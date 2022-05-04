@@ -41,7 +41,7 @@ extends PlacementModifier {
     }
 
     @Override
-    public Stream<BlockPos> getPositions(FeaturePlacementContext context, AbstractRandom abstractRandom, BlockPos pos) {
+    public Stream<BlockPos> getPositions(FeaturePlacementContext context, AbstractRandom random, BlockPos pos) {
         BlockPos.Mutable mutable = pos.mutableCopy();
         StructureWorldAccess structureWorldAccess = context.getWorld();
         if (!this.allowedSearchPredicate.test(structureWorldAccess, mutable)) {

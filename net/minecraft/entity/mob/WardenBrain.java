@@ -39,7 +39,6 @@ import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.ai.brain.task.WaitTask;
 import net.minecraft.entity.ai.brain.task.WanderAroundTask;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.mob.Angriness;
 import net.minecraft.entity.mob.WardenEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Unit;
@@ -105,7 +104,7 @@ public class WardenBrain {
     }
 
     private static void addInvestigateActivities(Brain<WardenEntity> brain) {
-        brain.setTaskList(Activity.INVESTIGATE, 5, ImmutableList.of(new FindRoarTargetTask<WardenEntity>(WardenEntity::getPrimeSuspect), new GoToCelebrateTask(MemoryModuleType.DISTURBANCE_LOCATION, 2, 0.7f), new WaitTask(10, 20)), MemoryModuleType.DISTURBANCE_LOCATION);
+        brain.setTaskList(Activity.INVESTIGATE, 5, ImmutableList.of(new FindRoarTargetTask<WardenEntity>(WardenEntity::getPrimeSuspect), new GoToCelebrateTask(MemoryModuleType.DISTURBANCE_LOCATION, 2, 0.7f)), MemoryModuleType.DISTURBANCE_LOCATION);
     }
 
     private static void addSniffActivities(Brain<WardenEntity> brain) {
@@ -117,7 +116,7 @@ public class WardenBrain {
     }
 
     private static void addFightActivities(WardenEntity warden, Brain<WardenEntity> brain) {
-        brain.setTaskList(Activity.FIGHT, 10, ImmutableList.of(RESET_DIG_COOLDOWN_TASK, new ForgetAttackTargetTask<WardenEntity>(entity -> warden.getAngriness() != Angriness.ANGRY || !warden.isValidTarget((Entity)entity), WardenBrain::removeDeadSuspect, false), new FollowMobTask(entity -> WardenBrain.isTargeting(warden, entity), (float)warden.getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE)), new RangedApproachTask(1.2f), new SonicBoomTask(), new MeleeAttackTask(18)), MemoryModuleType.ATTACK_TARGET);
+        brain.setTaskList(Activity.FIGHT, 10, ImmutableList.of(RESET_DIG_COOLDOWN_TASK, new ForgetAttackTargetTask<WardenEntity>(entity -> !warden.getAngriness().isAngry() || !warden.isValidTarget((Entity)entity), WardenBrain::removeDeadSuspect, false), new FollowMobTask(entity -> WardenBrain.isTargeting(warden, entity), (float)warden.getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE)), new RangedApproachTask(1.2f), new SonicBoomTask(), new MeleeAttackTask(18)), MemoryModuleType.ATTACK_TARGET);
     }
 
     private static boolean isTargeting(WardenEntity warden, LivingEntity entity2) {

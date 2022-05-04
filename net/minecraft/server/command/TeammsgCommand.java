@@ -12,6 +12,9 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import java.util.List;
 import net.minecraft.command.argument.MessageArgumentType;
 import net.minecraft.entity.Entity;
+import net.minecraft.network.MessageSender;
+import net.minecraft.network.MessageType;
+import net.minecraft.network.encryption.SignedChatMessage;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -27,25 +30,26 @@ public class TeamMsgCommand {
     private static final SimpleCommandExceptionType NO_TEAM_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.teammsg.failed.noteam"));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralCommandNode<ServerCommandSource> literalCommandNode = dispatcher.register((LiteralArgumentBuilder)CommandManager.literal("teammsg").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("message", MessageArgumentType.message()).executes(context -> TeamMsgCommand.execute((ServerCommandSource)context.getSource(), MessageArgumentType.getMessage(context, "message")))));
+        LiteralCommandNode<ServerCommandSource> literalCommandNode = dispatcher.register((LiteralArgumentBuilder)CommandManager.literal("teammsg").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("message", MessageArgumentType.message()).executes(context -> TeamMsgCommand.execute((ServerCommandSource)context.getSource(), MessageArgumentType.getSignedMessage(context, "message")))));
         dispatcher.register((LiteralArgumentBuilder)CommandManager.literal("tm").redirect(literalCommandNode));
     }
 
-    private static int execute(ServerCommandSource source, Text message) throws CommandSyntaxException {
-        Entity entity = source.getEntityOrThrow();
+    private static int execute(ServerCommandSource serverCommandSource, SignedChatMessage signedChatMessage) throws CommandSyntaxException {
+        Entity entity = serverCommandSource.getEntityOrThrow();
         Team team = (Team)entity.getScoreboardTeam();
         if (team == null) {
             throw NO_TEAM_EXCEPTION.create();
         }
         MutableText text = team.getFormattedName().fillStyle(STYLE);
-        List<ServerPlayerEntity> list = source.getServer().getPlayerManager().getPlayerList();
+        MessageSender messageSender = serverCommandSource.getChatMessageSender().withTeamName(text);
+        List<ServerPlayerEntity> list = serverCommandSource.getServer().getPlayerManager().getPlayerList();
         for (ServerPlayerEntity serverPlayerEntity : list) {
             if (serverPlayerEntity == entity) {
-                serverPlayerEntity.sendMessage((Text)Text.translatable("chat.type.team.sent", text, source.getDisplayName(), message), entity.getUuid());
+                serverPlayerEntity.sendMessage(Text.translatable("chat.type.team.sent", text, serverCommandSource.getDisplayName(), signedChatMessage.content()));
                 continue;
             }
             if (serverPlayerEntity.getScoreboardTeam() != team) continue;
-            serverPlayerEntity.sendMessage((Text)Text.translatable("chat.type.team.text", text, source.getDisplayName(), message), entity.getUuid());
+            serverPlayerEntity.sendChatMessage(signedChatMessage, messageSender, MessageType.TEAM_MSG_COMMAND);
         }
         return list.size();
     }

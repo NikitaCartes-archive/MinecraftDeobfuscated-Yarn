@@ -3,6 +3,7 @@
  */
 package net.minecraft.server.dedicated;
 
+import com.google.common.base.Strings;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.logging.LogUtils;
@@ -14,8 +15,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.AbstractPropertiesHandler;
 import net.minecraft.structure.StructureSet;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.dynamic.RegistryOps;
@@ -38,6 +42,7 @@ import org.slf4j.Logger;
 public class ServerPropertiesHandler
 extends AbstractPropertiesHandler<ServerPropertiesHandler> {
     static final Logger field_37276 = LogUtils.getLogger();
+    private static final Pattern SHA1_PATTERN = Pattern.compile("^[a-fA-F0-9]{40}$");
     public final boolean onlineMode = this.parseBoolean("online-mode", true);
     public final boolean preventProxyConnections = this.parseBoolean("prevent-proxy-connections", false);
     public final String serverIp = this.getString("server-ip", "");
@@ -45,9 +50,6 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
     public final boolean spawnNpcs = this.parseBoolean("spawn-npcs", true);
     public final boolean pvp = this.parseBoolean("pvp", true);
     public final boolean allowFlight = this.parseBoolean("allow-flight", false);
-    public final String resourcePack = this.getString("resource-pack", "");
-    public final boolean requireResourcePack = this.parseBoolean("require-resource-pack", false);
-    public final String resourcePackPrompt = this.getString("resource-pack-prompt", "");
     public final String motd = this.getString("motd", "A Minecraft Server");
     public final boolean forceGameMode = this.parseBoolean("force-gamemode", false);
     public final boolean enforceWhitelist = this.parseBoolean("enforce-whitelist", false);
@@ -62,9 +64,6 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
     public final boolean enableRcon = this.parseBoolean("enable-rcon", false);
     public final int rconPort = this.getInt("rcon.port", 25575);
     public final String rconPassword = this.getString("rcon.password", "");
-    @Nullable
-    public final String resourcePackHash = this.getDeprecatedString("resource-pack-hash");
-    public final String resourcePackSha1 = this.getString("resource-pack-sha1", "");
     public final boolean hardcore = this.parseBoolean("hardcore", false);
     public final boolean allowNether = this.parseBoolean("allow-nether", true);
     public final boolean spawnMonsters = this.parseBoolean("spawn-monsters", true);
@@ -89,6 +88,7 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
     public final boolean hideOnlinePlayers = this.parseBoolean("hide-online-players", false);
     public final int entityBroadcastRangePercentage = this.transformedParseInt("entity-broadcast-range-percentage", percentage -> MathHelper.clamp(percentage, 10, 1000), 100);
     public final String textFilteringConfig = this.getString("text-filtering-config", "");
+    public Optional<MinecraftServer.ServerResourcePackProperties> serverResourcePackProperties;
     public final AbstractPropertiesHandler.PropertyAccessor<Integer> playerIdleTimeout = this.intAccessor("player-idle-timeout", 0);
     public final AbstractPropertiesHandler.PropertyAccessor<Boolean> whiteList = this.booleanAccessor("white-list", false);
     public final boolean enforceSecureProfile = this.parseBoolean("enforce-secure-profile", false);
@@ -98,6 +98,7 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
 
     public ServerPropertiesHandler(Properties properties) {
         super(properties);
+        this.serverResourcePackProperties = ServerPropertiesHandler.getServerResourcePackProperties(this.getString("resource-pack", ""), this.getString("resource-pack-sha1", ""), this.getDeprecatedString("resource-pack-hash"), this.parseBoolean("require-resource-pack", false), this.getString("resource-pack-prompt", ""));
     }
 
     public static ServerPropertiesHandler load(Path path) {
@@ -109,6 +110,43 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
         ServerPropertiesHandler serverPropertiesHandler = new ServerPropertiesHandler(properties);
         serverPropertiesHandler.getGeneratorOptions(dynamicRegistryManager);
         return serverPropertiesHandler;
+    }
+
+    @Nullable
+    private static Text parseResourcePackPrompt(String prompt) {
+        if (!Strings.isNullOrEmpty(prompt)) {
+            try {
+                return Text.Serializer.fromJson(prompt);
+            } catch (Exception exception) {
+                field_37276.warn("Failed to parse resource pack prompt '{}'", (Object)prompt, (Object)exception);
+            }
+        }
+        return null;
+    }
+
+    private static Optional<MinecraftServer.ServerResourcePackProperties> getServerResourcePackProperties(String url, String sha1, @Nullable String hash, boolean required, String prompt) {
+        String string;
+        if (url.isEmpty()) {
+            return Optional.empty();
+        }
+        if (!sha1.isEmpty()) {
+            string = sha1;
+            if (!Strings.isNullOrEmpty(hash)) {
+                field_37276.warn("resource-pack-hash is deprecated and found along side resource-pack-sha1. resource-pack-hash will be ignored.");
+            }
+        } else if (!Strings.isNullOrEmpty(hash)) {
+            field_37276.warn("resource-pack-hash is deprecated. Please use resource-pack-sha1 instead.");
+            string = hash;
+        } else {
+            string = "";
+        }
+        if (string.isEmpty()) {
+            field_37276.warn("You specified a resource pack without providing a sha1 hash. Pack will be updated on the client only if you change the name of the pack.");
+        } else if (!SHA1_PATTERN.matcher(string).matches()) {
+            field_37276.warn("Invalid sha1 for resource-pack-sha1");
+        }
+        Text text = ServerPropertiesHandler.parseResourcePackPrompt(prompt);
+        return Optional.of(new MinecraftServer.ServerResourcePackProperties(url, string, required, text));
     }
 
     public GeneratorOptions getGeneratorOptions(DynamicRegistryManager dynamicRegistryManager) {

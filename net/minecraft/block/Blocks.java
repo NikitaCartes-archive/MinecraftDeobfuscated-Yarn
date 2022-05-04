@@ -1193,9 +1193,9 @@ public class Blocks {
     public static final Block RAW_GOLD_BLOCK = Blocks.register("raw_gold_block", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.GOLD).requiresTool().strength(5.0f, 6.0f)));
     public static final Block POTTED_AZALEA_BUSH = Blocks.register("potted_azalea_bush", new FlowerPotBlock(AZALEA, AbstractBlock.Settings.of(Material.DECORATION).breakInstantly().nonOpaque()));
     public static final Block POTTED_FLOWERING_AZALEA_BUSH = Blocks.register("potted_flowering_azalea_bush", new FlowerPotBlock(FLOWERING_AZALEA, AbstractBlock.Settings.of(Material.DECORATION).breakInstantly().nonOpaque()));
-    public static final Block OCHRE_FROGLIGHT = Blocks.register("ochre_froglight", new PillarBlock(AbstractBlock.Settings.of(Material.field_38977, MapColor.PALE_YELLOW).strength(0.3f).luminance(state -> 15).sounds(BlockSoundGroup.FROGLIGHT)));
-    public static final Block VERDANT_FROGLIGHT = Blocks.register("verdant_froglight", new PillarBlock(AbstractBlock.Settings.of(Material.field_38977, MapColor.LICHEN_GREEN).strength(0.3f).luminance(state -> 15).sounds(BlockSoundGroup.FROGLIGHT)));
-    public static final Block PEARLESCENT_FROGLIGHT = Blocks.register("pearlescent_froglight", new PillarBlock(AbstractBlock.Settings.of(Material.field_38977, MapColor.PINK).strength(0.3f).luminance(state -> 15).sounds(BlockSoundGroup.FROGLIGHT)));
+    public static final Block OCHRE_FROGLIGHT = Blocks.register("ochre_froglight", new PillarBlock(AbstractBlock.Settings.of(Material.FROGLIGHT, MapColor.PALE_YELLOW).strength(0.3f).luminance(state -> 15).sounds(BlockSoundGroup.FROGLIGHT)));
+    public static final Block VERDANT_FROGLIGHT = Blocks.register("verdant_froglight", new PillarBlock(AbstractBlock.Settings.of(Material.FROGLIGHT, MapColor.LICHEN_GREEN).strength(0.3f).luminance(state -> 15).sounds(BlockSoundGroup.FROGLIGHT)));
+    public static final Block PEARLESCENT_FROGLIGHT = Blocks.register("pearlescent_froglight", new PillarBlock(AbstractBlock.Settings.of(Material.FROGLIGHT, MapColor.PINK).strength(0.3f).luminance(state -> 15).sounds(BlockSoundGroup.FROGLIGHT)));
     public static final Block FROGSPAWN = Blocks.register("frogspawn", new FrogspawnBlock(AbstractBlock.Settings.of(Material.FROGSPAWN).breakInstantly().nonOpaque().noCollision().sounds(BlockSoundGroup.FROGSPAWN)));
     public static final Block REINFORCED_DEEPSLATE = Blocks.register("reinforced_deepslate", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.DEEPSLATE_GRAY).sounds(BlockSoundGroup.DEEPSLATE).strength(55.0f, 1200.0f)));
 

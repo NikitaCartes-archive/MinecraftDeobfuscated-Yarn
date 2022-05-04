@@ -14,6 +14,7 @@ import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
+import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
 import net.minecraft.network.packet.c2s.play.CraftRequestC2SPacket;
 import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
@@ -58,6 +59,8 @@ extends ServerPacketListener {
     public void onHandSwing(HandSwingC2SPacket var1);
 
     public void onChatMessage(ChatMessageC2SPacket var1);
+
+    public void onCommandExecution(CommandExecutionC2SPacket var1);
 
     public void onClientStatus(ClientStatusC2SPacket var1);
 

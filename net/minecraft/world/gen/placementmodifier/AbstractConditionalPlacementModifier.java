@@ -12,8 +12,8 @@ import net.minecraft.world.gen.placementmodifier.PlacementModifier;
 public abstract class AbstractConditionalPlacementModifier
 extends PlacementModifier {
     @Override
-    public final Stream<BlockPos> getPositions(FeaturePlacementContext context, AbstractRandom abstractRandom, BlockPos pos) {
-        if (this.shouldPlace(context, abstractRandom, pos)) {
+    public final Stream<BlockPos> getPositions(FeaturePlacementContext context, AbstractRandom random, BlockPos pos) {
+        if (this.shouldPlace(context, random, pos)) {
             return Stream.of(pos);
         }
         return Stream.of(new BlockPos[0]);

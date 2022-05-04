@@ -23,30 +23,27 @@ implements Packet<ClientPlayPacketListener> {
         this.suggestions = suggestions;
     }
 
-    public CommandSuggestionsS2CPacket(PacketByteBuf buf2) {
-        this.completionId = buf2.readVarInt();
-        int i = buf2.readVarInt();
-        int j = buf2.readVarInt();
+    public CommandSuggestionsS2CPacket(PacketByteBuf buf) {
+        this.completionId = buf.readVarInt();
+        int i = buf.readVarInt();
+        int j = buf.readVarInt();
         StringRange stringRange = StringRange.between(i, i + j);
-        List<Suggestion> list = buf2.readList(buf -> {
-            String string = buf.readString();
-            Text text = buf.readBoolean() ? buf.readText() : null;
+        List<Suggestion> list = buf.readList(buf2 -> {
+            String string = buf2.readString();
+            Text text = (Text)buf2.readNullable(PacketByteBuf::readText);
             return new Suggestion(stringRange, string, text);
         });
         this.suggestions = new Suggestions(stringRange, list);
     }
 
     @Override
-    public void write(PacketByteBuf buf2) {
-        buf2.writeVarInt(this.completionId);
-        buf2.writeVarInt(this.suggestions.getRange().getStart());
-        buf2.writeVarInt(this.suggestions.getRange().getLength());
-        buf2.writeCollection(this.suggestions.getList(), (buf, suggestion) -> {
-            buf.writeString(suggestion.getText());
-            buf.writeBoolean(suggestion.getTooltip() != null);
-            if (suggestion.getTooltip() != null) {
-                buf.writeText(Texts.toText(suggestion.getTooltip()));
-            }
+    public void write(PacketByteBuf buf) {
+        buf.writeVarInt(this.completionId);
+        buf.writeVarInt(this.suggestions.getRange().getStart());
+        buf.writeVarInt(this.suggestions.getRange().getLength());
+        buf.writeCollection(this.suggestions.getList(), (buf2, suggestion) -> {
+            buf2.writeString(suggestion.getText());
+            buf2.writeNullable(suggestion.getTooltip(), (buf3, tooltip) -> buf3.writeText(Texts.toText(tooltip)));
         });
     }
 

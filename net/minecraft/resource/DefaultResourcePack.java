@@ -139,7 +139,15 @@ implements ResourcePack {
     private static void collectIdentifiers(Collection<Identifier> results, String namespace, Path root, String prefix, Predicate<Identifier> allowedPathPredicate) throws IOException {
         Path path2 = root.resolve(namespace);
         try (Stream<Path> stream = Files.walk(path2.resolve(prefix), new FileVisitOption[0]);){
-            stream.filter(path -> !path.endsWith(".mcmeta") && Files.isRegularFile(path, new LinkOption[0])).map(path -> new Identifier(namespace, path2.relativize((Path)path).toString().replaceAll("\\\\", "/"))).filter(allowedPathPredicate).forEach(results::add);
+            stream.filter(path -> !path.endsWith(".mcmeta") && Files.isRegularFile(path, new LinkOption[0])).mapMulti((path, consumer) -> {
+                String string2 = path2.relativize((Path)path).toString().replaceAll("\\\\", "/");
+                Identifier identifier = Identifier.of(namespace, string2);
+                if (identifier == null) {
+                    Util.error("Invalid path in datapack: %s:%s, ignoring".formatted(namespace, string2));
+                } else {
+                    consumer.accept(identifier);
+                }
+            }).filter(allowedPathPredicate).forEach(results::add);
         }
     }
 

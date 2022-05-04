@@ -4,8 +4,6 @@
 package net.minecraft.data.server;
 
 import com.google.common.collect.Maps;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
@@ -29,7 +27,6 @@ import org.slf4j.Logger;
 public abstract class AbstractTagProvider<T>
 implements DataProvider {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     protected final DataGenerator root;
     protected final Registry<T> registry;
     private final Map<Identifier, Tag.Builder> tagBuilders = Maps.newLinkedHashMap();
@@ -58,8 +55,7 @@ implements DataProvider {
             JsonObject jsonObject = builder.toJson();
             Path path = this.getOutput((Identifier)id);
             try {
-                String string = GSON.toJson(jsonObject);
-                cache.write(path, string);
+                DataProvider.writeToPath(cache, jsonObject, path);
             } catch (IOException iOException) {
                 LOGGER.error("Couldn't save tags to {}", (Object)path, (Object)iOException);
             }

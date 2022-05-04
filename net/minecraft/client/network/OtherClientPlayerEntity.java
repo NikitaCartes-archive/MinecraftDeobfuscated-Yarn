@@ -10,6 +10,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
@@ -19,8 +20,8 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class OtherClientPlayerEntity
 extends AbstractClientPlayerEntity {
-    public OtherClientPlayerEntity(ClientWorld clientWorld, GameProfile gameProfile) {
-        super(clientWorld, gameProfile);
+    public OtherClientPlayerEntity(ClientWorld clientWorld, GameProfile gameProfile, PlayerPublicKey playerPublicKey) {
+        super(clientWorld, gameProfile, playerPublicKey);
         this.stepHeight = 1.0f;
         this.noClip = true;
     }

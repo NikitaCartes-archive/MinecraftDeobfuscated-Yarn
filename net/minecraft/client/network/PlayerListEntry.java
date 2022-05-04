@@ -43,23 +43,23 @@ public class PlayerListEntry {
     private long blinkingHeartTime;
     private long showTime;
     @Nullable
-    private final PlayerPublicKey.PublicKeyData publicKeyData;
+    private final PlayerPublicKey publicKeyData;
 
     public PlayerListEntry(PlayerListS2CPacket.Entry playerListPacketEntry, MinecraftSessionService sessionService) {
         this.profile = playerListPacketEntry.getProfile();
         this.gameMode = playerListPacketEntry.getGameMode();
         this.latency = playerListPacketEntry.getLatency();
         this.displayName = playerListPacketEntry.getDisplayName();
-        PlayerPublicKey.PublicKeyData publicKeyData = null;
+        PlayerPublicKey playerPublicKey = null;
         try {
-            PlayerPublicKey playerPublicKey = PlayerPublicKey.fromGameProfile(this.profile).orElse(null);
-            if (playerPublicKey != null) {
-                publicKeyData = playerPublicKey.verifyAndDecode(sessionService);
+            PlayerPublicKey.PublicKeyData publicKeyData = playerListPacketEntry.getPublicKeyData();
+            if (publicKeyData != null) {
+                playerPublicKey = PlayerPublicKey.verifyAndDecode(sessionService, publicKeyData);
             }
         } catch (InsecurePublicKeyException | NetworkEncryptionException exception) {
             LOGGER.error("Failed to retrieve publicKey property for profile {}", (Object)this.profile.getId(), (Object)exception);
         }
-        this.publicKeyData = publicKeyData;
+        this.publicKeyData = playerPublicKey;
     }
 
     public GameProfile getProfile() {
@@ -67,7 +67,7 @@ public class PlayerListEntry {
     }
 
     @Nullable
-    public PlayerPublicKey.PublicKeyData getPublicKeyData() {
+    public PlayerPublicKey getPublicKeyData() {
         return this.publicKeyData;
     }
 

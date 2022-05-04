@@ -27,17 +27,17 @@ implements Packet<ServerPlayPacketListener> {
         this.title = title;
     }
 
-    public BookUpdateC2SPacket(PacketByteBuf buf2) {
-        this.slot = buf2.readVarInt();
-        this.pages = buf2.readCollection(PacketByteBuf.getMaxValidator(Lists::newArrayListWithCapacity, 200), buf -> buf.readString(8192));
-        this.title = buf2.readOptional(buf -> buf.readString(128));
+    public BookUpdateC2SPacket(PacketByteBuf buf) {
+        this.slot = buf.readVarInt();
+        this.pages = buf.readCollection(PacketByteBuf.getMaxValidator(Lists::newArrayListWithCapacity, 200), buf2 -> buf2.readString(8192));
+        this.title = buf.readOptional(buf2 -> buf2.readString(128));
     }
 
     @Override
-    public void write(PacketByteBuf buf2) {
-        buf2.writeVarInt(this.slot);
-        buf2.writeCollection(this.pages, (buf, page) -> buf.writeString((String)page, 8192));
-        buf2.writeOptional(this.title, (buf, title) -> buf.writeString((String)title, 128));
+    public void write(PacketByteBuf buf) {
+        buf.writeVarInt(this.slot);
+        buf.writeCollection(this.pages, (buf2, page) -> buf2.writeString((String)page, 8192));
+        buf.writeOptional(this.title, (buf2, title) -> buf2.writeString((String)title, 128));
     }
 
     @Override

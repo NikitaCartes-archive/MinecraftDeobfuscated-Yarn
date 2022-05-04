@@ -53,6 +53,13 @@ public interface NbtType<T extends NbtElement> {
 
     public String getCommandFeedbackName();
 
+    /**
+     * {@return an invalid NBT type}
+     * 
+     * <p>Operations with an invalid NBT type always throws {@link IOException}.
+     * 
+     * @see NbtTypes#byId(int)
+     */
     public static NbtType<NbtEnd> createInvalid(final int type) {
         return new NbtType<NbtEnd>(){
 

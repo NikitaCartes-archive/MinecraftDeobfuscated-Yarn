@@ -77,6 +77,9 @@ implements NbtElementVisitor {
         this.pathParts = pathParts;
     }
 
+    /**
+     * {@return the stringified NBT {@code element}}
+     */
     public String apply(NbtElement element) {
         element.accept(this);
         return this.result;

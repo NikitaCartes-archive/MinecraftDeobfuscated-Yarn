@@ -18,7 +18,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.BlockPositionSource;
 import net.minecraft.world.event.GameEvent;
@@ -38,6 +37,11 @@ implements GameEventListener {
     }
 
     @Override
+    public boolean shouldListenImmediately() {
+        return true;
+    }
+
+    @Override
     public PositionSource getPositionSource() {
         return this.positionSource;
     }
@@ -48,12 +52,19 @@ implements GameEventListener {
     }
 
     @Override
-    public boolean listen(ServerWorld world, GameEvent event, GameEvent.Emitter emitter, Vec3d pos) {
+    public boolean listen(ServerWorld world, GameEvent.Message event) {
         Entity entity;
-        if (event == GameEvent.ENTITY_DIE && (entity = emitter.sourceEntity()) instanceof LivingEntity) {
+        if (this.isRemoved()) {
+            return false;
+        }
+        GameEvent.Emitter emitter = event.getEmitter();
+        if (event.getEvent() == GameEvent.ENTITY_DIE && (entity = emitter.sourceEntity()) instanceof LivingEntity) {
             LivingEntity livingEntity = (LivingEntity)entity;
             if (!livingEntity.isExperienceDroppingDisabled()) {
-                this.spreadManager.spread(new BlockPos(pos.withBias(Direction.UP, 0.5)), livingEntity.getXpToDrop());
+                int i = livingEntity.getXpToDrop();
+                if (livingEntity.shouldDropXp() && i > 0) {
+                    this.spreadManager.spread(new BlockPos(event.getEmitterPos().withBias(Direction.UP, 0.5)), i);
+                }
                 livingEntity.disableExperienceDropping();
                 LivingEntity livingEntity2 = livingEntity.getAttacker();
                 if (livingEntity2 instanceof ServerPlayerEntity) {

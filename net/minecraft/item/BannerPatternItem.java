@@ -8,6 +8,7 @@ import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tag.TagKey;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -16,15 +17,15 @@ import org.jetbrains.annotations.Nullable;
 
 public class BannerPatternItem
 extends Item {
-    private final BannerPattern pattern;
+    private final TagKey<BannerPattern> patternItemTag;
 
-    public BannerPatternItem(BannerPattern pattern, Item.Settings settings) {
+    public BannerPatternItem(TagKey<BannerPattern> patternItemTag, Item.Settings settings) {
         super(settings);
-        this.pattern = pattern;
+        this.patternItemTag = patternItemTag;
     }
 
-    public BannerPattern getPattern() {
-        return this.pattern;
+    public TagKey<BannerPattern> getPattern() {
+        return this.patternItemTag;
     }
 
     @Override

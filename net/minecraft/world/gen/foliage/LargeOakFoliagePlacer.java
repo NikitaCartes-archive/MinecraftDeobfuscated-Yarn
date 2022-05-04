@@ -31,15 +31,15 @@ extends BlobFoliagePlacer {
     }
 
     @Override
-    protected void generate(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom abstractRandom, TreeFeatureConfig config, int trunkHeight, FoliagePlacer.TreeNode treeNode, int foliageHeight, int radius, int offset) {
+    protected void generate(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, TreeFeatureConfig config, int trunkHeight, FoliagePlacer.TreeNode treeNode, int foliageHeight, int radius, int offset) {
         for (int i = offset; i >= offset - foliageHeight; --i) {
             int j = radius + (i == offset || i == offset - foliageHeight ? 0 : 1);
-            this.generateSquare(world, replacer, abstractRandom, config, treeNode.getCenter(), j, i, treeNode.isGiantTrunk());
+            this.generateSquare(world, replacer, random, config, treeNode.getCenter(), j, i, treeNode.isGiantTrunk());
         }
     }
 
     @Override
-    protected boolean isInvalidForLeaves(AbstractRandom abstractRandom, int dx, int y, int dz, int radius, boolean giantTrunk) {
+    protected boolean isInvalidForLeaves(AbstractRandom random, int dx, int y, int dz, int radius, boolean giantTrunk) {
         return MathHelper.square((float)dx + 0.5f) + MathHelper.square((float)dz + 0.5f) > (float)(radius * radius);
     }
 }

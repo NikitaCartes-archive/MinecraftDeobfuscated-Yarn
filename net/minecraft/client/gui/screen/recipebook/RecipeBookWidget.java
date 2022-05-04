@@ -193,7 +193,7 @@ RecipeGridAligner<Ingredient> {
         list2.removeIf(resultCollection -> !resultCollection.hasFittingRecipes());
         String string = this.searchField.getText();
         if (!string.isEmpty()) {
-            ObjectLinkedOpenHashSet objectSet = new ObjectLinkedOpenHashSet(this.client.getSearchableContainer(SearchManager.RECIPE_OUTPUT).findAll(string.toLowerCase(Locale.ROOT)));
+            ObjectLinkedOpenHashSet<RecipeResultCollection> objectSet = new ObjectLinkedOpenHashSet<RecipeResultCollection>(this.client.getSearchProvider(SearchManager.RECIPE_OUTPUT).findAll(string.toLowerCase(Locale.ROOT)));
             list2.removeIf(recipeResultCollection -> !objectSet.contains(recipeResultCollection));
         }
         if (this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)) {

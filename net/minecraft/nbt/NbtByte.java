@@ -14,7 +14,8 @@ import net.minecraft.nbt.scanner.NbtScanner;
 import net.minecraft.nbt.visitor.NbtElementVisitor;
 
 /**
- * Represents an NBT byte.
+ * Represents an NBT byte. Its type is {@value NbtElement#BYTE_TYPE}.
+ * Instances are immutable.
  */
 public class NbtByte
 extends AbstractNbtNumber {
@@ -57,7 +58,17 @@ extends AbstractNbtNumber {
             return this.read(input, depth, tracker);
         }
     };
+    /**
+     * The NBT byte representing {@code 0}.
+     * 
+     * @apiNote This is often used to indicate a false boolean value.
+     */
     public static final NbtByte ZERO = NbtByte.of((byte)0);
+    /**
+     * The NBT byte representing {@code 1}.
+     * 
+     * @apiNote This is often used to indicate a true boolean value.
+     */
     public static final NbtByte ONE = NbtByte.of((byte)1);
     private final byte value;
 
@@ -65,10 +76,18 @@ extends AbstractNbtNumber {
         this.value = value;
     }
 
+    /**
+     * {@return the NBT byte from {@code value}}
+     * 
+     * @implNote This returns the value from the cache.
+     */
     public static NbtByte of(byte value) {
         return Cache.VALUES[128 + value];
     }
 
+    /**
+     * {@return the NBT byte representing the boolean {@code value}}
+     */
     public static NbtByte of(boolean value) {
         return value ? ONE : ZERO;
     }

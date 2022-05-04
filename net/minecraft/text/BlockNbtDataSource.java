@@ -52,12 +52,12 @@ public record BlockNbtDataSource(String rawPos, @Nullable PosArgument pos) imple
      * Lifted jumps to return sites
      */
     @Override
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (!(object instanceof BlockNbtDataSource)) return false;
-        BlockNbtDataSource blockNbtDataSource = (BlockNbtDataSource)object;
+        if (!(o instanceof BlockNbtDataSource)) return false;
+        BlockNbtDataSource blockNbtDataSource = (BlockNbtDataSource)o;
         if (!this.rawPos.equals(blockNbtDataSource.rawPos)) return false;
         return true;
     }

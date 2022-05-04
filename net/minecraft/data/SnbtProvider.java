@@ -4,6 +4,9 @@
 package net.minecraft.data;
 
 import com.google.common.collect.Lists;
+import com.google.common.hash.HashCode;
+import com.google.common.hash.Hashing;
+import com.google.common.hash.HashingOutputStream;
 import com.mojang.logging.LogUtils;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -90,11 +93,12 @@ implements DataProvider {
                 String string = IOUtils.toString(bufferedReader);
                 NbtCompound nbtCompound = this.write(name, NbtHelper.fromNbtProviderString(string));
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                NbtIo.writeCompressed(nbtCompound, byteArrayOutputStream);
+                HashingOutputStream hashingOutputStream = new HashingOutputStream(Hashing.sha1(), byteArrayOutputStream);
+                NbtIo.writeCompressed(nbtCompound, hashingOutputStream);
                 byte[] bs = byteArrayOutputStream.toByteArray();
-                String string2 = SHA1.hashBytes(bs).toString();
-                String string3 = DEBUG_OUTPUT_DIRECTORY != null ? NbtHelper.toNbtProviderString(nbtCompound) : null;
-                compressedData = new CompressedData(name, bs, string3, string2);
+                HashCode hashCode = hashingOutputStream.hash();
+                String string2 = DEBUG_OUTPUT_DIRECTORY != null ? NbtHelper.toNbtProviderString(nbtCompound) : null;
+                compressedData = new CompressedData(name, bs, string2, hashCode);
                 if (bufferedReader == null) break block8;
             } catch (Throwable throwable) {
                 try {
@@ -138,18 +142,10 @@ implements DataProvider {
         public NbtCompound write(String var1, NbtCompound var2);
     }
 
-    static class CompressedData {
-        final String name;
-        final byte[] bytes;
+    record CompressedData(String name, byte[] bytes, @Nullable String snbtContent, HashCode sha1) {
         @Nullable
-        final String snbtContent;
-        final String sha1;
-
-        public CompressedData(String name, byte[] bytes, @Nullable String snbtContent, String sha1) {
-            this.name = name;
-            this.bytes = bytes;
-            this.snbtContent = snbtContent;
-            this.sha1 = sha1;
+        public String snbtContent() {
+            return this.snbtContent;
         }
     }
 

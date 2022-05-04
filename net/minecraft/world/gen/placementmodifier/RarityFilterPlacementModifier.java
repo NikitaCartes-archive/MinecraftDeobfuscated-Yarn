@@ -26,8 +26,8 @@ extends AbstractConditionalPlacementModifier {
     }
 
     @Override
-    protected boolean shouldPlace(FeaturePlacementContext context, AbstractRandom abstractRandom, BlockPos pos) {
-        return abstractRandom.nextFloat() < 1.0f / (float)this.chance;
+    protected boolean shouldPlace(FeaturePlacementContext context, AbstractRandom random, BlockPos pos) {
+        return random.nextFloat() < 1.0f / (float)this.chance;
     }
 
     @Override

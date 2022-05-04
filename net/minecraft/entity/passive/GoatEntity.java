@@ -30,6 +30,7 @@ import net.minecraft.entity.passive.GoatBrain;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.GoatHornItem;
+import net.minecraft.item.Instrument;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
@@ -40,12 +41,16 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.tag.InstrumentTags;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -73,6 +78,13 @@ extends AnimalEntity {
         this.getNavigation().setCanSwim(true);
         this.setPathfindingPenalty(PathNodeType.POWDER_SNOW, -1.0f);
         this.setPathfindingPenalty(PathNodeType.DANGER_POWDER_SNOW, -1.0f);
+    }
+
+    public ItemStack method_43690() {
+        AbstractRandom abstractRandom = AbstractRandom.createAtomic(this.getUuid().hashCode());
+        TagKey<Instrument> tagKey = this.isScreaming() ? InstrumentTags.SCREAMING_GOAT_HORNS : InstrumentTags.REGULAR_GOAT_HORNS;
+        RegistryEntryList.Named<Instrument> registryEntryList = Registry.INSTRUMENT.getOrCreateEntryList(tagKey);
+        return GoatHornItem.getStackForInstrument(Items.GOAT_HORN, registryEntryList.getRandom(abstractRandom).get());
     }
 
     protected Brain.Profile<GoatEntity> createBrainProfile() {
@@ -283,7 +295,7 @@ extends AnimalEntity {
         TrackedData<Boolean> trackedData = !bl ? RIGHT_HORN : (!bl2 ? LEFT_HORN : (this.random.nextBoolean() ? LEFT_HORN : RIGHT_HORN));
         this.dataTracker.set(trackedData, false);
         Vec3d vec3d = this.getPos();
-        ItemStack itemStack = GoatHornItem.getStackForGoat(this);
+        ItemStack itemStack = this.method_43690();
         double d = MathHelper.nextBetween(this.random, -0.2f, 0.2f);
         double e = MathHelper.nextBetween(this.random, 0.3f, 0.7f);
         double f = MathHelper.nextBetween(this.random, -0.2f, 0.2f);

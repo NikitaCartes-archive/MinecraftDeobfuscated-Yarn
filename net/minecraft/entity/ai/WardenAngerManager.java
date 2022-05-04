@@ -12,13 +12,12 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectAVLTreeSet;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.SortedSet;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -34,23 +33,32 @@ import org.jetbrains.annotations.Nullable;
 
 public class WardenAngerManager {
     @VisibleForTesting
-    protected static final int field_38733 = 40;
+    protected static final int field_38733 = 2;
     @VisibleForTesting
     protected static final int maxAnger = 150;
     private static final int angerDecreasePerTick = 1;
-    private int updateTimer = MathHelper.nextBetween(AbstractRandom.createAtomic(), 0, 40);
+    private int updateTimer = MathHelper.nextBetween(AbstractRandom.createAtomic(), 0, 2);
     private static final Codec<Pair<UUID, Integer>> SUSPECT_CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codecs.UUID.fieldOf("uuid")).forGetter(Pair::getFirst), ((MapCodec)Codecs.NONNEGATIVE_INT.fieldOf("anger")).forGetter(Pair::getSecond)).apply((Applicative<Pair, ?>)instance, Pair::of));
-    public static final Codec<WardenAngerManager> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)SUSPECT_CODEC.listOf().fieldOf("suspects")).orElse(Collections.emptyList()).forGetter(WardenAngerManager::getSuspects)).apply((Applicative<WardenAngerManager, ?>)instance, WardenAngerManager::new));
+    private final Predicate<Entity> suspectPredicate;
     @VisibleForTesting
-    protected final SortedSet<Entity> suspects = new ObjectAVLTreeSet<Entity>(new SuspectComparator(this));
+    protected final ArrayList<Entity> suspects;
+    private final SuspectComparator suspectComparator;
     @VisibleForTesting
-    protected final Object2IntMap<Entity> suspectsToAngerLevel = new Object2IntOpenHashMap<Entity>();
+    protected final Object2IntMap<Entity> suspectsToAngerLevel;
     @VisibleForTesting
     protected final Object2IntMap<UUID> suspectUuidsToAngerLevel;
 
-    public WardenAngerManager(List<Pair<UUID, Integer>> suspects) {
-        this.suspectUuidsToAngerLevel = new Object2IntOpenHashMap<UUID>(suspects.size());
-        suspects.forEach(pair -> this.suspectUuidsToAngerLevel.put((UUID)pair.getFirst(), (Integer)pair.getSecond()));
+    public static Codec<WardenAngerManager> method_43692(Predicate<Entity> predicate) {
+        return RecordCodecBuilder.create(instance -> instance.group(((MapCodec)SUSPECT_CODEC.listOf().fieldOf("suspects")).orElse(Collections.emptyList()).forGetter(WardenAngerManager::getSuspects)).apply((Applicative<WardenAngerManager, ?>)instance, list -> new WardenAngerManager(predicate, (List<Pair<UUID, Integer>>)list)));
+    }
+
+    public WardenAngerManager(Predicate<Entity> suspectPredicate, List<Pair<UUID, Integer>> suspectUuidsToAngerLevel) {
+        this.suspectPredicate = suspectPredicate;
+        this.suspects = new ArrayList();
+        this.suspectComparator = new SuspectComparator(this);
+        this.suspectsToAngerLevel = new Object2IntOpenHashMap<Entity>();
+        this.suspectUuidsToAngerLevel = new Object2IntOpenHashMap<UUID>(suspectUuidsToAngerLevel.size());
+        suspectUuidsToAngerLevel.forEach(pair -> this.suspectUuidsToAngerLevel.put((UUID)pair.getFirst(), (Integer)pair.getSecond()));
     }
 
     private List<Pair<UUID, Integer>> getSuspects() {
@@ -61,7 +69,7 @@ public class WardenAngerManager {
         --this.updateTimer;
         if (this.updateTimer <= 0) {
             this.updateSuspectsMap(world);
-            this.updateTimer = 40;
+            this.updateTimer = 2;
         }
         Iterator objectIterator = this.suspectUuidsToAngerLevel.object2IntEntrySet().iterator();
         while (objectIterator.hasNext()) {
@@ -78,13 +86,23 @@ public class WardenAngerManager {
             Object2IntMap.Entry entry2 = (Object2IntMap.Entry)objectIterator2.next();
             int j = entry2.getIntValue();
             Entity entity = (Entity)entry2.getKey();
-            if (j <= 1 || !suspectPredicate.test(entity)) {
+            Entity.RemovalReason removalReason = entity.getRemovalReason();
+            if (j <= 1 || !suspectPredicate.test(entity) || removalReason != null) {
                 this.suspects.remove(entity);
                 objectIterator2.remove();
+                if (j <= 1 || removalReason == null) continue;
+                switch (removalReason) {
+                    case CHANGED_DIMENSION: 
+                    case UNLOADED_TO_CHUNK: 
+                    case UNLOADED_WITH_PLAYER: {
+                        this.suspectUuidsToAngerLevel.put(entity.getUuid(), j - 1);
+                    }
+                }
                 continue;
             }
             entry2.setValue(j - 1);
         }
+        this.suspects.sort(this.suspectComparator);
     }
 
     private void updateSuspectsMap(ServerWorld world) {
@@ -98,16 +116,18 @@ public class WardenAngerManager {
             this.suspects.add(entity);
             objectIterator.remove();
         }
+        this.suspects.sort(this.suspectComparator);
     }
 
     public int increaseAngerAt(Entity entity, int amount) {
-        boolean bl = !this.suspects.remove(entity);
+        boolean bl = !this.suspectsToAngerLevel.containsKey(entity);
         int i = this.suspectsToAngerLevel.computeInt(entity, (suspect, anger) -> Math.min(150, (anger == null ? 0 : anger) + amount));
         if (bl) {
             int j = this.suspectUuidsToAngerLevel.removeInt(entity.getUuid());
             this.suspectsToAngerLevel.put(entity, i += j);
+            this.suspects.add(entity);
         }
-        this.suspects.add(entity);
+        this.suspects.sort(this.suspectComparator);
         return i;
     }
 
@@ -118,7 +138,7 @@ public class WardenAngerManager {
 
     @Nullable
     private Entity getPrimeSuspect() {
-        return this.suspects.isEmpty() ? null : this.suspects.first();
+        return this.suspects.stream().filter(this.suspectPredicate).findFirst().orElse(null);
     }
 
     public int getPrimeSuspectAnger() {
@@ -142,9 +162,8 @@ public class WardenAngerManager {
             }
             int i = this.angerManagement.suspectsToAngerLevel.getOrDefault((Object)entity, 0);
             int j = this.angerManagement.suspectsToAngerLevel.getOrDefault((Object)entity2, 0);
-            boolean bl = i >= Angriness.ANGRY.getThreshold();
-            boolean bl5 = bl2 = j >= Angriness.ANGRY.getThreshold();
-            if (bl != bl2) {
+            boolean bl = Angriness.getForAnger(i).isAngry();
+            if (bl != (bl2 = Angriness.getForAnger(j).isAngry())) {
                 return bl ? -1 : 1;
             }
             if (bl && (bl3 = entity instanceof PlayerEntity) != (bl4 = entity2 instanceof PlayerEntity)) {

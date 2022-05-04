@@ -62,8 +62,13 @@ implements VibrationListener.Callback {
     }
 
     @Override
+    public boolean triggersAvoidCriterion() {
+        return true;
+    }
+
+    @Override
     public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable GameEvent.Emitter emitter) {
-        if (pos.equals(this.getPos()) && (event == GameEvent.BLOCK_DESTROY || event == GameEvent.BLOCK_PLACE)) {
+        if (this.isRemoved() || pos.equals(this.getPos()) && (event == GameEvent.BLOCK_DESTROY || event == GameEvent.BLOCK_PLACE)) {
             return false;
         }
         return SculkSensorBlock.isInactive(this.getCachedState());

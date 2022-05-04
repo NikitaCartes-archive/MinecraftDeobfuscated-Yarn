@@ -37,7 +37,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class AbstractLichenBlock
+public abstract class MultifaceGrowthBlock
 extends Block {
     private static final float field_31194 = 1.0f;
     private static final VoxelShape UP_SHAPE = Block.createCuboidShape(0.0, 15.0, 0.0, 16.0, 16.0, 16.0);
@@ -61,22 +61,22 @@ extends Block {
     private final boolean canMirrorX;
     private final boolean canMirrorZ;
 
-    public AbstractLichenBlock(AbstractBlock.Settings settings) {
+    public MultifaceGrowthBlock(AbstractBlock.Settings settings) {
         super(settings);
-        this.setDefaultState(AbstractLichenBlock.withAllDirections(this.stateManager));
-        this.SHAPES = this.getShapesForStates(AbstractLichenBlock::getShapeForState);
+        this.setDefaultState(MultifaceGrowthBlock.withAllDirections(this.stateManager));
+        this.SHAPES = this.getShapesForStates(MultifaceGrowthBlock::getShapeForState);
         this.hasAllHorizontalDirections = Direction.Type.HORIZONTAL.stream().allMatch(this::canHaveDirection);
         this.canMirrorX = Direction.Type.HORIZONTAL.stream().filter(Direction.Axis.X).filter(this::canHaveDirection).count() % 2L == 0L;
         this.canMirrorZ = Direction.Type.HORIZONTAL.stream().filter(Direction.Axis.Z).filter(this::canHaveDirection).count() % 2L == 0L;
     }
 
     public static Set<Direction> collectDirections(BlockState state) {
-        if (!(state.getBlock() instanceof AbstractLichenBlock)) {
+        if (!(state.getBlock() instanceof MultifaceGrowthBlock)) {
             return Set.of();
         }
         EnumSet<Direction> set = EnumSet.noneOf(Direction.class);
         for (Direction direction : Direction.values()) {
-            if (!AbstractLichenBlock.hasDirection(state, direction)) continue;
+            if (!MultifaceGrowthBlock.hasDirection(state, direction)) continue;
             set.add(direction);
         }
         return set;
@@ -107,19 +107,19 @@ extends Block {
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         for (Direction direction : DIRECTIONS) {
             if (!this.canHaveDirection(direction)) continue;
-            builder.add(AbstractLichenBlock.getProperty(direction));
+            builder.add(MultifaceGrowthBlock.getProperty(direction));
         }
     }
 
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
-        if (!AbstractLichenBlock.hasAnyDirection(state)) {
+        if (!MultifaceGrowthBlock.hasAnyDirection(state)) {
             return Blocks.AIR.getDefaultState();
         }
-        if (!AbstractLichenBlock.hasDirection(state, direction) || AbstractLichenBlock.canGrowOn(world, direction, neighborPos, neighborState)) {
+        if (!MultifaceGrowthBlock.hasDirection(state, direction) || MultifaceGrowthBlock.canGrowOn(world, direction, neighborPos, neighborState)) {
             return state;
         }
-        return AbstractLichenBlock.disableDirection(state, AbstractLichenBlock.getProperty(direction));
+        return MultifaceGrowthBlock.disableDirection(state, MultifaceGrowthBlock.getProperty(direction));
     }
 
     @Override
@@ -131,9 +131,9 @@ extends Block {
     public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
         boolean bl = false;
         for (Direction direction : DIRECTIONS) {
-            if (!AbstractLichenBlock.hasDirection(state, direction)) continue;
+            if (!MultifaceGrowthBlock.hasDirection(state, direction)) continue;
             BlockPos blockPos = pos.offset(direction);
-            if (!AbstractLichenBlock.canGrowOn(world, direction, blockPos, world.getBlockState(blockPos))) {
+            if (!MultifaceGrowthBlock.canGrowOn(world, direction, blockPos, world.getBlockState(blockPos))) {
                 return false;
             }
             bl = true;
@@ -143,7 +143,7 @@ extends Block {
 
     @Override
     public boolean canReplace(BlockState state, ItemPlacementContext context) {
-        return AbstractLichenBlock.isNotFullBlock(state);
+        return MultifaceGrowthBlock.isNotFullBlock(state);
     }
 
     @Override
@@ -156,11 +156,11 @@ extends Block {
     }
 
     public boolean canGrowWithDirection(BlockView world, BlockState state, BlockPos pos, Direction direction) {
-        if (!this.canHaveDirection(direction) || state.isOf(this) && AbstractLichenBlock.hasDirection(state, direction)) {
+        if (!this.canHaveDirection(direction) || state.isOf(this) && MultifaceGrowthBlock.hasDirection(state, direction)) {
             return false;
         }
         BlockPos blockPos = pos.offset(direction);
-        return AbstractLichenBlock.canGrowOn(world, direction, blockPos, world.getBlockState(blockPos));
+        return MultifaceGrowthBlock.canGrowOn(world, direction, blockPos, world.getBlockState(blockPos));
     }
 
     @Nullable
@@ -169,7 +169,7 @@ extends Block {
             return null;
         }
         BlockState blockState = state.isOf(this) ? state : (this.isWaterlogged() && state.getFluidState().isEqualAndStill(Fluids.WATER) ? (BlockState)this.getDefaultState().with(Properties.WATERLOGGED, true) : this.getDefaultState());
-        return (BlockState)blockState.with(AbstractLichenBlock.getProperty(direction), true);
+        return (BlockState)blockState.with(MultifaceGrowthBlock.getProperty(direction), true);
     }
 
     @Override
@@ -195,13 +195,13 @@ extends Block {
         BlockState blockState = state;
         for (Direction direction : DIRECTIONS) {
             if (!this.canHaveDirection(direction)) continue;
-            blockState = (BlockState)blockState.with(AbstractLichenBlock.getProperty(mirror.apply(direction)), state.get(AbstractLichenBlock.getProperty(direction)));
+            blockState = (BlockState)blockState.with(MultifaceGrowthBlock.getProperty(mirror.apply(direction)), state.get(MultifaceGrowthBlock.getProperty(direction)));
         }
         return blockState;
     }
 
     public static boolean hasDirection(BlockState state, Direction direction) {
-        BooleanProperty booleanProperty = AbstractLichenBlock.getProperty(direction);
+        BooleanProperty booleanProperty = MultifaceGrowthBlock.getProperty(direction);
         return state.contains(booleanProperty) && state.get(booleanProperty) != false;
     }
 
@@ -215,7 +215,7 @@ extends Block {
 
     private static BlockState disableDirection(BlockState state, BooleanProperty direction) {
         BlockState blockState = (BlockState)state.with(direction, false);
-        if (AbstractLichenBlock.hasAnyDirection(blockState)) {
+        if (MultifaceGrowthBlock.hasAnyDirection(blockState)) {
             return blockState;
         }
         return Blocks.AIR.getDefaultState();
@@ -237,18 +237,18 @@ extends Block {
     private static VoxelShape getShapeForState(BlockState state) {
         VoxelShape voxelShape = VoxelShapes.empty();
         for (Direction direction : DIRECTIONS) {
-            if (!AbstractLichenBlock.hasDirection(state, direction)) continue;
+            if (!MultifaceGrowthBlock.hasDirection(state, direction)) continue;
             voxelShape = VoxelShapes.union(voxelShape, SHAPES_FOR_DIRECTIONS.get(direction));
         }
         return voxelShape.isEmpty() ? VoxelShapes.fullCube() : voxelShape;
     }
 
     protected static boolean hasAnyDirection(BlockState state) {
-        return Arrays.stream(DIRECTIONS).anyMatch(direction -> AbstractLichenBlock.hasDirection(state, direction));
+        return Arrays.stream(DIRECTIONS).anyMatch(direction -> MultifaceGrowthBlock.hasDirection(state, direction));
     }
 
     private static boolean isNotFullBlock(BlockState state) {
-        return Arrays.stream(DIRECTIONS).anyMatch(direction -> !AbstractLichenBlock.hasDirection(state, direction));
+        return Arrays.stream(DIRECTIONS).anyMatch(direction -> !MultifaceGrowthBlock.hasDirection(state, direction));
     }
 
     public abstract LichenGrower getGrower();

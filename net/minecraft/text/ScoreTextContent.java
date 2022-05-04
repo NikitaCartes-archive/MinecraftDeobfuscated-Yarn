@@ -92,12 +92,12 @@ implements TextContent {
      * Enabled force condition propagation
      * Lifted jumps to return sites
      */
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (!(object instanceof ScoreTextContent)) return false;
-        ScoreTextContent scoreTextContent = (ScoreTextContent)object;
+        if (!(o instanceof ScoreTextContent)) return false;
+        ScoreTextContent scoreTextContent = (ScoreTextContent)o;
         if (!this.name.equals(scoreTextContent.name)) return false;
         if (!this.objective.equals(scoreTextContent.objective)) return false;
         return true;

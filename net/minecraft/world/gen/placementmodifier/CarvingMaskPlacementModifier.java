@@ -28,7 +28,7 @@ extends PlacementModifier {
     }
 
     @Override
-    public Stream<BlockPos> getPositions(FeaturePlacementContext context, AbstractRandom abstractRandom, BlockPos pos) {
+    public Stream<BlockPos> getPositions(FeaturePlacementContext context, AbstractRandom random, BlockPos pos) {
         ChunkPos chunkPos = new ChunkPos(pos);
         return context.getOrCreateCarvingMask(chunkPos, this.step).streamBlockPos(chunkPos);
     }

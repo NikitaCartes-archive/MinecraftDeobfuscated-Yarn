@@ -339,7 +339,7 @@ implements DebugRenderer.Renderer {
         public final List<String> labels = Lists.newArrayList();
         public final Set<BlockPos> blacklist = Sets.newHashSet();
 
-        public Bee(UUID uuid, int entityId, Position position, Path path, BlockPos hive, BlockPos flower, int travelTicks) {
+        public Bee(UUID uuid, int entityId, Position position, @Nullable Path path, @Nullable BlockPos hive, @Nullable BlockPos flower, int travelTicks) {
             this.uuid = uuid;
             this.entityId = entityId;
             this.position = position;

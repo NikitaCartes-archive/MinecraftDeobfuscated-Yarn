@@ -27,7 +27,7 @@ extends Task<WardenEntity> {
     private static final double field_38852 = 0.5;
     private static final double field_38853 = 2.5;
     public static final int COOLDOWN = 40;
-    private static final int SOUND_DELAY = 34;
+    private static final int SOUND_DELAY = MathHelper.ceil(34.0);
     private static final int RUN_TIME = MathHelper.ceil(60.0f);
 
     public SonicBoomTask() {
@@ -47,7 +47,7 @@ extends Task<WardenEntity> {
     @Override
     protected void run(ServerWorld serverWorld, WardenEntity wardenEntity, long l) {
         wardenEntity.getBrain().remember(MemoryModuleType.ATTACK_COOLING_DOWN, true, RUN_TIME);
-        wardenEntity.getBrain().remember(MemoryModuleType.SONIC_BOOM_SOUND_DELAY, Unit.INSTANCE, 34L);
+        wardenEntity.getBrain().remember(MemoryModuleType.SONIC_BOOM_SOUND_DELAY, Unit.INSTANCE, SOUND_DELAY);
         serverWorld.sendEntityStatus(wardenEntity, EntityStatuses.SONIC_BOOM);
         wardenEntity.playSound(SoundEvents.ENTITY_WARDEN_SONIC_CHARGE, 3.0f, 1.0f);
     }
@@ -57,8 +57,8 @@ extends Task<WardenEntity> {
         if (wardenEntity.getBrain().hasMemoryModule(MemoryModuleType.SONIC_BOOM_SOUND_DELAY) || wardenEntity.getBrain().hasMemoryModule(MemoryModuleType.SONIC_BOOM_SOUND_COOLDOWN)) {
             return;
         }
-        wardenEntity.getBrain().remember(MemoryModuleType.SONIC_BOOM_SOUND_COOLDOWN, Unit.INSTANCE, RUN_TIME - 34);
-        wardenEntity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).filter(target -> wardenEntity.isInRange((Entity)target, 15.0, 20.0)).ifPresent(target -> {
+        wardenEntity.getBrain().remember(MemoryModuleType.SONIC_BOOM_SOUND_COOLDOWN, Unit.INSTANCE, RUN_TIME - SOUND_DELAY);
+        wardenEntity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).filter(wardenEntity::isValidTarget).filter(target -> wardenEntity.isInRange((Entity)target, 15.0, 20.0)).ifPresent(target -> {
             Vec3d vec3d = wardenEntity.getPos().add(0.0, 1.6f, 0.0);
             Vec3d vec3d2 = target.getEyePos().subtract(vec3d);
             Vec3d vec3d3 = vec3d2.normalize();

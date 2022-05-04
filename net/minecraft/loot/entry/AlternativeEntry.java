@@ -4,7 +4,9 @@
 package net.minecraft.loot.entry;
 
 import com.google.common.collect.Lists;
+import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.entry.CombinedEntry;
@@ -58,6 +60,10 @@ extends CombinedEntry {
 
     public static Builder builder(LootPoolEntry.Builder<?> ... children) {
         return new Builder(children);
+    }
+
+    public static <E> Builder builder(Collection<E> children, Function<E, LootPoolEntry.Builder<?>> toBuilderFunction) {
+        return new Builder((LootPoolEntry.Builder[])children.stream().map(toBuilderFunction::apply).toArray(LootPoolEntry.Builder[]::new));
     }
 
     public static class Builder

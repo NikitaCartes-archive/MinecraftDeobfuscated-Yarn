@@ -37,12 +37,12 @@ implements BlockEntityRenderer<EnchantingTableBlockEntity> {
         matrixStack.translate(0.5, 0.75, 0.5);
         float g = (float)enchantingTableBlockEntity.ticks + f;
         matrixStack.translate(0.0, 0.1f + MathHelper.sin(g * 0.1f) * 0.01f, 0.0);
-        for (h = enchantingTableBlockEntity.field_11964 - enchantingTableBlockEntity.field_11963; h >= (float)Math.PI; h -= (float)Math.PI * 2) {
+        for (h = enchantingTableBlockEntity.bookRotation - enchantingTableBlockEntity.lastBookRotation; h >= (float)Math.PI; h -= (float)Math.PI * 2) {
         }
         while (h < (float)(-Math.PI)) {
             h += (float)Math.PI * 2;
         }
-        float k = enchantingTableBlockEntity.field_11963 + h * f;
+        float k = enchantingTableBlockEntity.lastBookRotation + h * f;
         matrixStack.multiply(Vec3f.POSITIVE_Y.getRadialQuaternion(-k));
         matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(80.0f));
         float l = MathHelper.lerp(f, enchantingTableBlockEntity.pageAngle, enchantingTableBlockEntity.nextPageAngle);

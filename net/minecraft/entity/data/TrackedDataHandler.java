@@ -4,8 +4,6 @@
 package net.minecraft.entity.data;
 
 import java.util.Optional;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.collection.IndexedIterable;
@@ -21,47 +19,23 @@ public interface TrackedDataHandler<T> {
 
     public T copy(T var1);
 
-    public static <T> TrackedDataHandler<T> of(final BiConsumer<PacketByteBuf, T> writer, final Function<PacketByteBuf, T> reader) {
+    public static <T> TrackedDataHandler<T> of(final PacketByteBuf.PacketWriter<T> packetWriter, final PacketByteBuf.PacketReader<T> packetReader) {
         return new ImmutableHandler<T>(){
 
             @Override
             public void write(PacketByteBuf buf, T value) {
-                writer.accept(buf, value);
+                packetWriter.accept(buf, value);
             }
 
             @Override
             public T read(PacketByteBuf buf) {
-                return reader.apply(buf);
+                return packetReader.apply(buf);
             }
         };
     }
 
-    public static <T> TrackedDataHandler<Optional<T>> ofOptional(final BiConsumer<PacketByteBuf, T> writer, final Function<PacketByteBuf, T> reader) {
-        return new ImmutableHandler<Optional<T>>(){
-
-            @Override
-            public void write(PacketByteBuf packetByteBuf, Optional<T> optional) {
-                if (optional.isPresent()) {
-                    packetByteBuf.writeBoolean(true);
-                    writer.accept(packetByteBuf, optional.get());
-                } else {
-                    packetByteBuf.writeBoolean(false);
-                }
-            }
-
-            @Override
-            public Optional<T> read(PacketByteBuf packetByteBuf) {
-                if (packetByteBuf.readBoolean()) {
-                    return Optional.of(reader.apply(packetByteBuf));
-                }
-                return Optional.empty();
-            }
-
-            @Override
-            public /* synthetic */ Object read(PacketByteBuf buf) {
-                return this.read(buf);
-            }
-        };
+    public static <T> TrackedDataHandler<Optional<T>> ofOptional(PacketByteBuf.PacketWriter<T> packetWriter, PacketByteBuf.PacketReader<T> packetReader) {
+        return TrackedDataHandler.of(packetWriter.asOptional(), packetReader.asOptional());
     }
 
     public static <T extends Enum<T>> TrackedDataHandler<T> ofEnum(Class<T> enum_) {

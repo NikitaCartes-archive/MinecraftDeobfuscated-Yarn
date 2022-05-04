@@ -33,7 +33,7 @@ extends HeightProvider {
     }
 
     @Override
-    public int get(AbstractRandom abstractRandom, HeightContext context) {
+    public int get(AbstractRandom random, HeightContext context) {
         return this.offset.getY(context);
     }
 

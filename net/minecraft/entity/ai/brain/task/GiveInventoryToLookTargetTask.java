@@ -84,7 +84,7 @@ extends Task<E> {
             return false;
         }
         Optional<LookTarget> optional = this.lookTargetFunction.apply((LivingEntity)entity);
-        return optional.isPresent() && optional.get().isSeenBy((LivingEntity)entity);
+        return optional.isPresent();
     }
 
     private static Vec3d offsetTarget(LookTarget target) {

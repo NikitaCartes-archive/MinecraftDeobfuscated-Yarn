@@ -4,6 +4,7 @@
 package net.minecraft.util;
 
 import com.google.common.collect.Lists;
+import com.mojang.serialization.Codec;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -11,6 +12,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import net.minecraft.util.StringIdentifiable;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -21,7 +23,8 @@ import org.jetbrains.annotations.Nullable;
  * style, such as by bolding the text. {@link #RESET} is a special formatting
  * and is not classified as either of these two.
  */
-public enum Formatting {
+public enum Formatting implements StringIdentifiable
+{
     BLACK("BLACK", '0', 0, 0),
     DARK_BLUE("DARK_BLUE", '1', 1, 170),
     DARK_GREEN("DARK_GREEN", '2', 2, 43520),
@@ -45,6 +48,7 @@ public enum Formatting {
     ITALIC("ITALIC", 'o', true),
     RESET("RESET", 'r', -1, null);
 
+    public static final Codec<Formatting> CODEC;
     public static final char FORMATTING_CODE_PREFIX = '\u00a7';
     private static final Map<String, Formatting> BY_NAME;
     private static final Pattern FORMATTING_CODE_PATTERN;
@@ -192,7 +196,13 @@ public enum Formatting {
         return list;
     }
 
+    @Override
+    public String asString() {
+        return this.getName();
+    }
+
     static {
+        CODEC = StringIdentifiable.createCodec(Formatting::values);
         BY_NAME = Arrays.stream(Formatting.values()).collect(Collectors.toMap(f -> Formatting.sanitize(f.name), f -> f));
         FORMATTING_CODE_PATTERN = Pattern.compile("(?i)\u00a7[0-9A-FK-OR]");
     }

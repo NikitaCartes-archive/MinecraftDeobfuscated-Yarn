@@ -28,7 +28,7 @@ extends AbstractConditionalPlacementModifier {
     }
 
     @Override
-    protected boolean shouldPlace(FeaturePlacementContext context, AbstractRandom abstractRandom, BlockPos pos) {
+    protected boolean shouldPlace(FeaturePlacementContext context, AbstractRandom random, BlockPos pos) {
         int i = context.getTopY(Heightmap.Type.OCEAN_FLOOR, pos.getX(), pos.getZ());
         int j = context.getTopY(Heightmap.Type.WORLD_SURFACE, pos.getX(), pos.getZ());
         return j - i <= this.maxWaterDepth;

@@ -28,7 +28,7 @@ implements TextContent {
 
     private Text getTranslated() {
         if (this.translated == null) {
-            this.translated = KeybindTranslations.FACTORY.apply(this.key);
+            this.translated = KeybindTranslations.factory.apply(this.key);
         }
         return this.translated.get();
     }
@@ -47,12 +47,12 @@ implements TextContent {
      * Enabled force condition propagation
      * Lifted jumps to return sites
      */
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (!(object instanceof KeybindTextContent)) return false;
-        KeybindTextContent keybindTextContent = (KeybindTextContent)object;
+        if (!(o instanceof KeybindTextContent)) return false;
+        KeybindTextContent keybindTextContent = (KeybindTextContent)o;
         if (!this.key.equals(keybindTextContent.key)) return false;
         return true;
     }

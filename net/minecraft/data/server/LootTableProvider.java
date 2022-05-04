@@ -7,8 +7,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
@@ -39,7 +37,6 @@ import org.slf4j.Logger;
 public class LootTableProvider
 implements DataProvider {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     private final DataGenerator root;
     private final List<Pair<Supplier<Consumer<BiConsumer<Identifier, LootTable.Builder>>>, LootContextType>> lootTypeGenerators = ImmutableList.of(Pair.of(FishingLootTableGenerator::new, LootContextTypes.FISHING), Pair.of(ChestLootTableGenerator::new, LootContextTypes.CHEST), Pair.of(EntityLootTableGenerator::new, LootContextTypes.ENTITY), Pair.of(BlockLootTableGenerator::new, LootContextTypes.BLOCK), Pair.of(BarterLootTableGenerator::new, LootContextTypes.BARTER), Pair.of(GiftLootTableGenerator::new, LootContextTypes.GIFT));
 
@@ -70,7 +67,7 @@ implements DataProvider {
         map.forEach((id, table) -> {
             Path path2 = LootTableProvider.getOutput(path, id);
             try {
-                DataProvider.writeToPath(GSON, cache, LootManager.toJson(table), path2);
+                DataProvider.writeToPath(cache, LootManager.toJson(table), path2);
             } catch (IOException iOException) {
                 LOGGER.error("Couldn't save loot table {}", (Object)path2, (Object)iOException);
             }

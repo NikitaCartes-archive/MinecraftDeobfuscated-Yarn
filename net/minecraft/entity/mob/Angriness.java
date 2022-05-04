@@ -44,6 +44,10 @@ public enum Angriness {
         return CALM;
     }
 
+    public boolean isAngry() {
+        return this == ANGRY;
+    }
+
     static {
         VALUES = Util.make(Angriness.values(), values -> Arrays.sort(values, (a, b) -> Integer.compare(b.threshold, a.threshold)));
     }

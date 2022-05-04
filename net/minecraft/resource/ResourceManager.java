@@ -32,9 +32,6 @@ extends ResourceFactory {
      * 
      * <p>Each resource in this returned list must be closed to avoid resource leaks.
      * 
-     * @throws java.io.FileNotFoundException if no matching resources could be found (i.e. if the list would be empty)
-     * @throws IOException if resources were found, but any one of them could not be opened to be read.
-     * 
      * @param id the resource identifier to search for
      */
     public List<Resource> getAllResources(Identifier var1);

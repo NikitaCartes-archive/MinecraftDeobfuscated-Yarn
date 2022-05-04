@@ -27,6 +27,7 @@ import net.minecraft.entity.ai.brain.task.StayAboveWaterTask;
 import net.minecraft.entity.ai.brain.task.TemptationCooldownTask;
 import net.minecraft.entity.ai.brain.task.TimeLimitedTask;
 import net.minecraft.entity.ai.brain.task.WaitTask;
+import net.minecraft.entity.ai.brain.task.WalkTask;
 import net.minecraft.entity.ai.brain.task.WalkToNearestVisibleWantedItemTask;
 import net.minecraft.entity.ai.brain.task.WalkTowardsLookTargetTask;
 import net.minecraft.entity.ai.brain.task.WanderAroundTask;
@@ -42,6 +43,7 @@ public class AllayBrain {
     private static final float field_38406 = 1.0f;
     private static final float field_38407 = 2.25f;
     private static final float field_38408 = 1.75f;
+    private static final float field_39113 = 2.5f;
     private static final int field_38938 = 4;
     private static final int field_38939 = 16;
     private static final int field_38410 = 6;
@@ -60,7 +62,7 @@ public class AllayBrain {
     }
 
     private static void addCoreActivities(Brain<AllayEntity> brain) {
-        brain.setTaskList(Activity.CORE, 0, ImmutableList.of(new StayAboveWaterTask(0.8f), new LookAroundTask(45, 90), new WanderAroundTask(), new TemptationCooldownTask(MemoryModuleType.LIKED_NOTEBLOCK_COOLDOWN_TICKS), new TemptationCooldownTask(MemoryModuleType.ITEM_PICKUP_COOLDOWN_TICKS)));
+        brain.setTaskList(Activity.CORE, 0, ImmutableList.of(new StayAboveWaterTask(0.8f), new WalkTask(2.5f), new LookAroundTask(45, 90), new WanderAroundTask(), new TemptationCooldownTask(MemoryModuleType.LIKED_NOTEBLOCK_COOLDOWN_TICKS), new TemptationCooldownTask(MemoryModuleType.ITEM_PICKUP_COOLDOWN_TICKS)));
     }
 
     private static void addIdleActivities(Brain<AllayEntity> brain) {
@@ -112,15 +114,14 @@ public class AllayBrain {
             ServerWorld serverWorld = (ServerWorld)world;
             Optional<UUID> optional = allay.getBrain().getOptionalMemory(MemoryModuleType.LIKED_PLAYER);
             if (optional.isPresent()) {
-                Optional<ServerPlayerEntity> optional2;
                 Entity entity = serverWorld.getEntity(optional.get());
                 if (entity instanceof ServerPlayerEntity) {
                     ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
-                    optional2 = Optional.of(serverPlayerEntity);
-                } else {
-                    optional2 = Optional.empty();
+                    if ((serverPlayerEntity.interactionManager.isSurvivalLike() || serverPlayerEntity.interactionManager.isCreative()) && serverPlayerEntity.isInRange(allay, 64.0)) {
+                        return Optional.of(serverPlayerEntity);
+                    }
                 }
-                return optional2;
+                return Optional.empty();
             }
         }
         return Optional.empty();

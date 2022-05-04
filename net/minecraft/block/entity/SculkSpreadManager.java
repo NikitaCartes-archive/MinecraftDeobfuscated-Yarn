@@ -20,9 +20,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import net.minecraft.block.AbstractLichenBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.MultifaceGrowthBlock;
 import net.minecraft.block.SculkSpreadable;
 import net.minecraft.block.SculkVeinBlock;
 import net.minecraft.nbt.NbtCompound;
@@ -177,7 +177,7 @@ public class SculkSpreadManager {
             Set<Direction> set = collection = cursor3 == null ? null : cursor3.getFaces();
             if (i <= 0 || collection == null) continue;
             int j = (int)(Math.log1p(i) / (double)2.3f) + 1;
-            int k = (j << 6) + AbstractLichenBlock.directionsToFlag(collection);
+            int k = (j << 6) + MultifaceGrowthBlock.directionsToFlag(collection);
             world.syncWorldEvent(WorldEvents.SCULK_CHARGE, blockPos, k);
         }
         this.cursors = list;
@@ -271,7 +271,7 @@ public class SculkSpreadManager {
                 blockState = world.getBlockState(blockPos);
             }
             if (blockState.getBlock() instanceof SculkSpreadable) {
-                this.faces = AbstractLichenBlock.collectDirections(blockState);
+                this.faces = MultifaceGrowthBlock.collectDirections(blockState);
             }
             this.decay = sculkSpreadable.getDecay(this.decay);
             this.update = sculkSpreadable.getUpdate();

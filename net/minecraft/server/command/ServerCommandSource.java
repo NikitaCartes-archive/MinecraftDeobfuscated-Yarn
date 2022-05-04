@@ -19,6 +19,8 @@ import java.util.stream.Stream;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
+import net.minecraft.network.MessageSender;
+import net.minecraft.network.encryption.CommandArgumentSigner;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -62,12 +64,13 @@ implements CommandSource {
     private final ResultConsumer<ServerCommandSource> resultConsumer;
     private final EntityAnchorArgumentType.EntityAnchor entityAnchor;
     private final Vec2f rotation;
+    private final CommandArgumentSigner signer;
 
     public ServerCommandSource(CommandOutput output, Vec3d pos, Vec2f rot, ServerWorld world, int level, String name, Text displayName, MinecraftServer server, @Nullable Entity entity) {
-        this(output, pos, rot, world, level, name, displayName, server, entity, false, (context, success, result) -> {}, EntityAnchorArgumentType.EntityAnchor.FEET);
+        this(output, pos, rot, world, level, name, displayName, server, entity, false, (context, success, result) -> {}, EntityAnchorArgumentType.EntityAnchor.FEET, CommandArgumentSigner.NONE);
     }
 
-    protected ServerCommandSource(CommandOutput output, Vec3d pos, Vec2f rot, ServerWorld world, int level, String name, Text displayName, MinecraftServer server, @Nullable Entity entity, boolean silent, @Nullable ResultConsumer<ServerCommandSource> consumer, EntityAnchorArgumentType.EntityAnchor entityAnchor) {
+    protected ServerCommandSource(CommandOutput output, Vec3d pos, Vec2f rot, ServerWorld world, int level, String name, Text displayName, MinecraftServer server, @Nullable Entity entity, boolean silent, @Nullable ResultConsumer<ServerCommandSource> consumer, EntityAnchorArgumentType.EntityAnchor entityAnchor, CommandArgumentSigner signer) {
         this.output = output;
         this.position = pos;
         this.world = world;
@@ -80,41 +83,42 @@ implements CommandSource {
         this.resultConsumer = consumer;
         this.entityAnchor = entityAnchor;
         this.rotation = rot;
+        this.signer = signer;
     }
 
     public ServerCommandSource withOutput(CommandOutput output) {
         if (this.output == output) {
             return this;
         }
-        return new ServerCommandSource(output, this.position, this.rotation, this.world, this.level, this.name, this.displayName, this.server, this.entity, this.silent, this.resultConsumer, this.entityAnchor);
+        return new ServerCommandSource(output, this.position, this.rotation, this.world, this.level, this.name, this.displayName, this.server, this.entity, this.silent, this.resultConsumer, this.entityAnchor, this.signer);
     }
 
     public ServerCommandSource withEntity(Entity entity) {
         if (this.entity == entity) {
             return this;
         }
-        return new ServerCommandSource(this.output, this.position, this.rotation, this.world, this.level, entity.getName().getString(), entity.getDisplayName(), this.server, entity, this.silent, this.resultConsumer, this.entityAnchor);
+        return new ServerCommandSource(this.output, this.position, this.rotation, this.world, this.level, entity.getName().getString(), entity.getDisplayName(), this.server, entity, this.silent, this.resultConsumer, this.entityAnchor, this.signer);
     }
 
     public ServerCommandSource withPosition(Vec3d position) {
         if (this.position.equals(position)) {
             return this;
         }
-        return new ServerCommandSource(this.output, position, this.rotation, this.world, this.level, this.name, this.displayName, this.server, this.entity, this.silent, this.resultConsumer, this.entityAnchor);
+        return new ServerCommandSource(this.output, position, this.rotation, this.world, this.level, this.name, this.displayName, this.server, this.entity, this.silent, this.resultConsumer, this.entityAnchor, this.signer);
     }
 
     public ServerCommandSource withRotation(Vec2f rotation) {
         if (this.rotation.equals(rotation)) {
             return this;
         }
-        return new ServerCommandSource(this.output, this.position, rotation, this.world, this.level, this.name, this.displayName, this.server, this.entity, this.silent, this.resultConsumer, this.entityAnchor);
+        return new ServerCommandSource(this.output, this.position, rotation, this.world, this.level, this.name, this.displayName, this.server, this.entity, this.silent, this.resultConsumer, this.entityAnchor, this.signer);
     }
 
     public ServerCommandSource withConsumer(ResultConsumer<ServerCommandSource> consumer) {
         if (Objects.equals(this.resultConsumer, consumer)) {
             return this;
         }
-        return new ServerCommandSource(this.output, this.position, this.rotation, this.world, this.level, this.name, this.displayName, this.server, this.entity, this.silent, consumer, this.entityAnchor);
+        return new ServerCommandSource(this.output, this.position, this.rotation, this.world, this.level, this.name, this.displayName, this.server, this.entity, this.silent, consumer, this.entityAnchor, this.signer);
     }
 
     public ServerCommandSource mergeConsumers(ResultConsumer<ServerCommandSource> consumer, BinaryOperator<ResultConsumer<ServerCommandSource>> merger) {
@@ -126,28 +130,28 @@ implements CommandSource {
         if (this.silent || this.output.cannotBeSilenced()) {
             return this;
         }
-        return new ServerCommandSource(this.output, this.position, this.rotation, this.world, this.level, this.name, this.displayName, this.server, this.entity, true, this.resultConsumer, this.entityAnchor);
+        return new ServerCommandSource(this.output, this.position, this.rotation, this.world, this.level, this.name, this.displayName, this.server, this.entity, true, this.resultConsumer, this.entityAnchor, this.signer);
     }
 
     public ServerCommandSource withLevel(int level) {
         if (level == this.level) {
             return this;
         }
-        return new ServerCommandSource(this.output, this.position, this.rotation, this.world, level, this.name, this.displayName, this.server, this.entity, this.silent, this.resultConsumer, this.entityAnchor);
+        return new ServerCommandSource(this.output, this.position, this.rotation, this.world, level, this.name, this.displayName, this.server, this.entity, this.silent, this.resultConsumer, this.entityAnchor, this.signer);
     }
 
     public ServerCommandSource withMaxLevel(int level) {
         if (level <= this.level) {
             return this;
         }
-        return new ServerCommandSource(this.output, this.position, this.rotation, this.world, level, this.name, this.displayName, this.server, this.entity, this.silent, this.resultConsumer, this.entityAnchor);
+        return new ServerCommandSource(this.output, this.position, this.rotation, this.world, level, this.name, this.displayName, this.server, this.entity, this.silent, this.resultConsumer, this.entityAnchor, this.signer);
     }
 
     public ServerCommandSource withEntityAnchor(EntityAnchorArgumentType.EntityAnchor anchor) {
         if (anchor == this.entityAnchor) {
             return this;
         }
-        return new ServerCommandSource(this.output, this.position, this.rotation, this.world, this.level, this.name, this.displayName, this.server, this.entity, this.silent, this.resultConsumer, anchor);
+        return new ServerCommandSource(this.output, this.position, this.rotation, this.world, this.level, this.name, this.displayName, this.server, this.entity, this.silent, this.resultConsumer, anchor, this.signer);
     }
 
     public ServerCommandSource withWorld(ServerWorld world) {
@@ -156,7 +160,7 @@ implements CommandSource {
         }
         double d = DimensionType.getCoordinateScaleFactor(this.world.getDimension(), world.getDimension());
         Vec3d vec3d = new Vec3d(this.position.x * d, this.position.y, this.position.z * d);
-        return new ServerCommandSource(this.output, vec3d, this.rotation, world, this.level, this.name, this.displayName, this.server, this.entity, this.silent, this.resultConsumer, this.entityAnchor);
+        return new ServerCommandSource(this.output, vec3d, this.rotation, world, this.level, this.name, this.displayName, this.server, this.entity, this.silent, this.resultConsumer, this.entityAnchor, this.signer);
     }
 
     public ServerCommandSource withLookingAt(Entity entity, EntityAnchorArgumentType.EntityAnchor anchor) {
@@ -174,12 +178,26 @@ implements CommandSource {
         return this.withRotation(new Vec2f(h, i));
     }
 
+    public ServerCommandSource withSigner(CommandArgumentSigner signer) {
+        if (signer == this.signer) {
+            return this;
+        }
+        return new ServerCommandSource(this.output, this.position, this.rotation, this.world, this.level, this.name, this.displayName, this.server, this.entity, this.silent, this.resultConsumer, this.entityAnchor, signer);
+    }
+
     public Text getDisplayName() {
         return this.displayName;
     }
 
     public String getName() {
         return this.name;
+    }
+
+    public MessageSender getChatMessageSender() {
+        if (this.entity != null) {
+            return this.entity.asMessageSender();
+        }
+        return MessageSender.of(this.getDisplayName());
     }
 
     @Override
@@ -217,10 +235,16 @@ implements CommandSource {
      * Gets the player from this command source or throws a command syntax exception if this command source is not a player.
      */
     public ServerPlayerEntity getPlayer() throws CommandSyntaxException {
-        if (!(this.entity instanceof ServerPlayerEntity)) {
-            throw REQUIRES_PLAYER_EXCEPTION.create();
+        Entity entity = this.entity;
+        if (entity instanceof ServerPlayerEntity) {
+            ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
+            return serverPlayerEntity;
         }
-        return (ServerPlayerEntity)this.entity;
+        throw REQUIRES_PLAYER_EXCEPTION.create();
+    }
+
+    public boolean isExecutedByPlayer() {
+        return this.entity instanceof ServerPlayerEntity;
     }
 
     public Vec2f getRotation() {
@@ -233,6 +257,10 @@ implements CommandSource {
 
     public EntityAnchorArgumentType.EntityAnchor getEntityAnchor() {
         return this.entityAnchor;
+    }
+
+    public CommandArgumentSigner getSigner() {
+        return this.signer;
     }
 
     public void sendFeedback(Text message, boolean broadcastToOps) {

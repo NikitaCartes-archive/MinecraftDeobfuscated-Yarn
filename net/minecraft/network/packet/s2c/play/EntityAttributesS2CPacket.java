@@ -28,13 +28,13 @@ implements Packet<ClientPlayPacketListener> {
         }
     }
 
-    public EntityAttributesS2CPacket(PacketByteBuf buf2) {
-        this.entityId = buf2.readVarInt();
-        this.entries = buf2.readList(buf -> {
-            Identifier identifier = buf.readIdentifier();
+    public EntityAttributesS2CPacket(PacketByteBuf buf) {
+        this.entityId = buf.readVarInt();
+        this.entries = buf.readList(buf2 -> {
+            Identifier identifier = buf2.readIdentifier();
             EntityAttribute entityAttribute = Registry.ATTRIBUTE.get(identifier);
-            double d = buf.readDouble();
-            List<EntityAttributeModifier> list = buf.readList(modifiers -> new EntityAttributeModifier(modifiers.readUuid(), "Unknown synced attribute modifier", modifiers.readDouble(), EntityAttributeModifier.Operation.fromId(modifiers.readByte())));
+            double d = buf2.readDouble();
+            List<EntityAttributeModifier> list = buf2.readList(modifiers -> new EntityAttributeModifier(modifiers.readUuid(), "Unknown synced attribute modifier", modifiers.readDouble(), EntityAttributeModifier.Operation.fromId(modifiers.readByte())));
             return new Entry(entityAttribute, d, list);
         });
     }
@@ -45,10 +45,10 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeCollection(this.entries, (buf2, attribute) -> {
             buf2.writeIdentifier(Registry.ATTRIBUTE.getId(attribute.getId()));
             buf2.writeDouble(attribute.getBaseValue());
-            buf2.writeCollection(attribute.getModifiers(), (buf, modifier) -> {
-                buf.writeUuid(modifier.getId());
-                buf.writeDouble(modifier.getValue());
-                buf.writeByte(modifier.getOperation().getId());
+            buf2.writeCollection(attribute.getModifiers(), (buf3, modifier) -> {
+                buf3.writeUuid(modifier.getId());
+                buf3.writeDouble(modifier.getValue());
+                buf3.writeByte(modifier.getOperation().getId());
             });
         });
     }

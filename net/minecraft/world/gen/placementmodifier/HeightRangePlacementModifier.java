@@ -40,8 +40,8 @@ extends PlacementModifier {
     }
 
     @Override
-    public Stream<BlockPos> getPositions(FeaturePlacementContext context, AbstractRandom abstractRandom, BlockPos pos) {
-        return Stream.of(pos.withY(this.height.get(abstractRandom, context)));
+    public Stream<BlockPos> getPositions(FeaturePlacementContext context, AbstractRandom random, BlockPos pos) {
+        return Stream.of(pos.withY(this.height.get(random, context)));
     }
 
     @Override

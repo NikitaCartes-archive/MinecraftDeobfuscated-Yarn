@@ -14,11 +14,17 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Map;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -479,8 +485,8 @@ public class JsonHelper {
     }
 
     @Nullable
-    public static <T> T deserialize(Gson gson, String content, Class<T> class_, boolean lenient) {
-        return JsonHelper.deserialize(gson, (Reader)new StringReader(content), class_, lenient);
+    public static <T> T deserialize(Gson gson, String content, Class<T> clazz, boolean lenient) {
+        return JsonHelper.deserialize(gson, (Reader)new StringReader(content), clazz, lenient);
     }
 
     @Nullable
@@ -494,13 +500,13 @@ public class JsonHelper {
     }
 
     @Nullable
-    public static <T> T deserialize(Gson gson, Reader reader, Class<T> class_) {
-        return JsonHelper.deserialize(gson, reader, class_, false);
+    public static <T> T deserialize(Gson gson, Reader reader, Class<T> clazz) {
+        return JsonHelper.deserialize(gson, reader, clazz, false);
     }
 
     @Nullable
-    public static <T> T deserialize(Gson gson, String content, Class<T> class_) {
-        return JsonHelper.deserialize(gson, content, class_, false);
+    public static <T> T deserialize(Gson gson, String content, Class<T> clazz) {
+        return JsonHelper.deserialize(gson, content, clazz, false);
     }
 
     public static JsonObject deserialize(String content, boolean lenient) {
@@ -519,8 +525,62 @@ public class JsonHelper {
         return JsonHelper.deserialize(reader, false);
     }
 
+    public static JsonArray deserializeArray(String content) {
+        return JsonHelper.deserializeArray(new StringReader(content));
+    }
+
     public static JsonArray deserializeArray(Reader reader) {
         return JsonHelper.deserialize(GSON, reader, JsonArray.class, false);
+    }
+
+    public static String toSortedString(JsonElement json) {
+        StringWriter stringWriter = new StringWriter();
+        JsonWriter jsonWriter = new JsonWriter(stringWriter);
+        try {
+            JsonHelper.writeSorted(jsonWriter, json, Comparator.naturalOrder());
+        } catch (IOException iOException) {
+            throw new AssertionError((Object)iOException);
+        }
+        return stringWriter.toString();
+    }
+
+    public static void writeSorted(JsonWriter writer, @Nullable JsonElement json, @Nullable Comparator<String> comparator) throws IOException {
+        if (json == null || json.isJsonNull()) {
+            writer.nullValue();
+        } else if (json.isJsonPrimitive()) {
+            JsonPrimitive jsonPrimitive = json.getAsJsonPrimitive();
+            if (jsonPrimitive.isNumber()) {
+                writer.value(jsonPrimitive.getAsNumber());
+            } else if (jsonPrimitive.isBoolean()) {
+                writer.value(jsonPrimitive.getAsBoolean());
+            } else {
+                writer.value(jsonPrimitive.getAsString());
+            }
+        } else if (json.isJsonArray()) {
+            writer.beginArray();
+            for (JsonElement jsonElement : json.getAsJsonArray()) {
+                JsonHelper.writeSorted(writer, jsonElement, comparator);
+            }
+            writer.endArray();
+        } else if (json.isJsonObject()) {
+            writer.beginObject();
+            for (Map.Entry<String, JsonElement> entry : JsonHelper.sort(json.getAsJsonObject().entrySet(), comparator)) {
+                writer.name(entry.getKey());
+                JsonHelper.writeSorted(writer, entry.getValue(), comparator);
+            }
+            writer.endObject();
+        } else {
+            throw new IllegalArgumentException("Couldn't write " + json.getClass());
+        }
+    }
+
+    private static Collection<Map.Entry<String, JsonElement>> sort(Collection<Map.Entry<String, JsonElement>> entries, @Nullable Comparator<String> comparator) {
+        if (comparator == null) {
+            return entries;
+        }
+        ArrayList<Map.Entry<String, JsonElement>> list = new ArrayList<Map.Entry<String, JsonElement>>(entries);
+        list.sort(Map.Entry.comparingByKey(comparator));
+        return list;
     }
 }
 

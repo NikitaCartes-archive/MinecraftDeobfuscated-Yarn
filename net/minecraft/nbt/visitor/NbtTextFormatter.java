@@ -67,6 +67,9 @@ implements NbtElementVisitor {
         this.indentationLevel = indentationLevel;
     }
 
+    /**
+     * {@return the textified NBT {@code element}}
+     */
     public Text apply(NbtElement element) {
         element.accept(this);
         return this.result;

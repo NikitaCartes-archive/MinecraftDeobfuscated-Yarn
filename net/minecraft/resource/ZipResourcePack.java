@@ -6,6 +6,7 @@ package net.minecraft.resource;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.mojang.logging.LogUtils;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
@@ -26,9 +27,11 @@ import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class ZipResourcePack
 extends AbstractFileResourcePack {
+    private static final Logger field_39096 = LogUtils.getLogger();
     public static final Splitter TYPE_NAMESPACE_SPLITTER = Splitter.on('/').omitEmptyStrings().limit(3);
     @Nullable
     private ZipFile file;
@@ -114,11 +117,16 @@ extends AbstractFileResourcePack {
         String string = type.getDirectory() + "/" + namespace + "/";
         String string2 = string + prefix + "/";
         while (enumeration.hasMoreElements()) {
-            String string4;
-            Identifier identifier;
             String string3;
             ZipEntry zipEntry = enumeration.nextElement();
-            if (zipEntry.isDirectory() || (string3 = zipEntry.getName()).endsWith(".mcmeta") || !string3.startsWith(string2) || !allowedPathPredicate.test(identifier = new Identifier(namespace, string4 = string3.substring(string.length())))) continue;
+            if (zipEntry.isDirectory() || (string3 = zipEntry.getName()).endsWith(".mcmeta") || !string3.startsWith(string2)) continue;
+            String string4 = string3.substring(string.length());
+            Identifier identifier = Identifier.of(namespace, string4);
+            if (identifier == null) {
+                field_39096.warn("Invalid path in datapack: {}:{}, ignoring", (Object)namespace, (Object)string4);
+                continue;
+            }
+            if (!allowedPathPredicate.test(identifier)) continue;
             list.add(identifier);
         }
         return list;

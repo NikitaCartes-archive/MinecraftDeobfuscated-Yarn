@@ -3,6 +3,7 @@
  */
 package net.minecraft.data;
 
+import com.google.common.hash.HashCode;
 import com.google.common.hash.Hashing;
 import com.mojang.logging.LogUtils;
 import java.io.BufferedReader;
@@ -128,18 +129,18 @@ public class DataCache {
         LOGGER.info("Caching: total files: {}, old count: {}, new count: {}, removed stale: {}, written: {}", mutableInt2, this.totalSize, set.size(), mutableInt3, mutableInt);
     }
 
-    record CachedData(String version, Map<Path, String> data) {
+    record CachedData(String version, Map<Path, HashCode> data) {
         CachedData(String version) {
-            this(version, new HashMap<Path, String>());
+            this(version, new HashMap<Path, HashCode>());
         }
 
         @Nullable
-        public String get(Path path) {
+        public HashCode get(Path path) {
             return this.data.get(path);
         }
 
-        public void put(Path path, String value) {
-            this.data.put(path, value);
+        public void put(Path path, HashCode hashCode) {
+            this.data.put(path, hashCode);
         }
 
         public int size() {
@@ -157,7 +158,7 @@ public class DataCache {
                 HashMap map = new HashMap();
                 bufferedReader.lines().forEach(line -> {
                     int i = line.indexOf(32);
-                    map.put(root.resolve(line.substring(i + 1)), line.substring(0, i));
+                    map.put(root.resolve(line.substring(i + 1)), HashCode.fromString(line.substring(0, i)));
                 });
                 CachedData cachedData = new CachedData(string2, Map.copyOf(map));
                 return cachedData;
@@ -171,8 +172,8 @@ public class DataCache {
                 bufferedWriter.write(9);
                 bufferedWriter.write(description);
                 bufferedWriter.newLine();
-                for (Map.Entry<Path, String> entry : this.data.entrySet()) {
-                    bufferedWriter.write(entry.getValue());
+                for (Map.Entry<Path, HashCode> entry : this.data.entrySet()) {
+                    bufferedWriter.write(entry.getValue().toString());
                     bufferedWriter.write(32);
                     bufferedWriter.write(root.relativize(entry.getKey()).toString());
                     bufferedWriter.newLine();
@@ -194,33 +195,20 @@ public class DataCache {
             this.newCache = new CachedData(versionName);
         }
 
-        private boolean isCacheInvalid(Path path, String hash) {
-            return !Objects.equals(this.oldCache.get(path), hash) || !Files.exists(path, new LinkOption[0]);
+        private boolean isCacheInvalid(Path path, HashCode hashCode) {
+            return !Objects.equals(this.oldCache.get(path), hashCode) || !Files.exists(path, new LinkOption[0]);
         }
 
         @Override
-        public void write(Path path, String data) throws IOException {
-            String string = Hashing.sha1().hashUnencodedChars(data).toString();
-            if (this.isCacheInvalid(path, string)) {
-                ++this.cacheMissCount;
-                Files.createDirectories(path.getParent(), new FileAttribute[0]);
-                try (BufferedWriter bufferedWriter = Files.newBufferedWriter(path, StandardCharsets.UTF_8, new OpenOption[0]);){
-                    bufferedWriter.write(data);
-                }
-            }
-            this.newCache.put(path, string);
-        }
-
-        @Override
-        public void write(Path path, byte[] data, String hash) throws IOException {
-            if (this.isCacheInvalid(path, hash)) {
+        public void write(Path path, byte[] data, HashCode hashCode) throws IOException {
+            if (this.isCacheInvalid(path, hashCode)) {
                 ++this.cacheMissCount;
                 Files.createDirectories(path.getParent(), new FileAttribute[0]);
                 try (OutputStream outputStream = Files.newOutputStream(path, new OpenOption[0]);){
                     outputStream.write(data);
                 }
             }
-            this.newCache.put(path, hash);
+            this.newCache.put(path, hashCode);
         }
     }
 }

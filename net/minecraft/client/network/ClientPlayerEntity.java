@@ -3,13 +3,15 @@
  */
 package net.minecraft.client.network;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.mojang.brigadier.ParseResults;
 import com.mojang.logging.LogUtils;
 import java.security.GeneralSecurityException;
 import java.security.Signature;
-import java.time.Instant;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.StreamSupport;
 import net.fabricmc.api.EnvType;
@@ -43,6 +45,7 @@ import net.minecraft.client.sound.MinecartInsideSoundInstance;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.ClientPlayerTickable;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.command.CommandSource;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
@@ -60,11 +63,14 @@ import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.ElytraItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.network.encryption.NetworkEncryptionUtils;
+import net.minecraft.network.encryption.ArgumentSignatures;
+import net.minecraft.network.encryption.ChatMessageSignature;
+import net.minecraft.network.encryption.ChatMessageSigner;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
+import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInputC2SPacket;
@@ -150,7 +156,7 @@ extends AbstractClientPlayerEntity {
     private boolean showsDeathScreen = true;
 
     public ClientPlayerEntity(MinecraftClient client, ClientWorld world, ClientPlayNetworkHandler networkHandler, StatHandler stats, ClientRecipeBook recipeBook, boolean lastSneaking, boolean lastSprinting) {
-        super(world, networkHandler.getProfile());
+        super(world, networkHandler.getProfile(), client.getProfileKeys().getPublicKey());
         this.client = client;
         this.networkHandler = networkHandler;
         this.statHandler = stats;
@@ -310,27 +316,65 @@ extends AbstractClientPlayerEntity {
      * @param message the message to send
      */
     public void sendChatMessage(String message) {
-        Instant instant = Instant.now();
-        message = StringUtils.normalizeSpace(message);
-        this.networkHandler.sendPacket(new ChatMessageC2SPacket(instant, message, this.signChatMessage(instant, message)));
+        ChatMessageSigner chatMessageSigner = ChatMessageSigner.create(this.getUuid());
+        if ((message = StringUtils.normalizeSpace(message)).startsWith("/")) {
+            this.sendCommand(chatMessageSigner, message.substring(1));
+        } else {
+            ChatMessageSignature chatMessageSignature = this.signChatMessage(chatMessageSigner, Text.literal(message));
+            this.networkHandler.sendPacket(new ChatMessageC2SPacket(message, chatMessageSignature));
+        }
     }
 
     /**
      * Signs the chat message. If the chat message cannot be signed, this will return
-     * {@link NetworkEncryptionUtils.SignatureData#NONE}.
+     * {@link ChatMessageSignature#none()}.
      */
-    private NetworkEncryptionUtils.SignatureData signChatMessage(Instant time, String message) {
+    private ChatMessageSignature signChatMessage(ChatMessageSigner signer, Text message) {
         try {
             Signature signature = this.client.getProfileKeys().createSignatureInstance();
             if (signature != null) {
-                long l = NetworkEncryptionUtils.SecureRandomUtil.nextLong();
-                NetworkEncryptionUtils.updateSignature(signature, l, this.uuid, time, message);
-                return new NetworkEncryptionUtils.SignatureData(l, signature.sign());
+                return signer.sign(signature, message);
             }
         } catch (GeneralSecurityException generalSecurityException) {
-            field_39078.error("Failed to sign chat message {}", (Object)time, (Object)generalSecurityException);
+            field_39078.error("Failed to sign chat message: '{}'", (Object)message.getString(), (Object)generalSecurityException);
         }
-        return NetworkEncryptionUtils.SignatureData.NONE;
+        return ChatMessageSignature.none();
+    }
+
+    /**
+     * Signs and sends {@code command} to the server.
+     * 
+     * @param command the command (excluding the leading slash)
+     */
+    private void sendCommand(ChatMessageSigner signer, String command) {
+        ParseResults<CommandSource> parseResults = this.networkHandler.getCommandDispatcher().parse(command, (CommandSource)this.networkHandler.getCommandSource());
+        ArgumentSignatures argumentSignatures = this.signArguments(signer, parseResults);
+        this.networkHandler.sendPacket(new CommandExecutionC2SPacket(command, signer.timeStamp(), argumentSignatures));
+    }
+
+    /**
+     * Signs the command arguments. If the arguments cannot be signed, this will return
+     * {@link ArgumentSignatures#none()}.
+     */
+    private ArgumentSignatures signArguments(ChatMessageSigner signer, ParseResults<CommandSource> parseResults) {
+        Map<String, Text> map = ArgumentSignatures.collectArguments(parseResults.getContext());
+        if (map.isEmpty()) {
+            return ArgumentSignatures.none();
+        }
+        try {
+            ImmutableMap.Builder<String, byte[]> builder = ImmutableMap.builder();
+            for (Map.Entry<String, Text> entry : map.entrySet()) {
+                Signature signature = this.client.getProfileKeys().createSignatureInstance();
+                if (signature == null) continue;
+                Text text = entry.getValue();
+                ChatMessageSignature chatMessageSignature = signer.sign(signature, text);
+                builder.put(entry.getKey(), chatMessageSignature.saltSignature().signature());
+            }
+            return new ArgumentSignatures(signer.salt(), builder.build());
+        } catch (GeneralSecurityException generalSecurityException) {
+            field_39078.error("Failed to sign command arguments", generalSecurityException);
+            return ArgumentSignatures.none();
+        }
     }
 
     @Override

@@ -32,7 +32,7 @@ implements Packet<ClientPlayPacketListener> {
         this.url = buf.readString();
         this.hash = buf.readString(40);
         this.required = buf.readBoolean();
-        this.prompt = buf.readBoolean() ? buf.readText() : null;
+        this.prompt = (Text)buf.readNullable(PacketByteBuf::readText);
     }
 
     @Override
@@ -40,12 +40,7 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeString(this.url);
         buf.writeString(this.hash);
         buf.writeBoolean(this.required);
-        if (this.prompt != null) {
-            buf.writeBoolean(true);
-            buf.writeText(this.prompt);
-        } else {
-            buf.writeBoolean(false);
-        }
+        buf.writeNullable(this.prompt, PacketByteBuf::writeText);
     }
 
     @Override

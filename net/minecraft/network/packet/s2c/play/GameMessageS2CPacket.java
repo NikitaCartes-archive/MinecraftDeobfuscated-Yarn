@@ -3,22 +3,24 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
+import java.util.Objects;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.text.Text;
+import net.minecraft.util.registry.Registry;
 
-public record GameMessageS2CPacket(Text content, MessageType type) implements Packet<ClientPlayPacketListener>
+public record GameMessageS2CPacket(Text content, int typeId) implements Packet<ClientPlayPacketListener>
 {
     public GameMessageS2CPacket(PacketByteBuf buf) {
-        this(buf.readText(), MessageType.byId(buf.readByte()));
+        this(buf.readText(), buf.readVarInt());
     }
 
     @Override
     public void write(PacketByteBuf buf) {
         buf.writeText(this.content);
-        buf.writeByte(this.type.getId());
+        buf.writeVarInt(this.typeId);
     }
 
     @Override
@@ -29,6 +31,15 @@ public record GameMessageS2CPacket(Text content, MessageType type) implements Pa
     @Override
     public boolean isWritingErrorSkippable() {
         return true;
+    }
+
+    /**
+     * {@return the message type of the chat message}
+     * 
+     * @throws NullPointerException when the type ID is invalid (due to unsynced registry, etc)
+     */
+    public MessageType getMessageType(Registry<MessageType> registry) {
+        return Objects.requireNonNull((MessageType)registry.get(this.typeId), "Invalid chat type");
     }
 }
 

@@ -3,6 +3,7 @@
  */
 package net.minecraft.world.event.listener;
 
+import java.util.function.BiConsumer;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.listener.GameEventListener;
@@ -30,7 +31,8 @@ public interface GameEventDispatcher {
         }
 
         @Override
-        public void dispatch(GameEvent event, Vec3d pos, GameEvent.Emitter emitter) {
+        public boolean dispatch(GameEvent event, Vec3d pos, GameEvent.Emitter emitter, BiConsumer<GameEventListener, Vec3d> onListenerAccept) {
+            return false;
         }
     };
 
@@ -58,6 +60,6 @@ public interface GameEventDispatcher {
      * 
      * @param event the event
      */
-    public void dispatch(GameEvent var1, Vec3d var2, GameEvent.Emitter var3);
+    public boolean dispatch(GameEvent var1, Vec3d var2, GameEvent.Emitter var3, BiConsumer<GameEventListener, Vec3d> var4);
 }
 

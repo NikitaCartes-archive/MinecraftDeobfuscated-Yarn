@@ -138,11 +138,11 @@ implements Waterloggable {
     }
 
     public static BlockState getDefaultHangingState() {
-        return PropaguleBlock.method_43130(0);
+        return PropaguleBlock.getHangingState(0);
     }
 
-    public static BlockState method_43130(int i) {
-        return (BlockState)((BlockState)Blocks.MANGROVE_PROPAGULE.getDefaultState().with(HANGING, true)).with(AGE, i);
+    public static BlockState getHangingState(int age) {
+        return (BlockState)((BlockState)Blocks.MANGROVE_PROPAGULE.getDefaultState().with(HANGING, true)).with(AGE, age);
     }
 }
 

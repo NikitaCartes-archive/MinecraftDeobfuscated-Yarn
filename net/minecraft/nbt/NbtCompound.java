@@ -43,7 +43,21 @@ import net.minecraft.util.crash.CrashReportSection;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Represents an NBT compound object which holds unordered key-value pairs with distinct case-sensitive string keys.
+ * Represents an NBT compound object. This mutable object holds unordered key-value pairs
+ * with distinct case-sensitive string keys. This can effectively be used like a
+ * {@code HashMap<String, NbtElement>}. Note that this <strong>does not</strong> implement
+ * {@link java.util.Map}. Its type is {@value NbtElement#COMPOUND_TYPE}. To get the compound
+ * as a map, use {@link #toMap()}.
+ * 
+ * <p>There are two ways to use this compound; one is to create NBT instances yourself and use
+ * {@link #get(String)} or {@link #put(String, NbtElement)}. Manual casting is required in
+ * this case. The other, easier way is to use methods with type names, such as
+ * {@link #getInt(String)} or {@link #putInt(String, int)}. Where applicable, these methods
+ * return and accept Java types (e.g. {@code int}, {@code long[]}) instead of {@link NbtElement}
+ * subclasses. Note that there is no {@code putCompound} method, since you can just use the
+ * put method. These getters also have the advantage of providing type safety, because if
+ * type mismatch occurs or there is no such element in the compound, it returns the default
+ * value for that type instead of throwing or returning {@code null}.
  */
 public class NbtCompound
 implements NbtElement {
@@ -171,6 +185,9 @@ implements NbtElement {
         output.writeByte(0);
     }
 
+    /**
+     * {@return the set of keys in this compound}
+     */
     public Set<String> getKeys() {
         return this.entries.keySet();
     }
@@ -184,40 +201,84 @@ implements NbtElement {
         return TYPE;
     }
 
+    /**
+     * {@return the size of this compound}
+     */
     public int getSize() {
         return this.entries.size();
     }
 
+    /**
+     * Puts an element to this compound.
+     * 
+     * @return the previous value, or {@code null} if there was none
+     * @see #get(String)
+     */
     @Nullable
     public NbtElement put(String key, NbtElement element) {
         return this.entries.put(key, element);
     }
 
+    /**
+     * Puts a {@code byte} to this compound.
+     * 
+     * @see #getByte(String)
+     */
     public void putByte(String key, byte value) {
         this.entries.put(key, NbtByte.of(value));
     }
 
+    /**
+     * Puts a {@code short} to this compound.
+     * 
+     * @see #getShort(String)
+     */
     public void putShort(String key, short value) {
         this.entries.put(key, NbtShort.of(value));
     }
 
+    /**
+     * Puts an {@code int} to this compound.
+     * 
+     * @see #getInt(String)
+     */
     public void putInt(String key, int value) {
         this.entries.put(key, NbtInt.of(value));
     }
 
+    /**
+     * Puts a {@code long} to this compound.
+     * 
+     * @see #getLong(String)
+     */
     public void putLong(String key, long value) {
         this.entries.put(key, NbtLong.of(value));
     }
 
     /**
-     * Writes a {@link UUID} to its NBT representation in this {@code NbtCompound}.
+     * Puts a {@link UUID}'s NBT representation to this compound.
+     * 
+     * @see NbtHelper#fromUuid(UUID)
+     * @see #containsUuid(String)
+     * @see #getUuid(String)
      */
     public void putUuid(String key, UUID value) {
         this.entries.put(key, NbtHelper.fromUuid(value));
     }
 
     /**
-     * Reads a {@link UUID} from its NBT representation in this {@code NbtCompound}.
+     * {@return a {@link UUID} from its NBT representation in this compound}
+     * 
+     * @apiNote Unlike other specialized getters, this method can throw unchecked exceptions.
+     * It is therefore recommended to call {@link #containsUuid(String)} before getting the
+     * UUID.
+     * 
+     * @throws IllegalArgumentException if there is no value with the key or the value
+     * associated with the key is not a valid
+     * NBT representation of a UUID
+     * @see NbtHelper#toUuid(NbtIntArray)
+     * @see #containsUuid(String)
+     * @see #putUuid(String, UUID)
      */
     public UUID getUuid(String key) {
         return NbtHelper.toUuid(this.get(key));
@@ -232,46 +293,111 @@ implements NbtElement {
         return nbtElement != null && nbtElement.getNbtType() == NbtIntArray.TYPE && ((NbtIntArray)nbtElement).getIntArray().length == 4;
     }
 
+    /**
+     * Puts a {@code float} to this compound.
+     * 
+     * @see #getFloat(String)
+     */
     public void putFloat(String key, float value) {
         this.entries.put(key, NbtFloat.of(value));
     }
 
+    /**
+     * Puts a {@code double} to this compound.
+     * 
+     * @see #getDouble(String)
+     */
     public void putDouble(String key, double value) {
         this.entries.put(key, NbtDouble.of(value));
     }
 
+    /**
+     * Puts a {@link String} to this compound.
+     * 
+     * @see #getString(String)
+     */
     public void putString(String key, String value) {
         this.entries.put(key, NbtString.of(value));
     }
 
+    /**
+     * Puts a byte array to this compound. This does not copy the array.
+     * 
+     * @see #getByteArray(String)
+     * @see #putByteArray(String, List)
+     */
     public void putByteArray(String key, byte[] value) {
         this.entries.put(key, new NbtByteArray(value));
     }
 
+    /**
+     * Puts a list of bytes to this compound. This copies the list.
+     * 
+     * @see #getByteArray(String)
+     * @see #putByteArray(String, byte[])
+     */
     public void putByteArray(String key, List<Byte> value) {
         this.entries.put(key, new NbtByteArray(value));
     }
 
+    /**
+     * Puts an int array to this compound. This does not copy the array.
+     * 
+     * @see #getIntArray(String)
+     * @see #putIntArray(String, List)
+     */
     public void putIntArray(String key, int[] value) {
         this.entries.put(key, new NbtIntArray(value));
     }
 
+    /**
+     * Puts a list of integers to this compound. This copies the list.
+     * 
+     * @see #getIntArray(String)
+     * @see #putIntArray(String, int[])
+     */
     public void putIntArray(String key, List<Integer> value) {
         this.entries.put(key, new NbtIntArray(value));
     }
 
+    /**
+     * Puts a long array to this compound. This does not copy the array.
+     * 
+     * @see #getLongArray(String)
+     * @see #putLongArray(String, List)
+     */
     public void putLongArray(String key, long[] value) {
         this.entries.put(key, new NbtLongArray(value));
     }
 
+    /**
+     * Puts a list of longs to this compound. This copies the list.
+     * 
+     * @see #getLongArray(String)
+     * @see #putLongArray(String, long[])
+     */
     public void putLongArray(String key, List<Long> value) {
         this.entries.put(key, new NbtLongArray(value));
     }
 
+    /**
+     * Puts a {@code boolean} to this compound. The value is stored as {@link NbtByte}.
+     * 
+     * @see #getBoolean(String)
+     */
     public void putBoolean(String key, boolean value) {
         this.entries.put(key, NbtByte.of(value));
     }
 
+    /**
+     * {@return the element associated with the key from this compound, or
+     * {@code null} if there is none}
+     * 
+     * @apiNote This method does not provide type safety; if the type is known, it is
+     * recommended to use other type-specific methods instead.
+     * 
+     * @see #put(String, NbtElement)
+     */
     @Nullable
     public NbtElement get(String key) {
         return this.entries.get(key);
@@ -317,6 +443,15 @@ implements NbtElement {
         return false;
     }
 
+    /**
+     * {@return the {@code byte} associated with {@code key}, or {@code 0} if there is no number
+     * stored with the key}
+     * 
+     * <p>If a non-byte numeric value is stored, this will cast the value.
+     * 
+     * @see #putByte(String, byte)
+     * @see AbstractNbtNumber#byteValue()
+     */
     public byte getByte(String key) {
         try {
             if (this.contains(key, NbtElement.NUMBER_TYPE)) {
@@ -328,6 +463,15 @@ implements NbtElement {
         return 0;
     }
 
+    /**
+     * {@return the {@code short} associated with {@code key}, or {@code 0} if there is no number
+     * stored with the key}
+     * 
+     * <p>If a non-short numeric value is stored, this will cast the value.
+     * 
+     * @see #putShort(String, short)
+     * @see AbstractNbtNumber#shortValue()
+     */
     public short getShort(String key) {
         try {
             if (this.contains(key, NbtElement.NUMBER_TYPE)) {
@@ -339,6 +483,15 @@ implements NbtElement {
         return 0;
     }
 
+    /**
+     * {@return the {@code int} associated with {@code key}, or {@code 0} if there is no number
+     * stored with the key}
+     * 
+     * <p>If a non-integer numeric value is stored, this will cast the value.
+     * 
+     * @see #putInt(String, int)
+     * @see AbstractNbtNumber#intValue()
+     */
     public int getInt(String key) {
         try {
             if (this.contains(key, NbtElement.NUMBER_TYPE)) {
@@ -350,6 +503,15 @@ implements NbtElement {
         return 0;
     }
 
+    /**
+     * {@return the {@code long} associated with {@code key}, or {@code 0L} if there is no number
+     * stored with the key}
+     * 
+     * <p>If a non-long numeric value is stored, this will cast the value.
+     * 
+     * @see #putLong(String, long)
+     * @see AbstractNbtNumber#longValue()
+     */
     public long getLong(String key) {
         try {
             if (this.contains(key, NbtElement.NUMBER_TYPE)) {
@@ -361,6 +523,15 @@ implements NbtElement {
         return 0L;
     }
 
+    /**
+     * {@return the {@code float} associated with {@code key}, or {@code 0.0f} if there is
+     * no number stored with the key}
+     * 
+     * <p>If a non-float numeric value is stored, this will cast the value.
+     * 
+     * @see #putFloat(String, float)
+     * @see AbstractNbtNumber#floatValue()
+     */
     public float getFloat(String key) {
         try {
             if (this.contains(key, NbtElement.NUMBER_TYPE)) {
@@ -372,6 +543,15 @@ implements NbtElement {
         return 0.0f;
     }
 
+    /**
+     * {@return the {@code double} associated with {@code key}, or {@code 0.0} if there is
+     * no number stored with the key}
+     * 
+     * <p>If a non-double numeric value is stored, this will cast the value.
+     * 
+     * @see #putDouble(String, double)
+     * @see AbstractNbtNumber#doubleValue()
+     */
     public double getDouble(String key) {
         try {
             if (this.contains(key, NbtElement.NUMBER_TYPE)) {
@@ -383,6 +563,13 @@ implements NbtElement {
         return 0.0;
     }
 
+    /**
+     * {@return the {@link String} associated with {@code key}, or an empty string if there is no
+     * string stored with the key}
+     * 
+     * @see #putString(String, String)
+     * @see NbtElement#asString()
+     */
     public String getString(String key) {
         try {
             if (this.contains(key, NbtElement.STRING_TYPE)) {
@@ -394,6 +581,15 @@ implements NbtElement {
         return "";
     }
 
+    /**
+     * {@return the byte array associated with {@code key}, or an empty byte array if there is no
+     * byte array stored with the key}
+     * 
+     * @apiNote Modifying the returned array also modifies the NBT byte array.
+     * 
+     * @see #putByteArray(String, byte[])
+     * @see NbtByteArray#getByteArray()
+     */
     public byte[] getByteArray(String key) {
         try {
             if (this.contains(key, NbtElement.BYTE_ARRAY_TYPE)) {
@@ -405,6 +601,15 @@ implements NbtElement {
         return new byte[0];
     }
 
+    /**
+     * {@return the int array associated with {@code key}, or an empty int array if there is no
+     * int array stored with the key}
+     * 
+     * @apiNote Modifying the returned array also modifies the NBT int array.
+     * 
+     * @see #putIntArray(String, int[])
+     * @see NbtIntArray#getIntArray()
+     */
     public int[] getIntArray(String key) {
         try {
             if (this.contains(key, NbtElement.INT_ARRAY_TYPE)) {
@@ -416,6 +621,15 @@ implements NbtElement {
         return new int[0];
     }
 
+    /**
+     * {@return the long array associated with {@code key}, or an empty long array if there is no
+     * long array stored with the key}
+     * 
+     * @apiNote Modifying the returned array also modifies the NBT long array.
+     * 
+     * @see #putLongArray(String, long[])
+     * @see NbtLongArray#getLongArray()
+     */
     public long[] getLongArray(String key) {
         try {
             if (this.contains(key, NbtElement.LONG_ARRAY_TYPE)) {
@@ -427,6 +641,12 @@ implements NbtElement {
         return new long[0];
     }
 
+    /**
+     * {@return the compound associated with {@code key}, or an empty compound if there is no
+     * compound stored with the key}
+     * 
+     * @see #put(String, NbtElement)
+     */
     public NbtCompound getCompound(String key) {
         try {
             if (this.contains(key, NbtElement.COMPOUND_TYPE)) {
@@ -438,6 +658,14 @@ implements NbtElement {
         return new NbtCompound();
     }
 
+    /**
+     * {@return the list associated with {@code key}, or an empty list if there is no
+     * list stored with the key and the type}
+     * 
+     * @see #put(String, NbtElement)
+     * 
+     * @param type the expected held type of the list
+     */
     public NbtList getList(String key, int type) {
         try {
             if (this.getType(key) == NbtElement.LIST_TYPE) {
@@ -453,10 +681,23 @@ implements NbtElement {
         return new NbtList();
     }
 
+    /**
+     * {@return the boolean value stored with the {@code key}}
+     * 
+     * @implNote Since NBT does not have a boolean type, {@link NbtByte} is used instead. This
+     * method returns {@code true} for any values which, after casting to {@code byte} as
+     * described at {@link #getByte(String)}, is not {@code 0}. Since all non-numeric values
+     * become {@code 0} during casting to bytes, this method returns {@code false} for those
+     * as well. This includes values often considered truthy in other languages, such as a
+     * non-empty string or list.
+     */
     public boolean getBoolean(String key) {
         return this.getByte(key) != 0;
     }
 
+    /**
+     * Removes the entry with the specified {@code key}. Does nothing if there is none.
+     */
     public void remove(String key) {
         this.entries.remove(key);
     }
@@ -466,6 +707,9 @@ implements NbtElement {
         return this.asString();
     }
 
+    /**
+     * {@return whether the compound has no entries}
+     */
     public boolean isEmpty() {
         return this.entries.isEmpty();
     }
@@ -525,6 +769,13 @@ implements NbtElement {
         }
     }
 
+    /**
+     * Merges the entries of {@code source} to this compound. The passed compound will not
+     * be modified. If both compounds contain a compound with the same key, they will be
+     * merged; otherwise the values of this compound will be overwritten.
+     * 
+     * @return this compound with entries merged
+     */
     public NbtCompound copyFrom(NbtCompound source) {
         for (String string : source.entries.keySet()) {
             NbtElement nbtElement = source.entries.get(string);
@@ -547,6 +798,11 @@ implements NbtElement {
         visitor.visitCompound(this);
     }
 
+    /**
+     * {@return the compound as an unmodifiable map}
+     * 
+     * <p>Changes to this compound will be propagated to the returned map.
+     */
     protected Map<String, NbtElement> toMap() {
         return Collections.unmodifiableMap(this.entries);
     }

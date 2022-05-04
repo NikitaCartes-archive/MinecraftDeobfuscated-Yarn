@@ -254,7 +254,7 @@ StringVisitable {
                         Object[] objects = new Object[jsonArray.size()];
                         boolean bl = false;
                         while (var9_17 < objects.length) {
-                            objects[var9_17] = Serializer.method_43474(this.deserialize(jsonArray.get((int)var9_17), type, jsonDeserializationContext));
+                            objects[var9_17] = Serializer.optimizeArgument(this.deserialize(jsonArray.get((int)var9_17), type, jsonDeserializationContext));
                             ++var9_17;
                         }
                         mutableText = Text.translatable(string, objects);
@@ -310,14 +310,14 @@ StringVisitable {
             return mutableText;
         }
 
-        private static Object method_43474(Object object) {
+        private static Object optimizeArgument(Object text) {
             TextContent textContent;
-            Text text;
-            if (object instanceof Text && (text = (Text)object).getStyle().isEmpty() && text.getSiblings().isEmpty() && (textContent = text.getContent()) instanceof LiteralTextContent) {
+            Text text2;
+            if (text instanceof Text && (text2 = (Text)text).getStyle().isEmpty() && text2.getSiblings().isEmpty() && (textContent = text2.getContent()) instanceof LiteralTextContent) {
                 LiteralTextContent literalTextContent = (LiteralTextContent)textContent;
                 return literalTextContent.string();
             }
-            return object;
+            return text;
         }
 
         private Optional<Text> getSeparator(Type type, JsonDeserializationContext context, JsonObject json) {
@@ -422,6 +422,10 @@ StringVisitable {
 
         public static String toJson(Text text) {
             return GSON.toJson(text);
+        }
+
+        public static String toSortedJsonString(Text text) {
+            return JsonHelper.toSortedString(Serializer.toJsonTree(text));
         }
 
         public static JsonElement toJsonTree(Text text) {

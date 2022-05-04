@@ -15,7 +15,7 @@ import net.minecraft.util.registry.Registry;
 
 public class TagMatchRuleTest
 extends RuleTest {
-    public static final Codec<TagMatchRuleTest> CODEC = ((MapCodec)TagKey.identifierCodec(Registry.BLOCK_KEY).fieldOf("tag")).xmap(TagMatchRuleTest::new, tagMatchRuleTest -> tagMatchRuleTest.tag).codec();
+    public static final Codec<TagMatchRuleTest> CODEC = ((MapCodec)TagKey.unprefixedCodec(Registry.BLOCK_KEY).fieldOf("tag")).xmap(TagMatchRuleTest::new, tagMatchRuleTest -> tagMatchRuleTest.tag).codec();
     private final TagKey<Block> tag;
 
     public TagMatchRuleTest(TagKey<Block> tag) {

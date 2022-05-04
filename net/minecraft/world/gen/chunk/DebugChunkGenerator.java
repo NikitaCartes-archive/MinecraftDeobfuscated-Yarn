@@ -51,9 +51,9 @@ extends ChunkGenerator {
     public static final int field_31466 = 60;
     private final Registry<Biome> biomeRegistry;
 
-    public DebugChunkGenerator(Registry<StructureSet> registry, Registry<Biome> registry2) {
-        super(registry, Optional.empty(), new FixedBiomeSource(registry2.getOrCreateEntry(BiomeKeys.PLAINS)));
-        this.biomeRegistry = registry2;
+    public DebugChunkGenerator(Registry<StructureSet> structureSetRegistry, Registry<Biome> biomeRegistry) {
+        super(structureSetRegistry, Optional.empty(), new FixedBiomeSource(biomeRegistry.getOrCreateEntry(BiomeKeys.PLAINS)));
+        this.biomeRegistry = biomeRegistry;
     }
 
     public Registry<Biome> getBiomeRegistry() {
@@ -102,7 +102,7 @@ extends ChunkGenerator {
     }
 
     @Override
-    public void getDebugHudText(List<String> text, NoiseConfig noiseConfig, BlockPos blockPos) {
+    public void getDebugHudText(List<String> text, NoiseConfig noiseConfig, BlockPos pos) {
     }
 
     public static BlockState getBlockState(int x, int z) {

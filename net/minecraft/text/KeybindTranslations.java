@@ -8,10 +8,10 @@ import java.util.function.Supplier;
 import net.minecraft.text.Text;
 
 public class KeybindTranslations {
-    static Function<String, Supplier<Text>> FACTORY = string -> () -> Text.literal(string);
+    static Function<String, Supplier<Text>> factory = key -> () -> Text.literal(key);
 
     public static void setFactory(Function<String, Supplier<Text>> factory) {
-        FACTORY = factory;
+        KeybindTranslations.factory = factory;
     }
 }
 

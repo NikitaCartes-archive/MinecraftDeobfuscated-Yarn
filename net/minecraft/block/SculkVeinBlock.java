@@ -5,12 +5,12 @@ package net.minecraft.block;
 
 import java.util.Collection;
 import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.AbstractLichenBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LichenGrower;
 import net.minecraft.block.Material;
+import net.minecraft.block.MultifaceGrowthBlock;
 import net.minecraft.block.SculkSpreadable;
 import net.minecraft.block.Waterloggable;
 import net.minecraft.block.entity.SculkSpreadManager;
@@ -34,7 +34,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 
 public class SculkVeinBlock
-extends AbstractLichenBlock
+extends MultifaceGrowthBlock
 implements SculkSpreadable,
 Waterloggable {
     private static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;

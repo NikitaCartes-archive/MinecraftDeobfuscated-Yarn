@@ -39,7 +39,7 @@ import org.jetbrains.annotations.Nullable;
  * The generator for the woodland mansion structure.
  * 
  * <p>The cobblestones underneath the mansion are generated {@linkplain
- * net.minecraft.world.gen.feature.WoodlandMansionFeature#postPlace after
+ * net.minecraft.world.gen.structure.WoodlandMansionStructure#postPlace after
  * the mansion placement}.
  */
 public class WoodlandMansionGenerator {

@@ -15,8 +15,8 @@ extends PlacementModifier {
     protected abstract int getCount(AbstractRandom var1, BlockPos var2);
 
     @Override
-    public Stream<BlockPos> getPositions(FeaturePlacementContext context, AbstractRandom abstractRandom, BlockPos pos) {
-        return IntStream.range(0, this.getCount(abstractRandom, pos)).mapToObj(i -> pos);
+    public Stream<BlockPos> getPositions(FeaturePlacementContext context, AbstractRandom random, BlockPos pos) {
+        return IntStream.range(0, this.getCount(random, pos)).mapToObj(i -> pos);
     }
 }
 

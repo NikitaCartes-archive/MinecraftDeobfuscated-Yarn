@@ -129,7 +129,7 @@ public class LootPool {
         }
 
         @Override
-        public Builder getThis() {
+        public Builder getThisFunctionConsumingBuilder() {
             return this;
         }
 
@@ -163,17 +163,22 @@ public class LootPool {
         }
 
         @Override
-        public /* synthetic */ Object getThis() {
-            return this.getThis();
+        public /* synthetic */ LootFunctionConsumingBuilder getThisFunctionConsumingBuilder() {
+            return this.getThisFunctionConsumingBuilder();
         }
 
         @Override
-        public /* synthetic */ Object apply(LootFunction.Builder function) {
+        public /* synthetic */ LootFunctionConsumingBuilder apply(LootFunction.Builder function) {
             return this.apply(function);
         }
 
         @Override
-        public /* synthetic */ Object conditionally(LootCondition.Builder condition) {
+        public /* synthetic */ LootConditionConsumingBuilder getThisConditionConsumingBuilder() {
+            return this.getThisFunctionConsumingBuilder();
+        }
+
+        @Override
+        public /* synthetic */ LootConditionConsumingBuilder conditionally(LootCondition.Builder condition) {
             return this.conditionally(condition);
         }
     }

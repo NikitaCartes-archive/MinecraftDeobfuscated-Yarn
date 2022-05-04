@@ -1326,8 +1326,8 @@ public class SoundEvents {
     public static final SoundEvent ENTITY_ZOMBIE_VILLAGER_HURT = SoundEvents.register("entity.zombie_villager.hurt");
     public static final SoundEvent ENTITY_ZOMBIE_VILLAGER_STEP = SoundEvents.register("entity.zombie_villager.step");
 
-    private static SoundEvent register(String registryId, float eventId) {
-        return Registry.register(Registry.SOUND_EVENT, registryId, new SoundEvent(new Identifier(registryId), eventId));
+    private static SoundEvent register(String id, float distanceToTravel) {
+        return Registry.register(Registry.SOUND_EVENT, id, new SoundEvent(new Identifier(id), distanceToTravel));
     }
 
     private static SoundEvent register(String id) {

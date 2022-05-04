@@ -15,11 +15,11 @@ import net.minecraft.util.registry.RegistryKey;
 public record TagKey<T>(RegistryKey<? extends Registry<T>> registry, Identifier id) {
     private static final Interner<TagKey<?>> INTERNER = Interners.newWeakInterner();
 
-    public static <T> Codec<TagKey<T>> identifierCodec(RegistryKey<? extends Registry<T>> registry) {
+    public static <T> Codec<TagKey<T>> unprefixedCodec(RegistryKey<? extends Registry<T>> registry) {
         return Identifier.CODEC.xmap(id -> TagKey.of(registry, id), TagKey::id);
     }
 
-    public static <T> Codec<TagKey<T>> stringCodec(RegistryKey<? extends Registry<T>> registry) {
+    public static <T> Codec<TagKey<T>> codec(RegistryKey<? extends Registry<T>> registry) {
         return Codec.STRING.comapFlatMap(string -> string.startsWith("#") ? Identifier.validate(string.substring(1)).map(id -> TagKey.of(registry, id)) : DataResult.error("Not a tag id"), string -> "#" + string.id);
     }
 

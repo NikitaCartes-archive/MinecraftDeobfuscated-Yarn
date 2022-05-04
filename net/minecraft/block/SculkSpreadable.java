@@ -4,9 +4,9 @@
 package net.minecraft.block;
 
 import java.util.Collection;
-import net.minecraft.block.AbstractLichenBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.MultifaceGrowthBlock;
 import net.minecraft.block.SculkVeinBlock;
 import net.minecraft.block.entity.SculkSpreadManager;
 import net.minecraft.fluid.Fluids;
@@ -51,12 +51,12 @@ public interface SculkSpreadable {
     default public void spreadAtSamePosition(WorldAccess world, BlockState state, BlockPos pos, AbstractRandom random) {
     }
 
-    default public boolean method_41470(WorldAccess worldAccess, BlockPos blockPos, AbstractRandom abstractRandom) {
+    default public boolean method_41470(WorldAccess world, BlockPos pos, AbstractRandom random) {
         return false;
     }
 
     default public boolean spread(WorldAccess world, BlockPos pos, BlockState state, @Nullable Collection<Direction> directions, boolean markForPostProcessing) {
-        return ((AbstractLichenBlock)Blocks.SCULK_VEIN).getGrower().grow(state, world, pos, markForPostProcessing) > 0L;
+        return ((MultifaceGrowthBlock)Blocks.SCULK_VEIN).getGrower().grow(state, world, pos, markForPostProcessing) > 0L;
     }
 
     default public boolean shouldConvertToSpreadable() {

@@ -152,12 +152,12 @@ implements TextContent {
      * Enabled force condition propagation
      * Lifted jumps to return sites
      */
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (!(object instanceof TranslatableTextContent)) return false;
-        TranslatableTextContent translatableTextContent = (TranslatableTextContent)object;
+        if (!(o instanceof TranslatableTextContent)) return false;
+        TranslatableTextContent translatableTextContent = (TranslatableTextContent)o;
         if (!this.key.equals(translatableTextContent.key)) return false;
         if (!Arrays.equals(this.args, translatableTextContent.args)) return false;
         return true;

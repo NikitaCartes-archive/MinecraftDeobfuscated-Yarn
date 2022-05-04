@@ -224,7 +224,7 @@ Hoglin {
     }
 
     @Override
-    protected boolean shouldDropXp() {
+    public boolean shouldDropXp() {
         return true;
     }
 

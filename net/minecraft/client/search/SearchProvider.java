@@ -7,8 +7,14 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
+/**
+ * A functional interface that provides searching.
+ */
 @Environment(value=EnvType.CLIENT)
-public interface Searchable<T> {
+public interface SearchProvider<T> {
+    /**
+     * {@return the search result of {@code text}}
+     */
     public List<T> findAll(String var1);
 }
 

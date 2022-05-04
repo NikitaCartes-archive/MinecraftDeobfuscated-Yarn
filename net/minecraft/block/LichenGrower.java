@@ -5,10 +5,10 @@ package net.minecraft.block;
 
 import com.google.common.annotations.VisibleForTesting;
 import java.util.Optional;
-import net.minecraft.block.AbstractLichenBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.MultifaceGrowthBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.AbstractRandom;
@@ -20,7 +20,7 @@ public class LichenGrower {
     public static final GrowType[] GROW_TYPES = new GrowType[]{GrowType.SAME_POSITION, GrowType.SAME_PLANE, GrowType.WRAP_AROUND};
     private final GrowChecker growChecker;
 
-    public LichenGrower(AbstractLichenBlock lichen) {
+    public LichenGrower(MultifaceGrowthBlock lichen) {
         this(new LichenGrowChecker(lichen));
     }
 
@@ -78,9 +78,9 @@ public class LichenGrower {
 
     public static class LichenGrowChecker
     implements GrowChecker {
-        protected AbstractLichenBlock lichen;
+        protected MultifaceGrowthBlock lichen;
 
-        public LichenGrowChecker(AbstractLichenBlock lichen) {
+        public LichenGrowChecker(MultifaceGrowthBlock lichen) {
             this.lichen = lichen;
         }
 
@@ -112,7 +112,7 @@ public class LichenGrower {
         }
 
         default public boolean hasDirection(BlockState state, Direction direction) {
-            return AbstractLichenBlock.hasDirection(state, direction);
+            return MultifaceGrowthBlock.hasDirection(state, direction);
         }
 
         default public boolean canGrow(BlockState state) {

@@ -29,7 +29,7 @@ extends PlacementModifier {
     }
 
     @Override
-    public Stream<BlockPos> getPositions(FeaturePlacementContext context, AbstractRandom abstractRandom, BlockPos pos) {
+    public Stream<BlockPos> getPositions(FeaturePlacementContext context, AbstractRandom random, BlockPos pos) {
         int j;
         int i = pos.getX();
         int k = context.getTopY(this.heightmap, i, j = pos.getZ());

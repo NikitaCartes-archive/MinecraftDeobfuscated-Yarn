@@ -36,17 +36,17 @@ extends PlacementModifier {
     }
 
     @Override
-    public Stream<BlockPos> getPositions(FeaturePlacementContext context, AbstractRandom abstractRandom, BlockPos pos) {
+    public Stream<BlockPos> getPositions(FeaturePlacementContext context, AbstractRandom random, BlockPos pos) {
         boolean bl;
         Stream.Builder<BlockPos> builder = Stream.builder();
         int i = 0;
         do {
             bl = false;
-            for (int j = 0; j < this.count.get(abstractRandom); ++j) {
+            for (int j = 0; j < this.count.get(random); ++j) {
                 int l;
                 int m;
-                int k = abstractRandom.nextInt(16) + pos.getX();
-                int n = CountMultilayerPlacementModifier.findPos(context, k, m = context.getTopY(Heightmap.Type.MOTION_BLOCKING, k, l = abstractRandom.nextInt(16) + pos.getZ()), l, i);
+                int k = random.nextInt(16) + pos.getX();
+                int n = CountMultilayerPlacementModifier.findPos(context, k, m = context.getTopY(Heightmap.Type.MOTION_BLOCKING, k, l = random.nextInt(16) + pos.getZ()), l, i);
                 if (n == Integer.MAX_VALUE) continue;
                 builder.add(new BlockPos(k, n, l));
                 bl = true;

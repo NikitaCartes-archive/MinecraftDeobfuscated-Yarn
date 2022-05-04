@@ -123,7 +123,7 @@ public class DebugInfoSender {
     public static void sendBeeDebugData(BeeEntity bee) {
     }
 
-    public static void sendGameEvent(World world, GameEvent event, Vec3d vec3d) {
+    public static void sendGameEvent(World world, GameEvent event, Vec3d pos) {
     }
 
     public static void sendGameEventListener(World world, GameEventListener eventListener) {
@@ -132,53 +132,47 @@ public class DebugInfoSender {
     public static void sendBeehiveDebugData(World world, BlockPos pos, BlockState state, BeehiveBlockEntity blockEntity) {
     }
 
-    private static void writeBrain(LivingEntity entity, PacketByteBuf buf2) {
+    private static void writeBrain(LivingEntity entity, PacketByteBuf buf) {
         Brain<Path> brain = entity.getBrain();
         long l = entity.world.getTime();
         if (entity instanceof InventoryOwner) {
             SimpleInventory inventory = ((InventoryOwner)((Object)entity)).getInventory();
-            buf2.writeString(inventory.isEmpty() ? "" : ((Object)inventory).toString());
+            buf.writeString(inventory.isEmpty() ? "" : ((Object)inventory).toString());
         } else {
-            buf2.writeString("");
+            buf.writeString("");
         }
-        if (brain.hasMemoryModule(MemoryModuleType.PATH)) {
-            buf2.writeBoolean(true);
-            Path path = brain.getOptionalMemory(MemoryModuleType.PATH).get();
-            path.toBuffer(buf2);
-        } else {
-            buf2.writeBoolean(false);
-        }
+        buf.writeOptional(brain.hasMemoryModule(MemoryModuleType.PATH) ? brain.getOptionalMemory(MemoryModuleType.PATH) : Optional.empty(), (packetByteBuf, path) -> path.toBuffer((PacketByteBuf)packetByteBuf));
         if (entity instanceof VillagerEntity) {
             VillagerEntity villagerEntity = (VillagerEntity)entity;
             boolean bl = villagerEntity.canSummonGolem(l);
-            buf2.writeBoolean(bl);
+            buf.writeBoolean(bl);
         } else {
-            buf2.writeBoolean(false);
+            buf.writeBoolean(false);
         }
         if (entity.getType() == EntityType.WARDEN) {
             WardenEntity wardenEntity = (WardenEntity)entity;
-            buf2.writeInt(wardenEntity.getAnger());
+            buf.writeInt(wardenEntity.getAnger());
         } else {
-            buf2.writeInt(-1);
+            buf.writeInt(-1);
         }
-        buf2.writeCollection(brain.getPossibleActivities(), (buf, activity) -> buf.writeString(activity.getId()));
+        buf.writeCollection(brain.getPossibleActivities(), (buf2, activity) -> buf2.writeString(activity.getId()));
         Set set = brain.getRunningTasks().stream().map(Task::toString).collect(Collectors.toSet());
-        buf2.writeCollection(set, PacketByteBuf::writeString);
-        buf2.writeCollection(DebugInfoSender.listMemories(entity, l), (buf, memory) -> {
+        buf.writeCollection(set, PacketByteBuf::writeString);
+        buf.writeCollection(DebugInfoSender.listMemories(entity, l), (buf2, memory) -> {
             String string = StringHelper.truncate(memory, 255, true);
-            buf.writeString(string);
+            buf2.writeString(string);
         });
         if (entity instanceof VillagerEntity) {
             Set set2 = Stream.of(MemoryModuleType.JOB_SITE, MemoryModuleType.HOME, MemoryModuleType.MEETING_POINT).map(brain::getOptionalMemory).flatMap(Optional::stream).map(GlobalPos::getPos).collect(Collectors.toSet());
-            buf2.writeCollection(set2, PacketByteBuf::writeBlockPos);
+            buf.writeCollection(set2, PacketByteBuf::writeBlockPos);
         } else {
-            buf2.writeVarInt(0);
+            buf.writeVarInt(0);
         }
         if (entity instanceof VillagerEntity) {
             Set set2 = Stream.of(MemoryModuleType.POTENTIAL_JOB_SITE).map(brain::getOptionalMemory).flatMap(Optional::stream).map(GlobalPos::getPos).collect(Collectors.toSet());
-            buf2.writeCollection(set2, PacketByteBuf::writeBlockPos);
+            buf.writeCollection(set2, PacketByteBuf::writeBlockPos);
         } else {
-            buf2.writeVarInt(0);
+            buf.writeVarInt(0);
         }
         if (entity instanceof VillagerEntity) {
             Map<UUID, Object2IntMap<VillageGossipType>> map = ((VillagerEntity)entity).getGossip().getEntityReputationAssociatedGossips();
@@ -187,9 +181,9 @@ public class DebugInfoSender {
                 String string = NameGenerator.name(uuid);
                 gossips.forEach((type, value) -> list.add(string + ": " + type + ": " + value));
             });
-            buf2.writeCollection(list, PacketByteBuf::writeString);
+            buf.writeCollection(list, PacketByteBuf::writeString);
         } else {
-            buf2.writeVarInt(0);
+            buf.writeVarInt(0);
         }
     }
 
@@ -263,6 +257,10 @@ public class DebugInfoSender {
         for (PlayerEntity playerEntity : world.getPlayers()) {
             ((ServerPlayerEntity)playerEntity).networkHandler.sendPacket(packet);
         }
+    }
+
+    private static /* synthetic */ void method_43894(PacketByteBuf packetByteBuf, Path path) {
+        path.toBuffer(packetByteBuf);
     }
 
     private static /* synthetic */ void method_36163(PacketByteBuf buf, Raid raid) {

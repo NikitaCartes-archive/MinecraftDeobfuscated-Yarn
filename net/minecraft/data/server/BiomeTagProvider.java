@@ -31,9 +31,9 @@ extends AbstractTagProvider<Biome> {
         this.getOrCreateTagBuilder(BiomeTags.IS_FOREST).add(BiomeKeys.FOREST).add(BiomeKeys.FLOWER_FOREST).add(BiomeKeys.BIRCH_FOREST).add(BiomeKeys.OLD_GROWTH_BIRCH_FOREST).add(BiomeKeys.DARK_FOREST).add(BiomeKeys.GROVE);
         this.getOrCreateTagBuilder(BiomeTags.IS_SAVANNA).add(BiomeKeys.SAVANNA).add(BiomeKeys.SAVANNA_PLATEAU).add(BiomeKeys.WINDSWEPT_SAVANNA);
         AbstractTagProvider.ObjectBuilder<Biome> objectBuilder = this.getOrCreateTagBuilder(BiomeTags.IS_NETHER);
-        MultiNoiseBiomeSource.Preset.NETHER.stream().forEach(registryKey -> objectBuilder.add(registryKey));
+        MultiNoiseBiomeSource.Preset.NETHER.stream().forEach(biome -> objectBuilder.add(biome));
         AbstractTagProvider.ObjectBuilder<Biome> objectBuilder2 = this.getOrCreateTagBuilder(BiomeTags.IS_OVERWORLD);
-        MultiNoiseBiomeSource.Preset.OVERWORLD.stream().forEach(registryKey -> objectBuilder2.add(registryKey));
+        MultiNoiseBiomeSource.Preset.OVERWORLD.stream().forEach(biome -> objectBuilder2.add(biome));
         this.getOrCreateTagBuilder(BiomeTags.IS_END).add(BiomeKeys.THE_END).add(BiomeKeys.END_HIGHLANDS).add(BiomeKeys.END_MIDLANDS).add(BiomeKeys.SMALL_END_ISLANDS).add(BiomeKeys.END_BARRENS);
         this.getOrCreateTagBuilder(BiomeTags.BURIED_TREASURE_HAS_STRUCTURE).addTag(BiomeTags.IS_BEACH);
         this.getOrCreateTagBuilder(BiomeTags.DESERT_PYRAMID_HAS_STRUCTURE).add(BiomeKeys.DESERT);

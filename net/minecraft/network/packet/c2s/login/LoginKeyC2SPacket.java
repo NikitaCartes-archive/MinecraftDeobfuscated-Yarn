@@ -48,9 +48,9 @@ implements Packet<ServerLoginPacketListener> {
     }
 
     @Override
-    public void write(PacketByteBuf buf2) {
-        buf2.writeByteArray(this.encryptedSecretKey);
-        buf2.writeEither(this.nonce, PacketByteBuf::writeByteArray, (buf, signature) -> signature.write((PacketByteBuf)buf));
+    public void write(PacketByteBuf buf) {
+        buf.writeByteArray(this.encryptedSecretKey);
+        buf.writeEither(this.nonce, PacketByteBuf::writeByteArray, (buf2, signature) -> signature.write((PacketByteBuf)buf2));
     }
 
     @Override
@@ -62,7 +62,7 @@ implements Packet<ServerLoginPacketListener> {
         return NetworkEncryptionUtils.decryptSecretKey(privateKey, this.encryptedSecretKey);
     }
 
-    public boolean verifySignedNonce(byte[] nonce, PlayerPublicKey.PublicKeyData publicKeyInfo) {
+    public boolean verifySignedNonce(byte[] nonce, PlayerPublicKey publicKeyInfo) {
         return this.nonce.map(encrypted -> false, signature -> {
             try {
                 Signature signature2 = publicKeyInfo.createSignatureInstance();

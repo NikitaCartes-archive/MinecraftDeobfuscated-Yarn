@@ -84,5 +84,14 @@ public class StringHelper {
     public static boolean endsWithLineBreak(String text) {
         return ENDS_WITH_LINE_BREAK.matcher(text).find();
     }
+
+    /**
+     * {@return {@code text} truncated to at most 256 characters without ellipsis}
+     * 
+     * @apiNote This is used when sending chat messages.
+     */
+    public static String truncateChat(String text) {
+        return StringHelper.truncate(text, 256, false);
+    }
 }
 

@@ -25,6 +25,8 @@ import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SignType;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 
 @Environment(value=EnvType.CLIENT)
 public class TexturedRenderLayers {
@@ -47,8 +49,8 @@ public class TexturedRenderLayers {
     public static final SpriteIdentifier SHULKER_TEXTURE_ID = new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, new Identifier("entity/shulker/shulker"));
     public static final List<SpriteIdentifier> COLORED_SHULKER_BOXES_TEXTURES = Stream.of("white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray", "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black").map(string -> new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, new Identifier("entity/shulker/shulker_" + string))).collect(ImmutableList.toImmutableList());
     public static final Map<SignType, SpriteIdentifier> WOOD_TYPE_TEXTURES = SignType.stream().collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::createSignTextureId));
-    public static final Map<BannerPattern, SpriteIdentifier> BANNER_PATTERN_TEXTURES = Arrays.stream(BannerPattern.values()).collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::createBannerPatternTextureId));
-    public static final Map<BannerPattern, SpriteIdentifier> SHIELD_PATTERN_TEXTURES = Arrays.stream(BannerPattern.values()).collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::createShieldPatternTextureId));
+    public static final Map<RegistryKey<BannerPattern>, SpriteIdentifier> BANNER_PATTERN_TEXTURES = Registry.BANNER_PATTERN.getKeys().stream().collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::createBannerPatternTextureId));
+    public static final Map<RegistryKey<BannerPattern>, SpriteIdentifier> SHIELD_PATTERN_TEXTURES = Registry.BANNER_PATTERN.getKeys().stream().collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::createShieldPatternTextureId));
     public static final SpriteIdentifier[] BED_TEXTURES = (SpriteIdentifier[])Arrays.stream(DyeColor.values()).sorted(Comparator.comparingInt(DyeColor::getId)).map(dyeColor -> new SpriteIdentifier(BEDS_ATLAS_TEXTURE, new Identifier("entity/bed/" + dyeColor.getName()))).toArray(SpriteIdentifier[]::new);
     public static final SpriteIdentifier TRAPPED = TexturedRenderLayers.getChestTextureId("trapped");
     public static final SpriteIdentifier TRAPPED_LEFT = TexturedRenderLayers.getChestTextureId("trapped_left");
@@ -130,20 +132,20 @@ public class TexturedRenderLayers {
         return WOOD_TYPE_TEXTURES.get(signType);
     }
 
-    private static SpriteIdentifier createBannerPatternTextureId(BannerPattern pattern) {
-        return new SpriteIdentifier(BANNER_PATTERNS_ATLAS_TEXTURE, pattern.getSpriteId(true));
+    private static SpriteIdentifier createBannerPatternTextureId(RegistryKey<BannerPattern> bannerPattern) {
+        return new SpriteIdentifier(BANNER_PATTERNS_ATLAS_TEXTURE, BannerPattern.getSpriteId(bannerPattern, true));
     }
 
-    public static SpriteIdentifier getBannerPatternTextureId(BannerPattern pattern) {
-        return BANNER_PATTERN_TEXTURES.get((Object)pattern);
+    public static SpriteIdentifier getBannerPatternTextureId(RegistryKey<BannerPattern> bannerPattern) {
+        return BANNER_PATTERN_TEXTURES.get(bannerPattern);
     }
 
-    private static SpriteIdentifier createShieldPatternTextureId(BannerPattern pattern) {
-        return new SpriteIdentifier(SHIELD_PATTERNS_ATLAS_TEXTURE, pattern.getSpriteId(false));
+    private static SpriteIdentifier createShieldPatternTextureId(RegistryKey<BannerPattern> bannerPattern) {
+        return new SpriteIdentifier(SHIELD_PATTERNS_ATLAS_TEXTURE, BannerPattern.getSpriteId(bannerPattern, false));
     }
 
-    public static SpriteIdentifier getShieldPatternTextureId(BannerPattern pattern) {
-        return SHIELD_PATTERN_TEXTURES.get((Object)pattern);
+    public static SpriteIdentifier getShieldPatternTextureId(RegistryKey<BannerPattern> bannerPattern) {
+        return SHIELD_PATTERN_TEXTURES.get(bannerPattern);
     }
 
     private static SpriteIdentifier getChestTextureId(String variant) {

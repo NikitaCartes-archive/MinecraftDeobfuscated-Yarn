@@ -9,13 +9,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.listener.GameEventDispatcher;
 import net.minecraft.world.event.listener.GameEventListener;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * A simple game event dispatcher implementation that has hooks to
@@ -63,9 +63,9 @@ implements GameEventDispatcher {
      * WARNING - Removed try catching itself - possible behaviour change.
      */
     @Override
-    public void dispatch(GameEvent event, Vec3d pos, @Nullable GameEvent.Emitter emitter) {
-        boolean bl = false;
+    public boolean dispatch(GameEvent event, Vec3d pos, GameEvent.Emitter emitter, BiConsumer<GameEventListener, Vec3d> onListenerAccept) {
         this.dispatching = true;
+        boolean bl = false;
         try {
             Iterator<GameEventListener> iterator = this.listeners.iterator();
             while (iterator.hasNext()) {
@@ -74,7 +74,9 @@ implements GameEventDispatcher {
                     iterator.remove();
                     continue;
                 }
-                if (!SimpleGameEventDispatcher.dispatchTo(this.world, event, emitter, pos, gameEventListener)) continue;
+                Optional<Vec3d> optional = SimpleGameEventDispatcher.dispatchTo(this.world, pos, gameEventListener);
+                if (!optional.isPresent()) continue;
+                onListenerAccept.accept(gameEventListener, optional.get());
                 bl = true;
             }
         } finally {
@@ -88,19 +90,20 @@ implements GameEventDispatcher {
             this.listeners.removeAll(this.toRemove);
             this.toRemove.clear();
         }
-        if (bl) {
-            DebugInfoSender.sendGameEvent(this.world, event, pos);
-        }
+        return bl;
     }
 
-    private static boolean dispatchTo(ServerWorld world, GameEvent event, GameEvent.Emitter emitter, Vec3d pos, GameEventListener listener) {
+    private static Optional<Vec3d> dispatchTo(ServerWorld world, Vec3d listenerPos, GameEventListener listener) {
         int i;
         Optional<Vec3d> optional = listener.getPositionSource().getPos(world);
         if (optional.isEmpty()) {
-            return false;
+            return Optional.empty();
         }
-        double d = optional.get().squaredDistanceTo(pos);
-        return d <= (double)(i = listener.getRange() * listener.getRange()) && listener.listen(world, event, emitter, pos);
+        double d = optional.get().squaredDistanceTo(listenerPos);
+        if (d > (double)(i = listener.getRange() * listener.getRange())) {
+            return Optional.empty();
+        }
+        return optional;
     }
 }
 

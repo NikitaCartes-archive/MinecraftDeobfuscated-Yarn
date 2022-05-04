@@ -25,6 +25,7 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -141,6 +142,7 @@ import net.minecraft.world.entity.EntityHandler;
 import net.minecraft.world.entity.EntityLookup;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.listener.EntityGameEventHandler;
+import net.minecraft.world.event.listener.GameEventListener;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 import net.minecraft.world.gen.StructureAccessor;
@@ -194,6 +196,7 @@ implements StructureWorldAccess {
     protected final RaidManager raidManager;
     private final ObjectLinkedOpenHashSet<BlockEvent> syncedBlockEventQueue = new ObjectLinkedOpenHashSet();
     private final List<BlockEvent> blockEventQueue = new ArrayList<BlockEvent>(64);
+    private List<GameEvent.Message> queuedEvents = new ArrayList<GameEvent.Message>();
     private boolean inBlockTick;
     private final List<Spawner> spawners;
     @Nullable
@@ -343,6 +346,8 @@ implements StructureWorldAccess {
         }
         profiler.push("entityManagement");
         this.entityManager.tick();
+        profiler.push("gameEvents");
+        this.processEventQueue();
         profiler.pop();
     }
 
@@ -851,12 +856,12 @@ implements StructureWorldAccess {
 
     @Override
     public void playSound(@Nullable PlayerEntity except, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch, long seed) {
-        this.server.getPlayerManager().sendToAround(except, x, y, z, sound.method_43044(volume), this.getRegistryKey(), new PlaySoundS2CPacket(sound, category, x, y, z, volume, pitch, seed));
+        this.server.getPlayerManager().sendToAround(except, x, y, z, sound.getDistanceToTravel(volume), this.getRegistryKey(), new PlaySoundS2CPacket(sound, category, x, y, z, volume, pitch, seed));
     }
 
     @Override
     public void playSoundFromEntity(@Nullable PlayerEntity except, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch, long seed) {
-        this.server.getPlayerManager().sendToAround(except, entity.getX(), entity.getY(), entity.getZ(), sound.method_43044(volume), this.getRegistryKey(), new PlaySoundFromEntityS2CPacket(sound, category, entity, volume, pitch, seed));
+        this.server.getPlayerManager().sendToAround(except, entity.getX(), entity.getY(), entity.getZ(), sound.getDistanceToTravel(volume), this.getRegistryKey(), new PlaySoundFromEntityS2CPacket(sound, category, entity, volume, pitch, seed));
     }
 
     @Override
@@ -874,23 +879,48 @@ implements StructureWorldAccess {
     }
 
     @Override
-    public void emitGameEvent(GameEvent event, Vec3d pos, GameEvent.Emitter emitter) {
+    public void emitGameEvent(GameEvent event, Vec3d emitterPos, GameEvent.Emitter emitter) {
         int i = event.getRange();
-        BlockPos blockPos = new BlockPos(pos);
+        BlockPos blockPos = new BlockPos(emitterPos);
         int j = ChunkSectionPos.getSectionCoord(blockPos.getX() - i);
         int k = ChunkSectionPos.getSectionCoord(blockPos.getY() - i);
         int l = ChunkSectionPos.getSectionCoord(blockPos.getZ() - i);
         int m = ChunkSectionPos.getSectionCoord(blockPos.getX() + i);
         int n = ChunkSectionPos.getSectionCoord(blockPos.getY() + i);
         int o = ChunkSectionPos.getSectionCoord(blockPos.getZ() + i);
+        ArrayList<GameEvent.Message> list = new ArrayList<GameEvent.Message>();
+        boolean bl = false;
         for (int p = j; p <= m; ++p) {
             for (int q = l; q <= o; ++q) {
                 WorldChunk chunk = this.getChunkManager().getWorldChunk(p, q);
                 if (chunk == null) continue;
                 for (int r = k; r <= n; ++r) {
-                    ((Chunk)chunk).getGameEventDispatcher(r).dispatch(event, pos, emitter);
+                    bl |= ((Chunk)chunk).getGameEventDispatcher(r).dispatch(event, emitterPos, emitter, (listener, listenerPos) -> (listener.shouldListenImmediately() ? list : this.queuedEvents).add(new GameEvent.Message(event, emitterPos, emitter, (GameEventListener)listener, (Vec3d)listenerPos)));
                 }
             }
+        }
+        if (!list.isEmpty()) {
+            this.processEvents(list);
+        }
+        if (bl) {
+            DebugInfoSender.sendGameEvent(this, event, emitterPos);
+        }
+    }
+
+    private void processEventQueue() {
+        if (this.queuedEvents.isEmpty()) {
+            return;
+        }
+        List<GameEvent.Message> list = this.queuedEvents;
+        this.queuedEvents = new ArrayList<GameEvent.Message>();
+        this.processEvents(list);
+    }
+
+    private void processEvents(List<GameEvent.Message> events) {
+        Collections.sort(events);
+        for (GameEvent.Message message : events) {
+            GameEventListener gameEventListener = message.getListener();
+            gameEventListener.listen(this, message);
         }
     }
 
@@ -1106,7 +1136,7 @@ implements StructureWorldAccess {
      * 
      * @return the position of the structure, or {@code null} if no structure could be found within the given search radius
      * 
-     * @see ChunkGenerator#locateStructure
+     * @see ChunkGenerator#locateStructure(ServerWorld, RegistryEntryList, BlockPos, int, boolean)
      * 
      * @param pos the position to start the searching at
      * @param skipExistingChunks whether only structures that are not referenced by generated chunks (chunks past the {@code STRUCTURE_STARTS} stage) are returned, excluding strongholds

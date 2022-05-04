@@ -5,7 +5,7 @@ package net.minecraft.client.gui;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.network.ChatMessageSender;
+import net.minecraft.network.MessageSender;
 import net.minecraft.network.MessageType;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
@@ -26,6 +26,6 @@ public interface ClientChatListener {
      * 
      * @param sender the chat message's sender, or {@code null} for game messages
      */
-    public void onChatMessage(MessageType var1, Text var2, @Nullable ChatMessageSender var3);
+    public void onChatMessage(MessageType var1, Text var2, @Nullable MessageSender var3);
 }
 

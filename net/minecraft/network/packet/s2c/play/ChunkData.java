@@ -56,11 +56,11 @@ public class ChunkData {
         this.blockEntities = buf.readList(BlockEntityData::new);
     }
 
-    public void write(PacketByteBuf buf2) {
-        buf2.writeNbt(this.heightmap);
-        buf2.writeVarInt(this.sectionsData.length);
-        buf2.writeBytes(this.sectionsData);
-        buf2.writeCollection(this.blockEntities, (buf, entry) -> entry.write((PacketByteBuf)buf));
+    public void write(PacketByteBuf buf) {
+        buf.writeNbt(this.heightmap);
+        buf.writeVarInt(this.sectionsData.length);
+        buf.writeBytes(this.sectionsData);
+        buf.writeCollection(this.blockEntities, (buf2, entry) -> entry.write((PacketByteBuf)buf2));
     }
 
     private static int getSectionsPacketSize(WorldChunk chunk) {
@@ -121,11 +121,11 @@ public class ChunkData {
             this.nbt = nbt;
         }
 
-        private BlockEntityData(PacketByteBuf packetByteBuf) {
-            this.localXz = packetByteBuf.readByte();
-            this.y = packetByteBuf.readShort();
-            this.type = packetByteBuf.readRegistryValue(Registry.BLOCK_ENTITY_TYPE);
-            this.nbt = packetByteBuf.readNbt();
+        private BlockEntityData(PacketByteBuf buf) {
+            this.localXz = buf.readByte();
+            this.y = buf.readShort();
+            this.type = buf.readRegistryValue(Registry.BLOCK_ENTITY_TYPE);
+            this.nbt = buf.readNbt();
         }
 
         void write(PacketByteBuf buf) {

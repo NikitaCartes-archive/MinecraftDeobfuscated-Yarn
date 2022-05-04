@@ -118,7 +118,7 @@ implements BlockEntityProvider {
      * {@return whether the world's {@linkplain net.minecraft.world.dimension.DimensionType dimension type}
      * allows beds to be respawned at and slept in without exploding}
      * 
-     * @see net.minecraft.world.dimension.DimensionType#isBedWorking()
+     * @see net.minecraft.world.dimension.DimensionType#bedWorks
      */
     public static boolean isBedWorking(World world) {
         return world.getDimension().bedWorks();

@@ -67,14 +67,15 @@ extends TrunkPlacer {
     }
 
     private void generateExtraBranch(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, int height, TreeFeatureConfig config, List<FoliagePlacer.TreeNode> nodes, BlockPos.Mutable pos, int yOffset, Direction direction, int length, int steps) {
-        int i = 0;
+        int i = yOffset + length;
         int j = pos.getX();
         int k = pos.getZ();
         for (int l = length; l < height && steps > 0; ++l, --steps) {
             if (l < 1) continue;
             int m = yOffset + l;
+            i = m;
             if (this.getAndSetState(world, replacer, random, pos.set(j += direction.getOffsetX(), m, k += direction.getOffsetZ()), config)) {
-                i = m + 1;
+                ++i;
             }
             nodes.add(new FoliagePlacer.TreeNode(pos.toImmutable(), 0, false));
         }

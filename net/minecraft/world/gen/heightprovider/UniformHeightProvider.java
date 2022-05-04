@@ -40,7 +40,7 @@ extends HeightProvider {
     }
 
     @Override
-    public int get(AbstractRandom abstractRandom, HeightContext context) {
+    public int get(AbstractRandom random, HeightContext context) {
         int j;
         int i = this.minOffset.getY(context);
         if (i > (j = this.maxOffset.getY(context))) {
@@ -49,7 +49,7 @@ extends HeightProvider {
             }
             return i;
         }
-        return MathHelper.nextBetween(abstractRandom, i, j);
+        return MathHelper.nextBetween(random, i, j);
     }
 
     @Override

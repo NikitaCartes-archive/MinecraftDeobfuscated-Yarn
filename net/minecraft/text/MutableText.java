@@ -139,12 +139,12 @@ implements Text {
         return this.ordered;
     }
 
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (object instanceof MutableText) {
-            MutableText mutableText = (MutableText)object;
+        if (o instanceof MutableText) {
+            MutableText mutableText = (MutableText)o;
             return this.content.equals(mutableText.content) && this.style.equals(mutableText.style) && this.siblings.equals(mutableText.siblings);
         }
         return false;

@@ -55,7 +55,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.GameEventTags;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Unit;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -92,6 +91,7 @@ implements VibrationListener.Callback {
     private static final int field_38153 = 20;
     private static final int field_38155 = 35;
     private static final int field_38156 = 10;
+    private static final int field_39117 = 20;
     private static final int field_38157 = 100;
     private static final int field_38158 = 20;
     private static final int field_38159 = 30;
@@ -108,7 +108,7 @@ implements VibrationListener.Callback {
     public AnimationState attackingAnimationState = new AnimationState();
     public AnimationState chargingSonicBoomAnimationState = new AnimationState();
     private final EntityGameEventHandler<VibrationListener> gameEventHandler;
-    private WardenAngerManager angerManager = new WardenAngerManager(Collections.emptyList());
+    private WardenAngerManager angerManager = new WardenAngerManager(this::isValidTarget, Collections.emptyList());
 
     public WardenEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
@@ -315,7 +315,7 @@ implements VibrationListener.Callback {
     }
 
     private void addDigParticles(AnimationState animationState) {
-        if ((float)(Util.getMeasuringTimeMs() - animationState.getStartTime()) < 4500.0f) {
+        if ((float)animationState.getTimeRunning() < 4500.0f) {
             AbstractRandom abstractRandom = this.getRandom();
             BlockState blockState = this.world.getBlockState(this.getBlockPos().down());
             if (blockState.getRenderType() != BlockRenderType.INVISIBLE) {
@@ -382,6 +382,11 @@ implements VibrationListener.Callback {
         return GameEventTags.WARDEN_CAN_LISTEN;
     }
 
+    @Override
+    public boolean triggersAvoidCriterion() {
+        return true;
+    }
+
     /*
      * Enabled force condition propagation
      * Lifted jumps to return sites
@@ -389,6 +394,7 @@ implements VibrationListener.Callback {
     public boolean isValidTarget(@Nullable Entity entity) {
         if (!(entity instanceof LivingEntity)) return false;
         LivingEntity livingEntity = (LivingEntity)entity;
+        if (this.world != entity.world) return false;
         if (!EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test(entity)) return false;
         if (this.isTeammate(entity)) return false;
         if (livingEntity.getType() == EntityType.ARMOR_STAND) return false;
@@ -407,7 +413,7 @@ implements VibrationListener.Callback {
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-        WardenAngerManager.CODEC.encodeStart(NbtOps.INSTANCE, this.angerManager).resultOrPartial(field_38138::error).ifPresent(angerNbt -> nbt.put("anger", (NbtElement)angerNbt));
+        WardenAngerManager.method_43692(this::isValidTarget).encodeStart(NbtOps.INSTANCE, this.angerManager).resultOrPartial(field_38138::error).ifPresent(angerNbt -> nbt.put("anger", (NbtElement)angerNbt));
         VibrationListener.createCodec(this).encodeStart(NbtOps.INSTANCE, this.gameEventHandler.getListener()).resultOrPartial(field_38138::error).ifPresent(nbtElement -> nbt.put("listener", (NbtElement)nbtElement));
     }
 
@@ -415,7 +421,7 @@ implements VibrationListener.Callback {
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
         if (nbt.contains("anger")) {
-            WardenAngerManager.CODEC.parse(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt.get("anger"))).resultOrPartial(field_38138::error).ifPresent(angerManager -> {
+            WardenAngerManager.method_43692(this::isValidTarget).parse(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt.get("anger"))).resultOrPartial(field_38138::error).ifPresent(angerManager -> {
                 this.angerManager = angerManager;
             });
             this.updateAnger();
@@ -444,12 +450,12 @@ implements VibrationListener.Callback {
     }
 
     @VisibleForTesting
-    public void increaseAngerAt(@Nullable Entity entity2, int amount, boolean listening) {
-        if (!this.isAiDisabled() && this.isValidTarget(entity2)) {
+    public void increaseAngerAt(@Nullable Entity entity, int amount, boolean listening) {
+        if (!this.isAiDisabled() && this.isValidTarget(entity)) {
             WardenBrain.resetDigCooldown(this);
-            boolean bl = this.getPrimeSuspect().filter(entity -> !(entity instanceof PlayerEntity)).isPresent();
-            int i = this.angerManager.increaseAngerAt(entity2, amount);
-            if (entity2 instanceof PlayerEntity && bl && Angriness.getForAnger(i) == Angriness.ANGRY) {
+            boolean bl = !(this.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).orElse(null) instanceof PlayerEntity);
+            int i = this.angerManager.increaseAngerAt(entity, amount);
+            if (entity instanceof PlayerEntity && bl && Angriness.getForAnger(i).isAngry()) {
                 this.getBrain().forget(MemoryModuleType.ATTACK_TARGET);
             }
             if (listening) {
@@ -459,7 +465,7 @@ implements VibrationListener.Callback {
     }
 
     public Optional<LivingEntity> getPrimeSuspect() {
-        if (this.getAngriness() == Angriness.ANGRY) {
+        if (this.getAngriness().isAngry()) {
             return this.angerManager.getPrimeSuspect();
         }
         return Optional.empty();
@@ -539,7 +545,7 @@ implements VibrationListener.Callback {
     @Override
     public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, GameEvent.Emitter emitter) {
         LivingEntity livingEntity;
-        if (this.isAiDisabled() || this.getBrain().hasMemoryModule(MemoryModuleType.VIBRATION_COOLDOWN) || this.isDiggingOrEmerging() || !world.getWorldBorder().contains(pos)) {
+        if (this.isAiDisabled() || this.isDead() || this.getBrain().hasMemoryModule(MemoryModuleType.VIBRATION_COOLDOWN) || this.isDiggingOrEmerging() || !world.getWorldBorder().contains(pos) || this.isRemoved() || this.world != world) {
             return false;
         }
         Entity entity = emitter.sourceEntity();
@@ -567,8 +573,11 @@ implements VibrationListener.Callback {
         } else {
             this.increaseAngerAt(entity);
         }
-        if (this.getAngriness() != Angriness.ANGRY && (sourceEntity != null || this.angerManager.getPrimeSuspect().map(suspect -> suspect == entity).orElse(true).booleanValue())) {
-            WardenBrain.lookAtDisturbance(this, blockPos);
+        if (!this.getAngriness().isAngry()) {
+            Optional<LivingEntity> optional = this.angerManager.getPrimeSuspect();
+            if (sourceEntity != null || optional.isEmpty() || optional.get() == entity) {
+                WardenBrain.lookAtDisturbance(this, blockPos);
+            }
         }
     }
 

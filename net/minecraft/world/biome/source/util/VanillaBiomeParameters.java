@@ -32,6 +32,8 @@ public final class VanillaBiomeParameters {
     public static final float field_35044 = 0.3f;
     public static final float field_35045 = -0.78f;
     public static final float field_35046 = -0.375f;
+    private static final float field_39134 = -0.225f;
+    private static final float field_39135 = 0.9f;
     private final MultiNoiseUtil.ParameterRange defaultParameter = MultiNoiseUtil.ParameterRange.of(-1.0f, 1.0f);
     private final MultiNoiseUtil.ParameterRange[] temperatureParameters = new MultiNoiseUtil.ParameterRange[]{MultiNoiseUtil.ParameterRange.of(-1.0f, -0.45f), MultiNoiseUtil.ParameterRange.of(-0.45f, -0.15f), MultiNoiseUtil.ParameterRange.of(-0.15f, 0.2f), MultiNoiseUtil.ParameterRange.of(0.2f, 0.55f), MultiNoiseUtil.ParameterRange.of(0.55f, 1.0f)};
     private final MultiNoiseUtil.ParameterRange[] humidityParameters = new MultiNoiseUtil.ParameterRange[]{MultiNoiseUtil.ParameterRange.of(-1.0f, -0.35f), MultiNoiseUtil.ParameterRange.of(-0.35f, -0.1f), MultiNoiseUtil.ParameterRange.of(-0.1f, 0.1f), MultiNoiseUtil.ParameterRange.of(0.1f, 0.3f), MultiNoiseUtil.ParameterRange.of(0.3f, 1.0f)};
@@ -270,7 +272,7 @@ public final class VanillaBiomeParameters {
     private void writeCaveBiomes(Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> parameters) {
         this.writeCaveBiomeParameters(parameters, this.defaultParameter, this.defaultParameter, MultiNoiseUtil.ParameterRange.of(0.8f, 1.0f), this.defaultParameter, this.defaultParameter, 0.0f, BiomeKeys.DRIPSTONE_CAVES);
         this.writeCaveBiomeParameters(parameters, this.defaultParameter, MultiNoiseUtil.ParameterRange.of(0.7f, 1.0f), this.defaultParameter, this.defaultParameter, this.defaultParameter, 0.0f, BiomeKeys.LUSH_CAVES);
-        this.method_41419(parameters, this.defaultParameter, this.defaultParameter, this.defaultParameter, MultiNoiseUtil.ParameterRange.combine(this.erosionParameters[0], this.erosionParameters[1]), this.defaultParameter, 0.0f, BiomeKeys.DEEP_DARK);
+        this.writeDeepDarkParameters(parameters, this.defaultParameter, this.defaultParameter, this.defaultParameter, MultiNoiseUtil.ParameterRange.combine(this.erosionParameters[0], this.erosionParameters[1]), this.defaultParameter, 0.0f, BiomeKeys.DEEP_DARK);
     }
 
     private RegistryKey<Biome> getRegularBiome(int temperature, int humidity, MultiNoiseUtil.ParameterRange weirdness) {
@@ -363,8 +365,12 @@ public final class VanillaBiomeParameters {
         parameters.accept(Pair.of(MultiNoiseUtil.createNoiseHypercube(temperature, humidity, continentalness, erosion, MultiNoiseUtil.ParameterRange.of(0.2f, 0.9f), weirdness, offset), biome));
     }
 
-    private void method_41419(Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> consumer, MultiNoiseUtil.ParameterRange parameterRange, MultiNoiseUtil.ParameterRange parameterRange2, MultiNoiseUtil.ParameterRange parameterRange3, MultiNoiseUtil.ParameterRange parameterRange4, MultiNoiseUtil.ParameterRange parameterRange5, float f, RegistryKey<Biome> registryKey) {
-        consumer.accept(Pair.of(MultiNoiseUtil.createNoiseHypercube(parameterRange, parameterRange2, parameterRange3, parameterRange4, MultiNoiseUtil.ParameterRange.of(1.1f), parameterRange5, f), registryKey));
+    private void writeDeepDarkParameters(Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> parameters, MultiNoiseUtil.ParameterRange temperature, MultiNoiseUtil.ParameterRange humidity, MultiNoiseUtil.ParameterRange continentalness, MultiNoiseUtil.ParameterRange erosion, MultiNoiseUtil.ParameterRange weirdness, float offset, RegistryKey<Biome> biome) {
+        parameters.accept(Pair.of(MultiNoiseUtil.createNoiseHypercube(temperature, humidity, continentalness, erosion, MultiNoiseUtil.ParameterRange.of(1.1f), weirdness, offset), biome));
+    }
+
+    public static boolean method_43718(double d, double e) {
+        return d < (double)-0.225f && e > (double)0.9f;
     }
 
     public static String getWeirdnessDescription(double weirdness) {

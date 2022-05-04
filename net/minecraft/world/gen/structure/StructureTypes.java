@@ -21,6 +21,7 @@ import net.minecraft.structure.SnowyVillageData;
 import net.minecraft.structure.TaigaVillageData;
 import net.minecraft.tag.BiomeTags;
 import net.minecraft.tag.TagKey;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.Pool;
 import net.minecraft.util.collection.Weighted;
 import net.minecraft.util.registry.BuiltinRegistries;
@@ -87,7 +88,7 @@ public class StructureTypes {
     public static final RegistryEntry<StructureType> RUINED_PORTAL_MOUNTAIN = StructureTypes.register(StructureTypeKeys.RUINED_PORTAL_MOUNTAIN, new RuinedPortalStructure(StructureTypes.createConfig(BiomeTags.RUINED_PORTAL_MOUNTAIN_HAS_STRUCTURE, StructureTerrainAdaptation.NONE), List.of(new RuinedPortalStructure.Setup(RuinedPortalStructurePiece.VerticalPlacement.IN_MOUNTAIN, 1.0f, 0.2f, false, false, true, false, 0.5f), new RuinedPortalStructure.Setup(RuinedPortalStructurePiece.VerticalPlacement.ON_LAND_SURFACE, 0.5f, 0.2f, false, false, true, false, 0.5f))));
     public static final RegistryEntry<StructureType> RUINED_PORTAL_OCEAN = StructureTypes.register(StructureTypeKeys.RUINED_PORTAL_OCEAN, new RuinedPortalStructure(StructureTypes.createConfig(BiomeTags.RUINED_PORTAL_OCEAN_HAS_STRUCTURE, StructureTerrainAdaptation.NONE), new RuinedPortalStructure.Setup(RuinedPortalStructurePiece.VerticalPlacement.ON_OCEAN_FLOOR, 0.0f, 0.8f, false, false, true, false, 1.0f)));
     public static final RegistryEntry<StructureType> RUINED_PORTAL_NETHER = StructureTypes.register(StructureTypeKeys.RUINED_PORTAL_NETHER, new RuinedPortalStructure(StructureTypes.createConfig(BiomeTags.RUINED_PORTAL_NETHER_HAS_STRUCTURE, StructureTerrainAdaptation.NONE), new RuinedPortalStructure.Setup(RuinedPortalStructurePiece.VerticalPlacement.IN_NETHER, 0.5f, 0.0f, false, false, false, true, 1.0f)));
-    public static final RegistryEntry<StructureType> ANCIENT_CITY = StructureTypes.register(StructureTypeKeys.ANCIENT_CITY, new JigsawStructure(StructureTypes.createConfig(BiomeTags.ANCIENT_CITY_HAS_STRUCTURE, Arrays.stream(SpawnGroup.values()).collect(Collectors.toMap(spawnGroup -> spawnGroup, spawnGroup -> new StructureSpawns(StructureSpawns.BoundingBox.STRUCTURE, Pool.empty()))), GenerationStep.Feature.UNDERGROUND_DECORATION, StructureTerrainAdaptation.BEARD_BOX), AncientCityGenerator.CITY_CENTER, Optional.empty(), 7, ConstantHeightProvider.create(YOffset.fixed(-51)), false, Optional.empty(), 100));
+    public static final RegistryEntry<StructureType> ANCIENT_CITY = StructureTypes.register(StructureTypeKeys.ANCIENT_CITY, new JigsawStructure(StructureTypes.createConfig(BiomeTags.ANCIENT_CITY_HAS_STRUCTURE, Arrays.stream(SpawnGroup.values()).collect(Collectors.toMap(spawnGroup -> spawnGroup, spawnGroup -> new StructureSpawns(StructureSpawns.BoundingBox.STRUCTURE, Pool.empty()))), GenerationStep.Feature.UNDERGROUND_DECORATION, StructureTerrainAdaptation.BEARD_BOX), AncientCityGenerator.CITY_CENTER, Optional.of(new Identifier("city_anchor")), 7, ConstantHeightProvider.create(YOffset.fixed(-27)), false, Optional.empty(), 116));
 
     public static RegistryEntry<? extends StructureType> getDefault() {
         return MINESHAFT;

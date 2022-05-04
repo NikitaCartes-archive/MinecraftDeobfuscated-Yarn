@@ -127,7 +127,7 @@ public final class Material {
     public static final Material AMETHYST = new Builder(MapColor.PURPLE).build();
     public static final Material POWDER_SNOW = new Builder(MapColor.WHITE).notSolid().allowsMovement().build();
     public static final Material FROGSPAWN = new Builder(MapColor.WATER_BLUE).allowsMovement().lightPassesThrough().notSolid().destroyedByPiston().build();
-    public static final Material field_38977 = new Builder(MapColor.CLEAR).build();
+    public static final Material FROGLIGHT = new Builder(MapColor.CLEAR).build();
     private final MapColor color;
     private final PistonBehavior pistonBehavior;
     private final boolean blocksMovement;

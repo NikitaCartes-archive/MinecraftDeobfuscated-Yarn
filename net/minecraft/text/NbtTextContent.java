@@ -32,8 +32,8 @@ implements TextContent {
     @Nullable
     protected final NbtPathArgumentType.NbtPath path;
 
-    public NbtTextContent(String rawPath, boolean interpret, Optional<Text> separator, NbtDataSource nbtDataSource) {
-        this(rawPath, NbtTextContent.parsePath(rawPath), interpret, separator, nbtDataSource);
+    public NbtTextContent(String rawPath, boolean interpret, Optional<Text> separator, NbtDataSource dataSource) {
+        this(rawPath, NbtTextContent.parsePath(rawPath), interpret, separator, dataSource);
     }
 
     private NbtTextContent(String rawPath, @Nullable NbtPathArgumentType.NbtPath path, boolean interpret, Optional<Text> separator, NbtDataSource dataSource) {
@@ -73,12 +73,12 @@ implements TextContent {
      * Enabled force condition propagation
      * Lifted jumps to return sites
      */
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (!(object instanceof NbtTextContent)) return false;
-        NbtTextContent nbtTextContent = (NbtTextContent)object;
+        if (!(o instanceof NbtTextContent)) return false;
+        NbtTextContent nbtTextContent = (NbtTextContent)o;
         if (!this.dataSource.equals(nbtTextContent.dataSource)) return false;
         if (!this.separator.equals(nbtTextContent.separator)) return false;
         if (this.interpret != nbtTextContent.interpret) return false;

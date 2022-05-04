@@ -62,16 +62,20 @@ extends MobEntity {
                 double e = (entity.getY() - this.getY()) / (double)f;
                 double g = (entity.getZ() - this.getZ()) / (double)f;
                 this.setVelocity(this.getVelocity().add(Math.copySign(d * d * 0.4, d), Math.copySign(e * e * 0.4, e), Math.copySign(g * g * 0.4, g)));
-            } else {
+            } else if (this.shouldFollowLeash()) {
                 this.goalSelector.enableControl(Goal.Control.MOVE);
                 float h = 2.0f;
                 Vec3d vec3d = new Vec3d(entity.getX() - this.getX(), entity.getY() - this.getY(), entity.getZ() - this.getZ()).normalize().multiply(Math.max(f - 2.0f, 0.0f));
-                this.getNavigation().startMovingTo(this.getX() + vec3d.x, this.getY() + vec3d.y, this.getZ() + vec3d.z, this.getRunFromLeashSpeed());
+                this.getNavigation().startMovingTo(this.getX() + vec3d.x, this.getY() + vec3d.y, this.getZ() + vec3d.z, this.getFollowLeashSpeed());
             }
         }
     }
 
-    protected double getRunFromLeashSpeed() {
+    protected boolean shouldFollowLeash() {
+        return true;
+    }
+
+    protected double getFollowLeashSpeed() {
         return 1.0;
     }
 

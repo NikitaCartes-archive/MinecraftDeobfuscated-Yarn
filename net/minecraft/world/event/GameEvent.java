@@ -6,8 +6,10 @@ package net.minecraft.world.event;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.tag.TagKey;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.world.event.listener.GameEventListener;
 import org.jetbrains.annotations.Nullable;
 
 public class GameEvent {
@@ -90,6 +92,49 @@ public class GameEvent {
 
     public boolean isIn(TagKey<GameEvent> tag) {
         return this.registryEntry.isIn(tag);
+    }
+
+    public static final class Message
+    implements Comparable<Message> {
+        private final GameEvent event;
+        private final Vec3d emitterPos;
+        private final Emitter emitter;
+        private final GameEventListener listener;
+        private final double distanceTraveled;
+
+        public Message(GameEvent event, Vec3d emitterPos, Emitter emitter, GameEventListener listener, Vec3d listenerPos) {
+            this.event = event;
+            this.emitterPos = emitterPos;
+            this.emitter = emitter;
+            this.listener = listener;
+            this.distanceTraveled = emitterPos.squaredDistanceTo(listenerPos);
+        }
+
+        @Override
+        public int compareTo(Message message) {
+            return Double.compare(this.distanceTraveled, message.distanceTraveled);
+        }
+
+        public GameEvent getEvent() {
+            return this.event;
+        }
+
+        public Vec3d getEmitterPos() {
+            return this.emitterPos;
+        }
+
+        public Emitter getEmitter() {
+            return this.emitter;
+        }
+
+        public GameEventListener getListener() {
+            return this.listener;
+        }
+
+        @Override
+        public /* synthetic */ int compareTo(Object other) {
+            return this.compareTo((Message)other);
+        }
     }
 
     public record Emitter(@Nullable Entity sourceEntity, @Nullable BlockState affectedState) {

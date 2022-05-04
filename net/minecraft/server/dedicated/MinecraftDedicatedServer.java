@@ -3,7 +3,6 @@
  */
 package net.minecraft.server.dedicated;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
@@ -23,8 +22,8 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.function.BooleanSupplier;
-import java.util.regex.Pattern;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -52,7 +51,6 @@ import net.minecraft.server.rcon.QueryResponseHandler;
 import net.minecraft.server.rcon.RconCommandOutput;
 import net.minecraft.server.rcon.RconListener;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
 import net.minecraft.util.SystemDetails;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
@@ -74,7 +72,6 @@ implements DedicatedServer {
     static final Logger LOGGER = LogUtils.getLogger();
     private static final int field_29662 = 5000;
     private static final int field_29663 = 2;
-    private static final Pattern SHA1_PATTERN = Pattern.compile("^[a-fA-F0-9]{40}$");
     private final List<PendingServerCommand> commandQueue = Collections.synchronizedList(Lists.newArrayList());
     @Nullable
     private QueryResponseHandler queryResponseHandler;
@@ -86,15 +83,12 @@ implements DedicatedServer {
     private DedicatedServerGui gui;
     @Nullable
     private final TextFilterer filterer;
-    @Nullable
-    private final Text resourcePackPrompt;
 
     public MinecraftDedicatedServer(Thread serverThread, LevelStorage.Session session, ResourcePackManager dataPackManager, SaveLoader saveLoader, ServerPropertiesLoader propertiesLoader, DataFixer dataFixer, MinecraftSessionService sessionService, GameProfileRepository gameProfileRepo, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
         super(serverThread, session, dataPackManager, saveLoader, Proxy.NO_PROXY, dataFixer, sessionService, gameProfileRepo, userCache, worldGenerationProgressListenerFactory);
         this.propertiesLoader = propertiesLoader;
         this.rconCommandOutput = new RconCommandOutput(this);
         this.filterer = TextFilterer.load(propertiesLoader.getPropertiesHandler().textFilteringConfig);
-        this.resourcePackPrompt = MinecraftDedicatedServer.parseResourcePackPrompt(propertiesLoader);
     }
 
     @Override
@@ -132,7 +126,6 @@ implements DedicatedServer {
         }
         this.setPvpEnabled(serverPropertiesHandler.pvp);
         this.setFlightEnabled(serverPropertiesHandler.allowFlight);
-        this.setResourcePack(serverPropertiesHandler.resourcePack, this.createResourcePackHash());
         this.setMotd(serverPropertiesHandler.motd);
         super.setPlayerIdleTimeout(serverPropertiesHandler.playerIdleTimeout.get());
         this.setEnforceWhitelist(serverPropertiesHandler.enforceWhitelist);
@@ -215,29 +208,6 @@ implements DedicatedServer {
     @Override
     public boolean shouldSpawnNpcs() {
         return this.propertiesLoader.getPropertiesHandler().spawnNpcs && super.shouldSpawnNpcs();
-    }
-
-    public String createResourcePackHash() {
-        String string;
-        ServerPropertiesHandler serverPropertiesHandler = this.propertiesLoader.getPropertiesHandler();
-        if (!serverPropertiesHandler.resourcePackSha1.isEmpty()) {
-            string = serverPropertiesHandler.resourcePackSha1;
-            if (!Strings.isNullOrEmpty(serverPropertiesHandler.resourcePackHash)) {
-                LOGGER.warn("resource-pack-hash is deprecated and found along side resource-pack-sha1. resource-pack-hash will be ignored.");
-            }
-        } else if (!Strings.isNullOrEmpty(serverPropertiesHandler.resourcePackHash)) {
-            LOGGER.warn("resource-pack-hash is deprecated. Please use resource-pack-sha1 instead.");
-            string = serverPropertiesHandler.resourcePackHash;
-        } else {
-            string = "";
-        }
-        if (!string.isEmpty() && !SHA1_PATTERN.matcher(string).matches()) {
-            LOGGER.warn("Invalid sha1 for ressource-pack-sha1");
-        }
-        if (!serverPropertiesHandler.resourcePack.isEmpty() && string.isEmpty()) {
-            LOGGER.warn("You specified a resource pack without providing a sha1 hash. Pack will be updated on the client only if you change the name of the pack.");
-        }
-        return string;
     }
 
     @Override
@@ -566,33 +536,14 @@ implements DedicatedServer {
     }
 
     @Override
-    public boolean requireResourcePack() {
-        return this.propertiesLoader.getPropertiesHandler().requireResourcePack;
-    }
-
-    @Override
     @Nullable
     public GameMode getForcedGameMode() {
         return this.propertiesLoader.getPropertiesHandler().forceGameMode ? this.saveProperties.getGameMode() : null;
     }
 
-    @Nullable
-    private static Text parseResourcePackPrompt(ServerPropertiesLoader propertiesLoader) {
-        String string = propertiesLoader.getPropertiesHandler().resourcePackPrompt;
-        if (!Strings.isNullOrEmpty(string)) {
-            try {
-                return Text.Serializer.fromJson(string);
-            } catch (Exception exception) {
-                LOGGER.warn("Failed to parse resource pack prompt '{}'", (Object)string, (Object)exception);
-            }
-        }
-        return null;
-    }
-
     @Override
-    @Nullable
-    public Text getResourcePackPrompt() {
-        return this.resourcePackPrompt;
+    public Optional<MinecraftServer.ServerResourcePackProperties> getResourcePackProperties() {
+        return this.propertiesLoader.getPropertiesHandler().serverResourcePackProperties;
     }
 
     @Override

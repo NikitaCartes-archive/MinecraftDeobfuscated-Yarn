@@ -192,7 +192,7 @@ public class LootTable {
         }
 
         @Override
-        public Builder getThis() {
+        public Builder getThisFunctionConsumingBuilder() {
             return this;
         }
 
@@ -201,12 +201,12 @@ public class LootTable {
         }
 
         @Override
-        public /* synthetic */ Object getThis() {
-            return this.getThis();
+        public /* synthetic */ LootFunctionConsumingBuilder getThisFunctionConsumingBuilder() {
+            return this.getThisFunctionConsumingBuilder();
         }
 
         @Override
-        public /* synthetic */ Object apply(LootFunction.Builder function) {
+        public /* synthetic */ LootFunctionConsumingBuilder apply(LootFunction.Builder function) {
             return this.apply(function);
         }
     }

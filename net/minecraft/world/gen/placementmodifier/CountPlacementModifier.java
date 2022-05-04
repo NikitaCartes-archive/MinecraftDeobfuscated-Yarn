@@ -30,8 +30,8 @@ extends AbstractCountPlacementModifier {
     }
 
     @Override
-    protected int getCount(AbstractRandom abstractRandom, BlockPos pos) {
-        return this.count.get(abstractRandom);
+    protected int getCount(AbstractRandom random, BlockPos pos) {
+        return this.count.get(random);
     }
 
     @Override

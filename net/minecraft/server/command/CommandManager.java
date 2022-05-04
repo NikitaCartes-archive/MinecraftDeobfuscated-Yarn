@@ -60,7 +60,7 @@ import net.minecraft.server.command.LootCommand;
 import net.minecraft.server.command.MeCommand;
 import net.minecraft.server.command.MessageCommand;
 import net.minecraft.server.command.ParticleCommand;
-import net.minecraft.server.command.PlaceFeatureCommand;
+import net.minecraft.server.command.PlaceCommand;
 import net.minecraft.server.command.PlaySoundCommand;
 import net.minecraft.server.command.PublishCommand;
 import net.minecraft.server.command.RecipeCommand;
@@ -156,7 +156,7 @@ public class CommandManager {
         LootCommand.register(this.dispatcher, commandRegistryAccess);
         MessageCommand.register(this.dispatcher);
         ParticleCommand.register(this.dispatcher);
-        PlaceFeatureCommand.register(this.dispatcher);
+        PlaceCommand.register(this.dispatcher);
         PlaySoundCommand.register(this.dispatcher);
         ReloadCommand.register(this.dispatcher);
         RecipeCommand.register(this.dispatcher);

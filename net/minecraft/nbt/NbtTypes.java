@@ -18,6 +18,9 @@ import net.minecraft.nbt.NbtShort;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.nbt.NbtType;
 
+/**
+ * A class holding known NBT types.
+ */
 public class NbtTypes {
     private static final NbtType<?>[] VALUES = new NbtType[]{NbtEnd.TYPE, NbtByte.TYPE, NbtShort.TYPE, NbtInt.TYPE, NbtLong.TYPE, NbtFloat.TYPE, NbtDouble.TYPE, NbtByteArray.TYPE, NbtString.TYPE, NbtList.TYPE, NbtCompound.TYPE, NbtIntArray.TYPE, NbtLongArray.TYPE};
 

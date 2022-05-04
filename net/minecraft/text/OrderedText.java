@@ -19,7 +19,7 @@ public interface OrderedText {
     /**
      * An empty text that does not call the visitors.
      */
-    public static final OrderedText EMPTY = characterVisitor -> true;
+    public static final OrderedText EMPTY = visitor -> true;
 
     public boolean accept(CharacterVisitor var1);
 

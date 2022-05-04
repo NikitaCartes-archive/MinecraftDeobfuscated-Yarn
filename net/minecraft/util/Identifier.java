@@ -68,11 +68,26 @@ implements Comparable<Identifier> {
      * <p>Parses a string into an {@code Identifier}.
      * Takes a string of the form {@code <namespace>:<path>}, for example {@code minecraft:iron_ingot}.
      * @return resulting identifier, or {@code null} if the string couldn't be parsed as an identifier
+     * @see #of(String, String)
      */
     @Nullable
     public static Identifier tryParse(String id) {
         try {
             return new Identifier(id);
+        } catch (InvalidIdentifierException invalidIdentifierException) {
+            return null;
+        }
+    }
+
+    /**
+     * {@return the identifier from the name and path, or {@code null} if the passed values
+     * do not form a valid identifier}
+     * @see #tryParse(String)
+     */
+    @Nullable
+    public static Identifier of(String namespace, String path) {
+        try {
+            return new Identifier(namespace, path);
         } catch (InvalidIdentifierException invalidIdentifierException) {
             return null;
         }
@@ -140,6 +155,13 @@ implements Comparable<Identifier> {
 
     public String toTranslationKey() {
         return this.namespace + "." + this.path;
+    }
+
+    /**
+     * {@return the short translation key, with the default namespace omitted if present}
+     */
+    public String toShortTranslationKey() {
+        return this.namespace.equals(DEFAULT_NAMESPACE) ? this.path : this.toTranslationKey();
     }
 
     public String toTranslationKey(String prefix) {

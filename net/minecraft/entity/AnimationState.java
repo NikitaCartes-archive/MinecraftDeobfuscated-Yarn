@@ -8,10 +8,12 @@ import net.minecraft.util.Util;
 
 public class AnimationState {
     private static final long field_37417 = Long.MAX_VALUE;
-    private long startedAt = Long.MAX_VALUE;
+    private long updatedAt = Long.MAX_VALUE;
+    private long timeRunning;
 
     public void start() {
-        this.startedAt = Util.getMeasuringTimeMs();
+        this.updatedAt = Util.getMeasuringTimeMs();
+        this.timeRunning = 0L;
     }
 
     public void startIfNotRunning() {
@@ -21,11 +23,7 @@ public class AnimationState {
     }
 
     public void stop() {
-        this.startedAt = Long.MAX_VALUE;
-    }
-
-    public long getStartTime() {
-        return this.startedAt;
+        this.updatedAt = Long.MAX_VALUE;
     }
 
     public void run(Consumer<AnimationState> consumer) {
@@ -34,8 +32,23 @@ public class AnimationState {
         }
     }
 
+    public void update(boolean gamePaused, float f) {
+        if (!this.isRunning()) {
+            return;
+        }
+        long l = Util.getMeasuringTimeMs();
+        if (!gamePaused) {
+            this.timeRunning += (long)((float)(l - this.updatedAt) * f);
+        }
+        this.updatedAt = l;
+    }
+
+    public long getTimeRunning() {
+        return this.timeRunning;
+    }
+
     public boolean isRunning() {
-        return this.startedAt != Long.MAX_VALUE;
+        return this.updatedAt != Long.MAX_VALUE;
     }
 }
 

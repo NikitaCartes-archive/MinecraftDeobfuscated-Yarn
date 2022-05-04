@@ -4,12 +4,12 @@
 package net.minecraft.world.gen.feature;
 
 import java.util.List;
-import net.minecraft.block.AbstractLichenBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CaveVines;
 import net.minecraft.block.CaveVinesHeadBlock;
+import net.minecraft.block.MultifaceGrowthBlock;
 import net.minecraft.block.SmallDripleafBlock;
 import net.minecraft.state.property.Properties;
 import net.minecraft.structure.processor.StructureProcessorLists;
@@ -68,7 +68,7 @@ public class UndergroundConfiguredFeatures {
     public static final RegistryEntry<ConfiguredFeature<LargeDripstoneFeatureConfig, ?>> LARGE_DRIPSTONE = ConfiguredFeatures.register("large_dripstone", Feature.LARGE_DRIPSTONE, new LargeDripstoneFeatureConfig(30, UniformIntProvider.create(3, 19), UniformFloatProvider.create(0.4f, 2.0f), 0.33f, UniformFloatProvider.create(0.3f, 0.9f), UniformFloatProvider.create(0.4f, 1.0f), UniformFloatProvider.create(0.0f, 0.3f), 4, 0.6f));
     public static final RegistryEntry<ConfiguredFeature<SimpleRandomFeatureConfig, ?>> POINTED_DRIPSTONE = ConfiguredFeatures.register("pointed_dripstone", Feature.SIMPLE_RANDOM_SELECTOR, new SimpleRandomFeatureConfig(RegistryEntryList.of(PlacedFeatures.createEntry(Feature.POINTED_DRIPSTONE, new SmallDripstoneFeatureConfig(0.2f, 0.7f, 0.5f, 0.5f), EnvironmentScanPlacementModifier.of(Direction.DOWN, BlockPredicate.solid(), BlockPredicate.IS_AIR_OR_WATER, 12), RandomOffsetPlacementModifier.vertically(ConstantIntProvider.create(1))), PlacedFeatures.createEntry(Feature.POINTED_DRIPSTONE, new SmallDripstoneFeatureConfig(0.2f, 0.7f, 0.5f, 0.5f), EnvironmentScanPlacementModifier.of(Direction.UP, BlockPredicate.solid(), BlockPredicate.IS_AIR_OR_WATER, 12), RandomOffsetPlacementModifier.vertically(ConstantIntProvider.create(-1))))));
     public static final RegistryEntry<ConfiguredFeature<UnderwaterMagmaFeatureConfig, ?>> UNDERWATER_MAGMA = ConfiguredFeatures.register("underwater_magma", Feature.UNDERWATER_MAGMA, new UnderwaterMagmaFeatureConfig(5, 1, 0.5f));
-    private static final AbstractLichenBlock GLOW_LICHEN_BLOCK = (AbstractLichenBlock)Blocks.GLOW_LICHEN;
+    private static final MultifaceGrowthBlock GLOW_LICHEN_BLOCK = (MultifaceGrowthBlock)Blocks.GLOW_LICHEN;
     public static final RegistryEntry<ConfiguredFeature<MultifaceGrowthFeatureConfig, ?>> GLOW_LICHEN = ConfiguredFeatures.register("glow_lichen", Feature.MULTIFACE_GROWTH, new MultifaceGrowthFeatureConfig(GLOW_LICHEN_BLOCK, 20, false, true, true, 0.5f, RegistryEntryList.of(Block::getRegistryEntry, Blocks.STONE, Blocks.ANDESITE, Blocks.DIORITE, Blocks.GRANITE, Blocks.DRIPSTONE_BLOCK, Blocks.CALCITE, Blocks.TUFF, Blocks.DEEPSLATE)));
     public static final RegistryEntry<ConfiguredFeature<RootSystemFeatureConfig, ?>> ROOTED_AZALEA_TREE = ConfiguredFeatures.register("rooted_azalea_tree", Feature.ROOT_SYSTEM, new RootSystemFeatureConfig(PlacedFeatures.createEntry(TreeConfiguredFeatures.AZALEA_TREE, new PlacementModifier[0]), 3, 3, BlockTags.AZALEA_ROOT_REPLACEABLE, BlockStateProvider.of(Blocks.ROOTED_DIRT), 20, 100, 3, 2, BlockStateProvider.of(Blocks.HANGING_ROOTS), 20, 2, BlockPredicate.bothOf(BlockPredicate.anyOf(BlockPredicate.matchingBlocks(List.of(Blocks.AIR, Blocks.CAVE_AIR, Blocks.VOID_AIR, Blocks.WATER)), BlockPredicate.matchingBlockTag(BlockTags.LEAVES), BlockPredicate.matchingBlockTag(BlockTags.REPLACEABLE_PLANTS)), BlockPredicate.matchingBlockTag(Direction.DOWN.getVector(), BlockTags.AZALEA_GROWS_ON))));
     private static final WeightedBlockStateProvider CAVE_VINES_PLANT_PROVIDER = new WeightedBlockStateProvider(DataPool.builder().add(Blocks.CAVE_VINES_PLANT.getDefaultState(), 4).add((BlockState)Blocks.CAVE_VINES_PLANT.getDefaultState().with(CaveVines.BERRIES, true), 1));
@@ -87,7 +87,7 @@ public class UndergroundConfiguredFeatures {
     public static final RegistryEntry<ConfiguredFeature<GeodeFeatureConfig, ?>> AMETHYST_GEODE = ConfiguredFeatures.register("amethyst_geode", Feature.GEODE, new GeodeFeatureConfig(new GeodeLayerConfig(BlockStateProvider.of(Blocks.AIR), BlockStateProvider.of(Blocks.AMETHYST_BLOCK), BlockStateProvider.of(Blocks.BUDDING_AMETHYST), BlockStateProvider.of(Blocks.CALCITE), BlockStateProvider.of(Blocks.SMOOTH_BASALT), List.of(Blocks.SMALL_AMETHYST_BUD.getDefaultState(), Blocks.MEDIUM_AMETHYST_BUD.getDefaultState(), Blocks.LARGE_AMETHYST_BUD.getDefaultState(), Blocks.AMETHYST_CLUSTER.getDefaultState()), BlockTags.FEATURES_CANNOT_REPLACE, BlockTags.GEODE_INVALID_BLOCKS), new GeodeLayerThicknessConfig(1.7, 2.2, 3.2, 4.2), new GeodeCrackConfig(0.95, 2.0, 2), 0.35, 0.083, true, UniformIntProvider.create(4, 6), UniformIntProvider.create(3, 4), UniformIntProvider.create(1, 2), -16, 16, 0.05, 1));
     public static final RegistryEntry<ConfiguredFeature<SculkPatchFeatureConfig, ?>> SCULK_PATCH_DEEP_DARK = ConfiguredFeatures.register("sculk_patch_deep_dark", Feature.SCULK_PATCH, new SculkPatchFeatureConfig(10, 32, 64, 0, 1, ConstantIntProvider.create(0), 0.5f));
     public static final RegistryEntry<ConfiguredFeature<SculkPatchFeatureConfig, ?>> SCULK_PATCH_ANCIENT_CITY = ConfiguredFeatures.register("sculk_patch_ancient_city", Feature.SCULK_PATCH, new SculkPatchFeatureConfig(10, 32, 64, 0, 1, UniformIntProvider.create(1, 3), 0.5f));
-    private static final AbstractLichenBlock SCULK_VEIN_BLOCK = (AbstractLichenBlock)Blocks.SCULK_VEIN;
+    private static final MultifaceGrowthBlock SCULK_VEIN_BLOCK = (MultifaceGrowthBlock)Blocks.SCULK_VEIN;
     public static final RegistryEntry<ConfiguredFeature<MultifaceGrowthFeatureConfig, ?>> SCULK_VEIN = ConfiguredFeatures.register("sculk_vein", Feature.MULTIFACE_GROWTH, new MultifaceGrowthFeatureConfig(SCULK_VEIN_BLOCK, 20, true, true, true, 1.0f, RegistryEntryList.of(Block::getRegistryEntry, Blocks.STONE, Blocks.ANDESITE, Blocks.DIORITE, Blocks.GRANITE, Blocks.DRIPSTONE_BLOCK, Blocks.CALCITE, Blocks.TUFF, Blocks.DEEPSLATE)));
 
     private static RegistryEntry<PlacedFeature> createBigDripleafFeature(Direction direction) {

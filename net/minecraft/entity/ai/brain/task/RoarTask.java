@@ -4,7 +4,6 @@
 package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
-import java.util.Optional;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
@@ -37,16 +36,7 @@ extends Task<WardenEntity> {
 
     @Override
     protected boolean shouldKeepRunning(ServerWorld serverWorld, WardenEntity wardenEntity, long l) {
-        Brain<WardenEntity> brain = wardenEntity.getBrain();
-        Optional<LivingEntity> optional = brain.getOptionalMemory(MemoryModuleType.ROAR_TARGET);
-        if (optional.isPresent()) {
-            LivingEntity livingEntity = optional.get();
-            if (wardenEntity.isValidTarget(livingEntity)) {
-                return true;
-            }
-            brain.forget(MemoryModuleType.ROAR_TARGET);
-        }
-        return false;
+        return true;
     }
 
     @Override

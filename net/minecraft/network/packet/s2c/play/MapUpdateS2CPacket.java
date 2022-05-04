@@ -11,6 +11,7 @@ import net.minecraft.item.map.MapState;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 public class MapUpdateS2CPacket
@@ -35,10 +36,14 @@ implements Packet<ClientPlayPacketListener> {
         this.id = buf.readVarInt();
         this.scale = buf.readByte();
         this.locked = buf.readBoolean();
-        this.icons = buf.readBoolean() ? buf.readList(b -> {
-            MapIcon.Type type = b.readEnumConstant(MapIcon.Type.class);
-            return new MapIcon(type, b.readByte(), b.readByte(), (byte)(b.readByte() & 0xF), b.readBoolean() ? b.readText() : null);
-        }) : null;
+        this.icons = (List)buf.readNullable(buf2 -> buf2.readList(buf3 -> {
+            MapIcon.Type type = buf3.readEnumConstant(MapIcon.Type.class);
+            byte b = buf3.readByte();
+            byte c = buf3.readByte();
+            byte d = (byte)(buf3.readByte() & 0xF);
+            Text text = (Text)buf3.readNullable(PacketByteBuf::readText);
+            return new MapIcon(type, b, c, d, text);
+        }));
         short i = buf.readUnsignedByte();
         if (i > 0) {
             short j = buf.readUnsignedByte();
@@ -56,23 +61,13 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeVarInt(this.id);
         buf.writeByte(this.scale);
         buf.writeBoolean(this.locked);
-        if (this.icons != null) {
-            buf.writeBoolean(true);
-            buf.writeCollection(this.icons, (b, icon) -> {
-                b.writeEnumConstant(icon.getType());
-                b.writeByte(icon.getX());
-                b.writeByte(icon.getZ());
-                b.writeByte(icon.getRotation() & 0xF);
-                if (icon.getText() != null) {
-                    b.writeBoolean(true);
-                    b.writeText(icon.getText());
-                } else {
-                    b.writeBoolean(false);
-                }
-            });
-        } else {
-            buf.writeBoolean(false);
-        }
+        buf.writeNullable(this.icons, (buf2, icons) -> buf2.writeCollection(icons, (b, icon) -> {
+            b.writeEnumConstant(icon.getType());
+            b.writeByte(icon.getX());
+            b.writeByte(icon.getZ());
+            b.writeByte(icon.getRotation() & 0xF);
+            b.writeNullable(icon.getText(), PacketByteBuf::writeText);
+        }));
         if (this.updateData != null) {
             buf.writeByte(this.updateData.width);
             buf.writeByte(this.updateData.height);

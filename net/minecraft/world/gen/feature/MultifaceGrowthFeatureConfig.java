@@ -10,9 +10,9 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
-import net.minecraft.block.AbstractLichenBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.MultifaceGrowthBlock;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.AbstractRandom;
@@ -23,8 +23,8 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class MultifaceGrowthFeatureConfig
 implements FeatureConfig {
-    public static final Codec<MultifaceGrowthFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Registry.BLOCK.getCodec().fieldOf("block")).flatXmap(MultifaceGrowthFeatureConfig::validateBlock, DataResult::success).orElse((AbstractLichenBlock)Blocks.GLOW_LICHEN).forGetter(config -> config.lichen), ((MapCodec)Codec.intRange(1, 64).fieldOf("search_range")).orElse(10).forGetter(config -> config.searchRange), ((MapCodec)Codec.BOOL.fieldOf("can_place_on_floor")).orElse(false).forGetter(config -> config.placeOnFloor), ((MapCodec)Codec.BOOL.fieldOf("can_place_on_ceiling")).orElse(false).forGetter(config -> config.placeOnCeiling), ((MapCodec)Codec.BOOL.fieldOf("can_place_on_wall")).orElse(false).forGetter(config -> config.placeOnWalls), ((MapCodec)Codec.floatRange(0.0f, 1.0f).fieldOf("chance_of_spreading")).orElse(Float.valueOf(0.5f)).forGetter(config -> Float.valueOf(config.spreadChance)), ((MapCodec)RegistryCodecs.entryList(Registry.BLOCK_KEY).fieldOf("can_be_placed_on")).forGetter(config -> config.canPlaceOn)).apply((Applicative<MultifaceGrowthFeatureConfig, ?>)instance, MultifaceGrowthFeatureConfig::new));
-    public final AbstractLichenBlock lichen;
+    public static final Codec<MultifaceGrowthFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Registry.BLOCK.getCodec().fieldOf("block")).flatXmap(MultifaceGrowthFeatureConfig::validateBlock, DataResult::success).orElse((MultifaceGrowthBlock)Blocks.GLOW_LICHEN).forGetter(config -> config.lichen), ((MapCodec)Codec.intRange(1, 64).fieldOf("search_range")).orElse(10).forGetter(config -> config.searchRange), ((MapCodec)Codec.BOOL.fieldOf("can_place_on_floor")).orElse(false).forGetter(config -> config.placeOnFloor), ((MapCodec)Codec.BOOL.fieldOf("can_place_on_ceiling")).orElse(false).forGetter(config -> config.placeOnCeiling), ((MapCodec)Codec.BOOL.fieldOf("can_place_on_wall")).orElse(false).forGetter(config -> config.placeOnWalls), ((MapCodec)Codec.floatRange(0.0f, 1.0f).fieldOf("chance_of_spreading")).orElse(Float.valueOf(0.5f)).forGetter(config -> Float.valueOf(config.spreadChance)), ((MapCodec)RegistryCodecs.entryList(Registry.BLOCK_KEY).fieldOf("can_be_placed_on")).forGetter(config -> config.canPlaceOn)).apply((Applicative<MultifaceGrowthFeatureConfig, ?>)instance, MultifaceGrowthFeatureConfig::new));
+    public final MultifaceGrowthBlock lichen;
     public final int searchRange;
     public final boolean placeOnFloor;
     public final boolean placeOnCeiling;
@@ -33,18 +33,18 @@ implements FeatureConfig {
     public final RegistryEntryList<Block> canPlaceOn;
     private final ObjectArrayList<Direction> directions;
 
-    private static DataResult<AbstractLichenBlock> validateBlock(Block block) {
-        DataResult<AbstractLichenBlock> dataResult;
-        if (block instanceof AbstractLichenBlock) {
-            AbstractLichenBlock abstractLichenBlock = (AbstractLichenBlock)block;
-            dataResult = DataResult.success(abstractLichenBlock);
+    private static DataResult<MultifaceGrowthBlock> validateBlock(Block block) {
+        DataResult<MultifaceGrowthBlock> dataResult;
+        if (block instanceof MultifaceGrowthBlock) {
+            MultifaceGrowthBlock multifaceGrowthBlock = (MultifaceGrowthBlock)block;
+            dataResult = DataResult.success(multifaceGrowthBlock);
         } else {
             dataResult = DataResult.error("Growth block should be a multiface block");
         }
         return dataResult;
     }
 
-    public MultifaceGrowthFeatureConfig(AbstractLichenBlock lichen, int searchRange, boolean placeOnFloor, boolean placeOnCeiling, boolean placeOnWalls, float spreadChance, RegistryEntryList<Block> canPlaceOn) {
+    public MultifaceGrowthFeatureConfig(MultifaceGrowthBlock lichen, int searchRange, boolean placeOnFloor, boolean placeOnCeiling, boolean placeOnWalls, float spreadChance, RegistryEntryList<Block> canPlaceOn) {
         this.lichen = lichen;
         this.searchRange = searchRange;
         this.placeOnFloor = placeOnFloor;

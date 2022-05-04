@@ -29,37 +29,37 @@ extends FoliagePlacer {
     }
 
     @Override
-    protected void generate(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom abstractRandom, TreeFeatureConfig config, int trunkHeight, FoliagePlacer.TreeNode treeNode, int foliageHeight, int radius, int offset) {
+    protected void generate(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, TreeFeatureConfig config, int trunkHeight, FoliagePlacer.TreeNode treeNode, int foliageHeight, int radius, int offset) {
         BlockPos blockPos = treeNode.getCenter().up(offset);
         boolean bl = treeNode.isGiantTrunk();
         if (bl) {
-            this.generateSquare(world, replacer, abstractRandom, config, blockPos, radius + 2, -1, bl);
-            this.generateSquare(world, replacer, abstractRandom, config, blockPos, radius + 3, 0, bl);
-            this.generateSquare(world, replacer, abstractRandom, config, blockPos, radius + 2, 1, bl);
-            if (abstractRandom.nextBoolean()) {
-                this.generateSquare(world, replacer, abstractRandom, config, blockPos, radius, 2, bl);
+            this.generateSquare(world, replacer, random, config, blockPos, radius + 2, -1, bl);
+            this.generateSquare(world, replacer, random, config, blockPos, radius + 3, 0, bl);
+            this.generateSquare(world, replacer, random, config, blockPos, radius + 2, 1, bl);
+            if (random.nextBoolean()) {
+                this.generateSquare(world, replacer, random, config, blockPos, radius, 2, bl);
             }
         } else {
-            this.generateSquare(world, replacer, abstractRandom, config, blockPos, radius + 2, -1, bl);
-            this.generateSquare(world, replacer, abstractRandom, config, blockPos, radius + 1, 0, bl);
+            this.generateSquare(world, replacer, random, config, blockPos, radius + 2, -1, bl);
+            this.generateSquare(world, replacer, random, config, blockPos, radius + 1, 0, bl);
         }
     }
 
     @Override
-    public int getRandomHeight(AbstractRandom abstractRandom, int trunkHeight, TreeFeatureConfig config) {
+    public int getRandomHeight(AbstractRandom random, int trunkHeight, TreeFeatureConfig config) {
         return 4;
     }
 
     @Override
-    protected boolean isPositionInvalid(AbstractRandom abstractRandom, int dx, int y, int dz, int radius, boolean giantTrunk) {
+    protected boolean isPositionInvalid(AbstractRandom random, int dx, int y, int dz, int radius, boolean giantTrunk) {
         if (!(y != 0 || !giantTrunk || dx != -radius && dx < radius || dz != -radius && dz < radius)) {
             return true;
         }
-        return super.isPositionInvalid(abstractRandom, dx, y, dz, radius, giantTrunk);
+        return super.isPositionInvalid(random, dx, y, dz, radius, giantTrunk);
     }
 
     @Override
-    protected boolean isInvalidForLeaves(AbstractRandom abstractRandom, int dx, int y, int dz, int radius, boolean giantTrunk) {
+    protected boolean isInvalidForLeaves(AbstractRandom random, int dx, int y, int dz, int radius, boolean giantTrunk) {
         if (y == -1 && !giantTrunk) {
             return dx == radius && dz == radius;
         }

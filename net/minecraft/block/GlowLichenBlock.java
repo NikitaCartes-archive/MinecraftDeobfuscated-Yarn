@@ -5,11 +5,11 @@ package net.minecraft.block;
 
 import java.util.function.ToIntFunction;
 import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.AbstractLichenBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Fertilizable;
 import net.minecraft.block.LichenGrower;
+import net.minecraft.block.MultifaceGrowthBlock;
 import net.minecraft.block.Waterloggable;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -27,7 +27,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class GlowLichenBlock
-extends AbstractLichenBlock
+extends MultifaceGrowthBlock
 implements Fertilizable,
 Waterloggable {
     private static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
@@ -48,7 +48,7 @@ Waterloggable {
      * @param luminance luminance supplied when the lichen has at least one visible side
      */
     public static ToIntFunction<BlockState> getLuminanceSupplier(int luminance) {
-        return state -> AbstractLichenBlock.hasAnyDirection(state) ? luminance : 0;
+        return state -> MultifaceGrowthBlock.hasAnyDirection(state) ? luminance : 0;
     }
 
     @Override

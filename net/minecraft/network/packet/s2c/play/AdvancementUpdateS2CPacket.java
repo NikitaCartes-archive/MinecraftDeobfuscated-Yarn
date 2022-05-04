@@ -42,11 +42,11 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Override
-    public void write(PacketByteBuf buf2) {
-        buf2.writeBoolean(this.clearCurrent);
-        buf2.writeMap(this.toEarn, PacketByteBuf::writeIdentifier, (buf, task) -> task.toPacket((PacketByteBuf)buf));
-        buf2.writeCollection(this.toRemove, PacketByteBuf::writeIdentifier);
-        buf2.writeMap(this.toSetProgress, PacketByteBuf::writeIdentifier, (buf, progress) -> progress.toPacket((PacketByteBuf)buf));
+    public void write(PacketByteBuf buf) {
+        buf.writeBoolean(this.clearCurrent);
+        buf.writeMap(this.toEarn, PacketByteBuf::writeIdentifier, (buf2, task) -> task.toPacket((PacketByteBuf)buf2));
+        buf.writeCollection(this.toRemove, PacketByteBuf::writeIdentifier);
+        buf.writeMap(this.toSetProgress, PacketByteBuf::writeIdentifier, (buf2, progress) -> progress.toPacket((PacketByteBuf)buf2));
     }
 
     @Override

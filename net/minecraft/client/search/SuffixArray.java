@@ -73,11 +73,11 @@ public class SuffixArray<T> {
         int[] js = new int[i2];
         int[] ks = new int[i2];
         int[] ls = new int[i2];
-        IntComparator intComparator = (i, j) -> {
-            if (js[i] == js[j]) {
-                return Integer.compare(ks[i], ks[j]);
+        IntComparator intComparator = (a, b) -> {
+            if (js[a] == js[b]) {
+                return Integer.compare(ks[a], ks[b]);
             }
-            return Integer.compare(js[i], js[j]);
+            return Integer.compare(js[a], js[b]);
         };
         Swapper swapper = (i, j) -> {
             if (i != j) {

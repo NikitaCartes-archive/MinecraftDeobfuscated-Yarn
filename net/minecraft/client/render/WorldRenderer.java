@@ -39,12 +39,12 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.AbstractLichenBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.ComposterBlock;
+import net.minecraft.block.MultifaceGrowthBlock;
 import net.minecraft.block.PointedDripstoneBlock;
 import net.minecraft.block.SculkShriekerBlock;
 import net.minecraft.block.ShapeContext;
@@ -1594,14 +1594,12 @@ AutoCloseable {
         int m;
         float k;
         float i;
-        LivingEntity livingEntity;
-        Entity entity;
         runnable.run();
         if (bl) {
             return;
         }
         CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
-        if (cameraSubmersionType == CameraSubmersionType.POWDER_SNOW || cameraSubmersionType == CameraSubmersionType.LAVA || (entity = camera.getFocusedEntity()) instanceof LivingEntity && (livingEntity = (LivingEntity)entity).hasStatusEffect(StatusEffects.BLINDNESS)) {
+        if (cameraSubmersionType == CameraSubmersionType.POWDER_SNOW || cameraSubmersionType == CameraSubmersionType.LAVA || this.method_43788(camera)) {
             return;
         }
         if (this.client.world.getDimensionEffects().getSkyType() == DimensionEffects.SkyType.END) {
@@ -1715,6 +1713,15 @@ AutoCloseable {
         }
         RenderSystem.enableTexture();
         RenderSystem.depthMask(true);
+    }
+
+    private boolean method_43788(Camera camera) {
+        Entity entity = camera.getFocusedEntity();
+        if (entity instanceof LivingEntity) {
+            LivingEntity livingEntity = (LivingEntity)entity;
+            return livingEntity.hasStatusEffect(StatusEffects.BLINDNESS) || livingEntity.hasStatusEffect(StatusEffects.DARKNESS);
+        }
+        return false;
     }
 
     public void renderClouds(MatrixStack matrices, Matrix4f projectionMatrix, float tickDelta, double d, double e, double f) {
@@ -2467,7 +2474,7 @@ AutoCloseable {
                             ParticleUtil.spawnParticles(this.world, pos, new SculkChargeParticleEffect(ad), intProvider, direction2, supplier, g);
                         }
                     } else {
-                        for (Direction direction3 : AbstractLichenBlock.flagToDirections(b)) {
+                        for (Direction direction3 : MultifaceGrowthBlock.flagToDirections(b)) {
                             float ae = direction3 == Direction.UP ? (float)Math.PI : 0.0f;
                             double af = 0.35;
                             ParticleUtil.spawnParticles(this.world, pos, new SculkChargeParticleEffect(ae), intProvider, direction3, supplier, 0.35);

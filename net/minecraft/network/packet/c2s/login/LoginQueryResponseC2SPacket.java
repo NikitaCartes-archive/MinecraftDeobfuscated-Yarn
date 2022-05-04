@@ -22,26 +22,19 @@ implements Packet<ServerLoginPacketListener> {
 
     public LoginQueryResponseC2SPacket(PacketByteBuf buf) {
         this.queryId = buf.readVarInt();
-        if (buf.readBoolean()) {
-            int i = buf.readableBytes();
+        this.response = (PacketByteBuf)buf.readNullable(buf2 -> {
+            int i = buf2.readableBytes();
             if (i < 0 || i > 0x100000) {
                 throw new IllegalArgumentException("Payload may not be larger than 1048576 bytes");
             }
-            this.response = new PacketByteBuf(buf.readBytes(i));
-        } else {
-            this.response = null;
-        }
+            return new PacketByteBuf(buf2.readBytes(i));
+        });
     }
 
     @Override
     public void write(PacketByteBuf buf) {
         buf.writeVarInt(this.queryId);
-        if (this.response != null) {
-            buf.writeBoolean(true);
-            buf.writeBytes(this.response.copy());
-        } else {
-            buf.writeBoolean(false);
-        }
+        buf.writeNullable(this.response, (buf2, response) -> buf2.writeBytes(response.slice()));
     }
 
     @Override

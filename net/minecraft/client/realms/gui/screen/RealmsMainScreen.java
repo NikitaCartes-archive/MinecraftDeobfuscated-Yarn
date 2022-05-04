@@ -225,6 +225,9 @@ extends RealmsScreen {
         this.hasSelectionList = true;
         this.focusOn(this.realmSelectionList);
         this.popupText = MultilineText.create(this.textRenderer, (StringVisitable)POPUP_TEXT, 100);
+        this.hasUnreadNews = REALMS_DATA_FETCHER.hasUnreadNews();
+        this.newsLink = REALMS_DATA_FETCHER.newsLink();
+        this.numberOfPendingInvites = REALMS_DATA_FETCHER.getPendingInvitesCount();
     }
 
     private static boolean hasParentalConsent() {
@@ -278,7 +281,9 @@ extends RealmsScreen {
         this.configureButton.active = !this.shouldShowPopup();
         this.leaveButton.active = !this.shouldShowPopup();
         this.newsButton.active = true;
+        this.newsButton.visible = this.newsLink != null;
         this.pendingInvitesButton.active = true;
+        this.pendingInvitesButton.visible = true;
         this.showPopupButton.active = !this.shouldShowPopup();
     }
 
@@ -314,21 +319,22 @@ extends RealmsScreen {
             return;
         }
         REALMS_DATA_FETCHER.init();
+        boolean bl = false;
         if (REALMS_DATA_FETCHER.isFetchedSinceLastTry(RealmsDataFetcher.Task.SERVER_LIST)) {
-            boolean bl;
+            boolean bl2;
             List<RealmsServer> list = REALMS_DATA_FETCHER.getServers();
             RealmsServer realmsServer = this.findServer();
             RealmSelectionListEntry entry = null;
             this.realmSelectionList.clear();
-            boolean bl2 = bl = !this.hasFetchedServers;
-            if (bl) {
+            boolean bl3 = bl2 = !this.hasFetchedServers;
+            if (bl2) {
                 this.hasFetchedServers = true;
             }
             if (list != null) {
-                boolean bl22 = false;
+                boolean bl32 = false;
                 for (RealmsServer realmsServer2 : list) {
                     if (!this.isOwnedNotExpired(realmsServer2)) continue;
-                    bl22 = true;
+                    bl32 = true;
                 }
                 this.realmsServers = list;
                 if (this.shouldShowMessageInList()) {
@@ -340,13 +346,13 @@ extends RealmsScreen {
                     if (realmsServer == null || realmsServer.id != realmsServer2.id) continue;
                     entry = realmSelectionListEntry;
                 }
-                if (!regionsPinged && bl22) {
+                if (!regionsPinged && bl32) {
                     regionsPinged = true;
                     this.pingRegions();
                 }
             }
-            if (bl) {
-                this.updateButtonStates(null);
+            if (bl2) {
+                bl = true;
             } else {
                 this.realmSelectionList.setSelected(entry);
             }
@@ -358,12 +364,12 @@ extends RealmsScreen {
             }
         }
         if (REALMS_DATA_FETCHER.isFetchedSinceLastTry(RealmsDataFetcher.Task.TRIAL_AVAILABLE) && !this.createdTrial) {
-            boolean bl3 = REALMS_DATA_FETCHER.isTrialAvailable();
-            if (bl3 != this.trialsAvailable && this.shouldShowPopup()) {
-                this.trialsAvailable = bl3;
+            boolean bl4 = REALMS_DATA_FETCHER.isTrialAvailable();
+            if (bl4 != this.trialsAvailable && this.shouldShowPopup()) {
+                this.trialsAvailable = bl4;
                 this.showingPopup = false;
             } else {
-                this.trialsAvailable = bl3;
+                this.trialsAvailable = bl4;
             }
         }
         if (REALMS_DATA_FETCHER.isFetchedSinceLastTry(RealmsDataFetcher.Task.LIVE_STATS)) {
@@ -379,10 +385,14 @@ extends RealmsScreen {
         if (REALMS_DATA_FETCHER.isFetchedSinceLastTry(RealmsDataFetcher.Task.UNREAD_NEWS)) {
             this.hasUnreadNews = REALMS_DATA_FETCHER.hasUnreadNews();
             this.newsLink = REALMS_DATA_FETCHER.newsLink();
+            bl = true;
         }
         REALMS_DATA_FETCHER.markClean();
         if (this.shouldShowPopup()) {
             ++this.carouselTick;
+        }
+        if (bl) {
+            this.updateButtonStates(null);
         }
         if (this.showPopupButton != null) {
             this.showPopupButton.active = this.showPopupButton.visible = this.shouldShowPopupButton();

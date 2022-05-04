@@ -29,7 +29,7 @@ import net.minecraft.client.option.HotbarStorage;
 import net.minecraft.client.option.HotbarStorageEntry;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.search.SearchManager;
-import net.minecraft.client.search.SearchableContainer;
+import net.minecraft.client.search.SearchProvider;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.enchantment.Enchantment;
@@ -331,15 +331,15 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
                 item.appendStacks(ItemGroup.SEARCH, ((CreativeScreenHandler)this.handler).itemList);
             }
         } else {
-            SearchableContainer<ItemStack> searchable;
+            SearchProvider<ItemStack> searchProvider;
             if (string.startsWith("#")) {
                 string = string.substring(1);
-                searchable = this.client.getSearchableContainer(SearchManager.ITEM_TAG);
+                searchProvider = this.client.getSearchProvider(SearchManager.ITEM_TAG);
                 this.searchForTags(string);
             } else {
-                searchable = this.client.getSearchableContainer(SearchManager.ITEM_TOOLTIP);
+                searchProvider = this.client.getSearchProvider(SearchManager.ITEM_TOOLTIP);
             }
-            ((CreativeScreenHandler)this.handler).itemList.addAll(searchable.findAll(string.toLowerCase(Locale.ROOT)));
+            ((CreativeScreenHandler)this.handler).itemList.addAll(searchProvider.findAll(string.toLowerCase(Locale.ROOT)));
         }
         this.scrollPosition = 0.0f;
         ((CreativeScreenHandler)this.handler).scrollItems(0.0f);

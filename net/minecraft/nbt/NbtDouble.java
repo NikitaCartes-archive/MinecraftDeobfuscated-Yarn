@@ -15,11 +15,15 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
 import net.minecraft.util.math.MathHelper;
 
 /**
- * Represents an NBT 64-bit floating-point number.
+ * Represents an NBT 64-bit floating-point number. Its type is {@value NbtElement#DOUBLE_TYPE}.
+ * Instances are immutable.
  */
 public class NbtDouble
 extends AbstractNbtNumber {
     private static final int SIZE = 128;
+    /**
+     * The NBT double representing {@code 0.0}.
+     */
     public static final NbtDouble ZERO = new NbtDouble(0.0);
     public static final NbtType<NbtDouble> TYPE = new NbtType.OfFixedSize<NbtDouble>(){
 
@@ -65,6 +69,9 @@ extends AbstractNbtNumber {
         this.value = value;
     }
 
+    /**
+     * {@return the NBT double from {@code value}}
+     */
     public static NbtDouble of(double value) {
         if (value == 0.0) {
             return ZERO;

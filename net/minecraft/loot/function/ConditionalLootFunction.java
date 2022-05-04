@@ -114,7 +114,7 @@ implements LootFunction {
         }
 
         @Override
-        public final T getThis() {
+        public final T getThisConditionConsumingBuilder() {
             return this.getThisBuilder();
         }
 
@@ -125,12 +125,12 @@ implements LootFunction {
         }
 
         @Override
-        public /* synthetic */ Object getThis() {
-            return this.getThis();
+        public /* synthetic */ LootConditionConsumingBuilder getThisConditionConsumingBuilder() {
+            return this.getThisConditionConsumingBuilder();
         }
 
         @Override
-        public /* synthetic */ Object conditionally(LootCondition.Builder condition) {
+        public /* synthetic */ LootConditionConsumingBuilder conditionally(LootCondition.Builder condition) {
             return this.conditionally(condition);
         }
     }

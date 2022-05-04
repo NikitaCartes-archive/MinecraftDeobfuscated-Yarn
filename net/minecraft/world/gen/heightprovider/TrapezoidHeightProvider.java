@@ -47,7 +47,7 @@ extends HeightProvider {
     }
 
     @Override
-    public int get(AbstractRandom abstractRandom, HeightContext context) {
+    public int get(AbstractRandom random, HeightContext context) {
         int j;
         int i = this.minOffset.getY(context);
         if (i > (j = this.maxOffset.getY(context))) {
@@ -56,11 +56,11 @@ extends HeightProvider {
         }
         int k = j - i;
         if (this.plateau >= k) {
-            return MathHelper.nextBetween(abstractRandom, i, j);
+            return MathHelper.nextBetween(random, i, j);
         }
         int l = (k - this.plateau) / 2;
         int m = k - l;
-        return i + MathHelper.nextBetween(abstractRandom, 0, m) + MathHelper.nextBetween(abstractRandom, 0, l);
+        return i + MathHelper.nextBetween(random, 0, m) + MathHelper.nextBetween(random, 0, l);
     }
 
     @Override

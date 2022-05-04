@@ -21,8 +21,20 @@ implements NbtElement {
     @Override
     public abstract T remove(int var1);
 
+    /**
+     * Sets the element at {@code index} to {@code element}. Does nothing if
+     * the types were incompatible.
+     * 
+     * @return whether the element was actually set
+     */
     public abstract boolean setElement(int var1, NbtElement var2);
 
+    /**
+     * Inserts {@code element} at {@code index}. Does nothing if the
+     * types were incompatible.
+     * 
+     * @return whether the element was actually added
+     */
     public abstract boolean addElement(int var1, NbtElement var2);
 
     /**

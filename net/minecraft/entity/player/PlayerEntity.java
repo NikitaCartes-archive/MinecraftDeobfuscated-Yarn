@@ -77,7 +77,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.network.ChatMessageSender;
+import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -172,16 +172,19 @@ extends LivingEntity {
     protected final float field_7509 = 0.02f;
     private int lastPlayedLevelUpSoundTime;
     private final GameProfile gameProfile;
+    @Nullable
+    private final PlayerPublicKey publicKey;
     private boolean reducedDebugInfo;
     private ItemStack selectedItem = ItemStack.EMPTY;
     private final ItemCooldownManager itemCooldownManager = this.createCooldownManager();
     @Nullable
     public FishingBobberEntity fishHook;
 
-    public PlayerEntity(World world, BlockPos pos, float yaw, GameProfile profile) {
+    public PlayerEntity(World world, BlockPos pos, float yaw, GameProfile profile, @Nullable PlayerPublicKey publicKey) {
         super((EntityType<? extends LivingEntity>)EntityType.PLAYER, world);
         this.setUuid(DynamicSerializableUuid.getUuidFromProfile(profile));
         this.gameProfile = profile;
+        this.publicKey = publicKey;
         this.playerScreenHandler = new PlayerScreenHandler(this.inventory, !world.isClient, this);
         this.currentScreenHandler = this.playerScreenHandler;
         this.refreshPositionAndAngles((double)pos.getX() + 0.5, pos.getY() + 1, (double)pos.getZ() + 0.5, yaw, 0.0f);
@@ -1191,6 +1194,11 @@ extends LivingEntity {
         return this.gameProfile;
     }
 
+    @Nullable
+    public PlayerPublicKey getPublicKey() {
+        return this.publicKey;
+    }
+
     public PlayerInventory getInventory() {
         return this.inventory;
     }
@@ -1210,10 +1218,6 @@ extends LivingEntity {
      * @param cursorStack the item stack on the player's cursor
      */
     public void onPickupSlotClick(ItemStack cursorStack, ItemStack slotStack, ClickType clickType) {
-    }
-
-    public ChatMessageSender asChatMessageSender() {
-        return new ChatMessageSender(this.getUuid(), this.getDisplayName());
     }
 
     /**

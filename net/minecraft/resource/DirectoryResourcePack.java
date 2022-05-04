@@ -113,7 +113,12 @@ extends AbstractFileResourcePack {
                 }
                 if (file2.getName().endsWith(".mcmeta")) continue;
                 try {
-                    Identifier identifier = new Identifier(namespace, rootDirectory + file2.getName());
+                    String string = rootDirectory + file2.getName();
+                    Identifier identifier = Identifier.of(namespace, string);
+                    if (identifier == null) {
+                        LOGGER.warn("Invalid path in datapack: {}:{}, ignoring", (Object)namespace, (Object)string);
+                        continue;
+                    }
                     if (!allowedPathPredicate.test(identifier)) continue;
                     foundIds.add(identifier);
                 } catch (InvalidIdentifierException invalidIdentifierException) {

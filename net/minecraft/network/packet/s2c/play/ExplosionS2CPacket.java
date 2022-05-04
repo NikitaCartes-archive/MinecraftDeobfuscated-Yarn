@@ -58,10 +58,10 @@ implements Packet<ClientPlayPacketListener> {
         int i = MathHelper.floor(this.x);
         int j = MathHelper.floor(this.y);
         int k = MathHelper.floor(this.z);
-        this.affectedBlocks = buf.readList(packetByteBuf -> {
-            int l = packetByteBuf.readByte() + i;
-            int m = packetByteBuf.readByte() + j;
-            int n = packetByteBuf.readByte() + k;
+        this.affectedBlocks = buf.readList(buf2 -> {
+            int l = buf2.readByte() + i;
+            int m = buf2.readByte() + j;
+            int n = buf2.readByte() + k;
             return new BlockPos(l, m, n);
         });
         this.playerVelocityX = buf.readFloat();
@@ -70,25 +70,25 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Override
-    public void write(PacketByteBuf buf2) {
-        buf2.writeFloat((float)this.x);
-        buf2.writeFloat((float)this.y);
-        buf2.writeFloat((float)this.z);
-        buf2.writeFloat(this.radius);
+    public void write(PacketByteBuf buf) {
+        buf.writeFloat((float)this.x);
+        buf.writeFloat((float)this.y);
+        buf.writeFloat((float)this.z);
+        buf.writeFloat(this.radius);
         int i = MathHelper.floor(this.x);
         int j = MathHelper.floor(this.y);
         int k = MathHelper.floor(this.z);
-        buf2.writeCollection(this.affectedBlocks, (buf, pos) -> {
+        buf.writeCollection(this.affectedBlocks, (buf2, pos) -> {
             int l = pos.getX() - i;
             int m = pos.getY() - j;
             int n = pos.getZ() - k;
-            buf.writeByte(l);
-            buf.writeByte(m);
-            buf.writeByte(n);
+            buf2.writeByte(l);
+            buf2.writeByte(m);
+            buf2.writeByte(n);
         });
-        buf2.writeFloat(this.playerVelocityX);
-        buf2.writeFloat(this.playerVelocityY);
-        buf2.writeFloat(this.playerVelocityZ);
+        buf.writeFloat(this.playerVelocityX);
+        buf.writeFloat(this.playerVelocityY);
+        buf.writeFloat(this.playerVelocityZ);
     }
 
     @Override

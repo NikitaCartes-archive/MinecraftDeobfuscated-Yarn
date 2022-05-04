@@ -14,7 +14,8 @@ import net.minecraft.nbt.scanner.NbtScanner;
 import net.minecraft.nbt.visitor.NbtElementVisitor;
 
 /**
- * Represents an NBT 64-bit integer.
+ * Represents an NBT 64-bit integer. Its type is {@value NbtElement#LONG_TYPE}.
+ * Instances are immutable.
  */
 public class NbtLong
 extends AbstractNbtNumber {
@@ -63,6 +64,9 @@ extends AbstractNbtNumber {
         this.value = value;
     }
 
+    /**
+     * {@return the NBT long from {@code value}}
+     */
     public static NbtLong of(long value) {
         if (value >= -128L && value <= 1024L) {
             return Cache.VALUES[(int)value - -128];

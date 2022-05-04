@@ -82,12 +82,12 @@ implements TextContent {
      * Enabled force condition propagation
      * Lifted jumps to return sites
      */
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (!(object instanceof SelectorTextContent)) return false;
-        SelectorTextContent selectorTextContent = (SelectorTextContent)object;
+        if (!(o instanceof SelectorTextContent)) return false;
+        SelectorTextContent selectorTextContent = (SelectorTextContent)o;
         if (!this.pattern.equals(selectorTextContent.pattern)) return false;
         if (!this.separator.equals(selectorTextContent.separator)) return false;
         return true;

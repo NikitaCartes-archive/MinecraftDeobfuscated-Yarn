@@ -34,7 +34,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.PositionSource;
 import net.minecraft.world.event.listener.GameEventListener;
-import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class GameEventDebugRenderer
@@ -164,7 +163,7 @@ implements DebugRenderer.Renderer {
         }
 
         @Override
-        public boolean listen(ServerWorld world, GameEvent event, @Nullable GameEvent.Emitter emitter, Vec3d pos) {
+        public boolean listen(ServerWorld world, GameEvent.Message event) {
             return false;
         }
     }

@@ -14,7 +14,7 @@ import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.option.NarratorMode;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.toast.ToastManager;
-import net.minecraft.network.ChatMessageSender;
+import net.minecraft.network.MessageSender;
 import net.minecraft.network.MessageType;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
@@ -29,7 +29,7 @@ implements ClientChatListener {
     private final Narrator narrator = Narrator.getNarrator();
 
     @Override
-    public void onChatMessage(MessageType type, Text message, @Nullable ChatMessageSender sender) {
+    public void onChatMessage(MessageType type, Text message, @Nullable MessageSender sender) {
         NarratorMode narratorMode = NarratorManager.getNarratorOption();
         if (narratorMode == NarratorMode.OFF) {
             return;
@@ -38,19 +38,14 @@ implements ClientChatListener {
             this.debugPrintMessage(message.getString());
             return;
         }
-        if (narratorMode == NarratorMode.ALL || narratorMode == NarratorMode.CHAT && type == MessageType.CHAT || narratorMode == NarratorMode.SYSTEM && type == MessageType.SYSTEM) {
-            Text text = this.toNarratedMessage(type, message, sender);
-            String string = text.getString();
-            this.debugPrintMessage(string);
-            this.narrator.say(string, type.interruptsNarration());
-        }
-    }
-
-    private Text toNarratedMessage(MessageType type, Text message, @Nullable ChatMessageSender sender) {
-        if (sender != null && type == MessageType.CHAT) {
-            return Text.translatable("chat.type.text.narrate", sender.name(), message);
-        }
-        return message;
+        type.narration().ifPresent(narrationRule -> {
+            if (narratorMode.shouldNarrate(narrationRule.priority())) {
+                Text text2 = narrationRule.apply(message, sender);
+                String string = text2.getString();
+                this.debugPrintMessage(string);
+                this.narrator.say(string, narrationRule.priority().shouldInterrupt());
+            }
+        });
     }
 
     public void narrate(Text text) {

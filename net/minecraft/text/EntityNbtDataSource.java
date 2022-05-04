@@ -52,12 +52,12 @@ public record EntityNbtDataSource(String rawSelector, @Nullable EntitySelector s
      * Lifted jumps to return sites
      */
     @Override
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (!(object instanceof EntityNbtDataSource)) return false;
-        EntityNbtDataSource entityNbtDataSource = (EntityNbtDataSource)object;
+        if (!(o instanceof EntityNbtDataSource)) return false;
+        EntityNbtDataSource entityNbtDataSource = (EntityNbtDataSource)o;
         if (!this.rawSelector.equals(entityNbtDataSource.rawSelector)) return false;
         return true;
     }

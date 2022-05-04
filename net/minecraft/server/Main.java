@@ -3,6 +3,7 @@
  */
 package net.minecraft.server;
 
+import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
@@ -178,7 +179,7 @@ public class Main {
             final MinecraftDedicatedServer minecraftDedicatedServer = MinecraftServer.startServer(thread -> {
                 boolean bl;
                 MinecraftDedicatedServer minecraftDedicatedServer = new MinecraftDedicatedServer((Thread)thread, session, resourcePackManager, saveLoader, serverPropertiesLoader, Schemas.getFixer(), minecraftSessionService, gameProfileRepository, userCache, WorldGenerationProgressLogger::new);
-                minecraftDedicatedServer.setSinglePlayerName((String)optionSet.valueOf(optionSpec9));
+                minecraftDedicatedServer.setHostProfile(optionSet.has(optionSpec9) ? new GameProfile(null, (String)optionSet.valueOf(optionSpec9)) : null);
                 minecraftDedicatedServer.setServerPort((Integer)optionSet.valueOf(optionSpec12));
                 minecraftDedicatedServer.setDemo(optionSet.has(optionSpec3));
                 minecraftDedicatedServer.setServerId((String)optionSet.valueOf(optionSpec13));

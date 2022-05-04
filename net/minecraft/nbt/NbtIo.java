@@ -30,7 +30,18 @@ import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * A set of utility functions for reading, writing, and scanning NBT files.
+ */
 public class NbtIo {
+    /**
+     * Reads an NBT compound from Gzip-compressed {@code file}.
+     * 
+     * @return the NBT compound from the file
+     * @throws IOException if the IO operation fails or if the root NBT element is
+     * not a compound
+     * @see #readCompressed(InputStream)
+     */
     public static NbtCompound readCompressed(File file) throws IOException {
         try (FileInputStream inputStream = new FileInputStream(file);){
             NbtCompound nbtCompound = NbtIo.readCompressed(inputStream);
@@ -45,6 +56,14 @@ public class NbtIo {
         return new DataInputStream(new FixedBufferInputStream(new GZIPInputStream(stream)));
     }
 
+    /**
+     * Reads an NBT compound from Gzip-compressed {@code stream}.
+     * 
+     * @return the NBT compound from the stream
+     * @throws IOException if the IO operation fails or if the root NBT element is
+     * not a compound
+     * @see #readCompressed(File)
+     */
     public static NbtCompound readCompressed(InputStream stream) throws IOException {
         try (DataInputStream dataInputStream = NbtIo.decompress(stream);){
             NbtCompound nbtCompound = NbtIo.read(dataInputStream, NbtTagSizeTracker.EMPTY);
@@ -59,6 +78,7 @@ public class NbtIo {
      * to call the appropriate method of the {@link NbtScanner} subclasses, such as
      * {@link net.minecraft.nbt.scanner.NbtCollector#getRoot()}.
      * 
+     * @throws IOException if the IO operation fails
      * @see #scanCompressed(InputStream, NbtScanner)
      */
     public static void scanCompressed(File file, NbtScanner scanner) throws IOException {
@@ -74,6 +94,7 @@ public class NbtIo {
      * to call the appropriate method of the {@link NbtScanner} subclasses, such as
      * {@link net.minecraft.nbt.scanner.NbtCollector#getRoot()}.
      * 
+     * @throws IOException if the IO operation fails
      * @see #scanCompressed(File, NbtScanner)
      */
     public static void scanCompressed(InputStream stream, NbtScanner scanner) throws IOException {
@@ -82,25 +103,50 @@ public class NbtIo {
         }
     }
 
-    public static void writeCompressed(NbtCompound compound, File file) throws IOException {
+    /**
+     * Writes the Gzip-compressed {@code nbt} to {@code file}.
+     * 
+     * @throws IOException if the IO operation fails
+     * @see #writeCompressed(NbtCompound, OutputStream)
+     */
+    public static void writeCompressed(NbtCompound nbt, File file) throws IOException {
         try (FileOutputStream outputStream = new FileOutputStream(file);){
-            NbtIo.writeCompressed(compound, outputStream);
+            NbtIo.writeCompressed(nbt, outputStream);
         }
     }
 
-    public static void writeCompressed(NbtCompound compound, OutputStream stream) throws IOException {
+    /**
+     * Writes the Gzip-compressed {@code nbt} to {@code stream}.
+     * 
+     * @throws IOException if the IO operation fails
+     * @see #writeCompressed(NbtCompound, File)
+     */
+    public static void writeCompressed(NbtCompound nbt, OutputStream stream) throws IOException {
         try (DataOutputStream dataOutputStream = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(stream)));){
-            NbtIo.write(compound, (DataOutput)dataOutputStream);
+            NbtIo.write(nbt, (DataOutput)dataOutputStream);
         }
     }
 
-    public static void write(NbtCompound compound, File file) throws IOException {
+    /**
+     * Writes the {@code nbt} to {@code file}.
+     * 
+     * @throws IOException if the IO operation fails
+     * @see #write(NbtCompound, DataOutput)
+     */
+    public static void write(NbtCompound nbt, File file) throws IOException {
         try (FileOutputStream fileOutputStream = new FileOutputStream(file);
              DataOutputStream dataOutputStream = new DataOutputStream(fileOutputStream);){
-            NbtIo.write(compound, (DataOutput)dataOutputStream);
+            NbtIo.write(nbt, (DataOutput)dataOutputStream);
         }
     }
 
+    /**
+     * Reads an NBT compound from {@code file}.
+     * 
+     * @return the NBT compound from the file, or {@code null} if the file does not exist
+     * @throws IOException if the IO operation fails or if the root NBT element is
+     * not a compound
+     */
     @Nullable
     public static NbtCompound read(File file) throws IOException {
         if (!file.exists()) {
@@ -115,10 +161,24 @@ public class NbtIo {
         }
     }
 
+    /**
+     * Reads an NBT compound from {@code input}.
+     * 
+     * @return the NBT compound from the input
+     * @throws IOException if the IO operation fails or if the root NBT element is
+     * not a compound
+     */
     public static NbtCompound read(DataInput input) throws IOException {
         return NbtIo.read(input, NbtTagSizeTracker.EMPTY);
     }
 
+    /**
+     * Reads an NBT compound from {@code input}.
+     * 
+     * @return the NBT compound from the input
+     * @throws IOException if the IO operation fails or if the root NBT element is
+     * not a compound
+     */
     public static NbtCompound read(DataInput input, NbtTagSizeTracker tracker) throws IOException {
         NbtElement nbtElement = NbtIo.read(input, 0, tracker);
         if (nbtElement instanceof NbtCompound) {
@@ -127,10 +187,25 @@ public class NbtIo {
         throw new IOException("Root tag must be a named compound tag");
     }
 
-    public static void write(NbtCompound compound, DataOutput output) throws IOException {
-        NbtIo.write((NbtElement)compound, output);
+    /**
+     * Writes the {@code nbt} to {@code file}.
+     * 
+     * @throws IOException if the IO operation fails
+     * @see #write(NbtCompound, File)
+     */
+    public static void write(NbtCompound nbt, DataOutput output) throws IOException {
+        NbtIo.write((NbtElement)nbt, output);
     }
 
+    /**
+     * Scans the NBT input using {@code scanner}.
+     * 
+     * @apiNote This method does not return the scan result; the user is expected
+     * to call the appropriate method of the {@link NbtScanner} subclasses, such as
+     * {@link net.minecraft.nbt.scanner.NbtCollector#getRoot()}.
+     * 
+     * @throws IOException if the IO operation fails
+     */
     public static void scan(DataInput input, NbtScanner scanner) throws IOException {
         NbtType<?> nbtType = NbtTypes.byId(input.readByte());
         if (nbtType == NbtEnd.TYPE) {
@@ -155,13 +230,13 @@ public class NbtIo {
         }
     }
 
-    public static void write(NbtElement element, DataOutput output) throws IOException {
-        output.writeByte(element.getType());
-        if (element.getType() == 0) {
+    public static void write(NbtElement nbt, DataOutput output) throws IOException {
+        output.writeByte(nbt.getType());
+        if (nbt.getType() == 0) {
             return;
         }
         output.writeUTF("");
-        element.write(output);
+        nbt.write(output);
     }
 
     private static NbtElement read(DataInput input, int depth, NbtTagSizeTracker tracker) throws IOException {

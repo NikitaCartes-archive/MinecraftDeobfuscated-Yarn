@@ -49,8 +49,7 @@ implements Packet<ClientPlayPacketListener> {
         this.amplifier = buf.readByte();
         this.duration = buf.readVarInt();
         this.flags = buf.readByte();
-        boolean bl = buf.readBoolean();
-        this.factorCalculationData = bl ? buf.decode(StatusEffectInstance.FactorCalculationData.CODEC) : null;
+        this.factorCalculationData = (StatusEffectInstance.FactorCalculationData)buf.readNullable(buf2 -> buf2.decode(StatusEffectInstance.FactorCalculationData.CODEC));
     }
 
     @Override
@@ -60,11 +59,7 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeByte(this.amplifier);
         buf.writeVarInt(this.duration);
         buf.writeByte(this.flags);
-        boolean bl = this.factorCalculationData != null;
-        buf.writeBoolean(bl);
-        if (bl) {
-            buf.encode(StatusEffectInstance.FactorCalculationData.CODEC, this.factorCalculationData);
-        }
+        buf.writeNullable(this.factorCalculationData, (buf2, factorCalculationData) -> buf2.encode(StatusEffectInstance.FactorCalculationData.CODEC, factorCalculationData));
     }
 
     public boolean isPermanent() {

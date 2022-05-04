@@ -107,7 +107,7 @@ LunarWorldView {
     /**
      * Emits an game event.
      */
-    public void emitGameEvent(GameEvent var1, Vec3d var2, @Nullable GameEvent.Emitter var3);
+    public void emitGameEvent(GameEvent var1, Vec3d var2, GameEvent.Emitter var3);
 
     default public void emitGameEvent(@Nullable Entity entity, GameEvent event, Vec3d pos) {
         this.emitGameEvent(event, pos, new GameEvent.Emitter(entity, null));

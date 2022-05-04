@@ -24,15 +24,12 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     public SelectAdvancementTabS2CPacket(PacketByteBuf buf) {
-        this.tabId = buf.readBoolean() ? buf.readIdentifier() : null;
+        this.tabId = (Identifier)buf.readNullable(PacketByteBuf::readIdentifier);
     }
 
     @Override
     public void write(PacketByteBuf buf) {
-        buf.writeBoolean(this.tabId != null);
-        if (this.tabId != null) {
-            buf.writeIdentifier(this.tabId);
-        }
+        buf.writeNullable(this.tabId, PacketByteBuf::writeIdentifier);
     }
 
     @Nullable

@@ -37,7 +37,7 @@ extends Task<E> {
             return false;
         }
         LookTarget lookTarget = optional.get();
-        return lookTarget.isSeenBy((LivingEntity)entity) && !((Entity)entity).getPos().isInRange(lookTarget.getPos(), this.searchRange);
+        return !((Entity)entity).getPos().isInRange(lookTarget.getPos(), this.searchRange);
     }
 
     @Override

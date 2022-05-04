@@ -3,6 +3,8 @@
  */
 package net.minecraft.data.server;
 
+import java.util.Comparator;
+import java.util.Map;
 import java.util.function.Consumer;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementFrame;
@@ -115,7 +117,7 @@ implements Consumer<Consumer<Advancement>> {
     }
 
     private Advancement.Builder requireAllCatsTamed(Advancement.Builder builder) {
-        Registry.CAT_VARIANT.getEntrySet().forEach(entry -> builder.criterion(((RegistryKey)entry.getKey()).getValue().toString(), TameAnimalCriterion.Conditions.create(EntityPredicate.Builder.create().typeSpecific(TypeSpecificPredicate.cat((CatVariant)entry.getValue())).build())));
+        Registry.CAT_VARIANT.getEntrySet().stream().sorted(Map.Entry.comparingByKey(Comparator.comparing(RegistryKey::getValue))).forEach(entry -> builder.criterion(((RegistryKey)entry.getKey()).getValue().toString(), TameAnimalCriterion.Conditions.create(EntityPredicate.Builder.create().typeSpecific(TypeSpecificPredicate.cat((CatVariant)entry.getValue())).build())));
         return builder;
     }
 
