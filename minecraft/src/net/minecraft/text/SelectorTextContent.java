@@ -71,11 +71,11 @@ public class SelectorTextContent implements TextContent {
 		return visitor.accept(this.pattern);
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
 		} else {
-			if (object instanceof SelectorTextContent selectorTextContent
+			if (o instanceof SelectorTextContent selectorTextContent
 				&& this.pattern.equals(selectorTextContent.pattern)
 				&& this.separator.equals(selectorTextContent.separator)) {
 				return true;

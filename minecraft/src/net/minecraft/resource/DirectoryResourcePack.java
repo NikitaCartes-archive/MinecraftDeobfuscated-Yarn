@@ -105,12 +105,15 @@ public class DirectoryResourcePack extends AbstractFileResourcePack {
 					this.findFiles(file2, namespace, foundIds, rootDirectory + file2.getName() + "/", allowedPathPredicate);
 				} else if (!file2.getName().endsWith(".mcmeta")) {
 					try {
-						Identifier identifier = new Identifier(namespace, rootDirectory + file2.getName());
-						if (allowedPathPredicate.test(identifier)) {
+						String string = rootDirectory + file2.getName();
+						Identifier identifier = Identifier.of(namespace, string);
+						if (identifier == null) {
+							LOGGER.warn("Invalid path in datapack: {}:{}, ignoring", namespace, string);
+						} else if (allowedPathPredicate.test(identifier)) {
 							foundIds.add(identifier);
 						}
-					} catch (InvalidIdentifierException var12) {
-						LOGGER.error(var12.getMessage());
+					} catch (InvalidIdentifierException var13) {
+						LOGGER.error(var13.getMessage());
 					}
 				}
 			}

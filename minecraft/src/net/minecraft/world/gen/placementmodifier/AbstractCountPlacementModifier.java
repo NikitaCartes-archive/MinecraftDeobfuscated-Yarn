@@ -7,10 +7,10 @@ import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.gen.feature.FeaturePlacementContext;
 
 public abstract class AbstractCountPlacementModifier extends PlacementModifier {
-	protected abstract int getCount(AbstractRandom abstractRandom, BlockPos pos);
+	protected abstract int getCount(AbstractRandom random, BlockPos pos);
 
 	@Override
-	public Stream<BlockPos> getPositions(FeaturePlacementContext context, AbstractRandom abstractRandom, BlockPos pos) {
-		return IntStream.range(0, this.getCount(abstractRandom, pos)).mapToObj(i -> pos);
+	public Stream<BlockPos> getPositions(FeaturePlacementContext context, AbstractRandom random, BlockPos pos) {
+		return IntStream.range(0, this.getCount(random, pos)).mapToObj(i -> pos);
 	}
 }

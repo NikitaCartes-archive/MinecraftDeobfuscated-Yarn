@@ -4,11 +4,11 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
+import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -115,46 +115,43 @@ public class BlockStateModelGenerator {
 	 * function that creates a block state variant for connection on that
 	 * direction with a given connection model.
 	 */
-	public static final Map<BooleanProperty, Function<Identifier, BlockStateVariant>> CONNECTION_VARIANT_FUNCTIONS = Util.make(
-		Maps.newHashMap(),
-		map -> {
-			map.put(Properties.NORTH, (Function)id -> BlockStateVariant.create().put(VariantSettings.MODEL, id));
-			map.put(
-				Properties.EAST,
-				(Function)id -> BlockStateVariant.create()
-						.put(VariantSettings.MODEL, id)
-						.put(VariantSettings.Y, VariantSettings.Rotation.R90)
-						.put(VariantSettings.UVLOCK, true)
-			);
-			map.put(
-				Properties.SOUTH,
-				(Function)id -> BlockStateVariant.create()
-						.put(VariantSettings.MODEL, id)
-						.put(VariantSettings.Y, VariantSettings.Rotation.R180)
-						.put(VariantSettings.UVLOCK, true)
-			);
-			map.put(
-				Properties.WEST,
-				(Function)id -> BlockStateVariant.create()
-						.put(VariantSettings.MODEL, id)
-						.put(VariantSettings.Y, VariantSettings.Rotation.R270)
-						.put(VariantSettings.UVLOCK, true)
-			);
-			map.put(
-				Properties.UP,
-				(Function)id -> BlockStateVariant.create()
-						.put(VariantSettings.MODEL, id)
-						.put(VariantSettings.X, VariantSettings.Rotation.R270)
-						.put(VariantSettings.UVLOCK, true)
-			);
-			map.put(
-				Properties.DOWN,
-				(Function)id -> BlockStateVariant.create()
-						.put(VariantSettings.MODEL, id)
-						.put(VariantSettings.X, VariantSettings.Rotation.R90)
-						.put(VariantSettings.UVLOCK, true)
-			);
-		}
+	public static final List<Pair<BooleanProperty, Function<Identifier, BlockStateVariant>>> CONNECTION_VARIANT_FUNCTIONS = List.of(
+		Pair.of(Properties.NORTH, (Function)identifier -> BlockStateVariant.create().put(VariantSettings.MODEL, identifier)),
+		Pair.of(
+			Properties.EAST,
+			(Function)identifier -> BlockStateVariant.create()
+					.put(VariantSettings.MODEL, identifier)
+					.put(VariantSettings.Y, VariantSettings.Rotation.R90)
+					.put(VariantSettings.UVLOCK, true)
+		),
+		Pair.of(
+			Properties.SOUTH,
+			(Function)identifier -> BlockStateVariant.create()
+					.put(VariantSettings.MODEL, identifier)
+					.put(VariantSettings.Y, VariantSettings.Rotation.R180)
+					.put(VariantSettings.UVLOCK, true)
+		),
+		Pair.of(
+			Properties.WEST,
+			(Function)identifier -> BlockStateVariant.create()
+					.put(VariantSettings.MODEL, identifier)
+					.put(VariantSettings.Y, VariantSettings.Rotation.R270)
+					.put(VariantSettings.UVLOCK, true)
+		),
+		Pair.of(
+			Properties.UP,
+			(Function)identifier -> BlockStateVariant.create()
+					.put(VariantSettings.MODEL, identifier)
+					.put(VariantSettings.X, VariantSettings.Rotation.R270)
+					.put(VariantSettings.UVLOCK, true)
+		),
+		Pair.of(
+			Properties.DOWN,
+			(Function)identifier -> BlockStateVariant.create()
+					.put(VariantSettings.MODEL, identifier)
+					.put(VariantSettings.X, VariantSettings.Rotation.R90)
+					.put(VariantSettings.UVLOCK, true)
+		)
 	);
 
 	private static BlockStateSupplier createStoneState(
@@ -1391,20 +1388,20 @@ public class BlockStateModelGenerator {
 		Identifier identifier4 = this.createSubModel(rail, "_on", Models.RAIL_FLAT, TextureMap::rail);
 		Identifier identifier5 = this.createSubModel(rail, "_on", Models.TEMPLATE_RAIL_RAISED_NE, TextureMap::rail);
 		Identifier identifier6 = this.createSubModel(rail, "_on", Models.TEMPLATE_RAIL_RAISED_SW, TextureMap::rail);
-		BlockStateVariantMap blockStateVariantMap = BlockStateVariantMap.create(Properties.POWERED, Properties.STRAIGHT_RAIL_SHAPE).register((boolean_, shape) -> {
+		BlockStateVariantMap blockStateVariantMap = BlockStateVariantMap.create(Properties.POWERED, Properties.STRAIGHT_RAIL_SHAPE).register((on, shape) -> {
 			switch(shape) {
 				case NORTH_SOUTH:
-					return BlockStateVariant.create().put(VariantSettings.MODEL, boolean_ ? identifier4 : identifier);
+					return BlockStateVariant.create().put(VariantSettings.MODEL, on ? identifier4 : identifier);
 				case EAST_WEST:
-					return BlockStateVariant.create().put(VariantSettings.MODEL, boolean_ ? identifier4 : identifier).put(VariantSettings.Y, VariantSettings.Rotation.R90);
+					return BlockStateVariant.create().put(VariantSettings.MODEL, on ? identifier4 : identifier).put(VariantSettings.Y, VariantSettings.Rotation.R90);
 				case ASCENDING_EAST:
-					return BlockStateVariant.create().put(VariantSettings.MODEL, boolean_ ? identifier5 : identifier2).put(VariantSettings.Y, VariantSettings.Rotation.R90);
+					return BlockStateVariant.create().put(VariantSettings.MODEL, on ? identifier5 : identifier2).put(VariantSettings.Y, VariantSettings.Rotation.R90);
 				case ASCENDING_WEST:
-					return BlockStateVariant.create().put(VariantSettings.MODEL, boolean_ ? identifier6 : identifier3).put(VariantSettings.Y, VariantSettings.Rotation.R90);
+					return BlockStateVariant.create().put(VariantSettings.MODEL, on ? identifier6 : identifier3).put(VariantSettings.Y, VariantSettings.Rotation.R90);
 				case ASCENDING_NORTH:
-					return BlockStateVariant.create().put(VariantSettings.MODEL, boolean_ ? identifier5 : identifier2);
+					return BlockStateVariant.create().put(VariantSettings.MODEL, on ? identifier5 : identifier2);
 				case ASCENDING_SOUTH:
-					return BlockStateVariant.create().put(VariantSettings.MODEL, boolean_ ? identifier6 : identifier3);
+					return BlockStateVariant.create().put(VariantSettings.MODEL, on ? identifier6 : identifier3);
 				default:
 					throw new UnsupportedOperationException("Fix you generator!");
 			}
@@ -2681,10 +2678,13 @@ public class BlockStateModelGenerator {
 			);
 	}
 
-	private void registerInfested(Block modelSource, Block infested) {
+	/**
+	 * Used for a block that shares a block model with another block, for example waxed copper or infested stone bricks.
+	 */
+	private void registerParented(Block modelSource, Block child) {
 		Identifier identifier = ModelIds.getBlockModelId(modelSource);
-		this.blockStateCollector.accept(VariantsBlockStateSupplier.create(infested, BlockStateVariant.create().put(VariantSettings.MODEL, identifier)));
-		this.registerParentedItemModel(infested, identifier);
+		this.blockStateCollector.accept(VariantsBlockStateSupplier.create(child, BlockStateVariant.create().put(VariantSettings.MODEL, identifier)));
+		this.registerParentedItemModel(child, identifier);
 	}
 
 	private void registerIronBars() {
@@ -3419,17 +3419,23 @@ public class BlockStateModelGenerator {
 		this.registerItemModel(block);
 		Identifier identifier = ModelIds.getBlockModelId(block);
 		MultipartBlockStateSupplier multipartBlockStateSupplier = MultipartBlockStateSupplier.create(block);
-		When.PropertyCondition propertyCondition = Util.make(When.create(), propertyConditionx -> CONNECTION_VARIANT_FUNCTIONS.forEach((property, function) -> {
-				if (block.getDefaultState().contains(property)) {
-					propertyConditionx.set(property, false);
-				}
-			}));
-		CONNECTION_VARIANT_FUNCTIONS.forEach((property, function) -> {
-			if (block.getDefaultState().contains(property)) {
-				multipartBlockStateSupplier.with(When.create().set(property, true), (BlockStateVariant)function.apply(identifier));
+		When.PropertyCondition propertyCondition = Util.make(
+			When.create(), propertyConditionx -> CONNECTION_VARIANT_FUNCTIONS.stream().map(Pair::getFirst).forEach(property -> {
+					if (block.getDefaultState().contains(property)) {
+						propertyConditionx.set(property, false);
+					}
+				})
+		);
+
+		for(Pair<BooleanProperty, Function<Identifier, BlockStateVariant>> pair : CONNECTION_VARIANT_FUNCTIONS) {
+			BooleanProperty booleanProperty = pair.getFirst();
+			Function<Identifier, BlockStateVariant> function = (Function)pair.getSecond();
+			if (block.getDefaultState().contains(booleanProperty)) {
+				multipartBlockStateSupplier.with(When.create().set(booleanProperty, true), (BlockStateVariant)function.apply(identifier));
 				multipartBlockStateSupplier.with(propertyCondition, (BlockStateVariant)function.apply(identifier));
 			}
-		});
+		}
+
 		this.blockStateCollector.accept(multipartBlockStateSupplier);
 	}
 
@@ -3732,10 +3738,10 @@ public class BlockStateModelGenerator {
 		this.registerSimpleCubeAll(Blocks.EXPOSED_COPPER);
 		this.registerSimpleCubeAll(Blocks.WEATHERED_COPPER);
 		this.registerSimpleCubeAll(Blocks.OXIDIZED_COPPER);
-		this.registerInfested(Blocks.COPPER_BLOCK, Blocks.WAXED_COPPER_BLOCK);
-		this.registerInfested(Blocks.EXPOSED_COPPER, Blocks.WAXED_EXPOSED_COPPER);
-		this.registerInfested(Blocks.WEATHERED_COPPER, Blocks.WAXED_WEATHERED_COPPER);
-		this.registerInfested(Blocks.OXIDIZED_COPPER, Blocks.WAXED_OXIDIZED_COPPER);
+		this.registerParented(Blocks.COPPER_BLOCK, Blocks.WAXED_COPPER_BLOCK);
+		this.registerParented(Blocks.EXPOSED_COPPER, Blocks.WAXED_EXPOSED_COPPER);
+		this.registerParented(Blocks.WEATHERED_COPPER, Blocks.WAXED_WEATHERED_COPPER);
+		this.registerParented(Blocks.OXIDIZED_COPPER, Blocks.WAXED_OXIDIZED_COPPER);
 		this.registerPressurePlate(Blocks.LIGHT_WEIGHTED_PRESSURE_PLATE, Blocks.GOLD_BLOCK);
 		this.registerPressurePlate(Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE, Blocks.IRON_BLOCK);
 		this.registerAmethysts();
@@ -4206,12 +4212,12 @@ public class BlockStateModelGenerator {
 		this.registerRedstone();
 		this.registerRespawnAnchor();
 		this.registerSculkCatalyst();
-		this.registerInfested(Blocks.CHISELED_STONE_BRICKS, Blocks.INFESTED_CHISELED_STONE_BRICKS);
-		this.registerInfested(Blocks.COBBLESTONE, Blocks.INFESTED_COBBLESTONE);
-		this.registerInfested(Blocks.CRACKED_STONE_BRICKS, Blocks.INFESTED_CRACKED_STONE_BRICKS);
-		this.registerInfested(Blocks.MOSSY_STONE_BRICKS, Blocks.INFESTED_MOSSY_STONE_BRICKS);
+		this.registerParented(Blocks.CHISELED_STONE_BRICKS, Blocks.INFESTED_CHISELED_STONE_BRICKS);
+		this.registerParented(Blocks.COBBLESTONE, Blocks.INFESTED_COBBLESTONE);
+		this.registerParented(Blocks.CRACKED_STONE_BRICKS, Blocks.INFESTED_CRACKED_STONE_BRICKS);
+		this.registerParented(Blocks.MOSSY_STONE_BRICKS, Blocks.INFESTED_MOSSY_STONE_BRICKS);
 		this.registerInfestedStone();
-		this.registerInfested(Blocks.STONE_BRICKS, Blocks.INFESTED_STONE_BRICKS);
+		this.registerParented(Blocks.STONE_BRICKS, Blocks.INFESTED_STONE_BRICKS);
 		this.registerInfestedDeepslate();
 		SpawnEggItem.getAll().forEach(item -> this.registerParentedItemModel(item, ModelIds.getMinecraftNamespacedItem("template_spawn_egg")));
 	}

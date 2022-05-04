@@ -1,5 +1,7 @@
 package net.minecraft.screen;
 
+import com.google.common.collect.ImmutableList;
+import java.util.List;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.block.entity.BlockEntityType;
@@ -11,6 +13,7 @@ import net.minecraft.item.BannerItem;
 import net.minecraft.item.BannerPatternItem;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.DyeItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -18,17 +21,22 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.tag.BannerPatternTags;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.World;
 
 public class LoomScreenHandler extends ScreenHandler {
+	private static final int field_39120 = -1;
 	private static final int field_30826 = 4;
 	private static final int field_30827 = 31;
 	private static final int field_30828 = 31;
 	private static final int field_30829 = 40;
 	private final ScreenHandlerContext context;
 	final Property selectedPattern = Property.create();
+	private List<RegistryEntry<BannerPattern>> bannerPatterns = List.of();
 	Runnable inventoryChangeListener = () -> {
 	};
 	final Slot bannerSlot;
@@ -88,7 +96,7 @@ public class LoomScreenHandler extends ScreenHandler {
 				LoomScreenHandler.this.bannerSlot.takeStack(1);
 				LoomScreenHandler.this.dyeSlot.takeStack(1);
 				if (!LoomScreenHandler.this.bannerSlot.hasStack() || !LoomScreenHandler.this.dyeSlot.hasStack()) {
-					LoomScreenHandler.this.selectedPattern.set(0);
+					LoomScreenHandler.this.selectedPattern.set(-1);
 				}
 
 				context.run((world, pos) -> {
@@ -115,10 +123,6 @@ public class LoomScreenHandler extends ScreenHandler {
 		this.addProperty(this.selectedPattern);
 	}
 
-	public int getSelectedPattern() {
-		return this.selectedPattern.get();
-	}
-
 	@Override
 	public boolean canUse(PlayerEntity player) {
 		return canUse(this.context, player, Blocks.LOOM);
@@ -126,12 +130,26 @@ public class LoomScreenHandler extends ScreenHandler {
 
 	@Override
 	public boolean onButtonClick(PlayerEntity player, int id) {
-		if (id > 0 && id <= BannerPattern.LOOM_APPLICABLE_COUNT) {
+		if (id >= 0 && id < this.bannerPatterns.size()) {
 			this.selectedPattern.set(id);
-			this.updateOutputSlot();
+			this.updateOutputSlot((RegistryEntry<BannerPattern>)this.bannerPatterns.get(id));
 			return true;
 		} else {
 			return false;
+		}
+	}
+
+	private List<RegistryEntry<BannerPattern>> method_43705(ItemStack itemStack) {
+		if (itemStack.isEmpty()) {
+			return (List<RegistryEntry<BannerPattern>>)Registry.BANNER_PATTERN
+				.getEntryList(BannerPatternTags.NO_ITEM_REQUIRED)
+				.map(ImmutableList::copyOf)
+				.orElse(ImmutableList.of());
+		} else {
+			Item var3 = itemStack.getItem();
+			return var3 instanceof BannerPatternItem bannerPatternItem
+				? (List)Registry.BANNER_PATTERN.getEntryList(bannerPatternItem.getPattern()).map(ImmutableList::copyOf).orElse(ImmutableList.of())
+				: List.of();
 		}
 	}
 
@@ -140,31 +158,59 @@ public class LoomScreenHandler extends ScreenHandler {
 		ItemStack itemStack = this.bannerSlot.getStack();
 		ItemStack itemStack2 = this.dyeSlot.getStack();
 		ItemStack itemStack3 = this.patternSlot.getStack();
-		ItemStack itemStack4 = this.outputSlot.getStack();
-		if (itemStack4.isEmpty()
-			|| !itemStack.isEmpty()
-				&& !itemStack2.isEmpty()
-				&& this.selectedPattern.get() > 0
-				&& (this.selectedPattern.get() < BannerPattern.COUNT - BannerPattern.HAS_PATTERN_ITEM_COUNT || !itemStack3.isEmpty())) {
-			if (!itemStack3.isEmpty() && itemStack3.getItem() instanceof BannerPatternItem) {
+		if (!itemStack.isEmpty() && !itemStack2.isEmpty()) {
+			int i = this.selectedPattern.get();
+			List<RegistryEntry<BannerPattern>> list = this.bannerPatterns;
+			this.bannerPatterns = this.method_43705(itemStack3);
+			RegistryEntry<BannerPattern> registryEntry;
+			if (this.bannerPatterns.size() == 1) {
+				this.selectedPattern.set(0);
+				registryEntry = (RegistryEntry)this.bannerPatterns.get(0);
+			} else if (i == -1) {
+				this.selectedPattern.set(-1);
+				registryEntry = null;
+			} else {
+				RegistryEntry<BannerPattern> registryEntry2 = (RegistryEntry)list.get(i);
+				int j = this.bannerPatterns.indexOf(registryEntry2);
+				if (j != -1) {
+					registryEntry = registryEntry2;
+					this.selectedPattern.set(j);
+				} else {
+					registryEntry = null;
+					this.selectedPattern.set(-1);
+				}
+			}
+
+			if (registryEntry != null) {
 				NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(itemStack);
 				boolean bl = nbtCompound != null
 					&& nbtCompound.contains("Patterns", NbtElement.LIST_TYPE)
 					&& !itemStack.isEmpty()
 					&& nbtCompound.getList("Patterns", NbtElement.COMPOUND_TYPE).size() >= 6;
 				if (bl) {
-					this.selectedPattern.set(0);
+					this.selectedPattern.set(-1);
+					this.outputSlot.setStack(ItemStack.EMPTY);
 				} else {
-					this.selectedPattern.set(((BannerPatternItem)itemStack3.getItem()).getPattern().ordinal());
+					this.updateOutputSlot(registryEntry);
 				}
+			} else {
+				this.outputSlot.setStack(ItemStack.EMPTY);
 			}
+
+			this.sendContentUpdates();
 		} else {
 			this.outputSlot.setStack(ItemStack.EMPTY);
-			this.selectedPattern.set(0);
+			this.bannerPatterns = List.of();
+			this.selectedPattern.set(-1);
 		}
+	}
 
-		this.updateOutputSlot();
-		this.sendContentUpdates();
+	public List<RegistryEntry<BannerPattern>> getBannerPatterns() {
+		return this.bannerPatterns;
+	}
+
+	public int getSelectedPattern() {
+		return this.selectedPattern.get();
 	}
 
 	public void setInventoryChangeListener(Runnable inventoryChangeListener) {
@@ -230,39 +276,36 @@ public class LoomScreenHandler extends ScreenHandler {
 		this.context.run((world, pos) -> this.dropInventory(player, this.input));
 	}
 
-	private void updateOutputSlot() {
-		if (this.selectedPattern.get() > 0) {
-			ItemStack itemStack = this.bannerSlot.getStack();
-			ItemStack itemStack2 = this.dyeSlot.getStack();
-			ItemStack itemStack3 = ItemStack.EMPTY;
-			if (!itemStack.isEmpty() && !itemStack2.isEmpty()) {
-				itemStack3 = itemStack.copy();
-				itemStack3.setCount(1);
-				BannerPattern bannerPattern = BannerPattern.values()[this.selectedPattern.get()];
-				DyeColor dyeColor = ((DyeItem)itemStack2.getItem()).getColor();
-				NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(itemStack3);
-				NbtList nbtList;
-				if (nbtCompound != null && nbtCompound.contains("Patterns", NbtElement.LIST_TYPE)) {
-					nbtList = nbtCompound.getList("Patterns", NbtElement.COMPOUND_TYPE);
-				} else {
-					nbtList = new NbtList();
-					if (nbtCompound == null) {
-						nbtCompound = new NbtCompound();
-					}
-
-					nbtCompound.put("Patterns", nbtList);
+	private void updateOutputSlot(RegistryEntry<BannerPattern> registryEntry) {
+		ItemStack itemStack = this.bannerSlot.getStack();
+		ItemStack itemStack2 = this.dyeSlot.getStack();
+		ItemStack itemStack3 = ItemStack.EMPTY;
+		if (!itemStack.isEmpty() && !itemStack2.isEmpty()) {
+			itemStack3 = itemStack.copy();
+			itemStack3.setCount(1);
+			DyeColor dyeColor = ((DyeItem)itemStack2.getItem()).getColor();
+			NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(itemStack3);
+			NbtList nbtList;
+			if (nbtCompound != null && nbtCompound.contains("Patterns", NbtElement.LIST_TYPE)) {
+				nbtList = nbtCompound.getList("Patterns", NbtElement.COMPOUND_TYPE);
+			} else {
+				nbtList = new NbtList();
+				if (nbtCompound == null) {
+					nbtCompound = new NbtCompound();
 				}
 
-				NbtCompound nbtCompound2 = new NbtCompound();
-				nbtCompound2.putString("Pattern", bannerPattern.getId());
-				nbtCompound2.putInt("Color", dyeColor.getId());
-				nbtList.add(nbtCompound2);
-				BlockItem.setBlockEntityNbt(itemStack3, BlockEntityType.BANNER, nbtCompound);
+				nbtCompound.put("Patterns", nbtList);
 			}
 
-			if (!ItemStack.areEqual(itemStack3, this.outputSlot.getStack())) {
-				this.outputSlot.setStack(itemStack3);
-			}
+			NbtCompound nbtCompound2 = new NbtCompound();
+			nbtCompound2.putString("Pattern", registryEntry.value().getId());
+			nbtCompound2.putInt("Color", dyeColor.getId());
+			nbtList.add(nbtCompound2);
+			BlockItem.setBlockEntityNbt(itemStack3, BlockEntityType.BANNER, nbtCompound);
+		}
+
+		if (!ItemStack.areEqual(itemStack3, this.outputSlot.getStack())) {
+			this.outputSlot.setStack(itemStack3);
 		}
 	}
 

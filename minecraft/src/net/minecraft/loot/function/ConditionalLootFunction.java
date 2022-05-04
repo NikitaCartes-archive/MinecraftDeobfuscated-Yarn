@@ -53,7 +53,7 @@ public abstract class ConditionalLootFunction implements LootFunction {
 			return this.getThisBuilder();
 		}
 
-		public final T getThis() {
+		public final T getThisConditionConsumingBuilder() {
 			return this.getThisBuilder();
 		}
 

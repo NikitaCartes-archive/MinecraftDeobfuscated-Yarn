@@ -134,10 +134,10 @@ import net.minecraft.client.resource.SplashTextResourceSupplier;
 import net.minecraft.client.resource.VideoWarningManager;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.resource.language.LanguageManager;
-import net.minecraft.client.search.IdentifierSearchableContainer;
+import net.minecraft.client.search.IdentifierSearchProvider;
 import net.minecraft.client.search.SearchManager;
-import net.minecraft.client.search.SearchableContainer;
-import net.minecraft.client.search.TextSearchableContainer;
+import net.minecraft.client.search.SearchProvider;
+import net.minecraft.client.search.TextSearchProvider;
 import net.minecraft.client.sound.MusicTracker;
 import net.minecraft.client.sound.MusicType;
 import net.minecraft.client.sound.SoundManager;
@@ -595,7 +595,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.resourceManager.registerReloader(this.gameRenderer);
 		this.worldRenderer = new WorldRenderer(this, this.entityRenderDispatcher, this.blockEntityRenderDispatcher, this.bufferBuilders);
 		this.resourceManager.registerReloader(this.worldRenderer);
-		this.initializeSearchableContainers();
+		this.initializeSearchProviders();
 		this.resourceManager.registerReloader(this.searchManager);
 		this.particleManager = new ParticleManager(this.world, this.textureManager);
 		this.resourceManager.registerReloader(this.particleManager);
@@ -783,36 +783,33 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.fontManager.setIdOverrides(forcesUnicode ? ImmutableMap.of(DEFAULT_FONT_ID, UNICODE_FONT_ID) : ImmutableMap.of());
 	}
 
-	private void initializeSearchableContainers() {
-		TextSearchableContainer<ItemStack> textSearchableContainer = new TextSearchableContainer<>(
-			stack -> stack.getTooltip(null, TooltipContext.Default.NORMAL)
-					.stream()
-					.map(tooltip -> Formatting.strip(tooltip.getString()).trim())
-					.filter(string -> !string.isEmpty()),
-			stack -> Stream.of(Registry.ITEM.getId(stack.getItem()))
-		);
-		IdentifierSearchableContainer<ItemStack> identifierSearchableContainer = new IdentifierSearchableContainer<>(stack -> stack.streamTags().map(TagKey::id));
-		DefaultedList<ItemStack> defaultedList = DefaultedList.of();
-
-		for(Item item : Registry.ITEM) {
-			item.appendStacks(ItemGroup.SEARCH, defaultedList);
-		}
-
-		defaultedList.forEach(stack -> {
-			textSearchableContainer.add(stack);
-			identifierSearchableContainer.add(stack);
-		});
-		TextSearchableContainer<RecipeResultCollection> textSearchableContainer2 = new TextSearchableContainer<>(
-			resultCollection -> resultCollection.getAllRecipes()
-					.stream()
-					.flatMap(recipe -> recipe.getOutput().getTooltip(null, TooltipContext.Default.NORMAL).stream())
-					.map(tooltip -> Formatting.strip(tooltip.getString()).trim())
-					.filter(string -> !string.isEmpty()),
-			resultCollection -> resultCollection.getAllRecipes().stream().map(recipe -> Registry.ITEM.getId(recipe.getOutput().getItem()))
-		);
-		this.searchManager.put(SearchManager.ITEM_TOOLTIP, textSearchableContainer);
-		this.searchManager.put(SearchManager.ITEM_TAG, identifierSearchableContainer);
-		this.searchManager.put(SearchManager.RECIPE_OUTPUT, textSearchableContainer2);
+	private void initializeSearchProviders() {
+		this.searchManager
+			.put(
+				SearchManager.ITEM_TOOLTIP,
+				stacks -> new TextSearchProvider(
+						stack -> stack.getTooltip(null, TooltipContext.Default.NORMAL)
+								.stream()
+								.map(tooltip -> Formatting.strip(tooltip.getString()).trim())
+								.filter(string -> !string.isEmpty()),
+						stack -> Stream.of(Registry.ITEM.getId(stack.getItem())),
+						stacks
+					)
+			);
+		this.searchManager.put(SearchManager.ITEM_TAG, stacks -> new IdentifierSearchProvider(stack -> stack.streamTags().map(TagKey::id), stacks));
+		this.searchManager
+			.put(
+				SearchManager.RECIPE_OUTPUT,
+				resultCollections -> new TextSearchProvider(
+						resultCollection -> resultCollection.getAllRecipes()
+								.stream()
+								.flatMap(recipe -> recipe.getOutput().getTooltip(null, TooltipContext.Default.NORMAL).stream())
+								.map(text -> Formatting.strip(text.getString()).trim())
+								.filter(text -> !text.isEmpty()),
+						resultCollection -> resultCollection.getAllRecipes().stream().map(recipe -> Registry.ITEM.getId(recipe.getOutput().getItem())),
+						resultCollections
+					)
+			);
 	}
 
 	private void handleGlErrorByDisableVsync(int error, long description) {
@@ -2045,7 +2042,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		clientConnection.setPacketListener(new ClientLoginNetworkHandler(clientConnection, this, null, status -> {
 		}));
 		clientConnection.send(new HandshakeC2SPacket(socketAddress.toString(), 0, NetworkState.LOGIN));
-		clientConnection.send(new LoginHelloC2SPacket(this.getSession().getUsername(), Optional.ofNullable(this.profileKeys.getPublicKey())));
+		clientConnection.send(new LoginHelloC2SPacket(this.getSession().getUsername(), this.profileKeys.getPublicKeyData()));
 		this.integratedServerConnection = clientConnection;
 	}
 
@@ -2526,8 +2523,12 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.itemRenderer;
 	}
 
-	public <T> SearchableContainer<T> getSearchableContainer(SearchManager.Key<T> key) {
+	public <T> SearchProvider<T> getSearchProvider(SearchManager.Key<T> key) {
 		return this.searchManager.get(key);
+	}
+
+	public <T> void reloadSearchProvider(SearchManager.Key<T> key, List<T> values) {
+		this.searchManager.reload(key, values);
 	}
 
 	public MetricsData getMetricsData() {

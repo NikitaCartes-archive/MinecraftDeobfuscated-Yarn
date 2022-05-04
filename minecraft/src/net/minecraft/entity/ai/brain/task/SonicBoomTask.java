@@ -22,7 +22,7 @@ public class SonicBoomTask extends Task<WardenEntity> {
 	private static final double field_38852 = 0.5;
 	private static final double field_38853 = 2.5;
 	public static final int COOLDOWN = 40;
-	private static final int SOUND_DELAY = 34;
+	private static final int SOUND_DELAY = MathHelper.ceil(34.0);
 	private static final int RUN_TIME = MathHelper.ceil(60.0F);
 
 	public SonicBoomTask() {
@@ -51,7 +51,7 @@ public class SonicBoomTask extends Task<WardenEntity> {
 
 	protected void run(ServerWorld serverWorld, WardenEntity wardenEntity, long l) {
 		wardenEntity.getBrain().remember(MemoryModuleType.ATTACK_COOLING_DOWN, true, (long)RUN_TIME);
-		wardenEntity.getBrain().remember(MemoryModuleType.SONIC_BOOM_SOUND_DELAY, Unit.INSTANCE, 34L);
+		wardenEntity.getBrain().remember(MemoryModuleType.SONIC_BOOM_SOUND_DELAY, Unit.INSTANCE, (long)SOUND_DELAY);
 		serverWorld.sendEntityStatus(wardenEntity, EntityStatuses.SONIC_BOOM);
 		wardenEntity.playSound(SoundEvents.ENTITY_WARDEN_SONIC_CHARGE, 3.0F, 1.0F);
 	}
@@ -59,9 +59,10 @@ public class SonicBoomTask extends Task<WardenEntity> {
 	protected void keepRunning(ServerWorld serverWorld, WardenEntity wardenEntity, long l) {
 		if (!wardenEntity.getBrain().hasMemoryModule(MemoryModuleType.SONIC_BOOM_SOUND_DELAY)
 			&& !wardenEntity.getBrain().hasMemoryModule(MemoryModuleType.SONIC_BOOM_SOUND_COOLDOWN)) {
-			wardenEntity.getBrain().remember(MemoryModuleType.SONIC_BOOM_SOUND_COOLDOWN, Unit.INSTANCE, (long)(RUN_TIME - 34));
+			wardenEntity.getBrain().remember(MemoryModuleType.SONIC_BOOM_SOUND_COOLDOWN, Unit.INSTANCE, (long)(RUN_TIME - SOUND_DELAY));
 			wardenEntity.getBrain()
 				.getOptionalMemory(MemoryModuleType.ATTACK_TARGET)
+				.filter(wardenEntity::isValidTarget)
 				.filter(target -> wardenEntity.isInRange(target, 15.0, 20.0))
 				.ifPresent(target -> {
 					Vec3d vec3d = wardenEntity.getPos().add(0.0, 1.6F, 0.0);

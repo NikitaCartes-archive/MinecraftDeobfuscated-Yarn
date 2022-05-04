@@ -53,12 +53,7 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 		this.amplifier = buf.readByte();
 		this.duration = buf.readVarInt();
 		this.flags = buf.readByte();
-		boolean bl = buf.readBoolean();
-		if (bl) {
-			this.factorCalculationData = buf.decode(StatusEffectInstance.FactorCalculationData.CODEC);
-		} else {
-			this.factorCalculationData = null;
-		}
+		this.factorCalculationData = buf.readNullable(buf2 -> buf2.decode(StatusEffectInstance.FactorCalculationData.CODEC));
 	}
 
 	@Override
@@ -68,11 +63,9 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 		buf.writeByte(this.amplifier);
 		buf.writeVarInt(this.duration);
 		buf.writeByte(this.flags);
-		boolean bl = this.factorCalculationData != null;
-		buf.writeBoolean(bl);
-		if (bl) {
-			buf.encode(StatusEffectInstance.FactorCalculationData.CODEC, this.factorCalculationData);
-		}
+		buf.writeNullable(
+			this.factorCalculationData, (buf2, factorCalculationData) -> buf2.encode(StatusEffectInstance.FactorCalculationData.CODEC, factorCalculationData)
+		);
 	}
 
 	public boolean isPermanent() {

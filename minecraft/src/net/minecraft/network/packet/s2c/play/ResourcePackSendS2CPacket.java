@@ -29,11 +29,7 @@ public class ResourcePackSendS2CPacket implements Packet<ClientPlayPacketListene
 		this.url = buf.readString();
 		this.hash = buf.readString(40);
 		this.required = buf.readBoolean();
-		if (buf.readBoolean()) {
-			this.prompt = buf.readText();
-		} else {
-			this.prompt = null;
-		}
+		this.prompt = buf.readNullable(PacketByteBuf::readText);
 	}
 
 	@Override
@@ -41,12 +37,7 @@ public class ResourcePackSendS2CPacket implements Packet<ClientPlayPacketListene
 		buf.writeString(this.url);
 		buf.writeString(this.hash);
 		buf.writeBoolean(this.required);
-		if (this.prompt != null) {
-			buf.writeBoolean(true);
-			buf.writeText(this.prompt);
-		} else {
-			buf.writeBoolean(false);
-		}
+		buf.writeNullable(this.prompt, PacketByteBuf::writeText);
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

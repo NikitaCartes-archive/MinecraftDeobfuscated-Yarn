@@ -2,19 +2,20 @@ package net.minecraft.network.packet.c2s.play;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.UUID;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.encryption.ChatMessageSignature;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.listener.ServerPlayPacketListener;
-import org.apache.commons.lang3.StringUtils;
+import net.minecraft.util.StringHelper;
 
 /**
  * A packet used to send a chat message to the server.
  * 
- * <p>This truncates the message to at most {@value #MAX_LENGTH} characters
- * before sending to the server on the client. If the server receives the
- * message longer than {@value #MAX_LENGTH} characters, it will reject
- * the message and disconnect the client.
+ * <p>This truncates the message to at most 256 characters before sending to
+ * the server on the client. If the server receives the message longer than
+ * 256 characters, it will reject the message and disconnect the client.
  * 
  * <p>If the message contains an invalid character (see {@link
  * net.minecraft.SharedConstants#isValidChar isValidChar}), the server will
@@ -27,35 +28,27 @@ import org.apache.commons.lang3.StringUtils;
  * @see net.minecraft.server.network.ServerPlayNetworkHandler#onChatMessage
  */
 public class ChatMessageC2SPacket implements Packet<ServerPlayPacketListener> {
-	private static final int MAX_LENGTH = 256;
 	public static final Duration TIME_TO_LIVE = Duration.ofMinutes(2L);
-	private final Instant time;
 	private final String chatMessage;
+	private final Instant time;
 	private final NetworkEncryptionUtils.SignatureData signature;
 
-	public ChatMessageC2SPacket(Instant time, String chatMessage, NetworkEncryptionUtils.SignatureData signature) {
-		this.time = time;
-		this.chatMessage = truncateMessage(chatMessage);
-		this.signature = signature;
+	public ChatMessageC2SPacket(String chatMessage, ChatMessageSignature signature) {
+		this.chatMessage = StringHelper.truncateChat(chatMessage);
+		this.time = signature.timeStamp();
+		this.signature = signature.saltSignature();
 	}
 
 	public ChatMessageC2SPacket(PacketByteBuf buf) {
-		this.time = Instant.ofEpochSecond(buf.readLong());
 		this.chatMessage = buf.readString(256);
+		this.time = Instant.ofEpochSecond(buf.readLong());
 		this.signature = new NetworkEncryptionUtils.SignatureData(buf);
-	}
-
-	/**
-	 * {@return the message truncated to at most {@value #MAX_LENGTH} characters}
-	 */
-	private static String truncateMessage(String message) {
-		return message.length() > 256 ? message.substring(0, 256) : message;
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) {
-		buf.writeLong(this.time.getEpochSecond());
 		buf.writeString(this.chatMessage);
+		buf.writeLong(this.time.getEpochSecond());
 		this.signature.write(buf);
 	}
 
@@ -63,26 +56,12 @@ public class ChatMessageC2SPacket implements Packet<ServerPlayPacketListener> {
 		serverPlayPacketListener.onChatMessage(this);
 	}
 
-	/**
-	 * {@return when the client sent the message to the server}
-	 */
-	public Instant getTime() {
-		return this.time;
-	}
-
 	public String getChatMessage() {
 		return this.chatMessage;
 	}
 
-	/**
-	 * {@return the chat message with spaces normalized}
-	 */
-	public String getNormalizedChatMessage() {
-		return StringUtils.normalizeSpace(this.chatMessage);
-	}
-
-	public NetworkEncryptionUtils.SignatureData getSignature() {
-		return this.signature;
+	public ChatMessageSignature createSignatureInstance(UUID sender) {
+		return new ChatMessageSignature(sender, this.time, this.signature);
 	}
 
 	/**

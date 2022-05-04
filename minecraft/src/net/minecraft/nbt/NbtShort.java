@@ -7,7 +7,8 @@ import net.minecraft.nbt.scanner.NbtScanner;
 import net.minecraft.nbt.visitor.NbtElementVisitor;
 
 /**
- * Represents an NBT 16-bit integer.
+ * Represents an NBT 16-bit integer. Its type is {@value NbtElement#SHORT_TYPE}.
+ * Instances are immutable.
  */
 public class NbtShort extends AbstractNbtNumber {
 	private static final int SIZE = 80;
@@ -48,6 +49,9 @@ public class NbtShort extends AbstractNbtNumber {
 		this.value = value;
 	}
 
+	/**
+	 * {@return the NBT short from {@code value}}
+	 */
 	public static NbtShort of(short value) {
 		return value >= -128 && value <= 1024 ? NbtShort.Cache.VALUES[value - -128] : new NbtShort(value);
 	}

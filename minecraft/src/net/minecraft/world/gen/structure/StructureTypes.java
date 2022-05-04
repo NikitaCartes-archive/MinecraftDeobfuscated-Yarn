@@ -18,6 +18,7 @@ import net.minecraft.structure.SnowyVillageData;
 import net.minecraft.structure.TaigaVillageData;
 import net.minecraft.tag.BiomeTags;
 import net.minecraft.tag.TagKey;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.Pool;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.RegistryEntry;
@@ -289,12 +290,12 @@ public class StructureTypes {
 				StructureTerrainAdaptation.BEARD_BOX
 			),
 			AncientCityGenerator.CITY_CENTER,
-			Optional.empty(),
+			Optional.of(new Identifier("city_anchor")),
 			7,
-			ConstantHeightProvider.create(YOffset.fixed(-51)),
+			ConstantHeightProvider.create(YOffset.fixed(-27)),
 			false,
 			Optional.empty(),
-			100
+			116
 		)
 	);
 

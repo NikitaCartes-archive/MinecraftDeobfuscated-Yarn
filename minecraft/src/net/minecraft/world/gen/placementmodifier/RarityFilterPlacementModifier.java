@@ -22,8 +22,8 @@ public class RarityFilterPlacementModifier extends AbstractConditionalPlacementM
 	}
 
 	@Override
-	protected boolean shouldPlace(FeaturePlacementContext context, AbstractRandom abstractRandom, BlockPos pos) {
-		return abstractRandom.nextFloat() < 1.0F / (float)this.chance;
+	protected boolean shouldPlace(FeaturePlacementContext context, AbstractRandom random, BlockPos pos) {
+		return random.nextFloat() < 1.0F / (float)this.chance;
 	}
 
 	@Override

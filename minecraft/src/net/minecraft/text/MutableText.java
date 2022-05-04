@@ -132,13 +132,13 @@ public class MutableText implements Text {
 		return this.ordered;
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
-		} else if (!(object instanceof MutableText)) {
+		} else if (!(o instanceof MutableText)) {
 			return false;
 		} else {
-			MutableText mutableText = (MutableText)object;
+			MutableText mutableText = (MutableText)o;
 			return this.content.equals(mutableText.content) && this.style.equals(mutableText.style) && this.siblings.equals(mutableText.siblings);
 		}
 	}

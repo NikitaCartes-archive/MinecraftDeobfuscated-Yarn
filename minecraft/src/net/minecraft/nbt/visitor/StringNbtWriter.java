@@ -26,6 +26,9 @@ public class StringNbtWriter implements NbtElementVisitor {
 	private static final Pattern SIMPLE_NAME = Pattern.compile("[A-Za-z0-9._+-]+");
 	private final StringBuilder result = new StringBuilder();
 
+	/**
+	 * {@return the stringified NBT {@code element}}
+	 */
 	public String apply(NbtElement element) {
 		element.accept(this);
 		return this.result.toString();

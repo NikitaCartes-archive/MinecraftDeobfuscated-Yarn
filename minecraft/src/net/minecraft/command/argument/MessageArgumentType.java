@@ -2,7 +2,6 @@ package net.minecraft.command.argument;
 
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Arrays;
@@ -11,20 +10,31 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
+import net.minecraft.network.encryption.SignedChatMessage;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 
-public class MessageArgumentType implements ArgumentType<MessageArgumentType.MessageFormat> {
+public class MessageArgumentType implements TextConvertibleArgumentType<MessageArgumentType.MessageFormat> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("Hello world!", "foo", "@e", "Hello @p :)");
 
 	public static MessageArgumentType message() {
 		return new MessageArgumentType();
 	}
 
-	public static Text getMessage(CommandContext<ServerCommandSource> command, String name) throws CommandSyntaxException {
-		return command.<MessageArgumentType.MessageFormat>getArgument(name, MessageArgumentType.MessageFormat.class)
-			.format(command.getSource(), command.getSource().hasPermissionLevel(2));
+	public static Text getMessage(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
+		MessageArgumentType.MessageFormat messageFormat = context.getArgument(name, MessageArgumentType.MessageFormat.class);
+		return format(context.getSource(), messageFormat);
+	}
+
+	public static SignedChatMessage getSignedMessage(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
+		MessageArgumentType.MessageFormat messageFormat = context.getArgument(name, MessageArgumentType.MessageFormat.class);
+		Text text = Text.literal(messageFormat.getContents());
+		return context.getSource().getSigner().signArgument(context, name, text);
+	}
+
+	private static Text format(ServerCommandSource source, MessageArgumentType.MessageFormat format) throws CommandSyntaxException {
+		return format.format(source, source.hasPermissionLevel(2));
 	}
 
 	public MessageArgumentType.MessageFormat parse(StringReader stringReader) throws CommandSyntaxException {
@@ -34,6 +44,10 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
 	@Override
 	public Collection<String> getExamples() {
 		return EXAMPLES;
+	}
+
+	public Text toText(MessageArgumentType.MessageFormat messageFormat) {
+		return Text.literal(messageFormat.getContents());
 	}
 
 	public static class MessageFormat {

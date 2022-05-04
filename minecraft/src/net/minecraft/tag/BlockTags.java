@@ -155,6 +155,8 @@ public final class BlockTags {
 	public static final TagKey<Block> MANGROVE_ROOTS_CAN_GROW_THROUGH = of("mangrove_roots_can_grow_through");
 	public static final TagKey<Block> DEAD_BUSH_MAY_PLACE_ON = of("dead_bush_may_place_on");
 	public static final TagKey<Block> SNAPS_GOAT_HORN = of("snaps_goat_horn");
+	public static final TagKey<Block> SNOW_LAYER_CANNOT_SURVIVE_ON = of("snow_layer_cannot_survive_on");
+	public static final TagKey<Block> SNOW_LAYER_CAN_SURVIVE_ON = of("snow_layer_can_survive_on");
 
 	private BlockTags() {
 	}

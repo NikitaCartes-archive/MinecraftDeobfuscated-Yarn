@@ -94,7 +94,7 @@ public class SculkShriekerBlockEntity extends BlockEntity implements VibrationLi
 
 	@Override
 	public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable GameEvent.Emitter emitter) {
-		return this.canWarn(world);
+		return !this.isRemoved() && this.canWarn(world);
 	}
 
 	@Override

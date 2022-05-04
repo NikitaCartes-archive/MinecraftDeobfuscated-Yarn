@@ -276,9 +276,9 @@ public class Advancement {
 			}
 		}
 
-		public Advancement build(Consumer<Advancement> consumer, String id) {
+		public Advancement build(Consumer<Advancement> exporter, String id) {
 			Advancement advancement = this.build(new Identifier(id));
-			consumer.accept(advancement);
+			exporter.accept(advancement);
 			return advancement;
 		}
 
@@ -327,20 +327,8 @@ public class Advancement {
 				this.requirements = this.merger.createRequirements(this.criteria.keySet());
 			}
 
-			if (this.parentId == null) {
-				buf.writeBoolean(false);
-			} else {
-				buf.writeBoolean(true);
-				buf.writeIdentifier(this.parentId);
-			}
-
-			if (this.display == null) {
-				buf.writeBoolean(false);
-			} else {
-				buf.writeBoolean(true);
-				this.display.toPacket(buf);
-			}
-
+			buf.writeNullable(this.parentId, PacketByteBuf::writeIdentifier);
+			buf.writeNullable(this.display, (buf2, display) -> display.toPacket(buf2));
 			AdvancementCriterion.criteriaToPacket(this.criteria, buf);
 			buf.writeVarInt(this.requirements.length);
 
@@ -430,8 +418,8 @@ public class Advancement {
 		}
 
 		public static Advancement.Builder fromPacket(PacketByteBuf buf) {
-			Identifier identifier = buf.readBoolean() ? buf.readIdentifier() : null;
-			AdvancementDisplay advancementDisplay = buf.readBoolean() ? AdvancementDisplay.fromPacket(buf) : null;
+			Identifier identifier = buf.readNullable(PacketByteBuf::readIdentifier);
+			AdvancementDisplay advancementDisplay = buf.readNullable(AdvancementDisplay::fromPacket);
 			Map<String, AdvancementCriterion> map = AdvancementCriterion.criteriaFromPacket(buf);
 			String[][] strings = new String[buf.readVarInt()][];
 

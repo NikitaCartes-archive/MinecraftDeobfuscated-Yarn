@@ -45,9 +45,9 @@ public class AdvancementUpdateS2CPacket implements Packet<ClientPlayPacketListen
 	@Override
 	public void write(PacketByteBuf buf) {
 		buf.writeBoolean(this.clearCurrent);
-		buf.writeMap(this.toEarn, PacketByteBuf::writeIdentifier, (bufx, task) -> task.toPacket(bufx));
+		buf.writeMap(this.toEarn, PacketByteBuf::writeIdentifier, (buf2, task) -> task.toPacket(buf2));
 		buf.writeCollection(this.toRemove, PacketByteBuf::writeIdentifier);
-		buf.writeMap(this.toSetProgress, PacketByteBuf::writeIdentifier, (bufx, progress) -> progress.toPacket(bufx));
+		buf.writeMap(this.toSetProgress, PacketByteBuf::writeIdentifier, (buf2, progress) -> progress.toPacket(buf2));
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

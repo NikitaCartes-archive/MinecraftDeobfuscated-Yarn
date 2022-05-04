@@ -8,7 +8,7 @@ import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 
 public class TagMatchRuleTest extends RuleTest {
-	public static final Codec<TagMatchRuleTest> CODEC = TagKey.identifierCodec(Registry.BLOCK_KEY)
+	public static final Codec<TagMatchRuleTest> CODEC = TagKey.unprefixedCodec(Registry.BLOCK_KEY)
 		.fieldOf("tag")
 		.<TagMatchRuleTest>xmap(TagMatchRuleTest::new, tagMatchRuleTest -> tagMatchRuleTest.tag)
 		.codec();

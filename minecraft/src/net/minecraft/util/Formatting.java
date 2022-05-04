@@ -18,7 +18,7 @@ import javax.annotation.Nullable;
  * style, such as by bolding the text. {@link #RESET} is a special formatting
  * and is not classified as either of these two.
  */
-public enum Formatting {
+public enum Formatting implements StringIdentifiable {
 	BLACK("BLACK", '0', 0, 0),
 	DARK_BLUE("DARK_BLUE", '1', 1, 170),
 	DARK_GREEN("DARK_GREEN", '2', 2, 43520),
@@ -42,6 +42,7 @@ public enum Formatting {
 	ITALIC("ITALIC", 'o', true),
 	RESET("RESET", 'r', -1, null);
 
+	public static final com.mojang.serialization.Codec<Formatting> CODEC = StringIdentifiable.createCodec(Formatting::values);
 	public static final char FORMATTING_CODE_PREFIX = '§';
 	private static final Map<String, Formatting> BY_NAME = (Map<String, Formatting>)Arrays.stream(values())
 		.collect(Collectors.toMap(f -> sanitize(f.name), f -> f));
@@ -194,5 +195,10 @@ public enum Formatting {
 		}
 
 		return list;
+	}
+
+	@Override
+	public String asString() {
+		return this.getName();
 	}
 }

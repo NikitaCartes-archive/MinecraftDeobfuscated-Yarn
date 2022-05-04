@@ -30,7 +30,7 @@ import net.minecraft.world.WorldView;
 
 public class CandleBlock extends AbstractCandleBlock implements Waterloggable {
 	public static final int field_31050 = 1;
-	public static final int field_31051 = 4;
+	public static final int MAX_CANDLE_AMOUNT = 4;
 	public static final IntProperty CANDLES = Properties.CANDLES;
 	public static final BooleanProperty LIT = AbstractCandleBlock.LIT;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;

@@ -15,7 +15,7 @@ public class LichenGrower {
 	};
 	private final LichenGrower.GrowChecker growChecker;
 
-	public LichenGrower(AbstractLichenBlock lichen) {
+	public LichenGrower(MultifaceGrowthBlock lichen) {
 		this(new LichenGrower.LichenGrowChecker(lichen));
 	}
 
@@ -102,7 +102,7 @@ public class LichenGrower {
 		}
 
 		default boolean hasDirection(BlockState state, Direction direction) {
-			return AbstractLichenBlock.hasDirection(state, direction);
+			return MultifaceGrowthBlock.hasDirection(state, direction);
 		}
 
 		default boolean canGrow(BlockState state) {
@@ -159,9 +159,9 @@ public class LichenGrower {
 	}
 
 	public static class LichenGrowChecker implements LichenGrower.GrowChecker {
-		protected AbstractLichenBlock lichen;
+		protected MultifaceGrowthBlock lichen;
 
-		public LichenGrowChecker(AbstractLichenBlock lichen) {
+		public LichenGrowChecker(MultifaceGrowthBlock lichen) {
 			this.lichen = lichen;
 		}
 

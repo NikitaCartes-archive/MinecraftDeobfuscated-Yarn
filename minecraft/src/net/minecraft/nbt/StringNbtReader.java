@@ -11,6 +11,12 @@ import java.util.List;
 import java.util.regex.Pattern;
 import net.minecraft.text.Text;
 
+/**
+ * A class for reading a stringified NBT.
+ * 
+ * @apiNote Methods in this class throw {@code CommandSyntaxException} to indicate
+ * syntax errors within the NBT representation.
+ */
 public class StringNbtReader {
 	public static final SimpleCommandExceptionType TRAILING = new SimpleCommandExceptionType(Text.translatable("argument.nbt.trailing"));
 	public static final SimpleCommandExceptionType EXPECTED_KEY = new SimpleCommandExceptionType(Text.translatable("argument.nbt.expected.key"));
@@ -37,6 +43,12 @@ public class StringNbtReader {
 	private static final Pattern INT_PATTERN = Pattern.compile("[-+]?(?:0|[1-9][0-9]*)");
 	private final StringReader reader;
 
+	/**
+	 * {@return the NBT compound parsed from the {@code string}}
+	 * 
+	 * @throws CommandSyntaxException if the reader detects a syntax error (including
+	 * {@linkplain #TRAILING trailing strings})
+	 */
 	public static NbtCompound parse(String string) throws CommandSyntaxException {
 		return new StringNbtReader(new StringReader(string)).readCompound();
 	}
@@ -124,6 +136,11 @@ public class StringNbtReader {
 		return NbtString.of(input);
 	}
 
+	/**
+	 * {@return the parsed NBT element}
+	 * 
+	 * @throws CommandSyntaxException if the reader detects a syntax error
+	 */
 	public NbtElement parseElement() throws CommandSyntaxException {
 		this.reader.skipWhitespace();
 		if (!this.reader.canRead()) {
@@ -144,6 +161,11 @@ public class StringNbtReader {
 			: this.parseList();
 	}
 
+	/**
+	 * {@return the parsed NBT compound}
+	 * 
+	 * @throws CommandSyntaxException if the reader detects a syntax error
+	 */
 	public NbtCompound parseCompound() throws CommandSyntaxException {
 		this.expect('{');
 		NbtCompound nbtCompound = new NbtCompound();

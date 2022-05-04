@@ -18,27 +18,27 @@ import net.minecraft.world.gen.surfacebuilder.MaterialRules;
 public class CarverContext extends HeightContext {
 	private final DynamicRegistryManager registryManager;
 	private final ChunkNoiseSampler chunkNoiseSampler;
-	private final NoiseConfig field_37706;
-	private final MaterialRules.MaterialRule field_37707;
+	private final NoiseConfig noiseConfig;
+	private final MaterialRules.MaterialRule materialRule;
 
 	public CarverContext(
 		NoiseChunkGenerator noiseChunkGenerator,
-		DynamicRegistryManager dynamicRegistryManager,
+		DynamicRegistryManager registryManager,
 		HeightLimitView heightLimitView,
 		ChunkNoiseSampler chunkNoiseSampler,
 		NoiseConfig noiseConfig,
 		MaterialRules.MaterialRule materialRule
 	) {
 		super(noiseChunkGenerator, heightLimitView);
-		this.registryManager = dynamicRegistryManager;
+		this.registryManager = registryManager;
 		this.chunkNoiseSampler = chunkNoiseSampler;
-		this.field_37706 = noiseConfig;
-		this.field_37707 = materialRule;
+		this.noiseConfig = noiseConfig;
+		this.materialRule = materialRule;
 	}
 
 	@Deprecated
 	public Optional<BlockState> applyMaterialRule(Function<BlockPos, RegistryEntry<Biome>> posToBiome, Chunk chunk, BlockPos pos, boolean hasFluid) {
-		return this.field_37706.getSurfaceBuilder().applyMaterialRule(this.field_37707, this, posToBiome, chunk, this.chunkNoiseSampler, pos, hasFluid);
+		return this.noiseConfig.getSurfaceBuilder().applyMaterialRule(this.materialRule, this, posToBiome, chunk, this.chunkNoiseSampler, pos, hasFluid);
 	}
 
 	@Deprecated
@@ -46,7 +46,7 @@ public class CarverContext extends HeightContext {
 		return this.registryManager;
 	}
 
-	public NoiseConfig method_41570() {
-		return this.field_37706;
+	public NoiseConfig getNoiseConfig() {
+		return this.noiseConfig;
 	}
 }

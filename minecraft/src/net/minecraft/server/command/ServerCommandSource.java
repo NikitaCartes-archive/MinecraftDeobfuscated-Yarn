@@ -17,6 +17,8 @@ import javax.annotation.Nullable;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
+import net.minecraft.network.MessageSender;
+import net.minecraft.network.encryption.CommandArgumentSigner;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -56,12 +58,13 @@ public class ServerCommandSource implements CommandSource {
 	private final ResultConsumer<ServerCommandSource> resultConsumer;
 	private final EntityAnchorArgumentType.EntityAnchor entityAnchor;
 	private final Vec2f rotation;
+	private final CommandArgumentSigner signer;
 
 	public ServerCommandSource(
 		CommandOutput output, Vec3d pos, Vec2f rot, ServerWorld world, int level, String name, Text displayName, MinecraftServer server, @Nullable Entity entity
 	) {
 		this(output, pos, rot, world, level, name, displayName, server, entity, false, (context, success, result) -> {
-		}, EntityAnchorArgumentType.EntityAnchor.FEET);
+		}, EntityAnchorArgumentType.EntityAnchor.FEET, CommandArgumentSigner.NONE);
 	}
 
 	protected ServerCommandSource(
@@ -76,7 +79,8 @@ public class ServerCommandSource implements CommandSource {
 		@Nullable Entity entity,
 		boolean silent,
 		@Nullable ResultConsumer<ServerCommandSource> consumer,
-		EntityAnchorArgumentType.EntityAnchor entityAnchor
+		EntityAnchorArgumentType.EntityAnchor entityAnchor,
+		CommandArgumentSigner signer
 	) {
 		this.output = output;
 		this.position = pos;
@@ -90,6 +94,7 @@ public class ServerCommandSource implements CommandSource {
 		this.resultConsumer = consumer;
 		this.entityAnchor = entityAnchor;
 		this.rotation = rot;
+		this.signer = signer;
 	}
 
 	public ServerCommandSource withOutput(CommandOutput output) {
@@ -107,7 +112,8 @@ public class ServerCommandSource implements CommandSource {
 				this.entity,
 				this.silent,
 				this.resultConsumer,
-				this.entityAnchor
+				this.entityAnchor,
+				this.signer
 			);
 	}
 
@@ -126,7 +132,8 @@ public class ServerCommandSource implements CommandSource {
 				entity,
 				this.silent,
 				this.resultConsumer,
-				this.entityAnchor
+				this.entityAnchor,
+				this.signer
 			);
 	}
 
@@ -145,7 +152,8 @@ public class ServerCommandSource implements CommandSource {
 				this.entity,
 				this.silent,
 				this.resultConsumer,
-				this.entityAnchor
+				this.entityAnchor,
+				this.signer
 			);
 	}
 
@@ -164,7 +172,8 @@ public class ServerCommandSource implements CommandSource {
 				this.entity,
 				this.silent,
 				this.resultConsumer,
-				this.entityAnchor
+				this.entityAnchor,
+				this.signer
 			);
 	}
 
@@ -183,7 +192,8 @@ public class ServerCommandSource implements CommandSource {
 				this.entity,
 				this.silent,
 				consumer,
-				this.entityAnchor
+				this.entityAnchor,
+				this.signer
 			);
 	}
 
@@ -206,7 +216,8 @@ public class ServerCommandSource implements CommandSource {
 				this.entity,
 				true,
 				this.resultConsumer,
-				this.entityAnchor
+				this.entityAnchor,
+				this.signer
 			)
 			: this;
 	}
@@ -226,7 +237,8 @@ public class ServerCommandSource implements CommandSource {
 				this.entity,
 				this.silent,
 				this.resultConsumer,
-				this.entityAnchor
+				this.entityAnchor,
+				this.signer
 			);
 	}
 
@@ -245,7 +257,8 @@ public class ServerCommandSource implements CommandSource {
 				this.entity,
 				this.silent,
 				this.resultConsumer,
-				this.entityAnchor
+				this.entityAnchor,
+				this.signer
 			);
 	}
 
@@ -264,7 +277,8 @@ public class ServerCommandSource implements CommandSource {
 				this.entity,
 				this.silent,
 				this.resultConsumer,
-				anchor
+				anchor,
+				this.signer
 			);
 	}
 
@@ -286,7 +300,8 @@ public class ServerCommandSource implements CommandSource {
 				this.entity,
 				this.silent,
 				this.resultConsumer,
-				this.entityAnchor
+				this.entityAnchor,
+				this.signer
 			);
 		}
 	}
@@ -306,12 +321,36 @@ public class ServerCommandSource implements CommandSource {
 		return this.withRotation(new Vec2f(h, i));
 	}
 
+	public ServerCommandSource withSigner(CommandArgumentSigner signer) {
+		return signer == this.signer
+			? this
+			: new ServerCommandSource(
+				this.output,
+				this.position,
+				this.rotation,
+				this.world,
+				this.level,
+				this.name,
+				this.displayName,
+				this.server,
+				this.entity,
+				this.silent,
+				this.resultConsumer,
+				this.entityAnchor,
+				signer
+			);
+	}
+
 	public Text getDisplayName() {
 		return this.displayName;
 	}
 
 	public String getName() {
 		return this.name;
+	}
+
+	public MessageSender getChatMessageSender() {
+		return this.entity != null ? this.entity.asMessageSender() : MessageSender.of(this.getDisplayName());
 	}
 
 	@Override
@@ -350,11 +389,16 @@ public class ServerCommandSource implements CommandSource {
 	 * Gets the player from this command source or throws a command syntax exception if this command source is not a player.
 	 */
 	public ServerPlayerEntity getPlayer() throws CommandSyntaxException {
-		if (!(this.entity instanceof ServerPlayerEntity)) {
-			throw REQUIRES_PLAYER_EXCEPTION.create();
+		Entity var2 = this.entity;
+		if (var2 instanceof ServerPlayerEntity) {
+			return (ServerPlayerEntity)var2;
 		} else {
-			return (ServerPlayerEntity)this.entity;
+			throw REQUIRES_PLAYER_EXCEPTION.create();
 		}
+	}
+
+	public boolean isExecutedByPlayer() {
+		return this.entity instanceof ServerPlayerEntity;
 	}
 
 	public Vec2f getRotation() {
@@ -367,6 +411,10 @@ public class ServerCommandSource implements CommandSource {
 
 	public EntityAnchorArgumentType.EntityAnchor getEntityAnchor() {
 		return this.entityAnchor;
+	}
+
+	public CommandArgumentSigner getSigner() {
+		return this.signer;
 	}
 
 	public void sendFeedback(Text message, boolean broadcastToOps) {

@@ -89,11 +89,11 @@ public class ScoreTextContent implements TextContent {
 		}
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
 		} else {
-			if (object instanceof ScoreTextContent scoreTextContent && this.name.equals(scoreTextContent.name) && this.objective.equals(scoreTextContent.objective)) {
+			if (o instanceof ScoreTextContent scoreTextContent && this.name.equals(scoreTextContent.name) && this.objective.equals(scoreTextContent.objective)) {
 				return true;
 			}
 

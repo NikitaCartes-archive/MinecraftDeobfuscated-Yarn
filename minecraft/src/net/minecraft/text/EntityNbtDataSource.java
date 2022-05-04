@@ -42,11 +42,11 @@ public record EntityNbtDataSource(String rawSelector, @Nullable EntitySelector s
 		return "entity=" + this.rawSelector;
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
 		} else {
-			if (object instanceof EntityNbtDataSource entityNbtDataSource && this.rawSelector.equals(entityNbtDataSource.rawSelector)) {
+			if (o instanceof EntityNbtDataSource entityNbtDataSource && this.rawSelector.equals(entityNbtDataSource.rawSelector)) {
 				return true;
 			}
 

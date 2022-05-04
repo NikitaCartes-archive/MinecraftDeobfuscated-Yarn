@@ -26,6 +26,7 @@ import java.util.Enumeration;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
@@ -167,10 +168,15 @@ public class DefaultResourcePack implements ResourcePack {
 		Stream<Path> stream = Files.walk(path.resolve(prefix));
 
 		try {
-			stream.filter(pathx -> !pathx.endsWith(".mcmeta") && Files.isRegularFile(pathx, new LinkOption[0]))
-				.map(pathx -> new Identifier(namespace, path.relativize(pathx).toString().replaceAll("\\\\", "/")))
-				.filter(allowedPathPredicate)
-				.forEach(results::add);
+			stream.filter(pathx -> !pathx.endsWith(".mcmeta") && Files.isRegularFile(pathx, new LinkOption[0])).mapMulti((pathx, consumer) -> {
+				String string2 = path.relativize(pathx).toString().replaceAll("\\\\", "/");
+				Identifier identifier = Identifier.of(namespace, string2);
+				if (identifier == null) {
+					Util.error("Invalid path in datapack: %s:%s, ignoring".formatted(namespace, string2));
+				} else {
+					consumer.accept(identifier);
+				}
+			}).filter(allowedPathPredicate).forEach(results::add);
 		} catch (Throwable var10) {
 			if (stream != null) {
 				try {

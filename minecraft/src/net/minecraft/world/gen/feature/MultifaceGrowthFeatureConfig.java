@@ -6,9 +6,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
-import net.minecraft.block.AbstractLichenBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.MultifaceGrowthBlock;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.AbstractRandom;
@@ -23,7 +23,7 @@ public class MultifaceGrowthFeatureConfig implements FeatureConfig {
 						.getCodec()
 						.fieldOf("block")
 						.<Block>flatXmap(MultifaceGrowthFeatureConfig::validateBlock, DataResult::success)
-						.orElse((AbstractLichenBlock)Blocks.GLOW_LICHEN)
+						.orElse((MultifaceGrowthBlock)Blocks.GLOW_LICHEN)
 						.forGetter(config -> config.lichen),
 					Codec.intRange(1, 64).fieldOf("search_range").orElse(10).forGetter(config -> config.searchRange),
 					Codec.BOOL.fieldOf("can_place_on_floor").orElse(false).forGetter(config -> config.placeOnFloor),
@@ -34,7 +34,7 @@ public class MultifaceGrowthFeatureConfig implements FeatureConfig {
 				)
 				.apply(instance, MultifaceGrowthFeatureConfig::new)
 	);
-	public final AbstractLichenBlock lichen;
+	public final MultifaceGrowthBlock lichen;
 	public final int searchRange;
 	public final boolean placeOnFloor;
 	public final boolean placeOnCeiling;
@@ -43,14 +43,14 @@ public class MultifaceGrowthFeatureConfig implements FeatureConfig {
 	public final RegistryEntryList<Block> canPlaceOn;
 	private final ObjectArrayList<Direction> directions;
 
-	private static DataResult<AbstractLichenBlock> validateBlock(Block block) {
-		return block instanceof AbstractLichenBlock abstractLichenBlock
-			? DataResult.success(abstractLichenBlock)
+	private static DataResult<MultifaceGrowthBlock> validateBlock(Block block) {
+		return block instanceof MultifaceGrowthBlock multifaceGrowthBlock
+			? DataResult.success(multifaceGrowthBlock)
 			: DataResult.error("Growth block should be a multiface block");
 	}
 
 	public MultifaceGrowthFeatureConfig(
-		AbstractLichenBlock lichen,
+		MultifaceGrowthBlock lichen,
 		int searchRange,
 		boolean placeOnFloor,
 		boolean placeOnCeiling,

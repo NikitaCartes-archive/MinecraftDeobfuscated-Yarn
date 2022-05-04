@@ -24,6 +24,7 @@ import net.minecraft.entity.ai.brain.task.StayAboveWaterTask;
 import net.minecraft.entity.ai.brain.task.TemptationCooldownTask;
 import net.minecraft.entity.ai.brain.task.TimeLimitedTask;
 import net.minecraft.entity.ai.brain.task.WaitTask;
+import net.minecraft.entity.ai.brain.task.WalkTask;
 import net.minecraft.entity.ai.brain.task.WalkToNearestVisibleWantedItemTask;
 import net.minecraft.entity.ai.brain.task.WalkTowardsLookTargetTask;
 import net.minecraft.entity.ai.brain.task.WanderAroundTask;
@@ -38,6 +39,7 @@ public class AllayBrain {
 	private static final float field_38406 = 1.0F;
 	private static final float field_38407 = 2.25F;
 	private static final float field_38408 = 1.75F;
+	private static final float field_39113 = 2.5F;
 	private static final int field_38938 = 4;
 	private static final int field_38939 = 16;
 	private static final int field_38410 = 6;
@@ -61,6 +63,7 @@ public class AllayBrain {
 			0,
 			ImmutableList.of(
 				new StayAboveWaterTask(0.8F),
+				new WalkTask(2.5F),
 				new LookAroundTask(45, 90),
 				new WanderAroundTask(),
 				new TemptationCooldownTask(MemoryModuleType.LIKED_NOTEBLOCK_COOLDOWN_TICKS),
@@ -135,7 +138,13 @@ public class AllayBrain {
 			Optional<UUID> optional = allay.getBrain().getOptionalMemory(MemoryModuleType.LIKED_PLAYER);
 			if (optional.isPresent()) {
 				Entity entity = serverWorld.getEntity((UUID)optional.get());
-				return entity instanceof ServerPlayerEntity serverPlayerEntity ? Optional.of(serverPlayerEntity) : Optional.empty();
+				if (entity instanceof ServerPlayerEntity serverPlayerEntity
+					&& (serverPlayerEntity.interactionManager.isSurvivalLike() || serverPlayerEntity.interactionManager.isCreative())
+					&& serverPlayerEntity.isInRange(allay, 64.0)) {
+					return Optional.of(serverPlayerEntity);
+				}
+
+				return Optional.empty();
 			}
 		}
 

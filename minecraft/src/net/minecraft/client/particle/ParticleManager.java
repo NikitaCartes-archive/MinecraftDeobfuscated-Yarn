@@ -118,7 +118,7 @@ public class ParticleManager implements ResourceReloader {
 		this.registerFactory(ParticleTypes.ENTITY_EFFECT, SpellParticle.EntityFactory::new);
 		this.registerFactory(ParticleTypes.EXPLOSION_EMITTER, new ExplosionEmitterParticle.Factory());
 		this.registerFactory(ParticleTypes.EXPLOSION, ExplosionLargeParticle.Factory::new);
-		this.registerFactory(ParticleTypes.SONIC_BOOM, ExplosionLargeParticle.Factory::new);
+		this.registerFactory(ParticleTypes.SONIC_BOOM, SonicBoomParticle.Factory::new);
 		this.registerFactory(ParticleTypes.FALLING_DUST, BlockFallingDustParticle.Factory::new);
 		this.registerFactory(ParticleTypes.FIREWORK, FireworksSparkParticle.ExplosionFactory::new);
 		this.registerFactory(ParticleTypes.FISHING, FishingParticle.Factory::new);

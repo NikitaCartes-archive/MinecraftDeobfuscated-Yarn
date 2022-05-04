@@ -47,12 +47,12 @@ public interface SculkSpreadable {
 	default void spreadAtSamePosition(WorldAccess world, BlockState state, BlockPos pos, AbstractRandom random) {
 	}
 
-	default boolean method_41470(WorldAccess worldAccess, BlockPos blockPos, AbstractRandom abstractRandom) {
+	default boolean method_41470(WorldAccess world, BlockPos pos, AbstractRandom random) {
 		return false;
 	}
 
 	default boolean spread(WorldAccess world, BlockPos pos, BlockState state, @Nullable Collection<Direction> directions, boolean markForPostProcessing) {
-		return ((AbstractLichenBlock)Blocks.SCULK_VEIN).getGrower().grow(state, world, pos, markForPostProcessing) > 0L;
+		return ((MultifaceGrowthBlock)Blocks.SCULK_VEIN).getGrower().grow(state, world, pos, markForPostProcessing) > 0L;
 	}
 
 	default boolean shouldConvertToSpreadable() {

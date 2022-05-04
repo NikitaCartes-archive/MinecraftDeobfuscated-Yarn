@@ -16,9 +16,9 @@ public class SquarePlacementModifier extends PlacementModifier {
 	}
 
 	@Override
-	public Stream<BlockPos> getPositions(FeaturePlacementContext context, AbstractRandom abstractRandom, BlockPos pos) {
-		int i = abstractRandom.nextInt(16) + pos.getX();
-		int j = abstractRandom.nextInt(16) + pos.getZ();
+	public Stream<BlockPos> getPositions(FeaturePlacementContext context, AbstractRandom random, BlockPos pos) {
+		int i = random.nextInt(16) + pos.getX();
+		int j = random.nextInt(16) + pos.getZ();
 		return Stream.of(new BlockPos(i, pos.getY(), j));
 	}
 

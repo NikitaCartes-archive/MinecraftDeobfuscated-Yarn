@@ -1,8 +1,6 @@
 package net.minecraft.entity.data;
 
 import java.util.Optional;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.collection.IndexedIterable;
 
@@ -17,35 +15,22 @@ public interface TrackedDataHandler<T> {
 
 	T copy(T value);
 
-	static <T> TrackedDataHandler<T> of(BiConsumer<PacketByteBuf, T> writer, Function<PacketByteBuf, T> reader) {
+	static <T> TrackedDataHandler<T> of(PacketByteBuf.PacketWriter<T> packetWriter, PacketByteBuf.PacketReader<T> packetReader) {
 		return new TrackedDataHandler.ImmutableHandler<T>() {
 			@Override
 			public void write(PacketByteBuf buf, T value) {
-				writer.accept(buf, value);
+				packetWriter.accept(buf, value);
 			}
 
 			@Override
 			public T read(PacketByteBuf buf) {
-				return (T)reader.apply(buf);
+				return (T)packetReader.apply(buf);
 			}
 		};
 	}
 
-	static <T> TrackedDataHandler<Optional<T>> ofOptional(BiConsumer<PacketByteBuf, T> writer, Function<PacketByteBuf, T> reader) {
-		return new TrackedDataHandler.ImmutableHandler<Optional<T>>() {
-			public void write(PacketByteBuf packetByteBuf, Optional<T> optional) {
-				if (optional.isPresent()) {
-					packetByteBuf.writeBoolean(true);
-					writer.accept(packetByteBuf, optional.get());
-				} else {
-					packetByteBuf.writeBoolean(false);
-				}
-			}
-
-			public Optional<T> read(PacketByteBuf packetByteBuf) {
-				return packetByteBuf.readBoolean() ? Optional.of(reader.apply(packetByteBuf)) : Optional.empty();
-			}
-		};
+	static <T> TrackedDataHandler<Optional<T>> ofOptional(PacketByteBuf.PacketWriter<T> packetWriter, PacketByteBuf.PacketReader<T> packetReader) {
+		return of(packetWriter.asOptional(), packetReader.asOptional());
 	}
 
 	static <T extends Enum<T>> TrackedDataHandler<T> ofEnum(Class<T> enum_) {

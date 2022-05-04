@@ -470,7 +470,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	}
 
 	@Override
-	protected double getRunFromLeashSpeed() {
+	protected double getFollowLeashSpeed() {
 		return 2.0;
 	}
 

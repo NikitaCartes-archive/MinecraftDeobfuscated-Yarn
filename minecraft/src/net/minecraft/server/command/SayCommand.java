@@ -3,28 +3,39 @@ package net.minecraft.server.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.command.argument.MessageArgumentType;
-import net.minecraft.entity.Entity;
 import net.minecraft.network.MessageType;
+import net.minecraft.network.encryption.SignedChatMessage;
+import net.minecraft.server.PlayerManager;
+import net.minecraft.server.filter.TextStream;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 
 public class SayCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("say")
 				.requires(source -> source.hasPermissionLevel(2))
-				.then(CommandManager.argument("message", MessageArgumentType.message()).executes(context -> {
-					Text text = MessageArgumentType.getMessage(context, "message");
-					Text text2 = Text.translatable("chat.type.announcement", context.getSource().getDisplayName(), text);
-					Entity entity = context.getSource().getEntity();
-					if (entity != null) {
-						context.getSource().getServer().getPlayerManager().broadcast(text2, MessageType.SYSTEM, entity.getUuid());
-					} else {
-						context.getSource().getServer().getPlayerManager().broadcast(text2, serverPlayerEntity -> text2, MessageType.SYSTEM);
-					}
-		
-					return 1;
-				}))
+				.then(
+					CommandManager.argument("message", MessageArgumentType.message())
+						.executes(
+							context -> {
+								SignedChatMessage signedChatMessage = MessageArgumentType.getSignedMessage(context, "message");
+								ServerCommandSource serverCommandSource = context.getSource();
+								PlayerManager playerManager = serverCommandSource.getServer().getPlayerManager();
+								if (serverCommandSource.isExecutedByPlayer()) {
+									ServerPlayerEntity serverPlayerEntity = serverCommandSource.getPlayer();
+									serverPlayerEntity.getTextStream()
+										.filterText(signedChatMessage.content().getString())
+										.thenAcceptAsync(
+											message -> playerManager.broadcast(signedChatMessage, message, serverPlayerEntity, MessageType.SAY_COMMAND), serverCommandSource.getServer()
+										);
+								} else {
+									playerManager.broadcast(signedChatMessage, serverCommandSource.getChatMessageSender(), MessageType.SAY_COMMAND);
+								}
+					
+								return 1;
+							}
+						)
+				)
 		);
 	}
 }

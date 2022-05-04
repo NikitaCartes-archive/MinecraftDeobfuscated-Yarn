@@ -14,7 +14,7 @@ public interface OrderedText {
 	/**
 	 * An empty text that does not call the visitors.
 	 */
-	OrderedText EMPTY = characterVisitor -> true;
+	OrderedText EMPTY = visitor -> true;
 
 	boolean accept(CharacterVisitor visitor);
 

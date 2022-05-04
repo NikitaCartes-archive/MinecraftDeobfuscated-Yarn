@@ -15,7 +15,7 @@ import net.minecraft.util.registry.RegistryKey;
  * <p>The methods in this class in most cases perform the same as ones defined
  * in {@link Registry}. However, subclasses may have slightly different behaviors
  * to make it easier to handle user-passed arguments. For example, {@link #getEntryList(TagKey)}
- * may return an empty {@link RegistryEntryList} instead of {@link Optional.empty()}.
+ * may return an empty {@link RegistryEntryList} instead of {@link Optional#empty()}.
  * 
  * <p>A wrapper without any special behaviors can be created by calling {#link of(Registry)}.
  */
@@ -37,7 +37,7 @@ public interface CommandRegistryWrapper<T> {
 	 * 
 	 * <p>Implementations have different behaviors for unrecognized tags. The
 	 * {@linkplain CommandRegistryWrapper.Impl#getEntryList default implementation}
-	 * returns {@link Optional.empty()}; however, the ones created by
+	 * returns {@link Optional#empty()}; however, the ones created by
 	 * {@link CommandRegistryAccess#createWrapper} can create and return a new entry list, or
 	 * return an empty entry list.
 	 * 

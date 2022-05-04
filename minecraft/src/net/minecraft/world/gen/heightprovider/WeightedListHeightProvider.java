@@ -21,8 +21,8 @@ public class WeightedListHeightProvider extends HeightProvider {
 	}
 
 	@Override
-	public int get(AbstractRandom abstractRandom, HeightContext context) {
-		return ((HeightProvider)this.weightedList.getDataOrEmpty(abstractRandom).orElseThrow(IllegalStateException::new)).get(abstractRandom, context);
+	public int get(AbstractRandom random, HeightContext context) {
+		return ((HeightProvider)this.weightedList.getDataOrEmpty(random).orElseThrow(IllegalStateException::new)).get(random, context);
 	}
 
 	@Override

@@ -1,7 +1,6 @@
 package net.minecraft.world.event.listener;
 
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.PositionSource;
 
@@ -9,6 +8,10 @@ import net.minecraft.world.event.PositionSource;
  * A game event listener listens to game events from {@link GameEventDispatcher}s.
  */
 public interface GameEventListener {
+	default boolean shouldListenImmediately() {
+		return false;
+	}
+
 	/**
 	 * Returns the position source of this listener.
 	 */
@@ -24,5 +27,5 @@ public interface GameEventListener {
 	 * 
 	 * @return {@code true} if the game event has been accepted by this listener
 	 */
-	boolean listen(ServerWorld world, GameEvent event, GameEvent.Emitter emitter, Vec3d pos);
+	boolean listen(ServerWorld world, GameEvent.Message event);
 }

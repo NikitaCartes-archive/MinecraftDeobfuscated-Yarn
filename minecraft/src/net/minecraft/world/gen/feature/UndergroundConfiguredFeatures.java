@@ -1,12 +1,12 @@
 package net.minecraft.world.gen.feature;
 
 import java.util.List;
-import net.minecraft.block.AbstractLichenBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CaveVines;
 import net.minecraft.block.CaveVinesHeadBlock;
+import net.minecraft.block.MultifaceGrowthBlock;
 import net.minecraft.block.SmallDripleafBlock;
 import net.minecraft.state.property.Properties;
 import net.minecraft.structure.processor.StructureProcessorLists;
@@ -117,7 +117,7 @@ public class UndergroundConfiguredFeatures {
 	public static final RegistryEntry<ConfiguredFeature<UnderwaterMagmaFeatureConfig, ?>> UNDERWATER_MAGMA = ConfiguredFeatures.register(
 		"underwater_magma", Feature.UNDERWATER_MAGMA, new UnderwaterMagmaFeatureConfig(5, 1, 0.5F)
 	);
-	private static final AbstractLichenBlock GLOW_LICHEN_BLOCK = (AbstractLichenBlock)Blocks.GLOW_LICHEN;
+	private static final MultifaceGrowthBlock GLOW_LICHEN_BLOCK = (MultifaceGrowthBlock)Blocks.GLOW_LICHEN;
 	public static final RegistryEntry<ConfiguredFeature<MultifaceGrowthFeatureConfig, ?>> GLOW_LICHEN = ConfiguredFeatures.register(
 		"glow_lichen",
 		Feature.MULTIFACE_GROWTH,
@@ -373,7 +373,7 @@ public class UndergroundConfiguredFeatures {
 	public static final RegistryEntry<ConfiguredFeature<SculkPatchFeatureConfig, ?>> SCULK_PATCH_ANCIENT_CITY = ConfiguredFeatures.register(
 		"sculk_patch_ancient_city", Feature.SCULK_PATCH, new SculkPatchFeatureConfig(10, 32, 64, 0, 1, UniformIntProvider.create(1, 3), 0.5F)
 	);
-	private static final AbstractLichenBlock SCULK_VEIN_BLOCK = (AbstractLichenBlock)Blocks.SCULK_VEIN;
+	private static final MultifaceGrowthBlock SCULK_VEIN_BLOCK = (MultifaceGrowthBlock)Blocks.SCULK_VEIN;
 	public static final RegistryEntry<ConfiguredFeature<MultifaceGrowthFeatureConfig, ?>> SCULK_VEIN = ConfiguredFeatures.register(
 		"sculk_vein",
 		Feature.MULTIFACE_GROWTH,

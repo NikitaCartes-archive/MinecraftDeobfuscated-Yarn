@@ -29,7 +29,7 @@ public class MacWindowUtil {
 	}
 
 	private static void toggleFullscreen(NSObject handle) {
-		handle.send("toggleFullScreen:", new Object[0]);
+		handle.send("toggleFullScreen:", new Object[]{Pointer.NULL});
 	}
 
 	public static void setApplicationIconImage(InputStream stream) throws IOException {

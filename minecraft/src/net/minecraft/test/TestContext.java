@@ -154,7 +154,7 @@ public class TestContext {
 	}
 
 	public PlayerEntity createMockPlayer() {
-		return new PlayerEntity(this.getWorld(), BlockPos.ORIGIN, 0.0F, new GameProfile(UUID.randomUUID(), "test-mock-player")) {
+		return new PlayerEntity(this.getWorld(), BlockPos.ORIGIN, 0.0F, new GameProfile(UUID.randomUUID(), "test-mock-player"), null) {
 			@Override
 			public boolean isSpectator() {
 				return false;

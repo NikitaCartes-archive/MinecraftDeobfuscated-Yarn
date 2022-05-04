@@ -1,8 +1,10 @@
 package net.minecraft.loot.entry;
 
 import com.google.common.collect.Lists;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
@@ -53,6 +55,10 @@ public class AlternativeEntry extends CombinedEntry {
 
 	public static AlternativeEntry.Builder builder(LootPoolEntry.Builder<?>... children) {
 		return new AlternativeEntry.Builder(children);
+	}
+
+	public static <E> AlternativeEntry.Builder builder(Collection<E> children, Function<E, LootPoolEntry.Builder<?>> toBuilderFunction) {
+		return new AlternativeEntry.Builder((LootPoolEntry.Builder<?>[])children.stream().map(toBuilderFunction::apply).toArray(i -> new LootPoolEntry.Builder[i]));
 	}
 
 	public static class Builder extends LootPoolEntry.Builder<AlternativeEntry.Builder> {

@@ -16,7 +16,7 @@ public abstract class HeightProvider {
 		provider -> provider.getType() == HeightProviderType.CONSTANT ? Either.left(((ConstantHeightProvider)provider).getOffset()) : Either.right(provider)
 	);
 
-	public abstract int get(AbstractRandom abstractRandom, HeightContext context);
+	public abstract int get(AbstractRandom random, HeightContext context);
 
 	public abstract HeightProviderType<?> getType();
 }

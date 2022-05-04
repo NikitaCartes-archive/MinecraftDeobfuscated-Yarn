@@ -2,14 +2,12 @@ package net.minecraft.client.gui.hud;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -49,7 +47,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.ChatMessageSender;
+import net.minecraft.network.MessageSender;
 import net.minecraft.network.MessageType;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
@@ -135,7 +133,7 @@ public class InGameHud extends DrawableHelper {
 	private int scaledHeight;
 	private float autosaveIndicatorAlpha;
 	private float lastAutosaveIndicatorAlpha;
-	private final Map<MessageType, List<ClientChatListener>> listeners = Maps.newHashMap();
+	private final List<ClientChatListener> listeners;
 	private float spyglassScale;
 
 	public InGameHud(MinecraftClient client, ItemRenderer itemRenderer) {
@@ -147,17 +145,7 @@ public class InGameHud extends DrawableHelper {
 		this.playerListHud = new PlayerListHud(client, this);
 		this.bossBarHud = new BossBarHud(client);
 		this.subtitlesHud = new SubtitlesHud(client);
-
-		for(MessageType messageType : MessageType.values()) {
-			this.listeners.put(messageType, Lists.newArrayList());
-		}
-
-		ClientChatListener clientChatListener = NarratorManager.INSTANCE;
-		((List)this.listeners.get(MessageType.CHAT)).add(new ChatHudListener(client));
-		((List)this.listeners.get(MessageType.CHAT)).add(clientChatListener);
-		((List)this.listeners.get(MessageType.SYSTEM)).add(new ChatHudListener(client));
-		((List)this.listeners.get(MessageType.SYSTEM)).add(clientChatListener);
-		((List)this.listeners.get(MessageType.GAME_INFO)).add(new GameInfoChatListener(client));
+		this.listeners = List.of(new ChatHudListener(client), NarratorManager.INSTANCE, new GameInfoChatListener(client));
 		this.setDefaultTitleFade();
 	}
 
@@ -1243,10 +1231,10 @@ public class InGameHud extends DrawableHelper {
 	 * 
 	 * @see net.minecraft.client.network.ClientPlayNetworkHandler#onChatMessage
 	 */
-	public void onChatMessage(MessageType type, Text message, ChatMessageSender sender) {
+	public void onChatMessage(MessageType type, Text message, MessageSender sender) {
 		if (!this.client.shouldBlockMessages(sender.uuid())) {
 			if (!this.client.options.getHideMatchedNames().getValue() || !this.client.shouldBlockMessages(this.extractSender(message))) {
-				for(ClientChatListener clientChatListener : (List)this.listeners.get(type)) {
+				for(ClientChatListener clientChatListener : this.listeners) {
 					clientChatListener.onChatMessage(type, message, sender);
 				}
 			}
@@ -1263,7 +1251,7 @@ public class InGameHud extends DrawableHelper {
 	 */
 	public void onGameMessage(MessageType type, Text message) {
 		if (!this.client.options.getHideMatchedNames().getValue() || !this.client.shouldBlockMessages(this.extractSender(message))) {
-			for(ClientChatListener clientChatListener : (List)this.listeners.get(type)) {
+			for(ClientChatListener clientChatListener : this.listeners) {
 				clientChatListener.onChatMessage(type, message, null);
 			}
 		}

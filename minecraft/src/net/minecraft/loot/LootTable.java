@@ -194,7 +194,7 @@ public class LootTable {
 			return this;
 		}
 
-		public LootTable.Builder getThis() {
+		public LootTable.Builder getThisFunctionConsumingBuilder() {
 			return this;
 		}
 

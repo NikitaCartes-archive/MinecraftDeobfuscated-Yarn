@@ -54,10 +54,10 @@ public class ExplosionS2CPacket implements Packet<ClientPlayPacketListener> {
 		int i = MathHelper.floor(this.x);
 		int j = MathHelper.floor(this.y);
 		int k = MathHelper.floor(this.z);
-		this.affectedBlocks = buf.readList(packetByteBuf -> {
-			int l = packetByteBuf.readByte() + i;
-			int m = packetByteBuf.readByte() + j;
-			int n = packetByteBuf.readByte() + k;
+		this.affectedBlocks = buf.readList(buf2 -> {
+			int l = buf2.readByte() + i;
+			int m = buf2.readByte() + j;
+			int n = buf2.readByte() + k;
 			return new BlockPos(l, m, n);
 		});
 		this.playerVelocityX = buf.readFloat();
@@ -74,13 +74,13 @@ public class ExplosionS2CPacket implements Packet<ClientPlayPacketListener> {
 		int i = MathHelper.floor(this.x);
 		int j = MathHelper.floor(this.y);
 		int k = MathHelper.floor(this.z);
-		buf.writeCollection(this.affectedBlocks, (bufx, pos) -> {
+		buf.writeCollection(this.affectedBlocks, (buf2, pos) -> {
 			int l = pos.getX() - i;
 			int m = pos.getY() - j;
 			int n = pos.getZ() - k;
-			bufx.writeByte(l);
-			bufx.writeByte(m);
-			bufx.writeByte(n);
+			buf2.writeByte(l);
+			buf2.writeByte(m);
+			buf2.writeByte(n);
 		});
 		buf.writeFloat(this.playerVelocityX);
 		buf.writeFloat(this.playerVelocityY);

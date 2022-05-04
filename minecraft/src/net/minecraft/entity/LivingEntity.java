@@ -586,9 +586,9 @@ public abstract class LivingEntity extends Entity {
 	 * 
 	 * @see #dropXp()
 	 * @see #shouldAlwaysDropXp()
-	 * @see #getXpToDrop(PlayerEntity)
+	 * @see #getXpToDrop()
 	 */
-	protected boolean shouldDropXp() {
+	public boolean shouldDropXp() {
 		return !this.isBaby();
 	}
 
@@ -609,9 +609,6 @@ public abstract class LivingEntity extends Entity {
 	 * Called when this entity is killed and returns the amount of experience
 	 * to drop.
 	 * 
-	 * <p>{@code player} may be {@code null} if {@linkplain #shouldAlwaysDropXp
-	 * shouldAlwaysDropXp()} returns {@code true}.
-	 * 
 	 * @see #dropXp()
 	 * @see #shouldAlwaysDropXp()
 	 * @see #shouldDropXp()
@@ -625,7 +622,7 @@ public abstract class LivingEntity extends Entity {
 	 * other checks.
 	 * 
 	 * @see #dropXp()
-	 * @see #getXpToDrop(PlayerEntity)
+	 * @see #getXpToDrop()
 	 */
 	protected boolean shouldAlwaysDropXp() {
 		return false;
@@ -1448,7 +1445,7 @@ public abstract class LivingEntity extends Entity {
 	 * 
 	 * <p>To control the details of experience dropping, consider overriding
 	 * {@link #shouldAlwaysDropXp()}, {@link #shouldDropXp()}, and
-	 * {@link #getXpToDrop(PlayerEntity)}.
+	 * {@link #getXpToDrop()}.
 	 */
 	protected void dropXp() {
 		if (this.world instanceof ServerWorld

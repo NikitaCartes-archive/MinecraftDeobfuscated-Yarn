@@ -1,5 +1,8 @@
 package net.minecraft.nbt;
 
+/**
+ * A class holding known NBT types.
+ */
 public class NbtTypes {
 	private static final NbtType<?>[] VALUES = new NbtType[]{
 		NbtEnd.TYPE,

@@ -9,7 +9,7 @@ import net.minecraft.particle.DefaultParticleType;
 public class ExplosionLargeParticle extends SpriteBillboardParticle {
 	private final SpriteProvider spriteProvider;
 
-	ExplosionLargeParticle(ClientWorld world, double x, double y, double z, double d, SpriteProvider spriteProvider) {
+	protected ExplosionLargeParticle(ClientWorld world, double x, double y, double z, double d, SpriteProvider spriteProvider) {
 		super(world, x, y, z, 0.0, 0.0, 0.0);
 		this.maxAge = 6 + this.random.nextInt(4);
 		float f = this.random.nextFloat() * 0.6F + 0.4F;

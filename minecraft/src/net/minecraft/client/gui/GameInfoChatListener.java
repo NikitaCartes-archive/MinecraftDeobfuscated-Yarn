@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.network.ChatMessageSender;
+import net.minecraft.network.MessageSender;
 import net.minecraft.network.MessageType;
 import net.minecraft.text.Text;
 
@@ -17,7 +17,10 @@ public class GameInfoChatListener implements ClientChatListener {
 	}
 
 	@Override
-	public void onChatMessage(MessageType type, Text message, @Nullable ChatMessageSender sender) {
-		this.client.inGameHud.setOverlayMessage(message, false);
+	public void onChatMessage(MessageType type, Text message, @Nullable MessageSender sender) {
+		type.overlay().ifPresent(displayRule -> {
+			Text text2 = displayRule.apply(message, sender);
+			this.client.inGameHud.setOverlayMessage(text2, false);
+		});
 	}
 }
