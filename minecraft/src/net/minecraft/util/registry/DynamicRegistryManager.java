@@ -20,6 +20,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.network.MessageType;
 import net.minecraft.structure.StructureSet;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.processor.StructureProcessorType;
@@ -69,6 +70,7 @@ public interface DynamicRegistryManager {
 		register(builder, Registry.CHUNK_GENERATOR_SETTINGS_KEY, ChunkGeneratorSettings.CODEC);
 		register(builder, Registry.NOISE_KEY, DoublePerlinNoiseSampler.NoiseParameters.CODEC);
 		register(builder, Registry.DENSITY_FUNCTION_KEY, DensityFunction.CODEC);
+		register(builder, Registry.MESSAGE_TYPE_KEY, MessageType.CODEC, MessageType.CODEC);
 		register(builder, Registry.WORLD_PRESET_KEY, WorldPreset.CODEC);
 		register(builder, Registry.FLAT_LEVEL_GENERATOR_PRESET_KEY, FlatLevelGeneratorPreset.CODEC);
 		return builder.build();

@@ -66,7 +66,7 @@ public record DimensionType(
 						Codec.intRange(MIN_HEIGHT, MAX_COLUMN_HEIGHT).fieldOf("min_y").forGetter(DimensionType::minimumY),
 						Codec.intRange(16, MAX_HEIGHT).fieldOf("height").forGetter(DimensionType::height),
 						Codec.intRange(0, MAX_HEIGHT).fieldOf("logical_height").forGetter(DimensionType::logicalHeight),
-						TagKey.stringCodec(Registry.BLOCK_KEY).fieldOf("infiniburn").forGetter(dimensionType -> dimensionType.infiniburn),
+						TagKey.codec(Registry.BLOCK_KEY).fieldOf("infiniburn").forGetter(dimensionType -> dimensionType.infiniburn),
 						Identifier.CODEC.fieldOf("effects").orElse(DimensionTypes.OVERWORLD_ID).forGetter(dimensionType -> dimensionType.effects),
 						Codec.FLOAT.fieldOf("ambient_light").forGetter(dimensionType -> dimensionType.ambientLight)
 					)

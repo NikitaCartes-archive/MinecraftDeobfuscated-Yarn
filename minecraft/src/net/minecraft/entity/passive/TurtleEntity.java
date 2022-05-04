@@ -63,7 +63,7 @@ public class TurtleEntity extends AnimalEntity {
 	private static final TrackedData<Boolean> DIGGING_SAND = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<BlockPos> TRAVEL_POS = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BLOCK_POS);
 	private static final TrackedData<Boolean> LAND_BOUND = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private static final TrackedData<Boolean> ACTIVELY_TRAVELLING = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private static final TrackedData<Boolean> ACTIVELY_TRAVELING = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	public static final Ingredient BREEDING_ITEM = Ingredient.ofItems(Blocks.SEAGRASS.asItem());
 	int sandDiggingCounter;
 	public static final Predicate<LivingEntity> BABY_TURTLE_ON_LAND_FILTER = entity -> entity.isBaby() && !entity.isTouchingWater();
@@ -119,12 +119,12 @@ public class TurtleEntity extends AnimalEntity {
 		this.dataTracker.set(LAND_BOUND, landBound);
 	}
 
-	boolean isActivelyTravelling() {
-		return this.dataTracker.get(ACTIVELY_TRAVELLING);
+	boolean isActivelyTraveling() {
+		return this.dataTracker.get(ACTIVELY_TRAVELING);
 	}
 
-	void setActivelyTravelling(boolean travelling) {
-		this.dataTracker.set(ACTIVELY_TRAVELLING, travelling);
+	void setActivelyTraveling(boolean traveling) {
+		this.dataTracker.set(ACTIVELY_TRAVELING, traveling);
 	}
 
 	@Override
@@ -134,7 +134,7 @@ public class TurtleEntity extends AnimalEntity {
 		this.dataTracker.startTracking(HAS_EGG, false);
 		this.dataTracker.startTracking(TRAVEL_POS, BlockPos.ORIGIN);
 		this.dataTracker.startTracking(LAND_BOUND, false);
-		this.dataTracker.startTracking(ACTIVELY_TRAVELLING, false);
+		this.dataTracker.startTracking(ACTIVELY_TRAVELING, false);
 		this.dataTracker.startTracking(DIGGING_SAND, false);
 	}
 
@@ -513,7 +513,7 @@ public class TurtleEntity extends AnimalEntity {
 
 			BlockPos blockPos = new BlockPos((double)k + this.turtle.getX(), (double)l + this.turtle.getY(), (double)m + this.turtle.getZ());
 			this.turtle.setTravelPos(blockPos);
-			this.turtle.setActivelyTravelling(true);
+			this.turtle.setActivelyTraveling(true);
 			this.noPath = false;
 		}
 
@@ -551,7 +551,7 @@ public class TurtleEntity extends AnimalEntity {
 
 		@Override
 		public void stop() {
-			this.turtle.setActivelyTravelling(false);
+			this.turtle.setActivelyTraveling(false);
 			super.stop();
 		}
 	}
@@ -630,7 +630,7 @@ public class TurtleEntity extends AnimalEntity {
 
 		@Override
 		public boolean isValidPosition(BlockPos pos) {
-			if (this.entity instanceof TurtleEntity turtleEntity && turtleEntity.isActivelyTravelling()) {
+			if (this.entity instanceof TurtleEntity turtleEntity && turtleEntity.isActivelyTraveling()) {
 				return this.world.getBlockState(pos).isOf(Blocks.WATER);
 			}
 

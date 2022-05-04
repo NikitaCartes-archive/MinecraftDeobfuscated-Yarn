@@ -13,7 +13,7 @@ import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 public class VegetationPatchFeatureConfig implements FeatureConfig {
 	public static final Codec<VegetationPatchFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					TagKey.stringCodec(Registry.BLOCK_KEY).fieldOf("replaceable").forGetter(config -> config.replaceable),
+					TagKey.codec(Registry.BLOCK_KEY).fieldOf("replaceable").forGetter(config -> config.replaceable),
 					BlockStateProvider.TYPE_CODEC.fieldOf("ground_state").forGetter(config -> config.groundState),
 					PlacedFeature.REGISTRY_CODEC.fieldOf("vegetation_feature").forGetter(config -> config.vegetationFeature),
 					VerticalSurfaceType.CODEC.fieldOf("surface").forGetter(config -> config.surface),

@@ -31,11 +31,11 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 	public EntityAttributesS2CPacket(PacketByteBuf buf) {
 		this.entityId = buf.readVarInt();
 		this.entries = buf.readList(
-			bufx -> {
-				Identifier identifier = bufx.readIdentifier();
+			buf2 -> {
+				Identifier identifier = buf2.readIdentifier();
 				EntityAttribute entityAttribute = Registry.ATTRIBUTE.get(identifier);
-				double d = bufx.readDouble();
-				List<EntityAttributeModifier> list = bufx.readList(
+				double d = buf2.readDouble();
+				List<EntityAttributeModifier> list = buf2.readList(
 					modifiers -> new EntityAttributeModifier(
 							modifiers.readUuid(), "Unknown synced attribute modifier", modifiers.readDouble(), EntityAttributeModifier.Operation.fromId(modifiers.readByte())
 						)
@@ -48,13 +48,13 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 	@Override
 	public void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.entityId);
-		buf.writeCollection(this.entries, (bufx, attribute) -> {
-			bufx.writeIdentifier(Registry.ATTRIBUTE.getId(attribute.getId()));
-			bufx.writeDouble(attribute.getBaseValue());
-			bufx.writeCollection(attribute.getModifiers(), (bufxx, modifier) -> {
-				bufxx.writeUuid(modifier.getId());
-				bufxx.writeDouble(modifier.getValue());
-				bufxx.writeByte(modifier.getOperation().getId());
+		buf.writeCollection(this.entries, (buf2, attribute) -> {
+			buf2.writeIdentifier(Registry.ATTRIBUTE.getId(attribute.getId()));
+			buf2.writeDouble(attribute.getBaseValue());
+			buf2.writeCollection(attribute.getModifiers(), (buf3, modifier) -> {
+				buf3.writeUuid(modifier.getId());
+				buf3.writeDouble(modifier.getValue());
+				buf3.writeByte(modifier.getOperation().getId());
 			});
 		});
 	}

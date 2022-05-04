@@ -13,17 +13,17 @@ public class SharedConstants {
 	@Deprecated
 	public static final boolean IS_DEVELOPMENT_VERSION = true;
 	@Deprecated
-	public static final int WORLD_VERSION = 3093;
+	public static final int WORLD_VERSION = 3095;
 	@Deprecated
 	public static final String CURRENT_SERIES = "main";
 	@Deprecated
-	public static final String VERSION_NAME = "22w17a";
+	public static final String VERSION_NAME = "22w18a";
 	@Deprecated
 	public static final String RELEASE_TARGET = "1.19";
 	@Deprecated
 	public static final int RELEASE_TARGET_PROTOCOL_VERSION = 759;
 	@Deprecated
-	public static final int field_29736 = 82;
+	public static final int field_29736 = 83;
 	public static final int SNBT_TOO_OLD_THRESHOLD = 3075;
 	private static final int field_29708 = 30;
 	public static final boolean field_36325 = true;
@@ -77,6 +77,7 @@ public class SharedConstants {
 	public static final boolean field_29700 = false;
 	public static final boolean field_33554 = false;
 	public static final boolean field_37273 = false;
+	public static final boolean field_39090 = false;
 	public static final boolean field_34368 = false;
 	public static final boolean field_29701 = false;
 	public static final boolean field_29710 = false;
@@ -176,7 +177,7 @@ public class SharedConstants {
 	}
 
 	public static int getProtocolVersion() {
-		return 1073741906;
+		return 1073741907;
 	}
 
 	public static boolean method_37896(ChunkPos chunkPos) {

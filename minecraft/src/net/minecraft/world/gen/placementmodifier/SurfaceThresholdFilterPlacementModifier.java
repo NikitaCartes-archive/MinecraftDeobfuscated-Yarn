@@ -35,7 +35,7 @@ public class SurfaceThresholdFilterPlacementModifier extends AbstractConditional
 	}
 
 	@Override
-	protected boolean shouldPlace(FeaturePlacementContext context, AbstractRandom abstractRandom, BlockPos pos) {
+	protected boolean shouldPlace(FeaturePlacementContext context, AbstractRandom random, BlockPos pos) {
 		long l = (long)context.getTopY(this.heightmap, pos.getX(), pos.getZ());
 		long m = l + (long)this.min;
 		long n = l + (long)this.max;

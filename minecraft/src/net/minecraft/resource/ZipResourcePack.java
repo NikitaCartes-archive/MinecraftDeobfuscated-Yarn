@@ -3,6 +3,7 @@ package net.minecraft.resource;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.mojang.logging.LogUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,8 +19,10 @@ import java.util.zip.ZipFile;
 import javax.annotation.Nullable;
 import net.minecraft.util.Identifier;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
 
 public class ZipResourcePack extends AbstractFileResourcePack {
+	private static final Logger field_39096 = LogUtils.getLogger();
 	public static final Splitter TYPE_NAMESPACE_SPLITTER = Splitter.on('/').omitEmptyStrings().limit(3);
 	@Nullable
 	private ZipFile file;
@@ -120,8 +123,10 @@ public class ZipResourcePack extends AbstractFileResourcePack {
 				String string3 = zipEntry.getName();
 				if (!string3.endsWith(".mcmeta") && string3.startsWith(string2)) {
 					String string4 = string3.substring(string.length());
-					Identifier identifier = new Identifier(namespace, string4);
-					if (allowedPathPredicate.test(identifier)) {
+					Identifier identifier = Identifier.of(namespace, string4);
+					if (identifier == null) {
+						field_39096.warn("Invalid path in datapack: {}:{}, ignoring", namespace, string4);
+					} else if (allowedPathPredicate.test(identifier)) {
 						list.add(identifier);
 					}
 				}

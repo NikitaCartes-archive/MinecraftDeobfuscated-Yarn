@@ -24,7 +24,7 @@ public class HeightmapPlacementModifier extends PlacementModifier {
 	}
 
 	@Override
-	public Stream<BlockPos> getPositions(FeaturePlacementContext context, AbstractRandom abstractRandom, BlockPos pos) {
+	public Stream<BlockPos> getPositions(FeaturePlacementContext context, AbstractRandom random, BlockPos pos) {
 		int i = pos.getX();
 		int j = pos.getZ();
 		int k = context.getTopY(this.heightmap, i, j);

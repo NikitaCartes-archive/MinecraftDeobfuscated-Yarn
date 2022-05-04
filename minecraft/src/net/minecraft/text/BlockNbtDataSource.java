@@ -46,11 +46,11 @@ public record BlockNbtDataSource(String rawPos, @Nullable PosArgument pos) imple
 		return "block=" + this.rawPos;
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
 		} else {
-			if (object instanceof BlockNbtDataSource blockNbtDataSource && this.rawPos.equals(blockNbtDataSource.rawPos)) {
+			if (o instanceof BlockNbtDataSource blockNbtDataSource && this.rawPos.equals(blockNbtDataSource.rawPos)) {
 				return true;
 			}
 

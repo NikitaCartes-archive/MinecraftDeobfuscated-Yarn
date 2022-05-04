@@ -11,20 +11,14 @@ import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.entity.animation.Animation;
-import net.minecraft.client.render.entity.animation.AnimationHelper;
 import net.minecraft.client.render.entity.animation.WardenAnimations;
-import net.minecraft.entity.AnimationState;
 import net.minecraft.entity.mob.WardenEntity;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class WardenEntityModel<T extends WardenEntity> extends SinglePartEntityModel<T> {
 	private static final float field_38324 = 13.0F;
 	private static final float field_38325 = 1.0F;
-	private static final Vec3f field_38326 = new Vec3f();
 	private final ModelPart root;
 	protected final ModelPart bone;
 	protected final ModelPart body;
@@ -114,17 +108,16 @@ public class WardenEntityModel<T extends WardenEntity> extends SinglePartEntityM
 	public void setAngles(T wardenEntity, float f, float g, float h, float i, float j) {
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
 		float k = h - (float)wardenEntity.age;
-		long l = Util.getMeasuringTimeMs();
 		this.setHeadAngle(i, j);
 		this.setLimbAngles(f, g);
 		this.setHeadAndBodyAngles(h);
 		this.setTendrilPitches(wardenEntity, h, k);
-		this.runAnimation(wardenEntity.attackingAnimationState, WardenAnimations.ATTACKING, l);
-		this.runAnimation(wardenEntity.chargingSonicBoomAnimationState, WardenAnimations.CHARGING_SONIC_BOOM, l);
-		this.runAnimation(wardenEntity.diggingAnimationState, WardenAnimations.DIGGING, l);
-		this.runAnimation(wardenEntity.emergingAnimationState, WardenAnimations.EMERGING, l);
-		this.runAnimation(wardenEntity.roaringAnimationState, WardenAnimations.ROARING, l);
-		this.runAnimation(wardenEntity.sniffingAnimationState, WardenAnimations.SNIFFING, l);
+		this.updateAnimation(wardenEntity.attackingAnimationState, WardenAnimations.ATTACKING);
+		this.updateAnimation(wardenEntity.chargingSonicBoomAnimationState, WardenAnimations.CHARGING_SONIC_BOOM);
+		this.updateAnimation(wardenEntity.diggingAnimationState, WardenAnimations.DIGGING);
+		this.updateAnimation(wardenEntity.emergingAnimationState, WardenAnimations.EMERGING);
+		this.updateAnimation(wardenEntity.roaringAnimationState, WardenAnimations.ROARING);
+		this.updateAnimation(wardenEntity.sniffingAnimationState, WardenAnimations.SNIFFING);
 	}
 
 	private void setHeadAngle(float yaw, float pitch) {
@@ -176,10 +169,6 @@ public class WardenEntityModel<T extends WardenEntity> extends SinglePartEntityM
 		float f = warden.getTendrilPitch(tickDelta) * (float)(Math.cos((double)animationProgress * 2.25) * Math.PI * 0.1F);
 		this.leftTendril.pitch = f;
 		this.rightTendril.pitch = -f;
-	}
-
-	public void runAnimation(AnimationState animationState, Animation animation, long time) {
-		animationState.run(state -> AnimationHelper.animate(this, animation, time - state.getStartTime(), 1.0F, field_38326));
 	}
 
 	@Override

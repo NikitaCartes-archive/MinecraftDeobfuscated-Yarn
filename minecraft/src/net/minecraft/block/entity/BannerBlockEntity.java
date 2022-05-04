@@ -17,6 +17,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Nameable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 
 public class BannerBlockEntity extends BlockEntity implements Nameable {
 	public static final int field_31296 = 6;
@@ -29,7 +31,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	@Nullable
 	private NbtList patternListNbt;
 	@Nullable
-	private List<Pair<BannerPattern, DyeColor>> patterns;
+	private List<Pair<RegistryEntry<BannerPattern>, DyeColor>> patterns;
 
 	public BannerBlockEntity(BlockPos pos, BlockState state) {
 		super(BlockEntityType.BANNER, pos, state);
@@ -115,7 +117,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 		return nbtCompound != null && nbtCompound.contains("Patterns") ? nbtCompound.getList("Patterns", NbtElement.COMPOUND_TYPE).size() : 0;
 	}
 
-	public List<Pair<BannerPattern, DyeColor>> getPatterns() {
+	public List<Pair<RegistryEntry<BannerPattern>, DyeColor>> getPatterns() {
 		if (this.patterns == null) {
 			this.patterns = getPatternsFromNbt(this.baseColor, this.patternListNbt);
 		}
@@ -123,16 +125,16 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 		return this.patterns;
 	}
 
-	public static List<Pair<BannerPattern, DyeColor>> getPatternsFromNbt(DyeColor baseColor, @Nullable NbtList patternListNbt) {
-		List<Pair<BannerPattern, DyeColor>> list = Lists.<Pair<BannerPattern, DyeColor>>newArrayList();
-		list.add(Pair.of(BannerPattern.BASE, baseColor));
+	public static List<Pair<RegistryEntry<BannerPattern>, DyeColor>> getPatternsFromNbt(DyeColor baseColor, @Nullable NbtList patternListNbt) {
+		List<Pair<RegistryEntry<BannerPattern>, DyeColor>> list = Lists.<Pair<RegistryEntry<BannerPattern>, DyeColor>>newArrayList();
+		list.add(Pair.of(Registry.BANNER_PATTERN.entryOf(BannerPatterns.BASE), baseColor));
 		if (patternListNbt != null) {
 			for (int i = 0; i < patternListNbt.size(); i++) {
 				NbtCompound nbtCompound = patternListNbt.getCompound(i);
-				BannerPattern bannerPattern = BannerPattern.byId(nbtCompound.getString("Pattern"));
-				if (bannerPattern != null) {
+				RegistryEntry<BannerPattern> registryEntry = BannerPattern.byId(nbtCompound.getString("Pattern"));
+				if (registryEntry != null) {
 					int j = nbtCompound.getInt("Color");
-					list.add(Pair.of(bannerPattern, DyeColor.byId(j)));
+					list.add(Pair.of(registryEntry, DyeColor.byId(j)));
 				}
 			}
 		}

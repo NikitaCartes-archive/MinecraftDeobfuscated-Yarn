@@ -7,7 +7,8 @@ import net.minecraft.nbt.scanner.NbtScanner;
 import net.minecraft.nbt.visitor.NbtElementVisitor;
 
 /**
- * Represents an NBT 32-bit integer.
+ * Represents an NBT 32-bit integer. Its type is {@value NbtElement#INT_TYPE}.
+ * Instances are immutable.
  */
 public class NbtInt extends AbstractNbtNumber {
 	private static final int SIZE = 96;
@@ -48,6 +49,9 @@ public class NbtInt extends AbstractNbtNumber {
 		this.value = value;
 	}
 
+	/**
+	 * {@return the NBT integer from {@code value}}
+	 */
 	public static NbtInt of(int value) {
 		return value >= -128 && value <= 1024 ? NbtInt.Cache.VALUES[value - -128] : new NbtInt(value);
 	}

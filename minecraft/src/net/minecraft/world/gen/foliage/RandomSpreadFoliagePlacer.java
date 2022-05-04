@@ -39,7 +39,7 @@ public class RandomSpreadFoliagePlacer extends FoliagePlacer {
 	protected void generate(
 		TestableWorld world,
 		BiConsumer<BlockPos, BlockState> replacer,
-		AbstractRandom abstractRandom,
+		AbstractRandom random,
 		TreeFeatureConfig config,
 		int trunkHeight,
 		FoliagePlacer.TreeNode treeNode,
@@ -53,21 +53,21 @@ public class RandomSpreadFoliagePlacer extends FoliagePlacer {
 		for (int i = 0; i < this.leafPlacementAttempts; i++) {
 			mutable.set(
 				blockPos,
-				abstractRandom.nextInt(radius) - abstractRandom.nextInt(radius),
-				abstractRandom.nextInt(foliageHeight) - abstractRandom.nextInt(foliageHeight),
-				abstractRandom.nextInt(radius) - abstractRandom.nextInt(radius)
+				random.nextInt(radius) - random.nextInt(radius),
+				random.nextInt(foliageHeight) - random.nextInt(foliageHeight),
+				random.nextInt(radius) - random.nextInt(radius)
 			);
-			placeFoliageBlock(world, replacer, abstractRandom, config, mutable);
+			placeFoliageBlock(world, replacer, random, config, mutable);
 		}
 	}
 
 	@Override
-	public int getRandomHeight(AbstractRandom abstractRandom, int trunkHeight, TreeFeatureConfig config) {
-		return this.foliageHeight.get(abstractRandom);
+	public int getRandomHeight(AbstractRandom random, int trunkHeight, TreeFeatureConfig config) {
+		return this.foliageHeight.get(random);
 	}
 
 	@Override
-	protected boolean isInvalidForLeaves(AbstractRandom abstractRandom, int dx, int y, int dz, int radius, boolean giantTrunk) {
+	protected boolean isInvalidForLeaves(AbstractRandom random, int dx, int y, int dz, int radius, boolean giantTrunk) {
 		return false;
 	}
 }

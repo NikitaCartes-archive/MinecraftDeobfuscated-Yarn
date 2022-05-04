@@ -1,36 +1,28 @@
 package net.minecraft.server.command;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.context.CommandContext;
-import net.minecraft.entity.Entity;
+import net.minecraft.command.argument.MessageArgumentType;
 import net.minecraft.network.MessageType;
-import net.minecraft.server.MinecraftServer;
+import net.minecraft.network.encryption.SignedChatMessage;
+import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 
 public class MeCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-		dispatcher.register(CommandManager.literal("me").then(CommandManager.argument("action", StringArgumentType.greedyString()).executes(context -> {
-			String string = StringArgumentType.getString(context, "action");
-			Entity entity = context.getSource().getEntity();
-			MinecraftServer minecraftServer = context.getSource().getServer();
-			if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
-				serverPlayerEntity.getTextStream().filterText(string).thenAcceptAsync(message -> {
-					String stringx = message.getFiltered();
-					Text text = stringx.isEmpty() ? null : getEmoteText(context, stringx);
-					Text text2 = getEmoteText(context, message.getRaw());
-					minecraftServer.getPlayerManager().broadcast(text2, player -> serverPlayerEntity.shouldFilterMessagesSentTo(player) ? text : text2, MessageType.SYSTEM);
-				}, minecraftServer);
-				return 1;
+		dispatcher.register(CommandManager.literal("me").then(CommandManager.argument("action", MessageArgumentType.message()).executes(context -> {
+			SignedChatMessage signedChatMessage = MessageArgumentType.getSignedMessage(context, "action");
+			ServerCommandSource serverCommandSource = context.getSource();
+			if (serverCommandSource.isExecutedByPlayer()) {
+				ServerPlayerEntity serverPlayerEntity = serverCommandSource.getPlayer();
+				serverPlayerEntity.getTextStream().filterText(signedChatMessage.content().getString()).thenAcceptAsync(message -> {
+					PlayerManager playerManager = serverCommandSource.getServer().getPlayerManager();
+					playerManager.broadcast(signedChatMessage, message, serverPlayerEntity, MessageType.EMOTE_COMMAND);
+				}, serverCommandSource.getServer());
 			} else {
-				minecraftServer.getPlayerManager().broadcast(getEmoteText(context, string), MessageType.SYSTEM);
-				return 1;
+				serverCommandSource.getServer().getPlayerManager().broadcast(signedChatMessage, serverCommandSource.getChatMessageSender(), MessageType.EMOTE_COMMAND);
 			}
-		})));
-	}
 
-	private static Text getEmoteText(CommandContext<ServerCommandSource> context, String arg) {
-		return Text.translatable("chat.type.emote", context.getSource().getDisplayName(), arg);
+			return 1;
+		})));
 	}
 }

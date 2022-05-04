@@ -82,7 +82,7 @@ public class Models {
 	public static final Model TEMPLATE_COMMAND_BLOCK = block("template_command_block", TextureKey.FRONT, TextureKey.BACK, TextureKey.SIDE);
 	public static final Model TEMPLATE_ANVIL = block("template_anvil", TextureKey.TOP);
 	public static final Model[] STEM_GROWTH_STAGES = (Model[])IntStream.range(0, 8)
-		.mapToObj(i -> block("stem_growth" + i, "_stage" + i, TextureKey.STEM))
+		.mapToObj(stage -> block("stem_growth" + stage, "_stage" + stage, TextureKey.STEM))
 		.toArray(Model[]::new);
 	public static final Model STEM_FRUIT = block("stem_fruit", TextureKey.STEM, TextureKey.UPPERSTEM);
 	public static final Model CROP = block("crop", TextureKey.CROP);

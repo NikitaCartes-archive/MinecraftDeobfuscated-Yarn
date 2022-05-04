@@ -51,6 +51,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtFloat;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.network.MessageSender;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.BlockStateParticleEffect;
@@ -1175,6 +1176,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 */
 	public boolean isSubmergedInWater() {
 		return this.submergedInWater && this.isTouchingWater();
+	}
+
+	public MessageSender asMessageSender() {
+		return new MessageSender(this.getUuid(), this.getDisplayName());
 	}
 
 	public void updateSwimming() {

@@ -300,7 +300,7 @@ public final class SimpleOption<T> {
 		/**
 		 * {@return the validated value}
 		 * 
-		 * <p>Returning {@link Optional.empty()} indicates the passed value is invalid and it
+		 * <p>Returning {@link Optional#empty()} indicates the passed value is invalid and it
 		 * should reset to the default value. This method can also coerce the invalid value
 		 * into a valid one by clamping, etc.
 		 */

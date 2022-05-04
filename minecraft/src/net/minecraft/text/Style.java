@@ -8,8 +8,11 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.JsonSyntaxException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.lang.reflect.Type;
 import java.util.Objects;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -29,6 +32,19 @@ public class Style {
 	 * An empty style.
 	 */
 	public static final Style EMPTY = new Style(null, null, null, null, null, null, null, null, null, null);
+	public static final Codec<Style> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					TextColor.CODEC.optionalFieldOf("color").forGetter(style -> Optional.ofNullable(style.color)),
+					Codec.BOOL.optionalFieldOf("bold").forGetter(style -> Optional.ofNullable(style.bold)),
+					Codec.BOOL.optionalFieldOf("italic").forGetter(style -> Optional.ofNullable(style.italic)),
+					Codec.BOOL.optionalFieldOf("underlined").forGetter(style -> Optional.ofNullable(style.underlined)),
+					Codec.BOOL.optionalFieldOf("strikethrough").forGetter(style -> Optional.ofNullable(style.strikethrough)),
+					Codec.BOOL.optionalFieldOf("obfuscated").forGetter(style -> Optional.ofNullable(style.obfuscated)),
+					Codec.STRING.optionalFieldOf("insertion").forGetter(style -> Optional.ofNullable(style.insertion)),
+					Identifier.CODEC.optionalFieldOf("font").forGetter(style -> Optional.ofNullable(style.font))
+				)
+				.apply(instance, Style::of)
+	);
 	/**
 	 * The identifier for the default font of a style.
 	 */
@@ -53,6 +69,30 @@ public class Style {
 	final String insertion;
 	@Nullable
 	final Identifier font;
+
+	private static Style of(
+		Optional<TextColor> color,
+		Optional<Boolean> bold,
+		Optional<Boolean> italic,
+		Optional<Boolean> underlined,
+		Optional<Boolean> strikethrough,
+		Optional<Boolean> obfuscated,
+		Optional<String> insertion,
+		Optional<Identifier> font
+	) {
+		return new Style(
+			(TextColor)color.orElse(null),
+			(Boolean)bold.orElse(null),
+			(Boolean)italic.orElse(null),
+			(Boolean)underlined.orElse(null),
+			(Boolean)strikethrough.orElse(null),
+			(Boolean)obfuscated.orElse(null),
+			null,
+			null,
+			(String)insertion.orElse(null),
+			(Identifier)font.orElse(null)
+		);
+	}
 
 	Style(
 		@Nullable TextColor color,
@@ -450,49 +490,49 @@ public class Style {
 	public String toString() {
 		final StringBuilder stringBuilder = new StringBuilder("{");
 
-		class class_7418 {
-			private boolean field_39012;
+		class Writer {
+			private boolean shouldAppendComma;
 
-			private void method_43478() {
-				if (this.field_39012) {
+			private void appendComma() {
+				if (this.shouldAppendComma) {
 					stringBuilder.append(',');
 				}
 
-				this.field_39012 = true;
+				this.shouldAppendComma = true;
 			}
 
-			void method_43479(String string, @Nullable Boolean boolean_) {
-				if (boolean_ != null) {
-					this.method_43478();
-					if (!boolean_) {
+			void append(String key, @Nullable Boolean value) {
+				if (value != null) {
+					this.appendComma();
+					if (!value) {
 						stringBuilder.append('!');
 					}
 
-					stringBuilder.append(string);
+					stringBuilder.append(key);
 				}
 			}
 
-			void method_43480(String string, @Nullable Object object) {
-				if (object != null) {
-					this.method_43478();
-					stringBuilder.append(string);
+			void append(String key, @Nullable Object value) {
+				if (value != null) {
+					this.appendComma();
+					stringBuilder.append(key);
 					stringBuilder.append('=');
-					stringBuilder.append(object);
+					stringBuilder.append(value);
 				}
 			}
 		}
 
-		class_7418 lv = new class_7418();
-		lv.method_43480("color", this.color);
-		lv.method_43479("bold", this.bold);
-		lv.method_43479("italic", this.italic);
-		lv.method_43479("underlined", this.underlined);
-		lv.method_43479("strikethrough", this.strikethrough);
-		lv.method_43479("obfuscated", this.obfuscated);
-		lv.method_43480("clickEvent", this.clickEvent);
-		lv.method_43480("hoverEvent", this.hoverEvent);
-		lv.method_43480("insertion", this.insertion);
-		lv.method_43480("font", this.font);
+		Writer writer = new Writer();
+		writer.append("color", this.color);
+		writer.append("bold", this.bold);
+		writer.append("italic", this.italic);
+		writer.append("underlined", this.underlined);
+		writer.append("strikethrough", this.strikethrough);
+		writer.append("obfuscated", this.obfuscated);
+		writer.append("clickEvent", this.clickEvent);
+		writer.append("hoverEvent", this.hoverEvent);
+		writer.append("insertion", this.insertion);
+		writer.append("font", this.font);
 		stringBuilder.append("}");
 		return stringBuilder.toString();
 	}

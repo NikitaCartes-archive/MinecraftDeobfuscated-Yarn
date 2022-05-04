@@ -4,9 +4,6 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
@@ -55,7 +52,6 @@ import org.slf4j.Logger;
 
 public class RecipeProvider implements DataProvider {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	private static final ImmutableList<ItemConvertible> COAL_ORES = ImmutableList.of(Items.COAL_ORE, Items.DEEPSLATE_COAL_ORE);
 	private static final ImmutableList<ItemConvertible> IRON_ORES = ImmutableList.of(Items.IRON_ORE, Items.DEEPSLATE_IRON_ORE, Items.RAW_IRON);
 	private static final ImmutableList<ItemConvertible> COPPER_ORES = ImmutableList.of(Items.COPPER_ORE, Items.DEEPSLATE_COPPER_ORE, Items.RAW_COPPER);
@@ -117,8 +113,7 @@ public class RecipeProvider implements DataProvider {
 
 	private static void saveRecipe(DataWriter cache, JsonObject json, Path path) {
 		try {
-			String string = GSON.toJson((JsonElement)json);
-			cache.write(path, string);
+			DataProvider.writeToPath(cache, json, path);
 		} catch (IOException var4) {
 			LOGGER.error("Couldn't save recipe {}", path, var4);
 		}
@@ -126,8 +121,7 @@ public class RecipeProvider implements DataProvider {
 
 	private static void saveRecipeAdvancement(DataWriter cache, JsonObject json, Path path) {
 		try {
-			String string = GSON.toJson((JsonElement)json);
-			cache.write(path, string);
+			DataProvider.writeToPath(cache, json, path);
 		} catch (IOException var4) {
 			LOGGER.error("Couldn't save recipe advancement {}", path, var4);
 		}
@@ -1074,7 +1068,7 @@ public class RecipeProvider implements DataProvider {
 			.pattern("###")
 			.criterion("has_wheat", conditionsFromItem(Items.WHEAT))
 			.offerTo(exporter);
-		createPressurePlateRecipe(exporter, Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE, Items.IRON_INGOT);
+		offerPressurePlateRecipe(exporter, Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE, Items.IRON_INGOT);
 		ShapelessRecipeJsonBuilder.create(Items.HONEY_BOTTLE, 4)
 			.input(Items.HONEY_BLOCK)
 			.input(Items.GLASS_BOTTLE, 4)
@@ -1299,7 +1293,7 @@ public class RecipeProvider implements DataProvider {
 			.offerTo(exporter, "light_gray_dye_from_black_white_dye");
 		offerSingleOutputShapelessRecipe(exporter, Items.LIGHT_GRAY_DYE, Blocks.OXEYE_DAISY, "light_gray_dye");
 		offerSingleOutputShapelessRecipe(exporter, Items.LIGHT_GRAY_DYE, Blocks.WHITE_TULIP, "light_gray_dye");
-		createPressurePlateRecipe(exporter, Blocks.LIGHT_WEIGHTED_PRESSURE_PLATE, Items.GOLD_INGOT);
+		offerPressurePlateRecipe(exporter, Blocks.LIGHT_WEIGHTED_PRESSURE_PLATE, Items.GOLD_INGOT);
 		ShapedRecipeJsonBuilder.create(Blocks.LIGHTNING_ROD)
 			.input('#', Items.COPPER_INGOT)
 			.pattern("#")
@@ -2755,7 +2749,7 @@ public class RecipeProvider implements DataProvider {
 		return ShapedRecipeJsonBuilder.create(output).input('#', Items.STICK).input('W', input).pattern("#W#").pattern("#W#");
 	}
 
-	private static void createPressurePlateRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, ItemConvertible input) {
+	private static void offerPressurePlateRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, ItemConvertible input) {
 		createPressurePlateRecipe(output, Ingredient.ofItems(input)).criterion(hasItem(input), conditionsFromItem(input)).offerTo(exporter);
 	}
 

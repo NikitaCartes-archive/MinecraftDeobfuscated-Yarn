@@ -1,6 +1,9 @@
 package net.minecraft.data;
 
 import com.google.common.collect.Lists;
+import com.google.common.hash.HashCode;
+import com.google.common.hash.Hashing;
+import com.google.common.hash.HashingOutputStream;
 import com.mojang.logging.LogUtils;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -87,41 +90,42 @@ public class SnbtProvider implements DataProvider {
 		try {
 			BufferedReader bufferedReader = Files.newBufferedReader(path);
 
-			SnbtProvider.CompressedData var10;
+			SnbtProvider.CompressedData var11;
 			try {
 				String string = IOUtils.toString(bufferedReader);
 				NbtCompound nbtCompound = this.write(name, NbtHelper.fromNbtProviderString(string));
 				ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-				NbtIo.writeCompressed(nbtCompound, byteArrayOutputStream);
+				HashingOutputStream hashingOutputStream = new HashingOutputStream(Hashing.sha1(), byteArrayOutputStream);
+				NbtIo.writeCompressed(nbtCompound, hashingOutputStream);
 				byte[] bs = byteArrayOutputStream.toByteArray();
-				String string2 = SHA1.hashBytes(bs).toString();
-				String string3;
+				HashCode hashCode = hashingOutputStream.hash();
+				String string2;
 				if (DEBUG_OUTPUT_DIRECTORY != null) {
-					string3 = NbtHelper.toNbtProviderString(nbtCompound);
+					string2 = NbtHelper.toNbtProviderString(nbtCompound);
 				} else {
-					string3 = null;
+					string2 = null;
 				}
 
-				var10 = new SnbtProvider.CompressedData(name, bs, string3, string2);
-			} catch (Throwable var12) {
+				var11 = new SnbtProvider.CompressedData(name, bs, string2, hashCode);
+			} catch (Throwable var13) {
 				if (bufferedReader != null) {
 					try {
 						bufferedReader.close();
-					} catch (Throwable var11) {
-						var12.addSuppressed(var11);
+					} catch (Throwable var12) {
+						var13.addSuppressed(var12);
 					}
 				}
 
-				throw var12;
+				throw var13;
 			}
 
 			if (bufferedReader != null) {
 				bufferedReader.close();
 			}
 
-			return var10;
-		} catch (Throwable var13) {
-			throw new SnbtProvider.CompressionException(path, var13);
+			return var11;
+		} catch (Throwable var14) {
+			throw new SnbtProvider.CompressionException(path, var14);
 		}
 	}
 
@@ -145,19 +149,7 @@ public class SnbtProvider implements DataProvider {
 		}
 	}
 
-	static class CompressedData {
-		final String name;
-		final byte[] bytes;
-		@Nullable
-		final String snbtContent;
-		final String sha1;
-
-		public CompressedData(String name, byte[] bytes, @Nullable String snbtContent, String sha1) {
-			this.name = name;
-			this.bytes = bytes;
-			this.snbtContent = snbtContent;
-			this.sha1 = sha1;
-		}
+	static record CompressedData(String name, byte[] bytes, @Nullable String snbtContent, HashCode sha1) {
 	}
 
 	static class CompressionException extends RuntimeException {

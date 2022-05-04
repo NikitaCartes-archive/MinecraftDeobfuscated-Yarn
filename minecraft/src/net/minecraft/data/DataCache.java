@@ -1,5 +1,6 @@
 package net.minecraft.data;
 
+import com.google.common.hash.HashCode;
 import com.google.common.hash.Hashing;
 import com.mojang.logging.LogUtils;
 import java.io.BufferedReader;
@@ -142,19 +143,19 @@ public class DataCache {
 		);
 	}
 
-	static record CachedData(String version, Map<Path, String> data) {
+	static record CachedData(String version, Map<Path, HashCode> data) {
 
 		CachedData(String version) {
 			this(version, new HashMap());
 		}
 
 		@Nullable
-		public String get(Path path) {
-			return (String)this.data.get(path);
+		public HashCode get(Path path) {
+			return (HashCode)this.data.get(path);
 		}
 
-		public void put(Path path, String value) {
-			this.data.put(path, value);
+		public void put(Path path, HashCode hashCode) {
+			this.data.put(path, hashCode);
 		}
 
 		public int size() {
@@ -173,10 +174,10 @@ public class DataCache {
 
 				String[] strings = string.substring("// ".length()).split("\t", 2);
 				String string2 = strings[0];
-				Map<Path, String> map = new HashMap();
+				Map<Path, HashCode> map = new HashMap();
 				bufferedReader.lines().forEach(line -> {
 					int i = line.indexOf(32);
-					map.put(root.resolve(line.substring(i + 1)), line.substring(0, i));
+					map.put(root.resolve(line.substring(i + 1)), HashCode.fromString(line.substring(0, i)));
 				});
 				var7 = new DataCache.CachedData(string2, Map.copyOf(map));
 			} catch (Throwable var9) {
@@ -209,8 +210,8 @@ public class DataCache {
 					bufferedWriter.write(description);
 					bufferedWriter.newLine();
 
-					for (Entry<Path, String> entry : this.data.entrySet()) {
-						bufferedWriter.write((String)entry.getValue());
+					for (Entry<Path, HashCode> entry : this.data.entrySet()) {
+						bufferedWriter.write(((HashCode)entry.getValue()).toString());
 						bufferedWriter.write(32);
 						bufferedWriter.write(root.relativize((Path)entry.getKey()).toString());
 						bufferedWriter.newLine();
@@ -246,43 +247,13 @@ public class DataCache {
 			this.newCache = new DataCache.CachedData(versionName);
 		}
 
-		private boolean isCacheInvalid(Path path, String hash) {
-			return !Objects.equals(this.oldCache.get(path), hash) || !Files.exists(path, new LinkOption[0]);
+		private boolean isCacheInvalid(Path path, HashCode hashCode) {
+			return !Objects.equals(this.oldCache.get(path), hashCode) || !Files.exists(path, new LinkOption[0]);
 		}
 
 		@Override
-		public void write(Path path, String data) throws IOException {
-			String string = Hashing.sha1().hashUnencodedChars(data).toString();
-			if (this.isCacheInvalid(path, string)) {
-				this.cacheMissCount++;
-				Files.createDirectories(path.getParent());
-				BufferedWriter bufferedWriter = Files.newBufferedWriter(path, StandardCharsets.UTF_8);
-
-				try {
-					bufferedWriter.write(data);
-				} catch (Throwable var8) {
-					if (bufferedWriter != null) {
-						try {
-							bufferedWriter.close();
-						} catch (Throwable var7) {
-							var8.addSuppressed(var7);
-						}
-					}
-
-					throw var8;
-				}
-
-				if (bufferedWriter != null) {
-					bufferedWriter.close();
-				}
-			}
-
-			this.newCache.put(path, string);
-		}
-
-		@Override
-		public void write(Path path, byte[] data, String hash) throws IOException {
-			if (this.isCacheInvalid(path, hash)) {
+		public void write(Path path, byte[] data, HashCode hashCode) throws IOException {
+			if (this.isCacheInvalid(path, hashCode)) {
 				this.cacheMissCount++;
 				Files.createDirectories(path.getParent());
 				OutputStream outputStream = Files.newOutputStream(path);
@@ -306,7 +277,7 @@ public class DataCache {
 				}
 			}
 
-			this.newCache.put(path, hash);
+			this.newCache.put(path, hashCode);
 		}
 	}
 }

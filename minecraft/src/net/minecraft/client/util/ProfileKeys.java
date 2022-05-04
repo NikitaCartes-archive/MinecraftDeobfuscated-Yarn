@@ -1,6 +1,7 @@
 package net.minecraft.client.util;
 
 import com.google.gson.JsonParser;
+import com.mojang.authlib.exceptions.MinecraftClientException;
 import com.mojang.authlib.minecraft.UserApiService;
 import com.mojang.authlib.yggdrasil.response.KeyPairResponse;
 import com.mojang.logging.LogUtils;
@@ -48,7 +49,7 @@ public class ProfileKeys {
 	 */
 	private CompletableFuture<PlayerKeyPair> getKeyPair(UserApiService userApiService) {
 		return CompletableFuture.supplyAsync(() -> {
-			Optional<PlayerKeyPair> optional = this.loadKeyPairFromFile().filter(keyPair -> !keyPair.publicKey().isExpired());
+			Optional<PlayerKeyPair> optional = this.loadKeyPairFromFile().filter(keyPair -> !keyPair.publicKey().data().isExpired());
 			if (optional.isPresent() && !((PlayerKeyPair)optional.get()).isExpired()) {
 				return (PlayerKeyPair)optional.get();
 			} else {
@@ -56,7 +57,7 @@ public class ProfileKeys {
 					PlayerKeyPair playerKeyPair = this.fetchKeyPair(userApiService);
 					this.saveKeyPairToFile(playerKeyPair);
 					return playerKeyPair;
-				} catch (NetworkEncryptionException | IOException var4) {
+				} catch (NetworkEncryptionException | MinecraftClientException | IOException var4) {
 					LOGGER.error("Failed to retrieve profile key pair", (Throwable)var4);
 					this.saveKeyPairToFile(null);
 					return (PlayerKeyPair)optional.orElse(null);
@@ -137,9 +138,12 @@ public class ProfileKeys {
 	private PlayerKeyPair fetchKeyPair(UserApiService userApiService) throws NetworkEncryptionException, IOException {
 		KeyPairResponse keyPairResponse = userApiService.getKeyPair();
 		if (keyPairResponse != null) {
+			PlayerPublicKey.PublicKeyData publicKeyData = new PlayerPublicKey.PublicKeyData(
+				Instant.parse(keyPairResponse.getExpiresAt()), keyPairResponse.getPublicKey(), keyPairResponse.getPublicKeySignature()
+			);
 			return new PlayerKeyPair(
 				NetworkEncryptionUtils.decodeRsaPrivateKeyPem(keyPairResponse.getPrivateKey()),
-				new PlayerPublicKey(Instant.parse(keyPairResponse.getExpiresAt()), keyPairResponse.getPublicKey(), keyPairResponse.getPublicKeySignature()),
+				PlayerPublicKey.fromKeyData(publicKeyData),
 				Instant.parse(keyPairResponse.getRefreshedAfter())
 			);
 		} else {
@@ -164,10 +168,15 @@ public class ProfileKeys {
 		if (privateKey == null) {
 			return null;
 		} else {
-			Signature signature = Signature.getInstance("SHA1withRSA");
+			Signature signature = Signature.getInstance("SHA256withRSA");
 			signature.initSign(privateKey);
 			return signature;
 		}
+	}
+
+	public Optional<PlayerPublicKey.PublicKeyData> getPublicKeyData() {
+		PlayerPublicKey playerPublicKey = this.getPublicKey();
+		return Optional.ofNullable(playerPublicKey).map(PlayerPublicKey::data);
 	}
 
 	/**

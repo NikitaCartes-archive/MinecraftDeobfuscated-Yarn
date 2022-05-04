@@ -53,6 +53,7 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.RegistryEntry;
 import org.apache.commons.lang3.StringUtils;
 
 @Environment(EnvType.CLIENT)
@@ -151,7 +152,9 @@ public class BuiltinModelItemRenderer implements SynchronousResourceReloader {
 					);
 				this.modelShield.getHandle().render(matrices, vertexConsumer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
 				if (bl) {
-					List<Pair<BannerPattern, DyeColor>> list = BannerBlockEntity.getPatternsFromNbt(ShieldItem.getColor(stack), BannerBlockEntity.getPatternListNbt(stack));
+					List<Pair<RegistryEntry<BannerPattern>, DyeColor>> list = BannerBlockEntity.getPatternsFromNbt(
+						ShieldItem.getColor(stack), BannerBlockEntity.getPatternListNbt(stack)
+					);
 					BannerBlockEntityRenderer.renderCanvas(
 						matrices, vertexConsumers, light, overlay, this.modelShield.getPlate(), spriteIdentifier, false, list, stack.hasGlint()
 					);

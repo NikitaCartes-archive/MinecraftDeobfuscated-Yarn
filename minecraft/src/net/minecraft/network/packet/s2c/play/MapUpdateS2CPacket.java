@@ -9,6 +9,7 @@ import net.minecraft.item.map.MapState;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.text.Text;
 
 public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 	private final int id;
@@ -31,15 +32,14 @@ public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.id = buf.readVarInt();
 		this.scale = buf.readByte();
 		this.locked = buf.readBoolean();
-		if (buf.readBoolean()) {
-			this.icons = buf.readList(b -> {
-				MapIcon.Type type = b.readEnumConstant(MapIcon.Type.class);
-				return new MapIcon(type, b.readByte(), b.readByte(), (byte)(b.readByte() & 15), b.readBoolean() ? b.readText() : null);
-			});
-		} else {
-			this.icons = null;
-		}
-
+		this.icons = buf.readNullable(buf2 -> buf2.readList(buf3 -> {
+				MapIcon.Type type = buf3.readEnumConstant(MapIcon.Type.class);
+				byte b = buf3.readByte();
+				byte c = buf3.readByte();
+				byte d = (byte)(buf3.readByte() & 15);
+				Text text = buf3.readNullable(PacketByteBuf::readText);
+				return new MapIcon(type, b, c, d, text);
+			}));
 		int i = buf.readUnsignedByte();
 		if (i > 0) {
 			int j = buf.readUnsignedByte();
@@ -57,24 +57,13 @@ public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeVarInt(this.id);
 		buf.writeByte(this.scale);
 		buf.writeBoolean(this.locked);
-		if (this.icons != null) {
-			buf.writeBoolean(true);
-			buf.writeCollection(this.icons, (b, icon) -> {
+		buf.writeNullable(this.icons, (buf2, icons) -> buf2.writeCollection(icons, (b, icon) -> {
 				b.writeEnumConstant(icon.getType());
 				b.writeByte(icon.getX());
 				b.writeByte(icon.getZ());
 				b.writeByte(icon.getRotation() & 15);
-				if (icon.getText() != null) {
-					b.writeBoolean(true);
-					b.writeText(icon.getText());
-				} else {
-					b.writeBoolean(false);
-				}
-			});
-		} else {
-			buf.writeBoolean(false);
-		}
-
+				b.writeNullable(icon.getText(), PacketByteBuf::writeText);
+			}));
 		if (this.updateData != null) {
 			buf.writeByte(this.updateData.width);
 			buf.writeByte(this.updateData.height);

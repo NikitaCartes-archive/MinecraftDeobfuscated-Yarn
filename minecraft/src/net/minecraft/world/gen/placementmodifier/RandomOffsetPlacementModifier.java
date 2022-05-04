@@ -38,10 +38,10 @@ public class RandomOffsetPlacementModifier extends PlacementModifier {
 	}
 
 	@Override
-	public Stream<BlockPos> getPositions(FeaturePlacementContext context, AbstractRandom abstractRandom, BlockPos pos) {
-		int i = pos.getX() + this.spreadXz.get(abstractRandom);
-		int j = pos.getY() + this.spreadY.get(abstractRandom);
-		int k = pos.getZ() + this.spreadXz.get(abstractRandom);
+	public Stream<BlockPos> getPositions(FeaturePlacementContext context, AbstractRandom random, BlockPos pos) {
+		int i = pos.getX() + this.spreadXz.get(random);
+		int j = pos.getY() + this.spreadY.get(random);
+		int k = pos.getZ() + this.spreadXz.get(random);
 		return Stream.of(new BlockPos(i, j, k));
 	}
 

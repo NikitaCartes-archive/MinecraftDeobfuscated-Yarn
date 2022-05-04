@@ -27,8 +27,8 @@ public class GeodeLayerConfig {
 					BlockStateProvider.TYPE_CODEC.fieldOf("middle_layer_provider").forGetter(config -> config.middleLayerProvider),
 					BlockStateProvider.TYPE_CODEC.fieldOf("outer_layer_provider").forGetter(config -> config.outerLayerProvider),
 					Codecs.nonEmptyList(BlockState.CODEC.listOf()).fieldOf("inner_placements").forGetter(config -> config.innerBlocks),
-					TagKey.stringCodec(Registry.BLOCK_KEY).fieldOf("cannot_replace").forGetter(config -> config.cannotReplace),
-					TagKey.stringCodec(Registry.BLOCK_KEY).fieldOf("invalid_blocks").forGetter(config -> config.invalidBlocks)
+					TagKey.codec(Registry.BLOCK_KEY).fieldOf("cannot_replace").forGetter(config -> config.cannotReplace),
+					TagKey.codec(Registry.BLOCK_KEY).fieldOf("invalid_blocks").forGetter(config -> config.invalidBlocks)
 				)
 				.apply(instance, GeodeLayerConfig::new)
 	);

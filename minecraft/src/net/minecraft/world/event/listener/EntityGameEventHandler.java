@@ -13,11 +13,6 @@ import net.minecraft.world.chunk.ChunkStatus;
  * A game event handler for an entity so that the listener stored can be
  * moved to the correct dispatcher or unregistered as the entity moves or
  * gets removed.
- * 
- * @apiNote This implementation is currently unused by vanilla as vanilla
- * doesn't have any entity that listens to game events.
- * 
- * @see net.minecraft.entity.Entity#getGameEventHandler()
  */
 public class EntityGameEventHandler<T extends GameEventListener> {
 	private T listener;

@@ -1,5 +1,6 @@
 package net.minecraft.world.gen;
 
+import com.google.common.collect.ImmutableSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -82,7 +83,7 @@ public class FlatLevelGeneratorPresets {
 				FlatLevelGeneratorPresets.CLASSIC_FLAT,
 				Blocks.GRASS_BLOCK,
 				BiomeKeys.PLAINS,
-				Set.of(StructureSetKeys.VILLAGES),
+				ImmutableSet.of(StructureSetKeys.VILLAGES),
 				false,
 				false,
 				new FlatChunkGeneratorLayer(1, Blocks.GRASS_BLOCK),
@@ -93,7 +94,7 @@ public class FlatLevelGeneratorPresets {
 				FlatLevelGeneratorPresets.TUNNELERS_DREAM,
 				Blocks.STONE,
 				BiomeKeys.WINDSWEPT_HILLS,
-				Set.of(StructureSetKeys.MINESHAFTS, StructureSetKeys.STRONGHOLDS),
+				ImmutableSet.of(StructureSetKeys.MINESHAFTS, StructureSetKeys.STRONGHOLDS),
 				true,
 				false,
 				new FlatChunkGeneratorLayer(1, Blocks.GRASS_BLOCK),
@@ -105,7 +106,7 @@ public class FlatLevelGeneratorPresets {
 				FlatLevelGeneratorPresets.WATER_WORLD,
 				Items.WATER_BUCKET,
 				BiomeKeys.DEEP_OCEAN,
-				Set.of(StructureSetKeys.OCEAN_RUINS, StructureSetKeys.SHIPWRECKS, StructureSetKeys.OCEAN_MONUMENTS),
+				ImmutableSet.of(StructureSetKeys.OCEAN_RUINS, StructureSetKeys.SHIPWRECKS, StructureSetKeys.OCEAN_MONUMENTS),
 				false,
 				false,
 				new FlatChunkGeneratorLayer(90, Blocks.WATER),
@@ -119,7 +120,7 @@ public class FlatLevelGeneratorPresets {
 				FlatLevelGeneratorPresets.OVERWORLD,
 				Blocks.GRASS,
 				BiomeKeys.PLAINS,
-				Set.of(
+				ImmutableSet.of(
 					StructureSetKeys.VILLAGES, StructureSetKeys.MINESHAFTS, StructureSetKeys.PILLAGER_OUTPOSTS, StructureSetKeys.RUINED_PORTALS, StructureSetKeys.STRONGHOLDS
 				),
 				true,
@@ -133,7 +134,7 @@ public class FlatLevelGeneratorPresets {
 				FlatLevelGeneratorPresets.SNOWY_KINGDOM,
 				Blocks.SNOW,
 				BiomeKeys.SNOWY_PLAINS,
-				Set.of(StructureSetKeys.VILLAGES, StructureSetKeys.IGLOOS),
+				ImmutableSet.of(StructureSetKeys.VILLAGES, StructureSetKeys.IGLOOS),
 				false,
 				false,
 				new FlatChunkGeneratorLayer(1, Blocks.SNOW),
@@ -146,7 +147,7 @@ public class FlatLevelGeneratorPresets {
 				FlatLevelGeneratorPresets.BOTTOMLESS_PIT,
 				Items.FEATHER,
 				BiomeKeys.PLAINS,
-				Set.of(StructureSetKeys.VILLAGES),
+				ImmutableSet.of(StructureSetKeys.VILLAGES),
 				false,
 				false,
 				new FlatChunkGeneratorLayer(1, Blocks.GRASS_BLOCK),
@@ -157,7 +158,7 @@ public class FlatLevelGeneratorPresets {
 				FlatLevelGeneratorPresets.DESERT,
 				Blocks.SAND,
 				BiomeKeys.DESERT,
-				Set.of(StructureSetKeys.VILLAGES, StructureSetKeys.DESERT_PYRAMIDS, StructureSetKeys.MINESHAFTS, StructureSetKeys.STRONGHOLDS),
+				ImmutableSet.of(StructureSetKeys.VILLAGES, StructureSetKeys.DESERT_PYRAMIDS, StructureSetKeys.MINESHAFTS, StructureSetKeys.STRONGHOLDS),
 				true,
 				false,
 				new FlatChunkGeneratorLayer(8, Blocks.SAND),
@@ -169,7 +170,7 @@ public class FlatLevelGeneratorPresets {
 				FlatLevelGeneratorPresets.REDSTONE_READY,
 				Items.REDSTONE,
 				BiomeKeys.DESERT,
-				Set.of(),
+				ImmutableSet.of(),
 				false,
 				false,
 				new FlatChunkGeneratorLayer(116, Blocks.SANDSTONE),
@@ -177,7 +178,7 @@ public class FlatLevelGeneratorPresets {
 				new FlatChunkGeneratorLayer(1, Blocks.BEDROCK)
 			);
 			return this.createAndRegister(
-				FlatLevelGeneratorPresets.THE_VOID, Blocks.BARRIER, BiomeKeys.THE_VOID, Set.of(), true, false, new FlatChunkGeneratorLayer(1, Blocks.AIR)
+				FlatLevelGeneratorPresets.THE_VOID, Blocks.BARRIER, BiomeKeys.THE_VOID, ImmutableSet.of(), true, false, new FlatChunkGeneratorLayer(1, Blocks.AIR)
 			);
 		}
 	}

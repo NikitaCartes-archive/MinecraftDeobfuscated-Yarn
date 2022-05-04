@@ -185,7 +185,7 @@ public final class Material {
 		.notSolid()
 		.destroyedByPiston()
 		.build();
-	public static final Material field_38977 = new Material.Builder(MapColor.CLEAR).build();
+	public static final Material FROGLIGHT = new Material.Builder(MapColor.CLEAR).build();
 	private final MapColor color;
 	private final PistonBehavior pistonBehavior;
 	private final boolean blocksMovement;

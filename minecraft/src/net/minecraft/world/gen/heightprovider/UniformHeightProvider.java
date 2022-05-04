@@ -38,7 +38,7 @@ public class UniformHeightProvider extends HeightProvider {
 	}
 
 	@Override
-	public int get(AbstractRandom abstractRandom, HeightContext context) {
+	public int get(AbstractRandom random, HeightContext context) {
 		int i = this.minOffset.getY(context);
 		int j = this.maxOffset.getY(context);
 		if (i > j) {
@@ -48,7 +48,7 @@ public class UniformHeightProvider extends HeightProvider {
 
 			return i;
 		} else {
-			return MathHelper.nextBetween(abstractRandom, i, j);
+			return MathHelper.nextBetween(random, i, j);
 		}
 	}
 

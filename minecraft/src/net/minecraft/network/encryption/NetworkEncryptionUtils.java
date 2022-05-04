@@ -4,9 +4,6 @@ import com.google.common.primitives.Longs;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import it.unimi.dsi.fastutil.bytes.ByteArrays;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -15,14 +12,10 @@ import java.security.MessageDigest;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
-import java.security.Signature;
-import java.security.SignatureException;
 import java.security.spec.EncodedKeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.time.Instant;
 import java.util.Base64;
-import java.util.UUID;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
@@ -44,6 +37,7 @@ public class NetworkEncryptionUtils {
 	private static final int RSA_KEY_LENGTH = 1024;
 	private static final String ISO_8859_1 = "ISO_8859_1";
 	private static final String SHA1 = "SHA-1";
+	public static final String SHA256_WITH_RSA = "SHA256withRSA";
 	private static final String RSA_PRIVATE_KEY_PREFIX = "-----BEGIN RSA PRIVATE KEY-----";
 	private static final String RSA_PRIVATE_KEY_SUFFIX = "-----END RSA PRIVATE KEY-----";
 	public static final String RSA_PUBLIC_KEY_PREFIX = "-----BEGIN RSA PUBLIC KEY-----";
@@ -348,35 +342,6 @@ public class NetworkEncryptionUtils {
 		} catch (Exception var3) {
 			throw new NetworkEncryptionException(var3);
 		}
-	}
-
-	/**
-	 * Updates {@code signature} with the passed parameters.
-	 * 
-	 * @apiNote This is used when signing chat message contents.
-	 * 
-	 * @implNote The data to be signed is {@code salt}, followed by big-endian ordered
-	 * {@code uuid}, followed by {@code time} as seconds from the UTC epoch, followed by
-	 * UTF-8 encoded {@code message} bytes.
-	 * 
-	 * @throws SignatureException when updating signature fails
-	 * 
-	 * @see net.minecraft.client.network.ClientPlayerEntity#signChatMessage(Instant, String)
-	 */
-	public static void updateSignature(Signature signature, long salt, UUID uuid, Instant time, String message) throws SignatureException {
-		signature.update(Longs.toByteArray(salt));
-		signature.update(uuidToBytes(uuid.getMostSignificantBits(), uuid.getLeastSignificantBits()));
-		signature.update(Longs.toByteArray(time.getEpochSecond()));
-		signature.update(message.getBytes(StandardCharsets.UTF_8));
-	}
-
-	/**
-	 * {@return the UUID converted to a big-endian byte array}
-	 */
-	private static byte[] uuidToBytes(long mostSignificant, long leastSignificant) {
-		ByteBuffer byteBuffer = ByteBuffer.allocate(16).order(ByteOrder.BIG_ENDIAN);
-		byteBuffer.putLong(mostSignificant).putLong(leastSignificant);
-		return byteBuffer.array();
 	}
 
 	/**

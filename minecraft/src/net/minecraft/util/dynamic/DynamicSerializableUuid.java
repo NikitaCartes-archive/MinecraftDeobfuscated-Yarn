@@ -11,6 +11,7 @@ import net.minecraft.util.Util;
 public final class DynamicSerializableUuid {
 	public static final Codec<UUID> CODEC = Codec.INT_STREAM
 		.comapFlatMap(uuidStream -> Util.toArray(uuidStream, 4).map(DynamicSerializableUuid::toUuid), uuid -> Arrays.stream(toIntArray(uuid)));
+	public static final int field_39211 = 16;
 	private static final String OFFLINE_PLAYER_UUID_PREFIX = "OfflinePlayer:";
 
 	private DynamicSerializableUuid() {

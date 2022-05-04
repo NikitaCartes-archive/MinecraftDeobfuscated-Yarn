@@ -65,7 +65,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	private static final Vec3i ITEM_PICKUP_RANGE_EXPANDER = new Vec3i(1, 1, 1);
 	private static final int field_38934 = 5;
 	protected static final ImmutableList<SensorType<? extends Sensor<? super AllayEntity>>> SENSORS = ImmutableList.of(
-		SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.NEAREST_ITEMS
+		SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.HURT_BY, SensorType.NEAREST_ITEMS
 	);
 	protected static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(
 		MemoryModuleType.PATH,
@@ -73,6 +73,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 		MemoryModuleType.VISIBLE_MOBS,
 		MemoryModuleType.WALK_TARGET,
 		MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
+		MemoryModuleType.HURT_BY,
 		MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM,
 		MemoryModuleType.LIKED_PLAYER,
 		MemoryModuleType.LIKED_NOTEBLOCK,
@@ -295,7 +296,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	@Override
 	public boolean canGather(ItemStack stack) {
 		ItemStack itemStack = this.getStackInHand(Hand.MAIN_HAND);
-		return !itemStack.isEmpty() && itemStack.isItemEqual(stack) && this.inventory.canInsert(itemStack);
+		return !itemStack.isEmpty() && itemStack.isItemEqual(stack) && this.inventory.canInsert(stack);
 	}
 
 	@Override
@@ -347,7 +348,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 
 	@Override
 	public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, GameEvent.Emitter emitter) {
-		if (this.isAiDisabled()) {
+		if (this.world != world || this.isRemoved() || this.isAiDisabled()) {
 			return false;
 		} else if (!this.brain.hasMemoryModule(MemoryModuleType.LIKED_NOTEBLOCK)) {
 			return true;
@@ -374,6 +375,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
+		nbt.put("Inventory", this.inventory.toNbtList());
 		VibrationListener.createCodec(this)
 			.encodeStart(NbtOps.INSTANCE, this.gameEventHandler.getListener())
 			.resultOrPartial(field_39045::error)
@@ -383,11 +385,17 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
+		this.inventory.readNbtList(nbt.getList("Inventory", NbtElement.COMPOUND_TYPE));
 		if (nbt.contains("listener", NbtElement.COMPOUND_TYPE)) {
 			VibrationListener.createCodec(this)
 				.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("listener")))
 				.resultOrPartial(field_39045::error)
 				.ifPresent(vibrationListener -> this.gameEventHandler.setListener(vibrationListener, this.world));
 		}
+	}
+
+	@Override
+	protected boolean shouldFollowLeash() {
+		return false;
 	}
 }

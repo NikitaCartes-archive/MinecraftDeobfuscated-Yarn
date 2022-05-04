@@ -3,6 +3,7 @@ package net.minecraft.server.command;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.TextArgumentType;
+import net.minecraft.network.MessageType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Texts;
 
@@ -12,16 +13,24 @@ public class TellRawCommand {
 			CommandManager.literal("tellraw")
 				.requires(source -> source.hasPermissionLevel(2))
 				.then(
-					CommandManager.argument("targets", EntityArgumentType.players()).then(CommandManager.argument("message", TextArgumentType.text()).executes(context -> {
-						int i = 0;
+					CommandManager.argument("targets", EntityArgumentType.players())
+						.then(
+							CommandManager.argument("message", TextArgumentType.text())
+								.executes(
+									context -> {
+										int i = 0;
 
-						for (ServerPlayerEntity serverPlayerEntity : EntityArgumentType.getPlayers(context, "targets")) {
-							serverPlayerEntity.sendMessage(Texts.parse(context.getSource(), TextArgumentType.getTextArgument(context, "message"), serverPlayerEntity, 0));
-							i++;
-						}
+										for (ServerPlayerEntity serverPlayerEntity : EntityArgumentType.getPlayers(context, "targets")) {
+											serverPlayerEntity.sendMessage(
+												Texts.parse(context.getSource(), TextArgumentType.getTextArgument(context, "message"), serverPlayerEntity, 0), MessageType.TELLRAW_COMMAND
+											);
+											i++;
+										}
 
-						return i;
-					}))
+										return i;
+									}
+								)
+						)
 				)
 		);
 	}

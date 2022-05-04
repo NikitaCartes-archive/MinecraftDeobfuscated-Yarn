@@ -126,7 +126,7 @@ public class LootPool {
 			return this;
 		}
 
-		public LootPool.Builder getThis() {
+		public LootPool.Builder getThisFunctionConsumingBuilder() {
 			return this;
 		}
 

@@ -15,7 +15,7 @@ public class RootSystemFeatureConfig implements FeatureConfig {
 					PlacedFeature.REGISTRY_CODEC.fieldOf("feature").forGetter(config -> config.feature),
 					Codec.intRange(1, 64).fieldOf("required_vertical_space_for_tree").forGetter(config -> config.requiredVerticalSpaceForTree),
 					Codec.intRange(1, 64).fieldOf("root_radius").forGetter(config -> config.rootRadius),
-					TagKey.stringCodec(Registry.BLOCK_KEY).fieldOf("root_replaceable").forGetter(config -> config.rootReplaceable),
+					TagKey.codec(Registry.BLOCK_KEY).fieldOf("root_replaceable").forGetter(config -> config.rootReplaceable),
 					BlockStateProvider.TYPE_CODEC.fieldOf("root_state_provider").forGetter(config -> config.rootStateProvider),
 					Codec.intRange(1, 256).fieldOf("root_placement_attempts").forGetter(config -> config.rootPlacementAttempts),
 					Codec.intRange(1, 4096).fieldOf("root_column_max_height").forGetter(config -> config.maxRootColumnHeight),

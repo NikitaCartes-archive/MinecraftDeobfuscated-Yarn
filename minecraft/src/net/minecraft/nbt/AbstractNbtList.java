@@ -12,8 +12,20 @@ public abstract class AbstractNbtList<T extends NbtElement> extends AbstractList
 
 	public abstract T remove(int i);
 
+	/**
+	 * Sets the element at {@code index} to {@code element}. Does nothing if
+	 * the types were incompatible.
+	 * 
+	 * @return whether the element was actually set
+	 */
 	public abstract boolean setElement(int index, NbtElement element);
 
+	/**
+	 * Inserts {@code element} at {@code index}. Does nothing if the
+	 * types were incompatible.
+	 * 
+	 * @return whether the element was actually added
+	 */
 	public abstract boolean addElement(int index, NbtElement element);
 
 	/**

@@ -19,7 +19,7 @@ public class KeybindTextContent implements TextContent {
 
 	private Text getTranslated() {
 		if (this.translated == null) {
-			this.translated = (Supplier<Text>)KeybindTranslations.FACTORY.apply(this.key);
+			this.translated = (Supplier<Text>)KeybindTranslations.factory.apply(this.key);
 		}
 
 		return (Text)this.translated.get();
@@ -35,11 +35,11 @@ public class KeybindTextContent implements TextContent {
 		return this.getTranslated().visit(visitor, style);
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
 		} else {
-			if (object instanceof KeybindTextContent keybindTextContent && this.key.equals(keybindTextContent.key)) {
+			if (o instanceof KeybindTextContent keybindTextContent && this.key.equals(keybindTextContent.key)) {
 				return true;
 			}
 

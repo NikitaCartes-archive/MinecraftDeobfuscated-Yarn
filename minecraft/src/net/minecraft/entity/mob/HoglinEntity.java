@@ -248,7 +248,7 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	}
 
 	@Override
-	protected boolean shouldDropXp() {
+	public boolean shouldDropXp() {
 		return true;
 	}
 

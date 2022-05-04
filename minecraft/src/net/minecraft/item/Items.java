@@ -3,13 +3,14 @@ package net.minecraft.item;
 import java.util.Optional;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.tag.BannerPatternTags;
+import net.minecraft.tag.InstrumentTags;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
@@ -1539,24 +1540,27 @@ public class Items {
 	);
 	public static final Item LOOM = register(Blocks.LOOM, ItemGroup.DECORATIONS);
 	public static final Item FLOWER_BANNER_PATTERN = register(
-		"flower_banner_pattern", new BannerPatternItem(BannerPattern.FLOWER, new Item.Settings().maxCount(1).group(ItemGroup.MISC))
+		"flower_banner_pattern", new BannerPatternItem(BannerPatternTags.FLOWER_PATTERN_ITEM, new Item.Settings().maxCount(1).group(ItemGroup.MISC))
 	);
 	public static final Item CREEPER_BANNER_PATTERN = register(
-		"creeper_banner_pattern", new BannerPatternItem(BannerPattern.CREEPER, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.UNCOMMON))
+		"creeper_banner_pattern",
+		new BannerPatternItem(BannerPatternTags.CREEPER_PATTERN_ITEM, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.UNCOMMON))
 	);
 	public static final Item SKULL_BANNER_PATTERN = register(
-		"skull_banner_pattern", new BannerPatternItem(BannerPattern.SKULL, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.UNCOMMON))
+		"skull_banner_pattern",
+		new BannerPatternItem(BannerPatternTags.SKULL_PATTERN_ITEM, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.UNCOMMON))
 	);
 	public static final Item MOJANG_BANNER_PATTERN = register(
-		"mojang_banner_pattern", new BannerPatternItem(BannerPattern.MOJANG, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.EPIC))
+		"mojang_banner_pattern",
+		new BannerPatternItem(BannerPatternTags.MOJANG_PATTERN_ITEM, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.EPIC))
 	);
 	public static final Item GLOBE_BANNER_PATTERN = register(
-		"globe_banner_pattern", new BannerPatternItem(BannerPattern.GLOBE, new Item.Settings().maxCount(1).group(ItemGroup.MISC))
+		"globe_banner_pattern", new BannerPatternItem(BannerPatternTags.GLOBE_PATTERN_ITEM, new Item.Settings().maxCount(1).group(ItemGroup.MISC))
 	);
 	public static final Item PIGLIN_BANNER_PATTERN = register(
-		"piglin_banner_pattern", new BannerPatternItem(BannerPattern.PIGLIN, new Item.Settings().maxCount(1).group(ItemGroup.MISC))
+		"piglin_banner_pattern", new BannerPatternItem(BannerPatternTags.PIGLIN_PATTERN_ITEM, new Item.Settings().maxCount(1).group(ItemGroup.MISC))
 	);
-	public static final Item GOAT_HORN = register("goat_horn", new GoatHornItem(new Item.Settings().group(ItemGroup.MISC).maxCount(1)));
+	public static final Item GOAT_HORN = register("goat_horn", new GoatHornItem(new Item.Settings().group(ItemGroup.MISC).maxCount(1), InstrumentTags.GOAT_HORNS));
 	public static final Item COMPOSTER = register(Blocks.COMPOSTER, ItemGroup.DECORATIONS);
 	public static final Item BARREL = register(Blocks.BARREL, ItemGroup.DECORATIONS);
 	public static final Item SMOKER = register(Blocks.SMOKER, ItemGroup.DECORATIONS);

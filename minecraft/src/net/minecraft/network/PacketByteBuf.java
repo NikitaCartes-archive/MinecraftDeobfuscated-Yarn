@@ -75,13 +75,13 @@ import net.minecraft.util.registry.Registry;
  *  <td>{@link net.minecraft.util.registry.Registry} value</td><td>{@link #readRegistryValue(IndexedIterable)}</td><td>{@link #writeRegistryValue(IndexedIterable, Object)}</td>
  * </tr>
  * <tr>
- *  <td>{@link Collection}</td><td>{@link #readCollection(IntFunction, Function)}</td><td>{@link #writeCollection(Collection, BiConsumer)}</td>
+ *  <td>{@link Collection}</td><td>{@link #readCollection(IntFunction, PacketByteBuf.PacketReader)}</td><td>{@link #writeCollection(Collection, PacketByteBuf.PacketWriter)}</td>
  * </tr>
  * <tr>
  *  <td>{@link IntList}</td><td>{@link #readIntList()}</td><td>{@link #writeIntList(IntList)}</td>
  * </tr>
  * <tr>
- *  <td>{@link Map}</td><td>{@link #readMap(IntFunction, Function, Function)}</td><td>{@link #writeMap(Map, BiConsumer, BiConsumer)}</td>
+ *  <td>{@link Map}</td><td>{@link #readMap(IntFunction, PacketByteBuf.PacketReader, PacketByteBuf.PacketReader)}</td><td>{@link #writeMap(Map, PacketByteBuf.PacketWriter, PacketByteBuf.PacketWriter)}</td>
  * </tr>
  * <tr>
  *  <td>{@code byte[]}</td><td>{@link #readByteArray()}</td><td>{@link #writeByteArray(byte[])}</td>
@@ -144,10 +144,13 @@ import net.minecraft.util.registry.Registry;
  *  <td>{@link BitSet}</td><td>{@link #readBitSet()}</td><td>{@link #writeBitSet(BitSet)}</td>
  * </tr>
  * <tr>
- *  <td>{@link Optional}</td><td>{@link #readOptional(Function)}</td><td>{@link #writeOptional(Optional, BiConsumer)}</td>
+ *  <td>{@link Optional}</td><td>{@link #readOptional(PacketByteBuf.PacketReader)}</td><td>{@link #writeOptional(Optional, PacketByteBuf.PacketWriter)}</td>
  * </tr>
  * <tr>
- *  <td>{@index Either}</td><td>{@link #readEither(Function, Function)}</td><td>{@link #writeEither(Either, BiConsumer, BiConsumer)}</td>
+ *  <td>Nullable value</td><td>{@link #readNullable(PacketByteBuf.PacketReader)}</td><td>{@link #writeNullable(Object, PacketByteBuf.PacketWriter)}</td>
+ * </tr>
+ * <tr>
+ *  <td>{@index Either}</td><td>{@link #readEither(PacketByteBuf.PacketReader, PacketByteBuf.PacketReader)}</td><td>{@link #writeEither(Either, PacketByteBuf.PacketWriter, PacketByteBuf.PacketWriter)}</td>
  * </tr>
  * </table></div>
  * 
@@ -336,18 +339,17 @@ public class PacketByteBuf extends ByteBuf {
 	 * @param <T> the collection's entry type
 	 * @param <C> the collection's type
 	 * @return the read collection
-	 * @see #writeCollection(Collection, BiConsumer)
-	 * @see #readList(Function)
+	 * @see #writeCollection(Collection, PacketByteBuf.PacketWriter)
+	 * @see #readList(PacketByteBuf.PacketReader)
 	 * 
 	 * @param collectionFactory a factory that creates a collection with a given size
-	 * @param entryParser a parser that parses each entry for the collection given this buf
 	 */
-	public <T, C extends Collection<T>> C readCollection(IntFunction<C> collectionFactory, Function<PacketByteBuf, T> entryParser) {
+	public <T, C extends Collection<T>> C readCollection(IntFunction<C> collectionFactory, PacketByteBuf.PacketReader<T> reader) {
 		int i = this.readVarInt();
 		C collection = (C)collectionFactory.apply(i);
 
 		for (int j = 0; j < i; j++) {
-			collection.add(entryParser.apply(this));
+			collection.add(reader.apply(this));
 		}
 
 		return collection;
@@ -359,16 +361,15 @@ public class PacketByteBuf extends ByteBuf {
 	 * sequentially.
 	 * 
 	 * @param <T> the list's entry type
-	 * @see #readCollection(IntFunction, Function)
+	 * @see #readCollection(IntFunction, PacketByteBuf.PacketReader)
 	 * 
 	 * @param collection the collection to write
-	 * @param entrySerializer a serializer that writes each entry to this buf
 	 */
-	public <T> void writeCollection(Collection<T> collection, BiConsumer<PacketByteBuf, T> entrySerializer) {
+	public <T> void writeCollection(Collection<T> collection, PacketByteBuf.PacketWriter<T> writer) {
 		this.writeVarInt(collection.size());
 
 		for (T object : collection) {
-			entrySerializer.accept(this, object);
+			writer.accept(this, object);
 		}
 	}
 
@@ -377,12 +378,10 @@ public class PacketByteBuf extends ByteBuf {
 	 * 
 	 * @param <T> the list's entry type
 	 * @return the read list
-	 * @see #readCollection(IntFunction, Function)
-	 * 
-	 * @param entryParser a parser that parses each entry for the collection given this buf
+	 * @see #readCollection(IntFunction, PacketByteBuf.PacketReader)
 	 */
-	public <T> List<T> readList(Function<PacketByteBuf, T> entryParser) {
-		return this.readCollection(Lists::newArrayListWithCapacity, entryParser);
+	public <T> List<T> readList(PacketByteBuf.PacketReader<T> reader) {
+		return this.readCollection(Lists::newArrayListWithCapacity, reader);
 	}
 
 	/**
@@ -434,20 +433,18 @@ public class PacketByteBuf extends ByteBuf {
 	 * @param <V> the value type
 	 * @param <M> the map type
 	 * @return the read map
-	 * @see #writeMap(Map, BiConsumer, BiConsumer)
-	 * @see #readMap(Function, Function)
+	 * @see #writeMap(Map, PacketByteBuf.PacketWriter, PacketByteBuf.PacketWriter)
+	 * @see #readMap(PacketByteBuf.PacketReader, PacketByteBuf.PacketReader)
 	 * 
 	 * @param mapFactory a factory that creates a map with a given size
-	 * @param keyParser a parser that parses each key for the map given this buf
-	 * @param valueParser a parser that parses each value for the map given this buf
 	 */
-	public <K, V, M extends Map<K, V>> M readMap(IntFunction<M> mapFactory, Function<PacketByteBuf, K> keyParser, Function<PacketByteBuf, V> valueParser) {
+	public <K, V, M extends Map<K, V>> M readMap(IntFunction<M> mapFactory, PacketByteBuf.PacketReader<K> keyReader, PacketByteBuf.PacketReader<V> valueReader) {
 		int i = this.readVarInt();
 		M map = (M)mapFactory.apply(i);
 
 		for (int j = 0; j < i; j++) {
-			K object = (K)keyParser.apply(this);
-			V object2 = (V)valueParser.apply(this);
+			K object = (K)keyReader.apply(this);
+			V object2 = (V)valueReader.apply(this);
 			map.put(object, object2);
 		}
 
@@ -460,13 +457,10 @@ public class PacketByteBuf extends ByteBuf {
 	 * @param <K> the key type
 	 * @param <V> the value type
 	 * @return the read map
-	 * @see #readMap(IntFunction, Function, Function)
-	 * 
-	 * @param keyParser a parser that parses each key for the map given this buf
-	 * @param valueParser a parser that parses each value for the map given this buf
+	 * @see #readMap(IntFunction, PacketByteBuf.PacketReader, PacketByteBuf.PacketReader)
 	 */
-	public <K, V> Map<K, V> readMap(Function<PacketByteBuf, K> keyParser, Function<PacketByteBuf, V> valueParser) {
-		return this.readMap(Maps::newHashMapWithExpectedSize, keyParser, valueParser);
+	public <K, V> Map<K, V> readMap(PacketByteBuf.PacketReader<K> keyReader, PacketByteBuf.PacketReader<V> valueReader) {
+		return this.readMap(Maps::newHashMapWithExpectedSize, keyReader, valueReader);
 	}
 
 	/**
@@ -476,17 +470,15 @@ public class PacketByteBuf extends ByteBuf {
 	 * 
 	 * @param <K> the key type
 	 * @param <V> the value type
-	 * @see #readMap(IntFunction, Function, Function)
+	 * @see #readMap(IntFunction, PacketByteBuf.PacketReader, PacketByteBuf.PacketReader)
 	 * 
 	 * @param map the map to write
-	 * @param keySerializer a serializer that writes each key in the map to this buf
-	 * @param valueSerializer a serializer that writes each value in the map to this buf
 	 */
-	public <K, V> void writeMap(Map<K, V> map, BiConsumer<PacketByteBuf, K> keySerializer, BiConsumer<PacketByteBuf, V> valueSerializer) {
+	public <K, V> void writeMap(Map<K, V> map, PacketByteBuf.PacketWriter<K> keyWriter, PacketByteBuf.PacketWriter<V> valueWriter) {
 		this.writeVarInt(map.size());
 		map.forEach((key, value) -> {
-			keySerializer.accept(this, key);
-			valueSerializer.accept(this, value);
+			keyWriter.accept(this, key);
+			valueWriter.accept(this, value);
 		});
 	}
 
@@ -495,7 +487,7 @@ public class PacketByteBuf extends ByteBuf {
 	 * {@linkplain #readVarInt() var int} {@code size} followed by the entries
 	 * sequentially. The {@code consumer} will be called {@code size} times.
 	 * 
-	 * @see #readCollection(IntFunction, Function)
+	 * @see #readCollection(IntFunction, PacketByteBuf.PacketReader)
 	 * 
 	 * @param consumer the consumer to read entries
 	 */
@@ -512,12 +504,12 @@ public class PacketByteBuf extends ByteBuf {
 	 * a boolean indicating if the value is present, followed by the value only if
 	 * the value is present.
 	 * 
-	 * @see #readOptional(Function)
+	 * @see #readOptional(PacketByteBuf.PacketReader)
 	 */
-	public <T> void writeOptional(Optional<T> value, BiConsumer<PacketByteBuf, T> serializer) {
+	public <T> void writeOptional(Optional<T> value, PacketByteBuf.PacketWriter<T> writer) {
 		if (value.isPresent()) {
 			this.writeBoolean(true);
-			serializer.accept(this, value.get());
+			writer.accept(this, value.get());
 		} else {
 			this.writeBoolean(false);
 		}
@@ -529,10 +521,39 @@ public class PacketByteBuf extends ByteBuf {
 	 * the value is present.
 	 * 
 	 * @return the read optional value
-	 * @see #writeOptional(Optional, BiConsumer)
+	 * @see #writeOptional(Optional, PacketByteBuf.PacketWriter)
 	 */
-	public <T> Optional<T> readOptional(Function<PacketByteBuf, T> parser) {
-		return this.readBoolean() ? Optional.of(parser.apply(this)) : Optional.empty();
+	public <T> Optional<T> readOptional(PacketByteBuf.PacketReader<T> reader) {
+		return this.readBoolean() ? Optional.of(reader.apply(this)) : Optional.empty();
+	}
+
+	/**
+	 * Reads a nullable value from this buf. A nullable value is represented by
+	 * a boolean indicating if the value is not null, followed by the value only if
+	 * the value is not null.
+	 * 
+	 * @return the read nullable value
+	 * @see #writeNullable(Object, PacketByteBuf.PacketWriter)
+	 */
+	@Nullable
+	public <T> T readNullable(PacketByteBuf.PacketReader<T> reader) {
+		return (T)(this.readBoolean() ? reader.apply(this) : null);
+	}
+
+	/**
+	 * Writes a nullable value to this buf. A nullable value is represented by
+	 * a boolean indicating if the value is not null, followed by the value only if
+	 * the value is not null.
+	 * 
+	 * @see #readNullable(PacketByteBuf.PacketReader)
+	 */
+	public <T> void writeNullable(@Nullable T value, PacketByteBuf.PacketWriter<T> writer) {
+		if (value != null) {
+			this.writeBoolean(true);
+			writer.accept(this, value);
+		} else {
+			this.writeBoolean(false);
+		}
 	}
 
 	/**
@@ -540,15 +561,15 @@ public class PacketByteBuf extends ByteBuf {
 	 * a boolean indicating if the left side or the right side of the either,
 	 * followed by the value.
 	 * 
-	 * @see #readEither(Function, Function)
+	 * @see #readEither(PacketByteBuf.PacketReader, PacketByteBuf.PacketReader)
 	 */
-	public <L, R> void writeEither(Either<L, R> either, BiConsumer<PacketByteBuf, L> leftSerializer, BiConsumer<PacketByteBuf, R> rightSerializer) {
+	public <L, R> void writeEither(Either<L, R> either, PacketByteBuf.PacketWriter<L> leftWriter, PacketByteBuf.PacketWriter<R> rightWriter) {
 		either.ifLeft(object -> {
 			this.writeBoolean(true);
-			leftSerializer.accept(this, object);
+			leftWriter.accept(this, object);
 		}).ifRight(object -> {
 			this.writeBoolean(false);
-			rightSerializer.accept(this, object);
+			rightWriter.accept(this, object);
 		});
 	}
 
@@ -558,10 +579,10 @@ public class PacketByteBuf extends ByteBuf {
 	 * followed by the value.
 	 * 
 	 * @return the read either
-	 * @see #writeEither(Either, BiConsumer, BiConsumer)
+	 * @see #writeEither(Either, PacketByteBuf.PacketWriter, PacketByteBuf.PacketWriter)
 	 */
-	public <L, R> Either<L, R> readEither(Function<PacketByteBuf, L> leftParser, Function<PacketByteBuf, R> rightParser) {
-		return this.readBoolean() ? Either.left((L)leftParser.apply(this)) : Either.right((R)rightParser.apply(this));
+	public <L, R> Either<L, R> readEither(PacketByteBuf.PacketReader<L> leftReader, PacketByteBuf.PacketReader<R> rightReader) {
+		return this.readBoolean() ? Either.left((L)leftReader.apply(this)) : Either.right((R)rightReader.apply(this));
 	}
 
 	/**
@@ -2379,5 +2400,25 @@ public class PacketByteBuf extends ByteBuf {
 	@Override
 	public boolean release(int decrement) {
 		return this.parent.release(decrement);
+	}
+
+	/**
+	 * A functional interface to read a value from {@link PacketByteBuf}.
+	 */
+	@FunctionalInterface
+	public interface PacketReader<T> extends Function<PacketByteBuf, T> {
+		default PacketByteBuf.PacketReader<Optional<T>> asOptional() {
+			return buf -> buf.readOptional(this);
+		}
+	}
+
+	/**
+	 * A functional interface to write a value to {@link PacketByteBuf}.
+	 */
+	@FunctionalInterface
+	public interface PacketWriter<T> extends BiConsumer<PacketByteBuf, T> {
+		default PacketByteBuf.PacketWriter<Optional<T>> asOptional() {
+			return (buf, value) -> buf.writeOptional(value, this);
+		}
 	}
 }

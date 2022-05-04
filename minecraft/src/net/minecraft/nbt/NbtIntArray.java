@@ -10,7 +10,10 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
 import org.apache.commons.lang3.ArrayUtils;
 
 /**
- * Represents an NBT 32-bit integer array.
+ * Represents an NBT 32-bit integer array. This object is mutable and backed by
+ * {@code int[]}. Its type is {@value NbtElement#INT_ARRAY_TYPE}. Like Java arrays,
+ * accessing indices that are out of bounds will throw {@link ArrayIndexOutOfBoundsException}.
+ * The backing array can be obtained via {@link #getIntArray()}.
  */
 public class NbtIntArray extends AbstractNbtList<NbtInt> {
 	private static final int SIZE = 192;
@@ -114,6 +117,12 @@ public class NbtIntArray extends AbstractNbtList<NbtInt> {
 		return Arrays.hashCode(this.value);
 	}
 
+	/**
+	 * {@return the underlying int array}
+	 * 
+	 * @apiNote This does not copy the array, so modifications to the returned array
+	 * also apply to this NBT int array.
+	 */
 	public int[] getIntArray() {
 		return this.value;
 	}

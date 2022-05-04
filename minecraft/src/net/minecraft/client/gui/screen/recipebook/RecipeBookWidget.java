@@ -200,7 +200,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 		String string = this.searchField.getText();
 		if (!string.isEmpty()) {
 			ObjectSet<RecipeResultCollection> objectSet = new ObjectLinkedOpenHashSet<>(
-				this.client.getSearchableContainer(SearchManager.RECIPE_OUTPUT).findAll(string.toLowerCase(Locale.ROOT))
+				this.client.getSearchProvider(SearchManager.RECIPE_OUTPUT).findAll(string.toLowerCase(Locale.ROOT))
 			);
 			list2.removeIf(recipeResultCollection -> !objectSet.contains(recipeResultCollection));
 		}

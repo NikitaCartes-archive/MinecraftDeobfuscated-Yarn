@@ -60,8 +60,8 @@ public class TagPacketSerializer {
 
 	/**
 	 * A serialization-friendly POJO representation of a {@linkplain
-	 * RegistryEntryList registry entry list} of tags. This allows easy transport
-	 * of tags over Minecraft network protocol.
+	 * net.minecraft.util.registry.RegistryEntryList registry entry list} of tags.
+	 * This allows easy transport of tags over Minecraft network protocol.
 	 * 
 	 * <p>This stores tag entries with raw integer IDs and requires a registry
 	 * for raw ID access to serialize or deserialize tags.

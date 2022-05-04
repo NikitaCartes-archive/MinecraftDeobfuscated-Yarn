@@ -133,7 +133,7 @@ public class VineBlock extends Block {
 	}
 
 	public static boolean shouldConnectTo(BlockView world, BlockPos pos, Direction direction) {
-		return AbstractLichenBlock.canGrowOn(world, direction, pos, world.getBlockState(pos));
+		return MultifaceGrowthBlock.canGrowOn(world, direction, pos, world.getBlockState(pos));
 	}
 
 	private BlockState getPlacementShape(BlockState state, BlockView world, BlockPos pos) {

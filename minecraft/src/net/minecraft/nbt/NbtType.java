@@ -44,6 +44,13 @@ public interface NbtType<T extends NbtElement> {
 
 	String getCommandFeedbackName();
 
+	/**
+	 * {@return an invalid NBT type}
+	 * 
+	 * <p>Operations with an invalid NBT type always throws {@link IOException}.
+	 * 
+	 * @see NbtTypes#byId(int)
+	 */
 	static NbtType<NbtEnd> createInvalid(int type) {
 		return new NbtType<NbtEnd>() {
 			private IOException createException() {
@@ -81,6 +88,9 @@ public interface NbtType<T extends NbtElement> {
 		};
 	}
 
+	/**
+	 * Represents an NBT type whose elements have a fixed size, such as primitives.
+	 */
 	public interface OfFixedSize<T extends NbtElement> extends NbtType<T> {
 		@Override
 		default void skip(DataInput input) throws IOException {
@@ -92,9 +102,15 @@ public interface NbtType<T extends NbtElement> {
 			input.skipBytes(this.getSizeInBytes() * count);
 		}
 
+		/**
+		 * {@return the size of the elements in bytes}
+		 */
 		int getSizeInBytes();
 	}
 
+	/**
+	 * Represents an NBT type whose elements can have a variable size, such as lists.
+	 */
 	public interface OfVariableSize<T extends NbtElement> extends NbtType<T> {
 		@Override
 		default void skip(DataInput input, int count) throws IOException {

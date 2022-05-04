@@ -46,7 +46,7 @@ public class LoginKeyC2SPacket implements Packet<ServerLoginPacketListener> {
 	@Override
 	public void write(PacketByteBuf buf) {
 		buf.writeByteArray(this.encryptedSecretKey);
-		buf.writeEither(this.nonce, PacketByteBuf::writeByteArray, (bufx, signature) -> signature.write(bufx));
+		buf.writeEither(this.nonce, PacketByteBuf::writeByteArray, (buf2, signature) -> signature.write(buf2));
 	}
 
 	public void apply(ServerLoginPacketListener serverLoginPacketListener) {
@@ -57,7 +57,7 @@ public class LoginKeyC2SPacket implements Packet<ServerLoginPacketListener> {
 		return NetworkEncryptionUtils.decryptSecretKey(privateKey, this.encryptedSecretKey);
 	}
 
-	public boolean verifySignedNonce(byte[] nonce, PlayerPublicKey.PublicKeyData publicKeyInfo) {
+	public boolean verifySignedNonce(byte[] nonce, PlayerPublicKey publicKeyInfo) {
 		return this.nonce.<Boolean>map(encrypted -> false, signature -> {
 			try {
 				Signature signature2 = publicKeyInfo.createSignatureInstance();

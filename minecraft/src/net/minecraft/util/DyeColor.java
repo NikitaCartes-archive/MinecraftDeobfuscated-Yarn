@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.block.MapColor;
+import org.jetbrains.annotations.Contract;
 
 public enum DyeColor implements StringIdentifiable {
 	WHITE(0, "white", 16383998, MapColor.WHITE, 15790320, 16777215),
@@ -86,7 +87,9 @@ public enum DyeColor implements StringIdentifiable {
 		return VALUES[id];
 	}
 
-	public static DyeColor byName(String name, DyeColor defaultColor) {
+	@Nullable
+	@Contract("_,!null->!null;_,null->_")
+	public static DyeColor byName(String name, @Nullable DyeColor defaultColor) {
 		for (DyeColor dyeColor : values()) {
 			if (dyeColor.name.equals(name)) {
 				return dyeColor;

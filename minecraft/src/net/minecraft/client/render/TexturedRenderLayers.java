@@ -21,6 +21,8 @@ import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SignType;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 
 @Environment(EnvType.CLIENT)
 public class TexturedRenderLayers {
@@ -48,9 +50,13 @@ public class TexturedRenderLayers {
 		.collect(ImmutableList.toImmutableList());
 	public static final Map<SignType, SpriteIdentifier> WOOD_TYPE_TEXTURES = (Map<SignType, SpriteIdentifier>)SignType.stream()
 		.collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::createSignTextureId));
-	public static final Map<BannerPattern, SpriteIdentifier> BANNER_PATTERN_TEXTURES = (Map<BannerPattern, SpriteIdentifier>)Arrays.stream(BannerPattern.values())
+	public static final Map<RegistryKey<BannerPattern>, SpriteIdentifier> BANNER_PATTERN_TEXTURES = (Map<RegistryKey<BannerPattern>, SpriteIdentifier>)Registry.BANNER_PATTERN
+		.getKeys()
+		.stream()
 		.collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::createBannerPatternTextureId));
-	public static final Map<BannerPattern, SpriteIdentifier> SHIELD_PATTERN_TEXTURES = (Map<BannerPattern, SpriteIdentifier>)Arrays.stream(BannerPattern.values())
+	public static final Map<RegistryKey<BannerPattern>, SpriteIdentifier> SHIELD_PATTERN_TEXTURES = (Map<RegistryKey<BannerPattern>, SpriteIdentifier>)Registry.BANNER_PATTERN
+		.getKeys()
+		.stream()
 		.collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::createShieldPatternTextureId));
 	public static final SpriteIdentifier[] BED_TEXTURES = (SpriteIdentifier[])Arrays.stream(DyeColor.values())
 		.sorted(Comparator.comparingInt(DyeColor::getId))
@@ -138,20 +144,20 @@ public class TexturedRenderLayers {
 		return (SpriteIdentifier)WOOD_TYPE_TEXTURES.get(signType);
 	}
 
-	private static SpriteIdentifier createBannerPatternTextureId(BannerPattern pattern) {
-		return new SpriteIdentifier(BANNER_PATTERNS_ATLAS_TEXTURE, pattern.getSpriteId(true));
+	private static SpriteIdentifier createBannerPatternTextureId(RegistryKey<BannerPattern> bannerPattern) {
+		return new SpriteIdentifier(BANNER_PATTERNS_ATLAS_TEXTURE, BannerPattern.getSpriteId(bannerPattern, true));
 	}
 
-	public static SpriteIdentifier getBannerPatternTextureId(BannerPattern pattern) {
-		return (SpriteIdentifier)BANNER_PATTERN_TEXTURES.get(pattern);
+	public static SpriteIdentifier getBannerPatternTextureId(RegistryKey<BannerPattern> bannerPattern) {
+		return (SpriteIdentifier)BANNER_PATTERN_TEXTURES.get(bannerPattern);
 	}
 
-	private static SpriteIdentifier createShieldPatternTextureId(BannerPattern pattern) {
-		return new SpriteIdentifier(SHIELD_PATTERNS_ATLAS_TEXTURE, pattern.getSpriteId(false));
+	private static SpriteIdentifier createShieldPatternTextureId(RegistryKey<BannerPattern> bannerPattern) {
+		return new SpriteIdentifier(SHIELD_PATTERNS_ATLAS_TEXTURE, BannerPattern.getSpriteId(bannerPattern, false));
 	}
 
-	public static SpriteIdentifier getShieldPatternTextureId(BannerPattern pattern) {
-		return (SpriteIdentifier)SHIELD_PATTERN_TEXTURES.get(pattern);
+	public static SpriteIdentifier getShieldPatternTextureId(RegistryKey<BannerPattern> bannerPattern) {
+		return (SpriteIdentifier)SHIELD_PATTERN_TEXTURES.get(bannerPattern);
 	}
 
 	private static SpriteIdentifier getChestTextureId(String variant) {

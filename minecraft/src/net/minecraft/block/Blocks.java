@@ -3535,17 +3535,15 @@ public class Blocks {
 	);
 	public static final Block OCHRE_FROGLIGHT = register(
 		"ochre_froglight",
-		new PillarBlock(AbstractBlock.Settings.of(Material.field_38977, MapColor.PALE_YELLOW).strength(0.3F).luminance(state -> 15).sounds(BlockSoundGroup.FROGLIGHT))
+		new PillarBlock(AbstractBlock.Settings.of(Material.FROGLIGHT, MapColor.PALE_YELLOW).strength(0.3F).luminance(state -> 15).sounds(BlockSoundGroup.FROGLIGHT))
 	);
 	public static final Block VERDANT_FROGLIGHT = register(
 		"verdant_froglight",
-		new PillarBlock(
-			AbstractBlock.Settings.of(Material.field_38977, MapColor.LICHEN_GREEN).strength(0.3F).luminance(state -> 15).sounds(BlockSoundGroup.FROGLIGHT)
-		)
+		new PillarBlock(AbstractBlock.Settings.of(Material.FROGLIGHT, MapColor.LICHEN_GREEN).strength(0.3F).luminance(state -> 15).sounds(BlockSoundGroup.FROGLIGHT))
 	);
 	public static final Block PEARLESCENT_FROGLIGHT = register(
 		"pearlescent_froglight",
-		new PillarBlock(AbstractBlock.Settings.of(Material.field_38977, MapColor.PINK).strength(0.3F).luminance(state -> 15).sounds(BlockSoundGroup.FROGLIGHT))
+		new PillarBlock(AbstractBlock.Settings.of(Material.FROGLIGHT, MapColor.PINK).strength(0.3F).luminance(state -> 15).sounds(BlockSoundGroup.FROGLIGHT))
 	);
 	public static final Block FROGSPAWN = register(
 		"frogspawn", new FrogspawnBlock(AbstractBlock.Settings.of(Material.FROGSPAWN).breakInstantly().nonOpaque().noCollision().sounds(BlockSoundGroup.FROGSPAWN))

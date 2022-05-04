@@ -11,7 +11,10 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
 import org.apache.commons.lang3.ArrayUtils;
 
 /**
- * Represents an NBT 64-bit integer array.
+ * Represents an NBT 64-bit integer array. This object is mutable and backed by
+ * {@code long[]}. Its type is {@value NbtElement#LONG_ARRAY_TYPE}. Like Java arrays,
+ * accessing indices that are out of bounds will throw {@link ArrayIndexOutOfBoundsException}.
+ * The backing array can be obtained via {@link #getLongArray()}.
  */
 public class NbtLongArray extends AbstractNbtList<NbtLong> {
 	private static final int SIZE = 192;
@@ -124,6 +127,12 @@ public class NbtLongArray extends AbstractNbtList<NbtLong> {
 		visitor.visitLongArray(this);
 	}
 
+	/**
+	 * {@return the underlying long array}
+	 * 
+	 * @apiNote This does not copy the array, so modifications to the returned array
+	 * also apply to this NBT long array.
+	 */
 	public long[] getLongArray() {
 		return this.value;
 	}

@@ -37,7 +37,7 @@ public record ChunkGeneratorSettings(
 					GenerationShapeConfig.CODEC.fieldOf("noise").forGetter(ChunkGeneratorSettings::generationShapeConfig),
 					BlockState.CODEC.fieldOf("default_block").forGetter(ChunkGeneratorSettings::defaultBlock),
 					BlockState.CODEC.fieldOf("default_fluid").forGetter(ChunkGeneratorSettings::defaultFluid),
-					NoiseRouter.field_37683.fieldOf("noise_router").forGetter(ChunkGeneratorSettings::noiseRouter),
+					NoiseRouter.CODEC.fieldOf("noise_router").forGetter(ChunkGeneratorSettings::noiseRouter),
 					MaterialRules.MaterialRule.CODEC.fieldOf("surface_rule").forGetter(ChunkGeneratorSettings::surfaceRule),
 					MultiNoiseUtil.NoiseHypercube.CODEC.listOf().fieldOf("spawn_target").forGetter(ChunkGeneratorSettings::spawnTarget),
 					Codec.INT.fieldOf("sea_level").forGetter(ChunkGeneratorSettings::seaLevel),

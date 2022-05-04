@@ -27,7 +27,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
-public abstract class AbstractLichenBlock extends Block {
+public abstract class MultifaceGrowthBlock extends Block {
 	private static final float field_31194 = 1.0F;
 	private static final VoxelShape UP_SHAPE = Block.createCuboidShape(0.0, 15.0, 0.0, 16.0, 16.0, 16.0);
 	private static final VoxelShape DOWN_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 1.0, 16.0);
@@ -50,17 +50,17 @@ public abstract class AbstractLichenBlock extends Block {
 	private final boolean canMirrorX;
 	private final boolean canMirrorZ;
 
-	public AbstractLichenBlock(AbstractBlock.Settings settings) {
+	public MultifaceGrowthBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(withAllDirections(this.stateManager));
-		this.SHAPES = this.getShapesForStates(AbstractLichenBlock::getShapeForState);
+		this.SHAPES = this.getShapesForStates(MultifaceGrowthBlock::getShapeForState);
 		this.hasAllHorizontalDirections = Direction.Type.HORIZONTAL.stream().allMatch(this::canHaveDirection);
 		this.canMirrorX = Direction.Type.HORIZONTAL.stream().filter(Direction.Axis.X).filter(this::canHaveDirection).count() % 2L == 0L;
 		this.canMirrorZ = Direction.Type.HORIZONTAL.stream().filter(Direction.Axis.Z).filter(this::canHaveDirection).count() % 2L == 0L;
 	}
 
 	public static Set<Direction> collectDirections(BlockState state) {
-		if (!(state.getBlock() instanceof AbstractLichenBlock)) {
+		if (!(state.getBlock() instanceof MultifaceGrowthBlock)) {
 			return Set.of();
 		} else {
 			Set<Direction> set = EnumSet.noneOf(Direction.class);

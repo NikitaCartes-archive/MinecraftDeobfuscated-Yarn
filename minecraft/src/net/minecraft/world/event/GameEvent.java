@@ -4,8 +4,10 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.tag.TagKey;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.world.event.listener.GameEventListener;
 
 public class GameEvent {
 	public static final GameEvent BLOCK_ACTIVATE = register("block_activate");
@@ -100,6 +102,42 @@ public class GameEvent {
 
 		public static GameEvent.Emitter of(@Nullable Entity sourceEntity, @Nullable BlockState affectedState) {
 			return new GameEvent.Emitter(sourceEntity, affectedState);
+		}
+	}
+
+	public static final class Message implements Comparable<GameEvent.Message> {
+		private final GameEvent event;
+		private final Vec3d emitterPos;
+		private final GameEvent.Emitter emitter;
+		private final GameEventListener listener;
+		private final double distanceTraveled;
+
+		public Message(GameEvent event, Vec3d emitterPos, GameEvent.Emitter emitter, GameEventListener listener, Vec3d listenerPos) {
+			this.event = event;
+			this.emitterPos = emitterPos;
+			this.emitter = emitter;
+			this.listener = listener;
+			this.distanceTraveled = emitterPos.squaredDistanceTo(listenerPos);
+		}
+
+		public int compareTo(GameEvent.Message message) {
+			return Double.compare(this.distanceTraveled, message.distanceTraveled);
+		}
+
+		public GameEvent getEvent() {
+			return this.event;
+		}
+
+		public Vec3d getEmitterPos() {
+			return this.emitterPos;
+		}
+
+		public GameEvent.Emitter getEmitter() {
+			return this.emitter;
+		}
+
+		public GameEventListener getListener() {
+			return this.listener;
 		}
 	}
 }

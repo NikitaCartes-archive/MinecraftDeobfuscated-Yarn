@@ -253,7 +253,7 @@ public interface Text extends Message, StringVisitable {
 						Object[] objects = new Object[jsonArray.size()];
 
 						for (int i = 0; i < objects.length; i++) {
-							objects[i] = method_43474(this.deserialize(jsonArray.get(i), type, jsonDeserializationContext));
+							objects[i] = optimizeArgument(this.deserialize(jsonArray.get(i), type, jsonDeserializationContext));
 						}
 
 						mutableText = Text.translatable(string, objects);
@@ -312,15 +312,15 @@ public interface Text extends Message, StringVisitable {
 			}
 		}
 
-		private static Object method_43474(Object object) {
-			if (object instanceof Text text
-				&& text.getStyle().isEmpty()
-				&& text.getSiblings().isEmpty()
-				&& text.getContent() instanceof LiteralTextContent literalTextContent) {
+		private static Object optimizeArgument(Object text) {
+			if (text instanceof Text text2
+				&& text2.getStyle().isEmpty()
+				&& text2.getSiblings().isEmpty()
+				&& text2.getContent() instanceof LiteralTextContent literalTextContent) {
 				return literalTextContent.string();
 			}
 
-			return object;
+			return text;
 		}
 
 		private Optional<Text> getSeparator(Type type, JsonDeserializationContext context, JsonObject json) {
@@ -415,6 +415,10 @@ public interface Text extends Message, StringVisitable {
 
 		public static String toJson(Text text) {
 			return GSON.toJson(text);
+		}
+
+		public static String toSortedJsonString(Text text) {
+			return JsonHelper.toSortedString(toJsonTree(text));
 		}
 
 		public static JsonElement toJsonTree(Text text) {

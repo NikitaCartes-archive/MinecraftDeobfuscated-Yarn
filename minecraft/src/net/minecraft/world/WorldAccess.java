@@ -98,7 +98,7 @@ public interface WorldAccess extends RegistryWorldView, LunarWorldView {
 	/**
 	 * Emits an game event.
 	 */
-	void emitGameEvent(GameEvent event, Vec3d pos, @Nullable GameEvent.Emitter emitter);
+	void emitGameEvent(GameEvent event, Vec3d emitterPos, GameEvent.Emitter emitter);
 
 	default void emitGameEvent(@Nullable Entity entity, GameEvent event, Vec3d pos) {
 		this.emitGameEvent(event, pos, new GameEvent.Emitter(entity, null));

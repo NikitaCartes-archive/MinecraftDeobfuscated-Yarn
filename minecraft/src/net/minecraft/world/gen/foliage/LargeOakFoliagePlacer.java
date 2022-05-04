@@ -29,7 +29,7 @@ public class LargeOakFoliagePlacer extends BlobFoliagePlacer {
 	protected void generate(
 		TestableWorld world,
 		BiConsumer<BlockPos, BlockState> replacer,
-		AbstractRandom abstractRandom,
+		AbstractRandom random,
 		TreeFeatureConfig config,
 		int trunkHeight,
 		FoliagePlacer.TreeNode treeNode,
@@ -39,12 +39,12 @@ public class LargeOakFoliagePlacer extends BlobFoliagePlacer {
 	) {
 		for (int i = offset; i >= offset - foliageHeight; i--) {
 			int j = radius + (i != offset && i != offset - foliageHeight ? 1 : 0);
-			this.generateSquare(world, replacer, abstractRandom, config, treeNode.getCenter(), j, i, treeNode.isGiantTrunk());
+			this.generateSquare(world, replacer, random, config, treeNode.getCenter(), j, i, treeNode.isGiantTrunk());
 		}
 	}
 
 	@Override
-	protected boolean isInvalidForLeaves(AbstractRandom abstractRandom, int dx, int y, int dz, int radius, boolean giantTrunk) {
+	protected boolean isInvalidForLeaves(AbstractRandom random, int dx, int y, int dz, int radius, boolean giantTrunk) {
 		return MathHelper.square((float)dx + 0.5F) + MathHelper.square((float)dz + 0.5F) > (float)(radius * radius);
 	}
 }

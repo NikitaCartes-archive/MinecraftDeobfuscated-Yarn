@@ -193,7 +193,7 @@ public class SurfaceBuilder {
 		boolean hasFluid
 	) {
 		MaterialRules.MaterialRuleContext materialRuleContext = new MaterialRules.MaterialRuleContext(
-			this, context.method_41570(), chunk, chunkNoiseSampler, posToBiome, context.getRegistryManager().get(Registry.BIOME_KEY), context
+			this, context.getNoiseConfig(), chunk, chunkNoiseSampler, posToBiome, context.getRegistryManager().get(Registry.BIOME_KEY), context
 		);
 		MaterialRules.BlockStateRule blockStateRule = (MaterialRules.BlockStateRule)rule.apply(materialRuleContext);
 		int i = pos.getX();

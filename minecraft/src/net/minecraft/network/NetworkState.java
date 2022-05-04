@@ -28,6 +28,7 @@ import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
+import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
 import net.minecraft.network.packet.c2s.play.CraftRequestC2SPacket;
 import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
@@ -296,6 +297,7 @@ public enum NetworkState {
 					.register(TeleportConfirmC2SPacket.class, TeleportConfirmC2SPacket::new)
 					.register(QueryBlockNbtC2SPacket.class, QueryBlockNbtC2SPacket::new)
 					.register(UpdateDifficultyC2SPacket.class, UpdateDifficultyC2SPacket::new)
+					.register(CommandExecutionC2SPacket.class, CommandExecutionC2SPacket::new)
 					.register(ChatMessageC2SPacket.class, ChatMessageC2SPacket::new)
 					.register(ClientStatusC2SPacket.class, ClientStatusC2SPacket::new)
 					.register(ClientSettingsC2SPacket.class, ClientSettingsC2SPacket::new)

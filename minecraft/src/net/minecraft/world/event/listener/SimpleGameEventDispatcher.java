@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import javax.annotation.Nullable;
+import java.util.function.BiConsumer;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
@@ -55,9 +55,9 @@ public class SimpleGameEventDispatcher implements GameEventDispatcher {
 	}
 
 	@Override
-	public void dispatch(GameEvent event, Vec3d pos, @Nullable GameEvent.Emitter emitter) {
-		boolean bl = false;
+	public boolean dispatch(GameEvent event, Vec3d pos, GameEvent.Emitter emitter, BiConsumer<GameEventListener, Vec3d> onListenerAccept) {
 		this.dispatching = true;
+		boolean bl = false;
 
 		try {
 			Iterator<GameEventListener> iterator = this.listeners.iterator();
@@ -66,8 +66,12 @@ public class SimpleGameEventDispatcher implements GameEventDispatcher {
 				GameEventListener gameEventListener = (GameEventListener)iterator.next();
 				if (this.toRemove.remove(gameEventListener)) {
 					iterator.remove();
-				} else if (dispatchTo(this.world, event, emitter, pos, gameEventListener)) {
-					bl = true;
+				} else {
+					Optional<Vec3d> optional = dispatchTo(this.world, pos, gameEventListener);
+					if (optional.isPresent()) {
+						onListenerAccept.accept(gameEventListener, (Vec3d)optional.get());
+						bl = true;
+					}
 				}
 			}
 		} finally {
@@ -84,19 +88,17 @@ public class SimpleGameEventDispatcher implements GameEventDispatcher {
 			this.toRemove.clear();
 		}
 
-		if (bl) {
-			DebugInfoSender.sendGameEvent(this.world, event, pos);
-		}
+		return bl;
 	}
 
-	private static boolean dispatchTo(ServerWorld world, GameEvent event, GameEvent.Emitter emitter, Vec3d pos, GameEventListener listener) {
+	private static Optional<Vec3d> dispatchTo(ServerWorld world, Vec3d listenerPos, GameEventListener listener) {
 		Optional<Vec3d> optional = listener.getPositionSource().getPos(world);
 		if (optional.isEmpty()) {
-			return false;
+			return Optional.empty();
 		} else {
-			double d = ((Vec3d)optional.get()).squaredDistanceTo(pos);
+			double d = ((Vec3d)optional.get()).squaredDistanceTo(listenerPos);
 			int i = listener.getRange() * listener.getRange();
-			return d <= (double)i && listener.listen(world, event, emitter, pos);
+			return d > (double)i ? Optional.empty() : optional;
 		}
 	}
 }

@@ -8,6 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BannerPattern;
+import net.minecraft.block.entity.BannerPatterns;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
@@ -35,14 +36,13 @@ import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.RegistryEntry;
 
 @Environment(EnvType.CLIENT)
 public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/loom.png");
-	private static final int field_32345 = 1;
 	private static final int PATTERN_LIST_COLUMNS = 4;
 	private static final int PATTERN_LIST_ROWS = 4;
-	private static final int PATTERN_BUTTON_ROW_COUNT = (BannerPattern.COUNT - BannerPattern.HAS_PATTERN_ITEM_COUNT - 1 + 4 - 1) / 4;
 	private static final int SCROLLBAR_WIDTH = 12;
 	private static final int SCROLLBAR_HEIGHT = 15;
 	private static final int PATTERN_ENTRY_SIZE = 14;
@@ -51,20 +51,19 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 	private static final int PATTERN_LIST_OFFSET_Y = 13;
 	private ModelPart bannerField;
 	@Nullable
-	private List<Pair<BannerPattern, DyeColor>> bannerPatterns;
+	private List<Pair<RegistryEntry<BannerPattern>, DyeColor>> bannerPatterns;
 	private ItemStack banner = ItemStack.EMPTY;
 	private ItemStack dye = ItemStack.EMPTY;
 	private ItemStack pattern = ItemStack.EMPTY;
 	private boolean canApplyDyePattern;
-	private boolean canApplySpecialPattern;
 	private boolean hasTooManyPatterns;
 	private float scrollPosition;
 	private boolean scrollbarClicked;
-	private int firstPatternButtonId = 1;
+	private int field_39190;
 
-	public LoomScreen(LoomScreenHandler handler, PlayerInventory inventory, Text title) {
-		super(handler, inventory, title);
-		handler.setInventoryChangeListener(this::onInventoryChanged);
+	public LoomScreen(LoomScreenHandler screenHandler, PlayerInventory inventory, Text title) {
+		super(screenHandler, inventory, title);
+		screenHandler.setInventoryChangeListener(this::onInventoryChanged);
 		this.titleY -= 2;
 	}
 
@@ -78,6 +77,10 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		super.render(matrices, mouseX, mouseY, delta);
 		this.drawMouseoverTooltip(matrices, mouseX, mouseY);
+	}
+
+	private int method_43774() {
+		return MathHelper.ceilDiv(this.handler.getBannerPatterns().size(), 4);
 	}
 
 	@Override
@@ -129,38 +132,42 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 		if (this.canApplyDyePattern) {
 			int l = i + 60;
 			int m = j + 13;
-			int n = this.firstPatternButtonId + 16;
+			List<RegistryEntry<BannerPattern>> list = this.handler.getBannerPatterns();
 
-			for (int o = this.firstPatternButtonId; o < n && o < BannerPattern.COUNT - BannerPattern.HAS_PATTERN_ITEM_COUNT; o++) {
-				int p = o - this.firstPatternButtonId;
-				int q = l + p % 4 * 14;
-				int r = m + p / 4 * 14;
-				RenderSystem.setShaderTexture(0, TEXTURE);
-				int s = this.backgroundHeight;
-				if (o == this.handler.getSelectedPattern()) {
-					s += 14;
-				} else if (mouseX >= q && mouseY >= r && mouseX < q + 14 && mouseY < r + 14) {
-					s += 28;
+			label64:
+			for (int n = 0; n < 4; n++) {
+				for (int o = 0; o < 4; o++) {
+					int p = n + this.field_39190;
+					int q = p * 4 + o;
+					if (q >= list.size()) {
+						break label64;
+					}
+
+					RenderSystem.setShaderTexture(0, TEXTURE);
+					int r = l + o * 14;
+					int s = m + n * 14;
+					boolean bl = mouseX >= r && mouseY >= s && mouseX < r + 14 && mouseY < s + 14;
+					int t;
+					if (q == this.handler.getSelectedPattern()) {
+						t = this.backgroundHeight + 14;
+					} else if (bl) {
+						t = this.backgroundHeight + 28;
+					} else {
+						t = this.backgroundHeight;
+					}
+
+					this.drawTexture(matrices, r, s, 0, t, 14, 14);
+					this.drawBanner((RegistryEntry<BannerPattern>)list.get(q), r, s);
 				}
-
-				this.drawTexture(matrices, q, r, 0, s, 14, 14);
-				this.drawBanner(o, q, r);
 			}
-		} else if (this.canApplySpecialPattern) {
-			int l = i + 60;
-			int m = j + 13;
-			RenderSystem.setShaderTexture(0, TEXTURE);
-			this.drawTexture(matrices, l, m, 0, this.backgroundHeight, 14, 14);
-			int n = this.handler.getSelectedPattern();
-			this.drawBanner(n, l, m);
 		}
 
 		DiffuseLighting.enableGuiDepthLighting();
 	}
 
-	private void drawBanner(int pattern, int x, int y) {
+	private void drawBanner(RegistryEntry<BannerPattern> bannerPattern, int x, int y) {
 		NbtCompound nbtCompound = new NbtCompound();
-		NbtList nbtList = new BannerPattern.Patterns().add(BannerPattern.BASE, DyeColor.GRAY).add(BannerPattern.values()[pattern], DyeColor.WHITE).toNbt();
+		NbtList nbtList = new BannerPattern.Patterns().add(BannerPatterns.BASE, DyeColor.GRAY).add(bannerPattern, DyeColor.WHITE).toNbt();
 		nbtCompound.put("Patterns", nbtList);
 		ItemStack itemStack = new ItemStack(Items.GRAY_BANNER);
 		BlockItem.setBlockEntityNbt(itemStack, BlockEntityType.BANNER, nbtCompound);
@@ -175,7 +182,7 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 		VertexConsumerProvider.Immediate immediate = this.client.getBufferBuilders().getEntityVertexConsumers();
 		this.bannerField.pitch = 0.0F;
 		this.bannerField.pivotY = -32.0F;
-		List<Pair<BannerPattern, DyeColor>> list = BannerBlockEntity.getPatternsFromNbt(DyeColor.GRAY, BannerBlockEntity.getPatternListNbt(itemStack));
+		List<Pair<RegistryEntry<BannerPattern>, DyeColor>> list = BannerBlockEntity.getPatternsFromNbt(DyeColor.GRAY, BannerBlockEntity.getPatternListNbt(itemStack));
 		BannerBlockEntityRenderer.renderCanvas(matrixStack, immediate, 15728880, OverlayTexture.DEFAULT_UV, this.bannerField, ModelLoader.BANNER_BASE, true, list);
 		matrixStack.pop();
 		immediate.draw();
@@ -187,16 +194,18 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 		if (this.canApplyDyePattern) {
 			int i = this.x + 60;
 			int j = this.y + 13;
-			int k = this.firstPatternButtonId + 16;
 
-			for (int l = this.firstPatternButtonId; l < k; l++) {
-				int m = l - this.firstPatternButtonId;
-				double d = mouseX - (double)(i + m % 4 * 14);
-				double e = mouseY - (double)(j + m / 4 * 14);
-				if (d >= 0.0 && e >= 0.0 && d < 14.0 && e < 14.0 && this.handler.onButtonClick(this.client.player, l)) {
-					MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_LOOM_SELECT_PATTERN, 1.0F));
-					this.client.interactionManager.clickButton(this.handler.syncId, l);
-					return true;
+			for (int k = 0; k < 4; k++) {
+				for (int l = 0; l < 4; l++) {
+					double d = mouseX - (double)(i + l * 14);
+					double e = mouseY - (double)(j + k * 14);
+					int m = k + this.field_39190;
+					int n = m * 4 + l;
+					if (d >= 0.0 && e >= 0.0 && d < 14.0 && e < 14.0 && this.handler.onButtonClick(this.client.player, n)) {
+						MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_LOOM_SELECT_PATTERN, 1.0F));
+						this.client.interactionManager.clickButton(this.handler.syncId, n);
+						return true;
+					}
 				}
 			}
 
@@ -212,18 +221,13 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 
 	@Override
 	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-		if (this.scrollbarClicked && this.canApplyDyePattern) {
-			int i = this.y + 13;
-			int j = i + 56;
-			this.scrollPosition = ((float)mouseY - (float)i - 7.5F) / ((float)(j - i) - 15.0F);
+		int i = this.method_43774() - 4;
+		if (this.scrollbarClicked && this.canApplyDyePattern && i > 0) {
+			int j = this.y + 13;
+			int k = j + 56;
+			this.scrollPosition = ((float)mouseY - (float)j - 7.5F) / ((float)(k - j) - 15.0F);
 			this.scrollPosition = MathHelper.clamp(this.scrollPosition, 0.0F, 1.0F);
-			int k = PATTERN_BUTTON_ROW_COUNT - 4;
-			int l = (int)((double)(this.scrollPosition * (float)k) + 0.5);
-			if (l < 0) {
-				l = 0;
-			}
-
-			this.firstPatternButtonId = 1 + l * 4;
+			this.field_39190 = Math.max((int)((double)(this.scrollPosition * (float)i) + 0.5), 0);
 			return true;
 		} else {
 			return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
@@ -232,11 +236,11 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-		if (this.canApplyDyePattern) {
-			int i = PATTERN_BUTTON_ROW_COUNT - 4;
+		int i = this.method_43774() - 4;
+		if (this.canApplyDyePattern && i > 0) {
 			float f = (float)amount / (float)i;
 			this.scrollPosition = MathHelper.clamp(this.scrollPosition - f, 0.0F, 1.0F);
-			this.firstPatternButtonId = 1 + (int)(this.scrollPosition * (float)i + 0.5F) * 4;
+			this.field_39190 = Math.max((int)(this.scrollPosition * (float)i + 0.5F), 0);
 		}
 
 		return true;
@@ -268,8 +272,12 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 		}
 
 		if (!ItemStack.areEqual(itemStack2, this.banner) || !ItemStack.areEqual(itemStack3, this.dye) || !ItemStack.areEqual(itemStack4, this.pattern)) {
-			this.canApplyDyePattern = !itemStack2.isEmpty() && !itemStack3.isEmpty() && itemStack4.isEmpty() && !this.hasTooManyPatterns;
-			this.canApplySpecialPattern = !this.hasTooManyPatterns && !itemStack4.isEmpty() && !itemStack2.isEmpty() && !itemStack3.isEmpty();
+			this.canApplyDyePattern = !itemStack2.isEmpty() && !itemStack3.isEmpty() && !this.hasTooManyPatterns && !this.handler.getBannerPatterns().isEmpty();
+		}
+
+		if (this.field_39190 >= this.method_43774()) {
+			this.field_39190 = 0;
+			this.scrollPosition = 0.0F;
 		}
 
 		this.banner = itemStack2.copy();

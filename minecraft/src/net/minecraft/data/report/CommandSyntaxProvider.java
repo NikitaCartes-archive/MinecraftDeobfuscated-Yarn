@@ -1,7 +1,5 @@
 package net.minecraft.data.report;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.mojang.brigadier.CommandDispatcher;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -15,7 +13,6 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.registry.DynamicRegistryManager;
 
 public class CommandSyntaxProvider implements DataProvider {
-	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 	private final DataGenerator generator;
 
 	public CommandSyntaxProvider(DataGenerator generator) {
@@ -29,7 +26,7 @@ public class CommandSyntaxProvider implements DataProvider {
 				CommandManager.RegistrationEnvironment.ALL, new CommandRegistryAccess((DynamicRegistryManager)DynamicRegistryManager.BUILTIN.get())
 			)
 			.getDispatcher();
-		DataProvider.writeToPath(GSON, cache, ArgumentHelper.toJson(commandDispatcher, commandDispatcher.getRoot()), path);
+		DataProvider.writeToPath(cache, ArgumentHelper.toJson(commandDispatcher, commandDispatcher.getRoot()), path);
 	}
 
 	@Override

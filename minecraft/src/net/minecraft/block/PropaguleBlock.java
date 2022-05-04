@@ -141,10 +141,10 @@ public class PropaguleBlock extends SaplingBlock implements Waterloggable {
 	}
 
 	public static BlockState getDefaultHangingState() {
-		return method_43130(0);
+		return getHangingState(0);
 	}
 
-	public static BlockState method_43130(int i) {
-		return Blocks.MANGROVE_PROPAGULE.getDefaultState().with(HANGING, Boolean.valueOf(true)).with(AGE, Integer.valueOf(i));
+	public static BlockState getHangingState(int age) {
+		return Blocks.MANGROVE_PROPAGULE.getDefaultState().with(HANGING, Boolean.valueOf(true)).with(AGE, Integer.valueOf(age));
 	}
 }

@@ -87,6 +87,7 @@ import net.minecraft.datafixer.fix.EntityZombieVillagerTypeFix;
 import net.minecraft.datafixer.fix.EntityZombifiedPiglinRenameFix;
 import net.minecraft.datafixer.fix.FurnaceRecipesFix;
 import net.minecraft.datafixer.fix.GameEventRenamesFix;
+import net.minecraft.datafixer.fix.GoatHornIdFix;
 import net.minecraft.datafixer.fix.HangingEntityFix;
 import net.minecraft.datafixer.fix.HeightmapRenamingFix;
 import net.minecraft.datafixer.fix.IglooMetadataRemovalFix;
@@ -947,6 +948,8 @@ public class Schemas {
 		builder.addFixer(new BlendingDataFix(schema165));
 		Schema schema166 = builder.addSchema(3090, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new EntityPaintingFieldsRenameFix(schema166));
+		Schema schema167 = builder.addSchema(3094, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new GoatHornIdFix(schema167));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

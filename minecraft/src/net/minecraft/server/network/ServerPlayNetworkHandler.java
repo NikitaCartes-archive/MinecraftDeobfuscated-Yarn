@@ -54,11 +54,12 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
-import net.minecraft.network.ChatMessageSender;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.Packet;
+import net.minecraft.network.encryption.ChatMessageSignature;
+import net.minecraft.network.encryption.SignedChatMessage;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
 import net.minecraft.network.packet.c2s.play.BoatPaddleStateC2SPacket;
@@ -70,6 +71,7 @@ import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
+import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
 import net.minecraft.network.packet.c2s.play.CraftRequestC2SPacket;
 import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
@@ -143,6 +145,8 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.util.thread.ThreadExecutor;
@@ -307,10 +311,10 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	private <T, R> void filterText(T text, Consumer<R> consumer, BiFunction<TextStream, T, CompletableFuture<R>> backingFilterer) {
 		ThreadExecutor<?> threadExecutor = this.player.getWorld().getServer();
-		Consumer<R> consumer2 = object2 -> {
+		Consumer<R> consumer2 = message -> {
 			if (this.getConnection().isOpen()) {
 				try {
-					consumer.accept(object2);
+					consumer.accept(message);
 				} catch (Exception var5x) {
 					LOGGER.error("Failed to handle chat packet {}, suppressing error", text, var5x);
 				}
@@ -655,7 +659,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 			if (this.player.world.getBlockEntity(blockPos) instanceof JigsawBlockEntity jigsawBlockEntity) {
 				jigsawBlockEntity.setName(packet.getName());
 				jigsawBlockEntity.setTarget(packet.getTarget());
-				jigsawBlockEntity.setPool(packet.getPool());
+				jigsawBlockEntity.setPool(RegistryKey.of(Registry.STRUCTURE_POOL_KEY, packet.getPool()));
 				jigsawBlockEntity.setFinalState(packet.getFinalState());
 				jigsawBlockEntity.setJoint(packet.getJointType());
 				jigsawBlockEntity.markDirty();
@@ -696,8 +700,8 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 			this.filterTexts(
 				list,
 				optional.isPresent()
-					? listx -> this.addBook((TextStream.Message)listx.get(0), listx.subList(1, listx.size()), i)
-					: listx -> this.updateBookContent(listx, i)
+					? texts -> this.addBook((TextStream.Message)texts.get(0), texts.subList(1, texts.size()), i)
+					: texts -> this.updateBookContent(texts, i)
 			);
 		}
 	}
@@ -726,7 +730,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 				itemStack2.setSubNbt("title", NbtString.of(title.getRaw()));
 			}
 
-			this.setTextToBook(pages, string -> Text.Serializer.toJson(Text.literal(string)), itemStack2);
+			this.setTextToBook(pages, text -> Text.Serializer.toJson(Text.literal(text)), itemStack2);
 			this.player.getInventory().setStack(slotId, itemStack2);
 		}
 	}
@@ -1152,17 +1156,27 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onChatMessage(ChatMessageC2SPacket packet) {
-		if (packet.isExpired(Instant.now())) {
-			LOGGER.warn("{} tried to send expired message", this.player.getName().getString());
-		} else if (hasIllegalCharacter(packet.getChatMessage())) {
+		if (hasIllegalCharacter(packet.getChatMessage())) {
 			this.disconnect(Text.translatable("multiplayer.disconnect.illegal_characters"));
+		} else if (packet.isExpired(Instant.now())) {
+			LOGGER.warn("{} tried to send expired message: '{}'", this.player.getName().getString(), packet.getChatMessage());
 		} else {
-			String string = packet.getNormalizedChatMessage();
-			if (string.startsWith("/")) {
-				NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
-				this.handleMessage(packet, TextStream.Message.permitted(string));
-			} else {
-				this.filterText(packet.getChatMessage(), message -> this.handleMessage(packet, message));
+			this.filterText(packet.getChatMessage(), message -> this.handleMessage(packet, message));
+		}
+	}
+
+	@Override
+	public void onCommandExecution(CommandExecutionC2SPacket packet) {
+		if (hasIllegalCharacter(packet.command())) {
+			this.disconnect(Text.translatable("multiplayer.disconnect.illegal_characters"));
+		} else if (packet.isExpired(Instant.now())) {
+			LOGGER.warn("{} tried to send expired command: '{}'", this.player.getName().getString(), packet.command());
+		} else {
+			NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+			if (this.checkChatEnabled()) {
+				ServerCommandSource serverCommandSource = this.player.getCommandSource().withSigner(packet.createArgumentsSigner(this.player.getUuid()));
+				this.server.getCommandManager().execute(serverCommandSource, packet.command());
+				this.checkForSpam();
 			}
 		}
 	}
@@ -1182,40 +1196,32 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		return false;
 	}
 
-	private void handleMessage(ChatMessageC2SPacket packet, TextStream.Message message) {
+	private boolean checkChatEnabled() {
 		if (this.player.getClientChatVisibility() == ChatVisibility.HIDDEN) {
-			this.sendPacket(new GameMessageS2CPacket(Text.translatable("chat.disabled.options").formatted(Formatting.RED), MessageType.SYSTEM));
+			Registry<MessageType> registry = this.player.world.getRegistryManager().get(Registry.MESSAGE_TYPE_KEY);
+			int i = registry.getRawId(registry.get(MessageType.SYSTEM));
+			this.sendPacket(new GameMessageS2CPacket(Text.translatable("chat.disabled.options").formatted(Formatting.RED), i));
+			return false;
 		} else {
 			this.player.updateLastActionTime();
-			String string = packet.getNormalizedChatMessage();
-			if (string.startsWith("/")) {
-				this.executeCommand(string);
-			} else {
-				String string2 = message.getFiltered();
-				Text text = string2.isEmpty() ? null : Text.literal(string2);
-				Text text2 = Text.literal(packet.getChatMessage());
-				ChatMessageSender chatMessageSender = this.player.asChatMessageSender();
-				this.server
-					.getPlayerManager()
-					.broadcast(
-						text2,
-						player -> this.player.shouldFilterMessagesSentTo(player) ? text : text2,
-						MessageType.CHAT,
-						chatMessageSender,
-						packet.getTime(),
-						packet.getSignature()
-					);
-			}
-
-			this.messageCooldown += 20;
-			if (this.messageCooldown > 200 && !this.server.getPlayerManager().isOperator(this.player.getGameProfile())) {
-				this.disconnect(Text.translatable("disconnect.spam"));
-			}
+			return true;
 		}
 	}
 
-	private void executeCommand(String input) {
-		this.server.getCommandManager().execute(this.player.getCommandSource(), input);
+	private void handleMessage(ChatMessageC2SPacket packet, TextStream.Message message) {
+		if (this.checkChatEnabled()) {
+			ChatMessageSignature chatMessageSignature = packet.createSignatureInstance(this.player.getUuid());
+			SignedChatMessage signedChatMessage = new SignedChatMessage(Text.literal(packet.getChatMessage()), chatMessageSignature);
+			this.server.getPlayerManager().broadcast(signedChatMessage, message, this.player, MessageType.CHAT);
+			this.checkForSpam();
+		}
+	}
+
+	private void checkForSpam() {
+		this.messageCooldown += 20;
+		if (this.messageCooldown > 200 && !this.server.getPlayerManager().isOperator(this.player.getGameProfile())) {
+			this.disconnect(Text.translatable("disconnect.spam"));
+		}
 	}
 
 	@Override
@@ -1454,7 +1460,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	@Override
 	public void onUpdateSign(UpdateSignC2SPacket packet) {
 		List<String> list = (List<String>)Stream.of(packet.getText()).map(Formatting::strip).collect(Collectors.toList());
-		this.filterTexts(list, listx -> this.onSignUpdate(packet, listx));
+		this.filterTexts(list, texts -> this.onSignUpdate(packet, texts));
 	}
 
 	private void onSignUpdate(UpdateSignC2SPacket packet, List<TextStream.Message> signText) {

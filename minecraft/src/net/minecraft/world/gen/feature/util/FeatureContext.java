@@ -17,12 +17,12 @@ public class FeatureContext<FC extends FeatureConfig> {
 	private final FC config;
 
 	public FeatureContext(
-		Optional<ConfiguredFeature<?, ?>> feature, StructureWorldAccess world, ChunkGenerator generator, AbstractRandom abstractRandom, BlockPos origin, FC config
+		Optional<ConfiguredFeature<?, ?>> feature, StructureWorldAccess world, ChunkGenerator generator, AbstractRandom random, BlockPos origin, FC config
 	) {
 		this.feature = feature;
 		this.world = world;
 		this.generator = generator;
-		this.random = abstractRandom;
+		this.random = random;
 		this.origin = origin;
 		this.config = config;
 	}

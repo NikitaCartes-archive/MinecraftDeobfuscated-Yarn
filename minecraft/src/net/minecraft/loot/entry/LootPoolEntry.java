@@ -46,7 +46,7 @@ public abstract class LootPoolEntry implements EntryCombiner {
 			return this.getThisBuilder();
 		}
 
-		public final T getThis() {
+		public final T getThisConditionConsumingBuilder() {
 			return this.getThisBuilder();
 		}
 

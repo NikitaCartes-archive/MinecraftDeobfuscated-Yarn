@@ -117,7 +117,7 @@ public class DebugInfoSender {
 	public static void sendBeeDebugData(BeeEntity bee) {
 	}
 
-	public static void sendGameEvent(World world, GameEvent event, Vec3d vec3d) {
+	public static void sendGameEvent(World world, GameEvent event, Vec3d pos) {
 	}
 
 	public static void sendGameEventListener(World world, GameEventListener eventListener) {
@@ -136,14 +136,10 @@ public class DebugInfoSender {
 			buf.writeString("");
 		}
 
-		if (brain.hasMemoryModule(MemoryModuleType.PATH)) {
-			buf.writeBoolean(true);
-			Path path = (Path)brain.getOptionalMemory(MemoryModuleType.PATH).get();
-			path.toBuffer(buf);
-		} else {
-			buf.writeBoolean(false);
-		}
-
+		buf.writeOptional(
+			brain.hasMemoryModule(MemoryModuleType.PATH) ? brain.getOptionalMemory(MemoryModuleType.PATH) : Optional.empty(),
+			(packetByteBuf, path) -> path.toBuffer(packetByteBuf)
+		);
 		if (entity instanceof VillagerEntity villagerEntity) {
 			boolean bl = villagerEntity.canSummonGolem(l);
 			buf.writeBoolean(bl);
@@ -158,12 +154,12 @@ public class DebugInfoSender {
 			buf.writeInt(-1);
 		}
 
-		buf.writeCollection(brain.getPossibleActivities(), (bufx, activity) -> bufx.writeString(activity.getId()));
+		buf.writeCollection(brain.getPossibleActivities(), (buf2, activity) -> buf2.writeString(activity.getId()));
 		Set<String> set = (Set<String>)brain.getRunningTasks().stream().map(Task::toString).collect(Collectors.toSet());
 		buf.writeCollection(set, PacketByteBuf::writeString);
-		buf.writeCollection(listMemories(entity, l), (bufx, memory) -> {
+		buf.writeCollection(listMemories(entity, l), (buf2, memory) -> {
 			String string = StringHelper.truncate(memory, 255, true);
-			bufx.writeString(string);
+			buf2.writeString(string);
 		});
 		if (entity instanceof VillagerEntity) {
 			Set<BlockPos> set2 = (Set<BlockPos>)Stream.of(MemoryModuleType.JOB_SITE, MemoryModuleType.HOME, MemoryModuleType.MEETING_POINT)

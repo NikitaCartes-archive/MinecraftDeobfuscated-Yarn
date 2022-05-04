@@ -24,9 +24,9 @@ public class CommandSuggestionsS2CPacket implements Packet<ClientPlayPacketListe
 		int i = buf.readVarInt();
 		int j = buf.readVarInt();
 		StringRange stringRange = StringRange.between(i, i + j);
-		List<Suggestion> list = buf.readList(bufx -> {
-			String string = bufx.readString();
-			Text text = bufx.readBoolean() ? bufx.readText() : null;
+		List<Suggestion> list = buf.readList(buf2 -> {
+			String string = buf2.readString();
+			Text text = buf2.readNullable(PacketByteBuf::readText);
 			return new Suggestion(stringRange, string, text);
 		});
 		this.suggestions = new Suggestions(stringRange, list);
@@ -37,12 +37,9 @@ public class CommandSuggestionsS2CPacket implements Packet<ClientPlayPacketListe
 		buf.writeVarInt(this.completionId);
 		buf.writeVarInt(this.suggestions.getRange().getStart());
 		buf.writeVarInt(this.suggestions.getRange().getLength());
-		buf.writeCollection(this.suggestions.getList(), (bufx, suggestion) -> {
-			bufx.writeString(suggestion.getText());
-			bufx.writeBoolean(suggestion.getTooltip() != null);
-			if (suggestion.getTooltip() != null) {
-				bufx.writeText(Texts.toText(suggestion.getTooltip()));
-			}
+		buf.writeCollection(this.suggestions.getList(), (buf2, suggestion) -> {
+			buf2.writeString(suggestion.getText());
+			buf2.writeNullable(suggestion.getTooltip(), (buf3, tooltip) -> buf3.writeText(Texts.toText(tooltip)));
 		});
 	}
 

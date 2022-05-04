@@ -28,7 +28,7 @@ public class AcaciaFoliagePlacer extends FoliagePlacer {
 	protected void generate(
 		TestableWorld world,
 		BiConsumer<BlockPos, BlockState> replacer,
-		AbstractRandom abstractRandom,
+		AbstractRandom random,
 		TreeFeatureConfig config,
 		int trunkHeight,
 		FoliagePlacer.TreeNode treeNode,
@@ -38,18 +38,18 @@ public class AcaciaFoliagePlacer extends FoliagePlacer {
 	) {
 		boolean bl = treeNode.isGiantTrunk();
 		BlockPos blockPos = treeNode.getCenter().up(offset);
-		this.generateSquare(world, replacer, abstractRandom, config, blockPos, radius + treeNode.getFoliageRadius(), -1 - foliageHeight, bl);
-		this.generateSquare(world, replacer, abstractRandom, config, blockPos, radius - 1, -foliageHeight, bl);
-		this.generateSquare(world, replacer, abstractRandom, config, blockPos, radius + treeNode.getFoliageRadius() - 1, 0, bl);
+		this.generateSquare(world, replacer, random, config, blockPos, radius + treeNode.getFoliageRadius(), -1 - foliageHeight, bl);
+		this.generateSquare(world, replacer, random, config, blockPos, radius - 1, -foliageHeight, bl);
+		this.generateSquare(world, replacer, random, config, blockPos, radius + treeNode.getFoliageRadius() - 1, 0, bl);
 	}
 
 	@Override
-	public int getRandomHeight(AbstractRandom abstractRandom, int trunkHeight, TreeFeatureConfig config) {
+	public int getRandomHeight(AbstractRandom random, int trunkHeight, TreeFeatureConfig config) {
 		return 0;
 	}
 
 	@Override
-	protected boolean isInvalidForLeaves(AbstractRandom abstractRandom, int dx, int y, int dz, int radius, boolean giantTrunk) {
+	protected boolean isInvalidForLeaves(AbstractRandom random, int dx, int y, int dz, int radius, boolean giantTrunk) {
 		return y == 0 ? (dx > 1 || dz > 1) && dx != 0 && dz != 0 : dx == radius && dz == radius && radius > 0;
 	}
 }

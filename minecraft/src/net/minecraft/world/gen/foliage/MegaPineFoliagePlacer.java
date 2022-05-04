@@ -33,7 +33,7 @@ public class MegaPineFoliagePlacer extends FoliagePlacer {
 	protected void generate(
 		TestableWorld world,
 		BiConsumer<BlockPos, BlockState> replacer,
-		AbstractRandom abstractRandom,
+		AbstractRandom random,
 		TreeFeatureConfig config,
 		int trunkHeight,
 		FoliagePlacer.TreeNode treeNode,
@@ -54,18 +54,18 @@ public class MegaPineFoliagePlacer extends FoliagePlacer {
 				m = l;
 			}
 
-			this.generateSquare(world, replacer, abstractRandom, config, new BlockPos(blockPos.getX(), j, blockPos.getZ()), m, 0, treeNode.isGiantTrunk());
+			this.generateSquare(world, replacer, random, config, new BlockPos(blockPos.getX(), j, blockPos.getZ()), m, 0, treeNode.isGiantTrunk());
 			i = l;
 		}
 	}
 
 	@Override
-	public int getRandomHeight(AbstractRandom abstractRandom, int trunkHeight, TreeFeatureConfig config) {
-		return this.crownHeight.get(abstractRandom);
+	public int getRandomHeight(AbstractRandom random, int trunkHeight, TreeFeatureConfig config) {
+		return this.crownHeight.get(random);
 	}
 
 	@Override
-	protected boolean isInvalidForLeaves(AbstractRandom abstractRandom, int dx, int y, int dz, int radius, boolean giantTrunk) {
+	protected boolean isInvalidForLeaves(AbstractRandom random, int dx, int y, int dz, int radius, boolean giantTrunk) {
 		return dx + dz >= 7 ? true : dx * dx + dz * dz > radius * radius;
 	}
 }

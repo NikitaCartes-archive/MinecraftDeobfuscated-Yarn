@@ -12,6 +12,10 @@ public class TradeOfferList extends ArrayList<TradeOffer> {
 	public TradeOfferList() {
 	}
 
+	private TradeOfferList(int size) {
+		super(size);
+	}
+
 	public TradeOfferList(NbtCompound nbt) {
 		NbtList nbtList = nbt.getList("Recipes", NbtElement.COMPOUND_TYPE);
 
@@ -38,57 +42,40 @@ public class TradeOfferList extends ArrayList<TradeOffer> {
 	}
 
 	public void toPacket(PacketByteBuf buf) {
-		buf.writeByte((byte)(this.size() & 0xFF));
-
-		for (int i = 0; i < this.size(); i++) {
-			TradeOffer tradeOffer = (TradeOffer)this.get(i);
-			buf.writeItemStack(tradeOffer.getOriginalFirstBuyItem());
-			buf.writeItemStack(tradeOffer.getSellItem());
-			ItemStack itemStack = tradeOffer.getSecondBuyItem();
-			buf.writeBoolean(!itemStack.isEmpty());
-			if (!itemStack.isEmpty()) {
-				buf.writeItemStack(itemStack);
-			}
-
-			buf.writeBoolean(tradeOffer.isDisabled());
-			buf.writeInt(tradeOffer.getUses());
-			buf.writeInt(tradeOffer.getMaxUses());
-			buf.writeInt(tradeOffer.getMerchantExperience());
-			buf.writeInt(tradeOffer.getSpecialPrice());
-			buf.writeFloat(tradeOffer.getPriceMultiplier());
-			buf.writeInt(tradeOffer.getDemandBonus());
-		}
+		buf.writeCollection(this, (buf2, offer) -> {
+			buf2.writeItemStack(offer.getOriginalFirstBuyItem());
+			buf2.writeItemStack(offer.getSellItem());
+			buf2.writeItemStack(offer.getSecondBuyItem());
+			buf2.writeBoolean(offer.isDisabled());
+			buf2.writeInt(offer.getUses());
+			buf2.writeInt(offer.getMaxUses());
+			buf2.writeInt(offer.getMerchantExperience());
+			buf2.writeInt(offer.getSpecialPrice());
+			buf2.writeFloat(offer.getPriceMultiplier());
+			buf2.writeInt(offer.getDemandBonus());
+		});
 	}
 
 	public static TradeOfferList fromPacket(PacketByteBuf buf) {
-		TradeOfferList tradeOfferList = new TradeOfferList();
-		int i = buf.readByte() & 255;
-
-		for (int j = 0; j < i; j++) {
-			ItemStack itemStack = buf.readItemStack();
-			ItemStack itemStack2 = buf.readItemStack();
-			ItemStack itemStack3 = ItemStack.EMPTY;
-			if (buf.readBoolean()) {
-				itemStack3 = buf.readItemStack();
-			}
-
-			boolean bl = buf.readBoolean();
-			int k = buf.readInt();
-			int l = buf.readInt();
-			int m = buf.readInt();
-			int n = buf.readInt();
-			float f = buf.readFloat();
-			int o = buf.readInt();
-			TradeOffer tradeOffer = new TradeOffer(itemStack, itemStack3, itemStack2, k, l, m, f, o);
+		return buf.readCollection(TradeOfferList::new, buf2 -> {
+			ItemStack itemStack = buf2.readItemStack();
+			ItemStack itemStack2 = buf2.readItemStack();
+			ItemStack itemStack3 = buf2.readItemStack();
+			boolean bl = buf2.readBoolean();
+			int i = buf2.readInt();
+			int j = buf2.readInt();
+			int k = buf2.readInt();
+			int l = buf2.readInt();
+			float f = buf2.readFloat();
+			int m = buf2.readInt();
+			TradeOffer tradeOffer = new TradeOffer(itemStack, itemStack3, itemStack2, i, j, k, f, m);
 			if (bl) {
 				tradeOffer.disable();
 			}
 
-			tradeOffer.setSpecialPrice(n);
-			tradeOfferList.add(tradeOffer);
-		}
-
-		return tradeOfferList;
+			tradeOffer.setSpecialPrice(l);
+			return tradeOffer;
+		});
 	}
 
 	public NbtCompound toNbt() {

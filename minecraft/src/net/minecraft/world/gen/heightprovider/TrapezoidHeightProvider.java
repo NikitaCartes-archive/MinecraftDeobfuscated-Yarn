@@ -46,7 +46,7 @@ public class TrapezoidHeightProvider extends HeightProvider {
 	}
 
 	@Override
-	public int get(AbstractRandom abstractRandom, HeightContext context) {
+	public int get(AbstractRandom random, HeightContext context) {
 		int i = this.minOffset.getY(context);
 		int j = this.maxOffset.getY(context);
 		if (i > j) {
@@ -55,11 +55,11 @@ public class TrapezoidHeightProvider extends HeightProvider {
 		} else {
 			int k = j - i;
 			if (this.plateau >= k) {
-				return MathHelper.nextBetween(abstractRandom, i, j);
+				return MathHelper.nextBetween(random, i, j);
 			} else {
 				int l = (k - this.plateau) / 2;
 				int m = k - l;
-				return i + MathHelper.nextBetween(abstractRandom, 0, m) + MathHelper.nextBetween(abstractRandom, 0, l);
+				return i + MathHelper.nextBetween(random, 0, m) + MathHelper.nextBetween(random, 0, l);
 			}
 		}
 	}

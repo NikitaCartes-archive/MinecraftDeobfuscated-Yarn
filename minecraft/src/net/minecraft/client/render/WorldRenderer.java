@@ -37,12 +37,12 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.AbstractLichenBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.ComposterBlock;
+import net.minecraft.block.MultifaceGrowthBlock;
 import net.minecraft.block.PointedDripstoneBlock;
 import net.minecraft.block.SculkShriekerBlock;
 import net.minecraft.block.ShapeContext;
@@ -1838,11 +1838,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		runnable.run();
 		if (!bl) {
 			CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
-			if (cameraSubmersionType != CameraSubmersionType.POWDER_SNOW && cameraSubmersionType != CameraSubmersionType.LAVA) {
-				if (camera.getFocusedEntity() instanceof LivingEntity livingEntity && livingEntity.hasStatusEffect(StatusEffects.BLINDNESS)) {
-					return;
-				}
-
+			if (cameraSubmersionType != CameraSubmersionType.POWDER_SNOW && cameraSubmersionType != CameraSubmersionType.LAVA && !this.method_43788(camera)) {
 				if (this.client.world.getDimensionEffects().getSkyType() == DimensionEffects.SkyType.END) {
 					this.renderEndSky(matrices);
 				} else if (this.client.world.getDimensionEffects().getSkyType() == DimensionEffects.SkyType.NORMAL) {
@@ -1961,6 +1957,12 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				}
 			}
 		}
+	}
+
+	private boolean method_43788(Camera camera) {
+		return !(camera.getFocusedEntity() instanceof LivingEntity livingEntity)
+			? false
+			: livingEntity.hasStatusEffect(StatusEffects.BLINDNESS) || livingEntity.hasStatusEffect(StatusEffects.DARKNESS);
 	}
 
 	public void renderClouds(MatrixStack matrices, Matrix4f projectionMatrix, float tickDelta, double d, double e, double f) {
@@ -3283,7 +3285,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 							ParticleUtil.spawnParticles(this.world, pos, new SculkChargeParticleEffect(ad), intProvider, direction2, supplier, g);
 						}
 					} else {
-						for (Direction direction3 : AbstractLichenBlock.flagToDirections(b)) {
+						for (Direction direction3 : MultifaceGrowthBlock.flagToDirections(b)) {
 							float ae = direction3 == Direction.UP ? (float) Math.PI : 0.0F;
 							double af = 0.35;
 							ParticleUtil.spawnParticles(this.world, pos, new SculkChargeParticleEffect(ae), intProvider, direction3, supplier, 0.35);

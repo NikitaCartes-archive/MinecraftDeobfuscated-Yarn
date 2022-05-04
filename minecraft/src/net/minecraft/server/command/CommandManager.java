@@ -92,7 +92,7 @@ public class CommandManager {
 		LootCommand.register(this.dispatcher, commandRegistryAccess);
 		MessageCommand.register(this.dispatcher);
 		ParticleCommand.register(this.dispatcher);
-		PlaceFeatureCommand.register(this.dispatcher);
+		PlaceCommand.register(this.dispatcher);
 		PlaySoundCommand.register(this.dispatcher);
 		ReloadCommand.register(this.dispatcher);
 		RecipeCommand.register(this.dispatcher);

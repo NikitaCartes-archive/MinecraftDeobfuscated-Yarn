@@ -33,7 +33,7 @@ public class EnchantingTableBlockEntityRenderer implements BlockEntityRenderer<E
 		matrixStack.translate(0.5, 0.75, 0.5);
 		float g = (float)enchantingTableBlockEntity.ticks + f;
 		matrixStack.translate(0.0, (double)(0.1F + MathHelper.sin(g * 0.1F) * 0.01F), 0.0);
-		float h = enchantingTableBlockEntity.field_11964 - enchantingTableBlockEntity.field_11963;
+		float h = enchantingTableBlockEntity.bookRotation - enchantingTableBlockEntity.lastBookRotation;
 
 		while (h >= (float) Math.PI) {
 			h -= (float) (Math.PI * 2);
@@ -43,7 +43,7 @@ public class EnchantingTableBlockEntityRenderer implements BlockEntityRenderer<E
 			h += (float) (Math.PI * 2);
 		}
 
-		float k = enchantingTableBlockEntity.field_11963 + h * f;
+		float k = enchantingTableBlockEntity.lastBookRotation + h * f;
 		matrixStack.multiply(Vec3f.POSITIVE_Y.getRadialQuaternion(-k));
 		matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(80.0F));
 		float l = MathHelper.lerp(f, enchantingTableBlockEntity.pageAngle, enchantingTableBlockEntity.nextPageAngle);

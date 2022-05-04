@@ -73,7 +73,7 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 	}
 
 	public static class Builder extends ConditionalLootFunction.Builder<SetStewEffectLootFunction.Builder> {
-		private final Map<StatusEffect, LootNumberProvider> map = Maps.<StatusEffect, LootNumberProvider>newHashMap();
+		private final Map<StatusEffect, LootNumberProvider> map = Maps.<StatusEffect, LootNumberProvider>newLinkedHashMap();
 
 		protected SetStewEffectLootFunction.Builder getThisBuilder() {
 			return this;
@@ -113,7 +113,7 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 		}
 
 		public SetStewEffectLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-			Map<StatusEffect, LootNumberProvider> map = Maps.<StatusEffect, LootNumberProvider>newHashMap();
+			Map<StatusEffect, LootNumberProvider> map = Maps.<StatusEffect, LootNumberProvider>newLinkedHashMap();
 			if (jsonObject.has("effects")) {
 				for (JsonElement jsonElement : JsonHelper.getArray(jsonObject, "effects")) {
 					String string = JsonHelper.getString(jsonElement.getAsJsonObject(), "type");

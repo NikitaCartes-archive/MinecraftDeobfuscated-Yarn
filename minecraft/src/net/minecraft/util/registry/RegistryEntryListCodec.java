@@ -52,7 +52,7 @@ public class RegistryEntryListCodec<E> implements Codec<RegistryEntryList<E>> {
 		this.registry = registry;
 		this.entryCodec = entryCodec;
 		this.directEntryListCodec = createDirectEntryListCodec(entryCodec, alwaysSerializeAsList);
-		this.entryListStorageCodec = Codec.either(TagKey.stringCodec(registry), this.directEntryListCodec);
+		this.entryListStorageCodec = Codec.either(TagKey.codec(registry), this.directEntryListCodec);
 	}
 
 	@Override

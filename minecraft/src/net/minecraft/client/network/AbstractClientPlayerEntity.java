@@ -16,6 +16,7 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringHelper;
 import net.minecraft.util.dynamic.DynamicSerializableUuid;
@@ -42,8 +43,8 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 	public float elytraRoll;
 	public final ClientWorld clientWorld;
 
-	public AbstractClientPlayerEntity(ClientWorld world, GameProfile profile) {
-		super(world, world.getSpawnPos(), world.getSpawnAngle(), profile);
+	public AbstractClientPlayerEntity(ClientWorld world, GameProfile profile, @Nullable PlayerPublicKey publicKey) {
+		super(world, world.getSpawnPos(), world.getSpawnAngle(), profile, publicKey);
 		this.clientWorld = world;
 	}
 

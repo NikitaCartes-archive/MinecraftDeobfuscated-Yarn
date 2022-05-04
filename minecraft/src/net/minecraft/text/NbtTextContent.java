@@ -23,8 +23,8 @@ public class NbtTextContent implements TextContent {
 	@Nullable
 	protected final NbtPathArgumentType.NbtPath path;
 
-	public NbtTextContent(String rawPath, boolean interpret, Optional<Text> separator, NbtDataSource nbtDataSource) {
-		this(rawPath, parsePath(rawPath), interpret, separator, nbtDataSource);
+	public NbtTextContent(String rawPath, boolean interpret, Optional<Text> separator, NbtDataSource dataSource) {
+		this(rawPath, parsePath(rawPath), interpret, separator, dataSource);
 	}
 
 	private NbtTextContent(String rawPath, @Nullable NbtPathArgumentType.NbtPath path, boolean interpret, Optional<Text> separator, NbtDataSource dataSource) {
@@ -60,11 +60,11 @@ public class NbtTextContent implements TextContent {
 		return this.dataSource;
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
 		} else {
-			if (object instanceof NbtTextContent nbtTextContent
+			if (o instanceof NbtTextContent nbtTextContent
 				&& this.dataSource.equals(nbtTextContent.dataSource)
 				&& this.separator.equals(nbtTextContent.separator)
 				&& this.interpret == nbtTextContent.interpret

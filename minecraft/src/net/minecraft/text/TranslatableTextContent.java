@@ -159,11 +159,11 @@ public class TranslatableTextContent implements TextContent {
 		return MutableText.of(new TranslatableTextContent(this.key, objects));
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
 		} else {
-			if (object instanceof TranslatableTextContent translatableTextContent
+			if (o instanceof TranslatableTextContent translatableTextContent
 				&& this.key.equals(translatableTextContent.key)
 				&& Arrays.equals(this.args, translatableTextContent.args)) {
 				return true;

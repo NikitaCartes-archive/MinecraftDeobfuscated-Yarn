@@ -16,7 +16,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
-public class GlowLichenBlock extends AbstractLichenBlock implements Fertilizable, Waterloggable {
+public class GlowLichenBlock extends MultifaceGrowthBlock implements Fertilizable, Waterloggable {
 	private static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	private final LichenGrower grower = new LichenGrower(this);
 
@@ -35,7 +35,7 @@ public class GlowLichenBlock extends AbstractLichenBlock implements Fertilizable
 	 * @param luminance luminance supplied when the lichen has at least one visible side
 	 */
 	public static ToIntFunction<BlockState> getLuminanceSupplier(int luminance) {
-		return state -> AbstractLichenBlock.hasAnyDirection(state) ? luminance : 0;
+		return state -> MultifaceGrowthBlock.hasAnyDirection(state) ? luminance : 0;
 	}
 
 	@Override

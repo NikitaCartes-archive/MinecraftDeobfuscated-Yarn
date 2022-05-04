@@ -51,9 +51,9 @@ public class BiomeTagProvider extends AbstractTagProvider<Biome> {
 			.add(BiomeKeys.GROVE);
 		this.getOrCreateTagBuilder(BiomeTags.IS_SAVANNA).add(BiomeKeys.SAVANNA).add(BiomeKeys.SAVANNA_PLATEAU).add(BiomeKeys.WINDSWEPT_SAVANNA);
 		AbstractTagProvider.ObjectBuilder<Biome> objectBuilder = this.getOrCreateTagBuilder(BiomeTags.IS_NETHER);
-		MultiNoiseBiomeSource.Preset.NETHER.stream().forEach(registryKey -> objectBuilder.add(registryKey));
+		MultiNoiseBiomeSource.Preset.NETHER.stream().forEach(biome -> objectBuilder.add(biome));
 		AbstractTagProvider.ObjectBuilder<Biome> objectBuilder2 = this.getOrCreateTagBuilder(BiomeTags.IS_OVERWORLD);
-		MultiNoiseBiomeSource.Preset.OVERWORLD.stream().forEach(registryKey -> objectBuilder2.add(registryKey));
+		MultiNoiseBiomeSource.Preset.OVERWORLD.stream().forEach(biome -> objectBuilder2.add(biome));
 		this.getOrCreateTagBuilder(BiomeTags.IS_END)
 			.add(BiomeKeys.THE_END)
 			.add(BiomeKeys.END_HIGHLANDS)

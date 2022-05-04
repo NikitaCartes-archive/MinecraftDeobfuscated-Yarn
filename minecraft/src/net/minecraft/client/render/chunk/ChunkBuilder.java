@@ -222,9 +222,11 @@ public class ChunkBuilder {
 
 	public CompletableFuture<Void> scheduleUpload(BufferBuilder.class_7433 arg, VertexBuffer glBuffer) {
 		return CompletableFuture.runAsync(() -> {
-			glBuffer.bind();
-			glBuffer.upload(arg);
-			VertexBuffer.unbind();
+			if (!glBuffer.isClosed()) {
+				glBuffer.bind();
+				glBuffer.upload(arg);
+				VertexBuffer.unbind();
+			}
 		}, this.uploadQueue::add);
 	}
 

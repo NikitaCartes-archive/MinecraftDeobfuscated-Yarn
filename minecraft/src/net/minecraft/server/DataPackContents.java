@@ -31,7 +31,8 @@ import org.slf4j.Logger;
 /**
  * Contains loaders for contents controllable by data packs.
  * 
- * <p>This can be accessed via {@link MinecraftServer.ResourceManagerHolder#dataPackContents}.
+ * <p>This can be accessed via {@link
+ * net.minecraft.server.MinecraftServer.ResourceManagerHolder#dataPackContents}.
  * There are shortcut methods to access individual loaders on {@link MinecraftServer}.
  */
 public class DataPackContents {

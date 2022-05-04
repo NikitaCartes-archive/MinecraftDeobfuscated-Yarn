@@ -30,7 +30,7 @@ public class WalkTowardsLookTargetTask<E extends LivingEntity> extends Task<E> {
 			return false;
 		} else {
 			LookTarget lookTarget = (LookTarget)optional.get();
-			return lookTarget.isSeenBy(entity) && !entity.getPos().isInRange(lookTarget.getPos(), (double)this.searchRange);
+			return !entity.getPos().isInRange(lookTarget.getPos(), (double)this.searchRange);
 		}
 	}
 

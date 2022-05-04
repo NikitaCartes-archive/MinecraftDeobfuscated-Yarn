@@ -101,31 +101,39 @@ public interface NbtElement {
 	byte NUMBER_TYPE = 99;
 	int MAX_DEPTH = 512;
 
+	/**
+	 * Writes the NBT element to {@code output}.
+	 * 
+	 * @apiNote This is a low-level method for serializing NBT elements; consider using
+	 * {@link NbtIo}, {@link NbtOps}, or {@link net.minecraft.network.PacketByteBuf#writeNbt}
+	 * instead.
+	 */
 	void write(DataOutput output) throws IOException;
 
 	String toString();
 
 	/**
-	 * Gets the type of this NBT element.
-	 * 
-	 * @return the type
+	 * {@return the type of this NBT element}
 	 */
 	byte getType();
 
 	/**
-	 * Gets the NBT type definition of this NBT element.
-	 * 
-	 * @return the element type definition
+	 * {@return the NBT type definition of this NBT element}
 	 */
 	NbtType<?> getNbtType();
 
 	/**
-	 * Copies this NBT element.
-	 * 
-	 * @return the copied element
+	 * {@return an NBT element of equal value that won't change with this element}
 	 */
 	NbtElement copy();
 
+	/**
+	 * {@return the NBT's string representation}
+	 * 
+	 * @implNote By default, this returns the same result as {@link
+	 * net.minecraft.nbt.visitor.StringNbtWriter}. {@link NbtString} will return its
+	 * string value instead.
+	 */
 	default String asString() {
 		return new StringNbtWriter().apply(this);
 	}

@@ -18,27 +18,20 @@ public class LoginQueryResponseC2SPacket implements Packet<ServerLoginPacketList
 
 	public LoginQueryResponseC2SPacket(PacketByteBuf buf) {
 		this.queryId = buf.readVarInt();
-		if (buf.readBoolean()) {
-			int i = buf.readableBytes();
-			if (i < 0 || i > 1048576) {
+		this.response = buf.readNullable(buf2 -> {
+			int i = buf2.readableBytes();
+			if (i >= 0 && i <= 1048576) {
+				return new PacketByteBuf(buf2.readBytes(i));
+			} else {
 				throw new IllegalArgumentException("Payload may not be larger than 1048576 bytes");
 			}
-
-			this.response = new PacketByteBuf(buf.readBytes(i));
-		} else {
-			this.response = null;
-		}
+		});
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.queryId);
-		if (this.response != null) {
-			buf.writeBoolean(true);
-			buf.writeBytes(this.response.copy());
-		} else {
-			buf.writeBoolean(false);
-		}
+		buf.writeNullable(this.response, (buf2, response) -> buf2.writeBytes(response.slice()));
 	}
 
 	public void apply(ServerLoginPacketListener serverLoginPacketListener) {

@@ -41,6 +41,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
 
+/**
+ * Helper methods for handling NBT.
+ */
 public final class NbtHelper {
 	private static final Comparator<NbtList> BLOCK_POS_COMPARATOR = Comparator.comparingInt(nbt -> nbt.getInt(1))
 		.thenComparingInt(nbt -> nbt.getInt(0))
@@ -62,22 +65,27 @@ public final class NbtHelper {
 	private NbtHelper() {
 	}
 
+	/**
+	 * {@return the game profile converted from {@code nbt}}
+	 * 
+	 * @see #writeGameProfile(NbtCompound, GameProfile)
+	 */
 	@Nullable
-	public static GameProfile toGameProfile(NbtCompound compound) {
+	public static GameProfile toGameProfile(NbtCompound nbt) {
 		String string = null;
 		UUID uUID = null;
-		if (compound.contains("Name", NbtElement.STRING_TYPE)) {
-			string = compound.getString("Name");
+		if (nbt.contains("Name", NbtElement.STRING_TYPE)) {
+			string = nbt.getString("Name");
 		}
 
-		if (compound.containsUuid("Id")) {
-			uUID = compound.getUuid("Id");
+		if (nbt.containsUuid("Id")) {
+			uUID = nbt.getUuid("Id");
 		}
 
 		try {
 			GameProfile gameProfile = new GameProfile(uUID, string);
-			if (compound.contains("Properties", NbtElement.COMPOUND_TYPE)) {
-				NbtCompound nbtCompound = compound.getCompound("Properties");
+			if (nbt.contains("Properties", NbtElement.COMPOUND_TYPE)) {
+				NbtCompound nbtCompound = nbt.getCompound("Properties");
 
 				for (String string2 : nbtCompound.getKeys()) {
 					NbtList nbtList = nbtCompound.getList(string2, NbtElement.COMPOUND_TYPE);
@@ -100,13 +108,19 @@ public final class NbtHelper {
 		}
 	}
 
-	public static NbtCompound writeGameProfile(NbtCompound compound, GameProfile profile) {
+	/**
+	 * Writes the game profile to {@code nbt}. This modifies the passed compound.
+	 * 
+	 * @return the compound with the serialized game profile
+	 * @see #toGameProfile(NbtCompound)
+	 */
+	public static NbtCompound writeGameProfile(NbtCompound nbt, GameProfile profile) {
 		if (!StringHelper.isEmpty(profile.getName())) {
-			compound.putString("Name", profile.getName());
+			nbt.putString("Name", profile.getName());
 		}
 
 		if (profile.getId() != null) {
-			compound.putUuid("Id", profile.getId());
+			nbt.putUuid("Id", profile.getId());
 		}
 
 		if (!profile.getProperties().isEmpty()) {
@@ -128,14 +142,39 @@ public final class NbtHelper {
 				nbtCompound.put(string, nbtList);
 			}
 
-			compound.put("Properties", nbtCompound);
+			nbt.put("Properties", nbtCompound);
 		}
 
-		return compound;
+		return nbt;
 	}
 
+	/**
+	 * {@return whether {@code standard} is a subset of {@code subject}}
+	 * 
+	 * <p>Elements are matched based on the following order:
+	 * <ol>
+	 * <li>Passing the same reference to both parameters will return {@code true}.</li>
+	 * <li>If {@code standard} is {@code null}, return {@code true}.</li>
+	 * <li>If {@code subject} is {@code null}, return {@code false}.</li>
+	 * <li>If the types of {@code standard} and {@code subject} are different,
+	 * return {@code false}.</li>
+	 * <li>If {@code standard} is {@link NbtCompound}, return {@code true} if all keys
+	 * in the {@code standard} exist in {@code subject} and the values match (comparing
+	 * recursively.)</li>
+	 * <li>If {@code standard} is {@link NbtList} and {@code ignoreListOrder} is {@code true},
+	 * return {@code true} if both lists are empty, or if there exists a "matching" value
+	 * in {@code subject} for all values of {@code standard} (that is, if {@code standard}
+	 * is a subset of {@code subject}, ignoring duplicates.), otherwise {@code false}.
+	 * This means that the comparison ignores the ordering of the lists.</li>
+	 * <li>Otherwise, return {@code standard.equals(subject)}.</li>
+	 * </ol>
+	 * 
+	 * @param standard the standard (also called as "template" or "schema") element
+	 * @param subject the element to test
+	 * @param ignoreListOrder whether to ignore ordering for {@link NbtList}
+	 */
 	@VisibleForTesting
-	public static boolean matches(@Nullable NbtElement standard, @Nullable NbtElement subject, boolean equalValue) {
+	public static boolean matches(@Nullable NbtElement standard, @Nullable NbtElement subject, boolean ignoreListOrder) {
 		if (standard == subject) {
 			return true;
 		} else if (standard == null) {
@@ -149,13 +188,13 @@ public final class NbtHelper {
 
 			for (String string : nbtCompound.getKeys()) {
 				NbtElement nbtElement = nbtCompound.get(string);
-				if (!matches(nbtElement, nbtCompound2.get(string), equalValue)) {
+				if (!matches(nbtElement, nbtCompound2.get(string), ignoreListOrder)) {
 					return false;
 				}
 			}
 
 			return true;
-		} else if (standard instanceof NbtList && equalValue) {
+		} else if (standard instanceof NbtList && ignoreListOrder) {
 			NbtList nbtList = (NbtList)standard;
 			NbtList nbtList2 = (NbtList)subject;
 			if (nbtList.isEmpty()) {
@@ -166,7 +205,7 @@ public final class NbtHelper {
 					boolean bl = false;
 
 					for (int j = 0; j < nbtList2.size(); j++) {
-						if (matches(nbtElement2, nbtList2.get(j), equalValue)) {
+						if (matches(nbtElement2, nbtList2.get(j), ignoreListOrder)) {
 							bl = true;
 							break;
 						}
@@ -188,6 +227,7 @@ public final class NbtHelper {
 	 * Serializes a {@link UUID} into its equivalent NBT representation.
 	 * 
 	 * @since 20w10a
+	 * @see #toUuid(NbtElement)
 	 */
 	public static NbtIntArray fromUuid(UUID uuid) {
 		return new NbtIntArray(DynamicSerializableUuid.toIntArray(uuid));
@@ -199,6 +239,7 @@ public final class NbtHelper {
 	 * 
 	 * @throws IllegalArgumentException if {@code element} is not a valid representation of a UUID
 	 * @since 20w10a
+	 * @see #fromUuid(UUID)
 	 */
 	public static UUID toUuid(NbtElement element) {
 		if (element.getNbtType() != NbtIntArray.TYPE) {
@@ -215,10 +256,20 @@ public final class NbtHelper {
 		}
 	}
 
-	public static BlockPos toBlockPos(NbtCompound compound) {
-		return new BlockPos(compound.getInt("X"), compound.getInt("Y"), compound.getInt("Z"));
+	/**
+	 * {@return the block position from the {@code nbt}}
+	 * 
+	 * @see #fromBlockPos(BlockPos)
+	 */
+	public static BlockPos toBlockPos(NbtCompound nbt) {
+		return new BlockPos(nbt.getInt("X"), nbt.getInt("Y"), nbt.getInt("Z"));
 	}
 
+	/**
+	 * {@return the serialized block position}
+	 * 
+	 * @see #toBlockPos(NbtCompound)
+	 */
 	public static NbtCompound fromBlockPos(BlockPos pos) {
 		NbtCompound nbtCompound = new NbtCompound();
 		nbtCompound.putInt("X", pos.getX());
@@ -227,20 +278,28 @@ public final class NbtHelper {
 		return nbtCompound;
 	}
 
-	public static BlockState toBlockState(NbtCompound compound) {
-		if (!compound.contains("Name", NbtElement.STRING_TYPE)) {
+	/**
+	 * {@return the block state from the {@code nbt}}
+	 * 
+	 * <p>This returns the default state for {@link net.minecraft.block.Blocks#AIR}
+	 * if the block name is not present.
+	 * 
+	 * @see #fromBlockState(BlockState)
+	 */
+	public static BlockState toBlockState(NbtCompound nbt) {
+		if (!nbt.contains("Name", NbtElement.STRING_TYPE)) {
 			return Blocks.AIR.getDefaultState();
 		} else {
-			Block block = Registry.BLOCK.get(new Identifier(compound.getString("Name")));
+			Block block = Registry.BLOCK.get(new Identifier(nbt.getString("Name")));
 			BlockState blockState = block.getDefaultState();
-			if (compound.contains("Properties", NbtElement.COMPOUND_TYPE)) {
-				NbtCompound nbtCompound = compound.getCompound("Properties");
+			if (nbt.contains("Properties", NbtElement.COMPOUND_TYPE)) {
+				NbtCompound nbtCompound = nbt.getCompound("Properties");
 				StateManager<Block, BlockState> stateManager = block.getStateManager();
 
 				for (String string : nbtCompound.getKeys()) {
 					Property<?> property = stateManager.getProperty(string);
 					if (property != null) {
-						blockState = withProperty(blockState, property, string, nbtCompound, compound);
+						blockState = withProperty(blockState, property, string, nbtCompound, nbt);
 					}
 				}
 			}
@@ -261,6 +320,11 @@ public final class NbtHelper {
 		}
 	}
 
+	/**
+	 * {@return the serialized block state}
+	 * 
+	 * @see #toBlockState(NbtCompound)
+	 */
 	public static NbtCompound fromBlockState(BlockState state) {
 		NbtCompound nbtCompound = new NbtCompound();
 		nbtCompound.putString("Name", Registry.BLOCK.getId(state.getBlock()).toString());
@@ -279,6 +343,9 @@ public final class NbtHelper {
 		return nbtCompound;
 	}
 
+	/**
+	 * {@return the serialized fluid state}
+	 */
 	public static NbtCompound fromFluidState(FluidState state) {
 		NbtCompound nbtCompound = new NbtCompound();
 		nbtCompound.putString("Name", Registry.FLUID.getId(state.getFluid()).toString());
@@ -540,6 +607,11 @@ public final class NbtHelper {
 		return (NbtCompound)fixer.update(fixTypes.getTypeReference(), new Dynamic<>(NbtOps.INSTANCE, compound), oldVersion, targetVersion).getValue();
 	}
 
+	/**
+	 * {@return the pretty-printed text representation of {@code element}}
+	 * 
+	 * @see net.minecraft.nbt.visitor.NbtTextFormatter
+	 */
 	public static Text toPrettyPrintedText(NbtElement element) {
 		return new NbtTextFormatter("", 0).apply(element);
 	}

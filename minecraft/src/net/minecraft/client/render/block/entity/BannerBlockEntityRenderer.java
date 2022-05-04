@@ -28,6 +28,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.registry.RegistryEntry;
 
 @Environment(EnvType.CLIENT)
 public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBlockEntity> {
@@ -58,7 +59,7 @@ public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBloc
 	}
 
 	public void render(BannerBlockEntity bannerBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
-		List<Pair<BannerPattern, DyeColor>> list = bannerBlockEntity.getPatterns();
+		List<Pair<RegistryEntry<BannerPattern>, DyeColor>> list = bannerBlockEntity.getPatterns();
 		float g = 0.6666667F;
 		boolean bl = bannerBlockEntity.getWorld() == null;
 		matrixStack.push();
@@ -106,7 +107,7 @@ public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBloc
 		ModelPart canvas,
 		SpriteIdentifier baseSprite,
 		boolean isBanner,
-		List<Pair<BannerPattern, DyeColor>> patterns
+		List<Pair<RegistryEntry<BannerPattern>, DyeColor>> patterns
 	) {
 		renderCanvas(matrices, vertexConsumers, light, overlay, canvas, baseSprite, isBanner, patterns, false);
 	}
@@ -119,19 +120,20 @@ public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBloc
 		ModelPart canvas,
 		SpriteIdentifier baseSprite,
 		boolean isBanner,
-		List<Pair<BannerPattern, DyeColor>> patterns,
+		List<Pair<RegistryEntry<BannerPattern>, DyeColor>> patterns,
 		boolean glint
 	) {
 		canvas.render(matrices, baseSprite.getVertexConsumer(vertexConsumers, RenderLayer::getEntitySolid, glint), light, overlay);
 
 		for (int i = 0; i < 17 && i < patterns.size(); i++) {
-			Pair<BannerPattern, DyeColor> pair = (Pair<BannerPattern, DyeColor>)patterns.get(i);
+			Pair<RegistryEntry<BannerPattern>, DyeColor> pair = (Pair<RegistryEntry<BannerPattern>, DyeColor>)patterns.get(i);
 			float[] fs = pair.getSecond().getColorComponents();
-			BannerPattern bannerPattern = pair.getFirst();
-			SpriteIdentifier spriteIdentifier = isBanner
-				? TexturedRenderLayers.getBannerPatternTextureId(bannerPattern)
-				: TexturedRenderLayers.getShieldPatternTextureId(bannerPattern);
-			canvas.render(matrices, spriteIdentifier.getVertexConsumer(vertexConsumers, RenderLayer::getEntityNoOutline), light, overlay, fs[0], fs[1], fs[2], 1.0F);
+			pair.getFirst()
+				.getKey()
+				.map(key -> isBanner ? TexturedRenderLayers.getBannerPatternTextureId(key) : TexturedRenderLayers.getShieldPatternTextureId(key))
+				.ifPresent(
+					sprite -> canvas.render(matrices, sprite.getVertexConsumer(vertexConsumers, RenderLayer::getEntityNoOutline), light, overlay, fs[0], fs[1], fs[2], 1.0F)
+				);
 		}
 	}
 }

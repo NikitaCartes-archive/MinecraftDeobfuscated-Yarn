@@ -22,7 +22,7 @@ public abstract class PlacementModifier {
 	/**
 	 * Applies this placement modifier to the given position.
 	 */
-	public abstract Stream<BlockPos> getPositions(FeaturePlacementContext context, AbstractRandom abstractRandom, BlockPos pos);
+	public abstract Stream<BlockPos> getPositions(FeaturePlacementContext context, AbstractRandom random, BlockPos pos);
 
 	public abstract PlacementModifierType<?> getType();
 }

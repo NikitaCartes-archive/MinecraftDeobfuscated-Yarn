@@ -26,17 +26,17 @@ public class ItemModelGenerator {
 		model.upload(ModelIds.getItemModelId(item), TextureMap.layer0(texture), this.writer);
 	}
 
-	private void method_43228(Item item) {
+	private void registerCompass(Item compass) {
 		for (int i = 0; i < 32; i++) {
 			if (i != 16) {
-				this.register(item, String.format("_%02d", i), Models.GENERATED);
+				this.register(compass, String.format("_%02d", i), Models.GENERATED);
 			}
 		}
 	}
 
-	private void method_43229(Item item) {
+	private void registerClock(Item clock) {
 		for (int i = 1; i < 64; i++) {
-			this.register(item, String.format("_%02d", i), Models.GENERATED);
+			this.register(clock, String.format("_%02d", i), Models.GENERATED);
 		}
 	}
 
@@ -76,12 +76,12 @@ public class ItemModelGenerator {
 		this.register(Items.CHICKEN, Models.GENERATED);
 		this.register(Items.CHORUS_FRUIT, Models.GENERATED);
 		this.register(Items.CLAY_BALL, Models.GENERATED);
-		this.method_43229(Items.CLOCK);
+		this.registerClock(Items.CLOCK);
 		this.register(Items.COAL, Models.GENERATED);
 		this.register(Items.COD_BUCKET, Models.GENERATED);
 		this.register(Items.COMMAND_BLOCK_MINECART, Models.GENERATED);
-		this.method_43228(Items.COMPASS);
-		this.method_43228(Items.RECOVERY_COMPASS);
+		this.registerCompass(Items.COMPASS);
+		this.registerCompass(Items.RECOVERY_COMPASS);
 		this.register(Items.COOKED_BEEF, Models.GENERATED);
 		this.register(Items.COOKED_CHICKEN, Models.GENERATED);
 		this.register(Items.COOKED_COD, Models.GENERATED);

@@ -30,7 +30,7 @@ public class NoiseBasedCountPlacementModifier extends AbstractCountPlacementModi
 	}
 
 	@Override
-	protected int getCount(AbstractRandom abstractRandom, BlockPos pos) {
+	protected int getCount(AbstractRandom random, BlockPos pos) {
 		double d = Biome.FOLIAGE_NOISE.sample((double)pos.getX() / this.noiseFactor, (double)pos.getZ() / this.noiseFactor, false);
 		return (int)Math.ceil((d + this.noiseOffset) * (double)this.noiseToCountRatio);
 	}

@@ -19,9 +19,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
-import net.minecraft.block.AbstractLichenBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.MultifaceGrowthBlock;
 import net.minecraft.block.SculkSpreadable;
 import net.minecraft.block.SculkVeinBlock;
 import net.minecraft.nbt.NbtCompound;
@@ -179,7 +179,7 @@ public class SculkSpreadManager {
 				Collection<Direction> collection = cursor3 == null ? null : cursor3.getFaces();
 				if (i > 0 && collection != null) {
 					int j = (int)(Math.log1p((double)i) / 2.3F) + 1;
-					int k = (j << 6) + AbstractLichenBlock.directionsToFlag(collection);
+					int k = (j << 6) + MultifaceGrowthBlock.directionsToFlag(collection);
 					world.syncWorldEvent(WorldEvents.SCULK_CHARGE, blockPos, k);
 				}
 			}
@@ -289,7 +289,7 @@ public class SculkSpreadManager {
 						}
 
 						if (blockState.getBlock() instanceof SculkSpreadable) {
-							this.faces = AbstractLichenBlock.collectDirections(blockState);
+							this.faces = MultifaceGrowthBlock.collectDirections(blockState);
 						}
 
 						this.decay = sculkSpreadable.getDecay(this.decay);

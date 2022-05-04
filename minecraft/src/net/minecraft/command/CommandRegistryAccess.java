@@ -55,20 +55,20 @@ public final class CommandRegistryAccess {
 	}
 
 	/**
-	 * A policy on how to handle a {@link TagKey} that does not resolve to an existing
-	 * tag (unrecognized tag) in {@link CommandRegistryWrapper#getEntryList}.
+	 * A policy on how to handle a {@link net.minecraft.tag.TagKey} that does not resolve
+	 * to an existing tag (unrecognized tag) in {@link CommandRegistryWrapper#getEntryList}.
 	 */
 	public static enum EntryListCreationPolicy {
 		/**
-		 * Creates a new {@link RegistryEntryList}, stores it and returns it.
+		 * Creates a new {@link net.minecraft.util.registry.RegistryEntryList}, stores it and returns it.
 		 */
 		CREATE_NEW,
 		/**
-		 * Returns a new, empty {@link RegistryEntryList} every time.
+		 * Returns a new, empty {@link net.minecraft.util.registry.RegistryEntryList} every time.
 		 */
 		RETURN_EMPTY,
 		/**
-		 * Returns {@link Optional.empty()}.
+		 * Returns {@link Optional#empty()}.
 		 */
 		FAIL;
 	}

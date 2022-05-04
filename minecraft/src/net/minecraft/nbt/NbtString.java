@@ -8,7 +8,8 @@ import net.minecraft.nbt.scanner.NbtScanner;
 import net.minecraft.nbt.visitor.NbtElementVisitor;
 
 /**
- * Represents an NBT string.
+ * Represents an NBT string. Its type is {@value NbtElement#STRING_TYPE}.
+ * Instances are immutable.
  */
 public class NbtString implements NbtElement {
 	private static final int SIZE = 288;
@@ -61,6 +62,9 @@ public class NbtString implements NbtElement {
 		this.value = value;
 	}
 
+	/**
+	 * {@return the NBT string from {@code value}}
+	 */
 	public static NbtString of(String value) {
 		return value.isEmpty() ? EMPTY : new NbtString(value);
 	}
@@ -107,6 +111,16 @@ public class NbtString implements NbtElement {
 		visitor.visitString(this);
 	}
 
+	/**
+	 * {@return the string quoted with quotes and backslashes escaped}
+	 * 
+	 * @implNote If {@code value} contains one of the singlequote or the double quote,
+	 * it tries to use the other quotes to quote the string. If both appear, then the quote
+	 * that appeared later will be used to quote the string. If neither of them appears, this
+	 * uses a double quote. For example, the string {@code It's a "Tiny Potato"!} will be
+	 * escaped as {@code "It's a \"Tiny Potato\"!"}, while the string
+	 * {@code It is a "Tiny Potato"!} will be escaped as {@code 'It is a "Tiny Potato"!'}.
+	 */
 	public static String escape(String value) {
 		StringBuilder stringBuilder = new StringBuilder(" ");
 		char c = 0;

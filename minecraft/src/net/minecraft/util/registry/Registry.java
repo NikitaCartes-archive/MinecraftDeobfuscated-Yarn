@@ -23,6 +23,8 @@ import javax.annotation.Nullable;
 import net.minecraft.Bootstrap;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.BannerPattern;
+import net.minecraft.block.entity.BannerPatterns;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.command.argument.ArgumentTypes;
 import net.minecraft.command.argument.serialize.ArgumentSerializer;
@@ -43,6 +45,8 @@ import net.minecraft.entity.passive.CatVariant;
 import net.minecraft.entity.passive.FrogVariant;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.Instrument;
+import net.minecraft.item.Instruments;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.loot.condition.LootConditionType;
@@ -57,6 +61,7 @@ import net.minecraft.loot.provider.number.LootNumberProviderType;
 import net.minecraft.loot.provider.number.LootNumberProviderTypes;
 import net.minecraft.loot.provider.score.LootScoreProviderType;
 import net.minecraft.loot.provider.score.LootScoreProviderTypes;
+import net.minecraft.network.MessageType;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.Potion;
@@ -299,10 +304,16 @@ public abstract class Registry<T> implements Keyable, IndexedIterable<T> {
 	public static final Registry<StructurePoolElementType<?>> STRUCTURE_POOL_ELEMENT = create(
 		STRUCTURE_POOL_ELEMENT_KEY, registry -> StructurePoolElementType.EMPTY_POOL_ELEMENT
 	);
+	public static final RegistryKey<Registry<MessageType>> MESSAGE_TYPE_KEY = createRegistryKey("chat_type");
+	public static final Registry<MessageType> MESSAGE_TYPE = create(MESSAGE_TYPE_KEY, MessageType::registerAndGetDefault);
 	public static final RegistryKey<Registry<CatVariant>> CAT_VARIANT_KEY = createRegistryKey("cat_variant");
 	public static final Registry<CatVariant> CAT_VARIANT = create(CAT_VARIANT_KEY, registry -> CatVariant.BLACK);
 	public static final RegistryKey<Registry<FrogVariant>> FROG_VARIANT_KEY = createRegistryKey("frog_variant");
 	public static final Registry<FrogVariant> FROG_VARIANT = create(FROG_VARIANT_KEY, registry -> FrogVariant.TEMPERATE);
+	public static final RegistryKey<Registry<BannerPattern>> BANNER_PATTERN_KEY = createRegistryKey("banner_pattern");
+	public static final Registry<BannerPattern> BANNER_PATTERN = create(BANNER_PATTERN_KEY, BannerPatterns::initAndGetDefault);
+	public static final RegistryKey<Registry<Instrument>> INSTRUMENT_KEY = createRegistryKey("instrument");
+	public static final Registry<Instrument> INSTRUMENT = create(INSTRUMENT_KEY, Instruments::registerAndGetDefault);
 	/**
 	 * The key representing the type of elements held by this registry. It is also the
 	 * key of this registry within the root registry.

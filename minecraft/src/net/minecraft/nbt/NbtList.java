@@ -11,11 +11,21 @@ import net.minecraft.nbt.scanner.NbtScanner;
 import net.minecraft.nbt.visitor.NbtElementVisitor;
 
 /**
- * Represents an NBT list.
+ * Represents a mutable NBT list. Its type is {@value NbtElement#LIST_TYPE}.
  * <p>
  * An NBT list holds values of the same {@linkplain NbtElement#getType NBT type}.
  * The {@linkplain AbstractNbtList#getHeldType NBT type} of an NBT list is determined
- * once its first element is inserted; empty NBT lists return {@link NbtElement#END_TYPE} as their held {@linkplain AbstractNbtList#getHeldType NBT type}.
+ * once its first element is inserted; empty NBT lists return {@link NbtElement#END_TYPE}
+ * as their held {@linkplain AbstractNbtList#getHeldType NBT type}.
+ * 
+ * <p>To get values from this list, use methods with type names, such as
+ * {@link #getInt(int)}. Where applicable, these methods return Java types (e.g. {@code int},
+ * {@code long[]}) instead of {@link NbtElement} subclasses. If type mismatch occurs or
+ * the index is out of bounds, it returns the default value for that type instead of
+ * throwing or returning {@code null}.
+ * 
+ * <p>Unlike {@link NbtCompound}, there is no Java type-based adder, and numeric value
+ * getters will not try to cast the values.
  */
 public class NbtList extends AbstractNbtList<NbtElement> {
 	private static final int SIZE = 296;
@@ -170,6 +180,10 @@ public class NbtList extends AbstractNbtList<NbtElement> {
 		return this.value.isEmpty();
 	}
 
+	/**
+	 * {@return the compound at {@code index}, or an empty compound if the index is out
+	 * of bounds or if this is not a list of compounds}
+	 */
 	public NbtCompound getCompound(int index) {
 		if (index >= 0 && index < this.value.size()) {
 			NbtElement nbtElement = (NbtElement)this.value.get(index);
@@ -181,6 +195,10 @@ public class NbtList extends AbstractNbtList<NbtElement> {
 		return new NbtCompound();
 	}
 
+	/**
+	 * {@return the list at {@code index}, or an empty list if the index is out
+	 * of bounds or if this is not a list of lists}
+	 */
 	public NbtList getList(int index) {
 		if (index >= 0 && index < this.value.size()) {
 			NbtElement nbtElement = (NbtElement)this.value.get(index);
@@ -192,6 +210,10 @@ public class NbtList extends AbstractNbtList<NbtElement> {
 		return new NbtList();
 	}
 
+	/**
+	 * {@return the short at {@code index}, or {@code 0} if the index is out of bounds
+	 * or if this is not a list of shorts}
+	 */
 	public short getShort(int index) {
 		if (index >= 0 && index < this.value.size()) {
 			NbtElement nbtElement = (NbtElement)this.value.get(index);
@@ -203,6 +225,10 @@ public class NbtList extends AbstractNbtList<NbtElement> {
 		return 0;
 	}
 
+	/**
+	 * {@return the integer at {@code index}, or {@code 0} if the index is out of bounds
+	 * or if this is not a list of integers}
+	 */
 	public int getInt(int index) {
 		if (index >= 0 && index < this.value.size()) {
 			NbtElement nbtElement = (NbtElement)this.value.get(index);
@@ -214,6 +240,12 @@ public class NbtList extends AbstractNbtList<NbtElement> {
 		return 0;
 	}
 
+	/**
+	 * {@return the int array at {@code index}, or an empty int array if the index is
+	 * out of bounds or if this is not a list of int arrays}
+	 * 
+	 * @apiNote Modifying the returned array also modifies the NBT int array.
+	 */
 	public int[] getIntArray(int index) {
 		if (index >= 0 && index < this.value.size()) {
 			NbtElement nbtElement = (NbtElement)this.value.get(index);
@@ -225,6 +257,12 @@ public class NbtList extends AbstractNbtList<NbtElement> {
 		return new int[0];
 	}
 
+	/**
+	 * {@return the long array at {@code index}, or an empty int array if the index is
+	 * out of bounds or if this is not a list of long arrays}
+	 * 
+	 * @apiNote Modifying the returned array also modifies the NBT long array.
+	 */
 	public long[] getLongArray(int index) {
 		if (index >= 0 && index < this.value.size()) {
 			NbtElement nbtElement = (NbtElement)this.value.get(index);
@@ -236,6 +274,10 @@ public class NbtList extends AbstractNbtList<NbtElement> {
 		return new long[0];
 	}
 
+	/**
+	 * {@return the double at {@code index}, or {@code 0.0} if the index is out of bounds
+	 * or if this is not a list of doubles}
+	 */
 	public double getDouble(int index) {
 		if (index >= 0 && index < this.value.size()) {
 			NbtElement nbtElement = (NbtElement)this.value.get(index);
@@ -247,6 +289,10 @@ public class NbtList extends AbstractNbtList<NbtElement> {
 		return 0.0;
 	}
 
+	/**
+	 * {@return the float at {@code index}, or {@code 0.0f} if the index is out of bounds
+	 * or if this is not a list of floats}
+	 */
 	public float getFloat(int index) {
 		if (index >= 0 && index < this.value.size()) {
 			NbtElement nbtElement = (NbtElement)this.value.get(index);
@@ -258,6 +304,12 @@ public class NbtList extends AbstractNbtList<NbtElement> {
 		return 0.0F;
 	}
 
+	/**
+	 * {@return the stringified value at {@code index}, or an empty string if the index
+	 * is out of bounds}
+	 * 
+	 * <p>Unlike other getters, this works with any type, not just {@link NbtString}.
+	 */
 	public String getString(int index) {
 		if (index >= 0 && index < this.value.size()) {
 			NbtElement nbtElement = (NbtElement)this.value.get(index);

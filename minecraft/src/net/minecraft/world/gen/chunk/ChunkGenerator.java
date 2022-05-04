@@ -798,7 +798,7 @@ public abstract class ChunkGenerator {
 		return (List<StructurePlacement>)this.structurePlacements.getOrDefault(registryEntry.value(), List.of());
 	}
 
-	public abstract void getDebugHudText(List<String> text, NoiseConfig noiseConfig, BlockPos blockPos);
+	public abstract void getDebugHudText(List<String> text, NoiseConfig noiseConfig, BlockPos pos);
 
 	static {
 		Registry.register(Registry.CHUNK_GENERATOR, "noise", NoiseChunkGenerator.CODEC);

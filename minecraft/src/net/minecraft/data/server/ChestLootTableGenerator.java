@@ -25,6 +25,7 @@ import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
 import net.minecraft.potion.Potions;
 import net.minecraft.tag.ConfiguredStructureFeatureTags;
+import net.minecraft.tag.InstrumentTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -642,7 +643,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 					LootPool.builder()
 						.rolls(UniformLootNumberProvider.create(0.0F, 1.0F))
 						.with(ItemEntry.builder(Items.GOAT_HORN))
-						.apply(SetGoatHornSoundLootFunction.builder())
+						.apply(SetGoatHornSoundLootFunction.builder(InstrumentTags.REGULAR_GOAT_HORNS))
 				)
 		);
 		biConsumer.accept(

@@ -13,7 +13,7 @@ import net.minecraft.world.gen.feature.Feature;
 
 public class ProtectedBlocksStructureProcessor extends StructureProcessor {
 	public final TagKey<Block> protectedBlocksTag;
-	public static final Codec<ProtectedBlocksStructureProcessor> CODEC = TagKey.stringCodec(Registry.BLOCK_KEY)
+	public static final Codec<ProtectedBlocksStructureProcessor> CODEC = TagKey.codec(Registry.BLOCK_KEY)
 		.xmap(ProtectedBlocksStructureProcessor::new, protectedBlocksStructureProcessor -> protectedBlocksStructureProcessor.protectedBlocksTag);
 
 	public ProtectedBlocksStructureProcessor(TagKey<Block> tagKey) {

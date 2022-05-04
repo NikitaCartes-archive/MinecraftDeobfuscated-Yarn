@@ -10,7 +10,7 @@ package net.minecraft.world;
  * received on the client by {@link net.minecraft.client.network.ClientPlayNetworkHandler#onWorldEvent(net.minecraft.network.packet.s2c.play.WorldEventS2CPacket) ClientPlayNetworkHandler#onWorldEvent},
  * synced by {@link net.minecraft.client.world.ClientWorld#syncWorldEvent(net.minecraft.entity.player.PlayerEntity, int, net.minecraft.util.math.BlockPos, int) ClientWorld#syncWorldEvent} and
  * {@link net.minecraft.client.world.ClientWorld#syncGlobalEvent(int, net.minecraft.util.math.BlockPos, int) ClientWorld#syncGlobalEvent} (for regular and global events respectively), and
- * finally processed by {@link net.minecraft.client.render.WorldRenderer#processWorldEvent(net.minecraft.entity.player.PlayerEntity, int, net.minecraft.util.math.BlockPos, int) WorldRenderer#processWorldEvent} and
+ * finally processed by {@link net.minecraft.client.render.WorldRenderer#processWorldEvent(int, net.minecraft.util.math.BlockPos, int) WorldRenderer#processWorldEvent} and
  * {@link net.minecraft.client.render.WorldRenderer#processGlobalEvent(int, net.minecraft.util.math.BlockPos, int) WorldRenderer#processGlobalEvent} (for regular and global events respectively).
  */
 public class WorldEvents {
@@ -226,7 +226,7 @@ public class WorldEvents {
 	 */
 	public static final int ANVIL_LANDS = 1031;
 	/**
-	 * A portal is travelled through.
+	 * A portal is traveled through.
 	 * <br>Plays the portal travel sound event directly through the client's sound manager.
 	 * <p>Called by {@link net.minecraft.server.network.ServerPlayerEntity#moveToWorld(net.minecraft.server.world.ServerWorld) ServerPlayerEntity#moveToWorld}
 	 */
@@ -348,7 +348,7 @@ public class WorldEvents {
 	/**
 	 * A redstone torch burns out.
 	 * <br>Plays the redstone torch burn out sound event and spawns smoke particles.
-	 * <p>Called by {@link net.minecraft.block.RedstoneTorchBlock#scheduledTick(net.minecraft.block.BlockState, net.minecraft.server.world.ServerWorld, net.minecraft.util.math.BlockPos, java.util.Random) RedstoneTorchBlock#scheduledTick}
+	 * <p>Called by {@link net.minecraft.block.RedstoneTorchBlock#scheduledTick(net.minecraft.block.BlockState, net.minecraft.server.world.ServerWorld, net.minecraft.util.math.BlockPos, net.minecraft.util.math.random.AbstractRandom) RedstoneTorchBlock#scheduledTick}
 	 */
 	public static final int REDSTONE_TORCH_BURNS_OUT = 1502;
 	/**
@@ -392,7 +392,7 @@ public class WorldEvents {
 	 * {@link net.minecraft.entity.passive.RabbitEntity.EatCarrotCropGoal#tick() RabbitEntity.EatCarrotCropGoal#tick},
 	 * {@link net.minecraft.block.SpongeBlock#update(net.minecraft.world.World, net.minecraft.util.math.BlockPos) SpongeBlock#update},
 	 * {@link net.minecraft.block.TurtleEggBlock#breakEgg(net.minecraft.world.World, net.minecraft.util.math.BlockPos, net.minecraft.block.BlockState) TurtleEggBlock#breakEgg},
-	 * {@link net.minecraft.block.TurtleEggBlock#randomTick(net.minecraft.block.BlockState, net.minecraft.server.world.ServerWorld, net.minecraft.util.math.BlockPos, java.util.Random) TurtleEggBlock#randomTick},
+	 * {@link net.minecraft.block.TurtleEggBlock#randomTick(net.minecraft.block.BlockState, net.minecraft.server.world.ServerWorld, net.minecraft.util.math.BlockPos, net.minecraft.util.math.random.AbstractRandom) TurtleEggBlock#randomTick},
 	 * {@link net.minecraft.entity.passive.TurtleEntity#tickMovement() TurtleEntity#tickMovement},
 	 * {@link net.minecraft.block.WitherSkullBlock#onPlaced(net.minecraft.world.World, net.minecraft.util.math.BlockPos, net.minecraft.block.entity.SkullBlockEntity) WitherSkullBlock#onPlaced},
 	 * and {@link net.minecraft.world.World#breakBlock(net.minecraft.util.math.BlockPos, boolean, net.minecraft.entity.Entity, int) World#breakBlock}
@@ -497,13 +497,13 @@ public class WorldEvents {
 	/**
 	 * Sculk... charges? Sculk is weird.
 	 * <br>Spawns sculk charge particles.
-	 * <br>Called by {@link net.minecraft.block.entity.SculkSpreadManager#tick(net.minecraft.world.World, net.minecraft.util.math.BlockPos, java.util.Random) SculkSpreadManager#tick}
+	 * <br>Called by {@link net.minecraft.block.entity.SculkSpreadManager#tick(net.minecraft.world.World, net.minecraft.util.math.BlockPos,  net.minecraft.util.math.random.AbstractRandom, boolean) SculkSpreadManager#tick}
 	 */
 	public static final int SCULK_CHARGE = 3006;
 	/**
 	 * A sculk shrieker shrieks.
 	 * <br>Spawns shriek particles and plays the shriek sound event.
-	 * <br>Called by {@link net.minecraft.block.SculkShriekerBlock#shriek(net.minecraft.world.World, net.minecraft.block.BlockState, net.minecraft.util.math.BlockPos) SculkShriekerBlock#shriek}
+	 * <br>Called by {@link net.minecraft.block.entity.SculkShriekerBlockEntity#shriek(net.minecraft.server.world.ServerWorld, net.minecraft.entity.Entity) SculkShriekerBlockEntity#shriek}
 	 */
 	public static final int SCULK_SHRIEKS = 3007;
 }

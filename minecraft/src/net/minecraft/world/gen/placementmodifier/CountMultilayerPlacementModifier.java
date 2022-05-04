@@ -33,7 +33,7 @@ public class CountMultilayerPlacementModifier extends PlacementModifier {
 	}
 
 	@Override
-	public Stream<BlockPos> getPositions(FeaturePlacementContext context, AbstractRandom abstractRandom, BlockPos pos) {
+	public Stream<BlockPos> getPositions(FeaturePlacementContext context, AbstractRandom random, BlockPos pos) {
 		Builder<BlockPos> builder = Stream.builder();
 		int i = 0;
 
@@ -41,9 +41,9 @@ public class CountMultilayerPlacementModifier extends PlacementModifier {
 		do {
 			bl = false;
 
-			for (int j = 0; j < this.count.get(abstractRandom); j++) {
-				int k = abstractRandom.nextInt(16) + pos.getX();
-				int l = abstractRandom.nextInt(16) + pos.getZ();
+			for (int j = 0; j < this.count.get(random); j++) {
+				int k = random.nextInt(16) + pos.getX();
+				int l = random.nextInt(16) + pos.getZ();
 				int m = context.getTopY(Heightmap.Type.MOTION_BLOCKING, k, l);
 				int n = findPos(context, k, m, l, i);
 				if (n != Integer.MAX_VALUE) {

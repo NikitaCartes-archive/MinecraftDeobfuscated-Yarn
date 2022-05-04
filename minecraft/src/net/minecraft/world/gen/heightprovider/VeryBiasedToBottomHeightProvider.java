@@ -34,16 +34,16 @@ public class VeryBiasedToBottomHeightProvider extends HeightProvider {
 	}
 
 	@Override
-	public int get(AbstractRandom abstractRandom, HeightContext context) {
+	public int get(AbstractRandom random, HeightContext context) {
 		int i = this.minOffset.getY(context);
 		int j = this.maxOffset.getY(context);
 		if (j - i - this.inner + 1 <= 0) {
 			LOGGER.warn("Empty height range: {}", this);
 			return i;
 		} else {
-			int k = MathHelper.nextInt(abstractRandom, i + this.inner, j);
-			int l = MathHelper.nextInt(abstractRandom, i, k - 1);
-			return MathHelper.nextInt(abstractRandom, i, l - 1 + this.inner);
+			int k = MathHelper.nextInt(random, i + this.inner, j);
+			int l = MathHelper.nextInt(random, i, k - 1);
+			return MathHelper.nextInt(random, i, l - 1 + this.inner);
 		}
 	}
 

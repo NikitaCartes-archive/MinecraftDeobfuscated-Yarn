@@ -111,7 +111,7 @@ public abstract class HostileEntity extends PathAwareEntity implements Monster {
 	}
 
 	@Override
-	protected boolean shouldDropXp() {
+	public boolean shouldDropXp() {
 		return true;
 	}
 

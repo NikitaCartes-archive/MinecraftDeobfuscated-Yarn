@@ -10,6 +10,7 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.math.random.RandomDeriver;
+import net.minecraft.world.biome.source.util.VanillaBiomeParameters;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.densityfunction.DensityFunction;
 import net.minecraft.world.gen.noise.NoiseRouter;
@@ -391,7 +392,7 @@ public interface AquiferSampler {
 			DensityFunction.UnblendedNoisePos unblendedNoisePos = new DensityFunction.UnblendedNoisePos(i, j, k);
 			double d;
 			double e;
-			if (method_42351(this.field_38246.sample(unblendedNoisePos), this.field_38247.sample(unblendedNoisePos))) {
+			if (VanillaBiomeParameters.method_43718(this.field_38246.sample(unblendedNoisePos), this.field_38247.sample(unblendedNoisePos))) {
 				d = -1.0;
 				e = -1.0;
 			} else {
@@ -415,10 +416,6 @@ public interface AquiferSampler {
 			}
 
 			return m;
-		}
-
-		private static boolean method_42351(double d, double e) {
-			return d > -0.375 ? false : e > 0.9;
 		}
 
 		private int method_42352(int i, int j, int k, int l) {

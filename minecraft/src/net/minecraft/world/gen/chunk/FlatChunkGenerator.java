@@ -111,7 +111,7 @@ public class FlatChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public void getDebugHudText(List<String> text, NoiseConfig noiseConfig, BlockPos blockPos) {
+	public void getDebugHudText(List<String> text, NoiseConfig noiseConfig, BlockPos pos) {
 	}
 
 	@Override

@@ -10,7 +10,10 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
 import org.apache.commons.lang3.ArrayUtils;
 
 /**
- * Represents an NBT byte array.
+ * Represents an NBT byte array. This object is mutable and backed by {@code byte[]}.
+ * Its type is {@value NbtElement#BYTE_ARRAY_TYPE}. Like Java arrays, accessing
+ * indices that are out of bounds will throw {@link ArrayIndexOutOfBoundsException}.
+ * The backing array can be obtained via {@link #getByteArray()}.
  */
 public class NbtByteArray extends AbstractNbtList<NbtByte> {
 	private static final int SIZE = 192;
@@ -109,6 +112,12 @@ public class NbtByteArray extends AbstractNbtList<NbtByte> {
 		visitor.visitByteArray(this);
 	}
 
+	/**
+	 * {@return the underlying byte array}
+	 * 
+	 * @apiNote This does not copy the array, so modifications to the returned array
+	 * also apply to this NBT byte array.
+	 */
 	public byte[] getByteArray() {
 		return this.value;
 	}

@@ -23,7 +23,7 @@ public class BlockFilterPlacementModifier extends AbstractConditionalPlacementMo
 	}
 
 	@Override
-	protected boolean shouldPlace(FeaturePlacementContext context, AbstractRandom abstractRandom, BlockPos pos) {
+	protected boolean shouldPlace(FeaturePlacementContext context, AbstractRandom random, BlockPos pos) {
 		return this.predicate.test(context.getWorld(), pos);
 	}
 

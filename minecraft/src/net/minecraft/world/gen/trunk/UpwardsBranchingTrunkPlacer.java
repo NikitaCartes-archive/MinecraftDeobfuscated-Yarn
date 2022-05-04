@@ -97,7 +97,7 @@ public class UpwardsBranchingTrunkPlacer extends TrunkPlacer {
 		int length,
 		int steps
 	) {
-		int i = 0;
+		int i = yOffset + length;
 		int j = pos.getX();
 		int k = pos.getZ();
 		int l = length;
@@ -107,6 +107,7 @@ public class UpwardsBranchingTrunkPlacer extends TrunkPlacer {
 				int m = yOffset + l;
 				j += direction.getOffsetX();
 				k += direction.getOffsetZ();
+				i = m;
 				if (this.getAndSetState(world, replacer, random, pos.set(j, m, k), config)) {
 					i = m + 1;
 				}

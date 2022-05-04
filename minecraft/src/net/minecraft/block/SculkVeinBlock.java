@@ -21,7 +21,7 @@ import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 
-public class SculkVeinBlock extends AbstractLichenBlock implements SculkSpreadable, Waterloggable {
+public class SculkVeinBlock extends MultifaceGrowthBlock implements SculkSpreadable, Waterloggable {
 	private static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	private final LichenGrower allGrowTypeGrower = new LichenGrower(new SculkVeinBlock.SculkVeinGrowChecker(LichenGrower.GROW_TYPES));
 	private final LichenGrower samePositionOnlyGrower = new LichenGrower(new SculkVeinBlock.SculkVeinGrowChecker(LichenGrower.GrowType.SAME_POSITION));

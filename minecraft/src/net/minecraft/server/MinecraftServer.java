@@ -55,7 +55,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.loot.LootManager;
 import net.minecraft.loot.condition.LootConditionManager;
 import net.minecraft.loot.function.LootFunctionManager;
-import net.minecraft.network.ChatMessageSender;
+import net.minecraft.network.MessageSender;
 import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
@@ -224,10 +224,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	@Nullable
 	private KeyPair keyPair;
 	@Nullable
-	private String singlePlayerName;
+	private GameProfile hostProfile;
 	private boolean demo;
-	private String resourcePackUrl = "";
-	private String resourcePackHash = "";
 	private volatile boolean loading;
 	private long lastTimeReference;
 	private final MinecraftSessionService sessionService;
@@ -1053,35 +1051,13 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.serverPort = serverPort;
 	}
 
-	/**
-	 * {@return the name of the single player of this server} This may be
-	 * {@code null} for non-singleplayer servers.
-	 * 
-	 * <p>In vanilla, outside of integrated servers, this is used to
-	 * determine to whom the {@code Player} NBT from {@code level.dat} applies.
-	 * 
-	 * @see #setSinglePlayerName(String)
-	 * @see #isSingleplayer()
-	 */
-	public String getSinglePlayerName() {
-		return this.singlePlayerName;
+	@Nullable
+	public GameProfile getHostProfile() {
+		return this.hostProfile;
 	}
 
-	/**
-	 * Sets the name of the single player of this server.
-	 * 
-	 * <p>This is called by vanilla when setting up this server. The
-	 * {@code singlePlayerName} is the client's player name for integrated
-	 * servers and specified by the {@code --singleplayer <singlePlayerName>}
-	 * command-line argument or {@code null} for dedicated servers.
-	 * 
-	 * @see #getSinglePlayerName()
-	 * @see #isSingleplayer()
-	 * 
-	 * @param singlePlayerName the single player's name, or {@code null} for non-singleplayer servers
-	 */
-	public void setSinglePlayerName(String singlePlayerName) {
-		this.singlePlayerName = singlePlayerName;
+	public void setHostProfile(@Nullable GameProfile hostProfile) {
+		this.hostProfile = hostProfile;
 	}
 
 	/**
@@ -1096,11 +1072,11 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	 * <p>A dedicated singleplayer server always turns online mode off, regardless of the
 	 * content of {@code server.properties}.
 	 * 
-	 * @see #getSinglePlayerName
-	 * @see #setSinglePlayerName
+	 * @see #getHostProfile
+	 * @see #setHostProfile
 	 */
 	public boolean isSingleplayer() {
-		return this.singlePlayerName != null;
+		return this.hostProfile != null;
 	}
 
 	protected void generateKeyPair() {
@@ -1153,17 +1129,12 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.demo = demo;
 	}
 
-	public String getResourcePackUrl() {
-		return this.resourcePackUrl;
+	public Optional<MinecraftServer.ServerResourcePackProperties> getResourcePackProperties() {
+		return Optional.empty();
 	}
 
-	public String getResourcePackHash() {
-		return this.resourcePackHash;
-	}
-
-	public void setResourcePack(String url, String hash) {
-		this.resourcePackUrl = url;
-		this.resourcePackHash = hash;
+	public boolean requireResourcePack() {
+		return this.getResourcePackProperties().filter(MinecraftServer.ServerResourcePackProperties::isRequired).isPresent();
 	}
 
 	/**
@@ -1884,10 +1855,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return TextStream.UNFILTERED;
 	}
 
-	public boolean requireResourcePack() {
-		return false;
-	}
-
 	public ServerPlayerInteractionManager getPlayerInteractionManager(ServerPlayerEntity player) {
 		return (ServerPlayerInteractionManager)(this.isDemo() ? new DemoServerPlayerInteractionManager(player) : new ServerPlayerInteractionManager(player));
 	}
@@ -1902,11 +1869,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	public ResourceManager getResourceManager() {
 		return this.resourceManagerHolder.resourceManager;
-	}
-
-	@Nullable
-	public Text getResourcePackPrompt() {
-		return null;
 	}
 
 	public boolean isSaving() {
@@ -1935,7 +1897,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return 1000000;
 	}
 
-	public void logChatMessage(ChatMessageSender sender, Text message) {
+	public void logChatMessage(MessageSender sender, Text message) {
 		LOGGER.info(Text.translatable("chat.type.text", sender.name(), message).getString());
 	}
 
@@ -1993,5 +1955,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		public void close() {
 			this.resourceManager.close();
 		}
+	}
+
+	public static record ServerResourcePackProperties(String url, String hash, boolean isRequired, @Nullable Text prompt) {
 	}
 }

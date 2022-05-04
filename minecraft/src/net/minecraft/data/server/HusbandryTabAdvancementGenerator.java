@@ -1,6 +1,8 @@
 package net.minecraft.data.server;
 
 import com.google.common.collect.BiMap;
+import java.util.Comparator;
+import java.util.Map.Entry;
 import java.util.function.Consumer;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementFrame;
@@ -561,6 +563,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 	private Advancement.Builder requireAllCatsTamed(Advancement.Builder builder) {
 		Registry.CAT_VARIANT
 			.getEntrySet()
+			.stream()
+			.sorted(Entry.comparingByKey(Comparator.comparing(RegistryKey::getValue)))
 			.forEach(
 				entry -> builder.criterion(
 						((RegistryKey)entry.getKey()).getValue().toString(),

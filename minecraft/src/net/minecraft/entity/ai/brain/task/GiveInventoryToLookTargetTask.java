@@ -87,7 +87,7 @@ public class GiveInventoryToLookTargetTask<E extends LivingEntity & InventoryOwn
 			return false;
 		} else {
 			Optional<LookTarget> optional = (Optional<LookTarget>)this.lookTargetFunction.apply(entity);
-			return optional.isPresent() && ((LookTarget)optional.get()).isSeenBy(entity);
+			return optional.isPresent();
 		}
 	}
 

@@ -17,6 +17,7 @@ import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BannerPattern;
+import net.minecraft.block.entity.BannerPatterns;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -595,14 +596,14 @@ public class Raid {
 		ItemStack itemStack = new ItemStack(Items.WHITE_BANNER);
 		NbtCompound nbtCompound = new NbtCompound();
 		NbtList nbtList = new BannerPattern.Patterns()
-			.add(BannerPattern.RHOMBUS_MIDDLE, DyeColor.CYAN)
-			.add(BannerPattern.STRIPE_BOTTOM, DyeColor.LIGHT_GRAY)
-			.add(BannerPattern.STRIPE_CENTER, DyeColor.GRAY)
-			.add(BannerPattern.BORDER, DyeColor.LIGHT_GRAY)
-			.add(BannerPattern.STRIPE_MIDDLE, DyeColor.BLACK)
-			.add(BannerPattern.HALF_HORIZONTAL, DyeColor.LIGHT_GRAY)
-			.add(BannerPattern.CIRCLE_MIDDLE, DyeColor.LIGHT_GRAY)
-			.add(BannerPattern.BORDER, DyeColor.BLACK)
+			.add(BannerPatterns.RHOMBUS, DyeColor.CYAN)
+			.add(BannerPatterns.STRIPE_BOTTOM, DyeColor.LIGHT_GRAY)
+			.add(BannerPatterns.STRIPE_CENTER, DyeColor.GRAY)
+			.add(BannerPatterns.BORDER, DyeColor.LIGHT_GRAY)
+			.add(BannerPatterns.STRIPE_MIDDLE, DyeColor.BLACK)
+			.add(BannerPatterns.HALF_HORIZONTAL, DyeColor.LIGHT_GRAY)
+			.add(BannerPatterns.CIRCLE, DyeColor.LIGHT_GRAY)
+			.add(BannerPatterns.BORDER, DyeColor.BLACK)
 			.toNbt();
 		nbtCompound.put("Patterns", nbtList);
 		BlockItem.setBlockEntityNbt(itemStack, BlockEntityType.BANNER, nbtCompound);

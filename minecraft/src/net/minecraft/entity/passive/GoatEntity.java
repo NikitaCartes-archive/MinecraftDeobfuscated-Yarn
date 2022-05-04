@@ -25,6 +25,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.GoatHornItem;
+import net.minecraft.item.Instrument;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
@@ -35,12 +36,17 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.tag.InstrumentTags;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -89,6 +95,13 @@ public class GoatEntity extends AnimalEntity {
 		this.getNavigation().setCanSwim(true);
 		this.setPathfindingPenalty(PathNodeType.POWDER_SNOW, -1.0F);
 		this.setPathfindingPenalty(PathNodeType.DANGER_POWDER_SNOW, -1.0F);
+	}
+
+	public ItemStack method_43690() {
+		AbstractRandom abstractRandom = AbstractRandom.createAtomic((long)this.getUuid().hashCode());
+		TagKey<Instrument> tagKey = this.isScreaming() ? InstrumentTags.SCREAMING_GOAT_HORNS : InstrumentTags.REGULAR_GOAT_HORNS;
+		RegistryEntryList<Instrument> registryEntryList = Registry.INSTRUMENT.getOrCreateEntryList(tagKey);
+		return GoatHornItem.getStackForInstrument(Items.GOAT_HORN, (RegistryEntry<Instrument>)registryEntryList.getRandom(abstractRandom).get());
 	}
 
 	@Override
@@ -310,7 +323,7 @@ public class GoatEntity extends AnimalEntity {
 
 			this.dataTracker.set(trackedData, false);
 			Vec3d vec3d = this.getPos();
-			ItemStack itemStack = GoatHornItem.getStackForGoat(this);
+			ItemStack itemStack = this.method_43690();
 			double d = (double)MathHelper.nextBetween(this.random, -0.2F, 0.2F);
 			double e = (double)MathHelper.nextBetween(this.random, 0.3F, 0.7F);
 			double f = (double)MathHelper.nextBetween(this.random, -0.2F, 0.2F);

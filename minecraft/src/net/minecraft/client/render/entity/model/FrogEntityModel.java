@@ -9,17 +9,13 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.client.render.entity.animation.Animation;
-import net.minecraft.client.render.entity.animation.AnimationHelper;
 import net.minecraft.client.render.entity.animation.FrogAnimations;
-import net.minecraft.entity.AnimationState;
 import net.minecraft.entity.passive.FrogEntity;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class FrogEntityModel<T extends FrogEntity> extends SinglePartEntityModel<T> {
-	private static final Vec3f field_37918 = new Vec3f();
+	private static final float field_39194 = 200.0F;
+	public static final float field_39193 = 8.0F;
 	private final ModelPart root;
 	private final ModelPart body;
 	private final ModelPart head;
@@ -102,18 +98,14 @@ public class FrogEntityModel<T extends FrogEntity> extends SinglePartEntityModel
 
 	public void setAngles(T frogEntity, float f, float g, float h, float i, float j) {
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
-		long l = Util.getMeasuringTimeMs();
-		this.runAnimation(frogEntity.longJumpingAnimationState, FrogAnimations.LONG_JUMPING, l);
-		this.runAnimation(frogEntity.croakingAnimationState, FrogAnimations.CROAKING, l);
-		this.runAnimation(frogEntity.usingTongueAnimationState, FrogAnimations.USING_TONGUE, l);
-		this.runAnimation(frogEntity.walkingAnimationState, FrogAnimations.WALKING, l);
-		this.runAnimation(frogEntity.swimmingAnimationState, FrogAnimations.SWIMMING, l);
-		this.runAnimation(frogEntity.idlingInWaterAnimationState, FrogAnimations.IDLING_IN_WATER, l);
+		float k = Math.min((float)frogEntity.getVelocity().lengthSquared() * 200.0F, 8.0F);
+		this.updateAnimation(frogEntity.longJumpingAnimationState, FrogAnimations.LONG_JUMPING);
+		this.updateAnimation(frogEntity.croakingAnimationState, FrogAnimations.CROAKING);
+		this.updateAnimation(frogEntity.usingTongueAnimationState, FrogAnimations.USING_TONGUE);
+		this.updateAnimation(frogEntity.walkingAnimationState, FrogAnimations.WALKING, k);
+		this.updateAnimation(frogEntity.swimmingAnimationState, FrogAnimations.SWIMMING);
+		this.updateAnimation(frogEntity.idlingInWaterAnimationState, FrogAnimations.IDLING_IN_WATER);
 		this.croakingBody.visible = frogEntity.croakingAnimationState.isRunning();
-	}
-
-	private void runAnimation(AnimationState animationState, Animation animation, long time) {
-		animationState.run(state -> AnimationHelper.animate(this, animation, time - state.getStartTime(), 1.0F, field_37918));
 	}
 
 	@Override

@@ -131,12 +131,12 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		return CODEC;
 	}
 
-	public RegistryEntry<ChunkGeneratorSettings> method_41541() {
+	public RegistryEntry<ChunkGeneratorSettings> getSettings() {
 		return this.settings;
 	}
 
-	public boolean matchesSettings(RegistryKey<ChunkGeneratorSettings> registryKey) {
-		return this.settings.matchesKey(registryKey);
+	public boolean matchesSettings(RegistryKey<ChunkGeneratorSettings> settings) {
+		return this.settings.matchesKey(settings);
 	}
 
 	@Override
@@ -152,10 +152,10 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public void getDebugHudText(List<String> text, NoiseConfig noiseConfig, BlockPos blockPos) {
+	public void getDebugHudText(List<String> text, NoiseConfig noiseConfig, BlockPos pos) {
 		DecimalFormat decimalFormat = new DecimalFormat("0.000");
 		NoiseRouter noiseRouter = noiseConfig.getNoiseRouter();
-		DensityFunction.UnblendedNoisePos unblendedNoisePos = new DensityFunction.UnblendedNoisePos(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+		DensityFunction.UnblendedNoisePos unblendedNoisePos = new DensityFunction.UnblendedNoisePos(pos.getX(), pos.getY(), pos.getZ());
 		double d = noiseRouter.ridges().sample(unblendedNoisePos);
 		text.add(
 			"NoiseRouter T: "

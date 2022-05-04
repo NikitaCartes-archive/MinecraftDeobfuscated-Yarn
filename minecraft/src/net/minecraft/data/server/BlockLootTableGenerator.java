@@ -3,6 +3,7 @@ package net.minecraft.data.server;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -19,10 +20,10 @@ import net.minecraft.block.CarrotsBlock;
 import net.minecraft.block.CaveVines;
 import net.minecraft.block.CocoaBlock;
 import net.minecraft.block.ComposterBlock;
-import net.minecraft.block.ConnectingBlock;
 import net.minecraft.block.CropBlock;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.block.FlowerPotBlock;
+import net.minecraft.block.MultifaceGrowthBlock;
 import net.minecraft.block.NetherWartBlock;
 import net.minecraft.block.PotatoesBlock;
 import net.minecraft.block.PropaguleBlock;
@@ -86,6 +87,7 @@ import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 
 public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
@@ -131,12 +133,14 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 	private static final float[] LEAVES_STICK_DROP_CHANCE = new float[]{0.02F, 0.022222223F, 0.025F, 0.033333335F, 0.1F};
 	private final Map<Identifier, LootTable.Builder> lootTables = Maps.<Identifier, LootTable.Builder>newHashMap();
 
-	private static <T> T applyExplosionDecay(ItemConvertible drop, LootFunctionConsumingBuilder<T> builder) {
-		return !EXPLOSION_IMMUNE.contains(drop.asItem()) ? builder.apply(ExplosionDecayLootFunction.builder()) : builder.getThis();
+	private static <T extends LootFunctionConsumingBuilder<T>> T applyExplosionDecay(ItemConvertible drop, LootFunctionConsumingBuilder<T> builder) {
+		return !EXPLOSION_IMMUNE.contains(drop.asItem()) ? builder.apply(ExplosionDecayLootFunction.builder()) : builder.getThisFunctionConsumingBuilder();
 	}
 
-	private static <T> T addSurvivesExplosionCondition(ItemConvertible drop, LootConditionConsumingBuilder<T> builder) {
-		return !EXPLOSION_IMMUNE.contains(drop.asItem()) ? builder.conditionally(SurvivesExplosionLootCondition.builder()) : builder.getThis();
+	private static <T extends LootConditionConsumingBuilder<T>> T addSurvivesExplosionCondition(ItemConvertible drop, LootConditionConsumingBuilder<T> builder) {
+		return !EXPLOSION_IMMUNE.contains(drop.asItem())
+			? builder.conditionally(SurvivesExplosionLootCondition.builder())
+			: builder.getThisConditionConsumingBuilder();
 	}
 
 	private static LootTable.Builder drops(ItemConvertible drop) {
@@ -393,36 +397,9 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						.with(
 							ItemEntry.builder(drop)
 								.apply(
-									SetCountLootFunction.builder(BinomialLootNumberProvider.create(3, 0.06666667F))
-										.conditionally(BlockStatePropertyLootCondition.builder(stem).properties(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 0)))
-								)
-								.apply(
-									SetCountLootFunction.builder(BinomialLootNumberProvider.create(3, 0.13333334F))
-										.conditionally(BlockStatePropertyLootCondition.builder(stem).properties(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 1)))
-								)
-								.apply(
-									SetCountLootFunction.builder(BinomialLootNumberProvider.create(3, 0.2F))
-										.conditionally(BlockStatePropertyLootCondition.builder(stem).properties(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 2)))
-								)
-								.apply(
-									SetCountLootFunction.builder(BinomialLootNumberProvider.create(3, 0.26666668F))
-										.conditionally(BlockStatePropertyLootCondition.builder(stem).properties(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 3)))
-								)
-								.apply(
-									SetCountLootFunction.builder(BinomialLootNumberProvider.create(3, 0.33333334F))
-										.conditionally(BlockStatePropertyLootCondition.builder(stem).properties(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 4)))
-								)
-								.apply(
-									SetCountLootFunction.builder(BinomialLootNumberProvider.create(3, 0.4F))
-										.conditionally(BlockStatePropertyLootCondition.builder(stem).properties(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 5)))
-								)
-								.apply(
-									SetCountLootFunction.builder(BinomialLootNumberProvider.create(3, 0.46666667F))
-										.conditionally(BlockStatePropertyLootCondition.builder(stem).properties(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 6)))
-								)
-								.apply(
-									SetCountLootFunction.builder(BinomialLootNumberProvider.create(3, 0.53333336F))
-										.conditionally(BlockStatePropertyLootCondition.builder(stem).properties(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, 7)))
+									StemBlock.AGE.getValues(),
+									integer -> SetCountLootFunction.builder(BinomialLootNumberProvider.create(3, (float)(integer + 1) / 15.0F))
+											.conditionally(BlockStatePropertyLootCondition.builder(stem).properties(StatePredicate.Builder.create().exactMatch(StemBlock.AGE, integer)))
 								)
 						)
 				)
@@ -445,42 +422,22 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		return LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).conditionally(WITH_SHEARS).with(ItemEntry.builder(drop)));
 	}
 
-	private static LootTable.Builder glowLichenDrops(Block glowLichen) {
+	private static LootTable.Builder multifaceGrowthDrops(Block multifaceGrowthBlock, LootCondition.Builder conditionBuilder) {
 		return LootTable.builder()
 			.pool(
 				LootPool.builder()
 					.with(
 						(LootPoolEntry.Builder<?>)applyExplosionDecay(
-							glowLichen,
-							ItemEntry.builder(glowLichen)
-								.conditionally(WITH_SHEARS)
+							multifaceGrowthBlock,
+							ItemEntry.builder(multifaceGrowthBlock)
+								.conditionally(conditionBuilder)
 								.apply(
-									SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F), true)
-										.conditionally(BlockStatePropertyLootCondition.builder(glowLichen).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.EAST, true)))
-								)
-								.apply(
-									SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F), true)
-										.conditionally(BlockStatePropertyLootCondition.builder(glowLichen).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.WEST, true)))
-								)
-								.apply(
-									SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F), true)
-										.conditionally(
-											BlockStatePropertyLootCondition.builder(glowLichen).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.NORTH, true))
-										)
-								)
-								.apply(
-									SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F), true)
-										.conditionally(
-											BlockStatePropertyLootCondition.builder(glowLichen).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.SOUTH, true))
-										)
-								)
-								.apply(
-									SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F), true)
-										.conditionally(BlockStatePropertyLootCondition.builder(glowLichen).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.UP, true)))
-								)
-								.apply(
-									SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F), true)
-										.conditionally(BlockStatePropertyLootCondition.builder(glowLichen).properties(StatePredicate.Builder.create().exactMatch(ConnectingBlock.DOWN, true)))
+									Direction.values(),
+									direction -> SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F), true)
+											.conditionally(
+												BlockStatePropertyLootCondition.builder(multifaceGrowthBlock)
+													.properties(StatePredicate.Builder.create().exactMatch(MultifaceGrowthBlock.getProperty(direction), true))
+											)
 								)
 								.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(-1.0F), true))
 						)
@@ -611,16 +568,9 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 							candle,
 							ItemEntry.builder(candle)
 								.apply(
-									SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F))
-										.conditionally(BlockStatePropertyLootCondition.builder(candle).properties(StatePredicate.Builder.create().exactMatch(CandleBlock.CANDLES, 2)))
-								)
-								.apply(
-									SetCountLootFunction.builder(ConstantLootNumberProvider.create(3.0F))
-										.conditionally(BlockStatePropertyLootCondition.builder(candle).properties(StatePredicate.Builder.create().exactMatch(CandleBlock.CANDLES, 3)))
-								)
-								.apply(
-									SetCountLootFunction.builder(ConstantLootNumberProvider.create(4.0F))
-										.conditionally(BlockStatePropertyLootCondition.builder(candle).properties(StatePredicate.Builder.create().exactMatch(CandleBlock.CANDLES, 4)))
+									List.of(2, 3, 4),
+									integer -> SetCountLootFunction.builder(ConstantLootNumberProvider.create((float)integer.intValue()))
+											.conditionally(BlockStatePropertyLootCondition.builder(candle).properties(StatePredicate.Builder.create().exactMatch(CandleBlock.CANDLES, integer)))
 								)
 						)
 					)
@@ -1059,7 +1009,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDropWithSilkTouch(Blocks.SCULK_SENSOR);
 		this.addDropWithSilkTouch(Blocks.SCULK);
 		this.addDropWithSilkTouch(Blocks.SCULK_CATALYST);
-		this.addDropWithSilkTouch(Blocks.SCULK_VEIN);
+		this.addDrop(Blocks.SCULK_VEIN, blockx -> multifaceGrowthDrops(blockx, WITH_SILK_TOUCH));
 		this.addDropWithSilkTouch(Blocks.SCULK_SHRIEKER);
 		this.addDrop(Blocks.COPPER_BLOCK);
 		this.addDrop(Blocks.EXPOSED_COPPER);
@@ -1306,16 +1256,11 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 									Blocks.SEA_PICKLE,
 									ItemEntry.builder(blockx)
 										.apply(
-											SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F))
-												.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SeaPickleBlock.PICKLES, 2)))
-										)
-										.apply(
-											SetCountLootFunction.builder(ConstantLootNumberProvider.create(3.0F))
-												.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SeaPickleBlock.PICKLES, 3)))
-										)
-										.apply(
-											SetCountLootFunction.builder(ConstantLootNumberProvider.create(4.0F))
-												.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SeaPickleBlock.PICKLES, 4)))
+											List.of(2, 3, 4),
+											integer -> SetCountLootFunction.builder(ConstantLootNumberProvider.create((float)integer.intValue()))
+													.conditionally(
+														BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SeaPickleBlock.PICKLES, integer))
+													)
 										)
 								)
 							)
@@ -1541,7 +1486,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(Blocks.NETHER_SPROUTS, BlockLootTableGenerator::dropsWithShears);
 		this.addDrop(Blocks.SEAGRASS, BlockLootTableGenerator::dropsWithShears);
 		this.addDrop(Blocks.VINE, BlockLootTableGenerator::dropsWithShears);
-		this.addDrop(Blocks.GLOW_LICHEN, BlockLootTableGenerator::glowLichenDrops);
+		this.addDrop(Blocks.GLOW_LICHEN, blockx -> multifaceGrowthDrops(blockx, WITH_SHEARS));
 		this.addDrop(Blocks.HANGING_ROOTS, BlockLootTableGenerator::dropsWithShears);
 		this.addDrop(Blocks.SMALL_DRIPLEAF, BlockLootTableGenerator::dropsWithShears);
 		this.addDrop(Blocks.MANGROVE_LEAVES, BlockLootTableGenerator::mangroveLeavesDrop);
@@ -1638,51 +1583,19 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 							.with(
 								AlternativeEntry.builder(
 									AlternativeEntry.builder(
-											ItemEntry.builder(Items.SNOWBALL)
-												.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 1))),
-											ItemEntry.builder(Items.SNOWBALL)
-												.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 2)))
-												.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F))),
-											ItemEntry.builder(Items.SNOWBALL)
-												.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 3)))
-												.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(3.0F))),
-											ItemEntry.builder(Items.SNOWBALL)
-												.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 4)))
-												.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(4.0F))),
-											ItemEntry.builder(Items.SNOWBALL)
-												.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 5)))
-												.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(5.0F))),
-											ItemEntry.builder(Items.SNOWBALL)
-												.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 6)))
-												.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(6.0F))),
-											ItemEntry.builder(Items.SNOWBALL)
-												.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 7)))
-												.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(7.0F))),
-											ItemEntry.builder(Items.SNOWBALL).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(8.0F)))
+											SnowBlock.LAYERS.getValues(),
+											integer -> ItemEntry.builder(Items.SNOWBALL)
+													.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, integer)))
+													.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create((float)integer.intValue())))
 										)
 										.conditionally(WITHOUT_SILK_TOUCH),
 									AlternativeEntry.builder(
-										ItemEntry.builder(Blocks.SNOW)
-											.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 1))),
-										ItemEntry.builder(Blocks.SNOW)
-											.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F)))
-											.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 2))),
-										ItemEntry.builder(Blocks.SNOW)
-											.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(3.0F)))
-											.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 3))),
-										ItemEntry.builder(Blocks.SNOW)
-											.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(4.0F)))
-											.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 4))),
-										ItemEntry.builder(Blocks.SNOW)
-											.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(5.0F)))
-											.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 5))),
-										ItemEntry.builder(Blocks.SNOW)
-											.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(6.0F)))
-											.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 6))),
-										ItemEntry.builder(Blocks.SNOW)
-											.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(7.0F)))
-											.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, 7))),
-										ItemEntry.builder(Blocks.SNOW_BLOCK)
+										SnowBlock.LAYERS.getValues(),
+										integer -> integer == 8
+												? ItemEntry.builder(Blocks.SNOW_BLOCK)
+												: ItemEntry.builder(Blocks.SNOW)
+													.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create((float)integer.intValue())))
+													.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, integer)))
 									)
 								)
 							)

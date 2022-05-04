@@ -30,7 +30,6 @@ public class GameEventTagProvider extends AbstractTagProvider<GameEvent> {
 		GameEvent.ENTITY_SHAKE,
 		GameEvent.EQUIP,
 		GameEvent.EXPLODE,
-		GameEvent.FLAP,
 		GameEvent.FLUID_PICKUP,
 		GameEvent.FLUID_PLACE,
 		GameEvent.HIT_GROUND,

@@ -19,6 +19,7 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -129,6 +130,7 @@ import net.minecraft.world.entity.EntityHandler;
 import net.minecraft.world.entity.EntityLookup;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.listener.EntityGameEventHandler;
+import net.minecraft.world.event.listener.GameEventListener;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 import net.minecraft.world.gen.StructureAccessor;
@@ -178,6 +180,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	protected final RaidManager raidManager;
 	private final ObjectLinkedOpenHashSet<BlockEvent> syncedBlockEventQueue = new ObjectLinkedOpenHashSet<>();
 	private final List<BlockEvent> blockEventQueue = new ArrayList(64);
+	private List<GameEvent.Message> queuedEvents = new ArrayList();
 	private boolean inBlockTick;
 	private final List<Spawner> spawners;
 	@Nullable
@@ -376,6 +379,8 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 		profiler.push("entityManagement");
 		this.entityManager.tick();
+		profiler.push("gameEvents");
+		this.processEventQueue();
 		profiler.pop();
 	}
 
@@ -948,7 +953,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		this.server
 			.getPlayerManager()
 			.sendToAround(
-				except, x, y, z, (double)sound.method_43044(volume), this.getRegistryKey(), new PlaySoundS2CPacket(sound, category, x, y, z, volume, pitch, seed)
+				except, x, y, z, (double)sound.getDistanceToTravel(volume), this.getRegistryKey(), new PlaySoundS2CPacket(sound, category, x, y, z, volume, pitch, seed)
 			);
 	}
 
@@ -961,7 +966,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 				entity.getX(),
 				entity.getY(),
 				entity.getZ(),
-				(double)sound.method_43044(volume),
+				(double)sound.getDistanceToTravel(volume),
 				this.getRegistryKey(),
 				new PlaySoundFromEntityS2CPacket(sound, category, entity, volume, pitch, seed)
 			);
@@ -986,25 +991,59 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	@Override
-	public void emitGameEvent(GameEvent event, Vec3d pos, GameEvent.Emitter emitter) {
+	public void emitGameEvent(GameEvent event, Vec3d emitterPos, GameEvent.Emitter emitter) {
 		int i = event.getRange();
-		BlockPos blockPos = new BlockPos(pos);
+		BlockPos blockPos = new BlockPos(emitterPos);
 		int j = ChunkSectionPos.getSectionCoord(blockPos.getX() - i);
 		int k = ChunkSectionPos.getSectionCoord(blockPos.getY() - i);
 		int l = ChunkSectionPos.getSectionCoord(blockPos.getZ() - i);
 		int m = ChunkSectionPos.getSectionCoord(blockPos.getX() + i);
 		int n = ChunkSectionPos.getSectionCoord(blockPos.getY() + i);
 		int o = ChunkSectionPos.getSectionCoord(blockPos.getZ() + i);
+		List<GameEvent.Message> list = new ArrayList();
+		boolean bl = false;
 
 		for (int p = j; p <= m; p++) {
 			for (int q = l; q <= o; q++) {
 				Chunk chunk = this.getChunkManager().getWorldChunk(p, q);
 				if (chunk != null) {
 					for (int r = k; r <= n; r++) {
-						chunk.getGameEventDispatcher(r).dispatch(event, pos, emitter);
+						bl |= chunk.getGameEventDispatcher(r)
+							.dispatch(
+								event,
+								emitterPos,
+								emitter,
+								(listener, listenerPos) -> (listener.shouldListenImmediately() ? list : this.queuedEvents)
+										.add(new GameEvent.Message(event, emitterPos, emitter, listener, listenerPos))
+							);
 					}
 				}
 			}
+		}
+
+		if (!list.isEmpty()) {
+			this.processEvents(list);
+		}
+
+		if (bl) {
+			DebugInfoSender.sendGameEvent(this, event, emitterPos);
+		}
+	}
+
+	private void processEventQueue() {
+		if (!this.queuedEvents.isEmpty()) {
+			List<GameEvent.Message> list = this.queuedEvents;
+			this.queuedEvents = new ArrayList();
+			this.processEvents(list);
+		}
+	}
+
+	private void processEvents(List<GameEvent.Message> events) {
+		Collections.sort(events);
+
+		for (GameEvent.Message message : events) {
+			GameEventListener gameEventListener = message.getListener();
+			gameEventListener.listen(this, message);
 		}
 	}
 
@@ -1250,7 +1289,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	 * 
 	 * @return the position of the structure, or {@code null} if no structure could be found within the given search radius
 	 * 
-	 * @see ChunkGenerator#locateStructure
+	 * @see ChunkGenerator#locateStructure(ServerWorld, RegistryEntryList, BlockPos, int, boolean)
 	 * 
 	 * @param pos the position to start the searching at
 	 * @param radius the search radius in chunks around the chunk the given block position is in; a radius of 0 will only search in the given chunk

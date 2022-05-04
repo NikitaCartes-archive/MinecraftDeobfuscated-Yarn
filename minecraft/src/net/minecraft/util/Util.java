@@ -12,6 +12,8 @@ import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DataResult;
 import it.unimi.dsi.fastutil.Hash.Strategy;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.io.File;
 import java.io.IOException;
@@ -55,6 +57,7 @@ import java.util.function.Function;
 import java.util.function.LongSupplier;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.function.ToIntFunction;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -826,6 +829,23 @@ public class Util {
 		}
 
 		return object;
+	}
+
+	/**
+	 * {@return a function that, when given a value in {@code values}, returns the last
+	 * index of the value in the list}
+	 * 
+	 * @implNote Unlike {@link java.util.List#lastIndexOf}, the returned function will
+	 * return {@code 0} when given values not in the passed list.
+	 */
+	public static <T> ToIntFunction<T> lastIndexGetter(List<T> values) {
+		Object2IntMap<T> object2IntMap = new Object2IntOpenHashMap<>();
+
+		for (int i = 0; i < values.size(); i++) {
+			object2IntMap.put((T)values.get(i), i);
+		}
+
+		return object2IntMap;
 	}
 
 	static enum IdentityHashStrategy implements Strategy<Object> {

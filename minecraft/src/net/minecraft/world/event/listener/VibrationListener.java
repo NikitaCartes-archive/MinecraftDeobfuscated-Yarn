@@ -95,24 +95,29 @@ public class VibrationListener implements GameEventListener {
 	}
 
 	@Override
-	public boolean listen(ServerWorld world, GameEvent event, GameEvent.Emitter emitter, Vec3d pos) {
+	public boolean listen(ServerWorld world, GameEvent.Message event) {
 		if (this.vibration != null) {
 			return false;
-		} else if (!this.callback.canAccept(event, emitter)) {
-			return false;
 		} else {
-			Optional<Vec3d> optional = this.positionSource.getPos(world);
-			if (optional.isEmpty()) {
+			GameEvent gameEvent = event.getEvent();
+			GameEvent.Emitter emitter = event.getEmitter();
+			if (!this.callback.canAccept(gameEvent, emitter)) {
 				return false;
 			} else {
-				Vec3d vec3d = (Vec3d)optional.get();
-				if (!this.callback.accepts(world, this, new BlockPos(pos), event, emitter)) {
-					return false;
-				} else if (isOccluded(world, pos, vec3d)) {
+				Optional<Vec3d> optional = this.positionSource.getPos(world);
+				if (optional.isEmpty()) {
 					return false;
 				} else {
-					this.listen(world, event, emitter, pos, vec3d);
-					return true;
+					Vec3d vec3d = event.getEmitterPos();
+					Vec3d vec3d2 = (Vec3d)optional.get();
+					if (!this.callback.accepts(world, this, new BlockPos(vec3d), gameEvent, emitter)) {
+						return false;
+					} else if (isOccluded(world, vec3d, vec3d2)) {
+						return false;
+					} else {
+						this.listen(world, gameEvent, emitter, vec3d, vec3d2);
+						return true;
+					}
 				}
 			}
 		}
@@ -147,6 +152,10 @@ public class VibrationListener implements GameEventListener {
 			return GameEventTags.VIBRATIONS;
 		}
 
+		default boolean triggersAvoidCriterion() {
+			return false;
+		}
+
 		default boolean canAccept(GameEvent gameEvent, GameEvent.Emitter emitter) {
 			if (!gameEvent.isIn(this.getTag())) {
 				return false;
@@ -158,7 +167,7 @@ public class VibrationListener implements GameEventListener {
 					}
 
 					if (entity.bypassesSteppingEffects() && gameEvent.isIn(GameEventTags.IGNORE_VIBRATIONS_SNEAKING)) {
-						if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
+						if (this.triggersAvoidCriterion() && entity instanceof ServerPlayerEntity serverPlayerEntity) {
 							Criteria.AVOID_VIBRATION.trigger(serverPlayerEntity);
 						}
 

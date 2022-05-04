@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -200,7 +199,7 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 		}
 
 		@Override
-		public boolean listen(ServerWorld world, GameEvent event, @Nullable GameEvent.Emitter emitter, Vec3d pos) {
+		public boolean listen(ServerWorld world, GameEvent.Message event) {
 			return false;
 		}
 	}

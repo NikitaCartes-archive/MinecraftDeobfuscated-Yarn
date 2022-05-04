@@ -27,6 +27,8 @@ public final class VanillaBiomeParameters {
 	public static final float field_35044 = 0.3F;
 	public static final float field_35045 = -0.78F;
 	public static final float field_35046 = -0.375F;
+	private static final float field_39134 = -0.225F;
+	private static final float field_39135 = 0.9F;
 	private final MultiNoiseUtil.ParameterRange defaultParameter = MultiNoiseUtil.ParameterRange.of(-1.0F, 1.0F);
 	private final MultiNoiseUtil.ParameterRange[] temperatureParameters = new MultiNoiseUtil.ParameterRange[]{
 		MultiNoiseUtil.ParameterRange.of(-1.0F, -0.45F),
@@ -927,7 +929,7 @@ public final class VanillaBiomeParameters {
 			0.0F,
 			BiomeKeys.LUSH_CAVES
 		);
-		this.method_41419(
+		this.writeDeepDarkParameters(
 			parameters,
 			this.defaultParameter,
 			this.defaultParameter,
@@ -1051,24 +1053,25 @@ public final class VanillaBiomeParameters {
 		);
 	}
 
-	private void method_41419(
-		Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> consumer,
-		MultiNoiseUtil.ParameterRange parameterRange,
-		MultiNoiseUtil.ParameterRange parameterRange2,
-		MultiNoiseUtil.ParameterRange parameterRange3,
-		MultiNoiseUtil.ParameterRange parameterRange4,
-		MultiNoiseUtil.ParameterRange parameterRange5,
-		float f,
-		RegistryKey<Biome> registryKey
+	private void writeDeepDarkParameters(
+		Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> parameters,
+		MultiNoiseUtil.ParameterRange temperature,
+		MultiNoiseUtil.ParameterRange humidity,
+		MultiNoiseUtil.ParameterRange continentalness,
+		MultiNoiseUtil.ParameterRange erosion,
+		MultiNoiseUtil.ParameterRange weirdness,
+		float offset,
+		RegistryKey<Biome> biome
 	) {
-		consumer.accept(
+		parameters.accept(
 			Pair.of(
-				MultiNoiseUtil.createNoiseHypercube(
-					parameterRange, parameterRange2, parameterRange3, parameterRange4, MultiNoiseUtil.ParameterRange.of(1.1F), parameterRange5, f
-				),
-				registryKey
+				MultiNoiseUtil.createNoiseHypercube(temperature, humidity, continentalness, erosion, MultiNoiseUtil.ParameterRange.of(1.1F), weirdness, offset), biome
 			)
 		);
+	}
+
+	public static boolean method_43718(double d, double e) {
+		return d < -0.225F && e > 0.9F;
 	}
 
 	public static String getWeirdnessDescription(double weirdness) {

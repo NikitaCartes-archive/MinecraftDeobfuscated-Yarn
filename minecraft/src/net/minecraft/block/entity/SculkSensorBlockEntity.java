@@ -59,8 +59,13 @@ public class SculkSensorBlockEntity extends BlockEntity implements VibrationList
 	}
 
 	@Override
+	public boolean triggersAvoidCriterion() {
+		return true;
+	}
+
+	@Override
 	public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable GameEvent.Emitter emitter) {
-		return !pos.equals(this.getPos()) || event != GameEvent.BLOCK_DESTROY && event != GameEvent.BLOCK_PLACE
+		return !this.isRemoved() && (!pos.equals(this.getPos()) || event != GameEvent.BLOCK_DESTROY && event != GameEvent.BLOCK_PLACE)
 			? SculkSensorBlock.isInactive(this.getCachedState())
 			: false;
 	}

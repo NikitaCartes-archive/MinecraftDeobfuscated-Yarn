@@ -25,15 +25,15 @@ public class BookUpdateC2SPacket implements Packet<ServerPlayPacketListener> {
 
 	public BookUpdateC2SPacket(PacketByteBuf buf) {
 		this.slot = buf.readVarInt();
-		this.pages = buf.readCollection(PacketByteBuf.getMaxValidator(Lists::newArrayListWithCapacity, 200), bufx -> bufx.readString(8192));
-		this.title = buf.readOptional(bufx -> bufx.readString(128));
+		this.pages = buf.readCollection(PacketByteBuf.getMaxValidator(Lists::newArrayListWithCapacity, 200), buf2 -> buf2.readString(8192));
+		this.title = buf.readOptional(buf2 -> buf2.readString(128));
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.slot);
-		buf.writeCollection(this.pages, (bufx, page) -> bufx.writeString(page, 8192));
-		buf.writeOptional(this.title, (bufx, title) -> bufx.writeString(title, 128));
+		buf.writeCollection(this.pages, (buf2, page) -> buf2.writeString(page, 8192));
+		buf.writeOptional(this.title, (buf2, title) -> buf2.writeString(title, 128));
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {

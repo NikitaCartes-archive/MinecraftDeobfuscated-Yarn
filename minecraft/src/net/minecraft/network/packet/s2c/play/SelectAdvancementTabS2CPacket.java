@@ -19,19 +19,12 @@ public class SelectAdvancementTabS2CPacket implements Packet<ClientPlayPacketLis
 	}
 
 	public SelectAdvancementTabS2CPacket(PacketByteBuf buf) {
-		if (buf.readBoolean()) {
-			this.tabId = buf.readIdentifier();
-		} else {
-			this.tabId = null;
-		}
+		this.tabId = buf.readNullable(PacketByteBuf::readIdentifier);
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) {
-		buf.writeBoolean(this.tabId != null);
-		if (this.tabId != null) {
-			buf.writeIdentifier(this.tabId);
-		}
+		buf.writeNullable(this.tabId, PacketByteBuf::writeIdentifier);
 	}
 
 	@Nullable

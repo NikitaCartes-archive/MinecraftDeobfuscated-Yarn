@@ -1,5 +1,9 @@
 package net.minecraft.nbt;
 
+/**
+ * Tracks the size of NBT elements. Throws {@link RuntimeException} if the
+ * tracked element becomes larger than {@link #maxBytes} during addition.
+ */
 public class NbtTagSizeTracker {
 	public static final NbtTagSizeTracker EMPTY = new NbtTagSizeTracker(0L) {
 		@Override

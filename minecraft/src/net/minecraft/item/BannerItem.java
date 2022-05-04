@@ -12,6 +12,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.Validate;
 
@@ -32,9 +33,13 @@ public class BannerItem extends WallStandingBlockItem {
 			for (int i = 0; i < nbtList.size() && i < 6; i++) {
 				NbtCompound nbtCompound2 = nbtList.getCompound(i);
 				DyeColor dyeColor = DyeColor.byId(nbtCompound2.getInt("Color"));
-				BannerPattern bannerPattern = BannerPattern.byId(nbtCompound2.getString("Pattern"));
-				if (bannerPattern != null) {
-					tooltip.add(Text.translatable("block.minecraft.banner." + bannerPattern.getName() + "." + dyeColor.getName()).formatted(Formatting.GRAY));
+				RegistryEntry<BannerPattern> registryEntry = BannerPattern.byId(nbtCompound2.getString("Pattern"));
+				if (registryEntry != null) {
+					registryEntry.getKey()
+						.map(key -> key.getValue().toShortTranslationKey())
+						.ifPresent(
+							translationKey -> tooltip.add(Text.translatable("block.minecraft.banner." + translationKey + "." + dyeColor.getName()).formatted(Formatting.GRAY))
+						);
 				}
 			}
 		}

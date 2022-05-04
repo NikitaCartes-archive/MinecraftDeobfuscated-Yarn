@@ -26,4 +26,8 @@ public class FoliageColors {
 	public static int getDefaultColor() {
 		return 4764952;
 	}
+
+	public static int method_43717() {
+		return 9619016;
+	}
 }

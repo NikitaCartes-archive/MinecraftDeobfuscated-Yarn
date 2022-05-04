@@ -80,7 +80,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 	@Nullable
 	private ServerPlayerEntity delayedPlayer;
 	@Nullable
-	private PlayerPublicKey.PublicKeyData publicKeyInfo;
+	private PlayerPublicKey publicKey;
 
 	public ServerLoginNetworkHandler(MinecraftServer server, ClientConnection connection) {
 		this.server = server;
@@ -156,15 +156,11 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 			}
 
 			this.profile = this.server.getSessionService().fillProfileProperties(this.profile, true);
-			if (this.publicKeyInfo != null) {
-				this.publicKeyInfo.data().write(this.profile);
-			}
-
 			this.connection.send(new LoginSuccessS2CPacket(this.profile));
 			ServerPlayerEntity serverPlayerEntity = this.server.getPlayerManager().getPlayer(this.profile.getId());
 
 			try {
-				ServerPlayerEntity serverPlayerEntity2 = this.server.getPlayerManager().createPlayer(this.profile);
+				ServerPlayerEntity serverPlayerEntity2 = this.server.getPlayerManager().createPlayer(this.profile, this.publicKey);
 				if (serverPlayerEntity != null) {
 					this.state = ServerLoginNetworkHandler.State.DELAY_ACCEPT;
 					this.delayedPlayer = serverPlayerEntity2;
@@ -194,11 +190,11 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 	}
 
 	@Nullable
-	private static PlayerPublicKey.PublicKeyData getVerifiedPublicKey(
+	private static PlayerPublicKey getVerifiedPublicKey(
 		LoginHelloC2SPacket packet, MinecraftSessionService minecraftSessionService, boolean shouldThrowOnMissingKey
 	) throws ServerLoginNetworkHandler.LoginException {
 		try {
-			Optional<PlayerPublicKey> optional = packet.publicKey();
+			Optional<PlayerPublicKey.PublicKeyData> optional = packet.publicKey();
 			if (optional.isEmpty()) {
 				if (shouldThrowOnMissingKey) {
 					throw new ServerLoginNetworkHandler.LoginException(MISSING_PUBLIC_KEY_TEXT);
@@ -206,7 +202,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 					return null;
 				}
 			} else {
-				return ((PlayerPublicKey)optional.get()).verifyAndDecode(minecraftSessionService);
+				return PlayerPublicKey.verifyAndDecode(minecraftSessionService, (PlayerPublicKey.PublicKeyData)optional.get());
 			}
 		} catch (MissingException var4) {
 			if (shouldThrowOnMissingKey) {
@@ -225,21 +221,27 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 	public void onHello(LoginHelloC2SPacket packet) {
 		Validate.validState(this.state == ServerLoginNetworkHandler.State.HELLO, "Unexpected hello packet");
 		Validate.validState(isValidName(packet.name()), "Invalid characters in username");
-		this.profile = new GameProfile(null, packet.name());
 
 		try {
-			this.publicKeyInfo = getVerifiedPublicKey(packet, this.server.getSessionService(), this.server.shouldEnforceSecureProfile());
+			this.publicKey = getVerifiedPublicKey(packet, this.server.getSessionService(), this.server.shouldEnforceSecureProfile());
 		} catch (ServerLoginNetworkHandler.LoginException var3) {
 			LOGGER.error(var3.getMessage(), var3.getCause());
 			this.disconnect(var3.getMessageText());
 			return;
 		}
 
-		if (!this.server.isSingleplayer() && this.server.isOnlineMode() && !this.connection.isLocal()) {
-			this.state = ServerLoginNetworkHandler.State.KEY;
-			this.connection.send(new LoginHelloS2CPacket("", this.server.getKeyPair().getPublic().getEncoded(), this.nonce));
-		} else {
+		GameProfile gameProfile = this.server.getHostProfile();
+		if (gameProfile != null && packet.name().equalsIgnoreCase(gameProfile.getName())) {
+			this.profile = gameProfile;
 			this.state = ServerLoginNetworkHandler.State.READY_TO_ACCEPT;
+		} else {
+			this.profile = new GameProfile(null, packet.name());
+			if (this.server.isOnlineMode() && !this.connection.isLocal()) {
+				this.state = ServerLoginNetworkHandler.State.KEY;
+				this.connection.send(new LoginHelloS2CPacket("", this.server.getKeyPair().getPublic().getEncoded(), this.nonce));
+			} else {
+				this.state = ServerLoginNetworkHandler.State.READY_TO_ACCEPT;
+			}
 		}
 	}
 
@@ -255,8 +257,8 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 		try {
 			this.profile = this.server.getSessionService().fillProfileProperties(this.profile, true);
 			PrivateKey privateKey = this.server.getKeyPair().getPrivate();
-			if (this.publicKeyInfo != null) {
-				if (!packet.verifySignedNonce(this.nonce, this.publicKeyInfo)) {
+			if (this.publicKey != null) {
+				if (!packet.verifySignedNonce(this.nonce, this.publicKey)) {
 					throw new IllegalStateException("Protocol error");
 				}
 			} else if (!packet.verifyEncryptedNonce(this.nonce, privateKey)) {

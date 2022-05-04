@@ -8,10 +8,14 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
 import net.minecraft.util.math.MathHelper;
 
 /**
- * Represents an NBT 32-bit floating-point number.
+ * Represents an NBT 32-bit floating-point number. Its type is {@value NbtElement#FLOAT_TYPE}.
+ * Instances are immutable.
  */
 public class NbtFloat extends AbstractNbtNumber {
 	private static final int SIZE = 96;
+	/**
+	 * The NBT float representing {@code 0.0f}.
+	 */
 	public static final NbtFloat ZERO = new NbtFloat(0.0F);
 	public static final NbtType<NbtFloat> TYPE = new NbtType.OfFixedSize<NbtFloat>() {
 		public NbtFloat read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
@@ -50,6 +54,9 @@ public class NbtFloat extends AbstractNbtNumber {
 		this.value = value;
 	}
 
+	/**
+	 * {@return the NBT float from {@code value}}
+	 */
 	public static NbtFloat of(float value) {
 		return value == 0.0F ? ZERO : new NbtFloat(value);
 	}

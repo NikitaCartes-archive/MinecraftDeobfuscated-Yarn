@@ -37,10 +37,7 @@ public class CriterionProgress {
 	}
 
 	public void toPacket(PacketByteBuf buf) {
-		buf.writeBoolean(this.obtainedDate != null);
-		if (this.obtainedDate != null) {
-			buf.writeDate(this.obtainedDate);
-		}
+		buf.writeNullable(this.obtainedDate, PacketByteBuf::writeDate);
 	}
 
 	public JsonElement toJson() {
@@ -49,10 +46,7 @@ public class CriterionProgress {
 
 	public static CriterionProgress fromPacket(PacketByteBuf buf) {
 		CriterionProgress criterionProgress = new CriterionProgress();
-		if (buf.readBoolean()) {
-			criterionProgress.obtainedDate = buf.readDate();
-		}
-
+		criterionProgress.obtainedDate = buf.readNullable(PacketByteBuf::readDate);
 		return criterionProgress;
 	}
 

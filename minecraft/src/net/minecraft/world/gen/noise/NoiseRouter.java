@@ -22,7 +22,7 @@ public record NoiseRouter(
 	DensityFunction veinRidged,
 	DensityFunction veinGap
 ) {
-	public static final Codec<NoiseRouter> field_37683 = RecordCodecBuilder.create(
+	public static final Codec<NoiseRouter> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					method_41545("barrier", NoiseRouter::barrierNoise),
 					method_41545("fluid_level_floodedness", NoiseRouter::fluidLevelFloodednessNoise),
