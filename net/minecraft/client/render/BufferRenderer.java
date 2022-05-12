@@ -27,37 +27,37 @@ public class BufferRenderer {
         currentVertexBuffer = null;
     }
 
-    public static void drawWithShader(BufferBuilder.class_7433 arg) {
+    public static void drawWithShader(BufferBuilder.BuiltBuffer buffer) {
         if (!RenderSystem.isOnRenderThreadOrInit()) {
-            RenderSystem.recordRenderCall(() -> BufferRenderer.drawWithShaderInternal(arg));
+            RenderSystem.recordRenderCall(() -> BufferRenderer.drawWithShaderInternal(buffer));
         } else {
-            BufferRenderer.drawWithShaderInternal(arg);
+            BufferRenderer.drawWithShaderInternal(buffer);
         }
     }
 
-    private static void drawWithShaderInternal(BufferBuilder.class_7433 arg) {
-        VertexBuffer vertexBuffer = BufferRenderer.getVertexBuffer(arg);
+    private static void drawWithShaderInternal(BufferBuilder.BuiltBuffer buffer) {
+        VertexBuffer vertexBuffer = BufferRenderer.getVertexBuffer(buffer);
         if (vertexBuffer != null) {
             vertexBuffer.draw(RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader());
         }
     }
 
-    public static void drawWithoutShader(BufferBuilder.class_7433 arg) {
-        VertexBuffer vertexBuffer = BufferRenderer.getVertexBuffer(arg);
+    public static void drawWithoutShader(BufferBuilder.BuiltBuffer buffer) {
+        VertexBuffer vertexBuffer = BufferRenderer.getVertexBuffer(buffer);
         if (vertexBuffer != null) {
             vertexBuffer.drawElements();
         }
     }
 
     @Nullable
-    private static VertexBuffer getVertexBuffer(BufferBuilder.class_7433 arg) {
+    private static VertexBuffer getVertexBuffer(BufferBuilder.BuiltBuffer buffer) {
         RenderSystem.assertOnRenderThread();
-        if (arg.method_43584()) {
-            arg.method_43585();
+        if (buffer.isEmpty()) {
+            buffer.release();
             return null;
         }
-        VertexBuffer vertexBuffer = BufferRenderer.bindAndSet(arg.method_43583().format());
-        vertexBuffer.upload(arg);
+        VertexBuffer vertexBuffer = BufferRenderer.bindAndSet(buffer.getParameters().format());
+        vertexBuffer.upload(buffer);
         return vertexBuffer;
     }
 

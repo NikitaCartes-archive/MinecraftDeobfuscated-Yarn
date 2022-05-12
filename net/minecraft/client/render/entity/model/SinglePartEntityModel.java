@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -44,13 +43,13 @@ extends EntityModel<E> {
         return this.getPart().traverse().filter(part -> part.hasChild(name)).findFirst().map(part -> part.getChild(name));
     }
 
-    protected void updateAnimation(AnimationState animationState, Animation animation) {
-        this.updateAnimation(animationState, animation, 1.0f);
+    protected void updateAnimation(AnimationState animationState, Animation animation, float animationProgress) {
+        this.updateAnimation(animationState, animation, animationProgress, 1.0f);
     }
 
-    protected void updateAnimation(AnimationState animationState2, Animation animation, float f) {
-        animationState2.update(MinecraftClient.getInstance().isPaused(), f);
-        animationState2.run(animationState -> AnimationHelper.animate(this, animation, animationState.getTimeRunning(), 1.0f, field_39195));
+    protected void updateAnimation(AnimationState animationState, Animation animation, float animationProgress, float speedMultiplier) {
+        animationState.update(animationProgress, speedMultiplier);
+        animationState.run(state -> AnimationHelper.animate(this, animation, state.getTimeRunning(), 1.0f, field_39195));
     }
 }
 

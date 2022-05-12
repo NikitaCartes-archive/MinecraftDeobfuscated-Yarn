@@ -14,8 +14,10 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import java.util.Map;
 import net.minecraft.SharedConstants;
 import net.minecraft.command.argument.AngleArgumentType;
+import net.minecraft.command.argument.BlockMirrorArgumentType;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.BlockPredicateArgumentType;
+import net.minecraft.command.argument.BlockRotationArgumentType;
 import net.minecraft.command.argument.BlockStateArgumentType;
 import net.minecraft.command.argument.ColorArgumentType;
 import net.minecraft.command.argument.ColumnPosArgumentType;
@@ -120,6 +122,8 @@ public class ArgumentTypes {
         ArgumentTypes.register(registry, "time", TimeArgumentType.class, ConstantArgumentSerializer.of(TimeArgumentType::time));
         ArgumentTypes.register(registry, "resource_or_tag", ArgumentTypes.upcast(RegistryPredicateArgumentType.class), new RegistryPredicateArgumentType.Serializer());
         ArgumentTypes.register(registry, "resource", ArgumentTypes.upcast(RegistryKeyArgumentType.class), new RegistryKeyArgumentType.Serializer());
+        ArgumentTypes.register(registry, "template_mirror", BlockMirrorArgumentType.class, ConstantArgumentSerializer.of(BlockMirrorArgumentType::blockMirror));
+        ArgumentTypes.register(registry, "template_rotation", BlockRotationArgumentType.class, ConstantArgumentSerializer.of(BlockRotationArgumentType::blockRotation));
         if (SharedConstants.isDevelopment) {
             ArgumentTypes.register(registry, "test_argument", TestFunctionArgumentType.class, ConstantArgumentSerializer.of(TestFunctionArgumentType::testFunction));
             ArgumentTypes.register(registry, "test_class", TestClassArgumentType.class, ConstantArgumentSerializer.of(TestClassArgumentType::testClass));

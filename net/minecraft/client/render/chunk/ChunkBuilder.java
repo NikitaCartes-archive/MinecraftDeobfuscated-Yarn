@@ -217,13 +217,13 @@ public class ChunkBuilder {
         });
     }
 
-    public CompletableFuture<Void> scheduleUpload(BufferBuilder.class_7433 arg, VertexBuffer glBuffer) {
+    public CompletableFuture<Void> scheduleUpload(BufferBuilder.BuiltBuffer builtBuffer, VertexBuffer glBuffer) {
         return CompletableFuture.runAsync(() -> {
             if (glBuffer.isClosed()) {
                 return;
             }
             glBuffer.bind();
-            glBuffer.upload(arg);
+            glBuffer.upload(builtBuffer);
             VertexBuffer.unbind();
         }, this.uploadQueue::add);
     }
@@ -471,12 +471,12 @@ public class ChunkBuilder {
                 bufferBuilder.restoreState(state);
                 bufferBuilder.sortFrom(f - (float)BuiltChunk.this.origin.getX(), g - (float)BuiltChunk.this.origin.getY(), h - (float)BuiltChunk.this.origin.getZ());
                 this.data.bufferState = bufferBuilder.popState();
-                BufferBuilder.class_7433 lv = bufferBuilder.end();
+                BufferBuilder.BuiltBuffer builtBuffer = bufferBuilder.end();
                 if (this.cancelled.get()) {
-                    lv.method_43585();
+                    builtBuffer.release();
                     return CompletableFuture.completedFuture(Result.CANCELLED);
                 }
-                CompletionStage completableFuture = ChunkBuilder.this.scheduleUpload(lv, BuiltChunk.this.getBuffer(RenderLayer.getTranslucent())).thenApply(void_ -> Result.CANCELLED);
+                CompletionStage completableFuture = ChunkBuilder.this.scheduleUpload(builtBuffer, BuiltChunk.this.getBuffer(RenderLayer.getTranslucent())).thenApply(void_ -> Result.CANCELLED);
                 return ((CompletableFuture)completableFuture).handle((result, throwable) -> {
                     if (throwable != null && !(throwable instanceof CancellationException) && !(throwable instanceof InterruptedException)) {
                         MinecraftClient.getInstance().setCrashReportSupplierAndAddDetails(CrashReport.create(throwable, "Rendering chunk"));
@@ -554,19 +554,19 @@ public class ChunkBuilder {
                 float f = (float)vec3d.x;
                 float g = (float)vec3d.y;
                 float h = (float)vec3d.z;
-                class_7435 lv = this.render(f, g, h, buffers);
-                BuiltChunk.this.setNoCullingBlockEntities(lv.field_39079);
+                RenderData renderData = this.render(f, g, h, buffers);
+                BuiltChunk.this.setNoCullingBlockEntities(renderData.noCullingBlockEntities);
                 if (this.cancelled.get()) {
-                    lv.field_39081.values().forEach(BufferBuilder.class_7433::method_43585);
+                    renderData.field_39081.values().forEach(BufferBuilder.BuiltBuffer::release);
                     return CompletableFuture.completedFuture(Result.CANCELLED);
                 }
                 ChunkData chunkData = new ChunkData();
-                chunkData.occlusionGraph = lv.field_39082;
-                chunkData.blockEntities.addAll(lv.field_39080);
-                chunkData.bufferState = lv.field_39083;
+                chunkData.occlusionGraph = renderData.chunkOcclusionData;
+                chunkData.blockEntities.addAll(renderData.blockEntities);
+                chunkData.bufferState = renderData.translucencySortingData;
                 ArrayList list = Lists.newArrayList();
-                lv.field_39081.forEach((renderLayer, arg) -> {
-                    list.add(ChunkBuilder.this.scheduleUpload((BufferBuilder.class_7433)arg, BuiltChunk.this.getBuffer((RenderLayer)renderLayer)));
+                renderData.field_39081.forEach((renderLayer, builtBuffer) -> {
+                    list.add(ChunkBuilder.this.scheduleUpload((BufferBuilder.BuiltBuffer)builtBuffer, BuiltChunk.this.getBuffer((RenderLayer)renderLayer)));
                     chunkData.nonEmptyLayers.add((RenderLayer)renderLayer);
                 });
                 return Util.combine(list).handle((results, throwable) -> {
@@ -583,8 +583,8 @@ public class ChunkBuilder {
                 });
             }
 
-            private class_7435 render(float cameraX, float cameraY, float cameraZ, BlockBufferBuilderStorage blockBufferBuilderStorage) {
-                class_7435 lv = new class_7435();
+            private RenderData render(float cameraX, float cameraY, float cameraZ, BlockBufferBuilderStorage blockBufferBuilderStorage) {
+                RenderData renderData = new RenderData();
                 boolean i = true;
                 BlockPos blockPos = BuiltChunk.this.origin.toImmutable();
                 BlockPos blockPos2 = blockPos.add(15, 15, 15);
@@ -609,7 +609,7 @@ public class ChunkBuilder {
                             chunkOcclusionDataBuilder.markClosed(blockPos3);
                         }
                         if (blockState.hasBlockEntity() && (blockEntity = chunkRendererRegion.getBlockEntity(blockPos3)) != null) {
-                            this.addBlockEntity(lv, blockEntity);
+                            this.addBlockEntity(renderData, blockEntity);
                         }
                         if (!(fluidState = (blockState2 = chunkRendererRegion.getBlockState(blockPos3)).getFluidState()).isEmpty()) {
                             renderLayer = RenderLayers.getFluidLayer(fluidState);
@@ -630,27 +630,27 @@ public class ChunkBuilder {
                         blockRenderManager.renderBlock(blockState, blockPos3, chunkRendererRegion, matrixStack, bufferBuilder, true, abstractRandom);
                         matrixStack.pop();
                     }
-                    if (set.contains(RenderLayer.getTranslucent()) && !(bufferBuilder2 = blockBufferBuilderStorage.get(RenderLayer.getTranslucent())).method_43574()) {
+                    if (set.contains(RenderLayer.getTranslucent()) && !(bufferBuilder2 = blockBufferBuilderStorage.get(RenderLayer.getTranslucent())).isBatchEmpty()) {
                         bufferBuilder2.sortFrom(cameraX - (float)blockPos.getX(), cameraY - (float)blockPos.getY(), cameraZ - (float)blockPos.getZ());
-                        lv.field_39083 = bufferBuilder2.popState();
+                        renderData.translucencySortingData = bufferBuilder2.popState();
                     }
                     for (RenderLayer renderLayer2 : set) {
-                        BufferBuilder.class_7433 lv2 = blockBufferBuilderStorage.get(renderLayer2).method_43575();
-                        if (lv2 == null) continue;
-                        lv.field_39081.put(renderLayer2, lv2);
+                        BufferBuilder.BuiltBuffer builtBuffer = blockBufferBuilderStorage.get(renderLayer2).endNullable();
+                        if (builtBuffer == null) continue;
+                        renderData.field_39081.put(renderLayer2, builtBuffer);
                     }
                     BlockModelRenderer.disableBrightnessCache();
                 }
-                lv.field_39082 = chunkOcclusionDataBuilder.build();
-                return lv;
+                renderData.chunkOcclusionData = chunkOcclusionDataBuilder.build();
+                return renderData;
             }
 
-            private <E extends BlockEntity> void addBlockEntity(class_7435 arg, E blockEntity) {
+            private <E extends BlockEntity> void addBlockEntity(RenderData renderData, E blockEntity) {
                 BlockEntityRenderer<E> blockEntityRenderer = MinecraftClient.getInstance().getBlockEntityRenderDispatcher().get(blockEntity);
                 if (blockEntityRenderer != null) {
-                    arg.field_39080.add(blockEntity);
+                    renderData.blockEntities.add(blockEntity);
                     if (blockEntityRenderer.rendersOutsideBoundingBox(blockEntity)) {
-                        arg.field_39079.add(blockEntity);
+                        renderData.noCullingBlockEntities.add(blockEntity);
                     }
                 }
             }
@@ -664,15 +664,15 @@ public class ChunkBuilder {
             }
 
             @Environment(value=EnvType.CLIENT)
-            static final class class_7435 {
-                public final List<BlockEntity> field_39079 = new ArrayList<BlockEntity>();
-                public final List<BlockEntity> field_39080 = new ArrayList<BlockEntity>();
-                public final Map<RenderLayer, BufferBuilder.class_7433> field_39081 = new Reference2ObjectArrayMap<RenderLayer, BufferBuilder.class_7433>();
-                public ChunkOcclusionData field_39082 = new ChunkOcclusionData();
+            static final class RenderData {
+                public final List<BlockEntity> noCullingBlockEntities = new ArrayList<BlockEntity>();
+                public final List<BlockEntity> blockEntities = new ArrayList<BlockEntity>();
+                public final Map<RenderLayer, BufferBuilder.BuiltBuffer> field_39081 = new Reference2ObjectArrayMap<RenderLayer, BufferBuilder.BuiltBuffer>();
+                public ChunkOcclusionData chunkOcclusionData = new ChunkOcclusionData();
                 @Nullable
-                public BufferBuilder.State field_39083;
+                public BufferBuilder.State translucencySortingData;
 
-                class_7435() {
+                RenderData() {
                 }
             }
         }

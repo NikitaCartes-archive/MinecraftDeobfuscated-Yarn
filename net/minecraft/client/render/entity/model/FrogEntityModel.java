@@ -73,12 +73,12 @@ extends SinglePartEntityModel<T> {
     public void setAngles(T frogEntity, float f, float g, float h, float i, float j) {
         this.getPart().traverse().forEach(ModelPart::resetTransform);
         float k = Math.min((float)((Entity)frogEntity).getVelocity().lengthSquared() * 200.0f, 8.0f);
-        this.updateAnimation(((FrogEntity)frogEntity).longJumpingAnimationState, FrogAnimations.LONG_JUMPING);
-        this.updateAnimation(((FrogEntity)frogEntity).croakingAnimationState, FrogAnimations.CROAKING);
-        this.updateAnimation(((FrogEntity)frogEntity).usingTongueAnimationState, FrogAnimations.USING_TONGUE);
-        this.updateAnimation(((FrogEntity)frogEntity).walkingAnimationState, FrogAnimations.WALKING, k);
-        this.updateAnimation(((FrogEntity)frogEntity).swimmingAnimationState, FrogAnimations.SWIMMING);
-        this.updateAnimation(((FrogEntity)frogEntity).idlingInWaterAnimationState, FrogAnimations.IDLING_IN_WATER);
+        this.updateAnimation(((FrogEntity)frogEntity).longJumpingAnimationState, FrogAnimations.LONG_JUMPING, h);
+        this.updateAnimation(((FrogEntity)frogEntity).croakingAnimationState, FrogAnimations.CROAKING, h);
+        this.updateAnimation(((FrogEntity)frogEntity).usingTongueAnimationState, FrogAnimations.USING_TONGUE, h);
+        this.updateAnimation(((FrogEntity)frogEntity).walkingAnimationState, FrogAnimations.WALKING, h, k);
+        this.updateAnimation(((FrogEntity)frogEntity).swimmingAnimationState, FrogAnimations.SWIMMING, h);
+        this.updateAnimation(((FrogEntity)frogEntity).idlingInWaterAnimationState, FrogAnimations.IDLING_IN_WATER, h);
         this.croakingBody.visible = ((FrogEntity)frogEntity).croakingAnimationState.isRunning();
     }
 

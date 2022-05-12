@@ -32,6 +32,7 @@ public class ServerMetadata {
     private Version version;
     @Nullable
     private String favicon;
+    private boolean previewsChat;
 
     @Nullable
     public Text getDescription() {
@@ -67,6 +68,14 @@ public class ServerMetadata {
     @Nullable
     public String getFavicon() {
         return this.favicon;
+    }
+
+    public void setPreviewsChat(boolean previewsChat) {
+        this.previewsChat = previewsChat;
+    }
+
+    public boolean shouldPreviewChat() {
+        return this.previewsChat;
     }
 
     public static class Players {
@@ -143,8 +152,8 @@ public class ServerMetadata {
             }
 
             @Override
-            public /* synthetic */ Object deserialize(JsonElement json, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-                return this.deserialize(json, type, jsonDeserializationContext);
+            public /* synthetic */ Object deserialize(JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException {
+                return this.deserialize(json, type, context);
             }
         }
     }
@@ -214,12 +223,16 @@ public class ServerMetadata {
             if (jsonObject.has("favicon")) {
                 serverMetadata.setFavicon(JsonHelper.getString(jsonObject, "favicon"));
             }
+            if (jsonObject.has("previewsChat")) {
+                serverMetadata.setPreviewsChat(JsonHelper.getBoolean(jsonObject, "previewsChat"));
+            }
             return serverMetadata;
         }
 
         @Override
         public JsonElement serialize(ServerMetadata serverMetadata, Type type, JsonSerializationContext jsonSerializationContext) {
             JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("previewsChat", serverMetadata.shouldPreviewChat());
             if (serverMetadata.getDescription() != null) {
                 jsonObject.add("description", jsonSerializationContext.serialize(serverMetadata.getDescription()));
             }

@@ -7,7 +7,7 @@ import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Dynamic;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import java.util.Optional;
+import java.util.OptionalInt;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SculkShriekerBlock;
@@ -18,11 +18,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.WardenEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -34,6 +34,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.BlockPositionSource;
@@ -57,6 +58,7 @@ implements VibrationListener.Callback {
         warningSounds.put(1, SoundEvents.ENTITY_WARDEN_NEARBY_CLOSE);
         warningSounds.put(2, SoundEvents.ENTITY_WARDEN_NEARBY_CLOSER);
         warningSounds.put(3, SoundEvents.ENTITY_WARDEN_NEARBY_CLOSEST);
+        warningSounds.put(4, SoundEvents.ENTITY_WARDEN_LISTENING_ANGRY);
     });
     private static final int field_38756 = 90;
     private int warningLevel;
@@ -97,64 +99,78 @@ implements VibrationListener.Callback {
     }
 
     @Override
-    public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable GameEvent.Emitter emitter) {
-        return !this.isRemoved() && this.canWarn(world);
+    public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, GameEvent.Emitter emitter) {
+        return !this.isRemoved() && this.getCachedState().get(SculkShriekerBlock.SHRIEKING) == false && SculkShriekerBlockEntity.findResponsiblePlayerFromEntity(emitter.sourceEntity()) != null;
+    }
+
+    @Nullable
+    public static ServerPlayerEntity findResponsiblePlayerFromEntity(@Nullable Entity entity) {
+        ProjectileEntity projectileEntity;
+        Entity entity2;
+        Entity entity3;
+        if (entity instanceof ServerPlayerEntity) {
+            ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
+            return serverPlayerEntity;
+        }
+        if (entity != null && (entity3 = entity.getPrimaryPassenger()) instanceof ServerPlayerEntity) {
+            ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity3;
+            return serverPlayerEntity;
+        }
+        if (entity instanceof ProjectileEntity && (entity2 = (projectileEntity = (ProjectileEntity)entity).getOwner()) instanceof ServerPlayerEntity) {
+            ServerPlayerEntity serverPlayerEntity2 = (ServerPlayerEntity)entity2;
+            return serverPlayerEntity2;
+        }
+        return null;
     }
 
     @Override
     public void accept(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity, @Nullable Entity sourceEntity, int delay) {
-        this.shriek(world, sourceEntity != null ? sourceEntity : entity);
+        this.shriek(world, SculkShriekerBlockEntity.findResponsiblePlayerFromEntity(sourceEntity != null ? sourceEntity : entity));
+    }
+
+    public void shriek(ServerWorld world, @Nullable ServerPlayerEntity player) {
+        if (player == null) {
+            return;
+        }
+        BlockState blockState = this.getCachedState();
+        if (blockState.get(SculkShriekerBlock.SHRIEKING).booleanValue()) {
+            return;
+        }
+        this.warningLevel = 0;
+        if (this.canWarn(world) && !this.trySyncWarningLevel(world, player)) {
+            return;
+        }
+        this.shriek(world, (Entity)player);
+    }
+
+    private boolean trySyncWarningLevel(ServerWorld world, ServerPlayerEntity player) {
+        OptionalInt optionalInt = SculkShriekerWarningManager.warnNearbyPlayers(world, this.getPos(), player);
+        optionalInt.ifPresent(warningLevel -> {
+            this.warningLevel = warningLevel;
+        });
+        return optionalInt.isPresent();
+    }
+
+    private void shriek(ServerWorld world, @Nullable Entity entity) {
+        BlockPos blockPos = this.getPos();
+        BlockState blockState = this.getCachedState();
+        world.setBlockState(blockPos, (BlockState)blockState.with(SculkShriekerBlock.SHRIEKING, true), Block.NOTIFY_LISTENERS);
+        world.createAndScheduleBlockTick(blockPos, blockState.getBlock(), 90);
+        world.syncWorldEvent(WorldEvents.SCULK_SHRIEKS, blockPos, 0);
+        world.emitGameEvent(GameEvent.SHRIEK, blockPos, GameEvent.Emitter.of(entity));
     }
 
     private boolean canWarn(ServerWorld world) {
-        BlockState blockState = this.getCachedState();
-        if (blockState.get(SculkShriekerBlock.SHRIEKING).booleanValue()) {
-            return false;
-        }
-        if (!blockState.get(SculkShriekerBlock.CAN_SUMMON).booleanValue()) {
-            return true;
-        }
-        BlockPos blockPos = this.getPos();
-        return SculkShriekerBlockEntity.getClosestPlayerWarningManager(world, blockPos).map(warningManager -> warningManager.canIncreaseWarningLevel(world, blockPos)).orElse(false);
-    }
-
-    public void shriek(ServerWorld world, @Nullable Entity entity) {
-        BlockState blockState = this.getCachedState();
-        if (this.canWarn(world) && this.trySyncWarningLevel(world, blockState)) {
-            BlockPos blockPos = this.getPos();
-            world.setBlockState(blockPos, (BlockState)blockState.with(SculkShriekerBlock.SHRIEKING, true), Block.NOTIFY_LISTENERS);
-            world.createAndScheduleBlockTick(blockPos, blockState.getBlock(), 90);
-            world.syncWorldEvent(WorldEvents.SCULK_SHRIEKS, blockPos, 0);
-            world.emitGameEvent(GameEvent.SHRIEK, blockPos, GameEvent.Emitter.of(entity));
-        }
-    }
-
-    private boolean trySyncWarningLevel(ServerWorld world, BlockState state) {
-        if (state.get(SculkShriekerBlock.CAN_SUMMON).booleanValue()) {
-            BlockPos blockPos = this.getPos();
-            Optional<SculkShriekerWarningManager> optional = SculkShriekerBlockEntity.getClosestPlayerWarningManager(world, blockPos).filter(warningManager -> warningManager.warnNearbyPlayers(world, blockPos));
-            if (optional.isEmpty()) {
-                return false;
-            }
-            this.warningLevel = optional.get().getWarningLevel();
-        }
-        return true;
-    }
-
-    private static Optional<SculkShriekerWarningManager> getClosestPlayerWarningManager(ServerWorld world, BlockPos pos) {
-        PlayerEntity playerEntity = world.getClosestPlayer((double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), 16.0, EntityPredicates.EXCEPT_SPECTATOR.and(Entity::isAlive));
-        return playerEntity == null ? Optional.empty() : Optional.of(playerEntity.getSculkShriekerWarningManager());
+        return this.getCachedState().get(SculkShriekerBlock.CAN_SUMMON) != false && world.getDifficulty() != Difficulty.PEACEFUL && world.getGameRules().getBoolean(GameRules.DO_WARDEN_SPAWNING);
     }
 
     public void warn(ServerWorld world) {
-        if (this.getCachedState().get(SculkShriekerBlock.CAN_SUMMON).booleanValue()) {
-            WardenEntity.addDarknessToClosePlayers(world, Vec3d.ofCenter(this.getPos()), null, 40);
-            if (this.warningLevel >= 3) {
-                SculkShriekerBlockEntity.trySpawnWarden(world, this.getPos());
-                return;
+        if (this.canWarn(world) && this.warningLevel > 0) {
+            if (!this.trySpawnWarden(world)) {
+                this.playWarningSound();
             }
+            WardenEntity.addDarknessToClosePlayers(world, Vec3d.ofCenter(this.getPos()), null, 40);
         }
-        this.playWarningSound();
     }
 
     private void playWarningSound() {
@@ -168,10 +184,11 @@ implements VibrationListener.Callback {
         }
     }
 
-    private static void trySpawnWarden(ServerWorld world, BlockPos pos) {
-        if (world.getGameRules().getBoolean(GameRules.DO_WARDEN_SPAWNING)) {
-            LargeEntitySpawnHelper.trySpawnAt(EntityType.WARDEN, SpawnReason.TRIGGERED, world, pos, 20, 5, 6).ifPresent(entity -> entity.playSound(SoundEvents.ENTITY_WARDEN_AGITATED, 5.0f, 1.0f));
+    private boolean trySpawnWarden(ServerWorld world) {
+        if (this.warningLevel < 4) {
+            return false;
         }
+        return LargeEntitySpawnHelper.trySpawnAt(EntityType.WARDEN, SpawnReason.TRIGGERED, world, this.getPos(), 20, 5, 6).isPresent();
     }
 
     @Override

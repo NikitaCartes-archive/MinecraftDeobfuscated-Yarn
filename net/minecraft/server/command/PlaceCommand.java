@@ -4,23 +4,36 @@
 package net.minecraft.server.command;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import java.util.Optional;
+import net.minecraft.block.entity.StructureBlockBlockEntity;
+import net.minecraft.command.argument.BlockMirrorArgumentType;
 import net.minecraft.command.argument.BlockPosArgumentType;
+import net.minecraft.command.argument.BlockRotationArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.command.argument.RegistryKeyArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.structure.Structure;
+import net.minecraft.structure.StructureManager;
+import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolBasedGenerator;
+import net.minecraft.structure.processor.BlockRotStructureProcessor;
 import net.minecraft.text.Text;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -35,9 +48,11 @@ public class PlaceCommand {
     private static final SimpleCommandExceptionType FEATURE_FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.place.feature.failed"));
     private static final SimpleCommandExceptionType JIGSAW_FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.place.jigsaw.failed"));
     private static final SimpleCommandExceptionType STRUCTURE_FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.place.structure.failed"));
+    private static final DynamicCommandExceptionType TEMPLATE_INVALID_EXCEPTION = new DynamicCommandExceptionType(id -> Text.translatable("commands.place.template.invalid", id));
+    private static final SimpleCommandExceptionType TEMPLATE_FAILED_EXPECTION = new SimpleCommandExceptionType(Text.translatable("commands.place.template.failed"));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("place").requires(source -> source.hasPermissionLevel(2))).then(CommandManager.literal("feature").then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)CommandManager.argument("feature", RegistryKeyArgumentType.registryKey(Registry.CONFIGURED_FEATURE_KEY)).executes(context -> PlaceCommand.executePlaceFeature((ServerCommandSource)context.getSource(), RegistryKeyArgumentType.getConfiguredFeatureEntry(context, "feature"), new BlockPos(((ServerCommandSource)context.getSource()).getPosition())))).then(CommandManager.argument("pos", BlockPosArgumentType.blockPos()).executes(context -> PlaceCommand.executePlaceFeature((ServerCommandSource)context.getSource(), RegistryKeyArgumentType.getConfiguredFeatureEntry(context, "feature"), BlockPosArgumentType.getLoadedBlockPos(context, "pos"))))))).then(CommandManager.literal("jigsaw").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("pool", RegistryKeyArgumentType.registryKey(Registry.STRUCTURE_POOL_KEY)).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("target", IdentifierArgumentType.identifier()).then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)CommandManager.argument("max_depth", IntegerArgumentType.integer(1, 7)).executes(commandContext -> PlaceCommand.executePlaceJigsaw((ServerCommandSource)commandContext.getSource(), RegistryKeyArgumentType.getStructurePoolEntry(commandContext, "pool"), IdentifierArgumentType.getIdentifier(commandContext, "target"), IntegerArgumentType.getInteger(commandContext, "max_depth"), new BlockPos(((ServerCommandSource)commandContext.getSource()).getPosition())))).then(CommandManager.argument("position", BlockPosArgumentType.blockPos()).executes(commandContext -> PlaceCommand.executePlaceJigsaw((ServerCommandSource)commandContext.getSource(), RegistryKeyArgumentType.getStructurePoolEntry(commandContext, "pool"), IdentifierArgumentType.getIdentifier(commandContext, "target"), IntegerArgumentType.getInteger(commandContext, "max_depth"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "position"))))))))).then(CommandManager.literal("structure").then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)CommandManager.argument("structure", RegistryKeyArgumentType.registryKey(Registry.STRUCTURE_KEY)).executes(commandContext -> PlaceCommand.executePlaceStructure((ServerCommandSource)commandContext.getSource(), RegistryKeyArgumentType.getStructureTypeEntry(commandContext, "structure"), new BlockPos(((ServerCommandSource)commandContext.getSource()).getPosition())))).then(CommandManager.argument("pos", BlockPosArgumentType.blockPos()).executes(commandContext -> PlaceCommand.executePlaceStructure((ServerCommandSource)commandContext.getSource(), RegistryKeyArgumentType.getStructureTypeEntry(commandContext, "structure"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos")))))));
+        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("place").requires(source -> source.hasPermissionLevel(2))).then(CommandManager.literal("feature").then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)CommandManager.argument("feature", RegistryKeyArgumentType.registryKey(Registry.CONFIGURED_FEATURE_KEY)).executes(context -> PlaceCommand.executePlaceFeature((ServerCommandSource)context.getSource(), RegistryKeyArgumentType.getConfiguredFeatureEntry(context, "feature"), new BlockPos(((ServerCommandSource)context.getSource()).getPosition())))).then(CommandManager.argument("pos", BlockPosArgumentType.blockPos()).executes(context -> PlaceCommand.executePlaceFeature((ServerCommandSource)context.getSource(), RegistryKeyArgumentType.getConfiguredFeatureEntry(context, "feature"), BlockPosArgumentType.getLoadedBlockPos(context, "pos"))))))).then(CommandManager.literal("jigsaw").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("pool", RegistryKeyArgumentType.registryKey(Registry.STRUCTURE_POOL_KEY)).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("target", IdentifierArgumentType.identifier()).then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)CommandManager.argument("max_depth", IntegerArgumentType.integer(1, 7)).executes(commandContext -> PlaceCommand.executePlaceJigsaw((ServerCommandSource)commandContext.getSource(), RegistryKeyArgumentType.getStructurePoolEntry(commandContext, "pool"), IdentifierArgumentType.getIdentifier(commandContext, "target"), IntegerArgumentType.getInteger(commandContext, "max_depth"), new BlockPos(((ServerCommandSource)commandContext.getSource()).getPosition())))).then(CommandManager.argument("position", BlockPosArgumentType.blockPos()).executes(commandContext -> PlaceCommand.executePlaceJigsaw((ServerCommandSource)commandContext.getSource(), RegistryKeyArgumentType.getStructurePoolEntry(commandContext, "pool"), IdentifierArgumentType.getIdentifier(commandContext, "target"), IntegerArgumentType.getInteger(commandContext, "max_depth"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "position"))))))))).then(CommandManager.literal("structure").then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)CommandManager.argument("structure", RegistryKeyArgumentType.registryKey(Registry.STRUCTURE_KEY)).executes(commandContext -> PlaceCommand.executePlaceStructure((ServerCommandSource)commandContext.getSource(), RegistryKeyArgumentType.getStructureTypeEntry(commandContext, "structure"), new BlockPos(((ServerCommandSource)commandContext.getSource()).getPosition())))).then(CommandManager.argument("pos", BlockPosArgumentType.blockPos()).executes(commandContext -> PlaceCommand.executePlaceStructure((ServerCommandSource)commandContext.getSource(), RegistryKeyArgumentType.getStructureTypeEntry(commandContext, "structure"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"))))))).then(CommandManager.literal("template").then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)CommandManager.argument("template", IdentifierArgumentType.identifier()).executes(commandContext -> PlaceCommand.executePlaceTemplate((ServerCommandSource)commandContext.getSource(), IdentifierArgumentType.getIdentifier(commandContext, "template"), new BlockPos(((ServerCommandSource)commandContext.getSource()).getPosition()), BlockRotation.NONE, BlockMirror.NONE, 1.0f, 0))).then(((RequiredArgumentBuilder)CommandManager.argument("pos", BlockPosArgumentType.blockPos()).executes(commandContext -> PlaceCommand.executePlaceTemplate((ServerCommandSource)commandContext.getSource(), IdentifierArgumentType.getIdentifier(commandContext, "template"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"), BlockRotation.NONE, BlockMirror.NONE, 1.0f, 0))).then(((RequiredArgumentBuilder)CommandManager.argument("rotation", BlockRotationArgumentType.blockRotation()).executes(commandContext -> PlaceCommand.executePlaceTemplate((ServerCommandSource)commandContext.getSource(), IdentifierArgumentType.getIdentifier(commandContext, "template"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"), BlockRotationArgumentType.getBlockRotation(commandContext, "rotation"), BlockMirror.NONE, 1.0f, 0))).then(((RequiredArgumentBuilder)CommandManager.argument("mirror", BlockMirrorArgumentType.blockMirror()).executes(commandContext -> PlaceCommand.executePlaceTemplate((ServerCommandSource)commandContext.getSource(), IdentifierArgumentType.getIdentifier(commandContext, "template"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"), BlockRotationArgumentType.getBlockRotation(commandContext, "rotation"), BlockMirrorArgumentType.getBlockMirror(commandContext, "mirror"), 1.0f, 0))).then(((RequiredArgumentBuilder)CommandManager.argument("integrity", FloatArgumentType.floatArg(0.0f, 1.0f)).executes(commandContext -> PlaceCommand.executePlaceTemplate((ServerCommandSource)commandContext.getSource(), IdentifierArgumentType.getIdentifier(commandContext, "template"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"), BlockRotationArgumentType.getBlockRotation(commandContext, "rotation"), BlockMirrorArgumentType.getBlockMirror(commandContext, "mirror"), FloatArgumentType.getFloat(commandContext, "integrity"), 0))).then(CommandManager.argument("seed", IntegerArgumentType.integer()).executes(commandContext -> PlaceCommand.executePlaceTemplate((ServerCommandSource)commandContext.getSource(), IdentifierArgumentType.getIdentifier(commandContext, "template"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"), BlockRotationArgumentType.getBlockRotation(commandContext, "rotation"), BlockMirrorArgumentType.getBlockMirror(commandContext, "mirror"), FloatArgumentType.getFloat(commandContext, "integrity"), IntegerArgumentType.getInteger(commandContext, "seed")))))))))));
     }
 
     public static int executePlaceFeature(ServerCommandSource source, RegistryEntry<ConfiguredFeature<?, ?>> feature, BlockPos pos) throws CommandSyntaxException {
@@ -77,6 +92,32 @@ public class PlaceCommand {
         ChunkPos.stream(chunkPos2, chunkPos22).forEach(chunkPos -> structureStart.place(serverWorld, serverWorld.getStructureAccessor(), chunkGenerator, serverWorld.getRandom(), new BlockBox(chunkPos.getStartX(), serverWorld.getBottomY(), chunkPos.getStartZ(), chunkPos.getEndX(), serverWorld.getTopY(), chunkPos.getEndZ()), (ChunkPos)chunkPos));
         String string = structureType.getKey().map(key -> key.getValue().toString()).orElse("[unregistered]");
         source.sendFeedback(Text.translatable("commands.place.structure.success", string, pos.getX(), pos.getY(), pos.getZ()), true);
+        return 1;
+    }
+
+    public static int executePlaceTemplate(ServerCommandSource source, Identifier id, BlockPos pos, BlockRotation rotation, BlockMirror mirror, float integrity, int seed) throws CommandSyntaxException {
+        boolean bl;
+        Optional<Structure> optional;
+        ServerWorld serverWorld = source.getWorld();
+        StructureManager structureManager = serverWorld.getStructureManager();
+        try {
+            optional = structureManager.getStructure(id);
+        } catch (InvalidIdentifierException invalidIdentifierException) {
+            throw TEMPLATE_INVALID_EXCEPTION.create(id);
+        }
+        if (optional.isEmpty()) {
+            throw TEMPLATE_INVALID_EXCEPTION.create(id);
+        }
+        Structure structure = optional.get();
+        PlaceCommand.throwOnUnloadedPos(serverWorld, new ChunkPos(pos), new ChunkPos(pos.add(structure.getSize())));
+        StructurePlacementData structurePlacementData = new StructurePlacementData().setMirror(mirror).setRotation(rotation);
+        if (integrity < 1.0f) {
+            structurePlacementData.clearProcessors().addProcessor(new BlockRotStructureProcessor(integrity)).setRandom(StructureBlockBlockEntity.createRandom(seed));
+        }
+        if (!(bl = structure.place(serverWorld, pos, pos, structurePlacementData, StructureBlockBlockEntity.createRandom(seed), 2))) {
+            throw TEMPLATE_FAILED_EXPECTION.create();
+        }
+        source.sendFeedback(Text.translatable("commands.place.template.success", id, pos.getX(), pos.getY(), pos.getZ()), true);
         return 1;
     }
 

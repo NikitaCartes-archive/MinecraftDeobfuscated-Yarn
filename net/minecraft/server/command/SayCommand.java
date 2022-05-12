@@ -22,8 +22,11 @@ public class SayCommand {
             ServerCommandSource serverCommandSource = (ServerCommandSource)context.getSource();
             PlayerManager playerManager = serverCommandSource.getServer().getPlayerManager();
             if (serverCommandSource.isExecutedByPlayer()) {
-                ServerPlayerEntity serverPlayerEntity = serverCommandSource.getPlayer();
-                serverPlayerEntity.getTextStream().filterText(signedChatMessage.content().getString()).thenAcceptAsync(message -> playerManager.broadcast(signedChatMessage, (TextStream.Message)message, serverPlayerEntity, MessageType.SAY_COMMAND), (Executor)serverCommandSource.getServer());
+                ServerPlayerEntity serverPlayerEntity = serverCommandSource.getPlayerOrThrow();
+                serverPlayerEntity.getTextStream().filterText(signedChatMessage.signedContent().getString()).thenAcceptAsync(message -> {
+                    SignedChatMessage signedChatMessage2 = serverCommandSource.getServer().getChatDecorator().decorate(serverPlayerEntity, signedChatMessage);
+                    playerManager.broadcast(signedChatMessage2, (TextStream.Message)message, serverPlayerEntity, MessageType.SAY_COMMAND);
+                }, (Executor)serverCommandSource.getServer());
             } else {
                 playerManager.broadcast(signedChatMessage, serverCommandSource.getChatMessageSender(), MessageType.SAY_COMMAND);
             }

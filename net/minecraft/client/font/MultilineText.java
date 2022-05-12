@@ -47,6 +47,11 @@ public interface MultilineText {
         public int count() {
             return 0;
         }
+
+        @Override
+        public int getMaxWidth() {
+            return 0;
+        }
     };
 
     public static MultilineText create(TextRenderer renderer, StringVisitable text2, int width) {
@@ -65,22 +70,26 @@ public interface MultilineText {
         return MultilineText.create(renderer, texts.stream().map(Text::asOrderedText).map(text -> new Line((OrderedText)text, renderer.getWidth((OrderedText)text))).collect(ImmutableList.toImmutableList()));
     }
 
-    public static MultilineText create(final TextRenderer renderer, final List<Line> lines) {
+    public static MultilineText create(final TextRenderer textRenderer, final List<Line> lines) {
         if (lines.isEmpty()) {
             return EMPTY;
         }
         return new MultilineText(){
+            private final int maxWidth;
+            {
+                this.maxWidth = lines.stream().mapToInt(line -> line.width).max().orElse(0);
+            }
 
             @Override
             public int drawCenterWithShadow(MatrixStack matrices, int x, int y) {
-                return this.drawCenterWithShadow(matrices, x, y, renderer.fontHeight, 0xFFFFFF);
+                return this.drawCenterWithShadow(matrices, x, y, textRenderer.fontHeight, 0xFFFFFF);
             }
 
             @Override
             public int drawCenterWithShadow(MatrixStack matrices, int x, int y, int lineHeight, int color) {
                 int i = y;
                 for (Line line : lines) {
-                    renderer.drawWithShadow(matrices, line.text, (float)(x - line.width / 2), (float)i, color);
+                    textRenderer.drawWithShadow(matrices, line.text, (float)(x - line.width / 2), (float)i, color);
                     i += lineHeight;
                 }
                 return i;
@@ -90,7 +99,7 @@ public interface MultilineText {
             public int drawWithShadow(MatrixStack matrices, int x, int y, int lineHeight, int color) {
                 int i = y;
                 for (Line line : lines) {
-                    renderer.drawWithShadow(matrices, line.text, (float)x, (float)i, color);
+                    textRenderer.drawWithShadow(matrices, line.text, (float)x, (float)i, color);
                     i += lineHeight;
                 }
                 return i;
@@ -100,7 +109,7 @@ public interface MultilineText {
             public int draw(MatrixStack matrices, int x, int y, int lineHeight, int color) {
                 int i = y;
                 for (Line line : lines) {
-                    renderer.draw(matrices, line.text, (float)x, (float)i, color);
+                    textRenderer.draw(matrices, line.text, (float)x, (float)i, color);
                     i += lineHeight;
                 }
                 return i;
@@ -118,6 +127,11 @@ public interface MultilineText {
             public int count() {
                 return lines.size();
             }
+
+            @Override
+            public int getMaxWidth() {
+                return this.maxWidth;
+            }
         };
     }
 
@@ -132,6 +146,8 @@ public interface MultilineText {
     public void fillBackground(MatrixStack var1, int var2, int var3, int var4, int var5, int var6);
 
     public int count();
+
+    public int getMaxWidth();
 
     @Environment(value=EnvType.CLIENT)
     public static class Line {

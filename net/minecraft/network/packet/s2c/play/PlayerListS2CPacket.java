@@ -84,7 +84,7 @@ implements Packet<ClientPlayPacketListener> {
                 GameMode gameMode = GameMode.byId(buf.readVarInt());
                 int i = buf.readVarInt();
                 Text text = (Text)buf.readNullable(PacketByteBuf::readText);
-                PlayerPublicKey.PublicKeyData publicKeyData = (PlayerPublicKey.PublicKeyData)buf.readNullable(buf2 -> buf2.decode(PlayerPublicKey.PublicKeyData.CODEC));
+                PlayerPublicKey.PublicKeyData publicKeyData = (PlayerPublicKey.PublicKeyData)buf.readNullable(PlayerPublicKey.PublicKeyData::new);
                 return new Entry(gameProfile, i, gameMode, text, publicKeyData);
             }
 
@@ -94,7 +94,7 @@ implements Packet<ClientPlayPacketListener> {
                 buf.writeVarInt(entry.getGameMode().getId());
                 buf.writeVarInt(entry.getLatency());
                 buf.writeNullable(entry.getDisplayName(), PacketByteBuf::writeText);
-                buf.writeNullable(entry.getPublicKeyData(), (buf2, publicKeyData) -> buf2.encode(PlayerPublicKey.PublicKeyData.CODEC, publicKeyData));
+                buf.writeNullable(entry.getPublicKeyData(), (buf2, publicKeyData) -> publicKeyData.write((PacketByteBuf)buf2));
             }
         }
         ,

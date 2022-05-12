@@ -29,6 +29,7 @@ import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Items;
+import net.minecraft.network.ChatDecorator;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
@@ -83,12 +84,14 @@ implements DedicatedServer {
     private DedicatedServerGui gui;
     @Nullable
     private final TextFilterer filterer;
+    private final ChatDecorator chatDecorator;
 
     public MinecraftDedicatedServer(Thread serverThread, LevelStorage.Session session, ResourcePackManager dataPackManager, SaveLoader saveLoader, ServerPropertiesLoader propertiesLoader, DataFixer dataFixer, MinecraftSessionService sessionService, GameProfileRepository gameProfileRepo, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
         super(serverThread, session, dataPackManager, saveLoader, Proxy.NO_PROXY, dataFixer, sessionService, gameProfileRepo, userCache, worldGenerationProgressListenerFactory);
         this.propertiesLoader = propertiesLoader;
         this.rconCommandOutput = new RconCommandOutput(this);
         this.filterer = TextFilterer.load(propertiesLoader.getPropertiesHandler().textFilteringConfig);
+        this.chatDecorator = this.getProperties().testRainbowChat ? ChatDecorator.testRainbowChat() : ChatDecorator.NOOP;
     }
 
     @Override
@@ -302,6 +305,16 @@ implements DedicatedServer {
     @Override
     public boolean isUsingNativeTransport() {
         return this.getProperties().useNativeTransport;
+    }
+
+    @Override
+    public boolean shouldPreviewChat() {
+        return this.getProperties().previewsChat;
+    }
+
+    @Override
+    public ChatDecorator getChatDecorator() {
+        return this.chatDecorator;
     }
 
     @Override

@@ -131,8 +131,8 @@ extends Block {
             if (entity.getFireTicks() == 0) {
                 entity.setOnFireFor(8);
             }
-            entity.damage(DamageSource.IN_FIRE, this.damage);
         }
+        entity.damage(DamageSource.IN_FIRE, this.damage);
         super.onEntityCollision(state, world, pos, entity);
     }
 

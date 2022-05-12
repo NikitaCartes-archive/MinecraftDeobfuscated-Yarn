@@ -182,7 +182,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         this.lightingProvider = new ServerLightingProvider(chunkProvider, this, this.world.getDimension().hasSkyLight(), taskExecutor2, this.chunkTaskPrioritySystem.createExecutor(taskExecutor2, false));
         this.ticketManager = new TicketManager(executor, mainThreadExecutor);
         this.persistentStateManagerFactory = persistentStateManagerFactory;
-        this.pointOfInterestStorage = new PointOfInterestStorage(path.resolve("poi"), dataFixer, dsync, world);
+        this.pointOfInterestStorage = new PointOfInterestStorage(path.resolve("poi"), dataFixer, dsync, world.getRegistryManager(), world);
         this.setViewDistance(viewDistance);
     }
 

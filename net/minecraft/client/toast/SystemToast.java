@@ -20,7 +20,6 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class SystemToast
 implements Toast {
-    private static final long DURATION = 5000L;
     private static final int MIN_WIDTH = 200;
     private final Type type;
     private Text title;
@@ -87,7 +86,7 @@ implements Toast {
                 manager.getClient().textRenderer.draw(matrices, this.lines.get(k), 18.0f, (float)(18 + k * 12), -1);
             }
         }
-        return startTime - this.startTime < 5000L ? Toast.Visibility.SHOW : Toast.Visibility.HIDE;
+        return startTime - this.startTime < this.type.displayDuration ? Toast.Visibility.SHOW : Toast.Visibility.HIDE;
     }
 
     private void drawPart(MatrixStack matrices, ToastManager manager, int width, int textureV, int y, int height) {
@@ -149,8 +148,18 @@ implements Toast {
         PACK_LOAD_FAILURE,
         WORLD_ACCESS_FAILURE,
         PACK_COPY_FAILURE,
-        PERIODIC_NOTIFICATION;
+        PERIODIC_NOTIFICATION,
+        CHAT_PREVIEW_WARNING(10000L);
 
+        final long displayDuration;
+
+        private Type(long displayDuration) {
+            this.displayDuration = displayDuration;
+        }
+
+        private Type() {
+            this(5000L);
+        }
     }
 }
 

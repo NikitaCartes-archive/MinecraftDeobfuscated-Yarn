@@ -108,6 +108,7 @@ import net.minecraft.client.option.HotbarStorage;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.option.Perspective;
 import net.minecraft.client.particle.ParticleManager;
+import net.minecraft.client.realms.util.Realms32BitWarningChecker;
 import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferBuilderStorage;
@@ -462,6 +463,7 @@ implements WindowEventHandler {
     private double gpuUtilizationPercentage;
     @Nullable
     private GlTimer.Query currentGlTimerQuery;
+    private final Realms32BitWarningChecker realms32BitWarningChecker;
     private String openProfilerSection = "root";
 
     public MinecraftClient(RunArgs args) {
@@ -607,6 +609,7 @@ implements WindowEventHandler {
         this.onResolutionChanged();
         this.gameRenderer.preloadShaders(this.getResourcePackProvider().getPack().getFactory());
         this.profileKeys = new ProfileKeys(this.userApiService, this.session.getProfile().getId(), this.runDirectory.toPath());
+        this.realms32BitWarningChecker = new Realms32BitWarningChecker(this);
         SplashOverlay.init(this);
         List<ResourcePack> list = this.resourcePackManager.createResourcePacks();
         this.resourceReloadLogger.reload(ResourceReloadLogger.ReloadReason.INITIAL, list);
@@ -2513,6 +2516,10 @@ implements WindowEventHandler {
 
     public void loadBlockList() {
         this.socialInteractionsManager.loadBlockList();
+    }
+
+    public Realms32BitWarningChecker getRealms32BitWarningChecker() {
+        return this.realms32BitWarningChecker;
     }
 
     static {

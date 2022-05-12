@@ -213,14 +213,17 @@ implements ServerLoginPacketListener {
 
     @Override
     public void onHello(LoginHelloC2SPacket packet) {
-        Validate.validState(this.state == State.HELLO, "Unexpected hello packet", new Object[0]);
-        Validate.validState(ServerLoginNetworkHandler.isValidName(packet.name()), "Invalid characters in username", new Object[0]);
-        try {
-            this.publicKey = ServerLoginNetworkHandler.getVerifiedPublicKey(packet, this.server.getSessionService(), this.server.shouldEnforceSecureProfile());
-        } catch (LoginException loginException) {
-            LOGGER.error(loginException.getMessage(), loginException.getCause());
-            this.disconnect(loginException.getMessageText());
-            return;
+        block5: {
+            Validate.validState(this.state == State.HELLO, "Unexpected hello packet", new Object[0]);
+            Validate.validState(ServerLoginNetworkHandler.isValidName(packet.name()), "Invalid characters in username", new Object[0]);
+            try {
+                this.publicKey = ServerLoginNetworkHandler.getVerifiedPublicKey(packet, this.server.getSessionService(), this.server.shouldEnforceSecureProfile());
+            } catch (LoginException loginException) {
+                LOGGER.error(loginException.getMessage(), loginException.getCause());
+                if (this.connection.isLocal()) break block5;
+                this.disconnect(loginException.getMessageText());
+                return;
+            }
         }
         GameProfile gameProfile = this.server.getHostProfile();
         if (gameProfile != null && packet.name().equalsIgnoreCase(gameProfile.getName())) {

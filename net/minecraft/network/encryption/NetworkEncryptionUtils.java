@@ -7,6 +7,7 @@ import com.google.common.primitives.Longs;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import it.unimi.dsi.fastutil.bytes.ByteArrays;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -45,7 +46,8 @@ public class NetworkEncryptionUtils {
     private static final String RSA_PRIVATE_KEY_SUFFIX = "-----END RSA PRIVATE KEY-----";
     public static final String RSA_PUBLIC_KEY_PREFIX = "-----BEGIN RSA PUBLIC KEY-----";
     private static final String RSA_PUBLIC_KEY_SUFFIX = "-----END RSA PUBLIC KEY-----";
-    public static final String CRLF = "\r\n";
+    public static final String LINEBREAK = "\n";
+    public static final Base64.Encoder BASE64_ENCODER = Base64.getMimeEncoder(76, "\n".getBytes(StandardCharsets.UTF_8));
     /**
      * The codec for RSA public keys.
      * 
@@ -150,7 +152,11 @@ public class NetworkEncryptionUtils {
             int j = key.indexOf(suffix, i += prefix.length());
             key = key.substring(i, j + 1);
         }
-        return decoder.apply(Base64.getMimeDecoder().decode(key));
+        try {
+            return decoder.apply(Base64.getMimeDecoder().decode(key));
+        } catch (IllegalArgumentException illegalArgumentException) {
+            throw new NetworkEncryptionException(illegalArgumentException);
+        }
     }
 
     /**
@@ -205,7 +211,7 @@ public class NetworkEncryptionUtils {
         if (!RSA.equals(key.getAlgorithm())) {
             throw new IllegalArgumentException("Public key must be RSA");
         }
-        return "-----BEGIN RSA PUBLIC KEY-----\r\n" + Base64.getMimeEncoder().encodeToString(key.getEncoded()) + "\r\n-----END RSA PUBLIC KEY-----\r\n";
+        return "-----BEGIN RSA PUBLIC KEY-----\n" + BASE64_ENCODER.encodeToString(key.getEncoded()) + "\n-----END RSA PUBLIC KEY-----\n";
     }
 
     /**
@@ -224,7 +230,7 @@ public class NetworkEncryptionUtils {
         if (!RSA.equals(key.getAlgorithm())) {
             throw new IllegalArgumentException("Private key must be RSA");
         }
-        return "-----BEGIN RSA PRIVATE KEY-----\r\n" + Base64.getMimeEncoder().encodeToString(key.getEncoded()) + "\r\n-----END RSA PRIVATE KEY-----\r\n";
+        return "-----BEGIN RSA PRIVATE KEY-----\n" + BASE64_ENCODER.encodeToString(key.getEncoded()) + "\n-----END RSA PRIVATE KEY-----\n";
     }
 
     /**
@@ -355,9 +361,9 @@ public class NetworkEncryptionUtils {
             return this.signature.length > 0;
         }
 
-        public void write(PacketByteBuf buf) {
-            buf.writeLong(this.salt);
-            buf.writeByteArray(this.signature);
+        public static void write(PacketByteBuf buf, SignatureData signatureData) {
+            buf.writeLong(signatureData.salt);
+            buf.writeByteArray(signatureData.signature);
         }
 
         public byte[] getSalt() {

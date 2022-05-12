@@ -15,7 +15,7 @@ import net.minecraft.text.Text;
 public class ChatOptionsScreen
 extends SimpleOptionsScreen {
     public ChatOptionsScreen(Screen parent, GameOptions options) {
-        super(parent, options, Text.translatable("options.chat.title"), new SimpleOption[]{options.getChatVisibility(), options.getChatColors(), options.getChatLinks(), options.getChatLinksPrompt(), options.getChtOpacity(), options.getTextBackgroundOpacity(), options.getChatScale(), options.getChatLineSpacing(), options.getChatDelay(), options.getChatWidth(), options.getChatHeightFocused(), options.getChatHeightUnfocused(), options.getNarrator(), options.getAutoSuggestions(), options.getHideMatchedNames(), options.getReducedDebugInfo()});
+        super(parent, options, Text.translatable("options.chat.title"), new SimpleOption[]{options.getChatVisibility(), options.getChatColors(), options.getChatLinks(), options.getChatLinksPrompt(), options.getChtOpacity(), options.getTextBackgroundOpacity(), options.getChatScale(), options.getChatLineSpacing(), options.getChatDelay(), options.getChatWidth(), options.getChatHeightFocused(), options.getChatHeightUnfocused(), options.getNarrator(), options.getAutoSuggestions(), options.getHideMatchedNames(), options.getReducedDebugInfo(), options.getChatPreview(), options.getOnlyShowSignedChat()});
     }
 }
 

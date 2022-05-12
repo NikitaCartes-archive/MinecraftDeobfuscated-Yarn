@@ -85,7 +85,7 @@ extends BlockEntity {
         super.writeNbt(nbt);
         nbt.putString(NAME_KEY, this.name.toString());
         nbt.putString(TARGET_KEY, this.target.toString());
-        nbt.putString(POOL_KEY, this.pool.toString());
+        nbt.putString(POOL_KEY, this.pool.getValue().toString());
         nbt.putString(FINAL_STATE_KEY, this.finalState);
         nbt.putString(JOINT_KEY, this.joint.asString());
     }

@@ -89,6 +89,8 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
     public final int entityBroadcastRangePercentage = this.transformedParseInt("entity-broadcast-range-percentage", percentage -> MathHelper.clamp(percentage, 10, 1000), 100);
     public final String textFilteringConfig = this.getString("text-filtering-config", "");
     public Optional<MinecraftServer.ServerResourcePackProperties> serverResourcePackProperties;
+    public final boolean previewsChat = this.parseBoolean("previews-chat", false);
+    public final boolean testRainbowChat = this.parseBoolean("test-rainbow-chat", false);
     public final AbstractPropertiesHandler.PropertyAccessor<Integer> playerIdleTimeout = this.intAccessor("player-idle-timeout", 0);
     public final AbstractPropertiesHandler.PropertyAccessor<Boolean> whiteList = this.booleanAccessor("white-list", false);
     public final boolean enforceSecureProfile = this.parseBoolean("enforce-secure-profile", false);

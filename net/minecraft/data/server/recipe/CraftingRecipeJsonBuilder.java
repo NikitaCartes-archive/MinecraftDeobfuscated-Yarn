@@ -13,6 +13,8 @@ import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public interface CraftingRecipeJsonBuilder {
+    public static final Identifier field_39377 = new Identifier("recipes/root");
+
     public CraftingRecipeJsonBuilder criterion(String var1, CriterionConditions var2);
 
     public CraftingRecipeJsonBuilder group(@Nullable String var1);

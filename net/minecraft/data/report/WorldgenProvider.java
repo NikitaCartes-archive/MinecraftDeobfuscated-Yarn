@@ -15,7 +15,6 @@ import java.util.Optional;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
@@ -33,20 +32,17 @@ implements DataProvider {
 
     @Override
     public void run(DataWriter cache) {
-        Path path = this.generator.getOutput();
         DynamicRegistryManager dynamicRegistryManager = DynamicRegistryManager.BUILTIN.get();
         RegistryOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, dynamicRegistryManager);
-        DynamicRegistryManager.getInfos().forEach(info -> WorldgenProvider.writeRegistryEntries(cache, path, dynamicRegistryManager, dynamicOps, info));
+        DynamicRegistryManager.getInfos().forEach(info -> this.writeRegistryEntries(cache, dynamicRegistryManager, (DynamicOps<JsonElement>)dynamicOps, (DynamicRegistryManager.Info)info));
     }
 
-    private static <T> void writeRegistryEntries(DataWriter cache, Path path, DynamicRegistryManager registryManager, DynamicOps<JsonElement> json, DynamicRegistryManager.Info<T> info) {
-        WorldgenProvider.writeRegistryEntries(path, cache, json, info.registry(), registryManager.getManaged(info.registry()), info.entryCodec());
-    }
-
-    private static <E, T extends Registry<E>> void writeRegistryEntries(Path path, DataWriter cache, DynamicOps<JsonElement> json, RegistryKey<? extends T> registryKey, T registry, Encoder<E> encoder) {
-        for (Map.Entry<RegistryKey<E>, E> entry : registry.getEntrySet()) {
-            Path path2 = WorldgenProvider.getPath(path, registryKey.getValue(), entry.getKey().getValue());
-            WorldgenProvider.writeToPath(path2, cache, json, encoder, entry.getValue());
+    private <T> void writeRegistryEntries(DataWriter dataWriter, DynamicRegistryManager dynamicRegistryManager, DynamicOps<JsonElement> dynamicOps, DynamicRegistryManager.Info<T> info) {
+        RegistryKey<Registry<T>> registryKey = info.registry();
+        Registry<T> registry = dynamicRegistryManager.getManaged(registryKey);
+        DataGenerator.PathResolver pathResolver = this.generator.createPathResolver(DataGenerator.OutputType.REPORTS, registryKey.getValue().getPath());
+        for (Map.Entry<RegistryKey<T>, T> entry : registry.getEntrySet()) {
+            WorldgenProvider.writeToPath(pathResolver.resolveJson(entry.getKey().getValue()), dataWriter, dynamicOps, info.entryCodec(), entry.getValue());
         }
     }
 
@@ -59,14 +55,6 @@ implements DataProvider {
         } catch (IOException iOException) {
             LOGGER.error("Couldn't save element {}", (Object)path, (Object)iOException);
         }
-    }
-
-    private static Path getPath(Path root, Identifier rootId, Identifier id) {
-        return WorldgenProvider.getRootPath(root).resolve(id.getNamespace()).resolve(rootId.getPath()).resolve(id.getPath() + ".json");
-    }
-
-    private static Path getRootPath(Path path) {
-        return path.resolve("reports").resolve("worldgen");
     }
 
     @Override

@@ -46,14 +46,14 @@ extends Task<VillagerEntity> {
     @Override
     protected void finishRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         Optional<GlobalPos> optional = villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
-        optional.ifPresent(globalPos -> {
-            BlockPos blockPos = globalPos.getPos();
-            ServerWorld serverWorld2 = serverWorld.getServer().getWorld(globalPos.getDimension());
+        optional.ifPresent(pos -> {
+            BlockPos blockPos = pos.getPos();
+            ServerWorld serverWorld2 = serverWorld.getServer().getWorld(pos.getDimension());
             if (serverWorld2 == null) {
                 return;
             }
             PointOfInterestStorage pointOfInterestStorage = serverWorld2.getPointOfInterestStorage();
-            if (pointOfInterestStorage.test(blockPos, pointOfInterestType -> true)) {
+            if (pointOfInterestStorage.test(blockPos, registryEntry -> true)) {
                 pointOfInterestStorage.releaseTicket(blockPos);
             }
             DebugInfoSender.sendPointOfInterest(serverWorld, blockPos);

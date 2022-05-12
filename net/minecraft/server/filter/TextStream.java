@@ -62,6 +62,10 @@ public interface TextStream {
         public static Message censored(String raw) {
             return new Message(raw, "");
         }
+
+        public boolean hasFilteredText() {
+            return !this.raw.equals(this.filtered);
+        }
     }
 }
 

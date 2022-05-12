@@ -15,6 +15,7 @@ import net.minecraft.Bootstrap;
 import net.minecraft.GameVersion;
 import net.minecraft.data.DataCache;
 import net.minecraft.data.DataProvider;
+import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 
 public class DataGenerator {
@@ -39,6 +40,10 @@ public class DataGenerator {
 
     public Path getOutput() {
         return this.output;
+    }
+
+    public Path resolveRootDirectoryPath(OutputType outputType) {
+        return this.getOutput().resolve(outputType.path);
     }
 
     public void run() throws IOException {
@@ -68,8 +73,42 @@ public class DataGenerator {
         this.providers.add(provider);
     }
 
+    public PathResolver createPathResolver(OutputType outputType, String directoryName) {
+        return new PathResolver(this, outputType, directoryName);
+    }
+
     static {
         Bootstrap.initialize();
+    }
+
+    public static enum OutputType {
+        DATA_PACK("data"),
+        RESOURCE_PACK("assets"),
+        REPORTS("reports");
+
+        final String path;
+
+        private OutputType(String path) {
+            this.path = path;
+        }
+    }
+
+    public static class PathResolver {
+        private final Path rootPath;
+        private final String directoryName;
+
+        PathResolver(DataGenerator dataGenerator, OutputType outputType, String directoryName) {
+            this.rootPath = dataGenerator.resolveRootDirectoryPath(outputType);
+            this.directoryName = directoryName;
+        }
+
+        public Path resolve(Identifier id, String fileExtension) {
+            return this.rootPath.resolve(id.getNamespace()).resolve(this.directoryName).resolve(id.getPath() + "." + fileExtension);
+        }
+
+        public Path resolveJson(Identifier id) {
+            return this.rootPath.resolve(id.getNamespace()).resolve(this.directoryName).resolve(id.getPath() + ".json");
+        }
     }
 }
 

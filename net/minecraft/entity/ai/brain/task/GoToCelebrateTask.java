@@ -20,11 +20,11 @@ extends Task<E> {
     private final int completionRange;
     private final float speed;
 
-    public GoToCelebrateTask(MemoryModuleType<BlockPos> memoryModuleType, int i, float f) {
+    public GoToCelebrateTask(MemoryModuleType<BlockPos> memoryModuleType, int completionRange, float speed) {
         super(ImmutableMap.of(memoryModuleType, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED));
         this.memoryModuleType = memoryModuleType;
-        this.completionRange = i;
-        this.speed = f;
+        this.completionRange = completionRange;
+        this.speed = speed;
     }
 
     @Override
@@ -45,8 +45,8 @@ extends Task<E> {
         return random.nextInt(3) - 1;
     }
 
-    private BlockPos getCelebrateLocation(MobEntity mobEntity) {
-        return mobEntity.getBrain().getOptionalMemory(this.memoryModuleType).get();
+    private BlockPos getCelebrateLocation(MobEntity entity) {
+        return entity.getBrain().getOptionalMemory(this.memoryModuleType).get();
     }
 }
 

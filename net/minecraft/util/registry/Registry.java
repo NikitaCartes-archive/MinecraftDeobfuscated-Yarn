@@ -132,6 +132,7 @@ import net.minecraft.world.gen.surfacebuilder.MaterialRules;
 import net.minecraft.world.gen.treedecorator.TreeDecoratorType;
 import net.minecraft.world.gen.trunk.TrunkPlacerType;
 import net.minecraft.world.poi.PointOfInterestType;
+import net.minecraft.world.poi.PointOfInterestTypes;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -225,7 +226,7 @@ IndexedIterable<T> {
     public static final Registry<StatType<?>> STAT_TYPE = Registry.create(STAT_TYPE_KEY, registry -> Stats.USED);
     public static final DefaultedRegistry<VillagerType> VILLAGER_TYPE = Registry.create(VILLAGER_TYPE_KEY, "plains", (Registry<T> registry) -> VillagerType.PLAINS);
     public static final DefaultedRegistry<VillagerProfession> VILLAGER_PROFESSION = Registry.create(VILLAGER_PROFESSION_KEY, "none", (Registry<T> registry) -> VillagerProfession.NONE);
-    public static final DefaultedRegistry<PointOfInterestType> POINT_OF_INTEREST_TYPE = Registry.create(POINT_OF_INTEREST_TYPE_KEY, "unemployed", (Registry<T> registry) -> PointOfInterestType.UNEMPLOYED);
+    public static final Registry<PointOfInterestType> POINT_OF_INTEREST_TYPE = Registry.create(POINT_OF_INTEREST_TYPE_KEY, PointOfInterestTypes::registerAndGetDefault);
     public static final DefaultedRegistry<MemoryModuleType<?>> MEMORY_MODULE_TYPE = Registry.create(MEMORY_MODULE_TYPE_KEY, "dummy", (Registry<T> registry) -> MemoryModuleType.DUMMY);
     public static final DefaultedRegistry<SensorType<?>> SENSOR_TYPE = Registry.create(SENSOR_TYPE_KEY, "dummy", (Registry<T> registry) -> SensorType.DUMMY);
     public static final Registry<Schedule> SCHEDULE = Registry.create(SCHEDULE_KEY, registry -> Schedule.EMPTY);
@@ -296,7 +297,6 @@ IndexedIterable<T> {
     public static final Registry<StructureProcessorType<?>> STRUCTURE_PROCESSOR = Registry.create(STRUCTURE_PROCESSOR_KEY, registry -> StructureProcessorType.BLOCK_IGNORE);
     public static final Registry<StructurePoolElementType<?>> STRUCTURE_POOL_ELEMENT = Registry.create(STRUCTURE_POOL_ELEMENT_KEY, registry -> StructurePoolElementType.EMPTY_POOL_ELEMENT);
     public static final RegistryKey<Registry<MessageType>> MESSAGE_TYPE_KEY = Registry.createRegistryKey("chat_type");
-    public static final Registry<MessageType> MESSAGE_TYPE = Registry.create(MESSAGE_TYPE_KEY, MessageType::registerAndGetDefault);
     public static final RegistryKey<Registry<CatVariant>> CAT_VARIANT_KEY = Registry.createRegistryKey("cat_variant");
     public static final Registry<CatVariant> CAT_VARIANT = Registry.create(CAT_VARIANT_KEY, registry -> CatVariant.BLACK);
     public static final RegistryKey<Registry<FrogVariant>> FROG_VARIANT_KEY = Registry.createRegistryKey("frog_variant");

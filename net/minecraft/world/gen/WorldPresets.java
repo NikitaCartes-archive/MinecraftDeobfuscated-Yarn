@@ -40,8 +40,8 @@ public class WorldPresets {
     public static final RegistryKey<WorldPreset> SINGLE_BIOME_SURFACE = WorldPresets.of("single_biome_surface");
     public static final RegistryKey<WorldPreset> DEBUG_ALL_BLOCK_STATES = WorldPresets.of("debug_all_block_states");
 
-    public static RegistryEntry<WorldPreset> initAndGetDefault() {
-        return new Registrar().initAndGetDefault();
+    public static RegistryEntry<WorldPreset> initAndGetDefault(Registry<WorldPreset> registry) {
+        return new Registrar(registry).initAndGetDefault();
     }
 
     private static RegistryKey<WorldPreset> of(String id) {
@@ -80,7 +80,7 @@ public class WorldPresets {
     }
 
     static class Registrar {
-        private final Registry<WorldPreset> worldPresetRegistry = BuiltinRegistries.WORLD_PRESET;
+        private final Registry<WorldPreset> worldPresetRegistry;
         private final Registry<DimensionType> dimensionTypeRegistry = BuiltinRegistries.DIMENSION_TYPE;
         private final Registry<Biome> biomeRegistry = BuiltinRegistries.BIOME;
         private final Registry<StructureSet> structureSetRegistry = BuiltinRegistries.STRUCTURE_SET;
@@ -94,7 +94,8 @@ public class WorldPresets {
         private final RegistryEntry<ChunkGeneratorSettings> endChunkGeneratorSettings = this.chunkGeneratorSettingsRegistry.getOrCreateEntry(ChunkGeneratorSettings.END);
         private final DimensionOptions endDimensionOptions = new DimensionOptions(this.theEndDimensionType, new NoiseChunkGenerator(this.structureSetRegistry, this.noiseParametersRegistry, (BiomeSource)new TheEndBiomeSource(this.biomeRegistry), this.endChunkGeneratorSettings));
 
-        Registrar() {
+        Registrar(Registry<WorldPreset> registry) {
+            this.worldPresetRegistry = registry;
         }
 
         private DimensionOptions createOverworldOptions(ChunkGenerator chunkGenerator) {

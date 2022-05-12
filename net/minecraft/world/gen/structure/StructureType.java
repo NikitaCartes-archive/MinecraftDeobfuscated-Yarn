@@ -4,6 +4,7 @@
 package net.minecraft.world.gen.structure;
 
 import com.mojang.datafixers.kinds.Applicative;
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -85,14 +86,11 @@ public abstract class StructureType {
     }
 
     public StructureStart createStructureStart(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, BiomeSource biomeSource, NoiseConfig noiseConfig, StructureManager structureManager, long seed, ChunkPos chunkPos, int references, HeightLimitView world, Predicate<RegistryEntry<Biome>> validBiomes) {
+        StructurePiecesCollector structurePiecesCollector;
+        StructureStart structureStart;
         Optional<StructurePosition> optional = this.getStructurePosition(new Context(dynamicRegistryManager, chunkGenerator, biomeSource, noiseConfig, structureManager, seed, chunkPos, world, validBiomes));
-        if (optional.isPresent() && StructureType.isBiomeValid(optional.get(), chunkGenerator, noiseConfig, validBiomes)) {
-            StructurePiecesCollector structurePiecesCollector = new StructurePiecesCollector();
-            optional.get().generator().accept(structurePiecesCollector);
-            StructureStart structureStart = new StructureStart(this, chunkPos, references, structurePiecesCollector.toList());
-            if (structureStart.hasChildren()) {
-                return structureStart;
-            }
+        if (optional.isPresent() && StructureType.isBiomeValid(optional.get(), chunkGenerator, noiseConfig, validBiomes) && (structureStart = new StructureStart(this, chunkPos, references, (structurePiecesCollector = optional.get().generate()).toList())).hasChildren()) {
+            return structureStart;
         }
         return StructureStart.DEFAULT;
     }
@@ -170,7 +168,18 @@ public abstract class StructureType {
         }
     }
 
-    public record StructurePosition(BlockPos position, Consumer<StructurePiecesCollector> generator) {
+    public record StructurePosition(BlockPos position, Either<Consumer<StructurePiecesCollector>, StructurePiecesCollector> generator) {
+        public StructurePosition(BlockPos pos, Consumer<StructurePiecesCollector> generator) {
+            this(pos, Either.left(generator));
+        }
+
+        public StructurePiecesCollector generate() {
+            return this.generator.map(generator -> {
+                StructurePiecesCollector structurePiecesCollector = new StructurePiecesCollector();
+                generator.accept(structurePiecesCollector);
+                return structurePiecesCollector;
+            }, collector -> collector);
+        }
     }
 }
 

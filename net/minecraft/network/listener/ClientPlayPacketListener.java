@@ -11,6 +11,7 @@ import net.minecraft.network.packet.s2c.play.BlockEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChatPreviewS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDeltaUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkLoadDistanceS2CPacket;
@@ -80,6 +81,7 @@ import net.minecraft.network.packet.s2c.play.ScoreboardPlayerUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerPropertyUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.SelectAdvancementTabS2CPacket;
+import net.minecraft.network.packet.s2c.play.ServerMetadataS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetCameraEntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetTradeOffersS2CPacket;
 import net.minecraft.network.packet.s2c.play.SignEditorOpenS2CPacket;
@@ -140,6 +142,8 @@ extends PacketListener {
     public void onGameMessage(GameMessageS2CPacket var1);
 
     public void onChatMessage(ChatMessageS2CPacket var1);
+
+    public void onChatPreview(ChatPreviewS2CPacket var1);
 
     public void onChunkDeltaUpdate(ChunkDeltaUpdateS2CPacket var1);
 
@@ -312,5 +316,7 @@ extends PacketListener {
     public void onTitleFade(TitleFadeS2CPacket var1);
 
     public void onTitleClear(ClearTitleS2CPacket var1);
+
+    public void onServerMetadata(ServerMetadataS2CPacket var1);
 }
 

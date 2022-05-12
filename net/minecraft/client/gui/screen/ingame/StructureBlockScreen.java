@@ -142,7 +142,7 @@ extends Screen {
             }
         }));
         this.buttonEntities = this.addDrawableChild(CyclingButtonWidget.onOffBuilder(!this.structureBlock.shouldIgnoreEntities()).omitKeyText().build(this.width / 2 + 4 + 100, 160, 50, 20, INCLUDE_ENTITIES_TEXT, (button, includeEntities) -> this.structureBlock.setIgnoreEntities(includeEntities == false)));
-        this.buttonMirror = this.addDrawableChild(CyclingButtonWidget.builder(BlockMirror::getName).values((BlockMirror[])BlockMirror.values()).omitKeyText().initially(this.mirror).build(this.width / 2 - 20, 185, 40, 20, Text.literal("MIRROR"), (button, mirror) -> this.structureBlock.setMirror((BlockMirror)((Object)mirror))));
+        this.buttonMirror = this.addDrawableChild(CyclingButtonWidget.builder(BlockMirror::getName).values((BlockMirror[])BlockMirror.values()).omitKeyText().initially(this.mirror).build(this.width / 2 - 20, 185, 40, 20, Text.literal("MIRROR"), (button, mirror) -> this.structureBlock.setMirror((BlockMirror)mirror)));
         this.buttonShowAir = this.addDrawableChild(CyclingButtonWidget.onOffBuilder(this.structureBlock.shouldShowAir()).omitKeyText().build(this.width / 2 + 4 + 100, 80, 50, 20, SHOW_AIR_TEXT, (button, showAir) -> this.structureBlock.setShowAir((boolean)showAir)));
         this.buttonShowBoundingBox = this.addDrawableChild(CyclingButtonWidget.onOffBuilder(this.structureBlock.shouldShowBoundingBox()).omitKeyText().build(this.width / 2 + 4 + 100, 80, 50, 20, SHOW_BOUNDING_BOX_TEXT, (button, showBoundingBox) -> this.structureBlock.setShowBoundingBox((boolean)showBoundingBox)));
         this.buttonRotate0 = this.addDrawableChild(new ButtonWidget(this.width / 2 - 1 - 40 - 1 - 40 - 20, 185, 40, 20, Text.literal("0"), button -> {

@@ -543,9 +543,9 @@ AutoCloseable {
             this.darkSkyBuffer.close();
         }
         this.darkSkyBuffer = new VertexBuffer();
-        BufferBuilder.class_7433 lv = WorldRenderer.renderSky(bufferBuilder, -16.0f);
+        BufferBuilder.BuiltBuffer builtBuffer = WorldRenderer.renderSky(bufferBuilder, -16.0f);
         this.darkSkyBuffer.bind();
-        this.darkSkyBuffer.upload(lv);
+        this.darkSkyBuffer.upload(builtBuffer);
         VertexBuffer.unbind();
     }
 
@@ -556,13 +556,13 @@ AutoCloseable {
             this.lightSkyBuffer.close();
         }
         this.lightSkyBuffer = new VertexBuffer();
-        BufferBuilder.class_7433 lv = WorldRenderer.renderSky(bufferBuilder, 16.0f);
+        BufferBuilder.BuiltBuffer builtBuffer = WorldRenderer.renderSky(bufferBuilder, 16.0f);
         this.lightSkyBuffer.bind();
-        this.lightSkyBuffer.upload(lv);
+        this.lightSkyBuffer.upload(builtBuffer);
         VertexBuffer.unbind();
     }
 
-    private static BufferBuilder.class_7433 renderSky(BufferBuilder builder, float f) {
+    private static BufferBuilder.BuiltBuffer renderSky(BufferBuilder builder, float f) {
         float g = Math.signum(f) * 512.0f;
         float h = 512.0f;
         RenderSystem.setShader(GameRenderer::getPositionShader);
@@ -582,13 +582,13 @@ AutoCloseable {
             this.starsBuffer.close();
         }
         this.starsBuffer = new VertexBuffer();
-        BufferBuilder.class_7433 lv = this.renderStars(bufferBuilder);
+        BufferBuilder.BuiltBuffer builtBuffer = this.renderStars(bufferBuilder);
         this.starsBuffer.bind();
-        this.starsBuffer.upload(lv);
+        this.starsBuffer.upload(builtBuffer);
         VertexBuffer.unbind();
     }
 
-    private BufferBuilder.class_7433 renderStars(BufferBuilder buffer) {
+    private BufferBuilder.BuiltBuffer renderStars(BufferBuilder buffer) {
         AbstractRandom abstractRandom = AbstractRandom.createAtomic(10842L);
         buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
         for (int i = 0; i < 1500; ++i) {
@@ -1765,9 +1765,9 @@ AutoCloseable {
                 this.cloudsBuffer.close();
             }
             this.cloudsBuffer = new VertexBuffer();
-            BufferBuilder.class_7433 lv = this.renderClouds(bufferBuilder, l, m, n, vec3d);
+            BufferBuilder.BuiltBuffer builtBuffer = this.renderClouds(bufferBuilder, l, m, n, vec3d);
             this.cloudsBuffer.bind();
-            this.cloudsBuffer.upload(lv);
+            this.cloudsBuffer.upload(builtBuffer);
             VertexBuffer.unbind();
         }
         RenderSystem.setShader(GameRenderer::getPositionTexColorNormalShader);
@@ -1796,7 +1796,7 @@ AutoCloseable {
         RenderSystem.disableBlend();
     }
 
-    private BufferBuilder.class_7433 renderClouds(BufferBuilder builder, double x, double y, double z, Vec3d color) {
+    private BufferBuilder.BuiltBuffer renderClouds(BufferBuilder builder, double x, double y, double z, Vec3d color) {
         float f = 4.0f;
         float g = 0.00390625f;
         int i = 8;

@@ -129,8 +129,7 @@ public class StructurePoolBasedGenerator {
         StructureType.Context context = new StructureType.Context(world.getRegistryManager(), chunkGenerator, chunkGenerator.getBiomeSource(), world.getChunkManager().getNoiseConfig(), structureManager, world.getSeed(), new ChunkPos(pos), world, registryEntry -> true);
         Optional<StructureType.StructurePosition> optional = StructurePoolBasedGenerator.generate(context, structurePool, Optional.of(id), i, pos, false, Optional.empty(), 128);
         if (optional.isPresent()) {
-            StructurePiecesCollector structurePiecesCollector = new StructurePiecesCollector();
-            optional.get().generator().accept(structurePiecesCollector);
+            StructurePiecesCollector structurePiecesCollector = optional.get().generate();
             for (StructurePiece structurePiece : structurePiecesCollector.toList().pieces()) {
                 if (!(structurePiece instanceof PoolStructurePiece)) continue;
                 PoolStructurePiece poolStructurePiece = (PoolStructurePiece)structurePiece;

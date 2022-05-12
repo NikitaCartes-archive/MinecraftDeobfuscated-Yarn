@@ -16,7 +16,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.function.CommandFunction;
 import net.minecraft.server.function.FunctionLoader;
-import net.minecraft.tag.Tag;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.GameRules;
@@ -74,7 +73,7 @@ public class CommandFunctionManager {
         this.executeAll(this.tickFunctions, TICK_TAG_ID);
         if (this.justLoaded) {
             this.justLoaded = false;
-            List<CommandFunction> collection = this.loader.getTagOrEmpty(LOAD_TAG_ID).values();
+            Collection<CommandFunction> collection = this.loader.getTagOrEmpty(LOAD_TAG_ID);
             this.executeAll(collection, LOAD_TAG_ID);
         }
     }
@@ -154,7 +153,7 @@ public class CommandFunctionManager {
     }
 
     private void load(FunctionLoader loader) {
-        this.tickFunctions = ImmutableList.copyOf(loader.getTagOrEmpty(TICK_TAG_ID).values());
+        this.tickFunctions = ImmutableList.copyOf(loader.getTagOrEmpty(TICK_TAG_ID));
         this.justLoaded = true;
     }
 
@@ -176,7 +175,7 @@ public class CommandFunctionManager {
         return this.loader.get(id);
     }
 
-    public Tag<CommandFunction> getTag(Identifier id) {
+    public Collection<CommandFunction> getTag(Identifier id) {
         return this.loader.getTagOrEmpty(id);
     }
 

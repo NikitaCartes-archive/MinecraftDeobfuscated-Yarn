@@ -99,7 +99,7 @@ extends StructurePiece {
     }
 
     public String toString() {
-        return String.format("<%s | %s | %s | %s>", new Object[]{this.getClass().getSimpleName(), this.pos, this.rotation, this.poolElement});
+        return String.format("<%s | %s | %s | %s>", this.getClass().getSimpleName(), this.pos, this.rotation, this.poolElement);
     }
 
     public StructurePoolElement getPoolElement() {

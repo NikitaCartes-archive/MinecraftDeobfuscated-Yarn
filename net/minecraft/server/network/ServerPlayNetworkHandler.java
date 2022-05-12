@@ -64,6 +64,7 @@ import net.minecraft.network.MessageType;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.Packet;
 import net.minecraft.network.encryption.ChatMessageSignature;
+import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.encryption.SignedChatMessage;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
@@ -96,6 +97,7 @@ import net.minecraft.network.packet.c2s.play.QueryEntityNbtC2SPacket;
 import net.minecraft.network.packet.c2s.play.RecipeBookDataC2SPacket;
 import net.minecraft.network.packet.c2s.play.RecipeCategoryOptionsC2SPacket;
 import net.minecraft.network.packet.c2s.play.RenameItemC2SPacket;
+import net.minecraft.network.packet.c2s.play.RequestChatPreviewC2SPacket;
 import net.minecraft.network.packet.c2s.play.RequestCommandCompletionsC2SPacket;
 import net.minecraft.network.packet.c2s.play.ResourcePackStatusC2SPacket;
 import net.minecraft.network.packet.c2s.play.SelectMerchantTradeC2SPacket;
@@ -113,6 +115,7 @@ import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateStructureBlockC2SPacket;
 import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChatPreviewS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
@@ -141,6 +144,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.PendingTaskRunner;
 import net.minecraft.util.StringHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
@@ -206,6 +210,7 @@ ServerPlayPacketListener {
     private int vehicleFloatingTicks;
     private int movePacketsCount;
     private int lastTickMovePacketsCount;
+    private final PendingTaskRunner previewTaskRunner = new PendingTaskRunner();
 
     public ServerPlayNetworkHandler(MinecraftServer server, ClientConnection connection, ServerPlayerEntity player) {
         this.server = server;
@@ -285,6 +290,7 @@ ServerPlayPacketListener {
         if (this.player.getLastActionTime() > 0L && this.server.getPlayerIdleTimeout() > 0 && Util.getMeasuringTimeMs() - this.player.getLastActionTime() > (long)(this.server.getPlayerIdleTimeout() * 1000 * 60)) {
             this.disconnect(Text.translatable("multiplayer.disconnect.idling"));
         }
+        this.previewTaskRunner.runPending();
     }
 
     public void syncWithPlayerPosition() {
@@ -1168,8 +1174,14 @@ ServerPlayPacketListener {
 
     private void handleMessage(ChatMessageC2SPacket packet, TextStream.Message message) {
         if (this.checkChatEnabled()) {
+            MutableText text = Text.literal(packet.getChatMessage());
             ChatMessageSignature chatMessageSignature = packet.createSignatureInstance(this.player.getUuid());
-            SignedChatMessage signedChatMessage = new SignedChatMessage(Text.literal(packet.getChatMessage()), chatMessageSignature);
+            SignedChatMessage signedChatMessage = this.server.getChatDecorator().decorate(this.player, text, chatMessageSignature, packet.isPreviewed());
+            PlayerPublicKey playerPublicKey = this.player.getPublicKey();
+            if (playerPublicKey != null && !signedChatMessage.verify(playerPublicKey)) {
+                LOGGER.warn("{} sent message with invalid signature: '{}'", (Object)this.player.getName().getString(), (Object)signedChatMessage.signedContent().getString());
+                return;
+            }
             this.server.getPlayerManager().broadcast(signedChatMessage, message, this.player, MessageType.CHAT);
             this.checkForSpam();
         }
@@ -1179,6 +1191,22 @@ ServerPlayPacketListener {
         this.messageCooldown += 20;
         if (this.messageCooldown > 200 && !this.server.getPlayerManager().isOperator(this.player.getGameProfile())) {
             this.disconnect(Text.translatable("disconnect.spam"));
+        }
+    }
+
+    @Override
+    public void onRequestChatPreview(RequestChatPreviewC2SPacket packet) {
+        if (this.server.shouldPreviewChat()) {
+            this.previewTaskRunner.run(() -> {
+                Text text2;
+                String string = packet.query();
+                MutableText text = Text.literal(string);
+                if (!((Object)text).equals(text2 = this.server.getChatDecorator().decorate(this.player, text))) {
+                    this.sendPacket(new ChatPreviewS2CPacket(packet.queryId(), text2));
+                } else {
+                    this.sendPacket(new ChatPreviewS2CPacket(packet.queryId(), null));
+                }
+            });
         }
     }
 

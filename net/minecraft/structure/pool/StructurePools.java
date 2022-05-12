@@ -23,16 +23,17 @@ public class StructurePools {
         return BuiltinRegistries.add(BuiltinRegistries.STRUCTURE_POOL, templatePool.getId(), templatePool);
     }
 
-    public static RegistryEntry<StructurePool> initDefaultPools() {
+    @Deprecated
+    public static void method_44111() {
+        StructurePools.initDefaultPools(BuiltinRegistries.STRUCTURE_POOL);
+    }
+
+    public static RegistryEntry<StructurePool> initDefaultPools(Registry<StructurePool> registry) {
         BastionRemnantGenerator.init();
         PillagerOutpostGenerator.init();
         VillageGenerator.init();
         AncientCityGenerator.init();
         return INVALID;
-    }
-
-    static {
-        StructurePools.initDefaultPools();
     }
 }
 

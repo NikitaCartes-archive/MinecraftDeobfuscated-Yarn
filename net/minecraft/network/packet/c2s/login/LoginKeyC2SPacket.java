@@ -50,7 +50,7 @@ implements Packet<ServerLoginPacketListener> {
     @Override
     public void write(PacketByteBuf buf) {
         buf.writeByteArray(this.encryptedSecretKey);
-        buf.writeEither(this.nonce, PacketByteBuf::writeByteArray, (buf2, signature) -> signature.write((PacketByteBuf)buf2));
+        buf.writeEither(this.nonce, PacketByteBuf::writeByteArray, NetworkEncryptionUtils.SignatureData::write);
     }
 
     @Override

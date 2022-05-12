@@ -19,6 +19,7 @@ import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextContent;
 import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Language;
@@ -138,8 +139,9 @@ public class Texts {
     }
 
     public static boolean hasTranslation(@Nullable Text text) {
-        if (text instanceof TranslatableTextContent) {
-            TranslatableTextContent translatableTextContent = (TranslatableTextContent)((Object)text);
+        TextContent textContent;
+        if (text != null && (textContent = text.getContent()) instanceof TranslatableTextContent) {
+            TranslatableTextContent translatableTextContent = (TranslatableTextContent)textContent;
             String string = translatableTextContent.getKey();
             return Language.getInstance().hasTranslation(string);
         }

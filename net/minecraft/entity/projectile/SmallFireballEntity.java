@@ -38,16 +38,13 @@ extends AbstractFireballEntity {
             return;
         }
         Entity entity = entityHitResult.getEntity();
-        if (!entity.isFireImmune()) {
-            Entity entity2 = this.getOwner();
-            int i = entity.getFireTicks();
-            entity.setOnFireFor(5);
-            boolean bl = entity.damage(DamageSource.fireball(this, entity2), 5.0f);
-            if (!bl) {
-                entity.setFireTicks(i);
-            } else if (entity2 instanceof LivingEntity) {
-                this.applyDamageEffects((LivingEntity)entity2, entity);
-            }
+        Entity entity2 = this.getOwner();
+        int i = entity.getFireTicks();
+        entity.setOnFireFor(5);
+        if (!entity.damage(DamageSource.fireball(this, entity2), 5.0f)) {
+            entity.setFireTicks(i);
+        } else if (entity2 instanceof LivingEntity) {
+            this.applyDamageEffects((LivingEntity)entity2, entity);
         }
     }
 

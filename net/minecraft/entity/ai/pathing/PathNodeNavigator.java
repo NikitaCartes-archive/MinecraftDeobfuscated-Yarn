@@ -79,7 +79,7 @@ public class PathNodeNavigator {
             int k = this.pathNodeMaker.getSuccessors(this.successors, pathNode);
             for (int l = 0; l < k; ++l) {
                 PathNode pathNode2 = this.successors[l];
-                float f = pathNode.getDistance(pathNode2);
+                float f = this.getDistance(pathNode, pathNode2);
                 pathNode2.pathLength = pathNode.pathLength + f;
                 float g = pathNode.penalizedPathLength + f + pathNode2.penalty;
                 if (!(pathNode2.pathLength < followRange) || pathNode2.isInHeap() && !(g < pathNode2.penalizedPathLength)) continue;
@@ -94,13 +94,17 @@ public class PathNodeNavigator {
                 this.minHeap.push(pathNode2);
             }
         }
-        Optional<Path> optional = !set3.isEmpty() ? set3.stream().map(targetPathNode -> this.createPath(targetPathNode.getNearestNode(), (BlockPos)positions.get(targetPathNode), true)).min(Comparator.comparingInt(Path::getLength)) : set.stream().map(targetPathNode -> this.createPath(targetPathNode.getNearestNode(), (BlockPos)positions.get(targetPathNode), false)).min(Comparator.comparingDouble(Path::getManhattanDistanceFromTarget).thenComparingInt(Path::getLength));
+        Optional<Path> optional = !set3.isEmpty() ? set3.stream().map(node -> this.createPath(node.getNearestNode(), (BlockPos)positions.get(node), true)).min(Comparator.comparingInt(Path::getLength)) : set.stream().map(targetPathNode -> this.createPath(targetPathNode.getNearestNode(), (BlockPos)positions.get(targetPathNode), false)).min(Comparator.comparingDouble(Path::getManhattanDistanceFromTarget).thenComparingInt(Path::getLength));
         profiler.pop();
         if (!optional.isPresent()) {
             return null;
         }
         Path path = optional.get();
         return path;
+    }
+
+    protected float getDistance(PathNode a, PathNode b) {
+        return a.getDistance(b);
     }
 
     private float calculateDistances(PathNode node, Set<TargetPathNode> targets) {

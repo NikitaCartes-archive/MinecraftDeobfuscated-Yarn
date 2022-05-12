@@ -15,7 +15,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.world.poi.PointOfInterestStorage;
-import net.minecraft.world.poi.PointOfInterestType;
+import net.minecraft.world.poi.PointOfInterestTypes;
 
 public class HideInHomeTask
 extends Task<LivingEntity> {
@@ -33,7 +33,7 @@ extends Task<LivingEntity> {
 
     @Override
     protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
-        Optional<BlockPos> optional = world.getPointOfInterestStorage().getPosition(poiType -> poiType == PointOfInterestType.HOME, blockPos -> true, entity.getBlockPos(), this.preferredDistance + 1, PointOfInterestStorage.OccupationStatus.ANY);
+        Optional<BlockPos> optional = world.getPointOfInterestStorage().getPosition(poiType -> poiType.matchesKey(PointOfInterestTypes.HOME), pos -> true, entity.getBlockPos(), this.preferredDistance + 1, PointOfInterestStorage.OccupationStatus.ANY);
         this.homePosition = optional.isPresent() && optional.get().isWithinDistance(entity.getPos(), (double)this.preferredDistance) ? optional : Optional.empty();
         return true;
     }
@@ -43,7 +43,7 @@ extends Task<LivingEntity> {
         Optional<GlobalPos> optional2;
         Brain<?> brain = entity.getBrain();
         Optional<BlockPos> optional = this.homePosition;
-        if (!optional.isPresent() && !(optional = world.getPointOfInterestStorage().getPosition(poiType -> poiType == PointOfInterestType.HOME, blockPos -> true, PointOfInterestStorage.OccupationStatus.ANY, entity.getBlockPos(), this.maxDistance, entity.getRandom())).isPresent() && (optional2 = brain.getOptionalMemory(MemoryModuleType.HOME)).isPresent()) {
+        if (optional.isEmpty() && (optional = world.getPointOfInterestStorage().getPosition(poiType -> poiType.matchesKey(PointOfInterestTypes.HOME), pos -> true, PointOfInterestStorage.OccupationStatus.ANY, entity.getBlockPos(), this.maxDistance, entity.getRandom())).isEmpty() && (optional2 = brain.getOptionalMemory(MemoryModuleType.HOME)).isPresent()) {
             optional = Optional.of(optional2.get().getPos());
         }
         if (optional.isPresent()) {

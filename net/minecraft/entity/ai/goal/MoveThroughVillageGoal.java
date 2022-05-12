@@ -19,10 +19,10 @@ import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.tag.PointOfInterestTypeTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.poi.PointOfInterestStorage;
-import net.minecraft.world.poi.PointOfInterestType;
 import org.jetbrains.annotations.Nullable;
 
 public class MoveThroughVillageGoal
@@ -67,17 +67,14 @@ extends Goal {
             if (!serverWorld.isNearOccupiedPointOfInterest((BlockPos)pos)) {
                 return Double.NEGATIVE_INFINITY;
             }
-            Optional<BlockPos> optional = serverWorld.getPointOfInterestStorage().getPosition(PointOfInterestType.ALWAYS_TRUE, this::shouldVisit, (BlockPos)pos, 10, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED);
-            if (!optional.isPresent()) {
-                return Double.NEGATIVE_INFINITY;
-            }
-            return -optional.get().getSquaredDistance(blockPos);
+            Optional<BlockPos> optional = serverWorld.getPointOfInterestStorage().getPosition(poiType -> poiType.isIn(PointOfInterestTypeTags.VILLAGE), this::shouldVisit, (BlockPos)pos, 10, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED);
+            return optional.map(blockPos2 -> -blockPos2.getSquaredDistance(blockPos)).orElse(Double.NEGATIVE_INFINITY);
         });
         if (vec3d == null) {
             return false;
         }
-        Optional<BlockPos> optional = serverWorld.getPointOfInterestStorage().getPosition(PointOfInterestType.ALWAYS_TRUE, this::shouldVisit, new BlockPos(vec3d), 10, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED);
-        if (!optional.isPresent()) {
+        Optional<BlockPos> optional = serverWorld.getPointOfInterestStorage().getPosition(poiType -> poiType.isIn(PointOfInterestTypeTags.VILLAGE), this::shouldVisit, new BlockPos(vec3d), 10, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED);
+        if (optional.isEmpty()) {
             return false;
         }
         this.target = optional.get().toImmutable();

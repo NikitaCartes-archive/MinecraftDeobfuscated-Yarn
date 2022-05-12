@@ -2306,7 +2306,7 @@ CommandOutput {
     }
 
     public boolean isInvulnerableTo(DamageSource damageSource) {
-        return this.isRemoved() || this.invulnerable && damageSource != DamageSource.OUT_OF_WORLD && !damageSource.isSourceCreativePlayer();
+        return this.isRemoved() || this.invulnerable && damageSource != DamageSource.OUT_OF_WORLD && !damageSource.isSourceCreativePlayer() || damageSource.isFire() && this.isFireImmune();
     }
 
     public boolean isInvulnerable() {

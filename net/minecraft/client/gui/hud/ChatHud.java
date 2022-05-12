@@ -15,6 +15,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.client.util.ChatMessages;
 import net.minecraft.client.util.math.MatrixStack;
@@ -230,7 +231,7 @@ extends DrawableHelper {
     }
 
     @Nullable
-    public Style getText(double x, double y) {
+    public Style getTextStyleAt(double x, double y) {
         int j;
         if (!this.isChatFocused() || this.client.options.hudHidden || this.isChatHidden()) {
             return null;
@@ -250,8 +251,18 @@ extends DrawableHelper {
         return null;
     }
 
+    @Nullable
+    public ChatScreen getChatScreen() {
+        Screen screen = this.client.currentScreen;
+        if (screen instanceof ChatScreen) {
+            ChatScreen chatScreen = (ChatScreen)screen;
+            return chatScreen;
+        }
+        return null;
+    }
+
     private boolean isChatFocused() {
-        return this.client.currentScreen instanceof ChatScreen;
+        return this.getChatScreen() != null;
     }
 
     private void removeMessage(int messageId) {

@@ -9,6 +9,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.BuiltinRegistries;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.gen.blockpredicate.BlockPredicate;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
@@ -30,7 +31,7 @@ import net.minecraft.world.gen.feature.UndergroundConfiguredFeatures;
 import net.minecraft.world.gen.feature.VegetationConfiguredFeatures;
 
 public class ConfiguredFeatures {
-    public static RegistryEntry<? extends ConfiguredFeature<?, ?>> getDefaultConfiguredFeature() {
+    public static RegistryEntry<? extends ConfiguredFeature<?, ?>> getDefaultConfiguredFeature(Registry<ConfiguredFeature<?, ?>> registry) {
         List<RegistryEntry<ConfiguredFeature<RandomFeatureConfig, ?>>> list = List.of(OceanConfiguredFeatures.KELP, UndergroundConfiguredFeatures.MOSS_PATCH_BONEMEAL, EndConfiguredFeatures.CHORUS_PLANT, MiscConfiguredFeatures.SPRING_LAVA_OVERWORLD, NetherConfiguredFeatures.BASALT_BLOBS, OreConfiguredFeatures.ORE_ANCIENT_DEBRIS_LARGE, PileConfiguredFeatures.PILE_HAY, TreeConfiguredFeatures.AZALEA_TREE, VegetationConfiguredFeatures.TREES_OLD_GROWTH_PINE_TAIGA);
         return Util.getRandom(list, AbstractRandom.createAtomic());
     }

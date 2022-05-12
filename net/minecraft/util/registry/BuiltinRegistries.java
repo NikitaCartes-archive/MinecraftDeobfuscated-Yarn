@@ -8,6 +8,7 @@ import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Lifecycle;
 import java.util.Map;
 import java.util.function.Supplier;
+import net.minecraft.network.MessageType;
 import net.minecraft.structure.StructureSet;
 import net.minecraft.structure.StructureSets;
 import net.minecraft.structure.pool.StructurePool;
@@ -61,12 +62,12 @@ public class BuiltinRegistries {
     private static final MutableRegistry<MutableRegistry<?>> ROOT = new SimpleRegistry(RegistryKey.ofRegistry(new Identifier("root")), Lifecycle.experimental(), null);
     public static final Registry<? extends Registry<?>> REGISTRIES = ROOT;
     public static final Registry<DimensionType> DIMENSION_TYPE = BuiltinRegistries.addRegistry(Registry.DIMENSION_TYPE_KEY, DimensionTypeRegistrar::initAndGetDefault);
-    public static final Registry<ConfiguredCarver<?>> CONFIGURED_CARVER = BuiltinRegistries.addRegistry(Registry.CONFIGURED_CARVER_KEY, () -> ConfiguredCarvers.CAVE);
+    public static final Registry<ConfiguredCarver<?>> CONFIGURED_CARVER = BuiltinRegistries.addRegistry(Registry.CONFIGURED_CARVER_KEY, registry -> ConfiguredCarvers.CAVE);
     public static final Registry<ConfiguredFeature<?, ?>> CONFIGURED_FEATURE = BuiltinRegistries.addRegistry(Registry.CONFIGURED_FEATURE_KEY, ConfiguredFeatures::getDefaultConfiguredFeature);
     public static final Registry<PlacedFeature> PLACED_FEATURE = BuiltinRegistries.addRegistry(Registry.PLACED_FEATURE_KEY, PlacedFeatures::getDefaultPlacedFeature);
     public static final Registry<StructureType> STRUCTURE = BuiltinRegistries.addRegistry(Registry.STRUCTURE_KEY, StructureTypes::getDefault);
     public static final Registry<StructureSet> STRUCTURE_SET = BuiltinRegistries.addRegistry(Registry.STRUCTURE_SET_KEY, StructureSets::initAndGetDefault);
-    public static final Registry<StructureProcessorList> STRUCTURE_PROCESSOR_LIST = BuiltinRegistries.addRegistry(Registry.STRUCTURE_PROCESSOR_LIST_KEY, () -> StructureProcessorLists.ZOMBIE_PLAINS);
+    public static final Registry<StructureProcessorList> STRUCTURE_PROCESSOR_LIST = BuiltinRegistries.addRegistry(Registry.STRUCTURE_PROCESSOR_LIST_KEY, registry -> StructureProcessorLists.ZOMBIE_PLAINS);
     public static final Registry<StructurePool> STRUCTURE_POOL = BuiltinRegistries.addRegistry(Registry.STRUCTURE_POOL_KEY, StructurePools::initDefaultPools);
     public static final Registry<Biome> BIOME = BuiltinRegistries.addRegistry(Registry.BIOME_KEY, BuiltinBiomes::getDefaultBiome);
     public static final Registry<DoublePerlinNoiseSampler.NoiseParameters> NOISE_PARAMETERS = BuiltinRegistries.addRegistry(Registry.NOISE_KEY, BuiltinNoiseParameters::init);
@@ -74,19 +75,20 @@ public class BuiltinRegistries {
     public static final Registry<ChunkGeneratorSettings> CHUNK_GENERATOR_SETTINGS = BuiltinRegistries.addRegistry(Registry.CHUNK_GENERATOR_SETTINGS_KEY, ChunkGeneratorSettings::getInstance);
     public static final Registry<WorldPreset> WORLD_PRESET = BuiltinRegistries.addRegistry(Registry.WORLD_PRESET_KEY, WorldPresets::initAndGetDefault);
     public static final Registry<FlatLevelGeneratorPreset> FLAT_LEVEL_GENERATOR_PRESET = BuiltinRegistries.addRegistry(Registry.FLAT_LEVEL_GENERATOR_PRESET_KEY, FlatLevelGeneratorPresets::initAndGetDefault);
+    public static final Registry<MessageType> MESSAGE_TYPE = BuiltinRegistries.addRegistry(Registry.MESSAGE_TYPE_KEY, MessageType::initialize);
     public static final DynamicRegistryManager DYNAMIC_REGISTRY_MANAGER;
 
-    private static <T> Registry<T> addRegistry(RegistryKey<? extends Registry<T>> registryRef, Supplier<? extends RegistryEntry<? extends T>> defaultValueSupplier) {
-        return BuiltinRegistries.addRegistry(registryRef, Lifecycle.stable(), defaultValueSupplier);
+    private static <T> Registry<T> addRegistry(RegistryKey<? extends Registry<T>> registryRef, Initializer<T> initializer) {
+        return BuiltinRegistries.addRegistry(registryRef, Lifecycle.stable(), initializer);
     }
 
-    private static <T> Registry<T> addRegistry(RegistryKey<? extends Registry<T>> registryRef, Lifecycle lifecycle, Supplier<? extends RegistryEntry<? extends T>> defaultValueSupplier) {
-        return BuiltinRegistries.addRegistry(registryRef, new SimpleRegistry(registryRef, lifecycle, null), defaultValueSupplier, lifecycle);
+    private static <T> Registry<T> addRegistry(RegistryKey<? extends Registry<T>> registryRef, Lifecycle lifecycle, Initializer<T> initializer) {
+        return BuiltinRegistries.addRegistry(registryRef, new SimpleRegistry(registryRef, lifecycle, null), initializer, lifecycle);
     }
 
-    private static <T, R extends MutableRegistry<T>> R addRegistry(RegistryKey<? extends Registry<T>> registryRef, R registry, Supplier<? extends RegistryEntry<? extends T>> defaultValueSupplier, Lifecycle lifecycle) {
+    private static <T, R extends MutableRegistry<T>> R addRegistry(RegistryKey<? extends Registry<T>> registryRef, R registry, Initializer<T> initializer, Lifecycle lifecycle) {
         Identifier identifier = registryRef.getValue();
-        DEFAULT_VALUE_SUPPLIERS.put(identifier, defaultValueSupplier);
+        DEFAULT_VALUE_SUPPLIERS.put(identifier, () -> initializer.run(registry));
         ROOT.add(registryRef, registry, lifecycle);
         return registry;
     }
@@ -119,6 +121,11 @@ public class BuiltinRegistries {
         });
         Registry.validate(ROOT);
         DYNAMIC_REGISTRY_MANAGER = DynamicRegistryManager.of(REGISTRIES);
+    }
+
+    @FunctionalInterface
+    static interface Initializer<T> {
+        public RegistryEntry<? extends T> run(Registry<T> var1);
     }
 }
 

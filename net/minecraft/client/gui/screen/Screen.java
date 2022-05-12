@@ -224,6 +224,9 @@ implements Drawable {
         if (m + n + 6 > this.height) {
             m = this.height - n - 6;
         }
+        if (y - n - 8 < 0) {
+            m = y + 8;
+        }
         matrices.push();
         int o = -267386864;
         int p = 0x505000FF;
@@ -336,7 +339,7 @@ implements Drawable {
                 } else if (clickEvent.getAction() == ClickEvent.Action.SUGGEST_COMMAND) {
                     this.insertText(clickEvent.getValue(), true);
                 } else if (clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
-                    this.sendMessage(clickEvent.getValue(), false);
+                    this.client.player.sendCommand(clickEvent.getValue());
                 } else if (clickEvent.getAction() == ClickEvent.Action.COPY_TO_CLIPBOARD) {
                     this.client.keyboard.setClipboard(clickEvent.getValue());
                 } else {
@@ -346,17 +349,6 @@ implements Drawable {
             return true;
         }
         return false;
-    }
-
-    public void sendMessage(String message) {
-        this.sendMessage(message, true);
-    }
-
-    public void sendMessage(String message, boolean toHud) {
-        if (toHud) {
-            this.client.inGameHud.getChatHud().addToMessageHistory(message);
-        }
-        this.client.player.sendChatMessage(message);
     }
 
     public final void init(MinecraftClient client, int width, int height) {

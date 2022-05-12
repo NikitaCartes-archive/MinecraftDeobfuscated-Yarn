@@ -73,8 +73,8 @@ extends Task<VillagerEntity> {
     }
 
     private static Set<Item> getGatherableItems(VillagerEntity villagerEntity, VillagerEntity villagerEntity2) {
-        ImmutableSet<Item> immutableSet = villagerEntity2.getVillagerData().getProfession().getGatherableItems();
-        ImmutableSet<Item> immutableSet2 = villagerEntity.getVillagerData().getProfession().getGatherableItems();
+        ImmutableSet<Item> immutableSet = villagerEntity2.getVillagerData().getProfession().gatherableItems();
+        ImmutableSet<Item> immutableSet2 = villagerEntity.getVillagerData().getProfession().gatherableItems();
         return immutableSet.stream().filter(item -> !immutableSet2.contains(item)).collect(Collectors.toSet());
     }
 

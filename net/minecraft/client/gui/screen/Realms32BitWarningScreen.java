@@ -19,9 +19,11 @@ extends WarningScreen {
     private static final Text MESSAGE = Text.translatable("title.32bit.deprecation.realms");
     private static final Text CHECK_MESSAGE = Text.translatable("title.32bit.deprecation.realms.check");
     private static final Text NARRATED_TEXT = HEADER.shallowCopy().append("\n").append(MESSAGE);
+    private final Screen field_39353;
 
-    public Realms32BitWarningScreen(Screen parent) {
-        super(HEADER, MESSAGE, CHECK_MESSAGE, NARRATED_TEXT, parent);
+    public Realms32BitWarningScreen(Screen screen) {
+        super(HEADER, MESSAGE, CHECK_MESSAGE, NARRATED_TEXT);
+        this.field_39353 = screen;
     }
 
     @Override
@@ -31,7 +33,7 @@ extends WarningScreen {
                 this.client.options.skipRealms32BitWarning = true;
                 this.client.options.write();
             }
-            this.client.setScreen(this.parent);
+            this.client.setScreen(this.field_39353);
         }));
     }
 }

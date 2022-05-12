@@ -152,6 +152,7 @@ import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
+import net.minecraft.world.poi.PointOfInterestTypes;
 import net.minecraft.world.spawner.Spawner;
 import net.minecraft.world.storage.EntityChunkDataAccess;
 import net.minecraft.world.tick.QueryableTickScheduler;
@@ -346,7 +347,7 @@ implements StructureWorldAccess {
         }
         profiler.push("entityManagement");
         this.entityManager.tick();
-        profiler.push("gameEvents");
+        profiler.swap("gameEvents");
         this.processEventQueue();
         profiler.pop();
     }
@@ -469,7 +470,7 @@ implements StructureWorldAccess {
     }
 
     private Optional<BlockPos> getLightningRodPos(BlockPos pos2) {
-        Optional<BlockPos> optional = this.getPointOfInterestStorage().getNearestPosition(poiType -> poiType == PointOfInterestType.LIGHTNING_ROD, pos -> pos.getY() == this.getTopY(Heightmap.Type.WORLD_SURFACE, pos.getX(), pos.getZ()) - 1, pos2, 128, PointOfInterestStorage.OccupationStatus.ANY);
+        Optional<BlockPos> optional = this.getPointOfInterestStorage().getNearestPosition(registryEntry -> registryEntry.matchesKey(PointOfInterestTypes.LIGHTNING_ROD), pos -> pos.getY() == this.getTopY(Heightmap.Type.WORLD_SURFACE, pos.getX(), pos.getZ()) - 1, pos2, 128, PointOfInterestStorage.OccupationStatus.ANY);
         return optional.map(pos -> pos.up(1));
     }
 
@@ -1253,18 +1254,18 @@ implements StructureWorldAccess {
 
     @Override
     public void onBlockChanged(BlockPos pos, BlockState oldBlock, BlockState newBlock) {
-        Optional<PointOfInterestType> optional2;
-        Optional<PointOfInterestType> optional = PointOfInterestType.from(oldBlock);
-        if (Objects.equals(optional, optional2 = PointOfInterestType.from(newBlock))) {
+        Optional<RegistryEntry<PointOfInterestType>> optional2;
+        Optional<RegistryEntry<PointOfInterestType>> optional = PointOfInterestTypes.getTypeForState(oldBlock);
+        if (Objects.equals(optional, optional2 = PointOfInterestTypes.getTypeForState(newBlock))) {
             return;
         }
         BlockPos blockPos = pos.toImmutable();
-        optional.ifPresent(poiType -> this.getServer().execute(() -> {
+        optional.ifPresent(registryEntry -> this.getServer().execute(() -> {
             this.getPointOfInterestStorage().remove(blockPos);
             DebugInfoSender.sendPoiRemoval(this, blockPos);
         }));
-        optional2.ifPresent(poiType -> this.getServer().execute(() -> {
-            this.getPointOfInterestStorage().add(blockPos, (PointOfInterestType)poiType);
+        optional2.ifPresent(registryEntry -> this.getServer().execute(() -> {
+            this.getPointOfInterestStorage().add(blockPos, (RegistryEntry<PointOfInterestType>)registryEntry);
             DebugInfoSender.sendPoiAddition(this, blockPos);
         }));
     }

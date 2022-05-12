@@ -3,6 +3,8 @@
  */
 package net.minecraft.client.gui.screen;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -12,11 +14,19 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.network.ChatPreviewer;
+import net.minecraft.client.network.ServerInfo;
+import net.minecraft.client.option.ServerList;
+import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
+import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 /**
@@ -32,11 +42,18 @@ public class ChatScreen
 extends Screen {
     public static final double SHIFT_SCROLL_AMOUNT = 7.0;
     private static final Text USAGE_TEXT = Text.translatable("chat_screen.usage");
+    private static final int PREVIEW_LEFT_MARGIN = 2;
+    private static final int PREVIEW_RIGHT_MARGIN = 2;
+    private static final int PREVIEW_BOTTOM_MARGIN = 15;
+    private static final Text CHAT_PREVIEW_WARNING_TOAST_TITLE = Text.translatable("chatPreview.warning.toast.title");
+    private static final Text CHAT_PREVIEW_WARNING_TOAST_TEXT = Text.translatable("chatPreview.warning.toast");
+    private static final Text CHAT_PREVIEW_PLACEHOLDER_TEXT = Text.translatable("chat.preview").formatted(Formatting.DARK_GRAY);
     private String chatLastMessage = "";
     private int messageHistorySize = -1;
     protected TextFieldWidget chatField;
     private final String originalChatText;
     CommandSuggestor commandSuggestor;
+    private ChatPreviewer chatPreviewer;
 
     public ChatScreen(String originalChatText) {
         super(Text.translatable("chat_screen.title"));
@@ -45,6 +62,7 @@ extends Screen {
 
     @Override
     protected void init() {
+        ServerInfo.ChatPreview chatPreview;
         this.client.keyboard.setRepeatEvents(true);
         this.messageHistorySize = this.client.inGameHud.getChatHud().getMessageHistory().size();
         this.chatField = new TextFieldWidget(this.textRenderer, 4, this.height - 12, this.width - 4, 12, (Text)Text.translatable("chat.editBox")){
@@ -62,6 +80,14 @@ extends Screen {
         this.commandSuggestor = new CommandSuggestor(this.client, this, this.chatField, this.textRenderer, false, false, 1, 10, true, -805306368);
         this.commandSuggestor.refresh();
         this.setInitialFocus(this.chatField);
+        this.chatPreviewer = new ChatPreviewer(this.client);
+        this.updatePreviewer(this.chatField.getText());
+        ServerInfo serverInfo = this.client.getCurrentServerEntry();
+        if (serverInfo != null && (chatPreview = serverInfo.getChatPreview()) != null && chatPreview.showToast()) {
+            ServerList.updateServerListEntry(serverInfo);
+            SystemToast systemToast = SystemToast.create(this.client, SystemToast.Type.CHAT_PREVIEW_WARNING, CHAT_PREVIEW_WARNING_TOAST_TITLE, CHAT_PREVIEW_WARNING_TOAST_TEXT);
+            this.client.getToastManager().add(systemToast);
+        }
     }
 
     @Override
@@ -81,12 +107,55 @@ extends Screen {
     @Override
     public void tick() {
         this.chatField.tick();
+        this.chatPreviewer.tryQuery();
     }
 
     private void onChatFieldUpdate(String chatText) {
         String string = this.chatField.getText();
         this.commandSuggestor.setWindowActive(!string.equals(this.originalChatText));
         this.commandSuggestor.refresh();
+        this.updatePreviewer(string);
+    }
+
+    private void updatePreviewer(String chatText) {
+        String string = this.normalize(chatText);
+        if (this.shouldPreviewChat() && !string.startsWith("/")) {
+            this.chatPreviewer.onInput(string);
+        } else {
+            this.chatPreviewer.clear();
+        }
+    }
+
+    /**
+     * {@return whether the client and the server both allow chat previews}
+     * 
+     * <p>To check if the client allows chat previews, check {@linkplain
+     * net.minecraft.client.option.GameOptions#getChatPreview the chat preview option}.
+     * To check if the server allows chat previews, check {@link
+     * net.minecraft.client.network.ServerInfo#shouldPreviewChat}.
+     */
+    private boolean shouldPreviewChat() {
+        if (this.client.player == null) {
+            return false;
+        }
+        if (this.client.options.getChatPreview().getValue().booleanValue()) {
+            ServerInfo serverInfo = this.client.getCurrentServerEntry();
+            return serverInfo != null && serverInfo.shouldPreviewChat();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        if (super.keyReleased(keyCode, scanCode, modifiers)) {
+            return true;
+        }
+        if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
+            this.sendMessage(this.chatField.getText(), true);
+            this.client.setScreen(null);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -98,14 +167,6 @@ extends Screen {
             return true;
         }
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            this.client.setScreen(null);
-            return true;
-        }
-        if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
-            String string = this.chatField.getText().trim();
-            if (!string.isEmpty()) {
-                this.sendMessage(string);
-            }
             this.client.setScreen(null);
             return true;
         }
@@ -150,7 +211,7 @@ extends Screen {
             if (chatHud.mouseClicked(mouseX, mouseY)) {
                 return true;
             }
-            Style style = chatHud.getText(mouseX, mouseY);
+            Style style = this.getTextStyleAt(mouseX, mouseY);
             if (style != null && this.handleTextClick(style)) {
                 return true;
             }
@@ -195,8 +256,11 @@ extends Screen {
         this.chatField.setTextFieldFocused(true);
         ChatScreen.fill(matrices, 2, this.height - 14, this.width - 2, this.height - 2, this.client.options.getTextBackgroundColor(Integer.MIN_VALUE));
         this.chatField.render(matrices, mouseX, mouseY, delta);
+        if (this.chatPreviewer.shouldRenderPreview()) {
+            this.renderChatPreview(matrices);
+        }
         this.commandSuggestor.render(matrices, mouseX, mouseY);
-        Style style = this.client.inGameHud.getChatHud().getText(mouseX, mouseY);
+        Style style = this.getTextStyleAt(mouseX, mouseY);
         if (style != null && style.getHoverEvent() != null) {
             this.renderTextHoverEffect(matrices, style, mouseX, mouseY);
         }
@@ -220,6 +284,112 @@ extends Screen {
         if (!string.isEmpty()) {
             builder.nextMessage().put(NarrationPart.TITLE, (Text)Text.translatable("chat_screen.message", string));
         }
+    }
+
+    public void renderChatPreview(MatrixStack matrices) {
+        int i = (int)(255.0 * (this.client.options.getChtOpacity().getValue() * (double)0.9f + (double)0.1f));
+        int j = (int)(255.0 * this.client.options.getTextBackgroundOpacity().getValue());
+        int k = this.getPreviewWidth();
+        List<OrderedText> list = this.getPreviewText();
+        int l = this.getPreviewHeight(list);
+        RenderSystem.enableBlend();
+        matrices.push();
+        matrices.translate(this.getPreviewLeft(), this.getPreviewTop(l), 0.0);
+        ChatScreen.fill(matrices, 0, 0, k, l, j << 24);
+        matrices.translate(2.0, 2.0, 0.0);
+        for (int m = 0; m < list.size(); ++m) {
+            OrderedText orderedText = list.get(m);
+            this.client.textRenderer.drawWithShadow(matrices, orderedText, 0.0f, (float)(m * this.textRenderer.fontHeight), i << 24 | 0xFFFFFF);
+        }
+        matrices.pop();
+        RenderSystem.disableBlend();
+    }
+
+    @Nullable
+    private Style getTextStyleAt(double x, double y) {
+        Style style = this.client.inGameHud.getChatHud().getTextStyleAt(x, y);
+        if (style == null) {
+            style = this.getPreviewTextStyleAt(x, y);
+        }
+        return style;
+    }
+
+    @Nullable
+    private Style getPreviewTextStyleAt(double x, double y) {
+        if (this.client.options.hudHidden) {
+            return null;
+        }
+        List<OrderedText> list = this.getPreviewText();
+        int i = this.getPreviewHeight(list);
+        if (x < (double)this.getPreviewLeft() || x > (double)this.getPreviewRight() || y < (double)this.getPreviewTop(i) || y > (double)this.getPreviewBottom()) {
+            return null;
+        }
+        int j = this.getPreviewLeft() + 2;
+        int k = this.getPreviewTop(i) + 2;
+        int l = (MathHelper.floor(y) - k) / this.textRenderer.fontHeight;
+        if (l >= 0 && l < list.size()) {
+            OrderedText orderedText = list.get(l);
+            return this.client.textRenderer.getTextHandler().getStyleAt(orderedText, (int)(x - (double)j));
+        }
+        return null;
+    }
+
+    private List<OrderedText> getPreviewText() {
+        Text text = this.chatPreviewer.getPreviewText();
+        if (text != null) {
+            return this.textRenderer.wrapLines(text, this.getPreviewWidth());
+        }
+        return List.of(CHAT_PREVIEW_PLACEHOLDER_TEXT.asOrderedText());
+    }
+
+    private int getPreviewWidth() {
+        return this.client.currentScreen.width - 4;
+    }
+
+    private int getPreviewHeight(List<OrderedText> lines) {
+        return Math.max(lines.size(), 1) * this.textRenderer.fontHeight + 4;
+    }
+
+    private int getPreviewBottom() {
+        return this.client.currentScreen.height - 15;
+    }
+
+    private int getPreviewTop(int previewHeight) {
+        return this.getPreviewBottom() - previewHeight;
+    }
+
+    private int getPreviewLeft() {
+        return 2;
+    }
+
+    private int getPreviewRight() {
+        return this.client.currentScreen.width - 2;
+    }
+
+    public void sendMessage(String chatText, boolean addToHistory) {
+        if ((chatText = this.normalize(chatText)).isEmpty()) {
+            return;
+        }
+        if (addToHistory) {
+            this.client.inGameHud.getChatHud().addToMessageHistory(chatText);
+        }
+        Text text = this.chatPreviewer.tryConsumeResponse(chatText);
+        if (chatText.startsWith("/")) {
+            this.client.player.sendCommand(chatText.substring(1), text);
+        } else {
+            this.client.player.sendChatMessage(chatText, text);
+        }
+    }
+
+    /**
+     * {@return the {@code message} normalized by trimming it and then normalizing spaces}
+     */
+    public String normalize(String chatText) {
+        return StringUtils.normalizeSpace(chatText.trim());
+    }
+
+    public ChatPreviewer getChatPreviewer() {
+        return this.chatPreviewer;
     }
 }
 

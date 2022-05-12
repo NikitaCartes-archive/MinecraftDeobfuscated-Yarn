@@ -16,19 +16,31 @@ import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
-public record ArgumentSignatures(long salt, Map<String, byte[]> signatures) {
+/**
+ * A record holding the salt and signatures for all signable arguments of an executed command.
+ */
+public record ArgumentSignatureDataMap(long salt, Map<String, byte[]> signatures) {
     private static final int MAX_ARGUMENT_NAME_LENGTH = 16;
 
-    public ArgumentSignatures(PacketByteBuf buf) {
+    public ArgumentSignatureDataMap(PacketByteBuf buf) {
         this(buf.readLong(), buf.readMap(buf2 -> buf2.readString(16), PacketByteBuf::readByteArray));
     }
 
-    public static ArgumentSignatures none() {
-        return new ArgumentSignatures(0L, Map.of());
+    /**
+     * {@return an empty signature data map that has no signed arguments}
+     * 
+     * @apiNote This is used when there is no argument to sign, or when the signing fails.
+     */
+    public static ArgumentSignatureDataMap empty() {
+        return new ArgumentSignatureDataMap(0L, Map.of());
     }
 
+    /**
+     * {@return the signature data for {@code argumentName}, or {@code null} if the
+     * argument name is not present in this signatures}
+     */
     @Nullable
-    public NetworkEncryptionUtils.SignatureData createSignatureData(String argumentName) {
+    public NetworkEncryptionUtils.SignatureData get(String argumentName) {
         byte[] bs = this.signatures.get(argumentName);
         if (bs != null) {
             return new NetworkEncryptionUtils.SignatureData(this.salt, bs);
@@ -41,6 +53,9 @@ public record ArgumentSignatures(long salt, Map<String, byte[]> signatures) {
         buf2.writeMap(this.signatures, (buf, argumentName) -> buf.writeString((String)argumentName, 16), PacketByteBuf::writeByteArray);
     }
 
+    /**
+     * {@return the signable argument names and their values from {@code builder}}
+     */
     public static Map<String, Text> collectArguments(CommandContextBuilder<?> builder) {
         CommandContextBuilder<?> commandContextBuilder = builder.getLastChild();
         Object2ObjectArrayMap<String, Text> map = new Object2ObjectArrayMap<String, Text>();
@@ -51,7 +66,7 @@ public record ArgumentSignatures(long salt, Map<String, byte[]> signatures) {
             TextConvertibleArgumentType textConvertibleArgumentType = (TextConvertibleArgumentType)((Object)commandNode);
             ParsedArgument<?, ?> parsedArgument = commandContextBuilder.getArguments().get(argumentCommandNode.getName());
             if (parsedArgument == null) continue;
-            map.put(argumentCommandNode.getName(), ArgumentSignatures.resultToText(textConvertibleArgumentType, parsedArgument));
+            map.put(argumentCommandNode.getName(), ArgumentSignatureDataMap.resultToText(textConvertibleArgumentType, parsedArgument));
         }
         return map;
     }

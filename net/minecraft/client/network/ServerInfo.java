@@ -3,6 +3,11 @@
  */
 package net.minecraft.client.network;
 
+import com.mojang.datafixers.kinds.Applicative;
+import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.text.ParseException;
 import java.util.Collections;
 import java.util.List;
 import net.fabricmc.api.EnvType;
@@ -10,8 +15,11 @@ import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.text.Text;
+import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 /**
  * The information of a server entry in the list of servers available in
@@ -20,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
  */
 @Environment(value=EnvType.CLIENT)
 public class ServerInfo {
+    private static final Logger LOGGER = LogUtils.getLogger();
     public String name;
     public String address;
     public Text playerCountLabel;
@@ -33,6 +42,8 @@ public class ServerInfo {
     @Nullable
     private String icon;
     private boolean local;
+    @Nullable
+    private ChatPreview chatPreview;
 
     public ServerInfo(String name, String address, boolean local) {
         this.name = name;
@@ -51,6 +62,9 @@ public class ServerInfo {
             nbtCompound.putBoolean("acceptTextures", true);
         } else if (this.resourcePackPolicy == ResourcePackPolicy.DISABLED) {
             nbtCompound.putBoolean("acceptTextures", false);
+        }
+        if (this.chatPreview != null) {
+            ChatPreview.CODEC.encodeStart(NbtOps.INSTANCE, this.chatPreview).result().ifPresent(chatPreview -> nbtCompound.put("chatPreview", (NbtElement)chatPreview));
         }
         return nbtCompound;
     }
@@ -86,12 +100,24 @@ public class ServerInfo {
         } else {
             serverInfo.setResourcePackPolicy(ResourcePackPolicy.PROMPT);
         }
+        if (root.contains("chatPreview", NbtElement.COMPOUND_TYPE)) {
+            ChatPreview.CODEC.parse(NbtOps.INSTANCE, root.getCompound("chatPreview")).resultOrPartial(LOGGER::error).ifPresent(chatPreview -> {
+                serverInfo.chatPreview = chatPreview;
+            });
+        }
         return serverInfo;
     }
 
     @Nullable
     public String getIcon() {
         return this.icon;
+    }
+
+    public static String parseFavicon(String favicon) throws ParseException {
+        if (favicon.startsWith("data:image/png;base64,")) {
+            return favicon.substring("data:image/png;base64,".length());
+        }
+        throw new ParseException("Unknown format", 0);
     }
 
     public void setIcon(@Nullable String icon) {
@@ -102,12 +128,33 @@ public class ServerInfo {
         return this.local;
     }
 
+    /**
+     * Sets whether the chat preview is enabled.
+     */
+    public void setPreviewsChat(boolean enabled) {
+        if (enabled && this.chatPreview == null) {
+            this.chatPreview = new ChatPreview(false, false);
+        } else if (!enabled && this.chatPreview != null) {
+            this.chatPreview = null;
+        }
+    }
+
+    @Nullable
+    public ChatPreview getChatPreview() {
+        return this.chatPreview;
+    }
+
+    public boolean shouldPreviewChat() {
+        return this.chatPreview != null;
+    }
+
     public void copyFrom(ServerInfo serverInfo) {
         this.address = serverInfo.address;
         this.name = serverInfo.name;
         this.setResourcePackPolicy(serverInfo.getResourcePackPolicy());
         this.icon = serverInfo.icon;
         this.local = serverInfo.local;
+        this.chatPreview = Util.map(serverInfo.chatPreview, ChatPreview::copy);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -124,6 +171,38 @@ public class ServerInfo {
 
         public Text getName() {
             return this.name;
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static class ChatPreview {
+        public static final Codec<ChatPreview> CODEC = RecordCodecBuilder.create(instance -> instance.group(Codec.BOOL.optionalFieldOf("acknowledged", false).forGetter(chatPreview -> chatPreview.acknowledged), Codec.BOOL.optionalFieldOf("toastShown", false).forGetter(chatPreview -> chatPreview.toastShown)).apply((Applicative<ChatPreview, ?>)instance, ChatPreview::new));
+        private boolean acknowledged;
+        private boolean toastShown;
+
+        ChatPreview(boolean acknowledged, boolean toastShown) {
+            this.acknowledged = acknowledged;
+            this.toastShown = toastShown;
+        }
+
+        public void setAcknowledged() {
+            this.acknowledged = true;
+        }
+
+        public boolean showToast() {
+            if (!this.toastShown) {
+                this.toastShown = true;
+                return true;
+            }
+            return false;
+        }
+
+        public boolean isAcknowledged() {
+            return this.acknowledged;
+        }
+
+        private ChatPreview copy() {
+            return new ChatPreview(this.acknowledged, this.toastShown);
         }
     }
 }

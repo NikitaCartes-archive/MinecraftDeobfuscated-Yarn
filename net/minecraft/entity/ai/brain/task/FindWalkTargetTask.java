@@ -53,14 +53,14 @@ extends Task<PathAwareEntity> {
         }
     }
 
-    private void updateWalkTarget(PathAwareEntity entity, ChunkSectionPos pos) {
-        Optional<Vec3d> optional = Optional.ofNullable(NoPenaltyTargeting.findTo(entity, this.maxHorizontalDistance, this.maxVerticalDistance, Vec3d.ofBottomCenter(pos.getCenterPos()), 1.5707963705062866));
-        entity.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget((Vec3d)vec3d, this.walkSpeed, 0)));
+    private void updateWalkTarget(PathAwareEntity entity, ChunkSectionPos pos2) {
+        Optional<Vec3d> optional = Optional.ofNullable(NoPenaltyTargeting.findTo(entity, this.maxHorizontalDistance, this.maxVerticalDistance, Vec3d.ofBottomCenter(pos2.getCenterPos()), 1.5707963705062866));
+        entity.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(pos -> new WalkTarget((Vec3d)pos, this.walkSpeed, 0)));
     }
 
     private void updateWalkTarget(PathAwareEntity entity) {
         Optional<Vec3d> optional = Optional.ofNullable(FuzzyTargeting.find(entity, this.maxHorizontalDistance, this.maxVerticalDistance));
-        entity.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget((Vec3d)vec3d, this.walkSpeed, 0)));
+        entity.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(pos -> new WalkTarget((Vec3d)pos, this.walkSpeed, 0)));
     }
 }
 

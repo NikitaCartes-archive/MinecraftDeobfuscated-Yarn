@@ -3,6 +3,7 @@
  */
 package net.minecraft.tag;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -10,7 +11,6 @@ import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
-import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagGroupLoader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
@@ -56,7 +56,7 @@ implements ResourceReloader {
         return CompletableFuture.supplyAsync(() -> new RegistryTags(registryKey, tagGroupLoader.load(resourceManager)), prepareExecutor);
     }
 
-    public record RegistryTags<T>(RegistryKey<? extends Registry<T>> key, Map<Identifier, Tag<RegistryEntry<T>>> tags) {
+    public record RegistryTags<T>(RegistryKey<? extends Registry<T>> key, Map<Identifier, Collection<RegistryEntry<T>>> tags) {
     }
 }
 

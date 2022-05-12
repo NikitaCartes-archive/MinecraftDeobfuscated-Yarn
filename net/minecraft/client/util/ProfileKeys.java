@@ -3,8 +3,10 @@
  */
 package net.minecraft.client.util;
 
+import com.google.common.base.Strings;
 import com.google.gson.JsonParser;
 import com.mojang.authlib.exceptions.MinecraftClientException;
+import com.mojang.authlib.minecraft.InsecurePublicKeyException;
 import com.mojang.authlib.minecraft.UserApiService;
 import com.mojang.authlib.yggdrasil.response.KeyPairResponse;
 import com.mojang.logging.LogUtils;
@@ -18,8 +20,11 @@ import java.nio.file.Path;
 import java.nio.file.attribute.FileAttribute;
 import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.Signature;
+import java.time.DateTimeException;
 import java.time.Instant;
+import java.util.Base64;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -138,10 +143,29 @@ public class ProfileKeys {
     private PlayerKeyPair fetchKeyPair(UserApiService userApiService) throws NetworkEncryptionException, IOException {
         KeyPairResponse keyPairResponse = userApiService.getKeyPair();
         if (keyPairResponse != null) {
-            PlayerPublicKey.PublicKeyData publicKeyData = new PlayerPublicKey.PublicKeyData(Instant.parse(keyPairResponse.getExpiresAt()), keyPairResponse.getPublicKey(), keyPairResponse.getPublicKeySignature());
+            PlayerPublicKey.PublicKeyData publicKeyData = ProfileKeys.decodeKeyPairResponse(keyPairResponse);
             return new PlayerKeyPair(NetworkEncryptionUtils.decodeRsaPrivateKeyPem(keyPairResponse.getPrivateKey()), PlayerPublicKey.fromKeyData(publicKeyData), Instant.parse(keyPairResponse.getRefreshedAfter()));
         }
         throw new IOException("Could not retrieve profile key pair");
+    }
+
+    /**
+     * {@return {@code keyPairResponse} decoded to {@link PlayerPublicKey.PublicKeyData}}
+     * 
+     * @throws NetworkEncryptionException when the response is malformed
+     */
+    private static PlayerPublicKey.PublicKeyData decodeKeyPairResponse(KeyPairResponse keyPairResponse) throws NetworkEncryptionException {
+        if (Strings.isNullOrEmpty(keyPairResponse.getPublicKey()) || Strings.isNullOrEmpty(keyPairResponse.getPublicKeySignature())) {
+            throw new NetworkEncryptionException(new InsecurePublicKeyException.MissingException());
+        }
+        try {
+            Instant instant = Instant.parse(keyPairResponse.getExpiresAt());
+            PublicKey publicKey = NetworkEncryptionUtils.decodeRsaPublicKeyPem(keyPairResponse.getPublicKey());
+            byte[] bs = Base64.getDecoder().decode(keyPairResponse.getPublicKeySignature());
+            return new PlayerPublicKey.PublicKeyData(instant, publicKey, bs);
+        } catch (IllegalArgumentException | DateTimeException runtimeException) {
+            throw new NetworkEncryptionException(runtimeException);
+        }
     }
 
     /**

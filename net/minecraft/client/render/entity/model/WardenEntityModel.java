@@ -87,12 +87,12 @@ extends SinglePartEntityModel<T> {
         this.setLimbAngles(f, g);
         this.setHeadAndBodyAngles(h);
         this.setTendrilPitches(wardenEntity, h, k);
-        this.updateAnimation(((WardenEntity)wardenEntity).attackingAnimationState, WardenAnimations.ATTACKING);
-        this.updateAnimation(((WardenEntity)wardenEntity).chargingSonicBoomAnimationState, WardenAnimations.CHARGING_SONIC_BOOM);
-        this.updateAnimation(((WardenEntity)wardenEntity).diggingAnimationState, WardenAnimations.DIGGING);
-        this.updateAnimation(((WardenEntity)wardenEntity).emergingAnimationState, WardenAnimations.EMERGING);
-        this.updateAnimation(((WardenEntity)wardenEntity).roaringAnimationState, WardenAnimations.ROARING);
-        this.updateAnimation(((WardenEntity)wardenEntity).sniffingAnimationState, WardenAnimations.SNIFFING);
+        this.updateAnimation(((WardenEntity)wardenEntity).attackingAnimationState, WardenAnimations.ATTACKING, h);
+        this.updateAnimation(((WardenEntity)wardenEntity).chargingSonicBoomAnimationState, WardenAnimations.CHARGING_SONIC_BOOM, h);
+        this.updateAnimation(((WardenEntity)wardenEntity).diggingAnimationState, WardenAnimations.DIGGING, h);
+        this.updateAnimation(((WardenEntity)wardenEntity).emergingAnimationState, WardenAnimations.EMERGING, h);
+        this.updateAnimation(((WardenEntity)wardenEntity).roaringAnimationState, WardenAnimations.ROARING, h);
+        this.updateAnimation(((WardenEntity)wardenEntity).sniffingAnimationState, WardenAnimations.SNIFFING, h);
     }
 
     private void setHeadAngle(float yaw, float pitch) {

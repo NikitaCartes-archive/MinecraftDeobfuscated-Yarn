@@ -25,9 +25,10 @@ public class MessageCommand {
         dispatcher.register((LiteralArgumentBuilder)CommandManager.literal("w").redirect(literalCommandNode));
     }
 
-    private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, SignedChatMessage signedChatMessage) {
+    private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, SignedChatMessage message) {
+        SignedChatMessage signedChatMessage = source.getServer().getChatDecorator().decorate(source.getPlayer(), message);
         for (ServerPlayerEntity serverPlayerEntity : targets) {
-            source.sendFeedback(Text.translatable("commands.message.display.outgoing", serverPlayerEntity.getDisplayName(), signedChatMessage.content()).formatted(Formatting.GRAY, Formatting.ITALIC), false);
+            source.sendFeedback(Text.translatable("commands.message.display.outgoing", serverPlayerEntity.getDisplayName(), signedChatMessage.getContent()).formatted(Formatting.GRAY, Formatting.ITALIC), false);
             serverPlayerEntity.sendChatMessage(signedChatMessage, source.getChatMessageSender(), MessageType.MSG_COMMAND);
         }
         return targets.size();

@@ -107,7 +107,7 @@ AutoCloseable {
     public final AbstractRandom random = AbstractRandom.createAtomic();
     @Deprecated
     private final AbstractRandom blockingRandom = AbstractRandom.createBlocking();
-    final DimensionType dimension;
+    private final RegistryKey<DimensionType> dimension;
     private final RegistryEntry<DimensionType> dimensionEntry;
     protected final MutableWorldProperties properties;
     private final Supplier<Profiler> profiler;
@@ -121,19 +121,20 @@ AutoCloseable {
         this.profiler = supplier;
         this.properties = properties;
         this.dimensionEntry = dimension;
-        this.dimension = dimension.value();
+        this.dimension = dimension.getKey().orElseThrow(() -> new IllegalArgumentException("Dimensions must be registered"));
+        final DimensionType dimensionType = dimension.value();
         this.registryKey = registryRef;
         this.isClient = isClient;
-        this.border = this.dimension.coordinateScale() != 1.0 ? new WorldBorder(){
+        this.border = dimensionType.coordinateScale() != 1.0 ? new WorldBorder(){
 
             @Override
             public double getCenterX() {
-                return super.getCenterX() / World.this.dimension.coordinateScale();
+                return super.getCenterX() / dimensionType.coordinateScale();
             }
 
             @Override
             public double getCenterZ() {
-                return super.getCenterZ() / World.this.dimension.coordinateScale();
+                return super.getCenterZ() / dimensionType.coordinateScale();
             }
         } : new WorldBorder();
         this.thread = Thread.currentThread();
@@ -950,6 +951,10 @@ AutoCloseable {
 
     @Override
     public DimensionType getDimension() {
+        return this.dimensionEntry.value();
+    }
+
+    public RegistryKey<DimensionType> getDimensionKey() {
         return this.dimension;
     }
 

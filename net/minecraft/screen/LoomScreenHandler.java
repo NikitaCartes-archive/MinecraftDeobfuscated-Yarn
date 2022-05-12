@@ -147,11 +147,11 @@ extends ScreenHandler {
         return false;
     }
 
-    private List<RegistryEntry<BannerPattern>> method_43705(ItemStack itemStack) {
-        if (itemStack.isEmpty()) {
+    private List<RegistryEntry<BannerPattern>> getPatternsFor(ItemStack stack) {
+        if (stack.isEmpty()) {
             return Registry.BANNER_PATTERN.getEntryList(BannerPatternTags.NO_ITEM_REQUIRED).map(ImmutableList::copyOf).orElse(ImmutableList.of());
         }
-        Item item = itemStack.getItem();
+        Item item = stack.getItem();
         if (item instanceof BannerPatternItem) {
             BannerPatternItem bannerPatternItem = (BannerPatternItem)item;
             return Registry.BANNER_PATTERN.getEntryList(bannerPatternItem.getPattern()).map(ImmutableList::copyOf).orElse(ImmutableList.of());
@@ -173,7 +173,7 @@ extends ScreenHandler {
         }
         int i = this.selectedPattern.get();
         List<RegistryEntry<BannerPattern>> list = this.bannerPatterns;
-        this.bannerPatterns = this.method_43705(itemStack3);
+        this.bannerPatterns = this.getPatternsFor(itemStack3);
         if (this.bannerPatterns.size() == 1) {
             this.selectedPattern.set(0);
             registryEntry = this.bannerPatterns.get(0);
@@ -253,7 +253,7 @@ extends ScreenHandler {
         this.context.run((world, pos) -> this.dropInventory(player, this.input));
     }
 
-    private void updateOutputSlot(RegistryEntry<BannerPattern> registryEntry) {
+    private void updateOutputSlot(RegistryEntry<BannerPattern> pattern) {
         ItemStack itemStack = this.bannerSlot.getStack();
         ItemStack itemStack2 = this.dyeSlot.getStack();
         ItemStack itemStack3 = ItemStack.EMPTY;
@@ -273,7 +273,7 @@ extends ScreenHandler {
                 nbtCompound.put("Patterns", nbtList);
             }
             NbtCompound nbtCompound2 = new NbtCompound();
-            nbtCompound2.putString("Pattern", registryEntry.value().getId());
+            nbtCompound2.putString("Pattern", pattern.value().getId());
             nbtCompound2.putInt("Color", dyeColor.getId());
             nbtList.add(nbtCompound2);
             BlockItem.setBlockEntityNbt(itemStack3, BlockEntityType.BANNER, nbtCompound);

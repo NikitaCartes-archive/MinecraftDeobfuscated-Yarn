@@ -53,6 +53,8 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.village.VillageGossipType;
 import net.minecraft.village.raid.Raid;
 import net.minecraft.world.StructureWorldAccess;
@@ -60,7 +62,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.listener.GameEventListener;
 import net.minecraft.world.poi.PointOfInterest;
-import net.minecraft.world.poi.PointOfInterestType;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -273,11 +274,15 @@ public class DebugInfoSender {
         buf.writeString(goal.getGoal().getClass().getSimpleName());
     }
 
+    private static /* synthetic */ String method_44135(RegistryKey registryKey) {
+        return registryKey.getValue().toString();
+    }
+
     private static /* synthetic */ void method_36155(ServerWorld world, PointOfInterest poi) {
         DebugInfoSender.sendPoiAddition(world, poi.getPos());
     }
 
-    private static /* synthetic */ boolean method_36159(PointOfInterestType poiType) {
+    private static /* synthetic */ boolean method_36159(RegistryEntry registryEntry) {
         return true;
     }
 }

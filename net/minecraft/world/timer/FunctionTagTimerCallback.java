@@ -3,11 +3,11 @@
  */
 package net.minecraft.world.timer;
 
+import java.util.Collection;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.function.CommandFunction;
 import net.minecraft.server.function.CommandFunctionManager;
-import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.timer.Timer;
 import net.minecraft.world.timer.TimerCallback;
@@ -23,8 +23,8 @@ implements TimerCallback<MinecraftServer> {
     @Override
     public void call(MinecraftServer minecraftServer, Timer<MinecraftServer> timer, long l) {
         CommandFunctionManager commandFunctionManager = minecraftServer.getCommandFunctionManager();
-        Tag<CommandFunction> tag = commandFunctionManager.getTag(this.name);
-        for (CommandFunction commandFunction : tag.values()) {
+        Collection<CommandFunction> collection = commandFunctionManager.getTag(this.name);
+        for (CommandFunction commandFunction : collection) {
             commandFunctionManager.execute(commandFunction, commandFunctionManager.getScheduledCommandSource());
         }
     }

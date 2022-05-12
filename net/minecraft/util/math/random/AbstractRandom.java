@@ -8,6 +8,7 @@ import net.minecraft.util.math.random.AtomicSimpleRandom;
 import net.minecraft.util.math.random.BlockingSimpleRandom;
 import net.minecraft.util.math.random.RandomDeriver;
 import net.minecraft.util.math.random.SimpleRandom;
+import net.minecraft.world.gen.random.RandomSeed;
 
 /**
  * A reimplementation of {@link java.util.Random}.
@@ -34,12 +35,12 @@ public interface AbstractRandom {
     public static final double field_38930 = 2.297;
 
     public static AbstractRandom createAtomic() {
-        return AbstractRandom.createAtomic(System.nanoTime());
+        return AbstractRandom.createAtomic(RandomSeed.getSeed());
     }
 
     @Deprecated
     public static AbstractRandom createBlocking() {
-        return new BlockingSimpleRandom(System.nanoTime());
+        return new BlockingSimpleRandom(RandomSeed.getSeed());
     }
 
     public static AbstractRandom createAtomic(long seed) {

@@ -10,6 +10,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +26,6 @@ import net.minecraft.resource.ResourceReloader;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.function.CommandFunction;
-import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagGroupLoader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec2f;
@@ -57,7 +57,7 @@ implements ResourceReloader {
     private static final int EXTENSION_LENGTH = ".mcfunction".length();
     private volatile Map<Identifier, CommandFunction> functions = ImmutableMap.of();
     private final TagGroupLoader<CommandFunction> tagLoader = new TagGroupLoader(this::get, "tags/functions");
-    private volatile Map<Identifier, Tag<CommandFunction>> tags = Map.of();
+    private volatile Map<Identifier, Collection<CommandFunction>> tags = Map.of();
     private final int level;
     private final CommandDispatcher<ServerCommandSource> commandDispatcher;
 
@@ -69,8 +69,8 @@ implements ResourceReloader {
         return this.functions;
     }
 
-    public Tag<CommandFunction> getTagOrEmpty(Identifier id) {
-        return this.tags.getOrDefault(id, Tag.empty());
+    public Collection<CommandFunction> getTagOrEmpty(Identifier id) {
+        return this.tags.getOrDefault(id, List.of());
     }
 
     public Iterable<Identifier> getTags() {

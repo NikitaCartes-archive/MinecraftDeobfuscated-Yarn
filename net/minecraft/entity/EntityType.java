@@ -264,7 +264,7 @@ implements TypeFilter<Entity, T> {
     public static final EntityType<SquidEntity> SQUID = EntityType.register("squid", Builder.create(SquidEntity::new, SpawnGroup.WATER_CREATURE).setDimensions(0.8f, 0.8f).maxTrackingRange(8));
     public static final EntityType<StrayEntity> STRAY = EntityType.register("stray", Builder.create(StrayEntity::new, SpawnGroup.MONSTER).setDimensions(0.6f, 1.99f).allowSpawningInside(Blocks.POWDER_SNOW).maxTrackingRange(8));
     public static final EntityType<StriderEntity> STRIDER = EntityType.register("strider", Builder.create(StriderEntity::new, SpawnGroup.CREATURE).makeFireImmune().setDimensions(0.9f, 1.7f).maxTrackingRange(10));
-    public static final EntityType<TadpoleEntity> TADPOLE = EntityType.register("tadpole", Builder.create(TadpoleEntity::new, SpawnGroup.CREATURE).setDimensions(0.5f, 0.4f).maxTrackingRange(10));
+    public static final EntityType<TadpoleEntity> TADPOLE = EntityType.register("tadpole", Builder.create(TadpoleEntity::new, SpawnGroup.CREATURE).setDimensions(TadpoleEntity.WIDTH, TadpoleEntity.HEIGHT).maxTrackingRange(10));
     public static final EntityType<EggEntity> EGG = EntityType.register("egg", Builder.create(EggEntity::new, SpawnGroup.MISC).setDimensions(0.25f, 0.25f).maxTrackingRange(4).trackingTickInterval(10));
     public static final EntityType<EnderPearlEntity> ENDER_PEARL = EntityType.register("ender_pearl", Builder.create(EnderPearlEntity::new, SpawnGroup.MISC).setDimensions(0.25f, 0.25f).maxTrackingRange(4).trackingTickInterval(10));
     public static final EntityType<ExperienceBottleEntity> EXPERIENCE_BOTTLE = EntityType.register("experience_bottle", Builder.create(ExperienceBottleEntity::new, SpawnGroup.MISC).setDimensions(0.25f, 0.25f).maxTrackingRange(4).trackingTickInterval(10));
@@ -520,9 +520,9 @@ implements TypeFilter<Entity, T> {
         return StreamSupport.stream(new Spliterator<Entity>(){
 
             @Override
-            public boolean tryAdvance(Consumer<? super Entity> consumer) {
-                return spliterator.tryAdvance((? super T nbtElement) -> EntityType.loadEntityWithPassengers((NbtCompound)nbtElement, world, entity -> {
-                    consumer.accept((Entity)entity);
+            public boolean tryAdvance(Consumer<? super Entity> action) {
+                return spliterator.tryAdvance((? super T nbt) -> EntityType.loadEntityWithPassengers((NbtCompound)nbt, world, entity -> {
+                    action.accept((Entity)entity);
                     return entity;
                 }));
             }
@@ -613,7 +613,7 @@ implements TypeFilter<Entity, T> {
         }
 
         public static <T extends Entity> Builder<T> create(SpawnGroup spawnGroup) {
-            return new Builder<Entity>((entityType, world) -> null, spawnGroup);
+            return new Builder<Entity>((type, world) -> null, spawnGroup);
         }
 
         public Builder<T> setDimensions(float width, float height) {

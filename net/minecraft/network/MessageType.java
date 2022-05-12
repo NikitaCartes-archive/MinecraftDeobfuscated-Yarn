@@ -7,23 +7,24 @@ import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.lang.invoke.MethodHandle;
-import java.lang.runtime.ObjectMethods;
 import java.util.Optional;
 import net.minecraft.network.MessageSender;
 import net.minecraft.text.Decoration;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * A message type (also known as "chat type") controls whether to display or narrate
  * the messages sent to the clients, and if so, how. Message types are registered
- * at {@link Registry#MESSAGE_TYPE}. When sending a message, the registry key of the
- * message type can be passed to indicate which message type should be used.
+ * at {@link net.minecraft.util.registry.BuiltinRegistries#MESSAGE_TYPE}. When
+ * sending a message, the registry key of the message type can be passed to indicate
+ * which message type should be used.
  * 
  * <p>Message type has three fields, all of which are optional. If the field is empty,
  * the message is not displayed or narrated there.
@@ -112,16 +113,15 @@ public record MessageType(Optional<DisplayRule> chat, Optional<DisplayRule> over
         return RegistryKey.of(Registry.MESSAGE_TYPE_KEY, new Identifier(id));
     }
 
-    public static MessageType registerAndGetDefault(Registry<MessageType> registry) {
-        MessageType messageType = Registry.register(registry, CHAT, new MessageType(Optional.of(DisplayRule.of(Decoration.ofChat("chat.type.text"))), Optional.empty(), Optional.of(NarrationRule.of(Decoration.ofChat("chat.type.text.narrate"), NarrationRule.Kind.CHAT))));
-        Registry.register(registry, SYSTEM, new MessageType(Optional.of(DisplayRule.of()), Optional.empty(), Optional.of(NarrationRule.of(NarrationRule.Kind.SYSTEM))));
-        Registry.register(registry, GAME_INFO, new MessageType(Optional.empty(), Optional.of(DisplayRule.of()), Optional.empty()));
-        Registry.register(registry, SAY_COMMAND, new MessageType(Optional.of(DisplayRule.of(Decoration.ofChat("chat.type.announcement"))), Optional.empty(), Optional.of(NarrationRule.of(Decoration.ofChat("chat.type.text.narrate"), NarrationRule.Kind.CHAT))));
-        Registry.register(registry, MSG_COMMAND, new MessageType(Optional.of(DisplayRule.of(Decoration.ofDirectMessage("commands.message.display.incoming"))), Optional.empty(), Optional.of(NarrationRule.of(Decoration.ofChat("chat.type.text.narrate"), NarrationRule.Kind.CHAT))));
-        Registry.register(registry, TEAM_MSG_COMMAND, new MessageType(Optional.of(DisplayRule.of(Decoration.ofTeamMessage("chat.type.team.text"))), Optional.empty(), Optional.of(NarrationRule.of(Decoration.ofChat("chat.type.text.narrate"), NarrationRule.Kind.CHAT))));
-        Registry.register(registry, EMOTE_COMMAND, new MessageType(Optional.of(DisplayRule.of(Decoration.ofChat("chat.type.emote"))), Optional.empty(), Optional.of(NarrationRule.of(Decoration.ofChat("chat.type.emote"), NarrationRule.Kind.CHAT))));
-        Registry.register(registry, TELLRAW_COMMAND, new MessageType(Optional.of(DisplayRule.of()), Optional.empty(), Optional.of(NarrationRule.of(NarrationRule.Kind.CHAT))));
-        return messageType;
+    public static RegistryEntry<MessageType> initialize(Registry<MessageType> registry) {
+        BuiltinRegistries.add(registry, CHAT, new MessageType(Optional.of(DisplayRule.of(Decoration.ofChat("chat.type.text"))), Optional.empty(), Optional.of(NarrationRule.of(Decoration.ofChat("chat.type.text.narrate"), NarrationRule.Kind.CHAT))));
+        BuiltinRegistries.add(registry, SYSTEM, new MessageType(Optional.of(DisplayRule.of()), Optional.empty(), Optional.of(NarrationRule.of(NarrationRule.Kind.SYSTEM))));
+        BuiltinRegistries.add(registry, GAME_INFO, new MessageType(Optional.empty(), Optional.of(DisplayRule.of()), Optional.empty()));
+        BuiltinRegistries.add(registry, SAY_COMMAND, new MessageType(Optional.of(DisplayRule.of(Decoration.ofChat("chat.type.announcement"))), Optional.empty(), Optional.of(NarrationRule.of(Decoration.ofChat("chat.type.text.narrate"), NarrationRule.Kind.CHAT))));
+        BuiltinRegistries.add(registry, MSG_COMMAND, new MessageType(Optional.of(DisplayRule.of(Decoration.ofDirectMessage("commands.message.display.incoming"))), Optional.empty(), Optional.of(NarrationRule.of(Decoration.ofChat("chat.type.text.narrate"), NarrationRule.Kind.CHAT))));
+        BuiltinRegistries.add(registry, TEAM_MSG_COMMAND, new MessageType(Optional.of(DisplayRule.of(Decoration.ofTeamMessage("chat.type.team.text"))), Optional.empty(), Optional.of(NarrationRule.of(Decoration.ofChat("chat.type.text.narrate"), NarrationRule.Kind.CHAT))));
+        BuiltinRegistries.add(registry, EMOTE_COMMAND, new MessageType(Optional.of(DisplayRule.of(Decoration.ofChat("chat.type.emote"))), Optional.empty(), Optional.of(NarrationRule.of(Decoration.ofChat("chat.type.emote"), NarrationRule.Kind.CHAT))));
+        return BuiltinRegistries.add(registry, TELLRAW_COMMAND, new MessageType(Optional.of(DisplayRule.of()), Optional.empty(), Optional.of(NarrationRule.of(NarrationRule.Kind.CHAT))));
     }
 
     public record DisplayRule(Optional<Decoration> decoration) {
@@ -140,16 +140,8 @@ public record MessageType(Optional<DisplayRule> chat, Optional<DisplayRule> over
         }
     }
 
-    public static final class NarrationRule
-    extends Record {
-        private final Optional<Decoration> decoration;
-        private final Kind kind;
-        public static final Codec<NarrationRule> CODEC = RecordCodecBuilder.create(instance -> instance.group(Decoration.CODEC.optionalFieldOf("decoration").forGetter(NarrationRule::decoration), ((MapCodec)Kind.CODEC.fieldOf("priority")).forGetter(NarrationRule::priority)).apply((Applicative<NarrationRule, ?>)instance, NarrationRule::new));
-
-        public NarrationRule(Optional<Decoration> optional, Kind kind) {
-            this.decoration = optional;
-            this.kind = kind;
-        }
+    public record NarrationRule(Optional<Decoration> decoration, Kind kind) {
+        public static final Codec<NarrationRule> CODEC = RecordCodecBuilder.create(instance -> instance.group(Decoration.CODEC.optionalFieldOf("decoration").forGetter(NarrationRule::decoration), ((MapCodec)Kind.CODEC.fieldOf("priority")).forGetter(NarrationRule::kind)).apply((Applicative<NarrationRule, ?>)instance, NarrationRule::new));
 
         public static NarrationRule of(Kind priority) {
             return new NarrationRule(Optional.empty(), priority);
@@ -161,29 +153,6 @@ public record MessageType(Optional<DisplayRule> chat, Optional<DisplayRule> over
 
         public Text apply(Text message, @Nullable MessageSender sender) {
             return this.decoration.map(decoration -> decoration.apply(message, sender)).orElse(message);
-        }
-
-        @Override
-        public final String toString() {
-            return ObjectMethods.bootstrap("toString", new MethodHandle[]{NarrationRule.class, "decoration;priority", "decoration", "kind"}, this);
-        }
-
-        @Override
-        public final int hashCode() {
-            return (int)ObjectMethods.bootstrap("hashCode", new MethodHandle[]{NarrationRule.class, "decoration;priority", "decoration", "kind"}, this);
-        }
-
-        @Override
-        public final boolean equals(Object object) {
-            return (boolean)ObjectMethods.bootstrap("equals", new MethodHandle[]{NarrationRule.class, "decoration;priority", "decoration", "kind"}, this, object);
-        }
-
-        public Optional<Decoration> decoration() {
-            return this.decoration;
-        }
-
-        public Kind priority() {
-            return this.kind;
         }
 
         public static enum Kind implements StringIdentifiable

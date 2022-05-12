@@ -38,7 +38,6 @@ import net.minecraft.network.MessageSender;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.encryption.ChatMessageSignature;
 import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.encryption.SignedChatMessage;
 import net.minecraft.network.packet.s2c.play.ChunkLoadDistanceS2CPacket;
@@ -175,7 +174,7 @@ public abstract class PlayerManager {
         GameRules gameRules = serverWorld2.getGameRules();
         boolean bl = gameRules.getBoolean(GameRules.DO_IMMEDIATE_RESPAWN);
         boolean bl2 = gameRules.getBoolean(GameRules.REDUCED_DEBUG_INFO);
-        serverPlayNetworkHandler.sendPacket(new GameJoinS2CPacket(player.getId(), worldProperties.isHardcore(), player.interactionManager.getGameMode(), player.interactionManager.getPreviousGameMode(), this.server.getWorldRegistryKeys(), this.registryManager, serverWorld2.getDimensionEntry(), serverWorld2.getRegistryKey(), BiomeAccess.hashSeed(serverWorld2.getSeed()), this.getMaxPlayerCount(), this.viewDistance, this.simulationDistance, bl2, !bl, serverWorld2.isDebugWorld(), serverWorld2.isFlat()));
+        serverPlayNetworkHandler.sendPacket(new GameJoinS2CPacket(player.getId(), worldProperties.isHardcore(), player.interactionManager.getGameMode(), player.interactionManager.getPreviousGameMode(), this.server.getWorldRegistryKeys(), this.registryManager, serverWorld2.getDimensionKey(), serverWorld2.getRegistryKey(), BiomeAccess.hashSeed(serverWorld2.getSeed()), this.getMaxPlayerCount(), this.viewDistance, this.simulationDistance, bl2, !bl, serverWorld2.isDebugWorld(), serverWorld2.isFlat()));
         serverPlayNetworkHandler.sendPacket(new CustomPayloadS2CPacket(CustomPayloadS2CPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString(this.getServer().getServerModName())));
         serverPlayNetworkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
         serverPlayNetworkHandler.sendPacket(new PlayerAbilitiesS2CPacket(player.getAbilities()));
@@ -199,7 +198,8 @@ public abstract class PlayerManager {
         serverWorld2.onPlayerConnected(player);
         this.server.getBossBarManager().onPlayerConnect(player);
         this.sendWorldInfo(player, serverWorld2);
-        this.server.getResourcePackProperties().ifPresent(serverResourcePackProperties -> player.sendResourcePackUrl(serverResourcePackProperties.url(), serverResourcePackProperties.hash(), serverResourcePackProperties.isRequired(), serverResourcePackProperties.prompt()));
+        this.server.getResourcePackProperties().ifPresent(properties -> player.sendResourcePackUrl(properties.url(), properties.hash(), properties.isRequired(), properties.prompt()));
+        player.sendServerMetadata(this.server.getServerMetadata());
         for (StatusEffectInstance statusEffectInstance : player.getStatusEffects()) {
             serverPlayNetworkHandler.sendPacket(new EntityStatusEffectS2CPacket(player.getId(), statusEffectInstance));
         }
@@ -285,15 +285,15 @@ public abstract class PlayerManager {
     }
 
     @Nullable
-    public NbtCompound loadPlayerData(ServerPlayerEntity serverPlayerEntity) {
+    public NbtCompound loadPlayerData(ServerPlayerEntity player) {
         NbtCompound nbtCompound2;
         NbtCompound nbtCompound = this.server.getSaveProperties().getPlayerData();
-        if (this.server.isHost(serverPlayerEntity.getGameProfile()) && nbtCompound != null) {
+        if (this.server.isHost(player.getGameProfile()) && nbtCompound != null) {
             nbtCompound2 = nbtCompound;
-            serverPlayerEntity.readNbt(nbtCompound2);
+            player.readNbt(nbtCompound2);
             LOGGER.debug("loading single player");
         } else {
-            nbtCompound2 = this.saveHandler.loadPlayerData(serverPlayerEntity);
+            nbtCompound2 = this.saveHandler.loadPlayerData(player);
         }
         return nbtCompound2;
     }
@@ -362,7 +362,7 @@ public abstract class PlayerManager {
         return null;
     }
 
-    public ServerPlayerEntity createPlayer(GameProfile profile, @Nullable PlayerPublicKey playerPublicKey) {
+    public ServerPlayerEntity createPlayer(GameProfile profile, @Nullable PlayerPublicKey publicKey) {
         UUID uUID = DynamicSerializableUuid.getUuidFromProfile(profile);
         ArrayList<ServerPlayerEntity> list = Lists.newArrayList();
         for (int i = 0; i < this.players.size(); ++i) {
@@ -377,7 +377,7 @@ public abstract class PlayerManager {
         for (ServerPlayerEntity serverPlayerEntity3 : list) {
             serverPlayerEntity3.networkHandler.disconnect(Text.translatable("multiplayer.disconnect.duplicate_login"));
         }
-        return new ServerPlayerEntity(this.server, this.server.getOverworld(), profile, playerPublicKey);
+        return new ServerPlayerEntity(this.server, this.server.getOverworld(), profile, publicKey);
     }
 
     public ServerPlayerEntity respawnPlayer(ServerPlayerEntity player, boolean alive) {
@@ -419,7 +419,7 @@ public abstract class PlayerManager {
             serverPlayerEntity.setPosition(serverPlayerEntity.getX(), serverPlayerEntity.getY() + 1.0, serverPlayerEntity.getZ());
         }
         WorldProperties worldProperties = serverPlayerEntity.world.getLevelProperties();
-        serverPlayerEntity.networkHandler.sendPacket(new PlayerRespawnS2CPacket(serverPlayerEntity.world.getDimensionEntry(), serverPlayerEntity.world.getRegistryKey(), BiomeAccess.hashSeed(serverPlayerEntity.getWorld().getSeed()), serverPlayerEntity.interactionManager.getGameMode(), serverPlayerEntity.interactionManager.getPreviousGameMode(), serverPlayerEntity.getWorld().isDebugWorld(), serverPlayerEntity.getWorld().isFlat(), alive));
+        serverPlayerEntity.networkHandler.sendPacket(new PlayerRespawnS2CPacket(serverPlayerEntity.world.getDimensionKey(), serverPlayerEntity.world.getRegistryKey(), BiomeAccess.hashSeed(serverPlayerEntity.getWorld().getSeed()), serverPlayerEntity.interactionManager.getGameMode(), serverPlayerEntity.interactionManager.getPreviousGameMode(), serverPlayerEntity.getWorld().isDebugWorld(), serverPlayerEntity.getWorld().isFlat(), alive));
         serverPlayerEntity.networkHandler.requestTeleport(serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ(), serverPlayerEntity.getYaw(), serverPlayerEntity.getPitch());
         serverPlayerEntity.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(serverWorld2.getSpawnPos(), serverWorld2.getSpawnAngle()));
         serverPlayerEntity.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
@@ -664,6 +664,7 @@ public abstract class PlayerManager {
      * message or a join/leave message.
      * 
      * @see #broadcast(Text, Function, RegistryKey)
+     * @see #broadcast(SignedChatMessage, TextStream.Message, ServerPlayerEntity, RegistryKey)
      * @see #broadcast(SignedChatMessage, MessageSender, RegistryKey)
      * @see #broadcast(SignedChatMessage, Function, MessageSender, RegistryKey)
      */
@@ -676,8 +677,9 @@ public abstract class PlayerManager {
      * message can be sent to a different player.
      * 
      * @see #broadcast(Text, RegistryKey)
-     * @see #broadcast(SignedChatMessage, ChatMessageSender, RegistryKey)
-     * @see #broadcast(SignedChatMessage, Function, ChatMessageSender, RegistryKey)
+     * @see #broadcast(SignedChatMessage, TextStream.Message, ServerPlayerEntity, RegistryKey)
+     * @see #broadcast(SignedChatMessage, MessageSender, RegistryKey)
+     * @see #broadcast(SignedChatMessage, Function, MessageSender, RegistryKey)
      * 
      * @param playerMessageFactory a function that takes the player to send the message to
      * and returns either the text to send to them or {@code null}
@@ -710,18 +712,31 @@ public abstract class PlayerManager {
      * 
      * @see #broadcast(Text, RegistryKey)
      * @see #broadcast(Text, Function, RegistryKey)
-     * @see #broadcast(SignedChatMessage, ChatMessageSender, RegistryKey)
-     * @see #broadcast(SignedChatMessage, Function, ChatMessageSender, RegistryKey)
+     * @see #broadcast(SignedChatMessage, MessageSender, RegistryKey)
+     * @see #broadcast(SignedChatMessage, Function, MessageSender, RegistryKey)
      */
-    public void broadcast(SignedChatMessage message, TextStream.Message filterableMessage, ServerPlayerEntity sender, RegistryKey<MessageType> typeKey) {
-        SignedChatMessage signedChatMessage;
-        if (!filterableMessage.getFiltered().isEmpty()) {
-            MutableText text = Text.literal(filterableMessage.getFiltered());
-            signedChatMessage = new SignedChatMessage(text, ChatMessageSignature.none());
-        } else {
-            signedChatMessage = null;
-        }
+    public void broadcast(SignedChatMessage message, TextStream.Message filteredMessage, ServerPlayerEntity sender, RegistryKey<MessageType> typeKey) {
+        SignedChatMessage signedChatMessage = this.decorateIfFiltered(sender, message, filteredMessage);
         this.broadcast(message, (ServerPlayerEntity player) -> sender.shouldFilterMessagesSentTo((ServerPlayerEntity)player) ? signedChatMessage : message, sender.asMessageSender(), typeKey);
+    }
+
+    /**
+     * {@return the decorated message, or {@code null} if the filtered message exists but
+     * is empty}
+     * 
+     * <p>This only decorates the message if it is filtered, because the passed
+     * {@code message} is already decorated by the caller.
+     */
+    @Nullable
+    private SignedChatMessage decorateIfFiltered(ServerPlayerEntity player, SignedChatMessage message, TextStream.Message filteredMessage) {
+        if (!filteredMessage.hasFilteredText()) {
+            return message;
+        }
+        if (filteredMessage.getFiltered().isEmpty()) {
+            return null;
+        }
+        MutableText text = Text.literal(filteredMessage.getFiltered());
+        return SignedChatMessage.of(this.server.getChatDecorator().decorate(player, text));
     }
 
     /**
@@ -740,7 +755,8 @@ public abstract class PlayerManager {
      * 
      * @see #broadcast(Text, RegistryKey)
      * @see #broadcast(Text, Function, RegistryKey)
-     * @see #broadcast(SignedChatMessage, Function, ChatMessageSender, RegistryKey)
+     * @see #broadcast(SignedChatMessage, TextStream.Message, ServerPlayerEntity, RegistryKey)
+     * @see #broadcast(SignedChatMessage, Function, MessageSender, RegistryKey)
      */
     public void broadcast(SignedChatMessage message, MessageSender sender, RegistryKey<MessageType> typeKey) {
         this.broadcast(message, (ServerPlayerEntity player) -> message, sender, typeKey);
@@ -765,14 +781,15 @@ public abstract class PlayerManager {
      * 
      * @see #broadcast(Text, RegistryKey)
      * @see #broadcast(Text, Function, RegistryKey)
-     * @see #broadcast(SignedChatMessage, ChatMessageSender, RegistryKey)
+     * @see #broadcast(SignedChatMessage, TextStream.Message, ServerPlayerEntity, RegistryKey)
+     * @see #broadcast(SignedChatMessage, MessageSender, RegistryKey)
      * 
      * @param playerMessageFactory a function that takes the player to send the message to
      * and returns either the message to send to them or {@code null}
      * to indicate the message should not be sent to them
      */
     public void broadcast(SignedChatMessage message, Function<ServerPlayerEntity, SignedChatMessage> playerMessageFactory, MessageSender sender, RegistryKey<MessageType> typeKey) {
-        this.server.logChatMessage(sender, message.content());
+        this.server.logChatMessage(sender, message.getContent());
         for (ServerPlayerEntity serverPlayerEntity : this.players) {
             SignedChatMessage signedChatMessage = playerMessageFactory.apply(serverPlayerEntity);
             if (signedChatMessage == null) continue;

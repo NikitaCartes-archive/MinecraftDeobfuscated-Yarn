@@ -25,6 +25,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.Pool;
 import net.minecraft.util.collection.Weighted;
 import net.minecraft.util.registry.BuiltinRegistries;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.util.registry.RegistryKey;
@@ -90,7 +91,7 @@ public class StructureTypes {
     public static final RegistryEntry<StructureType> RUINED_PORTAL_NETHER = StructureTypes.register(StructureTypeKeys.RUINED_PORTAL_NETHER, new RuinedPortalStructure(StructureTypes.createConfig(BiomeTags.RUINED_PORTAL_NETHER_HAS_STRUCTURE, StructureTerrainAdaptation.NONE), new RuinedPortalStructure.Setup(RuinedPortalStructurePiece.VerticalPlacement.IN_NETHER, 0.5f, 0.0f, false, false, false, true, 1.0f)));
     public static final RegistryEntry<StructureType> ANCIENT_CITY = StructureTypes.register(StructureTypeKeys.ANCIENT_CITY, new JigsawStructure(StructureTypes.createConfig(BiomeTags.ANCIENT_CITY_HAS_STRUCTURE, Arrays.stream(SpawnGroup.values()).collect(Collectors.toMap(spawnGroup -> spawnGroup, spawnGroup -> new StructureSpawns(StructureSpawns.BoundingBox.STRUCTURE, Pool.empty()))), GenerationStep.Feature.UNDERGROUND_DECORATION, StructureTerrainAdaptation.BEARD_BOX), AncientCityGenerator.CITY_CENTER, Optional.of(new Identifier("city_anchor")), 7, ConstantHeightProvider.create(YOffset.fixed(-27)), false, Optional.empty(), 116));
 
-    public static RegistryEntry<? extends StructureType> getDefault() {
+    public static RegistryEntry<? extends StructureType> getDefault(Registry<StructureType> registry) {
         return MINESHAFT;
     }
 

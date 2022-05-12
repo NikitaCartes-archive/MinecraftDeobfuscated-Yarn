@@ -25,13 +25,13 @@ public class AnimationHelper {
             List<Transformation> list = entry.getValue();
             optional.ifPresent(part -> list.forEach(transformation -> {
                 Keyframe[] keyframes = transformation.keyframes();
-                int i2 = Math.max(0, MathHelper.binarySearch(0, keyframes.length, i -> g <= keyframes[i].timestamp()) - 1);
-                int j = Math.min(keyframes.length - 1, i2 + 1);
-                Keyframe keyframe = keyframes[i2];
+                int i = Math.max(0, MathHelper.binarySearch(0, keyframes.length, index -> g <= keyframes[index].timestamp()) - 1);
+                int j = Math.min(keyframes.length - 1, i + 1);
+                Keyframe keyframe = keyframes[i];
                 Keyframe keyframe2 = keyframes[j];
                 float h = g - keyframe.timestamp();
                 float k = MathHelper.clamp(h / (keyframe2.timestamp() - keyframe.timestamp()), 0.0f, 1.0f);
-                keyframe2.interpolation().apply(vec3f, k, keyframes, i2, j, f);
+                keyframe2.interpolation().apply(vec3f, k, keyframes, i, j, f);
                 transformation.target().apply((ModelPart)part, vec3f);
             }));
         }

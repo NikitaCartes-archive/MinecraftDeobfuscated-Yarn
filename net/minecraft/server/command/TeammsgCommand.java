@@ -16,6 +16,7 @@ import net.minecraft.network.MessageSender;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.encryption.SignedChatMessage;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -34,18 +35,20 @@ public class TeamMsgCommand {
         dispatcher.register((LiteralArgumentBuilder)CommandManager.literal("tm").redirect(literalCommandNode));
     }
 
-    private static int execute(ServerCommandSource serverCommandSource, SignedChatMessage signedChatMessage) throws CommandSyntaxException {
-        Entity entity = serverCommandSource.getEntityOrThrow();
+    private static int execute(ServerCommandSource source, SignedChatMessage message) throws CommandSyntaxException {
+        Entity entity = source.getEntityOrThrow();
         Team team = (Team)entity.getScoreboardTeam();
         if (team == null) {
             throw NO_TEAM_EXCEPTION.create();
         }
         MutableText text = team.getFormattedName().fillStyle(STYLE);
-        MessageSender messageSender = serverCommandSource.getChatMessageSender().withTeamName(text);
-        List<ServerPlayerEntity> list = serverCommandSource.getServer().getPlayerManager().getPlayerList();
+        MessageSender messageSender = source.getChatMessageSender().withTeamName(text);
+        MinecraftServer minecraftServer = source.getServer();
+        List<ServerPlayerEntity> list = minecraftServer.getPlayerManager().getPlayerList();
+        SignedChatMessage signedChatMessage = minecraftServer.getChatDecorator().decorate(source.getPlayer(), message);
         for (ServerPlayerEntity serverPlayerEntity : list) {
             if (serverPlayerEntity == entity) {
-                serverPlayerEntity.sendMessage(Text.translatable("chat.type.team.sent", text, serverCommandSource.getDisplayName(), signedChatMessage.content()));
+                serverPlayerEntity.sendMessage(Text.translatable("chat.type.team.sent", text, source.getDisplayName(), signedChatMessage.getContent()));
                 continue;
             }
             if (serverPlayerEntity.getScoreboardTeam() != team) continue;

@@ -10,6 +10,7 @@ import net.minecraft.structure.StructureSetKeys;
 import net.minecraft.tag.BiomeTags;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.BuiltinRegistries;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.gen.chunk.placement.ConcentricRingsStructurePlacement;
@@ -39,8 +40,8 @@ public interface StructureSets {
     public static final RegistryEntry<StructureSet> END_CITIES = StructureSets.register(StructureSetKeys.END_CITIES, StructureTypes.END_CITY, new RandomSpreadStructurePlacement(20, 11, SpreadType.TRIANGULAR, 10387313));
     public static final RegistryEntry<StructureSet> STRONGHOLDS = StructureSets.register(StructureSetKeys.STRONGHOLDS, StructureTypes.STRONGHOLD, new ConcentricRingsStructurePlacement(32, 3, 128, BuiltinRegistries.BIOME.getOrCreateEntryList(BiomeTags.STRONGHOLD_BIASED_TO)));
 
-    public static RegistryEntry<StructureSet> initAndGetDefault() {
-        return (RegistryEntry)BuiltinRegistries.STRUCTURE_SET.streamEntries().iterator().next();
+    public static RegistryEntry<StructureSet> initAndGetDefault(Registry<StructureSet> registry) {
+        return (RegistryEntry)registry.streamEntries().iterator().next();
     }
 
     public static RegistryEntry<StructureSet> register(RegistryKey<StructureSet> key, StructureSet structureSet) {

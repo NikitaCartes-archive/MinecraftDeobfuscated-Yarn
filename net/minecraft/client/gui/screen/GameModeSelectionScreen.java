@@ -113,7 +113,7 @@ extends Screen {
         Optional<GameModeSelection> optional = GameModeSelection.of(client.interactionManager.getCurrentGameMode());
         GameModeSelection gameModeSelection = gameMode.get();
         if (optional.isPresent() && client.player.hasPermissionLevel(2) && gameModeSelection != optional.get()) {
-            client.player.sendChatMessage(gameModeSelection.getCommand());
+            client.player.sendCommand(gameModeSelection.getCommand());
         }
     }
 
@@ -143,10 +143,10 @@ extends Screen {
 
     @Environment(value=EnvType.CLIENT)
     static enum GameModeSelection {
-        CREATIVE(Text.translatable("gameMode.creative"), "/gamemode creative", new ItemStack(Blocks.GRASS_BLOCK)),
-        SURVIVAL(Text.translatable("gameMode.survival"), "/gamemode survival", new ItemStack(Items.IRON_SWORD)),
-        ADVENTURE(Text.translatable("gameMode.adventure"), "/gamemode adventure", new ItemStack(Items.MAP)),
-        SPECTATOR(Text.translatable("gameMode.spectator"), "/gamemode spectator", new ItemStack(Items.ENDER_EYE));
+        CREATIVE(Text.translatable("gameMode.creative"), "gamemode creative", new ItemStack(Blocks.GRASS_BLOCK)),
+        SURVIVAL(Text.translatable("gameMode.survival"), "gamemode survival", new ItemStack(Items.IRON_SWORD)),
+        ADVENTURE(Text.translatable("gameMode.adventure"), "gamemode adventure", new ItemStack(Items.MAP)),
+        SPECTATOR(Text.translatable("gameMode.spectator"), "gamemode spectator", new ItemStack(Items.ENDER_EYE));
 
         protected static final GameModeSelection[] VALUES;
         private static final int field_32317 = 16;

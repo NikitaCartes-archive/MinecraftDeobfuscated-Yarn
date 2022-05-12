@@ -82,6 +82,7 @@ import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.ResourcePackSendS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerPropertyUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ServerMetadataS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetCameraEntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetTradeOffersS2CPacket;
 import net.minecraft.network.packet.s2c.play.SignEditorOpenS2CPacket;
@@ -102,6 +103,7 @@ import net.minecraft.screen.slot.CraftingResultSlot;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
+import net.minecraft.server.ServerMetadata;
 import net.minecraft.server.filter.TextStream;
 import net.minecraft.server.network.ServerItemCooldownManager;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
@@ -692,7 +694,7 @@ extends PlayerEntity {
             return this;
         }
         WorldProperties worldProperties = destination.getLevelProperties();
-        this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(destination.getDimensionEntry(), destination.getRegistryKey(), BiomeAccess.hashSeed(destination.getSeed()), this.interactionManager.getGameMode(), this.interactionManager.getPreviousGameMode(), destination.isDebugWorld(), destination.isFlat(), true));
+        this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(destination.getDimensionKey(), destination.getRegistryKey(), BiomeAccess.hashSeed(destination.getSeed()), this.interactionManager.getGameMode(), this.interactionManager.getPreviousGameMode(), destination.isDebugWorld(), destination.isFlat(), true));
         this.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
         PlayerManager playerManager = this.server.getPlayerManager();
         playerManager.sendCommandTree(this);
@@ -1248,7 +1250,7 @@ extends PlayerEntity {
      */
     public void sendChatMessage(SignedChatMessage message, MessageSender sender, RegistryKey<MessageType> typeKey) {
         if (this.acceptsMessage(typeKey)) {
-            this.networkHandler.sendPacket(new ChatMessageS2CPacket(message.content(), this.getMessageTypeId(typeKey), sender, message.signature().timeStamp(), message.signature().saltSignature()));
+            this.networkHandler.sendPacket(new ChatMessageS2CPacket(message.signedContent(), message.unsignedContent(), this.getMessageTypeId(typeKey), sender, message.signature().timestamp(), message.signature().saltSignature()));
         }
     }
 
@@ -1295,6 +1297,10 @@ extends PlayerEntity {
 
     public void sendResourcePackUrl(String url, String hash, boolean required, @Nullable Text resourcePackPrompt) {
         this.networkHandler.sendPacket(new ResourcePackSendS2CPacket(url, hash, required, resourcePackPrompt));
+    }
+
+    public void sendServerMetadata(ServerMetadata metadata) {
+        this.networkHandler.sendPacket(new ServerMetadataS2CPacket(metadata.getDescription(), metadata.getFavicon(), metadata.shouldPreviewChat()));
     }
 
     @Override
@@ -1388,7 +1394,7 @@ extends PlayerEntity {
         } else {
             ServerWorld serverWorld = this.getWorld();
             WorldProperties worldProperties = targetWorld.getLevelProperties();
-            this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(targetWorld.getDimensionEntry(), targetWorld.getRegistryKey(), BiomeAccess.hashSeed(targetWorld.getSeed()), this.interactionManager.getGameMode(), this.interactionManager.getPreviousGameMode(), targetWorld.isDebugWorld(), targetWorld.isFlat(), true));
+            this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(targetWorld.getDimensionKey(), targetWorld.getRegistryKey(), BiomeAccess.hashSeed(targetWorld.getSeed()), this.interactionManager.getGameMode(), this.interactionManager.getPreviousGameMode(), targetWorld.isDebugWorld(), targetWorld.isFlat(), true));
             this.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
             this.server.getPlayerManager().sendCommandTree(this);
             serverWorld.removePlayer(this, Entity.RemovalReason.CHANGED_DIMENSION);
@@ -1578,7 +1584,7 @@ extends PlayerEntity {
     public boolean dropSelectedItem(boolean entireStack) {
         PlayerInventory playerInventory = this.getInventory();
         ItemStack itemStack = playerInventory.dropSelectedItem(entireStack);
-        this.currentScreenHandler.getSlotIndex(playerInventory, playerInventory.selectedSlot).ifPresent(i -> this.currentScreenHandler.setPreviousTrackedSlot(i, playerInventory.getMainHandStack()));
+        this.currentScreenHandler.getSlotIndex(playerInventory, playerInventory.selectedSlot).ifPresent(index -> this.currentScreenHandler.setPreviousTrackedSlot(index, playerInventory.getMainHandStack()));
         return this.dropItem(itemStack, false, true) != null;
     }
 

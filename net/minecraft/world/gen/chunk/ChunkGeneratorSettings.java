@@ -59,42 +59,38 @@ public record ChunkGeneratorSettings(GenerationShapeConfig generationShapeConfig
         return this.usesLegacyRandom ? ChunkRandom.RandomProvider.LEGACY : ChunkRandom.RandomProvider.XOROSHIRO;
     }
 
-    private static void register(RegistryKey<ChunkGeneratorSettings> registryKey, ChunkGeneratorSettings settings) {
-        BuiltinRegistries.add(BuiltinRegistries.CHUNK_GENERATOR_SETTINGS, registryKey.getValue(), settings);
+    private static RegistryEntry<ChunkGeneratorSettings> register(Registry<ChunkGeneratorSettings> registry, RegistryKey<ChunkGeneratorSettings> registryKey, ChunkGeneratorSettings chunkGeneratorSettings) {
+        return BuiltinRegistries.add(registry, registryKey.getValue(), chunkGeneratorSettings);
     }
 
-    public static RegistryEntry<ChunkGeneratorSettings> getInstance() {
-        return (RegistryEntry)BuiltinRegistries.CHUNK_GENERATOR_SETTINGS.streamEntries().iterator().next();
+    public static RegistryEntry<ChunkGeneratorSettings> getInstance(Registry<ChunkGeneratorSettings> registry) {
+        ChunkGeneratorSettings.register(registry, OVERWORLD, ChunkGeneratorSettings.createSurfaceSettings(false, false));
+        ChunkGeneratorSettings.register(registry, LARGE_BIOMES, ChunkGeneratorSettings.createSurfaceSettings(false, true));
+        ChunkGeneratorSettings.register(registry, AMPLIFIED, ChunkGeneratorSettings.createSurfaceSettings(true, false));
+        ChunkGeneratorSettings.register(registry, NETHER, ChunkGeneratorSettings.createNetherSettings());
+        ChunkGeneratorSettings.register(registry, END, ChunkGeneratorSettings.createEndSettings());
+        ChunkGeneratorSettings.register(registry, CAVES, ChunkGeneratorSettings.createCavesSettings());
+        return ChunkGeneratorSettings.register(registry, FLOATING_ISLANDS, ChunkGeneratorSettings.createFloatingIslandsSettings());
     }
 
     private static ChunkGeneratorSettings createEndSettings() {
-        return new ChunkGeneratorSettings(GenerationShapeConfig.END, Blocks.END_STONE.getDefaultState(), Blocks.AIR.getDefaultState(), DensityFunctions.createEndNoiseRouter(), VanillaSurfaceRules.getEndStoneRule(), List.of(), 0, true, false, false, true);
+        return new ChunkGeneratorSettings(GenerationShapeConfig.END, Blocks.END_STONE.getDefaultState(), Blocks.AIR.getDefaultState(), DensityFunctions.createEndNoiseRouter(BuiltinRegistries.DENSITY_FUNCTION), VanillaSurfaceRules.getEndStoneRule(), List.of(), 0, true, false, false, true);
     }
 
     private static ChunkGeneratorSettings createNetherSettings() {
-        return new ChunkGeneratorSettings(GenerationShapeConfig.NETHER, Blocks.NETHERRACK.getDefaultState(), Blocks.LAVA.getDefaultState(), DensityFunctions.createNetherNoiseRouter(), VanillaSurfaceRules.createNetherSurfaceRule(), List.of(), 32, false, false, false, true);
+        return new ChunkGeneratorSettings(GenerationShapeConfig.NETHER, Blocks.NETHERRACK.getDefaultState(), Blocks.LAVA.getDefaultState(), DensityFunctions.createNetherNoiseRouter(BuiltinRegistries.DENSITY_FUNCTION), VanillaSurfaceRules.createNetherSurfaceRule(), List.of(), 32, false, false, false, true);
     }
 
     private static ChunkGeneratorSettings createSurfaceSettings(boolean amplified, boolean largeBiomes) {
-        return new ChunkGeneratorSettings(GenerationShapeConfig.SURFACE, Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), DensityFunctions.createSurfaceNoiseRouter(largeBiomes, amplified), VanillaSurfaceRules.createOverworldSurfaceRule(), new VanillaBiomeParameters().getSpawnSuitabilityNoises(), 63, false, true, true, false);
+        return new ChunkGeneratorSettings(GenerationShapeConfig.SURFACE, Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), DensityFunctions.createSurfaceNoiseRouter(BuiltinRegistries.DENSITY_FUNCTION, largeBiomes, amplified), VanillaSurfaceRules.createOverworldSurfaceRule(), new VanillaBiomeParameters().getSpawnSuitabilityNoises(), 63, false, true, true, false);
     }
 
     private static ChunkGeneratorSettings createCavesSettings() {
-        return new ChunkGeneratorSettings(GenerationShapeConfig.CAVES, Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), DensityFunctions.createCavesNoiseRouter(), VanillaSurfaceRules.createDefaultRule(false, true, true), List.of(), 32, false, false, false, true);
+        return new ChunkGeneratorSettings(GenerationShapeConfig.CAVES, Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), DensityFunctions.createCavesNoiseRouter(BuiltinRegistries.DENSITY_FUNCTION), VanillaSurfaceRules.createDefaultRule(false, true, true), List.of(), 32, false, false, false, true);
     }
 
     private static ChunkGeneratorSettings createFloatingIslandsSettings() {
-        return new ChunkGeneratorSettings(GenerationShapeConfig.FLOATING_ISLANDS, Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), DensityFunctions.createFloatingIslandsNoiseRouter(), VanillaSurfaceRules.createDefaultRule(false, false, false), List.of(), -64, false, false, false, true);
-    }
-
-    static {
-        ChunkGeneratorSettings.register(OVERWORLD, ChunkGeneratorSettings.createSurfaceSettings(false, false));
-        ChunkGeneratorSettings.register(LARGE_BIOMES, ChunkGeneratorSettings.createSurfaceSettings(false, true));
-        ChunkGeneratorSettings.register(AMPLIFIED, ChunkGeneratorSettings.createSurfaceSettings(true, false));
-        ChunkGeneratorSettings.register(NETHER, ChunkGeneratorSettings.createNetherSettings());
-        ChunkGeneratorSettings.register(END, ChunkGeneratorSettings.createEndSettings());
-        ChunkGeneratorSettings.register(CAVES, ChunkGeneratorSettings.createCavesSettings());
-        ChunkGeneratorSettings.register(FLOATING_ISLANDS, ChunkGeneratorSettings.createFloatingIslandsSettings());
+        return new ChunkGeneratorSettings(GenerationShapeConfig.FLOATING_ISLANDS, Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), DensityFunctions.createFloatingIslandsNoiseRouter(BuiltinRegistries.DENSITY_FUNCTION), VanillaSurfaceRules.createDefaultRule(false, false, false), List.of(), -64, false, false, false, true);
     }
 }
 

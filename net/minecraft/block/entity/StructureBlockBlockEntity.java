@@ -334,7 +334,7 @@ extends BlockEntity {
         return this.loadStructure(world, true);
     }
 
-    private static AbstractRandom createRandom(long seed) {
+    public static AbstractRandom createRandom(long seed) {
         if (seed == 0L) {
             return AbstractRandom.createAtomic(Util.getMeasuringTimeMs());
         }

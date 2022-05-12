@@ -4,23 +4,28 @@
 package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
+import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.longs.Long2LongMap;
 import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
+import net.minecraft.entity.ai.brain.task.FindPointOfInterestTask;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
+import net.minecraft.world.poi.PointOfInterestTypes;
 
 public class WalkHomeTask
 extends Task<LivingEntity> {
@@ -49,17 +54,18 @@ extends Task<LivingEntity> {
         }
         PathAwareEntity pathAwareEntity = (PathAwareEntity)entity;
         PointOfInterestStorage pointOfInterestStorage = world.getPointOfInterestStorage();
-        Optional<BlockPos> optional = pointOfInterestStorage.getNearestPosition(PointOfInterestType.HOME.getCompletionCondition(), entity.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.ANY);
+        Optional<BlockPos> optional = pointOfInterestStorage.getNearestPosition(poiType -> poiType.matchesKey(PointOfInterestTypes.HOME), entity.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.ANY);
         return optional.isPresent() && !(optional.get().getSquaredDistance(pathAwareEntity.getBlockPos()) <= 4.0);
     }
 
     @Override
     protected void run(ServerWorld world, LivingEntity entity, long time) {
+        Predicate<BlockPos> predicate;
         this.tries = 0;
         this.expiryTimeLimit = world.getTime() + (long)world.getRandom().nextInt(20);
         PathAwareEntity pathAwareEntity = (PathAwareEntity)entity;
         PointOfInterestStorage pointOfInterestStorage = world.getPointOfInterestStorage();
-        Predicate<BlockPos> predicate = pos -> {
+        Set<Pair<RegistryEntry<PointOfInterestType>, BlockPos>> set = pointOfInterestStorage.getTypesAndPositions(poiType -> poiType.matchesKey(PointOfInterestTypes.HOME), predicate = pos -> {
             long l = pos.asLong();
             if (this.positionToExpiry.containsKey(l)) {
                 return false;
@@ -69,12 +75,11 @@ extends Task<LivingEntity> {
             }
             this.positionToExpiry.put(l, this.expiryTimeLimit + 40L);
             return true;
-        };
-        Stream<BlockPos> stream = pointOfInterestStorage.getPositions(PointOfInterestType.HOME.getCompletionCondition(), predicate, entity.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.ANY);
-        Path path = pathAwareEntity.getNavigation().findPathToAny(stream, PointOfInterestType.HOME.getSearchDistance());
+        }, entity.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.ANY).collect(Collectors.toSet());
+        Path path = FindPointOfInterestTask.findPathToPoi(pathAwareEntity, set);
         if (path != null && path.reachesTarget()) {
             BlockPos blockPos = path.getTarget();
-            Optional<PointOfInterestType> optional = pointOfInterestStorage.getType(blockPos);
+            Optional<RegistryEntry<PointOfInterestType>> optional = pointOfInterestStorage.getType(blockPos);
             if (optional.isPresent()) {
                 entity.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(blockPos, this.speed, 1));
                 DebugInfoSender.sendPointOfInterest(world, blockPos);

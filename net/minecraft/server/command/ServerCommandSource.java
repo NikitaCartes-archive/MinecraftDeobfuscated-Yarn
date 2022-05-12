@@ -232,15 +232,27 @@ implements CommandSource {
     }
 
     /**
-     * Gets the player from this command source or throws a command syntax exception if this command source is not a player.
+     * {@return the player from this command source}
+     * 
+     * @throws CommandSyntaxException if this command source is not a player
      */
-    public ServerPlayerEntity getPlayer() throws CommandSyntaxException {
+    public ServerPlayerEntity getPlayerOrThrow() throws CommandSyntaxException {
         Entity entity = this.entity;
         if (entity instanceof ServerPlayerEntity) {
             ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
             return serverPlayerEntity;
         }
         throw REQUIRES_PLAYER_EXCEPTION.create();
+    }
+
+    /**
+     * {@return the player from this command source, or {@code null} if the source is not a player}
+     */
+    @Nullable
+    public ServerPlayerEntity getPlayer() {
+        ServerPlayerEntity serverPlayerEntity;
+        Entity entity = this.entity;
+        return entity instanceof ServerPlayerEntity ? (serverPlayerEntity = (ServerPlayerEntity)entity) : null;
     }
 
     public boolean isExecutedByPlayer() {

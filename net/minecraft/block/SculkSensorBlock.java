@@ -22,7 +22,6 @@ import net.minecraft.block.enums.SculkSensorPhase;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.pathing.NavigationType;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -244,16 +243,10 @@ implements Waterloggable {
     }
 
     public static void setActive(@Nullable Entity entity, World world, BlockPos pos, BlockState state, int power) {
-        Entity entity2;
         world.setBlockState(pos, (BlockState)((BlockState)state.with(SCULK_SENSOR_PHASE, SculkSensorPhase.ACTIVE)).with(POWER, power), Block.NOTIFY_ALL);
         world.createAndScheduleBlockTick(pos, state.getBlock(), 40);
         SculkSensorBlock.updateNeighbors(world, pos);
-        if (entity instanceof PlayerEntity) {
-            world.emitGameEvent(entity, GameEvent.SCULK_SENSOR_TENDRILS_CLICKING, pos);
-        } else if (entity != null && (entity2 = entity.getPrimaryPassenger()) instanceof PlayerEntity) {
-            PlayerEntity playerEntity = (PlayerEntity)entity2;
-            world.emitGameEvent((Entity)playerEntity, GameEvent.SCULK_SENSOR_TENDRILS_CLICKING, pos);
-        }
+        world.emitGameEvent(entity, GameEvent.SCULK_SENSOR_TENDRILS_CLICKING, pos);
         if (!state.get(WATERLOGGED).booleanValue()) {
             world.playSound(null, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, SoundEvents.BLOCK_SCULK_SENSOR_CLICKING, SoundCategory.BLOCKS, 1.0f, world.random.nextFloat() * 0.2f + 0.8f);
         }

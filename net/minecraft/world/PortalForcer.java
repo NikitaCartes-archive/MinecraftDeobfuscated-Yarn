@@ -21,7 +21,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.poi.PointOfInterest;
 import net.minecraft.world.poi.PointOfInterestStorage;
-import net.minecraft.world.poi.PointOfInterestType;
+import net.minecraft.world.poi.PointOfInterestTypes;
 
 public class PortalForcer {
     private static final int field_31810 = 3;
@@ -47,7 +47,7 @@ public class PortalForcer {
         PointOfInterestStorage pointOfInterestStorage = this.world.getPointOfInterestStorage();
         int i = destIsNether ? 16 : 128;
         pointOfInterestStorage.preloadChunks(this.world, pos, i);
-        Optional<PointOfInterest> optional = pointOfInterestStorage.getInSquare(poiType -> poiType == PointOfInterestType.NETHER_PORTAL, pos, i, PointOfInterestStorage.OccupationStatus.ANY).filter(poi -> worldBorder.contains(poi.getPos())).sorted(Comparator.comparingDouble(poi -> poi.getPos().getSquaredDistance(pos)).thenComparingInt(poi -> poi.getPos().getY())).filter(poi -> this.world.getBlockState(poi.getPos()).contains(Properties.HORIZONTAL_AXIS)).findFirst();
+        Optional<PointOfInterest> optional = pointOfInterestStorage.getInSquare(registryEntry -> registryEntry.matchesKey(PointOfInterestTypes.NETHER_PORTAL), pos, i, PointOfInterestStorage.OccupationStatus.ANY).filter(poi -> worldBorder.contains(poi.getPos())).sorted(Comparator.comparingDouble(poi -> poi.getPos().getSquaredDistance(pos)).thenComparingInt(poi -> poi.getPos().getY())).filter(poi -> this.world.getBlockState(poi.getPos()).contains(Properties.HORIZONTAL_AXIS)).findFirst();
         return optional.map(poi -> {
             BlockPos blockPos = poi.getPos();
             this.world.getChunkManager().addTicket(ChunkTicketType.PORTAL, new ChunkPos(blockPos), 3, blockPos);

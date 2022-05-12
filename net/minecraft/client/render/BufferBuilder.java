@@ -34,8 +34,8 @@ implements BufferVertexConsumer {
     private static final int MAX_BUFFER_SIZE = 0x200000;
     private static final Logger LOGGER = LogUtils.getLogger();
     private ByteBuffer buffer;
-    private int field_39061;
-    private int field_39062;
+    private int builtBufferCount;
+    private int batchOffset;
     private int elementOffset;
     private int vertexCount;
     @Nullable
@@ -110,7 +110,7 @@ implements BufferVertexConsumer {
         this.buffer.rewind();
         this.drawMode = state.drawMode;
         this.vertexCount = state.vertexCount;
-        this.elementOffset = this.field_39062;
+        this.elementOffset = this.batchOffset;
         this.sortingPrimitiveCenters = state.sortingPrimitiveCenters;
         this.sortingCameraX = state.sortingCameraX;
         this.sortingCameraY = state.sortingCameraY;
@@ -141,19 +141,19 @@ implements BufferVertexConsumer {
         this.hasOverlay = bl;
     }
 
-    private IntConsumer createIndexWriter(int i2, VertexFormat.IndexType indexType) {
-        MutableInt mutableInt = new MutableInt(i2);
+    private IntConsumer createIndexWriter(int offset, VertexFormat.IndexType indexType) {
+        MutableInt mutableInt = new MutableInt(offset);
         return switch (indexType) {
             default -> throw new IncompatibleClassChangeError();
-            case VertexFormat.IndexType.BYTE -> i -> this.buffer.put(mutableInt.getAndIncrement(), (byte)i);
-            case VertexFormat.IndexType.SHORT -> i -> this.buffer.putShort(mutableInt.getAndAdd(2), (short)i);
-            case VertexFormat.IndexType.INT -> i -> this.buffer.putInt(mutableInt.getAndAdd(4), i);
+            case VertexFormat.IndexType.BYTE -> index -> this.buffer.put(mutableInt.getAndIncrement(), (byte)index);
+            case VertexFormat.IndexType.SHORT -> index -> this.buffer.putShort(mutableInt.getAndAdd(2), (short)index);
+            case VertexFormat.IndexType.INT -> index -> this.buffer.putInt(mutableInt.getAndAdd(4), index);
         };
     }
 
     private Vec3f[] buildPrimitiveCenters() {
         FloatBuffer floatBuffer = this.buffer.asFloatBuffer();
-        int i = this.field_39062 / 4;
+        int i = this.batchOffset / 4;
         int j = this.format.getVertexSizeInteger();
         int k = j * this.drawMode.additionalVertexCount;
         int l = this.vertexCount / this.drawMode.additionalVertexCount;
@@ -195,36 +195,56 @@ implements BufferVertexConsumer {
         }
     }
 
-    public boolean method_43574() {
+    public boolean isBatchEmpty() {
         return this.vertexCount == 0;
     }
 
+    /**
+     * Builds a buffer if there are vertices in the current batch and resets
+     * the building state.
+     * 
+     * @throws IllegalStateException if this builder has not begun building
+     * 
+     * @return the built buffer if there are vertices, otherwise {@code null}
+     * 
+     * @see #end()
+     */
     @Nullable
-    public class_7433 method_43575() {
-        this.method_43577();
-        if (this.method_43574()) {
-            this.method_43579();
+    public BuiltBuffer endNullable() {
+        this.ensureBuilding();
+        if (this.isBatchEmpty()) {
+            this.resetBuilding();
             return null;
         }
-        class_7433 lv = this.method_43578();
-        this.method_43579();
-        return lv;
+        BuiltBuffer builtBuffer = this.build();
+        this.resetBuilding();
+        return builtBuffer;
     }
 
-    public class_7433 end() {
-        this.method_43577();
-        class_7433 lv = this.method_43578();
-        this.method_43579();
-        return lv;
+    /**
+     * Builds a buffer from the current batch and resets the building state.
+     * 
+     * <p>Unlike {@link #endNullable()}, this always builds a buffer even if
+     * there are no vertices in the current batch.
+     * 
+     * @throws IllegalStateException if this builder has not begun building
+     * 
+     * @return the buffer built from the current batch
+     */
+    public BuiltBuffer end() {
+        this.ensureBuilding();
+        BuiltBuffer builtBuffer = this.build();
+        this.resetBuilding();
+        return builtBuffer;
     }
 
-    private void method_43577() {
+    private void ensureBuilding() {
         if (!this.building) {
             throw new IllegalStateException("Not building!");
         }
     }
 
-    private class_7433 method_43578() {
+    private BuiltBuffer build() {
         int l;
         boolean bl;
         int k;
@@ -242,14 +262,14 @@ implements BufferVertexConsumer {
             bl = true;
             l = j;
         }
-        k = this.field_39062;
-        this.field_39062 += l;
-        ++this.field_39061;
+        k = this.batchOffset;
+        this.batchOffset += l;
+        ++this.builtBufferCount;
         DrawArrayParameters drawArrayParameters = new DrawArrayParameters(this.format, this.vertexCount, i, this.drawMode, indexType, this.hasNoVertexBuffer, bl);
-        return new class_7433(k, drawArrayParameters);
+        return new BuiltBuffer(k, drawArrayParameters);
     }
 
-    private void method_43579() {
+    private void resetBuilding() {
         this.building = false;
         this.vertexCount = 0;
         this.currentElement = null;
@@ -350,22 +370,22 @@ implements BufferVertexConsumer {
         super.vertex(x, y, z, red, green, blue, alpha, u, v, overlay, light, normalX, normalY, normalZ);
     }
 
-    void method_43580() {
-        if (this.field_39061 > 0 && --this.field_39061 == 0) {
+    void releaseBuiltBuffer() {
+        if (this.builtBufferCount > 0 && --this.builtBufferCount == 0) {
             this.clear();
         }
     }
 
     public void clear() {
-        if (this.field_39061 > 0) {
+        if (this.builtBufferCount > 0) {
             LOGGER.warn("Clearing BufferBuilder with unused batches");
         }
         this.reset();
     }
 
     public void reset() {
-        this.field_39061 = 0;
-        this.field_39062 = 0;
+        this.builtBufferCount = 0;
+        this.batchOffset = 0;
         this.elementOffset = 0;
     }
 
@@ -381,8 +401,8 @@ implements BufferVertexConsumer {
         return this.building;
     }
 
-    ByteBuffer method_43576(int i, int j) {
-        return MemoryUtil.memSlice(this.buffer, i, j - i);
+    ByteBuffer slice(int start, int end) {
+        return MemoryUtil.memSlice(this.buffer, start, end - start);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -406,42 +426,42 @@ implements BufferVertexConsumer {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public class class_7433 {
-        private final int field_39064;
-        private final DrawArrayParameters field_39065;
-        private boolean field_39066;
+    public class BuiltBuffer {
+        private final int batchOffset;
+        private final DrawArrayParameters parameters;
+        private boolean released;
 
-        class_7433(int i, DrawArrayParameters drawArrayParameters) {
-            this.field_39064 = i;
-            this.field_39065 = drawArrayParameters;
+        BuiltBuffer(int batchOffset, DrawArrayParameters parameters) {
+            this.batchOffset = batchOffset;
+            this.parameters = parameters;
         }
 
-        public ByteBuffer method_43581() {
-            int i = this.field_39064 + this.field_39065.getVertexBufferPosition();
-            int j = this.field_39064 + this.field_39065.getVertexBufferLimit();
-            return BufferBuilder.this.method_43576(i, j);
+        public ByteBuffer getVertexBuffer() {
+            int i = this.batchOffset + this.parameters.getVertexBufferPosition();
+            int j = this.batchOffset + this.parameters.getVertexBufferLimit();
+            return BufferBuilder.this.slice(i, j);
         }
 
-        public ByteBuffer method_43582() {
-            int i = this.field_39064 + this.field_39065.getIndexBufferPosition();
-            int j = this.field_39064 + this.field_39065.getIndexBufferLimit();
-            return BufferBuilder.this.method_43576(i, j);
+        public ByteBuffer getIndexBuffer() {
+            int i = this.batchOffset + this.parameters.getIndexBufferPosition();
+            int j = this.batchOffset + this.parameters.getIndexBufferLimit();
+            return BufferBuilder.this.slice(i, j);
         }
 
-        public DrawArrayParameters method_43583() {
-            return this.field_39065;
+        public DrawArrayParameters getParameters() {
+            return this.parameters;
         }
 
-        public boolean method_43584() {
-            return this.field_39065.vertexCount == 0;
+        public boolean isEmpty() {
+            return this.parameters.vertexCount == 0;
         }
 
-        public void method_43585() {
-            if (this.field_39066) {
+        public void release() {
+            if (this.released) {
                 throw new IllegalStateException("Buffer has already been released!");
             }
-            BufferBuilder.this.method_43580();
-            this.field_39066 = true;
+            BufferBuilder.this.releaseBuiltBuffer();
+            this.released = true;
         }
     }
 
