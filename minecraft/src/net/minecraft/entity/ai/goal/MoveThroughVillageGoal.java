@@ -16,10 +16,11 @@ import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.tag.PointOfInterestTypeTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.poi.PointOfInterestStorage;
-import net.minecraft.world.poi.PointOfInterestType;
 
 public class MoveThroughVillageGoal extends Goal {
 	protected final PathAwareEntity mob;
@@ -67,8 +68,10 @@ public class MoveThroughVillageGoal extends Goal {
 								return Double.NEGATIVE_INFINITY;
 							} else {
 								Optional<BlockPos> optionalxx = serverWorld.getPointOfInterestStorage()
-									.getPosition(PointOfInterestType.ALWAYS_TRUE, this::shouldVisit, pos, 10, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED);
-								return !optionalxx.isPresent() ? Double.NEGATIVE_INFINITY : -((BlockPos)optionalxx.get()).getSquaredDistance(blockPos);
+									.getPosition(
+										poiType -> poiType.isIn(PointOfInterestTypeTags.VILLAGE), this::shouldVisit, pos, 10, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED
+									);
+								return optionalxx.map(blockPos2x -> -blockPos2x.getSquaredDistance(blockPos)).orElse(Double.NEGATIVE_INFINITY);
 							}
 						}
 					);
@@ -76,8 +79,14 @@ public class MoveThroughVillageGoal extends Goal {
 						return false;
 					} else {
 						Optional<BlockPos> optional = serverWorld.getPointOfInterestStorage()
-							.getPosition(PointOfInterestType.ALWAYS_TRUE, this::shouldVisit, new BlockPos(vec3d), 10, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED);
-						if (!optional.isPresent()) {
+							.getPosition(
+								poiType -> poiType.isIn(PointOfInterestTypeTags.VILLAGE),
+								this::shouldVisit,
+								new BlockPos(vec3d),
+								10,
+								PointOfInterestStorage.OccupationStatus.IS_OCCUPIED
+							);
+						if (optional.isEmpty()) {
 							return false;
 						} else {
 							this.target = ((BlockPos)optional.get()).toImmutable();

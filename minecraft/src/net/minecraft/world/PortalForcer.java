@@ -13,10 +13,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.poi.PointOfInterest;
 import net.minecraft.world.poi.PointOfInterestStorage;
-import net.minecraft.world.poi.PointOfInterestType;
+import net.minecraft.world.poi.PointOfInterestTypes;
 
 public class PortalForcer {
 	private static final int field_31810 = 3;
@@ -43,7 +44,7 @@ public class PortalForcer {
 		int i = destIsNether ? 16 : 128;
 		pointOfInterestStorage.preloadChunks(this.world, pos, i);
 		Optional<PointOfInterest> optional = pointOfInterestStorage.getInSquare(
-				poiType -> poiType == PointOfInterestType.NETHER_PORTAL, pos, i, PointOfInterestStorage.OccupationStatus.ANY
+				registryEntry -> registryEntry.matchesKey(PointOfInterestTypes.NETHER_PORTAL), pos, i, PointOfInterestStorage.OccupationStatus.ANY
 			)
 			.filter(poi -> worldBorder.contains(poi.getPos()))
 			.sorted(Comparator.comparingDouble(poi -> poi.getPos().getSquaredDistance(pos)).thenComparingInt(poi -> poi.getPos().getY()))

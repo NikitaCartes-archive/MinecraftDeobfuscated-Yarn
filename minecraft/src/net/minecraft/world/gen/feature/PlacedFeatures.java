@@ -10,6 +10,7 @@ import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.intprovider.WeightedListIntProvider;
 import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.BuiltinRegistries;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.YOffset;
@@ -32,7 +33,7 @@ public class PlacedFeatures {
 	public static final PlacementModifier FOUR_ABOVE_AND_BELOW_RANGE = HeightRangePlacementModifier.uniform(YOffset.aboveBottom(4), YOffset.belowTop(4));
 	public static final PlacementModifier BOTTOM_TO_120_RANGE = HeightRangePlacementModifier.uniform(YOffset.getBottom(), YOffset.fixed(256));
 
-	public static RegistryEntry<PlacedFeature> getDefaultPlacedFeature() {
+	public static RegistryEntry<PlacedFeature> getDefaultPlacedFeature(Registry<PlacedFeature> registry) {
 		List<RegistryEntry<PlacedFeature>> list = List.of(
 			OceanPlacedFeatures.KELP_COLD,
 			UndergroundPlacedFeatures.CAVE_VINES,

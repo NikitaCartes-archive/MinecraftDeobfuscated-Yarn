@@ -22,37 +22,37 @@ public class BufferRenderer {
 		currentVertexBuffer = null;
 	}
 
-	public static void drawWithShader(BufferBuilder.class_7433 arg) {
+	public static void drawWithShader(BufferBuilder.BuiltBuffer buffer) {
 		if (!RenderSystem.isOnRenderThreadOrInit()) {
-			RenderSystem.recordRenderCall(() -> drawWithShaderInternal(arg));
+			RenderSystem.recordRenderCall(() -> drawWithShaderInternal(buffer));
 		} else {
-			drawWithShaderInternal(arg);
+			drawWithShaderInternal(buffer);
 		}
 	}
 
-	private static void drawWithShaderInternal(BufferBuilder.class_7433 arg) {
-		VertexBuffer vertexBuffer = getVertexBuffer(arg);
+	private static void drawWithShaderInternal(BufferBuilder.BuiltBuffer buffer) {
+		VertexBuffer vertexBuffer = getVertexBuffer(buffer);
 		if (vertexBuffer != null) {
 			vertexBuffer.draw(RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader());
 		}
 	}
 
-	public static void drawWithoutShader(BufferBuilder.class_7433 arg) {
-		VertexBuffer vertexBuffer = getVertexBuffer(arg);
+	public static void drawWithoutShader(BufferBuilder.BuiltBuffer buffer) {
+		VertexBuffer vertexBuffer = getVertexBuffer(buffer);
 		if (vertexBuffer != null) {
 			vertexBuffer.drawElements();
 		}
 	}
 
 	@Nullable
-	private static VertexBuffer getVertexBuffer(BufferBuilder.class_7433 arg) {
+	private static VertexBuffer getVertexBuffer(BufferBuilder.BuiltBuffer buffer) {
 		RenderSystem.assertOnRenderThread();
-		if (arg.method_43584()) {
-			arg.method_43585();
+		if (buffer.isEmpty()) {
+			buffer.release();
 			return null;
 		} else {
-			VertexBuffer vertexBuffer = bindAndSet(arg.method_43583().format());
-			vertexBuffer.upload(arg);
+			VertexBuffer vertexBuffer = bindAndSet(buffer.getParameters().format());
+			vertexBuffer.upload(buffer);
 			return vertexBuffer;
 		}
 	}

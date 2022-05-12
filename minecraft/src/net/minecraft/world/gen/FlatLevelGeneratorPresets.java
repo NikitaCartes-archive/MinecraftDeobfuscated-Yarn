@@ -32,8 +32,8 @@ public class FlatLevelGeneratorPresets {
 	public static final RegistryKey<FlatLevelGeneratorPreset> REDSTONE_READY = of("redstone_ready");
 	public static final RegistryKey<FlatLevelGeneratorPreset> THE_VOID = of("the_void");
 
-	public static RegistryEntry<FlatLevelGeneratorPreset> initAndGetDefault() {
-		return new FlatLevelGeneratorPresets.Registrar().initAndGetDefault();
+	public static RegistryEntry<FlatLevelGeneratorPreset> initAndGetDefault(Registry<FlatLevelGeneratorPreset> registry) {
+		return new FlatLevelGeneratorPresets.Registrar(registry).initAndGetDefault();
 	}
 
 	private static RegistryKey<FlatLevelGeneratorPreset> of(String id) {
@@ -41,9 +41,13 @@ public class FlatLevelGeneratorPresets {
 	}
 
 	static class Registrar {
-		private final Registry<FlatLevelGeneratorPreset> flatLevelGeneratorPresetRegistry = BuiltinRegistries.FLAT_LEVEL_GENERATOR_PRESET;
+		private final Registry<FlatLevelGeneratorPreset> flatLevelGeneratorPresetRegistry;
 		private final Registry<Biome> biomeRegistry = BuiltinRegistries.BIOME;
 		private final Registry<StructureSet> structureSetRegistry = BuiltinRegistries.STRUCTURE_SET;
+
+		Registrar(Registry<FlatLevelGeneratorPreset> registry) {
+			this.flatLevelGeneratorPresetRegistry = registry;
+		}
 
 		private RegistryEntry<FlatLevelGeneratorPreset> createAndRegister(
 			RegistryKey<FlatLevelGeneratorPreset> registryKey,

@@ -29,6 +29,7 @@ public class ServerMetadata {
 	private ServerMetadata.Version version;
 	@Nullable
 	private String favicon;
+	private boolean previewsChat;
 
 	@Nullable
 	public Text getDescription() {
@@ -66,6 +67,14 @@ public class ServerMetadata {
 		return this.favicon;
 	}
 
+	public void setPreviewsChat(boolean previewsChat) {
+		this.previewsChat = previewsChat;
+	}
+
+	public boolean shouldPreviewChat() {
+		return this.previewsChat;
+	}
+
 	public static class Deserializer implements JsonDeserializer<ServerMetadata>, JsonSerializer<ServerMetadata> {
 		public ServerMetadata deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "status");
@@ -86,11 +95,16 @@ public class ServerMetadata {
 				serverMetadata.setFavicon(JsonHelper.getString(jsonObject, "favicon"));
 			}
 
+			if (jsonObject.has("previewsChat")) {
+				serverMetadata.setPreviewsChat(JsonHelper.getBoolean(jsonObject, "previewsChat"));
+			}
+
 			return serverMetadata;
 		}
 
 		public JsonElement serialize(ServerMetadata serverMetadata, Type type, JsonSerializationContext jsonSerializationContext) {
 			JsonObject jsonObject = new JsonObject();
+			jsonObject.addProperty("previewsChat", serverMetadata.shouldPreviewChat());
 			if (serverMetadata.getDescription() != null) {
 				jsonObject.add("description", jsonSerializationContext.serialize(serverMetadata.getDescription()));
 			}

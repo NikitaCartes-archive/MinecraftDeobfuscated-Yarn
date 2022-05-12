@@ -50,11 +50,11 @@ public class FindWalkTargetTask extends Task<PathAwareEntity> {
 		Optional<Vec3d> optional = Optional.ofNullable(
 			NoPenaltyTargeting.findTo(entity, this.maxHorizontalDistance, this.maxVerticalDistance, Vec3d.ofBottomCenter(pos.getCenterPos()), (float) (Math.PI / 2))
 		);
-		entity.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget(vec3d, this.walkSpeed, 0)));
+		entity.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(posx -> new WalkTarget(posx, this.walkSpeed, 0)));
 	}
 
 	private void updateWalkTarget(PathAwareEntity entity) {
 		Optional<Vec3d> optional = Optional.ofNullable(FuzzyTargeting.find(entity, this.maxHorizontalDistance, this.maxVerticalDistance));
-		entity.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget(vec3d, this.walkSpeed, 0)));
+		entity.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(pos -> new WalkTarget(pos, this.walkSpeed, 0)));
 	}
 }

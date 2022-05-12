@@ -79,7 +79,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 				GameMode gameMode = GameMode.byId(buf.readVarInt());
 				int i = buf.readVarInt();
 				Text text = buf.readNullable(PacketByteBuf::readText);
-				PlayerPublicKey.PublicKeyData publicKeyData = buf.readNullable(buf2 -> buf2.decode(PlayerPublicKey.PublicKeyData.CODEC));
+				PlayerPublicKey.PublicKeyData publicKeyData = buf.readNullable(PlayerPublicKey.PublicKeyData::new);
 				return new PlayerListS2CPacket.Entry(gameProfile, i, gameMode, text, publicKeyData);
 			}
 
@@ -89,7 +89,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 				buf.writeVarInt(entry.getGameMode().getId());
 				buf.writeVarInt(entry.getLatency());
 				buf.writeNullable(entry.getDisplayName(), PacketByteBuf::writeText);
-				buf.writeNullable(entry.getPublicKeyData(), (buf2, publicKeyData) -> buf2.encode(PlayerPublicKey.PublicKeyData.CODEC, publicKeyData));
+				buf.writeNullable(entry.getPublicKeyData(), (buf2, publicKeyData) -> publicKeyData.write(buf2));
 			}
 		},
 		UPDATE_GAME_MODE {

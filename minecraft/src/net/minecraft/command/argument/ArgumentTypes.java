@@ -80,6 +80,8 @@ public class ArgumentTypes {
 		register(registry, "time", TimeArgumentType.class, ConstantArgumentSerializer.of(TimeArgumentType::time));
 		register(registry, "resource_or_tag", upcast(RegistryPredicateArgumentType.class), new RegistryPredicateArgumentType.Serializer());
 		register(registry, "resource", upcast(RegistryKeyArgumentType.class), new RegistryKeyArgumentType.Serializer());
+		register(registry, "template_mirror", BlockMirrorArgumentType.class, ConstantArgumentSerializer.of(BlockMirrorArgumentType::blockMirror));
+		register(registry, "template_rotation", BlockRotationArgumentType.class, ConstantArgumentSerializer.of(BlockRotationArgumentType::blockRotation));
 		if (SharedConstants.isDevelopment) {
 			register(registry, "test_argument", TestFunctionArgumentType.class, ConstantArgumentSerializer.of(TestFunctionArgumentType::testFunction));
 			register(registry, "test_class", TestClassArgumentType.class, ConstantArgumentSerializer.of(TestClassArgumentType::testClass));

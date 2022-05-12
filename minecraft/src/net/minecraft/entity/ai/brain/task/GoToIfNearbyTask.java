@@ -37,7 +37,7 @@ public class GoToIfNearbyTask extends Task<PathAwareEntity> {
 	protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
 		if (l > this.nextUpdateTime) {
 			Optional<Vec3d> optional = Optional.ofNullable(FuzzyTargeting.find(pathAwareEntity, 8, 6));
-			pathAwareEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget(vec3d, this.walkSpeed, 1)));
+			pathAwareEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(pos -> new WalkTarget(pos, this.walkSpeed, 1)));
 			this.nextUpdateTime = l + 180L;
 		}
 	}

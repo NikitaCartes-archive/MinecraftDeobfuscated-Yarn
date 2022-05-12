@@ -12,6 +12,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.client.util.ChatMessages;
 import net.minecraft.client.util.math.MatrixStack;
@@ -237,7 +238,7 @@ public class ChatHud extends DrawableHelper {
 	}
 
 	@Nullable
-	public Style getText(double x, double y) {
+	public Style getTextStyleAt(double x, double y) {
 		if (this.isChatFocused() && !this.client.options.hudHidden && !this.isChatHidden()) {
 			double d = x - 2.0;
 			double e = (double)this.client.getWindow().getScaledHeight() - y - 40.0;
@@ -262,8 +263,14 @@ public class ChatHud extends DrawableHelper {
 		}
 	}
 
+	@Nullable
+	public ChatScreen getChatScreen() {
+		Screen var2 = this.client.currentScreen;
+		return var2 instanceof ChatScreen ? (ChatScreen)var2 : null;
+	}
+
 	private boolean isChatFocused() {
-		return this.client.currentScreen instanceof ChatScreen;
+		return this.getChatScreen() != null;
 	}
 
 	private void removeMessage(int messageId) {

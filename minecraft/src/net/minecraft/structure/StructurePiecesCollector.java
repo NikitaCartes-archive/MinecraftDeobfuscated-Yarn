@@ -36,7 +36,7 @@ public class StructurePiecesCollector implements StructurePiecesHolder {
 	 * Somewhat like {@code shiftInto(random, bottomY, topY - topPenalty)}.
 	 */
 	@Deprecated
-	public void shiftInto(int topY, int bottomY, AbstractRandom random, int topPenalty) {
+	public int shiftInto(int topY, int bottomY, AbstractRandom random, int topPenalty) {
 		int i = topY - topPenalty;
 		BlockBox blockBox = this.getBoundingBox();
 		int j = blockBox.getBlockCountY() + bottomY + 1;
@@ -46,6 +46,7 @@ public class StructurePiecesCollector implements StructurePiecesHolder {
 
 		int k = j - blockBox.getMaxY();
 		this.shift(k);
+		return k;
 	}
 
 	/** @deprecated */

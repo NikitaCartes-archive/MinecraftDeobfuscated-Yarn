@@ -530,7 +530,10 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 		"strider", EntityType.Builder.<StriderEntity>create(StriderEntity::new, SpawnGroup.CREATURE).makeFireImmune().setDimensions(0.9F, 1.7F).maxTrackingRange(10)
 	);
 	public static final EntityType<TadpoleEntity> TADPOLE = register(
-		"tadpole", EntityType.Builder.<TadpoleEntity>create(TadpoleEntity::new, SpawnGroup.CREATURE).setDimensions(0.5F, 0.4F).maxTrackingRange(10)
+		"tadpole",
+		EntityType.Builder.<TadpoleEntity>create(TadpoleEntity::new, SpawnGroup.CREATURE)
+			.setDimensions(TadpoleEntity.WIDTH, TadpoleEntity.HEIGHT)
+			.maxTrackingRange(10)
 	);
 	public static final EntityType<EggEntity> EGG = register(
 		"egg", EntityType.Builder.<EggEntity>create(EggEntity::new, SpawnGroup.MISC).setDimensions(0.25F, 0.25F).maxTrackingRange(4).trackingTickInterval(10)
@@ -931,9 +934,9 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 	public static Stream<Entity> streamFromNbt(List<? extends NbtElement> entityNbtList, World world) {
 		final Spliterator<? extends NbtElement> spliterator = entityNbtList.spliterator();
 		return StreamSupport.stream(new Spliterator<Entity>() {
-			public boolean tryAdvance(Consumer<? super Entity> consumer) {
-				return spliterator.tryAdvance(nbtElement -> EntityType.loadEntityWithPassengers((NbtCompound)nbtElement, world, entity -> {
-						consumer.accept(entity);
+			public boolean tryAdvance(Consumer<? super Entity> action) {
+				return spliterator.tryAdvance(nbt -> EntityType.loadEntityWithPassengers((NbtCompound)nbt, world, entity -> {
+						action.accept(entity);
 						return entity;
 					}));
 			}
@@ -1029,7 +1032,7 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 		}
 
 		public static <T extends Entity> EntityType.Builder<T> create(SpawnGroup spawnGroup) {
-			return new EntityType.Builder<>((entityType, world) -> null, spawnGroup);
+			return new EntityType.Builder<>((type, world) -> null, spawnGroup);
 		}
 
 		public EntityType.Builder<T> setDimensions(float width, float height) {

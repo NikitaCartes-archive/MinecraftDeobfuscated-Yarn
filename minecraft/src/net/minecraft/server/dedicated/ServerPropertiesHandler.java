@@ -86,6 +86,8 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 	);
 	public final String textFilteringConfig = this.getString("text-filtering-config", "");
 	public Optional<MinecraftServer.ServerResourcePackProperties> serverResourcePackProperties;
+	public final boolean previewsChat = this.parseBoolean("previews-chat", false);
+	public final boolean testRainbowChat = this.parseBoolean("test-rainbow-chat", false);
 	public final AbstractPropertiesHandler<ServerPropertiesHandler>.PropertyAccessor<Integer> playerIdleTimeout = this.intAccessor("player-idle-timeout", 0);
 	public final AbstractPropertiesHandler<ServerPropertiesHandler>.PropertyAccessor<Boolean> whiteList = this.booleanAccessor("white-list", false);
 	public final boolean enforceSecureProfile = this.parseBoolean("enforce-secure-profile", false);

@@ -108,7 +108,7 @@ public class RuinedPortalStructure extends StructureType {
 			}
 
 			Structure structure = context.structureManager().getStructureOrBlank(identifier);
-			BlockRotation blockRotation = Util.getRandom((BlockRotation[])BlockRotation.values(), chunkRandom);
+			BlockRotation blockRotation = Util.getRandom(BlockRotation.values(), chunkRandom);
 			BlockMirror blockMirror = chunkRandom.nextFloat() < 0.5F ? BlockMirror.NONE : BlockMirror.FRONT_BACK;
 			BlockPos blockPos = new BlockPos(structure.getSize().getX() / 2, 0, structure.getSize().getZ() / 2);
 			ChunkGenerator chunkGenerator = context.chunkGenerator();

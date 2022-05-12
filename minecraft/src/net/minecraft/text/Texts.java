@@ -132,11 +132,14 @@ public class Texts {
 	}
 
 	public static boolean hasTranslation(@Nullable Text text) {
-		if (text instanceof TranslatableTextContent translatableTextContent) {
-			String string = translatableTextContent.getKey();
-			return Language.getInstance().hasTranslation(string);
-		} else {
-			return true;
+		if (text != null) {
+			TextContent string = text.getContent();
+			if (string instanceof TranslatableTextContent translatableTextContent) {
+				String stringx = translatableTextContent.getKey();
+				return Language.getInstance().hasTranslation(stringx);
+			}
 		}
+
+		return true;
 	}
 }

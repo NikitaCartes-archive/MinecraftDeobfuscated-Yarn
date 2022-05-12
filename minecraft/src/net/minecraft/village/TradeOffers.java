@@ -61,7 +61,7 @@ public class TradeOffers {
 	private static final float LOW_PRICE_MULTIPLIER = 0.05F;
 	private static final float HIGH_PRICE_MULTIPLIER = 0.2F;
 	public static final Map<VillagerProfession, Int2ObjectMap<TradeOffers.Factory[]>> PROFESSION_TO_LEVELED_TRADE = Util.make(
-		Maps.<VillagerProfession, Int2ObjectMap<TradeOffers.Factory[]>>newHashMap(),
+		Maps.newHashMap(),
 		map -> {
 			map.put(
 				VillagerProfession.FARMER,

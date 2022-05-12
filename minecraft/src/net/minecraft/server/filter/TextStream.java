@@ -58,5 +58,9 @@ public interface TextStream {
 		public static TextStream.Message censored(String raw) {
 			return new TextStream.Message(raw, "");
 		}
+
+		public boolean hasFilteredText() {
+			return !this.raw.equals(this.filtered);
+		}
 	}
 }

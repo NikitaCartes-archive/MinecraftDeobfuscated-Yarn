@@ -6,6 +6,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.GlobalPos;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.world.poi.PointOfInterestType;
 
@@ -22,8 +23,8 @@ public class WorkStationCompetitionTask extends Task<VillagerEntity> {
 		serverWorld.getPointOfInterestStorage()
 			.getType(globalPos.getPos())
 			.ifPresent(
-				pointOfInterestType -> LookTargetUtil.streamSeenVillagers(
-							villagerEntity, villagerEntityxx -> this.isUsingWorkStationAt(globalPos, pointOfInterestType, villagerEntityxx)
+				registryEntry -> LookTargetUtil.streamSeenVillagers(
+							villagerEntity, villagerEntityxx -> this.isUsingWorkStationAt(globalPos, registryEntry, villagerEntityxx)
 						)
 						.reduce(villagerEntity, WorkStationCompetitionTask::keepJobSiteForMoreExperiencedVillager)
 			);
@@ -44,14 +45,14 @@ public class WorkStationCompetitionTask extends Task<VillagerEntity> {
 		return villagerEntity;
 	}
 
-	private boolean isUsingWorkStationAt(GlobalPos pos, PointOfInterestType poiType, VillagerEntity villager) {
+	private boolean isUsingWorkStationAt(GlobalPos pos, RegistryEntry<PointOfInterestType> poiType, VillagerEntity villager) {
 		return this.hasJobSite(villager)
 			&& pos.equals(villager.getBrain().getOptionalMemory(MemoryModuleType.JOB_SITE).get())
 			&& this.isCompletedWorkStation(poiType, villager.getVillagerData().getProfession());
 	}
 
-	private boolean isCompletedWorkStation(PointOfInterestType poiType, VillagerProfession profession) {
-		return profession.getWorkStation().getCompletionCondition().test(poiType);
+	private boolean isCompletedWorkStation(RegistryEntry<PointOfInterestType> poiType, VillagerProfession profession) {
+		return profession.heldWorkstation().test(poiType);
 	}
 
 	private boolean hasJobSite(VillagerEntity villager) {

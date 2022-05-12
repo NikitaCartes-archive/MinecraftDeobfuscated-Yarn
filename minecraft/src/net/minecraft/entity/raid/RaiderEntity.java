@@ -36,6 +36,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.village.raid.Raid;
 import net.minecraft.village.raid.RaidManager;
 import net.minecraft.world.GameRules;
@@ -43,7 +44,7 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.poi.PointOfInterestStorage;
-import net.minecraft.world.poi.PointOfInterestType;
+import net.minecraft.world.poi.PointOfInterestTypes;
 
 public abstract class RaiderEntity extends PatrolEntity {
 	protected static final TrackedData<Boolean> CELEBRATING = DataTracker.registerData(RaiderEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -319,7 +320,12 @@ public abstract class RaiderEntity extends PatrolEntity {
 			BlockPos blockPos = this.raider.getBlockPos();
 			Optional<BlockPos> optional = serverWorld.getPointOfInterestStorage()
 				.getPosition(
-					poiType -> poiType == PointOfInterestType.HOME, this::canLootHome, PointOfInterestStorage.OccupationStatus.ANY, blockPos, 48, this.raider.random
+					registryEntry -> registryEntry.matchesKey(PointOfInterestTypes.HOME),
+					this::canLootHome,
+					PointOfInterestStorage.OccupationStatus.ANY,
+					blockPos,
+					48,
+					this.raider.random
 				);
 			if (!optional.isPresent()) {
 				return false;

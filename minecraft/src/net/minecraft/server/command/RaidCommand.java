@@ -54,7 +54,7 @@ public class RaidCommand {
 	}
 
 	private static int executeGlow(ServerCommandSource source) throws CommandSyntaxException {
-		Raid raid = getRaid(source.getPlayer());
+		Raid raid = getRaid(source.getPlayerOrThrow());
 		if (raid != null) {
 			for(RaiderEntity raiderEntity : raid.getAllRaiders()) {
 				raiderEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 1000, 1));
@@ -65,7 +65,7 @@ public class RaidCommand {
 	}
 
 	private static int executeSetOmen(ServerCommandSource source, int level) throws CommandSyntaxException {
-		Raid raid = getRaid(source.getPlayer());
+		Raid raid = getRaid(source.getPlayerOrThrow());
 		if (raid != null) {
 			int i = raid.getMaxAcceptableBadOmenLevel();
 			if (level > i) {
@@ -102,7 +102,7 @@ public class RaidCommand {
 	}
 
 	private static int executeStart(ServerCommandSource source, int level) throws CommandSyntaxException {
-		ServerPlayerEntity serverPlayerEntity = source.getPlayer();
+		ServerPlayerEntity serverPlayerEntity = source.getPlayerOrThrow();
 		BlockPos blockPos = serverPlayerEntity.getBlockPos();
 		if (serverPlayerEntity.getWorld().hasRaidAt(blockPos)) {
 			source.sendError(Text.literal("Raid already started close by"));
@@ -123,7 +123,7 @@ public class RaidCommand {
 	}
 
 	private static int executeStop(ServerCommandSource source) throws CommandSyntaxException {
-		ServerPlayerEntity serverPlayerEntity = source.getPlayer();
+		ServerPlayerEntity serverPlayerEntity = source.getPlayerOrThrow();
 		BlockPos blockPos = serverPlayerEntity.getBlockPos();
 		Raid raid = serverPlayerEntity.getWorld().getRaidAt(blockPos);
 		if (raid != null) {
@@ -137,7 +137,7 @@ public class RaidCommand {
 	}
 
 	private static int executeCheck(ServerCommandSource source) throws CommandSyntaxException {
-		Raid raid = getRaid(source.getPlayer());
+		Raid raid = getRaid(source.getPlayerOrThrow());
 		if (raid != null) {
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append("Found a started raid! ");

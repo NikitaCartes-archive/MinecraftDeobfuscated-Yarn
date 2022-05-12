@@ -11,9 +11,9 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.poi.PointOfInterest;
 import net.minecraft.world.poi.PointOfInterestStorage;
-import net.minecraft.world.poi.PointOfInterestType;
 
 public class IronGolemWanderAroundGoal extends WanderAroundGoal {
 	private static final int CHUNK_RANGE = 2;
@@ -92,7 +92,7 @@ public class IronGolemWanderAroundGoal extends WanderAroundGoal {
 		ServerWorld serverWorld = (ServerWorld)this.mob.world;
 		PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
 		List<BlockPos> list = (List)pointOfInterestStorage.getInCircle(
-				pointOfInterestType -> true, pos.getCenterPos(), 8, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED
+				registryEntry -> true, pos.getCenterPos(), 8, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED
 			)
 			.map(PointOfInterest::getPos)
 			.collect(Collectors.toList());

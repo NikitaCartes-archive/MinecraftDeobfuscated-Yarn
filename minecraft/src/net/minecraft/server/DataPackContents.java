@@ -1,6 +1,7 @@
 package net.minecraft.server;
 
 import com.mojang.logging.LogUtils;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -18,7 +19,6 @@ import net.minecraft.resource.ResourceReloader;
 import net.minecraft.resource.SimpleResourceReload;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.function.FunctionLoader;
-import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagKey;
 import net.minecraft.tag.TagManagerLoader;
 import net.minecraft.util.Identifier;
@@ -147,7 +147,7 @@ public class DataPackContents {
 		Map<TagKey<T>, List<RegistryEntry<T>>> map = (Map)tags.tags()
 			.entrySet()
 			.stream()
-			.collect(Collectors.toUnmodifiableMap(entry -> TagKey.of(registryKey, (Identifier)entry.getKey()), entry -> ((Tag)entry.getValue()).values()));
+			.collect(Collectors.toUnmodifiableMap(entry -> TagKey.of(registryKey, (Identifier)entry.getKey()), entry -> List.copyOf((Collection)entry.getValue())));
 		dynamicRegistryManager.get(registryKey).populateTags(map);
 	}
 }

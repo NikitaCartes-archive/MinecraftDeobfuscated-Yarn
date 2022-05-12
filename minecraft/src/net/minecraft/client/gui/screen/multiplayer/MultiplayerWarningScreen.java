@@ -15,9 +15,11 @@ public class MultiplayerWarningScreen extends WarningScreen {
 	private static final Text MESSAGE = Text.translatable("multiplayerWarning.message");
 	private static final Text CHECK_MESSAGE = Text.translatable("multiplayerWarning.check");
 	private static final Text NARRATED_TEXT = HEADER.shallowCopy().append("\n").append(MESSAGE);
+	private final Screen parent;
 
 	public MultiplayerWarningScreen(Screen parent) {
-		super(HEADER, MESSAGE, CHECK_MESSAGE, NARRATED_TEXT, parent);
+		super(HEADER, MESSAGE, CHECK_MESSAGE, NARRATED_TEXT);
+		this.parent = parent;
 	}
 
 	@Override

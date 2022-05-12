@@ -156,7 +156,7 @@ public class StructureBlockScreen extends Screen {
 				.build(this.width / 2 + 4 + 100, 160, 50, 20, INCLUDE_ENTITIES_TEXT, (button, includeEntities) -> this.structureBlock.setIgnoreEntities(!includeEntities))
 		);
 		this.buttonMirror = this.addDrawableChild(
-			CyclingButtonWidget.builder(BlockMirror::getName)
+			CyclingButtonWidget.<BlockMirror>builder(BlockMirror::getName)
 				.values(BlockMirror.values())
 				.omitKeyText()
 				.initially(this.mirror)

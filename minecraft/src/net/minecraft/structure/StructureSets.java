@@ -5,6 +5,7 @@ import java.util.Optional;
 import net.minecraft.tag.BiomeTags;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.BuiltinRegistries;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.gen.chunk.placement.ConcentricRingsStructurePlacement;
@@ -126,8 +127,8 @@ public interface StructureSets {
 		new ConcentricRingsStructurePlacement(32, 3, 128, BuiltinRegistries.BIOME.getOrCreateEntryList(BiomeTags.STRONGHOLD_BIASED_TO))
 	);
 
-	static RegistryEntry<StructureSet> initAndGetDefault() {
-		return (RegistryEntry<StructureSet>)BuiltinRegistries.STRUCTURE_SET.streamEntries().iterator().next();
+	static RegistryEntry<StructureSet> initAndGetDefault(Registry<StructureSet> registry) {
+		return (RegistryEntry<StructureSet>)registry.streamEntries().iterator().next();
 	}
 
 	static RegistryEntry<StructureSet> register(RegistryKey<StructureSet> key, StructureSet structureSet) {

@@ -3,6 +3,7 @@ package net.minecraft.network.packet.s2c.play;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
+import java.util.Optional;
 import net.minecraft.network.MessageSender;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.Packet;
@@ -39,21 +40,30 @@ import net.minecraft.util.registry.Registry;
  * @see net.minecraft.server.network.ServerPlayerEntity#sendChatMessage
  * @see net.minecraft.client.network.ClientPlayNetworkHandler#onChatMessage
  */
-public record ChatMessageS2CPacket(Text content, int typeId, MessageSender sender, Instant time, NetworkEncryptionUtils.SignatureData saltSignature)
-	implements Packet<ClientPlayPacketListener> {
+public record ChatMessageS2CPacket(
+	Text signedContent, Optional<Text> unsignedContent, int typeId, MessageSender sender, Instant time, NetworkEncryptionUtils.SignatureData saltSignature
+) implements Packet<ClientPlayPacketListener> {
 	private static final Duration TIME_TO_LIVE = ChatMessageC2SPacket.TIME_TO_LIVE.plus(Duration.ofMinutes(2L));
 
 	public ChatMessageS2CPacket(PacketByteBuf buf) {
-		this(buf.readText(), buf.readVarInt(), new MessageSender(buf), Instant.ofEpochSecond(buf.readLong()), new NetworkEncryptionUtils.SignatureData(buf));
+		this(
+			buf.readText(),
+			buf.readOptional(PacketByteBuf::readText),
+			buf.readVarInt(),
+			new MessageSender(buf),
+			buf.readInstant(),
+			new NetworkEncryptionUtils.SignatureData(buf)
+		);
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) {
-		buf.writeText(this.content);
+		buf.writeText(this.signedContent);
+		buf.writeOptional(this.unsignedContent, PacketByteBuf::writeText);
 		buf.writeVarInt(this.typeId);
 		this.sender.write(buf);
-		buf.writeLong(this.time.getEpochSecond());
-		this.saltSignature.write(buf);
+		buf.writeInstant(this.time);
+		NetworkEncryptionUtils.SignatureData.write(buf, this.saltSignature);
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
@@ -67,7 +77,7 @@ public record ChatMessageS2CPacket(Text content, int typeId, MessageSender sende
 
 	public SignedChatMessage getSignedMessage() {
 		ChatMessageSignature chatMessageSignature = new ChatMessageSignature(this.sender.uuid(), this.time, this.saltSignature);
-		return new SignedChatMessage(this.content, chatMessageSignature);
+		return new SignedChatMessage(this.signedContent, chatMessageSignature, this.unsignedContent);
 	}
 
 	/**

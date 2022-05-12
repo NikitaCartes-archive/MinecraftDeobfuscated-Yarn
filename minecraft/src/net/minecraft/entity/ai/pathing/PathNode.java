@@ -54,6 +54,12 @@ public class PathNode {
 		return MathHelper.sqrt(f * f + g * g + h * h);
 	}
 
+	public float getHorizontalDistance(PathNode node) {
+		float f = (float)(node.x - this.x);
+		float g = (float)(node.z - this.z);
+		return MathHelper.sqrt(f * f + g * g);
+	}
+
 	public float getDistance(BlockPos pos) {
 		float f = (float)(pos.getX() - this.x);
 		float g = (float)(pos.getY() - this.y);

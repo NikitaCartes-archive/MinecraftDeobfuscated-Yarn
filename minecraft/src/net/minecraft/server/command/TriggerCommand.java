@@ -38,7 +38,7 @@ public class TriggerCommand {
 								.executes(
 									context -> executeSimple(
 											(ServerCommandSource)context.getSource(),
-											getScore(((ServerCommandSource)context.getSource()).getPlayer(), ScoreboardObjectiveArgumentType.getObjective(context, "objective"))
+											getScore(((ServerCommandSource)context.getSource()).getPlayerOrThrow(), ScoreboardObjectiveArgumentType.getObjective(context, "objective"))
 										)
 								))
 							.then(
@@ -48,7 +48,7 @@ public class TriggerCommand {
 											.executes(
 												context -> executeAdd(
 														context.getSource(),
-														getScore(context.getSource().getPlayer(), ScoreboardObjectiveArgumentType.getObjective(context, "objective")),
+														getScore(context.getSource().getPlayerOrThrow(), ScoreboardObjectiveArgumentType.getObjective(context, "objective")),
 														IntegerArgumentType.getInteger(context, "value")
 													)
 											)
@@ -61,7 +61,7 @@ public class TriggerCommand {
 										.executes(
 											context -> executeSet(
 													context.getSource(),
-													getScore(context.getSource().getPlayer(), ScoreboardObjectiveArgumentType.getObjective(context, "objective")),
+													getScore(context.getSource().getPlayerOrThrow(), ScoreboardObjectiveArgumentType.getObjective(context, "objective")),
 													IntegerArgumentType.getInteger(context, "value")
 												)
 										)

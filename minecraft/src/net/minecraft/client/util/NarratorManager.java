@@ -32,11 +32,11 @@ public class NarratorManager implements ClientChatListener {
 				this.debugPrintMessage(message.getString());
 			} else {
 				type.narration().ifPresent(narrationRule -> {
-					if (narratorMode.shouldNarrate(narrationRule.priority())) {
+					if (narratorMode.shouldNarrate(narrationRule.kind())) {
 						Text text2 = narrationRule.apply(message, sender);
 						String string = text2.getString();
 						this.debugPrintMessage(string);
-						this.narrator.say(string, narrationRule.priority().shouldInterrupt());
+						this.narrator.say(string, narrationRule.kind().shouldInterrupt());
 					}
 				});
 			}

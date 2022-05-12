@@ -28,18 +28,21 @@ public class SleepingChatScreen extends ChatScreen {
 	}
 
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-			this.stopSleeping();
-		} else if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
-			String string = this.chatField.getText().trim();
-			if (!string.isEmpty()) {
-				this.sendMessage(string);
-			}
-
+	public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+		if (keyCode != GLFW.GLFW_KEY_ENTER && keyCode != GLFW.GLFW_KEY_KP_ENTER) {
+			return super.keyReleased(keyCode, scanCode, modifiers);
+		} else {
+			this.sendMessage(this.chatField.getText(), true);
 			this.chatField.setText("");
 			this.client.inGameHud.getChatHud().resetScroll();
 			return true;
+		}
+	}
+
+	@Override
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+			this.stopSleeping();
 		}
 
 		return super.keyPressed(keyCode, scanCode, modifiers);

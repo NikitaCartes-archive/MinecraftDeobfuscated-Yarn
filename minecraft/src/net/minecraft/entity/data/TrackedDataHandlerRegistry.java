@@ -95,7 +95,7 @@ public class TrackedDataHandlerRegistry {
 	public static final TrackedDataHandler<Direction> FACING = TrackedDataHandler.ofEnum(Direction.class);
 	public static final TrackedDataHandler<Optional<UUID>> OPTIONAL_UUID = TrackedDataHandler.ofOptional(PacketByteBuf::writeUuid, PacketByteBuf::readUuid);
 	public static final TrackedDataHandler<Optional<GlobalPos>> OPTIONAL_GLOBAL_POS = TrackedDataHandler.ofOptional(
-		(packetByteBuf, globalPos) -> packetByteBuf.encode(GlobalPos.CODEC, globalPos), packetByteBuf -> packetByteBuf.decode(GlobalPos.CODEC)
+		PacketByteBuf::writeGlobalPos, PacketByteBuf::readGlobalPos
 	);
 	public static final TrackedDataHandler<NbtCompound> NBT_COMPOUND = new TrackedDataHandler<NbtCompound>() {
 		public void write(PacketByteBuf packetByteBuf, NbtCompound nbtCompound) {

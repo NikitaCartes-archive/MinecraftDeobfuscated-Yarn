@@ -386,15 +386,26 @@ public class ServerCommandSource implements CommandSource {
 	}
 
 	/**
-	 * Gets the player from this command source or throws a command syntax exception if this command source is not a player.
+	 * {@return the player from this command source}
+	 * 
+	 * @throws CommandSyntaxException if this command source is not a player
 	 */
-	public ServerPlayerEntity getPlayer() throws CommandSyntaxException {
+	public ServerPlayerEntity getPlayerOrThrow() throws CommandSyntaxException {
 		Entity var2 = this.entity;
 		if (var2 instanceof ServerPlayerEntity) {
 			return (ServerPlayerEntity)var2;
 		} else {
 			throw REQUIRES_PLAYER_EXCEPTION.create();
 		}
+	}
+
+	/**
+	 * {@return the player from this command source, or {@code null} if the source is not a player}
+	 */
+	@Nullable
+	public ServerPlayerEntity getPlayer() {
+		Entity var2 = this.entity;
+		return var2 instanceof ServerPlayerEntity serverPlayerEntity ? serverPlayerEntity : null;
 	}
 
 	public boolean isExecutedByPlayer() {

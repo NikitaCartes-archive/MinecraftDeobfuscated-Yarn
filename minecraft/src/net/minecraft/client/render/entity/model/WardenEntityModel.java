@@ -112,12 +112,12 @@ public class WardenEntityModel<T extends WardenEntity> extends SinglePartEntityM
 		this.setLimbAngles(f, g);
 		this.setHeadAndBodyAngles(h);
 		this.setTendrilPitches(wardenEntity, h, k);
-		this.updateAnimation(wardenEntity.attackingAnimationState, WardenAnimations.ATTACKING);
-		this.updateAnimation(wardenEntity.chargingSonicBoomAnimationState, WardenAnimations.CHARGING_SONIC_BOOM);
-		this.updateAnimation(wardenEntity.diggingAnimationState, WardenAnimations.DIGGING);
-		this.updateAnimation(wardenEntity.emergingAnimationState, WardenAnimations.EMERGING);
-		this.updateAnimation(wardenEntity.roaringAnimationState, WardenAnimations.ROARING);
-		this.updateAnimation(wardenEntity.sniffingAnimationState, WardenAnimations.SNIFFING);
+		this.updateAnimation(wardenEntity.attackingAnimationState, WardenAnimations.ATTACKING, h);
+		this.updateAnimation(wardenEntity.chargingSonicBoomAnimationState, WardenAnimations.CHARGING_SONIC_BOOM, h);
+		this.updateAnimation(wardenEntity.diggingAnimationState, WardenAnimations.DIGGING, h);
+		this.updateAnimation(wardenEntity.emergingAnimationState, WardenAnimations.EMERGING, h);
+		this.updateAnimation(wardenEntity.roaringAnimationState, WardenAnimations.ROARING, h);
+		this.updateAnimation(wardenEntity.sniffingAnimationState, WardenAnimations.SNIFFING, h);
 	}
 
 	private void setHeadAngle(float yaw, float pitch) {

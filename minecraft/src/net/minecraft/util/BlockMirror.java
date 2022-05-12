@@ -4,16 +4,19 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.DirectionTransformation;
 
-public enum BlockMirror {
-	NONE(Text.translatable("mirror.none"), DirectionTransformation.IDENTITY),
-	LEFT_RIGHT(Text.translatable("mirror.left_right"), DirectionTransformation.INVERT_Z),
-	FRONT_BACK(Text.translatable("mirror.front_back"), DirectionTransformation.INVERT_X);
+public enum BlockMirror implements StringIdentifiable {
+	NONE("none", DirectionTransformation.IDENTITY),
+	LEFT_RIGHT("left_right", DirectionTransformation.INVERT_Z),
+	FRONT_BACK("front_back", DirectionTransformation.INVERT_X);
 
+	public static final com.mojang.serialization.Codec<BlockMirror> CODEC = StringIdentifiable.createCodec(BlockMirror::values);
+	private final String id;
 	private final Text name;
 	private final DirectionTransformation directionTransformation;
 
-	private BlockMirror(Text name, DirectionTransformation directionTransformation) {
-		this.name = name;
+	private BlockMirror(String id, DirectionTransformation directionTransformation) {
+		this.id = id;
+		this.name = Text.translatable("mirror." + id);
 		this.directionTransformation = directionTransformation;
 	}
 
@@ -51,5 +54,10 @@ public enum BlockMirror {
 
 	public Text getName() {
 		return this.name;
+	}
+
+	@Override
+	public String asString() {
+		return this.id;
 	}
 }

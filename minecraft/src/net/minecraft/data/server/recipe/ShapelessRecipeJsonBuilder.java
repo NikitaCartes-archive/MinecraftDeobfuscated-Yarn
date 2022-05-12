@@ -87,7 +87,7 @@ public class ShapelessRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 	public void offerTo(Consumer<RecipeJsonProvider> exporter, Identifier recipeId) {
 		this.validate(recipeId);
 		this.advancementBuilder
-			.parent(new Identifier("recipes/root"))
+			.parent(field_39377)
 			.criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeId))
 			.rewards(AdvancementRewards.Builder.recipe(recipeId))
 			.criteriaMerger(CriterionMerger.OR);

@@ -94,7 +94,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	public final AbstractRandom random = AbstractRandom.createAtomic();
 	@Deprecated
 	private final AbstractRandom blockingRandom = AbstractRandom.createBlocking();
-	final DimensionType dimension;
+	private final RegistryKey<DimensionType> dimension;
 	private final RegistryEntry<DimensionType> dimensionEntry;
 	protected final MutableWorldProperties properties;
 	private final Supplier<Profiler> profiler;
@@ -117,19 +117,20 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		this.profiler = supplier;
 		this.properties = properties;
 		this.dimensionEntry = dimension;
-		this.dimension = (DimensionType)dimension.value();
+		this.dimension = (RegistryKey)dimension.getKey().orElseThrow(() -> new IllegalArgumentException("Dimensions must be registered"));
+		final DimensionType dimensionType = (DimensionType)dimension.value();
 		this.registryKey = registryRef;
 		this.isClient = isClient;
-		if (this.dimension.coordinateScale() != 1.0) {
+		if (dimensionType.coordinateScale() != 1.0) {
 			this.border = new WorldBorder() {
 				@Override
 				public double getCenterX() {
-					return super.getCenterX() / World.this.dimension.coordinateScale();
+					return super.getCenterX() / dimensionType.coordinateScale();
 				}
 
 				@Override
 				public double getCenterZ() {
-					return super.getCenterZ() / World.this.dimension.coordinateScale();
+					return super.getCenterZ() / dimensionType.coordinateScale();
 				}
 			};
 		} else {
@@ -1013,6 +1014,10 @@ public abstract class World implements WorldAccess, AutoCloseable {
 
 	@Override
 	public DimensionType getDimension() {
+		return (DimensionType)this.dimensionEntry.value();
+	}
+
+	public RegistryKey<DimensionType> getDimensionKey() {
 		return this.dimension;
 	}
 

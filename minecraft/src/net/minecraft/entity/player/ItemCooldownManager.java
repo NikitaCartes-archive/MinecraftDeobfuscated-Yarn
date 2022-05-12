@@ -14,11 +14,11 @@ public class ItemCooldownManager {
 		return this.getCooldownProgress(item, 0.0F) > 0.0F;
 	}
 
-	public float getCooldownProgress(Item item, float partialTicks) {
+	public float getCooldownProgress(Item item, float tickDelta) {
 		ItemCooldownManager.Entry entry = (ItemCooldownManager.Entry)this.entries.get(item);
 		if (entry != null) {
 			float f = (float)(entry.endTick - entry.startTick);
-			float g = (float)entry.endTick - ((float)this.tick + partialTicks);
+			float g = (float)entry.endTick - ((float)this.tick + tickDelta);
 			return MathHelper.clamp(g / f, 0.0F, 1.0F);
 		} else {
 			return 0.0F;

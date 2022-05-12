@@ -10,8 +10,8 @@ import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.poi.PointOfInterestStorage;
-import net.minecraft.world.poi.PointOfInterestType;
 
 public class WalkTowardJobSiteTask extends Task<VillagerEntity> {
 	private static final int RUN_TIME = 1200;
@@ -41,12 +41,12 @@ public class WalkTowardJobSiteTask extends Task<VillagerEntity> {
 
 	protected void finishRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		Optional<GlobalPos> optional = villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
-		optional.ifPresent(globalPos -> {
-			BlockPos blockPos = globalPos.getPos();
-			ServerWorld serverWorld2 = serverWorld.getServer().getWorld(globalPos.getDimension());
+		optional.ifPresent(pos -> {
+			BlockPos blockPos = pos.getPos();
+			ServerWorld serverWorld2 = serverWorld.getServer().getWorld(pos.getDimension());
 			if (serverWorld2 != null) {
 				PointOfInterestStorage pointOfInterestStorage = serverWorld2.getPointOfInterestStorage();
-				if (pointOfInterestStorage.test(blockPos, pointOfInterestType -> true)) {
+				if (pointOfInterestStorage.test(blockPos, registryEntry -> true)) {
 					pointOfInterestStorage.releaseTicket(blockPos);
 				}
 

@@ -91,7 +91,6 @@ public class CommandManager {
 		KillCommand.register(this.dispatcher);
 		ListCommand.register(this.dispatcher);
 		LocateCommand.register(this.dispatcher);
-		LocateBiomeCommand.register(this.dispatcher);
 		LootCommand.register(this.dispatcher, commandRegistryAccess);
 		MessageCommand.register(this.dispatcher);
 		ParticleCommand.register(this.dispatcher);

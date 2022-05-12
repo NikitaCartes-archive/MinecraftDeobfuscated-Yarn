@@ -29,6 +29,8 @@ import java.nio.channels.GatheringByteChannel;
 import java.nio.channels.ScatteringByteChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.security.PublicKey;
+import java.time.Instant;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Date;
@@ -48,6 +50,8 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtTagSizeTracker;
+import net.minecraft.network.encryption.NetworkEncryptionException;
+import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.IndexedIterable;
@@ -56,8 +60,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.World;
 
 /**
  * A packet byte buf is a specialized byte buf with utility methods adapted
@@ -103,6 +110,9 @@ import net.minecraft.util.registry.Registry;
  *  <td>{@link ChunkSectionPos}</td><td>{@link #readChunkSectionPos()}</td><td>{@link #writeChunkSectionPos(ChunkSectionPos)}</td>
  * </tr>
  * <tr>
+ *  <td>{@link GlobalPos}</td><td>{@link #readGlobalPos()}</td><td>{@link #writeGlobalPos(GlobalPos)}</td>
+ * </tr>
+ * <tr>
  *  <td>{@link Text}</td><td>{@link #readText()}</td><td>{@link #writeText(Text)}</td>
  * </tr>
  * <tr>
@@ -136,7 +146,16 @@ import net.minecraft.util.registry.Registry;
  *  <td>{@link Identifier}</td><td>{@link #readIdentifier()}</td><td>{@link #writeIdentifier(Identifier)}</td>
  * </tr>
  * <tr>
+ *  <td>{@link RegistryKey}</td><td>{@link #readRegistryKey(RegistryKey)}</td><td>{@link #writeRegistryKey(RegistryKey)}</td>
+ * </tr>
+ * <tr>
  *  <td>{@link Date}</td><td>{@link #readDate()}</td><td>{@link #writeDate(Date)}</td>
+ * </tr>
+ * <tr>
+ *  <td>{@link Instant}</td><td>{@link #readInstant()}</td><td>{@link #writeInstant(Instant)}</td>
+ * </tr>
+ * <tr>
+ *  <td>{@link PublicKey}</td><td>{@link #readPublicKey()}</td><td>{@link #writePublicKey(PublicKey)}</td>
  * </tr>
  * <tr>
  *  <td>{@link BlockHitResult}</td><td>{@link #readBlockHitResult()}</td><td>{@link #writeBlockHitResult(BlockHitResult)}</td>
@@ -194,6 +213,9 @@ public class PacketByteBuf extends ByteBuf {
 	 * {@link #readText()} or written by {@link #writeText(Text)}.
 	 */
 	public static final int MAX_TEXT_LENGTH = 262144;
+	private static final int field_39381 = 256;
+	private static final int field_39382 = 256;
+	private static final int field_39383 = 512;
 
 	/**
 	 * Creates a packet byte buf that delegates its operations to the {@code
@@ -243,6 +265,7 @@ public class PacketByteBuf extends ByteBuf {
 		return MAX_VAR_LONG_LENGTH;
 	}
 
+	/** @deprecated */
 	/**
 	 * Reads an object from this buf as a compound NBT with the given codec.
 	 * 
@@ -263,6 +286,7 @@ public class PacketByteBuf extends ByteBuf {
 		return (T)dataResult.result().get();
 	}
 
+	/** @deprecated */
 	/**
 	 * Writes an object to this buf as a compound NBT with the given codec.
 	 * 
@@ -887,6 +911,32 @@ public class PacketByteBuf extends ByteBuf {
 	}
 
 	/**
+	 * Reads a global position from this buf. A global position is represented by
+	 * {@linkplain #readRegistryKey the registry key} of the dimension followed by
+	 * {@linkplain #readBlockPos the block position}.
+	 * 
+	 * @return the read global pos
+	 * @see #writeGlobalPos(GlobalPos)
+	 */
+	public GlobalPos readGlobalPos() {
+		RegistryKey<World> registryKey = this.readRegistryKey(Registry.WORLD_KEY);
+		BlockPos blockPos = this.readBlockPos();
+		return GlobalPos.create(registryKey, blockPos);
+	}
+
+	/**
+	 * Writes a global position to this buf. A global position is represented by
+	 * {@linkplain #writeRegistryKey the registry key} of the dimension followed by
+	 * {@linkplain #writeBlockPos the block position}.
+	 * 
+	 * @see #readGlobalPos()
+	 */
+	public void writeGlobalPos(GlobalPos pos) {
+		this.writeRegistryKey(pos.getDimension());
+		this.writeBlockPos(pos.getPos());
+	}
+
+	/**
 	 * Reads a text from this buf. A text is represented by a JSON string with
 	 * max length {@value #MAX_TEXT_LENGTH}.
 	 * 
@@ -1331,6 +1381,30 @@ public class PacketByteBuf extends ByteBuf {
 	}
 
 	/**
+	 * Reads a registry key from this buf. A registry key is represented by its
+	 * {@linkplain #readIdentifier value as an identifier}.
+	 * 
+	 * @return the read registry key
+	 * @see #writeRegistryKey(RegistryKey)
+	 * 
+	 * @param registryRef the registry key of the registry the read registry key belongs to
+	 */
+	public <T> RegistryKey<T> readRegistryKey(RegistryKey<? extends Registry<T>> registryRef) {
+		Identifier identifier = this.readIdentifier();
+		return RegistryKey.of(registryRef, identifier);
+	}
+
+	/**
+	 * Writes a registry key to this buf. A registry key is represented by its
+	 * {@linkplain #writeIdentifier value as an identifier}.
+	 * 
+	 * @see #readRegistryKey(RegistryKey)
+	 */
+	public void writeRegistryKey(RegistryKey<?> key) {
+		this.writeIdentifier(key.getValue());
+	}
+
+	/**
 	 * Reads a date from this buf. A date is represented by its time, a regular
 	 * long.
 	 * 
@@ -1352,6 +1426,55 @@ public class PacketByteBuf extends ByteBuf {
 	 */
 	public PacketByteBuf writeDate(Date date) {
 		this.writeLong(date.getTime());
+		return this;
+	}
+
+	/**
+	 * Reads an instant from this buf. An instant is represented by the milliseconds
+	 * since the epoch.
+	 * 
+	 * @return the read instant
+	 * @see #writeInstant(Instant)
+	 */
+	public Instant readInstant() {
+		return Instant.ofEpochMilli(this.readLong());
+	}
+
+	/**
+	 * Writes an instant to this buf. An instant is represented by the milliseconds
+	 * since the epoch.
+	 * 
+	 * @see #readInstant()
+	 */
+	public void writeInstant(Instant instant) {
+		this.writeLong(instant.toEpochMilli());
+	}
+
+	/**
+	 * Reads a public key from this buf. A public key is represented by a {@linkplain
+	 * #readByteArray byte array} of X.509-encoded payload.
+	 * 
+	 * @return the read public key
+	 * @throws io.netty.handler.codec.DecoderException if the public key is malformed
+	 * @see #writePublicKey(PublicKey)
+	 */
+	public PublicKey readPublicKey() {
+		try {
+			return NetworkEncryptionUtils.decodeEncodedRsaPublicKey(this.readByteArray(512));
+		} catch (NetworkEncryptionException var2) {
+			throw new DecoderException("Malformed public key bytes", var2);
+		}
+	}
+
+	/**
+	 * Writes a public key to this buf. A public key is represented by a {@linkplain
+	 * #writeByteArray byte array} of X.509-encoded payload.
+	 * 
+	 * @return this buf, for chaining
+	 * @see #readPublicKey()
+	 */
+	public PacketByteBuf writePublicKey(PublicKey publicKey) {
+		this.writeByteArray(publicKey.getEncoded());
 		return this;
 	}
 

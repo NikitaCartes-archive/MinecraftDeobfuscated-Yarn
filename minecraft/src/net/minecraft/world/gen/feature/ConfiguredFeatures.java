@@ -6,11 +6,12 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.BuiltinRegistries;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.gen.blockpredicate.BlockPredicate;
 
 public class ConfiguredFeatures {
-	public static RegistryEntry<? extends ConfiguredFeature<?, ?>> getDefaultConfiguredFeature() {
+	public static RegistryEntry<? extends ConfiguredFeature<?, ?>> getDefaultConfiguredFeature(Registry<ConfiguredFeature<?, ?>> registry) {
 		List<RegistryEntry<? extends ConfiguredFeature<?, ?>>> list = List.of(
 			OceanConfiguredFeatures.KELP,
 			UndergroundConfiguredFeatures.MOSS_PATCH_BONEMEAL,

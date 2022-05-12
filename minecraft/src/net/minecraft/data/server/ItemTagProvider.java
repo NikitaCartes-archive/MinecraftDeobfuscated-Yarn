@@ -7,12 +7,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagBuilder;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.registry.Registry;
 
 public class ItemTagProvider extends AbstractTagProvider<Item> {
-	private final Function<TagKey<Block>, Tag.Builder> blockTags;
+	private final Function<TagKey<Block>, TagBuilder> blockTags;
 
 	public ItemTagProvider(DataGenerator root, BlockTagProvider blockTagsProvider) {
 		super(root, Registry.ITEM);
@@ -205,8 +205,8 @@ public class ItemTagProvider extends AbstractTagProvider<Item> {
 	}
 
 	protected void copy(TagKey<Block> blockTag, TagKey<Item> itemTag) {
-		Tag.Builder builder = this.getTagBuilder(itemTag);
-		Tag.Builder builder2 = (Tag.Builder)this.blockTags.apply(blockTag);
-		builder2.streamEntries().forEach(builder::add);
+		TagBuilder tagBuilder = this.getTagBuilder(itemTag);
+		TagBuilder tagBuilder2 = (TagBuilder)this.blockTags.apply(blockTag);
+		tagBuilder2.build().forEach(tagBuilder::add);
 	}
 }

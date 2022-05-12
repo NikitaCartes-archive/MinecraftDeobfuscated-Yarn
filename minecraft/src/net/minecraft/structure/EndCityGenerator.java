@@ -85,7 +85,7 @@ public class EndCityGenerator {
 				for(Pair<BlockRotation, BlockPos> pair : EndCityGenerator.SMALL_TOWER_BRIDGE_ATTACHMENTS) {
 					if (random.nextBoolean()) {
 						EndCityGenerator.Piece piece3 = EndCityGenerator.addPiece(
-							pieces, EndCityGenerator.createPiece(manager, piece2, pair.getRight(), "bridge_end", blockRotation.rotate((BlockRotation)pair.getLeft()), true)
+							pieces, EndCityGenerator.createPiece(manager, piece2, pair.getRight(), "bridge_end", blockRotation.rotate(pair.getLeft()), true)
 						);
 						EndCityGenerator.createPart(manager, EndCityGenerator.BRIDGE_PIECE, depth + 1, piece3, null, pieces, random);
 					}
@@ -181,7 +181,7 @@ public class EndCityGenerator {
 				for(Pair<BlockRotation, BlockPos> pair : EndCityGenerator.FAT_TOWER_BRIDGE_ATTACHMENTS) {
 					if (random.nextBoolean()) {
 						EndCityGenerator.Piece piece2 = EndCityGenerator.addPiece(
-							pieces, EndCityGenerator.createPiece(manager, piece, pair.getRight(), "bridge_end", blockRotation.rotate((BlockRotation)pair.getLeft()), true)
+							pieces, EndCityGenerator.createPiece(manager, piece, pair.getRight(), "bridge_end", blockRotation.rotate(pair.getLeft()), true)
 						);
 						EndCityGenerator.createPart(manager, EndCityGenerator.BRIDGE_PIECE, depth + 1, piece2, null, pieces, random);
 					}

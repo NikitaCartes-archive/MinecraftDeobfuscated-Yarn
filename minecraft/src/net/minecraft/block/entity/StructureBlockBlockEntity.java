@@ -351,7 +351,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		return this.loadStructure(world, true);
 	}
 
-	private static AbstractRandom createRandom(long seed) {
+	public static AbstractRandom createRandom(long seed) {
 		return seed == 0L ? AbstractRandom.createAtomic(Util.getMeasuringTimeMs()) : AbstractRandom.createAtomic(seed);
 	}
 

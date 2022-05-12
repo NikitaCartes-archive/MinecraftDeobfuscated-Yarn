@@ -11,10 +11,11 @@ import net.minecraft.tag.ConfiguredStructureFeatureTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.poi.PointOfInterestStorage;
-import net.minecraft.world.poi.PointOfInterestType;
+import net.minecraft.world.poi.PointOfInterestTypes;
 
 /**
  * A spawner for cats in villages and swamp huts.
@@ -74,7 +75,8 @@ public class CatSpawner implements Spawner {
 	 */
 	private int spawnInHouse(ServerWorld world, BlockPos pos) {
 		int i = 48;
-		if (world.getPointOfInterestStorage().count(PointOfInterestType.HOME.getCompletionCondition(), pos, 48, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED)
+		if (world.getPointOfInterestStorage()
+				.count(registryEntry -> registryEntry.matchesKey(PointOfInterestTypes.HOME), pos, 48, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED)
 			> 4L) {
 			List<CatEntity> list = world.getNonSpectatingEntities(CatEntity.class, new Box(pos).expand(48.0, 8.0, 48.0));
 			if (list.size() < 5) {

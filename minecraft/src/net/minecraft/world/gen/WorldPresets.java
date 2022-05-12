@@ -35,8 +35,8 @@ public class WorldPresets {
 	public static final RegistryKey<WorldPreset> SINGLE_BIOME_SURFACE = of("single_biome_surface");
 	public static final RegistryKey<WorldPreset> DEBUG_ALL_BLOCK_STATES = of("debug_all_block_states");
 
-	public static RegistryEntry<WorldPreset> initAndGetDefault() {
-		return new WorldPresets.Registrar().initAndGetDefault();
+	public static RegistryEntry<WorldPreset> initAndGetDefault(Registry<WorldPreset> registry) {
+		return new WorldPresets.Registrar(registry).initAndGetDefault();
 	}
 
 	private static RegistryKey<WorldPreset> of(String id) {
@@ -73,7 +73,7 @@ public class WorldPresets {
 	}
 
 	static class Registrar {
-		private final Registry<WorldPreset> worldPresetRegistry = BuiltinRegistries.WORLD_PRESET;
+		private final Registry<WorldPreset> worldPresetRegistry;
 		private final Registry<DimensionType> dimensionTypeRegistry = BuiltinRegistries.DIMENSION_TYPE;
 		private final Registry<Biome> biomeRegistry = BuiltinRegistries.BIOME;
 		private final Registry<StructureSet> structureSetRegistry = BuiltinRegistries.STRUCTURE_SET;
@@ -99,6 +99,10 @@ public class WorldPresets {
 			this.theEndDimensionType,
 			new NoiseChunkGenerator(this.structureSetRegistry, this.noiseParametersRegistry, new TheEndBiomeSource(this.biomeRegistry), this.endChunkGeneratorSettings)
 		);
+
+		Registrar(Registry<WorldPreset> registry) {
+			this.worldPresetRegistry = registry;
+		}
 
 		private DimensionOptions createOverworldOptions(ChunkGenerator chunkGenerator) {
 			return new DimensionOptions(this.overworldDimensionType, chunkGenerator);

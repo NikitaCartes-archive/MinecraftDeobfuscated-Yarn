@@ -13,7 +13,7 @@ public class GoToCelebrateTask<E extends MobEntity> extends Task<E> {
 	private final int completionRange;
 	private final float speed;
 
-	public GoToCelebrateTask(MemoryModuleType<BlockPos> memoryModuleType, int i, float f) {
+	public GoToCelebrateTask(MemoryModuleType<BlockPos> memoryModuleType, int completionRange, float speed) {
 		super(
 			ImmutableMap.of(
 				memoryModuleType,
@@ -27,8 +27,8 @@ public class GoToCelebrateTask<E extends MobEntity> extends Task<E> {
 			)
 		);
 		this.memoryModuleType = memoryModuleType;
-		this.completionRange = i;
-		this.speed = f;
+		this.completionRange = completionRange;
+		this.speed = speed;
 	}
 
 	protected void run(ServerWorld serverWorld, MobEntity mobEntity, long l) {
@@ -48,7 +48,7 @@ public class GoToCelebrateTask<E extends MobEntity> extends Task<E> {
 		return random.nextInt(3) - 1;
 	}
 
-	private BlockPos getCelebrateLocation(MobEntity mobEntity) {
-		return (BlockPos)mobEntity.getBrain().getOptionalMemory(this.memoryModuleType).get();
+	private BlockPos getCelebrateLocation(MobEntity entity) {
+		return (BlockPos)entity.getBrain().getOptionalMemory(this.memoryModuleType).get();
 	}
 }

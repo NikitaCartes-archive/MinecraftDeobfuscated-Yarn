@@ -11,8 +11,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.village.VillagerProfession;
-import net.minecraft.world.poi.PointOfInterestType;
 
 public class GoToWorkTask extends Task<VillagerEntity> {
 	public GoToWorkTask() {
@@ -33,7 +33,7 @@ public class GoToWorkTask extends Task<VillagerEntity> {
 			MinecraftServer minecraftServer = serverWorld.getServer();
 			Optional.ofNullable(minecraftServer.getWorld(globalPos.getDimension()))
 				.flatMap(world -> world.getPointOfInterestStorage().getType(globalPos.getPos()))
-				.flatMap(poiType -> Registry.VILLAGER_PROFESSION.stream().filter(profession -> profession.getWorkStation() == poiType).findFirst())
+				.flatMap(registryEntry -> Registry.VILLAGER_PROFESSION.stream().filter(profession -> profession.heldWorkstation().test(registryEntry)).findFirst())
 				.ifPresent(profession -> {
 					villagerEntity.setVillagerData(villagerEntity.getVillagerData().withProfession(profession));
 					villagerEntity.reinitializeBrain(serverWorld);

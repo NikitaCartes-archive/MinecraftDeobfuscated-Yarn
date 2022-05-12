@@ -91,7 +91,7 @@ public class JigsawBlockScreen extends Screen {
 		this.client.keyboard.setRepeatEvents(true);
 		this.poolField = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 20, 300, 20, Text.translatable("jigsaw_block.pool"));
 		this.poolField.setMaxLength(128);
-		this.poolField.setText(this.jigsaw.getPool().toString());
+		this.poolField.setText(this.jigsaw.getPool().getValue().toString());
 		this.poolField.setChangedListener(pool -> this.updateDoneButtonState());
 		this.addSelectableChild(this.poolField);
 		this.nameField = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 55, 300, 20, Text.translatable("jigsaw_block.name"));

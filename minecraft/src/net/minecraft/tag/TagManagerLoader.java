@@ -1,5 +1,6 @@
 package net.minecraft.tag;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -72,6 +73,6 @@ public class TagManagerLoader implements ResourceReloader {
 		return CompletableFuture.supplyAsync(() -> new TagManagerLoader.RegistryTags<>(registryKey, tagGroupLoader.load(resourceManager)), prepareExecutor);
 	}
 
-	public static record RegistryTags<T>(RegistryKey<? extends Registry<T>> key, Map<Identifier, Tag<RegistryEntry<T>>> tags) {
+	public static record RegistryTags<T>(RegistryKey<? extends Registry<T>> key, Map<Identifier, Collection<RegistryEntry<T>>> tags) {
 	}
 }
