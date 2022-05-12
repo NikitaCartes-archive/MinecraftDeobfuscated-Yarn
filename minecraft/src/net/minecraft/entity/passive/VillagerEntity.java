@@ -74,6 +74,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.TradeOffers;
@@ -90,6 +91,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
+import net.minecraft.world.poi.PointOfInterestTypes;
 import org.slf4j.Logger;
 
 public class VillagerEntity extends MerchantEntity implements InteractionObserver, VillagerDataContainer {
@@ -166,15 +168,15 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		SensorType.SECONDARY_POIS,
 		SensorType.GOLEM_DETECTED
 	);
-	public static final Map<MemoryModuleType<GlobalPos>, BiPredicate<VillagerEntity, PointOfInterestType>> POINTS_OF_INTEREST = ImmutableMap.of(
+	public static final Map<MemoryModuleType<GlobalPos>, BiPredicate<VillagerEntity, RegistryEntry<PointOfInterestType>>> POINTS_OF_INTEREST = ImmutableMap.of(
 		MemoryModuleType.HOME,
-		(villager, poiType) -> poiType == PointOfInterestType.HOME,
+		(villager, registryEntry) -> registryEntry.matchesKey(PointOfInterestTypes.HOME),
 		MemoryModuleType.JOB_SITE,
-		(villager, poiType) -> villager.getVillagerData().getProfession().getWorkStation() == poiType,
+		(villager, registryEntry) -> villager.getVillagerData().getProfession().heldWorkstation().test(registryEntry),
 		MemoryModuleType.POTENTIAL_JOB_SITE,
-		(villager, poiType) -> PointOfInterestType.IS_USED_BY_PROFESSION.test(poiType),
+		(villager, registryEntry) -> VillagerProfession.IS_ACQUIRABLE_JOB_SITE.test(registryEntry),
 		MemoryModuleType.MEETING_POINT,
-		(villager, poiType) -> poiType == PointOfInterestType.MEETING
+		(villager, registryEntry) -> registryEntry.matchesKey(PointOfInterestTypes.MEETING)
 	);
 
 	public VillagerEntity(EntityType<? extends VillagerEntity> entityType, World world) {
@@ -566,7 +568,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	}
 
 	public void playWorkSound() {
-		SoundEvent soundEvent = this.getVillagerData().getProfession().getWorkSound();
+		SoundEvent soundEvent = this.getVillagerData().getProfession().workSound();
 		if (soundEvent != null) {
 			this.playSound(soundEvent, this.getSoundVolume(), this.getSoundPitch());
 		}
@@ -656,18 +658,24 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	public void releaseTicketFor(MemoryModuleType<GlobalPos> memoryModuleType) {
 		if (this.world instanceof ServerWorld) {
 			MinecraftServer minecraftServer = ((ServerWorld)this.world).getServer();
-			this.brain.getOptionalMemory(memoryModuleType).ifPresent(pos -> {
-				ServerWorld serverWorld = minecraftServer.getWorld(pos.getDimension());
-				if (serverWorld != null) {
-					PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
-					Optional<PointOfInterestType> optional = pointOfInterestStorage.getType(pos.getPos());
-					BiPredicate<VillagerEntity, PointOfInterestType> biPredicate = (BiPredicate<VillagerEntity, PointOfInterestType>)POINTS_OF_INTEREST.get(memoryModuleType);
-					if (optional.isPresent() && biPredicate.test(this, (PointOfInterestType)optional.get())) {
-						pointOfInterestStorage.releaseTicket(pos.getPos());
-						DebugInfoSender.sendPointOfInterest(serverWorld, pos.getPos());
+			this.brain
+				.getOptionalMemory(memoryModuleType)
+				.ifPresent(
+					pos -> {
+						ServerWorld serverWorld = minecraftServer.getWorld(pos.getDimension());
+						if (serverWorld != null) {
+							PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
+							Optional<RegistryEntry<PointOfInterestType>> optional = pointOfInterestStorage.getType(pos.getPos());
+							BiPredicate<VillagerEntity, RegistryEntry<PointOfInterestType>> biPredicate = (BiPredicate<VillagerEntity, RegistryEntry<PointOfInterestType>>)POINTS_OF_INTEREST.get(
+								memoryModuleType
+							);
+							if (optional.isPresent() && biPredicate.test(this, (RegistryEntry)optional.get())) {
+								pointOfInterestStorage.releaseTicket(pos.getPos());
+								DebugInfoSender.sendPointOfInterest(serverWorld, pos.getPos());
+							}
+						}
 					}
-				}
-			});
+				);
 		}
 	}
 
@@ -815,8 +823,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	@Override
 	public boolean canGather(ItemStack stack) {
 		Item item = stack.getItem();
-		return (GATHERABLE_ITEMS.contains(item) || this.getVillagerData().getProfession().getGatherableItems().contains(item))
-			&& this.getInventory().canInsert(stack);
+		return (GATHERABLE_ITEMS.contains(item) || this.getVillagerData().getProfession().gatherableItems().contains(item)) && this.getInventory().canInsert(stack);
 	}
 
 	public boolean wantsToStartBreeding() {

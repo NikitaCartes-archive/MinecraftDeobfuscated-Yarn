@@ -183,8 +183,7 @@ public class StructurePoolBasedGenerator {
 		);
 		Optional<StructureType.StructurePosition> optional = generate(context, structurePool, Optional.of(id), i, pos, false, Optional.empty(), 128);
 		if (optional.isPresent()) {
-			StructurePiecesCollector structurePiecesCollector = new StructurePiecesCollector();
-			((StructureType.StructurePosition)optional.get()).generator().accept(structurePiecesCollector);
+			StructurePiecesCollector structurePiecesCollector = ((StructureType.StructurePosition)optional.get()).generate();
 
 			for (StructurePiece structurePiece : structurePiecesCollector.toList().pieces()) {
 				if (structurePiece instanceof PoolStructurePiece poolStructurePiece) {

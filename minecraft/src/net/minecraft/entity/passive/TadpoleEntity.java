@@ -35,6 +35,8 @@ import net.minecraft.world.World;
 public class TadpoleEntity extends FishEntity {
 	@VisibleForTesting
 	public static int MAX_TADPOLE_AGE = Math.abs(-24000);
+	public static float WIDTH = 0.4F;
+	public static float HEIGHT = 0.3F;
 	private int tadpoleAge;
 	protected static final ImmutableList<SensorType<? extends Sensor<? super TadpoleEntity>>> SENSORS = ImmutableList.of(
 		SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.HURT_BY

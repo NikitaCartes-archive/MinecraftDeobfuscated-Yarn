@@ -4,7 +4,6 @@ import com.google.common.collect.Maps;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.EntityStatuses;
@@ -18,6 +17,7 @@ import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
+import net.minecraft.tag.PointOfInterestTypeTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.RegistryEntry;
@@ -27,7 +27,6 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.dimension.DimensionTypes;
 import net.minecraft.world.poi.PointOfInterest;
 import net.minecraft.world.poi.PointOfInterestStorage;
-import net.minecraft.world.poi.PointOfInterestType;
 
 public class RaidManager extends PersistentState {
 	private static final String RAIDS = "raids";
@@ -89,10 +88,10 @@ public class RaidManager extends PersistentState {
 				return null;
 			} else {
 				BlockPos blockPos = player.getBlockPos();
-				List<PointOfInterest> list = (List<PointOfInterest>)this.world
+				List<PointOfInterest> list = this.world
 					.getPointOfInterestStorage()
-					.getInCircle(PointOfInterestType.ALWAYS_TRUE, blockPos, 64, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED)
-					.collect(Collectors.toList());
+					.getInCircle(poiType -> poiType.isIn(PointOfInterestTypeTags.VILLAGE), blockPos, 64, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED)
+					.toList();
 				int i = 0;
 				Vec3d vec3d = Vec3d.ZERO;
 

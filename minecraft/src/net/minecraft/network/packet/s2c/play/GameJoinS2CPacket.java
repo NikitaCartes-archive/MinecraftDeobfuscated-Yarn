@@ -8,7 +8,6 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
@@ -21,7 +20,7 @@ public record GameJoinS2CPacket(
 	@Nullable GameMode previousGameMode,
 	Set<RegistryKey<World>> dimensionIds,
 	DynamicRegistryManager.Immutable registryManager,
-	RegistryEntry<DimensionType> dimensionType,
+	RegistryKey<DimensionType> dimensionType,
 	RegistryKey<World> dimensionId,
 	long sha256Seed,
 	int maxPlayers,
@@ -38,10 +37,10 @@ public record GameJoinS2CPacket(
 			buf.readBoolean(),
 			GameMode.byId(buf.readByte()),
 			GameMode.getOrNull(buf.readByte()),
-			buf.readCollection(Sets::newHashSetWithExpectedSize, b -> RegistryKey.of(Registry.WORLD_KEY, b.readIdentifier())),
+			buf.readCollection(Sets::newHashSetWithExpectedSize, b -> b.readRegistryKey(Registry.WORLD_KEY)),
 			buf.decode(DynamicRegistryManager.CODEC).toImmutable(),
-			buf.decode(DimensionType.REGISTRY_CODEC),
-			RegistryKey.of(Registry.WORLD_KEY, buf.readIdentifier()),
+			buf.readRegistryKey(Registry.DIMENSION_TYPE_KEY),
+			buf.readRegistryKey(Registry.WORLD_KEY),
 			buf.readLong(),
 			buf.readVarInt(),
 			buf.readVarInt(),
@@ -59,10 +58,10 @@ public record GameJoinS2CPacket(
 		buf.writeBoolean(this.hardcore);
 		buf.writeByte(this.gameMode.getId());
 		buf.writeByte(GameMode.getId(this.previousGameMode));
-		buf.writeCollection(this.dimensionIds, (b, dimension) -> b.writeIdentifier(dimension.getValue()));
+		buf.writeCollection(this.dimensionIds, PacketByteBuf::writeRegistryKey);
 		buf.encode(DynamicRegistryManager.CODEC, this.registryManager);
-		buf.encode(DimensionType.REGISTRY_CODEC, this.dimensionType);
-		buf.writeIdentifier(this.dimensionId.getValue());
+		buf.writeRegistryKey(this.dimensionType);
+		buf.writeRegistryKey(this.dimensionId);
 		buf.writeLong(this.sha256Seed);
 		buf.writeVarInt(this.maxPlayers);
 		buf.writeVarInt(this.viewDistance);

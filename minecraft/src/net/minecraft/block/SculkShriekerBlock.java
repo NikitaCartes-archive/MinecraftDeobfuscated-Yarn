@@ -6,11 +6,11 @@ import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.SculkShriekerBlockEntity;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -52,17 +52,11 @@ public class SculkShriekerBlock extends BlockWithEntity implements Waterloggable
 
 	@Override
 	public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
-		Entity entity2;
-		if (entity instanceof PlayerEntity) {
-			entity2 = entity;
-		} else if (entity.getPrimaryPassenger() instanceof PlayerEntity) {
-			entity2 = entity.getPrimaryPassenger();
-		} else {
-			entity2 = null;
-		}
-
-		if (world instanceof ServerWorld serverWorld && entity2 != null) {
-			serverWorld.getBlockEntity(pos, BlockEntityType.SCULK_SHRIEKER).ifPresent(blockEntity -> blockEntity.shriek(serverWorld, entity2));
+		if (world instanceof ServerWorld serverWorld) {
+			ServerPlayerEntity serverPlayerEntity = SculkShriekerBlockEntity.findResponsiblePlayerFromEntity(entity);
+			if (serverPlayerEntity != null) {
+				serverWorld.getBlockEntity(pos, BlockEntityType.SCULK_SHRIEKER).ifPresent(blockEntity -> blockEntity.shriek(serverWorld, serverPlayerEntity));
+			}
 		}
 
 		super.onSteppedOn(world, pos, state, entity);

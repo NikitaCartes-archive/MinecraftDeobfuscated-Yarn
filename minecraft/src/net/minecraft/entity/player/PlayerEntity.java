@@ -1084,7 +1084,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	protected Vec3d adjustMovementForSneaking(Vec3d movement, MovementType type) {
-		if (!this.abilities.flying && (type == MovementType.SELF || type == MovementType.PLAYER) && this.clipAtLedge() && this.method_30263()) {
+		if (!this.abilities.flying && movement.y <= 0.0 && (type == MovementType.SELF || type == MovementType.PLAYER) && this.clipAtLedge() && this.method_30263()) {
 			double d = movement.x;
 			double e = movement.z;
 			double f = 0.05;

@@ -272,7 +272,10 @@ public class ServerPlayerInteractionManager {
 			} else if (typedActionResult.getResult() == ActionResult.FAIL && itemStack.getMaxUseTime() > 0 && !player.isUsingItem()) {
 				return typedActionResult.getResult();
 			} else {
-				player.setStackInHand(hand, itemStack);
+				if (stack != itemStack) {
+					player.setStackInHand(hand, itemStack);
+				}
+
 				if (this.isCreative()) {
 					itemStack.setCount(i);
 					if (itemStack.isDamageable() && itemStack.getDamage() != j) {

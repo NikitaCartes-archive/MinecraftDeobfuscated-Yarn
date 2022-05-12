@@ -30,7 +30,7 @@ public class SecondaryPointsOfInterestSensor extends Sensor<VillagerEntity> {
 			for (int k = -2; k <= 2; k++) {
 				for (int l = -4; l <= 4; l++) {
 					BlockPos blockPos2 = blockPos.add(j, k, l);
-					if (villagerEntity.getVillagerData().getProfession().getSecondaryJobSites().contains(serverWorld.getBlockState(blockPos2).getBlock())) {
+					if (villagerEntity.getVillagerData().getProfession().secondaryJobSites().contains(serverWorld.getBlockState(blockPos2).getBlock())) {
 						list.add(GlobalPos.create(registryKey, blockPos2));
 					}
 				}

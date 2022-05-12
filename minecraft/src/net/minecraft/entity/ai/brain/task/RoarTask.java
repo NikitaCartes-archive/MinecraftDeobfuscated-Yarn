@@ -14,6 +14,7 @@ import net.minecraft.util.Unit;
 
 public class RoarTask extends Task<WardenEntity> {
 	private static final int SOUND_DELAY = 25;
+	private static final int ANGER_INCREASE = 20;
 
 	public RoarTask() {
 		super(
@@ -35,8 +36,10 @@ public class RoarTask extends Task<WardenEntity> {
 		Brain<WardenEntity> brain = wardenEntity.getBrain();
 		brain.remember(MemoryModuleType.ROAR_SOUND_DELAY, Unit.INSTANCE, 25L);
 		brain.forget(MemoryModuleType.WALK_TARGET);
-		LookTargetUtil.lookAt(wardenEntity, (LivingEntity)wardenEntity.getBrain().getOptionalMemory(MemoryModuleType.ROAR_TARGET).get());
+		LivingEntity livingEntity = (LivingEntity)wardenEntity.getBrain().getOptionalMemory(MemoryModuleType.ROAR_TARGET).get();
+		LookTargetUtil.lookAt(wardenEntity, livingEntity);
 		wardenEntity.setPose(EntityPose.ROARING);
+		wardenEntity.increaseAngerAt(livingEntity, 20, false);
 	}
 
 	protected boolean shouldKeepRunning(ServerWorld serverWorld, WardenEntity wardenEntity, long l) {

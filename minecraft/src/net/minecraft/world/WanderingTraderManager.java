@@ -15,7 +15,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.poi.PointOfInterestStorage;
-import net.minecraft.world.poi.PointOfInterestType;
+import net.minecraft.world.poi.PointOfInterestTypes;
 import net.minecraft.world.spawner.Spawner;
 
 public class WanderingTraderManager implements Spawner {
@@ -89,7 +89,7 @@ public class WanderingTraderManager implements Spawner {
 			int i = 48;
 			PointOfInterestStorage pointOfInterestStorage = world.getPointOfInterestStorage();
 			Optional<BlockPos> optional = pointOfInterestStorage.getPosition(
-				PointOfInterestType.MEETING.getCompletionCondition(), pos -> true, blockPos, 48, PointOfInterestStorage.OccupationStatus.ANY
+				registryEntry -> registryEntry.matchesKey(PointOfInterestTypes.MEETING), pos -> true, blockPos, 48, PointOfInterestStorage.OccupationStatus.ANY
 			);
 			BlockPos blockPos2 = (BlockPos)optional.orElse(blockPos);
 			BlockPos blockPos3 = this.getNearbySpawnPos(world, blockPos2, 48);

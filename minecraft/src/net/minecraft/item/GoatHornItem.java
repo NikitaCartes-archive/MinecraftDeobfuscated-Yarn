@@ -1,5 +1,6 @@
 package net.minecraft.item;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
@@ -36,8 +37,11 @@ public class GoatHornItem extends Item {
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
 		super.appendTooltip(stack, world, tooltip, context);
-		MutableText mutableText = Text.translatable(Util.createTranslationKey("instrument", getInstrumentId(stack)));
-		tooltip.add(mutableText.formatted(Formatting.GRAY));
+		Optional<RegistryKey<Instrument>> optional = this.getInstrument(stack).flatMap(RegistryEntry::getKey);
+		if (optional.isPresent()) {
+			MutableText mutableText = Text.translatable(Util.createTranslationKey("instrument", ((RegistryKey)optional.get()).getValue()));
+			tooltip.add(mutableText.formatted(Formatting.GRAY));
+		}
 	}
 
 	public static ItemStack getStackForInstrument(Item item, RegistryEntry<Instrument> instrument) {
@@ -72,8 +76,9 @@ public class GoatHornItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
-		Instrument instrument = getInstrument(itemStack);
-		if (instrument != null) {
+		Optional<RegistryEntry<Instrument>> optional = this.getInstrument(itemStack);
+		if (optional.isPresent()) {
+			Instrument instrument = (Instrument)((RegistryEntry)optional.get()).value();
 			user.setCurrentHand(hand);
 			playSound(world, user, instrument);
 			user.getItemCooldownManager().set(this, instrument.useDuration());
@@ -85,19 +90,21 @@ public class GoatHornItem extends Item {
 
 	@Override
 	public int getMaxUseTime(ItemStack stack) {
-		Instrument instrument = getInstrument(stack);
-		return instrument != null ? instrument.useDuration() : 0;
+		Optional<RegistryEntry<Instrument>> optional = this.getInstrument(stack);
+		return optional.isPresent() ? ((Instrument)((RegistryEntry)optional.get()).value()).useDuration() : 0;
 	}
 
-	@Nullable
-	private static Instrument getInstrument(ItemStack stack) {
-		return Registry.INSTRUMENT.get(getInstrumentId(stack));
-	}
-
-	@Nullable
-	private static Identifier getInstrumentId(ItemStack stack) {
+	private Optional<RegistryEntry<Instrument>> getInstrument(ItemStack stack) {
 		NbtCompound nbtCompound = stack.getNbt();
-		return nbtCompound != null ? Identifier.tryParse(nbtCompound.getString("instrument")) : null;
+		if (nbtCompound != null) {
+			Identifier identifier = Identifier.tryParse(nbtCompound.getString("instrument"));
+			if (identifier != null) {
+				return Registry.INSTRUMENT.getEntry(RegistryKey.of(Registry.INSTRUMENT_KEY, identifier));
+			}
+		}
+
+		Iterator<RegistryEntry<Instrument>> iterator = Registry.INSTRUMENT.iterateEntries(this.instrumentTag).iterator();
+		return iterator.hasNext() ? Optional.of((RegistryEntry)iterator.next()) : Optional.empty();
 	}
 
 	@Override

@@ -55,6 +55,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.loot.LootManager;
 import net.minecraft.loot.condition.LootConditionManager;
 import net.minecraft.loot.function.LootFunctionManager;
+import net.minecraft.network.ChatDecorator;
 import net.minecraft.network.MessageSender;
 import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
@@ -678,6 +679,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			this.timeReference = Util.getMeasuringTimeMs();
 			this.metadata.setDescription(Text.literal(this.motd));
 			this.metadata.setVersion(new ServerMetadata.Version(SharedConstants.getGameVersion().getName(), SharedConstants.getGameVersion().getProtocolVersion()));
+			this.metadata.setPreviewsChat(this.shouldPreviewChat());
 			this.setFavicon(this.metadata);
 
 			while (this.running) {
@@ -1218,6 +1220,10 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	public void setMotd(String motd) {
 		this.motd = motd;
+	}
+
+	public boolean shouldPreviewChat() {
+		return false;
 	}
 
 	public boolean isStopped() {
@@ -1899,6 +1905,15 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	public void logChatMessage(MessageSender sender, Text message) {
 		LOGGER.info(Text.translatable("chat.type.text", sender.name(), message).getString());
+	}
+
+	/**
+	 * {@return the chat decorator used by the server}
+	 * 
+	 * <p>See the documentation of {@link ChatDecorator} for more information.
+	 */
+	public ChatDecorator getChatDecorator() {
+		return ChatDecorator.NOOP;
 	}
 
 	static class DebugStart {

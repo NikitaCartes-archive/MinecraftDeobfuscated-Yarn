@@ -12,14 +12,14 @@ public class WardenSpawnTrackerCommand {
 		dispatcher.register(
 			CommandManager.literal("warden_spawn_tracker")
 				.requires(source -> source.hasPermissionLevel(2))
-				.then(CommandManager.literal("clear").executes(context -> clearTracker(context.getSource(), ImmutableList.of(context.getSource().getPlayer()))))
+				.then(CommandManager.literal("clear").executes(context -> clearTracker(context.getSource(), ImmutableList.of(context.getSource().getPlayerOrThrow()))))
 				.then(
 					CommandManager.literal("set")
 						.then(
-							CommandManager.argument("warning_level", IntegerArgumentType.integer(0, 3))
+							CommandManager.argument("warning_level", IntegerArgumentType.integer(0, 4))
 								.executes(
 									context -> setWarningLevel(
-											context.getSource(), ImmutableList.of(context.getSource().getPlayer()), IntegerArgumentType.getInteger(context, "warning_level")
+											context.getSource(), ImmutableList.of(context.getSource().getPlayerOrThrow()), IntegerArgumentType.getInteger(context, "warning_level")
 										)
 								)
 						)

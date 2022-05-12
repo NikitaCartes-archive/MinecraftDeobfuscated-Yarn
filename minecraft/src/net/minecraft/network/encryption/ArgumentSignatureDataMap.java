@@ -13,19 +13,31 @@ import net.minecraft.command.argument.TextConvertibleArgumentType;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 
-public record ArgumentSignatures(long salt, Map<String, byte[]> signatures) {
+/**
+ * A record holding the salt and signatures for all signable arguments of an executed command.
+ */
+public record ArgumentSignatureDataMap(long salt, Map<String, byte[]> signatures) {
 	private static final int MAX_ARGUMENT_NAME_LENGTH = 16;
 
-	public ArgumentSignatures(PacketByteBuf buf) {
+	public ArgumentSignatureDataMap(PacketByteBuf buf) {
 		this(buf.readLong(), buf.readMap(buf2 -> buf2.readString(16), PacketByteBuf::readByteArray));
 	}
 
-	public static ArgumentSignatures none() {
-		return new ArgumentSignatures(0L, Map.of());
+	/**
+	 * {@return an empty signature data map that has no signed arguments}
+	 * 
+	 * @apiNote This is used when there is no argument to sign, or when the signing fails.
+	 */
+	public static ArgumentSignatureDataMap empty() {
+		return new ArgumentSignatureDataMap(0L, Map.of());
 	}
 
+	/**
+	 * {@return the signature data for {@code argumentName}, or {@code null} if the
+	 * argument name is not present in this signatures}
+	 */
 	@Nullable
-	public NetworkEncryptionUtils.SignatureData createSignatureData(String argumentName) {
+	public NetworkEncryptionUtils.SignatureData get(String argumentName) {
 		byte[] bs = (byte[])this.signatures.get(argumentName);
 		return bs != null ? new NetworkEncryptionUtils.SignatureData(this.salt, bs) : null;
 	}
@@ -35,6 +47,9 @@ public record ArgumentSignatures(long salt, Map<String, byte[]> signatures) {
 		buf.writeMap(this.signatures, (bufx, argumentName) -> bufx.writeString(argumentName, 16), PacketByteBuf::writeByteArray);
 	}
 
+	/**
+	 * {@return the signable argument names and their values from {@code builder}}
+	 */
 	public static Map<String, Text> collectArguments(CommandContextBuilder<?> builder) {
 		CommandContextBuilder<?> commandContextBuilder = builder.getLastChild();
 		Map<String, Text> map = new Object2ObjectArrayMap<>();

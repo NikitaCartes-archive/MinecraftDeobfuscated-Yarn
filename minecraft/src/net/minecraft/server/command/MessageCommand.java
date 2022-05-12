@@ -29,10 +29,12 @@ public class MessageCommand {
 		dispatcher.register(CommandManager.literal("w").redirect(literalCommandNode));
 	}
 
-	private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, SignedChatMessage signedChatMessage) {
+	private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, SignedChatMessage message) {
+		SignedChatMessage signedChatMessage = source.getServer().getChatDecorator().decorate(source.getPlayer(), message);
+
 		for (ServerPlayerEntity serverPlayerEntity : targets) {
 			source.sendFeedback(
-				Text.translatable("commands.message.display.outgoing", serverPlayerEntity.getDisplayName(), signedChatMessage.content())
+				Text.translatable("commands.message.display.outgoing", serverPlayerEntity.getDisplayName(), signedChatMessage.getContent())
 					.formatted(Formatting.GRAY, Formatting.ITALIC),
 				false
 			);

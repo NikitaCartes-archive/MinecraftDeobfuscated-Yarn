@@ -23,6 +23,11 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.SonicBoomTask;
 import net.minecraft.entity.ai.brain.task.UpdateAttackTargetTask;
+import net.minecraft.entity.ai.pathing.EntityNavigation;
+import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
+import net.minecraft.entity.ai.pathing.MobNavigation;
+import net.minecraft.entity.ai.pathing.PathNode;
+import net.minecraft.entity.ai.pathing.PathNodeNavigator;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -63,6 +68,7 @@ import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.listener.EntityGameEventHandler;
 import net.minecraft.world.event.listener.GameEventListener;
 import net.minecraft.world.event.listener.VibrationListener;
+import org.jetbrains.annotations.Contract;
 import org.slf4j.Logger;
 
 public class WardenEntity extends HostileEntity implements VibrationListener.Callback {
@@ -89,6 +95,7 @@ public class WardenEntity extends HostileEntity implements VibrationListener.Cal
 	private static final int field_38159 = 30;
 	private static final float field_38160 = 4.5F;
 	private static final float field_38161 = 0.7F;
+	private static final int field_39305 = 30;
 	private int field_38162;
 	private int field_38163;
 	private int field_38164;
@@ -221,7 +228,7 @@ public class WardenEntity extends HostileEntity implements VibrationListener.Cal
 	}
 
 	private void updateAnger() {
-		this.dataTracker.set(ANGER, this.angerManager.getPrimeSuspectAnger());
+		this.dataTracker.set(ANGER, this.getAngerAtTarget());
 	}
 
 	@Override
@@ -276,15 +283,16 @@ public class WardenEntity extends HostileEntity implements VibrationListener.Cal
 
 		if (this.age % 20 == 0) {
 			this.angerManager.tick(serverWorld, this::isValidTarget);
+			this.updateAnger();
 		}
 
-		this.updateAnger();
 		WardenBrain.updateActivities(this);
 	}
 
 	@Override
 	public void handleStatus(byte status) {
 		if (status == EntityStatuses.PLAY_ATTACK_SOUND) {
+			this.roaringAnimationState.stop();
 			this.attackingAnimationState.start();
 		} else if (status == EntityStatuses.EARS_TWITCH) {
 			this.field_38162 = 10;
@@ -345,6 +353,11 @@ public class WardenEntity extends HostileEntity implements VibrationListener.Cal
 	}
 
 	@Override
+	public boolean isImmuneToExplosion() {
+		return this.isDiggingOrEmerging();
+	}
+
+	@Override
 	protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
 		return WardenBrain.create(this, dynamic);
 	}
@@ -377,6 +390,7 @@ public class WardenEntity extends HostileEntity implements VibrationListener.Cal
 		return true;
 	}
 
+	@Contract("null->false")
 	public boolean isValidTarget(@Nullable Entity entity) {
 		if (entity instanceof LivingEntity livingEntity
 			&& this.world == entity.world
@@ -437,7 +451,11 @@ public class WardenEntity extends HostileEntity implements VibrationListener.Cal
 	}
 
 	public Angriness getAngriness() {
-		return Angriness.getForAnger(this.angerManager.getPrimeSuspectAnger());
+		return Angriness.getForAnger(this.getAngerAtTarget());
+	}
+
+	private int getAngerAtTarget() {
+		return this.angerManager.getAngerFor(this.getTarget());
 	}
 
 	public void removeSuspect(Entity entity) {
@@ -488,34 +506,32 @@ public class WardenEntity extends HostileEntity implements VibrationListener.Cal
 		if (spawnReason == SpawnReason.TRIGGERED) {
 			this.setPose(EntityPose.EMERGING);
 			this.getBrain().remember(MemoryModuleType.IS_EMERGING, Unit.INSTANCE, (long)WardenBrain.EMERGE_DURATION);
-			this.setPersistent();
+			this.playSound(SoundEvents.ENTITY_WARDEN_AGITATED, 5.0F, 1.0F);
 		}
 
+		this.setPersistent();
 		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 
 	@Override
 	public boolean damage(DamageSource source, float amount) {
 		boolean bl = super.damage(source, amount);
-		if (this.world.isClient) {
-			return false;
-		} else {
-			if (bl && !this.isAiDisabled()) {
-				Entity entity = source.getAttacker();
-				this.increaseAngerAt(entity, Angriness.ANGRY.getThreshold() + 20, false);
-				if (this.brain.getOptionalMemory(MemoryModuleType.ATTACK_TARGET).isEmpty()
-					&& entity instanceof LivingEntity livingEntity
-					&& (!(source instanceof ProjectileDamageSource) || this.isInRange(livingEntity, 5.0))) {
-					this.updateAttackTarget(livingEntity);
-				}
+		if (!this.world.isClient && !this.isAiDisabled() && amount > 0.0F) {
+			Entity entity = source.getAttacker();
+			this.increaseAngerAt(entity, Angriness.ANGRY.getThreshold() + 20, false);
+			if (this.brain.getOptionalMemory(MemoryModuleType.ATTACK_TARGET).isEmpty()
+				&& entity instanceof LivingEntity livingEntity
+				&& (!(source instanceof ProjectileDamageSource) || this.isInRange(livingEntity, 5.0))) {
+				this.updateAttackTarget(livingEntity);
 			}
-
-			return bl;
 		}
+
+		return bl;
 	}
 
-	public void updateAttackTarget(LivingEntity entity) {
-		UpdateAttackTargetTask.updateAttackTarget(this, entity);
+	public void updateAttackTarget(LivingEntity target) {
+		this.getBrain().forget(MemoryModuleType.ROAR_TARGET);
+		UpdateAttackTargetTask.updateAttackTarget(this, target);
 		SonicBoomTask.cooldown(this, 200);
 	}
 
@@ -597,5 +613,22 @@ public class WardenEntity extends HostileEntity implements VibrationListener.Cal
 	@VisibleForTesting
 	public WardenAngerManager getAngerManager() {
 		return this.angerManager;
+	}
+
+	@Override
+	protected EntityNavigation createNavigation(World world) {
+		return new MobNavigation(this, world) {
+			@Override
+			protected PathNodeNavigator createPathNodeNavigator(int range) {
+				this.nodeMaker = new LandPathNodeMaker();
+				this.nodeMaker.setCanEnterOpenDoors(true);
+				return new PathNodeNavigator(this.nodeMaker, range) {
+					@Override
+					protected float getDistance(PathNode a, PathNode b) {
+						return a.getHorizontalDistance(b);
+					}
+				};
+			}
+		};
 	}
 }

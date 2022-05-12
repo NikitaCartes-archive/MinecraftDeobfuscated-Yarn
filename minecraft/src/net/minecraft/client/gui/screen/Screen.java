@@ -219,6 +219,10 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 				m = this.height - j - 6;
 			}
 
+			if (y - j - 8 < 0) {
+				m = y + 8;
+			}
+
 			matrices.push();
 			int o = -267386864;
 			int p = 1347420415;
@@ -337,7 +341,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 				} else if (clickEvent.getAction() == ClickEvent.Action.SUGGEST_COMMAND) {
 					this.insertText(clickEvent.getValue(), true);
 				} else if (clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
-					this.sendMessage(clickEvent.getValue(), false);
+					this.client.player.sendCommand(clickEvent.getValue());
 				} else if (clickEvent.getAction() == ClickEvent.Action.COPY_TO_CLIPBOARD) {
 					this.client.keyboard.setClipboard(clickEvent.getValue());
 				} else {
@@ -349,18 +353,6 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 
 			return false;
 		}
-	}
-
-	public void sendMessage(String message) {
-		this.sendMessage(message, true);
-	}
-
-	public void sendMessage(String message, boolean toHud) {
-		if (toHud) {
-			this.client.inGameHud.getChatHud().addToMessageHistory(message);
-		}
-
-		this.client.player.sendChatMessage(message);
 	}
 
 	public final void init(MinecraftClient client, int width, int height) {

@@ -9,10 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
@@ -24,15 +23,16 @@ import org.slf4j.Logger;
 
 public class ModelProvider implements DataProvider {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private final DataGenerator generator;
+	private final DataGenerator.PathResolver blockstatesPathResolver;
+	private final DataGenerator.PathResolver modelsPathResolver;
 
 	public ModelProvider(DataGenerator generator) {
-		this.generator = generator;
+		this.blockstatesPathResolver = generator.createPathResolver(DataGenerator.OutputType.RESOURCE_PACK, "blockstates");
+		this.modelsPathResolver = generator.createPathResolver(DataGenerator.OutputType.RESOURCE_PACK, "models");
 	}
 
 	@Override
 	public void run(DataWriter cache) {
-		Path path = this.generator.getOutput();
 		Map<Block, BlockStateSupplier> map = Maps.<Block, BlockStateSupplier>newHashMap();
 		Consumer<BlockStateSupplier> consumer = blockStateSupplier -> {
 			Block block = blockStateSupplier.getBlock();
@@ -52,7 +52,7 @@ public class ModelProvider implements DataProvider {
 		Consumer<Item> consumer2 = set::add;
 		new BlockStateModelGenerator(consumer, biConsumer, consumer2).register();
 		new ItemModelGenerator(biConsumer).register();
-		List<Block> list = (List<Block>)Registry.BLOCK.stream().filter(block -> !map.containsKey(block)).collect(Collectors.toList());
+		List<Block> list = Registry.BLOCK.stream().filter(block -> !map.containsKey(block)).toList();
 		if (!list.isEmpty()) {
 			throw new IllegalStateException("Missing blockstate definitions for: " + list);
 		} else {
@@ -69,30 +69,21 @@ public class ModelProvider implements DataProvider {
 					}
 				}
 			});
-			this.writeJsons(cache, path, map, ModelProvider::getBlockStateJsonPath);
-			this.writeJsons(cache, path, map2, ModelProvider::getModelJsonPath);
+			this.writeJsons(cache, map, block -> this.blockstatesPathResolver.resolveJson(block.getRegistryEntry().registryKey().getValue()));
+			this.writeJsons(cache, map2, this.modelsPathResolver::resolveJson);
 		}
 	}
 
-	private <T> void writeJsons(DataWriter cache, Path root, Map<T, ? extends Supplier<JsonElement>> jsons, BiFunction<Path, T, Path> locator) {
-		jsons.forEach((object, supplier) -> {
-			Path path2 = (Path)locator.apply(root, object);
+	private <T> void writeJsons(DataWriter cache, Map<T, ? extends Supplier<JsonElement>> map, Function<T, Path> function) {
+		map.forEach((object, supplier) -> {
+			Path path = (Path)function.apply(object);
 
 			try {
-				DataProvider.writeToPath(cache, (JsonElement)supplier.get(), path2);
-			} catch (Exception var7) {
-				LOGGER.error("Couldn't save {}", path2, var7);
+				DataProvider.writeToPath(cache, (JsonElement)supplier.get(), path);
+			} catch (Exception var6) {
+				LOGGER.error("Couldn't save {}", path, var6);
 			}
 		});
-	}
-
-	private static Path getBlockStateJsonPath(Path root, Block block) {
-		Identifier identifier = Registry.BLOCK.getId(block);
-		return root.resolve("assets/" + identifier.getNamespace() + "/blockstates/" + identifier.getPath() + ".json");
-	}
-
-	private static Path getModelJsonPath(Path root, Identifier id) {
-		return root.resolve("assets/" + id.getNamespace() + "/models/" + id.getPath() + ".json");
 	}
 
 	@Override

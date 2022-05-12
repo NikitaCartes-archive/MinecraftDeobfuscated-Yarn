@@ -79,7 +79,7 @@ public class JigsawBlockEntity extends BlockEntity {
 		super.writeNbt(nbt);
 		nbt.putString("name", this.name.toString());
 		nbt.putString("target", this.target.toString());
-		nbt.putString("pool", this.pool.toString());
+		nbt.putString("pool", this.pool.getValue().toString());
 		nbt.putString("final_state", this.finalState);
 		nbt.putString("joint", this.joint.asString());
 	}

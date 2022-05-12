@@ -140,6 +140,7 @@ import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
+import net.minecraft.world.poi.PointOfInterestTypes;
 import net.minecraft.world.spawner.Spawner;
 import net.minecraft.world.storage.ChunkDataAccess;
 import net.minecraft.world.storage.EntityChunkDataAccess;
@@ -379,7 +380,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 		profiler.push("entityManagement");
 		this.entityManager.tick();
-		profiler.push("gameEvents");
+		profiler.swap("gameEvents");
 		this.processEventQueue();
 		profiler.pop();
 	}
@@ -516,7 +517,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	private Optional<BlockPos> getLightningRodPos(BlockPos pos) {
 		Optional<BlockPos> optional = this.getPointOfInterestStorage()
 			.getNearestPosition(
-				poiType -> poiType == PointOfInterestType.LIGHTNING_ROD,
+				registryEntry -> registryEntry.matchesKey(PointOfInterestTypes.LIGHTNING_ROD),
 				posx -> posx.getY() == this.getTopY(Heightmap.Type.WORLD_SURFACE, posx.getX(), posx.getZ()) - 1,
 				pos,
 				128,
@@ -1424,16 +1425,16 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	@Override
 	public void onBlockChanged(BlockPos pos, BlockState oldBlock, BlockState newBlock) {
-		Optional<PointOfInterestType> optional = PointOfInterestType.from(oldBlock);
-		Optional<PointOfInterestType> optional2 = PointOfInterestType.from(newBlock);
+		Optional<RegistryEntry<PointOfInterestType>> optional = PointOfInterestTypes.getTypeForState(oldBlock);
+		Optional<RegistryEntry<PointOfInterestType>> optional2 = PointOfInterestTypes.getTypeForState(newBlock);
 		if (!Objects.equals(optional, optional2)) {
 			BlockPos blockPos = pos.toImmutable();
-			optional.ifPresent(poiType -> this.getServer().execute(() -> {
+			optional.ifPresent(registryEntry -> this.getServer().execute(() -> {
 					this.getPointOfInterestStorage().remove(blockPos);
 					DebugInfoSender.sendPoiRemoval(this, blockPos);
 				}));
-			optional2.ifPresent(poiType -> this.getServer().execute(() -> {
-					this.getPointOfInterestStorage().add(blockPos, poiType);
+			optional2.ifPresent(registryEntry -> this.getServer().execute(() -> {
+					this.getPointOfInterestStorage().add(blockPos, registryEntry);
 					DebugInfoSender.sendPoiAddition(this, blockPos);
 				}));
 		}

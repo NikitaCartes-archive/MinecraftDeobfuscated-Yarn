@@ -15,6 +15,7 @@ import com.mojang.serialization.Codec.ResultFunction;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -29,6 +30,7 @@ import java.util.function.ToIntFunction;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Stream;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.registry.RegistryEntryList;
 import org.apache.commons.lang3.mutable.MutableObject;
@@ -52,7 +54,21 @@ public class Codecs {
 			return DataResult.error("Invalid regex pattern '" + pattern + "': " + var2.getMessage());
 		}
 	}, Pattern::pattern);
-	public static final Codec<Instant> INSTANT = method_43532(DateTimeFormatter.ISO_INSTANT);
+	public static final Codec<Instant> INSTANT = instant(DateTimeFormatter.ISO_INSTANT);
+	public static final Codec<byte[]> BASE_64 = Codec.STRING.comapFlatMap(string -> {
+		try {
+			return DataResult.success(Base64.getDecoder().decode(string));
+		} catch (IllegalArgumentException var2) {
+			return DataResult.error("Malformed base64 string");
+		}
+	}, bs -> Base64.getEncoder().encodeToString(bs));
+	public static final Codec<Codecs.TagEntryId> TAG_ENTRY = Codec.STRING
+		.comapFlatMap(
+			string -> string.startsWith("#")
+					? Identifier.validate(string.substring(1)).map(identifier -> new Codecs.TagEntryId(identifier, true))
+					: Identifier.validate(string).map(identifier -> new Codecs.TagEntryId(identifier, false)),
+			Codecs.TagEntryId::asString
+		);
 
 	/**
 	 * Returns an exclusive-or codec for {@link Either} instances.
@@ -283,14 +299,14 @@ public class Codecs {
 		});
 	}
 
-	public static Codec<Instant> method_43532(DateTimeFormatter dateTimeFormatter) {
+	public static Codec<Instant> instant(DateTimeFormatter formatter) {
 		return Codec.STRING.comapFlatMap(string -> {
 			try {
-				return DataResult.success(Instant.from(dateTimeFormatter.parse(string)));
+				return DataResult.success(Instant.from(formatter.parse(string)));
 			} catch (Exception var3) {
 				return DataResult.error(var3.getMessage());
 			}
-		}, dateTimeFormatter::format);
+		}, formatter::format);
 	}
 
 	static final class Either<F, S> implements Codec<com.mojang.datafixers.util.Either<F, S>> {
@@ -355,6 +371,16 @@ public class Codecs {
 		@Override
 		public <T> DataResult<T> encode(A input, DynamicOps<T> ops, T prefix) {
 			return ((Codec)this.delegate.get()).encode(input, ops, prefix);
+		}
+	}
+
+	public static record TagEntryId(Identifier id, boolean tag) {
+		public String toString() {
+			return this.asString();
+		}
+
+		private String asString() {
+			return this.tag ? "#" + this.id : this.id.toString();
 		}
 	}
 

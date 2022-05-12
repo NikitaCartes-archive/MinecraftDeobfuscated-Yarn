@@ -20,7 +20,6 @@ import net.minecraft.entity.boss.dragon.phase.Phase;
 import net.minecraft.entity.boss.dragon.phase.PhaseManager;
 import net.minecraft.entity.boss.dragon.phase.PhaseType;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.EntityDamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -512,11 +511,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 
 	@Override
 	public boolean damage(DamageSource source, float amount) {
-		if (source instanceof EntityDamageSource && ((EntityDamageSource)source).isThorns() && !this.world.isClient) {
-			this.damagePart(this.body, source, amount);
-		}
-
-		return false;
+		return !this.world.isClient ? this.damagePart(this.body, source, amount) : false;
 	}
 
 	protected boolean parentDamage(DamageSource source, float amount) {

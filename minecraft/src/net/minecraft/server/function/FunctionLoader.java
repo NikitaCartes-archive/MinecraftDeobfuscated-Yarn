@@ -8,6 +8,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -21,7 +22,6 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagGroupLoader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec2f;
@@ -52,7 +52,7 @@ public class FunctionLoader implements ResourceReloader {
 	private static final int EXTENSION_LENGTH = ".mcfunction".length();
 	private volatile Map<Identifier, CommandFunction> functions = ImmutableMap.of();
 	private final TagGroupLoader<CommandFunction> tagLoader = new TagGroupLoader<>(this::get, "tags/functions");
-	private volatile Map<Identifier, Tag<CommandFunction>> tags = Map.of();
+	private volatile Map<Identifier, Collection<CommandFunction>> tags = Map.of();
 	private final int level;
 	private final CommandDispatcher<ServerCommandSource> commandDispatcher;
 
@@ -64,8 +64,8 @@ public class FunctionLoader implements ResourceReloader {
 		return this.functions;
 	}
 
-	public Tag<CommandFunction> getTagOrEmpty(Identifier id) {
-		return (Tag<CommandFunction>)this.tags.getOrDefault(id, Tag.empty());
+	public Collection<CommandFunction> getTagOrEmpty(Identifier id) {
+		return (Collection<CommandFunction>)this.tags.getOrDefault(id, List.of());
 	}
 
 	public Iterable<Identifier> getTags() {
@@ -86,7 +86,9 @@ public class FunctionLoader implements ResourceReloader {
 		Executor prepareExecutor,
 		Executor applyExecutor
 	) {
-		CompletableFuture<Map<Identifier, Tag.Builder>> completableFuture = CompletableFuture.supplyAsync(() -> this.tagLoader.loadTags(manager), prepareExecutor);
+		CompletableFuture<Map<Identifier, List<TagGroupLoader.TrackedEntry>>> completableFuture = CompletableFuture.supplyAsync(
+			() -> this.tagLoader.loadTags(manager), prepareExecutor
+		);
 		CompletableFuture<Map<Identifier, CompletableFuture<CommandFunction>>> completableFuture2 = CompletableFuture.supplyAsync(
 				() -> manager.findResources("functions", identifier -> identifier.getPath().endsWith(".mcfunction")), prepareExecutor
 			)
@@ -124,7 +126,7 @@ public class FunctionLoader implements ResourceReloader {
 					return null;
 				}).join());
 			this.functions = builder.build();
-			this.tags = this.tagLoader.buildGroup((Map<Identifier, Tag.Builder>)intermediate.getFirst());
+			this.tags = this.tagLoader.buildGroup((Map<Identifier, List<TagGroupLoader.TrackedEntry>>)intermediate.getFirst());
 		}, applyExecutor);
 	}
 

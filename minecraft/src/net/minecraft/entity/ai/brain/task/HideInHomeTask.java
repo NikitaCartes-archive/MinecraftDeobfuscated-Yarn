@@ -11,7 +11,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.world.poi.PointOfInterestStorage;
-import net.minecraft.world.poi.PointOfInterestType;
+import net.minecraft.world.poi.PointOfInterestTypes;
 
 public class HideInHomeTask extends Task<LivingEntity> {
 	private final float walkSpeed;
@@ -39,8 +39,8 @@ public class HideInHomeTask extends Task<LivingEntity> {
 	protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
 		Optional<BlockPos> optional = world.getPointOfInterestStorage()
 			.getPosition(
-				poiType -> poiType == PointOfInterestType.HOME,
-				blockPos -> true,
+				poiType -> poiType.matchesKey(PointOfInterestTypes.HOME),
+				pos -> true,
 				entity.getBlockPos(),
 				this.preferredDistance + 1,
 				PointOfInterestStorage.OccupationStatus.ANY
@@ -58,17 +58,17 @@ public class HideInHomeTask extends Task<LivingEntity> {
 	protected void run(ServerWorld world, LivingEntity entity, long time) {
 		Brain<?> brain = entity.getBrain();
 		Optional<BlockPos> optional = this.homePosition;
-		if (!optional.isPresent()) {
+		if (optional.isEmpty()) {
 			optional = world.getPointOfInterestStorage()
 				.getPosition(
-					poiType -> poiType == PointOfInterestType.HOME,
-					blockPos -> true,
+					poiType -> poiType.matchesKey(PointOfInterestTypes.HOME),
+					pos -> true,
 					PointOfInterestStorage.OccupationStatus.ANY,
 					entity.getBlockPos(),
 					this.maxDistance,
 					entity.getRandom()
 				);
-			if (!optional.isPresent()) {
+			if (optional.isEmpty()) {
 				Optional<GlobalPos> optional2 = brain.getOptionalMemory(MemoryModuleType.HOME);
 				if (optional2.isPresent()) {
 					optional = Optional.of(((GlobalPos)optional2.get()).getPos());

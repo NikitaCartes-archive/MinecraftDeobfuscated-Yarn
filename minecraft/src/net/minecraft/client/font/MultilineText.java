@@ -42,6 +42,11 @@ public interface MultilineText {
 		public int count() {
 			return 0;
 		}
+
+		@Override
+		public int getMaxWidth() {
+			return 0;
+		}
 	};
 
 	static MultilineText create(TextRenderer renderer, StringVisitable text, int width) {
@@ -85,10 +90,12 @@ public interface MultilineText {
 		);
 	}
 
-	static MultilineText create(TextRenderer renderer, List<MultilineText.Line> lines) {
+	static MultilineText create(TextRenderer textRenderer, List<MultilineText.Line> lines) {
 		return lines.isEmpty()
 			? EMPTY
 			: new MultilineText() {
+				private final int maxWidth = lines.stream().mapToInt(line -> line.width).max().orElse(0);
+
 				@Override
 				public int drawCenterWithShadow(MatrixStack matrices, int x, int y) {
 					return this.drawCenterWithShadow(matrices, x, y, 9, 16777215);
@@ -99,7 +106,7 @@ public interface MultilineText {
 					int i = y;
 
 					for (MultilineText.Line line : lines) {
-						renderer.drawWithShadow(matrices, line.text, (float)(x - line.width / 2), (float)i, color);
+						textRenderer.drawWithShadow(matrices, line.text, (float)(x - line.width / 2), (float)i, color);
 						i += lineHeight;
 					}
 
@@ -111,7 +118,7 @@ public interface MultilineText {
 					int i = y;
 
 					for (MultilineText.Line line : lines) {
-						renderer.drawWithShadow(matrices, line.text, (float)x, (float)i, color);
+						textRenderer.drawWithShadow(matrices, line.text, (float)x, (float)i, color);
 						i += lineHeight;
 					}
 
@@ -123,7 +130,7 @@ public interface MultilineText {
 					int i = y;
 
 					for (MultilineText.Line line : lines) {
-						renderer.draw(matrices, line.text, (float)x, (float)i, color);
+						textRenderer.draw(matrices, line.text, (float)x, (float)i, color);
 						i += lineHeight;
 					}
 
@@ -144,6 +151,11 @@ public interface MultilineText {
 				public int count() {
 					return lines.size();
 				}
+
+				@Override
+				public int getMaxWidth() {
+					return this.maxWidth;
+				}
 			};
 	}
 
@@ -158,6 +170,8 @@ public interface MultilineText {
 	void fillBackground(MatrixStack matrices, int centerX, int centerY, int lineHeight, int padding, int color);
 
 	int count();
+
+	int getMaxWidth();
 
 	@Environment(EnvType.CLIENT)
 	public static class Line {

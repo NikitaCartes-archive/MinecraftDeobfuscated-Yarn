@@ -226,8 +226,10 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 			this.publicKey = getVerifiedPublicKey(packet, this.server.getSessionService(), this.server.shouldEnforceSecureProfile());
 		} catch (ServerLoginNetworkHandler.LoginException var3) {
 			LOGGER.error(var3.getMessage(), var3.getCause());
-			this.disconnect(var3.getMessageText());
-			return;
+			if (!this.connection.isLocal()) {
+				this.disconnect(var3.getMessageText());
+				return;
+			}
 		}
 
 		GameProfile gameProfile = this.server.getHostProfile();

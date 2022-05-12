@@ -14,7 +14,6 @@ import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class SystemToast implements Toast {
-	private static final long DURATION = 5000L;
 	private static final int MIN_WIDTH = 200;
 	private final SystemToast.Type type;
 	private Text title;
@@ -97,7 +96,7 @@ public class SystemToast implements Toast {
 			}
 		}
 
-		return startTime - this.startTime < 5000L ? Toast.Visibility.SHOW : Toast.Visibility.HIDE;
+		return startTime - this.startTime < this.type.displayDuration ? Toast.Visibility.SHOW : Toast.Visibility.HIDE;
 	}
 
 	private void drawPart(MatrixStack matrices, ToastManager manager, int width, int textureV, int y, int height) {
@@ -156,6 +155,17 @@ public class SystemToast implements Toast {
 		PACK_LOAD_FAILURE,
 		WORLD_ACCESS_FAILURE,
 		PACK_COPY_FAILURE,
-		PERIODIC_NOTIFICATION;
+		PERIODIC_NOTIFICATION,
+		CHAT_PREVIEW_WARNING(10000L);
+
+		final long displayDuration;
+
+		private Type(long displayDuration) {
+			this.displayDuration = displayDuration;
+		}
+
+		private Type() {
+			this(5000L);
+		}
 	}
 }

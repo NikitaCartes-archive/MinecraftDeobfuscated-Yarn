@@ -20,22 +20,13 @@ import net.minecraft.command.argument.serialize.ArgumentSerializer;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.tag.TagKey;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.structure.StructureType;
 
 public class RegistryPredicateArgumentType<T> implements ArgumentType<RegistryPredicateArgumentType.RegistryPredicate<T>> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "012", "#skeletons", "#minecraft:skeletons");
-	private static final DynamicCommandExceptionType INVALID_BIOME_EXCEPTION = new DynamicCommandExceptionType(
-		id -> Text.translatable("commands.locatebiome.invalid", id)
-	);
-	private static final DynamicCommandExceptionType INVALID_CONFIGURED_STRUCTURE_FEATURE_EXCEPTION = new DynamicCommandExceptionType(
-		id -> Text.translatable("commands.locate.invalid", id)
-	);
 	final RegistryKey<? extends Registry<T>> registryRef;
 
 	public RegistryPredicateArgumentType(RegistryKey<? extends Registry<T>> registryRef) {
@@ -46,22 +37,12 @@ public class RegistryPredicateArgumentType<T> implements ArgumentType<RegistryPr
 		return new RegistryPredicateArgumentType<>(registryRef);
 	}
 
-	private static <T> RegistryPredicateArgumentType.RegistryPredicate<T> getPredicate(
+	public static <T> RegistryPredicateArgumentType.RegistryPredicate<T> getPredicate(
 		CommandContext<ServerCommandSource> context, String name, RegistryKey<Registry<T>> registryRef, DynamicCommandExceptionType invalidException
 	) throws CommandSyntaxException {
 		RegistryPredicateArgumentType.RegistryPredicate<?> registryPredicate = context.getArgument(name, RegistryPredicateArgumentType.RegistryPredicate.class);
 		Optional<RegistryPredicateArgumentType.RegistryPredicate<T>> optional = registryPredicate.tryCast(registryRef);
 		return (RegistryPredicateArgumentType.RegistryPredicate<T>)optional.orElseThrow(() -> invalidException.create(registryPredicate));
-	}
-
-	public static RegistryPredicateArgumentType.RegistryPredicate<Biome> getBiomePredicate(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-		return getPredicate(context, name, Registry.BIOME_KEY, INVALID_BIOME_EXCEPTION);
-	}
-
-	public static RegistryPredicateArgumentType.RegistryPredicate<StructureType> getConfiguredStructureFeaturePredicate(
-		CommandContext<ServerCommandSource> context, String name
-	) throws CommandSyntaxException {
-		return getPredicate(context, name, Registry.STRUCTURE_KEY, INVALID_CONFIGURED_STRUCTURE_FEATURE_EXCEPTION);
 	}
 
 	public RegistryPredicateArgumentType.RegistryPredicate<T> parse(StringReader stringReader) throws CommandSyntaxException {

@@ -21,7 +21,7 @@ public class CommandSyntaxProvider implements DataProvider {
 
 	@Override
 	public void run(DataWriter cache) throws IOException {
-		Path path = this.generator.getOutput().resolve("reports/commands.json");
+		Path path = this.generator.resolveRootDirectoryPath(DataGenerator.OutputType.REPORTS).resolve("commands.json");
 		CommandDispatcher<ServerCommandSource> commandDispatcher = new CommandManager(
 				CommandManager.RegistrationEnvironment.ALL, new CommandRegistryAccess((DynamicRegistryManager)DynamicRegistryManager.BUILTIN.get())
 			)

@@ -8,13 +8,13 @@ import net.minecraft.network.listener.ServerLoginPacketListener;
 
 public record LoginHelloC2SPacket(String name, Optional<PlayerPublicKey.PublicKeyData> publicKey) implements Packet<ServerLoginPacketListener> {
 	public LoginHelloC2SPacket(PacketByteBuf buf) {
-		this(buf.readString(16), buf.readOptional(buf2 -> buf2.decode(PlayerPublicKey.PublicKeyData.CODEC)));
+		this(buf.readString(16), buf.readOptional(PlayerPublicKey.PublicKeyData::new));
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) {
 		buf.writeString(this.name, 16);
-		buf.writeOptional(this.publicKey, (buf2, publicKey) -> buf2.encode(PlayerPublicKey.PublicKeyData.CODEC, publicKey));
+		buf.writeOptional(this.publicKey, (buf2, publicKey) -> publicKey.write(buf));
 	}
 
 	public void apply(ServerLoginPacketListener serverLoginPacketListener) {

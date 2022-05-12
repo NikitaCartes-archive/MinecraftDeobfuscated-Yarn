@@ -31,16 +31,13 @@ public class SmallFireballEntity extends AbstractFireballEntity {
 		super.onEntityHit(entityHitResult);
 		if (!this.world.isClient) {
 			Entity entity = entityHitResult.getEntity();
-			if (!entity.isFireImmune()) {
-				Entity entity2 = this.getOwner();
-				int i = entity.getFireTicks();
-				entity.setOnFireFor(5);
-				boolean bl = entity.damage(DamageSource.fireball(this, entity2), 5.0F);
-				if (!bl) {
-					entity.setFireTicks(i);
-				} else if (entity2 instanceof LivingEntity) {
-					this.applyDamageEffects((LivingEntity)entity2, entity);
-				}
+			Entity entity2 = this.getOwner();
+			int i = entity.getFireTicks();
+			entity.setOnFireFor(5);
+			if (!entity.damage(DamageSource.fireball(this, entity2), 5.0F)) {
+				entity.setFireTicks(i);
+			} else if (entity2 instanceof LivingEntity) {
+				this.applyDamageEffects((LivingEntity)entity2, entity);
 			}
 		}
 	}

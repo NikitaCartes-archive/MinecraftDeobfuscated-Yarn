@@ -13,10 +13,11 @@ public class MeCommand {
 			SignedChatMessage signedChatMessage = MessageArgumentType.getSignedMessage(context, "action");
 			ServerCommandSource serverCommandSource = context.getSource();
 			if (serverCommandSource.isExecutedByPlayer()) {
-				ServerPlayerEntity serverPlayerEntity = serverCommandSource.getPlayer();
-				serverPlayerEntity.getTextStream().filterText(signedChatMessage.content().getString()).thenAcceptAsync(message -> {
+				ServerPlayerEntity serverPlayerEntity = serverCommandSource.getPlayerOrThrow();
+				serverPlayerEntity.getTextStream().filterText(signedChatMessage.signedContent().getString()).thenAcceptAsync(message -> {
 					PlayerManager playerManager = serverCommandSource.getServer().getPlayerManager();
-					playerManager.broadcast(signedChatMessage, message, serverPlayerEntity, MessageType.EMOTE_COMMAND);
+					SignedChatMessage signedChatMessage2 = serverCommandSource.getServer().getChatDecorator().decorate(serverPlayerEntity, signedChatMessage);
+					playerManager.broadcast(signedChatMessage2, message, serverPlayerEntity, MessageType.EMOTE_COMMAND);
 				}, serverCommandSource.getServer());
 			} else {
 				serverCommandSource.getServer().getPlayerManager().broadcast(signedChatMessage, serverCommandSource.getChatMessageSender(), MessageType.EMOTE_COMMAND);

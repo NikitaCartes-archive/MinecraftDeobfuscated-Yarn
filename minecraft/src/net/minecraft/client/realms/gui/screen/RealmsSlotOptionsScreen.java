@@ -39,8 +39,8 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 	private final RealmsServer.WorldType worldType;
 	private Difficulty difficulty;
 	private GameMode gameMode;
-	private final String field_39187;
-	private String field_39188;
+	private final String defaultSlotName;
+	private String slotName;
 	private boolean pvp;
 	private boolean spawnNpcs;
 	private boolean spawnAnimals;
@@ -57,8 +57,8 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 		this.worldType = worldType;
 		this.difficulty = get(DIFFICULTIES, options.difficulty, 2);
 		this.gameMode = get(GAME_MODES, options.gameMode, 0);
-		this.field_39187 = options.getDefaultSlotName(activeSlot);
-		this.method_43757(options.getSlotName(activeSlot));
+		this.defaultSlotName = options.getDefaultSlotName(activeSlot);
+		this.setSlotName(options.getSlotName(activeSlot));
 		if (worldType == RealmsServer.WorldType.NORMAL) {
 			this.pvp = options.pvp;
 			this.spawnProtection = options.spawnProtection;
@@ -133,8 +133,8 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 			this.client.textRenderer, this.column1_x + 2, row(1), this.column2_x - 4, 20, null, Text.translatable("mco.configure.world.edit.slot.name")
 		);
 		this.nameEdit.setMaxLength(10);
-		this.nameEdit.setText(this.field_39188);
-		this.nameEdit.setChangedListener(this::method_43757);
+		this.nameEdit.setText(this.slotName);
+		this.nameEdit.setChangedListener(this::setSlotName);
 		this.focusOn(this.nameEdit);
 		CyclingButtonWidget<Boolean> cyclingButtonWidget = this.addDrawableChild(
 			CyclingButtonWidget.onOffBuilder(this.pvp)
@@ -231,14 +231,14 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 		this.addSelectableChild(this.nameEdit);
 	}
 
-	private CyclingButtonWidget.UpdateCallback<Boolean> getSpawnToggleButtonCallback(Text text, Consumer<Boolean> consumer) {
-		return (cyclingButtonWidget, boolean_) -> {
-			if (boolean_) {
-				consumer.accept(true);
+	private CyclingButtonWidget.UpdateCallback<Boolean> getSpawnToggleButtonCallback(Text text, Consumer<Boolean> valueSetter) {
+		return (button, value) -> {
+			if (value) {
+				valueSetter.accept(true);
 			} else {
-				this.client.setScreen(new ConfirmScreen(bl -> {
-					if (bl) {
-						consumer.accept(false);
+				this.client.setScreen(new ConfirmScreen(confirmed -> {
+					if (confirmed) {
+						valueSetter.accept(false);
 					}
 
 					this.client.setScreen(this);
@@ -262,11 +262,11 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 
-	private void method_43757(String string) {
-		if (string.equals(this.field_39187)) {
-			this.field_39188 = "";
+	private void setSlotName(String slotName) {
+		if (slotName.equals(this.defaultSlotName)) {
+			this.slotName = "";
 		} else {
-			this.field_39188 = string;
+			this.slotName = slotName;
 		}
 	}
 
@@ -279,9 +279,7 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 			boolean bl = this.worldType == RealmsServer.WorldType.NORMAL && this.difficulty != Difficulty.PEACEFUL && this.spawnMonsters;
 			this.parent
 				.saveSlotSettings(
-					new RealmsWorldOptions(
-						this.pvp, this.spawnAnimals, bl, this.spawnNpcs, this.spawnProtection, this.commandBlocks, i, j, this.forceGameMode, this.field_39188
-					)
+					new RealmsWorldOptions(this.pvp, this.spawnAnimals, bl, this.spawnNpcs, this.spawnProtection, this.commandBlocks, i, j, this.forceGameMode, this.slotName)
 				);
 		} else {
 			this.parent
@@ -296,7 +294,7 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 						i,
 						j,
 						this.options.forceGameMode,
-						this.field_39188
+						this.slotName
 					)
 				);
 		}

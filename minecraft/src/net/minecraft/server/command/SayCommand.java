@@ -12,28 +12,22 @@ public class SayCommand {
 		dispatcher.register(
 			CommandManager.literal("say")
 				.requires(source -> source.hasPermissionLevel(2))
-				.then(
-					CommandManager.argument("message", MessageArgumentType.message())
-						.executes(
-							context -> {
-								SignedChatMessage signedChatMessage = MessageArgumentType.getSignedMessage(context, "message");
-								ServerCommandSource serverCommandSource = context.getSource();
-								PlayerManager playerManager = serverCommandSource.getServer().getPlayerManager();
-								if (serverCommandSource.isExecutedByPlayer()) {
-									ServerPlayerEntity serverPlayerEntity = serverCommandSource.getPlayer();
-									serverPlayerEntity.getTextStream()
-										.filterText(signedChatMessage.content().getString())
-										.thenAcceptAsync(
-											message -> playerManager.broadcast(signedChatMessage, message, serverPlayerEntity, MessageType.SAY_COMMAND), serverCommandSource.getServer()
-										);
-								} else {
-									playerManager.broadcast(signedChatMessage, serverCommandSource.getChatMessageSender(), MessageType.SAY_COMMAND);
-								}
+				.then(CommandManager.argument("message", MessageArgumentType.message()).executes(context -> {
+					SignedChatMessage signedChatMessage = MessageArgumentType.getSignedMessage(context, "message");
+					ServerCommandSource serverCommandSource = context.getSource();
+					PlayerManager playerManager = serverCommandSource.getServer().getPlayerManager();
+					if (serverCommandSource.isExecutedByPlayer()) {
+						ServerPlayerEntity serverPlayerEntity = serverCommandSource.getPlayerOrThrow();
+						serverPlayerEntity.getTextStream().filterText(signedChatMessage.signedContent().getString()).thenAcceptAsync(message -> {
+							SignedChatMessage signedChatMessage2 = serverCommandSource.getServer().getChatDecorator().decorate(serverPlayerEntity, signedChatMessage);
+							playerManager.broadcast(signedChatMessage2, message, serverPlayerEntity, MessageType.SAY_COMMAND);
+						}, serverCommandSource.getServer());
+					} else {
+						playerManager.broadcast(signedChatMessage, serverCommandSource.getChatMessageSender(), MessageType.SAY_COMMAND);
+					}
 
-								return 1;
-							}
-						)
-				)
+					return 1;
+				}))
 		);
 	}
 }

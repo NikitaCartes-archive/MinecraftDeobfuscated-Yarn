@@ -59,7 +59,7 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 	private boolean hasTooManyPatterns;
 	private float scrollPosition;
 	private boolean scrollbarClicked;
-	private int field_39190;
+	private int visibleTopRow;
 
 	public LoomScreen(LoomScreenHandler screenHandler, PlayerInventory inventory, Text title) {
 		super(screenHandler, inventory, title);
@@ -79,7 +79,7 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 		this.drawMouseoverTooltip(matrices, mouseX, mouseY);
 	}
 
-	private int method_43774() {
+	private int getRows() {
 		return MathHelper.ceilDiv(this.handler.getBannerPatterns().size(), 4);
 	}
 
@@ -137,7 +137,7 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 			label64:
 			for (int n = 0; n < 4; n++) {
 				for (int o = 0; o < 4; o++) {
-					int p = n + this.field_39190;
+					int p = n + this.visibleTopRow;
 					int q = p * 4 + o;
 					if (q >= list.size()) {
 						break label64;
@@ -199,7 +199,7 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 				for (int l = 0; l < 4; l++) {
 					double d = mouseX - (double)(i + l * 14);
 					double e = mouseY - (double)(j + k * 14);
-					int m = k + this.field_39190;
+					int m = k + this.visibleTopRow;
 					int n = m * 4 + l;
 					if (d >= 0.0 && e >= 0.0 && d < 14.0 && e < 14.0 && this.handler.onButtonClick(this.client.player, n)) {
 						MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_LOOM_SELECT_PATTERN, 1.0F));
@@ -221,13 +221,13 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 
 	@Override
 	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-		int i = this.method_43774() - 4;
+		int i = this.getRows() - 4;
 		if (this.scrollbarClicked && this.canApplyDyePattern && i > 0) {
 			int j = this.y + 13;
 			int k = j + 56;
 			this.scrollPosition = ((float)mouseY - (float)j - 7.5F) / ((float)(k - j) - 15.0F);
 			this.scrollPosition = MathHelper.clamp(this.scrollPosition, 0.0F, 1.0F);
-			this.field_39190 = Math.max((int)((double)(this.scrollPosition * (float)i) + 0.5), 0);
+			this.visibleTopRow = Math.max((int)((double)(this.scrollPosition * (float)i) + 0.5), 0);
 			return true;
 		} else {
 			return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
@@ -236,11 +236,11 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-		int i = this.method_43774() - 4;
+		int i = this.getRows() - 4;
 		if (this.canApplyDyePattern && i > 0) {
 			float f = (float)amount / (float)i;
 			this.scrollPosition = MathHelper.clamp(this.scrollPosition - f, 0.0F, 1.0F);
-			this.field_39190 = Math.max((int)(this.scrollPosition * (float)i + 0.5F), 0);
+			this.visibleTopRow = Math.max((int)(this.scrollPosition * (float)i + 0.5F), 0);
 		}
 
 		return true;
@@ -275,8 +275,8 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 			this.canApplyDyePattern = !itemStack2.isEmpty() && !itemStack3.isEmpty() && !this.hasTooManyPatterns && !this.handler.getBannerPatterns().isEmpty();
 		}
 
-		if (this.field_39190 >= this.method_43774()) {
-			this.field_39190 = 0;
+		if (this.visibleTopRow >= this.getRows()) {
+			this.visibleTopRow = 0;
 			this.scrollPosition = 0.0F;
 		}
 

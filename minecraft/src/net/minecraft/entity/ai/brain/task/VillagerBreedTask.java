@@ -14,7 +14,9 @@ import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.poi.PointOfInterestType;
+import net.minecraft.world.poi.PointOfInterestTypes;
 
 public class VillagerBreedTask extends Task<VillagerEntity> {
 	private static final int MAX_DISTANCE = 5;
@@ -92,11 +94,13 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 
 	private Optional<BlockPos> getReachableHome(ServerWorld world, VillagerEntity villager) {
 		return world.getPointOfInterestStorage()
-			.getPosition(PointOfInterestType.HOME.getCompletionCondition(), blockPos -> this.canReachHome(villager, blockPos), villager.getBlockPos(), 48);
+			.getPosition(
+				poiType -> poiType.matchesKey(PointOfInterestTypes.HOME), (poiType, pos) -> this.canReachHome(villager, pos, poiType), villager.getBlockPos(), 48
+			);
 	}
 
-	private boolean canReachHome(VillagerEntity villager, BlockPos pos) {
-		Path path = villager.getNavigation().findPathTo(pos, PointOfInterestType.HOME.getSearchDistance());
+	private boolean canReachHome(VillagerEntity villager, BlockPos pos, RegistryEntry<PointOfInterestType> poiType) {
+		Path path = villager.getNavigation().findPathTo(pos, poiType.value().searchDistance());
 		return path != null && path.reachesTarget();
 	}
 

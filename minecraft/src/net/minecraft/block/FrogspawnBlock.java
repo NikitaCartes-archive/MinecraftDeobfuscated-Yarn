@@ -11,6 +11,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
@@ -96,15 +97,18 @@ public class FrogspawnBlock extends Block {
 
 		for (int j = 1; j <= i; j++) {
 			TadpoleEntity tadpoleEntity = EntityType.TADPOLE.create(world);
-			double d = random.nextDouble();
-			double e = random.nextDouble();
-			double f = (double)pos.getX() + d;
-			double g = (double)pos.getZ() + e;
+			double d = (double)pos.getX() + this.getSpawnOffset(random);
+			double e = (double)pos.getZ() + this.getSpawnOffset(random);
 			int k = random.nextBetweenExclusive(1, 361);
-			tadpoleEntity.refreshPositionAndAngles(f, (double)pos.getY() - 0.5, g, (float)k, 0.0F);
+			tadpoleEntity.refreshPositionAndAngles(d, (double)pos.getY() - 0.5, e, (float)k, 0.0F);
 			tadpoleEntity.setPersistent();
 			world.spawnEntity(tadpoleEntity);
 		}
+	}
+
+	private double getSpawnOffset(AbstractRandom random) {
+		double d = (double)(TadpoleEntity.WIDTH / 2.0F);
+		return MathHelper.clamp(random.nextDouble(), d, 1.0 - d);
 	}
 
 	@VisibleForTesting

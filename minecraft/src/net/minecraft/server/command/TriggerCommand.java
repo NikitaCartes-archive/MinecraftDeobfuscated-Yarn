@@ -33,7 +33,7 @@ public class TriggerCommand {
 						.suggests((context, builder) -> suggestObjectives(context.getSource(), builder))
 						.executes(
 							context -> executeSimple(
-									context.getSource(), getScore(context.getSource().getPlayer(), ScoreboardObjectiveArgumentType.getObjective(context, "objective"))
+									context.getSource(), getScore(context.getSource().getPlayerOrThrow(), ScoreboardObjectiveArgumentType.getObjective(context, "objective"))
 								)
 						)
 						.then(
@@ -43,7 +43,7 @@ public class TriggerCommand {
 										.executes(
 											context -> executeAdd(
 													context.getSource(),
-													getScore(context.getSource().getPlayer(), ScoreboardObjectiveArgumentType.getObjective(context, "objective")),
+													getScore(context.getSource().getPlayerOrThrow(), ScoreboardObjectiveArgumentType.getObjective(context, "objective")),
 													IntegerArgumentType.getInteger(context, "value")
 												)
 										)
@@ -56,7 +56,7 @@ public class TriggerCommand {
 										.executes(
 											context -> executeSet(
 													context.getSource(),
-													getScore(context.getSource().getPlayer(), ScoreboardObjectiveArgumentType.getObjective(context, "objective")),
+													getScore(context.getSource().getPlayerOrThrow(), ScoreboardObjectiveArgumentType.getObjective(context, "objective")),
 													IntegerArgumentType.getInteger(context, "value")
 												)
 										)

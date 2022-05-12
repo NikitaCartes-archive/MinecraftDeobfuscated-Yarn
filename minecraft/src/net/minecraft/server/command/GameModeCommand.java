@@ -20,7 +20,7 @@ public class GameModeCommand {
 		for (GameMode gameMode : GameMode.values()) {
 			literalArgumentBuilder.then(
 				CommandManager.literal(gameMode.getName())
-					.executes(context -> execute(context, Collections.singleton(context.getSource().getPlayer()), gameMode))
+					.executes(context -> execute(context, Collections.singleton(context.getSource().getPlayerOrThrow()), gameMode))
 					.then(
 						CommandManager.argument("target", EntityArgumentType.players())
 							.executes(context -> execute(context, EntityArgumentType.getPlayers(context, "target"), gameMode))

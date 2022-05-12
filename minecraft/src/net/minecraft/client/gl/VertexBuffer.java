@@ -35,19 +35,19 @@ public class VertexBuffer implements AutoCloseable {
 		this.vertexArrayId = GlStateManager._glGenVertexArrays();
 	}
 
-	public void upload(BufferBuilder.class_7433 arg) {
+	public void upload(BufferBuilder.BuiltBuffer buffer) {
 		if (!this.isClosed()) {
 			RenderSystem.assertOnRenderThread();
 
 			try {
-				BufferBuilder.DrawArrayParameters drawArrayParameters = arg.method_43583();
-				this.vertexFormat = this.configureVertexFormat(drawArrayParameters, arg.method_43581());
-				this.indexBuffer = this.configureIndexBuffer(drawArrayParameters, arg.method_43582());
+				BufferBuilder.DrawArrayParameters drawArrayParameters = buffer.getParameters();
+				this.vertexFormat = this.configureVertexFormat(drawArrayParameters, buffer.getVertexBuffer());
+				this.indexBuffer = this.configureIndexBuffer(drawArrayParameters, buffer.getIndexBuffer());
 				this.vertexCount = drawArrayParameters.indexCount();
 				this.indexType = drawArrayParameters.indexType();
 				this.drawMode = drawArrayParameters.mode();
 			} finally {
-				arg.method_43585();
+				buffer.release();
 			}
 		}
 	}

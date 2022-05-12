@@ -28,7 +28,7 @@ import net.minecraft.village.VillagerProfession;
 public class GiveGiftsToHeroTask extends Task<VillagerEntity> {
 	private static final int MAX_DISTANCE = 5;
 	private static final int DEFAULT_DURATION = 600;
-	private static final int field_30119 = 6600;
+	private static final int MAX_NEXT_GIFT_DELAY = 6600;
 	private static final int RUN_TIME = 20;
 	private static final Map<VillagerProfession, Identifier> GIFTS = Util.make(Maps.<VillagerProfession, Identifier>newHashMap(), hashMap -> {
 		hashMap.put(VillagerProfession.ARMORER, LootTables.HERO_OF_THE_VILLAGE_ARMORER_GIFT_GAMEPLAY);

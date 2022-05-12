@@ -91,7 +91,7 @@ public class IronGolemWanderAroundGoal extends WanderAroundGoal {
 		ServerWorld serverWorld = (ServerWorld)this.mob.world;
 		PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
 		List<BlockPos> list = (List<BlockPos>)pointOfInterestStorage.getInCircle(
-				pointOfInterestType -> true, pos.getCenterPos(), 8, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED
+				registryEntry -> true, pos.getCenterPos(), 8, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED
 			)
 			.map(PointOfInterest::getPos)
 			.collect(Collectors.toList());

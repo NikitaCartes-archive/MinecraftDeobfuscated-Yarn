@@ -62,7 +62,8 @@ public class RecipeProvider implements DataProvider {
 	private static final ImmutableList<ItemConvertible> LAPIS_ORES = ImmutableList.of(Items.LAPIS_ORE, Items.DEEPSLATE_LAPIS_ORE);
 	private static final ImmutableList<ItemConvertible> REDSTONE_ORES = ImmutableList.of(Items.REDSTONE_ORE, Items.DEEPSLATE_REDSTONE_ORE);
 	private static final ImmutableList<ItemConvertible> EMERALD_ORES = ImmutableList.of(Items.EMERALD_ORE, Items.DEEPSLATE_EMERALD_ORE);
-	private final DataGenerator root;
+	private final DataGenerator.PathResolver recipesPathResolver;
+	private final DataGenerator.PathResolver advancementsPathResolver;
 	private static final Map<BlockFamily.Variant, BiFunction<ItemConvertible, ItemConvertible, CraftingRecipeJsonBuilder>> VARIANT_FACTORIES = ImmutableMap.<BlockFamily.Variant, BiFunction<ItemConvertible, ItemConvertible, CraftingRecipeJsonBuilder>>builder()
 		.put(BlockFamily.Variant.BUTTON, (output, input) -> createTransmutationRecipe(output, Ingredient.ofItems(input)))
 		.put(BlockFamily.Variant.CHISELED, (output, input) -> createChiseledBlockRecipe(output, Ingredient.ofItems(input)))
@@ -80,34 +81,28 @@ public class RecipeProvider implements DataProvider {
 		.build();
 
 	public RecipeProvider(DataGenerator root) {
-		this.root = root;
+		this.recipesPathResolver = root.createPathResolver(DataGenerator.OutputType.DATA_PACK, "recipes");
+		this.advancementsPathResolver = root.createPathResolver(DataGenerator.OutputType.DATA_PACK, "advancements");
 	}
 
 	@Override
 	public void run(DataWriter cache) {
-		Path path = this.root.getOutput();
 		Set<Identifier> set = Sets.<Identifier>newHashSet();
-		generate(
-			provider -> {
-				if (!set.add(provider.getRecipeId())) {
-					throw new IllegalStateException("Duplicate recipe " + provider.getRecipeId());
-				} else {
-					saveRecipe(
-						cache, provider.toJson(), path.resolve("data/" + provider.getRecipeId().getNamespace() + "/recipes/" + provider.getRecipeId().getPath() + ".json")
-					);
-					JsonObject jsonObject = provider.toAdvancementJson();
-					if (jsonObject != null) {
-						saveRecipeAdvancement(
-							cache, jsonObject, path.resolve("data/" + provider.getRecipeId().getNamespace() + "/advancements/" + provider.getAdvancementId().getPath() + ".json")
-						);
-					}
+		generate(provider -> {
+			if (!set.add(provider.getRecipeId())) {
+				throw new IllegalStateException("Duplicate recipe " + provider.getRecipeId());
+			} else {
+				saveRecipe(cache, provider.toJson(), this.recipesPathResolver.resolveJson(provider.getRecipeId()));
+				JsonObject jsonObject = provider.toAdvancementJson();
+				if (jsonObject != null) {
+					saveRecipeAdvancement(cache, jsonObject, this.advancementsPathResolver.resolveJson(provider.getAdvancementId()));
 				}
 			}
-		);
+		});
 		saveRecipeAdvancement(
 			cache,
 			Advancement.Builder.create().criterion("impossible", new ImpossibleCriterion.Conditions()).toJson(),
-			path.resolve("data/minecraft/advancements/recipes/root.json")
+			this.advancementsPathResolver.resolveJson(CraftingRecipeJsonBuilder.field_39377)
 		);
 	}
 

@@ -4,7 +4,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.function.CommandFunction;
 import net.minecraft.server.function.CommandFunctionManager;
-import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 
 public class FunctionTagTimerCallback implements TimerCallback<MinecraftServer> {
@@ -16,9 +15,8 @@ public class FunctionTagTimerCallback implements TimerCallback<MinecraftServer> 
 
 	public void call(MinecraftServer minecraftServer, Timer<MinecraftServer> timer, long l) {
 		CommandFunctionManager commandFunctionManager = minecraftServer.getCommandFunctionManager();
-		Tag<CommandFunction> tag = commandFunctionManager.getTag(this.name);
 
-		for (CommandFunction commandFunction : tag.values()) {
+		for (CommandFunction commandFunction : commandFunctionManager.getTag(this.name)) {
 			commandFunctionManager.execute(commandFunction, commandFunctionManager.getScheduledCommandSource());
 		}
 	}

@@ -21,21 +21,20 @@ import org.slf4j.Logger;
 
 public class BiomeParametersProvider implements DataProvider {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private final DataGenerator dataGenerator;
+	private final Path path;
 
 	public BiomeParametersProvider(DataGenerator dataGenerator) {
-		this.dataGenerator = dataGenerator;
+		this.path = dataGenerator.resolveRootDirectoryPath(DataGenerator.OutputType.REPORTS).resolve("biome_parameters");
 	}
 
 	@Override
 	public void run(DataWriter cache) {
-		Path path = this.dataGenerator.getOutput();
 		DynamicRegistryManager.Immutable immutable = (DynamicRegistryManager.Immutable)DynamicRegistryManager.BUILTIN.get();
 		DynamicOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, immutable);
 		Registry<Biome> registry = immutable.get(Registry.BIOME_KEY);
 		MultiNoiseBiomeSource.Preset.method_41415().forEach(pair -> {
 			MultiNoiseBiomeSource multiNoiseBiomeSource = ((MultiNoiseBiomeSource.Preset)pair.getSecond()).getBiomeSource(registry, false);
-			method_42030(method_42032(path, (Identifier)pair.getFirst()), cache, dynamicOps, MultiNoiseBiomeSource.CODEC, multiNoiseBiomeSource);
+			method_42030(this.resolvePath((Identifier)pair.getFirst()), cache, dynamicOps, MultiNoiseBiomeSource.CODEC, multiNoiseBiomeSource);
 		});
 	}
 
@@ -51,12 +50,8 @@ public class BiomeParametersProvider implements DataProvider {
 		}
 	}
 
-	private static Path method_42032(Path path, Identifier identifier) {
-		return method_42029(path).resolve(identifier.getNamespace()).resolve(identifier.getPath() + ".json");
-	}
-
-	private static Path method_42029(Path path) {
-		return path.resolve("reports").resolve("biome_parameters");
+	private Path resolvePath(Identifier id) {
+		return this.path.resolve(id.getNamespace()).resolve(id.getPath() + ".json");
 	}
 
 	@Override

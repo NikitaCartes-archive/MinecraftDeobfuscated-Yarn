@@ -21,6 +21,7 @@ import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.Pool;
 import net.minecraft.util.registry.BuiltinRegistries;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.util.registry.RegistryKey;
@@ -299,7 +300,7 @@ public class StructureTypes {
 		)
 	);
 
-	public static RegistryEntry<? extends StructureType> getDefault() {
+	public static RegistryEntry<? extends StructureType> getDefault(Registry<StructureType> registry) {
 		return MINESHAFT;
 	}
 

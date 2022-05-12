@@ -32,24 +32,28 @@ public class ChatMessageC2SPacket implements Packet<ServerPlayPacketListener> {
 	private final String chatMessage;
 	private final Instant time;
 	private final NetworkEncryptionUtils.SignatureData signature;
+	private final boolean previewed;
 
-	public ChatMessageC2SPacket(String chatMessage, ChatMessageSignature signature) {
+	public ChatMessageC2SPacket(String chatMessage, ChatMessageSignature signature, boolean previewed) {
 		this.chatMessage = StringHelper.truncateChat(chatMessage);
-		this.time = signature.timeStamp();
+		this.time = signature.timestamp();
 		this.signature = signature.saltSignature();
+		this.previewed = previewed;
 	}
 
 	public ChatMessageC2SPacket(PacketByteBuf buf) {
 		this.chatMessage = buf.readString(256);
-		this.time = Instant.ofEpochSecond(buf.readLong());
+		this.time = buf.readInstant();
 		this.signature = new NetworkEncryptionUtils.SignatureData(buf);
+		this.previewed = buf.readBoolean();
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) {
 		buf.writeString(this.chatMessage);
-		buf.writeLong(this.time.getEpochSecond());
-		this.signature.write(buf);
+		buf.writeInstant(this.time);
+		NetworkEncryptionUtils.SignatureData.write(buf, this.signature);
+		buf.writeBoolean(this.previewed);
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
@@ -76,5 +80,14 @@ public class ChatMessageC2SPacket implements Packet<ServerPlayPacketListener> {
 	 */
 	public boolean isExpired(Instant currentTime) {
 		return currentTime.isAfter(this.getExpiryTime());
+	}
+
+	/**
+	 * {@return whether the chat message was previewed before sending}
+	 * 
+	 * @apiNote Chat decorators can produce signed decorated content only if it was previewed.
+	 */
+	public boolean isPreviewed() {
+		return this.previewed;
 	}
 }

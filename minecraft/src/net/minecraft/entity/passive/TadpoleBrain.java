@@ -16,8 +16,6 @@ import net.minecraft.entity.ai.brain.task.ConditionalTask;
 import net.minecraft.entity.ai.brain.task.FollowMobTask;
 import net.minecraft.entity.ai.brain.task.GoTowardsLookTarget;
 import net.minecraft.entity.ai.brain.task.LookAroundTask;
-import net.minecraft.entity.ai.brain.task.SeekWaterTask;
-import net.minecraft.entity.ai.brain.task.StrollTask;
 import net.minecraft.entity.ai.brain.task.TemptationCooldownTask;
 import net.minecraft.entity.ai.brain.task.TimeLimitedTask;
 import net.minecraft.entity.ai.brain.task.WaitTask;
@@ -27,7 +25,6 @@ import net.minecraft.util.math.intprovider.UniformIntProvider;
 
 public class TadpoleBrain {
 	private static final float field_37500 = 2.0F;
-	private static final float field_37501 = 0.15F;
 	private static final float field_37502 = 0.5F;
 
 	protected static Brain<?> create(Brain<TadpoleEntity> brain) {
@@ -54,9 +51,8 @@ public class TadpoleBrain {
 			Activity.IDLE,
 			ImmutableList.of(
 				Pair.of(0, new TimeLimitedTask<>(new FollowMobTask(EntityType.PLAYER, 6.0F), UniformIntProvider.create(30, 60))),
-				Pair.of(3, new SeekWaterTask(6, 0.15F)),
 				Pair.of(
-					4,
+					1,
 					new CompositeTask<>(
 						ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT),
 						ImmutableSet.of(),
@@ -64,7 +60,6 @@ public class TadpoleBrain {
 						CompositeTask.RunMode.TRY_ALL,
 						ImmutableList.of(
 							Pair.of(new AquaticStrollTask(0.5F), 2),
-							Pair.of(new StrollTask(0.15F), 2),
 							Pair.of(new GoTowardsLookTarget(0.5F, 3), 3),
 							Pair.of(new ConditionalTask<>(Entity::isInsideWaterOrBubbleColumn, new WaitTask(30, 60)), 5)
 						)

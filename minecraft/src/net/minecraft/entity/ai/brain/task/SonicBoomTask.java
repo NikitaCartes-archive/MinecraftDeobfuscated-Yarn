@@ -57,6 +57,7 @@ public class SonicBoomTask extends Task<WardenEntity> {
 	}
 
 	protected void keepRunning(ServerWorld serverWorld, WardenEntity wardenEntity, long l) {
+		wardenEntity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).ifPresent(target -> wardenEntity.getLookControl().lookAt(target.getPos()));
 		if (!wardenEntity.getBrain().hasMemoryModule(MemoryModuleType.SONIC_BOOM_SOUND_DELAY)
 			&& !wardenEntity.getBrain().hasMemoryModule(MemoryModuleType.SONIC_BOOM_SOUND_COOLDOWN)) {
 			wardenEntity.getBrain().remember(MemoryModuleType.SONIC_BOOM_SOUND_COOLDOWN, Unit.INSTANCE, (long)(RUN_TIME - SOUND_DELAY));
@@ -75,7 +76,7 @@ public class SonicBoomTask extends Task<WardenEntity> {
 					}
 
 					wardenEntity.playSound(SoundEvents.ENTITY_WARDEN_SONIC_BOOM, 3.0F, 1.0F);
-					target.damage(DamageSource.SONIC_BOOM, 10.0F);
+					target.damage(DamageSource.sonicBoom(wardenEntity), 10.0F);
 					double d = 0.5 * (1.0 - target.getAttributeValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE));
 					double e = 2.5 * (1.0 - target.getAttributeValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE));
 					target.addVelocity(vec3d3.getX() * e, vec3d3.getY() * d, vec3d3.getZ() * e);

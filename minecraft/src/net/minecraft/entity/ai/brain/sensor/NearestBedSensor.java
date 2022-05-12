@@ -1,19 +1,23 @@
 package net.minecraft.entity.ai.brain.sensor;
 
 import com.google.common.collect.ImmutableSet;
+import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.longs.Long2LongMap;
 import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.brain.task.FindPointOfInterestTask;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
+import net.minecraft.world.poi.PointOfInterestTypes;
 
 public class NearestBedSensor extends Sensor<MobEntity> {
 	private static final int REMEMBER_TIME = 40;
@@ -48,13 +52,14 @@ public class NearestBedSensor extends Sensor<MobEntity> {
 					return true;
 				}
 			};
-			Stream<BlockPos> stream = pointOfInterestStorage.getPositions(
-				PointOfInterestType.HOME.getCompletionCondition(), predicate, mobEntity.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.ANY
-			);
-			Path path = mobEntity.getNavigation().findPathToAny(stream, PointOfInterestType.HOME.getSearchDistance());
+			Set<Pair<RegistryEntry<PointOfInterestType>, BlockPos>> set = (Set<Pair<RegistryEntry<PointOfInterestType>, BlockPos>>)pointOfInterestStorage.getTypesAndPositions(
+					registryEntry -> registryEntry.matchesKey(PointOfInterestTypes.HOME), predicate, mobEntity.getBlockPos(), 48, PointOfInterestStorage.OccupationStatus.ANY
+				)
+				.collect(Collectors.toSet());
+			Path path = FindPointOfInterestTask.findPathToPoi(mobEntity, set);
 			if (path != null && path.reachesTarget()) {
 				BlockPos blockPos = path.getTarget();
-				Optional<PointOfInterestType> optional = pointOfInterestStorage.getType(blockPos);
+				Optional<RegistryEntry<PointOfInterestType>> optional = pointOfInterestStorage.getType(blockPos);
 				if (optional.isPresent()) {
 					mobEntity.getBrain().remember(MemoryModuleType.NEAREST_BED, blockPos);
 				}

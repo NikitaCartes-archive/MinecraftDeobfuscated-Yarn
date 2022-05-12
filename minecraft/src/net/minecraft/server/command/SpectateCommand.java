@@ -21,10 +21,10 @@ public class SpectateCommand {
 		dispatcher.register(
 			CommandManager.literal("spectate")
 				.requires(source -> source.hasPermissionLevel(2))
-				.executes(context -> execute(context.getSource(), null, context.getSource().getPlayer()))
+				.executes(context -> execute(context.getSource(), null, context.getSource().getPlayerOrThrow()))
 				.then(
 					CommandManager.argument("target", EntityArgumentType.entity())
-						.executes(context -> execute(context.getSource(), EntityArgumentType.getEntity(context, "target"), context.getSource().getPlayer()))
+						.executes(context -> execute(context.getSource(), EntityArgumentType.getEntity(context, "target"), context.getSource().getPlayerOrThrow()))
 						.then(
 							CommandManager.argument("player", EntityArgumentType.player())
 								.executes(context -> execute(context.getSource(), EntityArgumentType.getEntity(context, "target"), EntityArgumentType.getPlayer(context, "player")))

@@ -1,18 +1,31 @@
 package net.minecraft.server.command;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import java.util.Optional;
+import net.minecraft.block.entity.StructureBlockBlockEntity;
+import net.minecraft.command.argument.BlockMirrorArgumentType;
 import net.minecraft.command.argument.BlockPosArgumentType;
+import net.minecraft.command.argument.BlockRotationArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.command.argument.RegistryKeyArgumentType;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.structure.Structure;
+import net.minecraft.structure.StructureManager;
+import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolBasedGenerator;
+import net.minecraft.structure.processor.BlockRotStructureProcessor;
 import net.minecraft.text.Text;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -29,6 +42,10 @@ public class PlaceCommand {
 	private static final SimpleCommandExceptionType STRUCTURE_FAILED_EXCEPTION = new SimpleCommandExceptionType(
 		Text.translatable("commands.place.structure.failed")
 	);
+	private static final DynamicCommandExceptionType TEMPLATE_INVALID_EXCEPTION = new DynamicCommandExceptionType(
+		id -> Text.translatable("commands.place.template.invalid", id)
+	);
+	private static final SimpleCommandExceptionType TEMPLATE_FAILED_EXPECTION = new SimpleCommandExceptionType(Text.translatable("commands.place.template.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
@@ -109,6 +126,93 @@ public class PlaceCommand {
 								)
 						)
 				)
+				.then(
+					CommandManager.literal("template")
+						.then(
+							CommandManager.argument("template", IdentifierArgumentType.identifier())
+								.executes(
+									commandContext -> executePlaceTemplate(
+											commandContext.getSource(),
+											IdentifierArgumentType.getIdentifier(commandContext, "template"),
+											new BlockPos(commandContext.getSource().getPosition()),
+											BlockRotation.NONE,
+											BlockMirror.NONE,
+											1.0F,
+											0
+										)
+								)
+								.then(
+									CommandManager.argument("pos", BlockPosArgumentType.blockPos())
+										.executes(
+											commandContext -> executePlaceTemplate(
+													commandContext.getSource(),
+													IdentifierArgumentType.getIdentifier(commandContext, "template"),
+													BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
+													BlockRotation.NONE,
+													BlockMirror.NONE,
+													1.0F,
+													0
+												)
+										)
+										.then(
+											CommandManager.argument("rotation", BlockRotationArgumentType.blockRotation())
+												.executes(
+													commandContext -> executePlaceTemplate(
+															commandContext.getSource(),
+															IdentifierArgumentType.getIdentifier(commandContext, "template"),
+															BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
+															BlockRotationArgumentType.getBlockRotation(commandContext, "rotation"),
+															BlockMirror.NONE,
+															1.0F,
+															0
+														)
+												)
+												.then(
+													CommandManager.argument("mirror", BlockMirrorArgumentType.blockMirror())
+														.executes(
+															commandContext -> executePlaceTemplate(
+																	commandContext.getSource(),
+																	IdentifierArgumentType.getIdentifier(commandContext, "template"),
+																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
+																	BlockRotationArgumentType.getBlockRotation(commandContext, "rotation"),
+																	BlockMirrorArgumentType.getBlockMirror(commandContext, "mirror"),
+																	1.0F,
+																	0
+																)
+														)
+														.then(
+															CommandManager.argument("integrity", FloatArgumentType.floatArg(0.0F, 1.0F))
+																.executes(
+																	commandContext -> executePlaceTemplate(
+																			commandContext.getSource(),
+																			IdentifierArgumentType.getIdentifier(commandContext, "template"),
+																			BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
+																			BlockRotationArgumentType.getBlockRotation(commandContext, "rotation"),
+																			BlockMirrorArgumentType.getBlockMirror(commandContext, "mirror"),
+																			FloatArgumentType.getFloat(commandContext, "integrity"),
+																			0
+																		)
+																)
+																.then(
+																	CommandManager.argument("seed", IntegerArgumentType.integer())
+																		.executes(
+																			commandContext -> executePlaceTemplate(
+																					commandContext.getSource(),
+																					IdentifierArgumentType.getIdentifier(commandContext, "template"),
+																					BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
+																					BlockRotationArgumentType.getBlockRotation(commandContext, "rotation"),
+																					BlockMirrorArgumentType.getBlockMirror(commandContext, "mirror"),
+																					FloatArgumentType.getFloat(commandContext, "integrity"),
+																					IntegerArgumentType.getInteger(commandContext, "seed")
+																				)
+																		)
+																)
+														)
+												)
+										)
+								)
+						)
+				)
 		);
 	}
 
@@ -173,6 +277,41 @@ public class PlaceCommand {
 			String string = (String)structureType.getKey().map(key -> key.getValue().toString()).orElse("[unregistered]");
 			source.sendFeedback(Text.translatable("commands.place.structure.success", string, pos.getX(), pos.getY(), pos.getZ()), true);
 			return 1;
+		}
+	}
+
+	public static int executePlaceTemplate(
+		ServerCommandSource source, Identifier id, BlockPos pos, BlockRotation rotation, BlockMirror mirror, float integrity, int seed
+	) throws CommandSyntaxException {
+		ServerWorld serverWorld = source.getWorld();
+		StructureManager structureManager = serverWorld.getStructureManager();
+
+		Optional<Structure> optional;
+		try {
+			optional = structureManager.getStructure(id);
+		} catch (InvalidIdentifierException var13) {
+			throw TEMPLATE_INVALID_EXCEPTION.create(id);
+		}
+
+		if (optional.isEmpty()) {
+			throw TEMPLATE_INVALID_EXCEPTION.create(id);
+		} else {
+			Structure structure = (Structure)optional.get();
+			throwOnUnloadedPos(serverWorld, new ChunkPos(pos), new ChunkPos(pos.add(structure.getSize())));
+			StructurePlacementData structurePlacementData = new StructurePlacementData().setMirror(mirror).setRotation(rotation);
+			if (integrity < 1.0F) {
+				structurePlacementData.clearProcessors()
+					.addProcessor(new BlockRotStructureProcessor(integrity))
+					.setRandom(StructureBlockBlockEntity.createRandom((long)seed));
+			}
+
+			boolean bl = structure.place(serverWorld, pos, pos, structurePlacementData, StructureBlockBlockEntity.createRandom((long)seed), 2);
+			if (!bl) {
+				throw TEMPLATE_FAILED_EXPECTION.create();
+			} else {
+				source.sendFeedback(Text.translatable("commands.place.template.success", id, pos.getX(), pos.getY(), pos.getZ()), true);
+				return 1;
+			}
 		}
 	}
 

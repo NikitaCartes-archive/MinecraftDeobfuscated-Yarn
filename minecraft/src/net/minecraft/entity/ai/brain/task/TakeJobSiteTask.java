@@ -10,6 +10,7 @@ import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.world.poi.PointOfInterestType;
 
@@ -36,9 +37,11 @@ public class TakeJobSiteTask extends Task<VillagerEntity> {
 
 	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		BlockPos blockPos = ((GlobalPos)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.POTENTIAL_JOB_SITE).get()).getPos();
-		Optional<PointOfInterestType> optional = serverWorld.getPointOfInterestStorage().getType(blockPos);
+		Optional<RegistryEntry<PointOfInterestType>> optional = serverWorld.getPointOfInterestStorage().getType(blockPos);
 		if (optional.isPresent()) {
-			LookTargetUtil.streamSeenVillagers(villagerEntity, villagerEntityx -> this.canUseJobSite((PointOfInterestType)optional.get(), villagerEntityx, blockPos))
+			LookTargetUtil.streamSeenVillagers(
+					villagerEntity, villagerEntityx -> this.canUseJobSite((RegistryEntry<PointOfInterestType>)optional.get(), villagerEntityx, blockPos)
+				)
 				.findFirst()
 				.ifPresent(
 					villagerEntity2 -> this.claimSite(
@@ -48,17 +51,17 @@ public class TakeJobSiteTask extends Task<VillagerEntity> {
 		}
 	}
 
-	private boolean canUseJobSite(PointOfInterestType poiType, VillagerEntity villager, BlockPos pos) {
+	private boolean canUseJobSite(RegistryEntry<PointOfInterestType> poiType, VillagerEntity villager, BlockPos pos) {
 		boolean bl = villager.getBrain().getOptionalMemory(MemoryModuleType.POTENTIAL_JOB_SITE).isPresent();
 		if (bl) {
 			return false;
 		} else {
 			Optional<GlobalPos> optional = villager.getBrain().getOptionalMemory(MemoryModuleType.JOB_SITE);
 			VillagerProfession villagerProfession = villager.getVillagerData().getProfession();
-			if (villager.getVillagerData().getProfession() == VillagerProfession.NONE || !villagerProfession.getWorkStation().getCompletionCondition().test(poiType)) {
-				return false;
+			if (villagerProfession.heldWorkstation().test(poiType)) {
+				return !optional.isPresent() ? this.canReachJobSite(villager, pos, poiType.value()) : ((GlobalPos)optional.get()).getPos().equals(pos);
 			} else {
-				return !optional.isPresent() ? this.canReachJobSite(villager, pos, poiType) : ((GlobalPos)optional.get()).getPos().equals(pos);
+				return false;
 			}
 		}
 	}
@@ -73,7 +76,7 @@ public class TakeJobSiteTask extends Task<VillagerEntity> {
 	}
 
 	private boolean canReachJobSite(VillagerEntity villager, BlockPos pos, PointOfInterestType poiType) {
-		Path path = villager.getNavigation().findPathTo(pos, poiType.getSearchDistance());
+		Path path = villager.getNavigation().findPathTo(pos, poiType.searchDistance());
 		return path != null && path.reachesTarget();
 	}
 

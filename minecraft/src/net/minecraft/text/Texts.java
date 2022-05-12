@@ -132,7 +132,7 @@ public class Texts {
 	}
 
 	public static boolean hasTranslation(@Nullable Text text) {
-		if (text instanceof TranslatableTextContent translatableTextContent) {
+		if (text != null && text.getContent() instanceof TranslatableTextContent translatableTextContent) {
 			String string = translatableTextContent.getKey();
 			return Language.getInstance().hasTranslation(string);
 		} else {

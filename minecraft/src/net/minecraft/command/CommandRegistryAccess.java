@@ -68,7 +68,7 @@ public final class CommandRegistryAccess {
 		 */
 		RETURN_EMPTY,
 		/**
-		 * Returns {@link Optional#empty()}.
+		 * Returns {@link java.util.Optional#empty()}.
 		 */
 		FAIL;
 	}

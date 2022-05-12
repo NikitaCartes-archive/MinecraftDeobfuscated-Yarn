@@ -7,8 +7,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 
 public class DimensionTypeRegistrar {
-	public static RegistryEntry<DimensionType> initAndGetDefault() {
-		Registry<DimensionType> registry = BuiltinRegistries.DIMENSION_TYPE;
+	public static RegistryEntry<DimensionType> initAndGetDefault(Registry<DimensionType> registry) {
 		BuiltinRegistries.add(
 			registry,
 			DimensionTypes.OVERWORLD,

@@ -12,7 +12,6 @@ import java.util.Collection;
 import java.util.Collections;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.function.CommandFunction;
-import net.minecraft.tag.Tag;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -36,12 +35,11 @@ public class CommandFunctionArgumentType implements ArgumentType<CommandFunction
 			return new CommandFunctionArgumentType.FunctionArgument() {
 				@Override
 				public Collection<CommandFunction> getFunctions(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-					Tag<CommandFunction> tag = CommandFunctionArgumentType.getFunctionTag(context, identifier);
-					return tag.values();
+					return CommandFunctionArgumentType.getFunctionTag(context, identifier);
 				}
 
 				@Override
-				public Pair<Identifier, Either<CommandFunction, Tag<CommandFunction>>> getFunctionOrTag(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+				public Pair<Identifier, Either<CommandFunction, Collection<CommandFunction>>> getFunctionOrTag(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
 					return Pair.of(identifier, Either.right(CommandFunctionArgumentType.getFunctionTag(context, identifier)));
 				}
 			};
@@ -54,7 +52,7 @@ public class CommandFunctionArgumentType implements ArgumentType<CommandFunction
 				}
 
 				@Override
-				public Pair<Identifier, Either<CommandFunction, Tag<CommandFunction>>> getFunctionOrTag(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+				public Pair<Identifier, Either<CommandFunction, Collection<CommandFunction>>> getFunctionOrTag(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
 					return Pair.of(identifier, Either.left(CommandFunctionArgumentType.getFunction(context, identifier)));
 				}
 			};
@@ -69,12 +67,12 @@ public class CommandFunctionArgumentType implements ArgumentType<CommandFunction
 			.orElseThrow(() -> UNKNOWN_FUNCTION_EXCEPTION.create(id.toString()));
 	}
 
-	static Tag<CommandFunction> getFunctionTag(CommandContext<ServerCommandSource> context, Identifier id) throws CommandSyntaxException {
-		Tag<CommandFunction> tag = context.getSource().getServer().getCommandFunctionManager().getTag(id);
-		if (tag == null) {
+	static Collection<CommandFunction> getFunctionTag(CommandContext<ServerCommandSource> context, Identifier id) throws CommandSyntaxException {
+		Collection<CommandFunction> collection = context.getSource().getServer().getCommandFunctionManager().getTag(id);
+		if (collection == null) {
 			throw UNKNOWN_FUNCTION_TAG_EXCEPTION.create(id.toString());
 		} else {
-			return tag;
+			return collection;
 		}
 	}
 
@@ -82,7 +80,7 @@ public class CommandFunctionArgumentType implements ArgumentType<CommandFunction
 		return context.<CommandFunctionArgumentType.FunctionArgument>getArgument(name, CommandFunctionArgumentType.FunctionArgument.class).getFunctions(context);
 	}
 
-	public static Pair<Identifier, Either<CommandFunction, Tag<CommandFunction>>> getFunctionOrTag(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
+	public static Pair<Identifier, Either<CommandFunction, Collection<CommandFunction>>> getFunctionOrTag(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
 		return context.<CommandFunctionArgumentType.FunctionArgument>getArgument(name, CommandFunctionArgumentType.FunctionArgument.class).getFunctionOrTag(context);
 	}
 
@@ -94,6 +92,6 @@ public class CommandFunctionArgumentType implements ArgumentType<CommandFunction
 	public interface FunctionArgument {
 		Collection<CommandFunction> getFunctions(CommandContext<ServerCommandSource> context) throws CommandSyntaxException;
 
-		Pair<Identifier, Either<CommandFunction, Tag<CommandFunction>>> getFunctionOrTag(CommandContext<ServerCommandSource> context) throws CommandSyntaxException;
+		Pair<Identifier, Either<CommandFunction, Collection<CommandFunction>>> getFunctionOrTag(CommandContext<ServerCommandSource> context) throws CommandSyntaxException;
 	}
 }

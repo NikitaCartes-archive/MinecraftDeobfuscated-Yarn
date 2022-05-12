@@ -358,6 +358,28 @@ public class Util {
 		return object;
 	}
 
+	/**
+	 * {@return the {@code value} with {@code mapper} applied if the value is not {@code null},
+	 * otherwise {@code null}}
+	 * 
+	 * <p>This is the nullable equivalent to {@link Optional#map}.
+	 */
+	@Nullable
+	public static <T, R> R map(@Nullable T value, Function<T, R> mapper) {
+		return (R)(value == null ? null : mapper.apply(value));
+	}
+
+	/**
+	 * {@return the {@code value} with {@code mapper} applied if the value is not {@code null},
+	 * otherwise {@code other}}
+	 * 
+	 * <p>This is the nullable equivalent to {@link Optional#map} chained with
+	 * {@link Optional#orElse}.
+	 */
+	public static <T, R> R mapOrElse(@Nullable T value, Function<T, R> mapper, R other) {
+		return (R)(value == null ? other : mapper.apply(value));
+	}
+
 	public static <K> Strategy<K> identityHashStrategy() {
 		return Util.IdentityHashStrategy.INSTANCE;
 	}

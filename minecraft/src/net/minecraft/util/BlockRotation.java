@@ -5,15 +5,18 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.DirectionTransformation;
 import net.minecraft.util.math.random.AbstractRandom;
 
-public enum BlockRotation {
-	NONE(DirectionTransformation.IDENTITY),
-	CLOCKWISE_90(DirectionTransformation.ROT_90_Y_NEG),
-	CLOCKWISE_180(DirectionTransformation.ROT_180_FACE_XZ),
-	COUNTERCLOCKWISE_90(DirectionTransformation.ROT_90_Y_POS);
+public enum BlockRotation implements StringIdentifiable {
+	NONE("none", DirectionTransformation.IDENTITY),
+	CLOCKWISE_90("clockwise_90", DirectionTransformation.ROT_90_Y_NEG),
+	CLOCKWISE_180("180", DirectionTransformation.ROT_180_FACE_XZ),
+	COUNTERCLOCKWISE_90("counterclockwise_90", DirectionTransformation.ROT_90_Y_POS);
 
+	public static final com.mojang.serialization.Codec<BlockRotation> CODEC = StringIdentifiable.createCodec(BlockRotation::values);
+	private final String id;
 	private final DirectionTransformation directionTransformation;
 
-	private BlockRotation(DirectionTransformation directionTransformation) {
+	private BlockRotation(String id, DirectionTransformation directionTransformation) {
+		this.id = id;
 		this.directionTransformation = directionTransformation;
 	}
 
@@ -97,5 +100,10 @@ public enum BlockRotation {
 
 	public static List<BlockRotation> randomRotationOrder(AbstractRandom random) {
 		return Util.copyShuffled(values(), random);
+	}
+
+	@Override
+	public String asString() {
+		return this.id;
 	}
 }

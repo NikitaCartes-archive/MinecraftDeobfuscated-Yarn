@@ -12,7 +12,6 @@ import net.minecraft.block.enums.SculkSensorPhase;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.pathing.NavigationType;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -238,12 +237,7 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 		world.setBlockState(pos, state.with(SCULK_SENSOR_PHASE, SculkSensorPhase.ACTIVE).with(POWER, Integer.valueOf(power)), Block.NOTIFY_ALL);
 		world.createAndScheduleBlockTick(pos, state.getBlock(), 40);
 		updateNeighbors(world, pos);
-		if (entity instanceof PlayerEntity) {
-			world.emitGameEvent(entity, GameEvent.SCULK_SENSOR_TENDRILS_CLICKING, pos);
-		} else if (entity != null && entity.getPrimaryPassenger() instanceof PlayerEntity playerEntity) {
-			world.emitGameEvent(playerEntity, GameEvent.SCULK_SENSOR_TENDRILS_CLICKING, pos);
-		}
-
+		world.emitGameEvent(entity, GameEvent.SCULK_SENSOR_TENDRILS_CLICKING, pos);
 		if (!(Boolean)state.get(WATERLOGGED)) {
 			world.playSound(
 				null,

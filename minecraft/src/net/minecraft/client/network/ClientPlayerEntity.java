@@ -61,7 +61,7 @@ import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.ElytraItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.network.encryption.ArgumentSignatures;
+import net.minecraft.network.encryption.ArgumentSignatureDataMap;
 import net.minecraft.network.encryption.ChatMessageSignature;
 import net.minecraft.network.encryption.ChatMessageSigner;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
@@ -95,7 +95,6 @@ import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.CommandBlockExecutor;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 /**
@@ -325,13 +324,54 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	 * @param message the message to send
 	 */
 	public void sendChatMessage(String message) {
+		this.sendChatMessage(message, null);
+	}
+
+	/**
+	 * Sends a chat message with the preview to the server. If the server could not
+	 * reproduce the preview based on {@code message}, the server rejects the message.
+	 * 
+	 * <p>The message will be truncated to at most 256 characters before
+	 * sending to the server.
+	 * 
+	 * <p>If the message contains an invalid character (see {@link
+	 * net.minecraft.SharedConstants#isValidChar isValidChar}), the server will
+	 * reject the message and disconnect the client.
+	 * 
+	 * @apiNote This method is used to send a message typed in {@linkplain
+	 * net.minecraft.client.gui.screen the chat screen} that has a preview.
+	 */
+	public void sendChatMessage(String message, @Nullable Text preview) {
 		ChatMessageSigner chatMessageSigner = ChatMessageSigner.create(this.getUuid());
-		message = StringUtils.normalizeSpace(message);
-		if (message.startsWith("/")) {
-			this.sendCommand(chatMessageSigner, message.substring(1));
+		this.sendChatMessagePacket(chatMessageSigner, message, preview);
+	}
+
+	/**
+	 * Sends a command to the server.
+	 * 
+	 * @param command the command (can have the leading slash)
+	 */
+	public void sendCommand(String command) {
+		this.sendCommand(command, null);
+	}
+
+	/**
+	 * Sends a command to the server.
+	 * 
+	 * @param command the command (can have the leading slash)
+	 */
+	public void sendCommand(String command, @Nullable Text preview) {
+		ChatMessageSigner chatMessageSigner = ChatMessageSigner.create(this.getUuid());
+		this.sendCommand(chatMessageSigner, command, preview);
+	}
+
+	private void sendChatMessagePacket(ChatMessageSigner signer, String message, @Nullable Text preview) {
+		if (preview != null) {
+			ChatMessageSignature chatMessageSignature = this.signChatMessage(signer, preview);
+			this.networkHandler.sendPacket(new ChatMessageC2SPacket(message, chatMessageSignature, true));
 		} else {
-			ChatMessageSignature chatMessageSignature = this.signChatMessage(chatMessageSigner, Text.literal(message));
-			this.networkHandler.sendPacket(new ChatMessageC2SPacket(message, chatMessageSignature));
+			ChatMessageSignature chatMessageSignature = this.signChatMessage(signer, Text.literal(message));
+			this.networkHandler.sendPacket(new ChatMessageC2SPacket(message, chatMessageSignature, false));
 		}
 	}
 
@@ -355,22 +395,22 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	/**
 	 * Signs and sends {@code command} to the server.
 	 * 
-	 * @param command the command (excluding the leading slash)
+	 * @param command the command (can have the leading slash)
 	 */
-	private void sendCommand(ChatMessageSigner signer, String command) {
+	private void sendCommand(ChatMessageSigner signer, String command, @Nullable Text preview) {
 		ParseResults<CommandSource> parseResults = this.networkHandler.getCommandDispatcher().parse(command, this.networkHandler.getCommandSource());
-		ArgumentSignatures argumentSignatures = this.signArguments(signer, parseResults);
-		this.networkHandler.sendPacket(new CommandExecutionC2SPacket(command, signer.timeStamp(), argumentSignatures));
+		ArgumentSignatureDataMap argumentSignatureDataMap = this.signArguments(signer, parseResults);
+		this.networkHandler.sendPacket(new CommandExecutionC2SPacket(command, signer.timeStamp(), argumentSignatureDataMap));
 	}
 
 	/**
-	 * Signs the command arguments. If the arguments cannot be signed, this will return
-	 * {@link ArgumentSignatures#none()}.
+	 * Signs the command arguments. If the arguments cannot be signed or if there is no
+	 * arguments to sign, this will return {@link ArgumentSignatureDataMap#empty()}.
 	 */
-	private ArgumentSignatures signArguments(ChatMessageSigner signer, ParseResults<CommandSource> parseResults) {
-		Map<String, Text> map = ArgumentSignatures.collectArguments(parseResults.getContext());
+	private ArgumentSignatureDataMap signArguments(ChatMessageSigner signer, ParseResults<CommandSource> parseResults) {
+		Map<String, Text> map = ArgumentSignatureDataMap.collectArguments(parseResults.getContext());
 		if (map.isEmpty()) {
-			return ArgumentSignatures.none();
+			return ArgumentSignatureDataMap.empty();
 		} else {
 			try {
 				Builder<String, byte[]> builder = ImmutableMap.builder();
@@ -384,10 +424,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 					}
 				}
 
-				return new ArgumentSignatures(signer.salt(), builder.build());
+				return new ArgumentSignatureDataMap(signer.salt(), builder.build());
 			} catch (GeneralSecurityException var10) {
 				field_39078.error("Failed to sign command arguments", (Throwable)var10);
-				return ArgumentSignatures.none();
+				return ArgumentSignatureDataMap.empty();
 			}
 		}
 	}

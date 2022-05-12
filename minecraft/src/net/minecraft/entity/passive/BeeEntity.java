@@ -75,6 +75,7 @@ import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
+import net.minecraft.tag.PointOfInterestTypeTags;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.TimeHelper;
 import net.minecraft.util.annotation.Debug;
@@ -88,7 +89,6 @@ import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.poi.PointOfInterest;
 import net.minecraft.world.poi.PointOfInterestStorage;
-import net.minecraft.world.poi.PointOfInterestType;
 
 public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	public static final float field_30271 = 120.32113F;
@@ -810,7 +810,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 			BlockPos blockPos = BeeEntity.this.getBlockPos();
 			PointOfInterestStorage pointOfInterestStorage = ((ServerWorld)BeeEntity.this.world).getPointOfInterestStorage();
 			Stream<PointOfInterest> stream = pointOfInterestStorage.getInCircle(
-				poiType -> poiType == PointOfInterestType.BEEHIVE || poiType == PointOfInterestType.BEE_NEST, blockPos, 20, PointOfInterestStorage.OccupationStatus.ANY
+				poiType -> poiType.isIn(PointOfInterestTypeTags.BEE_HOME), blockPos, 20, PointOfInterestStorage.OccupationStatus.ANY
 			);
 			return (List<BlockPos>)stream.map(PointOfInterest::getPos)
 				.filter(BeeEntity.this::doesHiveHaveSpace)

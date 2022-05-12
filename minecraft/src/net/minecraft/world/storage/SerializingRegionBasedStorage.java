@@ -27,8 +27,10 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.util.Util;
+import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.HeightLimitView;
 import org.slf4j.Logger;
 
@@ -42,6 +44,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 	private final Function<Runnable, R> factory;
 	private final DataFixer dataFixer;
 	private final DataFixTypes dataFixTypes;
+	private final DynamicRegistryManager dynamicRegistryManager;
 	protected final HeightLimitView world;
 
 	public SerializingRegionBasedStorage(
@@ -51,12 +54,14 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 		DataFixer dataFixer,
 		DataFixTypes dataFixTypes,
 		boolean dsync,
+		DynamicRegistryManager dynamicRegistryManager,
 		HeightLimitView world
 	) {
 		this.codecFactory = codecFactory;
 		this.factory = factory;
 		this.dataFixer = dataFixer;
 		this.dataFixTypes = dataFixTypes;
+		this.dynamicRegistryManager = dynamicRegistryManager;
 		this.world = world;
 		this.worker = new StorageIoWorker(path, dsync, path.getFileName().toString());
 	}
@@ -116,9 +121,10 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 		}
 	}
 
-	private void loadDataAt(ChunkPos chunkPos) {
-		Optional<NbtCompound> optional = (Optional<NbtCompound>)this.loadNbt(chunkPos).join();
-		this.update(chunkPos, NbtOps.INSTANCE, (NbtElement)optional.orElse(null));
+	private void loadDataAt(ChunkPos pos) {
+		Optional<NbtCompound> optional = (Optional<NbtCompound>)this.loadNbt(pos).join();
+		RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, this.dynamicRegistryManager);
+		this.update(pos, registryOps, (NbtElement)optional.orElse(null));
 	}
 
 	private CompletableFuture<Optional<NbtCompound>> loadNbt(ChunkPos pos) {
@@ -161,11 +167,12 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 		}
 	}
 
-	private void save(ChunkPos chunkPos) {
-		Dynamic<NbtElement> dynamic = this.serialize(chunkPos, NbtOps.INSTANCE);
+	private void save(ChunkPos pos) {
+		RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, this.dynamicRegistryManager);
+		Dynamic<NbtElement> dynamic = this.serialize(pos, registryOps);
 		NbtElement nbtElement = dynamic.getValue();
 		if (nbtElement instanceof NbtCompound) {
-			this.worker.setResult(chunkPos, (NbtCompound)nbtElement);
+			this.worker.setResult(pos, (NbtCompound)nbtElement);
 		} else {
 			LOGGER.error("Expected compound tag, got {}", nbtElement);
 		}

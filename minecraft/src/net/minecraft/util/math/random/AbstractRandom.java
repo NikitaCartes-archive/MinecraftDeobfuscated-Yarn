@@ -1,6 +1,7 @@
 package net.minecraft.util.math.random;
 
 import io.netty.util.internal.ThreadLocalRandom;
+import net.minecraft.world.gen.random.RandomSeed;
 
 /**
  * A reimplementation of {@link java.util.Random}.
@@ -27,12 +28,12 @@ public interface AbstractRandom {
 	double field_38930 = 2.297;
 
 	static AbstractRandom createAtomic() {
-		return createAtomic(System.nanoTime());
+		return createAtomic(RandomSeed.getSeed());
 	}
 
 	@Deprecated
 	static AbstractRandom createBlocking() {
-		return new BlockingSimpleRandom(System.nanoTime());
+		return new BlockingSimpleRandom(RandomSeed.getSeed());
 	}
 
 	static AbstractRandom createAtomic(long seed) {

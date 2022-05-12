@@ -6,7 +6,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
@@ -15,6 +14,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.MultilineText;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.CubeMapRenderer;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.RotatingCubeMapRenderer;
@@ -28,8 +28,6 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.PressableTextWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
-import net.minecraft.client.realms.RealmsClient;
-import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.client.realms.gui.screen.RealmsNotificationsScreen;
 import net.minecraft.client.render.GameRenderer;
@@ -70,8 +68,6 @@ public class TitleScreen extends Screen {
 	private long backgroundFadeStart;
 	@Nullable
 	private TitleScreen.DeprecationNotice deprecationNotice;
-	private RealmsClient realms;
-	private boolean displayedRealms32BitWarning = false;
 
 	public TitleScreen() {
 		this(false);
@@ -81,7 +77,6 @@ public class TitleScreen extends Screen {
 		super(Text.translatable("narrator.screen.title"));
 		this.doBackgroundFade = doBackgroundFade;
 		this.isMinceraft = (double)AbstractRandom.createAtomic().nextFloat() < 1.0E-4;
-		this.realms = RealmsClient.createRealmsClient();
 	}
 
 	private boolean areRealmsNotificationsEnabled() {
@@ -94,22 +89,7 @@ public class TitleScreen extends Screen {
 			this.realmsNotificationGui.tick();
 		}
 
-		this.tryShowRealms32BitWarning();
-	}
-
-	private void tryShowRealms32BitWarning() {
-		try {
-			if (this.deprecationNotice != null
-				&& !this.client.options.skipRealms32BitWarning
-				&& !this.displayedRealms32BitWarning
-				&& (Boolean)this.deprecationNotice.realmsSubscriptionFuture.getNow(false)) {
-				this.displayedRealms32BitWarning = true;
-				this.client.setScreen(new Realms32BitWarningScreen(this));
-			}
-		} catch (CompletionException var2) {
-			LOGGER.warn("Failed to retrieve realms subscriptions", (Throwable)var2);
-			this.displayedRealms32BitWarning = true;
-		}
+		this.client.getRealms32BitWarningChecker().showWarningIfNeeded(this);
 	}
 
 	public static CompletableFuture<Void> loadTexturesAsync(TextureManager textureManager, Executor executor) {
@@ -200,24 +180,9 @@ public class TitleScreen extends Screen {
 		}
 
 		if (!this.client.is64Bit()) {
-			CompletableFuture<Boolean> completableFuture = this.deprecationNotice != null
-				? this.deprecationNotice.realmsSubscriptionFuture
-				: CompletableFuture.supplyAsync(this::fetchRealmsSubscribed, Util.getMainWorkerExecutor());
 			this.deprecationNotice = new TitleScreen.DeprecationNotice(
-				MultilineText.create(this.textRenderer, Text.translatable("title.32bit.deprecation"), 350, 2), this.width / 2, l - 24, completableFuture
+				this.textRenderer, MultilineText.create(this.textRenderer, Text.translatable("title.32bit.deprecation"), 350, 2), this.width / 2, l - 24
 			);
-		}
-	}
-
-	private boolean fetchRealmsSubscribed() {
-		try {
-			return this.realms
-				.listWorlds()
-				.servers
-				.stream()
-				.anyMatch(server -> server.ownerUUID != null && !server.expired && server.ownerUUID.equals(this.client.getSession().getUuid()));
-		} catch (RealmsServiceException var2) {
-			return false;
 		}
 	}
 
@@ -370,8 +335,7 @@ public class TitleScreen extends Screen {
 			RenderSystem.setShaderTexture(0, EDITION_TITLE_TEXTURE);
 			drawTexture(matrices, j + 88, 67, 0.0F, 0.0F, 98, 14, 128, 16);
 			if (this.deprecationNotice != null) {
-				this.deprecationNotice.label.fillBackground(matrices, this.deprecationNotice.x, this.deprecationNotice.y, 9, 2, 1428160512);
-				this.deprecationNotice.label.drawCenterWithShadow(matrices, this.deprecationNotice.x, this.deprecationNotice.y, 9, 16777215 | l);
+				this.deprecationNotice.render(matrices, l);
 			}
 
 			if (this.splashText != null) {
@@ -439,6 +403,10 @@ public class TitleScreen extends Screen {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static record DeprecationNotice(MultilineText label, int x, int y, CompletableFuture<Boolean> realmsSubscriptionFuture) {
+	static record DeprecationNotice(TextRenderer textRenderer, MultilineText label, int x, int y) {
+		public void render(MatrixStack matrices, int color) {
+			this.label.fillBackground(matrices, this.x, this.y, 9, 2, 1428160512);
+			this.label.drawCenterWithShadow(matrices, this.x, this.y, 9, 16777215 | color);
+		}
 	}
 }

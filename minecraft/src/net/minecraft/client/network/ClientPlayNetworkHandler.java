@@ -9,6 +9,7 @@ import com.mojang.logging.LogUtils;
 import io.netty.buffer.Unpooled;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.ParseException;
 import java.time.Instant;
 import java.util.BitSet;
 import java.util.Collection;
@@ -34,6 +35,7 @@ import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.CreditsScreen;
 import net.minecraft.client.gui.screen.DeathScreen;
@@ -49,6 +51,7 @@ import net.minecraft.client.gui.screen.ingame.CommandBlockScreen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.gui.screen.ingame.HorseScreen;
+import net.minecraft.client.gui.screen.multiplayer.ChatPreviewWarningScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
@@ -110,11 +113,13 @@ import net.minecraft.item.Items;
 import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.ClientConnection;
+import net.minecraft.network.MessageSender;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.encryption.PlayerPublicKey;
+import net.minecraft.network.encryption.SignedChatMessage;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
@@ -131,6 +136,7 @@ import net.minecraft.network.packet.s2c.play.BlockEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChatPreviewS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkData;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDeltaUpdateS2CPacket;
@@ -202,6 +208,7 @@ import net.minecraft.network.packet.s2c.play.ScoreboardPlayerUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerPropertyUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.SelectAdvancementTabS2CPacket;
+import net.minecraft.network.packet.s2c.play.ServerMetadataS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetCameraEntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetTradeOffersS2CPacket;
 import net.minecraft.network.packet.s2c.play.SignEditorOpenS2CPacket;
@@ -338,7 +345,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		Collections.shuffle(list);
 		this.worldKeys = Sets.<RegistryKey<World>>newLinkedHashSet(list);
 		RegistryKey<World> registryKey = packet.dimensionId();
-		RegistryEntry<DimensionType> registryEntry = packet.dimensionType();
+		RegistryEntry<DimensionType> registryEntry = this.registryManager.get(Registry.DIMENSION_TYPE_KEY).entryOf(packet.dimensionType());
 		this.chunkLoadDistance = packet.viewDistance();
 		this.simulationDistance = packet.simulationDistance();
 		boolean bl = packet.debugWorld();
@@ -605,6 +612,15 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
+	public void onChatPreview(ChatPreviewS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		ChatScreen chatScreen = this.client.inGameHud.getChatHud().getChatScreen();
+		if (chatScreen != null) {
+			chatScreen.getChatPreviewer().onResponse(packet.queryId(), packet.preview());
+		}
+	}
+
+	@Override
 	public void onChunkDeltaUpdate(ChunkDeltaUpdateS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		int i = Block.NOTIFY_ALL | Block.FORCE_STATE | (packet.shouldSkipLightingUpdates() ? Block.SKIP_LIGHTING_UPDATES : 0);
@@ -768,31 +784,42 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onChatMessage(ChatMessageS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		MessageSender messageSender = packet.sender();
 		if (packet.isExpired(Instant.now())) {
-			LOGGER.warn("Received expired chat packet from {}", packet.sender().name().getString());
-		}
-
-		if (!this.isSignatureValid(packet)) {
-			LOGGER.warn("Received unsigned chat packet from {}", packet.sender().name().getString());
+			LOGGER.warn("Received expired chat packet from {}", messageSender.name().getString());
 		}
 
 		Registry<MessageType> registry = this.world.getRegistryManager().get(Registry.MESSAGE_TYPE_KEY);
 		MessageType messageType = packet.getMessageType(registry);
-		this.client.inGameHud.onChatMessage(messageType, packet.content(), packet.sender());
+		SignedChatMessage signedChatMessage = packet.getSignedMessage();
+		this.handleMessage(messageType, signedChatMessage, messageSender);
 	}
 
 	/**
-	 * {@return whether the chat message packet has a valid signature}
+	 * Handles an incoming chat message.
+	 */
+	private void handleMessage(MessageType type, SignedChatMessage message, MessageSender sender) {
+		if (!this.isSignatureValid(message)) {
+			LOGGER.warn("Received chat packet without valid signature from {}", sender.name().getString());
+		}
+
+		boolean bl = this.client.options.getOnlyShowSignedChat().getValue();
+		Text text = bl ? message.signedContent() : message.getContent();
+		this.client.inGameHud.onChatMessage(type, text, sender);
+	}
+
+	/**
+	 * {@return whether the chat message has a valid signature}
 	 * 
 	 * <p>This returns {@code false} when the chat sender is unknown.
 	 */
-	private boolean isSignatureValid(ChatMessageS2CPacket packet) {
-		PlayerListEntry playerListEntry = this.getPlayerListEntry(packet.sender().uuid());
+	private boolean isSignatureValid(SignedChatMessage message) {
+		PlayerListEntry playerListEntry = this.getPlayerListEntry(message.signature().sender());
 		if (playerListEntry == null) {
 			return false;
 		} else {
 			PlayerPublicKey playerPublicKey = playerListEntry.getPublicKeyData();
-			return playerPublicKey != null && packet.getSignedMessage().verify(playerPublicKey);
+			return playerPublicKey != null && message.verify(playerPublicKey);
 		}
 	}
 
@@ -922,7 +949,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	public void onPlayerRespawn(PlayerRespawnS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		RegistryKey<World> registryKey = packet.getDimension();
-		RegistryEntry<DimensionType> registryEntry = packet.getDimensionType();
+		RegistryEntry<DimensionType> registryEntry = this.registryManager.get(Registry.DIMENSION_TYPE_KEY).entryOf(packet.getDimensionType());
 		ClientPlayerEntity clientPlayerEntity = this.client.player;
 		int i = clientPlayerEntity.getId();
 		if (registryKey != clientPlayerEntity.world.getRegistryKey()) {
@@ -1487,6 +1514,28 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.client.inGameHud.clearTitle();
 		if (packet.shouldReset()) {
 			this.client.inGameHud.setDefaultTitleFade();
+		}
+	}
+
+	@Override
+	public void onServerMetadata(ServerMetadataS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		ServerInfo serverInfo = this.client.getCurrentServerEntry();
+		if (serverInfo != null) {
+			packet.getDescription().ifPresent(description -> serverInfo.label = description);
+			packet.getFavicon().ifPresent(favicon -> {
+				try {
+					serverInfo.setIcon(ServerInfo.parseFavicon(favicon));
+				} catch (ParseException var3x) {
+					LOGGER.error("Invalid server icon", (Throwable)var3x);
+				}
+			});
+			serverInfo.setPreviewsChat(packet.shouldPreviewChat());
+			ServerList.updateServerListEntry(serverInfo);
+			ServerInfo.ChatPreview chatPreview = serverInfo.getChatPreview();
+			if (chatPreview != null && !chatPreview.isAcknowledged()) {
+				this.client.execute(() -> this.client.setScreen(new ChatPreviewWarningScreen(serverInfo)));
+			}
 		}
 	}
 

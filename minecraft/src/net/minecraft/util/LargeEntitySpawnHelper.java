@@ -39,17 +39,18 @@ public class LargeEntitySpawnHelper {
 		if (!world.getWorldBorder().contains(pos)) {
 			return false;
 		} else {
-			BlockState blockState = world.getBlockState(pos);
+			boolean bl = world.getBlockState(pos).getCollisionShape(world, pos).isEmpty();
 
 			for (int i = verticalRange; i >= -verticalRange; i--) {
 				pos.move(Direction.DOWN);
-				BlockState blockState2 = world.getBlockState(pos);
-				if ((blockState.isAir() || blockState.getMaterial().isLiquid()) && blockState2.getMaterial().blocksLight()) {
+				BlockState blockState = world.getBlockState(pos);
+				boolean bl2 = blockState.getCollisionShape(world, pos).isEmpty();
+				if (bl && !bl2) {
 					pos.move(Direction.UP);
 					return true;
 				}
 
-				blockState = blockState2;
+				bl = bl2;
 			}
 
 			return false;

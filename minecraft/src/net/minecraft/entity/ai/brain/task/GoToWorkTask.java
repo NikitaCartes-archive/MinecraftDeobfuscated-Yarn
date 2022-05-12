@@ -32,7 +32,7 @@ public class GoToWorkTask extends Task<VillagerEntity> {
 			MinecraftServer minecraftServer = serverWorld.getServer();
 			Optional.ofNullable(minecraftServer.getWorld(globalPos.getDimension()))
 				.flatMap(world -> world.getPointOfInterestStorage().getType(globalPos.getPos()))
-				.flatMap(poiType -> Registry.VILLAGER_PROFESSION.stream().filter(profession -> profession.getWorkStation() == poiType).findFirst())
+				.flatMap(registryEntry -> Registry.VILLAGER_PROFESSION.stream().filter(profession -> profession.heldWorkstation().test(registryEntry)).findFirst())
 				.ifPresent(profession -> {
 					villagerEntity.setVillagerData(villagerEntity.getVillagerData().withProfession(profession));
 					villagerEntity.reinitializeBrain(serverWorld);

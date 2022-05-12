@@ -13,11 +13,13 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Util;
+import net.minecraft.util.thread.TaskExecutor;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class ServerList {
 	private static final Logger LOGGER = LogUtils.getLogger();
+	private static final TaskExecutor<Runnable> IO_EXECUTOR = TaskExecutor.create(Util.getMainWorkerExecutor(), "server-list-io");
 	private final MinecraftClient client;
 	private final List<ServerInfo> servers = Lists.<ServerInfo>newArrayList();
 
@@ -92,17 +94,19 @@ public class ServerList {
 	}
 
 	public static void updateServerListEntry(ServerInfo e) {
-		ServerList serverList = new ServerList(MinecraftClient.getInstance());
-		serverList.loadFile();
+		IO_EXECUTOR.send(() -> {
+			ServerList serverList = new ServerList(MinecraftClient.getInstance());
+			serverList.loadFile();
 
-		for (int i = 0; i < serverList.size(); i++) {
-			ServerInfo serverInfo = serverList.get(i);
-			if (serverInfo.name.equals(e.name) && serverInfo.address.equals(e.address)) {
-				serverList.set(i, e);
-				break;
+			for (int i = 0; i < serverList.size(); i++) {
+				ServerInfo serverInfo2 = serverList.get(i);
+				if (serverInfo2.name.equals(e.name) && serverInfo2.address.equals(e.address)) {
+					serverList.set(i, e);
+					break;
+				}
 			}
-		}
 
-		serverList.saveFile();
+			serverList.saveFile();
+		});
 	}
 }

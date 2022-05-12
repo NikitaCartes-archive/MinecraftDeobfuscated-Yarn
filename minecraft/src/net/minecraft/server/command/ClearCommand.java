@@ -26,7 +26,7 @@ public class ClearCommand {
 		dispatcher.register(
 			CommandManager.literal("clear")
 				.requires(source -> source.hasPermissionLevel(2))
-				.executes(context -> execute(context.getSource(), Collections.singleton(context.getSource().getPlayer()), stack -> true, -1))
+				.executes(context -> execute(context.getSource(), Collections.singleton(context.getSource().getPlayerOrThrow()), stack -> true, -1))
 				.then(
 					CommandManager.argument("targets", EntityArgumentType.players())
 						.executes(context -> execute(context.getSource(), EntityArgumentType.getPlayers(context, "targets"), stack -> true, -1))

@@ -240,7 +240,7 @@ public class TestCommand {
 	}
 
 	private static int executePos(ServerCommandSource source, String variableName) throws CommandSyntaxException {
-		BlockHitResult blockHitResult = (BlockHitResult)source.getPlayer().raycast(10.0, 1.0F, false);
+		BlockHitResult blockHitResult = (BlockHitResult)source.getPlayerOrThrow().raycast(10.0, 1.0F, false);
 		BlockPos blockPos = blockHitResult.getBlockPos();
 		ServerWorld serverWorld = source.getWorld();
 		Optional<BlockPos> optional = StructureTestUtil.findContainingStructureBlock(blockPos, 15, serverWorld);

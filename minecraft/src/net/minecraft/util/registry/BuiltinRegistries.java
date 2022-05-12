@@ -5,6 +5,7 @@ import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Lifecycle;
 import java.util.Map;
 import java.util.function.Supplier;
+import net.minecraft.network.MessageType;
 import net.minecraft.structure.StructureSet;
 import net.minecraft.structure.StructureSets;
 import net.minecraft.structure.pool.StructurePool;
@@ -54,7 +55,7 @@ public class BuiltinRegistries {
 	);
 	public static final Registry<? extends Registry<?>> REGISTRIES = ROOT;
 	public static final Registry<DimensionType> DIMENSION_TYPE = addRegistry(Registry.DIMENSION_TYPE_KEY, DimensionTypeRegistrar::initAndGetDefault);
-	public static final Registry<ConfiguredCarver<?>> CONFIGURED_CARVER = addRegistry(Registry.CONFIGURED_CARVER_KEY, () -> ConfiguredCarvers.CAVE);
+	public static final Registry<ConfiguredCarver<?>> CONFIGURED_CARVER = addRegistry(Registry.CONFIGURED_CARVER_KEY, registry -> ConfiguredCarvers.CAVE);
 	public static final Registry<ConfiguredFeature<?, ?>> CONFIGURED_FEATURE = addRegistry(
 		Registry.CONFIGURED_FEATURE_KEY, ConfiguredFeatures::getDefaultConfiguredFeature
 	);
@@ -62,7 +63,7 @@ public class BuiltinRegistries {
 	public static final Registry<StructureType> STRUCTURE = addRegistry(Registry.STRUCTURE_KEY, StructureTypes::getDefault);
 	public static final Registry<StructureSet> STRUCTURE_SET = addRegistry(Registry.STRUCTURE_SET_KEY, StructureSets::initAndGetDefault);
 	public static final Registry<StructureProcessorList> STRUCTURE_PROCESSOR_LIST = addRegistry(
-		Registry.STRUCTURE_PROCESSOR_LIST_KEY, () -> StructureProcessorLists.ZOMBIE_PLAINS
+		Registry.STRUCTURE_PROCESSOR_LIST_KEY, registry -> StructureProcessorLists.ZOMBIE_PLAINS
 	);
 	public static final Registry<StructurePool> STRUCTURE_POOL = addRegistry(Registry.STRUCTURE_POOL_KEY, StructurePools::initDefaultPools);
 	public static final Registry<Biome> BIOME = addRegistry(Registry.BIOME_KEY, BuiltinBiomes::getDefaultBiome);
@@ -75,23 +76,22 @@ public class BuiltinRegistries {
 	public static final Registry<FlatLevelGeneratorPreset> FLAT_LEVEL_GENERATOR_PRESET = addRegistry(
 		Registry.FLAT_LEVEL_GENERATOR_PRESET_KEY, FlatLevelGeneratorPresets::initAndGetDefault
 	);
+	public static final Registry<MessageType> MESSAGE_TYPE = addRegistry(Registry.MESSAGE_TYPE_KEY, MessageType::initialize);
 	public static final DynamicRegistryManager DYNAMIC_REGISTRY_MANAGER = DynamicRegistryManager.of(REGISTRIES);
 
-	private static <T> Registry<T> addRegistry(RegistryKey<? extends Registry<T>> registryRef, Supplier<? extends RegistryEntry<? extends T>> defaultValueSupplier) {
-		return addRegistry(registryRef, Lifecycle.stable(), defaultValueSupplier);
+	private static <T> Registry<T> addRegistry(RegistryKey<? extends Registry<T>> registryRef, BuiltinRegistries.Initializer<T> initializer) {
+		return addRegistry(registryRef, Lifecycle.stable(), initializer);
 	}
 
-	private static <T> Registry<T> addRegistry(
-		RegistryKey<? extends Registry<T>> registryRef, Lifecycle lifecycle, Supplier<? extends RegistryEntry<? extends T>> defaultValueSupplier
-	) {
-		return addRegistry(registryRef, new SimpleRegistry<>(registryRef, lifecycle, null), defaultValueSupplier, lifecycle);
+	private static <T> Registry<T> addRegistry(RegistryKey<? extends Registry<T>> registryRef, Lifecycle lifecycle, BuiltinRegistries.Initializer<T> initializer) {
+		return addRegistry(registryRef, new SimpleRegistry<>(registryRef, lifecycle, null), initializer, lifecycle);
 	}
 
 	private static <T, R extends MutableRegistry<T>> R addRegistry(
-		RegistryKey<? extends Registry<T>> registryRef, R registry, Supplier<? extends RegistryEntry<? extends T>> defaultValueSupplier, Lifecycle lifecycle
+		RegistryKey<? extends Registry<T>> registryRef, R registry, BuiltinRegistries.Initializer<T> initializer, Lifecycle lifecycle
 	) {
 		Identifier identifier = registryRef.getValue();
-		DEFAULT_VALUE_SUPPLIERS.put(identifier, defaultValueSupplier);
+		DEFAULT_VALUE_SUPPLIERS.put(identifier, (Supplier)() -> initializer.run(registry));
 		ROOT.add((RegistryKey<MutableRegistry<?>>)registryRef, registry, lifecycle);
 		return registry;
 	}
@@ -122,5 +122,13 @@ public class BuiltinRegistries {
 			}
 		});
 		Registry.validate(ROOT);
+	}
+
+	/**
+	 * A functional interface that initializes the registry and returns the default value.
+	 */
+	@FunctionalInterface
+	interface Initializer<T> {
+		RegistryEntry<? extends T> run(Registry<T> registry);
 	}
 }

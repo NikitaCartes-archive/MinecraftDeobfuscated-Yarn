@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.util.UUID;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.encryption.ArgumentSignatures;
+import net.minecraft.network.encryption.ArgumentSignatureDataMap;
 import net.minecraft.network.encryption.CommandArgumentSigner;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.util.StringHelper;
@@ -27,23 +27,23 @@ import net.minecraft.util.StringHelper;
  * @see net.minecraft.client.network.ClientPlayerEntity#sendCommand
  * @see net.minecraft.server.network.ServerPlayNetworkHandler#onCommandExecution
  */
-public record CommandExecutionC2SPacket(String command, Instant time, ArgumentSignatures argumentSignatures) implements Packet<ServerPlayPacketListener> {
+public record CommandExecutionC2SPacket(String command, Instant time, ArgumentSignatureDataMap argumentSignatures) implements Packet<ServerPlayPacketListener> {
 	private static final int MAX_COMMAND_LENGTH = 256;
 
-	public CommandExecutionC2SPacket(String command, Instant time, ArgumentSignatures argumentSignatures) {
+	public CommandExecutionC2SPacket(String command, Instant time, ArgumentSignatureDataMap argumentSignatures) {
 		this.command = StringHelper.truncateChat(command);
 		this.time = time;
 		this.argumentSignatures = argumentSignatures;
 	}
 
 	public CommandExecutionC2SPacket(PacketByteBuf buf) {
-		this(buf.readString(256), Instant.ofEpochSecond(buf.readLong()), new ArgumentSignatures(buf));
+		this(buf.readString(256), buf.readInstant(), new ArgumentSignatureDataMap(buf));
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) {
 		buf.writeString(this.command);
-		buf.writeLong(this.time.getEpochSecond());
+		buf.writeInstant(this.time);
 		this.argumentSignatures.write(buf);
 	}
 

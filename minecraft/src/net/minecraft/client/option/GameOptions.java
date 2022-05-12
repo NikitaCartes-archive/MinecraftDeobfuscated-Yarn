@@ -451,6 +451,12 @@ public class GameOptions {
 		"options.hideMatchedNames", SimpleOption.constantTooltip(HIDE_MATCHED_NAMES_TOOLTIP), true
 	);
 	private final SimpleOption<Boolean> showAutosaveIndicator = SimpleOption.ofBoolean("options.autosaveIndicator", true);
+	private static final Text CHAT_PREVIEW_TOOLTIP = Text.translatable("options.chatPreview.tooltip");
+	private final SimpleOption<Boolean> chatPreview = SimpleOption.ofBoolean("options.chatPreview", SimpleOption.constantTooltip(CHAT_PREVIEW_TOOLTIP), true);
+	private static final Text ONLY_SHOW_SIGNED_CHAT_TOOLTIP = Text.translatable("options.onlyShowSignedChat.tooltip");
+	private final SimpleOption<Boolean> onlyShowSignedChat = SimpleOption.ofBoolean(
+		"options.onlyShowSignedChat", SimpleOption.constantTooltip(ONLY_SHOW_SIGNED_CHAT_TOOLTIP), false
+	);
 	/**
 	 * A key binding for moving forward.
 	 * Bound to {@linkplain org.lwjgl.glfw.GLFW#GLFW_KEY_W the W key} by default.
@@ -965,6 +971,14 @@ public class GameOptions {
 		return this.showAutosaveIndicator;
 	}
 
+	public SimpleOption<Boolean> getChatPreview() {
+		return this.chatPreview;
+	}
+
+	public SimpleOption<Boolean> getOnlyShowSignedChat() {
+		return this.onlyShowSignedChat;
+	}
+
 	public SimpleOption<Integer> getFov() {
 		return this.fov;
 	}
@@ -1121,6 +1135,8 @@ public class GameOptions {
 		this.syncChunkWrites = visitor.visitBoolean("syncChunkWrites", this.syncChunkWrites);
 		visitor.accept("showAutosaveIndicator", this.showAutosaveIndicator);
 		visitor.accept("allowServerListing", this.allowServerListing);
+		visitor.accept("chatPreview", this.chatPreview);
+		visitor.accept("onlyShowSignedChat", this.onlyShowSignedChat);
 
 		for (KeyBinding keyBinding : this.allKeys) {
 			String string = keyBinding.getBoundKeyTranslationKey();

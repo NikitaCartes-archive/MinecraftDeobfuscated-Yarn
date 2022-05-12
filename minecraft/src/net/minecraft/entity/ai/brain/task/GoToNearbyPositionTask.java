@@ -36,7 +36,7 @@ public class GoToNearbyPositionTask extends Task<PathAwareEntity> {
 		if (l > this.nextRunTime) {
 			Brain<?> brain = pathAwareEntity.getBrain();
 			Optional<GlobalPos> optional = brain.getOptionalMemory(this.memoryModuleType);
-			optional.ifPresent(globalPos -> brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(globalPos.getPos(), this.walkSpeed, this.completionRange)));
+			optional.ifPresent(pos -> brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(pos.getPos(), this.walkSpeed, this.completionRange)));
 			this.nextRunTime = l + 80L;
 		}
 	}

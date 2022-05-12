@@ -9,12 +9,12 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
+import java.util.Collection;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.CommandFunctionArgumentType;
 import net.minecraft.command.argument.TimeArgumentType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.function.CommandFunction;
-import net.minecraft.tag.Tag;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.timer.FunctionTagTimerCallback;
@@ -76,7 +76,9 @@ public class ScheduleCommand {
 		);
 	}
 
-	private static int execute(ServerCommandSource source, Pair<Identifier, Either<CommandFunction, Tag<CommandFunction>>> function, int time, boolean replace) throws CommandSyntaxException {
+	private static int execute(
+		ServerCommandSource source, Pair<Identifier, Either<CommandFunction, Collection<CommandFunction>>> function, int time, boolean replace
+	) throws CommandSyntaxException {
 		if (time == 0) {
 			throw SAME_TICK_EXCEPTION.create();
 		} else {
@@ -91,7 +93,7 @@ public class ScheduleCommand {
 
 				timer.setEvent(string, l, new FunctionTimerCallback(identifier));
 				source.sendFeedback(Text.translatable("commands.schedule.created.function", identifier, time, l), true);
-			}).ifRight(tag -> {
+			}).ifRight(collection -> {
 				String string = "#" + identifier;
 				if (replace) {
 					timer.remove(string);

@@ -16,26 +16,28 @@ public class ForgetAttackTargetTask<E extends MobEntity> extends Task<E> {
 	private final BiConsumer<E, LivingEntity> forgetCallback;
 	private final boolean shouldForgetIfTargetUnreachable;
 
-	public ForgetAttackTargetTask(Predicate<LivingEntity> condition, BiConsumer<E, LivingEntity> biConsumer, boolean shouldForgetIfTargetUnreachable) {
+	public ForgetAttackTargetTask(
+		Predicate<LivingEntity> alternativePredicate, BiConsumer<E, LivingEntity> forgetCallback, boolean shouldForgetIfTargetUnreachable
+	) {
 		super(
 			ImmutableMap.of(MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleState.REGISTERED)
 		);
-		this.alternativeCondition = condition;
-		this.forgetCallback = biConsumer;
+		this.alternativeCondition = alternativePredicate;
+		this.forgetCallback = forgetCallback;
 		this.shouldForgetIfTargetUnreachable = shouldForgetIfTargetUnreachable;
 	}
 
-	public ForgetAttackTargetTask(Predicate<LivingEntity> predicate, BiConsumer<E, LivingEntity> biConsumer) {
-		this(predicate, biConsumer, true);
+	public ForgetAttackTargetTask(Predicate<LivingEntity> alternativePredicate, BiConsumer<E, LivingEntity> forgetCallback) {
+		this(alternativePredicate, forgetCallback, true);
 	}
 
-	public ForgetAttackTargetTask(Predicate<LivingEntity> alternativeCondition) {
-		this(alternativeCondition, (mobEntity, livingEntity) -> {
+	public ForgetAttackTargetTask(Predicate<LivingEntity> alternativePredicate) {
+		this(alternativePredicate, (mobEntity, livingEntity) -> {
 		});
 	}
 
-	public ForgetAttackTargetTask(BiConsumer<E, LivingEntity> biConsumer) {
-		this(target -> false, biConsumer);
+	public ForgetAttackTargetTask(BiConsumer<E, LivingEntity> forgetCallback) {
+		this(target -> false, forgetCallback);
 	}
 
 	public ForgetAttackTargetTask() {

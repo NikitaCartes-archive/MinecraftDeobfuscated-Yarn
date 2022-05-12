@@ -13,7 +13,7 @@ public class SniffTask<E extends WardenEntity> extends Task<E> {
 	private static final double HORIZONTAL_RADIUS = 6.0;
 	private static final double VERTICAL_RADIUS = 20.0;
 
-	public SniffTask(int i) {
+	public SniffTask(int runTime) {
 		super(
 			ImmutableMap.of(
 				MemoryModuleType.IS_SNIFFING,
@@ -25,9 +25,13 @@ public class SniffTask<E extends WardenEntity> extends Task<E> {
 				MemoryModuleType.LOOK_TARGET,
 				MemoryModuleState.REGISTERED,
 				MemoryModuleType.NEAREST_ATTACKABLE,
+				MemoryModuleState.REGISTERED,
+				MemoryModuleType.DISTURBANCE_LOCATION,
+				MemoryModuleState.REGISTERED,
+				MemoryModuleType.SNIFF_COOLDOWN,
 				MemoryModuleState.REGISTERED
 			),
-			i
+			runTime
 		);
 	}
 
@@ -45,12 +49,14 @@ public class SniffTask<E extends WardenEntity> extends Task<E> {
 		}
 
 		wardenEntity.getBrain().forget(MemoryModuleType.IS_SNIFFING);
-		wardenEntity.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_ATTACKABLE).filter(wardenEntity::isValidTarget).ifPresent(livingEntity -> {
-			if (wardenEntity.isInRange(livingEntity, 6.0, 20.0)) {
-				wardenEntity.increaseAngerAt(livingEntity);
+		wardenEntity.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_ATTACKABLE).filter(wardenEntity::isValidTarget).ifPresent(target -> {
+			if (wardenEntity.isInRange(target, 6.0, 20.0)) {
+				wardenEntity.increaseAngerAt(target);
 			}
 
-			WardenBrain.lookAtDisturbance(wardenEntity, livingEntity.getBlockPos());
+			if (!wardenEntity.getBrain().hasMemoryModule(MemoryModuleType.DISTURBANCE_LOCATION)) {
+				WardenBrain.lookAtDisturbance(wardenEntity, target.getBlockPos());
+			}
 		});
 	}
 }

@@ -1,5 +1,6 @@
 package net.minecraft.world.gen.structure;
 
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
@@ -35,10 +36,12 @@ public class MineshaftStructure extends StructureType {
 		context.random().nextDouble();
 		ChunkPos chunkPos = context.chunkPos();
 		BlockPos blockPos = new BlockPos(chunkPos.getCenterX(), 50, chunkPos.getStartZ());
-		return Optional.of(new StructureType.StructurePosition(blockPos, collector -> this.addPieces(collector, blockPos, context)));
+		StructurePiecesCollector structurePiecesCollector = new StructurePiecesCollector();
+		int i = this.addPieces(structurePiecesCollector, context);
+		return Optional.of(new StructureType.StructurePosition(blockPos.add(0, i, 0), Either.right(structurePiecesCollector)));
 	}
 
-	private void addPieces(StructurePiecesCollector collector, BlockPos pos, StructureType.Context context) {
+	private int addPieces(StructurePiecesCollector collector, StructureType.Context context) {
 		ChunkPos chunkPos = context.chunkPos();
 		ChunkRandom chunkRandom = context.random();
 		ChunkGenerator chunkGenerator = context.chunkGenerator();
@@ -54,8 +57,9 @@ public class MineshaftStructure extends StructureType {
 			int k = j <= i ? i : MathHelper.nextBetween(chunkRandom, i, j);
 			int l = k - blockPos.getY();
 			collector.shift(l);
+			return l;
 		} else {
-			collector.shiftInto(i, chunkGenerator.getMinimumY(), chunkRandom, 10);
+			return collector.shiftInto(i, chunkGenerator.getMinimumY(), chunkRandom, 10);
 		}
 	}
 

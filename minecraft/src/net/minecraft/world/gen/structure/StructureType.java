@@ -1,5 +1,6 @@
 package net.minecraft.world.gen.structure;
 
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -96,8 +97,7 @@ public abstract class StructureType {
 			new StructureType.Context(dynamicRegistryManager, chunkGenerator, biomeSource, noiseConfig, structureManager, seed, chunkPos, world, validBiomes)
 		);
 		if (optional.isPresent() && isBiomeValid((StructureType.StructurePosition)optional.get(), chunkGenerator, noiseConfig, validBiomes)) {
-			StructurePiecesCollector structurePiecesCollector = new StructurePiecesCollector();
-			((StructureType.StructurePosition)optional.get()).generator().accept(structurePiecesCollector);
+			StructurePiecesCollector structurePiecesCollector = ((StructureType.StructurePosition)optional.get()).generate();
 			StructureStart structureStart = new StructureStart(this, chunkPos, references, structurePiecesCollector.toList());
 			if (structureStart.hasChildren()) {
 				return structureStart;
@@ -249,6 +249,17 @@ public abstract class StructureType {
 		}
 	}
 
-	public static record StructurePosition(BlockPos position, Consumer<StructurePiecesCollector> generator) {
+	public static record StructurePosition(BlockPos position, Either<Consumer<StructurePiecesCollector>, StructurePiecesCollector> generator) {
+		public StructurePosition(BlockPos pos, Consumer<StructurePiecesCollector> generator) {
+			this(pos, Either.left(generator));
+		}
+
+		public StructurePiecesCollector generate() {
+			return this.generator.map(generator -> {
+				StructurePiecesCollector structurePiecesCollector = new StructurePiecesCollector();
+				generator.accept(structurePiecesCollector);
+				return structurePiecesCollector;
+			}, collector -> collector);
+		}
 	}
 }

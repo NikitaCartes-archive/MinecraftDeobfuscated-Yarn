@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 
 public class LootTableProvider implements DataProvider {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private final DataGenerator root;
+	private final DataGenerator.PathResolver pathResolver;
 	private final List<Pair<Supplier<Consumer<BiConsumer<Identifier, LootTable.Builder>>>, LootContextType>> lootTypeGenerators = ImmutableList.of(
 		Pair.of(FishingLootTableGenerator::new, LootContextTypes.FISHING),
 		Pair.of(ChestLootTableGenerator::new, LootContextTypes.CHEST),
@@ -38,12 +38,11 @@ public class LootTableProvider implements DataProvider {
 	);
 
 	public LootTableProvider(DataGenerator root) {
-		this.root = root;
+		this.pathResolver = root.createPathResolver(DataGenerator.OutputType.DATA_PACK, "loot_tables");
 	}
 
 	@Override
 	public void run(DataWriter cache) {
-		Path path = this.root.getOutput();
 		Map<Identifier, LootTable> map = Maps.<Identifier, LootTable>newHashMap();
 		this.lootTypeGenerators.forEach(generator -> ((Consumer)((Supplier)generator.getFirst()).get()).accept((BiConsumer)(id, builder) -> {
 				if (map.put(id, builder.type((LootContextType)generator.getSecond()).build()) != null) {
@@ -63,19 +62,15 @@ public class LootTableProvider implements DataProvider {
 			throw new IllegalStateException("Failed to validate loot tables, see logs");
 		} else {
 			map.forEach((id, table) -> {
-				Path path2 = getOutput(path, id);
+				Path path = this.pathResolver.resolveJson(id);
 
 				try {
-					DataProvider.writeToPath(cache, LootManager.toJson(table), path2);
-				} catch (IOException var6) {
-					LOGGER.error("Couldn't save loot table {}", path2, var6);
+					DataProvider.writeToPath(cache, LootManager.toJson(table), path);
+				} catch (IOException var6x) {
+					LOGGER.error("Couldn't save loot table {}", path, var6x);
 				}
 			});
 		}
-	}
-
-	private static Path getOutput(Path rootOutput, Identifier lootTableId) {
-		return rootOutput.resolve("data/" + lootTableId.getNamespace() + "/loot_tables/" + lootTableId.getPath() + ".json");
 	}
 
 	@Override

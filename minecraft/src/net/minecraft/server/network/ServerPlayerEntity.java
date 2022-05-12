@@ -79,6 +79,7 @@ import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.ResourcePackSendS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerPropertyUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ServerMetadataS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetCameraEntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetTradeOffersS2CPacket;
 import net.minecraft.network.packet.s2c.play.SignEditorOpenS2CPacket;
@@ -99,6 +100,7 @@ import net.minecraft.screen.slot.CraftingResultSlot;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
+import net.minecraft.server.ServerMetadata;
 import net.minecraft.server.filter.TextStream;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -737,7 +739,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			this.networkHandler
 				.sendPacket(
 					new PlayerRespawnS2CPacket(
-						destination.getDimensionEntry(),
+						destination.getDimensionKey(),
 						destination.getRegistryKey(),
 						BiomeAccess.hashSeed(destination.getSeed()),
 						this.interactionManager.getGameMode(),
@@ -1334,7 +1336,14 @@ public class ServerPlayerEntity extends PlayerEntity {
 		if (this.acceptsMessage(typeKey)) {
 			this.networkHandler
 				.sendPacket(
-					new ChatMessageS2CPacket(message.content(), this.getMessageTypeId(typeKey), sender, message.signature().timeStamp(), message.signature().saltSignature())
+					new ChatMessageS2CPacket(
+						message.signedContent(),
+						message.unsignedContent(),
+						this.getMessageTypeId(typeKey),
+						sender,
+						message.signature().timestamp(),
+						message.signature().saltSignature()
+					)
 				);
 		}
 	}
@@ -1381,6 +1390,10 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	public void sendResourcePackUrl(String url, String hash, boolean required, @Nullable Text resourcePackPrompt) {
 		this.networkHandler.sendPacket(new ResourcePackSendS2CPacket(url, hash, required, resourcePackPrompt));
+	}
+
+	public void sendServerMetadata(ServerMetadata metadata) {
+		this.networkHandler.sendPacket(new ServerMetadataS2CPacket(metadata.getDescription(), metadata.getFavicon(), metadata.shouldPreviewChat()));
 	}
 
 	@Override
@@ -1477,7 +1490,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			this.networkHandler
 				.sendPacket(
 					new PlayerRespawnS2CPacket(
-						targetWorld.getDimensionEntry(),
+						targetWorld.getDimensionKey(),
 						targetWorld.getRegistryKey(),
 						BiomeAccess.hashSeed(targetWorld.getSeed()),
 						this.interactionManager.getGameMode(),
@@ -1679,7 +1692,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		ItemStack itemStack = playerInventory.dropSelectedItem(entireStack);
 		this.currentScreenHandler
 			.getSlotIndex(playerInventory, playerInventory.selectedSlot)
-			.ifPresent(i -> this.currentScreenHandler.setPreviousTrackedSlot(i, playerInventory.getMainHandStack()));
+			.ifPresent(index -> this.currentScreenHandler.setPreviousTrackedSlot(index, playerInventory.getMainHandStack()));
 		return this.dropItem(itemStack, false, true) != null;
 	}
 

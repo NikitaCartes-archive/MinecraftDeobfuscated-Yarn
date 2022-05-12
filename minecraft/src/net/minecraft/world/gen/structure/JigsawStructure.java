@@ -21,20 +21,20 @@ public final class JigsawStructure extends StructureType {
 	public static final Codec<JigsawStructure> CODEC = RecordCodecBuilder.mapCodec(
 			instance -> instance.group(
 						configCodecBuilder(instance),
-						StructurePool.REGISTRY_CODEC.fieldOf("start_pool").forGetter(feature -> feature.startPool),
-						Identifier.CODEC.optionalFieldOf("start_jigsaw_name").forGetter(jigsawStructure -> jigsawStructure.field_39059),
-						Codec.intRange(0, 7).fieldOf("size").forGetter(feature -> feature.size),
-						HeightProvider.CODEC.fieldOf("start_height").forGetter(feature -> feature.startHeight),
-						Codec.BOOL.fieldOf("use_expansion_hack").forGetter(feature -> feature.useExpansionHack),
-						Heightmap.Type.CODEC.optionalFieldOf("project_start_to_heightmap").forGetter(feature -> feature.projectStartToHeightmap),
-						Codec.intRange(1, 128).fieldOf("max_distance_from_center").forGetter(feature -> feature.maxDistanceFromCenter)
+						StructurePool.REGISTRY_CODEC.fieldOf("start_pool").forGetter(structure -> structure.startPool),
+						Identifier.CODEC.optionalFieldOf("start_jigsaw_name").forGetter(structure -> structure.startJigsawName),
+						Codec.intRange(0, 7).fieldOf("size").forGetter(structure -> structure.size),
+						HeightProvider.CODEC.fieldOf("start_height").forGetter(structure -> structure.startHeight),
+						Codec.BOOL.fieldOf("use_expansion_hack").forGetter(structure -> structure.useExpansionHack),
+						Heightmap.Type.CODEC.optionalFieldOf("project_start_to_heightmap").forGetter(structure -> structure.projectStartToHeightmap),
+						Codec.intRange(1, 128).fieldOf("max_distance_from_center").forGetter(structure -> structure.maxDistanceFromCenter)
 					)
 					.apply(instance, JigsawStructure::new)
 		)
 		.<JigsawStructure>flatXmap(createValidator(), createValidator())
 		.codec();
 	private final RegistryEntry<StructurePool> startPool;
-	private final Optional<Identifier> field_39059;
+	private final Optional<Identifier> startJigsawName;
 	private final int size;
 	private final HeightProvider startHeight;
 	private final boolean useExpansionHack;
@@ -56,7 +56,7 @@ public final class JigsawStructure extends StructureType {
 	public JigsawStructure(
 		StructureType.Config config,
 		RegistryEntry<StructurePool> startPool,
-		Optional<Identifier> optional,
+		Optional<Identifier> startJigsawName,
 		int size,
 		HeightProvider startHeight,
 		boolean useExpansionHack,
@@ -65,7 +65,7 @@ public final class JigsawStructure extends StructureType {
 	) {
 		super(config);
 		this.startPool = startPool;
-		this.field_39059 = optional;
+		this.startJigsawName = startJigsawName;
 		this.size = size;
 		this.startHeight = startHeight;
 		this.useExpansionHack = useExpansionHack;
@@ -93,9 +93,9 @@ public final class JigsawStructure extends StructureType {
 		ChunkPos chunkPos = context.chunkPos();
 		int i = this.startHeight.get(context.random(), new HeightContext(context.chunkGenerator(), context.world()));
 		BlockPos blockPos = new BlockPos(chunkPos.getStartX(), i, chunkPos.getStartZ());
-		StructurePools.initDefaultPools();
+		StructurePools.method_44111();
 		return StructurePoolBasedGenerator.generate(
-			context, this.startPool, this.field_39059, this.size, blockPos, this.useExpansionHack, this.projectStartToHeightmap, this.maxDistanceFromCenter
+			context, this.startPool, this.startJigsawName, this.size, blockPos, this.useExpansionHack, this.projectStartToHeightmap, this.maxDistanceFromCenter
 		);
 	}
 

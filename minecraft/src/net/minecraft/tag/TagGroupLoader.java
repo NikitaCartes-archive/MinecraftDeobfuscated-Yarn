@@ -1,13 +1,19 @@
 package net.minecraft.tag;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import com.google.common.collect.ImmutableSet.Builder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.JsonOps;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -18,18 +24,18 @@ import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
+import net.minecraft.class_7475;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
 import org.slf4j.Logger;
 
 public class TagGroupLoader<T> {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Gson GSON = new Gson();
 	private static final String JSON_EXTENSION = ".json";
 	private static final int JSON_EXTENSION_LENGTH = ".json".length();
-	private final Function<Identifier, Optional<T>> registryGetter;
+	final Function<Identifier, Optional<T>> registryGetter;
 	private final String dataType;
 
 	public TagGroupLoader(Function<Identifier, Optional<T>> registryGetter, String dataType) {
@@ -37,10 +43,10 @@ public class TagGroupLoader<T> {
 		this.dataType = dataType;
 	}
 
-	public Map<Identifier, Tag.Builder> loadTags(ResourceManager manager) {
-		Map<Identifier, Tag.Builder> map = Maps.<Identifier, Tag.Builder>newHashMap();
+	public Map<Identifier, List<TagGroupLoader.TrackedEntry>> loadTags(ResourceManager manager) {
+		Map<Identifier, List<TagGroupLoader.TrackedEntry>> map = Maps.<Identifier, List<TagGroupLoader.TrackedEntry>>newHashMap();
 
-		for (Entry<Identifier, List<Resource>> entry : manager.findAllResources(this.dataType, identifierx -> identifierx.getPath().endsWith(".json")).entrySet()) {
+		for (Entry<Identifier, List<Resource>> entry : manager.findAllResources(this.dataType, id -> id.getPath().endsWith(".json")).entrySet()) {
 			Identifier identifier = (Identifier)entry.getKey();
 			String string = identifier.getPath();
 			Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(this.dataType.length() + 1, string.length() - JSON_EXTENSION_LENGTH));
@@ -50,29 +56,32 @@ public class TagGroupLoader<T> {
 					Reader reader = resource.getReader();
 
 					try {
-						JsonObject jsonObject = JsonHelper.deserialize(GSON, reader, JsonObject.class);
-						if (jsonObject == null) {
-							throw new NullPointerException("Invalid JSON contents");
+						JsonElement jsonElement = JsonParser.parseReader(reader);
+						List<TagGroupLoader.TrackedEntry> list = (List<TagGroupLoader.TrackedEntry>)map.computeIfAbsent(identifier2, identifierx -> new ArrayList());
+						class_7475 lv = class_7475.field_39269.parse(new Dynamic<>(JsonOps.INSTANCE, jsonElement)).getOrThrow(false, LOGGER::error);
+						if (lv.replace()) {
+							list.clear();
 						}
 
-						((Tag.Builder)map.computeIfAbsent(identifier2, identifierx -> Tag.Builder.create())).read(jsonObject, resource.getResourcePackName());
-					} catch (Throwable var14) {
+						String string2 = resource.getResourcePackName();
+						lv.entries().forEach(tagEntry -> list.add(new TagGroupLoader.TrackedEntry(tagEntry, string2)));
+					} catch (Throwable var16) {
 						if (reader != null) {
 							try {
 								reader.close();
-							} catch (Throwable var13) {
-								var14.addSuppressed(var13);
+							} catch (Throwable var15) {
+								var16.addSuppressed(var15);
 							}
 						}
 
-						throw var14;
+						throw var16;
 					}
 
 					if (reader != null) {
 						reader.close();
 					}
-				} catch (Exception var15) {
-					LOGGER.error("Couldn't read tag list {} from {} in data pack {}", identifier2, identifier, resource.getResourcePackName(), var15);
+				} catch (Exception var17) {
+					LOGGER.error("Couldn't read tag list {} from {} in data pack {}", identifier2, identifier, resource.getResourcePackName(), var17);
 				}
 			}
 		}
@@ -81,17 +90,17 @@ public class TagGroupLoader<T> {
 	}
 
 	private static void method_32839(
-		Map<Identifier, Tag.Builder> map,
+		Map<Identifier, List<TagGroupLoader.TrackedEntry>> map,
 		Multimap<Identifier, Identifier> multimap,
 		Set<Identifier> set,
 		Identifier identifier,
-		BiConsumer<Identifier, Tag.Builder> biConsumer
+		BiConsumer<Identifier, List<TagGroupLoader.TrackedEntry>> biConsumer
 	) {
 		if (set.add(identifier)) {
 			multimap.get(identifier).forEach(identifierx -> method_32839(map, multimap, set, identifierx, biConsumer));
-			Tag.Builder builder = (Tag.Builder)map.get(identifier);
-			if (builder != null) {
-				biConsumer.accept(identifier, builder);
+			List<TagGroupLoader.TrackedEntry> list = (List<TagGroupLoader.TrackedEntry>)map.get(identifier);
+			if (list != null) {
+				biConsumer.accept(identifier, list);
 			}
 		}
 	}
@@ -107,22 +116,52 @@ public class TagGroupLoader<T> {
 		}
 	}
 
-	public Map<Identifier, Tag<T>> buildGroup(Map<Identifier, Tag.Builder> tags) {
-		Map<Identifier, Tag<T>> map = Maps.<Identifier, Tag<T>>newHashMap();
-		Function<Identifier, Tag<T>> function = map::get;
-		Function<Identifier, T> function2 = id -> ((Optional)this.registryGetter.apply(id)).orElse(null);
+	private Either<Collection<TagGroupLoader.TrackedEntry>, Collection<T>> method_43952(
+		TagEntry.ValueGetter<T> valueGetter, List<TagGroupLoader.TrackedEntry> list
+	) {
+		Builder<T> builder = ImmutableSet.builder();
+		List<TagGroupLoader.TrackedEntry> list2 = new ArrayList();
+
+		for (TagGroupLoader.TrackedEntry trackedEntry : list) {
+			if (!trackedEntry.entry().resolve(valueGetter, builder::add)) {
+				list2.add(trackedEntry);
+			}
+		}
+
+		return list2.isEmpty() ? Either.right(builder.build()) : Either.left(list2);
+	}
+
+	public Map<Identifier, Collection<T>> buildGroup(Map<Identifier, List<TagGroupLoader.TrackedEntry>> map) {
+		final Map<Identifier, Collection<T>> map2 = Maps.<Identifier, Collection<T>>newHashMap();
+		TagEntry.ValueGetter<T> valueGetter = new TagEntry.ValueGetter<T>() {
+			@Nullable
+			@Override
+			public T direct(Identifier id) {
+				return (T)((Optional)TagGroupLoader.this.registryGetter.apply(id)).orElse(null);
+			}
+
+			@Nullable
+			@Override
+			public Collection<T> tag(Identifier id) {
+				return (Collection<T>)map2.get(id);
+			}
+		};
 		Multimap<Identifier, Identifier> multimap = HashMultimap.create();
-		tags.forEach((identifier, builder) -> builder.forEachTagId(identifier2 -> method_32844(multimap, identifier, identifier2)));
-		tags.forEach((identifier, builder) -> builder.forEachGroupId(identifier2 -> method_32844(multimap, identifier, identifier2)));
+		map.forEach(
+			(identifier, list) -> list.forEach(trackedEntry -> trackedEntry.entry.forEachRequiredTagId(identifier2 -> method_32844(multimap, identifier, identifier2)))
+		);
+		map.forEach(
+			(identifier, list) -> list.forEach(trackedEntry -> trackedEntry.entry.forEachOptionalTagId(identifier2 -> method_32844(multimap, identifier, identifier2)))
+		);
 		Set<Identifier> set = Sets.<Identifier>newHashSet();
-		tags.keySet()
+		map.keySet()
 			.forEach(
 				identifier -> method_32839(
-						tags,
+						map,
 						multimap,
 						set,
 						identifier,
-						(identifierx, builder) -> builder.build(function, function2)
+						(identifierx, list) -> this.method_43952(valueGetter, list)
 								.ifLeft(
 									collection -> LOGGER.error(
 											"Couldn't load tag {} as it is missing following references: {}",
@@ -130,13 +169,20 @@ public class TagGroupLoader<T> {
 											collection.stream().map(Objects::toString).collect(Collectors.joining(", "))
 										)
 								)
-								.ifRight(tag -> map.put(identifierx, tag))
+								.ifRight(collection -> map2.put(identifierx, collection))
 					)
 			);
-		return map;
+		return map2;
 	}
 
-	public Map<Identifier, Tag<T>> load(ResourceManager manager) {
+	public Map<Identifier, Collection<T>> load(ResourceManager manager) {
 		return this.buildGroup(this.loadTags(manager));
+	}
+
+	public static record TrackedEntry(TagEntry entry, String source) {
+
+		public String toString() {
+			return this.entry + " (from " + this.source + ")";
+		}
 	}
 }

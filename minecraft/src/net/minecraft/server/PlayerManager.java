@@ -34,7 +34,6 @@ import net.minecraft.network.MessageSender;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.encryption.ChatMessageSignature;
 import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.encryption.SignedChatMessage;
 import net.minecraft.network.packet.s2c.play.ChunkLoadDistanceS2CPacket;
@@ -176,7 +175,7 @@ public abstract class PlayerManager {
 				player.interactionManager.getPreviousGameMode(),
 				this.server.getWorldRegistryKeys(),
 				this.registryManager,
-				serverWorld2.getDimensionEntry(),
+				serverWorld2.getDimensionKey(),
 				serverWorld2.getRegistryKey(),
 				BiomeAccess.hashSeed(serverWorld2.getSeed()),
 				this.getMaxPlayerCount(),
@@ -223,11 +222,8 @@ public abstract class PlayerManager {
 		this.sendWorldInfo(player, serverWorld2);
 		this.server
 			.getResourcePackProperties()
-			.ifPresent(
-				serverResourcePackProperties -> player.sendResourcePackUrl(
-						serverResourcePackProperties.url(), serverResourcePackProperties.hash(), serverResourcePackProperties.isRequired(), serverResourcePackProperties.prompt()
-					)
-			);
+			.ifPresent(properties -> player.sendResourcePackUrl(properties.url(), properties.hash(), properties.isRequired(), properties.prompt()));
+		player.sendServerMetadata(this.server.getServerMetadata());
 
 		for (StatusEffectInstance statusEffectInstance : player.getStatusEffects()) {
 			serverPlayNetworkHandler.sendPacket(new EntityStatusEffectS2CPacket(player.getId(), statusEffectInstance));
@@ -328,15 +324,15 @@ public abstract class PlayerManager {
 	}
 
 	@Nullable
-	public NbtCompound loadPlayerData(ServerPlayerEntity serverPlayerEntity) {
+	public NbtCompound loadPlayerData(ServerPlayerEntity player) {
 		NbtCompound nbtCompound = this.server.getSaveProperties().getPlayerData();
 		NbtCompound nbtCompound2;
-		if (this.server.isHost(serverPlayerEntity.getGameProfile()) && nbtCompound != null) {
+		if (this.server.isHost(player.getGameProfile()) && nbtCompound != null) {
 			nbtCompound2 = nbtCompound;
-			serverPlayerEntity.readNbt(nbtCompound);
+			player.readNbt(nbtCompound);
 			LOGGER.debug("loading single player");
 		} else {
-			nbtCompound2 = this.saveHandler.loadPlayerData(serverPlayerEntity);
+			nbtCompound2 = this.saveHandler.loadPlayerData(player);
 		}
 
 		return nbtCompound2;
@@ -409,7 +405,7 @@ public abstract class PlayerManager {
 		}
 	}
 
-	public ServerPlayerEntity createPlayer(GameProfile profile, @Nullable PlayerPublicKey playerPublicKey) {
+	public ServerPlayerEntity createPlayer(GameProfile profile, @Nullable PlayerPublicKey publicKey) {
 		UUID uUID = DynamicSerializableUuid.getUuidFromProfile(profile);
 		List<ServerPlayerEntity> list = Lists.<ServerPlayerEntity>newArrayList();
 
@@ -429,7 +425,7 @@ public abstract class PlayerManager {
 			serverPlayerEntity3.networkHandler.disconnect(Text.translatable("multiplayer.disconnect.duplicate_login"));
 		}
 
-		return new ServerPlayerEntity(this.server, this.server.getOverworld(), profile, playerPublicKey);
+		return new ServerPlayerEntity(this.server, this.server.getOverworld(), profile, publicKey);
 	}
 
 	public ServerPlayerEntity respawnPlayer(ServerPlayerEntity player, boolean alive) {
@@ -486,7 +482,7 @@ public abstract class PlayerManager {
 		serverPlayerEntity.networkHandler
 			.sendPacket(
 				new PlayerRespawnS2CPacket(
-					serverPlayerEntity.world.getDimensionEntry(),
+					serverPlayerEntity.world.getDimensionKey(),
 					serverPlayerEntity.world.getRegistryKey(),
 					BiomeAccess.hashSeed(serverPlayerEntity.getWorld().getSeed()),
 					serverPlayerEntity.interactionManager.getGameMode(),
@@ -776,6 +772,7 @@ public abstract class PlayerManager {
 	 * message or a join/leave message.
 	 * 
 	 * @see #broadcast(Text, Function, RegistryKey)
+	 * @see #broadcast(SignedChatMessage, TextStream.Message, ServerPlayerEntity, RegistryKey)
 	 * @see #broadcast(SignedChatMessage, MessageSender, RegistryKey)
 	 * @see #broadcast(SignedChatMessage, Function, MessageSender, RegistryKey)
 	 */
@@ -788,8 +785,9 @@ public abstract class PlayerManager {
 	 * message can be sent to a different player.
 	 * 
 	 * @see #broadcast(Text, RegistryKey)
-	 * @see #broadcast(SignedChatMessage, ChatMessageSender, RegistryKey)
-	 * @see #broadcast(SignedChatMessage, Function, ChatMessageSender, RegistryKey)
+	 * @see #broadcast(SignedChatMessage, TextStream.Message, ServerPlayerEntity, RegistryKey)
+	 * @see #broadcast(SignedChatMessage, MessageSender, RegistryKey)
+	 * @see #broadcast(SignedChatMessage, Function, MessageSender, RegistryKey)
 	 * 
 	 * @param playerMessageFactory a function that takes the player to send the message to
 	 * and returns either the text to send to them or {@code null}
@@ -824,19 +822,31 @@ public abstract class PlayerManager {
 	 * 
 	 * @see #broadcast(Text, RegistryKey)
 	 * @see #broadcast(Text, Function, RegistryKey)
-	 * @see #broadcast(SignedChatMessage, ChatMessageSender, RegistryKey)
-	 * @see #broadcast(SignedChatMessage, Function, ChatMessageSender, RegistryKey)
+	 * @see #broadcast(SignedChatMessage, MessageSender, RegistryKey)
+	 * @see #broadcast(SignedChatMessage, Function, MessageSender, RegistryKey)
 	 */
-	public void broadcast(SignedChatMessage message, TextStream.Message filterableMessage, ServerPlayerEntity sender, RegistryKey<MessageType> typeKey) {
-		SignedChatMessage signedChatMessage;
-		if (!filterableMessage.getFiltered().isEmpty()) {
-			Text text = Text.literal(filterableMessage.getFiltered());
-			signedChatMessage = new SignedChatMessage(text, ChatMessageSignature.none());
-		} else {
-			signedChatMessage = null;
-		}
-
+	public void broadcast(SignedChatMessage message, TextStream.Message filteredMessage, ServerPlayerEntity sender, RegistryKey<MessageType> typeKey) {
+		SignedChatMessage signedChatMessage = this.decorateIfFiltered(sender, message, filteredMessage);
 		this.broadcast(message, player -> sender.shouldFilterMessagesSentTo(player) ? signedChatMessage : message, sender.asMessageSender(), typeKey);
+	}
+
+	/**
+	 * {@return the decorated message, or {@code null} if the filtered message exists but
+	 * is empty}
+	 * 
+	 * <p>This only decorates the message if it is filtered, because the passed
+	 * {@code message} is already decorated by the caller.
+	 */
+	@Nullable
+	private SignedChatMessage decorateIfFiltered(ServerPlayerEntity player, SignedChatMessage message, TextStream.Message filteredMessage) {
+		if (!filteredMessage.hasFilteredText()) {
+			return message;
+		} else if (filteredMessage.getFiltered().isEmpty()) {
+			return null;
+		} else {
+			Text text = Text.literal(filteredMessage.getFiltered());
+			return SignedChatMessage.of(this.server.getChatDecorator().decorate(player, text));
+		}
 	}
 
 	/**
@@ -855,7 +865,8 @@ public abstract class PlayerManager {
 	 * 
 	 * @see #broadcast(Text, RegistryKey)
 	 * @see #broadcast(Text, Function, RegistryKey)
-	 * @see #broadcast(SignedChatMessage, Function, ChatMessageSender, RegistryKey)
+	 * @see #broadcast(SignedChatMessage, TextStream.Message, ServerPlayerEntity, RegistryKey)
+	 * @see #broadcast(SignedChatMessage, Function, MessageSender, RegistryKey)
 	 */
 	public void broadcast(SignedChatMessage message, MessageSender sender, RegistryKey<MessageType> typeKey) {
 		this.broadcast(message, player -> message, sender, typeKey);
@@ -880,7 +891,8 @@ public abstract class PlayerManager {
 	 * 
 	 * @see #broadcast(Text, RegistryKey)
 	 * @see #broadcast(Text, Function, RegistryKey)
-	 * @see #broadcast(SignedChatMessage, ChatMessageSender, RegistryKey)
+	 * @see #broadcast(SignedChatMessage, TextStream.Message, ServerPlayerEntity, RegistryKey)
+	 * @see #broadcast(SignedChatMessage, MessageSender, RegistryKey)
 	 * 
 	 * @param playerMessageFactory a function that takes the player to send the message to
 	 * and returns either the message to send to them or {@code null}
@@ -889,7 +901,7 @@ public abstract class PlayerManager {
 	public void broadcast(
 		SignedChatMessage message, Function<ServerPlayerEntity, SignedChatMessage> playerMessageFactory, MessageSender sender, RegistryKey<MessageType> typeKey
 	) {
-		this.server.logChatMessage(sender, message.content());
+		this.server.logChatMessage(sender, message.getContent());
 
 		for (ServerPlayerEntity serverPlayerEntity : this.players) {
 			SignedChatMessage signedChatMessage = (SignedChatMessage)playerMessageFactory.apply(serverPlayerEntity);

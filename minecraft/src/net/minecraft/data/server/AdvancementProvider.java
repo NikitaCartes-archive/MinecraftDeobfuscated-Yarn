@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 
 public class AdvancementProvider implements DataProvider {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private final DataGenerator root;
+	private final DataGenerator.PathResolver pathResolver;
 	private final List<Consumer<Consumer<Advancement>>> tabGenerators = ImmutableList.of(
 		new EndTabAdvancementGenerator(),
 		new HusbandryTabAdvancementGenerator(),
@@ -27,23 +27,22 @@ public class AdvancementProvider implements DataProvider {
 	);
 
 	public AdvancementProvider(DataGenerator root) {
-		this.root = root;
+		this.pathResolver = root.createPathResolver(DataGenerator.OutputType.DATA_PACK, "advancements");
 	}
 
 	@Override
 	public void run(DataWriter cache) {
-		Path path = this.root.getOutput();
 		Set<Identifier> set = Sets.<Identifier>newHashSet();
 		Consumer<Advancement> consumer = advancement -> {
 			if (!set.add(advancement.getId())) {
 				throw new IllegalStateException("Duplicate advancement " + advancement.getId());
 			} else {
-				Path path2 = getOutput(path, advancement);
+				Path path = this.pathResolver.resolveJson(advancement.getId());
 
 				try {
-					DataProvider.writeToPath(cache, advancement.createTask().toJson(), path2);
-				} catch (IOException var6x) {
-					LOGGER.error("Couldn't save advancement {}", path2, var6x);
+					DataProvider.writeToPath(cache, advancement.createTask().toJson(), path);
+				} catch (IOException var6) {
+					LOGGER.error("Couldn't save advancement {}", path, var6);
 				}
 			}
 		};
@@ -51,10 +50,6 @@ public class AdvancementProvider implements DataProvider {
 		for (Consumer<Consumer<Advancement>> consumer2 : this.tabGenerators) {
 			consumer2.accept(consumer);
 		}
-	}
-
-	private static Path getOutput(Path rootOutput, Advancement advancement) {
-		return rootOutput.resolve("data/" + advancement.getId().getNamespace() + "/advancements/" + advancement.getId().getPath() + ".json");
 	}
 
 	@Override

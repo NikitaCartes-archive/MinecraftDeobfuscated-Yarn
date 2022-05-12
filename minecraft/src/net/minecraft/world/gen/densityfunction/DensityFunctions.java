@@ -65,48 +65,63 @@ public class DensityFunctions {
 		return RegistryKey.of(Registry.DENSITY_FUNCTION_KEY, new Identifier(id));
 	}
 
-	public static RegistryEntry<? extends DensityFunction> init() {
-		register(ZERO, DensityFunctionTypes.zero());
+	public static RegistryEntry<? extends DensityFunction> init(Registry<DensityFunction> registry) {
+		register(registry, ZERO, DensityFunctionTypes.zero());
 		int i = DimensionType.MIN_HEIGHT * 2;
 		int j = DimensionType.MAX_COLUMN_HEIGHT * 2;
-		register(Y, DensityFunctionTypes.yClampedGradient(i, j, (double)i, (double)j));
+		register(registry, Y, DensityFunctionTypes.yClampedGradient(i, j, (double)i, (double)j));
 		DensityFunction densityFunction = method_41551(
-			SHIFT_X, DensityFunctionTypes.flatCache(DensityFunctionTypes.cache2d(DensityFunctionTypes.shiftA(method_41111(NoiseParametersKeys.OFFSET))))
+			registry, SHIFT_X, DensityFunctionTypes.flatCache(DensityFunctionTypes.cache2d(DensityFunctionTypes.shiftA(method_41111(NoiseParametersKeys.OFFSET))))
 		);
 		DensityFunction densityFunction2 = method_41551(
-			SHIFT_Z, DensityFunctionTypes.flatCache(DensityFunctionTypes.cache2d(DensityFunctionTypes.shiftB(method_41111(NoiseParametersKeys.OFFSET))))
+			registry, SHIFT_Z, DensityFunctionTypes.flatCache(DensityFunctionTypes.cache2d(DensityFunctionTypes.shiftB(method_41111(NoiseParametersKeys.OFFSET))))
 		);
-		register(BASE_3D_NOISE_OVERWORLD, InterpolatedNoiseSampler.method_42384(0.25, 0.125, 80.0, 160.0, 8.0));
-		register(BASE_3D_NOISE_NETHER, InterpolatedNoiseSampler.method_42384(0.25, 0.375, 80.0, 60.0, 8.0));
-		register(BASE_3D_NOISE_END, InterpolatedNoiseSampler.method_42384(0.25, 0.25, 80.0, 160.0, 4.0));
+		register(registry, BASE_3D_NOISE_OVERWORLD, InterpolatedNoiseSampler.method_42384(0.25, 0.125, 80.0, 160.0, 8.0));
+		register(registry, BASE_3D_NOISE_NETHER, InterpolatedNoiseSampler.method_42384(0.25, 0.375, 80.0, 60.0, 8.0));
+		register(registry, BASE_3D_NOISE_END, InterpolatedNoiseSampler.method_42384(0.25, 0.25, 80.0, 160.0, 4.0));
 		RegistryEntry<DensityFunction> registryEntry = register(
+			registry,
 			CONTINENTS_OVERWORLD,
 			DensityFunctionTypes.flatCache(DensityFunctionTypes.shiftedNoise(densityFunction, densityFunction2, 0.25, method_41111(NoiseParametersKeys.CONTINENTALNESS)))
 		);
 		RegistryEntry<DensityFunction> registryEntry2 = register(
+			registry,
 			EROSION_OVERWORLD,
 			DensityFunctionTypes.flatCache(DensityFunctionTypes.shiftedNoise(densityFunction, densityFunction2, 0.25, method_41111(NoiseParametersKeys.EROSION)))
 		);
 		DensityFunction densityFunction3 = method_41551(
+			registry,
 			RIDGES_OVERWORLD,
 			DensityFunctionTypes.flatCache(DensityFunctionTypes.shiftedNoise(densityFunction, densityFunction2, 0.25, method_41111(NoiseParametersKeys.RIDGE)))
 		);
-		register(RIDGES_FOLDED_OVERWORLD, method_41547(densityFunction3));
+		register(registry, RIDGES_FOLDED_OVERWORLD, method_41547(densityFunction3));
 		DensityFunction densityFunction4 = DensityFunctionTypes.method_40502(method_41111(NoiseParametersKeys.JAGGED), 1500.0, 0.0);
 		method_41548(
-			densityFunction4, registryEntry, registryEntry2, OFFSET_OVERWORLD, FACTOR_OVERWORLD, JAGGEDNESS_OVERWORLD, DEPTH_OVERWORLD, SLOPED_CHEESE_OVERWORLD, false
+			registry,
+			densityFunction4,
+			registryEntry,
+			registryEntry2,
+			OFFSET_OVERWORLD,
+			FACTOR_OVERWORLD,
+			JAGGEDNESS_OVERWORLD,
+			DEPTH_OVERWORLD,
+			SLOPED_CHEESE_OVERWORLD,
+			false
 		);
 		RegistryEntry<DensityFunction> registryEntry3 = register(
+			registry,
 			CONTINENTS_OVERWORLD_LARGE_BIOME,
 			DensityFunctionTypes.flatCache(
 				DensityFunctionTypes.shiftedNoise(densityFunction, densityFunction2, 0.25, method_41111(NoiseParametersKeys.CONTINENTALNESS_LARGE))
 			)
 		);
 		RegistryEntry<DensityFunction> registryEntry4 = register(
+			registry,
 			EROSION_OVERWORLD_LARGE_BIOME,
 			DensityFunctionTypes.flatCache(DensityFunctionTypes.shiftedNoise(densityFunction, densityFunction2, 0.25, method_41111(NoiseParametersKeys.EROSION_LARGE)))
 		);
 		method_41548(
+			registry,
 			densityFunction4,
 			registryEntry3,
 			registryEntry4,
@@ -118,6 +133,7 @@ public class DensityFunctions {
 			false
 		);
 		method_41548(
+			registry,
 			densityFunction4,
 			registryEntry,
 			registryEntry2,
@@ -128,20 +144,21 @@ public class DensityFunctions {
 			SLOPED_CHEESE_OVERWORLD_AMPLIFIED,
 			true
 		);
-		register(SLOPED_CHEESE_END, DensityFunctionTypes.add(DensityFunctionTypes.endIslands(0L), method_41116(BASE_3D_NOISE_END)));
-		register(CAVES_SPAGHETTI_ROUGHNESS_FUNCTION_OVERWORLD, method_41113());
+		register(registry, SLOPED_CHEESE_END, DensityFunctionTypes.add(DensityFunctionTypes.endIslands(0L), method_41116(registry, BASE_3D_NOISE_END)));
+		register(registry, CAVES_SPAGHETTI_ROUGHNESS_FUNCTION_OVERWORLD, method_41113());
 		register(
+			registry,
 			CAVES_SPAGHETTI_2D_THICKNESS_MODULATOR_OVERWORLD,
 			DensityFunctionTypes.cacheOnce(DensityFunctionTypes.noise(method_41111(NoiseParametersKeys.SPAGHETTI_2D_THICKNESS), 2.0, 1.0, -0.6, -1.3))
 		);
-		register(CAVES_SPAGHETTI_2D_OVERWORLD, method_41122());
-		register(CAVES_ENTRANCES_OVERWORLD, method_41117());
-		register(CAVES_NOODLE_OVERWORLD, method_41119());
-		register(CAVES_PILLARS_OVERWORLD, method_41121());
-		return (RegistryEntry<? extends DensityFunction>)BuiltinRegistries.DENSITY_FUNCTION.streamEntries().iterator().next();
+		register(registry, CAVES_SPAGHETTI_2D_OVERWORLD, method_41122(registry));
+		register(registry, CAVES_ENTRANCES_OVERWORLD, method_41117(registry));
+		register(registry, CAVES_NOODLE_OVERWORLD, method_41119(registry));
+		return register(registry, CAVES_PILLARS_OVERWORLD, method_41121());
 	}
 
 	private static void method_41548(
+		Registry<DensityFunction> registry,
 		DensityFunction densityFunction,
 		RegistryEntry<DensityFunction> registryEntry,
 		RegistryEntry<DensityFunction> registryEntry2,
@@ -154,9 +171,10 @@ public class DensityFunctions {
 	) {
 		DensityFunctionTypes.Spline.class_7135 lv = new DensityFunctionTypes.Spline.class_7135(registryEntry);
 		DensityFunctionTypes.Spline.class_7135 lv2 = new DensityFunctionTypes.Spline.class_7135(registryEntry2);
-		DensityFunctionTypes.Spline.class_7135 lv3 = new DensityFunctionTypes.Spline.class_7135(BuiltinRegistries.DENSITY_FUNCTION.entryOf(RIDGES_OVERWORLD));
-		DensityFunctionTypes.Spline.class_7135 lv4 = new DensityFunctionTypes.Spline.class_7135(BuiltinRegistries.DENSITY_FUNCTION.entryOf(RIDGES_FOLDED_OVERWORLD));
+		DensityFunctionTypes.Spline.class_7135 lv3 = new DensityFunctionTypes.Spline.class_7135(registry.entryOf(RIDGES_OVERWORLD));
+		DensityFunctionTypes.Spline.class_7135 lv4 = new DensityFunctionTypes.Spline.class_7135(registry.entryOf(RIDGES_FOLDED_OVERWORLD));
 		DensityFunction densityFunction2 = method_41551(
+			registry,
 			registryKey,
 			method_40541(
 				DensityFunctionTypes.add(
@@ -166,33 +184,35 @@ public class DensityFunctions {
 			)
 		);
 		DensityFunction densityFunction3 = method_41551(
-			registryKey2, method_40541(DensityFunctionTypes.spline(VanillaTerrainParametersCreator.method_42055(lv, lv2, lv3, lv4, bl)), field_36618)
+			registry, registryKey2, method_40541(DensityFunctionTypes.spline(VanillaTerrainParametersCreator.method_42055(lv, lv2, lv3, lv4, bl)), field_36618)
 		);
 		DensityFunction densityFunction4 = method_41551(
-			registryKey4, DensityFunctionTypes.add(DensityFunctionTypes.yClampedGradient(-64, 320, 1.5, -1.5), densityFunction2)
+			registry, registryKey4, DensityFunctionTypes.add(DensityFunctionTypes.yClampedGradient(-64, 320, 1.5, -1.5), densityFunction2)
 		);
 		DensityFunction densityFunction5 = method_41551(
-			registryKey3, method_40541(DensityFunctionTypes.spline(VanillaTerrainParametersCreator.method_42058(lv, lv2, lv3, lv4, bl)), field_36619)
+			registry, registryKey3, method_40541(DensityFunctionTypes.spline(VanillaTerrainParametersCreator.method_42058(lv, lv2, lv3, lv4, bl)), field_36619)
 		);
 		DensityFunction densityFunction6 = DensityFunctionTypes.mul(densityFunction5, densityFunction.halfNegative());
 		DensityFunction densityFunction7 = method_40540(densityFunction3, DensityFunctionTypes.add(densityFunction4, densityFunction6));
-		register(registryKey5, DensityFunctionTypes.add(densityFunction7, method_41116(BASE_3D_NOISE_OVERWORLD)));
+		register(registry, registryKey5, DensityFunctionTypes.add(densityFunction7, method_41116(registry, BASE_3D_NOISE_OVERWORLD)));
 	}
 
-	private static DensityFunction method_41551(RegistryKey<DensityFunction> registryKey, DensityFunction densityFunction) {
-		return new DensityFunctionTypes.RegistryEntryHolder(BuiltinRegistries.add(BuiltinRegistries.DENSITY_FUNCTION, registryKey, densityFunction));
+	private static DensityFunction method_41551(Registry<DensityFunction> registry, RegistryKey<DensityFunction> registryKey, DensityFunction densityFunction) {
+		return new DensityFunctionTypes.RegistryEntryHolder(BuiltinRegistries.add(registry, registryKey, densityFunction));
 	}
 
-	private static RegistryEntry<DensityFunction> register(RegistryKey<DensityFunction> key, DensityFunction function) {
-		return BuiltinRegistries.add(BuiltinRegistries.DENSITY_FUNCTION, key, function);
+	private static RegistryEntry<DensityFunction> register(
+		Registry<DensityFunction> registry, RegistryKey<DensityFunction> registryKey, DensityFunction densityFunction
+	) {
+		return BuiltinRegistries.add(registry, registryKey, densityFunction);
 	}
 
 	private static RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> method_41111(RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey) {
 		return BuiltinRegistries.NOISE_PARAMETERS.entryOf(registryKey);
 	}
 
-	private static DensityFunction method_41116(RegistryKey<DensityFunction> registryKey) {
-		return new DensityFunctionTypes.RegistryEntryHolder(BuiltinRegistries.DENSITY_FUNCTION.entryOf(registryKey));
+	private static DensityFunction method_41116(Registry<DensityFunction> registry, RegistryKey<DensityFunction> registryKey) {
+		return new DensityFunctionTypes.RegistryEntryHolder(registry.entryOf(registryKey));
 	}
 
 	private static DensityFunction method_41547(DensityFunction densityFunction) {
@@ -217,7 +237,7 @@ public class DensityFunctions {
 		);
 	}
 
-	private static DensityFunction method_41117() {
+	private static DensityFunction method_41117(Registry<DensityFunction> registry) {
 		DensityFunction densityFunction = DensityFunctionTypes.cacheOnce(
 			DensityFunctionTypes.method_40502(method_41111(NoiseParametersKeys.SPAGHETTI_3D_RARITY), 2.0, 1.0)
 		);
@@ -229,7 +249,7 @@ public class DensityFunctions {
 			densityFunction, method_41111(NoiseParametersKeys.SPAGHETTI_3D_2), DensityFunctionTypes.WeirdScaledSampler.RarityValueMapper.TYPE1
 		);
 		DensityFunction densityFunction5 = DensityFunctionTypes.add(DensityFunctionTypes.max(densityFunction3, densityFunction4), densityFunction2).clamp(-1.0, 1.0);
-		DensityFunction densityFunction6 = method_41116(CAVES_SPAGHETTI_ROUGHNESS_FUNCTION_OVERWORLD);
+		DensityFunction densityFunction6 = method_41116(registry, CAVES_SPAGHETTI_ROUGHNESS_FUNCTION_OVERWORLD);
 		DensityFunction densityFunction7 = DensityFunctionTypes.method_40502(method_41111(NoiseParametersKeys.CAVE_ENTRANCE), 0.75, 0.5);
 		DensityFunction densityFunction8 = DensityFunctionTypes.add(
 			DensityFunctionTypes.add(densityFunction7, DensityFunctionTypes.constant(0.37)), DensityFunctionTypes.yClampedGradient(-10, 30, 0.3, 0.0)
@@ -237,8 +257,8 @@ public class DensityFunctions {
 		return DensityFunctionTypes.cacheOnce(DensityFunctionTypes.min(densityFunction8, DensityFunctionTypes.add(densityFunction6, densityFunction5)));
 	}
 
-	private static DensityFunction method_41119() {
-		DensityFunction densityFunction = method_41116(Y);
+	private static DensityFunction method_41119(Registry<DensityFunction> registry) {
+		DensityFunction densityFunction = method_41116(registry, Y);
 		int i = -64;
 		int j = -60;
 		int k = 320;
@@ -273,7 +293,7 @@ public class DensityFunctions {
 		return DensityFunctionTypes.cacheOnce(DensityFunctionTypes.mul(densityFunction4, densityFunction3.cube()));
 	}
 
-	private static DensityFunction method_41122() {
+	private static DensityFunction method_41122(Registry<DensityFunction> registry) {
 		DensityFunction densityFunction = DensityFunctionTypes.method_40502(method_41111(NoiseParametersKeys.SPAGHETTI_2D_MODULATOR), 2.0, 1.0);
 		DensityFunction densityFunction2 = DensityFunctionTypes.weirdScaledSampler(
 			densityFunction, method_41111(NoiseParametersKeys.SPAGHETTI_2D), DensityFunctionTypes.WeirdScaledSampler.RarityValueMapper.TYPE2
@@ -281,7 +301,7 @@ public class DensityFunctions {
 		DensityFunction densityFunction3 = DensityFunctionTypes.noise(
 			method_41111(NoiseParametersKeys.SPAGHETTI_2D_ELEVATION), 0.0, (double)Math.floorDiv(-64, 8), 8.0
 		);
-		DensityFunction densityFunction4 = method_41116(CAVES_SPAGHETTI_2D_THICKNESS_MODULATOR_OVERWORLD);
+		DensityFunction densityFunction4 = method_41116(registry, CAVES_SPAGHETTI_2D_THICKNESS_MODULATOR_OVERWORLD);
 		DensityFunction densityFunction5 = DensityFunctionTypes.add(densityFunction3, DensityFunctionTypes.yClampedGradient(-64, 320, 8.0, -40.0)).abs();
 		DensityFunction densityFunction6 = DensityFunctionTypes.add(densityFunction5, densityFunction4).cube();
 		double d = 0.083;
@@ -291,9 +311,9 @@ public class DensityFunctions {
 		return DensityFunctionTypes.max(densityFunction7, densityFunction6).clamp(-1.0, 1.0);
 	}
 
-	private static DensityFunction method_41101(DensityFunction densityFunction) {
-		DensityFunction densityFunction2 = method_41116(CAVES_SPAGHETTI_2D_OVERWORLD);
-		DensityFunction densityFunction3 = method_41116(CAVES_SPAGHETTI_ROUGHNESS_FUNCTION_OVERWORLD);
+	private static DensityFunction method_41101(Registry<DensityFunction> registry, DensityFunction densityFunction) {
+		DensityFunction densityFunction2 = method_41116(registry, CAVES_SPAGHETTI_2D_OVERWORLD);
+		DensityFunction densityFunction3 = method_41116(registry, CAVES_SPAGHETTI_ROUGHNESS_FUNCTION_OVERWORLD);
 		DensityFunction densityFunction4 = DensityFunctionTypes.noise(method_41111(NoiseParametersKeys.CAVE_LAYER), 8.0);
 		DensityFunction densityFunction5 = DensityFunctionTypes.mul(DensityFunctionTypes.constant(4.0), densityFunction4.square());
 		DensityFunction densityFunction6 = DensityFunctionTypes.noise(method_41111(NoiseParametersKeys.CAVE_CHEESE), 0.6666666666666666);
@@ -304,9 +324,9 @@ public class DensityFunctions {
 		);
 		DensityFunction densityFunction8 = DensityFunctionTypes.add(densityFunction5, densityFunction7);
 		DensityFunction densityFunction9 = DensityFunctionTypes.min(
-			DensityFunctionTypes.min(densityFunction8, method_41116(CAVES_ENTRANCES_OVERWORLD)), DensityFunctionTypes.add(densityFunction2, densityFunction3)
+			DensityFunctionTypes.min(densityFunction8, method_41116(registry, CAVES_ENTRANCES_OVERWORLD)), DensityFunctionTypes.add(densityFunction2, densityFunction3)
 		);
-		DensityFunction densityFunction10 = method_41116(CAVES_PILLARS_OVERWORLD);
+		DensityFunction densityFunction10 = method_41116(registry, CAVES_PILLARS_OVERWORLD);
 		DensityFunction densityFunction11 = DensityFunctionTypes.rangeChoice(
 			densityFunction10, -1000000.0, 0.03, DensityFunctionTypes.constant(-1000000.0), densityFunction10
 		);
@@ -318,33 +338,35 @@ public class DensityFunctions {
 		return DensityFunctionTypes.mul(DensityFunctionTypes.interpolated(densityFunction2), DensityFunctionTypes.constant(0.64)).squeeze();
 	}
 
-	public static NoiseRouter createSurfaceNoiseRouter(boolean largeBiomes, boolean amplified) {
+	public static NoiseRouter createSurfaceNoiseRouter(Registry<DensityFunction> registry, boolean bl, boolean bl2) {
 		DensityFunction densityFunction = DensityFunctionTypes.noise(method_41111(NoiseParametersKeys.AQUIFER_BARRIER), 0.5);
 		DensityFunction densityFunction2 = DensityFunctionTypes.noise(method_41111(NoiseParametersKeys.AQUIFER_FLUID_LEVEL_FLOODEDNESS), 0.67);
 		DensityFunction densityFunction3 = DensityFunctionTypes.noise(method_41111(NoiseParametersKeys.AQUIFER_FLUID_LEVEL_SPREAD), 0.7142857142857143);
 		DensityFunction densityFunction4 = DensityFunctionTypes.noise(method_41111(NoiseParametersKeys.AQUIFER_LAVA));
-		DensityFunction densityFunction5 = method_41116(SHIFT_X);
-		DensityFunction densityFunction6 = method_41116(SHIFT_Z);
+		DensityFunction densityFunction5 = method_41116(registry, SHIFT_X);
+		DensityFunction densityFunction6 = method_41116(registry, SHIFT_Z);
 		DensityFunction densityFunction7 = DensityFunctionTypes.shiftedNoise(
-			densityFunction5, densityFunction6, 0.25, method_41111(largeBiomes ? NoiseParametersKeys.TEMPERATURE_LARGE : NoiseParametersKeys.TEMPERATURE)
+			densityFunction5, densityFunction6, 0.25, method_41111(bl ? NoiseParametersKeys.TEMPERATURE_LARGE : NoiseParametersKeys.TEMPERATURE)
 		);
 		DensityFunction densityFunction8 = DensityFunctionTypes.shiftedNoise(
-			densityFunction5, densityFunction6, 0.25, method_41111(largeBiomes ? NoiseParametersKeys.VEGETATION_LARGE : NoiseParametersKeys.VEGETATION)
+			densityFunction5, densityFunction6, 0.25, method_41111(bl ? NoiseParametersKeys.VEGETATION_LARGE : NoiseParametersKeys.VEGETATION)
 		);
-		DensityFunction densityFunction9 = method_41116(largeBiomes ? FACTOR_OVERWORLD_LARGE_BIOME : (amplified ? FACTOR_OVERWORLD_AMPLIFIED : FACTOR_OVERWORLD));
-		DensityFunction densityFunction10 = method_41116(largeBiomes ? DEPTH_OVERWORLD_LARGE_BIOME : (amplified ? DEPTH_OVERWORLD_AMPLIFIED : DEPTH_OVERWORLD));
+		DensityFunction densityFunction9 = method_41116(registry, bl ? FACTOR_OVERWORLD_LARGE_BIOME : (bl2 ? FACTOR_OVERWORLD_AMPLIFIED : FACTOR_OVERWORLD));
+		DensityFunction densityFunction10 = method_41116(registry, bl ? DEPTH_OVERWORLD_LARGE_BIOME : (bl2 ? DEPTH_OVERWORLD_AMPLIFIED : DEPTH_OVERWORLD));
 		DensityFunction densityFunction11 = method_40540(DensityFunctionTypes.cache2d(densityFunction9), densityFunction10);
 		DensityFunction densityFunction12 = method_41116(
-			largeBiomes ? SLOPED_CHEESE_OVERWORLD_LARGE_BIOME : (amplified ? SLOPED_CHEESE_OVERWORLD_AMPLIFIED : SLOPED_CHEESE_OVERWORLD)
+			registry, bl ? SLOPED_CHEESE_OVERWORLD_LARGE_BIOME : (bl2 ? SLOPED_CHEESE_OVERWORLD_AMPLIFIED : SLOPED_CHEESE_OVERWORLD)
 		);
 		DensityFunction densityFunction13 = DensityFunctionTypes.min(
-			densityFunction12, DensityFunctionTypes.mul(DensityFunctionTypes.constant(5.0), method_41116(CAVES_ENTRANCES_OVERWORLD))
+			densityFunction12, DensityFunctionTypes.mul(DensityFunctionTypes.constant(5.0), method_41116(registry, CAVES_ENTRANCES_OVERWORLD))
 		);
 		DensityFunction densityFunction14 = DensityFunctionTypes.rangeChoice(
-			densityFunction12, -1000000.0, 1.5625, densityFunction13, method_41101(densityFunction12)
+			densityFunction12, -1000000.0, 1.5625, densityFunction13, method_41101(registry, densityFunction12)
 		);
-		DensityFunction densityFunction15 = DensityFunctionTypes.min(method_41207(method_42366(amplified, densityFunction14)), method_41116(CAVES_NOODLE_OVERWORLD));
-		DensityFunction densityFunction16 = method_41116(Y);
+		DensityFunction densityFunction15 = DensityFunctionTypes.min(
+			method_41207(method_42366(bl2, densityFunction14)), method_41116(registry, CAVES_NOODLE_OVERWORLD)
+		);
+		DensityFunction densityFunction16 = method_41116(registry, Y);
 		int i = Stream.of(OreVeinSampler.VeinType.values()).mapToInt(veinType -> veinType.minY).min().orElse(-DimensionType.MIN_HEIGHT * 2);
 		int j = Stream.of(OreVeinSampler.VeinType.values()).mapToInt(veinType -> veinType.maxY).max().orElse(-DimensionType.MIN_HEIGHT * 2);
 		DensityFunction densityFunction17 = method_40539(
@@ -370,11 +392,11 @@ public class DensityFunctions {
 			densityFunction4,
 			densityFunction7,
 			densityFunction8,
-			method_41116(largeBiomes ? CONTINENTS_OVERWORLD_LARGE_BIOME : CONTINENTS_OVERWORLD),
-			method_41116(largeBiomes ? EROSION_OVERWORLD_LARGE_BIOME : EROSION_OVERWORLD),
+			method_41116(registry, bl ? CONTINENTS_OVERWORLD_LARGE_BIOME : CONTINENTS_OVERWORLD),
+			method_41116(registry, bl ? EROSION_OVERWORLD_LARGE_BIOME : EROSION_OVERWORLD),
 			densityFunction10,
-			method_41116(RIDGES_OVERWORLD),
-			method_42366(amplified, DensityFunctionTypes.add(densityFunction11, DensityFunctionTypes.constant(-0.703125)).clamp(-64.0, 64.0)),
+			method_41116(registry, RIDGES_OVERWORLD),
+			method_42366(bl2, DensityFunctionTypes.add(densityFunction11, DensityFunctionTypes.constant(-0.703125)).clamp(-64.0, 64.0)),
 			densityFunction15,
 			densityFunction17,
 			densityFunction20,
@@ -382,9 +404,9 @@ public class DensityFunctions {
 		);
 	}
 
-	private static NoiseRouter method_41211(DensityFunction densityFunction) {
-		DensityFunction densityFunction2 = method_41116(SHIFT_X);
-		DensityFunction densityFunction3 = method_41116(SHIFT_Z);
+	private static NoiseRouter method_41211(Registry<DensityFunction> registry, DensityFunction densityFunction) {
+		DensityFunction densityFunction2 = method_41116(registry, SHIFT_X);
+		DensityFunction densityFunction3 = method_41116(registry, SHIFT_Z);
 		DensityFunction densityFunction4 = DensityFunctionTypes.shiftedNoise(densityFunction2, densityFunction3, 0.25, method_41111(NoiseParametersKeys.TEMPERATURE));
 		DensityFunction densityFunction5 = DensityFunctionTypes.shiftedNoise(densityFunction2, densityFunction3, 0.25, method_41111(NoiseParametersKeys.VEGETATION));
 		DensityFunction densityFunction6 = method_41207(densityFunction);
@@ -411,33 +433,33 @@ public class DensityFunctions {
 		return method_42365(densityFunction, -64, 384, bl ? 16 : 80, bl ? 0 : 64, -0.078125, 0, 24, bl ? 0.4 : 0.1171875);
 	}
 
-	private static DensityFunction method_42363(int i, int j) {
-		return method_42365(method_41116(BASE_3D_NOISE_NETHER), i, j, 24, 0, 0.9375, -8, 24, 2.5);
+	private static DensityFunction method_42363(Registry<DensityFunction> registry, int i, int j) {
+		return method_42365(method_41116(registry, BASE_3D_NOISE_NETHER), i, j, 24, 0, 0.9375, -8, 24, 2.5);
 	}
 
 	private static DensityFunction method_42364(DensityFunction densityFunction, int i, int j) {
 		return method_42365(densityFunction, i, j, 72, -184, -23.4375, 4, 32, -0.234375);
 	}
 
-	public static NoiseRouter createNetherNoiseRouter() {
-		return method_41211(method_42363(0, 128));
+	public static NoiseRouter createNetherNoiseRouter(Registry<DensityFunction> registry) {
+		return method_41211(registry, method_42363(registry, 0, 128));
 	}
 
-	public static NoiseRouter createCavesNoiseRouter() {
-		return method_41211(method_42363(-64, 192));
+	public static NoiseRouter createCavesNoiseRouter(Registry<DensityFunction> registry) {
+		return method_41211(registry, method_42363(registry, -64, 192));
 	}
 
-	public static NoiseRouter createFloatingIslandsNoiseRouter() {
-		return method_41211(method_42364(method_41116(BASE_3D_NOISE_END), 0, 256));
+	public static NoiseRouter createFloatingIslandsNoiseRouter(Registry<DensityFunction> registry) {
+		return method_41211(registry, method_42364(method_41116(registry, BASE_3D_NOISE_END), 0, 256));
 	}
 
 	private static DensityFunction method_42367(DensityFunction densityFunction) {
 		return method_42364(densityFunction, 0, 128);
 	}
 
-	public static NoiseRouter createEndNoiseRouter() {
+	public static NoiseRouter createEndNoiseRouter(Registry<DensityFunction> registry) {
 		DensityFunction densityFunction = DensityFunctionTypes.cache2d(DensityFunctionTypes.endIslands(0L));
-		DensityFunction densityFunction2 = method_41207(method_42367(method_41116(SLOPED_CHEESE_END)));
+		DensityFunction densityFunction2 = method_41207(method_42367(method_41116(registry, SLOPED_CHEESE_END)));
 		return new NoiseRouter(
 			DensityFunctionTypes.zero(),
 			DensityFunctionTypes.zero(),

@@ -19,6 +19,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -50,7 +51,7 @@ public class MultiplayerServerListPinger {
 	private static final Text CANNOT_CONNECT_TEXT = Text.translatable("multiplayer.status.cannot_connect").formatted(Formatting.DARK_RED);
 	private final List<ClientConnection> clientConnections = Collections.synchronizedList(Lists.newArrayList());
 
-	public void add(ServerInfo entry, Runnable runnable) throws UnknownHostException {
+	public void add(ServerInfo entry, Runnable saver) throws UnknownHostException {
 		ServerAddress serverAddress = ServerAddress.parse(entry.address);
 		Optional<InetSocketAddress> optional = AllowedAddressResolver.DEFAULT.resolve(serverAddress).map(Address::getInetSocketAddress);
 		if (!optional.isPresent()) {
@@ -110,19 +111,18 @@ public class MultiplayerServerListPinger {
 								entry.playerCountLabel = Text.translatable("multiplayer.status.unknown").formatted(Formatting.DARK_GRAY);
 							}
 
-							String string = null;
-							if (serverMetadata.getFavicon() != null) {
-								String string2 = serverMetadata.getFavicon();
-								if (string2.startsWith("data:image/png;base64,")) {
-									string = string2.substring("data:image/png;base64,".length());
-								} else {
-									MultiplayerServerListPinger.LOGGER.error("Invalid server icon (unknown format)");
+							String string = serverMetadata.getFavicon();
+							if (string != null) {
+								try {
+									string = ServerInfo.parseFavicon(string);
+								} catch (ParseException var9) {
+									MultiplayerServerListPinger.LOGGER.error("Invalid server icon", (Throwable)var9);
 								}
 							}
 
 							if (!Objects.equals(string, entry.getIcon())) {
 								entry.setIcon(string);
-								runnable.run();
+								saver.run();
 							}
 
 							this.startTime = Util.getMeasuringTimeMs();
@@ -233,8 +233,8 @@ public class MultiplayerServerListPinger {
 					}
 
 					@Override
-					public void exceptionCaught(ChannelHandlerContext channelHandlerContext, Throwable throwable) {
-						channelHandlerContext.close();
+					public void exceptionCaught(ChannelHandlerContext context, Throwable throwable) {
+						context.close();
 					}
 				});
 			}

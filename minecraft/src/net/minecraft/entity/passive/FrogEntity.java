@@ -26,6 +26,7 @@ import net.minecraft.entity.ai.control.AquaticMoveControl;
 import net.minecraft.entity.ai.control.LookControl;
 import net.minecraft.entity.ai.pathing.AmphibiousPathNodeMaker;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
+import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.entity.ai.pathing.PathNodeNavigator;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -52,7 +53,7 @@ import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
@@ -105,6 +106,7 @@ public class FrogEntity extends AnimalEntity {
 		super(entityType, world);
 		this.lookControl = new FrogEntity.FrogLookControl(this);
 		this.setPathfindingPenalty(PathNodeType.WATER, 4.0F);
+		this.setPathfindingPenalty(PathNodeType.TRAPDOOR, -1.0F);
 		this.moveControl = new AquaticMoveControl(this, 85, 10, 0.02F, 0.1F, true);
 		this.stepHeight = 1.0F;
 	}
@@ -367,6 +369,11 @@ public class FrogEntity extends AnimalEntity {
 		}
 	}
 
+	@Override
+	public boolean canJumpToNextPathNode(PathNodeType type) {
+		return super.canJumpToNextPathNode(type) && type != PathNodeType.WATER_BORDER;
+	}
+
 	public static boolean isValidFrogFood(LivingEntity entity) {
 		if (entity instanceof SlimeEntity slimeEntity && slimeEntity.getSize() != 1) {
 			return false;
@@ -420,11 +427,23 @@ public class FrogEntity extends AnimalEntity {
 			super(bl);
 		}
 
+		@Nullable
+		@Override
+		public PathNode getStart() {
+			return this.getStart(
+				new BlockPos(
+					MathHelper.floor(this.entity.getBoundingBox().minX),
+					MathHelper.floor(this.entity.getBoundingBox().minY),
+					MathHelper.floor(this.entity.getBoundingBox().minZ)
+				)
+			);
+		}
+
 		@Override
 		public PathNodeType getDefaultNodeType(BlockView world, int x, int y, int z) {
 			this.pos.set(x, y - 1, z);
 			BlockState blockState = world.getBlockState(this.pos);
-			return blockState.isIn(BlockTags.FROG_PREFER_JUMP_TO) ? PathNodeType.OPEN : getLandNodeType(world, this.pos.move(Direction.UP));
+			return blockState.isIn(BlockTags.FROG_PREFER_JUMP_TO) ? PathNodeType.OPEN : super.getDefaultNodeType(world, x, y, z);
 		}
 	}
 }

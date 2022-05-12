@@ -27,6 +27,7 @@ import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Items;
+import net.minecraft.network.ChatDecorator;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.SaveLoader;
@@ -70,6 +71,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	private DedicatedServerGui gui;
 	@Nullable
 	private final TextFilterer filterer;
+	private final ChatDecorator chatDecorator;
 
 	public MinecraftDedicatedServer(
 		Thread serverThread,
@@ -98,6 +100,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		this.propertiesLoader = propertiesLoader;
 		this.rconCommandOutput = new RconCommandOutput(this);
 		this.filterer = TextFilterer.load(propertiesLoader.getPropertiesHandler().textFilteringConfig);
+		this.chatDecorator = this.getProperties().testRainbowChat ? ChatDecorator.testRainbowChat() : ChatDecorator.NOOP;
 	}
 
 	@Override
@@ -345,6 +348,16 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	@Override
 	public boolean isUsingNativeTransport() {
 		return this.getProperties().useNativeTransport;
+	}
+
+	@Override
+	public boolean shouldPreviewChat() {
+		return this.getProperties().previewsChat;
+	}
+
+	@Override
+	public ChatDecorator getChatDecorator() {
+		return this.chatDecorator;
 	}
 
 	public DedicatedPlayerManager getPlayerManager() {

@@ -34,6 +34,7 @@ public class WardenAngerManager {
 	protected static final int maxAnger = 150;
 	private static final int angerDecreasePerTick = 1;
 	private int updateTimer = MathHelper.nextBetween(AbstractRandom.createAtomic(), 0, 2);
+	int primeAnger;
 	private static final Codec<Pair<UUID, Integer>> SUSPECT_CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(Codecs.UUID.fieldOf("uuid").forGetter(Pair::getFirst), Codecs.NONNEGATIVE_INT.fieldOf("anger").forGetter(Pair::getSecond))
 				.apply(instance, Pair::of)
@@ -113,7 +114,15 @@ public class WardenAngerManager {
 			}
 		}
 
+		this.updatePrimeAnger();
+	}
+
+	private void updatePrimeAnger() {
+		this.primeAnger = 0;
 		this.suspects.sort(this.suspectComparator);
+		if (this.suspects.size() == 1) {
+			this.primeAnger = this.suspectsToAngerLevel.getInt(this.suspects.get(0));
+		}
 	}
 
 	private void updateSuspectsMap(ServerWorld world) {
@@ -129,8 +138,6 @@ public class WardenAngerManager {
 				objectIterator.remove();
 			}
 		}
-
-		this.suspects.sort(this.suspectComparator);
 	}
 
 	public int increaseAngerAt(Entity entity, int amount) {
@@ -143,13 +150,14 @@ public class WardenAngerManager {
 			this.suspects.add(entity);
 		}
 
-		this.suspects.sort(this.suspectComparator);
+		this.updatePrimeAnger();
 		return i;
 	}
 
 	public void removeSuspect(Entity entity) {
 		this.suspectsToAngerLevel.removeInt(entity);
 		this.suspects.remove(entity);
+		this.updatePrimeAnger();
 	}
 
 	@Nullable
@@ -157,8 +165,8 @@ public class WardenAngerManager {
 		return (Entity)this.suspects.stream().filter(this.suspectPredicate).findFirst().orElse(null);
 	}
 
-	public int getPrimeSuspectAnger() {
-		return this.suspectsToAngerLevel.getInt(this.getPrimeSuspect());
+	public int getAngerFor(@Nullable Entity entity) {
+		return entity == null ? this.primeAnger : this.suspectsToAngerLevel.getInt(entity);
 	}
 
 	public Optional<LivingEntity> getPrimeSuspect() {
@@ -173,20 +181,19 @@ public class WardenAngerManager {
 			} else {
 				int i = this.angerManagement.suspectsToAngerLevel.getOrDefault(entity, 0);
 				int j = this.angerManagement.suspectsToAngerLevel.getOrDefault(entity2, 0);
+				this.angerManagement.primeAnger = Math.max(this.angerManagement.primeAnger, Math.max(i, j));
 				boolean bl = Angriness.getForAnger(i).isAngry();
 				boolean bl2 = Angriness.getForAnger(j).isAngry();
 				if (bl != bl2) {
 					return bl ? -1 : 1;
 				} else {
-					if (bl) {
-						boolean bl3 = entity instanceof PlayerEntity;
-						boolean bl4 = entity2 instanceof PlayerEntity;
-						if (bl3 != bl4) {
-							return bl3 ? -1 : 1;
-						}
+					boolean bl3 = entity instanceof PlayerEntity;
+					boolean bl4 = entity2 instanceof PlayerEntity;
+					if (bl3 != bl4) {
+						return bl3 ? -1 : 1;
+					} else {
+						return i > j ? -1 : 1;
 					}
-
-					return i > j ? -1 : 1;
 				}
 			}
 		}

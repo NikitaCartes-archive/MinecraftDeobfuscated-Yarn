@@ -18,7 +18,9 @@ public class SpawnPointCommand {
 			CommandManager.literal("spawnpoint")
 				.requires(source -> source.hasPermissionLevel(2))
 				.executes(
-					context -> execute(context.getSource(), Collections.singleton(context.getSource().getPlayer()), new BlockPos(context.getSource().getPosition()), 0.0F)
+					context -> execute(
+							context.getSource(), Collections.singleton(context.getSource().getPlayerOrThrow()), new BlockPos(context.getSource().getPosition()), 0.0F
+						)
 				)
 				.then(
 					CommandManager.argument("targets", EntityArgumentType.players())
