@@ -7,8 +7,8 @@ import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
 
 public class JigsawPropertiesFix extends ChoiceFix {
-	public JigsawPropertiesFix(Schema outputSchema, boolean changesType) {
-		super(outputSchema, changesType, "JigsawPropertiesFix", TypeReferences.BLOCK_ENTITY, "minecraft:jigsaw");
+	public JigsawPropertiesFix(Schema schema, boolean bl) {
+		super(schema, bl, "JigsawPropertiesFix", TypeReferences.BLOCK_ENTITY, "minecraft:jigsaw");
 	}
 
 	private static Dynamic<?> renameProperties(Dynamic<?> dynamic) {

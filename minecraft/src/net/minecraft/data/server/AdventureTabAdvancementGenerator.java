@@ -559,7 +559,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.build(consumer, "adventure/fall_from_world_height");
 		Advancement.Builder.create()
-			.parent(advancement)
+			.parent(advancement4)
 			.display(
 				Blocks.SCULK_CATALYST,
 				Text.translatable("advancements.adventure.kill_mob_near_sculk_catalyst.title"),

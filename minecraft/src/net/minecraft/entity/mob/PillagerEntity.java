@@ -45,7 +45,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.village.raid.Raid;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
@@ -168,19 +168,19 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Inven
 	public EntityData initialize(
 		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
-		AbstractRandom abstractRandom = world.getRandom();
-		this.initEquipment(abstractRandom, difficulty);
-		this.updateEnchantments(abstractRandom, difficulty);
+		Random random = world.getRandom();
+		this.initEquipment(random, difficulty);
+		this.updateEnchantments(random, difficulty);
 		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 
 	@Override
-	protected void initEquipment(AbstractRandom random, LocalDifficulty localDifficulty) {
+	protected void initEquipment(Random random, LocalDifficulty localDifficulty) {
 		this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.CROSSBOW));
 	}
 
 	@Override
-	protected void enchantMainHandItem(AbstractRandom random, float power) {
+	protected void enchantMainHandItem(Random random, float power) {
 		super.enchantMainHandItem(random, power);
 		if (random.nextInt(300) == 0) {
 			ItemStack itemStack = this.getMainHandStack();

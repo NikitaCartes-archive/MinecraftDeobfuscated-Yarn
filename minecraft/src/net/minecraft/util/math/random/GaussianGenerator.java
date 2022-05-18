@@ -1,14 +1,13 @@
-package net.minecraft.world.gen.random;
+package net.minecraft.util.math.random;
 
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
 
 public class GaussianGenerator {
-	public final AbstractRandom baseRandom;
+	public final Random baseRandom;
 	private double nextNextGaussian;
 	private boolean hasNextGaussian;
 
-	public GaussianGenerator(AbstractRandom baseRandom) {
+	public GaussianGenerator(Random baseRandom) {
 		this.baseRandom = baseRandom;
 	}
 

@@ -7,7 +7,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.YOffset;
 import org.slf4j.Logger;
@@ -39,7 +39,7 @@ public class UniformHeightProvider extends HeightProvider {
 	}
 
 	@Override
-	public int get(AbstractRandom random, HeightContext context) {
+	public int get(Random random, HeightContext context) {
 		int i = this.minOffset.getY(context);
 		int j = this.maxOffset.getY(context);
 		if (i > j) {

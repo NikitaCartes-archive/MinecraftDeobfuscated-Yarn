@@ -11,7 +11,7 @@ import java.util.stream.StreamSupport;
 import javax.annotation.concurrent.Immutable;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 
@@ -256,7 +256,7 @@ public class BlockPos extends Vec3i {
 	 * @param around the {@link BlockPos} to iterate around
 	 * @param range the maximum distance from the given pos in any axis
 	 */
-	public static Iterable<BlockPos> iterateRandomly(AbstractRandom random, int count, BlockPos around, int range) {
+	public static Iterable<BlockPos> iterateRandomly(Random random, int count, BlockPos around, int range) {
 		return iterateRandomly(
 			random, count, around.getX() - range, around.getY() - range, around.getZ() - range, around.getX() + range, around.getY() + range, around.getZ() + range
 		);
@@ -276,7 +276,7 @@ public class BlockPos extends Vec3i {
 	 * @param maxY the maximum y value for returned positions
 	 * @param maxZ the maximum z value for returned positions
 	 */
-	public static Iterable<BlockPos> iterateRandomly(AbstractRandom random, int count, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+	public static Iterable<BlockPos> iterateRandomly(Random random, int count, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
 		int i = maxX - minX + 1;
 		int j = maxY - minY + 1;
 		int k = maxZ - minZ + 1;

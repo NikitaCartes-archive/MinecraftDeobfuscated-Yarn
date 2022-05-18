@@ -127,14 +127,14 @@ public class TextFilterer implements AutoCloseable {
 						};
 					} else {
 						String string5 = String.valueOf(i);
-						messageEncoder = (gameProfile, string2x) -> {
+						messageEncoder = (profile, message) -> {
 							JsonObject jsonObject = new JsonObject();
 							jsonObject.addProperty("rule_id", string5);
 							jsonObject.addProperty("category", string2);
 							jsonObject.addProperty("subcategory", string3);
-							jsonObject.addProperty("user_id", gameProfile.getId().toString());
-							jsonObject.addProperty("user_display_name", gameProfile.getName());
-							jsonObject.addProperty("text", string2x);
+							jsonObject.addProperty("user_id", profile.getId().toString());
+							jsonObject.addProperty("user_display_name", profile.getName());
+							jsonObject.addProperty("text", message);
 							return jsonObject;
 						};
 					}
@@ -162,27 +162,27 @@ public class TextFilterer implements AutoCloseable {
 		});
 	}
 
-	CompletableFuture<TextStream.Message> filterMessage(GameProfile gameProfile, String message, TextFilterer.HashIgnorer ignorer, Executor executor) {
-		return message.isEmpty() ? CompletableFuture.completedFuture(TextStream.Message.EMPTY) : CompletableFuture.supplyAsync(() -> {
+	CompletableFuture<FilteredMessage<String>> filterMessage(GameProfile gameProfile, String message, TextFilterer.HashIgnorer ignorer, Executor executor) {
+		return message.isEmpty() ? CompletableFuture.completedFuture(FilteredMessage.EMPTY) : CompletableFuture.supplyAsync(() -> {
 			JsonObject jsonObject = this.messageEncoder.encode(gameProfile, message);
 
 			try {
 				JsonObject jsonObject2 = this.sendJsonRequest(jsonObject, this.chatEndpoint);
 				boolean bl = JsonHelper.getBoolean(jsonObject2, "response", false);
 				if (bl) {
-					return TextStream.Message.permitted(message);
+					return FilteredMessage.permitted(message);
 				} else {
 					String string2 = JsonHelper.getString(jsonObject2, "hashed", null);
 					if (string2 == null) {
-						return TextStream.Message.censored(message);
+						return FilteredMessage.censored(message);
 					} else {
 						int i = JsonHelper.getArray(jsonObject2, "hashes").size();
-						return ignorer.shouldIgnore(string2, i) ? TextStream.Message.censored(message) : new TextStream.Message(message, string2);
+						return ignorer.shouldIgnore(string2, i) ? FilteredMessage.censored(message) : new FilteredMessage(message, string2);
 					}
 				}
 			} catch (Exception var9) {
 				LOGGER.warn("Failed to validate message '{}'", message, var9);
-				return TextStream.Message.censored(message);
+				return FilteredMessage.censored(message);
 			}
 		}, executor);
 	}
@@ -364,15 +364,15 @@ public class TextFilterer implements AutoCloseable {
 		}
 
 		@Override
-		public CompletableFuture<List<TextStream.Message>> filterTexts(List<String> texts) {
-			List<CompletableFuture<TextStream.Message>> list = (List)texts.stream()
+		public CompletableFuture<List<FilteredMessage<String>>> filterTexts(List<String> texts) {
+			List<CompletableFuture<FilteredMessage<String>>> list = (List)texts.stream()
 				.map(text -> TextFilterer.this.filterMessage(this.gameProfile, text, TextFilterer.this.ignorer, this.executor))
 				.collect(ImmutableList.toImmutableList());
 			return Util.combine(list).exceptionally(throwable -> ImmutableList.of());
 		}
 
 		@Override
-		public CompletableFuture<TextStream.Message> filterText(String text) {
+		public CompletableFuture<FilteredMessage<String>> filterText(String text) {
 			return TextFilterer.this.filterMessage(this.gameProfile, text, TextFilterer.this.ignorer, this.executor);
 		}
 	}

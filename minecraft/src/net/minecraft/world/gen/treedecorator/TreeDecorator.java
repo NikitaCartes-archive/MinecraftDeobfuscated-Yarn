@@ -11,7 +11,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.TestableWorld;
 
@@ -28,7 +28,7 @@ public abstract class TreeDecorator {
 	public static final class Generator {
 		private final TestableWorld world;
 		private final BiConsumer<BlockPos, BlockState> replacer;
-		private final AbstractRandom random;
+		private final Random random;
 		private final ObjectArrayList<BlockPos> logPositions;
 		private final ObjectArrayList<BlockPos> leavesPositions;
 		private final ObjectArrayList<BlockPos> rootPositions;
@@ -36,7 +36,7 @@ public abstract class TreeDecorator {
 		public Generator(
 			TestableWorld world,
 			BiConsumer<BlockPos, BlockState> replacer,
-			AbstractRandom random,
+			Random random,
 			Set<BlockPos> logPositions,
 			Set<BlockPos> leavesPositions,
 			Set<BlockPos> rootPositions
@@ -68,7 +68,7 @@ public abstract class TreeDecorator {
 			return this.world;
 		}
 
-		public AbstractRandom getRandom() {
+		public Random getRandom() {
 			return this.random;
 		}
 

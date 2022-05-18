@@ -6,7 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 @Environment(EnvType.CLIENT)
 public class WaterSuspendParticle extends SpriteBillboardParticle {
@@ -46,10 +46,10 @@ public class WaterSuspendParticle extends SpriteBillboardParticle {
 		}
 
 		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
-			AbstractRandom abstractRandom = clientWorld.random;
-			double j = abstractRandom.nextGaussian() * 1.0E-6F;
-			double k = abstractRandom.nextGaussian() * 1.0E-4F;
-			double l = abstractRandom.nextGaussian() * 1.0E-6F;
+			Random random = clientWorld.random;
+			double j = random.nextGaussian() * 1.0E-6F;
+			double k = random.nextGaussian() * 1.0E-4F;
+			double l = random.nextGaussian() * 1.0E-6F;
 			WaterSuspendParticle waterSuspendParticle = new WaterSuspendParticle(clientWorld, this.spriteProvider, d, e, f, j, k, l);
 			waterSuspendParticle.setColor(0.9F, 0.4F, 0.5F);
 			return waterSuspendParticle;

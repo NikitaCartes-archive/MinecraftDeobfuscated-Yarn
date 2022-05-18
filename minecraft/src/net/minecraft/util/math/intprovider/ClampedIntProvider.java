@@ -6,7 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.util.function.Function;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class ClampedIntProvider extends IntProvider {
 	public static final Codec<ClampedIntProvider> CODEC = RecordCodecBuilder.create(
@@ -38,7 +38,7 @@ public class ClampedIntProvider extends IntProvider {
 	}
 
 	@Override
-	public int get(AbstractRandom random) {
+	public int get(Random random) {
 		return MathHelper.clamp(this.source.get(random), this.min, this.max);
 	}
 

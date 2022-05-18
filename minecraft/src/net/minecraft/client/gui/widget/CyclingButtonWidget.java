@@ -9,11 +9,11 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.option.SimpleOption;
 import net.minecraft.client.util.OrderableTooltip;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
@@ -177,8 +177,8 @@ public class CyclingButtonWidget<T> extends PressableWidget implements Orderable
 	/**
 	 * Creates a builder for a cycling button widget that only has {@linkplain Boolean#TRUE}
 	 * and {@linkplain Boolean#FALSE} values. It displays
-	 * {@link net.minecraft.client.gui.screen.ScreenTexts#ON} for {@code true} and
-	 * {@link net.minecraft.client.gui.screen.ScreenTexts#OFF} for {@code false}.
+	 * {@link net.minecraft.screen.ScreenTexts#ON} for {@code true} and
+	 * {@link net.minecraft.screen.ScreenTexts#OFF} for {@code false}.
 	 * Its current initial value is {@code true}.
 	 */
 	public static CyclingButtonWidget.Builder<Boolean> onOffBuilder() {
@@ -188,8 +188,8 @@ public class CyclingButtonWidget<T> extends PressableWidget implements Orderable
 	/**
 	 * Creates a builder for a cycling button widget that only has {@linkplain Boolean#TRUE}
 	 * and {@linkplain Boolean#FALSE} values. It displays
-	 * {@link net.minecraft.client.gui.screen.ScreenTexts#ON} for {@code true} and
-	 * {@link net.minecraft.client.gui.screen.ScreenTexts#OFF} for {@code false}.
+	 * {@link net.minecraft.screen.ScreenTexts#ON} for {@code true} and
+	 * {@link net.minecraft.screen.ScreenTexts#OFF} for {@code false}.
 	 * Its current initial value is set to {@code initialValue}.
 	 */
 	public static CyclingButtonWidget.Builder<Boolean> onOffBuilder(boolean initialValue) {

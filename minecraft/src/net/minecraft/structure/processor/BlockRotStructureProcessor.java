@@ -10,7 +10,7 @@ import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryCodecs;
 import net.minecraft.util.registry.RegistryEntryList;
@@ -50,9 +50,9 @@ public class BlockRotStructureProcessor extends StructureProcessor {
 		Structure.StructureBlockInfo currentBlockInfo,
 		StructurePlacementData data
 	) {
-		AbstractRandom abstractRandom = data.getRandom(currentBlockInfo.pos);
+		Random random = data.getRandom(currentBlockInfo.pos);
 		return (!this.rottableBlocks.isPresent() || originalBlockInfo.state.isIn((RegistryEntryList<Block>)this.rottableBlocks.get()))
-				&& !(abstractRandom.nextFloat() <= this.integrity)
+				&& !(random.nextFloat() <= this.integrity)
 			? null
 			: currentBlockInfo;
 	}

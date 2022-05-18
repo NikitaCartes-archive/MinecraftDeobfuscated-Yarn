@@ -19,8 +19,8 @@ import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.math.random.ChunkRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
@@ -169,7 +169,7 @@ public class RuinedPortalStructure extends StructureType {
 	}
 
 	private static int getFloorHeight(
-		AbstractRandom random,
+		Random random,
 		ChunkGenerator chunkGenerator,
 		RuinedPortalStructurePiece.VerticalPlacement verticalPlacement,
 		boolean airPocket,
@@ -231,7 +231,7 @@ public class RuinedPortalStructure extends StructureType {
 		return l;
 	}
 
-	private static int choosePlacementHeight(AbstractRandom random, int min, int max) {
+	private static int choosePlacementHeight(Random random, int min, int max) {
 		return min < max ? MathHelper.nextBetween(random, min, max) : max;
 	}
 

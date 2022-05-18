@@ -29,7 +29,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class StructureBlockBlockEntity extends BlockEntity {
 	private static final int field_31367 = 5;
@@ -351,8 +351,8 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		return this.loadStructure(world, true);
 	}
 
-	public static AbstractRandom createRandom(long seed) {
-		return seed == 0L ? AbstractRandom.createAtomic(Util.getMeasuringTimeMs()) : AbstractRandom.createAtomic(seed);
+	public static Random createRandom(long seed) {
+		return seed == 0L ? Random.create(Util.getMeasuringTimeMs()) : Random.create(seed);
 	}
 
 	public boolean loadStructure(ServerWorld world, boolean bl) {

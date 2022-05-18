@@ -1,4 +1,4 @@
-package net.minecraft.world.gen.random;
+package net.minecraft.util.math.random;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
@@ -6,15 +6,13 @@ import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 import com.google.common.primitives.Longs;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
-import net.minecraft.util.math.random.Xoroshiro128PlusPlusRandomImpl;
 
 /**
  * Xoroshiro128++ based pseudo random number generator.
  * 
  * @implNote The actual implementation can be found on {@link Xoroshiro128PlusPlusRandomImpl}.
  */
-public class Xoroshiro128PlusPlusRandom implements AbstractRandom {
+public class Xoroshiro128PlusPlusRandom implements Random {
 	private static final float FLOAT_MULTIPLIER = 5.9604645E-8F;
 	private static final double DOUBLE_MULTIPLIER = 1.110223E-16F;
 	private Xoroshiro128PlusPlusRandomImpl implementation;
@@ -29,13 +27,13 @@ public class Xoroshiro128PlusPlusRandom implements AbstractRandom {
 	}
 
 	@Override
-	public AbstractRandom derive() {
+	public Random split() {
 		return new Xoroshiro128PlusPlusRandom(this.implementation.next(), this.implementation.next());
 	}
 
 	@Override
-	public net.minecraft.util.math.random.RandomDeriver createRandomDeriver() {
-		return new Xoroshiro128PlusPlusRandom.RandomDeriver(this.implementation.next(), this.implementation.next());
+	public RandomSplitter nextSplitter() {
+		return new Xoroshiro128PlusPlusRandom.Splitter(this.implementation.next(), this.implementation.next());
 	}
 
 	@Override
@@ -106,32 +104,32 @@ public class Xoroshiro128PlusPlusRandom implements AbstractRandom {
 	 * 
 	 * @implNote In Xoroshiro128++, the lower bits have to be discarded in order
 	 * to ensure proper randomness. For example, to obtain a double, the upper 53
-	 * bits, instead of the lower 53 bits.
+	 * bits should be used instead of the lower 53 bits.
 	 */
 	private long next(int bits) {
 		return this.implementation.next() >>> 64 - bits;
 	}
 
-	public static class RandomDeriver implements net.minecraft.util.math.random.RandomDeriver {
+	public static class Splitter implements RandomSplitter {
 		private static final HashFunction MD5_HASHER = Hashing.md5();
 		private final long seedLo;
 		private final long seedHi;
 
-		public RandomDeriver(long seedLo, long seedHi) {
+		public Splitter(long seedLo, long seedHi) {
 			this.seedLo = seedLo;
 			this.seedHi = seedHi;
 		}
 
 		@Override
-		public AbstractRandom createRandom(int x, int y, int z) {
+		public Random split(int x, int y, int z) {
 			long l = MathHelper.hashCode(x, y, z);
 			long m = l ^ this.seedLo;
 			return new Xoroshiro128PlusPlusRandom(m, this.seedHi);
 		}
 
 		@Override
-		public AbstractRandom createRandom(String string) {
-			byte[] bs = MD5_HASHER.hashString(string, Charsets.UTF_8).asBytes();
+		public Random split(String seed) {
+			byte[] bs = MD5_HASHER.hashString(seed, Charsets.UTF_8).asBytes();
 			long l = Longs.fromBytes(bs[0], bs[1], bs[2], bs[3], bs[4], bs[5], bs[6], bs[7]);
 			long m = Longs.fromBytes(bs[8], bs[9], bs[10], bs[11], bs[12], bs[13], bs[14], bs[15]);
 			return new Xoroshiro128PlusPlusRandom(l ^ this.seedLo, m ^ this.seedHi);

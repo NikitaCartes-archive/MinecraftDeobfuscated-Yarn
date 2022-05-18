@@ -79,7 +79,7 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 
 	@Override
 	default int getBottomY() {
-		return this.getDimension().minimumY();
+		return this.getDimension().minY();
 	}
 
 	@Override

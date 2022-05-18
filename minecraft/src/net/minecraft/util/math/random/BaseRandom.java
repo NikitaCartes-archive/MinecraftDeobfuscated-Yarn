@@ -1,6 +1,6 @@
 package net.minecraft.util.math.random;
 
-public interface BaseSimpleRandom extends AbstractRandom {
+public interface BaseRandom extends Random {
 	float FLOAT_MULTIPLIER = 5.9604645E-8F;
 	double DOUBLE_MULTIPLIER = 1.110223E-16F;
 

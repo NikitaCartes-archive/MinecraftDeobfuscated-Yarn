@@ -10,7 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class NoiseBlockStateProvider extends AbstractNoiseBlockStateProvider {
 	public static final Codec<NoiseBlockStateProvider> CODEC = RecordCodecBuilder.create(
@@ -35,7 +35,7 @@ public class NoiseBlockStateProvider extends AbstractNoiseBlockStateProvider {
 	}
 
 	@Override
-	public BlockState getBlockState(AbstractRandom random, BlockPos pos) {
+	public BlockState getBlockState(Random random, BlockPos pos) {
 		return this.getStateFromList(this.states, pos, (double)this.scale);
 	}
 

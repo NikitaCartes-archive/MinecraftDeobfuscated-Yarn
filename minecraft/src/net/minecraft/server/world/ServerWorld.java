@@ -1323,7 +1323,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		return this.getChunkManager()
 			.getChunkGenerator()
 			.getBiomeSource()
-			.method_42310(
+			.locateBiome(
 				pos, radius, horizontalBlockCheckInterval, verticalBlockCheckInterval, predicate, this.getChunkManager().getNoiseConfig().getMultiNoiseSampler(), this
 			);
 	}

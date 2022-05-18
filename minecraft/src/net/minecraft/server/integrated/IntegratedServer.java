@@ -3,8 +3,6 @@ package net.minecraft.server.integrated;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.GameProfileRepository;
-import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.logging.LogUtils;
 import java.io.File;
 import java.io.IOException;
@@ -23,9 +21,9 @@ import net.minecraft.server.SaveLoader;
 import net.minecraft.server.WorldGenerationProgressListenerFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.ApiServices;
 import net.minecraft.util.ModStatus;
 import net.minecraft.util.SystemDetails;
-import net.minecraft.util.UserCache;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.GameMode;
@@ -53,22 +51,11 @@ public class IntegratedServer extends MinecraftServer {
 		LevelStorage.Session session,
 		ResourcePackManager dataPackManager,
 		SaveLoader saveLoader,
-		MinecraftSessionService sessionService,
-		GameProfileRepository gameProfileRepo,
-		UserCache userCache,
+		ApiServices apiServices,
 		WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory
 	) {
 		super(
-			serverThread,
-			session,
-			dataPackManager,
-			saveLoader,
-			client.getNetworkProxy(),
-			client.getDataFixer(),
-			sessionService,
-			gameProfileRepo,
-			userCache,
-			worldGenerationProgressListenerFactory
+			serverThread, session, dataPackManager, saveLoader, client.getNetworkProxy(), client.getDataFixer(), apiServices, worldGenerationProgressListenerFactory
 		);
 		this.setHostProfile(client.getSession().getProfile());
 		this.setDemo(client.isDemo());

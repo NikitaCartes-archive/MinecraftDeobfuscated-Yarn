@@ -59,6 +59,7 @@ import net.minecraft.network.ChatDecorator;
 import net.minecraft.network.MessageSender;
 import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
+import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.obfuscate.DontObfuscate;
@@ -86,6 +87,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.test.TestManager;
 import net.minecraft.text.Text;
+import net.minecraft.util.ApiServices;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
 import net.minecraft.util.ModStatus;
@@ -103,7 +105,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.DebugRecorder;
 import net.minecraft.util.profiler.DummyRecorder;
 import net.minecraft.util.profiler.EmptyProfileResult;
@@ -177,7 +179,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private static final int field_33216 = 15000;
 	private static final long PLAYER_SAMPLE_UPDATE_INTERVAL = 5000000000L;
 	private static final int field_33218 = 12;
-	public static final File USER_CACHE_FILE = new File("usercache.json");
 	public static final int START_TICKET_CHUNK_RADIUS = 11;
 	private static final int START_TICKET_CHUNKS = 441;
 	private static final int field_33220 = 6000;
@@ -203,7 +204,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private final ServerNetworkIo networkIo;
 	private final WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory;
 	private final ServerMetadata metadata = new ServerMetadata();
-	private final AbstractRandom random = AbstractRandom.createAtomic();
+	private final Random random = Random.create();
 	private final DataFixer dataFixer;
 	private String serverIp;
 	private int serverPort = -1;
@@ -229,11 +230,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private boolean demo;
 	private volatile boolean loading;
 	private long lastTimeReference;
-	private final MinecraftSessionService sessionService;
-	@Nullable
-	private final GameProfileRepository gameProfileRepo;
-	@Nullable
-	private final UserCache userCache;
+	protected final ApiServices apiServices;
 	private long lastPlayerSampleUpdate;
 	private final Thread serverThread;
 	private long timeReference = Util.getMeasuringTimeMs();
@@ -277,9 +274,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		SaveLoader saveLoader,
 		Proxy proxy,
 		DataFixer dataFixer,
-		@Nullable MinecraftSessionService sessionService,
-		@Nullable GameProfileRepository gameProfileRepo,
-		@Nullable UserCache userCache,
+		ApiServices apiServices,
 		WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory
 	) {
 		super("Server");
@@ -291,11 +286,9 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			this.proxy = proxy;
 			this.dataPackManager = dataPackManager;
 			this.resourceManagerHolder = new MinecraftServer.ResourceManagerHolder(saveLoader.resourceManager(), saveLoader.dataPackContents());
-			this.sessionService = sessionService;
-			this.gameProfileRepo = gameProfileRepo;
-			this.userCache = userCache;
-			if (userCache != null) {
-				userCache.setExecutor(this);
+			this.apiServices = apiServices;
+			if (apiServices.userCache() != null) {
+				apiServices.userCache().setExecutor(this);
 			}
 
 			this.networkIo = new ServerNetworkIo(this);
@@ -730,8 +723,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			} catch (Throwable var42) {
 				LOGGER.error("Exception stopping the server", var42);
 			} finally {
-				if (this.userCache != null) {
-					this.userCache.clearExecutor();
+				if (this.apiServices.userCache() != null) {
+					this.apiServices.userCache().clearExecutor();
 				}
 
 				this.exit();
@@ -835,12 +828,10 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return new File(".");
 	}
 
-	protected void setCrashReport(CrashReport report) {
-		LOGGER.error("Game test server crashed\n{}", report.asString());
+	public void setCrashReport(CrashReport report) {
 	}
 
 	public void exit() {
-		LOGGER.info("Game test server shutting down");
 	}
 
 	public void tick(BooleanSupplier shouldKeepTicking) {
@@ -1307,15 +1298,19 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	public MinecraftSessionService getSessionService() {
-		return this.sessionService;
+		return this.apiServices.sessionService();
+	}
+
+	public SignatureVerifier getServicesSignatureVerifier() {
+		return this.apiServices.serviceSignatureVerifier();
 	}
 
 	public GameProfileRepository getGameProfileRepo() {
-		return this.gameProfileRepo;
+		return this.apiServices.profileRepository();
 	}
 
 	public UserCache getUserCache() {
-		return this.userCache;
+		return this.apiServices.userCache();
 	}
 
 	public ServerMetadata getServerMetadata() {

@@ -1,8 +1,6 @@
 package net.minecraft.server;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.GameProfileRepository;
-import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.util.Pair;
@@ -40,7 +38,7 @@ import net.minecraft.server.dedicated.MinecraftDedicatedServer;
 import net.minecraft.server.dedicated.ServerPropertiesHandler;
 import net.minecraft.server.dedicated.ServerPropertiesLoader;
 import net.minecraft.text.Text;
-import net.minecraft.util.UserCache;
+import net.minecraft.util.ApiServices;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.crash.CrashReport;
@@ -115,10 +113,7 @@ public class Main {
 			}
 
 			File file = new File(optionSet.valueOf(optionSpec10));
-			YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(Proxy.NO_PROXY);
-			MinecraftSessionService minecraftSessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
-			GameProfileRepository gameProfileRepository = yggdrasilAuthenticationService.createProfileRepository();
-			UserCache userCache = new UserCache(gameProfileRepository, new File(file, MinecraftServer.USER_CACHE_FILE.getName()));
+			ApiServices apiServices = ApiServices.create(new YggdrasilAuthenticationService(Proxy.NO_PROXY), file);
 			String string = (String)Optional.ofNullable((String)optionSet.valueOf(optionSpec11)).orElse(serverPropertiesLoader.getPropertiesHandler().levelName);
 			LevelStorage levelStorage = LevelStorage.create(file.toPath());
 			LevelStorage.Session session = levelStorage.createSession(string);
@@ -154,7 +149,7 @@ public class Main {
 					dataPacks, CommandManager.RegistrationEnvironment.DEDICATED, serverPropertiesLoader.getPropertiesHandler().functionPermissionLevel
 				);
 				saveLoader = (SaveLoader)Util.waitAndApply(
-						executor -> SaveLoader.load(
+						applyExecutor -> SaveLoader.load(
 								serverConfig,
 								(resourceManager, dataPackSettings) -> {
 									DynamicRegistryManager.Mutable mutable = DynamicRegistryManager.createAndLoad();
@@ -189,12 +184,12 @@ public class Main {
 									}
 								},
 								Util.getMainWorkerExecutor(),
-								executor
+								applyExecutor
 							)
 					)
 					.get();
-			} catch (Exception var38) {
-				LOGGER.warn("Failed to load datapacks, can't proceed with server load. You can either fix your datapacks or reset to vanilla with --safeMode", var38);
+			} catch (Exception var35) {
+				LOGGER.warn("Failed to load datapacks, can't proceed with server load. You can either fix your datapacks or reset to vanilla with --safeMode", var35);
 				return;
 			}
 
@@ -209,16 +204,7 @@ public class Main {
 			final MinecraftDedicatedServer minecraftDedicatedServer = MinecraftServer.startServer(
 				threadx -> {
 					MinecraftDedicatedServer minecraftDedicatedServerxx = new MinecraftDedicatedServer(
-						threadx,
-						session,
-						resourcePackManager,
-						saveLoader,
-						serverPropertiesLoader,
-						Schemas.getFixer(),
-						minecraftSessionService,
-						gameProfileRepository,
-						userCache,
-						WorldGenerationProgressLogger::new
+						threadx, session, resourcePackManager, saveLoader, serverPropertiesLoader, Schemas.getFixer(), apiServices, WorldGenerationProgressLogger::new
 					);
 					minecraftDedicatedServerxx.setHostProfile(optionSet.has(optionSpec9) ? new GameProfile(null, optionSet.valueOf(optionSpec9)) : null);
 					minecraftDedicatedServerxx.setServerPort(optionSet.valueOf(optionSpec12));
@@ -239,8 +225,8 @@ public class Main {
 			};
 			thread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER));
 			Runtime.getRuntime().addShutdownHook(thread);
-		} catch (Exception var39) {
-			LOGGER.error(LogUtils.FATAL_MARKER, "Failed to start the minecraft server", var39);
+		} catch (Exception var36) {
+			LOGGER.error(LogUtils.FATAL_MARKER, "Failed to start the minecraft server", var36);
 		}
 	}
 

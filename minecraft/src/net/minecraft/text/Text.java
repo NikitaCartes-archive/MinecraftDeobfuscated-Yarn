@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
-import net.minecraft.client.gui.screen.ScreenTexts;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.LowercaseEnumTypeAdapterFactory;
@@ -83,18 +83,18 @@ public interface Text extends Message, StringVisitable {
 	List<Text> getSiblings();
 
 	/**
-	 * Copies the text itself, excluding the styles or siblings.
+	 * Copies the text's content, excluding the styles or siblings.
 	 */
-	default MutableText copy() {
+	default MutableText copyContentOnly() {
 		return MutableText.of(this.getContent());
 	}
 
 	/**
-	 * Copies the text itself, the style, and the siblings.
+	 * Copies the text's content, the style, and the siblings.
 	 * 
 	 * <p>A shallow copy is made for the siblings.
 	 */
-	default MutableText shallowCopy() {
+	default MutableText copy() {
 		return new MutableText(this.getContent(), new ArrayList(this.getSiblings()), this.getStyle());
 	}
 

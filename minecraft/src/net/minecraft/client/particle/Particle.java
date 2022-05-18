@@ -13,7 +13,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 @Environment(EnvType.CLIENT)
 public abstract class Particle {
@@ -36,7 +36,7 @@ public abstract class Particle {
 	protected boolean dead;
 	protected float spacingXZ = 0.6F;
 	protected float spacingY = 1.8F;
-	protected final AbstractRandom random = AbstractRandom.createAtomic();
+	protected final Random random = Random.create();
 	protected int age;
 	protected int maxAge;
 	protected float gravityStrength;

@@ -5,7 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 @Environment(EnvType.CLIENT)
 public abstract class AbstractSoundInstance implements SoundInstance {
@@ -21,16 +21,16 @@ public abstract class AbstractSoundInstance implements SoundInstance {
 	protected int repeatDelay;
 	protected SoundInstance.AttenuationType attenuationType = SoundInstance.AttenuationType.LINEAR;
 	protected boolean relative;
-	protected AbstractRandom field_38800;
+	protected Random field_38800;
 
-	protected AbstractSoundInstance(SoundEvent sound, SoundCategory category, AbstractRandom random) {
+	protected AbstractSoundInstance(SoundEvent sound, SoundCategory category, Random random) {
 		this(sound.getId(), category, random);
 	}
 
-	protected AbstractSoundInstance(Identifier soundId, SoundCategory category, AbstractRandom abstractRandom) {
+	protected AbstractSoundInstance(Identifier soundId, SoundCategory category, Random random) {
 		this.id = soundId;
 		this.category = category;
-		this.field_38800 = abstractRandom;
+		this.field_38800 = random;
 	}
 
 	@Override

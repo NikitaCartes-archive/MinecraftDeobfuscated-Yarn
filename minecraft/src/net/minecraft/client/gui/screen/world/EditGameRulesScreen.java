@@ -18,7 +18,6 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -28,6 +27,7 @@ import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -140,9 +140,7 @@ public class EditGameRulesScreen extends Screen {
 
 		public IntRuleWidget(Text name, List<OrderedText> description, String ruleName, GameRules.IntRule rule) {
 			super(description, name);
-			this.valueWidget = new TextFieldWidget(
-				EditGameRulesScreen.this.client.textRenderer, 10, 5, 42, 20, name.shallowCopy().append("\n").append(ruleName).append("\n")
-			);
+			this.valueWidget = new TextFieldWidget(EditGameRulesScreen.this.client.textRenderer, 10, 5, 42, 20, name.copy().append("\n").append(ruleName).append("\n"));
 			this.valueWidget.setText(Integer.toString(rule.get()));
 			this.valueWidget.setChangedListener(value -> {
 				if (rule.validate(value)) {

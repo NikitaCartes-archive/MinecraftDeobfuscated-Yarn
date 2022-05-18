@@ -101,11 +101,18 @@ public class StorageIoWorker implements NbtScannable, AutoCloseable {
 							SelectiveNbtCollector selectiveNbtCollector = new SelectiveNbtCollector(
 								new NbtScanQuery(NbtInt.TYPE, "DataVersion"), new NbtScanQuery(NbtCompound.TYPE, "blending_data")
 							);
-							this.scanChunk(chunkPosx, selectiveNbtCollector).join();
+			
+							try {
+								this.scanChunk(chunkPosx, selectiveNbtCollector).join();
+							} catch (Exception var7) {
+								LOGGER.warn("Failed to scan chunk {}", chunkPosx, var7);
+								return;
+							}
+			
 							NbtElement nbtElement = selectiveNbtCollector.getRoot();
-							if (nbtElement instanceof NbtCompound nbtCompound) {
+							if (nbtElement instanceof NbtCompound nbtCompound && this.needsBlending(nbtCompound)) {
 								int i = chunkPosx.getRegionRelativeZ() * 32 + chunkPosx.getRegionRelativeX();
-								bitSet.set(i, this.needsBlending(nbtCompound));
+								bitSet.set(i);
 							}
 						}
 					);

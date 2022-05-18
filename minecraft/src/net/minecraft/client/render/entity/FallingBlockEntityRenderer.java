@@ -13,7 +13,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
@@ -44,7 +44,7 @@ public class FallingBlockEntityRenderer extends EntityRenderer<FallingBlockEntit
 						matrixStack,
 						vertexConsumerProvider.getBuffer(RenderLayers.getMovingBlockLayer(blockState)),
 						false,
-						AbstractRandom.createAtomic(),
+						Random.create(),
 						blockState.getRenderingSeed(fallingBlockEntity.getFallingBlockPos()),
 						OverlayTexture.DEFAULT_UV
 					);

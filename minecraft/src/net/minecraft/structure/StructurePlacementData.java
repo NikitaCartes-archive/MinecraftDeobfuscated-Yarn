@@ -10,7 +10,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class StructurePlacementData {
 	private BlockMirror mirror = BlockMirror.NONE;
@@ -21,7 +21,7 @@ public class StructurePlacementData {
 	private BlockBox boundingBox;
 	private boolean placeFluids = true;
 	@Nullable
-	private AbstractRandom random;
+	private Random random;
 	private int field_15575;
 	private final List<StructureProcessor> processors = Lists.<StructureProcessor>newArrayList();
 	private boolean updateNeighbors;
@@ -68,7 +68,7 @@ public class StructurePlacementData {
 		return this;
 	}
 
-	public StructurePlacementData setRandom(@Nullable AbstractRandom random) {
+	public StructurePlacementData setRandom(@Nullable Random random) {
 		this.random = random;
 		return this;
 	}
@@ -110,11 +110,11 @@ public class StructurePlacementData {
 		return this.position;
 	}
 
-	public AbstractRandom getRandom(@Nullable BlockPos pos) {
+	public Random getRandom(@Nullable BlockPos pos) {
 		if (this.random != null) {
 			return this.random;
 		} else {
-			return pos == null ? AbstractRandom.createAtomic(Util.getMeasuringTimeMs()) : AbstractRandom.createAtomic(MathHelper.hashCode(pos));
+			return pos == null ? Random.create(Util.getMeasuringTimeMs()) : Random.create(MathHelper.hashCode(pos));
 		}
 	}
 

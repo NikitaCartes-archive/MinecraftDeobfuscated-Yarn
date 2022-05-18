@@ -53,7 +53,7 @@ public class ItemPickupParticle extends Particle {
 		float f = ((float)this.ticksExisted + tickDelta) / 3.0F;
 		f *= f;
 		double d = MathHelper.lerp((double)tickDelta, this.interactingEntity.lastRenderX, this.interactingEntity.getX());
-		double e = MathHelper.lerp((double)tickDelta, this.interactingEntity.lastRenderY, this.interactingEntity.getY()) + 0.5;
+		double e = MathHelper.lerp((double)tickDelta, this.interactingEntity.lastRenderY, (this.interactingEntity.getY() + this.interactingEntity.getEyeY()) / 2.0);
 		double g = MathHelper.lerp((double)tickDelta, this.interactingEntity.lastRenderZ, this.interactingEntity.getZ());
 		double h = MathHelper.lerp((double)f, this.itemEntity.getX(), d);
 		double i = MathHelper.lerp((double)f, this.itemEntity.getY(), e);

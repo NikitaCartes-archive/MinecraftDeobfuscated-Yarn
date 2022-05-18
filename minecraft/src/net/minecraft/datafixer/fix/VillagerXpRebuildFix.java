@@ -21,8 +21,8 @@ public class VillagerXpRebuildFix extends DataFix {
 		return LEVEL_TO_XP[MathHelper.clamp(level - 1, 0, LEVEL_TO_XP.length - 1)];
 	}
 
-	public VillagerXpRebuildFix(Schema outputSchema, boolean changesType) {
-		super(outputSchema, changesType);
+	public VillagerXpRebuildFix(Schema schema, boolean bl) {
+		super(schema, bl);
 	}
 
 	@Override

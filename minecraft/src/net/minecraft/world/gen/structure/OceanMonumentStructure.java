@@ -11,12 +11,12 @@ import net.minecraft.tag.BiomeTags;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AtomicSimpleRandom;
+import net.minecraft.util.math.random.CheckedRandom;
 import net.minecraft.util.math.random.ChunkRandom;
+import net.minecraft.util.math.random.RandomSeed;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.random.RandomSeed;
 
 public class OceanMonumentStructure extends StructureType {
 	public static final Codec<OceanMonumentStructure> CODEC = createCodec(OceanMonumentStructure::new);
@@ -55,7 +55,7 @@ public class OceanMonumentStructure extends StructureType {
 		if (pieces.isEmpty()) {
 			return pieces;
 		} else {
-			ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(RandomSeed.getSeed()));
+			ChunkRandom chunkRandom = new ChunkRandom(new CheckedRandom(RandomSeed.getSeed()));
 			chunkRandom.setCarverSeed(worldSeed, pos.x, pos.z);
 			StructurePiece structurePiece = (StructurePiece)pieces.pieces().get(0);
 			BlockBox blockBox = structurePiece.getBoundingBox();

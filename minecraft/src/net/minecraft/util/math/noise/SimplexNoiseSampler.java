@@ -1,7 +1,7 @@
 package net.minecraft.util.math.noise;
 
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class SimplexNoiseSampler {
 	protected static final int[][] GRADIENTS = new int[][]{
@@ -30,7 +30,7 @@ public class SimplexNoiseSampler {
 	public final double originY;
 	public final double originZ;
 
-	public SimplexNoiseSampler(AbstractRandom random) {
+	public SimplexNoiseSampler(Random random) {
 		this.originX = random.nextDouble() * 256.0;
 		this.originY = random.nextDouble() * 256.0;
 		this.originZ = random.nextDouble() * 256.0;

@@ -1,11 +1,11 @@
 package net.minecraft.network.packet.s2c.play;
 
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardObjective;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 
 public class ScoreboardObjectiveUpdateS2CPacket implements Packet<ClientPlayPacketListener> {

@@ -491,7 +491,7 @@ public class Item implements ItemConvertible {
 
 	@Nullable
 	public SoundEvent getEquipSound() {
-		return null;
+		return SoundEvents.ITEM_ARMOR_EQUIP_GENERIC;
 	}
 
 	/**

@@ -7,7 +7,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import org.slf4j.Logger;
 
 public class EntityAttributeModifier {
@@ -18,7 +18,7 @@ public class EntityAttributeModifier {
 	private final UUID uuid;
 
 	public EntityAttributeModifier(String name, double value, EntityAttributeModifier.Operation operation) {
-		this(MathHelper.randomUuid(AbstractRandom.create()), (Supplier<String>)(() -> name), value, operation);
+		this(MathHelper.randomUuid(Random.createLocal()), (Supplier<String>)(() -> name), value, operation);
 	}
 
 	public EntityAttributeModifier(UUID uuid, String name, double value, EntityAttributeModifier.Operation operation) {

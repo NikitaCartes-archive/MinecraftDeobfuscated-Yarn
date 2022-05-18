@@ -37,7 +37,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
 import org.slf4j.Logger;
@@ -145,7 +145,7 @@ public class SculkSpreadManager {
 		}
 	}
 
-	public void tick(WorldAccess world, BlockPos pos, AbstractRandom random, boolean shouldConvertToBlock) {
+	public void tick(WorldAccess world, BlockPos pos, Random random, boolean shouldConvertToBlock) {
 		if (!this.cursors.isEmpty()) {
 			List<SculkSpreadManager.Cursor> list = new ArrayList();
 			Map<BlockPos, SculkSpreadManager.Cursor> map = new HashMap();
@@ -257,7 +257,7 @@ public class SculkSpreadManager {
 			}
 		}
 
-		public void spread(WorldAccess world, BlockPos pos, AbstractRandom random, SculkSpreadManager spreadManager, boolean shouldConvertToBlock) {
+		public void spread(WorldAccess world, BlockPos pos, Random random, SculkSpreadManager spreadManager, boolean shouldConvertToBlock) {
 			if (this.canSpread(world, pos, spreadManager.worldGen)) {
 				if (this.update > 0) {
 					--this.update;
@@ -311,12 +311,12 @@ public class SculkSpreadManager {
 			return var2 instanceof SculkSpreadable sculkSpreadable ? sculkSpreadable : SculkSpreadable.VEIN_ONLY_SPREADER;
 		}
 
-		private static List<Vec3i> shuffleOffsets(AbstractRandom random) {
+		private static List<Vec3i> shuffleOffsets(Random random) {
 			return Util.copyShuffled(OFFSETS, random);
 		}
 
 		@Nullable
-		private static BlockPos getSpreadPos(WorldAccess world, BlockPos pos, AbstractRandom random) {
+		private static BlockPos getSpreadPos(WorldAccess world, BlockPos pos, Random random) {
 			BlockPos.Mutable mutable = pos.mutableCopy();
 			BlockPos.Mutable mutable2 = pos.mutableCopy();
 

@@ -65,7 +65,8 @@ import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.scoreboard.Team;
-import net.minecraft.server.filter.TextStream;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -774,7 +775,8 @@ public abstract class PlayerManager {
 	 * message or a join/leave message.
 	 * 
 	 * @see #broadcast(Text, Function, RegistryKey)
-	 * @see #broadcast(SignedChatMessage, TextStream.Message, ServerPlayerEntity, RegistryKey)
+	 * @see #broadcast(FilteredMessage, ServerCommandSource, RegistryKey)
+	 * @see #broadcast(FilteredMessage, ServerPlayerEntity, RegistryKey)
 	 * @see #broadcast(SignedChatMessage, MessageSender, RegistryKey)
 	 * @see #broadcast(SignedChatMessage, Function, MessageSender, RegistryKey)
 	 */
@@ -787,7 +789,8 @@ public abstract class PlayerManager {
 	 * message can be sent to a different player.
 	 * 
 	 * @see #broadcast(Text, RegistryKey)
-	 * @see #broadcast(SignedChatMessage, TextStream.Message, ServerPlayerEntity, RegistryKey)
+	 * @see #broadcast(FilteredMessage, ServerCommandSource, RegistryKey)
+	 * @see #broadcast(FilteredMessage, ServerPlayerEntity, RegistryKey)
 	 * @see #broadcast(SignedChatMessage, MessageSender, RegistryKey)
 	 * @see #broadcast(SignedChatMessage, Function, MessageSender, RegistryKey)
 	 * 
@@ -809,6 +812,28 @@ public abstract class PlayerManager {
 	/**
 	 * Broadcasts a chat message to all players and the server console.
 	 * 
+	 * @apiNote This method is used to broadcast a message sent by  commands like
+	 * {@link net.minecraft.server.command.MeCommand} or
+	 * {@link net.minecraft.server.command.SayCommand} .
+	 * 
+	 * @see #broadcast(Text, RegistryKey)
+	 * @see #broadcast(Text, Function, RegistryKey)
+	 * @see #broadcast(FilteredMessage, ServerPlayerEntity, RegistryKey)
+	 * @see #broadcast(SignedChatMessage, MessageSender, RegistryKey)
+	 * @see #broadcast(SignedChatMessage, Function, MessageSender, RegistryKey)
+	 */
+	public void broadcast(FilteredMessage<SignedChatMessage> message, ServerCommandSource source, RegistryKey<MessageType> typeKey) {
+		ServerPlayerEntity serverPlayerEntity = source.getPlayer();
+		if (serverPlayerEntity != null) {
+			this.broadcast(message, serverPlayerEntity, typeKey);
+		} else {
+			this.broadcast((SignedChatMessage)message.raw(), source.getChatMessageSender(), typeKey);
+		}
+	}
+
+	/**
+	 * Broadcasts a chat message to all players and the server console.
+	 * 
 	 * <p>Chat messages have signatures. It is possible to use a bogus signature - such as
 	 * {@link net.minecraft.network.encryption.ChatMessageSignature#none} - to send a chat
 	 * message; however if the signature is invalid (e.g. because the text's content differs
@@ -824,31 +849,12 @@ public abstract class PlayerManager {
 	 * 
 	 * @see #broadcast(Text, RegistryKey)
 	 * @see #broadcast(Text, Function, RegistryKey)
+	 * @see #broadcast(FilteredMessage, ServerCommandSource, RegistryKey)
 	 * @see #broadcast(SignedChatMessage, MessageSender, RegistryKey)
 	 * @see #broadcast(SignedChatMessage, Function, MessageSender, RegistryKey)
 	 */
-	public void broadcast(SignedChatMessage message, TextStream.Message filteredMessage, ServerPlayerEntity sender, RegistryKey<MessageType> typeKey) {
-		SignedChatMessage signedChatMessage = this.decorateIfFiltered(sender, message, filteredMessage);
-		this.broadcast(message, player -> sender.shouldFilterMessagesSentTo(player) ? signedChatMessage : message, sender.asMessageSender(), typeKey);
-	}
-
-	/**
-	 * {@return the decorated message, or {@code null} if the filtered message exists but
-	 * is empty}
-	 * 
-	 * <p>This only decorates the message if it is filtered, because the passed
-	 * {@code message} is already decorated by the caller.
-	 */
-	@Nullable
-	private SignedChatMessage decorateIfFiltered(ServerPlayerEntity player, SignedChatMessage message, TextStream.Message filteredMessage) {
-		if (!filteredMessage.hasFilteredText()) {
-			return message;
-		} else if (filteredMessage.getFiltered().isEmpty()) {
-			return null;
-		} else {
-			Text text = Text.literal(filteredMessage.getFiltered());
-			return SignedChatMessage.of(this.server.getChatDecorator().decorate(player, text));
-		}
+	public void broadcast(FilteredMessage<SignedChatMessage> message, ServerPlayerEntity sender, RegistryKey<MessageType> typeKey) {
+		this.broadcast((SignedChatMessage)message.raw(), player -> (SignedChatMessage)message.getFilterableFor(sender, player), sender.asMessageSender(), typeKey);
 	}
 
 	/**
@@ -867,7 +873,8 @@ public abstract class PlayerManager {
 	 * 
 	 * @see #broadcast(Text, RegistryKey)
 	 * @see #broadcast(Text, Function, RegistryKey)
-	 * @see #broadcast(SignedChatMessage, TextStream.Message, ServerPlayerEntity, RegistryKey)
+	 * @see #broadcast(FilteredMessage, ServerCommandSource, RegistryKey)
+	 * @see #broadcast(FilteredMessage, ServerPlayerEntity, RegistryKey)
 	 * @see #broadcast(SignedChatMessage, Function, MessageSender, RegistryKey)
 	 */
 	public void broadcast(SignedChatMessage message, MessageSender sender, RegistryKey<MessageType> typeKey) {
@@ -893,7 +900,8 @@ public abstract class PlayerManager {
 	 * 
 	 * @see #broadcast(Text, RegistryKey)
 	 * @see #broadcast(Text, Function, RegistryKey)
-	 * @see #broadcast(SignedChatMessage, TextStream.Message, ServerPlayerEntity, RegistryKey)
+	 * @see #broadcast(FilteredMessage, ServerCommandSource, RegistryKey)
+	 * @see #broadcast(FilteredMessage, ServerPlayerEntity, RegistryKey)
 	 * @see #broadcast(SignedChatMessage, MessageSender, RegistryKey)
 	 * 
 	 * @param playerMessageFactory a function that takes the player to send the message to

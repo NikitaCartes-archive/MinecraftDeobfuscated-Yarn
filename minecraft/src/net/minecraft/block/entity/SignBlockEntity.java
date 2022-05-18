@@ -6,10 +6,10 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -177,7 +177,7 @@ public class SignBlockEntity extends BlockEntity {
 			Style style = text.getStyle();
 			ClickEvent clickEvent = style.getClickEvent();
 			if (clickEvent != null && clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
-				player.getServer().getCommandManager().execute(this.getCommandSource(player), clickEvent.getValue());
+				player.getServer().getCommandManager().executeWithPrefix(this.getCommandSource(player), clickEvent.getValue());
 			}
 		}
 

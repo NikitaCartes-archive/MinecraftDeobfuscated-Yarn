@@ -1,44 +1,46 @@
 package net.minecraft.util;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
 
 /**
- * A runner for tasks that have a running state and can hold one pending task.
+ * A runner for tasks that can hold one pending task.
  * 
- * <p>If there is no running tasks, calling {@link #run} will run the passed task
- * and marks the runner as running. During this state, calling the run method will set
- * the task as pending. If called multiple times, only the last task will be called.
- * Calling {@link #runPending} forces it to run the pending task, if any.
+ * <p>To queue a task for running, call {@link #queue}, and to run the task,
+ * call {@link #runPending}.
  */
 public class PendingTaskRunner {
-	private boolean running;
+	private final AtomicReference<PendingTaskRunner.FutureRunnable> reference = new AtomicReference();
 	@Nullable
-	private Runnable pending;
+	private CompletableFuture<?> future;
 
 	/**
 	 * Runs the pending task, if any, and marks the runner as not running.
 	 */
 	public void runPending() {
-		Runnable runnable = this.pending;
-		if (runnable != null) {
-			runnable.run();
-			this.pending = null;
+		if (this.future != null && this.future.isDone()) {
+			this.future = null;
 		}
 
-		this.running = false;
+		if (this.future == null) {
+			this.runPendingInternal();
+		}
 	}
 
-	/**
-	 * Runs the task and marks the runner as running if there is no running task,
-	 * otherwise sets the task as the pending task. This overwrites the old pending task.
-	 */
-	public void run(Runnable task) {
-		if (this.running) {
-			this.pending = task;
-		} else {
-			task.run();
-			this.running = true;
-			this.pending = null;
+	private void runPendingInternal() {
+		PendingTaskRunner.FutureRunnable futureRunnable = (PendingTaskRunner.FutureRunnable)this.reference.getAndSet(null);
+		if (futureRunnable != null) {
+			this.future = futureRunnable.run();
 		}
+	}
+
+	public void queue(PendingTaskRunner.FutureRunnable task) {
+		this.reference.set(task);
+	}
+
+	@FunctionalInterface
+	public interface FutureRunnable {
+		CompletableFuture<?> run();
 	}
 }

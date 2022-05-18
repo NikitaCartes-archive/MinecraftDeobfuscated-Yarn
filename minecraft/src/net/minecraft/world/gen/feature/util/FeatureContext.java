@@ -2,7 +2,7 @@ package net.minecraft.world.gen.feature.util;
 
 import java.util.Optional;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
@@ -12,12 +12,12 @@ public class FeatureContext<FC extends FeatureConfig> {
 	private final Optional<ConfiguredFeature<?, ?>> feature;
 	private final StructureWorldAccess world;
 	private final ChunkGenerator generator;
-	private final AbstractRandom random;
+	private final Random random;
 	private final BlockPos origin;
 	private final FC config;
 
 	public FeatureContext(
-		Optional<ConfiguredFeature<?, ?>> feature, StructureWorldAccess world, ChunkGenerator generator, AbstractRandom random, BlockPos origin, FC config
+		Optional<ConfiguredFeature<?, ?>> feature, StructureWorldAccess world, ChunkGenerator generator, Random random, BlockPos origin, FC config
 	) {
 		this.feature = feature;
 		this.world = world;
@@ -39,7 +39,7 @@ public class FeatureContext<FC extends FeatureConfig> {
 		return this.generator;
 	}
 
-	public AbstractRandom getRandom() {
+	public Random getRandom() {
 		return this.random;
 	}
 

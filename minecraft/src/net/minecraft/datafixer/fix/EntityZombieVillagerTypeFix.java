@@ -5,14 +5,14 @@ import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class EntityZombieVillagerTypeFix extends ChoiceFix {
 	private static final int field_29883 = 6;
-	private static final AbstractRandom RANDOM = AbstractRandom.createAtomic();
+	private static final Random RANDOM = Random.create();
 
-	public EntityZombieVillagerTypeFix(Schema outputSchema, boolean changesType) {
-		super(outputSchema, changesType, "EntityZombieVillagerTypeFix", TypeReferences.ENTITY, "Zombie");
+	public EntityZombieVillagerTypeFix(Schema schema, boolean bl) {
+		super(schema, bl, "EntityZombieVillagerTypeFix", TypeReferences.ENTITY, "Zombie");
 	}
 
 	public Dynamic<?> fixZombieType(Dynamic<?> dynamic) {

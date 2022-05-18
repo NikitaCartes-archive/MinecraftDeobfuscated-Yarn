@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 
 public class RandomBlockMatchRuleTest extends RuleTest {
@@ -25,7 +25,7 @@ public class RandomBlockMatchRuleTest extends RuleTest {
 	}
 
 	@Override
-	public boolean test(BlockState state, AbstractRandom random) {
+	public boolean test(BlockState state, Random random) {
 		return state.isOf(this.block) && random.nextFloat() < this.probability;
 	}
 

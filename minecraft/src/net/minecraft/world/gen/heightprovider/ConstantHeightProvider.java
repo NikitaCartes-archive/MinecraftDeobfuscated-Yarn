@@ -4,7 +4,7 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.YOffset;
 
@@ -32,7 +32,7 @@ public class ConstantHeightProvider extends HeightProvider {
 	}
 
 	@Override
-	public int get(AbstractRandom random, HeightContext context) {
+	public int get(Random random, HeightContext context) {
 		return this.offset.getY(context);
 	}
 

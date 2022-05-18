@@ -7,11 +7,11 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 @Environment(EnvType.CLIENT)
 public class SpellParticle extends SpriteBillboardParticle {
-	private static final AbstractRandom RANDOM = AbstractRandom.createAtomic();
+	private static final Random RANDOM = Random.create();
 	private final SpriteProvider spriteProvider;
 
 	SpellParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {

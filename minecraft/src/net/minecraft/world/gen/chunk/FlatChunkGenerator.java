@@ -9,13 +9,12 @@ import java.util.concurrent.Executor;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.structure.StructureSet;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.biome.source.FixedBiomeSource;
 import net.minecraft.world.chunk.Chunk;
@@ -32,7 +31,7 @@ public class FlatChunkGenerator extends ChunkGenerator {
 	private final FlatChunkGeneratorConfig config;
 
 	public FlatChunkGenerator(Registry<StructureSet> structureSetRegistry, FlatChunkGeneratorConfig config) {
-		super(structureSetRegistry, config.getStructureOverrides(), new FixedBiomeSource(config.createBiome()), new FixedBiomeSource(config.getBiome()));
+		super(structureSetRegistry, config.getStructureOverrides(), new FixedBiomeSource(config.getBiome()), Util.memoize(config::method_44225));
 		this.config = config;
 	}
 
@@ -52,11 +51,6 @@ public class FlatChunkGenerator extends ChunkGenerator {
 	@Override
 	public int getSpawnHeight(HeightLimitView world) {
 		return world.getBottomY() + Math.min(world.getHeight(), this.config.getLayerBlocks().size());
-	}
-
-	@Override
-	protected RegistryEntry<Biome> filterBiome(RegistryEntry<Biome> biome) {
-		return this.config.getBiome();
 	}
 
 	@Override

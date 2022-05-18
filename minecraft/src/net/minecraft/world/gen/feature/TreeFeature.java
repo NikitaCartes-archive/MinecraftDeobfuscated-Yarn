@@ -18,7 +18,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.BitSetVoxelSet;
 import net.minecraft.util.shape.VoxelSet;
 import net.minecraft.world.ModifiableWorld;
@@ -66,7 +66,7 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 
 	private boolean generate(
 		StructureWorldAccess world,
-		AbstractRandom random,
+		Random random,
 		BlockPos pos,
 		BiConsumer<BlockPos, BlockState> rootPlacerReplacer,
 		BiConsumer<BlockPos, BlockState> trunkPlacerReplacer,
@@ -126,7 +126,7 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 	@Override
 	public final boolean generate(FeatureContext<TreeFeatureConfig> context) {
 		StructureWorldAccess structureWorldAccess = context.getWorld();
-		AbstractRandom abstractRandom = context.getRandom();
+		Random random = context.getRandom();
 		BlockPos blockPos = context.getOrigin();
 		TreeFeatureConfig treeFeatureConfig = context.getConfig();
 		Set<BlockPos> set = Sets.<BlockPos>newHashSet();
@@ -149,10 +149,10 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 			set4.add(pos.toImmutable());
 			structureWorldAccess.setBlockState(pos, state, Block.NOTIFY_ALL | Block.FORCE_STATE);
 		};
-		boolean bl = this.generate(structureWorldAccess, abstractRandom, blockPos, biConsumer, biConsumer2, biConsumer3, treeFeatureConfig);
+		boolean bl = this.generate(structureWorldAccess, random, blockPos, biConsumer, biConsumer2, biConsumer3, treeFeatureConfig);
 		if (bl && (!set2.isEmpty() || !set3.isEmpty())) {
 			if (!treeFeatureConfig.decorators.isEmpty()) {
-				TreeDecorator.Generator generator = new TreeDecorator.Generator(structureWorldAccess, biConsumer4, abstractRandom, set2, set3, set);
+				TreeDecorator.Generator generator = new TreeDecorator.Generator(structureWorldAccess, biConsumer4, random, set2, set3, set);
 				treeFeatureConfig.decorators.forEach(decorator -> decorator.generate(generator));
 			}
 

@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import javax.annotation.Nullable;
 import net.minecraft.datafixer.Schemas;
+import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourcePackManager;
@@ -24,6 +25,7 @@ import net.minecraft.server.SaveLoading;
 import net.minecraft.server.WorldGenerationProgressLogger;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.ApiServices;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.SystemDetails;
 import net.minecraft.util.Util;
@@ -46,6 +48,7 @@ import org.slf4j.Logger;
 public class TestServer extends MinecraftServer {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int RESULT_STRING_LOG_INTERVAL = 20;
+	private static final ApiServices field_39441 = new ApiServices(null, SignatureVerifier.NOOP, null, null);
 	private final List<GameTestBatch> batches;
 	private final BlockPos pos;
 	private static final GameRules GAME_RULES = Util.make(new GameRules(), gameRules -> {
@@ -106,7 +109,7 @@ public class TestServer extends MinecraftServer {
 		Collection<GameTestBatch> batches,
 		BlockPos pos
 	) {
-		super(serverThread, session, dataPackManager, saveLoader, Proxy.NO_PROXY, Schemas.getFixer(), null, null, null, WorldGenerationProgressLogger::new);
+		super(serverThread, session, dataPackManager, saveLoader, Proxy.NO_PROXY, Schemas.getFixer(), field_39441, WorldGenerationProgressLogger::new);
 		this.batches = Lists.<GameTestBatch>newArrayList(batches);
 		this.pos = pos;
 	}
@@ -166,11 +169,14 @@ public class TestServer extends MinecraftServer {
 	@Override
 	public void exit() {
 		super.exit();
+		LOGGER.info("Game test server shutting down");
 		System.exit(this.testSet.getFailedRequiredTestCount());
 	}
 
 	@Override
 	public void setCrashReport(CrashReport report) {
+		super.setCrashReport(report);
+		LOGGER.error("Game test server crashed\n{}", report.asString());
 		System.exit(1);
 	}
 

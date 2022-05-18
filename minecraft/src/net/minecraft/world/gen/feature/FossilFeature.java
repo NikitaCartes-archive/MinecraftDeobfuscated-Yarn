@@ -13,7 +13,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.util.FeatureContext;
@@ -26,12 +26,12 @@ public class FossilFeature extends Feature<FossilFeatureConfig> {
 
 	@Override
 	public boolean generate(FeatureContext<FossilFeatureConfig> context) {
-		AbstractRandom abstractRandom = context.getRandom();
+		Random random = context.getRandom();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		BlockPos blockPos = context.getOrigin();
-		BlockRotation blockRotation = BlockRotation.random(abstractRandom);
+		BlockRotation blockRotation = BlockRotation.random(random);
 		FossilFeatureConfig fossilFeatureConfig = context.getConfig();
-		int i = abstractRandom.nextInt(fossilFeatureConfig.fossilStructures.size());
+		int i = random.nextInt(fossilFeatureConfig.fossilStructures.size());
 		StructureManager structureManager = structureWorldAccess.toServerWorld().getServer().getStructureManager();
 		Structure structure = structureManager.getStructureOrBlank((Identifier)fossilFeatureConfig.fossilStructures.get(i));
 		Structure structure2 = structureManager.getStructureOrBlank((Identifier)fossilFeatureConfig.overlayStructures.get(i));
@@ -44,7 +44,7 @@ public class FossilFeature extends Feature<FossilFeatureConfig> {
 			structureWorldAccess.getTopY(),
 			chunkPos.getEndZ() + 16
 		);
-		StructurePlacementData structurePlacementData = new StructurePlacementData().setRotation(blockRotation).setBoundingBox(blockBox).setRandom(abstractRandom);
+		StructurePlacementData structurePlacementData = new StructurePlacementData().setRotation(blockRotation).setBoundingBox(blockBox).setRandom(random);
 		Vec3i vec3i = structure.getRotatedSize(blockRotation);
 		BlockPos blockPos2 = blockPos.add(-vec3i.getX() / 2, 0, -vec3i.getZ() / 2);
 		int j = blockPos.getY();
@@ -55,17 +55,17 @@ public class FossilFeature extends Feature<FossilFeatureConfig> {
 			}
 		}
 
-		int k = Math.max(j - 15 - abstractRandom.nextInt(10), structureWorldAccess.getBottomY() + 10);
+		int k = Math.max(j - 15 - random.nextInt(10), structureWorldAccess.getBottomY() + 10);
 		BlockPos blockPos3 = structure.offsetByTransformedSize(blockPos2.withY(k), BlockMirror.NONE, blockRotation);
 		if (getEmptyCorners(structureWorldAccess, structure.calculateBoundingBox(structurePlacementData, blockPos3)) > fossilFeatureConfig.maxEmptyCorners) {
 			return false;
 		} else {
 			structurePlacementData.clearProcessors();
 			fossilFeatureConfig.fossilProcessors.value().getList().forEach(structurePlacementData::addProcessor);
-			structure.place(structureWorldAccess, blockPos3, blockPos3, structurePlacementData, abstractRandom, 4);
+			structure.place(structureWorldAccess, blockPos3, blockPos3, structurePlacementData, random, 4);
 			structurePlacementData.clearProcessors();
 			fossilFeatureConfig.overlayProcessors.value().getList().forEach(structurePlacementData::addProcessor);
-			structure2.place(structureWorldAccess, blockPos3, blockPos3, structurePlacementData, abstractRandom, 4);
+			structure2.place(structureWorldAccess, blockPos3, blockPos3, structurePlacementData, random, 4);
 			return true;
 		}
 	}

@@ -3,6 +3,8 @@ package net.minecraft.server.filter;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import net.minecraft.text.Text;
+import net.minecraft.util.Util;
 
 public interface TextStream {
 	TextStream UNFILTERED = new TextStream() {
@@ -15,13 +17,13 @@ public interface TextStream {
 		}
 
 		@Override
-		public CompletableFuture<TextStream.Message> filterText(String text) {
-			return CompletableFuture.completedFuture(TextStream.Message.permitted(text));
+		public CompletableFuture<FilteredMessage<String>> filterText(String text) {
+			return CompletableFuture.completedFuture(FilteredMessage.permitted(text));
 		}
 
 		@Override
-		public CompletableFuture<List<TextStream.Message>> filterTexts(List<String> texts) {
-			return CompletableFuture.completedFuture((List)texts.stream().map(TextStream.Message::permitted).collect(ImmutableList.toImmutableList()));
+		public CompletableFuture<List<FilteredMessage<String>>> filterTexts(List<String> texts) {
+			return CompletableFuture.completedFuture((List)texts.stream().map(FilteredMessage::permitted).collect(ImmutableList.toImmutableList()));
 		}
 	};
 
@@ -29,38 +31,14 @@ public interface TextStream {
 
 	void onDisconnect();
 
-	CompletableFuture<TextStream.Message> filterText(String text);
+	CompletableFuture<FilteredMessage<String>> filterText(String text);
 
-	CompletableFuture<List<TextStream.Message>> filterTexts(List<String> texts);
+	CompletableFuture<List<FilteredMessage<String>>> filterTexts(List<String> texts);
 
-	public static class Message {
-		public static final TextStream.Message EMPTY = new TextStream.Message("", "");
-		private final String raw;
-		private final String filtered;
-
-		public Message(String raw, String filtered) {
-			this.raw = raw;
-			this.filtered = filtered;
-		}
-
-		public String getRaw() {
-			return this.raw;
-		}
-
-		public String getFiltered() {
-			return this.filtered;
-		}
-
-		public static TextStream.Message permitted(String text) {
-			return new TextStream.Message(text, text);
-		}
-
-		public static TextStream.Message censored(String raw) {
-			return new TextStream.Message(raw, "");
-		}
-
-		public boolean hasFilteredText() {
-			return !this.raw.equals(this.filtered);
-		}
+	default CompletableFuture<FilteredMessage<Text>> filterText(Text text) {
+		return this.filterText(text.getString()).thenApply(filteredMessage -> {
+			Text text2 = Util.map((String)filteredMessage.filtered(), Text::literal);
+			return new FilteredMessage<>(text, text2);
+		});
 	}
 }

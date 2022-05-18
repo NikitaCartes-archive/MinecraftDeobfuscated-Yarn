@@ -19,6 +19,7 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.structure.StructureSet;
 import net.minecraft.tag.FlatLevelGeneratorPresetTags;
 import net.minecraft.text.Text;

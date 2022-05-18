@@ -3,7 +3,7 @@ package net.minecraft.util;
 import java.util.List;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.DirectionTransformation;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public enum BlockRotation implements StringIdentifiable {
 	NONE("none", DirectionTransformation.IDENTITY),
@@ -94,11 +94,11 @@ public enum BlockRotation implements StringIdentifiable {
 		}
 	}
 
-	public static BlockRotation random(AbstractRandom random) {
+	public static BlockRotation random(Random random) {
 		return Util.getRandom(values(), random);
 	}
 
-	public static List<BlockRotation> randomRotationOrder(AbstractRandom random) {
+	public static List<BlockRotation> randomRotationOrder(Random random) {
 		return Util.copyShuffled(values(), random);
 	}
 

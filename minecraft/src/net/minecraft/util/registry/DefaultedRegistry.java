@@ -6,7 +6,7 @@ import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class DefaultedRegistry<T> extends SimpleRegistry<T> {
 	private final Identifier defaultId;
@@ -62,7 +62,7 @@ public class DefaultedRegistry<T> extends SimpleRegistry<T> {
 	}
 
 	@Override
-	public Optional<RegistryEntry<T>> getRandom(AbstractRandom random) {
+	public Optional<RegistryEntry<T>> getRandom(Random random) {
 		return super.getRandom(random).or(() -> Optional.of(this.defaultEntry));
 	}
 

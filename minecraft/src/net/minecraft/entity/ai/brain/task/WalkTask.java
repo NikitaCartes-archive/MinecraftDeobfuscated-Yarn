@@ -5,6 +5,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.FuzzyTargeting;
+import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
@@ -23,7 +24,7 @@ public class WalkTask extends Task<PathAwareEntity> {
 	private final float speed;
 
 	public WalkTask(float speed) {
-		super(ImmutableMap.of(MemoryModuleType.HURT_BY, MemoryModuleState.VALUE_PRESENT), 100, 120);
+		super(ImmutableMap.of(MemoryModuleType.IS_PANICKING, MemoryModuleState.REGISTERED, MemoryModuleType.HURT_BY, MemoryModuleState.VALUE_PRESENT), 100, 120);
 		this.speed = speed;
 	}
 
@@ -32,7 +33,13 @@ public class WalkTask extends Task<PathAwareEntity> {
 	}
 
 	protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
+		pathAwareEntity.getBrain().remember(MemoryModuleType.IS_PANICKING, true);
 		pathAwareEntity.getBrain().forget(MemoryModuleType.WALK_TARGET);
+	}
+
+	protected void finishRunning(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
+		Brain<?> brain = pathAwareEntity.getBrain();
+		brain.forget(MemoryModuleType.IS_PANICKING);
 	}
 
 	protected void keepRunning(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {

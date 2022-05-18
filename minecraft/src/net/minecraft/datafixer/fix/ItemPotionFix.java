@@ -149,8 +149,8 @@ public class ItemPotionFix extends DataFix {
 	});
 	public static final String WATER = "minecraft:water";
 
-	public ItemPotionFix(Schema outputSchema, boolean changesType) {
-		super(outputSchema, changesType);
+	public ItemPotionFix(Schema schema, boolean bl) {
+		super(schema, bl);
 	}
 
 	@Override

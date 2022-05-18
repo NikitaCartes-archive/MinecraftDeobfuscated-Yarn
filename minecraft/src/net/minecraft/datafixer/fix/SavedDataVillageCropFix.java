@@ -8,8 +8,8 @@ import java.util.stream.Stream;
 import net.minecraft.datafixer.TypeReferences;
 
 public class SavedDataVillageCropFix extends DataFix {
-	public SavedDataVillageCropFix(Schema outputSchema, boolean changesType) {
-		super(outputSchema, changesType);
+	public SavedDataVillageCropFix(Schema schema, boolean bl) {
+		super(schema, bl);
 	}
 
 	@Override

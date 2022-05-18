@@ -7,7 +7,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.WorldAccess;
 
 public class SculkBlock extends OreBlock implements SculkSpreadable {
@@ -17,12 +17,7 @@ public class SculkBlock extends OreBlock implements SculkSpreadable {
 
 	@Override
 	public int spread(
-		SculkSpreadManager.Cursor cursor,
-		WorldAccess world,
-		BlockPos catalystPos,
-		AbstractRandom random,
-		SculkSpreadManager spreadManager,
-		boolean shouldConvertToBlock
+		SculkSpreadManager.Cursor cursor, WorldAccess world, BlockPos catalystPos, Random random, SculkSpreadManager spreadManager, boolean shouldConvertToBlock
 	) {
 		int i = cursor.getCharge();
 		if (i != 0 && random.nextInt(spreadManager.getSpreadChance()) == 0) {
@@ -54,7 +49,7 @@ public class SculkBlock extends OreBlock implements SculkSpreadable {
 		return Math.max(1, (int)((float)charge * g * 0.5F));
 	}
 
-	private BlockState getExtraBlockState(WorldAccess world, BlockPos pos, AbstractRandom random, boolean allowShrieker) {
+	private BlockState getExtraBlockState(WorldAccess world, BlockPos pos, Random random, boolean allowShrieker) {
 		BlockState blockState;
 		if (random.nextInt(11) == 0) {
 			blockState = Blocks.SCULK_SHRIEKER.getDefaultState().with(SculkShriekerBlock.CAN_SUMMON, Boolean.valueOf(allowShrieker));

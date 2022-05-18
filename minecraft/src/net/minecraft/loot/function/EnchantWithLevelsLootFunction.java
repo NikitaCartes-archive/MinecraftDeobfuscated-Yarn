@@ -11,7 +11,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class EnchantWithLevelsLootFunction extends ConditionalLootFunction {
 	final LootNumberProvider range;
@@ -35,8 +35,8 @@ public class EnchantWithLevelsLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
-		AbstractRandom abstractRandom = context.getRandom();
-		return EnchantmentHelper.enchant(abstractRandom, stack, this.range.nextInt(context), this.treasureEnchantmentsAllowed);
+		Random random = context.getRandom();
+		return EnchantmentHelper.enchant(random, stack, this.range.nextInt(context), this.treasureEnchantmentsAllowed);
 	}
 
 	public static EnchantWithLevelsLootFunction.Builder builder(LootNumberProvider range) {

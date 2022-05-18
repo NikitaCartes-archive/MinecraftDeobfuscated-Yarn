@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class CountPlacementModifier extends AbstractCountPlacementModifier {
 	public static final Codec<CountPlacementModifier> MODIFIER_CODEC = IntProvider.createValidatingCodec(0, 256)
@@ -26,7 +26,7 @@ public class CountPlacementModifier extends AbstractCountPlacementModifier {
 	}
 
 	@Override
-	protected int getCount(AbstractRandom random, BlockPos pos) {
+	protected int getCount(Random random, BlockPos pos) {
 		return this.count.get(random);
 	}
 

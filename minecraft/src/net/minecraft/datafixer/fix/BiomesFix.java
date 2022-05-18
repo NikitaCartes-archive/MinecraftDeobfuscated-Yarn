@@ -61,7 +61,7 @@ public class BiomesFix extends BiomeRenameFix {
 		.put("minecraft:frozen_deep_ocean", "minecraft:deep_frozen_ocean")
 		.build();
 
-	public BiomesFix(Schema outputSchema, boolean changesType) {
-		super(outputSchema, changesType, "Biomes fix", RENAMED_BIOMES);
+	public BiomesFix(Schema schema, boolean bl) {
+		super(schema, bl, "Biomes fix", RENAMED_BIOMES);
 	}
 }

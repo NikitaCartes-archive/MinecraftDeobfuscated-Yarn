@@ -16,7 +16,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 public class ZombieHorseEntity extends AbstractHorseEntity {
@@ -29,7 +29,7 @@ public class ZombieHorseEntity extends AbstractHorseEntity {
 	}
 
 	@Override
-	protected void initAttributes(AbstractRandom random) {
+	protected void initAttributes(Random random) {
 		this.getAttributeInstance(EntityAttributes.HORSE_JUMP_STRENGTH).setBaseValue(this.getChildJumpStrengthBonus(random));
 	}
 

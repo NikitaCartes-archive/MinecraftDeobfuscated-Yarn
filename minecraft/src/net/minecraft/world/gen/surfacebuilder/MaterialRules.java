@@ -22,8 +22,8 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.VerticalSurfaceType;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
-import net.minecraft.util.math.random.AbstractRandom;
-import net.minecraft.util.math.random.RandomDeriver;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.util.math.random.RandomSplitter;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
@@ -818,7 +818,7 @@ public class MaterialRules {
 		public MaterialRules.BooleanSupplier apply(MaterialRules.MaterialRuleContext materialRuleContext) {
 			final int i = this.trueAtAndBelow().getY(materialRuleContext.heightContext);
 			final int j = this.falseAtAndAbove().getY(materialRuleContext.heightContext);
-			final RandomDeriver randomDeriver = materialRuleContext.noiseConfig.getOrCreateRandomDeriver(this.randomName());
+			final RandomSplitter randomSplitter = materialRuleContext.noiseConfig.getOrCreateRandomDeriver(this.randomName());
 
 			class VerticalGradientPredicate extends MaterialRules.FullLazyAbstractPredicate {
 				VerticalGradientPredicate() {
@@ -834,8 +834,8 @@ public class MaterialRules {
 						return false;
 					} else {
 						double d = MathHelper.lerpFromProgress((double)ix, (double)i, (double)j, 1.0, 0.0);
-						AbstractRandom abstractRandom = randomDeriver.createRandom(this.context.x, ix, this.context.z);
-						return (double)abstractRandom.nextFloat() < d;
+						Random random = randomSplitter.split(this.context.x, ix, this.context.z);
+						return (double)random.nextFloat() < d;
 					}
 				}
 			}

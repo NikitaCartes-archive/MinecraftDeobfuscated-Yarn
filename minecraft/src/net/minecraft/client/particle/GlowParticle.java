@@ -5,11 +5,11 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 @Environment(EnvType.CLIENT)
 public class GlowParticle extends SpriteBillboardParticle {
-	static final AbstractRandom RANDOM = AbstractRandom.createAtomic();
+	static final Random RANDOM = Random.create();
 	private final SpriteProvider spriteProvider;
 
 	GlowParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {

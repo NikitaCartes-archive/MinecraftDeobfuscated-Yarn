@@ -6,8 +6,8 @@ import com.mojang.serialization.Dynamic;
 import java.util.Objects;
 
 public class EntityCatSplitFix extends EntitySimpleTransformFix {
-	public EntityCatSplitFix(Schema outputSchema, boolean changesType) {
-		super("EntityCatSplitFix", outputSchema, changesType);
+	public EntityCatSplitFix(Schema schema, boolean bl) {
+		super("EntityCatSplitFix", schema, bl);
 	}
 
 	@Override

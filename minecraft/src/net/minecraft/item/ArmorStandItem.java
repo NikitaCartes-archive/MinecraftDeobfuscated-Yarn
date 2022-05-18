@@ -13,7 +13,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.EulerAngle;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
@@ -60,7 +60,7 @@ public class ArmorStandItem extends Item {
 		}
 	}
 
-	private void setRotations(ArmorStandEntity stand, AbstractRandom random) {
+	private void setRotations(ArmorStandEntity stand, Random random) {
 		EulerAngle eulerAngle = stand.getHeadRotation();
 		float f = random.nextFloat() * 5.0F;
 		float g = random.nextFloat() * 20.0F - 10.0F;

@@ -13,7 +13,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Scanner;
 import javax.annotation.Nullable;
-import net.minecraft.client.gui.screen.ScreenTexts;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ChaseCommand;
 import net.minecraft.server.command.CommandManager;
@@ -145,7 +145,7 @@ public class ChaseClient {
 			.ifPresent(
 				pos -> this.executeCommand(
 						String.format(
-							Locale.ROOT, "/execute in %s run tp @s %.3f %.3f %.3f %.3f %.3f", pos.dimension.getValue(), pos.pos.x, pos.pos.y, pos.pos.z, pos.rot.y, pos.rot.x
+							Locale.ROOT, "execute in %s run tp @s %.3f %.3f %.3f %.3f %.3f", pos.dimension.getValue(), pos.pos.x, pos.pos.y, pos.pos.z, pos.rot.y, pos.rot.x
 						)
 					)
 			);

@@ -41,7 +41,7 @@ import net.minecraft.util.registry.Registry;
  * @see net.minecraft.client.network.ClientPlayNetworkHandler#onChatMessage
  */
 public record ChatMessageS2CPacket(
-	Text signedContent, Optional<Text> unsignedContent, int typeId, MessageSender sender, Instant time, NetworkEncryptionUtils.SignatureData saltSignature
+	Text signedContent, Optional<Text> unsignedContent, int typeId, MessageSender sender, Instant timestamp, NetworkEncryptionUtils.SignatureData saltSignature
 ) implements Packet<ClientPlayPacketListener> {
 	private static final Duration TIME_TO_LIVE = ChatMessageC2SPacket.TIME_TO_LIVE.plus(Duration.ofMinutes(2L));
 
@@ -62,7 +62,7 @@ public record ChatMessageS2CPacket(
 		buf.writeOptional(this.unsignedContent, PacketByteBuf::writeText);
 		buf.writeVarInt(this.typeId);
 		this.sender.write(buf);
-		buf.writeInstant(this.time);
+		buf.writeInstant(this.timestamp);
 		NetworkEncryptionUtils.SignatureData.write(buf, this.saltSignature);
 	}
 
@@ -76,7 +76,7 @@ public record ChatMessageS2CPacket(
 	}
 
 	public SignedChatMessage getSignedMessage() {
-		ChatMessageSignature chatMessageSignature = new ChatMessageSignature(this.sender.uuid(), this.time, this.saltSignature);
+		ChatMessageSignature chatMessageSignature = new ChatMessageSignature(this.sender.uuid(), this.timestamp, this.saltSignature);
 		return new SignedChatMessage(this.signedContent, chatMessageSignature, this.unsignedContent);
 	}
 
@@ -84,7 +84,7 @@ public record ChatMessageS2CPacket(
 	 * {@return when the message is considered expired}
 	 */
 	private Instant getExpiryTime() {
-		return this.time.plus(TIME_TO_LIVE);
+		return this.timestamp.plus(TIME_TO_LIVE);
 	}
 
 	/**

@@ -10,12 +10,12 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.RealmsLabel;
 import net.minecraft.client.realms.RealmsObjectSelectionList;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -146,7 +146,7 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 			}
 
 			if (summary.hasCheats()) {
-				text = text.shallowCopy().append(", ").append(RealmsSelectFileToUploadScreen.CHEATS_TEXT);
+				text = text.copy().append(", ").append(RealmsSelectFileToUploadScreen.CHEATS_TEXT);
 			}
 
 			this.details = text;

@@ -4,7 +4,7 @@ import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
@@ -23,7 +23,7 @@ public class ConfiguredFeatures {
 			TreeConfiguredFeatures.AZALEA_TREE,
 			VegetationConfiguredFeatures.TREES_OLD_GROWTH_PINE_TAIGA
 		);
-		return Util.getRandom(list, AbstractRandom.createAtomic());
+		return Util.getRandom(list, Random.create());
 	}
 
 	private static BlockPredicate createBlockPredicate(List<Block> validGround) {

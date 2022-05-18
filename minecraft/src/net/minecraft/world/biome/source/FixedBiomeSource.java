@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
@@ -51,7 +51,7 @@ public class FixedBiomeSource extends BiomeSource implements BiomeAccess.Storage
 		int radius,
 		int blockCheckInterval,
 		Predicate<RegistryEntry<Biome>> predicate,
-		AbstractRandom random,
+		Random random,
 		boolean bl,
 		MultiNoiseUtil.MultiNoiseSampler noiseSampler
 	) {
@@ -66,10 +66,16 @@ public class FixedBiomeSource extends BiomeSource implements BiomeAccess.Storage
 
 	@Nullable
 	@Override
-	public Pair<BlockPos, RegistryEntry<Biome>> method_42310(
-		BlockPos blockPos, int i, int j, int k, Predicate<RegistryEntry<Biome>> predicate, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler, WorldView worldView
+	public Pair<BlockPos, RegistryEntry<Biome>> locateBiome(
+		BlockPos origin,
+		int radius,
+		int horizontalBlockCheckInterval,
+		int verticalBlockCheckInterval,
+		Predicate<RegistryEntry<Biome>> predicate,
+		MultiNoiseUtil.MultiNoiseSampler noiseSampler,
+		WorldView world
 	) {
-		return predicate.test(this.biome) ? Pair.of(blockPos, this.biome) : null;
+		return predicate.test(this.biome) ? Pair.of(origin, this.biome) : null;
 	}
 
 	@Override

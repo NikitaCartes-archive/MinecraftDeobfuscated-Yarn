@@ -26,7 +26,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.ServerWorldAccess;
@@ -101,16 +101,16 @@ public class OceanRuinGenerator {
 		new Identifier("underwater_ruin/big_warm_7")
 	};
 
-	private static Identifier getRandomWarmRuin(AbstractRandom random) {
+	private static Identifier getRandomWarmRuin(Random random) {
 		return Util.getRandom(WARM_RUINS, random);
 	}
 
-	private static Identifier getRandomBigWarmRuin(AbstractRandom random) {
+	private static Identifier getRandomBigWarmRuin(Random random) {
 		return Util.getRandom(BIG_WARM_RUINS, random);
 	}
 
 	public static void addPieces(
-		StructureManager manager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder holder, AbstractRandom random, OceanRuinStructure oceanRuinStructure
+		StructureManager manager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder holder, Random random, OceanRuinStructure oceanRuinStructure
 	) {
 		boolean bl = random.nextFloat() <= oceanRuinStructure.largeProbability;
 		float f = bl ? 0.9F : 0.8F;
@@ -122,7 +122,7 @@ public class OceanRuinGenerator {
 
 	private static void method_14825(
 		StructureManager manager,
-		AbstractRandom random,
+		Random random,
 		BlockRotation rotation,
 		BlockPos pos,
 		OceanRuinStructure oceanRuinStructure,
@@ -149,7 +149,7 @@ public class OceanRuinGenerator {
 		}
 	}
 
-	private static List<BlockPos> getRoomPositions(AbstractRandom random, BlockPos pos) {
+	private static List<BlockPos> getRoomPositions(Random random, BlockPos pos) {
 		List<BlockPos> list = Lists.<BlockPos>newArrayList();
 		list.add(pos.add(-16 + MathHelper.nextInt(random, 1, 8), 0, 16 + MathHelper.nextInt(random, 1, 7)));
 		list.add(pos.add(-16 + MathHelper.nextInt(random, 1, 8), 0, MathHelper.nextInt(random, 1, 7)));
@@ -167,7 +167,7 @@ public class OceanRuinGenerator {
 		BlockPos pos,
 		BlockRotation rotation,
 		StructurePiecesHolder holder,
-		AbstractRandom random,
+		Random random,
 		OceanRuinStructure oceanRuinStructure,
 		boolean large,
 		float integrity
@@ -233,7 +233,7 @@ public class OceanRuinGenerator {
 		}
 
 		@Override
-		protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, AbstractRandom random, BlockBox boundingBox) {
+		protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox) {
 			if ("chest".equals(metadata)) {
 				world.setBlockState(
 					pos, Blocks.CHEST.getDefaultState().with(ChestBlock.WATERLOGGED, Boolean.valueOf(world.getFluidState(pos).isIn(FluidTags.WATER))), Block.NOTIFY_LISTENERS
@@ -262,7 +262,7 @@ public class OceanRuinGenerator {
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
-			AbstractRandom random,
+			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
 			BlockPos pos

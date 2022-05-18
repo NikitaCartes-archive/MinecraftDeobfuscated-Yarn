@@ -5,7 +5,7 @@ import com.mojang.serialization.DataResult;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class WeightedBlockStateProvider extends BlockStateProvider {
 	public static final Codec<WeightedBlockStateProvider> CODEC = DataPool.createCodec(BlockState.CODEC)
@@ -32,7 +32,7 @@ public class WeightedBlockStateProvider extends BlockStateProvider {
 	}
 
 	@Override
-	public BlockState getBlockState(AbstractRandom random, BlockPos pos) {
+	public BlockState getBlockState(Random random, BlockPos pos) {
 		return (BlockState)this.states.getDataOrEmpty(random).orElseThrow(IllegalStateException::new);
 	}
 }

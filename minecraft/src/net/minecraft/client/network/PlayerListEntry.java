@@ -5,7 +5,6 @@ import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.InsecurePublicKeyException;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
-import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture.Type;
 import com.mojang.logging.LogUtils;
 import java.util.Map;
@@ -16,6 +15,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.PlayerPublicKey;
+import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.Text;
@@ -43,7 +43,7 @@ public class PlayerListEntry {
 	@Nullable
 	private final PlayerPublicKey publicKeyData;
 
-	public PlayerListEntry(PlayerListS2CPacket.Entry playerListPacketEntry, MinecraftSessionService sessionService) {
+	public PlayerListEntry(PlayerListS2CPacket.Entry playerListPacketEntry, SignatureVerifier servicesSignatureVerifier) {
 		this.profile = playerListPacketEntry.getProfile();
 		this.gameMode = playerListPacketEntry.getGameMode();
 		this.latency = playerListPacketEntry.getLatency();
@@ -53,7 +53,7 @@ public class PlayerListEntry {
 		try {
 			PlayerPublicKey.PublicKeyData publicKeyData = playerListPacketEntry.getPublicKeyData();
 			if (publicKeyData != null) {
-				playerPublicKey = PlayerPublicKey.verifyAndDecode(sessionService, publicKeyData);
+				playerPublicKey = PlayerPublicKey.verifyAndDecode(servicesSignatureVerifier, publicKeyData);
 			}
 		} catch (InsecurePublicKeyException | NetworkEncryptionException var5) {
 			LOGGER.error("Failed to retrieve publicKey property for profile {}", this.profile.getId(), var5);

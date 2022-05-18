@@ -11,7 +11,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.IntProvider;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.TreeFeature;
@@ -39,7 +39,7 @@ public abstract class FoliagePlacer {
 	public void generate(
 		TestableWorld world,
 		BiConsumer<BlockPos, BlockState> replacer,
-		AbstractRandom random,
+		Random random,
 		TreeFeatureConfig config,
 		int trunkHeight,
 		FoliagePlacer.TreeNode treeNode,
@@ -55,7 +55,7 @@ public abstract class FoliagePlacer {
 	protected abstract void generate(
 		TestableWorld world,
 		BiConsumer<BlockPos, BlockState> replacer,
-		AbstractRandom random,
+		Random random,
 		TreeFeatureConfig config,
 		int trunkHeight,
 		FoliagePlacer.TreeNode treeNode,
@@ -64,25 +64,25 @@ public abstract class FoliagePlacer {
 		int offset
 	);
 
-	public abstract int getRandomHeight(AbstractRandom random, int trunkHeight, TreeFeatureConfig config);
+	public abstract int getRandomHeight(Random random, int trunkHeight, TreeFeatureConfig config);
 
-	public int getRandomRadius(AbstractRandom random, int baseHeight) {
+	public int getRandomRadius(Random random, int baseHeight) {
 		return this.radius.get(random);
 	}
 
-	private int getRandomOffset(AbstractRandom random) {
+	private int getRandomOffset(Random random) {
 		return this.offset.get(random);
 	}
 
 	/**
 	 * Used to exclude certain positions such as corners when creating a square of leaves.
 	 */
-	protected abstract boolean isInvalidForLeaves(AbstractRandom random, int dx, int y, int dz, int radius, boolean giantTrunk);
+	protected abstract boolean isInvalidForLeaves(Random random, int dx, int y, int dz, int radius, boolean giantTrunk);
 
 	/**
 	 * Normalizes x and z coords before checking if they are invalid.
 	 */
-	protected boolean isPositionInvalid(AbstractRandom random, int dx, int y, int dz, int radius, boolean giantTrunk) {
+	protected boolean isPositionInvalid(Random random, int dx, int y, int dz, int radius, boolean giantTrunk) {
 		int i;
 		int j;
 		if (giantTrunk) {
@@ -102,7 +102,7 @@ public abstract class FoliagePlacer {
 	protected void generateSquare(
 		TestableWorld world,
 		BiConsumer<BlockPos, BlockState> replacer,
-		AbstractRandom random,
+		Random random,
 		TreeFeatureConfig config,
 		BlockPos centerPos,
 		int radius,
@@ -122,9 +122,7 @@ public abstract class FoliagePlacer {
 		}
 	}
 
-	protected static void placeFoliageBlock(
-		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, TreeFeatureConfig config, BlockPos pos
-	) {
+	protected static void placeFoliageBlock(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, TreeFeatureConfig config, BlockPos pos) {
 		if (TreeFeature.canReplace(world, pos)) {
 			BlockState blockState = config.foliageProvider.getBlockState(random, pos);
 			if (blockState.contains(Properties.WATERLOGGED)) {

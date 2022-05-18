@@ -79,8 +79,8 @@ public final class RegistryElementCodec<E> implements Codec<RegistryEntry<E>> {
 							.load(this.registryRef, this.elementCodec, registryKey, registryOps.getEntryOps())
 							.map(entry -> Pair.of(entry, pair.getSecond()));
 					} else {
-						RegistryEntry<E> registryEntry = registry.getOrCreateEntry(registryKey);
-						return DataResult.success(Pair.of(registryEntry, pair.getSecond()), Lifecycle.stable());
+						DataResult<RegistryEntry<E>> dataResult2 = registry.getOrCreateEntryDataResult(registryKey);
+						return dataResult2.<Pair<RegistryEntry<E>, T>>map(registryEntry -> Pair.of(registryEntry, pair.getSecond())).setLifecycle(Lifecycle.stable());
 					}
 				}
 			}

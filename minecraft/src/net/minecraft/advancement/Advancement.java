@@ -62,8 +62,8 @@ public class Advancement {
 		} else {
 			Text text = display.getTitle();
 			Formatting formatting = display.getFrame().getTitleFormat();
-			Text text2 = Texts.setStyleIfAbsent(text.shallowCopy(), Style.EMPTY.withColor(formatting)).append("\n").append(display.getDescription());
-			Text text3 = text.shallowCopy().styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text2)));
+			Text text2 = Texts.setStyleIfAbsent(text.copy(), Style.EMPTY.withColor(formatting)).append("\n").append(display.getDescription());
+			Text text3 = text.copy().styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text2)));
 			this.text = Texts.bracketed(text3).formatted(formatting);
 		}
 	}

@@ -1,7 +1,7 @@
 package net.minecraft.util.math.floatprovider;
 
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public interface FloatSupplier {
-	float get(AbstractRandom random);
+	float get(Random random);
 }

@@ -5,7 +5,7 @@ import java.util.Optional;
 import net.minecraft.structure.StructureSet;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
@@ -61,7 +61,7 @@ public class WorldPresets {
 	}
 
 	public static GeneratorOptions createDefaultOptions(DynamicRegistryManager dynamicRegistryManager) {
-		return createDefaultOptions(dynamicRegistryManager, AbstractRandom.createAtomic().nextLong());
+		return createDefaultOptions(dynamicRegistryManager, Random.create().nextLong());
 	}
 
 	public static GeneratorOptions createDemoOptions(DynamicRegistryManager dynamicRegistryManager) {

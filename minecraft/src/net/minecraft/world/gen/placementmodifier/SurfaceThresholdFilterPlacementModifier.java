@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.feature.FeaturePlacementContext;
 
@@ -36,7 +36,7 @@ public class SurfaceThresholdFilterPlacementModifier extends AbstractConditional
 	}
 
 	@Override
-	protected boolean shouldPlace(FeaturePlacementContext context, AbstractRandom random, BlockPos pos) {
+	protected boolean shouldPlace(FeaturePlacementContext context, Random random, BlockPos pos) {
 		long l = (long)context.getTopY(this.heightmap, pos.getX(), pos.getZ());
 		long m = l + (long)this.min;
 		long n = l + (long)this.max;

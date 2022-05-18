@@ -7,8 +7,8 @@ import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
 
 public class WeaponsmithChestLootTableFix extends ChoiceFix {
-	public WeaponsmithChestLootTableFix(Schema outputSchema, boolean changesType) {
-		super(outputSchema, changesType, "WeaponSmithChestLootTableFix", TypeReferences.BLOCK_ENTITY, "minecraft:chest");
+	public WeaponsmithChestLootTableFix(Schema schema, boolean bl) {
+		super(schema, bl, "WeaponSmithChestLootTableFix", TypeReferences.BLOCK_ENTITY, "minecraft:chest");
 	}
 
 	@Override

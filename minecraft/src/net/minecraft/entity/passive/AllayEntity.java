@@ -93,7 +93,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 		this.moveControl = new FlightMoveControl(this, 20, true);
 		this.setCanPickUpLoot(this.canPickUpLoot());
 		this.gameEventHandler = new EntityGameEventHandler<>(
-			new VibrationListener(new EntityPositionSource(this, this.getStandingEyeHeight()), 16, this, null, 0, 0)
+			new VibrationListener(new EntityPositionSource(this, this.getStandingEyeHeight()), 16, this, null, 0.0F, 0)
 		);
 	}
 
@@ -364,7 +364,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 
 	@Override
 	public void accept(
-		ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity, @Nullable Entity sourceEntity, int delay
+		ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity, @Nullable Entity sourceEntity, float distance
 	) {
 		if (event == GameEvent.NOTE_BLOCK_PLAY) {
 			AllayBrain.rememberNoteBlock(this, new BlockPos(pos));

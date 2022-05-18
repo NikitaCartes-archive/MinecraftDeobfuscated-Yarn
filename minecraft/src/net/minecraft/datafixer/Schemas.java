@@ -10,6 +10,7 @@ import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.UnaryOperator;
 import net.minecraft.SharedConstants;
@@ -21,7 +22,6 @@ import net.minecraft.datafixer.fix.AdvancementsFix;
 import net.minecraft.datafixer.fix.ArrowPickupFix;
 import net.minecraft.datafixer.fix.BedBlockEntityFix;
 import net.minecraft.datafixer.fix.BedItemColorFix;
-import net.minecraft.datafixer.fix.BeehiveRenameFix;
 import net.minecraft.datafixer.fix.BiomeFormatFix;
 import net.minecraft.datafixer.fix.BiomeRenameFix;
 import net.minecraft.datafixer.fix.BiomesFix;
@@ -129,15 +129,20 @@ import net.minecraft.datafixer.fix.OptionsKeyTranslationFix;
 import net.minecraft.datafixer.fix.OptionsLowerCaseLanguageFix;
 import net.minecraft.datafixer.fix.PersistentStateUuidFix;
 import net.minecraft.datafixer.fix.PlayerUuidFix;
+import net.minecraft.datafixer.fix.PointOfInterestRemoveFix;
+import net.minecraft.datafixer.fix.PointOfInterestRenameFix;
 import net.minecraft.datafixer.fix.PointOfInterestReorganizationFix;
 import net.minecraft.datafixer.fix.ProtoChunkTickListFix;
 import net.minecraft.datafixer.fix.RecipeFix;
 import net.minecraft.datafixer.fix.RecipeRenameFix;
 import net.minecraft.datafixer.fix.RecipeRenamingFix;
 import net.minecraft.datafixer.fix.RedstoneConnectionsFix;
+import net.minecraft.datafixer.fix.RemoveFilteredBookTextFix;
+import net.minecraft.datafixer.fix.RemoveFilteredSignTextFix;
 import net.minecraft.datafixer.fix.RemoveGolemGossipFix;
 import net.minecraft.datafixer.fix.RemovePoiValidTagFix;
 import net.minecraft.datafixer.fix.RenameItemStackAttributesFix;
+import net.minecraft.datafixer.fix.RenameVariantsFix;
 import net.minecraft.datafixer.fix.SavedDataVillageCropFix;
 import net.minecraft.datafixer.fix.StatsCounterFix;
 import net.minecraft.datafixer.fix.StatsRenameFix;
@@ -584,7 +589,7 @@ public class Schemas {
 		Schema schema91 = builder.addSchema(1946, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new PointOfInterestReorganizationFix(schema91, false));
 		Schema schema92 = builder.addSchema(1948, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new OminousBannerItemRenameFix(schema92, false));
+		builder.addFixer(new OminousBannerItemRenameFix(schema92));
 		Schema schema93 = builder.addSchema(1953, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new OminousBannerBlockEntityRenameFix(schema93, false));
 		Schema schema94 = builder.addSchema(1955, EMPTY_IDENTIFIER_NORMALIZE);
@@ -606,9 +611,10 @@ public class Schemas {
 		Schema schema98 = builder.addSchema(2202, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new BiomeFormatFix(schema98, false));
 		Schema schema99 = builder.addSchema(2209, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(ItemNameFix.create(schema99, "Rename bee_hive item to beehive", replacing("minecraft:bee_hive", "minecraft:beehive")));
-		builder.addFixer(new BeehiveRenameFix(schema99));
-		builder.addFixer(BlockNameFix.create(schema99, "Rename bee_hive block to beehive", replacing("minecraft:bee_hive", "minecraft:beehive")));
+		UnaryOperator<String> unaryOperator = replacing("minecraft:bee_hive", "minecraft:beehive");
+		builder.addFixer(ItemNameFix.create(schema99, "Rename bee_hive item to beehive", unaryOperator));
+		builder.addFixer(new PointOfInterestRenameFix(schema99, "Rename bee_hive poi to beehive", unaryOperator));
+		builder.addFixer(BlockNameFix.create(schema99, "Rename bee_hive block to beehive", unaryOperator));
 		Schema schema100 = builder.addSchema(2211, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new StructureReferenceFix(schema100, false));
 		Schema schema101 = builder.addSchema(2218, EMPTY_IDENTIFIER_NORMALIZE);
@@ -950,6 +956,22 @@ public class Schemas {
 		builder.addFixer(new EntityPaintingFieldsRenameFix(schema166));
 		Schema schema167 = builder.addSchema(3094, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new GoatHornIdFix(schema167));
+		Schema schema168 = builder.addSchema(3097, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new RemoveFilteredBookTextFix(schema168));
+		builder.addFixer(new RemoveFilteredSignTextFix(schema168));
+		Map<String, String> map = Map.of("minecraft:british", "minecraft:british_shorthair");
+		builder.addFixer(new RenameVariantsFix(schema168, "Rename british shorthair", TypeReferences.ENTITY, "minecraft:cat", map));
+		builder.addFixer(
+			new AdvancementCriteriaRenameFix(
+				schema168,
+				"Migrate cat variant advancement for british shorthair",
+				"minecraft:husbandry/complete_catalogue",
+				string -> (String)map.getOrDefault(string, string)
+			)
+		);
+		builder.addFixer(
+			new PointOfInterestRemoveFix(schema168, "Remove unpopulated villager PoI types", Set.of("minecraft:unemployed", "minecraft:nitwit")::contains)
+		);
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

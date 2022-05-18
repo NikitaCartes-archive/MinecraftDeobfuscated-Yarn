@@ -32,7 +32,7 @@ public class ChatOptionsScreen extends SimpleOptionsScreen {
 				options.getHideMatchedNames(),
 				options.getReducedDebugInfo(),
 				options.getChatPreview(),
-				options.getOnlyShowSignedChat()
+				options.getOnlyShowSecureChat()
 			}
 		);
 	}

@@ -2,7 +2,7 @@ package net.minecraft.util.math.noise;
 
 import com.google.common.annotations.VisibleForTesting;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.gen.noise.NoiseHelper;
 
 public final class PerlinNoiseSampler {
@@ -12,7 +12,7 @@ public final class PerlinNoiseSampler {
 	public final double originY;
 	public final double originZ;
 
-	public PerlinNoiseSampler(AbstractRandom random) {
+	public PerlinNoiseSampler(Random random) {
 		this.originX = random.nextDouble() * 256.0;
 		this.originY = random.nextDouble() * 256.0;
 		this.originZ = random.nextDouble() * 256.0;

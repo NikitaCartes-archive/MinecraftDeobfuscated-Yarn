@@ -10,7 +10,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,7 +21,7 @@ public interface RegistryEntryList<T> extends Iterable<RegistryEntry<T>> {
 
 	Either<TagKey<T>, List<RegistryEntry<T>>> getStorage();
 
-	Optional<RegistryEntry<T>> getRandom(AbstractRandom random);
+	Optional<RegistryEntry<T>> getRandom(Random random);
 
 	RegistryEntry<T> get(int index);
 
@@ -103,7 +103,7 @@ public interface RegistryEntryList<T> extends Iterable<RegistryEntry<T>> {
 		}
 
 		@Override
-		public Optional<RegistryEntry<T>> getRandom(AbstractRandom random) {
+		public Optional<RegistryEntry<T>> getRandom(Random random) {
 			return Util.getRandomOrEmpty(this.getEntries(), random);
 		}
 

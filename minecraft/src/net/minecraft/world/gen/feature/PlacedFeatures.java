@@ -8,7 +8,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.intprovider.WeightedListIntProvider;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
@@ -45,7 +45,7 @@ public class PlacedFeatures {
 			VegetationPlacedFeatures.BAMBOO_VEGETATION,
 			VillagePlacedFeatures.PILE_HAY
 		);
-		return Util.getRandom(list, AbstractRandom.createAtomic());
+		return Util.getRandom(list, Random.create());
 	}
 
 	public static RegistryEntry<PlacedFeature> register(

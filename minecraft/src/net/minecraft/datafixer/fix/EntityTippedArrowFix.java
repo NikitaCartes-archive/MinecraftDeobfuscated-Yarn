@@ -4,8 +4,8 @@ import com.mojang.datafixers.schemas.Schema;
 import java.util.Objects;
 
 public class EntityTippedArrowFix extends EntityRenameFix {
-	public EntityTippedArrowFix(Schema outputSchema, boolean changesType) {
-		super("EntityTippedArrowFix", outputSchema, changesType);
+	public EntityTippedArrowFix(Schema schema, boolean bl) {
+		super("EntityTippedArrowFix", schema, bl);
 	}
 
 	@Override

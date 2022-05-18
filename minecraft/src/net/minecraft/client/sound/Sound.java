@@ -5,7 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.floatprovider.FloatSupplier;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 @Environment(EnvType.CLIENT)
 public class Sound implements SoundContainer<Sound> {
@@ -52,7 +52,7 @@ public class Sound implements SoundContainer<Sound> {
 		return this.weight;
 	}
 
-	public Sound getSound(AbstractRandom abstractRandom) {
+	public Sound getSound(Random random) {
 		return this;
 	}
 

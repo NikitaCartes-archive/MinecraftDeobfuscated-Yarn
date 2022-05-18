@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import javax.annotation.Nullable;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.entity.Entity;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Language;
@@ -40,7 +40,7 @@ public class Texts {
 
 	public static MutableText parse(@Nullable ServerCommandSource source, Text text, @Nullable Entity sender, int depth) throws CommandSyntaxException {
 		if (depth > 100) {
-			return text.shallowCopy();
+			return text.copy();
 		} else {
 			MutableText mutableText = text.getContent().parse(source, sender, depth + 1);
 
@@ -105,7 +105,7 @@ public class Texts {
 		if (elements.isEmpty()) {
 			return Text.empty();
 		} else if (elements.size() == 1) {
-			return ((Text)transformer.apply(elements.iterator().next())).shallowCopy();
+			return ((Text)transformer.apply(elements.iterator().next())).copy();
 		} else {
 			MutableText mutableText = Text.empty();
 			boolean bl = true;

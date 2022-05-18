@@ -64,7 +64,7 @@ import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameMode;
 import org.slf4j.Logger;
@@ -84,7 +84,7 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 	public static final float CAMERA_DEPTH = 0.05F;
 	private final MinecraftClient client;
 	private final ResourceManager resourceManager;
-	private final AbstractRandom random = AbstractRandom.createAtomic();
+	private final Random random = Random.create();
 	private float viewDistance;
 	public final HeldItemRenderer firstPersonRenderer;
 	private final MapRenderer mapRenderer;

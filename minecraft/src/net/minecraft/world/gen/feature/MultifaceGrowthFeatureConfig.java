@@ -11,7 +11,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.MultifaceGrowthBlock;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryCodecs;
 import net.minecraft.util.registry.RegistryEntryList;
@@ -79,11 +79,11 @@ public class MultifaceGrowthFeatureConfig implements FeatureConfig {
 		}
 	}
 
-	public List<Direction> shuffleDirections(AbstractRandom random, Direction excluded) {
+	public List<Direction> shuffleDirections(Random random, Direction excluded) {
 		return Util.copyShuffled(this.directions.stream().filter(direction -> direction != excluded), random);
 	}
 
-	public List<Direction> shuffleDirections(AbstractRandom random) {
+	public List<Direction> shuffleDirections(Random random) {
 		return Util.copyShuffled(this.directions, random);
 	}
 }

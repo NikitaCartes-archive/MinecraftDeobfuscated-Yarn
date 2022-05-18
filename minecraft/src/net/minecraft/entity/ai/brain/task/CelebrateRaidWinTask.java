@@ -15,7 +15,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.village.raid.Raid;
 
 public class CelebrateRaidWinTask extends Task<VillagerEntity> {
@@ -42,14 +42,14 @@ public class CelebrateRaidWinTask extends Task<VillagerEntity> {
 	}
 
 	protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		AbstractRandom abstractRandom = villagerEntity.getRandom();
-		if (abstractRandom.nextInt(100) == 0) {
+		Random random = villagerEntity.getRandom();
+		if (random.nextInt(100) == 0) {
 			villagerEntity.playCelebrateSound();
 		}
 
-		if (abstractRandom.nextInt(200) == 0 && SeekSkyTask.isSkyVisible(serverWorld, villagerEntity, villagerEntity.getBlockPos())) {
-			DyeColor dyeColor = Util.getRandom(DyeColor.values(), abstractRandom);
-			int i = abstractRandom.nextInt(3);
+		if (random.nextInt(200) == 0 && SeekSkyTask.isSkyVisible(serverWorld, villagerEntity, villagerEntity.getBlockPos())) {
+			DyeColor dyeColor = Util.getRandom(DyeColor.values(), random);
+			int i = random.nextInt(3);
 			ItemStack itemStack = this.createFirework(dyeColor, i);
 			FireworkRocketEntity fireworkRocketEntity = new FireworkRocketEntity(
 				villagerEntity.world, villagerEntity, villagerEntity.getX(), villagerEntity.getEyeY(), villagerEntity.getZ(), itemStack

@@ -33,6 +33,7 @@ public class GameEventTagProvider extends AbstractTagProvider<GameEvent> {
 		GameEvent.FLUID_PICKUP,
 		GameEvent.FLUID_PLACE,
 		GameEvent.HIT_GROUND,
+		GameEvent.INSTRUMENT_PLAY,
 		GameEvent.ITEM_INTERACT_FINISH,
 		GameEvent.ITEM_INTERACT_START,
 		GameEvent.LIGHTNING_STRIKE,
@@ -57,7 +58,8 @@ public class GameEventTagProvider extends AbstractTagProvider<GameEvent> {
 		this.getOrCreateTagBuilder(GameEventTags.VIBRATIONS).add(field_38363).add(GameEvent.FLAP);
 		this.getOrCreateTagBuilder(GameEventTags.SHRIEKER_CAN_LISTEN).add(GameEvent.SCULK_SENSOR_TENDRILS_CLICKING);
 		this.getOrCreateTagBuilder(GameEventTags.WARDEN_CAN_LISTEN).add(field_38363).add(GameEvent.SHRIEK).addTag(GameEventTags.SHRIEKER_CAN_LISTEN);
-		this.getOrCreateTagBuilder(GameEventTags.IGNORE_VIBRATIONS_SNEAKING).add(GameEvent.HIT_GROUND, GameEvent.PROJECTILE_SHOOT, GameEvent.STEP, GameEvent.SWIM);
+		this.getOrCreateTagBuilder(GameEventTags.IGNORE_VIBRATIONS_SNEAKING)
+			.add(GameEvent.HIT_GROUND, GameEvent.PROJECTILE_SHOOT, GameEvent.STEP, GameEvent.SWIM, GameEvent.ITEM_INTERACT_START, GameEvent.ITEM_INTERACT_FINISH);
 		this.getOrCreateTagBuilder(GameEventTags.ALLAY_CAN_LISTEN).add(GameEvent.NOTE_BLOCK_PLAY);
 	}
 }

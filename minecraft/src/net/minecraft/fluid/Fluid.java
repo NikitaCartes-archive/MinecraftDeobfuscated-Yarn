@@ -12,7 +12,7 @@ import net.minecraft.util.collection.IdList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.shape.VoxelShape;
@@ -50,13 +50,13 @@ public abstract class Fluid {
 
 	public abstract Item getBucketItem();
 
-	protected void randomDisplayTick(World world, BlockPos pos, FluidState state, AbstractRandom random) {
+	protected void randomDisplayTick(World world, BlockPos pos, FluidState state, Random random) {
 	}
 
 	protected void onScheduledTick(World world, BlockPos pos, FluidState state) {
 	}
 
-	protected void onRandomTick(World world, BlockPos pos, FluidState state, AbstractRandom random) {
+	protected void onRandomTick(World world, BlockPos pos, FluidState state, Random random) {
 	}
 
 	@Nullable

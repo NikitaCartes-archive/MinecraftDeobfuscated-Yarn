@@ -1,10 +1,12 @@
 package net.minecraft.util.math.random;
 
 import java.util.concurrent.atomic.AtomicLong;
-import net.minecraft.world.gen.random.GaussianGenerator;
 
+/**
+ * A random that can be shared by multiple threads safely.
+ */
 @Deprecated
-public class BlockingSimpleRandom implements BaseSimpleRandom {
+public class ThreadSafeRandom implements BaseRandom {
 	private static final int INT_BITS = 48;
 	private static final long SEED_MASK = 281474976710655L;
 	private static final long MULTIPLIER = 25214903917L;
@@ -12,18 +14,18 @@ public class BlockingSimpleRandom implements BaseSimpleRandom {
 	private final AtomicLong seed = new AtomicLong();
 	private final GaussianGenerator gaussianGenerator = new GaussianGenerator(this);
 
-	public BlockingSimpleRandom(long seed) {
+	public ThreadSafeRandom(long seed) {
 		this.setSeed(seed);
 	}
 
 	@Override
-	public AbstractRandom derive() {
-		return new BlockingSimpleRandom(this.nextLong());
+	public Random split() {
+		return new ThreadSafeRandom(this.nextLong());
 	}
 
 	@Override
-	public RandomDeriver createRandomDeriver() {
-		return new AtomicSimpleRandom.RandomDeriver(this.nextLong());
+	public RandomSplitter nextSplitter() {
+		return new CheckedRandom.Splitter(this.nextLong());
 	}
 
 	@Override
