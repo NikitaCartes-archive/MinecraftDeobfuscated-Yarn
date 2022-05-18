@@ -1,7 +1,7 @@
 package net.minecraft.world.gen.chunk.placement;
 
 import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public enum SpreadType implements StringIdentifiable {
 	LINEAR("linear"),
@@ -19,7 +19,7 @@ public enum SpreadType implements StringIdentifiable {
 		return this.name;
 	}
 
-	public int get(AbstractRandom random, int bound) {
+	public int get(Random random, int bound) {
 		return switch (this) {
 			case LINEAR -> random.nextInt(bound);
 			case TRIANGULAR -> (random.nextInt(bound) + random.nextInt(bound)) / 2;

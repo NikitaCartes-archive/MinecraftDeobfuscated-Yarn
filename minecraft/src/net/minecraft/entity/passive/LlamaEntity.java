@@ -47,7 +47,7 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -77,7 +77,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 		this.dataTracker.set(STRENGTH, Math.max(1, Math.min(5, strength)));
 	}
 
-	private void initializeStrength(AbstractRandom random) {
+	private void initializeStrength(Random random) {
 		int i = random.nextFloat() < 0.04F ? 5 : 3;
 		this.setStrength(1 + random.nextInt(i));
 	}
@@ -249,13 +249,13 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	public EntityData initialize(
 		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
-		AbstractRandom abstractRandom = world.getRandom();
-		this.initializeStrength(abstractRandom);
+		Random random = world.getRandom();
+		this.initializeStrength(random);
 		int i;
 		if (entityData instanceof LlamaEntity.LlamaData) {
 			i = ((LlamaEntity.LlamaData)entityData).variant;
 		} else {
-			i = abstractRandom.nextInt(4);
+			i = random.nextInt(4);
 			entityData = new LlamaEntity.LlamaData(i);
 		}
 

@@ -8,7 +8,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.feature.FeaturePlacementContext;
 
@@ -33,7 +33,7 @@ public class CountMultilayerPlacementModifier extends PlacementModifier {
 	}
 
 	@Override
-	public Stream<BlockPos> getPositions(FeaturePlacementContext context, AbstractRandom random, BlockPos pos) {
+	public Stream<BlockPos> getPositions(FeaturePlacementContext context, Random random, BlockPos pos) {
 		Builder<BlockPos> builder = Stream.builder();
 		int i = 0;
 

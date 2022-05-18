@@ -9,7 +9,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.JsonSerializer;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public final class BinomialLootNumberProvider implements LootNumberProvider {
 	final LootNumberProvider n;
@@ -29,11 +29,11 @@ public final class BinomialLootNumberProvider implements LootNumberProvider {
 	public int nextInt(LootContext context) {
 		int i = this.n.nextInt(context);
 		float f = this.p.nextFloat(context);
-		AbstractRandom abstractRandom = context.getRandom();
+		Random random = context.getRandom();
 		int j = 0;
 
 		for (int k = 0; k < i; k++) {
-			if (abstractRandom.nextFloat() < f) {
+			if (random.nextFloat() < f) {
 				j++;
 			}
 		}

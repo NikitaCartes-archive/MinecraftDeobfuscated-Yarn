@@ -23,8 +23,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
-import net.minecraft.util.math.random.AtomicSimpleRandom;
+import net.minecraft.util.math.random.CheckedRandom;
 import net.minecraft.util.math.random.ChunkRandom;
+import net.minecraft.util.math.random.RandomSeed;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
@@ -55,7 +56,6 @@ import net.minecraft.world.gen.densityfunction.DensityFunctionTypes;
 import net.minecraft.world.gen.densityfunction.DensityFunctions;
 import net.minecraft.world.gen.noise.NoiseConfig;
 import net.minecraft.world.gen.noise.NoiseRouter;
-import net.minecraft.world.gen.random.RandomSeed;
 import org.apache.commons.lang3.mutable.MutableObject;
 
 public final class NoiseChunkGenerator extends ChunkGenerator {
@@ -79,22 +79,12 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	public NoiseChunkGenerator(
 		Registry<StructureSet> structureSetRegistry,
 		Registry<DoublePerlinNoiseSampler.NoiseParameters> noiseRegistry,
-		BiomeSource biomeSource,
-		RegistryEntry<ChunkGeneratorSettings> settings
-	) {
-		this(structureSetRegistry, noiseRegistry, biomeSource, biomeSource, settings);
-	}
-
-	private NoiseChunkGenerator(
-		Registry<StructureSet> structureSetRegistry,
-		Registry<DoublePerlinNoiseSampler.NoiseParameters> noiseRegistry,
 		BiomeSource populationSource,
-		BiomeSource biomeSource,
-		RegistryEntry<ChunkGeneratorSettings> settings
+		RegistryEntry<ChunkGeneratorSettings> registryEntry
 	) {
-		super(structureSetRegistry, Optional.empty(), populationSource, biomeSource);
+		super(structureSetRegistry, Optional.empty(), populationSource);
 		this.noiseRegistry = noiseRegistry;
-		this.settings = settings;
+		this.settings = registryEntry;
 		ChunkGeneratorSettings chunkGeneratorSettings = this.settings.value();
 		this.defaultBlock = chunkGeneratorSettings.defaultBlock();
 		AquiferSampler.FluidLevel fluidLevel = new AquiferSampler.FluidLevel(-54, Blocks.LAVA.getDefaultState());
@@ -116,7 +106,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 
 	private void populateBiomes(Blender blender, NoiseConfig noiseConfig, StructureAccessor structureAccessor, Chunk chunk) {
 		ChunkNoiseSampler chunkNoiseSampler = chunk.getOrCreateChunkNoiseSampler(chunkx -> this.method_41537(chunkx, structureAccessor, blender, noiseConfig));
-		BiomeSupplier biomeSupplier = BelowZeroRetrogen.getBiomeSupplier(blender.getBiomeSupplier(this.biomeSource), chunk);
+		BiomeSupplier biomeSupplier = BelowZeroRetrogen.getBiomeSupplier(blender.getBiomeSupplier(this.populationSource), chunk);
 		chunk.populateBiomes(biomeSupplier, chunkNoiseSampler.createMultiNoiseSampler(noiseConfig.getNoiseRouter(), this.settings.value().spawnTarget()));
 	}
 
@@ -300,7 +290,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		GenerationStep.Carver carverStep
 	) {
 		BiomeAccess biomeAccess = world.withSource((ix, jx, kx) -> this.populationSource.getBiome(ix, jx, kx, noiseConfig.getMultiNoiseSampler()));
-		ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(RandomSeed.getSeed()));
+		ChunkRandom chunkRandom = new ChunkRandom(new CheckedRandom(RandomSeed.getSeed()));
 		int i = 8;
 		ChunkPos chunkPos = chunk.getPos();
 		ChunkNoiseSampler chunkNoiseSampler = chunk.getOrCreateChunkNoiseSampler(
@@ -316,12 +306,12 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 			for (int k = -8; k <= 8; k++) {
 				ChunkPos chunkPos2 = new ChunkPos(chunkPos.x + j, chunkPos.z + k);
 				Chunk chunk2 = chunkRegion.getChunk(chunkPos2.x, chunkPos2.z);
-				GenerationSettings generationSettings = chunk2.setBiomeIfAbsent(
-						() -> this.populationSource
+				GenerationSettings generationSettings = chunk2.method_44214(
+					() -> this.method_44216(
+							this.populationSource
 								.getBiome(BiomeCoords.fromBlock(chunkPos2.getStartX()), 0, BiomeCoords.fromBlock(chunkPos2.getStartZ()), noiseConfig.getMultiNoiseSampler())
-					)
-					.value()
-					.getGenerationSettings();
+						)
+				);
 				Iterable<RegistryEntry<ConfiguredCarver<?>>> iterable = generationSettings.getCarversForStep(carverStep);
 				int l = 0;
 
@@ -471,7 +461,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		if (!this.settings.value().mobGenerationDisabled()) {
 			ChunkPos chunkPos = region.getCenterPos();
 			RegistryEntry<Biome> registryEntry = region.getBiome(chunkPos.getStartPos().withY(region.getTopY() - 1));
-			ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(RandomSeed.getSeed()));
+			ChunkRandom chunkRandom = new ChunkRandom(new CheckedRandom(RandomSeed.getSeed()));
 			chunkRandom.setPopulationSeed(region.getSeed(), chunkPos.getStartX(), chunkPos.getStartZ());
 			SpawnHelper.populateEntities(region, registryEntry, chunkPos, chunkRandom);
 		}

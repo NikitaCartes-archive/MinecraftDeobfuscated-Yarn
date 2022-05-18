@@ -11,12 +11,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import net.minecraft.class_7475;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
 import net.minecraft.tag.TagBuilder;
 import net.minecraft.tag.TagEntry;
+import net.minecraft.tag.TagFile;
 import net.minecraft.tag.TagKey;
 import net.minecraft.tag.TagManagerLoader;
 import net.minecraft.util.Identifier;
@@ -58,7 +58,7 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 							)
 						);
 					} else {
-						JsonElement jsonElement = class_7475.field_39269.encodeStart(JsonOps.INSTANCE, new class_7475(list, false)).getOrThrow(false, LOGGER::error);
+						JsonElement jsonElement = TagFile.CODEC.encodeStart(JsonOps.INSTANCE, new TagFile(list, false)).getOrThrow(false, LOGGER::error);
 						Path path = this.pathResolver.resolveJson(id);
 
 						try {

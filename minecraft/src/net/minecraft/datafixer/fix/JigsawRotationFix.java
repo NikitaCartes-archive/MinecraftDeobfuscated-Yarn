@@ -20,8 +20,8 @@ public class JigsawRotationFix extends DataFix {
 		.put("east", "east_up")
 		.build();
 
-	public JigsawRotationFix(Schema outputSchema, boolean changesType) {
-		super(outputSchema, changesType);
+	public JigsawRotationFix(Schema schema, boolean bl) {
+		super(schema, bl);
 	}
 
 	private static Dynamic<?> updateBlockState(Dynamic<?> dynamic) {

@@ -65,8 +65,8 @@ public class ItemInstanceSpawnEggFix extends DataFix {
 		map.put("minecraft:zombie_villager", "minecraft:zombie_villager_spawn_egg");
 	});
 
-	public ItemInstanceSpawnEggFix(Schema outputSchema, boolean changesType) {
-		super(outputSchema, changesType);
+	public ItemInstanceSpawnEggFix(Schema schema, boolean bl) {
+		super(schema, bl);
 	}
 
 	@Override

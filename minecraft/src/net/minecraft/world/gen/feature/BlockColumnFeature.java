@@ -3,7 +3,7 @@ package net.minecraft.world.gen.feature;
 import com.mojang.serialization.Codec;
 import net.minecraft.block.Block;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 
@@ -16,13 +16,13 @@ public class BlockColumnFeature extends Feature<BlockColumnFeatureConfig> {
 	public boolean generate(FeatureContext<BlockColumnFeatureConfig> context) {
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		BlockColumnFeatureConfig blockColumnFeatureConfig = context.getConfig();
-		AbstractRandom abstractRandom = context.getRandom();
+		Random random = context.getRandom();
 		int i = blockColumnFeatureConfig.layers().size();
 		int[] is = new int[i];
 		int j = 0;
 
 		for (int k = 0; k < i; k++) {
-			is[k] = ((BlockColumnFeatureConfig.Layer)blockColumnFeatureConfig.layers().get(k)).height().get(abstractRandom);
+			is[k] = ((BlockColumnFeatureConfig.Layer)blockColumnFeatureConfig.layers().get(k)).height().get(random);
 			j += is[k];
 		}
 
@@ -47,7 +47,7 @@ public class BlockColumnFeature extends Feature<BlockColumnFeatureConfig> {
 					BlockColumnFeatureConfig.Layer layer = (BlockColumnFeatureConfig.Layer)blockColumnFeatureConfig.layers().get(l);
 
 					for (int n = 0; n < m; n++) {
-						structureWorldAccess.setBlockState(mutable, layer.state().getBlockState(abstractRandom, mutable), Block.NOTIFY_LISTENERS);
+						structureWorldAccess.setBlockState(mutable, layer.state().getBlockState(random, mutable), Block.NOTIFY_LISTENERS);
 						mutable.move(blockColumnFeatureConfig.direction());
 					}
 				}

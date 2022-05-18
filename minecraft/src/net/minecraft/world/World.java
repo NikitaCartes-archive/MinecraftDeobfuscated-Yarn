@@ -44,7 +44,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
@@ -85,15 +85,15 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	private final Thread thread;
 	private final boolean debugWorld;
 	private int ambientDarkness;
-	protected int lcgBlockSeed = AbstractRandom.createAtomic().nextInt();
+	protected int lcgBlockSeed = Random.create().nextInt();
 	protected final int lcgBlockSeedIncrement = 1013904223;
 	protected float rainGradientPrev;
 	protected float rainGradient;
 	protected float thunderGradientPrev;
 	protected float thunderGradient;
-	public final AbstractRandom random = AbstractRandom.createAtomic();
+	public final Random random = Random.create();
 	@Deprecated
-	private final AbstractRandom blockingRandom = AbstractRandom.createBlocking();
+	private final Random threadSafeRandom = Random.createThreadSafe();
 	private final RegistryKey<DimensionType> dimension;
 	private final RegistryEntry<DimensionType> dimensionEntry;
 	protected final MutableWorldProperties properties;
@@ -117,7 +117,8 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		this.profiler = supplier;
 		this.properties = properties;
 		this.dimensionEntry = dimension;
-		this.dimension = (RegistryKey<DimensionType>)dimension.getKey().orElseThrow(() -> new IllegalArgumentException("Dimensions must be registered"));
+		this.dimension = (RegistryKey<DimensionType>)dimension.getKey()
+			.orElseThrow(() -> new IllegalArgumentException("Dimension must be registered, got " + dimension));
 		final DimensionType dimensionType = dimension.value();
 		this.registryKey = registryRef;
 		this.isClient = isClient;
@@ -442,11 +443,11 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	);
 
 	public void playSound(@Nullable PlayerEntity player, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch) {
-		this.playSound(player, x, y, z, sound, category, volume, pitch, this.blockingRandom.nextLong());
+		this.playSound(player, x, y, z, sound, category, volume, pitch, this.threadSafeRandom.nextLong());
 	}
 
 	public void playSoundFromEntity(@Nullable PlayerEntity player, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch) {
-		this.playSoundFromEntity(player, entity, sound, category, volume, pitch, this.blockingRandom.nextLong());
+		this.playSoundFromEntity(player, entity, sound, category, volume, pitch, this.threadSafeRandom.nextLong());
 	}
 
 	public void playSound(double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch, boolean useDistance) {
@@ -1022,7 +1023,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	}
 
 	@Override
-	public AbstractRandom getRandom() {
+	public Random getRandom() {
 		return this.random;
 	}
 

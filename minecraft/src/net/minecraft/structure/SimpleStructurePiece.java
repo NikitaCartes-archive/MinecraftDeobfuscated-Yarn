@@ -15,7 +15,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.StructureWorldAccess;
@@ -71,7 +71,7 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 		StructureWorldAccess world,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
-		AbstractRandom random,
+		Random random,
 		BlockBox chunkBox,
 		ChunkPos chunkPos,
 		BlockPos pos
@@ -105,7 +105,7 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 		}
 	}
 
-	protected abstract void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, AbstractRandom random, BlockBox boundingBox);
+	protected abstract void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox);
 
 	@Deprecated
 	@Override

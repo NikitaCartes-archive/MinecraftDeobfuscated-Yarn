@@ -23,7 +23,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.ServerWorldAccess;
 
 /**
@@ -34,20 +34,18 @@ import net.minecraft.world.ServerWorldAccess;
  * the mansion placement}.
  */
 public class WoodlandMansionGenerator {
-	public static void addPieces(
-		StructureManager manager, BlockPos pos, BlockRotation rotation, List<WoodlandMansionGenerator.Piece> pieces, AbstractRandom random
-	) {
+	public static void addPieces(StructureManager manager, BlockPos pos, BlockRotation rotation, List<WoodlandMansionGenerator.Piece> pieces, Random random) {
 		WoodlandMansionGenerator.MansionParameters mansionParameters = new WoodlandMansionGenerator.MansionParameters(random);
 		WoodlandMansionGenerator.LayoutGenerator layoutGenerator = new WoodlandMansionGenerator.LayoutGenerator(manager, random);
 		layoutGenerator.generate(pos, rotation, pieces, mansionParameters);
 	}
 
 	public static void printRandomFloorLayouts(String[] args) {
-		AbstractRandom abstractRandom = AbstractRandom.createAtomic();
-		long l = abstractRandom.nextLong();
+		Random random = Random.create();
+		long l = random.nextLong();
 		System.out.println("Seed: " + l);
-		abstractRandom.setSeed(l);
-		WoodlandMansionGenerator.MansionParameters mansionParameters = new WoodlandMansionGenerator.MansionParameters(abstractRandom);
+		random.setSeed(l);
+		WoodlandMansionGenerator.MansionParameters mansionParameters = new WoodlandMansionGenerator.MansionParameters(random);
 		mansionParameters.printFloorLayouts();
 	}
 
@@ -56,37 +54,37 @@ public class WoodlandMansionGenerator {
 	 */
 	static class FirstFloorRoomPool extends WoodlandMansionGenerator.RoomPool {
 		@Override
-		public String getSmallRoom(AbstractRandom random) {
+		public String getSmallRoom(Random random) {
 			return "1x1_a" + (random.nextInt(5) + 1);
 		}
 
 		@Override
-		public String getSmallSecretRoom(AbstractRandom random) {
+		public String getSmallSecretRoom(Random random) {
 			return "1x1_as" + (random.nextInt(4) + 1);
 		}
 
 		@Override
-		public String getMediumFunctionalRoom(AbstractRandom random, boolean staircase) {
+		public String getMediumFunctionalRoom(Random random, boolean staircase) {
 			return "1x2_a" + (random.nextInt(9) + 1);
 		}
 
 		@Override
-		public String getMediumGenericRoom(AbstractRandom random, boolean staircase) {
+		public String getMediumGenericRoom(Random random, boolean staircase) {
 			return "1x2_b" + (random.nextInt(5) + 1);
 		}
 
 		@Override
-		public String getMediumSecretRoom(AbstractRandom random) {
+		public String getMediumSecretRoom(Random random) {
 			return "1x2_s" + (random.nextInt(2) + 1);
 		}
 
 		@Override
-		public String getBigRoom(AbstractRandom random) {
+		public String getBigRoom(Random random) {
 			return "2x2_a" + (random.nextInt(4) + 1);
 		}
 
 		@Override
-		public String getBigSecretRoom(AbstractRandom random) {
+		public String getBigSecretRoom(Random random) {
 			return "2x2_s1";
 		}
 	}
@@ -153,11 +151,11 @@ public class WoodlandMansionGenerator {
 	 */
 	static class LayoutGenerator {
 		private final StructureManager manager;
-		private final AbstractRandom random;
+		private final Random random;
 		private int entranceI;
 		private int entranceJ;
 
-		public LayoutGenerator(StructureManager manager, AbstractRandom random) {
+		public LayoutGenerator(StructureManager manager, Random random) {
 			this.manager = manager;
 			this.random = random;
 		}
@@ -779,7 +777,7 @@ public class WoodlandMansionGenerator {
 		 * The mask for the room ID. Connected rooms share the same ID.
 		 */
 		private static final int ROOM_ID_MASK = 65535;
-		private final AbstractRandom random;
+		private final Random random;
 		/**
 		 * Determines a rough shape of the first floor and the second floor.
 		 * 
@@ -813,7 +811,7 @@ public class WoodlandMansionGenerator {
 		final int entranceI;
 		final int entranceJ;
 
-		public MansionParameters(AbstractRandom random) {
+		public MansionParameters(Random random) {
 			this.random = random;
 			int i = 11;
 			this.entranceI = 7;
@@ -1169,7 +1167,7 @@ public class WoodlandMansionGenerator {
 		}
 
 		@Override
-		protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, AbstractRandom random, BlockBox boundingBox) {
+		protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox) {
 			if (metadata.startsWith("Chest")) {
 				BlockRotation blockRotation = this.placementData.getRotation();
 				BlockState blockState = Blocks.CHEST.getDefaultState();
@@ -1219,19 +1217,19 @@ public class WoodlandMansionGenerator {
 	 * Provides methods that sample room template identifiers.
 	 */
 	abstract static class RoomPool {
-		public abstract String getSmallRoom(AbstractRandom random);
+		public abstract String getSmallRoom(Random random);
 
-		public abstract String getSmallSecretRoom(AbstractRandom random);
+		public abstract String getSmallSecretRoom(Random random);
 
-		public abstract String getMediumFunctionalRoom(AbstractRandom random, boolean staircase);
+		public abstract String getMediumFunctionalRoom(Random random, boolean staircase);
 
-		public abstract String getMediumGenericRoom(AbstractRandom random, boolean staircase);
+		public abstract String getMediumGenericRoom(Random random, boolean staircase);
 
-		public abstract String getMediumSecretRoom(AbstractRandom random);
+		public abstract String getMediumSecretRoom(Random random);
 
-		public abstract String getBigRoom(AbstractRandom random);
+		public abstract String getBigRoom(Random random);
 
-		public abstract String getBigSecretRoom(AbstractRandom random);
+		public abstract String getBigSecretRoom(Random random);
 	}
 
 	/**
@@ -1239,37 +1237,37 @@ public class WoodlandMansionGenerator {
 	 */
 	static class SecondFloorRoomPool extends WoodlandMansionGenerator.RoomPool {
 		@Override
-		public String getSmallRoom(AbstractRandom random) {
+		public String getSmallRoom(Random random) {
 			return "1x1_b" + (random.nextInt(4) + 1);
 		}
 
 		@Override
-		public String getSmallSecretRoom(AbstractRandom random) {
+		public String getSmallSecretRoom(Random random) {
 			return "1x1_as" + (random.nextInt(4) + 1);
 		}
 
 		@Override
-		public String getMediumFunctionalRoom(AbstractRandom random, boolean staircase) {
+		public String getMediumFunctionalRoom(Random random, boolean staircase) {
 			return staircase ? "1x2_c_stairs" : "1x2_c" + (random.nextInt(4) + 1);
 		}
 
 		@Override
-		public String getMediumGenericRoom(AbstractRandom random, boolean staircase) {
+		public String getMediumGenericRoom(Random random, boolean staircase) {
 			return staircase ? "1x2_d_stairs" : "1x2_d" + (random.nextInt(5) + 1);
 		}
 
 		@Override
-		public String getMediumSecretRoom(AbstractRandom random) {
+		public String getMediumSecretRoom(Random random) {
 			return "1x2_se" + (random.nextInt(1) + 1);
 		}
 
 		@Override
-		public String getBigRoom(AbstractRandom random) {
+		public String getBigRoom(Random random) {
 			return "2x2_b" + (random.nextInt(5) + 1);
 		}
 
 		@Override
-		public String getBigSecretRoom(AbstractRandom random) {
+		public String getBigSecretRoom(Random random) {
 			return "2x2_s1";
 		}
 	}

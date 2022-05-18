@@ -42,7 +42,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
@@ -96,7 +96,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		return entityData;
 	}
 
-	public static boolean canSpawn(EntityType<DrownedEntity> type, ServerWorldAccess world, SpawnReason spawnReason, BlockPos pos, AbstractRandom random) {
+	public static boolean canSpawn(EntityType<DrownedEntity> type, ServerWorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		if (!world.getFluidState(pos.down()).isIn(FluidTags.WATER)) {
 			return false;
 		} else {
@@ -150,7 +150,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 	}
 
 	@Override
-	protected void initEquipment(AbstractRandom random, LocalDifficulty localDifficulty) {
+	protected void initEquipment(Random random, LocalDifficulty localDifficulty) {
 		if ((double)random.nextFloat() > 0.9) {
 			int i = random.nextInt(16);
 			if (i < 10) {
@@ -480,11 +480,11 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 
 		@Nullable
 		private Vec3d getWanderTarget() {
-			AbstractRandom abstractRandom = this.mob.getRandom();
+			Random random = this.mob.getRandom();
 			BlockPos blockPos = this.mob.getBlockPos();
 
 			for (int i = 0; i < 10; i++) {
-				BlockPos blockPos2 = blockPos.add(abstractRandom.nextInt(20) - 10, 2 - abstractRandom.nextInt(8), abstractRandom.nextInt(20) - 10);
+				BlockPos blockPos2 = blockPos.add(random.nextInt(20) - 10, 2 - random.nextInt(8), random.nextInt(20) - 10);
 				if (this.world.getBlockState(blockPos2).isOf(Blocks.WATER)) {
 					return Vec3d.ofBottomCenter(blockPos2);
 				}

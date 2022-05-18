@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.collection.Weighted;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class WeightedListIntProvider extends IntProvider {
 	public static final Codec<WeightedListIntProvider> CODEC = RecordCodecBuilder.create(
@@ -34,7 +34,7 @@ public class WeightedListIntProvider extends IntProvider {
 	}
 
 	@Override
-	public int get(AbstractRandom random) {
+	public int get(Random random) {
 		return ((IntProvider)this.weightedList.getDataOrEmpty(random).orElseThrow(IllegalStateException::new)).get(random);
 	}
 

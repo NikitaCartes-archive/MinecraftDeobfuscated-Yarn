@@ -12,7 +12,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.IntProvider;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.TreeFeature;
@@ -42,14 +42,14 @@ public abstract class RootPlacer {
 	protected abstract RootPlacerType<?> getType();
 
 	public abstract boolean generate(
-		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, BlockPos pos, BlockPos trunkPos, TreeFeatureConfig config
+		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, BlockPos pos, BlockPos trunkPos, TreeFeatureConfig config
 	);
 
 	protected boolean canGrowThrough(TestableWorld world, BlockPos pos) {
 		return TreeFeature.canReplace(world, pos);
 	}
 
-	protected void placeRoots(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, BlockPos pos, TreeFeatureConfig config) {
+	protected void placeRoots(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, BlockPos pos, TreeFeatureConfig config) {
 		if (this.canGrowThrough(world, pos)) {
 			replacer.accept(pos, this.applyWaterlogging(world, pos, this.rootProvider.getBlockState(random, pos)));
 			if (this.aboveRootPlacement.isPresent()) {
@@ -71,7 +71,7 @@ public abstract class RootPlacer {
 		}
 	}
 
-	public BlockPos trunkOffset(BlockPos pos, AbstractRandom random) {
+	public BlockPos trunkOffset(BlockPos pos, Random random) {
 		return pos.up(this.trunkOffsetY.get(random));
 	}
 }

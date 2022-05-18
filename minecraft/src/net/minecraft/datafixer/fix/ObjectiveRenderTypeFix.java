@@ -10,8 +10,8 @@ import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 
 public class ObjectiveRenderTypeFix extends DataFix {
-	public ObjectiveRenderTypeFix(Schema outputSchema, boolean changesType) {
-		super(outputSchema, changesType);
+	public ObjectiveRenderTypeFix(Schema schema, boolean bl) {
+		super(schema, bl);
 	}
 
 	private static ScoreboardCriterion.RenderType parseLegacyRenderType(String oldName) {

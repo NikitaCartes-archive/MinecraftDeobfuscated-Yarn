@@ -9,7 +9,7 @@ import it.unimi.dsi.fastutil.doubles.DoubleListIterator;
 import java.util.List;
 import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.RegistryElementCodec;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 
@@ -23,19 +23,19 @@ public class DoublePerlinNoiseSampler {
 	private final DoublePerlinNoiseSampler.NoiseParameters field_37207;
 
 	@Deprecated
-	public static DoublePerlinNoiseSampler createLegacy(AbstractRandom random, DoublePerlinNoiseSampler.NoiseParameters parameters) {
+	public static DoublePerlinNoiseSampler createLegacy(Random random, DoublePerlinNoiseSampler.NoiseParameters parameters) {
 		return new DoublePerlinNoiseSampler(random, parameters, false);
 	}
 
-	public static DoublePerlinNoiseSampler create(AbstractRandom random, int offset, double... octaves) {
+	public static DoublePerlinNoiseSampler create(Random random, int offset, double... octaves) {
 		return create(random, new DoublePerlinNoiseSampler.NoiseParameters(offset, new DoubleArrayList(octaves)));
 	}
 
-	public static DoublePerlinNoiseSampler create(AbstractRandom random, DoublePerlinNoiseSampler.NoiseParameters parameters) {
+	public static DoublePerlinNoiseSampler create(Random random, DoublePerlinNoiseSampler.NoiseParameters parameters) {
 		return new DoublePerlinNoiseSampler(random, parameters, true);
 	}
 
-	private DoublePerlinNoiseSampler(AbstractRandom random, DoublePerlinNoiseSampler.NoiseParameters noiseParameters, boolean bl) {
+	private DoublePerlinNoiseSampler(Random random, DoublePerlinNoiseSampler.NoiseParameters noiseParameters, boolean bl) {
 		int i = noiseParameters.firstOctave;
 		DoubleList doubleList = noiseParameters.amplitudes;
 		this.field_37207 = noiseParameters;

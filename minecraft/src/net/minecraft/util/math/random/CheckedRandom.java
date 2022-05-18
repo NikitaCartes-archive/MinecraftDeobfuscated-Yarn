@@ -4,9 +4,11 @@ import com.google.common.annotations.VisibleForTesting;
 import java.util.concurrent.atomic.AtomicLong;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.thread.LockHelper;
-import net.minecraft.world.gen.random.GaussianGenerator;
 
-public class AtomicSimpleRandom implements BaseSimpleRandom {
+/**
+ * A checked random that fails fast when it detects concurrent usage.
+ */
+public class CheckedRandom implements BaseRandom {
 	private static final int INT_BITS = 48;
 	private static final long SEED_MASK = 281474976710655L;
 	private static final long MULTIPLIER = 25214903917L;
@@ -14,18 +16,18 @@ public class AtomicSimpleRandom implements BaseSimpleRandom {
 	private final AtomicLong seed = new AtomicLong();
 	private final GaussianGenerator gaussianGenerator = new GaussianGenerator(this);
 
-	public AtomicSimpleRandom(long seed) {
+	public CheckedRandom(long seed) {
 		this.setSeed(seed);
 	}
 
 	@Override
-	public AbstractRandom derive() {
-		return new AtomicSimpleRandom(this.nextLong());
+	public Random split() {
+		return new CheckedRandom(this.nextLong());
 	}
 
 	@Override
-	public net.minecraft.util.math.random.RandomDeriver createRandomDeriver() {
-		return new AtomicSimpleRandom.RandomDeriver(this.nextLong());
+	public RandomSplitter nextSplitter() {
+		return new CheckedRandom.Splitter(this.nextLong());
 	}
 
 	@Override
@@ -53,24 +55,24 @@ public class AtomicSimpleRandom implements BaseSimpleRandom {
 		return this.gaussianGenerator.next();
 	}
 
-	public static class RandomDeriver implements net.minecraft.util.math.random.RandomDeriver {
+	public static class Splitter implements RandomSplitter {
 		private final long seed;
 
-		public RandomDeriver(long seed) {
+		public Splitter(long seed) {
 			this.seed = seed;
 		}
 
 		@Override
-		public AbstractRandom createRandom(int x, int y, int z) {
+		public Random split(int x, int y, int z) {
 			long l = MathHelper.hashCode(x, y, z);
 			long m = l ^ this.seed;
-			return new AtomicSimpleRandom(m);
+			return new CheckedRandom(m);
 		}
 
 		@Override
-		public AbstractRandom createRandom(String string) {
-			int i = string.hashCode();
-			return new AtomicSimpleRandom((long)i ^ this.seed);
+		public Random split(String seed) {
+			int i = seed.hashCode();
+			return new CheckedRandom((long)i ^ this.seed);
 		}
 
 		@VisibleForTesting

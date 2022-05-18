@@ -6,11 +6,11 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 @Environment(EnvType.CLIENT)
 public class PositionedSoundInstance extends AbstractSoundInstance {
-	public PositionedSoundInstance(SoundEvent sound, SoundCategory category, float volume, float pitch, AbstractRandom random, BlockPos pos) {
+	public PositionedSoundInstance(SoundEvent sound, SoundCategory category, float volume, float pitch, Random random, BlockPos pos) {
 		this(sound, category, volume, pitch, random, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5);
 	}
 
@@ -46,11 +46,11 @@ public class PositionedSoundInstance extends AbstractSoundInstance {
 		return ambient(sound, 1.0F, 1.0F);
 	}
 
-	public static PositionedSoundInstance ambient(SoundEvent sound, AbstractRandom random, double x, double y, double z) {
+	public static PositionedSoundInstance ambient(SoundEvent sound, Random random, double x, double y, double z) {
 		return new PositionedSoundInstance(sound, SoundCategory.AMBIENT, 1.0F, 1.0F, random, false, 0, SoundInstance.AttenuationType.LINEAR, x, y, z);
 	}
 
-	public PositionedSoundInstance(SoundEvent sound, SoundCategory category, float volume, float pitch, AbstractRandom random, double x, double y, double z) {
+	public PositionedSoundInstance(SoundEvent sound, SoundCategory category, float volume, float pitch, Random random, double x, double y, double z) {
 		this(sound, category, volume, pitch, random, false, 0, SoundInstance.AttenuationType.LINEAR, x, y, z);
 	}
 
@@ -59,7 +59,7 @@ public class PositionedSoundInstance extends AbstractSoundInstance {
 		SoundCategory category,
 		float volume,
 		float pitch,
-		AbstractRandom random,
+		Random random,
 		boolean repeat,
 		int repeatDelay,
 		SoundInstance.AttenuationType attenuationType,
@@ -75,7 +75,7 @@ public class PositionedSoundInstance extends AbstractSoundInstance {
 		SoundCategory category,
 		float volume,
 		float pitch,
-		AbstractRandom random,
+		Random random,
 		boolean repeat,
 		int repeatDelay,
 		SoundInstance.AttenuationType attenuationType,

@@ -59,7 +59,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -90,7 +90,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 		this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, 0.0F);
 	}
 
-	public static boolean canSpawn(EntityType<StriderEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, AbstractRandom random) {
+	public static boolean canSpawn(EntityType<StriderEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		BlockPos.Mutable mutable = pos.mutableCopy();
 
 		do {
@@ -444,14 +444,14 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 		if (this.isBaby()) {
 			return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 		} else {
-			AbstractRandom abstractRandom = world.getRandom();
+			Random random = world.getRandom();
 			Object var8;
-			if (abstractRandom.nextInt(30) == 0) {
+			if (random.nextInt(30) == 0) {
 				MobEntity mobEntity = EntityType.ZOMBIFIED_PIGLIN.create(world.toServerWorld());
-				var8 = this.initializeRider(world, difficulty, mobEntity, new ZombieEntity.ZombieData(ZombieEntity.shouldBeBaby(abstractRandom), false));
+				var8 = this.initializeRider(world, difficulty, mobEntity, new ZombieEntity.ZombieData(ZombieEntity.shouldBeBaby(random), false));
 				mobEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.WARPED_FUNGUS_ON_A_STICK));
 				this.saddle(null);
-			} else if (abstractRandom.nextInt(10) == 0) {
+			} else if (random.nextInt(10) == 0) {
 				PassiveEntity passiveEntity = EntityType.STRIDER.create(world.toServerWorld());
 				passiveEntity.setBreedingAge(-24000);
 				var8 = this.initializeRider(world, difficulty, passiveEntity, null);

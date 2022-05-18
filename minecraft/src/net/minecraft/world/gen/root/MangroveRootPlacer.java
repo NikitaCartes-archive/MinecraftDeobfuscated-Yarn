@@ -10,7 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.intprovider.IntProvider;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
@@ -34,7 +34,7 @@ public class MangroveRootPlacer extends RootPlacer {
 
 	@Override
 	public boolean generate(
-		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, BlockPos pos, BlockPos trunkPos, TreeFeatureConfig config
+		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, BlockPos pos, BlockPos trunkPos, TreeFeatureConfig config
 	) {
 		List<BlockPos> list = Lists.<BlockPos>newArrayList();
 		BlockPos.Mutable mutable = pos.mutableCopy();
@@ -68,7 +68,7 @@ public class MangroveRootPlacer extends RootPlacer {
 	}
 
 	private boolean canGrow(
-		TestableWorld world, AbstractRandom random, BlockPos pos, Direction direction, BlockPos origin, List<BlockPos> offshootPositions, int rootLength
+		TestableWorld world, Random random, BlockPos pos, Direction direction, BlockPos origin, List<BlockPos> offshootPositions, int rootLength
 	) {
 		int i = this.mangroveRootPlacement.maxRootLength();
 		if (rootLength != i && offshootPositions.size() <= i) {
@@ -87,7 +87,7 @@ public class MangroveRootPlacer extends RootPlacer {
 		}
 	}
 
-	protected List<BlockPos> getOffshootPositions(BlockPos pos, Direction direction, AbstractRandom random, BlockPos origin) {
+	protected List<BlockPos> getOffshootPositions(BlockPos pos, Direction direction, Random random, BlockPos origin) {
 		BlockPos blockPos = pos.down();
 		BlockPos blockPos2 = pos.offset(direction);
 		int i = pos.getManhattanDistance(origin);
@@ -110,7 +110,7 @@ public class MangroveRootPlacer extends RootPlacer {
 	}
 
 	@Override
-	protected void placeRoots(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, BlockPos pos, TreeFeatureConfig config) {
+	protected void placeRoots(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, BlockPos pos, TreeFeatureConfig config) {
 		if (world.testBlockState(pos, state -> state.isIn(this.mangroveRootPlacement.muddyRootsIn()))) {
 			BlockState blockState = this.mangroveRootPlacement.muddyRootsProvider().getBlockState(random, pos);
 			replacer.accept(pos, this.applyWaterlogging(world, pos, blockState));

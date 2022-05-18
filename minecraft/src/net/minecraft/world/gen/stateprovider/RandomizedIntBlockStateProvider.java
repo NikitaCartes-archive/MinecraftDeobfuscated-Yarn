@@ -10,7 +10,7 @@ import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.IntProvider;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 /**
  * A {@linkplain BlockStateProvider block state provider} that randomizes a single {@link IntProperty} of a block state provided by another provider.
@@ -56,7 +56,7 @@ public class RandomizedIntBlockStateProvider extends BlockStateProvider {
 	}
 
 	@Override
-	public BlockState getBlockState(AbstractRandom random, BlockPos pos) {
+	public BlockState getBlockState(Random random, BlockPos pos) {
 		BlockState blockState = this.source.getBlockState(random, pos);
 		if (this.property == null || !blockState.contains(this.property)) {
 			this.property = getIntPropertyByName(blockState, this.propertyName);

@@ -29,6 +29,7 @@ public class TemptTask extends Task<PathAwareEntity> {
 			builder.put(MemoryModuleType.IS_TEMPTED, MemoryModuleState.REGISTERED);
 			builder.put(MemoryModuleType.TEMPTING_PLAYER, MemoryModuleState.VALUE_PRESENT);
 			builder.put(MemoryModuleType.BREED_TARGET, MemoryModuleState.VALUE_ABSENT);
+			builder.put(MemoryModuleType.IS_PANICKING, MemoryModuleState.VALUE_ABSENT);
 			return builder.build();
 		}));
 		this.speed = speed;
@@ -48,7 +49,9 @@ public class TemptTask extends Task<PathAwareEntity> {
 	}
 
 	protected boolean shouldKeepRunning(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
-		return this.getTemptingPlayer(pathAwareEntity).isPresent() && !pathAwareEntity.getBrain().hasMemoryModule(MemoryModuleType.BREED_TARGET);
+		return this.getTemptingPlayer(pathAwareEntity).isPresent()
+			&& !pathAwareEntity.getBrain().hasMemoryModule(MemoryModuleType.BREED_TARGET)
+			&& !pathAwareEntity.getBrain().hasMemoryModule(MemoryModuleType.IS_PANICKING);
 	}
 
 	protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {

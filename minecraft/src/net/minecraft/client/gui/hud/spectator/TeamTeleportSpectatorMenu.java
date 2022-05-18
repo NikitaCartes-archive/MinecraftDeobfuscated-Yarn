@@ -16,7 +16,7 @@ import net.minecraft.scoreboard.Team;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 @Environment(EnvType.CLIENT)
 public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, SpectatorMenuCommand {
@@ -89,7 +89,7 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 			if (this.scoreboardEntries.isEmpty()) {
 				this.skinId = DefaultSkinHelper.getTexture();
 			} else {
-				String string2 = ((PlayerListEntry)this.scoreboardEntries.get(AbstractRandom.createAtomic().nextInt(this.scoreboardEntries.size()))).getProfile().getName();
+				String string2 = ((PlayerListEntry)this.scoreboardEntries.get(Random.create().nextInt(this.scoreboardEntries.size()))).getProfile().getName();
 				this.skinId = AbstractClientPlayerEntity.getSkinId(string2);
 				AbstractClientPlayerEntity.loadSkin(this.skinId, string2);
 			}

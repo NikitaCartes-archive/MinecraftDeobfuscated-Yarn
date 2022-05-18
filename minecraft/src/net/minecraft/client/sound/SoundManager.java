@@ -27,7 +27,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.floatprovider.ConstantFloatProvider;
 import net.minecraft.util.math.floatprovider.MultipliedFloatSupplier;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
@@ -259,12 +259,12 @@ public class SoundManager extends SinglePreparationResourceReloader<SoundManager
 								return weightedSoundSet == null ? 0 : weightedSoundSet.getWeight();
 							}
 
-							public Sound getSound(AbstractRandom abstractRandom) {
+							public Sound getSound(Random random) {
 								WeightedSoundSet weightedSoundSet = (WeightedSoundSet)SoundList.this.loadedSounds.get(identifier);
 								if (weightedSoundSet == null) {
 									return SoundManager.MISSING_SOUND;
 								} else {
-									Sound sound = weightedSoundSet.getSound(abstractRandom);
+									Sound sound = weightedSoundSet.getSound(random);
 									return new Sound(
 										sound.getIdentifier().toString(),
 										new MultipliedFloatSupplier(sound.getVolume(), sound.getVolume()),

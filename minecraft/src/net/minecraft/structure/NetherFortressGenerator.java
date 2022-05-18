@@ -18,7 +18,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -46,7 +46,7 @@ public class NetherFortressGenerator {
 	};
 
 	static NetherFortressGenerator.Piece createPiece(
-		NetherFortressGenerator.PieceData pieceData, StructurePiecesHolder holder, AbstractRandom random, int x, int y, int z, Direction orientation, int chainLength
+		NetherFortressGenerator.PieceData pieceData, StructurePiecesHolder holder, Random random, int x, int y, int z, Direction orientation, int chainLength
 	) {
 		Class<? extends NetherFortressGenerator.Piece> class_ = pieceData.pieceType;
 		NetherFortressGenerator.Piece piece = null;
@@ -86,7 +86,7 @@ public class NetherFortressGenerator {
 		private static final int SIZE_Y = 10;
 		private static final int SIZE_Z = 19;
 
-		public Bridge(int chainLength, AbstractRandom random, BlockBox boundingBox, Direction orientation) {
+		public Bridge(int chainLength, Random random, BlockBox boundingBox, Direction orientation) {
 			super(StructurePieceType.NETHER_FORTRESS_BRIDGE, chainLength, boundingBox);
 			this.setOrientation(orientation);
 		}
@@ -96,13 +96,11 @@ public class NetherFortressGenerator {
 		}
 
 		@Override
-		public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, AbstractRandom random) {
+		public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, Random random) {
 			this.fillForwardOpening((NetherFortressGenerator.Start)start, holder, random, 1, 3, false);
 		}
 
-		public static NetherFortressGenerator.Bridge create(
-			StructurePiecesHolder holder, AbstractRandom random, int x, int y, int z, Direction orientation, int chainLength
-		) {
+		public static NetherFortressGenerator.Bridge create(StructurePiecesHolder holder, Random random, int x, int y, int z, Direction orientation, int chainLength) {
 			BlockBox blockBox = BlockBox.rotated(x, y, z, -1, -3, 0, 5, 10, 19, orientation);
 			return isInBounds(blockBox) && holder.getIntersecting(blockBox) == null
 				? new NetherFortressGenerator.Bridge(chainLength, random, blockBox, orientation)
@@ -114,7 +112,7 @@ public class NetherFortressGenerator {
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
-			AbstractRandom random,
+			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
 			BlockPos pos
@@ -176,7 +174,7 @@ public class NetherFortressGenerator {
 		}
 
 		@Override
-		public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, AbstractRandom random) {
+		public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, Random random) {
 			this.fillForwardOpening((NetherFortressGenerator.Start)start, holder, random, 8, 3, false);
 			this.fillNWOpening((NetherFortressGenerator.Start)start, holder, random, 3, 8, false);
 			this.fillSEOpening((NetherFortressGenerator.Start)start, holder, random, 3, 8, false);
@@ -194,7 +192,7 @@ public class NetherFortressGenerator {
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
-			AbstractRandom random,
+			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
 			BlockPos pos
@@ -243,7 +241,7 @@ public class NetherFortressGenerator {
 		private static final int SIZE_Z = 8;
 		private final int seed;
 
-		public BridgeEnd(int chainLength, AbstractRandom random, BlockBox boundingBox, Direction orientation) {
+		public BridgeEnd(int chainLength, Random random, BlockBox boundingBox, Direction orientation) {
 			super(StructurePieceType.NETHER_FORTRESS_BRIDGE_END, chainLength, boundingBox);
 			this.setOrientation(orientation);
 			this.seed = random.nextInt();
@@ -255,7 +253,7 @@ public class NetherFortressGenerator {
 		}
 
 		public static NetherFortressGenerator.BridgeEnd create(
-			StructurePiecesHolder holder, AbstractRandom random, int x, int y, int z, Direction orientation, int chainLength
+			StructurePiecesHolder holder, Random random, int x, int y, int z, Direction orientation, int chainLength
 		) {
 			BlockBox blockBox = BlockBox.rotated(x, y, z, -1, -3, 0, 5, 10, 8, orientation);
 			return isInBounds(blockBox) && holder.getIntersecting(blockBox) == null
@@ -274,33 +272,33 @@ public class NetherFortressGenerator {
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
-			AbstractRandom random,
+			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
 			BlockPos pos
 		) {
-			AbstractRandom abstractRandom = AbstractRandom.createAtomic((long)this.seed);
+			Random random2 = Random.create((long)this.seed);
 
 			for (int i = 0; i <= 4; i++) {
 				for (int j = 3; j <= 4; j++) {
-					int k = abstractRandom.nextInt(8);
+					int k = random2.nextInt(8);
 					this.fillWithOutline(world, chunkBox, i, j, 0, i, j, k, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
 				}
 			}
 
-			int i = abstractRandom.nextInt(8);
+			int i = random2.nextInt(8);
 			this.fillWithOutline(world, chunkBox, 0, 5, 0, 0, 5, i, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
-			i = abstractRandom.nextInt(8);
+			i = random2.nextInt(8);
 			this.fillWithOutline(world, chunkBox, 4, 5, 0, 4, 5, i, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
 
 			for (int ix = 0; ix <= 4; ix++) {
-				int j = abstractRandom.nextInt(5);
+				int j = random2.nextInt(5);
 				this.fillWithOutline(world, chunkBox, ix, 2, 0, ix, 2, j, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
 			}
 
 			for (int ix = 0; ix <= 4; ix++) {
 				for (int j = 0; j <= 1; j++) {
-					int k = abstractRandom.nextInt(3);
+					int k = random2.nextInt(3);
 					this.fillWithOutline(world, chunkBox, ix, j, 0, ix, j, k, Blocks.NETHER_BRICKS.getDefaultState(), Blocks.NETHER_BRICKS.getDefaultState(), false);
 				}
 			}
@@ -341,7 +339,7 @@ public class NetherFortressGenerator {
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
-			AbstractRandom random,
+			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
 			BlockPos pos
@@ -444,7 +442,7 @@ public class NetherFortressGenerator {
 		}
 
 		@Override
-		public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, AbstractRandom random) {
+		public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, Random random) {
 			this.fillForwardOpening((NetherFortressGenerator.Start)start, holder, random, 2, 0, false);
 			this.fillNWOpening((NetherFortressGenerator.Start)start, holder, random, 0, 2, false);
 			this.fillSEOpening((NetherFortressGenerator.Start)start, holder, random, 0, 2, false);
@@ -462,7 +460,7 @@ public class NetherFortressGenerator {
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
-			AbstractRandom random,
+			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
 			BlockPos pos
@@ -517,7 +515,7 @@ public class NetherFortressGenerator {
 		}
 
 		@Override
-		public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, AbstractRandom random) {
+		public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, Random random) {
 			this.fillSEOpening((NetherFortressGenerator.Start)start, holder, random, 6, 2, false);
 		}
 
@@ -533,7 +531,7 @@ public class NetherFortressGenerator {
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
-			AbstractRandom random,
+			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
 			BlockPos pos
@@ -589,7 +587,7 @@ public class NetherFortressGenerator {
 		}
 
 		@Override
-		public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, AbstractRandom random) {
+		public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, Random random) {
 			int i = 1;
 			Direction direction = this.getFacing();
 			if (direction == Direction.WEST || direction == Direction.NORTH) {
@@ -612,7 +610,7 @@ public class NetherFortressGenerator {
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
-			AbstractRandom random,
+			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
 			BlockPos pos
@@ -684,7 +682,7 @@ public class NetherFortressGenerator {
 		}
 
 		@Override
-		public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, AbstractRandom random) {
+		public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, Random random) {
 			this.fillForwardOpening((NetherFortressGenerator.Start)start, holder, random, 1, 0, true);
 			this.fillNWOpening((NetherFortressGenerator.Start)start, holder, random, 0, 1, true);
 			this.fillSEOpening((NetherFortressGenerator.Start)start, holder, random, 0, 1, true);
@@ -702,7 +700,7 @@ public class NetherFortressGenerator {
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
-			AbstractRandom random,
+			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
 			BlockPos pos
@@ -728,7 +726,7 @@ public class NetherFortressGenerator {
 		private static final int SIZE_Y = 14;
 		private static final int SIZE_Z = 13;
 
-		public CorridorExit(int chainLength, AbstractRandom random, BlockBox boundingBox, Direction orientation) {
+		public CorridorExit(int chainLength, Random random, BlockBox boundingBox, Direction orientation) {
 			super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_EXIT, chainLength, boundingBox);
 			this.setOrientation(orientation);
 		}
@@ -738,12 +736,12 @@ public class NetherFortressGenerator {
 		}
 
 		@Override
-		public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, AbstractRandom random) {
+		public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, Random random) {
 			this.fillForwardOpening((NetherFortressGenerator.Start)start, holder, random, 5, 3, true);
 		}
 
 		public static NetherFortressGenerator.CorridorExit create(
-			StructurePiecesHolder holder, AbstractRandom random, int x, int y, int z, Direction orientation, int chainLength
+			StructurePiecesHolder holder, Random random, int x, int y, int z, Direction orientation, int chainLength
 		) {
 			BlockBox blockBox = BlockBox.rotated(x, y, z, -5, -3, 0, 13, 14, 13, orientation);
 			return isInBounds(blockBox) && holder.getIntersecting(blockBox) == null
@@ -756,7 +754,7 @@ public class NetherFortressGenerator {
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
-			AbstractRandom random,
+			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
 			BlockPos pos
@@ -899,7 +897,7 @@ public class NetherFortressGenerator {
 		private static final int SIZE_Z = 5;
 		private boolean containsChest;
 
-		public CorridorLeftTurn(int chainLength, AbstractRandom random, BlockBox boundingBox, Direction orientation) {
+		public CorridorLeftTurn(int chainLength, Random random, BlockBox boundingBox, Direction orientation) {
 			super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_LEFT_TURN, chainLength, boundingBox);
 			this.setOrientation(orientation);
 			this.containsChest = random.nextInt(3) == 0;
@@ -917,12 +915,12 @@ public class NetherFortressGenerator {
 		}
 
 		@Override
-		public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, AbstractRandom random) {
+		public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, Random random) {
 			this.fillNWOpening((NetherFortressGenerator.Start)start, holder, random, 0, 1, true);
 		}
 
 		public static NetherFortressGenerator.CorridorLeftTurn create(
-			StructurePiecesHolder holder, AbstractRandom random, int x, int y, int z, Direction orientation, int chainLength
+			StructurePiecesHolder holder, Random random, int x, int y, int z, Direction orientation, int chainLength
 		) {
 			BlockBox blockBox = BlockBox.rotated(x, y, z, -1, 0, 0, 5, 7, 5, orientation);
 			return isInBounds(blockBox) && holder.getIntersecting(blockBox) == null
@@ -935,7 +933,7 @@ public class NetherFortressGenerator {
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
-			AbstractRandom random,
+			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
 			BlockPos pos
@@ -987,7 +985,7 @@ public class NetherFortressGenerator {
 		}
 
 		@Override
-		public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, AbstractRandom random) {
+		public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, Random random) {
 			this.fillForwardOpening((NetherFortressGenerator.Start)start, holder, random, 5, 3, true);
 			this.fillForwardOpening((NetherFortressGenerator.Start)start, holder, random, 5, 11, true);
 		}
@@ -1006,7 +1004,7 @@ public class NetherFortressGenerator {
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
-			AbstractRandom random,
+			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
 			BlockPos pos
@@ -1164,7 +1162,7 @@ public class NetherFortressGenerator {
 		private static final int SIZE_Z = 5;
 		private boolean containsChest;
 
-		public CorridorRightTurn(int chainLength, AbstractRandom random, BlockBox boundingBox, Direction orientation) {
+		public CorridorRightTurn(int chainLength, Random random, BlockBox boundingBox, Direction orientation) {
 			super(StructurePieceType.NETHER_FORTRESS_CORRIDOR_RIGHT_TURN, chainLength, boundingBox);
 			this.setOrientation(orientation);
 			this.containsChest = random.nextInt(3) == 0;
@@ -1182,12 +1180,12 @@ public class NetherFortressGenerator {
 		}
 
 		@Override
-		public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, AbstractRandom random) {
+		public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, Random random) {
 			this.fillSEOpening((NetherFortressGenerator.Start)start, holder, random, 0, 1, true);
 		}
 
 		public static NetherFortressGenerator.CorridorRightTurn create(
-			StructurePiecesHolder holder, AbstractRandom random, int x, int y, int z, Direction orientation, int chainLength
+			StructurePiecesHolder holder, Random random, int x, int y, int z, Direction orientation, int chainLength
 		) {
 			BlockBox blockBox = BlockBox.rotated(x, y, z, -1, 0, 0, 5, 7, 5, orientation);
 			return isInBounds(blockBox) && holder.getIntersecting(blockBox) == null
@@ -1200,7 +1198,7 @@ public class NetherFortressGenerator {
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
-			AbstractRandom random,
+			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
 			BlockPos pos
@@ -1252,7 +1250,7 @@ public class NetherFortressGenerator {
 		}
 
 		@Override
-		public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, AbstractRandom random) {
+		public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, Random random) {
 			this.fillForwardOpening((NetherFortressGenerator.Start)start, holder, random, 1, 0, true);
 		}
 
@@ -1268,7 +1266,7 @@ public class NetherFortressGenerator {
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
-			AbstractRandom random,
+			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
 			BlockPos pos
@@ -1338,7 +1336,7 @@ public class NetherFortressGenerator {
 			NetherFortressGenerator.Start start,
 			List<NetherFortressGenerator.PieceData> possiblePieces,
 			StructurePiecesHolder holder,
-			AbstractRandom random,
+			Random random,
 			int x,
 			int y,
 			int z,
@@ -1380,7 +1378,7 @@ public class NetherFortressGenerator {
 		private StructurePiece pieceGenerator(
 			NetherFortressGenerator.Start start,
 			StructurePiecesHolder holder,
-			AbstractRandom random,
+			Random random,
 			int x,
 			int y,
 			int z,
@@ -1408,7 +1406,7 @@ public class NetherFortressGenerator {
 
 		@Nullable
 		protected StructurePiece fillForwardOpening(
-			NetherFortressGenerator.Start start, StructurePiecesHolder holder, AbstractRandom random, int leftRightOffset, int heightOffset, boolean inside
+			NetherFortressGenerator.Start start, StructurePiecesHolder holder, Random random, int leftRightOffset, int heightOffset, boolean inside
 		) {
 			Direction direction = this.getFacing();
 			if (direction != null) {
@@ -1469,7 +1467,7 @@ public class NetherFortressGenerator {
 
 		@Nullable
 		protected StructurePiece fillNWOpening(
-			NetherFortressGenerator.Start start, StructurePiecesHolder holder, AbstractRandom random, int heightOffset, int leftRightOffset, boolean inside
+			NetherFortressGenerator.Start start, StructurePiecesHolder holder, Random random, int heightOffset, int leftRightOffset, boolean inside
 		) {
 			Direction direction = this.getFacing();
 			if (direction != null) {
@@ -1530,7 +1528,7 @@ public class NetherFortressGenerator {
 
 		@Nullable
 		protected StructurePiece fillSEOpening(
-			NetherFortressGenerator.Start start, StructurePiecesHolder holder, AbstractRandom random, int heightOffset, int leftRightOffset, boolean inside
+			NetherFortressGenerator.Start start, StructurePiecesHolder holder, Random random, int heightOffset, int leftRightOffset, boolean inside
 		) {
 			Direction direction = this.getFacing();
 			if (direction != null) {
@@ -1636,7 +1634,7 @@ public class NetherFortressGenerator {
 		}
 
 		@Override
-		public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, AbstractRandom random) {
+		public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, Random random) {
 			this.fillForwardOpening((NetherFortressGenerator.Start)start, holder, random, 1, 0, true);
 		}
 
@@ -1652,7 +1650,7 @@ public class NetherFortressGenerator {
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
-			AbstractRandom random,
+			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
 			BlockPos pos
@@ -1685,7 +1683,7 @@ public class NetherFortressGenerator {
 		public List<NetherFortressGenerator.PieceData> corridorPieces;
 		public final List<StructurePiece> pieces = Lists.<StructurePiece>newArrayList();
 
-		public Start(AbstractRandom random, int x, int z) {
+		public Start(Random random, int x, int z) {
 			super(x, z, getRandomHorizontalDirection(random));
 			this.bridgePieces = Lists.<NetherFortressGenerator.PieceData>newArrayList();
 

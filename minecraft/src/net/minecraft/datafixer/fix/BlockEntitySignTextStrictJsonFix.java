@@ -12,8 +12,8 @@ import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.serialization.Dynamic;
 import java.lang.reflect.Type;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.datafixer.TypeReferences;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.JsonHelper;
@@ -44,8 +44,8 @@ public class BlockEntitySignTextStrictJsonFix extends ChoiceFix {
 		}
 	}).create();
 
-	public BlockEntitySignTextStrictJsonFix(Schema outputSchema, boolean changesType) {
-		super(outputSchema, changesType, "BlockEntitySignTextStrictJsonFix", TypeReferences.BLOCK_ENTITY, "Sign");
+	public BlockEntitySignTextStrictJsonFix(Schema schema, boolean bl) {
+		super(schema, bl, "BlockEntitySignTextStrictJsonFix", TypeReferences.BLOCK_ENTITY, "Sign");
 	}
 
 	private Dynamic<?> fix(Dynamic<?> dynamic, String lineName) {

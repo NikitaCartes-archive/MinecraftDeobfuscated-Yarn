@@ -1,24 +1,36 @@
-package net.minecraft.world.gen.random;
+package net.minecraft.util.math.random;
 
 import com.google.common.annotations.VisibleForTesting;
 import java.util.concurrent.atomic.AtomicLong;
 
 public final class RandomSeed {
-	public static final long XOROSHIRO64_SEED_LO_FALLBACK = -7046029254386353131L;
-	public static final long XOROSHIRO64_SEED_HI_FALLBACK = 7640891576956012809L;
+	/**
+	 * @see jdk.internal.util.random.RandomSupport#GOLDEN_RATIO_64
+	 */
+	public static final long GOLDEN_RATIO_64 = -7046029254386353131L;
+	/**
+	 * @see jdk.internal.util.random.RandomSupport#SILVER_RATIO_64
+	 */
+	public static final long SILVER_RATIO_64 = 7640891576956012809L;
 	private static final AtomicLong SEED_UNIQUIFIER = new AtomicLong(8682522807148012L);
 
+	/**
+	 * @see jdk.internal.util.random.RandomSupport#mixStafford13(long)
+	 */
 	@VisibleForTesting
-	public static long nextSplitMix64Int(long seed) {
+	public static long mixStafford13(long seed) {
 		seed = (seed ^ seed >>> 30) * -4658895280553007687L;
 		seed = (seed ^ seed >>> 27) * -7723592293110705685L;
 		return seed ^ seed >>> 31;
 	}
 
+	/**
+	 * @see jdk.random.Xoroshiro128PlusPlus#Xoroshiro128PlusPlus(long)
+	 */
 	public static RandomSeed.XoroshiroSeed createXoroshiroSeed(long seed) {
 		long l = seed ^ 7640891576956012809L;
 		long m = l + -7046029254386353131L;
-		return new RandomSeed.XoroshiroSeed(nextSplitMix64Int(l), nextSplitMix64Int(m));
+		return new RandomSeed.XoroshiroSeed(mixStafford13(l), mixStafford13(m));
 	}
 
 	/**

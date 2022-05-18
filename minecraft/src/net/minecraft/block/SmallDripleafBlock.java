@@ -17,7 +17,7 @@ import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -104,12 +104,12 @@ public class SmallDripleafBlock extends TallPlantBlock implements Fertilizable, 
 	}
 
 	@Override
-	public boolean canGrow(World world, AbstractRandom random, BlockPos pos, BlockState state) {
+	public boolean canGrow(World world, Random random, BlockPos pos, BlockState state) {
 		return true;
 	}
 
 	@Override
-	public void grow(ServerWorld world, AbstractRandom random, BlockPos pos, BlockState state) {
+	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
 		if (state.get(TallPlantBlock.HALF) == DoubleBlockHalf.LOWER) {
 			BlockPos blockPos = pos.up();
 			world.setBlockState(blockPos, world.getFluidState(blockPos).getBlockState(), Block.NOTIFY_LISTENERS | Block.FORCE_STATE);

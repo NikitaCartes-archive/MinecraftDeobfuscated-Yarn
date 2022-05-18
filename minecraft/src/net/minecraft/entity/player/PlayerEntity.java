@@ -611,14 +611,14 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public void onDeath(DamageSource source) {
-		super.onDeath(source);
+	public void onDeath(DamageSource damageSource) {
+		super.onDeath(damageSource);
 		this.refreshPosition();
 		if (!this.isSpectator()) {
-			this.drop(source);
+			this.drop(damageSource);
 		}
 
-		if (source != null) {
+		if (damageSource != null) {
 			this.setVelocity(
 				(double)(-MathHelper.cos((this.knockbackVelocity + this.getYaw()) * (float) (Math.PI / 180.0)) * 0.1F),
 				0.1F,
@@ -1699,8 +1699,9 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public void onKilledOther(ServerWorld world, LivingEntity other) {
+	public boolean onKilledOther(ServerWorld world, LivingEntity other) {
 		this.incrementStat(Stats.KILLED.getOrCreateStat(other.getType()));
+		return true;
 	}
 
 	@Override
@@ -1858,18 +1859,22 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
+	protected boolean isArmorSlot(EquipmentSlot slot) {
+		return slot.getType() == EquipmentSlot.Type.ARMOR;
+	}
+
+	@Override
 	public void equipStack(EquipmentSlot slot, ItemStack stack) {
 		this.processEquippedStack(stack);
 		if (slot == EquipmentSlot.MAINHAND) {
-			this.onEquipStack(stack, false);
 			this.inventory.main.set(this.inventory.selectedSlot, stack);
 		} else if (slot == EquipmentSlot.OFFHAND) {
-			this.onEquipStack(stack, true);
 			this.inventory.offHand.set(0, stack);
 		} else if (slot.getType() == EquipmentSlot.Type.ARMOR) {
-			this.onEquipStack(stack, true);
 			this.inventory.armor.set(slot.getEntitySlotId(), stack);
 		}
+
+		this.onEquipStack(slot, stack);
 	}
 
 	public boolean giveItemStack(ItemStack stack) {

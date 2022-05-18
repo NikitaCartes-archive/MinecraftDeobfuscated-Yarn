@@ -56,7 +56,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
@@ -369,7 +369,7 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	protected void initEquipment(AbstractRandom random, LocalDifficulty localDifficulty) {
+	protected void initEquipment(Random random, LocalDifficulty localDifficulty) {
 		super.initEquipment(random, localDifficulty);
 		if (random.nextFloat() < (this.world.getDifficulty() == Difficulty.HARD ? 0.05F : 0.01F)) {
 			int i = random.nextInt(3);
@@ -402,11 +402,11 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	public void onKilledOther(ServerWorld world, LivingEntity other) {
-		super.onKilledOther(world, other);
+	public boolean onKilledOther(ServerWorld world, LivingEntity other) {
+		boolean bl = super.onKilledOther(world, other);
 		if ((world.getDifficulty() == Difficulty.NORMAL || world.getDifficulty() == Difficulty.HARD) && other instanceof VillagerEntity) {
 			if (world.getDifficulty() != Difficulty.HARD && this.random.nextBoolean()) {
-				return;
+				return bl;
 			}
 
 			VillagerEntity villagerEntity = (VillagerEntity)other;
@@ -421,7 +421,11 @@ public class ZombieEntity extends HostileEntity {
 			if (!this.isSilent()) {
 				world.syncWorldEvent(null, WorldEvents.ZOMBIE_INFECTS_VILLAGER, this.getBlockPos(), 0);
 			}
+
+			bl = false;
 		}
+
+		return bl;
 	}
 
 	@Override
@@ -444,26 +448,26 @@ public class ZombieEntity extends HostileEntity {
 	public EntityData initialize(
 		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
-		AbstractRandom abstractRandom = world.getRandom();
+		Random random = world.getRandom();
 		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 		float f = difficulty.getClampedLocalDifficulty();
-		this.setCanPickUpLoot(abstractRandom.nextFloat() < 0.55F * f);
+		this.setCanPickUpLoot(random.nextFloat() < 0.55F * f);
 		if (entityData == null) {
-			entityData = new ZombieEntity.ZombieData(shouldBeBaby(abstractRandom), true);
+			entityData = new ZombieEntity.ZombieData(shouldBeBaby(random), true);
 		}
 
 		if (entityData instanceof ZombieEntity.ZombieData zombieData) {
 			if (zombieData.baby) {
 				this.setBaby(true);
 				if (zombieData.tryChickenJockey) {
-					if ((double)abstractRandom.nextFloat() < 0.05) {
+					if ((double)random.nextFloat() < 0.05) {
 						List<ChickenEntity> list = world.getEntitiesByClass(ChickenEntity.class, this.getBoundingBox().expand(5.0, 3.0, 5.0), EntityPredicates.NOT_MOUNTED);
 						if (!list.isEmpty()) {
 							ChickenEntity chickenEntity = (ChickenEntity)list.get(0);
 							chickenEntity.setHasJockey(true);
 							this.startRiding(chickenEntity);
 						}
-					} else if ((double)abstractRandom.nextFloat() < 0.05) {
+					} else if ((double)random.nextFloat() < 0.05) {
 						ChickenEntity chickenEntity2 = EntityType.CHICKEN.create(this.world);
 						chickenEntity2.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), 0.0F);
 						chickenEntity2.initialize(world, difficulty, SpawnReason.JOCKEY, null, null);
@@ -474,17 +478,17 @@ public class ZombieEntity extends HostileEntity {
 				}
 			}
 
-			this.setCanBreakDoors(this.shouldBreakDoors() && abstractRandom.nextFloat() < f * 0.1F);
-			this.initEquipment(abstractRandom, difficulty);
-			this.updateEnchantments(abstractRandom, difficulty);
+			this.setCanBreakDoors(this.shouldBreakDoors() && random.nextFloat() < f * 0.1F);
+			this.initEquipment(random, difficulty);
+			this.updateEnchantments(random, difficulty);
 		}
 
 		if (this.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
 			LocalDate localDate = LocalDate.now();
 			int i = localDate.get(ChronoField.DAY_OF_MONTH);
 			int j = localDate.get(ChronoField.MONTH_OF_YEAR);
-			if (j == 10 && i == 31 && abstractRandom.nextFloat() < 0.25F) {
-				this.equipStack(EquipmentSlot.HEAD, new ItemStack(abstractRandom.nextFloat() < 0.1F ? Blocks.JACK_O_LANTERN : Blocks.CARVED_PUMPKIN));
+			if (j == 10 && i == 31 && random.nextFloat() < 0.25F) {
+				this.equipStack(EquipmentSlot.HEAD, new ItemStack(random.nextFloat() < 0.1F ? Blocks.JACK_O_LANTERN : Blocks.CARVED_PUMPKIN));
 				this.armorDropChances[EquipmentSlot.HEAD.getEntitySlotId()] = 0.0F;
 			}
 		}
@@ -493,7 +497,7 @@ public class ZombieEntity extends HostileEntity {
 		return entityData;
 	}
 
-	public static boolean shouldBeBaby(AbstractRandom random) {
+	public static boolean shouldBeBaby(Random random) {
 		return random.nextFloat() < 0.05F;
 	}
 

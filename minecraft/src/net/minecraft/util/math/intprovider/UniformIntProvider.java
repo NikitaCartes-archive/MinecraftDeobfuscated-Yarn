@@ -5,7 +5,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.function.Function;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class UniformIntProvider extends IntProvider {
 	public static final Codec<UniformIntProvider> CODEC = RecordCodecBuilder.create(
@@ -37,7 +37,7 @@ public class UniformIntProvider extends IntProvider {
 	}
 
 	@Override
-	public int get(AbstractRandom random) {
+	public int get(Random random) {
 		return MathHelper.nextBetween(random, this.min, this.max);
 	}
 

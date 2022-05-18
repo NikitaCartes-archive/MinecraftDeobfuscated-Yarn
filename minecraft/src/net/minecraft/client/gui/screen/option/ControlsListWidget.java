@@ -159,9 +159,9 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 
 			if (bl) {
 				this.editButton
-					.setMessage(Text.literal("> ").append(this.editButton.getMessage().shallowCopy().formatted(Formatting.YELLOW)).append(" <").formatted(Formatting.YELLOW));
+					.setMessage(Text.literal("> ").append(this.editButton.getMessage().copy().formatted(Formatting.YELLOW)).append(" <").formatted(Formatting.YELLOW));
 			} else if (bl2) {
-				this.editButton.setMessage(this.editButton.getMessage().shallowCopy().formatted(Formatting.RED));
+				this.editButton.setMessage(this.editButton.getMessage().copy().formatted(Formatting.RED));
 			}
 
 			this.editButton.render(matrices, mouseX, mouseY, tickDelta);

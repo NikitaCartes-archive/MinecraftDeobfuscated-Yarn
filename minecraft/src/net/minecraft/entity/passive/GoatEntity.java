@@ -43,7 +43,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryEntryList;
@@ -79,7 +79,8 @@ public class GoatEntity extends AnimalEntity {
 		MemoryModuleType.TEMPTATION_COOLDOWN_TICKS,
 		MemoryModuleType.IS_TEMPTED,
 		MemoryModuleType.RAM_COOLDOWN_TICKS,
-		MemoryModuleType.RAM_TARGET
+		MemoryModuleType.RAM_TARGET,
+		MemoryModuleType.IS_PANICKING
 	);
 	public static final int FALL_DAMAGE_SUBTRACTOR = 10;
 	public static final double SCREAMING_CHANCE = 0.02;
@@ -98,10 +99,10 @@ public class GoatEntity extends AnimalEntity {
 	}
 
 	public ItemStack method_43690() {
-		AbstractRandom abstractRandom = AbstractRandom.createAtomic((long)this.getUuid().hashCode());
+		Random random = Random.create((long)this.getUuid().hashCode());
 		TagKey<Instrument> tagKey = this.isScreaming() ? InstrumentTags.SCREAMING_GOAT_HORNS : InstrumentTags.REGULAR_GOAT_HORNS;
 		RegistryEntryList<Instrument> registryEntryList = Registry.INSTRUMENT.getOrCreateEntryList(tagKey);
-		return GoatHornItem.getStackForInstrument(Items.GOAT_HORN, (RegistryEntry<Instrument>)registryEntryList.getRandom(abstractRandom).get());
+		return GoatHornItem.getStackForInstrument(Items.GOAT_HORN, (RegistryEntry<Instrument>)registryEntryList.getRandom(random).get());
 	}
 
 	@Override
@@ -228,12 +229,12 @@ public class GoatEntity extends AnimalEntity {
 	public EntityData initialize(
 		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
-		AbstractRandom abstractRandom = world.getRandom();
-		GoatBrain.resetLongJumpCooldown(this, abstractRandom);
-		this.setScreaming(abstractRandom.nextDouble() < 0.02);
+		Random random = world.getRandom();
+		GoatBrain.resetLongJumpCooldown(this, random);
+		this.setScreaming(random.nextDouble() < 0.02);
 		this.onGrowUp();
-		if (!this.isBaby() && (double)abstractRandom.nextFloat() < 0.1F) {
-			TrackedData<Boolean> trackedData = abstractRandom.nextBoolean() ? LEFT_HORN : RIGHT_HORN;
+		if (!this.isBaby() && (double)random.nextFloat() < 0.1F) {
+			TrackedData<Boolean> trackedData = random.nextBoolean() ? LEFT_HORN : RIGHT_HORN;
 			this.dataTracker.set(trackedData, false);
 		}
 
@@ -355,7 +356,7 @@ public class GoatEntity extends AnimalEntity {
 		return (float)this.field_33488 / 20.0F * 30.0F * (float) (Math.PI / 180.0);
 	}
 
-	public static boolean canSpawn(EntityType<? extends AnimalEntity> entityType, WorldAccess world, SpawnReason spawnReason, BlockPos pos, AbstractRandom random) {
+	public static boolean canSpawn(EntityType<? extends AnimalEntity> entityType, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		return world.getBlockState(pos.down()).isIn(BlockTags.GOATS_SPAWNABLE_ON) && isLightLevelValidForNaturalSpawn(world, pos);
 	}
 }

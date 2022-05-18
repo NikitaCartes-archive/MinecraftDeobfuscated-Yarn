@@ -24,7 +24,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockRenderView;
 
 @Environment(EnvType.CLIENT)
@@ -48,7 +48,7 @@ public class BlockModelRenderer {
 		MatrixStack matrices,
 		VertexConsumer vertexConsumer,
 		boolean cull,
-		AbstractRandom random,
+		Random random,
 		long seed,
 		int overlay
 	) {
@@ -79,7 +79,7 @@ public class BlockModelRenderer {
 		MatrixStack matrices,
 		VertexConsumer vertexConsumer,
 		boolean cull,
-		AbstractRandom random,
+		Random random,
 		long seed,
 		int overlay
 	) {
@@ -114,7 +114,7 @@ public class BlockModelRenderer {
 		MatrixStack matrices,
 		VertexConsumer vertexConsumer,
 		boolean cull,
-		AbstractRandom random,
+		Random random,
 		long seed,
 		int overlay
 	) {
@@ -315,16 +315,16 @@ public class BlockModelRenderer {
 		int light,
 		int overlay
 	) {
-		AbstractRandom abstractRandom = AbstractRandom.createAtomic();
+		Random random = Random.create();
 		long l = 42L;
 
 		for (Direction direction : DIRECTIONS) {
-			abstractRandom.setSeed(42L);
-			renderQuads(entry, vertexConsumer, red, green, blue, bakedModel.getQuads(state, direction, abstractRandom), light, overlay);
+			random.setSeed(42L);
+			renderQuads(entry, vertexConsumer, red, green, blue, bakedModel.getQuads(state, direction, random), light, overlay);
 		}
 
-		abstractRandom.setSeed(42L);
-		renderQuads(entry, vertexConsumer, red, green, blue, bakedModel.getQuads(state, null, abstractRandom), light, overlay);
+		random.setSeed(42L);
+		renderQuads(entry, vertexConsumer, red, green, blue, bakedModel.getQuads(state, null, random), light, overlay);
 	}
 
 	private static void renderQuads(

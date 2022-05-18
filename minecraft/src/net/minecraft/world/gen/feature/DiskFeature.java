@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 
@@ -18,26 +18,26 @@ public class DiskFeature extends Feature<DiskFeatureConfig> {
 		DiskFeatureConfig diskFeatureConfig = context.getConfig();
 		BlockPos blockPos = context.getOrigin();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
-		AbstractRandom abstractRandom = context.getRandom();
+		Random random = context.getRandom();
 		boolean bl = false;
 		int i = blockPos.getY();
 		int j = i + diskFeatureConfig.halfHeight();
 		int k = i - diskFeatureConfig.halfHeight() - 1;
-		int l = diskFeatureConfig.radius().get(abstractRandom);
+		int l = diskFeatureConfig.radius().get(random);
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-l, 0, -l), blockPos.add(l, 0, l))) {
 			int m = blockPos2.getX() - blockPos.getX();
 			int n = blockPos2.getZ() - blockPos.getZ();
 			if (m * m + n * n <= l * l) {
-				bl |= this.placeBlock(diskFeatureConfig, structureWorldAccess, abstractRandom, j, k, mutable.set(blockPos2));
+				bl |= this.placeBlock(diskFeatureConfig, structureWorldAccess, random, j, k, mutable.set(blockPos2));
 			}
 		}
 
 		return bl;
 	}
 
-	protected boolean placeBlock(DiskFeatureConfig config, StructureWorldAccess world, AbstractRandom random, int topY, int bottomY, BlockPos.Mutable pos) {
+	protected boolean placeBlock(DiskFeatureConfig config, StructureWorldAccess world, Random random, int topY, int bottomY, BlockPos.Mutable pos) {
 		boolean bl = false;
 		BlockState blockState = null;
 

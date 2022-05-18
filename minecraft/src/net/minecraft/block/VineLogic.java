@@ -1,6 +1,6 @@
 package net.minecraft.block;
 
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class VineLogic {
 	private static final double field_31198 = 0.826;
@@ -10,7 +10,7 @@ public class VineLogic {
 		return state.isAir();
 	}
 
-	public static int getGrowthLength(AbstractRandom random) {
+	public static int getGrowthLength(Random random) {
 		double d = 1.0;
 
 		int i;

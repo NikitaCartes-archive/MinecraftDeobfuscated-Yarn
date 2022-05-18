@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 
@@ -16,9 +16,9 @@ public class EndIslandFeature extends Feature<DefaultFeatureConfig> {
 	@Override
 	public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
 		StructureWorldAccess structureWorldAccess = context.getWorld();
-		AbstractRandom abstractRandom = context.getRandom();
+		Random random = context.getRandom();
 		BlockPos blockPos = context.getOrigin();
-		float f = (float)abstractRandom.nextInt(3) + 4.0F;
+		float f = (float)random.nextInt(3) + 4.0F;
 
 		for (int i = 0; f > 0.5F; i--) {
 			for (int j = MathHelper.floor(-f); j <= MathHelper.ceil(f); j++) {
@@ -29,7 +29,7 @@ public class EndIslandFeature extends Feature<DefaultFeatureConfig> {
 				}
 			}
 
-			f -= (float)abstractRandom.nextInt(2) + 0.5F;
+			f -= (float)random.nextInt(2) + 0.5F;
 		}
 
 		return true;

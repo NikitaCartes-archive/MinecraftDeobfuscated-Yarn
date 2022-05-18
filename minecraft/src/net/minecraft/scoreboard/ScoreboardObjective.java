@@ -38,9 +38,7 @@ public class ScoreboardObjective {
 	}
 
 	private Text generateBracketedDisplayName() {
-		return Texts.bracketed(
-			this.displayName.shallowCopy().styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(this.name))))
-		);
+		return Texts.bracketed(this.displayName.copy().styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(this.name)))));
 	}
 
 	public Text toHoverableText() {

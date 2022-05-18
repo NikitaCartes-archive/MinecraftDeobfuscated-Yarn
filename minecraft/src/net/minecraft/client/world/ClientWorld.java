@@ -59,7 +59,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
@@ -343,13 +343,13 @@ public class ClientWorld extends World {
 
 	public void doRandomBlockDisplayTicks(int centerX, int centerY, int centerZ) {
 		int i = 32;
-		AbstractRandom abstractRandom = AbstractRandom.createAtomic();
+		Random random = Random.create();
 		Block block = this.getBlockParticle();
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (int j = 0; j < 667; j++) {
-			this.randomBlockDisplayTick(centerX, centerY, centerZ, 16, abstractRandom, block, mutable);
-			this.randomBlockDisplayTick(centerX, centerY, centerZ, 32, abstractRandom, block, mutable);
+			this.randomBlockDisplayTick(centerX, centerY, centerZ, 16, random, block, mutable);
+			this.randomBlockDisplayTick(centerX, centerY, centerZ, 32, random, block, mutable);
 		}
 	}
 
@@ -366,7 +366,7 @@ public class ClientWorld extends World {
 		return null;
 	}
 
-	public void randomBlockDisplayTick(int centerX, int centerY, int centerZ, int radius, AbstractRandom random, @Nullable Block block, BlockPos.Mutable pos) {
+	public void randomBlockDisplayTick(int centerX, int centerY, int centerZ, int radius, Random random, @Nullable Block block, BlockPos.Mutable pos) {
 		int i = centerX + this.random.nextInt(radius) - this.random.nextInt(radius);
 		int j = centerY + this.random.nextInt(radius) - this.random.nextInt(radius);
 		int k = centerZ + this.random.nextInt(radius) - this.random.nextInt(radius);
@@ -487,7 +487,7 @@ public class ClientWorld extends World {
 
 	private void playSound(double x, double y, double z, SoundEvent event, SoundCategory category, float volume, float pitch, boolean useDistance, long seed) {
 		double d = this.client.gameRenderer.getCamera().getPos().squaredDistanceTo(x, y, z);
-		PositionedSoundInstance positionedSoundInstance = new PositionedSoundInstance(event, category, volume, pitch, AbstractRandom.createAtomic(seed), x, y, z);
+		PositionedSoundInstance positionedSoundInstance = new PositionedSoundInstance(event, category, volume, pitch, Random.create(seed), x, y, z);
 		if (useDistance && d > 100.0) {
 			double e = Math.sqrt(d) / 40.0;
 			this.client.getSoundManager().play(positionedSoundInstance, (int)(e * 20.0));

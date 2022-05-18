@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class BiomeParticleConfig {
 	public static final Codec<BiomeParticleConfig> CODEC = RecordCodecBuilder.create(
@@ -26,7 +26,7 @@ public class BiomeParticleConfig {
 		return this.particle;
 	}
 
-	public boolean shouldAddParticle(AbstractRandom random) {
+	public boolean shouldAddParticle(Random random) {
 		return random.nextFloat() <= this.probability;
 	}
 }

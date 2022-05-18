@@ -1,8 +1,9 @@
 package net.minecraft.util.math.random;
 
-import net.minecraft.world.gen.random.GaussianGenerator;
-
-public class SimpleRandom implements BaseSimpleRandom {
+/**
+ * A local random, not intended to be shared across threads.
+ */
+public class LocalRandom implements BaseRandom {
 	private static final int INT_BITS = 48;
 	private static final long SEED_MASK = 281474976710655L;
 	private static final long MULTIPLIER = 25214903917L;
@@ -10,18 +11,18 @@ public class SimpleRandom implements BaseSimpleRandom {
 	private long seed;
 	private final GaussianGenerator gaussianGenerator = new GaussianGenerator(this);
 
-	public SimpleRandom(long seed) {
+	public LocalRandom(long seed) {
 		this.setSeed(seed);
 	}
 
 	@Override
-	public AbstractRandom derive() {
-		return new SimpleRandom(this.nextLong());
+	public Random split() {
+		return new LocalRandom(this.nextLong());
 	}
 
 	@Override
-	public RandomDeriver createRandomDeriver() {
-		return new AtomicSimpleRandom.RandomDeriver(this.nextLong());
+	public RandomSplitter nextSplitter() {
+		return new CheckedRandom.Splitter(this.nextLong());
 	}
 
 	@Override

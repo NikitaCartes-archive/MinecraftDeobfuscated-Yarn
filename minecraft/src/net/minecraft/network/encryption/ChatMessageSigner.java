@@ -1,6 +1,5 @@
 package net.minecraft.network.encryption;
 
-import java.security.Signature;
 import java.security.SignatureException;
 import java.time.Instant;
 import java.util.UUID;
@@ -20,15 +19,15 @@ public record ChatMessageSigner(UUID sender, Instant timeStamp, long salt) {
 	/**
 	 * {@return the chat message signature obtained by signing {@code message} with {@code signature}}
 	 */
-	public ChatMessageSignature sign(Signature signature, Text message) throws SignatureException {
-		ChatMessageSignature.updateSignature(signature, message, this.sender, this.timeStamp, this.salt);
-		return new ChatMessageSignature(this.sender, this.timeStamp, new NetworkEncryptionUtils.SignatureData(this.salt, signature.sign()));
+	public ChatMessageSignature sign(Signer signer, Text message) {
+		byte[] bs = signer.sign(updater -> ChatMessageSignature.updateSignature(updater, message, this.sender, this.timeStamp, this.salt));
+		return new ChatMessageSignature(this.sender, this.timeStamp, new NetworkEncryptionUtils.SignatureData(this.salt, bs));
 	}
 
 	/**
 	 * {@return the chat message signature obtained by signing {@code message} with {@code signature}}
 	 */
-	public ChatMessageSignature sign(Signature signature, String message) throws SignatureException {
-		return this.sign(signature, Text.literal(message));
+	public ChatMessageSignature sign(Signer signer, String message) throws SignatureException {
+		return this.sign(signer, Text.literal(message));
 	}
 }

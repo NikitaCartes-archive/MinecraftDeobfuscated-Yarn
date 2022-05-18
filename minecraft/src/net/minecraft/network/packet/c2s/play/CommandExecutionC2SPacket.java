@@ -12,60 +12,48 @@ import net.minecraft.util.StringHelper;
 /**
  * A packet used to execute commands on the server.
  * 
- * <p>This truncates the command to at most {@value #MAX_COMMAND_LENGTH} characters
- * before sending to the server on the client. If the server receives the command
- * longer than {@value #MAX_COMMAND_LENGTH} characters, it will reject the message
- * and disconnect the client.
+ * <p>This truncates the command to at most 256 characters before sending to the
+ * server on the client. If the server receives the command longer than 256 characters,
+ * it will reject the message and disconnect the client.
  * 
  * <p>If the command contains an invalid character (see {@link
  * net.minecraft.SharedConstants#isValidChar isValidChar}), the server will
  * reject the command and disconnect the client.
  * 
  * <p>Commands that took more than {@link ChatMessageC2SPacket#TIME_TO_LIVE} to reach
- * the server are considered expired and will be discarded.
+ * the server are considered expired and will be discarded. Commands can also be discarded
+ * if the server receives them with improper order.
  * 
  * @see net.minecraft.client.network.ClientPlayerEntity#sendCommand
  * @see net.minecraft.server.network.ServerPlayNetworkHandler#onCommandExecution
  */
-public record CommandExecutionC2SPacket(String command, Instant time, ArgumentSignatureDataMap argumentSignatures) implements Packet<ServerPlayPacketListener> {
-	private static final int MAX_COMMAND_LENGTH = 256;
-
-	public CommandExecutionC2SPacket(String command, Instant time, ArgumentSignatureDataMap argumentSignatures) {
-		this.command = StringHelper.truncateChat(command);
-		this.time = time;
+public record CommandExecutionC2SPacket(String command, Instant timestamp, ArgumentSignatureDataMap argumentSignatures, boolean signedPreview)
+	implements Packet<ServerPlayPacketListener> {
+	public CommandExecutionC2SPacket(String command, Instant timestamp, ArgumentSignatureDataMap argumentSignatures, boolean signedPreview) {
+		command = StringHelper.truncateChat(command);
+		this.command = command;
+		this.timestamp = timestamp;
 		this.argumentSignatures = argumentSignatures;
+		this.signedPreview = signedPreview;
 	}
 
 	public CommandExecutionC2SPacket(PacketByteBuf buf) {
-		this(buf.readString(256), buf.readInstant(), new ArgumentSignatureDataMap(buf));
+		this(buf.readString(256), buf.readInstant(), new ArgumentSignatureDataMap(buf), buf.readBoolean());
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) {
-		buf.writeString(this.command);
-		buf.writeInstant(this.time);
+		buf.writeString(this.command, 256);
+		buf.writeInstant(this.timestamp);
 		this.argumentSignatures.write(buf);
+		buf.writeBoolean(this.signedPreview);
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onCommandExecution(this);
 	}
 
-	/**
-	 * {@return when the command execution is considered expired and should be discarded}
-	 */
-	private Instant getExpiryTime() {
-		return this.time.plus(ChatMessageC2SPacket.TIME_TO_LIVE);
-	}
-
-	/**
-	 * {@return whether the command execution is considered expired and should be discarded}
-	 */
-	public boolean isExpired(Instant currentTime) {
-		return currentTime.isAfter(this.getExpiryTime());
-	}
-
 	public CommandArgumentSigner createArgumentsSigner(UUID sender) {
-		return new CommandArgumentSigner.Signatures(sender, this.time, this.argumentSignatures);
+		return new CommandArgumentSigner.Signatures(sender, this.timestamp, this.argumentSignatures, this.signedPreview);
 	}
 }

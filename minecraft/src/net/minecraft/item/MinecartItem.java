@@ -104,7 +104,7 @@ public class MinecartItem extends Item {
 				}
 
 				world.spawnEntity(abstractMinecartEntity);
-				world.emitGameEvent(context.getPlayer(), GameEvent.ENTITY_PLACE, blockPos);
+				world.emitGameEvent(GameEvent.ENTITY_PLACE, blockPos, GameEvent.Emitter.of(context.getPlayer(), world.getBlockState(blockPos.down())));
 			}
 
 			itemStack.decrement(1);

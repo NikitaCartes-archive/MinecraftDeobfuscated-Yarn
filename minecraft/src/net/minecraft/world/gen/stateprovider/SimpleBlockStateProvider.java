@@ -3,7 +3,7 @@ package net.minecraft.world.gen.stateprovider;
 import com.mojang.serialization.Codec;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class SimpleBlockStateProvider extends BlockStateProvider {
 	public static final Codec<SimpleBlockStateProvider> CODEC = BlockState.CODEC
@@ -22,7 +22,7 @@ public class SimpleBlockStateProvider extends BlockStateProvider {
 	}
 
 	@Override
-	public BlockState getBlockState(AbstractRandom random, BlockPos pos) {
+	public BlockState getBlockState(Random random, BlockPos pos) {
 		return this.state;
 	}
 }

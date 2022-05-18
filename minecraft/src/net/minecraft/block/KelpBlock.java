@@ -8,7 +8,7 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
@@ -47,7 +47,7 @@ public class KelpBlock extends AbstractPlantStemBlock implements FluidFillable {
 	}
 
 	@Override
-	protected int getGrowthLength(AbstractRandom random) {
+	protected int getGrowthLength(Random random) {
 		return 1;
 	}
 

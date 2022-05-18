@@ -26,7 +26,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
 
 public class SpreadPlayersCommand {
@@ -105,13 +105,13 @@ public class SpreadPlayersCommand {
 		if (maxY < i) {
 			throw INVALID_HEIGHT_EXCEPTION.create(maxY, i);
 		} else {
-			AbstractRandom abstractRandom = AbstractRandom.createAtomic();
+			Random random = Random.create();
 			double d = (double)(center.x - maxRange);
 			double e = (double)(center.y - maxRange);
 			double f = (double)(center.x + maxRange);
 			double g = (double)(center.y + maxRange);
-			SpreadPlayersCommand.Pile[] piles = makePiles(abstractRandom, respectTeams ? getPileCountRespectingTeams(players) : players.size(), d, e, f, g);
-			spread(center, (double)spreadDistance, serverWorld, abstractRandom, d, e, f, g, maxY, piles, respectTeams);
+			SpreadPlayersCommand.Pile[] piles = makePiles(random, respectTeams ? getPileCountRespectingTeams(players) : players.size(), d, e, f, g);
+			spread(center, (double)spreadDistance, serverWorld, random, d, e, f, g, maxY, piles, respectTeams);
 			double h = getMinDistance(players, serverWorld, piles, maxY, respectTeams);
 			source.sendFeedback(
 				Text.translatable(
@@ -141,7 +141,7 @@ public class SpreadPlayersCommand {
 		Vec2f center,
 		double spreadDistance,
 		ServerWorld world,
-		AbstractRandom random,
+		Random random,
 		double minX,
 		double minZ,
 		double maxX,
@@ -254,7 +254,7 @@ public class SpreadPlayersCommand {
 		return entities.size() < 2 ? 0.0 : d / (double)entities.size();
 	}
 
-	private static SpreadPlayersCommand.Pile[] makePiles(AbstractRandom random, int count, double minX, double minZ, double maxX, double maxZ) {
+	private static SpreadPlayersCommand.Pile[] makePiles(Random random, int count, double minX, double minZ, double maxX, double maxZ) {
 		SpreadPlayersCommand.Pile[] piles = new SpreadPlayersCommand.Pile[count];
 
 		for (int i = 0; i < piles.length; i++) {
@@ -339,7 +339,7 @@ public class SpreadPlayersCommand {
 			return blockPos.getY() < maxY && !material.isLiquid() && material != Material.FIRE;
 		}
 
-		public void setPileLocation(AbstractRandom random, double minX, double minZ, double maxX, double maxZ) {
+		public void setPileLocation(Random random, double minX, double minZ, double maxX, double maxZ) {
 			this.x = MathHelper.nextDouble(random, minX, maxX);
 			this.z = MathHelper.nextDouble(random, minZ, maxZ);
 		}

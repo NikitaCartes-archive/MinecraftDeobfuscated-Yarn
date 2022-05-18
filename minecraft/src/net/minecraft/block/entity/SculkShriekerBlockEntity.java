@@ -11,6 +11,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.SculkShriekerBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LargeEntitySpawnHelper;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.WardenEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
@@ -24,7 +25,6 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.GameEventTags;
 import net.minecraft.tag.TagKey;
-import net.minecraft.util.LargeEntitySpawnHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -54,7 +54,7 @@ public class SculkShriekerBlockEntity extends BlockEntity implements VibrationLi
 	});
 	private static final int field_38756 = 90;
 	private int warningLevel;
-	private VibrationListener vibrationListener = new VibrationListener(new BlockPositionSource(this.pos), 8, this, null, 0, 0);
+	private VibrationListener vibrationListener = new VibrationListener(new BlockPositionSource(this.pos), 8, this, null, 0.0F, 0);
 
 	public SculkShriekerBlockEntity(BlockPos pos, BlockState state) {
 		super(BlockEntityType.SCULK_SHRIEKER, pos, state);
@@ -126,7 +126,7 @@ public class SculkShriekerBlockEntity extends BlockEntity implements VibrationLi
 
 	@Override
 	public void accept(
-		ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity, @Nullable Entity sourceEntity, int delay
+		ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity, @Nullable Entity sourceEntity, float distance
 	) {
 		this.shriek(world, findResponsiblePlayerFromEntity(sourceEntity != null ? sourceEntity : entity));
 	}
@@ -188,7 +188,8 @@ public class SculkShriekerBlockEntity extends BlockEntity implements VibrationLi
 	private boolean trySpawnWarden(ServerWorld world) {
 		return this.warningLevel < 4
 			? false
-			: LargeEntitySpawnHelper.trySpawnAt(EntityType.WARDEN, SpawnReason.TRIGGERED, world, this.getPos(), 20, 5, 6).isPresent();
+			: LargeEntitySpawnHelper.trySpawnAt(EntityType.WARDEN, SpawnReason.TRIGGERED, world, this.getPos(), 20, 5, 6, LargeEntitySpawnHelper.Requirements.WARDEN)
+				.isPresent();
 	}
 
 	@Override

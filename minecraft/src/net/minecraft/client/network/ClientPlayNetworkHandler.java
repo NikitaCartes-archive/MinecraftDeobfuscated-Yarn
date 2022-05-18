@@ -26,6 +26,7 @@ import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_7519;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -43,7 +44,6 @@ import net.minecraft.client.gui.screen.DemoScreen;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
 import net.minecraft.client.gui.screen.DownloadingTerrainScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.StatsListener;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.screen.ingame.BookScreen;
@@ -245,6 +245,7 @@ import net.minecraft.screen.HorseScreenHandler;
 import net.minecraft.screen.MerchantScreenHandler;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stat;
@@ -264,7 +265,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Position;
 import net.minecraft.util.math.PositionImpl;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
@@ -302,7 +303,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	private final DataQueryHandler dataQueryHandler = new DataQueryHandler(this);
 	private int chunkLoadDistance = 3;
 	private int simulationDistance = 3;
-	private final AbstractRandom random = AbstractRandom.createBlocking();
+	private final Random random = Random.createThreadSafe();
 	private CommandDispatcher<CommandSource> commandDispatcher = new CommandDispatcher<>();
 	private final RecipeManager recipeManager = new RecipeManager();
 	private final UUID sessionId = UUID.randomUUID();
@@ -621,6 +622,15 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
+	public void method_44286(class_7519 arg) {
+		NetworkThreadUtils.forceMainThread(arg, this, this.client);
+		ServerInfo serverInfo = this.client.getCurrentServerEntry();
+		if (serverInfo != null) {
+			serverInfo.setTemporaryChatPreviewState(arg.enabled());
+		}
+	}
+
+	@Override
 	public void onChunkDeltaUpdate(ChunkDeltaUpdateS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		int i = Block.NOTIFY_ALL | Block.FORCE_STATE | (packet.shouldSkipLightingUpdates() ? Block.SKIP_LIGHTING_UPDATES : 0);
@@ -803,7 +813,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			LOGGER.warn("Received chat packet without valid signature from {}", sender.name().getString());
 		}
 
-		boolean bl = this.client.options.getOnlyShowSignedChat().getValue();
+		boolean bl = this.client.options.getOnlyShowSecureChat().getValue();
 		Text text = bl ? message.signedContent() : message.getContent();
 		this.client.inGameHud.onChatMessage(type, text, sender);
 	}
@@ -1532,9 +1542,11 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			});
 			serverInfo.setPreviewsChat(packet.shouldPreviewChat());
 			ServerList.updateServerListEntry(serverInfo);
-			ServerInfo.ChatPreview chatPreview = serverInfo.getChatPreview();
-			if (chatPreview != null && !chatPreview.isAcknowledged()) {
-				this.client.execute(() -> this.client.setScreen(new ChatPreviewWarningScreen(serverInfo)));
+			if (this.client.options.getChatPreview().getValue()) {
+				ServerInfo.ChatPreview chatPreview = serverInfo.getChatPreview();
+				if (chatPreview != null && !chatPreview.isAcknowledged()) {
+					this.client.execute(() -> this.client.setScreen(new ChatPreviewWarningScreen(this.client.currentScreen, serverInfo)));
+				}
 			}
 		}
 	}
@@ -1590,7 +1602,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			} else {
 				PlayerListEntry playerListEntry = (PlayerListEntry)this.playerListEntries.get(entry.getProfile().getId());
 				if (packet.getAction() == PlayerListS2CPacket.Action.ADD_PLAYER) {
-					playerListEntry = new PlayerListEntry(entry, this.client.getSessionService());
+					playerListEntry = new PlayerListEntry(entry, this.client.getServicesSignatureVerifier());
 					this.playerListEntries.put(playerListEntry.getProfile().getId(), playerListEntry);
 					this.client.getSocialInteractionsManager().setPlayerOnline(playerListEntry);
 				}
@@ -1673,7 +1685,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 					packet.getCategory(),
 					packet.getVolume(),
 					packet.getPitch(),
-					AbstractRandom.createAtomic(packet.getSeed()),
+					Random.create(packet.getSeed()),
 					false,
 					0,
 					SoundInstance.AttenuationType.LINEAR,

@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockLocating;
 import net.minecraft.world.BlockView;
@@ -55,12 +55,12 @@ public abstract class AbstractPlantBlock extends AbstractPlantPartBlock implemen
 	}
 
 	@Override
-	public boolean canGrow(World world, AbstractRandom random, BlockPos pos, BlockState state) {
+	public boolean canGrow(World world, Random random, BlockPos pos, BlockState state) {
 		return true;
 	}
 
 	@Override
-	public void grow(ServerWorld world, AbstractRandom random, BlockPos pos, BlockState state) {
+	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
 		Optional<BlockPos> optional = this.getStemHeadPos(world, pos, state.getBlock());
 		if (optional.isPresent()) {
 			BlockState blockState = world.getBlockState((BlockPos)optional.get());

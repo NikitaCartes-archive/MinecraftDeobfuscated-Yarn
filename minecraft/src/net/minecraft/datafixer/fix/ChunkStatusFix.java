@@ -11,8 +11,8 @@ import java.util.Objects;
 import net.minecraft.datafixer.TypeReferences;
 
 public class ChunkStatusFix extends DataFix {
-	public ChunkStatusFix(Schema outputSchema, boolean changesType) {
-		super(outputSchema, changesType);
+	public ChunkStatusFix(Schema schema, boolean bl) {
+		super(schema, bl);
 	}
 
 	@Override

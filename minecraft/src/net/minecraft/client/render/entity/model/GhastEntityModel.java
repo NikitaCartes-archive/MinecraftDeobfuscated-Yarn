@@ -10,7 +10,7 @@ import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 /**
  * Represents the model of a ghast-like entity.
@@ -77,12 +77,12 @@ public class GhastEntityModel<T extends Entity> extends SinglePartEntityModel<T>
 		modelPartData.addChild(
 			EntityModelPartNames.BODY, ModelPartBuilder.create().uv(0, 0).cuboid(-8.0F, -8.0F, -8.0F, 16.0F, 16.0F, 16.0F), ModelTransform.pivot(0.0F, 17.6F, 0.0F)
 		);
-		AbstractRandom abstractRandom = AbstractRandom.createAtomic(1660L);
+		Random random = Random.create(1660L);
 
 		for (int i = 0; i < 9; i++) {
 			float f = (((float)(i % 3) - (float)(i / 3 % 2) * 0.5F + 0.25F) / 2.0F * 2.0F - 1.0F) * 5.0F;
 			float g = ((float)(i / 3) / 2.0F * 2.0F - 1.0F) * 5.0F;
-			int j = abstractRandom.nextInt(7) + 8;
+			int j = random.nextInt(7) + 8;
 			modelPartData.addChild(
 				getTentacleName(i), ModelPartBuilder.create().uv(0, 0).cuboid(-1.0F, 0.0F, -1.0F, 2.0F, (float)j, 2.0F), ModelTransform.pivot(f, 24.6F, g)
 			);

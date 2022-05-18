@@ -1,17 +1,13 @@
 package net.minecraft.network.encryption;
 
 import com.mojang.authlib.minecraft.InsecurePublicKeyException;
-import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.minecraft.InsecurePublicKeyException.InvalidException;
-import com.mojang.authlib.properties.Property;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.security.GeneralSecurityException;
+import java.nio.charset.StandardCharsets;
 import java.security.PublicKey;
-import java.security.Signature;
 import java.time.Instant;
-import java.util.Base64;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.dynamic.Codecs;
 
@@ -32,7 +28,6 @@ public record PlayerPublicKey(PlayerPublicKey.PublicKeyData data) {
 			return DataResult.error("Malformed public key");
 		}
 	}, PlayerPublicKey::data);
-	private static final String PUBLIC_KEY = "publicKey";
 
 	public static PlayerPublicKey fromKeyData(PlayerPublicKey.PublicKeyData publicKeyData) throws NetworkEncryptionException {
 		return new PlayerPublicKey(publicKeyData);
@@ -48,27 +43,18 @@ public record PlayerPublicKey(PlayerPublicKey.PublicKeyData data) {
 	 * @throws InsecurePublicKeyException.InvalidException when the key is unsigned or expired
 	 * @throws NetworkEncryptionException when the key is malformed
 	 */
-	public static PlayerPublicKey verifyAndDecode(MinecraftSessionService sessionService, PlayerPublicKey.PublicKeyData publicKeyData) throws InsecurePublicKeyException, NetworkEncryptionException {
+	public static PlayerPublicKey verifyAndDecode(SignatureVerifier servicesSignatureVerifier, PlayerPublicKey.PublicKeyData publicKeyData) throws InsecurePublicKeyException, NetworkEncryptionException {
 		if (publicKeyData.isExpired()) {
 			throw new InvalidException("Expired profile public key");
+		} else if (!publicKeyData.verifyKey(servicesSignatureVerifier)) {
+			throw new InvalidException("Invalid profile public key signature");
 		} else {
-			String string = sessionService.getSecurePropertyValue(publicKeyData.toProperty());
-			if (!publicKeyData.toSerializedString().equals(string)) {
-				throw new InvalidException("Invalid profile public key signature");
-			} else {
-				return fromKeyData(publicKeyData);
-			}
+			return fromKeyData(publicKeyData);
 		}
 	}
 
-	public Signature createSignatureInstance() throws NetworkEncryptionException {
-		try {
-			Signature signature = Signature.getInstance("SHA256withRSA");
-			signature.initVerify(this.data.key());
-			return signature;
-		} catch (GeneralSecurityException var2) {
-			throw new NetworkEncryptionException(var2);
-		}
+	public SignatureVerifier createSignatureInstance() {
+		return SignatureVerifier.create(this.data.key, "SHA256withRSA");
 	}
 
 	public static record PublicKeyData(Instant expiresAt, PublicKey key, byte[] keySignature) {
@@ -92,12 +78,11 @@ public record PlayerPublicKey(PlayerPublicKey.PublicKeyData data) {
 			buf.writeByteArray(this.keySignature);
 		}
 
-		Property toProperty() {
-			String string = Base64.getEncoder().encodeToString(this.keySignature);
-			return new Property("publicKey", this.toSerializedString(), string);
+		boolean verifyKey(SignatureVerifier servicesSignatureVerifier) {
+			return servicesSignatureVerifier.validate(this.toSerializedString().getBytes(StandardCharsets.US_ASCII), this.keySignature);
 		}
 
-		String toSerializedString() {
+		private String toSerializedString() {
 			String string = NetworkEncryptionUtils.encodeRsaPublicKey(this.key);
 			return this.expiresAt.toEpochMilli() + string;
 		}

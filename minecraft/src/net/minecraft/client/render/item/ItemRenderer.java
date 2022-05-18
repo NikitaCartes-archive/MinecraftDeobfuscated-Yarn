@@ -55,7 +55,7 @@ import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
@@ -93,16 +93,16 @@ public class ItemRenderer implements SynchronousResourceReloader {
 	}
 
 	private void renderBakedItemModel(BakedModel model, ItemStack stack, int light, int overlay, MatrixStack matrices, VertexConsumer vertices) {
-		AbstractRandom abstractRandom = AbstractRandom.createAtomic();
+		Random random = Random.create();
 		long l = 42L;
 
 		for (Direction direction : Direction.values()) {
-			abstractRandom.setSeed(42L);
-			this.renderBakedItemQuads(matrices, vertices, model.getQuads(null, direction, abstractRandom), stack, light, overlay);
+			random.setSeed(42L);
+			this.renderBakedItemQuads(matrices, vertices, model.getQuads(null, direction, random), stack, light, overlay);
 		}
 
-		abstractRandom.setSeed(42L);
-		this.renderBakedItemQuads(matrices, vertices, model.getQuads(null, null, abstractRandom), stack, light, overlay);
+		random.setSeed(42L);
+		this.renderBakedItemQuads(matrices, vertices, model.getQuads(null, null, random), stack, light, overlay);
 	}
 
 	public void renderItem(

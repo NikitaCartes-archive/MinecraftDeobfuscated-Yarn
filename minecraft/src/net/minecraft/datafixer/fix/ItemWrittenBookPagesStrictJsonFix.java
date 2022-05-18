@@ -8,15 +8,15 @@ import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
 import com.mojang.serialization.Dynamic;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.datafixer.TypeReferences;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.JsonHelper;
 import org.apache.commons.lang3.StringUtils;
 
 public class ItemWrittenBookPagesStrictJsonFix extends DataFix {
-	public ItemWrittenBookPagesStrictJsonFix(Schema outputSchema, boolean changesType) {
-		super(outputSchema, changesType);
+	public ItemWrittenBookPagesStrictJsonFix(Schema schema, boolean bl) {
+		super(schema, bl);
 	}
 
 	public Dynamic<?> fixBookPages(Dynamic<?> dynamic) {

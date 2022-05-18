@@ -8,12 +8,12 @@ import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.ClientChatListener;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.option.NarratorMode;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.toast.ToastManager;
 import net.minecraft.network.MessageSender;
 import net.minecraft.network.MessageType;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import org.slf4j.Logger;
 

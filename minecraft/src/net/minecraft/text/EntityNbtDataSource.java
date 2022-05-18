@@ -3,7 +3,6 @@ package net.minecraft.text;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.command.EntitySelector;
@@ -55,6 +54,6 @@ public record EntityNbtDataSource(String rawSelector, @Nullable EntitySelector s
 	}
 
 	public int hashCode() {
-		return Objects.hash(new Object[]{this.rawSelector});
+		return this.rawSelector.hashCode();
 	}
 }

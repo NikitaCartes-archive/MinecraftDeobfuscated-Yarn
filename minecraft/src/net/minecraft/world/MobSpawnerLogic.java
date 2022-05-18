@@ -18,8 +18,9 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.event.GameEvent;
 import org.slf4j.Logger;
 
 public abstract class MobSpawnerLogic {
@@ -51,10 +52,10 @@ public abstract class MobSpawnerLogic {
 		if (!this.isPlayerInRange(world, pos)) {
 			this.field_9159 = this.field_9161;
 		} else {
-			AbstractRandom abstractRandom = world.getRandom();
-			double d = (double)pos.getX() + abstractRandom.nextDouble();
-			double e = (double)pos.getY() + abstractRandom.nextDouble();
-			double f = (double)pos.getZ() + abstractRandom.nextDouble();
+			Random random = world.getRandom();
+			double d = (double)pos.getX() + random.nextDouble();
+			double e = (double)pos.getY() + random.nextDouble();
+			double f = (double)pos.getZ() + random.nextDouble();
 			world.addParticle(ParticleTypes.SMOKE, d, e, f, 0.0, 0.0, 0.0);
 			world.addParticle(ParticleTypes.FLAME, d, e, f, 0.0, 0.0, 0.0);
 			if (this.spawnDelay > 0) {
@@ -87,14 +88,10 @@ public abstract class MobSpawnerLogic {
 
 					NbtList nbtList = nbtCompound.getList("Pos", NbtElement.DOUBLE_TYPE);
 					int j = nbtList.size();
-					AbstractRandom abstractRandom = world.getRandom();
-					double d = j >= 1
-						? nbtList.getDouble(0)
-						: (double)pos.getX() + (abstractRandom.nextDouble() - abstractRandom.nextDouble()) * (double)this.spawnRange + 0.5;
-					double e = j >= 2 ? nbtList.getDouble(1) : (double)(pos.getY() + abstractRandom.nextInt(3) - 1);
-					double f = j >= 3
-						? nbtList.getDouble(2)
-						: (double)pos.getZ() + (abstractRandom.nextDouble() - abstractRandom.nextDouble()) * (double)this.spawnRange + 0.5;
+					Random random = world.getRandom();
+					double d = j >= 1 ? nbtList.getDouble(0) : (double)pos.getX() + (random.nextDouble() - random.nextDouble()) * (double)this.spawnRange + 0.5;
+					double e = j >= 2 ? nbtList.getDouble(1) : (double)(pos.getY() + random.nextInt(3) - 1);
+					double f = j >= 3 ? nbtList.getDouble(2) : (double)pos.getZ() + (random.nextDouble() - random.nextDouble()) * (double)this.spawnRange + 0.5;
 					if (world.isSpaceEmpty(((EntityType)optional.get()).createSimpleBoundingBox(d, e, f))) {
 						BlockPos blockPos = new BlockPos(d, e, f);
 						if (this.spawnEntry.getCustomSpawnRules().isPresent()) {
@@ -131,7 +128,7 @@ public abstract class MobSpawnerLogic {
 							return;
 						}
 
-						entity.refreshPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), abstractRandom.nextFloat() * 360.0F, 0.0F);
+						entity.refreshPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), random.nextFloat() * 360.0F, 0.0F);
 						if (entity instanceof MobEntity mobEntity) {
 							if (this.spawnEntry.getCustomSpawnRules().isEmpty() && !mobEntity.canSpawn(world, SpawnReason.SPAWNER) || !mobEntity.canSpawn(world)) {
 								continue;
@@ -148,6 +145,7 @@ public abstract class MobSpawnerLogic {
 						}
 
 						world.syncWorldEvent(WorldEvents.SPAWNER_SPAWNS_MOB, pos, 0);
+						world.emitGameEvent(entity, GameEvent.ENTITY_PLACE, blockPos);
 						if (entity instanceof MobEntity) {
 							((MobEntity)entity).playSpawnEffects();
 						}
@@ -164,14 +162,14 @@ public abstract class MobSpawnerLogic {
 	}
 
 	private void updateSpawns(World world, BlockPos pos) {
-		AbstractRandom abstractRandom = world.random;
+		Random random = world.random;
 		if (this.maxSpawnDelay <= this.minSpawnDelay) {
 			this.spawnDelay = this.minSpawnDelay;
 		} else {
-			this.spawnDelay = this.minSpawnDelay + abstractRandom.nextInt(this.maxSpawnDelay - this.minSpawnDelay);
+			this.spawnDelay = this.minSpawnDelay + random.nextInt(this.maxSpawnDelay - this.minSpawnDelay);
 		}
 
-		this.spawnPotentials.getOrEmpty(abstractRandom).ifPresent(present -> this.setSpawnEntry(world, pos, (MobSpawnerEntry)present.getData()));
+		this.spawnPotentials.getOrEmpty(random).ifPresent(present -> this.setSpawnEntry(world, pos, (MobSpawnerEntry)present.getData()));
 		this.sendStatus(world, pos, 1);
 	}
 

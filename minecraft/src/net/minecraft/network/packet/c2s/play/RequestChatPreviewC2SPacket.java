@@ -3,8 +3,15 @@ package net.minecraft.network.packet.c2s.play;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
+import net.minecraft.util.StringHelper;
 
 public record RequestChatPreviewC2SPacket(int queryId, String query) implements Packet<ServerPlayPacketListener> {
+	public RequestChatPreviewC2SPacket(int queryId, String query) {
+		query = StringHelper.truncateChat(query);
+		this.queryId = queryId;
+		this.query = query;
+	}
+
 	public RequestChatPreviewC2SPacket(PacketByteBuf buf) {
 		this(buf.readInt(), buf.readString(256));
 	}

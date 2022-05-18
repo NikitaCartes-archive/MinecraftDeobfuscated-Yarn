@@ -5,7 +5,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.logging.LogUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,6 +22,7 @@ import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.block.enums.StructureBlockMode;
 import net.minecraft.command.argument.BlockStateArgument;
+import net.minecraft.data.DataWriter;
 import net.minecraft.data.dev.NbtProvider;
 import net.minecraft.data.validate.StructureValidatorProvider;
 import net.minecraft.entity.Entity;
@@ -86,10 +86,10 @@ public class StructureTestUtil {
 		Bootstrap.initialize();
 		Files.walk(Paths.get(testStructuresDirectoryName)).filter(path -> path.toString().endsWith(".snbt")).forEach(path -> {
 			try {
-				String string = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
+				String string = Files.readString(path);
 				NbtCompound nbtCompound = NbtHelper.fromNbtProviderString(string);
 				NbtCompound nbtCompound2 = StructureValidatorProvider.update(path.toString(), nbtCompound);
-				NbtProvider.writeTo(path, NbtHelper.toNbtProviderString(nbtCompound2));
+				NbtProvider.writeTo(DataWriter.field_39439, path, NbtHelper.toNbtProviderString(nbtCompound2));
 			} catch (IOException | CommandSyntaxException var4) {
 				LOGGER.error("Something went wrong upgrading: {}", path, var4);
 			}

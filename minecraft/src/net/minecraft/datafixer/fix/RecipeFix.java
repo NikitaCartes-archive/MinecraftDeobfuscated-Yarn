@@ -62,7 +62,7 @@ public class RecipeFix extends RecipeRenameFix {
 		.put("minecraft:yellow_stained_hardened_clay", "minecraft:yellow_terracotta")
 		.build();
 
-	public RecipeFix(Schema outputSchema, boolean changesType) {
-		super(outputSchema, changesType, "Recipes fix", string -> (String)RECIPES.getOrDefault(string, string));
+	public RecipeFix(Schema schema, boolean bl) {
+		super(schema, bl, "Recipes fix", string -> (String)RECIPES.getOrDefault(string, string));
 	}
 }

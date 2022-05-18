@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
@@ -92,7 +92,7 @@ public final class StructureStart {
 	}
 
 	public void place(
-		StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, AbstractRandom random, BlockBox chunkBox, ChunkPos chunkPos
+		StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos
 	) {
 		List<StructurePiece> list = this.children.pieces();
 		if (!list.isEmpty()) {

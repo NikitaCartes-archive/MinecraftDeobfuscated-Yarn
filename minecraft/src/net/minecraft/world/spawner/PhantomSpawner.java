@@ -13,7 +13,7 @@ import net.minecraft.stat.ServerStatHandler;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.SpawnHelper;
@@ -28,12 +28,12 @@ public class PhantomSpawner implements Spawner {
 		} else if (!world.getGameRules().getBoolean(GameRules.DO_INSOMNIA)) {
 			return 0;
 		} else {
-			AbstractRandom abstractRandom = world.random;
+			Random random = world.random;
 			this.cooldown--;
 			if (this.cooldown > 0) {
 				return 0;
 			} else {
-				this.cooldown = this.cooldown + (60 + abstractRandom.nextInt(60)) * 20;
+				this.cooldown = this.cooldown + (60 + random.nextInt(60)) * 20;
 				if (world.getAmbientDarkness() < 5 && world.getDimension().hasSkyLight()) {
 					return 0;
 				} else {
@@ -44,17 +44,17 @@ public class PhantomSpawner implements Spawner {
 							BlockPos blockPos = playerEntity.getBlockPos();
 							if (!world.getDimension().hasSkyLight() || blockPos.getY() >= world.getSeaLevel() && world.isSkyVisible(blockPos)) {
 								LocalDifficulty localDifficulty = world.getLocalDifficulty(blockPos);
-								if (localDifficulty.isHarderThan(abstractRandom.nextFloat() * 3.0F)) {
+								if (localDifficulty.isHarderThan(random.nextFloat() * 3.0F)) {
 									ServerStatHandler serverStatHandler = ((ServerPlayerEntity)playerEntity).getStatHandler();
 									int j = MathHelper.clamp(serverStatHandler.getStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_REST)), 1, Integer.MAX_VALUE);
 									int k = 24000;
-									if (abstractRandom.nextInt(j) >= 72000) {
-										BlockPos blockPos2 = blockPos.up(20 + abstractRandom.nextInt(15)).east(-10 + abstractRandom.nextInt(21)).south(-10 + abstractRandom.nextInt(21));
+									if (random.nextInt(j) >= 72000) {
+										BlockPos blockPos2 = blockPos.up(20 + random.nextInt(15)).east(-10 + random.nextInt(21)).south(-10 + random.nextInt(21));
 										BlockState blockState = world.getBlockState(blockPos2);
 										FluidState fluidState = world.getFluidState(blockPos2);
 										if (SpawnHelper.isClearForSpawn(world, blockPos2, blockState, fluidState, EntityType.PHANTOM)) {
 											EntityData entityData = null;
-											int l = 1 + abstractRandom.nextInt(localDifficulty.getGlobalDifficulty().getId() + 1);
+											int l = 1 + random.nextInt(localDifficulty.getGlobalDifficulty().getId() + 1);
 
 											for (int m = 0; m < l; m++) {
 												PhantomEntity phantomEntity = EntityType.PHANTOM.create(world);

@@ -1,7 +1,5 @@
 package net.minecraft.util.math.random;
 
-import net.minecraft.world.gen.random.RandomSeed;
-
 /**
  * Implementation of Xoroshiro128++ pseudo-random number generator.
  * 

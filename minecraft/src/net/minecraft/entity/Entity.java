@@ -99,7 +99,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -233,7 +233,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	public double lastRenderZ;
 	public float stepHeight;
 	public boolean noClip;
-	protected final AbstractRandom random = AbstractRandom.createAtomic();
+	protected final Random random = Random.create();
 	public int age;
 	private int fireTicks = -this.getBurningDuration();
 	protected boolean touchingWater;
@@ -2307,7 +2307,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.onLanding();
 	}
 
-	public void onKilledOther(ServerWorld world, LivingEntity other) {
+	public boolean onKilledOther(ServerWorld world, LivingEntity other) {
+		return true;
 	}
 
 	public void onLanding() {
@@ -2351,7 +2352,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	private static Text removeClickEvents(Text textComponent) {
-		MutableText mutableText = textComponent.copy().setStyle(textComponent.getStyle().withClickEvent(null));
+		MutableText mutableText = textComponent.copyContentOnly().setStyle(textComponent.getStyle().withClickEvent(null));
 
 		for (Text text : textComponent.getSiblings()) {
 			mutableText.append(removeClickEvents(text));

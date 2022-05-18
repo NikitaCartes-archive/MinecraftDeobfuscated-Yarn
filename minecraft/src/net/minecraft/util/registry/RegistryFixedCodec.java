@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.Lifecycle;
 import java.util.Optional;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.RegistryOps;
@@ -43,9 +44,11 @@ public final class RegistryFixedCodec<E> implements Codec<RegistryEntry<E>> {
 		if (ops instanceof RegistryOps<?> registryOps) {
 			Optional<? extends Registry<E>> optional = registryOps.getRegistry(this.registry);
 			if (optional.isPresent()) {
-				return Identifier.CODEC
-					.decode(ops, input)
-					.map(pair -> pair.mapFirst(value -> ((Registry)optional.get()).getOrCreateEntry(RegistryKey.of(this.registry, value))));
+				return Identifier.CODEC.decode(ops, input).flatMap(pair -> {
+					Identifier identifier = (Identifier)pair.getFirst();
+					DataResult<RegistryEntry<E>> dataResult = ((Registry)optional.get()).getOrCreateEntryDataResult(RegistryKey.of(this.registry, identifier));
+					return dataResult.map(registryEntry -> Pair.of(registryEntry, pair.getSecond())).setLifecycle(Lifecycle.stable());
+				});
 			}
 		}
 

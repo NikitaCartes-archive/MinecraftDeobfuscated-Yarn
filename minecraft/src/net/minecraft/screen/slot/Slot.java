@@ -59,6 +59,11 @@ public class Slot {
 		this.markDirty();
 	}
 
+	public void method_44206(ItemStack itemStack) {
+		this.inventory.setStack(this.index, itemStack);
+		this.markDirty();
+	}
+
 	public void markDirty() {
 		this.inventory.markDirty();
 	}

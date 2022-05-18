@@ -5,13 +5,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.logging.LogUtils;
-import java.security.GeneralSecurityException;
-import java.security.Signature;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Map.Entry;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -64,6 +61,8 @@ import net.minecraft.item.Items;
 import net.minecraft.network.encryption.ArgumentSignatureDataMap;
 import net.minecraft.network.encryption.ChatMessageSignature;
 import net.minecraft.network.encryption.ChatMessageSigner;
+import net.minecraft.network.encryption.PlayerPublicKey;
+import net.minecraft.network.encryption.Signer;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
@@ -159,7 +158,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		boolean lastSneaking,
 		boolean lastSprinting
 	) {
-		super(world, networkHandler.getProfile(), client.getProfileKeys().getPublicKey());
+		super(world, networkHandler.getProfile(), (PlayerPublicKey)client.getProfileKeys().getPublicKey().orElse(null));
 		this.client = client;
 		this.networkHandler = networkHandler;
 		this.statHandler = stats;
@@ -381,11 +380,11 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	 */
 	private ChatMessageSignature signChatMessage(ChatMessageSigner signer, Text message) {
 		try {
-			Signature signature = this.client.getProfileKeys().createSignatureInstance();
-			if (signature != null) {
-				return signer.sign(signature, message);
+			Signer signer2 = this.client.getProfileKeys().getSigner();
+			if (signer2 != null) {
+				return signer.sign(signer2, message);
 			}
-		} catch (GeneralSecurityException var4) {
+		} catch (Exception var4) {
 			field_39078.error("Failed to sign chat message: '{}'", message.getString(), var4);
 		}
 
@@ -399,35 +398,37 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	 */
 	private void sendCommand(ChatMessageSigner signer, String command, @Nullable Text preview) {
 		ParseResults<CommandSource> parseResults = this.networkHandler.getCommandDispatcher().parse(command, this.networkHandler.getCommandSource());
-		ArgumentSignatureDataMap argumentSignatureDataMap = this.signArguments(signer, parseResults);
-		this.networkHandler.sendPacket(new CommandExecutionC2SPacket(command, signer.timeStamp(), argumentSignatureDataMap));
+		ArgumentSignatureDataMap argumentSignatureDataMap = this.signArguments(signer, parseResults, preview);
+		this.networkHandler.sendPacket(new CommandExecutionC2SPacket(command, signer.timeStamp(), argumentSignatureDataMap, preview != null));
 	}
 
 	/**
 	 * Signs the command arguments. If the arguments cannot be signed or if there is no
 	 * arguments to sign, this will return {@link ArgumentSignatureDataMap#empty()}.
+	 * 
+	 * @param preview the previewed argument value; if supplied, will be used for all signed arguments
 	 */
-	private ArgumentSignatureDataMap signArguments(ChatMessageSigner signer, ParseResults<CommandSource> parseResults) {
+	private ArgumentSignatureDataMap signArguments(ChatMessageSigner signer, ParseResults<CommandSource> parseResults, @Nullable Text preview) {
 		Map<String, Text> map = ArgumentSignatureDataMap.collectArguments(parseResults.getContext());
 		if (map.isEmpty()) {
 			return ArgumentSignatureDataMap.empty();
 		} else {
-			try {
-				Builder<String, byte[]> builder = ImmutableMap.builder();
-
-				for (Entry<String, Text> entry : map.entrySet()) {
-					Signature signature = this.client.getProfileKeys().createSignatureInstance();
-					if (signature != null) {
-						Text text = (Text)entry.getValue();
-						ChatMessageSignature chatMessageSignature = signer.sign(signature, text);
-						builder.put((String)entry.getKey(), chatMessageSignature.saltSignature().signature());
-					}
-				}
-
-				return new ArgumentSignatureDataMap(signer.salt(), builder.build());
-			} catch (GeneralSecurityException var10) {
-				field_39078.error("Failed to sign command arguments", (Throwable)var10);
+			Signer signer2 = this.client.getProfileKeys().getSigner();
+			if (signer2 == null) {
 				return ArgumentSignatureDataMap.empty();
+			} else {
+				try {
+					Builder<String, byte[]> builder = ImmutableMap.builder();
+					map.forEach((argumentName, value) -> {
+						Text text2 = preview != null ? preview : value;
+						ChatMessageSignature chatMessageSignature = signer.sign(signer2, text2);
+						builder.put(argumentName, chatMessageSignature.saltSignature().signature());
+					});
+					return new ArgumentSignatureDataMap(signer.salt(), builder.build());
+				} catch (Exception var7) {
+					field_39078.error("Failed to sign command arguments", (Throwable)var7);
+					return ArgumentSignatureDataMap.empty();
+				}
 			}
 		}
 	}

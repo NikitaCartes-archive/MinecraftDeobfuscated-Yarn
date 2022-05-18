@@ -22,7 +22,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -109,7 +109,7 @@ public class StairsBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public void randomDisplayTick(BlockState state, World world, BlockPos pos, AbstractRandom random) {
+	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		this.baseBlock.randomDisplayTick(state, world, pos, random);
 	}
 
@@ -154,12 +154,12 @@ public class StairsBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		this.baseBlock.randomTick(state, world, pos, random);
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
+	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		this.baseBlock.scheduledTick(state, world, pos, random);
 	}
 

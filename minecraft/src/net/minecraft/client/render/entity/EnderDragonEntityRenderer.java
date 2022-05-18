@@ -23,7 +23,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 @Environment(EnvType.CLIENT)
 public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity> {
@@ -71,20 +71,20 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 		if (enderDragonEntity.ticksSinceDeath > 0) {
 			float l = ((float)enderDragonEntity.ticksSinceDeath + g) / 200.0F;
 			float m = Math.min(l > 0.8F ? (l - 0.8F) / 0.2F : 0.0F, 1.0F);
-			AbstractRandom abstractRandom = AbstractRandom.createAtomic(432L);
+			Random random = Random.create(432L);
 			VertexConsumer vertexConsumer4 = vertexConsumerProvider.getBuffer(RenderLayer.getLightning());
 			matrixStack.push();
 			matrixStack.translate(0.0, -1.0, -2.0);
 
 			for (int n = 0; (float)n < (l + l * l) / 2.0F * 60.0F; n++) {
-				matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(abstractRandom.nextFloat() * 360.0F));
-				matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(abstractRandom.nextFloat() * 360.0F));
-				matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(abstractRandom.nextFloat() * 360.0F));
-				matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(abstractRandom.nextFloat() * 360.0F));
-				matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(abstractRandom.nextFloat() * 360.0F));
-				matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(abstractRandom.nextFloat() * 360.0F + l * 90.0F));
-				float o = abstractRandom.nextFloat() * 20.0F + 5.0F + m * 10.0F;
-				float p = abstractRandom.nextFloat() * 2.0F + 1.0F + m * 2.0F;
+				matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(random.nextFloat() * 360.0F));
+				matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(random.nextFloat() * 360.0F));
+				matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(random.nextFloat() * 360.0F));
+				matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(random.nextFloat() * 360.0F));
+				matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(random.nextFloat() * 360.0F));
+				matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(random.nextFloat() * 360.0F + l * 90.0F));
+				float o = random.nextFloat() * 20.0F + 5.0F + m * 10.0F;
+				float p = random.nextFloat() * 2.0F + 1.0F + m * 2.0F;
 				Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
 				int q = (int)(255.0F * (1.0F - m));
 				method_23157(vertexConsumer4, matrix4f, q);

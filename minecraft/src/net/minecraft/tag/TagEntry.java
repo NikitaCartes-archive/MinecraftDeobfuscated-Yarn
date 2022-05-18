@@ -13,15 +13,14 @@ import net.minecraft.util.dynamic.Codecs;
 public class TagEntry {
 	private static final Codec<TagEntry> field_39266 = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codecs.TAG_ENTRY.fieldOf("id").forGetter(TagEntry::getIdForCodec),
-					Codec.BOOL.optionalFieldOf("required", Boolean.valueOf(true)).forGetter(tagEntry -> tagEntry.required)
+					Codecs.TAG_ENTRY_ID.fieldOf("id").forGetter(TagEntry::getIdForCodec),
+					Codec.BOOL.optionalFieldOf("required", Boolean.valueOf(true)).forGetter(entry -> entry.required)
 				)
 				.apply(instance, TagEntry::new)
 	);
-	public static final Codec<TagEntry> field_39265 = Codec.either(Codecs.TAG_ENTRY, field_39266)
+	public static final Codec<TagEntry> CODEC = Codec.either(Codecs.TAG_ENTRY_ID, field_39266)
 		.xmap(
-			either -> either.map(tagEntryId -> new TagEntry(tagEntryId, true), tagEntry -> tagEntry),
-			tagEntry -> tagEntry.required ? Either.left(tagEntry.getIdForCodec()) : Either.right(tagEntry)
+			either -> either.map(id -> new TagEntry(id, true), tagEntry -> tagEntry), entry -> entry.required ? Either.left(entry.getIdForCodec()) : Either.right(entry)
 		);
 	private final Identifier id;
 	private final boolean tag;

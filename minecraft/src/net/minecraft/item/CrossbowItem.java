@@ -30,7 +30,7 @@ import net.minecraft.util.UseAction;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 public class CrossbowItem extends RangedWeaponItem implements Vanishable {
@@ -281,12 +281,12 @@ public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 		postShoot(world, entity, stack);
 	}
 
-	private static float[] getSoundPitches(AbstractRandom random) {
+	private static float[] getSoundPitches(Random random) {
 		boolean bl = random.nextBoolean();
 		return new float[]{1.0F, getSoundPitch(bl, random), getSoundPitch(!bl, random)};
 	}
 
-	private static float getSoundPitch(boolean flag, AbstractRandom random) {
+	private static float getSoundPitch(boolean flag, Random random) {
 		float f = flag ? 0.63F : 0.43F;
 		return 1.0F / (random.nextFloat() * 0.5F + 1.8F) + f;
 	}

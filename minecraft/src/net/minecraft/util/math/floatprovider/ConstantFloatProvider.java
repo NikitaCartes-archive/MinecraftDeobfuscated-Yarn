@@ -3,7 +3,7 @@ package net.minecraft.util.math.floatprovider;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class ConstantFloatProvider extends FloatProvider {
 	public static final ConstantFloatProvider ZERO = new ConstantFloatProvider(0.0F);
@@ -29,7 +29,7 @@ public class ConstantFloatProvider extends FloatProvider {
 	}
 
 	@Override
-	public float get(AbstractRandom random) {
+	public float get(Random random) {
 		return this.value;
 	}
 

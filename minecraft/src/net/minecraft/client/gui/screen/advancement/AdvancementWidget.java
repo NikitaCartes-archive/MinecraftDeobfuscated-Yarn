@@ -67,7 +67,7 @@ public class AdvancementWidget extends DrawableHelper {
 		int k = i > 1 ? client.textRenderer.getWidth("  ") + client.textRenderer.getWidth("0") * j * 2 + client.textRenderer.getWidth("/") : 0;
 		int l = 29 + client.textRenderer.getWidth(this.title) + k;
 		this.description = Language.getInstance()
-			.reorder(this.wrapDescription(Texts.setStyleIfAbsent(display.getDescription().shallowCopy(), Style.EMPTY.withColor(display.getFrame().getTitleFormat())), l));
+			.reorder(this.wrapDescription(Texts.setStyleIfAbsent(display.getDescription().copy(), Style.EMPTY.withColor(display.getFrame().getTitleFormat())), l));
 
 		for (OrderedText orderedText : this.description) {
 			l = Math.max(l, client.textRenderer.getWidth(orderedText));

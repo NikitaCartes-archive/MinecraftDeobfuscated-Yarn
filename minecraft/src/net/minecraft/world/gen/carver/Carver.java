@@ -15,7 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
@@ -190,13 +190,13 @@ public abstract class Carver<C extends CarverConfig> {
 		C config,
 		Chunk chunk,
 		Function<BlockPos, RegistryEntry<Biome>> posToBiome,
-		AbstractRandom random,
+		Random random,
 		AquiferSampler aquiferSampler,
 		ChunkPos pos,
 		CarvingMask mask
 	);
 
-	public abstract boolean shouldCarve(C config, AbstractRandom random);
+	public abstract boolean shouldCarve(C config, Random random);
 
 	protected boolean canAlwaysCarveBlock(C config, BlockState state) {
 		return state.isIn(config.replaceable);

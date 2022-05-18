@@ -27,7 +27,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 
@@ -104,9 +104,9 @@ public class LootTable {
 
 	public void supplyInventory(Inventory inventory, LootContext context) {
 		ObjectArrayList<ItemStack> objectArrayList = this.generateLoot(context);
-		AbstractRandom abstractRandom = context.getRandom();
-		List<Integer> list = this.getFreeSlots(inventory, abstractRandom);
-		this.shuffle(objectArrayList, list.size(), abstractRandom);
+		Random random = context.getRandom();
+		List<Integer> list = this.getFreeSlots(inventory, random);
+		this.shuffle(objectArrayList, list.size(), random);
 
 		for (ItemStack itemStack : objectArrayList) {
 			if (list.isEmpty()) {
@@ -122,7 +122,7 @@ public class LootTable {
 		}
 	}
 
-	private void shuffle(ObjectArrayList<ItemStack> drops, int freeSlots, AbstractRandom random) {
+	private void shuffle(ObjectArrayList<ItemStack> drops, int freeSlots, Random random) {
 		List<ItemStack> list = Lists.<ItemStack>newArrayList();
 		Iterator<ItemStack> iterator = drops.iterator();
 
@@ -157,7 +157,7 @@ public class LootTable {
 		Util.shuffle(drops, random);
 	}
 
-	private List<Integer> getFreeSlots(Inventory inventory, AbstractRandom random) {
+	private List<Integer> getFreeSlots(Inventory inventory, Random random) {
 		ObjectArrayList<Integer> objectArrayList = new ObjectArrayList<>();
 
 		for (int i = 0; i < inventory.size(); i++) {

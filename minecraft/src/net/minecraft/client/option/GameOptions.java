@@ -42,7 +42,6 @@ import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.hud.ChatHud;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.render.ChunkBuilderMode;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.resource.VideoWarningManager;
@@ -60,6 +59,7 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.MutableText;
@@ -453,9 +453,9 @@ public class GameOptions {
 	private final SimpleOption<Boolean> showAutosaveIndicator = SimpleOption.ofBoolean("options.autosaveIndicator", true);
 	private static final Text CHAT_PREVIEW_TOOLTIP = Text.translatable("options.chatPreview.tooltip");
 	private final SimpleOption<Boolean> chatPreview = SimpleOption.ofBoolean("options.chatPreview", SimpleOption.constantTooltip(CHAT_PREVIEW_TOOLTIP), true);
-	private static final Text ONLY_SHOW_SIGNED_CHAT_TOOLTIP = Text.translatable("options.onlyShowSignedChat.tooltip");
-	private final SimpleOption<Boolean> onlyShowSignedChat = SimpleOption.ofBoolean(
-		"options.onlyShowSignedChat", SimpleOption.constantTooltip(ONLY_SHOW_SIGNED_CHAT_TOOLTIP), false
+	private static final Text ONLY_SHOW_SECURE_CHAT_TOOLTIP = Text.translatable("options.onlyShowSecureChat.tooltip");
+	private final SimpleOption<Boolean> onlyShowSecureChat = SimpleOption.ofBoolean(
+		"options.onlyShowSecureChat", SimpleOption.constantTooltip(ONLY_SHOW_SECURE_CHAT_TOOLTIP), false
 	);
 	/**
 	 * A key binding for moving forward.
@@ -975,8 +975,8 @@ public class GameOptions {
 		return this.chatPreview;
 	}
 
-	public SimpleOption<Boolean> getOnlyShowSignedChat() {
-		return this.onlyShowSignedChat;
+	public SimpleOption<Boolean> getOnlyShowSecureChat() {
+		return this.onlyShowSecureChat;
 	}
 
 	public SimpleOption<Integer> getFov() {
@@ -1136,7 +1136,7 @@ public class GameOptions {
 		visitor.accept("showAutosaveIndicator", this.showAutosaveIndicator);
 		visitor.accept("allowServerListing", this.allowServerListing);
 		visitor.accept("chatPreview", this.chatPreview);
-		visitor.accept("onlyShowSignedChat", this.onlyShowSignedChat);
+		visitor.accept("onlyShowSecureChat", this.onlyShowSecureChat);
 
 		for (KeyBinding keyBinding : this.allKeys) {
 			String string = keyBinding.getBoundKeyTranslationKey();

@@ -3,27 +3,27 @@ package net.minecraft.server.command;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.command.argument.MessageArgumentType;
 import net.minecraft.network.MessageType;
-import net.minecraft.network.encryption.SignedChatMessage;
 import net.minecraft.server.PlayerManager;
-import net.minecraft.server.network.ServerPlayerEntity;
 
 public class MeCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-		dispatcher.register(CommandManager.literal("me").then(CommandManager.argument("action", MessageArgumentType.message()).executes(context -> {
-			SignedChatMessage signedChatMessage = MessageArgumentType.getSignedMessage(context, "action");
-			ServerCommandSource serverCommandSource = context.getSource();
-			if (serverCommandSource.isExecutedByPlayer()) {
-				ServerPlayerEntity serverPlayerEntity = serverCommandSource.getPlayerOrThrow();
-				serverPlayerEntity.getTextStream().filterText(signedChatMessage.signedContent().getString()).thenAcceptAsync(message -> {
-					PlayerManager playerManager = serverCommandSource.getServer().getPlayerManager();
-					SignedChatMessage signedChatMessage2 = serverCommandSource.getServer().getChatDecorator().decorate(serverPlayerEntity, signedChatMessage);
-					playerManager.broadcast(signedChatMessage2, message, serverPlayerEntity, MessageType.EMOTE_COMMAND);
-				}, serverCommandSource.getServer());
-			} else {
-				serverCommandSource.getServer().getPlayerManager().broadcast(signedChatMessage, serverCommandSource.getChatMessageSender(), MessageType.EMOTE_COMMAND);
-			}
-
-			return 1;
-		})));
+		dispatcher.register(
+			CommandManager.literal("me")
+				.then(
+					CommandManager.argument("action", MessageArgumentType.message())
+						.executes(
+							context -> {
+								MessageArgumentType.SignedMessage signedMessage = MessageArgumentType.getSignedMessage(context, "action");
+								ServerCommandSource serverCommandSource = context.getSource();
+								PlayerManager playerManager = serverCommandSource.getServer().getPlayerManager();
+								signedMessage.decorate(serverCommandSource)
+									.thenAcceptAsync(
+										decoratedMessage -> playerManager.broadcast(decoratedMessage, serverCommandSource, MessageType.EMOTE_COMMAND), serverCommandSource.getServer()
+									);
+								return 1;
+							}
+						)
+				)
+		);
 	}
 }

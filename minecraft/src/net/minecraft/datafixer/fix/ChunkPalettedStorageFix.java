@@ -134,8 +134,8 @@ public class ChunkPalettedStorageFix extends DataFix {
 	static final Dynamic<?> AIR = BlockStateFlattening.lookupState(0);
 	private static final int field_29870 = 4096;
 
-	public ChunkPalettedStorageFix(Schema outputSchema, boolean changesType) {
-		super(outputSchema, changesType);
+	public ChunkPalettedStorageFix(Schema schema, boolean bl) {
+		super(schema, bl);
 	}
 
 	private static void buildSkull(Map<String, Dynamic<?>> out, int i, String mob, String block) {

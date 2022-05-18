@@ -5,7 +5,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 /**
  * A sensor can update memories over time in a brain. The sensor's computation
@@ -15,7 +15,7 @@ import net.minecraft.util.math.random.AbstractRandom;
  * @see net.minecraft.entity.ai.brain.Brain#sensors
  */
 public abstract class Sensor<E extends LivingEntity> {
-	private static final AbstractRandom RANDOM = AbstractRandom.createBlocking();
+	private static final Random RANDOM = Random.createThreadSafe();
 	private static final int DEFAULT_RUN_TIME = 20;
 	protected static final int BASE_MAX_DISTANCE = 16;
 	private static final TargetPredicate TARGET_PREDICATE = TargetPredicate.createNonAttackable().setBaseMaxDistance(16.0);

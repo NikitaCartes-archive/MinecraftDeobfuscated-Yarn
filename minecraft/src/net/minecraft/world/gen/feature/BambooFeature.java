@@ -8,7 +8,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.BambooLeaves;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.ProbabilityConfig;
@@ -33,15 +33,15 @@ public class BambooFeature extends Feature<ProbabilityConfig> {
 		int i = 0;
 		BlockPos blockPos = context.getOrigin();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
-		AbstractRandom abstractRandom = context.getRandom();
+		Random random = context.getRandom();
 		ProbabilityConfig probabilityConfig = context.getConfig();
 		BlockPos.Mutable mutable = blockPos.mutableCopy();
 		BlockPos.Mutable mutable2 = blockPos.mutableCopy();
 		if (structureWorldAccess.isAir(mutable)) {
 			if (Blocks.BAMBOO.getDefaultState().canPlaceAt(structureWorldAccess, mutable)) {
-				int j = abstractRandom.nextInt(12) + 5;
-				if (abstractRandom.nextFloat() < probabilityConfig.probability) {
-					int k = abstractRandom.nextInt(4) + 1;
+				int j = random.nextInt(12) + 5;
+				if (random.nextFloat() < probabilityConfig.probability) {
+					int k = random.nextInt(4) + 1;
 
 					for (int l = blockPos.getX() - k; l <= blockPos.getX() + k; l++) {
 						for (int m = blockPos.getZ() - k; m <= blockPos.getZ() + k; m++) {

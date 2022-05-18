@@ -15,7 +15,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -37,6 +36,7 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.tag.TagKey;
@@ -619,7 +619,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 				}
 			});
 			if (itemGroup != null) {
-				list2.add(1, itemGroup.getDisplayName().shallowCopy().formatted(Formatting.BLUE));
+				list2.add(1, itemGroup.getDisplayName().copy().formatted(Formatting.BLUE));
 			}
 
 			this.renderTooltip(matrices, list2, stack.getTooltipData(), x, y);

@@ -18,7 +18,7 @@ import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.Heightmap;
@@ -101,11 +101,11 @@ public class StructurePool {
 		return this.terminatorsId;
 	}
 
-	public StructurePoolElement getRandomElement(AbstractRandom random) {
+	public StructurePoolElement getRandomElement(Random random) {
 		return this.elements.get(random.nextInt(this.elements.size()));
 	}
 
-	public List<StructurePoolElement> getElementIndicesInRandomOrder(AbstractRandom random) {
+	public List<StructurePoolElement> getElementIndicesInRandomOrder(Random random) {
 		return Util.copyShuffled(this.elements, random);
 	}
 

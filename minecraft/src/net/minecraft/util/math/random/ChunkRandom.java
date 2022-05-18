@@ -1,13 +1,12 @@
 package net.minecraft.util.math.random;
 
 import java.util.function.LongFunction;
-import net.minecraft.world.gen.random.Xoroshiro128PlusPlusRandom;
 
-public class ChunkRandom extends AtomicSimpleRandom {
-	private final AbstractRandom baseRandom;
+public class ChunkRandom extends CheckedRandom {
+	private final Random baseRandom;
 	private int sampleCount;
 
-	public ChunkRandom(AbstractRandom baseRandom) {
+	public ChunkRandom(Random baseRandom) {
 		super(0L);
 		this.baseRandom = baseRandom;
 	}
@@ -17,19 +16,19 @@ public class ChunkRandom extends AtomicSimpleRandom {
 	}
 
 	@Override
-	public AbstractRandom derive() {
-		return this.baseRandom.derive();
+	public Random split() {
+		return this.baseRandom.split();
 	}
 
 	@Override
-	public net.minecraft.util.math.random.RandomDeriver createRandomDeriver() {
-		return this.baseRandom.createRandomDeriver();
+	public RandomSplitter nextSplitter() {
+		return this.baseRandom.nextSplitter();
 	}
 
 	@Override
 	public int next(int bits) {
 		this.sampleCount++;
-		return this.baseRandom instanceof AtomicSimpleRandom atomicSimpleRandom ? atomicSimpleRandom.next(bits) : (int)(this.baseRandom.nextLong() >>> 64 - bits);
+		return this.baseRandom instanceof CheckedRandom checkedRandom ? checkedRandom.next(bits) : (int)(this.baseRandom.nextLong() >>> 64 - bits);
 	}
 
 	@Override
@@ -109,24 +108,24 @@ public class ChunkRandom extends AtomicSimpleRandom {
 		this.setSeed(l);
 	}
 
-	public static AbstractRandom getSlimeRandom(int chunkX, int chunkZ, long worldSeed, long scrambler) {
-		return AbstractRandom.createAtomic(
+	public static Random getSlimeRandom(int chunkX, int chunkZ, long worldSeed, long scrambler) {
+		return Random.create(
 			worldSeed + (long)(chunkX * chunkX * 4987142) + (long)(chunkX * 5947611) + (long)(chunkZ * chunkZ) * 4392871L + (long)(chunkZ * 389711) ^ scrambler
 		);
 	}
 
 	public static enum RandomProvider {
-		LEGACY(AtomicSimpleRandom::new),
+		LEGACY(CheckedRandom::new),
 		XOROSHIRO(Xoroshiro128PlusPlusRandom::new);
 
-		private final LongFunction<AbstractRandom> provider;
+		private final LongFunction<Random> provider;
 
-		private RandomProvider(LongFunction<AbstractRandom> provider) {
+		private RandomProvider(LongFunction<Random> provider) {
 			this.provider = provider;
 		}
 
-		public AbstractRandom create(long seed) {
-			return (AbstractRandom)this.provider.apply(seed);
+		public Random create(long seed) {
+			return (Random)this.provider.apply(seed);
 		}
 	}
 }

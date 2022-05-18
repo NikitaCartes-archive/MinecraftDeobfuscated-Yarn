@@ -54,6 +54,7 @@ import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.function.LongSupplier;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -71,7 +72,7 @@ import net.minecraft.state.property.Property;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
@@ -529,19 +530,19 @@ public class Util {
 		}
 	}
 
-	public static <T> T getRandom(T[] array, AbstractRandom random) {
+	public static <T> T getRandom(T[] array, Random random) {
 		return array[random.nextInt(array.length)];
 	}
 
-	public static int getRandom(int[] array, AbstractRandom random) {
+	public static int getRandom(int[] array, Random random) {
 		return array[random.nextInt(array.length)];
 	}
 
-	public static <T> T getRandom(List<T> list, AbstractRandom random) {
+	public static <T> T getRandom(List<T> list, Random random) {
 		return (T)list.get(random.nextInt(list.size()));
 	}
 
-	public static <T> Optional<T> getRandomOrEmpty(List<T> list, AbstractRandom random) {
+	public static <T> Optional<T> getRandomOrEmpty(List<T> list, Random random) {
 		return list.isEmpty() ? Optional.empty() : Optional.of(getRandom(list, random));
 	}
 
@@ -766,13 +767,13 @@ public class Util {
 		};
 	}
 
-	public static <T> List<T> copyShuffled(Stream<T> stream, AbstractRandom random) {
+	public static <T> List<T> copyShuffled(Stream<T> stream, Random random) {
 		ObjectArrayList<T> objectArrayList = (ObjectArrayList<T>)stream.collect(ObjectArrayList.toList());
 		shuffle(objectArrayList, random);
 		return objectArrayList;
 	}
 
-	public static IntArrayList shuffle(IntStream stream, AbstractRandom random) {
+	public static IntArrayList shuffle(IntStream stream, Random random) {
 		IntArrayList intArrayList = IntArrayList.wrap(stream.toArray());
 		int i = intArrayList.size();
 
@@ -784,19 +785,19 @@ public class Util {
 		return intArrayList;
 	}
 
-	public static <T> List<T> copyShuffled(T[] array, AbstractRandom random) {
+	public static <T> List<T> copyShuffled(T[] array, Random random) {
 		ObjectArrayList<T> objectArrayList = new ObjectArrayList<>(array);
 		shuffle(objectArrayList, random);
 		return objectArrayList;
 	}
 
-	public static <T> List<T> copyShuffled(ObjectArrayList<T> list, AbstractRandom random) {
+	public static <T> List<T> copyShuffled(ObjectArrayList<T> list, Random random) {
 		ObjectArrayList<T> objectArrayList = new ObjectArrayList<>(list);
 		shuffle(objectArrayList, random);
 		return objectArrayList;
 	}
 
-	public static <T> void shuffle(ObjectArrayList<T> list, AbstractRandom random) {
+	public static <T> void shuffle(ObjectArrayList<T> list, Random random) {
 		int i = list.size();
 
 		for (int j = i; j > 1; j--) {
@@ -861,10 +862,14 @@ public class Util {
 	 * return {@code 0} when given values not in the passed list.
 	 */
 	public static <T> ToIntFunction<T> lastIndexGetter(List<T> values) {
-		Object2IntMap<T> object2IntMap = new Object2IntOpenHashMap<>();
+		return method_44146(values, Object2IntOpenHashMap::new);
+	}
 
-		for (int i = 0; i < values.size(); i++) {
-			object2IntMap.put((T)values.get(i), i);
+	public static <T> ToIntFunction<T> method_44146(List<T> list, IntFunction<Object2IntMap<T>> intFunction) {
+		Object2IntMap<T> object2IntMap = (Object2IntMap<T>)intFunction.apply(list.size());
+
+		for (int i = 0; i < list.size(); i++) {
+			object2IntMap.put((T)list.get(i), i);
 		}
 
 		return object2IntMap;

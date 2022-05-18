@@ -9,9 +9,7 @@ import com.mojang.authlib.exceptions.InvalidCredentialsException;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.logging.LogUtils;
 import java.math.BigInteger;
-import java.security.GeneralSecurityException;
 import java.security.PublicKey;
-import java.security.Signature;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import javax.crypto.Cipher;
@@ -21,14 +19,13 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.realms.gui.screen.DisconnectedRealmsScreen;
 import net.minecraft.client.realms.gui.screen.RealmsScreen;
 import net.minecraft.client.util.NetworkUtils;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
-import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
+import net.minecraft.network.encryption.Signer;
 import net.minecraft.network.listener.ClientLoginPacketListener;
 import net.minecraft.network.packet.c2s.login.LoginKeyC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginQueryResponseC2SPacket;
@@ -37,6 +34,7 @@ import net.minecraft.network.packet.s2c.login.LoginDisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.login.LoginHelloS2CPacket;
 import net.minecraft.network.packet.s2c.login.LoginQueryRequestS2CPacket;
 import net.minecraft.network.packet.s2c.login.LoginSuccessS2CPacket;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import org.slf4j.Logger;
 
@@ -70,17 +68,19 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 			cipher = NetworkEncryptionUtils.cipherFromKey(2, secretKey);
 			cipher2 = NetworkEncryptionUtils.cipherFromKey(1, secretKey);
 			byte[] bs = packet.getNonce();
-			Signature signature = this.client.getProfileKeys().createSignatureInstance();
-			if (signature == null) {
+			Signer signer = this.client.getProfileKeys().getSigner();
+			if (signer == null) {
 				loginKeyC2SPacket = new LoginKeyC2SPacket(secretKey, publicKey, bs);
 			} else {
 				long l = NetworkEncryptionUtils.SecureRandomUtil.nextLong();
-				signature.update(bs);
-				signature.update(Longs.toByteArray(l));
-				loginKeyC2SPacket = new LoginKeyC2SPacket(secretKey, publicKey, l, signature.sign());
+				byte[] cs = signer.sign(updater -> {
+					updater.update(bs);
+					updater.update(Longs.toByteArray(l));
+				});
+				loginKeyC2SPacket = new LoginKeyC2SPacket(secretKey, publicKey, l, cs);
 			}
-		} catch (GeneralSecurityException | NetworkEncryptionException var12) {
-			throw new IllegalStateException("Protocol error", var12);
+		} catch (Exception var13) {
+			throw new IllegalStateException("Protocol error", var13);
 		}
 
 		this.statusConsumer.accept(Text.translatable("connect.authorizing"));

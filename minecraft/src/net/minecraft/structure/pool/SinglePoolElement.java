@@ -26,7 +26,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
@@ -97,9 +97,7 @@ public class SinglePoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public List<Structure.StructureBlockInfo> getStructureBlockInfos(
-		StructureManager structureManager, BlockPos pos, BlockRotation rotation, AbstractRandom random
-	) {
+	public List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager structureManager, BlockPos pos, BlockRotation rotation, Random random) {
 		Structure structure = this.getStructure(structureManager);
 		ObjectArrayList<Structure.StructureBlockInfo> objectArrayList = structure.getInfosForBlock(
 			pos, new StructurePlacementData().setRotation(rotation), Blocks.JIGSAW, true
@@ -124,7 +122,7 @@ public class SinglePoolElement extends StructurePoolElement {
 		BlockPos blockPos,
 		BlockRotation rotation,
 		BlockBox box,
-		AbstractRandom random,
+		Random random,
 		boolean keepJigsaws
 	) {
 		Structure structure = this.getStructure(structureManager);

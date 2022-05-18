@@ -25,7 +25,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
 
@@ -45,7 +45,7 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
-		AbstractRandom abstractRandom = context.getRandom();
+		Random random = context.getRandom();
 		Enchantment enchantment;
 		if (this.enchantments.isEmpty()) {
 			boolean bl = stack.isOf(Items.BOOK);
@@ -59,15 +59,15 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 				return stack;
 			}
 
-			enchantment = (Enchantment)list.get(abstractRandom.nextInt(list.size()));
+			enchantment = (Enchantment)list.get(random.nextInt(list.size()));
 		} else {
-			enchantment = (Enchantment)this.enchantments.get(abstractRandom.nextInt(this.enchantments.size()));
+			enchantment = (Enchantment)this.enchantments.get(random.nextInt(this.enchantments.size()));
 		}
 
-		return addEnchantmentToStack(stack, enchantment, abstractRandom);
+		return addEnchantmentToStack(stack, enchantment, random);
 	}
 
-	private static ItemStack addEnchantmentToStack(ItemStack stack, Enchantment enchantment, AbstractRandom random) {
+	private static ItemStack addEnchantmentToStack(ItemStack stack, Enchantment enchantment, Random random) {
 		int i = MathHelper.nextInt(random, enchantment.getMinLevel(), enchantment.getMaxLevel());
 		if (stack.isOf(Items.BOOK)) {
 			stack = new ItemStack(Items.ENCHANTED_BOOK);

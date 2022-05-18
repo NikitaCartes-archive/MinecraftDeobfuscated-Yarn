@@ -12,7 +12,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.util.FeatureContext;
@@ -24,11 +24,11 @@ public class BonusChestFeature extends Feature<DefaultFeatureConfig> {
 
 	@Override
 	public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
-		AbstractRandom abstractRandom = context.getRandom();
+		Random random = context.getRandom();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		ChunkPos chunkPos = new ChunkPos(context.getOrigin());
-		IntArrayList intArrayList = Util.shuffle(IntStream.rangeClosed(chunkPos.getStartX(), chunkPos.getEndX()), abstractRandom);
-		IntArrayList intArrayList2 = Util.shuffle(IntStream.rangeClosed(chunkPos.getStartZ(), chunkPos.getEndZ()), abstractRandom);
+		IntArrayList intArrayList = Util.shuffle(IntStream.rangeClosed(chunkPos.getStartX(), chunkPos.getEndX()), random);
+		IntArrayList intArrayList2 = Util.shuffle(IntStream.rangeClosed(chunkPos.getStartZ(), chunkPos.getEndZ()), random);
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (Integer integer : intArrayList) {
@@ -37,7 +37,7 @@ public class BonusChestFeature extends Feature<DefaultFeatureConfig> {
 				BlockPos blockPos = structureWorldAccess.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mutable);
 				if (structureWorldAccess.isAir(blockPos) || structureWorldAccess.getBlockState(blockPos).getCollisionShape(structureWorldAccess, blockPos).isEmpty()) {
 					structureWorldAccess.setBlockState(blockPos, Blocks.CHEST.getDefaultState(), Block.NOTIFY_LISTENERS);
-					LootableContainerBlockEntity.setLootTable(structureWorldAccess, abstractRandom, blockPos, LootTables.SPAWN_BONUS_CHEST);
+					LootableContainerBlockEntity.setLootTable(structureWorldAccess, random, blockPos, LootTables.SPAWN_BONUS_CHEST);
 					BlockState blockState = Blocks.TORCH.getDefaultState();
 
 					for (Direction direction : Direction.Type.HORIZONTAL) {

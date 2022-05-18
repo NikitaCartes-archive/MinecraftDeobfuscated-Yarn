@@ -5,7 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 @Environment(EnvType.CLIENT)
 public interface SoundInstance {
@@ -44,8 +44,8 @@ public interface SoundInstance {
 		return true;
 	}
 
-	static AbstractRandom createRandom() {
-		return AbstractRandom.createAtomic();
+	static Random createRandom() {
+		return Random.create();
 	}
 
 	@Environment(EnvType.CLIENT)

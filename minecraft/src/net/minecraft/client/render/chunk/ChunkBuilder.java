@@ -50,7 +50,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.thread.TaskExecutor;
 import net.minecraft.world.chunk.ChunkStatus;
 import org.slf4j.Logger;
@@ -521,7 +521,7 @@ public class ChunkBuilder {
 				if (chunkRendererRegion != null) {
 					BlockModelRenderer.enableBrightnessCache();
 					Set<RenderLayer> set = new ReferenceArraySet<>(RenderLayer.getBlockLayers().size());
-					AbstractRandom abstractRandom = AbstractRandom.createAtomic();
+					Random random = Random.create();
 					BlockRenderManager blockRenderManager = MinecraftClient.getInstance().getBlockRenderManager();
 
 					for (BlockPos blockPos3 : BlockPos.iterate(blockPos, blockPos2)) {
@@ -558,7 +558,7 @@ public class ChunkBuilder {
 
 							matrixStack.push();
 							matrixStack.translate((double)(blockPos3.getX() & 15), (double)(blockPos3.getY() & 15), (double)(blockPos3.getZ() & 15));
-							blockRenderManager.renderBlock(blockState, blockPos3, chunkRendererRegion, matrixStack, bufferBuilder, true, abstractRandom);
+							blockRenderManager.renderBlock(blockState, blockPos3, chunkRendererRegion, matrixStack, bufferBuilder, true, random);
 							matrixStack.pop();
 						}
 					}

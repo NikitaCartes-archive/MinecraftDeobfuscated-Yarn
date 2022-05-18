@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import javax.annotation.Nullable;
+import net.minecraft.class_7519;
 import net.minecraft.network.listener.PacketListener;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
@@ -266,6 +267,7 @@ public enum NetworkState {
 					.register(ChunkRenderDistanceCenterS2CPacket.class, ChunkRenderDistanceCenterS2CPacket::new)
 					.register(ChunkLoadDistanceS2CPacket.class, ChunkLoadDistanceS2CPacket::new)
 					.register(PlayerSpawnPositionS2CPacket.class, PlayerSpawnPositionS2CPacket::new)
+					.register(class_7519.class, class_7519::new)
 					.register(ScoreboardDisplayS2CPacket.class, ScoreboardDisplayS2CPacket::new)
 					.register(EntityTrackerUpdateS2CPacket.class, EntityTrackerUpdateS2CPacket::new)
 					.register(EntityAttachS2CPacket.class, EntityAttachS2CPacket::new)

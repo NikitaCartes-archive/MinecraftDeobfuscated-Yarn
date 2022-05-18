@@ -10,7 +10,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class DispenserBlockEntity extends LootableContainerBlockEntity {
 	public static final int field_31340 = 9;
@@ -29,7 +29,7 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 		return 9;
 	}
 
-	public int chooseNonEmptySlot(AbstractRandom random) {
+	public int chooseNonEmptySlot(Random random) {
 		this.checkLootInteraction(null);
 		int i = -1;
 		int j = 1;

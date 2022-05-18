@@ -2,7 +2,7 @@ package net.minecraft.block;
 
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class OxidizableStairsBlock extends StairsBlock implements Oxidizable {
 	private final Oxidizable.OxidationLevel oxidationLevel;
@@ -13,7 +13,7 @@ public class OxidizableStairsBlock extends StairsBlock implements Oxidizable {
 	}
 
 	@Override
-	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		this.tickDegradation(state, world, pos, random);
 	}
 

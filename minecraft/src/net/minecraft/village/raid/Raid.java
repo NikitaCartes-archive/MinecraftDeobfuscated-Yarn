@@ -51,7 +51,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.LocalDifficulty;
@@ -80,8 +80,8 @@ public class Raid {
 	private static final Text EVENT_TEXT = Text.translatable("event.minecraft.raid");
 	private static final Text VICTORY_SUFFIX_TEXT = Text.translatable("event.minecraft.raid.victory");
 	private static final Text DEFEAT_SUFFIX_TEXT = Text.translatable("event.minecraft.raid.defeat");
-	private static final Text VICTORY_TITLE = EVENT_TEXT.shallowCopy().append(" - ").append(VICTORY_SUFFIX_TEXT);
-	private static final Text DEFEAT_TITLE = EVENT_TEXT.shallowCopy().append(" - ").append(DEFEAT_SUFFIX_TEXT);
+	private static final Text VICTORY_TITLE = EVENT_TEXT.copy().append(" - ").append(VICTORY_SUFFIX_TEXT);
+	private static final Text DEFEAT_TITLE = EVENT_TEXT.copy().append(" - ").append(DEFEAT_SUFFIX_TEXT);
 	private static final int MAX_ACTIVE_TICKS = 48000;
 	public static final int field_30674 = 9216;
 	public static final int field_30675 = 12544;
@@ -100,7 +100,7 @@ public class Raid {
 	private final ServerBossBar bar = new ServerBossBar(EVENT_TEXT, BossBar.Color.RED, BossBar.Style.NOTCHED_10);
 	private int postRaidTicks;
 	private int preRaidTicks;
-	private final AbstractRandom random = AbstractRandom.createAtomic();
+	private final Random random = Random.create();
 	private final int waveCount;
 	private Raid.Status status;
 	private int finishCooldown;
@@ -318,7 +318,7 @@ public class Raid {
 					this.removeObsoleteRaiders();
 					if (i > 0) {
 						if (i <= 2) {
-							this.bar.setName(EVENT_TEXT.shallowCopy().append(" - ").append(Text.translatable("event.minecraft.raid.raiders_remaining", i)));
+							this.bar.setName(EVENT_TEXT.copy().append(" - ").append(Text.translatable("event.minecraft.raid.raiders_remaining", i)));
 						} else {
 							this.bar.setName(EVENT_TEXT);
 						}
@@ -701,7 +701,7 @@ public class Raid {
 		return extra ? member.countInWave[this.waveCount] : member.countInWave[wave];
 	}
 
-	private int getBonusCount(Raid.Member member, AbstractRandom random, int wave, LocalDifficulty localDifficulty, boolean extra) {
+	private int getBonusCount(Raid.Member member, Random random, int wave, LocalDifficulty localDifficulty, boolean extra) {
 		Difficulty difficulty = localDifficulty.getGlobalDifficulty();
 		boolean bl = difficulty == Difficulty.EASY;
 		boolean bl2 = difficulty == Difficulty.NORMAL;

@@ -3,10 +3,10 @@ package net.minecraft.world;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.annotation.Nullable;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
@@ -128,7 +128,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 							this.successCount++;
 						}
 					});
-					minecraftServer.getCommandManager().execute(serverCommandSource, this.command);
+					minecraftServer.getCommandManager().executeWithPrefix(serverCommandSource, this.command);
 				} catch (Throwable var6) {
 					CrashReport crashReport = CrashReport.create(var6, "Executing command block");
 					CrashReportSection crashReportSection = crashReport.addElement("Command to be executed");

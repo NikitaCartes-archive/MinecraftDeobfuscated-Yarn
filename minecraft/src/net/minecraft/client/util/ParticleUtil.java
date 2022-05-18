@@ -8,7 +8,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 public class ParticleUtil {
@@ -28,7 +28,7 @@ public class ParticleUtil {
 		}
 	}
 
-	private static Vec3d getRandomVelocity(AbstractRandom random) {
+	private static Vec3d getRandomVelocity(Random random) {
 		return new Vec3d(MathHelper.nextDouble(random, -0.5, 0.5), MathHelper.nextDouble(random, -0.5, 0.5), MathHelper.nextDouble(random, -0.5, 0.5));
 	}
 

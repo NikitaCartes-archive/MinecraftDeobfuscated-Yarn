@@ -6,7 +6,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 public class EscapeSunlightGoal extends Goal {
@@ -63,11 +63,11 @@ public class EscapeSunlightGoal extends Goal {
 
 	@Nullable
 	protected Vec3d locateShadedPos() {
-		AbstractRandom abstractRandom = this.mob.getRandom();
+		Random random = this.mob.getRandom();
 		BlockPos blockPos = this.mob.getBlockPos();
 
 		for (int i = 0; i < 10; i++) {
-			BlockPos blockPos2 = blockPos.add(abstractRandom.nextInt(20) - 10, abstractRandom.nextInt(6) - 3, abstractRandom.nextInt(20) - 10);
+			BlockPos blockPos2 = blockPos.add(random.nextInt(20) - 10, random.nextInt(6) - 3, random.nextInt(20) - 10);
 			if (!this.world.isSkyVisible(blockPos2) && this.mob.getPathfindingFavor(blockPos2) < 0.0F) {
 				return Vec3d.ofBottomCenter(blockPos2);
 			}

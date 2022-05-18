@@ -13,10 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
-import java.security.GeneralSecurityException;
-import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.Signature;
 import java.time.DateTimeException;
 import java.time.Instant;
 import java.util.Base64;
@@ -30,6 +27,7 @@ import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.encryption.PlayerKeyPair;
 import net.minecraft.network.encryption.PlayerPublicKey;
+import net.minecraft.network.encryption.Signer;
 import net.minecraft.util.Util;
 import org.slf4j.Logger;
 
@@ -41,31 +39,34 @@ public class ProfileKeys {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Path PROFILE_KEYS_PATH = Path.of("profilekeys");
 	private final Path jsonPath;
-	private final CompletableFuture<PlayerKeyPair> keyPairFuture;
+	private final CompletableFuture<Optional<PlayerPublicKey>> publicKeyFuture;
+	private final CompletableFuture<Optional<Signer>> signerFuture;
 
 	public ProfileKeys(UserApiService userApiService, UUID uuid, Path root) {
 		this.jsonPath = root.resolve(PROFILE_KEYS_PATH).resolve(uuid + ".json");
-		this.keyPairFuture = this.getKeyPair(userApiService);
+		CompletableFuture<Optional<PlayerKeyPair>> completableFuture = this.getKeyPair(userApiService);
+		this.publicKeyFuture = completableFuture.thenApply(optionalKeyPair -> optionalKeyPair.map(PlayerKeyPair::publicKey));
+		this.signerFuture = completableFuture.thenApply(optionalKeyPair -> optionalKeyPair.map(keyPair -> Signer.create(keyPair.privateKey(), "SHA256withRSA")));
 	}
 
 	/**
 	 * Gets the key pair from the file cache, or if it is unavailable or expired,
 	 * the Mojang server.
 	 */
-	private CompletableFuture<PlayerKeyPair> getKeyPair(UserApiService userApiService) {
+	private CompletableFuture<Optional<PlayerKeyPair>> getKeyPair(UserApiService userApiService) {
 		return CompletableFuture.supplyAsync(() -> {
 			Optional<PlayerKeyPair> optional = this.loadKeyPairFromFile().filter(keyPair -> !keyPair.publicKey().data().isExpired());
 			if (optional.isPresent() && !((PlayerKeyPair)optional.get()).isExpired()) {
-				return (PlayerKeyPair)optional.get();
+				return optional;
 			} else {
 				try {
 					PlayerKeyPair playerKeyPair = this.fetchKeyPair(userApiService);
 					this.saveKeyPairToFile(playerKeyPair);
-					return playerKeyPair;
+					return Optional.of(playerKeyPair);
 				} catch (NetworkEncryptionException | MinecraftClientException | IOException var4) {
 					LOGGER.error("Failed to retrieve profile key pair", (Throwable)var4);
 					this.saveKeyPairToFile(null);
-					return (PlayerKeyPair)optional.orElse(null);
+					return optional;
 				}
 			}
 		}, Util.getMainWorkerExecutor());
@@ -175,50 +176,22 @@ public class ProfileKeys {
 	}
 
 	/**
-	 * {@return the SHA1withRSA signature instance used for signing, or {@code null} if
-	 * there is no private key associated with the profile}
-	 * 
-	 * @apiNote Use {#link PlayerPublicKey.PublicKeyData#createSignatureInstance()}
-	 * to create the signature for verifying the signatures.
-	 * 
-	 * @throws GeneralSecurityException when creation fails
-	 * 
-	 * @see PlayerPublicKey.PublicKeyData#createSignatureInstance()
+	 * {@return the signer, or {@code null} if there is no key pair associated with the profile}
 	 */
 	@Nullable
-	public Signature createSignatureInstance() throws GeneralSecurityException {
-		PrivateKey privateKey = this.getPrivateKey();
-		if (privateKey == null) {
-			return null;
-		} else {
-			Signature signature = Signature.getInstance("SHA256withRSA");
-			signature.initSign(privateKey);
-			return signature;
-		}
-	}
-
-	public Optional<PlayerPublicKey.PublicKeyData> getPublicKeyData() {
-		PlayerPublicKey playerPublicKey = this.getPublicKey();
-		return Optional.ofNullable(playerPublicKey).map(PlayerPublicKey::data);
+	public Signer getSigner() {
+		return (Signer)((Optional)this.signerFuture.join()).orElse(null);
 	}
 
 	/**
 	 * {@return the public key, or {@code null} if there is no public key associated
 	 * with the profile}
 	 */
-	@Nullable
-	public PlayerPublicKey getPublicKey() {
-		PlayerKeyPair playerKeyPair = (PlayerKeyPair)this.keyPairFuture.join();
-		return playerKeyPair != null ? playerKeyPair.publicKey() : null;
+	public Optional<PlayerPublicKey> getPublicKey() {
+		return (Optional<PlayerPublicKey>)this.publicKeyFuture.join();
 	}
 
-	/**
-	 * {@return the private key, or {@code null} if there is no private key associated
-	 * with the profile}
-	 */
-	@Nullable
-	private PrivateKey getPrivateKey() {
-		PlayerKeyPair playerKeyPair = (PlayerKeyPair)this.keyPairFuture.join();
-		return playerKeyPair != null ? playerKeyPair.privateKey() : null;
+	public Optional<PlayerPublicKey.PublicKeyData> getPublicKeyData() {
+		return this.getPublicKey().map(PlayerPublicKey::data);
 	}
 }

@@ -31,7 +31,7 @@ import net.minecraft.item.Items;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class GoatBrain {
 	public static final int PREPARE_RAM_DURATION = 20;
@@ -56,7 +56,7 @@ public class GoatBrain {
 	public static final float ADULT_RAM_STRENGTH_MULTIPLIER = 2.5F;
 	public static final float BABY_RAM_STRENGTH_MULTIPLIER = 1.0F;
 
-	protected static void resetLongJumpCooldown(GoatEntity goat, AbstractRandom random) {
+	protected static void resetLongJumpCooldown(GoatEntity goat, Random random) {
 		goat.getBrain().remember(MemoryModuleType.LONG_JUMP_COOLING_DOWN, LONG_JUMP_COOLDOWN_RANGE.get(random));
 		goat.getBrain().remember(MemoryModuleType.RAM_COOLDOWN_TICKS, RAM_COOLDOWN_RANGE.get(random));
 	}

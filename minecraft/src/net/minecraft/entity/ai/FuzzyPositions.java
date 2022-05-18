@@ -9,7 +9,7 @@ import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class FuzzyPositions {
 	private static final int GAUSS_RANGE = 10;
@@ -18,7 +18,7 @@ public class FuzzyPositions {
 	 * Creates a fuzzy offset position within the given horizontal and vertical
 	 * ranges.
 	 */
-	public static BlockPos localFuzz(AbstractRandom random, int horizontalRange, int verticalRange) {
+	public static BlockPos localFuzz(Random random, int horizontalRange, int verticalRange) {
 		int i = random.nextInt(2 * horizontalRange + 1) - horizontalRange;
 		int j = random.nextInt(2 * verticalRange + 1) - verticalRange;
 		int k = random.nextInt(2 * horizontalRange + 1) - horizontalRange;
@@ -32,7 +32,7 @@ public class FuzzyPositions {
 	 */
 	@Nullable
 	public static BlockPos localFuzz(
-		AbstractRandom random, int horizontalRange, int verticalRange, int startHeight, double directionX, double directionZ, double angleRange
+		Random random, int horizontalRange, int verticalRange, int startHeight, double directionX, double directionZ, double angleRange
 	) {
 		double d = MathHelper.atan2(directionZ, directionX) - (float) (Math.PI / 2);
 		double e = d + (double)(2.0F * random.nextFloat() - 1.0F) * angleRange;
@@ -137,7 +137,7 @@ public class FuzzyPositions {
 	 * {@link net.minecraft.entity.mob.MobEntity#getPositionTarget() position target}
 	 * if it exists.
 	 */
-	public static BlockPos towardTarget(PathAwareEntity entity, int horizontalRange, AbstractRandom random, BlockPos fuzz) {
+	public static BlockPos towardTarget(PathAwareEntity entity, int horizontalRange, Random random, BlockPos fuzz) {
 		int i = fuzz.getX();
 		int j = fuzz.getZ();
 		if (entity.hasPositionTarget() && horizontalRange > 1) {

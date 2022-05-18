@@ -49,7 +49,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryEntryList;
@@ -438,7 +438,7 @@ public abstract class AbstractBlock {
 	 * @deprecated Consider calling {@link AbstractBlockState#randomTick} instead. See <a href="#deprecated-methods">the class javadoc</a>.
 	 */
 	@Deprecated
-	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		this.scheduledTick(state, world, pos, random);
 	}
 
@@ -446,7 +446,7 @@ public abstract class AbstractBlock {
 	 * @deprecated Consider calling {@link AbstractBlockState#scheduledTick} instead. See <a href="#deprecated-methods">the class javadoc</a>.
 	 */
 	@Deprecated
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
+	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 	}
 
 	/**
@@ -792,11 +792,11 @@ public abstract class AbstractBlock {
 			this.getBlock().onStateReplaced(this.asBlockState(), world, pos, state, moved);
 		}
 
-		public void scheduledTick(ServerWorld world, BlockPos pos, AbstractRandom random) {
+		public void scheduledTick(ServerWorld world, BlockPos pos, Random random) {
 			this.getBlock().scheduledTick(this.asBlockState(), world, pos, random);
 		}
 
-		public void randomTick(ServerWorld world, BlockPos pos, AbstractRandom random) {
+		public void randomTick(ServerWorld world, BlockPos pos, Random random) {
 			this.getBlock().randomTick(this.asBlockState(), world, pos, random);
 		}
 

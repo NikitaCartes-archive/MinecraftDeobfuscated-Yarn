@@ -26,7 +26,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -433,7 +433,7 @@ public class RedstoneWireBlock extends Block {
 		return MathHelper.packRgb((float)vec3d.getX(), (float)vec3d.getY(), (float)vec3d.getZ());
 	}
 
-	private void addPoweredParticles(World world, AbstractRandom random, BlockPos pos, Vec3d color, Direction direction, Direction direction2, float f, float g) {
+	private void addPoweredParticles(World world, Random random, BlockPos pos, Vec3d color, Direction direction, Direction direction2, float f, float g) {
 		float h = g - f;
 		if (!(random.nextFloat() >= 0.2F * h)) {
 			float i = 0.4375F;
@@ -446,7 +446,7 @@ public class RedstoneWireBlock extends Block {
 	}
 
 	@Override
-	public void randomDisplayTick(BlockState state, World world, BlockPos pos, AbstractRandom random) {
+	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		int i = (Integer)state.get(POWER);
 		if (i != 0) {
 			for (Direction direction : Direction.Type.HORIZONTAL) {

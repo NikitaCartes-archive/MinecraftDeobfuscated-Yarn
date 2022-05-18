@@ -3,7 +3,7 @@ package net.minecraft.world.gen.heightprovider;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.collection.DataPool;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.gen.HeightContext;
 
 public class WeightedListHeightProvider extends HeightProvider {
@@ -20,7 +20,7 @@ public class WeightedListHeightProvider extends HeightProvider {
 	}
 
 	@Override
-	public int get(AbstractRandom random, HeightContext context) {
+	public int get(Random random, HeightContext context) {
 		return ((HeightProvider)this.weightedList.getDataOrEmpty(random).orElseThrow(IllegalStateException::new)).get(random, context);
 	}
 

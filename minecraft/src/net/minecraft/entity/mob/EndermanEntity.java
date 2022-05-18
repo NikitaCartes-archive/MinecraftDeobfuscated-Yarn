@@ -58,7 +58,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
@@ -453,11 +453,11 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 
 		@Override
 		public void tick() {
-			AbstractRandom abstractRandom = this.enderman.getRandom();
+			Random random = this.enderman.getRandom();
 			World world = this.enderman.world;
-			int i = MathHelper.floor(this.enderman.getX() - 2.0 + abstractRandom.nextDouble() * 4.0);
-			int j = MathHelper.floor(this.enderman.getY() + abstractRandom.nextDouble() * 3.0);
-			int k = MathHelper.floor(this.enderman.getZ() - 2.0 + abstractRandom.nextDouble() * 4.0);
+			int i = MathHelper.floor(this.enderman.getX() - 2.0 + random.nextDouble() * 4.0);
+			int j = MathHelper.floor(this.enderman.getY() + random.nextDouble() * 3.0);
+			int k = MathHelper.floor(this.enderman.getZ() - 2.0 + random.nextDouble() * 4.0);
 			BlockPos blockPos = new BlockPos(i, j, k);
 			BlockState blockState = world.getBlockState(blockPos);
 			Vec3d vec3d = new Vec3d((double)this.enderman.getBlockX() + 0.5, (double)j + 0.5, (double)this.enderman.getBlockZ() + 0.5);
@@ -492,11 +492,11 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 
 		@Override
 		public void tick() {
-			AbstractRandom abstractRandom = this.enderman.getRandom();
+			Random random = this.enderman.getRandom();
 			World world = this.enderman.world;
-			int i = MathHelper.floor(this.enderman.getX() - 1.0 + abstractRandom.nextDouble() * 2.0);
-			int j = MathHelper.floor(this.enderman.getY() + abstractRandom.nextDouble() * 2.0);
-			int k = MathHelper.floor(this.enderman.getZ() - 1.0 + abstractRandom.nextDouble() * 2.0);
+			int i = MathHelper.floor(this.enderman.getX() - 1.0 + random.nextDouble() * 2.0);
+			int j = MathHelper.floor(this.enderman.getY() + random.nextDouble() * 2.0);
+			int k = MathHelper.floor(this.enderman.getZ() - 1.0 + random.nextDouble() * 2.0);
 			BlockPos blockPos = new BlockPos(i, j, k);
 			BlockState blockState = world.getBlockState(blockPos);
 			BlockPos blockPos2 = blockPos.down();

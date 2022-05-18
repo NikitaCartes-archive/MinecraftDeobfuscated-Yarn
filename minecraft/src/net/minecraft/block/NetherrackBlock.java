@@ -3,7 +3,7 @@ package net.minecraft.block;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
@@ -28,12 +28,12 @@ public class NetherrackBlock extends Block implements Fertilizable {
 	}
 
 	@Override
-	public boolean canGrow(World world, AbstractRandom random, BlockPos pos, BlockState state) {
+	public boolean canGrow(World world, Random random, BlockPos pos, BlockState state) {
 		return true;
 	}
 
 	@Override
-	public void grow(ServerWorld world, AbstractRandom random, BlockPos pos, BlockState state) {
+	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
 		boolean bl = false;
 		boolean bl2 = false;
 

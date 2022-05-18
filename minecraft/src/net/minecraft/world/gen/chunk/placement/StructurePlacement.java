@@ -13,7 +13,7 @@ import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.math.random.AtomicSimpleRandom;
+import net.minecraft.util.math.random.CheckedRandom;
 import net.minecraft.util.math.random.ChunkRandom;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
@@ -98,19 +98,19 @@ public abstract class StructurePlacement {
 	public abstract StructurePlacementType<?> getType();
 
 	private static boolean defaultShouldGenerate(long seed, int regionX, int regionZ, int salt, float frequency) {
-		ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
+		ChunkRandom chunkRandom = new ChunkRandom(new CheckedRandom(0L));
 		chunkRandom.setRegionSeed(seed, regionX, regionZ, salt);
 		return chunkRandom.nextFloat() < frequency;
 	}
 
 	private static boolean legacyType3ShouldGenerate(long seed, int i, int chunkX, int chunkZ, float frequency) {
-		ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
+		ChunkRandom chunkRandom = new ChunkRandom(new CheckedRandom(0L));
 		chunkRandom.setCarverSeed(seed, chunkX, chunkZ);
 		return chunkRandom.nextDouble() < (double)frequency;
 	}
 
 	private static boolean legacyType2ShouldGenerate(long seed, int i, int regionX, int regionZ, float frequency) {
-		ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
+		ChunkRandom chunkRandom = new ChunkRandom(new CheckedRandom(0L));
 		chunkRandom.setRegionSeed(seed, regionX, regionZ, 10387320);
 		return chunkRandom.nextFloat() < frequency;
 	}
@@ -118,7 +118,7 @@ public abstract class StructurePlacement {
 	private static boolean legacyType1ShouldGenerate(long seed, int i, int j, int k, float frequency) {
 		int l = j >> 4;
 		int m = k >> 4;
-		ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
+		ChunkRandom chunkRandom = new ChunkRandom(new CheckedRandom(0L));
 		chunkRandom.setSeed((long)(l ^ m << 4) ^ seed);
 		chunkRandom.nextInt();
 		return chunkRandom.nextInt((int)(1.0F / frequency)) == 0;

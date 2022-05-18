@@ -14,7 +14,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 @Environment(EnvType.CLIENT)
 public class BlockLeakParticle extends SpriteBillboardParticle {
@@ -375,11 +375,11 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 	@Environment(EnvType.CLIENT)
 	public static class FallingSporeBlossomFactory implements ParticleFactory<DefaultParticleType> {
 		protected final SpriteProvider spriteProvider;
-		private final AbstractRandom random;
+		private final Random random;
 
 		public FallingSporeBlossomFactory(SpriteProvider spriteProvider) {
 			this.spriteProvider = spriteProvider;
-			this.random = AbstractRandom.createAtomic();
+			this.random = Random.create();
 		}
 
 		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {

@@ -7,7 +7,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class NoiseThresholdBlockStateProvider extends AbstractNoiseBlockStateProvider {
 	public static final Codec<NoiseThresholdBlockStateProvider> CODEC = RecordCodecBuilder.create(
@@ -53,7 +53,7 @@ public class NoiseThresholdBlockStateProvider extends AbstractNoiseBlockStatePro
 	}
 
 	@Override
-	public BlockState getBlockState(AbstractRandom random, BlockPos pos) {
+	public BlockState getBlockState(Random random, BlockPos pos) {
 		double d = this.getNoiseValue(pos, (double)this.scale);
 		if (d < (double)this.threshold) {
 			return Util.getRandom(this.lowStates, random);

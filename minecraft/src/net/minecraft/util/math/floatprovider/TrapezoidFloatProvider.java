@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.function.Function;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class TrapezoidFloatProvider extends FloatProvider {
 	public static final Codec<TrapezoidFloatProvider> CODEC = RecordCodecBuilder.create(
@@ -42,7 +42,7 @@ public class TrapezoidFloatProvider extends FloatProvider {
 	}
 
 	@Override
-	public float get(AbstractRandom random) {
+	public float get(Random random) {
 		float f = this.max - this.min;
 		float g = (f - this.plateau) / 2.0F;
 		float h = f - g;

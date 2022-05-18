@@ -22,7 +22,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.WorldChunk;
@@ -210,9 +210,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 		if (blockPos == null) {
 			blockPos = new BlockPos(vec3d.x + 0.5, 75.0, vec3d.z + 0.5);
 			LOGGER.debug("Failed to find a suitable block to teleport to, spawning an island on {}", blockPos);
-			EndConfiguredFeatures.END_ISLAND
-				.value()
-				.generate(world, world.getChunkManager().getChunkGenerator(), AbstractRandom.createAtomic(blockPos.asLong()), blockPos);
+			EndConfiguredFeatures.END_ISLAND.value().generate(world, world.getChunkManager().getChunkGenerator(), Random.create(blockPos.asLong()), blockPos);
 		} else {
 			LOGGER.debug("Found suitable block to teleport to: {}", blockPos);
 		}
@@ -294,7 +292,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 	}
 
 	private static void createPortal(ServerWorld world, BlockPos pos, EndGatewayFeatureConfig config) {
-		Feature.END_GATEWAY.generateIfValid(config, world, world.getChunkManager().getChunkGenerator(), AbstractRandom.createAtomic(), pos);
+		Feature.END_GATEWAY.generateIfValid(config, world, world.getChunkManager().getChunkGenerator(), Random.create(), pos);
 	}
 
 	@Override

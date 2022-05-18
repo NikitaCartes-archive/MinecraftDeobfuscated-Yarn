@@ -10,7 +10,7 @@ import net.minecraft.structure.rule.AlwaysTruePosRuleTest;
 import net.minecraft.structure.rule.PosRuleTest;
 import net.minecraft.structure.rule.RuleTest;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class StructureProcessorRule {
 	public static final Codec<StructureProcessorRule> CODEC = RecordCodecBuilder.create(
@@ -50,7 +50,7 @@ public class StructureProcessorRule {
 		this.outputNbt = (NbtCompound)nbt.orElse(null);
 	}
 
-	public boolean test(BlockState input, BlockState location, BlockPos blockPos, BlockPos blockPos2, BlockPos pivot, AbstractRandom random) {
+	public boolean test(BlockState input, BlockState location, BlockPos blockPos, BlockPos blockPos2, BlockPos pivot, Random random) {
 		return this.inputPredicate.test(input, random)
 			&& this.locationPredicate.test(location, random)
 			&& this.positionPredicate.test(blockPos, blockPos2, pivot, random);

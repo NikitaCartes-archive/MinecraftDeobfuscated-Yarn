@@ -3,7 +3,7 @@ package net.minecraft.util.collection;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class Weighting {
 	private Weighting() {
@@ -23,7 +23,7 @@ public class Weighting {
 		}
 	}
 
-	public static <T extends Weighted> Optional<T> getRandom(AbstractRandom random, List<T> pool, int totalWeight) {
+	public static <T extends Weighted> Optional<T> getRandom(Random random, List<T> pool, int totalWeight) {
 		if (totalWeight < 0) {
 			throw (IllegalArgumentException)Util.throwOrPause((T)(new IllegalArgumentException("Negative total weight in getRandomItem")));
 		} else if (totalWeight == 0) {
@@ -45,7 +45,7 @@ public class Weighting {
 		return Optional.empty();
 	}
 
-	public static <T extends Weighted> Optional<T> getRandom(AbstractRandom random, List<T> pool) {
+	public static <T extends Weighted> Optional<T> getRandom(Random random, List<T> pool) {
 		return getRandom(random, pool, getWeightSum(pool));
 	}
 }

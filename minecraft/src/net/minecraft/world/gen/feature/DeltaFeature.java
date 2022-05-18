@@ -7,7 +7,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.util.FeatureContext;
@@ -26,16 +26,16 @@ public class DeltaFeature extends Feature<DeltaFeatureConfig> {
 	@Override
 	public boolean generate(FeatureContext<DeltaFeatureConfig> context) {
 		boolean bl = false;
-		AbstractRandom abstractRandom = context.getRandom();
+		Random random = context.getRandom();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		DeltaFeatureConfig deltaFeatureConfig = context.getConfig();
 		BlockPos blockPos = context.getOrigin();
-		boolean bl2 = abstractRandom.nextDouble() < 0.9;
-		int i = bl2 ? deltaFeatureConfig.getRimSize().get(abstractRandom) : 0;
-		int j = bl2 ? deltaFeatureConfig.getRimSize().get(abstractRandom) : 0;
+		boolean bl2 = random.nextDouble() < 0.9;
+		int i = bl2 ? deltaFeatureConfig.getRimSize().get(random) : 0;
+		int j = bl2 ? deltaFeatureConfig.getRimSize().get(random) : 0;
 		boolean bl3 = bl2 && i != 0 && j != 0;
-		int k = deltaFeatureConfig.getSize().get(abstractRandom);
-		int l = deltaFeatureConfig.getSize().get(abstractRandom);
+		int k = deltaFeatureConfig.getSize().get(random);
+		int l = deltaFeatureConfig.getSize().get(random);
 		int m = Math.max(k, l);
 
 		for (BlockPos blockPos2 : BlockPos.iterateOutwards(blockPos, k, 0, l)) {

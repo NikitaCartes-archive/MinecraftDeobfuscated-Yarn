@@ -12,8 +12,8 @@ import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.text.Text;
 
 public class ItemCustomNameToComponentFix extends DataFix {
-	public ItemCustomNameToComponentFix(Schema outputSchema, boolean changesType) {
-		super(outputSchema, changesType);
+	public ItemCustomNameToComponentFix(Schema schema, boolean bl) {
+		super(schema, bl);
 	}
 
 	private Dynamic<?> fixCustomName(Dynamic<?> dynamic) {

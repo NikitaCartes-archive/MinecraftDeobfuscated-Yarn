@@ -26,7 +26,7 @@ import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.mutable.MutableInt;
 
@@ -50,7 +50,7 @@ public class LootPool {
 	}
 
 	private void supplyOnce(Consumer<ItemStack> lootConsumer, LootContext context) {
-		AbstractRandom abstractRandom = context.getRandom();
+		Random random = context.getRandom();
 		List<LootChoice> list = Lists.<LootChoice>newArrayList();
 		MutableInt mutableInt = new MutableInt();
 
@@ -69,7 +69,7 @@ public class LootPool {
 			if (i == 1) {
 				((LootChoice)list.get(0)).generateLoot(lootConsumer, context);
 			} else {
-				int j = abstractRandom.nextInt(mutableInt.intValue());
+				int j = random.nextInt(mutableInt.intValue());
 
 				for (LootChoice lootChoice : list) {
 					j -= lootChoice.getWeight(context.getLuck());

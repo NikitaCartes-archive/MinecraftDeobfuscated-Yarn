@@ -16,7 +16,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.StructureWorldAccess;
@@ -43,7 +43,7 @@ public abstract class StructurePoolElement {
 	public abstract Vec3i getStart(StructureManager structureManager, BlockRotation rotation);
 
 	public abstract List<Structure.StructureBlockInfo> getStructureBlockInfos(
-		StructureManager structureManager, BlockPos pos, BlockRotation rotation, AbstractRandom random
+		StructureManager structureManager, BlockPos pos, BlockRotation rotation, Random random
 	);
 
 	public abstract BlockBox getBoundingBox(StructureManager structureManager, BlockPos pos, BlockRotation rotation);
@@ -57,15 +57,13 @@ public abstract class StructurePoolElement {
 		BlockPos blockPos,
 		BlockRotation rotation,
 		BlockBox box,
-		AbstractRandom random,
+		Random random,
 		boolean keepJigsaws
 	);
 
 	public abstract StructurePoolElementType<?> getType();
 
-	public void method_16756(
-		WorldAccess world, Structure.StructureBlockInfo structureBlockInfo, BlockPos pos, BlockRotation rotation, AbstractRandom random, BlockBox box
-	) {
+	public void method_16756(WorldAccess world, Structure.StructureBlockInfo structureBlockInfo, BlockPos pos, BlockRotation rotation, Random random, BlockBox box) {
 	}
 
 	public StructurePoolElement setProjection(StructurePool.Projection projection) {

@@ -26,7 +26,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -83,7 +83,7 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 		return VoxelShapes.union((VoxelShape)SHAPES_FOR_TILT.get(state.get(TILT)), (VoxelShape)SHAPES_FOR_DIRECTION.get(state.get(FACING)));
 	}
 
-	public static void grow(WorldAccess world, AbstractRandom random, BlockPos pos, Direction direction) {
+	public static void grow(WorldAccess world, Random random, BlockPos pos, Direction direction) {
 		int i = MathHelper.nextInt(random, 2, 5);
 		BlockPos.Mutable mutable = pos.mutableCopy();
 		int j = 0;
@@ -161,12 +161,12 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 	}
 
 	@Override
-	public boolean canGrow(World world, AbstractRandom random, BlockPos pos, BlockState state) {
+	public boolean canGrow(World world, Random random, BlockPos pos, BlockState state) {
 		return true;
 	}
 
 	@Override
-	public void grow(ServerWorld world, AbstractRandom random, BlockPos pos, BlockState state) {
+	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
 		BlockPos blockPos = pos.up();
 		BlockState blockState = world.getBlockState(blockPos);
 		if (canGrowInto(world, blockPos, blockState)) {
@@ -186,7 +186,7 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
+	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (world.isReceivingRedstonePower(pos)) {
 			resetTilt(state, world, pos);
 		} else {

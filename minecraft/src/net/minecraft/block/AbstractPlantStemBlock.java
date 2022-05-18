@@ -7,7 +7,7 @@ import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -35,7 +35,7 @@ public abstract class AbstractPlantStemBlock extends AbstractPlantPartBlock impl
 	}
 
 	@Override
-	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if ((Integer)state.get(AGE) < 25 && random.nextDouble() < this.growthChance) {
 			BlockPos blockPos = pos.offset(this.growthDirection);
 			if (this.chooseStemState(world.getBlockState(blockPos))) {
@@ -44,7 +44,7 @@ public abstract class AbstractPlantStemBlock extends AbstractPlantPartBlock impl
 		}
 	}
 
-	protected BlockState age(BlockState state, AbstractRandom random) {
+	protected BlockState age(BlockState state, Random random) {
 		return state.cycle(AGE);
 	}
 
@@ -90,12 +90,12 @@ public abstract class AbstractPlantStemBlock extends AbstractPlantPartBlock impl
 	}
 
 	@Override
-	public boolean canGrow(World world, AbstractRandom random, BlockPos pos, BlockState state) {
+	public boolean canGrow(World world, Random random, BlockPos pos, BlockState state) {
 		return true;
 	}
 
 	@Override
-	public void grow(ServerWorld world, AbstractRandom random, BlockPos pos, BlockState state) {
+	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
 		BlockPos blockPos = pos.offset(this.growthDirection);
 		int i = Math.min((Integer)state.get(AGE) + 1, 25);
 		int j = this.getGrowthLength(random);
@@ -107,7 +107,7 @@ public abstract class AbstractPlantStemBlock extends AbstractPlantPartBlock impl
 		}
 	}
 
-	protected abstract int getGrowthLength(AbstractRandom random);
+	protected abstract int getGrowthLength(Random random);
 
 	protected abstract boolean chooseStemState(BlockState state);
 

@@ -22,7 +22,8 @@ import net.minecraft.util.StringHelper;
  * reject the message and disconnect the client.
  * 
  * <p>Messages that took more than {@link #TIME_TO_LIVE} to reach the server
- * are considered expired and will be discarded.
+ * are considered expired and will be discarded. Messages can also be discarded
+ * if the server receives them with improper order.
  * 
  * @see net.minecraft.client.network.ClientPlayerEntity#sendChatMessage
  * @see net.minecraft.server.network.ServerPlayNetworkHandler#onChatMessage
@@ -30,28 +31,28 @@ import net.minecraft.util.StringHelper;
 public class ChatMessageC2SPacket implements Packet<ServerPlayPacketListener> {
 	public static final Duration TIME_TO_LIVE = Duration.ofMinutes(2L);
 	private final String chatMessage;
-	private final Instant time;
+	private final Instant timestamp;
 	private final NetworkEncryptionUtils.SignatureData signature;
 	private final boolean previewed;
 
 	public ChatMessageC2SPacket(String chatMessage, ChatMessageSignature signature, boolean previewed) {
 		this.chatMessage = StringHelper.truncateChat(chatMessage);
-		this.time = signature.timestamp();
+		this.timestamp = signature.timestamp();
 		this.signature = signature.saltSignature();
 		this.previewed = previewed;
 	}
 
 	public ChatMessageC2SPacket(PacketByteBuf buf) {
 		this.chatMessage = buf.readString(256);
-		this.time = buf.readInstant();
+		this.timestamp = buf.readInstant();
 		this.signature = new NetworkEncryptionUtils.SignatureData(buf);
 		this.previewed = buf.readBoolean();
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) {
-		buf.writeString(this.chatMessage);
-		buf.writeInstant(this.time);
+		buf.writeString(this.chatMessage, 256);
+		buf.writeInstant(this.timestamp);
 		NetworkEncryptionUtils.SignatureData.write(buf, this.signature);
 		buf.writeBoolean(this.previewed);
 	}
@@ -65,21 +66,11 @@ public class ChatMessageC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	public ChatMessageSignature createSignatureInstance(UUID sender) {
-		return new ChatMessageSignature(sender, this.time, this.signature);
+		return new ChatMessageSignature(sender, this.timestamp, this.signature);
 	}
 
-	/**
-	 * {@return when the message is considered expired and should be discarded}
-	 */
-	private Instant getExpiryTime() {
-		return this.time.plus(TIME_TO_LIVE);
-	}
-
-	/**
-	 * {@return whether the message is considered expired and should be discarded}
-	 */
-	public boolean isExpired(Instant currentTime) {
-		return currentTime.isAfter(this.getExpiryTime());
+	public Instant getTimestamp() {
+		return this.timestamp;
 	}
 
 	/**

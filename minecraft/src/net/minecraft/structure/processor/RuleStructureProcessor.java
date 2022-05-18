@@ -9,7 +9,7 @@ import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.WorldView;
 
 public class RuleStructureProcessor extends StructureProcessor {
@@ -34,11 +34,11 @@ public class RuleStructureProcessor extends StructureProcessor {
 		Structure.StructureBlockInfo currentBlockInfo,
 		StructurePlacementData data
 	) {
-		AbstractRandom abstractRandom = AbstractRandom.createAtomic(MathHelper.hashCode(currentBlockInfo.pos));
+		Random random = Random.create(MathHelper.hashCode(currentBlockInfo.pos));
 		BlockState blockState = world.getBlockState(currentBlockInfo.pos);
 
 		for (StructureProcessorRule structureProcessorRule : this.rules) {
-			if (structureProcessorRule.test(currentBlockInfo.state, blockState, originalBlockInfo.pos, currentBlockInfo.pos, pivot, abstractRandom)) {
+			if (structureProcessorRule.test(currentBlockInfo.state, blockState, originalBlockInfo.pos, currentBlockInfo.pos, pivot, random)) {
 				return new Structure.StructureBlockInfo(currentBlockInfo.pos, structureProcessorRule.getOutputState(), structureProcessorRule.getOutputNbt());
 			}
 		}

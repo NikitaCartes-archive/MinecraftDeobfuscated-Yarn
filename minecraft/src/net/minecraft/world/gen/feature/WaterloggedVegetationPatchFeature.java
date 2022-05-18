@@ -10,7 +10,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -21,13 +21,7 @@ public class WaterloggedVegetationPatchFeature extends VegetationPatchFeature {
 
 	@Override
 	protected Set<BlockPos> placeGroundAndGetPositions(
-		StructureWorldAccess world,
-		VegetationPatchFeatureConfig config,
-		AbstractRandom random,
-		BlockPos pos,
-		Predicate<BlockState> replaceable,
-		int radiusX,
-		int radiusZ
+		StructureWorldAccess world, VegetationPatchFeatureConfig config, Random random, BlockPos pos, Predicate<BlockState> replaceable, int radiusX, int radiusZ
 	) {
 		Set<BlockPos> set = super.placeGroundAndGetPositions(world, config, random, pos, replaceable, radiusX, radiusZ);
 		Set<BlockPos> set2 = new HashSet();
@@ -61,7 +55,7 @@ public class WaterloggedVegetationPatchFeature extends VegetationPatchFeature {
 
 	@Override
 	protected boolean generateVegetationFeature(
-		StructureWorldAccess world, VegetationPatchFeatureConfig config, ChunkGenerator generator, AbstractRandom random, BlockPos pos
+		StructureWorldAccess world, VegetationPatchFeatureConfig config, ChunkGenerator generator, Random random, BlockPos pos
 	) {
 		if (super.generateVegetationFeature(world, config, generator, random, pos.down())) {
 			BlockState blockState = world.getBlockState(pos);

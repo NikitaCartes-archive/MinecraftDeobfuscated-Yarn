@@ -5,7 +5,7 @@ import java.util.List;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.gen.feature.EndSpikeFeature;
@@ -73,11 +73,7 @@ public enum EnderDragonSpawnState {
 						EndSpikeFeatureConfig endSpikeFeatureConfig = new EndSpikeFeatureConfig(true, ImmutableList.of(spike), new BlockPos(0, 128, 0));
 						Feature.END_SPIKE
 							.generateIfValid(
-								endSpikeFeatureConfig,
-								world,
-								world.getChunkManager().getChunkGenerator(),
-								AbstractRandom.createAtomic(),
-								new BlockPos(spike.getCenterX(), 45, spike.getCenterZ())
+								endSpikeFeatureConfig, world, world.getChunkManager().getChunkGenerator(), Random.create(), new BlockPos(spike.getCenterX(), 45, spike.getCenterZ())
 							);
 					}
 				} else if (bl) {

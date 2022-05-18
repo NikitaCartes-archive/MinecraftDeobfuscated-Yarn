@@ -24,8 +24,8 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.math.random.ChunkRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
@@ -145,7 +145,7 @@ public class StructurePoolBasedGenerator {
 		ChunkGenerator chunkGenerator,
 		StructureManager structureManager,
 		HeightLimitView heightLimitView,
-		AbstractRandom random,
+		Random random,
 		Registry<StructurePool> structurePoolRegistry,
 		PoolStructurePiece firstPiece,
 		List<PoolStructurePiece> pieces,
@@ -169,7 +169,7 @@ public class StructurePoolBasedGenerator {
 		ChunkGenerator chunkGenerator = world.getChunkManager().getChunkGenerator();
 		StructureManager structureManager = world.getStructureManager();
 		StructureAccessor structureAccessor = world.getStructureAccessor();
-		AbstractRandom abstractRandom = world.getRandom();
+		Random random = world.getRandom();
 		StructureType.Context context = new StructureType.Context(
 			world.getRegistryManager(),
 			chunkGenerator,
@@ -187,7 +187,7 @@ public class StructurePoolBasedGenerator {
 
 			for (StructurePiece structurePiece : structurePiecesCollector.toList().pieces()) {
 				if (structurePiece instanceof PoolStructurePiece poolStructurePiece) {
-					poolStructurePiece.generate(world, structureAccessor, chunkGenerator, abstractRandom, BlockBox.infinite(), pos, keepJigsaws);
+					poolStructurePiece.generate(world, structureAccessor, chunkGenerator, random, BlockBox.infinite(), pos, keepJigsaws);
 				}
 			}
 
@@ -215,7 +215,7 @@ public class StructurePoolBasedGenerator {
 		private final ChunkGenerator chunkGenerator;
 		private final StructureManager structureManager;
 		private final List<? super PoolStructurePiece> children;
-		private final AbstractRandom random;
+		private final Random random;
 		final Deque<StructurePoolBasedGenerator.ShapedPoolStructurePiece> structurePieces = Queues.<StructurePoolBasedGenerator.ShapedPoolStructurePiece>newArrayDeque();
 
 		StructurePoolGenerator(
@@ -224,7 +224,7 @@ public class StructurePoolBasedGenerator {
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,
 			List<? super PoolStructurePiece> children,
-			AbstractRandom random
+			Random random
 		) {
 			this.registry = registry;
 			this.maxSize = maxSize;

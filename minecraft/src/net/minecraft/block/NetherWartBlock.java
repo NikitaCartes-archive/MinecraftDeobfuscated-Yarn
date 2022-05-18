@@ -7,7 +7,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 
@@ -42,7 +42,7 @@ public class NetherWartBlock extends PlantBlock {
 	}
 
 	@Override
-	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		int i = (Integer)state.get(AGE);
 		if (i < 3 && random.nextInt(10) == 0) {
 			state = state.with(AGE, Integer.valueOf(i + 1));

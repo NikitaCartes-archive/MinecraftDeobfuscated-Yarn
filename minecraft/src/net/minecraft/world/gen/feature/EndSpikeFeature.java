@@ -20,7 +20,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.dimension.DimensionType;
@@ -38,8 +38,8 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 	}
 
 	public static List<EndSpikeFeature.Spike> getSpikes(StructureWorldAccess world) {
-		AbstractRandom abstractRandom = AbstractRandom.createAtomic(world.getSeed());
-		long l = abstractRandom.nextLong() & 65535L;
+		Random random = Random.create(world.getSeed());
+		long l = random.nextLong() & 65535L;
 		return CACHE.getUnchecked(l);
 	}
 
@@ -47,7 +47,7 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 	public boolean generate(FeatureContext<EndSpikeFeatureConfig> context) {
 		EndSpikeFeatureConfig endSpikeFeatureConfig = context.getConfig();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
-		AbstractRandom abstractRandom = context.getRandom();
+		Random random = context.getRandom();
 		BlockPos blockPos = context.getOrigin();
 		List<EndSpikeFeature.Spike> list = endSpikeFeatureConfig.getSpikes();
 		if (list.isEmpty()) {
@@ -56,14 +56,14 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 
 		for (EndSpikeFeature.Spike spike : list) {
 			if (spike.isInChunk(blockPos)) {
-				this.generateSpike(structureWorldAccess, abstractRandom, endSpikeFeatureConfig, spike);
+				this.generateSpike(structureWorldAccess, random, endSpikeFeatureConfig, spike);
 			}
 		}
 
 		return true;
 	}
 
-	private void generateSpike(ServerWorldAccess world, AbstractRandom random, EndSpikeFeatureConfig config, EndSpikeFeature.Spike spike) {
+	private void generateSpike(ServerWorldAccess world, Random random, EndSpikeFeatureConfig config, EndSpikeFeature.Spike spike) {
 		int i = spike.getRadius();
 
 		for (BlockPos blockPos : BlockPos.iterate(
@@ -182,7 +182,7 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 
 	static class SpikeCache extends CacheLoader<Long, List<EndSpikeFeature.Spike>> {
 		public List<EndSpikeFeature.Spike> load(Long long_) {
-			IntArrayList intArrayList = Util.shuffle(IntStream.range(0, 10), AbstractRandom.createAtomic(long_));
+			IntArrayList intArrayList = Util.shuffle(IntStream.range(0, 10), Random.create(long_));
 			List<EndSpikeFeature.Spike> list = Lists.<EndSpikeFeature.Spike>newArrayList();
 
 			for (int i = 0; i < 10; i++) {

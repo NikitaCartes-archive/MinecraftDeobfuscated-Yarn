@@ -424,7 +424,7 @@ public class SoundEvents {
 	public static final SoundEvent ENTITY_FROG_LAY_SPAWN = register("entity.frog.lay_spawn");
 	public static final SoundEvent ENTITY_FROG_LONG_JUMP = register("entity.frog.long_jump");
 	public static final SoundEvent ENTITY_FROG_STEP = register("entity.frog.step");
-	public static final SoundEvent ENTITY_FROG_TOUNGE = register("entity.frog.tounge");
+	public static final SoundEvent ENTITY_FROG_TONGUE = register("entity.frog.tongue");
 	public static final SoundEvent BLOCK_ROOTS_BREAK = register("block.roots.break");
 	public static final SoundEvent BLOCK_ROOTS_STEP = register("block.roots.step");
 	public static final SoundEvent BLOCK_ROOTS_PLACE = register("block.roots.place");

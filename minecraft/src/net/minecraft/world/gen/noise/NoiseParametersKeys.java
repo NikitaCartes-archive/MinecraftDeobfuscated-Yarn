@@ -2,7 +2,7 @@ package net.minecraft.world.gen.noise;
 
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
-import net.minecraft.util.math.random.RandomDeriver;
+import net.minecraft.util.math.random.RandomSplitter;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
@@ -74,9 +74,9 @@ public class NoiseParametersKeys {
 	}
 
 	public static DoublePerlinNoiseSampler createNoiseSampler(
-		Registry<DoublePerlinNoiseSampler.NoiseParameters> registry, RandomDeriver randomDeriver, RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey
+		Registry<DoublePerlinNoiseSampler.NoiseParameters> registry, RandomSplitter randomSplitter, RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey
 	) {
 		RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> registryEntry = registry.entryOf(registryKey);
-		return DoublePerlinNoiseSampler.create(randomDeriver.createRandom(((RegistryKey)registryEntry.getKey().orElseThrow()).getValue()), registryEntry.value());
+		return DoublePerlinNoiseSampler.create(randomSplitter.split(((RegistryKey)registryEntry.getKey().orElseThrow()).getValue()), registryEntry.value());
 	}
 }

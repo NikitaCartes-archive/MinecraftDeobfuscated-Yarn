@@ -10,7 +10,7 @@ import net.minecraft.block.SeaPickleBlock;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.StructureWorldAccess;
@@ -24,16 +24,16 @@ public abstract class CoralFeature extends Feature<DefaultFeatureConfig> {
 
 	@Override
 	public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
-		AbstractRandom abstractRandom = context.getRandom();
+		Random random = context.getRandom();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		BlockPos blockPos = context.getOrigin();
-		Optional<Block> optional = Registry.BLOCK.getEntryList(BlockTags.CORAL_BLOCKS).flatMap(blocks -> blocks.getRandom(abstractRandom)).map(RegistryEntry::value);
-		return optional.isEmpty() ? false : this.generateCoral(structureWorldAccess, abstractRandom, blockPos, ((Block)optional.get()).getDefaultState());
+		Optional<Block> optional = Registry.BLOCK.getEntryList(BlockTags.CORAL_BLOCKS).flatMap(blocks -> blocks.getRandom(random)).map(RegistryEntry::value);
+		return optional.isEmpty() ? false : this.generateCoral(structureWorldAccess, random, blockPos, ((Block)optional.get()).getDefaultState());
 	}
 
-	protected abstract boolean generateCoral(WorldAccess world, AbstractRandom random, BlockPos pos, BlockState state);
+	protected abstract boolean generateCoral(WorldAccess world, Random random, BlockPos pos, BlockState state);
 
-	protected boolean generateCoralPiece(WorldAccess world, AbstractRandom random, BlockPos pos, BlockState state) {
+	protected boolean generateCoralPiece(WorldAccess world, Random random, BlockPos pos, BlockState state) {
 		BlockPos blockPos = pos.up();
 		BlockState blockState = world.getBlockState(pos);
 		if ((blockState.isOf(Blocks.WATER) || blockState.isIn(BlockTags.CORALS)) && world.getBlockState(blockPos).isOf(Blocks.WATER)) {

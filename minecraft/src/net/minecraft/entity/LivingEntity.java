@@ -112,7 +112,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockLocating;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
@@ -628,7 +628,7 @@ public abstract class LivingEntity extends Entity {
 		return false;
 	}
 
-	public AbstractRandom getRandom() {
+	public Random getRandom() {
 		return this.random;
 	}
 
@@ -686,12 +686,19 @@ public abstract class LivingEntity extends Entity {
 		this.noDrag = noDrag;
 	}
 
-	protected void onEquipStack(ItemStack stack, boolean bl) {
-		if (!stack.isEmpty() && !this.isSpectator()) {
-			if (bl) {
-				this.emitGameEvent(GameEvent.EQUIP);
-			}
+	protected boolean isArmorSlot(EquipmentSlot slot) {
+		return true;
+	}
 
+	public void onEquipStack(EquipmentSlot slot, ItemStack stack) {
+		this.playEquipSound(stack);
+		if (this.isArmorSlot(slot)) {
+			this.emitGameEvent(GameEvent.EQUIP);
+		}
+	}
+
+	protected void playEquipSound(ItemStack stack) {
+		if (!stack.isEmpty() && !this.isSpectator()) {
 			SoundEvent soundEvent = stack.getEquipSound();
 			if (soundEvent != null) {
 				this.playSound(soundEvent, 1.0F, 1.0F);
@@ -1357,19 +1364,18 @@ public abstract class LivingEntity extends Entity {
 		}
 	}
 
-	public void onDeath(DamageSource source) {
+	public void onDeath(DamageSource damageSource) {
 		if (!this.isRemoved() && !this.dead) {
-			Entity entity = source.getAttacker();
+			Entity entity = damageSource.getAttacker();
 			LivingEntity livingEntity = this.getPrimeAdversary();
 			if (this.scoreAmount >= 0 && livingEntity != null) {
-				livingEntity.updateKilledAdvancementCriterion(this, this.scoreAmount, source);
+				livingEntity.updateKilledAdvancementCriterion(this, this.scoreAmount, damageSource);
 			}
 
 			if (this.isSleeping()) {
 				this.wakeUp();
 			}
 
-			this.emitGameEvent(GameEvent.ENTITY_DIE);
 			if (!this.world.isClient && this.hasCustomName()) {
 				field_36332.info("Named entity {} died: {}", this, this.getDamageTracker().getDeathMessage().getString());
 			}
@@ -1377,15 +1383,15 @@ public abstract class LivingEntity extends Entity {
 			this.dead = true;
 			this.getDamageTracker().update();
 			if (this.world instanceof ServerWorld) {
-				if (entity != null) {
-					entity.onKilledOther((ServerWorld)this.world, this);
+				if (entity == null || entity.onKilledOther((ServerWorld)this.world, this)) {
+					this.emitGameEvent(GameEvent.ENTITY_DIE);
+					this.drop(damageSource);
+					this.onKilledBy(livingEntity);
 				}
 
-				this.drop(source);
-				this.onKilledBy(livingEntity);
+				this.world.sendEntityStatus(this, EntityStatuses.PLAY_DEATH_SOUND_OR_ADD_PROJECTILE_HIT_PARTICLES);
 			}
 
-			this.world.sendEntityStatus(this, EntityStatuses.PLAY_DEATH_SOUND_OR_ADD_PROJECTILE_HIT_PARTICLES);
 			this.setPose(EntityPose.DYING);
 		}
 	}
@@ -3029,6 +3035,7 @@ public abstract class LivingEntity extends Entity {
 			if (!this.world.isClient) {
 				this.setLivingFlag(USING_ITEM_FLAG, true);
 				this.setLivingFlag(OFF_HAND_ACTIVE_FLAG, hand == Hand.OFF_HAND);
+				this.emitGameEvent(GameEvent.ITEM_INTERACT_START);
 			}
 		}
 	}
@@ -3132,7 +3139,11 @@ public abstract class LivingEntity extends Entity {
 
 	public void clearActiveItem() {
 		if (!this.world.isClient) {
+			boolean bl = this.isUsingItem();
 			this.setLivingFlag(USING_ITEM_FLAG, false);
+			if (bl) {
+				this.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH);
+			}
 		}
 
 		this.activeItemStack = ItemStack.EMPTY;

@@ -12,7 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.floatprovider.ClampedNormalFloatProvider;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
@@ -30,21 +30,21 @@ public class DripstoneClusterFeature extends Feature<DripstoneClusterFeatureConf
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		BlockPos blockPos = context.getOrigin();
 		DripstoneClusterFeatureConfig dripstoneClusterFeatureConfig = context.getConfig();
-		AbstractRandom abstractRandom = context.getRandom();
+		Random random = context.getRandom();
 		if (!DripstoneHelper.canGenerate(structureWorldAccess, blockPos)) {
 			return false;
 		} else {
-			int i = dripstoneClusterFeatureConfig.height.get(abstractRandom);
-			float f = dripstoneClusterFeatureConfig.wetness.get(abstractRandom);
-			float g = dripstoneClusterFeatureConfig.density.get(abstractRandom);
-			int j = dripstoneClusterFeatureConfig.radius.get(abstractRandom);
-			int k = dripstoneClusterFeatureConfig.radius.get(abstractRandom);
+			int i = dripstoneClusterFeatureConfig.height.get(random);
+			float f = dripstoneClusterFeatureConfig.wetness.get(random);
+			float g = dripstoneClusterFeatureConfig.density.get(random);
+			int j = dripstoneClusterFeatureConfig.radius.get(random);
+			int k = dripstoneClusterFeatureConfig.radius.get(random);
 
 			for (int l = -j; l <= j; l++) {
 				for (int m = -k; m <= k; m++) {
 					double d = this.dripstoneChance(j, k, l, m, dripstoneClusterFeatureConfig);
 					BlockPos blockPos2 = blockPos.add(l, 0, m);
-					this.generate(structureWorldAccess, abstractRandom, blockPos2, l, m, f, d, i, g, dripstoneClusterFeatureConfig);
+					this.generate(structureWorldAccess, random, blockPos2, l, m, f, d, i, g, dripstoneClusterFeatureConfig);
 				}
 			}
 
@@ -54,7 +54,7 @@ public class DripstoneClusterFeature extends Feature<DripstoneClusterFeatureConf
 
 	private void generate(
 		StructureWorldAccess world,
-		AbstractRandom random,
+		Random random,
 		BlockPos pos,
 		int localX,
 		int localZ,
@@ -145,7 +145,7 @@ public class DripstoneClusterFeature extends Feature<DripstoneClusterFeatureConf
 		return world.getBlockState(pos).isOf(Blocks.LAVA);
 	}
 
-	private int getHeight(AbstractRandom random, int localX, int localZ, float density, int height, DripstoneClusterFeatureConfig config) {
+	private int getHeight(Random random, int localX, int localZ, float density, int height, DripstoneClusterFeatureConfig config) {
 		if (random.nextFloat() > density) {
 			return 0;
 		} else {
@@ -200,7 +200,7 @@ public class DripstoneClusterFeature extends Feature<DripstoneClusterFeatureConf
 		);
 	}
 
-	private static float clampedGaussian(AbstractRandom random, float min, float max, float mean, float deviation) {
+	private static float clampedGaussian(Random random, float min, float max, float mean, float deviation) {
 		return ClampedNormalFloatProvider.get(random, mean, deviation, min, max);
 	}
 }

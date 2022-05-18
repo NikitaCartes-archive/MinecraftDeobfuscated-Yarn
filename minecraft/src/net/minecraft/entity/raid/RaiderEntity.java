@@ -115,9 +115,9 @@ public abstract class RaiderEntity extends PatrolEntity {
 	}
 
 	@Override
-	public void onDeath(DamageSource source) {
+	public void onDeath(DamageSource damageSource) {
 		if (this.world instanceof ServerWorld) {
-			Entity entity = source.getAttacker();
+			Entity entity = damageSource.getAttacker();
 			Raid raid = this.getRaid();
 			if (raid != null) {
 				if (this.isPatrolLeader()) {
@@ -162,7 +162,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 			}
 		}
 
-		super.onDeath(source);
+		super.onDeath(damageSource);
 	}
 
 	@Override

@@ -69,7 +69,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3f;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
@@ -99,7 +99,7 @@ public class InGameHud extends DrawableHelper {
 	private static final int field_33942 = 9;
 	private static final int field_33943 = 8;
 	private static final float field_35431 = 0.2F;
-	private final AbstractRandom random = AbstractRandom.createAtomic();
+	private final Random random = Random.create();
 	private final MinecraftClient client;
 	private final ItemRenderer itemRenderer;
 	private final ChatHud chatHud;

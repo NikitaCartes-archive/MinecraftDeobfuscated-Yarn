@@ -33,7 +33,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.GravityField;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
@@ -254,7 +254,7 @@ public final class SpawnHelper {
 	}
 
 	private static Optional<SpawnSettings.SpawnEntry> pickRandomSpawnEntry(
-		ServerWorld world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnGroup spawnGroup, AbstractRandom random, BlockPos pos
+		ServerWorld world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnGroup spawnGroup, Random random, BlockPos pos
 	) {
 		RegistryEntry<Biome> registryEntry = world.getBiome(pos);
 		return spawnGroup == SpawnGroup.WATER_AMBIENT && registryEntry.isIn(BiomeTags.REDUCE_WATER_AMBIENT_SPAWNS) && random.nextFloat() < 0.98F
@@ -342,7 +342,7 @@ public final class SpawnHelper {
 		}
 	}
 
-	public static void populateEntities(ServerWorldAccess world, RegistryEntry<Biome> registryEntry, ChunkPos chunkPos, AbstractRandom random) {
+	public static void populateEntities(ServerWorldAccess world, RegistryEntry<Biome> registryEntry, ChunkPos chunkPos, Random random) {
 		SpawnSettings spawnSettings = registryEntry.value().getSpawnSettings();
 		Pool<SpawnSettings.SpawnEntry> pool = spawnSettings.getSpawnEntries(SpawnGroup.CREATURE);
 		if (!pool.isEmpty()) {

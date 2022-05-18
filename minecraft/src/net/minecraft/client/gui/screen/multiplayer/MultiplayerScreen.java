@@ -10,7 +10,6 @@ import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.ConnectScreen;
 import net.minecraft.client.gui.screen.DirectConnectScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.LanServerInfo;
 import net.minecraft.client.network.LanServerQueryManager;
@@ -20,6 +19,7 @@ import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.option.ServerList;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
@@ -87,7 +87,7 @@ public class MultiplayerScreen extends Screen {
 			if (entry instanceof MultiplayerServerListWidget.ServerEntry) {
 				ServerInfo serverInfo = ((MultiplayerServerListWidget.ServerEntry)entry).getServer();
 				this.selectedEntry = new ServerInfo(serverInfo.name, serverInfo.address, false);
-				this.selectedEntry.copyFrom(serverInfo);
+				this.selectedEntry.copyWithSettingsFrom(serverInfo);
 				this.client.setScreen(new AddServerScreen(this, this::editEntry, this.selectedEntry));
 			}
 		}));
@@ -156,7 +156,7 @@ public class MultiplayerScreen extends Screen {
 			ServerInfo serverInfo = ((MultiplayerServerListWidget.ServerEntry)entry).getServer();
 			serverInfo.name = this.selectedEntry.name;
 			serverInfo.address = this.selectedEntry.address;
-			serverInfo.copyFrom(this.selectedEntry);
+			serverInfo.copyWithSettingsFrom(this.selectedEntry);
 			this.serverList.saveFile();
 			this.serverListWidget.setServers(this.serverList);
 		}
@@ -166,8 +166,15 @@ public class MultiplayerScreen extends Screen {
 
 	private void addEntry(boolean confirmedAction) {
 		if (confirmedAction) {
-			this.serverList.add(this.selectedEntry);
-			this.serverList.saveFile();
+			ServerInfo serverInfo = this.serverList.tryUnhide(this.selectedEntry.address);
+			if (serverInfo != null) {
+				serverInfo.copyFrom(this.selectedEntry);
+				this.serverList.saveFile();
+			} else {
+				this.serverList.add(this.selectedEntry, false);
+				this.serverList.saveFile();
+			}
+
 			this.serverListWidget.setSelected(null);
 			this.serverListWidget.setServers(this.serverList);
 		}
@@ -177,7 +184,14 @@ public class MultiplayerScreen extends Screen {
 
 	private void directConnect(boolean confirmedAction) {
 		if (confirmedAction) {
-			this.connect(this.selectedEntry);
+			ServerInfo serverInfo = this.serverList.get(this.selectedEntry.address);
+			if (serverInfo == null) {
+				this.serverList.add(this.selectedEntry, true);
+				this.serverList.saveFile();
+				this.connect(this.selectedEntry);
+			} else {
+				this.connect(serverInfo);
+			}
 		} else {
 			this.client.setScreen(this);
 		}

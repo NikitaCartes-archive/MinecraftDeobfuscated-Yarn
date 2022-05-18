@@ -71,7 +71,7 @@ import net.minecraft.util.TimeHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.GameRules;
 
 public class PiglinBrain {
@@ -126,7 +126,7 @@ public class PiglinBrain {
 		return brain;
 	}
 
-	protected static void setHuntedRecently(PiglinEntity piglin, AbstractRandom random) {
+	protected static void setHuntedRecently(PiglinEntity piglin, Random random) {
 		int i = HUNT_MEMORY_DURATION.get(random);
 		piglin.getBrain().remember(MemoryModuleType.HUNTED_RECENTLY, true, (long)i);
 	}
@@ -433,7 +433,7 @@ public class PiglinBrain {
 	}
 
 	private static boolean isHuntingTarget(LivingEntity piglin, LivingEntity target) {
-		return target.getType() != EntityType.HOGLIN ? false : AbstractRandom.createAtomic(piglin.world.getTime()).nextFloat() < 0.1F;
+		return target.getType() != EntityType.HOGLIN ? false : Random.create(piglin.world.getTime()).nextFloat() < 0.1F;
 	}
 
 	protected static boolean canGather(PiglinEntity piglin, ItemStack stack) {

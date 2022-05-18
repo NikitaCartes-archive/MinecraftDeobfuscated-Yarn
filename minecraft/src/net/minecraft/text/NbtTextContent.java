@@ -77,8 +77,7 @@ public class NbtTextContent implements TextContent {
 	}
 
 	public int hashCode() {
-		int i = super.hashCode();
-		i = 31 * i + (this.interpret ? 1 : 0);
+		int i = this.interpret ? 1 : 0;
 		i = 31 * i + this.separator.hashCode();
 		i = 31 * i + this.rawPath.hashCode();
 		return 31 * i + this.dataSource.hashCode();

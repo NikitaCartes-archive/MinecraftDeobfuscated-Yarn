@@ -7,12 +7,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 @Environment(EnvType.CLIENT)
 public class WeightedSoundSet implements SoundContainer<Sound> {
 	private final List<SoundContainer<Sound>> sounds = Lists.<SoundContainer<Sound>>newArrayList();
-	private final AbstractRandom random = AbstractRandom.createAtomic();
+	private final Random random = Random.create();
 	private final Identifier id;
 	@Nullable
 	private final Text subtitle;
@@ -33,15 +33,15 @@ public class WeightedSoundSet implements SoundContainer<Sound> {
 		return i;
 	}
 
-	public Sound getSound(AbstractRandom abstractRandom) {
+	public Sound getSound(Random random) {
 		int i = this.getWeight();
 		if (!this.sounds.isEmpty() && i != 0) {
-			int j = abstractRandom.nextInt(i);
+			int j = random.nextInt(i);
 
 			for (SoundContainer<Sound> soundContainer : this.sounds) {
 				j -= soundContainer.getWeight();
 				if (j < 0) {
-					return soundContainer.getSound(abstractRandom);
+					return soundContainer.getSound(random);
 				}
 			}
 

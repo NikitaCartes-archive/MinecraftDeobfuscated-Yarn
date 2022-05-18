@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Lifecycle;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
@@ -29,7 +30,7 @@ import javax.annotation.Nullable;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 
@@ -191,14 +192,33 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 
 	@Override
 	public RegistryEntry<T> getOrCreateEntry(RegistryKey<T> key) {
-		return (RegistryEntry<T>)this.keyToEntry.computeIfAbsent(key, keyx -> {
+		return (RegistryEntry<T>)this.keyToEntry.computeIfAbsent(key, entry -> {
 			if (this.valueToEntryFunction != null) {
 				throw new IllegalStateException("This registry can't create new holders without value");
 			} else {
-				this.assertNotFrozen(keyx);
-				return RegistryEntry.Reference.standAlone(this, keyx);
+				this.assertNotFrozen(entry);
+				return RegistryEntry.Reference.standAlone(this, entry);
 			}
 		});
+	}
+
+	@Override
+	public DataResult<RegistryEntry<T>> getOrCreateEntryDataResult(RegistryKey<T> key) {
+		RegistryEntry.Reference<T> reference = (RegistryEntry.Reference<T>)this.keyToEntry.get(key);
+		if (reference == null) {
+			if (this.valueToEntryFunction != null) {
+				return DataResult.error("This registry can't create new holders without value (requested key: " + key + ")");
+			}
+
+			if (this.frozen) {
+				return DataResult.error("Registry is already frozen (requested key: " + key + ")");
+			}
+
+			reference = RegistryEntry.Reference.standAlone(this, key);
+			this.keyToEntry.put(key, reference);
+		}
+
+		return DataResult.success(reference);
 	}
 
 	@Override
@@ -290,7 +310,7 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 	}
 
 	@Override
-	public Optional<RegistryEntry<T>> getRandom(AbstractRandom random) {
+	public Optional<RegistryEntry<T>> getRandom(Random random) {
 		return Util.getRandomOrEmpty(this.getEntries(), random).map(RegistryEntry::upcast);
 	}
 

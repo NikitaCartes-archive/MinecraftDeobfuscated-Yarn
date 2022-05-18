@@ -6,7 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.math.random.AtomicSimpleRandom;
+import net.minecraft.util.math.random.CheckedRandom;
 import net.minecraft.util.math.random.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.noise.NoiseConfig;
@@ -67,7 +67,7 @@ public class RandomSpreadStructurePlacement extends StructurePlacement {
 	public ChunkPos getStartChunk(long seed, int x, int z) {
 		int i = Math.floorDiv(x, this.field_37772);
 		int j = Math.floorDiv(z, this.field_37772);
-		ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
+		ChunkRandom chunkRandom = new ChunkRandom(new CheckedRandom(0L));
 		chunkRandom.setRegionSeed(seed, i, j, this.getSalt());
 		int k = this.field_37772 - this.field_37773;
 		int l = this.field_37774.get(chunkRandom, k);

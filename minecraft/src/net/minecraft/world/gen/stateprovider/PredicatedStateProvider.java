@@ -6,7 +6,7 @@ import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.blockpredicate.BlockPredicate;
 
@@ -27,7 +27,7 @@ public record PredicatedStateProvider(BlockStateProvider fallback, List<Predicat
 		return of(BlockStateProvider.of(block));
 	}
 
-	public BlockState getBlockState(StructureWorldAccess world, AbstractRandom random, BlockPos pos) {
+	public BlockState getBlockState(StructureWorldAccess world, Random random, BlockPos pos) {
 		for (PredicatedStateProvider.Rule rule : this.rules) {
 			if (rule.ifTrue().test(world, pos)) {
 				return rule.then().getBlockState(random, pos);

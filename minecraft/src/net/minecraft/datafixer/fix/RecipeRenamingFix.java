@@ -14,7 +14,7 @@ public class RecipeRenamingFix extends RecipeRenameFix {
 		.put("minecraft:spruce_bark", "minecraft:spruce_wood")
 		.build();
 
-	public RecipeRenamingFix(Schema outputSchema, boolean changesType) {
-		super(outputSchema, changesType, "Recipes renamening fix", string -> (String)RECIPES.getOrDefault(string, string));
+	public RecipeRenamingFix(Schema schema, boolean bl) {
+		super(schema, bl, "Recipes renamening fix", string -> (String)RECIPES.getOrDefault(string, string));
 	}
 }

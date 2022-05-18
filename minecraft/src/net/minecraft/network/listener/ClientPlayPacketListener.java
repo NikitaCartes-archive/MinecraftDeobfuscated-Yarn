@@ -1,5 +1,6 @@
 package net.minecraft.network.listener;
 
+import net.minecraft.class_7519;
 import net.minecraft.network.packet.s2c.play.AdvancementUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockBreakingProgressS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
@@ -139,6 +140,8 @@ public interface ClientPlayPacketListener extends PacketListener {
 	void onChatMessage(ChatMessageS2CPacket packet);
 
 	void onChatPreview(ChatPreviewS2CPacket packet);
+
+	void method_44286(class_7519 arg);
 
 	void onChunkDeltaUpdate(ChunkDeltaUpdateS2CPacket packet);
 

@@ -16,7 +16,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
@@ -53,9 +53,7 @@ public class FeaturePoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public List<Structure.StructureBlockInfo> getStructureBlockInfos(
-		StructureManager structureManager, BlockPos pos, BlockRotation rotation, AbstractRandom random
-	) {
+	public List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager structureManager, BlockPos pos, BlockRotation rotation, Random random) {
 		List<Structure.StructureBlockInfo> list = Lists.<Structure.StructureBlockInfo>newArrayList();
 		list.add(
 			new Structure.StructureBlockInfo(
@@ -81,7 +79,7 @@ public class FeaturePoolElement extends StructurePoolElement {
 		BlockPos blockPos,
 		BlockRotation rotation,
 		BlockBox box,
-		AbstractRandom random,
+		Random random,
 		boolean keepJigsaws
 	) {
 		return this.feature.value().generateUnregistered(world, chunkGenerator, random, pos);

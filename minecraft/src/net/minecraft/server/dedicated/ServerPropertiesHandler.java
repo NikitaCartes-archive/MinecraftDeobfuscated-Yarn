@@ -21,7 +21,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
@@ -87,7 +87,6 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 	public final String textFilteringConfig = this.getString("text-filtering-config", "");
 	public Optional<MinecraftServer.ServerResourcePackProperties> serverResourcePackProperties;
 	public final boolean previewsChat = this.parseBoolean("previews-chat", false);
-	public final boolean testRainbowChat = this.parseBoolean("test-rainbow-chat", false);
 	public final AbstractPropertiesHandler<ServerPropertiesHandler>.PropertyAccessor<Integer> playerIdleTimeout = this.intAccessor("player-idle-timeout", 0);
 	public final AbstractPropertiesHandler<ServerPropertiesHandler>.PropertyAccessor<Boolean> whiteList = this.booleanAccessor("white-list", false);
 	public final boolean enforceSecureProfile = this.parseBoolean("enforce-secure-profile", false);
@@ -178,7 +177,7 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 		);
 
 		public GeneratorOptions createGeneratorOptions(DynamicRegistryManager dynamicRegistryManager) {
-			long l = GeneratorOptions.parseSeed(this.levelSeed()).orElse(AbstractRandom.createAtomic().nextLong());
+			long l = GeneratorOptions.parseSeed(this.levelSeed()).orElse(Random.create().nextLong());
 			Registry<WorldPreset> registry = dynamicRegistryManager.get(Registry.WORLD_PRESET_KEY);
 			RegistryEntry<WorldPreset> registryEntry = (RegistryEntry<WorldPreset>)registry.getEntry(WorldPresets.DEFAULT)
 				.or(() -> registry.streamEntries().findAny())

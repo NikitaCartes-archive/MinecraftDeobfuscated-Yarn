@@ -8,8 +8,8 @@ import com.mojang.datafixers.schemas.Schema;
 import net.minecraft.datafixer.TypeReferences;
 
 public class OptionsAddTextBackgroundFix extends DataFix {
-	public OptionsAddTextBackgroundFix(Schema outputSchema, boolean changesType) {
-		super(outputSchema, changesType);
+	public OptionsAddTextBackgroundFix(Schema schema, boolean bl) {
+		super(schema, bl);
 	}
 
 	@Override

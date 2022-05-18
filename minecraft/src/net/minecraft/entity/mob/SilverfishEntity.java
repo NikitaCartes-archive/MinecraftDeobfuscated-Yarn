@@ -27,7 +27,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
@@ -125,7 +125,7 @@ public class SilverfishEntity extends HostileEntity {
 		return InfestedBlock.isInfestable(world.getBlockState(pos.down())) ? 10.0F : super.getPathfindingFavor(pos, world);
 	}
 
-	public static boolean canSpawn(EntityType<SilverfishEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, AbstractRandom random) {
+	public static boolean canSpawn(EntityType<SilverfishEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		if (canSpawnIgnoreLightLevel(type, world, spawnReason, pos, random)) {
 			PlayerEntity playerEntity = world.getClosestPlayer((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 5.0, true);
 			return playerEntity == null;
@@ -163,7 +163,7 @@ public class SilverfishEntity extends HostileEntity {
 			this.delay--;
 			if (this.delay <= 0) {
 				World world = this.silverfish.world;
-				AbstractRandom abstractRandom = this.silverfish.getRandom();
+				Random random = this.silverfish.getRandom();
 				BlockPos blockPos = this.silverfish.getBlockPos();
 
 				for (int i = 0; i <= 5 && i >= -5; i = (i <= 0 ? 1 : 0) - i) {
@@ -179,7 +179,7 @@ public class SilverfishEntity extends HostileEntity {
 									world.setBlockState(blockPos2, ((InfestedBlock)block).toRegularState(world.getBlockState(blockPos2)), Block.NOTIFY_ALL);
 								}
 
-								if (abstractRandom.nextBoolean()) {
+								if (random.nextBoolean()) {
 									return;
 								}
 							}
@@ -207,9 +207,9 @@ public class SilverfishEntity extends HostileEntity {
 			} else if (!this.mob.getNavigation().isIdle()) {
 				return false;
 			} else {
-				AbstractRandom abstractRandom = this.mob.getRandom();
-				if (this.mob.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && abstractRandom.nextInt(toGoalTicks(10)) == 0) {
-					this.direction = Direction.random(abstractRandom);
+				Random random = this.mob.getRandom();
+				if (this.mob.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && random.nextInt(toGoalTicks(10)) == 0) {
+					this.direction = Direction.random(random);
 					BlockPos blockPos = new BlockPos(this.mob.getX(), this.mob.getY() + 0.5, this.mob.getZ()).offset(this.direction);
 					BlockState blockState = this.mob.world.getBlockState(blockPos);
 					if (InfestedBlock.isInfestable(blockState)) {

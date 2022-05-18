@@ -23,7 +23,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -80,7 +80,7 @@ public class PiglinBruteEntity extends AbstractPiglinEntity {
 	}
 
 	@Override
-	protected void initEquipment(AbstractRandom random, LocalDifficulty localDifficulty) {
+	protected void initEquipment(Random random, LocalDifficulty localDifficulty) {
 		this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_AXE));
 	}
 

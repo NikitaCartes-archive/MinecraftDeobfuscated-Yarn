@@ -12,7 +12,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
@@ -74,7 +74,7 @@ public class RepeaterBlock extends AbstractRedstoneGateBlock {
 	}
 
 	@Override
-	public void randomDisplayTick(BlockState state, World world, BlockPos pos, AbstractRandom random) {
+	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		if ((Boolean)state.get(POWERED)) {
 			Direction direction = state.get(FACING);
 			double d = (double)pos.getX() + 0.5 + (random.nextDouble() - 0.5) * 0.2;

@@ -40,7 +40,7 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class FrogBrain {
 	private static final float field_37469 = 2.0F;
@@ -54,7 +54,7 @@ public class FrogBrain {
 	private static final float field_37477 = 1.5F;
 	private static final float field_37478 = 1.25F;
 
-	protected static void coolDownLongJump(FrogEntity frog, AbstractRandom random) {
+	protected static void coolDownLongJump(FrogEntity frog, Random random) {
 		frog.getBrain().remember(MemoryModuleType.LONG_JUMP_COOLING_DOWN, longJumpCooldownRange.get(random));
 	}
 
@@ -182,6 +182,7 @@ public class FrogBrain {
 				)
 			),
 			ImmutableSet.of(
+				Pair.of(MemoryModuleType.TEMPTING_PLAYER, MemoryModuleState.VALUE_ABSENT),
 				Pair.of(MemoryModuleType.BREED_TARGET, MemoryModuleState.VALUE_ABSENT),
 				Pair.of(MemoryModuleType.LONG_JUMP_COOLING_DOWN, MemoryModuleState.VALUE_ABSENT),
 				Pair.of(MemoryModuleType.IS_IN_WATER, MemoryModuleState.VALUE_ABSENT)
@@ -193,7 +194,7 @@ public class FrogBrain {
 		brain.setTaskList(
 			Activity.TONGUE,
 			0,
-			ImmutableList.of(new ForgetAttackTargetTask<>(), new FrogEatEntityTask(SoundEvents.ENTITY_FROG_TOUNGE, SoundEvents.ENTITY_FROG_EAT)),
+			ImmutableList.of(new ForgetAttackTargetTask<>(), new FrogEatEntityTask(SoundEvents.ENTITY_FROG_TONGUE, SoundEvents.ENTITY_FROG_EAT)),
 			MemoryModuleType.ATTACK_TARGET
 		);
 	}

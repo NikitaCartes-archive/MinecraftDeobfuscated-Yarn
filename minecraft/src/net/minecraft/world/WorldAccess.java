@@ -13,7 +13,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.block.NeighborUpdater;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.event.GameEvent;
@@ -74,7 +74,7 @@ public interface WorldAccess extends RegistryWorldView, LunarWorldView {
 		return this.getChunkManager().isChunkLoaded(chunkX, chunkZ);
 	}
 
-	AbstractRandom getRandom();
+	Random getRandom();
 
 	default void updateNeighbors(BlockPos pos, Block block) {
 	}

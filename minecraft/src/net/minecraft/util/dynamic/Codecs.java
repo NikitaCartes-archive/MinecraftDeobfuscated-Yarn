@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.OptionalLong;
 import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -62,13 +63,18 @@ public class Codecs {
 			return DataResult.error("Malformed base64 string");
 		}
 	}, bs -> Base64.getEncoder().encodeToString(bs));
-	public static final Codec<Codecs.TagEntryId> TAG_ENTRY = Codec.STRING
+	public static final Codec<Codecs.TagEntryId> TAG_ENTRY_ID = Codec.STRING
 		.comapFlatMap(
 			string -> string.startsWith("#")
 					? Identifier.validate(string.substring(1)).map(identifier -> new Codecs.TagEntryId(identifier, true))
 					: Identifier.validate(string).map(identifier -> new Codecs.TagEntryId(identifier, false)),
 			Codecs.TagEntryId::asString
 		);
+	public static final Function<Optional<Long>, OptionalLong> field_39395 = optional -> (OptionalLong)optional.map(OptionalLong::of)
+			.orElseGet(OptionalLong::empty);
+	public static final Function<OptionalLong, Optional<Long>> field_39396 = optionalLong -> optionalLong.isPresent()
+			? Optional.of(optionalLong.getAsLong())
+			: Optional.empty();
 
 	/**
 	 * Returns an exclusive-or codec for {@link Either} instances.
@@ -307,6 +313,10 @@ public class Codecs {
 				return DataResult.error(var3.getMessage());
 			}
 		}, formatter::format);
+	}
+
+	public static MapCodec<OptionalLong> method_44167(MapCodec<Optional<Long>> mapCodec) {
+		return mapCodec.xmap(field_39395, field_39396);
 	}
 
 	static final class Either<F, S> implements Codec<com.mojang.datafixers.util.Either<F, S>> {

@@ -2,7 +2,7 @@ package net.minecraft.structure.rule;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.block.BlockState;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 
 /**
@@ -11,7 +11,7 @@ import net.minecraft.util.registry.Registry;
 public abstract class RuleTest {
 	public static final Codec<RuleTest> TYPE_CODEC = Registry.RULE_TEST.getCodec().dispatch("predicate_type", RuleTest::getType, RuleTestType::codec);
 
-	public abstract boolean test(BlockState state, AbstractRandom random);
+	public abstract boolean test(BlockState state, Random random);
 
 	protected abstract RuleTestType<?> getType();
 }

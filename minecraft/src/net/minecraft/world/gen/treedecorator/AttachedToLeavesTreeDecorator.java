@@ -9,7 +9,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 
 public class AttachedToLeavesTreeDecorator extends TreeDecorator {
@@ -45,12 +45,12 @@ public class AttachedToLeavesTreeDecorator extends TreeDecorator {
 	@Override
 	public void generate(TreeDecorator.Generator generator) {
 		Set<BlockPos> set = new HashSet();
-		AbstractRandom abstractRandom = generator.getRandom();
+		Random random = generator.getRandom();
 
-		for (BlockPos blockPos : Util.copyShuffled(generator.getLeavesPositions(), abstractRandom)) {
-			Direction direction = Util.getRandom(this.directions, abstractRandom);
+		for (BlockPos blockPos : Util.copyShuffled(generator.getLeavesPositions(), random)) {
+			Direction direction = Util.getRandom(this.directions, random);
 			BlockPos blockPos2 = blockPos.offset(direction);
-			if (!set.contains(blockPos2) && abstractRandom.nextFloat() < this.probability && this.meetsRequiredEmptyBlocks(generator, blockPos, direction)) {
+			if (!set.contains(blockPos2) && random.nextFloat() < this.probability && this.meetsRequiredEmptyBlocks(generator, blockPos, direction)) {
 				BlockPos blockPos3 = blockPos2.add(-this.exclusionRadiusXZ, -this.exclusionRadiusY, -this.exclusionRadiusXZ);
 				BlockPos blockPos4 = blockPos2.add(this.exclusionRadiusXZ, this.exclusionRadiusY, this.exclusionRadiusXZ);
 
@@ -58,7 +58,7 @@ public class AttachedToLeavesTreeDecorator extends TreeDecorator {
 					set.add(blockPos5.toImmutable());
 				}
 
-				generator.replace(blockPos2, this.blockProvider.getBlockState(abstractRandom, blockPos2));
+				generator.replace(blockPos2, this.blockProvider.getBlockState(random, blockPos2));
 			}
 		}
 	}

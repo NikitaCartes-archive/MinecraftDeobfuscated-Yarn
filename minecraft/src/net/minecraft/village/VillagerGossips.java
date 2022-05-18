@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.dynamic.DynamicSerializableUuid;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class VillagerGossips {
 	public static final int field_30236 = 2;
@@ -57,7 +57,7 @@ public class VillagerGossips {
 		return this.entityReputation.entrySet().stream().flatMap(entry -> ((VillagerGossips.Reputation)entry.getValue()).entriesFor((UUID)entry.getKey()));
 	}
 
-	private Collection<VillagerGossips.GossipEntry> pickGossips(AbstractRandom random, int count) {
+	private Collection<VillagerGossips.GossipEntry> pickGossips(Random random, int count) {
 		List<VillagerGossips.GossipEntry> list = (List<VillagerGossips.GossipEntry>)this.entries().collect(Collectors.toList());
 		if (list.isEmpty()) {
 			return Collections.emptyList();
@@ -87,7 +87,7 @@ public class VillagerGossips {
 		return (VillagerGossips.Reputation)this.entityReputation.computeIfAbsent(target, uuid -> new VillagerGossips.Reputation());
 	}
 
-	public void shareGossipFrom(VillagerGossips from, AbstractRandom random, int count) {
+	public void shareGossipFrom(VillagerGossips from, Random random, int count) {
 		Collection<VillagerGossips.GossipEntry> collection = from.pickGossips(random, count);
 		collection.forEach(gossip -> {
 			int i = gossip.value - gossip.type.shareDecrement;

@@ -39,7 +39,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.village.raid.Raid;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
@@ -128,14 +128,14 @@ public class VindicatorEntity extends IllagerEntity {
 	) {
 		EntityData entityData2 = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 		((MobNavigation)this.getNavigation()).setCanPathThroughDoors(true);
-		AbstractRandom abstractRandom = world.getRandom();
-		this.initEquipment(abstractRandom, difficulty);
-		this.updateEnchantments(abstractRandom, difficulty);
+		Random random = world.getRandom();
+		this.initEquipment(random, difficulty);
+		this.updateEnchantments(random, difficulty);
 		return entityData2;
 	}
 
 	@Override
-	protected void initEquipment(AbstractRandom random, LocalDifficulty localDifficulty) {
+	protected void initEquipment(Random random, LocalDifficulty localDifficulty) {
 		if (this.getRaid() == null) {
 			this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_AXE));
 		}

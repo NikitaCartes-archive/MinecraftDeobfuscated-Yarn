@@ -17,7 +17,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 public abstract class AbstractDonkeyEntity extends AbstractHorseEntity {
@@ -30,7 +30,7 @@ public abstract class AbstractDonkeyEntity extends AbstractHorseEntity {
 	}
 
 	@Override
-	protected void initAttributes(AbstractRandom random) {
+	protected void initAttributes(Random random) {
 		this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue((double)this.getChildHealthBonus(random));
 	}
 

@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.function.Function;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class BiasedToBottomIntProvider extends IntProvider {
 	public static final Codec<BiasedToBottomIntProvider> CODEC = RecordCodecBuilder.create(
@@ -36,7 +36,7 @@ public class BiasedToBottomIntProvider extends IntProvider {
 	}
 
 	@Override
-	public int get(AbstractRandom random) {
+	public int get(Random random) {
 		return this.min + random.nextInt(random.nextInt(this.max - this.min + 1) + 1);
 	}
 

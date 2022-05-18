@@ -11,8 +11,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
-import net.minecraft.util.math.random.AbstractRandom;
-import net.minecraft.util.math.random.RandomDeriver;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.util.math.random.RandomSplitter;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.HeightLimitView;
@@ -49,16 +49,16 @@ public class SurfaceBuilder {
 	private final DoublePerlinNoiseSampler icebergPillarNoise;
 	private final DoublePerlinNoiseSampler icebergPillarRoofNoise;
 	private final DoublePerlinNoiseSampler icebergSurfaceNoise;
-	private final RandomDeriver randomDeriver;
+	private final RandomSplitter randomDeriver;
 	private final DoublePerlinNoiseSampler surfaceNoise;
 	private final DoublePerlinNoiseSampler surfaceSecondaryNoise;
 
-	public SurfaceBuilder(NoiseConfig noiseConfig, BlockState defaultState, int seaLevel, RandomDeriver randomDeriver) {
+	public SurfaceBuilder(NoiseConfig noiseConfig, BlockState defaultState, int seaLevel, RandomSplitter randomDeriver) {
 		this.defaultState = defaultState;
 		this.seaLevel = seaLevel;
 		this.randomDeriver = randomDeriver;
 		this.terracottaBandsOffsetNoise = noiseConfig.getOrCreateSampler(NoiseParametersKeys.CLAY_BANDS_OFFSET);
-		this.terracottaBands = createTerracottaBands(randomDeriver.createRandom(new Identifier("clay_bands")));
+		this.terracottaBands = createTerracottaBands(randomDeriver.split(new Identifier("clay_bands")));
 		this.surfaceNoise = noiseConfig.getOrCreateSampler(NoiseParametersKeys.SURFACE);
 		this.surfaceSecondaryNoise = noiseConfig.getOrCreateSampler(NoiseParametersKeys.SURFACE_SECONDARY);
 		this.badlandsPillarNoise = noiseConfig.getOrCreateSampler(NoiseParametersKeys.BADLANDS_PILLAR);
@@ -171,7 +171,7 @@ public class SurfaceBuilder {
 
 	protected int method_39552(int i, int j) {
 		double d = this.surfaceNoise.sample((double)i, 0.0, (double)j);
-		return (int)(d * 2.75 + 3.0 + this.randomDeriver.createRandom(i, 0, j).nextDouble() * 0.25);
+		return (int)(d * 2.75 + 3.0 + this.randomDeriver.split(i, 0, j).nextDouble() * 0.25);
 	}
 
 	protected double method_39555(int i, int j) {
@@ -259,14 +259,14 @@ public class SurfaceBuilder {
 			}
 
 			double k = i;
-			AbstractRandom abstractRandom = this.randomDeriver.createRandom(x, 0, z);
-			int l = 2 + abstractRandom.nextInt(4);
-			int m = this.seaLevel + 18 + abstractRandom.nextInt(10);
+			Random random = this.randomDeriver.split(x, 0, z);
+			int l = 2 + random.nextInt(4);
+			int m = this.seaLevel + 18 + random.nextInt(10);
 			int n = 0;
 
 			for (int o = Math.max(surfaceY, (int)i + 1); o >= minY; o--) {
-				if (column.getState(o).isAir() && o < (int)k && abstractRandom.nextDouble() > 0.01
-					|| column.getState(o).getMaterial() == Material.WATER && o > (int)j && o < this.seaLevel && j != 0.0 && abstractRandom.nextDouble() > 0.15) {
+				if (column.getState(o).isAir() && o < (int)k && random.nextDouble() > 0.01
+					|| column.getState(o).getMaterial() == Material.WATER && o > (int)j && o < this.seaLevel && j != 0.0 && random.nextDouble() > 0.15) {
 					if (n <= l && o > m) {
 						column.setState(o, SNOW_BLOCK);
 						n++;
@@ -278,7 +278,7 @@ public class SurfaceBuilder {
 		}
 	}
 
-	private static BlockState[] createTerracottaBands(AbstractRandom random) {
+	private static BlockState[] createTerracottaBands(Random random) {
 		BlockState[] blockStates = new BlockState[192];
 		Arrays.fill(blockStates, TERRACOTTA);
 
@@ -311,7 +311,7 @@ public class SurfaceBuilder {
 		return blockStates;
 	}
 
-	private static void addTerracottaBands(AbstractRandom random, BlockState[] terracottaBands, int minBandSize, BlockState state) {
+	private static void addTerracottaBands(Random random, BlockState[] terracottaBands, int minBandSize, BlockState state) {
 		int i = random.nextBetween(6, 15);
 
 		for (int j = 0; j < i; j++) {

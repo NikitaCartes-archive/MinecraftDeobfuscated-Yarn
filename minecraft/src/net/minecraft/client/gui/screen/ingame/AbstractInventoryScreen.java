@@ -117,7 +117,7 @@ public abstract class AbstractInventoryScreen<T extends ScreenHandler> extends H
 	}
 
 	private Text getStatusEffectDescription(StatusEffectInstance statusEffect) {
-		MutableText mutableText = statusEffect.getEffectType().getName().shallowCopy();
+		MutableText mutableText = statusEffect.getEffectType().getName().copy();
 		if (statusEffect.getAmplifier() >= 1 && statusEffect.getAmplifier() <= 9) {
 			mutableText.append(" ").append(Text.translatable("enchantment.level." + (statusEffect.getAmplifier() + 1)));
 		}

@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.feature.EndPortalFeature;
 
@@ -25,10 +25,10 @@ public class LandingPhase extends AbstractPhase {
 		double f = this.dragon.head.getZ();
 
 		for (int i = 0; i < 8; i++) {
-			AbstractRandom abstractRandom = this.dragon.getRandom();
-			double g = d + abstractRandom.nextGaussian() / 2.0;
-			double h = e + abstractRandom.nextGaussian() / 2.0;
-			double j = f + abstractRandom.nextGaussian() / 2.0;
+			Random random = this.dragon.getRandom();
+			double g = d + random.nextGaussian() / 2.0;
+			double h = e + random.nextGaussian() / 2.0;
+			double j = f + random.nextGaussian() / 2.0;
 			Vec3d vec3d2 = this.dragon.getVelocity();
 			this.dragon.world.addParticle(ParticleTypes.DRAGON_BREATH, g, h, j, -vec3d.x * 0.08F + vec3d2.x, -vec3d.y * 0.3F + vec3d2.y, -vec3d.z * 0.08F + vec3d2.z);
 			vec3d.rotateY((float) (Math.PI / 16));

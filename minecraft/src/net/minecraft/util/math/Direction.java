@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public enum Direction implements StringIdentifiable {
 	DOWN(0, 1, -1, "down", Direction.AxisDirection.NEGATIVE, Direction.Axis.Y, new Vec3i(0, -1, 0)),
@@ -101,7 +101,7 @@ public enum Direction implements StringIdentifiable {
 		return getFacing(vector4f.getX(), vector4f.getY(), vector4f.getZ());
 	}
 
-	public static Collection<Direction> shuffle(AbstractRandom random) {
+	public static Collection<Direction> shuffle(Random random) {
 		return Util.<Direction>copyShuffled(values(), random);
 	}
 
@@ -294,7 +294,7 @@ public enum Direction implements StringIdentifiable {
 		return (float)((this.idHorizontal & 3) * 90);
 	}
 
-	public static Direction random(AbstractRandom random) {
+	public static Direction random(Random random) {
 		return Util.getRandom(ALL, random);
 	}
 
@@ -422,7 +422,7 @@ public enum Direction implements StringIdentifiable {
 			return this.name;
 		}
 
-		public static Direction.Axis pickRandomAxis(AbstractRandom random) {
+		public static Direction.Axis pickRandomAxis(Random random) {
 			return Util.getRandom(VALUES, random);
 		}
 
@@ -488,11 +488,11 @@ public enum Direction implements StringIdentifiable {
 			this.axisArray = axisArray;
 		}
 
-		public Direction random(AbstractRandom random) {
+		public Direction random(Random random) {
 			return Util.getRandom(this.facingArray, random);
 		}
 
-		public Direction.Axis randomAxis(AbstractRandom random) {
+		public Direction.Axis randomAxis(Random random) {
 			return Util.getRandom(this.axisArray, random);
 		}
 
@@ -508,7 +508,7 @@ public enum Direction implements StringIdentifiable {
 			return Arrays.stream(this.facingArray);
 		}
 
-		public List<Direction> getShuffled(AbstractRandom random) {
+		public List<Direction> getShuffled(Random random) {
 			return Util.copyShuffled(this.facingArray, random);
 		}
 	}

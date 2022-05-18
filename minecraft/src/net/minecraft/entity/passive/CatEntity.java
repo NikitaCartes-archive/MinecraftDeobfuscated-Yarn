@@ -60,7 +60,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
@@ -566,14 +566,14 @@ public class CatEntity extends TameableEntity {
 		}
 
 		private void dropMorningGifts() {
-			AbstractRandom abstractRandom = this.cat.getRandom();
+			Random random = this.cat.getRandom();
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 			mutable.set(this.cat.getBlockPos());
 			this.cat
 				.teleport(
-					(double)(mutable.getX() + abstractRandom.nextInt(11) - 5),
-					(double)(mutable.getY() + abstractRandom.nextInt(5) - 2),
-					(double)(mutable.getZ() + abstractRandom.nextInt(11) - 5),
+					(double)(mutable.getX() + random.nextInt(11) - 5),
+					(double)(mutable.getY() + random.nextInt(5) - 2),
+					(double)(mutable.getZ() + random.nextInt(11) - 5),
 					false
 				);
 			mutable.set(this.cat.getBlockPos());
@@ -581,7 +581,7 @@ public class CatEntity extends TameableEntity {
 			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.cat.world)
 				.parameter(LootContextParameters.ORIGIN, this.cat.getPos())
 				.parameter(LootContextParameters.THIS_ENTITY, this.cat)
-				.random(abstractRandom);
+				.random(random);
 
 			for (ItemStack itemStack : lootTable.generateLoot(builder.build(LootContextTypes.GIFT))) {
 				this.cat

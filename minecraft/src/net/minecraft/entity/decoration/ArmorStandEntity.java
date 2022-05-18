@@ -151,7 +151,6 @@ public class ArmorStandEntity extends LivingEntity {
 	@Override
 	public void equipStack(EquipmentSlot slot, ItemStack stack) {
 		this.processEquippedStack(stack);
-		this.onEquipStack(stack, true);
 		switch (slot.getType()) {
 			case HAND:
 				this.heldItems.set(slot.getEntitySlotId(), stack);
@@ -159,6 +158,8 @@ public class ArmorStandEntity extends LivingEntity {
 			case ARMOR:
 				this.armorItems.set(slot.getEntitySlotId(), stack);
 		}
+
+		this.onEquipStack(slot, stack);
 	}
 
 	@Override

@@ -25,6 +25,7 @@ import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.InteractionObserver;
 import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.LargeEntitySpawnHelper;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
@@ -68,7 +69,6 @@ import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.LargeEntitySpawnHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.GlobalPos;
@@ -626,15 +626,15 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	}
 
 	@Override
-	public void onDeath(DamageSource source) {
-		field_36335.info("Villager {} died, message: '{}'", this, source.getDeathMessage(this).getString());
-		Entity entity = source.getAttacker();
+	public void onDeath(DamageSource damageSource) {
+		field_36335.info("Villager {} died, message: '{}'", this, damageSource.getDeathMessage(this).getString());
+		Entity entity = damageSource.getAttacker();
 		if (entity != null) {
 			this.notifyDeath(entity);
 		}
 
 		this.releaseAllTickets();
-		super.onDeath(source);
+		super.onDeath(damageSource);
 	}
 
 	private void releaseAllTickets() {
@@ -882,7 +882,10 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 			List<VillagerEntity> list = world.getNonSpectatingEntities(VillagerEntity.class, box);
 			List<VillagerEntity> list2 = (List<VillagerEntity>)list.stream().filter(villager -> villager.canSummonGolem(time)).limit(5L).collect(Collectors.toList());
 			if (list2.size() >= requiredCount) {
-				if (LargeEntitySpawnHelper.trySpawnAt(EntityType.IRON_GOLEM, SpawnReason.MOB_SUMMONED, world, this.getBlockPos(), 10, 8, 6).isPresent()) {
+				if (LargeEntitySpawnHelper.trySpawnAt(
+						EntityType.IRON_GOLEM, SpawnReason.MOB_SUMMONED, world, this.getBlockPos(), 10, 8, 6, LargeEntitySpawnHelper.Requirements.IRON_GOLEM
+					)
+					.isPresent()) {
 					list.forEach(GolemLastSeenSensor::rememberIronGolem);
 				}
 			}

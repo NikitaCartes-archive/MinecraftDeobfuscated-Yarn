@@ -29,18 +29,28 @@ public class MessageCommand {
 		dispatcher.register(CommandManager.literal("w").redirect(literalCommandNode));
 	}
 
-	private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, SignedChatMessage message) {
-		SignedChatMessage signedChatMessage = source.getServer().getChatDecorator().decorate(source.getPlayer(), message);
+	private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, MessageArgumentType.SignedMessage signedMessage) {
+		if (targets.isEmpty()) {
+			return 0;
+		} else {
+			signedMessage.decorate(source)
+				.thenAcceptAsync(
+					decoratedMessage -> {
+						Text text = ((SignedChatMessage)decoratedMessage.raw()).getContent();
 
-		for (ServerPlayerEntity serverPlayerEntity : targets) {
-			source.sendFeedback(
-				Text.translatable("commands.message.display.outgoing", serverPlayerEntity.getDisplayName(), signedChatMessage.getContent())
-					.formatted(Formatting.GRAY, Formatting.ITALIC),
-				false
-			);
-			serverPlayerEntity.sendChatMessage(signedChatMessage, source.getChatMessageSender(), MessageType.MSG_COMMAND);
+						for (ServerPlayerEntity serverPlayerEntity : targets) {
+							source.sendFeedback(
+								Text.translatable("commands.message.display.outgoing", serverPlayerEntity.getDisplayName(), text).formatted(Formatting.GRAY, Formatting.ITALIC), false
+							);
+							SignedChatMessage signedChatMessage = (SignedChatMessage)decoratedMessage.getFilterableFor(source, serverPlayerEntity);
+							if (signedChatMessage != null) {
+								serverPlayerEntity.sendChatMessage(signedChatMessage, source.getChatMessageSender(), MessageType.MSG_COMMAND);
+							}
+						}
+					},
+					source.getServer()
+				);
+			return targets.size();
 		}
-
-		return targets.size();
 	}
 }

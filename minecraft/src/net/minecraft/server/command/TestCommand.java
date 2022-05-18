@@ -23,6 +23,7 @@ import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.command.argument.BlockStateArgument;
 import net.minecraft.command.argument.TestClassArgumentType;
 import net.minecraft.command.argument.TestFunctionArgumentType;
+import net.minecraft.data.DataWriter;
 import net.minecraft.data.dev.NbtProvider;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
@@ -432,8 +433,8 @@ public class TestCommand {
 	private static int executeExport(ServerCommandSource source, String structure) {
 		Path path = Paths.get(StructureTestUtil.testStructuresDirectoryName);
 		Identifier identifier = new Identifier("minecraft", structure);
-		Path path2 = source.getWorld().getStructureManager().getStructurePath(identifier, ".nbt");
-		Path path3 = NbtProvider.convertNbtToSnbt(path2, structure, path);
+		Path path2 = source.getWorld().getStructureManager().method_44228(identifier, ".nbt");
+		Path path3 = NbtProvider.convertNbtToSnbt(DataWriter.field_39439, path2, structure, path);
 		if (path3 == null) {
 			sendMessage(source, "Failed to export " + path2);
 			return 1;
@@ -454,7 +455,7 @@ public class TestCommand {
 	private static int executeImport(ServerCommandSource source, String structure) {
 		Path path = Paths.get(StructureTestUtil.testStructuresDirectoryName, structure + ".snbt");
 		Identifier identifier = new Identifier("minecraft", structure);
-		Path path2 = source.getWorld().getStructureManager().getStructurePath(identifier, ".nbt");
+		Path path2 = source.getWorld().getStructureManager().method_44228(identifier, ".nbt");
 
 		try {
 			BufferedReader bufferedReader = Files.newBufferedReader(path);

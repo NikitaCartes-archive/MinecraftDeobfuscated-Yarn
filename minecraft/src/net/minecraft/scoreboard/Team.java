@@ -4,7 +4,7 @@ import com.google.common.collect.Sets;
 import java.util.Collection;
 import java.util.Set;
 import javax.annotation.Nullable;
-import net.minecraft.client.gui.screen.ScreenTexts;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
@@ -50,7 +50,7 @@ public class Team extends AbstractTeam {
 	}
 
 	public MutableText getFormattedName() {
-		MutableText mutableText = Texts.bracketed(this.displayName.shallowCopy().fillStyle(this.nameStyle));
+		MutableText mutableText = Texts.bracketed(this.displayName.copy().fillStyle(this.nameStyle));
 		Formatting formatting = this.getColor();
 		if (formatting != Formatting.RESET) {
 			mutableText.formatted(formatting);
@@ -110,7 +110,7 @@ public class Team extends AbstractTeam {
 	 * @param name the name to be decorated
 	 */
 	public static MutableText decorateName(@Nullable AbstractTeam team, Text name) {
-		return team == null ? name.shallowCopy() : team.decorateName(name);
+		return team == null ? name.copy() : team.decorateName(name);
 	}
 
 	@Override

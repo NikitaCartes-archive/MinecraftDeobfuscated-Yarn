@@ -15,8 +15,8 @@ import java.util.Objects;
 import java.util.stream.IntStream;
 import javax.annotation.Nullable;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
-import net.minecraft.util.math.random.RandomDeriver;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.util.math.random.RandomSplitter;
 
 public class OctavePerlinNoiseSampler {
 	private static final int field_31704 = 33554432;
@@ -28,32 +28,32 @@ public class OctavePerlinNoiseSampler {
 	private final double field_36632;
 
 	@Deprecated
-	public static OctavePerlinNoiseSampler createLegacy(AbstractRandom random, IntStream intStream) {
+	public static OctavePerlinNoiseSampler createLegacy(Random random, IntStream intStream) {
 		return new OctavePerlinNoiseSampler(
 			random, calculateAmplitudes(new IntRBTreeSet((Collection<? extends Integer>)intStream.boxed().collect(ImmutableList.toImmutableList()))), false
 		);
 	}
 
 	@Deprecated
-	public static OctavePerlinNoiseSampler createLegacy(AbstractRandom random, int offset, DoubleList amplitudes) {
+	public static OctavePerlinNoiseSampler createLegacy(Random random, int offset, DoubleList amplitudes) {
 		return new OctavePerlinNoiseSampler(random, Pair.of(offset, amplitudes), false);
 	}
 
-	public static OctavePerlinNoiseSampler create(AbstractRandom random, IntStream intStream) {
+	public static OctavePerlinNoiseSampler create(Random random, IntStream intStream) {
 		return create(random, (List<Integer>)intStream.boxed().collect(ImmutableList.toImmutableList()));
 	}
 
-	public static OctavePerlinNoiseSampler create(AbstractRandom random, List<Integer> list) {
+	public static OctavePerlinNoiseSampler create(Random random, List<Integer> list) {
 		return new OctavePerlinNoiseSampler(random, calculateAmplitudes(new IntRBTreeSet(list)), true);
 	}
 
-	public static OctavePerlinNoiseSampler create(AbstractRandom random, int offset, double firstAmplitude, double... amplitudes) {
+	public static OctavePerlinNoiseSampler create(Random random, int offset, double firstAmplitude, double... amplitudes) {
 		DoubleArrayList doubleArrayList = new DoubleArrayList(amplitudes);
 		doubleArrayList.add(0, firstAmplitude);
 		return new OctavePerlinNoiseSampler(random, Pair.of(offset, doubleArrayList), true);
 	}
 
-	public static OctavePerlinNoiseSampler create(AbstractRandom random, int offset, DoubleList amplitudes) {
+	public static OctavePerlinNoiseSampler create(Random random, int offset, DoubleList amplitudes) {
 		return new OctavePerlinNoiseSampler(random, Pair.of(offset, amplitudes), true);
 	}
 
@@ -80,19 +80,19 @@ public class OctavePerlinNoiseSampler {
 		}
 	}
 
-	protected OctavePerlinNoiseSampler(AbstractRandom random, Pair<Integer, DoubleList> pair, boolean xoroshiro) {
+	protected OctavePerlinNoiseSampler(Random random, Pair<Integer, DoubleList> pair, boolean xoroshiro) {
 		this.firstOctave = pair.getFirst();
 		this.amplitudes = pair.getSecond();
 		int i = this.amplitudes.size();
 		int j = -this.firstOctave;
 		this.octaveSamplers = new PerlinNoiseSampler[i];
 		if (xoroshiro) {
-			RandomDeriver randomDeriver = random.createRandomDeriver();
+			RandomSplitter randomSplitter = random.nextSplitter();
 
 			for (int k = 0; k < i; k++) {
 				if (this.amplitudes.getDouble(k) != 0.0) {
 					int l = this.firstOctave + k;
-					this.octaveSamplers[k] = new PerlinNoiseSampler(randomDeriver.createRandom("octave_" + l));
+					this.octaveSamplers[k] = new PerlinNoiseSampler(randomSplitter.split("octave_" + l));
 				}
 			}
 		} else {
@@ -135,7 +135,7 @@ public class OctavePerlinNoiseSampler {
 		return this.field_36632;
 	}
 
-	private static void skipCalls(AbstractRandom random) {
+	private static void skipCalls(Random random) {
 		random.skip(262);
 	}
 

@@ -18,7 +18,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
@@ -40,6 +39,7 @@ import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -506,19 +506,8 @@ public class RealmsMainScreen extends RealmsScreen {
 
 						try {
 							RealmsClient.CompatibleVersionResponse compatibleVersionResponse = realmsClient.clientCompatible();
-							if (compatibleVersionResponse == RealmsClient.CompatibleVersionResponse.OUTDATED) {
-								RealmsMainScreen.realmsGenericErrorScreen = new RealmsClientOutdatedScreen(RealmsMainScreen.this.lastScreen, true);
-								RealmsMainScreen.this.client.execute(() -> RealmsMainScreen.this.client.setScreen(RealmsMainScreen.realmsGenericErrorScreen));
-								return;
-							}
-
-							if (compatibleVersionResponse == RealmsClient.CompatibleVersionResponse.OTHER) {
-								RealmsMainScreen.realmsGenericErrorScreen = new RealmsClientOutdatedScreen(RealmsMainScreen.this.lastScreen, false);
-								RealmsMainScreen.this.client.execute(() -> RealmsMainScreen.this.client.setScreen(RealmsMainScreen.realmsGenericErrorScreen));
-								return;
-							}
-
-							RealmsMainScreen.this.checkParentalConsent();
+							RealmsMainScreen.realmsGenericErrorScreen = new RealmsClientOutdatedScreen(RealmsMainScreen.this.lastScreen);
+							RealmsMainScreen.this.client.execute(() -> RealmsMainScreen.this.client.setScreen(RealmsMainScreen.realmsGenericErrorScreen));
 						} catch (RealmsServiceException var3) {
 							RealmsMainScreen.checkedClientCompatibility = false;
 							RealmsMainScreen.LOGGER.error("Couldn't connect to realms", (Throwable)var3);
@@ -538,7 +527,7 @@ public class RealmsMainScreen extends RealmsScreen {
 		}
 	}
 
-	void checkParentalConsent() {
+	private void checkParentalConsent() {
 		(new Thread("MCO Compatability Checker #1") {
 			public void run() {
 				RealmsClient realmsClient = RealmsClient.createRealmsClient();

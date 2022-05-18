@@ -16,6 +16,7 @@ import net.minecraft.entity.ai.brain.task.ConditionalTask;
 import net.minecraft.entity.ai.brain.task.FollowMobTask;
 import net.minecraft.entity.ai.brain.task.GoTowardsLookTarget;
 import net.minecraft.entity.ai.brain.task.LookAroundTask;
+import net.minecraft.entity.ai.brain.task.TemptTask;
 import net.minecraft.entity.ai.brain.task.TemptationCooldownTask;
 import net.minecraft.entity.ai.brain.task.TimeLimitedTask;
 import net.minecraft.entity.ai.brain.task.WaitTask;
@@ -26,6 +27,7 @@ import net.minecraft.util.math.intprovider.UniformIntProvider;
 public class TadpoleBrain {
 	private static final float field_37500 = 2.0F;
 	private static final float field_37502 = 0.5F;
+	private static final float field_39409 = 1.25F;
 
 	protected static Brain<?> create(Brain<TadpoleEntity> brain) {
 		addCoreActivities(brain);
@@ -51,8 +53,9 @@ public class TadpoleBrain {
 			Activity.IDLE,
 			ImmutableList.of(
 				Pair.of(0, new TimeLimitedTask<>(new FollowMobTask(EntityType.PLAYER, 6.0F), UniformIntProvider.create(30, 60))),
+				Pair.of(1, new TemptTask(livingEntity -> 1.25F)),
 				Pair.of(
-					1,
+					2,
 					new CompositeTask<>(
 						ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT),
 						ImmutableSet.of(),

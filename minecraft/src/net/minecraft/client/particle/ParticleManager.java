@@ -52,7 +52,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
@@ -71,7 +71,7 @@ public class ParticleManager implements ResourceReloader {
 	private final Map<ParticleTextureSheet, Queue<Particle>> particles = Maps.<ParticleTextureSheet, Queue<Particle>>newIdentityHashMap();
 	private final Queue<EmitterParticle> newEmitterParticles = Queues.<EmitterParticle>newArrayDeque();
 	private final TextureManager textureManager;
-	private final AbstractRandom random = AbstractRandom.createAtomic();
+	private final Random random = Random.create();
 	private final Int2ObjectMap<ParticleFactory<?>> factories = new Int2ObjectOpenHashMap<>();
 	private final Queue<Particle> newParticles = Queues.<Particle>newArrayDeque();
 	private final Map<Identifier, ParticleManager.SimpleSpriteProvider> spriteAwareFactories = Maps.<Identifier, ParticleManager.SimpleSpriteProvider>newHashMap();
@@ -530,7 +530,7 @@ public class ParticleManager implements ResourceReloader {
 		}
 
 		@Override
-		public Sprite getSprite(AbstractRandom random) {
+		public Sprite getSprite(Random random) {
 			return (Sprite)this.sprites.get(random.nextInt(this.sprites.size()));
 		}
 

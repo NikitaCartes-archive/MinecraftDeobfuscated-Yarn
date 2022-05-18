@@ -13,7 +13,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 
 public class BeehiveTreeDecorator extends TreeDecorator {
@@ -39,13 +39,13 @@ public class BeehiveTreeDecorator extends TreeDecorator {
 
 	@Override
 	public void generate(TreeDecorator.Generator generator) {
-		AbstractRandom abstractRandom = generator.getRandom();
-		if (!(abstractRandom.nextFloat() >= this.probability)) {
+		Random random = generator.getRandom();
+		if (!(random.nextFloat() >= this.probability)) {
 			List<BlockPos> list = generator.getLeavesPositions();
 			List<BlockPos> list2 = generator.getLogPositions();
 			int i = !list.isEmpty()
 				? Math.max(((BlockPos)list.get(0)).getY() - 1, ((BlockPos)list2.get(0)).getY() + 1)
-				: Math.min(((BlockPos)list2.get(0)).getY() + 1 + abstractRandom.nextInt(3), ((BlockPos)list2.get(list2.size() - 1)).getY());
+				: Math.min(((BlockPos)list2.get(0)).getY() + 1 + random.nextInt(3), ((BlockPos)list2.get(list2.size() - 1)).getY());
 			List<BlockPos> list3 = (List<BlockPos>)list2.stream()
 				.filter(pos -> pos.getY() == i)
 				.flatMap(pos -> Stream.of(GENERATE_DIRECTIONS).map(pos::offset))
@@ -56,12 +56,12 @@ public class BeehiveTreeDecorator extends TreeDecorator {
 				if (!optional.isEmpty()) {
 					generator.replace((BlockPos)optional.get(), Blocks.BEE_NEST.getDefaultState().with(BeehiveBlock.FACING, BEE_NEST_FACE));
 					generator.getWorld().getBlockEntity((BlockPos)optional.get(), BlockEntityType.BEEHIVE).ifPresent(blockEntity -> {
-						int ix = 2 + abstractRandom.nextInt(2);
+						int ix = 2 + random.nextInt(2);
 
 						for (int j = 0; j < ix; j++) {
 							NbtCompound nbtCompound = new NbtCompound();
 							nbtCompound.putString("id", Registry.ENTITY_TYPE.getId(EntityType.BEE).toString());
-							blockEntity.addBee(nbtCompound, abstractRandom.nextInt(599), false);
+							blockEntity.addBee(nbtCompound, random.nextInt(599), false);
 						}
 					});
 				}

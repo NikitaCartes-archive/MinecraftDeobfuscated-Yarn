@@ -8,12 +8,12 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.dto.RealmsWorldOptions;
 import net.minecraft.client.realms.util.RealmsTextureManager;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -119,7 +119,7 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 				text3 = minigame ? MINIGAME_TOOLTIP : TOOLTIP;
 			}
 
-			Text text4 = text3.shallowCopy().append(text2);
+			Text text4 = text3.copy().append(text2);
 			return Pair.of(text3, text4);
 		}
 	}

@@ -14,7 +14,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
@@ -45,7 +45,7 @@ public class NetherPortalBlock extends Block {
 	}
 
 	@Override
-	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (world.getDimension().natural() && world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) && random.nextInt(2000) < world.getDifficulty().getId()) {
 			while (world.getBlockState(pos).isOf(this)) {
 				pos = pos.down();
@@ -80,7 +80,7 @@ public class NetherPortalBlock extends Block {
 	}
 
 	@Override
-	public void randomDisplayTick(BlockState state, World world, BlockPos pos, AbstractRandom random) {
+	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		if (random.nextInt(100) == 0) {
 			world.playSound(
 				(double)pos.getX() + 0.5,

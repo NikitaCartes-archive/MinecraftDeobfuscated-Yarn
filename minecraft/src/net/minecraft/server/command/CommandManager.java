@@ -15,6 +15,7 @@ import com.mojang.logging.LogUtils;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
@@ -148,13 +149,22 @@ public class CommandManager {
 		this.dispatcher.setConsumer((context, success, result) -> context.getSource().onCommandComplete(context, success, result));
 	}
 
+	/**
+	 * Executes {@code command}. Unlike {@link #execute} the command can be prefixed
+	 * with a slash.
+	 */
+	public int executeWithPrefix(ServerCommandSource source, String command) {
+		return this.execute(source, command.startsWith("/") ? command.substring(1) : command);
+	}
+
+	/**
+	 * Executes {@code command}. The command cannot be prefixed with a slash.
+	 * 
+	 * @see #executeWithPrefix(ServerCommandSource, String)
+	 */
 	public int execute(ServerCommandSource commandSource, String command) {
 		StringReader stringReader = new StringReader(command);
-		if (stringReader.canRead() && stringReader.peek() == '/') {
-			stringReader.skip();
-		}
-
-		commandSource.getServer().getProfiler().push(command);
+		commandSource.getServer().getProfiler().push((Supplier<String>)(() -> "/" + command));
 
 		byte var20;
 		try {
@@ -168,7 +178,7 @@ public class CommandManager {
 				int i = Math.min(var14.getInput().length(), var14.getCursor());
 				MutableText mutableText = Text.empty()
 					.formatted(Formatting.GRAY)
-					.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command)));
+					.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/" + command)));
 				if (i > 10) {
 					mutableText.append("...");
 				}
@@ -187,7 +197,7 @@ public class CommandManager {
 		} catch (Exception var15) {
 			MutableText mutableText2 = Text.literal(var15.getMessage() == null ? var15.getClass().getName() : var15.getMessage());
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.error("Command exception: {}", command, var15);
+				LOGGER.error("Command exception: /{}", command, var15);
 				StackTraceElement[] stackTraceElements = var15.getStackTrace();
 
 				for (int j = 0; j < Math.min(stackTraceElements.length, 3); j++) {
@@ -203,7 +213,7 @@ public class CommandManager {
 			commandSource.sendError(Text.translatable("command.failed").styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, mutableText2))));
 			if (SharedConstants.isDevelopment) {
 				commandSource.sendError(Text.literal(Util.getInnermostMessage(var15)));
-				LOGGER.error("'{}' threw an exception", command, var15);
+				LOGGER.error("'/{}' threw an exception", command, var15);
 			}
 
 			var20 = 0;

@@ -3,20 +3,20 @@ package net.minecraft.util.math.noise;
 import it.unimi.dsi.fastutil.ints.IntRBTreeSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import java.util.List;
-import net.minecraft.util.math.random.AbstractRandom;
-import net.minecraft.util.math.random.AtomicSimpleRandom;
+import net.minecraft.util.math.random.CheckedRandom;
 import net.minecraft.util.math.random.ChunkRandom;
+import net.minecraft.util.math.random.Random;
 
 public class OctaveSimplexNoiseSampler {
 	private final SimplexNoiseSampler[] octaveSamplers;
 	private final double persistence;
 	private final double lacunarity;
 
-	public OctaveSimplexNoiseSampler(AbstractRandom random, List<Integer> octaves) {
+	public OctaveSimplexNoiseSampler(Random random, List<Integer> octaves) {
 		this(random, new IntRBTreeSet(octaves));
 	}
 
-	private OctaveSimplexNoiseSampler(AbstractRandom random, IntSortedSet octaves) {
+	private OctaveSimplexNoiseSampler(Random random, IntSortedSet octaves) {
 		if (octaves.isEmpty()) {
 			throw new IllegalArgumentException("Need some octaves!");
 		} else {
@@ -43,13 +43,13 @@ public class OctaveSimplexNoiseSampler {
 
 				if (j > 0) {
 					long n = (long)(simplexNoiseSampler.sample(simplexNoiseSampler.originX, simplexNoiseSampler.originY, simplexNoiseSampler.originZ) * 9.223372E18F);
-					AbstractRandom abstractRandom = new ChunkRandom(new AtomicSimpleRandom(n));
+					Random random2 = new ChunkRandom(new CheckedRandom(n));
 
 					for (int o = l - 1; o >= 0; o--) {
 						if (o < k && octaves.contains(l - o)) {
-							this.octaveSamplers[o] = new SimplexNoiseSampler(abstractRandom);
+							this.octaveSamplers[o] = new SimplexNoiseSampler(random2);
 						} else {
-							abstractRandom.skip(262);
+							random2.skip(262);
 						}
 					}
 				}

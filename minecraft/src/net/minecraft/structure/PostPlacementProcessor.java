@@ -2,7 +2,7 @@ package net.minecraft.structure;
 
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -21,7 +21,7 @@ public interface PostPlacementProcessor {
 		StructureWorldAccess world,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
-		AbstractRandom random,
+		Random random,
 		BlockBox chunkBox,
 		ChunkPos pos,
 		StructurePiecesList children

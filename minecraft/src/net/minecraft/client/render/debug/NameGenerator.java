@@ -5,7 +5,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class NameGenerator {
 	private static final String[] PREFIX = new String[]{
@@ -86,15 +86,15 @@ public class NameGenerator {
 	}
 
 	public static String name(UUID uuid) {
-		AbstractRandom abstractRandom = randomFromUuid(uuid);
-		return getRandom(abstractRandom, PREFIX) + getRandom(abstractRandom, SUFFIX);
+		Random random = randomFromUuid(uuid);
+		return getRandom(random, PREFIX) + getRandom(random, SUFFIX);
 	}
 
-	private static String getRandom(AbstractRandom random, String[] options) {
+	private static String getRandom(Random random, String[] options) {
 		return Util.getRandom(options, random);
 	}
 
-	private static AbstractRandom randomFromUuid(UUID uuid) {
-		return AbstractRandom.createAtomic((long)(uuid.hashCode() >> 2));
+	private static Random randomFromUuid(UUID uuid) {
+		return Random.create((long)(uuid.hashCode() >> 2));
 	}
 }

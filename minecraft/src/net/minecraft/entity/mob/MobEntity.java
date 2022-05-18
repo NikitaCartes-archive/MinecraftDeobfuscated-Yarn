@@ -68,7 +68,7 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
@@ -848,7 +848,7 @@ public abstract class MobEntity extends LivingEntity {
 		return from + f;
 	}
 
-	public static boolean canMobSpawn(EntityType<? extends MobEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, AbstractRandom random) {
+	public static boolean canMobSpawn(EntityType<? extends MobEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		BlockPos blockPos = pos.down();
 		return spawnReason == SpawnReason.SPAWNER || world.getBlockState(blockPos).allowsSpawning(world, blockPos, type);
 	}
@@ -909,7 +909,6 @@ public abstract class MobEntity extends LivingEntity {
 	@Override
 	public void equipStack(EquipmentSlot slot, ItemStack stack) {
 		this.processEquippedStack(stack);
-		this.onEquipStack(stack, true);
 		switch (slot.getType()) {
 			case HAND:
 				this.handItems.set(slot.getEntitySlotId(), stack);
@@ -917,6 +916,8 @@ public abstract class MobEntity extends LivingEntity {
 			case ARMOR:
 				this.armorItems.set(slot.getEntitySlotId(), stack);
 		}
+
+		this.onEquipStack(slot, stack);
 	}
 
 	@Override
@@ -949,7 +950,7 @@ public abstract class MobEntity extends LivingEntity {
 		};
 	}
 
-	protected void initEquipment(AbstractRandom random, LocalDifficulty localDifficulty) {
+	protected void initEquipment(Random random, LocalDifficulty localDifficulty) {
 		if (random.nextFloat() < 0.15F * localDifficulty.getClampedLocalDifficulty()) {
 			int i = random.nextInt(2);
 			float f = this.world.getDifficulty() == Difficulty.HARD ? 0.1F : 0.25F;
@@ -1042,7 +1043,7 @@ public abstract class MobEntity extends LivingEntity {
 		}
 	}
 
-	protected void updateEnchantments(AbstractRandom random, LocalDifficulty localDifficulty) {
+	protected void updateEnchantments(Random random, LocalDifficulty localDifficulty) {
 		float f = localDifficulty.getClampedLocalDifficulty();
 		this.enchantMainHandItem(random, f);
 
@@ -1053,13 +1054,13 @@ public abstract class MobEntity extends LivingEntity {
 		}
 	}
 
-	protected void enchantMainHandItem(AbstractRandom random, float power) {
+	protected void enchantMainHandItem(Random random, float power) {
 		if (!this.getMainHandStack().isEmpty() && random.nextFloat() < 0.25F * power) {
 			this.equipStack(EquipmentSlot.MAINHAND, EnchantmentHelper.enchant(random, this.getMainHandStack(), (int)(5.0F + power * (float)random.nextInt(18)), false));
 		}
 	}
 
-	protected void enchantEquipment(AbstractRandom random, float power, EquipmentSlot slot) {
+	protected void enchantEquipment(Random random, float power, EquipmentSlot slot) {
 		ItemStack itemStack = this.getEquippedStack(slot);
 		if (!itemStack.isEmpty() && random.nextFloat() < 0.5F * power) {
 			this.equipStack(slot, EnchantmentHelper.enchant(random, itemStack, (int)(5.0F + power * (float)random.nextInt(18)), false));
@@ -1070,12 +1071,12 @@ public abstract class MobEntity extends LivingEntity {
 	public EntityData initialize(
 		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
-		AbstractRandom abstractRandom = world.getRandom();
+		Random random = world.getRandom();
 		this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE)
 			.addPersistentModifier(
-				new EntityAttributeModifier("Random spawn bonus", abstractRandom.nextPredictable(0.0, 0.11485000000000001), EntityAttributeModifier.Operation.MULTIPLY_BASE)
+				new EntityAttributeModifier("Random spawn bonus", random.nextTriangular(0.0, 0.11485000000000001), EntityAttributeModifier.Operation.MULTIPLY_BASE)
 			);
-		if (abstractRandom.nextFloat() < 0.05F) {
+		if (random.nextFloat() < 0.05F) {
 			this.setLeftHanded(true);
 		} else {
 			this.setLeftHanded(false);

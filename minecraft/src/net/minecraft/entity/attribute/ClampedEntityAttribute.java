@@ -32,6 +32,6 @@ public class ClampedEntityAttribute extends EntityAttribute {
 
 	@Override
 	public double clamp(double value) {
-		return MathHelper.clamp(value, this.minValue, this.maxValue);
+		return Double.isNaN(value) ? this.minValue : MathHelper.clamp(value, this.minValue, this.maxValue);
 	}
 }

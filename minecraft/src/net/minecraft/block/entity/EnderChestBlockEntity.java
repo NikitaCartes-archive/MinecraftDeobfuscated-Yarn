@@ -2,14 +2,13 @@ package net.minecraft.block.entity;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.block.ChestAnimationProgress;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class EnderChestBlockEntity extends BlockEntity implements ChestAnimationProgress {
+public class EnderChestBlockEntity extends BlockEntity implements LidOpenable {
 	private final ChestLidAnimator lidAnimator = new ChestLidAnimator();
 	private final ViewerCountManager stateManager = new ViewerCountManager() {
 		@Override

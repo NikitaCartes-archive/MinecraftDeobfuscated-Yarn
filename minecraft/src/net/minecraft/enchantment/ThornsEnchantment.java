@@ -7,7 +7,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class ThornsEnchantment extends Enchantment {
 	private static final float ATTACK_CHANCE_PER_LEVEL = 0.15F;
@@ -38,11 +38,11 @@ public class ThornsEnchantment extends Enchantment {
 
 	@Override
 	public void onUserDamaged(LivingEntity user, Entity attacker, int level) {
-		AbstractRandom abstractRandom = user.getRandom();
+		Random random = user.getRandom();
 		Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.chooseEquipmentWith(Enchantments.THORNS, user);
-		if (shouldDamageAttacker(level, abstractRandom)) {
+		if (shouldDamageAttacker(level, random)) {
 			if (attacker != null) {
-				attacker.damage(DamageSource.thorns(user), (float)getDamageAmount(level, abstractRandom));
+				attacker.damage(DamageSource.thorns(user), (float)getDamageAmount(level, random));
 			}
 
 			if (entry != null) {
@@ -51,11 +51,11 @@ public class ThornsEnchantment extends Enchantment {
 		}
 	}
 
-	public static boolean shouldDamageAttacker(int level, AbstractRandom random) {
+	public static boolean shouldDamageAttacker(int level, Random random) {
 		return level <= 0 ? false : random.nextFloat() < 0.15F * (float)level;
 	}
 
-	public static int getDamageAmount(int level, AbstractRandom random) {
+	public static int getDamageAmount(int level, Random random) {
 		return level > 10 ? level - 10 : 1 + random.nextInt(4);
 	}
 }

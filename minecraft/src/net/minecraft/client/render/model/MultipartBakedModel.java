@@ -16,7 +16,7 @@ import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import org.apache.commons.lang3.tuple.Pair;
 
 @Environment(EnvType.CLIENT)
@@ -42,7 +42,7 @@ public class MultipartBakedModel implements BakedModel {
 	}
 
 	@Override
-	public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction face, AbstractRandom random) {
+	public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction face, Random random) {
 		if (state == null) {
 			return Collections.emptyList();
 		} else {
@@ -65,7 +65,7 @@ public class MultipartBakedModel implements BakedModel {
 
 			for (int j = 0; j < bitSet.length(); j++) {
 				if (bitSet.get(j)) {
-					list.addAll(((BakedModel)((Pair)this.components.get(j)).getRight()).getQuads(state, face, AbstractRandom.createAtomic(l)));
+					list.addAll(((BakedModel)((Pair)this.components.get(j)).getRight()).getQuads(state, face, Random.create(l)));
 				}
 			}
 

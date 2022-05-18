@@ -17,7 +17,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.StructureWorldAccess;
@@ -36,7 +36,7 @@ public class IglooGenerator {
 		TOP_TEMPLATE, BlockPos.ORIGIN, MIDDLE_TEMPLATE, new BlockPos(2, -3, 4), BOTTOM_TEMPLATE, new BlockPos(0, -3, -2)
 	);
 
-	public static void addPieces(StructureManager manager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder holder, AbstractRandom random) {
+	public static void addPieces(StructureManager manager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder holder, Random random) {
 		if (random.nextDouble() < 0.5) {
 			int i = random.nextInt(8) + 4;
 			holder.addPiece(new IglooGenerator.Piece(manager, BOTTOM_TEMPLATE, pos, rotation, i * 3));
@@ -79,7 +79,7 @@ public class IglooGenerator {
 		}
 
 		@Override
-		protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, AbstractRandom random, BlockBox boundingBox) {
+		protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox) {
 			if ("chest".equals(metadata)) {
 				world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
 				BlockEntity blockEntity = world.getBlockEntity(pos.down());
@@ -94,7 +94,7 @@ public class IglooGenerator {
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
-			AbstractRandom random,
+			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
 			BlockPos pos

@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.tag.TagKey;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 
 public class TagMatchRuleTest extends RuleTest {
@@ -19,7 +19,7 @@ public class TagMatchRuleTest extends RuleTest {
 	}
 
 	@Override
-	public boolean test(BlockState state, AbstractRandom random) {
+	public boolean test(BlockState state, Random random) {
 		return state.isIn(this.tag);
 	}
 

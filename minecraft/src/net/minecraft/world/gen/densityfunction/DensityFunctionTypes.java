@@ -18,8 +18,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.math.noise.InterpolatedNoiseSampler;
 import net.minecraft.util.math.noise.SimplexNoiseSampler;
-import net.minecraft.util.math.random.AbstractRandom;
-import net.minecraft.util.math.random.AtomicSimpleRandom;
+import net.minecraft.util.math.random.CheckedRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
@@ -438,9 +438,9 @@ public final class DensityFunctionTypes {
 		private final SimplexNoiseSampler field_36554;
 
 		public EndIslands(long seed) {
-			AbstractRandom abstractRandom = new AtomicSimpleRandom(seed);
-			abstractRandom.skip(17292);
-			this.field_36554 = new SimplexNoiseSampler(abstractRandom);
+			Random random = new CheckedRandom(seed);
+			random.skip(17292);
+			this.field_36554 = new SimplexNoiseSampler(random);
 		}
 
 		private static float method_41529(SimplexNoiseSampler simplexNoiseSampler, int i, int j) {

@@ -3,31 +3,28 @@ package net.minecraft.client.realms.gui.screen;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class RealmsClientOutdatedScreen extends RealmsScreen {
-	private static final Text OUTDATED_TITLE = Text.translatable("mco.client.outdated.title");
-	private static final Text[] OUTDATED_LINES = new Text[]{
-		Text.translatable("mco.client.outdated.msg.line1"), Text.translatable("mco.client.outdated.msg.line2")
-	};
 	private static final Text INCOMPATIBLE_TITLE = Text.translatable("mco.client.incompatible.title");
-	private static final Text[] INCOMPATIBLE_LINES = new Text[]{
+	private static final Text[] field_39419 = new Text[]{
 		Text.translatable("mco.client.incompatible.msg.line1"),
 		Text.translatable("mco.client.incompatible.msg.line2"),
 		Text.translatable("mco.client.incompatible.msg.line3")
 	};
+	private static final Text[] INCOMPATIBLE_LINES = new Text[]{
+		Text.translatable("mco.client.incompatible.msg.line1"), Text.translatable("mco.client.incompatible.msg.line2")
+	};
 	private final Screen parent;
-	private final boolean outdated;
 
-	public RealmsClientOutdatedScreen(Screen parent, boolean outdated) {
-		super(outdated ? OUTDATED_TITLE : INCOMPATIBLE_TITLE);
+	public RealmsClientOutdatedScreen(Screen parent) {
+		super(INCOMPATIBLE_TITLE);
 		this.parent = parent;
-		this.outdated = outdated;
 	}
 
 	@Override
@@ -39,13 +36,17 @@ public class RealmsClientOutdatedScreen extends RealmsScreen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, row(3), 16711680);
-		Text[] texts = this.outdated ? INCOMPATIBLE_LINES : OUTDATED_LINES;
+		Text[] texts = this.method_44255();
 
 		for (int i = 0; i < texts.length; i++) {
 			drawCenteredText(matrices, this.textRenderer, texts[i], this.width / 2, row(5) + i * 12, 16777215);
 		}
 
 		super.render(matrices, mouseX, mouseY, delta);
+	}
+
+	private Text[] method_44255() {
+		return this.client.getGame().getVersion().isStable() ? INCOMPATIBLE_LINES : field_39419;
 	}
 
 	@Override

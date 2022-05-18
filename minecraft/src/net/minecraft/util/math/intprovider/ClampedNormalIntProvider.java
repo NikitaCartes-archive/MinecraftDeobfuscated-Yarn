@@ -5,7 +5,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.function.Function;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class ClampedNormalIntProvider extends IntProvider {
 	public static final Codec<ClampedNormalIntProvider> CODEC = RecordCodecBuilder.create(
@@ -40,11 +40,11 @@ public class ClampedNormalIntProvider extends IntProvider {
 	}
 
 	@Override
-	public int get(AbstractRandom random) {
+	public int get(Random random) {
 		return next(random, this.mean, this.deviation, (float)this.min, (float)this.max);
 	}
 
-	public static int next(AbstractRandom random, float mean, float deviation, float min, float max) {
+	public static int next(Random random, float mean, float deviation, float min, float max) {
 		return (int)MathHelper.clamp(MathHelper.nextGaussian(random, mean, deviation), min, max);
 	}
 

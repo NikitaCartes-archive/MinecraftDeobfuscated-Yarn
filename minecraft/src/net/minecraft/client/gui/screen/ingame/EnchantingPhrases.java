@@ -8,14 +8,14 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 @Environment(EnvType.CLIENT)
 public class EnchantingPhrases {
 	private static final Identifier FONT_ID = new Identifier("minecraft", "alt");
 	private static final Style STYLE = Style.EMPTY.withFont(FONT_ID);
 	private static final EnchantingPhrases INSTANCE = new EnchantingPhrases();
-	private final AbstractRandom random = AbstractRandom.createAtomic();
+	private final Random random = Random.create();
 	private final String[] phrases = new String[]{
 		"the",
 		"elder",

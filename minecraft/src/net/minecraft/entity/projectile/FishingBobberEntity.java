@@ -41,13 +41,13 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import org.slf4j.Logger;
 
 public class FishingBobberEntity extends ProjectileEntity {
 	private static final Logger field_36336 = LogUtils.getLogger();
-	private final AbstractRandom velocityRandom = AbstractRandom.createAtomic();
+	private final Random velocityRandom = Random.create();
 	private boolean caughtFish;
 	private int outOfOpenWaterTicks;
 	private static final int field_30665 = 10;
@@ -92,9 +92,9 @@ public class FishingBobberEntity extends ProjectileEntity {
 		Vec3d vec3d = new Vec3d((double)(-i), (double)MathHelper.clamp(-(k / j), -5.0F, 5.0F), (double)(-h));
 		double m = vec3d.length();
 		vec3d = vec3d.multiply(
-			0.6 / m + this.random.nextPredictable(0.5, 0.0103365),
-			0.6 / m + this.random.nextPredictable(0.5, 0.0103365),
-			0.6 / m + this.random.nextPredictable(0.5, 0.0103365)
+			0.6 / m + this.random.nextTriangular(0.5, 0.0103365),
+			0.6 / m + this.random.nextTriangular(0.5, 0.0103365),
+			0.6 / m + this.random.nextTriangular(0.5, 0.0103365)
 		);
 		this.setVelocity(vec3d);
 		this.setYaw((float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI));
@@ -299,7 +299,7 @@ public class FishingBobberEntity extends ProjectileEntity {
 		} else if (this.fishTravelCountdown > 0) {
 			this.fishTravelCountdown -= i;
 			if (this.fishTravelCountdown > 0) {
-				this.fishAngle = this.fishAngle + (float)this.random.nextPredictable(0.0, 9.188);
+				this.fishAngle = this.fishAngle + (float)this.random.nextTriangular(0.0, 9.188);
 				float f = this.fishAngle * (float) (Math.PI / 180.0);
 				float g = MathHelper.sin(f);
 				float h = MathHelper.cos(f);

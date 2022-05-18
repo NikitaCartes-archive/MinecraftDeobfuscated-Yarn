@@ -19,11 +19,12 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class GoatHornItem extends Item {
 	private static final String INSTRUMENT_KEY = "instrument";
@@ -50,7 +51,7 @@ public class GoatHornItem extends Item {
 		return itemStack;
 	}
 
-	public static void setRandomInstrumentFromTag(ItemStack stack, TagKey<Instrument> instrumentTag, AbstractRandom random) {
+	public static void setRandomInstrumentFromTag(ItemStack stack, TagKey<Instrument> instrumentTag, Random random) {
 		Optional<RegistryEntry<Instrument>> optional = Registry.INSTRUMENT.getEntryList(instrumentTag).flatMap(entryList -> entryList.getRandom(random));
 		if (optional.isPresent()) {
 			setInstrument(stack, (RegistryEntry<Instrument>)optional.get());
@@ -116,5 +117,6 @@ public class GoatHornItem extends Item {
 		SoundEvent soundEvent = instrument.soundEvent();
 		float f = instrument.range() / 16.0F;
 		world.playSoundFromEntity(player, player, soundEvent, SoundCategory.RECORDS, f, 1.0F);
+		world.emitGameEvent(GameEvent.INSTRUMENT_PLAY, player.getPos(), GameEvent.Emitter.of(player));
 	}
 }

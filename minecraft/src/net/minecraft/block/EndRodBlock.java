@@ -6,7 +6,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 public class EndRodBlock extends RodBlock {
@@ -25,7 +25,7 @@ public class EndRodBlock extends RodBlock {
 	}
 
 	@Override
-	public void randomDisplayTick(BlockState state, World world, BlockPos pos, AbstractRandom random) {
+	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		Direction direction = state.get(FACING);
 		double d = (double)pos.getX() + 0.55 - (double)(random.nextFloat() * 0.1F);
 		double e = (double)pos.getY() + 0.55 - (double)(random.nextFloat() * 0.1F);

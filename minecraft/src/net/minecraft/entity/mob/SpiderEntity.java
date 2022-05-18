@@ -36,7 +36,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
@@ -158,8 +158,8 @@ public class SpiderEntity extends HostileEntity {
 		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
 		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
-		AbstractRandom abstractRandom = world.getRandom();
-		if (abstractRandom.nextInt(100) == 0) {
+		Random random = world.getRandom();
+		if (random.nextInt(100) == 0) {
 			SkeletonEntity skeletonEntity = EntityType.SKELETON.create(this.world);
 			skeletonEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), 0.0F);
 			skeletonEntity.initialize(world, difficulty, spawnReason, null, null);
@@ -168,8 +168,8 @@ public class SpiderEntity extends HostileEntity {
 
 		if (entityData == null) {
 			entityData = new SpiderEntity.SpiderData();
-			if (world.getDifficulty() == Difficulty.HARD && abstractRandom.nextFloat() < 0.1F * difficulty.getClampedLocalDifficulty()) {
-				((SpiderEntity.SpiderData)entityData).setEffect(abstractRandom);
+			if (world.getDifficulty() == Difficulty.HARD && random.nextFloat() < 0.1F * difficulty.getClampedLocalDifficulty()) {
+				((SpiderEntity.SpiderData)entityData).setEffect(random);
 			}
 		}
 
@@ -219,7 +219,7 @@ public class SpiderEntity extends HostileEntity {
 		@Nullable
 		public StatusEffect effect;
 
-		public void setEffect(AbstractRandom random) {
+		public void setEffect(Random random) {
 			int i = random.nextInt(5);
 			if (i <= 1) {
 				this.effect = StatusEffects.SPEED;

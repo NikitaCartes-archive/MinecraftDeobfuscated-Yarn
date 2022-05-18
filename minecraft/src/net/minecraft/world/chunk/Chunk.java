@@ -39,6 +39,7 @@ import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureHolder;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.GenerationSettings;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.BiomeSupplier;
@@ -64,7 +65,7 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 	private long inhabitedTime;
 	@Nullable
 	@Deprecated
-	private RegistryEntry<Biome> biome;
+	private GenerationSettings generationSettings;
 	@Nullable
 	protected ChunkNoiseSampler chunkNoiseSampler;
 	protected final UpgradeData upgradeData;
@@ -214,8 +215,8 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 	}
 
 	@Override
-	public LongSet getStructureReferences(StructureType structureType) {
-		return (LongSet)this.structureReferences.getOrDefault(structureType, EMPTY_STRUCTURE_REFERENCES);
+	public LongSet getStructureReferences(StructureType strcutureType) {
+		return (LongSet)this.structureReferences.getOrDefault(strcutureType, EMPTY_STRUCTURE_REFERENCES);
 	}
 
 	@Override
@@ -363,12 +364,12 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 	}
 
 	@Deprecated
-	public RegistryEntry<Biome> setBiomeIfAbsent(Supplier<RegistryEntry<Biome>> biomeSupplier) {
-		if (this.biome == null) {
-			this.biome = (RegistryEntry<Biome>)biomeSupplier.get();
+	public GenerationSettings method_44214(Supplier<GenerationSettings> supplier) {
+		if (this.generationSettings == null) {
+			this.generationSettings = (GenerationSettings)supplier.get();
 		}
 
-		return this.biome;
+		return this.generationSettings;
 	}
 
 	@Override

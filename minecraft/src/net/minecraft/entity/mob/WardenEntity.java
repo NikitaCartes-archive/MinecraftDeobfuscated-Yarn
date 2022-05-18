@@ -58,7 +58,7 @@ import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -111,7 +111,9 @@ public class WardenEntity extends HostileEntity implements VibrationListener.Cal
 
 	public WardenEntity(EntityType<? extends HostileEntity> entityType, World world) {
 		super(entityType, world);
-		this.gameEventHandler = new EntityGameEventHandler<>(new VibrationListener(new EntityPositionSource(this, this.getStandingEyeHeight()), 16, this, null, 0, 0));
+		this.gameEventHandler = new EntityGameEventHandler<>(
+			new VibrationListener(new EntityPositionSource(this, this.getStandingEyeHeight()), 16, this, null, 0.0F, 0)
+		);
 		this.experiencePoints = 5;
 		this.getNavigation().setCanSwim(true);
 		this.setPathfindingPenalty(PathNodeType.UNPASSABLE_RAIL, 0.0F);
@@ -293,11 +295,11 @@ public class WardenEntity extends HostileEntity implements VibrationListener.Cal
 	public void handleStatus(byte status) {
 		if (status == EntityStatuses.PLAY_ATTACK_SOUND) {
 			this.roaringAnimationState.stop();
-			this.attackingAnimationState.start();
+			this.attackingAnimationState.start(this.age);
 		} else if (status == EntityStatuses.EARS_TWITCH) {
 			this.field_38162 = 10;
 		} else if (status == EntityStatuses.SONIC_BOOM) {
-			this.chargingSonicBoomAnimationState.start();
+			this.chargingSonicBoomAnimationState.start(this.age);
 		} else {
 			super.handleStatus(status);
 		}
@@ -318,13 +320,13 @@ public class WardenEntity extends HostileEntity implements VibrationListener.Cal
 
 	private void addDigParticles(AnimationState animationState) {
 		if ((float)animationState.getTimeRunning() < 4500.0F) {
-			AbstractRandom abstractRandom = this.getRandom();
+			Random random = this.getRandom();
 			BlockState blockState = this.world.getBlockState(this.getBlockPos().down());
 			if (blockState.getRenderType() != BlockRenderType.INVISIBLE) {
 				for (int i = 0; i < 30; i++) {
-					double d = this.getX() + (double)MathHelper.nextBetween(abstractRandom, -0.7F, 0.7F);
+					double d = this.getX() + (double)MathHelper.nextBetween(random, -0.7F, 0.7F);
 					double e = this.getY();
-					double f = this.getZ() + (double)MathHelper.nextBetween(abstractRandom, -0.7F, 0.7F);
+					double f = this.getZ() + (double)MathHelper.nextBetween(random, -0.7F, 0.7F);
 					this.world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState), d, e, f, 0.0, 0.0, 0.0);
 				}
 			}
@@ -336,16 +338,16 @@ public class WardenEntity extends HostileEntity implements VibrationListener.Cal
 		if (POSE.equals(data)) {
 			switch (this.getPose()) {
 				case EMERGING:
-					this.emergingAnimationState.start();
+					this.emergingAnimationState.start(this.age);
 					break;
 				case DIGGING:
-					this.diggingAnimationState.start();
+					this.diggingAnimationState.start(this.age);
 					break;
 				case ROARING:
-					this.roaringAnimationState.start();
+					this.roaringAnimationState.start(this.age);
 					break;
 				case SNIFFING:
-					this.sniffingAnimationState.start();
+					this.sniffingAnimationState.start(this.age);
 			}
 		}
 
@@ -578,7 +580,7 @@ public class WardenEntity extends HostileEntity implements VibrationListener.Cal
 
 	@Override
 	public void accept(
-		ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity, @Nullable Entity sourceEntity, int delay
+		ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity, @Nullable Entity sourceEntity, float distance
 	) {
 		this.brain.remember(MemoryModuleType.VIBRATION_COOLDOWN, Unit.INSTANCE, 40L);
 		world.sendEntityStatus(this, EntityStatuses.EARS_TWITCH);

@@ -7,7 +7,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.TallSeagrassBlock;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.ProbabilityConfig;
@@ -21,16 +21,16 @@ public class SeagrassFeature extends Feature<ProbabilityConfig> {
 	@Override
 	public boolean generate(FeatureContext<ProbabilityConfig> context) {
 		boolean bl = false;
-		AbstractRandom abstractRandom = context.getRandom();
+		Random random = context.getRandom();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		BlockPos blockPos = context.getOrigin();
 		ProbabilityConfig probabilityConfig = context.getConfig();
-		int i = abstractRandom.nextInt(8) - abstractRandom.nextInt(8);
-		int j = abstractRandom.nextInt(8) - abstractRandom.nextInt(8);
+		int i = random.nextInt(8) - random.nextInt(8);
+		int j = random.nextInt(8) - random.nextInt(8);
 		int k = structureWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR, blockPos.getX() + i, blockPos.getZ() + j);
 		BlockPos blockPos2 = new BlockPos(blockPos.getX() + i, k, blockPos.getZ() + j);
 		if (structureWorldAccess.getBlockState(blockPos2).isOf(Blocks.WATER)) {
-			boolean bl2 = abstractRandom.nextDouble() < (double)probabilityConfig.probability;
+			boolean bl2 = random.nextDouble() < (double)probabilityConfig.probability;
 			BlockState blockState = bl2 ? Blocks.TALL_SEAGRASS.getDefaultState() : Blocks.SEAGRASS.getDefaultState();
 			if (blockState.canPlaceAt(structureWorldAccess, blockPos2)) {
 				if (bl2) {

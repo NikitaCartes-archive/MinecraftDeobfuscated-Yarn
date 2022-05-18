@@ -11,7 +11,7 @@ import net.minecraft.block.PillarBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
@@ -36,7 +36,7 @@ public class LargeOakTrunkPlacer extends TrunkPlacer {
 
 	@Override
 	public List<FoliagePlacer.TreeNode> generate(
-		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, int height, BlockPos startPos, TreeFeatureConfig config
+		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, int height, BlockPos startPos, TreeFeatureConfig config
 	) {
 		int i = 5;
 		int j = height + 2;
@@ -90,7 +90,7 @@ public class LargeOakTrunkPlacer extends TrunkPlacer {
 	private boolean makeOrCheckBranch(
 		TestableWorld testableWorld,
 		BiConsumer<BlockPos, BlockState> biConsumer,
-		AbstractRandom abstractRandom,
+		Random random,
 		BlockPos startPos,
 		BlockPos branchPos,
 		boolean make,
@@ -108,9 +108,7 @@ public class LargeOakTrunkPlacer extends TrunkPlacer {
 			for (int j = 0; j <= i; j++) {
 				BlockPos blockPos2 = startPos.add((double)(0.5F + (float)j * f), (double)(0.5F + (float)j * g), (double)(0.5F + (float)j * h));
 				if (make) {
-					this.getAndSetState(
-						testableWorld, biConsumer, abstractRandom, blockPos2, config, state -> state.with(PillarBlock.AXIS, this.getLogAxis(startPos, blockPos2))
-					);
+					this.getAndSetState(testableWorld, biConsumer, random, blockPos2, config, state -> state.with(PillarBlock.AXIS, this.getLogAxis(startPos, blockPos2)));
 				} else if (!this.canReplaceOrIsLog(testableWorld, blockPos2)) {
 					return false;
 				}
@@ -150,7 +148,7 @@ public class LargeOakTrunkPlacer extends TrunkPlacer {
 	private void makeBranches(
 		TestableWorld world,
 		BiConsumer<BlockPos, BlockState> replacer,
-		AbstractRandom abstractRandom,
+		Random random,
 		int treeHeight,
 		BlockPos startPos,
 		List<LargeOakTrunkPlacer.BranchPosition> branchPositions,
@@ -160,7 +158,7 @@ public class LargeOakTrunkPlacer extends TrunkPlacer {
 			int i = branchPosition.getEndY();
 			BlockPos blockPos = new BlockPos(startPos.getX(), i, startPos.getZ());
 			if (!blockPos.equals(branchPosition.node.getCenter()) && this.isHighEnough(treeHeight, i - startPos.getY())) {
-				this.makeOrCheckBranch(world, replacer, abstractRandom, blockPos, branchPosition.node.getCenter(), true, config);
+				this.makeOrCheckBranch(world, replacer, random, blockPos, branchPosition.node.getCenter(), true, config);
 			}
 		}
 	}

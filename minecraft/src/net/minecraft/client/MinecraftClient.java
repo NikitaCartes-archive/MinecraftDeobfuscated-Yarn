@@ -3,9 +3,7 @@ package net.minecraft.client;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Queues;
-import com.mojang.authlib.AuthenticationService;
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.minecraft.UserApiService;
@@ -74,7 +72,6 @@ import net.minecraft.client.gui.screen.OutOfMemoryScreen;
 import net.minecraft.client.gui.screen.Overlay;
 import net.minecraft.client.gui.screen.ProgressScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.SleepingChatScreen;
 import net.minecraft.client.gui.screen.SplashOverlay;
 import net.minecraft.client.gui.screen.TitleScreen;
@@ -175,6 +172,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
+import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
@@ -187,6 +185,7 @@ import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.metadata.PackResourceMetadata;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.QueueingWorldGenerationProgressListener;
 import net.minecraft.server.SaveLoader;
@@ -200,6 +199,7 @@ import net.minecraft.text.KeybindTranslations;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.ApiServices;
 import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
@@ -357,7 +357,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final PeriodicNotificationManager regionalComplianciesManager = new PeriodicNotificationManager(
 		REGIONAL_COMPLIANCIES_ID, MinecraftClient::isCountrySetTo
 	);
+	private final YggdrasilAuthenticationService authenticationService;
 	private final MinecraftSessionService sessionService;
+	private final SignatureVerifier servicesSignatureVerifier;
 	private final UserApiService userApiService;
 	private final PlayerSkinProvider skinProvider;
 	private final BakedModelManager bakedModelManager;
@@ -474,9 +476,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			new FileResourcePackProvider(this.resourcePackDir, ResourcePackSource.PACK_SOURCE_NONE)
 		);
 		this.networkProxy = args.network.netProxy;
-		YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(this.networkProxy);
-		this.sessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
-		this.userApiService = this.createUserApiService(yggdrasilAuthenticationService, args);
+		this.authenticationService = new YggdrasilAuthenticationService(this.networkProxy);
+		this.sessionService = this.authenticationService.createMinecraftSessionService();
+		this.userApiService = this.createUserApiService(this.authenticationService, args);
+		this.servicesSignatureVerifier = SignatureVerifier.create(this.authenticationService.getServicesKey());
 		this.session = args.network.session;
 		LOGGER.info("Setting user: {}", this.session.getUsername());
 		LOGGER.debug("(Session ID is {})", this.session.getSessionId());
@@ -531,8 +534,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				InputStream inputStream2 = this.getResourcePackProvider().getPack().open(ResourceType.CLIENT_RESOURCES, new Identifier("icons/icon_32x32.png"));
 				this.window.setIcon(inputStream, inputStream2);
 			}
-		} catch (IOException var9) {
-			LOGGER.error("Couldn't set icon", (Throwable)var9);
+		} catch (IOException var8) {
+			LOGGER.error("Couldn't set icon", (Throwable)var8);
 		}
 
 		this.window.setFramerateLimit(this.options.getMaxFps().getValue());
@@ -1986,25 +1989,20 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 		try {
 			session.backupLevelDataFile(saveLoader.dynamicRegistryManager(), saveLoader.saveProperties());
-			YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(this.networkProxy);
-			MinecraftSessionService minecraftSessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
-			GameProfileRepository gameProfileRepository = yggdrasilAuthenticationService.createProfileRepository();
-			UserCache userCache = new UserCache(gameProfileRepository, new File(this.runDirectory, MinecraftServer.USER_CACHE_FILE.getName()));
-			userCache.setExecutor(this);
-			SkullBlockEntity.setServices(userCache, minecraftSessionService, this);
+			ApiServices apiServices = ApiServices.create(this.authenticationService, this.runDirectory);
+			apiServices.userCache().setExecutor(this);
+			SkullBlockEntity.setServices(apiServices, this);
 			UserCache.setUseRemote(false);
 			this.server = MinecraftServer.startServer(
-				thread -> new IntegratedServer(
-						thread, this, session, dataPackManager, saveLoader, minecraftSessionService, gameProfileRepository, userCache, spawnChunkRadius -> {
-							WorldGenerationProgressTracker worldGenerationProgressTracker = new WorldGenerationProgressTracker(spawnChunkRadius + 0);
-							this.worldGenProgressTracker.set(worldGenerationProgressTracker);
-							return QueueingWorldGenerationProgressListener.create(worldGenerationProgressTracker, this.renderTaskQueue::add);
-						}
-					)
+				thread -> new IntegratedServer(thread, this, session, dataPackManager, saveLoader, apiServices, spawnChunkRadius -> {
+						WorldGenerationProgressTracker worldGenerationProgressTracker = new WorldGenerationProgressTracker(spawnChunkRadius + 0);
+						this.worldGenProgressTracker.set(worldGenerationProgressTracker);
+						return QueueingWorldGenerationProgressListener.create(worldGenerationProgressTracker, this.renderTaskQueue::add);
+					})
 			);
 			this.integratedServerRunning = true;
-		} catch (Throwable var10) {
-			CrashReport crashReport = CrashReport.create(var10, "Starting integrated server");
+		} catch (Throwable var9) {
+			CrashReport crashReport = CrashReport.create(var9, "Starting integrated server");
 			CrashReportSection crashReportSection = crashReport.addElement("Starting integrated server");
 			crashReportSection.add("Level ID", levelName);
 			crashReportSection.add("Level Name", (CrashCallable<String>)(() -> saveLoader.saveProperties().getLevelName()));
@@ -2025,7 +2023,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 			try {
 				Thread.sleep(16L);
-			} catch (InterruptedException var9) {
+			} catch (InterruptedException var8) {
 			}
 
 			if (this.crashReportSupplier != null) {
@@ -2051,12 +2049,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.world = world;
 		this.setWorld(world);
 		if (!this.integratedServerRunning) {
-			AuthenticationService authenticationService = new YggdrasilAuthenticationService(this.networkProxy);
-			MinecraftSessionService minecraftSessionService = authenticationService.createMinecraftSessionService();
-			GameProfileRepository gameProfileRepository = authenticationService.createProfileRepository();
-			UserCache userCache = new UserCache(gameProfileRepository, new File(this.runDirectory, MinecraftServer.USER_CACHE_FILE.getName()));
-			userCache.setExecutor(this);
-			SkullBlockEntity.setServices(userCache, minecraftSessionService, this);
+			ApiServices apiServices = ApiServices.create(this.authenticationService, this.runDirectory);
+			apiServices.userCache().setExecutor(this);
+			SkullBlockEntity.setServices(apiServices, this);
 			UserCache.setUseRemote(false);
 		}
 	}
@@ -2812,6 +2807,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public Realms32BitWarningChecker getRealms32BitWarningChecker() {
 		return this.realms32BitWarningChecker;
+	}
+
+	public SignatureVerifier getServicesSignatureVerifier() {
+		return this.servicesSignatureVerifier;
 	}
 
 	/**

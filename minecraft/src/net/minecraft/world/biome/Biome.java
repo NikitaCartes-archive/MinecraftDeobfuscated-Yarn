@@ -24,7 +24,7 @@ import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
-import net.minecraft.util.math.random.AtomicSimpleRandom;
+import net.minecraft.util.math.random.CheckedRandom;
 import net.minecraft.util.math.random.ChunkRandom;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryCodecs;
@@ -50,17 +50,15 @@ public final class Biome {
 	public static final Codec<RegistryEntry<Biome>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.BIOME_KEY, CODEC);
 	public static final Codec<RegistryEntryList<Biome>> REGISTRY_ENTRY_LIST_CODEC = RegistryCodecs.entryList(Registry.BIOME_KEY, CODEC);
 	private static final OctaveSimplexNoiseSampler TEMPERATURE_NOISE = new OctaveSimplexNoiseSampler(
-		new ChunkRandom(new AtomicSimpleRandom(1234L)), ImmutableList.of(0)
+		new ChunkRandom(new CheckedRandom(1234L)), ImmutableList.of(0)
 	);
 	static final OctaveSimplexNoiseSampler FROZEN_OCEAN_NOISE = new OctaveSimplexNoiseSampler(
-		new ChunkRandom(new AtomicSimpleRandom(3456L)), ImmutableList.of(-2, -1, 0)
+		new ChunkRandom(new CheckedRandom(3456L)), ImmutableList.of(-2, -1, 0)
 	);
 	@Deprecated(
 		forRemoval = true
 	)
-	public static final OctaveSimplexNoiseSampler FOLIAGE_NOISE = new OctaveSimplexNoiseSampler(
-		new ChunkRandom(new AtomicSimpleRandom(2345L)), ImmutableList.of(0)
-	);
+	public static final OctaveSimplexNoiseSampler FOLIAGE_NOISE = new OctaveSimplexNoiseSampler(new ChunkRandom(new CheckedRandom(2345L)), ImmutableList.of(0));
 	private static final int MAX_TEMPERATURE_CACHE_SIZE = 1024;
 	private final Biome.Weather weather;
 	private final GenerationSettings generationSettings;
@@ -214,11 +212,11 @@ public final class Biome {
 		return FoliageColors.getColor(d, e);
 	}
 
-	public final float getDownfall() {
+	public float getDownfall() {
 		return this.weather.downfall;
 	}
 
-	public final float getTemperature() {
+	public float getTemperature() {
 		return this.weather.temperature;
 	}
 
@@ -226,11 +224,11 @@ public final class Biome {
 		return this.effects;
 	}
 
-	public final int getWaterColor() {
+	public int getWaterColor() {
 		return this.effects.getWaterColor();
 	}
 
-	public final int getWaterFogColor() {
+	public int getWaterFogColor() {
 		return this.effects.getWaterFogColor();
 	}
 
@@ -268,16 +266,6 @@ public final class Biome {
 		private SpawnSettings spawnSettings;
 		@Nullable
 		private GenerationSettings generationSettings;
-
-		public static Biome.Builder copy(Biome biome) {
-			return new Biome.Builder()
-				.precipitation(biome.getPrecipitation())
-				.temperature(biome.getTemperature())
-				.downfall(biome.getDownfall())
-				.effects(biome.getEffects())
-				.generationSettings(biome.getGenerationSettings())
-				.spawnSettings(biome.getSpawnSettings());
-		}
 
 		public Biome.Builder precipitation(Biome.Precipitation precipitation) {
 			this.precipitation = precipitation;
@@ -416,7 +404,7 @@ public final class Biome {
 		}
 	}
 
-	static class Weather {
+	static record Weather(Biome.Precipitation precipitation, float temperature, Biome.TemperatureModifier temperatureModifier, float downfall) {
 		public static final MapCodec<Biome.Weather> CODEC = RecordCodecBuilder.mapCodec(
 			instance -> instance.group(
 						Biome.Precipitation.CODEC.fieldOf("precipitation").forGetter(weather -> weather.precipitation),
@@ -426,16 +414,5 @@ public final class Biome {
 					)
 					.apply(instance, Biome.Weather::new)
 		);
-		final Biome.Precipitation precipitation;
-		final float temperature;
-		final Biome.TemperatureModifier temperatureModifier;
-		final float downfall;
-
-		Weather(Biome.Precipitation precipitation, float temperature, Biome.TemperatureModifier temperatureModifier, float downfall) {
-			this.precipitation = precipitation;
-			this.temperature = temperature;
-			this.temperatureModifier = temperatureModifier;
-			this.downfall = downfall;
-		}
 	}
 }

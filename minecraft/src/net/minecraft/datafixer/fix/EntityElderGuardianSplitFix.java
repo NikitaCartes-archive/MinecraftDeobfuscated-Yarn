@@ -6,8 +6,8 @@ import com.mojang.serialization.Dynamic;
 import java.util.Objects;
 
 public class EntityElderGuardianSplitFix extends EntitySimpleTransformFix {
-	public EntityElderGuardianSplitFix(Schema outputSchema, boolean changesType) {
-		super("EntityElderGuardianSplitFix", outputSchema, changesType);
+	public EntityElderGuardianSplitFix(Schema schema, boolean bl) {
+		super("EntityElderGuardianSplitFix", schema, bl);
 	}
 
 	@Override

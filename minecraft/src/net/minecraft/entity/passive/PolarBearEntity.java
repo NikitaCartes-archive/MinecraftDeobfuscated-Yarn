@@ -40,7 +40,7 @@ import net.minecraft.util.TimeHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
@@ -98,7 +98,7 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6.0);
 	}
 
-	public static boolean canSpawn(EntityType<PolarBearEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, AbstractRandom random) {
+	public static boolean canSpawn(EntityType<PolarBearEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		RegistryEntry<Biome> registryEntry = world.getBiome(pos);
 		return !registryEntry.isIn(BiomeTags.POLAR_BEARS_SPAWN_ON_ALTERNATE_BLOCKS)
 			? isValidNaturalSpawn(type, world, spawnReason, pos, random)

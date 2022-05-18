@@ -4,6 +4,11 @@ import com.google.common.collect.Lists;
 import com.google.common.primitives.Floats;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.context.CommandContextBuilder;
+import com.mojang.brigadier.context.ParsedCommandNode;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.tree.ArgumentCommandNode;
+import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.logging.LogUtils;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
@@ -15,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
@@ -35,6 +41,7 @@ import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.client.option.ChatVisibility;
+import net.minecraft.command.argument.DecoratableArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
@@ -54,12 +61,12 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.network.ChatDecorator;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.Packet;
 import net.minecraft.network.encryption.ChatMessageSignature;
-import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.encryption.SignedChatMessage;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
@@ -125,8 +132,10 @@ import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.AnvilScreenHandler;
 import net.minecraft.screen.BeaconScreenHandler;
 import net.minecraft.screen.MerchantScreenHandler;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.filter.TextStream;
 import net.minecraft.server.world.EntityTrackingListener;
 import net.minecraft.server.world.ServerWorld;
@@ -159,6 +168,7 @@ import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerPlayPacketListener {
@@ -201,6 +211,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	private int movePacketsCount;
 	private int lastTickMovePacketsCount;
 	private final PendingTaskRunner previewTaskRunner = new PendingTaskRunner();
+	private final AtomicReference<Instant> lastMessageTimestamp = new AtomicReference(Instant.EPOCH);
 
 	public ServerPlayNetworkHandler(MinecraftServer server, ClientConnection connection, ServerPlayerEntity player) {
 		this.server = server;
@@ -332,11 +343,11 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		((CompletableFuture)backingFilterer.apply(this.player.getTextStream(), text)).thenAcceptAsync(consumer2, threadExecutor);
 	}
 
-	private void filterText(String text, Consumer<TextStream.Message> consumer) {
+	private void filterText(String text, Consumer<FilteredMessage<String>> consumer) {
 		this.filterText(text, consumer, TextStream::filterText);
 	}
 
-	private void filterTexts(List<String> texts, Consumer<List<TextStream.Message>> consumer) {
+	private void filterTexts(List<String> texts, Consumer<List<FilteredMessage<String>>> consumer) {
 		this.filterText(texts, consumer, TextStream::filterTexts);
 	}
 
@@ -707,20 +718,20 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 			this.filterTexts(
 				list,
 				optional.isPresent()
-					? texts -> this.addBook((TextStream.Message)texts.get(0), texts.subList(1, texts.size()), i)
+					? texts -> this.addBook((FilteredMessage<String>)texts.get(0), texts.subList(1, texts.size()), i)
 					: texts -> this.updateBookContent(texts, i)
 			);
 		}
 	}
 
-	private void updateBookContent(List<TextStream.Message> pages, int slotId) {
+	private void updateBookContent(List<FilteredMessage<String>> pages, int slotId) {
 		ItemStack itemStack = this.player.getInventory().getStack(slotId);
 		if (itemStack.isOf(Items.WRITABLE_BOOK)) {
 			this.setTextToBook(pages, UnaryOperator.identity(), itemStack);
 		}
 	}
 
-	private void addBook(TextStream.Message title, List<TextStream.Message> pages, int slotId) {
+	private void addBook(FilteredMessage<String> title, List<FilteredMessage<String>> pages, int slotId) {
 		ItemStack itemStack = this.player.getInventory().getStack(slotId);
 		if (itemStack.isOf(Items.WRITABLE_BOOK)) {
 			ItemStack itemStack2 = new ItemStack(Items.WRITTEN_BOOK);
@@ -731,10 +742,10 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 			itemStack2.setSubNbt("author", NbtString.of(this.player.getName().getString()));
 			if (this.player.shouldFilterText()) {
-				itemStack2.setSubNbt("title", NbtString.of(title.getFiltered()));
+				itemStack2.setSubNbt("title", NbtString.of(title.filteredOrElse("")));
 			} else {
-				itemStack2.setSubNbt("filtered_title", NbtString.of(title.getFiltered()));
-				itemStack2.setSubNbt("title", NbtString.of(title.getRaw()));
+				itemStack2.setSubNbt("filtered_title", NbtString.of(title.filteredOrElse("")));
+				itemStack2.setSubNbt("title", NbtString.of(title.raw()));
 			}
 
 			this.setTextToBook(pages, text -> Text.Serializer.toJson(Text.literal(text)), itemStack2);
@@ -742,21 +753,20 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		}
 	}
 
-	private void setTextToBook(List<TextStream.Message> messages, UnaryOperator<String> postProcessor, ItemStack book) {
+	private void setTextToBook(List<FilteredMessage<String>> messages, UnaryOperator<String> postProcessor, ItemStack book) {
 		NbtList nbtList = new NbtList();
 		if (this.player.shouldFilterText()) {
-			messages.stream().map(messagex -> NbtString.of((String)postProcessor.apply(messagex.getFiltered()))).forEach(nbtList::add);
+			messages.stream().map(message -> NbtString.of((String)postProcessor.apply(message.filteredOrElse("")))).forEach(nbtList::add);
 		} else {
 			NbtCompound nbtCompound = new NbtCompound();
 			int i = 0;
 
 			for (int j = messages.size(); i < j; i++) {
-				TextStream.Message message = (TextStream.Message)messages.get(i);
-				String string = message.getRaw();
+				FilteredMessage<String> filteredMessage = (FilteredMessage<String>)messages.get(i);
+				String string = filteredMessage.raw();
 				nbtList.add(NbtString.of((String)postProcessor.apply(string)));
-				String string2 = message.getFiltered();
-				if (!string.equals(string2)) {
-					nbtCompound.putString(String.valueOf(i), (String)postProcessor.apply(string2));
+				if (filteredMessage.isFiltered()) {
+					nbtCompound.putString(String.valueOf(i), (String)postProcessor.apply(filteredMessage.filteredOrElse("")));
 				}
 			}
 
@@ -1165,10 +1175,13 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	public void onChatMessage(ChatMessageC2SPacket packet) {
 		if (hasIllegalCharacter(packet.getChatMessage())) {
 			this.disconnect(Text.translatable("multiplayer.disconnect.illegal_characters"));
-		} else if (packet.isExpired(Instant.now())) {
-			LOGGER.warn("{} tried to send expired message: '{}'", this.player.getName().getString(), packet.getChatMessage());
 		} else {
-			this.filterText(packet.getChatMessage(), message -> this.handleMessage(packet, message));
+			Instant instant = packet.getTimestamp();
+			if (!this.isExpired(instant) && !this.isDisordered(instant)) {
+				this.filterText(packet.getChatMessage(), message -> this.handleMessage(packet, message));
+			} else {
+				LOGGER.warn("{} tried to send expired or out-of-order message: '{}'", this.player.getName().getString(), packet.getChatMessage());
+			}
 		}
 	}
 
@@ -1176,16 +1189,48 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	public void onCommandExecution(CommandExecutionC2SPacket packet) {
 		if (hasIllegalCharacter(packet.command())) {
 			this.disconnect(Text.translatable("multiplayer.disconnect.illegal_characters"));
-		} else if (packet.isExpired(Instant.now())) {
-			LOGGER.warn("{} tried to send expired command: '{}'", this.player.getName().getString(), packet.command());
 		} else {
-			NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
-			if (this.checkChatEnabled()) {
-				ServerCommandSource serverCommandSource = this.player.getCommandSource().withSigner(packet.createArgumentsSigner(this.player.getUuid()));
-				this.server.getCommandManager().execute(serverCommandSource, packet.command());
-				this.checkForSpam();
+			Instant instant = packet.timestamp();
+			if (!this.isExpired(instant) && !this.isDisordered(instant)) {
+				NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+				if (this.checkChatEnabled()) {
+					ServerCommandSource serverCommandSource = this.player.getCommandSource().withSigner(packet.createArgumentsSigner(this.player.getUuid()));
+					this.server.getCommandManager().execute(serverCommandSource, packet.command());
+					this.checkForSpam();
+				}
+			} else {
+				LOGGER.warn("{} tried to send expired or out-of-order command: '{}'", this.player.getName().getString(), packet.command());
 			}
 		}
+	}
+
+	/**
+	 * {@return whether the message sent at {@code timestamp} is expired}
+	 * 
+	 * <p>If {@code true}, the message will be discarded.
+	 * 
+	 * @see ChatMessageC2SPacket#TIME_TO_LIVE
+	 */
+	private boolean isExpired(Instant timestamp) {
+		Instant instant = timestamp.plus(ChatMessageC2SPacket.TIME_TO_LIVE);
+		return Instant.now().isAfter(instant);
+	}
+
+	/**
+	 * {@return whether the message sent at {@code timestamp} is received with improper order}
+	 * 
+	 * <p>If {@code true}, the message will be discarded.
+	 */
+	private boolean isDisordered(Instant timestamp) {
+		Instant instant;
+		do {
+			instant = (Instant)this.lastMessageTimestamp.get();
+			if (timestamp.isBefore(instant)) {
+				return true;
+			}
+		} while (!this.lastMessageTimestamp.compareAndSet(instant, timestamp));
+
+		return false;
 	}
 
 	/**
@@ -1215,18 +1260,20 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		}
 	}
 
-	private void handleMessage(ChatMessageC2SPacket packet, TextStream.Message message) {
+	private void handleMessage(ChatMessageC2SPacket packet, FilteredMessage<String> message) {
 		if (this.checkChatEnabled()) {
-			Text text = Text.literal(packet.getChatMessage());
 			ChatMessageSignature chatMessageSignature = packet.createSignatureInstance(this.player.getUuid());
-			SignedChatMessage signedChatMessage = this.server.getChatDecorator().decorate(this.player, text, chatMessageSignature, packet.isPreviewed());
-			PlayerPublicKey playerPublicKey = this.player.getPublicKey();
-			if (playerPublicKey != null && !signedChatMessage.verify(playerPublicKey)) {
-				LOGGER.warn("{} sent message with invalid signature: '{}'", this.player.getName().getString(), signedChatMessage.signedContent().getString());
-				return;
-			}
+			boolean bl = packet.isPreviewed();
+			ChatDecorator chatDecorator = this.server.getChatDecorator();
+			chatDecorator.decorateChat(this.player, message.map(Text::literal), chatMessageSignature, bl).thenAcceptAsync(this::handleDecoratedMessage, this.server);
+		}
+	}
 
-			this.server.getPlayerManager().broadcast(signedChatMessage, message, this.player, MessageType.CHAT);
+	private void handleDecoratedMessage(FilteredMessage<SignedChatMessage> message) {
+		if (!message.raw().verify(this.player)) {
+			LOGGER.warn("{} sent message with invalid signature: '{}'", this.player.getName().getString(), message.raw().signedContent().getString());
+		} else {
+			this.server.getPlayerManager().broadcast(message, this.player, MessageType.CHAT);
 			this.checkForSpam();
 		}
 	}
@@ -1241,16 +1288,54 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	@Override
 	public void onRequestChatPreview(RequestChatPreviewC2SPacket packet) {
 		if (this.server.shouldPreviewChat()) {
-			this.previewTaskRunner.run(() -> {
+			this.previewTaskRunner.queue(() -> {
+				int i = packet.queryId();
 				String string = packet.query();
-				Text text = Text.literal(string);
-				Text text2 = this.server.getChatDecorator().decorate(this.player, text);
-				if (!text.equals(text2)) {
-					this.sendPacket(new ChatPreviewS2CPacket(packet.queryId(), text2));
-				} else {
-					this.sendPacket(new ChatPreviewS2CPacket(packet.queryId(), null));
-				}
+				return this.decorate(string).thenAccept(decorated -> this.sendPacket(new ChatPreviewS2CPacket(i, decorated)));
 			});
+		}
+	}
+
+	private CompletableFuture<Text> decorate(String query) {
+		String string = StringUtils.normalizeSpace(query);
+		return string.startsWith("/") ? this.decorateCommand(string.substring(1)) : this.decorateChat(query);
+	}
+
+	private CompletableFuture<Text> decorateChat(String query) {
+		Text text = Text.literal(query);
+		return this.server.getChatDecorator().decorate(this.player, text).thenApply(decorated -> !text.equals(decorated) ? decorated : null);
+	}
+
+	private CompletableFuture<Text> decorateCommand(String query) {
+		ServerCommandSource serverCommandSource = this.player.getCommandSource();
+		ParseResults<ServerCommandSource> parseResults = this.server.getCommandManager().getDispatcher().parse(query, serverCommandSource);
+		return this.decorateCommand(parseResults.getContext());
+	}
+
+	private CompletableFuture<Text> decorateCommand(CommandContextBuilder<ServerCommandSource> builder) {
+		CommandContextBuilder<ServerCommandSource> commandContextBuilder = builder.getLastChild();
+		if (commandContextBuilder.getArguments().isEmpty()) {
+			return CompletableFuture.completedFuture(null);
+		} else {
+			List<? extends ParsedCommandNode<?>> list = commandContextBuilder.getNodes();
+
+			for (int i = list.size() - 1; i >= 0; i--) {
+				CommandNode<?> commandNode = ((ParsedCommandNode)list.get(i)).getNode();
+				if (commandNode instanceof ArgumentCommandNode) {
+					ArgumentCommandNode<?, ?> argumentCommandNode = (ArgumentCommandNode<?, ?>)commandNode;
+
+					try {
+						CompletableFuture<Text> completableFuture = DecoratableArgumentType.decorate(argumentCommandNode, commandContextBuilder);
+						if (completableFuture != null) {
+							return completableFuture;
+						}
+					} catch (CommandSyntaxException var8) {
+						return CompletableFuture.completedFuture(null);
+					}
+				}
+			}
+
+			return CompletableFuture.completedFuture(null);
 		}
 	}
 
@@ -1493,7 +1578,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		this.filterTexts(list, texts -> this.onSignUpdate(packet, texts));
 	}
 
-	private void onSignUpdate(UpdateSignC2SPacket packet, List<TextStream.Message> signText) {
+	private void onSignUpdate(UpdateSignC2SPacket packet, List<FilteredMessage<String>> signText) {
 		this.player.updateLastActionTime();
 		ServerWorld serverWorld = this.player.getWorld();
 		BlockPos blockPos = packet.getPos();
@@ -1509,11 +1594,11 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 			}
 
 			for (int i = 0; i < signText.size(); i++) {
-				TextStream.Message message = (TextStream.Message)signText.get(i);
+				FilteredMessage<Text> filteredMessage = ((FilteredMessage)signText.get(i)).map(Text::literal);
 				if (this.player.shouldFilterText()) {
-					signBlockEntity.setTextOnRow(i, Text.literal(message.getFiltered()));
+					signBlockEntity.setTextOnRow(i, filteredMessage.filteredOrElse(ScreenTexts.EMPTY));
 				} else {
-					signBlockEntity.setTextOnRow(i, Text.literal(message.getRaw()), Text.literal(message.getFiltered()));
+					signBlockEntity.setTextOnRow(i, filteredMessage.raw(), filteredMessage.filteredOrElse(ScreenTexts.EMPTY));
 				}
 			}
 

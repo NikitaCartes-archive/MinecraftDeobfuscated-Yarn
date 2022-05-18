@@ -6,8 +6,10 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
 import java.util.Optional;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
+import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.BlockMirrorArgumentType;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.BlockRotationArgumentType;
@@ -45,7 +47,11 @@ public class PlaceCommand {
 	private static final DynamicCommandExceptionType TEMPLATE_INVALID_EXCEPTION = new DynamicCommandExceptionType(
 		id -> Text.translatable("commands.place.template.invalid", id)
 	);
-	private static final SimpleCommandExceptionType TEMPLATE_FAILED_EXPECTION = new SimpleCommandExceptionType(Text.translatable("commands.place.template.failed"));
+	private static final SimpleCommandExceptionType TEMPLATE_FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.place.template.failed"));
+	private static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) -> {
+		StructureManager structureManager = context.getSource().getWorld().getStructureManager();
+		return CommandSource.suggestIdentifiers(structureManager.method_44226(), builder);
+	};
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
@@ -130,6 +136,7 @@ public class PlaceCommand {
 					CommandManager.literal("template")
 						.then(
 							CommandManager.argument("template", IdentifierArgumentType.identifier())
+								.suggests(SUGGESTION_PROVIDER)
 								.executes(
 									commandContext -> executePlaceTemplate(
 											commandContext.getSource(),
@@ -307,7 +314,7 @@ public class PlaceCommand {
 
 			boolean bl = structure.place(serverWorld, pos, pos, structurePlacementData, StructureBlockBlockEntity.createRandom((long)seed), 2);
 			if (!bl) {
-				throw TEMPLATE_FAILED_EXPECTION.create();
+				throw TEMPLATE_FAILED_EXCEPTION.create();
 			} else {
 				source.sendFeedback(Text.translatable("commands.place.template.success", id, pos.getX(), pos.getY(), pos.getZ()), true);
 				return 1;

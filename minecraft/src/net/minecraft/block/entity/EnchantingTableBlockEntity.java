@@ -9,7 +9,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Nameable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 public class EnchantingTableBlockEntity extends BlockEntity implements Nameable {
@@ -23,7 +23,7 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Nameable 
 	public float bookRotation;
 	public float lastBookRotation;
 	public float targetBookRotation;
-	private static final AbstractRandom RANDOM = AbstractRandom.createAtomic();
+	private static final Random RANDOM = Random.create();
 	private Text customName;
 
 	public EnchantingTableBlockEntity(BlockPos pos, BlockState state) {

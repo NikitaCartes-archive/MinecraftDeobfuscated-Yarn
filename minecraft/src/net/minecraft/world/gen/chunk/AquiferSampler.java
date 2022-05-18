@@ -8,8 +8,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
-import net.minecraft.util.math.random.RandomDeriver;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.util.math.random.RandomSplitter;
 import net.minecraft.world.biome.source.util.VanillaBiomeParameters;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.densityfunction.DensityFunction;
@@ -21,12 +21,12 @@ public interface AquiferSampler {
 		ChunkNoiseSampler chunkNoiseSampler,
 		ChunkPos chunkPos,
 		NoiseRouter noiseRouter,
-		RandomDeriver randomDeriver,
+		RandomSplitter randomSplitter,
 		int i,
 		int j,
 		AquiferSampler.FluidLevelSampler fluidLevelSampler
 	) {
-		return new AquiferSampler.Impl(chunkNoiseSampler, chunkPos, noiseRouter, randomDeriver, i, j, fluidLevelSampler);
+		return new AquiferSampler.Impl(chunkNoiseSampler, chunkPos, noiseRouter, randomSplitter, i, j, fluidLevelSampler);
 	}
 
 	static AquiferSampler seaLevel(AquiferSampler.FluidLevelSampler fluidLevelSampler) {
@@ -84,7 +84,7 @@ public interface AquiferSampler {
 		private final DensityFunction fluidLevelFloodednessNoise;
 		private final DensityFunction fluidLevelSpreadNoise;
 		private final DensityFunction fluidTypeNoise;
-		private final RandomDeriver randomDeriver;
+		private final RandomSplitter randomDeriver;
 		private final AquiferSampler.FluidLevel[] waterLevels;
 		private final long[] blockPositions;
 		private final AquiferSampler.FluidLevelSampler fluidLevelSampler;
@@ -104,7 +104,7 @@ public interface AquiferSampler {
 			ChunkNoiseSampler chunkNoiseSampler,
 			ChunkPos chunkPos,
 			NoiseRouter noiseRouter,
-			RandomDeriver randomDeriver,
+			RandomSplitter randomSplitter,
 			int i,
 			int j,
 			AquiferSampler.FluidLevelSampler fluidLevelSampler
@@ -116,7 +116,7 @@ public interface AquiferSampler {
 			this.fluidTypeNoise = noiseRouter.lavaNoise();
 			this.field_38246 = noiseRouter.erosion();
 			this.field_38247 = noiseRouter.depth();
-			this.randomDeriver = randomDeriver;
+			this.randomDeriver = randomSplitter;
 			this.startX = this.getLocalX(chunkPos.getStartX()) - 1;
 			this.fluidLevelSampler = fluidLevelSampler;
 			int k = this.getLocalX(chunkPos.getEndX()) + 1;
@@ -177,8 +177,8 @@ public interface AquiferSampler {
 								if (ab != Long.MAX_VALUE) {
 									ac = ab;
 								} else {
-									AbstractRandom abstractRandom = this.randomDeriver.createRandom(x, y, z);
-									ac = BlockPos.asLong(x * 16 + abstractRandom.nextInt(10), y * 12 + abstractRandom.nextInt(9), z * 16 + abstractRandom.nextInt(10));
+									Random random = this.randomDeriver.split(x, y, z);
+									ac = BlockPos.asLong(x * 16 + random.nextInt(10), y * 12 + random.nextInt(9), z * 16 + random.nextInt(10));
 									this.blockPositions[aa] = ac;
 								}
 

@@ -15,13 +15,14 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LightType;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.dimension.DimensionType;
 
 public abstract class HostileEntity extends PathAwareEntity implements Monster {
 	protected HostileEntity(EntityType<? extends HostileEntity> entityType, World world) {
@@ -83,25 +84,27 @@ public abstract class HostileEntity extends PathAwareEntity implements Monster {
 		return -world.getPhototaxisFavor(pos);
 	}
 
-	public static boolean isSpawnDark(ServerWorldAccess world, BlockPos pos, AbstractRandom random) {
+	public static boolean isSpawnDark(ServerWorldAccess world, BlockPos pos, Random random) {
 		if (world.getLightLevel(LightType.SKY, pos) > random.nextInt(32)) {
 			return false;
-		} else if (world.getLightLevel(LightType.BLOCK, pos) > 0) {
-			return false;
 		} else {
-			int i = world.toServerWorld().isThundering() ? world.getLightLevel(pos, 10) : world.getLightLevel(pos);
-			return i <= random.nextInt(8);
+			DimensionType dimensionType = world.getDimension();
+			int i = dimensionType.monsterSpawnBlockLightLimit();
+			if (i < 15 && world.getLightLevel(LightType.BLOCK, pos) > i) {
+				return false;
+			} else {
+				int j = world.toServerWorld().isThundering() ? world.getLightLevel(pos, 10) : world.getLightLevel(pos);
+				return j <= dimensionType.monsterSpawnLightTest().get(random);
+			}
 		}
 	}
 
-	public static boolean canSpawnInDark(
-		EntityType<? extends HostileEntity> type, ServerWorldAccess world, SpawnReason spawnReason, BlockPos pos, AbstractRandom random
-	) {
+	public static boolean canSpawnInDark(EntityType<? extends HostileEntity> type, ServerWorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		return world.getDifficulty() != Difficulty.PEACEFUL && isSpawnDark(world, pos, random) && canMobSpawn(type, world, spawnReason, pos, random);
 	}
 
 	public static boolean canSpawnIgnoreLightLevel(
-		EntityType<? extends HostileEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, AbstractRandom random
+		EntityType<? extends HostileEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random
 	) {
 		return world.getDifficulty() != Difficulty.PEACEFUL && canMobSpawn(type, world, spawnReason, pos, random);
 	}

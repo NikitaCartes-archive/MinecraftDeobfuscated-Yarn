@@ -64,7 +64,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -925,15 +925,15 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 		}
 	}
 
-	protected float getChildHealthBonus(AbstractRandom random) {
+	protected float getChildHealthBonus(Random random) {
 		return 15.0F + (float)random.nextInt(8) + (float)random.nextInt(9);
 	}
 
-	protected double getChildJumpStrengthBonus(AbstractRandom random) {
+	protected double getChildJumpStrengthBonus(Random random) {
 		return 0.4F + random.nextDouble() * 0.2 + random.nextDouble() * 0.2 + random.nextDouble() * 0.2;
 	}
 
-	protected double getChildMovementSpeedBonus(AbstractRandom random) {
+	protected double getChildMovementSpeedBonus(Random random) {
 		return (0.45F + random.nextDouble() * 0.3 + random.nextDouble() * 0.3 + random.nextDouble() * 0.3) * 0.25;
 	}
 
@@ -1083,7 +1083,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 		}
 	}
 
-	protected void initAttributes(AbstractRandom random) {
+	protected void initAttributes(Random random) {
 	}
 
 	@Nullable

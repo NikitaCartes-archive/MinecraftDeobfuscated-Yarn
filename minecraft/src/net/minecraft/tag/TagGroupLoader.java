@@ -25,7 +25,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import net.minecraft.class_7475;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -58,13 +57,13 @@ public class TagGroupLoader<T> {
 					try {
 						JsonElement jsonElement = JsonParser.parseReader(reader);
 						List<TagGroupLoader.TrackedEntry> list = (List<TagGroupLoader.TrackedEntry>)map.computeIfAbsent(identifier2, identifierx -> new ArrayList());
-						class_7475 lv = class_7475.field_39269.parse(new Dynamic<>(JsonOps.INSTANCE, jsonElement)).getOrThrow(false, LOGGER::error);
-						if (lv.replace()) {
+						TagFile tagFile = TagFile.CODEC.parse(new Dynamic<>(JsonOps.INSTANCE, jsonElement)).getOrThrow(false, LOGGER::error);
+						if (tagFile.replace()) {
 							list.clear();
 						}
 
 						String string2 = resource.getResourcePackName();
-						lv.entries().forEach(tagEntry -> list.add(new TagGroupLoader.TrackedEntry(tagEntry, string2)));
+						tagFile.entries().forEach(tagEntry -> list.add(new TagGroupLoader.TrackedEntry(tagEntry, string2)));
 					} catch (Throwable var16) {
 						if (reader != null) {
 							try {

@@ -9,7 +9,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.util.JsonSerializer;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class SurvivesExplosionLootCondition implements LootCondition {
 	static final SurvivesExplosionLootCondition INSTANCE = new SurvivesExplosionLootCondition();
@@ -30,9 +30,9 @@ public class SurvivesExplosionLootCondition implements LootCondition {
 	public boolean test(LootContext lootContext) {
 		Float float_ = lootContext.get(LootContextParameters.EXPLOSION_RADIUS);
 		if (float_ != null) {
-			AbstractRandom abstractRandom = lootContext.getRandom();
+			Random random = lootContext.getRandom();
 			float f = 1.0F / float_;
-			return abstractRandom.nextFloat() <= f;
+			return random.nextFloat() <= f;
 		} else {
 			return true;
 		}

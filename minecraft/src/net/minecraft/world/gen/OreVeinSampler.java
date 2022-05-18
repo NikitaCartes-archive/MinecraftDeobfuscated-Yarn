@@ -3,8 +3,8 @@ package net.minecraft.world.gen;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
-import net.minecraft.util.math.random.RandomDeriver;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.util.math.random.RandomSplitter;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
 import net.minecraft.world.gen.densityfunction.DensityFunction;
 
@@ -23,7 +23,7 @@ public final class OreVeinSampler {
 	}
 
 	public static ChunkNoiseSampler.BlockStateSampler create(
-		DensityFunction veinToggle, DensityFunction veinRidged, DensityFunction veinGap, RandomDeriver randomDeriver
+		DensityFunction veinToggle, DensityFunction veinRidged, DensityFunction veinGap, RandomSplitter randomDeriver
 	) {
 		BlockState blockState = null;
 		return pos -> {
@@ -39,15 +39,15 @@ public final class OreVeinSampler {
 				if (e + f < 0.4F) {
 					return blockState;
 				} else {
-					AbstractRandom abstractRandom = randomDeriver.createRandom(pos.blockX(), i, pos.blockZ());
-					if (abstractRandom.nextFloat() > 0.7F) {
+					Random random = randomDeriver.split(pos.blockX(), i, pos.blockZ());
+					if (random.nextFloat() > 0.7F) {
 						return blockState;
 					} else if (veinRidged.sample(pos) >= 0.0) {
 						return blockState;
 					} else {
 						double g = MathHelper.clampedLerpFromProgress(e, 0.4F, 0.6F, 0.1F, 0.3F);
-						if ((double)abstractRandom.nextFloat() < g && veinGap.sample(pos) > -0.3F) {
-							return abstractRandom.nextFloat() < 0.02F ? veinType.rawOreBlock : veinType.ore;
+						if ((double)random.nextFloat() < g && veinGap.sample(pos) > -0.3F) {
+							return random.nextFloat() < 0.02F ? veinType.rawOreBlock : veinType.ore;
 						} else {
 							return veinType.stone;
 						}

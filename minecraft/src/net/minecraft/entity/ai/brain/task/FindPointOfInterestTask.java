@@ -21,7 +21,7 @@ import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
@@ -140,12 +140,12 @@ public class FindPointOfInterestTask extends Task<PathAwareEntity> {
 		private static final int MIN_DELAY = 40;
 		private static final int MAX_EXTRA_DELAY = 80;
 		private static final int ATTEMPT_DURATION = 400;
-		private final AbstractRandom random;
+		private final Random random;
 		private long previousAttemptAt;
 		private long nextScheduledAttemptAt;
 		private int currentDelay;
 
-		RetryMarker(AbstractRandom random, long time) {
+		RetryMarker(Random random, long time) {
 			this.random = random;
 			this.setAttemptTime(time);
 		}

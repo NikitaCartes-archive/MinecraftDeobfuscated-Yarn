@@ -28,7 +28,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 
@@ -162,7 +162,7 @@ public class CreditsScreen extends Screen {
 
 	private void readPoem(Reader reader) throws IOException {
 		BufferedReader bufferedReader = new BufferedReader(reader);
-		AbstractRandom abstractRandom = AbstractRandom.createAtomic(8124371L);
+		Random random = Random.create(8124371L);
 
 		String string;
 		while ((string = bufferedReader.readLine()) != null) {
@@ -172,7 +172,7 @@ public class CreditsScreen extends Screen {
 			while ((i = string.indexOf(OBFUSCATION_PLACEHOLDER)) != -1) {
 				String string2 = string.substring(0, i);
 				String string3 = string.substring(i + OBFUSCATION_PLACEHOLDER.length());
-				string = string2 + Formatting.WHITE + Formatting.OBFUSCATED + "XXXXXXXX".substring(0, abstractRandom.nextInt(4) + 3) + string3;
+				string = string2 + Formatting.WHITE + Formatting.OBFUSCATED + "XXXXXXXX".substring(0, random.nextInt(4) + 3) + string3;
 			}
 
 			this.addText(string);

@@ -62,7 +62,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.event.GameEvent;
@@ -250,12 +250,12 @@ public class WolfEntity extends TameableEntity implements Angerable {
 	}
 
 	@Override
-	public void onDeath(DamageSource source) {
+	public void onDeath(DamageSource damageSource) {
 		this.furWet = false;
 		this.canShakeWaterOff = false;
 		this.lastShakeProgress = 0.0F;
 		this.shakeProgress = 0.0F;
-		super.onDeath(source);
+		super.onDeath(damageSource);
 	}
 
 	/**
@@ -534,7 +534,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 		return new Vec3d(0.0, (double)(0.6F * this.getStandingEyeHeight()), (double)(this.getWidth() * 0.4F));
 	}
 
-	public static boolean canSpawn(EntityType<WolfEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, AbstractRandom random) {
+	public static boolean canSpawn(EntityType<WolfEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		return world.getBlockState(pos.down()).isIn(BlockTags.WOLVES_SPAWNABLE_ON) && isLightLevelValidForNaturalSpawn(world, pos);
 	}
 

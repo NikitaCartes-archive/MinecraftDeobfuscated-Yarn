@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import java.util.Optional;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.util.DripstoneHelper;
 import net.minecraft.world.gen.feature.util.FeatureContext;
@@ -18,15 +18,15 @@ public class SmallDripstoneFeature extends Feature<SmallDripstoneFeatureConfig> 
 	public boolean generate(FeatureContext<SmallDripstoneFeatureConfig> context) {
 		WorldAccess worldAccess = context.getWorld();
 		BlockPos blockPos = context.getOrigin();
-		AbstractRandom abstractRandom = context.getRandom();
+		Random random = context.getRandom();
 		SmallDripstoneFeatureConfig smallDripstoneFeatureConfig = context.getConfig();
-		Optional<Direction> optional = getDirection(worldAccess, blockPos, abstractRandom);
+		Optional<Direction> optional = getDirection(worldAccess, blockPos, random);
 		if (optional.isEmpty()) {
 			return false;
 		} else {
 			BlockPos blockPos2 = blockPos.offset(((Direction)optional.get()).getOpposite());
-			generateDripstoneBlocks(worldAccess, abstractRandom, blockPos2, smallDripstoneFeatureConfig);
-			int i = abstractRandom.nextFloat() < smallDripstoneFeatureConfig.chanceOfTallerDripstone
+			generateDripstoneBlocks(worldAccess, random, blockPos2, smallDripstoneFeatureConfig);
+			int i = random.nextFloat() < smallDripstoneFeatureConfig.chanceOfTallerDripstone
 					&& DripstoneHelper.canGenerate(worldAccess.getBlockState(blockPos.offset((Direction)optional.get())))
 				? 2
 				: 1;
@@ -35,7 +35,7 @@ public class SmallDripstoneFeature extends Feature<SmallDripstoneFeatureConfig> 
 		}
 	}
 
-	private static Optional<Direction> getDirection(WorldAccess world, BlockPos pos, AbstractRandom random) {
+	private static Optional<Direction> getDirection(WorldAccess world, BlockPos pos, Random random) {
 		boolean bl = DripstoneHelper.canReplace(world.getBlockState(pos.up()));
 		boolean bl2 = DripstoneHelper.canReplace(world.getBlockState(pos.down()));
 		if (bl && bl2) {
@@ -47,7 +47,7 @@ public class SmallDripstoneFeature extends Feature<SmallDripstoneFeatureConfig> 
 		}
 	}
 
-	private static void generateDripstoneBlocks(WorldAccess world, AbstractRandom random, BlockPos pos, SmallDripstoneFeatureConfig config) {
+	private static void generateDripstoneBlocks(WorldAccess world, Random random, BlockPos pos, SmallDripstoneFeatureConfig config) {
 		DripstoneHelper.generateDripstoneBlock(world, pos);
 
 		for (Direction direction : Direction.Type.HORIZONTAL) {

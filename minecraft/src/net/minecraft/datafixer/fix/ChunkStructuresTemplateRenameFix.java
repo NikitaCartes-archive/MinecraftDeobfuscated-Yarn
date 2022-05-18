@@ -121,8 +121,8 @@ public class ChunkStructuresTemplateRenameFix extends DataFix {
 		)
 		.build();
 
-	public ChunkStructuresTemplateRenameFix(Schema outputSchema, boolean changesType) {
-		super(outputSchema, changesType);
+	public ChunkStructuresTemplateRenameFix(Schema schema, boolean bl) {
+		super(schema, bl);
 	}
 
 	@Override

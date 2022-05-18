@@ -6,7 +6,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
@@ -17,8 +17,8 @@ public class CaveCarver extends Carver<CaveCarverConfig> {
 		super(codec);
 	}
 
-	public boolean shouldCarve(CaveCarverConfig caveCarverConfig, AbstractRandom abstractRandom) {
-		return abstractRandom.nextFloat() <= caveCarverConfig.probability;
+	public boolean shouldCarve(CaveCarverConfig caveCarverConfig, Random random) {
+		return random.nextFloat() <= caveCarverConfig.probability;
 	}
 
 	public boolean carve(
@@ -26,44 +26,44 @@ public class CaveCarver extends Carver<CaveCarverConfig> {
 		CaveCarverConfig caveCarverConfig,
 		Chunk chunk,
 		Function<BlockPos, RegistryEntry<Biome>> function,
-		AbstractRandom abstractRandom,
+		Random random,
 		AquiferSampler aquiferSampler,
 		ChunkPos chunkPos,
 		CarvingMask carvingMask
 	) {
 		int i = ChunkSectionPos.getBlockCoord(this.getBranchFactor() * 2 - 1);
-		int j = abstractRandom.nextInt(abstractRandom.nextInt(abstractRandom.nextInt(this.getMaxCaveCount()) + 1) + 1);
+		int j = random.nextInt(random.nextInt(random.nextInt(this.getMaxCaveCount()) + 1) + 1);
 
 		for (int k = 0; k < j; k++) {
-			double d = (double)chunkPos.getOffsetX(abstractRandom.nextInt(16));
-			double e = (double)caveCarverConfig.y.get(abstractRandom, carverContext);
-			double f = (double)chunkPos.getOffsetZ(abstractRandom.nextInt(16));
-			double g = (double)caveCarverConfig.horizontalRadiusMultiplier.get(abstractRandom);
-			double h = (double)caveCarverConfig.verticalRadiusMultiplier.get(abstractRandom);
-			double l = (double)caveCarverConfig.floorLevel.get(abstractRandom);
+			double d = (double)chunkPos.getOffsetX(random.nextInt(16));
+			double e = (double)caveCarverConfig.y.get(random, carverContext);
+			double f = (double)chunkPos.getOffsetZ(random.nextInt(16));
+			double g = (double)caveCarverConfig.horizontalRadiusMultiplier.get(random);
+			double h = (double)caveCarverConfig.verticalRadiusMultiplier.get(random);
+			double l = (double)caveCarverConfig.floorLevel.get(random);
 			Carver.SkipPredicate skipPredicate = (context, scaledRelativeX, scaledRelativeY, scaledRelativeZ, y) -> isPositionExcluded(
 					scaledRelativeX, scaledRelativeY, scaledRelativeZ, l
 				);
 			int m = 1;
-			if (abstractRandom.nextInt(4) == 0) {
-				double n = (double)caveCarverConfig.yScale.get(abstractRandom);
-				float o = 1.0F + abstractRandom.nextFloat() * 6.0F;
+			if (random.nextInt(4) == 0) {
+				double n = (double)caveCarverConfig.yScale.get(random);
+				float o = 1.0F + random.nextFloat() * 6.0F;
 				this.carveCave(carverContext, caveCarverConfig, chunk, function, aquiferSampler, d, e, f, o, n, carvingMask, skipPredicate);
-				m += abstractRandom.nextInt(4);
+				m += random.nextInt(4);
 			}
 
 			for (int p = 0; p < m; p++) {
-				float q = abstractRandom.nextFloat() * (float) (Math.PI * 2);
-				float o = (abstractRandom.nextFloat() - 0.5F) / 4.0F;
-				float r = this.getTunnelSystemWidth(abstractRandom);
-				int s = i - abstractRandom.nextInt(i / 4);
+				float q = random.nextFloat() * (float) (Math.PI * 2);
+				float o = (random.nextFloat() - 0.5F) / 4.0F;
+				float r = this.getTunnelSystemWidth(random);
+				int s = i - random.nextInt(i / 4);
 				int t = 0;
 				this.carveTunnels(
 					carverContext,
 					caveCarverConfig,
 					chunk,
 					function,
-					abstractRandom.nextLong(),
+					random.nextLong(),
 					aquiferSampler,
 					d,
 					e,
@@ -89,7 +89,7 @@ public class CaveCarver extends Carver<CaveCarverConfig> {
 		return 15;
 	}
 
-	protected float getTunnelSystemWidth(AbstractRandom random) {
+	protected float getTunnelSystemWidth(Random random) {
 		float f = random.nextFloat() * 2.0F + random.nextFloat();
 		if (random.nextInt(10) == 0) {
 			f *= random.nextFloat() * random.nextFloat() * 3.0F + 1.0F;
@@ -142,9 +142,9 @@ public class CaveCarver extends Carver<CaveCarverConfig> {
 		CarvingMask mask,
 		Carver.SkipPredicate skipPredicate
 	) {
-		AbstractRandom abstractRandom = AbstractRandom.createAtomic(seed);
-		int i = abstractRandom.nextInt(branchCount / 2) + branchCount / 4;
-		boolean bl = abstractRandom.nextInt(6) == 0;
+		Random random = Random.create(seed);
+		int i = random.nextInt(branchCount / 2) + branchCount / 4;
+		boolean bl = random.nextInt(6) == 0;
 		float f = 0.0F;
 		float g = 0.0F;
 
@@ -160,22 +160,22 @@ public class CaveCarver extends Carver<CaveCarverConfig> {
 			yaw += f * 0.1F;
 			g *= 0.9F;
 			f *= 0.75F;
-			g += (abstractRandom.nextFloat() - abstractRandom.nextFloat()) * abstractRandom.nextFloat() * 2.0F;
-			f += (abstractRandom.nextFloat() - abstractRandom.nextFloat()) * abstractRandom.nextFloat() * 4.0F;
+			g += (random.nextFloat() - random.nextFloat()) * random.nextFloat() * 2.0F;
+			f += (random.nextFloat() - random.nextFloat()) * random.nextFloat() * 4.0F;
 			if (j == i && width > 1.0F) {
 				this.carveTunnels(
 					context,
 					config,
 					chunk,
 					posToBiome,
-					abstractRandom.nextLong(),
+					random.nextLong(),
 					aquiferSampler,
 					x,
 					y,
 					z,
 					horizontalScale,
 					verticalScale,
-					abstractRandom.nextFloat() * 0.5F + 0.5F,
+					random.nextFloat() * 0.5F + 0.5F,
 					yaw - (float) (Math.PI / 2),
 					pitch / 3.0F,
 					j,
@@ -189,14 +189,14 @@ public class CaveCarver extends Carver<CaveCarverConfig> {
 					config,
 					chunk,
 					posToBiome,
-					abstractRandom.nextLong(),
+					random.nextLong(),
 					aquiferSampler,
 					x,
 					y,
 					z,
 					horizontalScale,
 					verticalScale,
-					abstractRandom.nextFloat() * 0.5F + 0.5F,
+					random.nextFloat() * 0.5F + 0.5F,
 					yaw + (float) (Math.PI / 2),
 					pitch / 3.0F,
 					j,
@@ -208,7 +208,7 @@ public class CaveCarver extends Carver<CaveCarverConfig> {
 				return;
 			}
 
-			if (abstractRandom.nextInt(4) != 0) {
+			if (random.nextInt(4) != 0) {
 				if (!canCarveBranch(chunk.getPos(), x, z, j, branchCount, width)) {
 					return;
 				}
