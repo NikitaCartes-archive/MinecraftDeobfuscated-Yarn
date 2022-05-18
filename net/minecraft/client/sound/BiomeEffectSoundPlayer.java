@@ -19,7 +19,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -34,7 +34,7 @@ implements ClientPlayerTickable {
     private final ClientPlayerEntity player;
     private final SoundManager soundManager;
     private final BiomeAccess biomeAccess;
-    private final AbstractRandom random;
+    private final Random random;
     private final Object2ObjectArrayMap<Biome, MusicLoop> soundLoops = new Object2ObjectArrayMap();
     private Optional<BiomeMoodSound> moodSound = Optional.empty();
     private Optional<BiomeAdditionsSound> additionsSound = Optional.empty();

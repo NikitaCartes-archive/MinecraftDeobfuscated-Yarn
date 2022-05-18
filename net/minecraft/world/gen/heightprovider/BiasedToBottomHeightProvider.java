@@ -8,7 +8,7 @@ import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.YOffset;
 import net.minecraft.world.gen.heightprovider.HeightProvider;
@@ -34,7 +34,7 @@ extends HeightProvider {
     }
 
     @Override
-    public int get(AbstractRandom random, HeightContext context) {
+    public int get(Random random, HeightContext context) {
         int i = this.minOffset.getY(context);
         int j = this.maxOffset.getY(context);
         if (j - i - this.inner + 1 <= 0) {

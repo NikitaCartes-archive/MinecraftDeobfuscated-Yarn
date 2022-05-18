@@ -19,7 +19,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
@@ -168,9 +168,9 @@ public abstract class Carver<C extends CarverConfig> {
         return state;
     }
 
-    public abstract boolean carve(CarverContext var1, C var2, Chunk var3, Function<BlockPos, RegistryEntry<Biome>> var4, AbstractRandom var5, AquiferSampler var6, ChunkPos var7, CarvingMask var8);
+    public abstract boolean carve(CarverContext var1, C var2, Chunk var3, Function<BlockPos, RegistryEntry<Biome>> var4, Random var5, AquiferSampler var6, ChunkPos var7, CarvingMask var8);
 
-    public abstract boolean shouldCarve(C var1, AbstractRandom var2);
+    public abstract boolean shouldCarve(C var1, Random var2);
 
     protected boolean canAlwaysCarveBlock(C config, BlockState state) {
         return state.isIn(((CarverConfig)config).replaceable);

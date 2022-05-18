@@ -20,7 +20,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -56,7 +56,7 @@ extends Block {
         world.createAndScheduleBlockTick(pos, this, FrogspawnBlock.getHatchTime(world.getRandom()));
     }
 
-    private static int getHatchTime(AbstractRandom random) {
+    private static int getHatchTime(Random random) {
         return random.nextBetweenExclusive(minHatchTime, maxHatchTime);
     }
 
@@ -69,7 +69,7 @@ extends Block {
     }
 
     @Override
-    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (!this.canPlaceAt(state, world, pos)) {
             this.breakWithoutDrop(world, pos);
             return;
@@ -90,7 +90,7 @@ extends Block {
         return fluidState.getFluid() == Fluids.WATER && fluidState2.getFluid() == Fluids.EMPTY;
     }
 
-    private void hatch(ServerWorld world, BlockPos pos, AbstractRandom random) {
+    private void hatch(ServerWorld world, BlockPos pos, Random random) {
         this.breakWithoutDrop(world, pos);
         world.playSound(null, pos, SoundEvents.BLOCK_FROGSPAWN_HATCH, SoundCategory.BLOCKS, 1.0f, 1.0f);
         this.spawnTadpoles(world, pos, random);
@@ -100,7 +100,7 @@ extends Block {
         world.breakBlock(pos, false);
     }
 
-    private void spawnTadpoles(ServerWorld world, BlockPos pos, AbstractRandom random) {
+    private void spawnTadpoles(ServerWorld world, BlockPos pos, Random random) {
         int i = random.nextBetweenExclusive(2, 6);
         for (int j = 1; j <= i; ++j) {
             TadpoleEntity tadpoleEntity = EntityType.TADPOLE.create(world);
@@ -113,7 +113,7 @@ extends Block {
         }
     }
 
-    private double getSpawnOffset(AbstractRandom random) {
+    private double getSpawnOffset(Random random) {
         double d = TadpoleEntity.WIDTH / 2.0f;
         return MathHelper.clamp(random.nextDouble(), d, 1.0 - d);
     }

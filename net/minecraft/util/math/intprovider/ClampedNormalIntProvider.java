@@ -12,7 +12,7 @@ import java.util.function.Function;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.intprovider.IntProviderType;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class ClampedNormalIntProvider
 extends IntProvider {
@@ -39,11 +39,11 @@ extends IntProvider {
     }
 
     @Override
-    public int get(AbstractRandom random) {
+    public int get(Random random) {
         return ClampedNormalIntProvider.next(random, this.mean, this.deviation, this.min, this.max);
     }
 
-    public static int next(AbstractRandom random, float mean, float deviation, float min, float max) {
+    public static int next(Random random, float mean, float deviation, float min, float max) {
         return (int)MathHelper.clamp(MathHelper.nextGaussian(random, mean, deviation), min, max);
     }
 

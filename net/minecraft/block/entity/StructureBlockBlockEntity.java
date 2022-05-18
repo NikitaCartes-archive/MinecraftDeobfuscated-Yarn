@@ -34,7 +34,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 
 public class StructureBlockBlockEntity
@@ -334,11 +334,11 @@ extends BlockEntity {
         return this.loadStructure(world, true);
     }
 
-    public static AbstractRandom createRandom(long seed) {
+    public static Random createRandom(long seed) {
         if (seed == 0L) {
-            return AbstractRandom.createAtomic(Util.getMeasuringTimeMs());
+            return Random.create(Util.getMeasuringTimeMs());
         }
-        return AbstractRandom.createAtomic(seed);
+        return Random.create(seed);
     }
 
     public boolean loadStructure(ServerWorld world, boolean bl) {

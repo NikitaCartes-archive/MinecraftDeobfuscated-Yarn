@@ -32,7 +32,7 @@ implements VibrationListener.Callback {
 
     public SculkSensorBlockEntity(BlockPos pos, BlockState state) {
         super(BlockEntityType.SCULK_SENSOR, pos, state);
-        this.listener = new VibrationListener(new BlockPositionSource(this.pos), ((SculkSensorBlock)state.getBlock()).getRange(), this, null, 0, 0);
+        this.listener = new VibrationListener(new BlockPositionSource(this.pos), ((SculkSensorBlock)state.getBlock()).getRange(), this, null, 0.0f, 0);
     }
 
     @Override
@@ -75,11 +75,11 @@ implements VibrationListener.Callback {
     }
 
     @Override
-    public void accept(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity, @Nullable Entity sourceEntity, int delay) {
+    public void accept(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity, @Nullable Entity sourceEntity, float distance) {
         BlockState blockState = this.getCachedState();
         if (SculkSensorBlock.isInactive(blockState)) {
             this.lastVibrationFrequency = SculkSensorBlock.FREQUENCIES.getInt(event);
-            SculkSensorBlock.setActive(entity, world, this.pos, blockState, SculkSensorBlockEntity.getPower(delay, listener.getRange()));
+            SculkSensorBlock.setActive(entity, world, this.pos, blockState, SculkSensorBlockEntity.getPower(distance, listener.getRange()));
         }
     }
 
@@ -88,9 +88,13 @@ implements VibrationListener.Callback {
         this.markDirty();
     }
 
-    public static int getPower(int distance, int range) {
+    public static int getPower(float distance, int range) {
         double d = (double)distance / (double)range;
         return Math.max(1, 15 - MathHelper.floor(d * 15.0));
+    }
+
+    public void setLastVibrationFrequency(int lastVibrationFrequency) {
+        this.lastVibrationFrequency = lastVibrationFrequency;
     }
 }
 

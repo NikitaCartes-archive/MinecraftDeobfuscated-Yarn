@@ -5,8 +5,6 @@ package net.minecraft.server.dedicated;
 
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.GameProfileRepository;
-import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.logging.LogUtils;
 import java.io.BufferedReader;
@@ -29,7 +27,6 @@ import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Items;
-import net.minecraft.network.ChatDecorator;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
@@ -52,6 +49,7 @@ import net.minecraft.server.rcon.QueryResponseHandler;
 import net.minecraft.server.rcon.RconCommandOutput;
 import net.minecraft.server.rcon.RconListener;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.ApiServices;
 import net.minecraft.util.SystemDetails;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
@@ -84,14 +82,12 @@ implements DedicatedServer {
     private DedicatedServerGui gui;
     @Nullable
     private final TextFilterer filterer;
-    private final ChatDecorator chatDecorator;
 
-    public MinecraftDedicatedServer(Thread serverThread, LevelStorage.Session session, ResourcePackManager dataPackManager, SaveLoader saveLoader, ServerPropertiesLoader propertiesLoader, DataFixer dataFixer, MinecraftSessionService sessionService, GameProfileRepository gameProfileRepo, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
-        super(serverThread, session, dataPackManager, saveLoader, Proxy.NO_PROXY, dataFixer, sessionService, gameProfileRepo, userCache, worldGenerationProgressListenerFactory);
+    public MinecraftDedicatedServer(Thread serverThread, LevelStorage.Session session, ResourcePackManager dataPackManager, SaveLoader saveLoader, ServerPropertiesLoader propertiesLoader, DataFixer dataFixer, ApiServices apiServices, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
+        super(serverThread, session, dataPackManager, saveLoader, Proxy.NO_PROXY, dataFixer, apiServices, worldGenerationProgressListenerFactory);
         this.propertiesLoader = propertiesLoader;
         this.rconCommandOutput = new RconCommandOutput(this);
         this.filterer = TextFilterer.load(propertiesLoader.getPropertiesHandler().textFilteringConfig);
-        this.chatDecorator = this.getProperties().testRainbowChat ? ChatDecorator.testRainbowChat() : ChatDecorator.NOOP;
     }
 
     @Override
@@ -165,7 +161,7 @@ implements DedicatedServer {
         }
         this.setPlayerManager(new DedicatedPlayerManager(this, this.getRegistryManager(), this.saveHandler));
         long l = Util.getMeasuringTimeNano();
-        SkullBlockEntity.setServices(this.getUserCache(), this.getSessionService(), this);
+        SkullBlockEntity.setServices(this.apiServices, this);
         UserCache.setUseRemote(this.isOnlineMode());
         LOGGER.info("Preparing level \"{}\"", (Object)this.getLevelName());
         this.loadWorld();
@@ -288,7 +284,7 @@ implements DedicatedServer {
     public void executeQueuedCommands() {
         while (!this.commandQueue.isEmpty()) {
             PendingServerCommand pendingServerCommand = this.commandQueue.remove(0);
-            this.getCommandManager().execute(pendingServerCommand.source, pendingServerCommand.command);
+            this.getCommandManager().executeWithPrefix(pendingServerCommand.source, pendingServerCommand.command);
         }
     }
 
@@ -310,11 +306,6 @@ implements DedicatedServer {
     @Override
     public boolean shouldPreviewChat() {
         return this.getProperties().previewsChat;
-    }
-
-    @Override
-    public ChatDecorator getChatDecorator() {
-        return this.chatDecorator;
     }
 
     @Override
@@ -505,7 +496,7 @@ implements DedicatedServer {
     @Override
     public String executeRconCommand(String command) {
         this.rconCommandOutput.clear();
-        this.submitAndJoin(() -> this.getCommandManager().execute(this.rconCommandOutput.createRconCommandSource(), command));
+        this.submitAndJoin(() -> this.getCommandManager().executeWithPrefix(this.rconCommandOutput.createRconCommandSource(), command));
         return this.rconCommandOutput.asString();
     }
 

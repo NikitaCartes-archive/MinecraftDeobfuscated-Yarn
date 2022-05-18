@@ -45,7 +45,7 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class FrogBrain {
     private static final float field_37469 = 2.0f;
@@ -59,7 +59,7 @@ public class FrogBrain {
     private static final float field_37477 = 1.5f;
     private static final float field_37478 = 1.25f;
 
-    protected static void coolDownLongJump(FrogEntity frog, AbstractRandom random) {
+    protected static void coolDownLongJump(FrogEntity frog, Random random) {
         frog.getBrain().remember(MemoryModuleType.LONG_JUMP_COOLING_DOWN, longJumpCooldownRange.get(random));
     }
 
@@ -93,11 +93,11 @@ public class FrogBrain {
     }
 
     private static void addLongJumpActivities(Brain<FrogEntity> brain) {
-        brain.setTaskList(Activity.LONG_JUMP, ImmutableList.of(Pair.of(0, new LeapingChargeTask(longJumpCooldownRange, SoundEvents.ENTITY_FROG_STEP)), Pair.of(1, new BiasedLongJumpTask<FrogEntity>(longJumpCooldownRange, 2, 4, 1.5f, frog -> SoundEvents.ENTITY_FROG_LONG_JUMP, BlockTags.FROG_PREFER_JUMP_TO, 0.5f, state -> state.isOf(Blocks.LILY_PAD)))), ImmutableSet.of(Pair.of(MemoryModuleType.BREED_TARGET, MemoryModuleState.VALUE_ABSENT), Pair.of(MemoryModuleType.LONG_JUMP_COOLING_DOWN, MemoryModuleState.VALUE_ABSENT), Pair.of(MemoryModuleType.IS_IN_WATER, MemoryModuleState.VALUE_ABSENT)));
+        brain.setTaskList(Activity.LONG_JUMP, ImmutableList.of(Pair.of(0, new LeapingChargeTask(longJumpCooldownRange, SoundEvents.ENTITY_FROG_STEP)), Pair.of(1, new BiasedLongJumpTask<FrogEntity>(longJumpCooldownRange, 2, 4, 1.5f, frog -> SoundEvents.ENTITY_FROG_LONG_JUMP, BlockTags.FROG_PREFER_JUMP_TO, 0.5f, state -> state.isOf(Blocks.LILY_PAD)))), ImmutableSet.of(Pair.of(MemoryModuleType.TEMPTING_PLAYER, MemoryModuleState.VALUE_ABSENT), Pair.of(MemoryModuleType.BREED_TARGET, MemoryModuleState.VALUE_ABSENT), Pair.of(MemoryModuleType.LONG_JUMP_COOLING_DOWN, MemoryModuleState.VALUE_ABSENT), Pair.of(MemoryModuleType.IS_IN_WATER, MemoryModuleState.VALUE_ABSENT)));
     }
 
     private static void addTongueActivities(Brain<FrogEntity> brain) {
-        brain.setTaskList(Activity.TONGUE, 0, ImmutableList.of(new ForgetAttackTargetTask(), new FrogEatEntityTask(SoundEvents.ENTITY_FROG_TOUNGE, SoundEvents.ENTITY_FROG_EAT)), MemoryModuleType.ATTACK_TARGET);
+        brain.setTaskList(Activity.TONGUE, 0, ImmutableList.of(new ForgetAttackTargetTask(), new FrogEatEntityTask(SoundEvents.ENTITY_FROG_TONGUE, SoundEvents.ENTITY_FROG_EAT)), MemoryModuleType.ATTACK_TARGET);
     }
 
     private static boolean isNotBreeding(FrogEntity frog) {

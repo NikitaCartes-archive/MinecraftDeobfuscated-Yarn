@@ -26,7 +26,7 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -188,15 +188,15 @@ extends SchoolingFishEntity {
             this.setVariant(entityNbt.getInt(BUCKET_VARIANT_TAG_KEY));
             return entityData;
         }
-        AbstractRandom abstractRandom = world.getRandom();
+        Random random = world.getRandom();
         if (entityData instanceof TropicalFishData) {
             TropicalFishData tropicalFishData = (TropicalFishData)entityData;
             i = tropicalFishData.shape;
             j = tropicalFishData.pattern;
             k = tropicalFishData.baseColor;
             l = tropicalFishData.patternColor;
-        } else if ((double)abstractRandom.nextFloat() < 0.9) {
-            int m = Util.getRandom(COMMON_VARIANTS, abstractRandom);
+        } else if ((double)random.nextFloat() < 0.9) {
+            int m = Util.getRandom(COMMON_VARIANTS, random);
             i = m & 0xFF;
             j = (m & 0xFF00) >> 8;
             k = (m & 0xFF0000) >> 16;
@@ -204,16 +204,16 @@ extends SchoolingFishEntity {
             entityData = new TropicalFishData(this, i, j, k, l);
         } else {
             this.commonSpawn = false;
-            i = abstractRandom.nextInt(2);
-            j = abstractRandom.nextInt(6);
-            k = abstractRandom.nextInt(15);
-            l = abstractRandom.nextInt(15);
+            i = random.nextInt(2);
+            j = random.nextInt(6);
+            k = random.nextInt(15);
+            l = random.nextInt(15);
         }
         this.setVariant(i | j << 8 | k << 16 | l << 24);
         return entityData;
     }
 
-    public static boolean canTropicalFishSpawn(EntityType<TropicalFishEntity> type, WorldAccess world, SpawnReason reason, BlockPos pos, AbstractRandom random) {
+    public static boolean canTropicalFishSpawn(EntityType<TropicalFishEntity> type, WorldAccess world, SpawnReason reason, BlockPos pos, Random random) {
         return world.getFluidState(pos.down()).isIn(FluidTags.WATER) && world.getBlockState(pos.up()).isOf(Blocks.WATER) && (world.getBiome(pos).isIn(BiomeTags.ALLOWS_TROPICAL_FISH_SPAWNS_AT_ANY_HEIGHT) || WaterCreatureEntity.canSpawn(type, world, reason, pos, random));
     }
 

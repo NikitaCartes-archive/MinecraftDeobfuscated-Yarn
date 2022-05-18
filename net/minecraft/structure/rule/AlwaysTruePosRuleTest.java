@@ -7,7 +7,7 @@ import com.mojang.serialization.Codec;
 import net.minecraft.structure.rule.PosRuleTest;
 import net.minecraft.structure.rule.PosRuleTestType;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class AlwaysTruePosRuleTest
 extends PosRuleTest {
@@ -18,7 +18,7 @@ extends PosRuleTest {
     }
 
     @Override
-    public boolean test(BlockPos blockPos, BlockPos blockPos2, BlockPos pivot, AbstractRandom random) {
+    public boolean test(BlockPos blockPos, BlockPos blockPos2, BlockPos pivot, Random random) {
         return true;
     }
 

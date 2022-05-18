@@ -14,7 +14,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.Feature;
@@ -47,9 +47,9 @@ public abstract class TrunkPlacer {
     /**
      * Generates the trunk blocks and return a list of tree nodes to place foliage around
      */
-    public abstract List<FoliagePlacer.TreeNode> generate(TestableWorld var1, BiConsumer<BlockPos, BlockState> var2, AbstractRandom var3, int var4, BlockPos var5, TreeFeatureConfig var6);
+    public abstract List<FoliagePlacer.TreeNode> generate(TestableWorld var1, BiConsumer<BlockPos, BlockState> var2, Random var3, int var4, BlockPos var5, TreeFeatureConfig var6);
 
-    public int getHeight(AbstractRandom random) {
+    public int getHeight(Random random) {
         return this.baseHeight + random.nextInt(this.firstRandomHeight + 1) + random.nextInt(this.secondRandomHeight + 1);
     }
 
@@ -57,17 +57,17 @@ public abstract class TrunkPlacer {
         return world.testBlockState(pos, state -> Feature.isSoil(state) && !state.isOf(Blocks.GRASS_BLOCK) && !state.isOf(Blocks.MYCELIUM));
     }
 
-    protected static void setToDirt(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, BlockPos pos, TreeFeatureConfig config) {
+    protected static void setToDirt(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, BlockPos pos, TreeFeatureConfig config) {
         if (config.forceDirt || !TrunkPlacer.canGenerate(world, pos)) {
             replacer.accept(pos, config.dirtProvider.getBlockState(random, pos));
         }
     }
 
-    protected boolean getAndSetState(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, BlockPos pos, TreeFeatureConfig config) {
+    protected boolean getAndSetState(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, BlockPos pos, TreeFeatureConfig config) {
         return this.getAndSetState(world, replacer, random, pos, config, Function.identity());
     }
 
-    protected boolean getAndSetState(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, BlockPos pos, TreeFeatureConfig config, Function<BlockState, BlockState> function) {
+    protected boolean getAndSetState(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, BlockPos pos, TreeFeatureConfig config, Function<BlockState, BlockState> function) {
         if (this.canReplace(world, pos)) {
             replacer.accept(pos, function.apply(config.trunkProvider.getBlockState(random, pos)));
             return true;
@@ -75,7 +75,7 @@ public abstract class TrunkPlacer {
         return false;
     }
 
-    protected void trySetState(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, BlockPos.Mutable pos, TreeFeatureConfig config) {
+    protected void trySetState(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, BlockPos.Mutable pos, TreeFeatureConfig config) {
         if (this.canReplaceOrIsLog(world, pos)) {
             this.getAndSetState(world, replacer, random, pos, config);
         }

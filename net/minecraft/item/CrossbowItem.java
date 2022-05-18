@@ -39,7 +39,7 @@ import net.minecraft.util.UseAction;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -259,12 +259,12 @@ implements Vanishable {
         CrossbowItem.postShoot(world, entity, stack);
     }
 
-    private static float[] getSoundPitches(AbstractRandom random) {
+    private static float[] getSoundPitches(Random random) {
         boolean bl = random.nextBoolean();
         return new float[]{1.0f, CrossbowItem.getSoundPitch(bl, random), CrossbowItem.getSoundPitch(!bl, random)};
     }
 
-    private static float getSoundPitch(boolean flag, AbstractRandom random) {
+    private static float getSoundPitch(boolean flag, Random random) {
         float f = flag ? 0.63f : 0.43f;
         return 1.0f / (random.nextFloat() * 0.5f + 1.8f) + f;
     }

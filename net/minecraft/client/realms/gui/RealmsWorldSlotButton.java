@@ -10,12 +10,12 @@ import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.dto.RealmsWorldOptions;
 import net.minecraft.client.realms.util.RealmsTextureManager;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -104,7 +104,7 @@ extends ButtonWidget {
         }
         Text text2 = minigame ? (empty ? ScreenTexts.EMPTY : Text.literal(" ").append(text).append(" ").append(server.minigameName)) : Text.literal(" ").append(text);
         Text text3 = action == Action.JOIN ? ACTIVE_TOOLTIP : (minigame ? MINIGAME_TOOLTIP : TOOLTIP);
-        MutableText text4 = text3.shallowCopy().append(text2);
+        MutableText text4 = text3.copy().append(text2);
         return Pair.of(text3, text4);
     }
 

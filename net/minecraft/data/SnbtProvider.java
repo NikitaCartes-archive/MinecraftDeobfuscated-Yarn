@@ -124,7 +124,7 @@ implements DataProvider {
         if (data.snbtContent != null) {
             path = DEBUG_OUTPUT_DIRECTORY.resolve(data.name + ".snbt");
             try {
-                NbtProvider.writeTo(path, data.snbtContent);
+                NbtProvider.writeTo(DataWriter.field_39439, path, data.snbtContent);
             } catch (IOException iOException) {
                 LOGGER.error("Couldn't write structure SNBT {} at {}", data.name, path, iOException);
             }

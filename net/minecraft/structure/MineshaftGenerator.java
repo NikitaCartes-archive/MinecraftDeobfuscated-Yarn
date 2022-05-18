@@ -33,7 +33,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
@@ -55,7 +55,7 @@ public class MineshaftGenerator {
     private static final int field_31556 = 8;
     public static final int field_34729 = 50;
 
-    private static MineshaftPart pickPiece(StructurePiecesHolder holder, AbstractRandom random, int x, int y, int z, @Nullable Direction orientation, int chainLength, MineshaftStructure.Type type) {
+    private static MineshaftPart pickPiece(StructurePiecesHolder holder, Random random, int x, int y, int z, @Nullable Direction orientation, int chainLength, MineshaftStructure.Type type) {
         int i = random.nextInt(100);
         if (i >= 80) {
             BlockBox blockBox = MineshaftCrossing.getBoundingBox(holder, random, x, y, z, orientation);
@@ -76,7 +76,7 @@ public class MineshaftGenerator {
         return null;
     }
 
-    static MineshaftPart pieceGenerator(StructurePiece start, StructurePiecesHolder holder, AbstractRandom random, int x, int y, int z, Direction orientation, int chainLength) {
+    static MineshaftPart pieceGenerator(StructurePiece start, StructurePiecesHolder holder, Random random, int x, int y, int z, Direction orientation, int chainLength) {
         if (chainLength > 8) {
             return null;
         }
@@ -117,7 +117,7 @@ public class MineshaftGenerator {
         }
 
         @Nullable
-        public static BlockBox getBoundingBox(StructurePiecesHolder holder, AbstractRandom random, int x, int y, int z, Direction orientation) {
+        public static BlockBox getBoundingBox(StructurePiecesHolder holder, Random random, int x, int y, int z, Direction orientation) {
             int i = random.nextInt(4) == 0 ? 6 : 2;
             BlockBox blockBox = switch (orientation) {
                 default -> new BlockBox(-1, 0, -4, 3, i, 0);
@@ -133,7 +133,7 @@ public class MineshaftGenerator {
         }
 
         @Override
-        public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, AbstractRandom random) {
+        public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, Random random) {
             int i = this.getChainLength();
             switch (this.direction) {
                 default: {
@@ -177,7 +177,7 @@ public class MineshaftGenerator {
         }
 
         @Override
-        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, AbstractRandom random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos) {
             if (this.cannotGenerate(world, chunkBox)) {
                 return;
             }
@@ -223,7 +223,7 @@ public class MineshaftGenerator {
         }
 
         @Nullable
-        public static BlockBox getBoundingBox(StructurePiecesHolder holder, AbstractRandom random, int x, int y, int z, Direction orientation) {
+        public static BlockBox getBoundingBox(StructurePiecesHolder holder, Random random, int x, int y, int z, Direction orientation) {
             BlockBox blockBox = switch (orientation) {
                 default -> new BlockBox(0, -5, -8, 2, 2, 0);
                 case Direction.SOUTH -> new BlockBox(0, -5, 0, 2, 2, 8);
@@ -238,7 +238,7 @@ public class MineshaftGenerator {
         }
 
         @Override
-        public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, AbstractRandom random) {
+        public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, Random random) {
             int i = this.getChainLength();
             Direction direction = this.getFacing();
             if (direction != null) {
@@ -263,7 +263,7 @@ public class MineshaftGenerator {
         }
 
         @Override
-        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, AbstractRandom random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos) {
             if (this.cannotGenerate(world, chunkBox)) {
                 return;
             }
@@ -299,7 +299,7 @@ public class MineshaftGenerator {
             nbt.putInt("Num", this.length);
         }
 
-        public MineshaftCorridor(int chainLength, AbstractRandom random, BlockBox boundingBox, Direction orientation, MineshaftStructure.Type type) {
+        public MineshaftCorridor(int chainLength, Random random, BlockBox boundingBox, Direction orientation, MineshaftStructure.Type type) {
             super(StructurePieceType.MINESHAFT_CORRIDOR, chainLength, type, boundingBox);
             this.setOrientation(orientation);
             this.hasRails = random.nextInt(3) == 0;
@@ -311,7 +311,7 @@ public class MineshaftGenerator {
          * Enabled aggressive block sorting
          */
         @Nullable
-        public static BlockBox getBoundingBox(StructurePiecesHolder structurePiecesHolder, AbstractRandom random, int x, int y, int z, Direction orientation) {
+        public static BlockBox getBoundingBox(StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation) {
             int i = random.nextInt(3) + 2;
             while (i > 0) {
                 int j = i * 5;
@@ -331,7 +331,7 @@ public class MineshaftGenerator {
         }
 
         @Override
-        public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, AbstractRandom random) {
+        public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, Random random) {
             block24: {
                 int i = this.getChainLength();
                 int j = random.nextInt(4);
@@ -415,7 +415,7 @@ public class MineshaftGenerator {
         }
 
         @Override
-        protected boolean addChest(StructureWorldAccess world, BlockBox boundingBox, AbstractRandom random, int x, int y, int z, Identifier lootTableId) {
+        protected boolean addChest(StructureWorldAccess world, BlockBox boundingBox, Random random, int x, int y, int z, Identifier lootTableId) {
             BlockPos.Mutable blockPos = this.offsetPos(x, y, z);
             if (boundingBox.contains(blockPos) && world.getBlockState(blockPos).isAir() && !world.getBlockState(((BlockPos)blockPos).down()).isAir()) {
                 BlockState blockState = (BlockState)Blocks.RAIL.getDefaultState().with(RailBlock.SHAPE, random.nextBoolean() ? RailShape.NORTH_SOUTH : RailShape.EAST_WEST);
@@ -429,7 +429,7 @@ public class MineshaftGenerator {
         }
 
         @Override
-        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, AbstractRandom random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos) {
             int p;
             int o;
             int n;
@@ -578,7 +578,7 @@ public class MineshaftGenerator {
             return Block.sideCoversSmallSquare(world, pos, Direction.DOWN) && !(state.getBlock() instanceof FallingBlock);
         }
 
-        private void generateSupports(StructureWorldAccess world, BlockBox boundingBox, int minX, int minY, int z, int maxY, int maxX, AbstractRandom random) {
+        private void generateSupports(StructureWorldAccess world, BlockBox boundingBox, int minX, int minY, int z, int maxY, int maxX, Random random) {
             if (!this.isSolidCeiling(world, boundingBox, minX, maxX, maxY, z)) {
                 return;
             }
@@ -596,7 +596,7 @@ public class MineshaftGenerator {
             }
         }
 
-        private void addCobwebsUnderground(StructureWorldAccess world, BlockBox box, AbstractRandom random, float threshold, int x, int y, int z) {
+        private void addCobwebsUnderground(StructureWorldAccess world, BlockBox box, Random random, float threshold, int x, int y, int z) {
             if (this.isUnderSeaLevel(world, x, y, z, box) && random.nextFloat() < threshold && this.method_36422(world, box, x, y, z, 2)) {
                 this.addBlock(world, Blocks.COBWEB.getDefaultState(), x, y, z, box);
             }
@@ -711,7 +711,7 @@ public class MineshaftGenerator {
     extends MineshaftPart {
         private final List<BlockBox> entrances = Lists.newLinkedList();
 
-        public MineshaftRoom(int chainLength, AbstractRandom random, int x, int z, MineshaftStructure.Type type) {
+        public MineshaftRoom(int chainLength, Random random, int x, int z, MineshaftStructure.Type type) {
             super(StructurePieceType.MINESHAFT_ROOM, chainLength, type, new BlockBox(x, 50, z, x + 7 + random.nextInt(6), 54 + random.nextInt(6), z + 7 + random.nextInt(6)));
             this.mineshaftType = type;
         }
@@ -722,7 +722,7 @@ public class MineshaftGenerator {
         }
 
         @Override
-        public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, AbstractRandom random) {
+        public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, Random random) {
             BlockBox blockBox;
             MineshaftPart mineshaftPart;
             int k;
@@ -758,7 +758,7 @@ public class MineshaftGenerator {
         }
 
         @Override
-        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, AbstractRandom random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos) {
             if (this.cannotGenerate(world, chunkBox)) {
                 return;
             }

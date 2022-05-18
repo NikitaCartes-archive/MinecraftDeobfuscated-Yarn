@@ -32,8 +32,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.math.random.ChunkRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
@@ -112,7 +112,7 @@ public class StructurePoolBasedGenerator {
         return optional;
     }
 
-    private static void generate(NoiseConfig noiseConfig, int maxSize, boolean modifyBoundingBox, ChunkGenerator chunkGenerator, StructureManager structureManager, HeightLimitView heightLimitView, AbstractRandom random, Registry<StructurePool> structurePoolRegistry, PoolStructurePiece firstPiece, List<PoolStructurePiece> pieces, VoxelShape pieceShape) {
+    private static void generate(NoiseConfig noiseConfig, int maxSize, boolean modifyBoundingBox, ChunkGenerator chunkGenerator, StructureManager structureManager, HeightLimitView heightLimitView, Random random, Registry<StructurePool> structurePoolRegistry, PoolStructurePiece firstPiece, List<PoolStructurePiece> pieces, VoxelShape pieceShape) {
         StructurePoolGenerator structurePoolGenerator = new StructurePoolGenerator(structurePoolRegistry, maxSize, chunkGenerator, structureManager, pieces, random);
         structurePoolGenerator.structurePieces.addLast(new ShapedPoolStructurePiece(firstPiece, new MutableObject<VoxelShape>(pieceShape), 0));
         while (!structurePoolGenerator.structurePieces.isEmpty()) {
@@ -125,7 +125,7 @@ public class StructurePoolBasedGenerator {
         ChunkGenerator chunkGenerator = world.getChunkManager().getChunkGenerator();
         StructureManager structureManager = world.getStructureManager();
         StructureAccessor structureAccessor = world.getStructureAccessor();
-        AbstractRandom abstractRandom = world.getRandom();
+        Random random = world.getRandom();
         StructureType.Context context = new StructureType.Context(world.getRegistryManager(), chunkGenerator, chunkGenerator.getBiomeSource(), world.getChunkManager().getNoiseConfig(), structureManager, world.getSeed(), new ChunkPos(pos), world, registryEntry -> true);
         Optional<StructureType.StructurePosition> optional = StructurePoolBasedGenerator.generate(context, structurePool, Optional.of(id), i, pos, false, Optional.empty(), 128);
         if (optional.isPresent()) {
@@ -133,7 +133,7 @@ public class StructurePoolBasedGenerator {
             for (StructurePiece structurePiece : structurePiecesCollector.toList().pieces()) {
                 if (!(structurePiece instanceof PoolStructurePiece)) continue;
                 PoolStructurePiece poolStructurePiece = (PoolStructurePiece)structurePiece;
-                poolStructurePiece.generate((StructureWorldAccess)world, structureAccessor, chunkGenerator, abstractRandom, BlockBox.infinite(), pos, keepJigsaws);
+                poolStructurePiece.generate((StructureWorldAccess)world, structureAccessor, chunkGenerator, random, BlockBox.infinite(), pos, keepJigsaws);
             }
             return true;
         }
@@ -146,10 +146,10 @@ public class StructurePoolBasedGenerator {
         private final ChunkGenerator chunkGenerator;
         private final StructureManager structureManager;
         private final List<? super PoolStructurePiece> children;
-        private final AbstractRandom random;
+        private final Random random;
         final Deque<ShapedPoolStructurePiece> structurePieces = Queues.newArrayDeque();
 
-        StructurePoolGenerator(Registry<StructurePool> registry, int maxSize, ChunkGenerator chunkGenerator, StructureManager structureManager, List<? super PoolStructurePiece> children, AbstractRandom random) {
+        StructurePoolGenerator(Registry<StructurePool> registry, int maxSize, ChunkGenerator chunkGenerator, StructureManager structureManager, List<? super PoolStructurePiece> children, Random random) {
             this.registry = registry;
             this.maxSize = maxSize;
             this.chunkGenerator = chunkGenerator;

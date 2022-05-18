@@ -9,7 +9,7 @@ import net.minecraft.client.sound.MovingSoundInstance;
 import net.minecraft.entity.Entity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 @Environment(value=EnvType.CLIENT)
 public class EntityTrackingSoundInstance
@@ -17,7 +17,7 @@ extends MovingSoundInstance {
     private final Entity entity;
 
     public EntityTrackingSoundInstance(SoundEvent sound, SoundCategory category, float volume, float pitch, Entity entity, long seed) {
-        super(sound, category, AbstractRandom.createAtomic(seed));
+        super(sound, category, Random.create(seed));
         this.volume = volume;
         this.pitch = pitch;
         this.entity = entity;

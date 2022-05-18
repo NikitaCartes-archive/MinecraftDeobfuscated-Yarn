@@ -7,21 +7,32 @@ import com.google.common.collect.Lists;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.logging.LogUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Executor;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
 import net.minecraft.command.argument.TextConvertibleArgumentType;
+import net.minecraft.network.ChatDecorator;
+import net.minecraft.network.encryption.ChatMessageSignature;
+import net.minecraft.network.encryption.CommandArgumentSigner;
 import net.minecraft.network.encryption.SignedChatMessage;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.filter.FilteredMessage;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class MessageArgumentType
 implements TextConvertibleArgumentType<MessageFormat> {
     private static final Collection<String> EXAMPLES = Arrays.asList("Hello world!", "foo", "@e", "Hello @p :)");
+    static final Logger LOGGER = LogUtils.getLogger();
 
     public static MessageArgumentType message() {
         return new MessageArgumentType();
@@ -29,17 +40,16 @@ implements TextConvertibleArgumentType<MessageFormat> {
 
     public static Text getMessage(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
         MessageFormat messageFormat = context.getArgument(name, MessageFormat.class);
-        return MessageArgumentType.format(context.getSource(), messageFormat);
+        return messageFormat.format(context.getSource());
     }
 
-    public static SignedChatMessage getSignedMessage(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
+    public static SignedMessage getSignedMessage(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
         MessageFormat messageFormat = context.getArgument(name, MessageFormat.class);
-        MutableText text = Text.literal(messageFormat.getContents());
-        return context.getSource().getSigner().signArgument(context, name, text);
-    }
-
-    private static Text format(ServerCommandSource source, MessageFormat format) throws CommandSyntaxException {
-        return format.format(source, source.hasPermissionLevel(2));
+        CommandArgumentSigner commandArgumentSigner = context.getSource().getSigner();
+        ChatMessageSignature chatMessageSignature = commandArgumentSigner.getArgumentSignature(name);
+        boolean bl = commandArgumentSigner.isPreviewSigned(name);
+        Text text = messageFormat.format(context.getSource());
+        return new SignedMessage(text, chatMessageSignature, bl);
     }
 
     @Override
@@ -55,6 +65,23 @@ implements TextConvertibleArgumentType<MessageFormat> {
     @Override
     public Text toText(MessageFormat messageFormat) {
         return Text.literal(messageFormat.getContents());
+    }
+
+    @Override
+    public CompletableFuture<Text> decorate(ServerCommandSource serverCommandSource, MessageFormat messageFormat) throws CommandSyntaxException {
+        return messageFormat.decorate(serverCommandSource);
+    }
+
+    @Override
+    public Class<MessageFormat> getFormatClass() {
+        return MessageFormat.class;
+    }
+
+    static void handleResolvingFailure(ServerCommandSource source, CompletableFuture<?> future) {
+        future.exceptionally(throwable -> {
+            LOGGER.error("Encountered unexpected exception while resolving chat message argument from '{}'", (Object)source.getDisplayName().getString(), throwable);
+            return null;
+        });
     }
 
     @Override
@@ -77,6 +104,17 @@ implements TextConvertibleArgumentType<MessageFormat> {
 
         public MessageSelector[] getSelectors() {
             return this.selectors;
+        }
+
+        CompletableFuture<Text> decorate(ServerCommandSource source) throws CommandSyntaxException {
+            Text text = this.format(source);
+            CompletableFuture<Text> completableFuture = source.getServer().getChatDecorator().decorate(source.getPlayer(), text);
+            MessageArgumentType.handleResolvingFailure(source, completableFuture);
+            return completableFuture;
+        }
+
+        Text format(ServerCommandSource source) throws CommandSyntaxException {
+            return this.format(source, source.hasPermissionLevel(2));
         }
 
         public Text format(ServerCommandSource source, boolean canUseSelectors) throws CommandSyntaxException {
@@ -129,6 +167,32 @@ implements TextConvertibleArgumentType<MessageFormat> {
                 reader.skip();
             }
             return new MessageFormat(string, list.toArray(new MessageSelector[0]));
+        }
+    }
+
+    public record SignedMessage(Text plain, ChatMessageSignature signature, boolean signedPreview) {
+        public CompletableFuture<FilteredMessage<SignedChatMessage>> decorate(ServerCommandSource source) {
+            CompletionStage completableFuture = ((CompletableFuture)this.filter(source, this.plain).thenComposeAsync(filtered -> {
+                ChatDecorator chatDecorator = source.getServer().getChatDecorator();
+                return chatDecorator.decorateChat(source.getPlayer(), (FilteredMessage<Text>)filtered, this.signature, this.signedPreview);
+            }, (Executor)source.getServer())).thenApply(decorated -> this.logInvalidSignatureWarning(source, (FilteredMessage<SignedChatMessage>)decorated));
+            MessageArgumentType.handleResolvingFailure(source, completableFuture);
+            return completableFuture;
+        }
+
+        private FilteredMessage<SignedChatMessage> logInvalidSignatureWarning(ServerCommandSource source, FilteredMessage<SignedChatMessage> decorated) {
+            if (!decorated.raw().verify(source)) {
+                LOGGER.warn("{} sent message with invalid signature: '{}'", (Object)source.getDisplayName().getString(), (Object)decorated.raw().signedContent().getString());
+            }
+            return decorated;
+        }
+
+        private CompletableFuture<FilteredMessage<Text>> filter(ServerCommandSource source, Text message) {
+            ServerPlayerEntity serverPlayerEntity = source.getPlayer();
+            if (serverPlayerEntity != null) {
+                return serverPlayerEntity.getTextStream().filterText(message);
+            }
+            return CompletableFuture.completedFuture(FilteredMessage.permitted(message));
         }
     }
 

@@ -24,7 +24,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
@@ -90,7 +90,6 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
     public final String textFilteringConfig = this.getString("text-filtering-config", "");
     public Optional<MinecraftServer.ServerResourcePackProperties> serverResourcePackProperties;
     public final boolean previewsChat = this.parseBoolean("previews-chat", false);
-    public final boolean testRainbowChat = this.parseBoolean("test-rainbow-chat", false);
     public final AbstractPropertiesHandler.PropertyAccessor<Integer> playerIdleTimeout = this.intAccessor("player-idle-timeout", 0);
     public final AbstractPropertiesHandler.PropertyAccessor<Boolean> whiteList = this.booleanAccessor("white-list", false);
     public final boolean enforceSecureProfile = this.parseBoolean("enforce-secure-profile", false);
@@ -167,7 +166,7 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
         private static final Map<String, RegistryKey<WorldPreset>> LEVEL_TYPE_TO_PRESET_KEY = Map.of("default", WorldPresets.DEFAULT, "largebiomes", WorldPresets.LARGE_BIOMES);
 
         public GeneratorOptions createGeneratorOptions(DynamicRegistryManager dynamicRegistryManager) {
-            long l = GeneratorOptions.parseSeed(this.levelSeed()).orElse(AbstractRandom.createAtomic().nextLong());
+            long l = GeneratorOptions.parseSeed(this.levelSeed()).orElse(Random.create().nextLong());
             Registry<WorldPreset> registry = dynamicRegistryManager.get(Registry.WORLD_PRESET_KEY);
             RegistryEntry<WorldPreset> registryEntry = registry.getEntry(WorldPresets.DEFAULT).or(() -> registry.streamEntries().findAny()).orElseThrow(() -> new IllegalStateException("Invalid datapack contents: can't find default preset"));
             RegistryEntry registryEntry2 = Optional.ofNullable(Identifier.tryParse(this.levelType)).map(levelTypeId -> RegistryKey.of(Registry.WORLD_PRESET_KEY, levelTypeId)).or(() -> Optional.ofNullable(LEVEL_TYPE_TO_PRESET_KEY.get(this.levelType))).flatMap(registry::getEntry).orElseGet(() -> {

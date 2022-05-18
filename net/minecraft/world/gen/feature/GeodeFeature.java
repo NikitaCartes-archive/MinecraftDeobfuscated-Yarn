@@ -22,9 +22,9 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
-import net.minecraft.util.math.random.AbstractRandom;
-import net.minecraft.util.math.random.AtomicSimpleRandom;
+import net.minecraft.util.math.random.CheckedRandom;
 import net.minecraft.util.math.random.ChunkRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.GeodeCrackConfig;
@@ -50,14 +50,14 @@ extends Feature<GeodeFeatureConfig> {
         int o;
         int n;
         GeodeFeatureConfig geodeFeatureConfig = context.getConfig();
-        AbstractRandom abstractRandom = context.getRandom();
+        Random random = context.getRandom();
         BlockPos blockPos = context.getOrigin();
         StructureWorldAccess structureWorldAccess = context.getWorld();
         int i = geodeFeatureConfig.minGenOffset;
         int j = geodeFeatureConfig.maxGenOffset;
         LinkedList<Pair<BlockPos, Integer>> list = Lists.newLinkedList();
-        int k = geodeFeatureConfig.distributionPoints.get(abstractRandom);
-        ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(structureWorldAccess.getSeed()));
+        int k = geodeFeatureConfig.distributionPoints.get(random);
+        ChunkRandom chunkRandom = new ChunkRandom(new CheckedRandom(structureWorldAccess.getSeed()));
         DoublePerlinNoiseSampler doublePerlinNoiseSampler = DoublePerlinNoiseSampler.create(chunkRandom, -4, 1.0);
         LinkedList<BlockPos> list2 = Lists.newLinkedList();
         double d = (double)k / (double)geodeFeatureConfig.outerWallDistance.getMax();
@@ -68,22 +68,22 @@ extends Feature<GeodeFeatureConfig> {
         double f = 1.0 / Math.sqrt(geodeLayerThicknessConfig.innerLayer + d);
         double g = 1.0 / Math.sqrt(geodeLayerThicknessConfig.middleLayer + d);
         double h = 1.0 / Math.sqrt(geodeLayerThicknessConfig.outerLayer + d);
-        double l = 1.0 / Math.sqrt(geodeCrackConfig.baseCrackSize + abstractRandom.nextDouble() / 2.0 + (k > 3 ? d : 0.0));
-        boolean bl = (double)abstractRandom.nextFloat() < geodeCrackConfig.generateCrackChance;
+        double l = 1.0 / Math.sqrt(geodeCrackConfig.baseCrackSize + random.nextDouble() / 2.0 + (k > 3 ? d : 0.0));
+        boolean bl = (double)random.nextFloat() < geodeCrackConfig.generateCrackChance;
         int m = 0;
         for (n = 0; n < k; ++n) {
             int q;
             int p;
-            o = geodeFeatureConfig.outerWallDistance.get(abstractRandom);
-            BlockPos blockPos2 = blockPos.add(o, p = geodeFeatureConfig.outerWallDistance.get(abstractRandom), q = geodeFeatureConfig.outerWallDistance.get(abstractRandom));
+            o = geodeFeatureConfig.outerWallDistance.get(random);
+            BlockPos blockPos2 = blockPos.add(o, p = geodeFeatureConfig.outerWallDistance.get(random), q = geodeFeatureConfig.outerWallDistance.get(random));
             blockState = structureWorldAccess.getBlockState(blockPos2);
             if ((blockState.isAir() || blockState.isIn(BlockTags.GEODE_INVALID_BLOCKS)) && ++m > geodeFeatureConfig.invalidBlocksThreshold) {
                 return false;
             }
-            list.add(Pair.of(blockPos2, geodeFeatureConfig.pointOffset.get(abstractRandom)));
+            list.add(Pair.of(blockPos2, geodeFeatureConfig.pointOffset.get(random)));
         }
         if (bl) {
-            n = abstractRandom.nextInt(4);
+            n = random.nextInt(4);
             o = k * 2 + 1;
             if (n == 0) {
                 list2.add(blockPos.add(o, 7, 0));
@@ -127,31 +127,31 @@ extends Feature<GeodeFeatureConfig> {
                 continue;
             }
             if (s >= e) {
-                this.setBlockStateIf(structureWorldAccess, blockPos3, geodeLayerConfig.fillingProvider.getBlockState(abstractRandom, blockPos3), predicate);
+                this.setBlockStateIf(structureWorldAccess, blockPos3, geodeLayerConfig.fillingProvider.getBlockState(random, blockPos3), predicate);
                 continue;
             }
             if (s >= f) {
                 boolean bl2;
-                boolean bl3 = bl2 = (double)abstractRandom.nextFloat() < geodeFeatureConfig.useAlternateLayer0Chance;
+                boolean bl3 = bl2 = (double)random.nextFloat() < geodeFeatureConfig.useAlternateLayer0Chance;
                 if (bl2) {
-                    this.setBlockStateIf(structureWorldAccess, blockPos3, geodeLayerConfig.alternateInnerLayerProvider.getBlockState(abstractRandom, blockPos3), predicate);
+                    this.setBlockStateIf(structureWorldAccess, blockPos3, geodeLayerConfig.alternateInnerLayerProvider.getBlockState(random, blockPos3), predicate);
                 } else {
-                    this.setBlockStateIf(structureWorldAccess, blockPos3, geodeLayerConfig.innerLayerProvider.getBlockState(abstractRandom, blockPos3), predicate);
+                    this.setBlockStateIf(structureWorldAccess, blockPos3, geodeLayerConfig.innerLayerProvider.getBlockState(random, blockPos3), predicate);
                 }
-                if (geodeFeatureConfig.placementsRequireLayer0Alternate && !bl2 || !((double)abstractRandom.nextFloat() < geodeFeatureConfig.usePotentialPlacementsChance)) continue;
+                if (geodeFeatureConfig.placementsRequireLayer0Alternate && !bl2 || !((double)random.nextFloat() < geodeFeatureConfig.usePotentialPlacementsChance)) continue;
                 list3.add(blockPos3.toImmutable());
                 continue;
             }
             if (s >= g) {
-                this.setBlockStateIf(structureWorldAccess, blockPos3, geodeLayerConfig.middleLayerProvider.getBlockState(abstractRandom, blockPos3), predicate);
+                this.setBlockStateIf(structureWorldAccess, blockPos3, geodeLayerConfig.middleLayerProvider.getBlockState(random, blockPos3), predicate);
                 continue;
             }
             if (!(s >= h)) continue;
-            this.setBlockStateIf(structureWorldAccess, blockPos3, geodeLayerConfig.outerLayerProvider.getBlockState(abstractRandom, blockPos3), predicate);
+            this.setBlockStateIf(structureWorldAccess, blockPos3, geodeLayerConfig.outerLayerProvider.getBlockState(random, blockPos3), predicate);
         }
         List<BlockState> list4 = geodeLayerConfig.innerBlocks;
         block5: for (BlockPos blockPos2 : list3) {
-            blockState = Util.getRandom(list4, abstractRandom);
+            blockState = Util.getRandom(list4, random);
             for (Direction direction2 : DIRECTIONS) {
                 if (blockState.contains(Properties.FACING)) {
                     blockState = (BlockState)blockState.with(Properties.FACING, direction2);

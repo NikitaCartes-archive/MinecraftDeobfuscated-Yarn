@@ -48,7 +48,7 @@ extends AbstractRecipeScreenHandler<CraftingInventory> {
     public final boolean onServer;
     private final PlayerEntity owner;
 
-    public PlayerScreenHandler(PlayerInventory inventory, boolean onServer, PlayerEntity owner) {
+    public PlayerScreenHandler(PlayerInventory inventory, boolean onServer, final PlayerEntity owner) {
         super(null, 0);
         int i;
         this.onServer = onServer;
@@ -62,6 +62,12 @@ extends AbstractRecipeScreenHandler<CraftingInventory> {
         for (i = 0; i < 4; ++i) {
             final EquipmentSlot equipmentSlot = EQUIPMENT_SLOT_ORDER[i];
             this.addSlot(new Slot(inventory, 39 - i, 8, 8 + i * 18){
+
+                @Override
+                public void setStack(ItemStack stack) {
+                    super.setStack(stack);
+                    owner.onEquipStack(equipmentSlot, stack);
+                }
 
                 @Override
                 public int getMaxItemCount() {

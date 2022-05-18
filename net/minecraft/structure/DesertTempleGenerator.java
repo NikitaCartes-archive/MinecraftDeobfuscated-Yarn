@@ -15,7 +15,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -26,7 +26,7 @@ extends ShiftableStructurePiece {
     public static final int DEPTH = 21;
     private final boolean[] hasPlacedChest = new boolean[4];
 
-    public DesertTempleGenerator(AbstractRandom random, int x, int z) {
+    public DesertTempleGenerator(Random random, int x, int z) {
         super(StructurePieceType.DESERT_TEMPLE, x, 64, z, 21, 15, 21, DesertTempleGenerator.getRandomHorizontalDirection(random));
     }
 
@@ -48,7 +48,7 @@ extends ShiftableStructurePiece {
     }
 
     @Override
-    public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, AbstractRandom random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos) {
+    public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos) {
         int l;
         int i;
         if (!this.adjustToMinHeight(world, -random.nextInt(3))) {

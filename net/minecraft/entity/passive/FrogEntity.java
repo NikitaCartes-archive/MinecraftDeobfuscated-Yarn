@@ -62,7 +62,7 @@ import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.BlockView;
@@ -78,7 +78,7 @@ public class FrogEntity
 extends AnimalEntity {
     public static final Ingredient SLIME_BALL = Ingredient.ofItems(Items.SLIME_BALL);
     protected static final ImmutableList<SensorType<? extends Sensor<? super FrogEntity>>> SENSORS = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.HURT_BY, SensorType.FROG_ATTACKABLES, SensorType.FROG_TEMPTATIONS, SensorType.IS_IN_WATER);
-    protected static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(MemoryModuleType.LOOK_TARGET, MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.PATH, MemoryModuleType.BREED_TARGET, MemoryModuleType.LONG_JUMP_COOLING_DOWN, MemoryModuleType.LONG_JUMP_MID_JUMP, MemoryModuleType.ATTACK_TARGET, MemoryModuleType.TEMPTING_PLAYER, MemoryModuleType.TEMPTATION_COOLDOWN_TICKS, new MemoryModuleType[]{MemoryModuleType.IS_TEMPTED, MemoryModuleType.HURT_BY, MemoryModuleType.HURT_BY_ENTITY, MemoryModuleType.NEAREST_ATTACKABLE, MemoryModuleType.IS_IN_WATER, MemoryModuleType.IS_PREGNANT});
+    protected static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(MemoryModuleType.LOOK_TARGET, MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.PATH, MemoryModuleType.BREED_TARGET, MemoryModuleType.LONG_JUMP_COOLING_DOWN, MemoryModuleType.LONG_JUMP_MID_JUMP, MemoryModuleType.ATTACK_TARGET, MemoryModuleType.TEMPTING_PLAYER, MemoryModuleType.TEMPTATION_COOLDOWN_TICKS, new MemoryModuleType[]{MemoryModuleType.IS_TEMPTED, MemoryModuleType.HURT_BY, MemoryModuleType.HURT_BY_ENTITY, MemoryModuleType.NEAREST_ATTACKABLE, MemoryModuleType.IS_IN_WATER, MemoryModuleType.IS_PREGNANT, MemoryModuleType.IS_PANICKING});
     private static final TrackedData<FrogVariant> VARIANT = DataTracker.registerData(FrogEntity.class, TrackedDataHandlerRegistry.FROG_VARIANT);
     private static final TrackedData<OptionalInt> TARGET = DataTracker.registerData(FrogEntity.class, TrackedDataHandlerRegistry.OPTIONAL_INT);
     private static final int field_37459 = 5;
@@ -192,16 +192,16 @@ extends AnimalEntity {
     public void tick() {
         if (this.world.isClient()) {
             if (this.shouldWalk()) {
-                this.walkingAnimationState.startIfNotRunning();
+                this.walkingAnimationState.startIfNotRunning(this.age);
             } else {
                 this.walkingAnimationState.stop();
             }
             if (this.shouldSwim()) {
                 this.idlingInWaterAnimationState.stop();
-                this.swimmingAnimationState.startIfNotRunning();
+                this.swimmingAnimationState.startIfNotRunning(this.age);
             } else if (this.isInsideWaterOrBubbleColumn()) {
                 this.swimmingAnimationState.stop();
-                this.idlingInWaterAnimationState.startIfNotRunning();
+                this.idlingInWaterAnimationState.startIfNotRunning(this.age);
             } else {
                 this.swimmingAnimationState.stop();
                 this.idlingInWaterAnimationState.stop();
@@ -215,17 +215,17 @@ extends AnimalEntity {
         if (POSE.equals(data)) {
             EntityPose entityPose = this.getPose();
             if (entityPose == EntityPose.LONG_JUMPING) {
-                this.longJumpingAnimationState.start();
+                this.longJumpingAnimationState.start(this.age);
             } else {
                 this.longJumpingAnimationState.stop();
             }
             if (entityPose == EntityPose.CROAKING) {
-                this.croakingAnimationState.start();
+                this.croakingAnimationState.start(this.age);
             } else {
                 this.croakingAnimationState.stop();
             }
             if (entityPose == EntityPose.USING_TONGUE) {
-                this.usingTongueAnimationState.start();
+                this.usingTongueAnimationState.start(this.age);
             } else {
                 this.usingTongueAnimationState.stop();
             }
@@ -364,7 +364,7 @@ extends AnimalEntity {
         return SLIME_BALL.test(stack);
     }
 
-    public static boolean canSpawn(EntityType<? extends AnimalEntity> type, WorldAccess world, SpawnReason reason, BlockPos pos, AbstractRandom random) {
+    public static boolean canSpawn(EntityType<? extends AnimalEntity> type, WorldAccess world, SpawnReason reason, BlockPos pos, Random random) {
         return world.getBlockState(pos.down()).isIn(BlockTags.FROGS_SPAWNABLE_ON) && FrogEntity.isLightLevelValidForNaturalSpawn(world, pos);
     }
 

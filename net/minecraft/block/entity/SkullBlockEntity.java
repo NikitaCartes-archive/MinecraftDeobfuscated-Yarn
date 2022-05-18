@@ -17,6 +17,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.util.ApiServices;
 import net.minecraft.util.StringHelper;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
@@ -42,9 +43,9 @@ extends BlockEntity {
         super(BlockEntityType.SKULL, pos, state);
     }
 
-    public static void setServices(UserCache userCache, MinecraftSessionService sessionService, Executor executor) {
-        SkullBlockEntity.userCache = userCache;
-        SkullBlockEntity.sessionService = sessionService;
+    public static void setServices(ApiServices apiServices, Executor executor) {
+        userCache = apiServices.userCache();
+        sessionService = apiServices.sessionService();
         SkullBlockEntity.executor = executor;
     }
 

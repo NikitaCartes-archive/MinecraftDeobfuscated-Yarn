@@ -11,7 +11,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.MultifaceGrowthBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
@@ -32,7 +32,7 @@ public class LichenGrower {
         return Direction.stream().anyMatch(direction2 -> this.getGrowPos(state, world, pos, direction, (Direction)direction2, this.growChecker::canGrow).isPresent());
     }
 
-    public Optional<GrowPos> grow(BlockState state, WorldAccess world, BlockPos pos, AbstractRandom random) {
+    public Optional<GrowPos> grow(BlockState state, WorldAccess world, BlockPos pos, Random random) {
         return Direction.shuffle(random).stream().filter(direction -> this.growChecker.canGrow(state, (Direction)direction)).map(direction -> this.grow(state, world, pos, (Direction)direction, random, false)).filter(Optional::isPresent).findFirst().orElse(Optional.empty());
     }
 
@@ -40,7 +40,7 @@ public class LichenGrower {
         return Direction.stream().filter(direction -> this.growChecker.canGrow(state, (Direction)direction)).map(direction -> this.grow(state, world, pos, (Direction)direction, markForPostProcessing)).reduce(0L, Long::sum);
     }
 
-    public Optional<GrowPos> grow(BlockState state, WorldAccess world, BlockPos pos, Direction direction, AbstractRandom random, boolean markForPostProcessing) {
+    public Optional<GrowPos> grow(BlockState state, WorldAccess world, BlockPos pos, Direction direction, Random random, boolean markForPostProcessing) {
         return Direction.shuffle(random).stream().map(direction2 -> this.grow(state, world, pos, direction, (Direction)direction2, markForPostProcessing)).filter(Optional::isPresent).findFirst().orElse(Optional.empty());
     }
 

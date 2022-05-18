@@ -24,9 +24,9 @@ import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.random.AbstractRandom;
-import net.minecraft.util.math.random.AtomicSimpleRandom;
+import net.minecraft.util.math.random.CheckedRandom;
 import net.minecraft.util.math.random.ChunkRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryCodecs;
@@ -108,7 +108,7 @@ public abstract class StructureType {
         return validBiomes.test(chunkGenerator.getBiomeSource().getBiome(BiomeCoords.fromBlock(blockPos.getX()), BiomeCoords.fromBlock(blockPos.getY()), BiomeCoords.fromBlock(blockPos.getZ()), noiseConfig.getMultiNoiseSampler()));
     }
 
-    public void postPlace(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, AbstractRandom random, BlockBox box, ChunkPos chunkPos, StructurePiecesList pieces) {
+    public void postPlace(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox box, ChunkPos chunkPos, StructurePiecesList pieces) {
     }
 
     private static int[] getCornerHeights(Context context, int x, int width, int z, int height) {
@@ -162,7 +162,7 @@ public abstract class StructureType {
         }
 
         private static ChunkRandom createChunkRandom(long seed, ChunkPos chunkPos) {
-            ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
+            ChunkRandom chunkRandom = new ChunkRandom(new CheckedRandom(0L));
             chunkRandom.setCarverSeed(seed, chunkPos.x, chunkPos.z);
             return chunkRandom;
         }

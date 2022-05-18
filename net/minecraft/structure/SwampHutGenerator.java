@@ -19,7 +19,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
@@ -30,7 +30,7 @@ extends ShiftableStructurePiece {
     private boolean hasWitch;
     private boolean hasCat;
 
-    public SwampHutGenerator(AbstractRandom random, int x, int z) {
+    public SwampHutGenerator(Random random, int x, int z) {
         super(StructurePieceType.SWAMP_HUT, x, 64, z, 7, 7, 9, SwampHutGenerator.getRandomHorizontalDirection(random));
     }
 
@@ -48,7 +48,7 @@ extends ShiftableStructurePiece {
     }
 
     @Override
-    public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, AbstractRandom random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos) {
+    public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos) {
         BlockPos.Mutable blockPos;
         if (!this.adjustToAverageHeight(world, chunkBox, 0)) {
             return;

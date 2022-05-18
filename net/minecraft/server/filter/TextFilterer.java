@@ -29,6 +29,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 import net.minecraft.SharedConstants;
+import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.filter.TextStream;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
@@ -91,7 +92,7 @@ implements AutoCloseable {
                 throw new IllegalArgumentException("Missing API key");
             }
             int i = JsonHelper.getInt(jsonObject, "ruleId", 1);
-            String string22 = JsonHelper.getString(jsonObject, "serverId", "");
+            String string2 = JsonHelper.getString(jsonObject, "serverId", "");
             String string3 = JsonHelper.getString(jsonObject, "roomId", "Java:Chat");
             int j = JsonHelper.getInt(jsonObject, "hashesToDrop", -1);
             int k = JsonHelper.getInt(jsonObject, "maxConcurrentRequests", 7);
@@ -103,7 +104,7 @@ implements AutoCloseable {
             URL uRL3 = TextFilterer.getEndpoint(uRI, jsonObject2, "leave", "v1/leave");
             ProfileEncoder profileEncoder = profile -> {
                 JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("server", string22);
+                jsonObject.addProperty("server", string2);
                 jsonObject.addProperty("room", string3);
                 jsonObject.addProperty("user_id", profile.getId().toString());
                 jsonObject.addProperty("user_display_name", profile.getName());
@@ -113,7 +114,7 @@ implements AutoCloseable {
                 messageEncoder = (profile, message) -> {
                     JsonObject jsonObject = new JsonObject();
                     jsonObject.addProperty("rule", i);
-                    jsonObject.addProperty("server", string22);
+                    jsonObject.addProperty("server", string2);
                     jsonObject.addProperty("room", string3);
                     jsonObject.addProperty("player", profile.getId().toString());
                     jsonObject.addProperty("player_display_name", profile.getName());
@@ -122,14 +123,14 @@ implements AutoCloseable {
                 };
             } else {
                 String string5 = String.valueOf(i);
-                messageEncoder = (gameProfile, string2) -> {
+                messageEncoder = (profile, message) -> {
                     JsonObject jsonObject = new JsonObject();
                     jsonObject.addProperty("rule_id", string5);
-                    jsonObject.addProperty("category", string22);
+                    jsonObject.addProperty("category", string2);
                     jsonObject.addProperty("subcategory", string3);
-                    jsonObject.addProperty("user_id", gameProfile.getId().toString());
-                    jsonObject.addProperty("user_display_name", gameProfile.getName());
-                    jsonObject.addProperty("text", string2);
+                    jsonObject.addProperty("user_id", profile.getId().toString());
+                    jsonObject.addProperty("user_display_name", profile.getName());
+                    jsonObject.addProperty("text", message);
                     return jsonObject;
                 };
             }
@@ -153,9 +154,9 @@ implements AutoCloseable {
         });
     }
 
-    CompletableFuture<TextStream.Message> filterMessage(GameProfile gameProfile, String message, HashIgnorer ignorer, Executor executor) {
+    CompletableFuture<FilteredMessage<String>> filterMessage(GameProfile gameProfile, String message, HashIgnorer ignorer, Executor executor) {
         if (message.isEmpty()) {
-            return CompletableFuture.completedFuture(TextStream.Message.EMPTY);
+            return CompletableFuture.completedFuture(FilteredMessage.EMPTY);
         }
         return CompletableFuture.supplyAsync(() -> {
             JsonObject jsonObject = this.messageEncoder.encode(gameProfile, message);
@@ -163,17 +164,17 @@ implements AutoCloseable {
                 JsonObject jsonObject2 = this.sendJsonRequest(jsonObject, this.chatEndpoint);
                 boolean bl = JsonHelper.getBoolean(jsonObject2, "response", false);
                 if (bl) {
-                    return TextStream.Message.permitted(message);
+                    return FilteredMessage.permitted(message);
                 }
                 String string2 = JsonHelper.getString(jsonObject2, "hashed", null);
                 if (string2 == null) {
-                    return TextStream.Message.censored(message);
+                    return FilteredMessage.censored(message);
                 }
                 int i = JsonHelper.getArray(jsonObject2, "hashes").size();
-                return ignorer.shouldIgnore(string2, i) ? TextStream.Message.censored(message) : new TextStream.Message(message, string2);
+                return ignorer.shouldIgnore(string2, i) ? FilteredMessage.censored(message) : new FilteredMessage<String>(message, string2);
             } catch (Exception exception) {
                 LOGGER.warn("Failed to validate message '{}'", (Object)message, (Object)exception);
-                return TextStream.Message.censored(message);
+                return FilteredMessage.censored(message);
             }
         }, executor);
     }
@@ -304,13 +305,13 @@ implements AutoCloseable {
         }
 
         @Override
-        public CompletableFuture<List<TextStream.Message>> filterTexts(List<String> texts) {
+        public CompletableFuture<List<FilteredMessage<String>>> filterTexts(List<String> texts) {
             List list = texts.stream().map(text -> TextFilterer.this.filterMessage(this.gameProfile, (String)text, TextFilterer.this.ignorer, this.executor)).collect(ImmutableList.toImmutableList());
             return Util.combine(list).exceptionally(throwable -> ImmutableList.of());
         }
 
         @Override
-        public CompletableFuture<TextStream.Message> filterText(String text) {
+        public CompletableFuture<FilteredMessage<String>> filterText(String text) {
             return TextFilterer.this.filterMessage(this.gameProfile, text, TextFilterer.this.ignorer, this.executor);
         }
     }

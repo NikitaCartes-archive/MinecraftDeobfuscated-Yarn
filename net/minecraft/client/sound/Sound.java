@@ -9,7 +9,7 @@ import net.minecraft.client.sound.SoundContainer;
 import net.minecraft.client.sound.SoundSystem;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.floatprovider.FloatSupplier;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -57,7 +57,7 @@ implements SoundContainer<Sound> {
     }
 
     @Override
-    public Sound getSound(AbstractRandom abstractRandom) {
+    public Sound getSound(Random random) {
         return this;
     }
 
@@ -89,7 +89,7 @@ implements SoundContainer<Sound> {
     }
 
     @Override
-    public /* synthetic */ Object getSound(AbstractRandom random) {
+    public /* synthetic */ Object getSound(Random random) {
         return this.getSound(random);
     }
 

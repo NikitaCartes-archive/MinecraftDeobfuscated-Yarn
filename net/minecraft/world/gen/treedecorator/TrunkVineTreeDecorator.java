@@ -6,7 +6,7 @@ package net.minecraft.world.gen.treedecorator;
 import com.mojang.serialization.Codec;
 import net.minecraft.block.VineBlock;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.gen.treedecorator.TreeDecorator;
 import net.minecraft.world.gen.treedecorator.TreeDecoratorType;
 
@@ -22,19 +22,19 @@ extends TreeDecorator {
 
     @Override
     public void generate(TreeDecorator.Generator generator) {
-        AbstractRandom abstractRandom = generator.getRandom();
+        Random random = generator.getRandom();
         generator.getLogPositions().forEach(pos -> {
             BlockPos blockPos;
-            if (abstractRandom.nextInt(3) > 0 && generator.isAir(blockPos = pos.west())) {
+            if (random.nextInt(3) > 0 && generator.isAir(blockPos = pos.west())) {
                 generator.replaceWithVine(blockPos, VineBlock.EAST);
             }
-            if (abstractRandom.nextInt(3) > 0 && generator.isAir(blockPos = pos.east())) {
+            if (random.nextInt(3) > 0 && generator.isAir(blockPos = pos.east())) {
                 generator.replaceWithVine(blockPos, VineBlock.WEST);
             }
-            if (abstractRandom.nextInt(3) > 0 && generator.isAir(blockPos = pos.north())) {
+            if (random.nextInt(3) > 0 && generator.isAir(blockPos = pos.north())) {
                 generator.replaceWithVine(blockPos, VineBlock.SOUTH);
             }
-            if (abstractRandom.nextInt(3) > 0 && generator.isAir(blockPos = pos.south())) {
+            if (random.nextInt(3) > 0 && generator.isAir(blockPos = pos.south())) {
                 generator.replaceWithVine(blockPos, VineBlock.NORTH);
             }
         });

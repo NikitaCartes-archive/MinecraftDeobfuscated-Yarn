@@ -22,7 +22,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -98,7 +98,7 @@ implements Waterloggable {
     }
 
     @Override
-    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
+    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (!PropaguleBlock.isHanging(state)) {
             if (random.nextInt(7) == 0) {
                 this.generate(world, pos, state, random);
@@ -116,12 +116,12 @@ implements Waterloggable {
     }
 
     @Override
-    public boolean canGrow(World world, AbstractRandom random, BlockPos pos, BlockState state) {
+    public boolean canGrow(World world, Random random, BlockPos pos, BlockState state) {
         return PropaguleBlock.isHanging(state) ? !PropaguleBlock.isFullyGrown(state) : super.canGrow(world, random, pos, state);
     }
 
     @Override
-    public void grow(ServerWorld world, AbstractRandom random, BlockPos pos, BlockState state) {
+    public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
         if (PropaguleBlock.isHanging(state) && !PropaguleBlock.isFullyGrown(state)) {
             world.setBlockState(pos, (BlockState)state.cycle(AGE), Block.NOTIFY_LISTENERS);
         } else {

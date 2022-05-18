@@ -5,7 +5,7 @@ package net.minecraft.util.math.floatprovider;
 
 import java.util.Arrays;
 import net.minecraft.util.math.floatprovider.FloatSupplier;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class MultipliedFloatSupplier
 implements FloatSupplier {
@@ -16,7 +16,7 @@ implements FloatSupplier {
     }
 
     @Override
-    public float get(AbstractRandom random) {
+    public float get(Random random) {
         float f = 1.0f;
         for (int i = 0; i < this.multipliers.length; ++i) {
             f *= this.multipliers[i].get(random);

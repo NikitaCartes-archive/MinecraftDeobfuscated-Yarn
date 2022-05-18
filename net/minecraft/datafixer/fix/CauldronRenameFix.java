@@ -13,8 +13,8 @@ import net.minecraft.datafixer.TypeReferences;
 
 public class CauldronRenameFix
 extends DataFix {
-    public CauldronRenameFix(Schema outputSchema, boolean bl) {
-        super(outputSchema, bl);
+    public CauldronRenameFix(Schema schema, boolean bl) {
+        super(schema, bl);
     }
 
     private static Dynamic<?> rename(Dynamic<?> dynamic) {

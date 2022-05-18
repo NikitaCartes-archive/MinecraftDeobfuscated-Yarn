@@ -63,7 +63,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -99,7 +99,7 @@ Saddleable {
         this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, 0.0f);
     }
 
-    public static boolean canSpawn(EntityType<StriderEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, AbstractRandom random) {
+    public static boolean canSpawn(EntityType<StriderEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
         BlockPos.Mutable mutable = pos.mutableCopy();
         do {
             mutable.move(Direction.UP);
@@ -428,13 +428,13 @@ Saddleable {
         if (this.isBaby()) {
             return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
         }
-        AbstractRandom abstractRandom = world.getRandom();
-        if (abstractRandom.nextInt(30) == 0) {
+        Random random = world.getRandom();
+        if (random.nextInt(30) == 0) {
             MobEntity mobEntity = EntityType.ZOMBIFIED_PIGLIN.create(world.toServerWorld());
-            entityData = this.initializeRider(world, difficulty, mobEntity, new ZombieEntity.ZombieData(ZombieEntity.shouldBeBaby(abstractRandom), false));
+            entityData = this.initializeRider(world, difficulty, mobEntity, new ZombieEntity.ZombieData(ZombieEntity.shouldBeBaby(random), false));
             mobEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.WARPED_FUNGUS_ON_A_STICK));
             this.saddle(null);
-        } else if (abstractRandom.nextInt(10) == 0) {
+        } else if (random.nextInt(10) == 0) {
             PassiveEntity passiveEntity = EntityType.STRIDER.create(world.toServerWorld());
             passiveEntity.setBreedingAge(-24000);
             entityData = this.initializeRider(world, difficulty, passiveEntity, null);

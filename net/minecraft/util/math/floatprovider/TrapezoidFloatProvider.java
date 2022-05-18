@@ -11,7 +11,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.function.Function;
 import net.minecraft.util.math.floatprovider.FloatProvider;
 import net.minecraft.util.math.floatprovider.FloatProviderType;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class TrapezoidFloatProvider
 extends FloatProvider {
@@ -39,7 +39,7 @@ extends FloatProvider {
     }
 
     @Override
-    public float get(AbstractRandom random) {
+    public float get(Random random) {
         float f = this.max - this.min;
         float g = (f - this.plateau) / 2.0f;
         float h = f - g;

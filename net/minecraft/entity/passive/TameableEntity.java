@@ -213,11 +213,11 @@ implements Tameable {
     }
 
     @Override
-    public void onDeath(DamageSource source) {
+    public void onDeath(DamageSource damageSource) {
         if (!this.world.isClient && this.world.getGameRules().getBoolean(GameRules.SHOW_DEATH_MESSAGES) && this.getOwner() instanceof ServerPlayerEntity) {
             this.getOwner().sendMessage(this.getDamageTracker().getDeathMessage());
         }
-        super.onDeath(source);
+        super.onDeath(damageSource);
     }
 
     public boolean isSitting() {

@@ -23,7 +23,7 @@ import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 
 public class ApplyBonusLootFunction
@@ -82,7 +82,7 @@ extends ConditionalLootFunction {
     }
 
     static interface Formula {
-        public int getValue(AbstractRandom var1, int var2, int var3);
+        public int getValue(Random var1, int var2, int var3);
 
         public void toJson(JsonObject var1, JsonSerializationContext var2);
 
@@ -99,7 +99,7 @@ extends ConditionalLootFunction {
         }
 
         @Override
-        public int getValue(AbstractRandom random, int initialCount, int enchantmentLevel) {
+        public int getValue(Random random, int initialCount, int enchantmentLevel) {
             return initialCount + random.nextInt(this.bonusMultiplier * enchantmentLevel + 1);
         }
 
@@ -127,7 +127,7 @@ extends ConditionalLootFunction {
         }
 
         @Override
-        public int getValue(AbstractRandom random, int initialCount, int enchantmentLevel) {
+        public int getValue(Random random, int initialCount, int enchantmentLevel) {
             if (enchantmentLevel > 0) {
                 int i = random.nextInt(enchantmentLevel + 2) - 1;
                 if (i < 0) {
@@ -164,7 +164,7 @@ extends ConditionalLootFunction {
         }
 
         @Override
-        public int getValue(AbstractRandom random, int initialCount, int enchantmentLevel) {
+        public int getValue(Random random, int initialCount, int enchantmentLevel) {
             for (int i = 0; i < enchantmentLevel + this.extra; ++i) {
                 if (!(random.nextFloat() < this.probability)) continue;
                 ++initialCount;

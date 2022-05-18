@@ -9,7 +9,7 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 import net.minecraft.world.gen.stateprovider.BlockStateProviderType;
 
@@ -39,7 +39,7 @@ extends BlockStateProvider {
     }
 
     @Override
-    public BlockState getBlockState(AbstractRandom random, BlockPos pos) {
+    public BlockState getBlockState(Random random, BlockPos pos) {
         return this.states.getDataOrEmpty(random).orElseThrow(IllegalStateException::new);
     }
 }

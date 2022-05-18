@@ -11,7 +11,7 @@ import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 @Environment(value=EnvType.CLIENT)
 public class WhiteAshParticle
@@ -36,10 +36,10 @@ extends AscendingParticle {
 
         @Override
         public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
-            AbstractRandom abstractRandom = clientWorld.random;
-            double j = (double)abstractRandom.nextFloat() * -1.9 * (double)abstractRandom.nextFloat() * 0.1;
-            double k = (double)abstractRandom.nextFloat() * -0.5 * (double)abstractRandom.nextFloat() * 0.1 * 5.0;
-            double l = (double)abstractRandom.nextFloat() * -1.9 * (double)abstractRandom.nextFloat() * 0.1;
+            Random random = clientWorld.random;
+            double j = (double)random.nextFloat() * -1.9 * (double)random.nextFloat() * 0.1;
+            double k = (double)random.nextFloat() * -0.5 * (double)random.nextFloat() * 0.1 * 5.0;
+            double l = (double)random.nextFloat() * -1.9 * (double)random.nextFloat() * 0.1;
             return new WhiteAshParticle(clientWorld, d, e, f, j, k, l, 1.0f, this.spriteProvider);
         }
     }

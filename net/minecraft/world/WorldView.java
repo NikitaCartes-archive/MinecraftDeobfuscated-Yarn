@@ -95,7 +95,7 @@ BiomeAccess.Storage {
 
     @Override
     default public int getBottomY() {
-        return this.getDimension().minimumY();
+        return this.getDimension().minY();
     }
 
     @Override

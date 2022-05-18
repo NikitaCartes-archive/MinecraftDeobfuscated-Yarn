@@ -5,7 +5,7 @@ package net.minecraft.world.gen.chunk.placement;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public enum SpreadType implements StringIdentifiable
 {
@@ -24,7 +24,7 @@ public enum SpreadType implements StringIdentifiable
         return this.name;
     }
 
-    public int get(AbstractRandom random, int bound) {
+    public int get(Random random, int bound) {
         return switch (this) {
             default -> throw new IncompatibleClassChangeError();
             case LINEAR -> random.nextInt(bound);

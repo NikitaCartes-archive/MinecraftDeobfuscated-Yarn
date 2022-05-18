@@ -12,7 +12,7 @@ import net.minecraft.block.SculkSpreadable;
 import net.minecraft.block.entity.SculkSpreadManager;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.Feature;
@@ -35,7 +35,7 @@ extends Feature<SculkPatchFeatureConfig> {
             return false;
         }
         SculkPatchFeatureConfig sculkPatchFeatureConfig = context.getConfig();
-        AbstractRandom abstractRandom = context.getRandom();
+        Random random = context.getRandom();
         SculkSpreadManager sculkSpreadManager = SculkSpreadManager.createWorldGen();
         int i = sculkPatchFeatureConfig.spreadRounds() + sculkPatchFeatureConfig.growthRounds();
         for (int j = 0; j < i; ++j) {
@@ -44,17 +44,17 @@ extends Feature<SculkPatchFeatureConfig> {
             }
             boolean bl = j < sculkPatchFeatureConfig.spreadRounds();
             for (l = 0; l < sculkPatchFeatureConfig.spreadAttempts(); ++l) {
-                sculkSpreadManager.tick(structureWorldAccess, blockPos, abstractRandom, bl);
+                sculkSpreadManager.tick(structureWorldAccess, blockPos, random, bl);
             }
             sculkSpreadManager.clearCursors();
         }
         BlockPos blockPos2 = blockPos.down();
-        if (abstractRandom.nextFloat() <= sculkPatchFeatureConfig.catalystChance() && structureWorldAccess.getBlockState(blockPos2).isFullCube(structureWorldAccess, blockPos2)) {
+        if (random.nextFloat() <= sculkPatchFeatureConfig.catalystChance() && structureWorldAccess.getBlockState(blockPos2).isFullCube(structureWorldAccess, blockPos2)) {
             structureWorldAccess.setBlockState(blockPos, Blocks.SCULK_CATALYST.getDefaultState(), Block.NOTIFY_ALL);
         }
-        k = sculkPatchFeatureConfig.extraRareGrowths().get(abstractRandom);
+        k = sculkPatchFeatureConfig.extraRareGrowths().get(random);
         for (l = 0; l < k; ++l) {
-            BlockPos blockPos3 = blockPos.add(abstractRandom.nextInt(5) - 2, 0, abstractRandom.nextInt(5) - 2);
+            BlockPos blockPos3 = blockPos.add(random.nextInt(5) - 2, 0, random.nextInt(5) - 2);
             if (!structureWorldAccess.getBlockState(blockPos3).isAir() || !structureWorldAccess.getBlockState(blockPos3.down()).isSideSolidFullSquare(structureWorldAccess, blockPos3.down(), Direction.UP)) continue;
             structureWorldAccess.setBlockState(blockPos3, (BlockState)Blocks.SCULK_SHRIEKER.getDefaultState().with(SculkShriekerBlock.CAN_SUMMON, true), Block.NOTIFY_ALL);
         }

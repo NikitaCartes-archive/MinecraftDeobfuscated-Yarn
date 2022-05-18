@@ -4,10 +4,8 @@
 package net.minecraft.network.packet.c2s.login;
 
 import com.mojang.datafixers.util.Either;
-import java.security.GeneralSecurityException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.Signature;
 import java.util.Arrays;
 import java.util.Optional;
 import javax.crypto.SecretKey;
@@ -63,16 +61,10 @@ implements Packet<ServerLoginPacketListener> {
     }
 
     public boolean verifySignedNonce(byte[] nonce, PlayerPublicKey publicKeyInfo) {
-        return this.nonce.map(encrypted -> false, signature -> {
-            try {
-                Signature signature2 = publicKeyInfo.createSignatureInstance();
-                signature2.update(nonce);
-                signature2.update(signature.getSalt());
-                return signature2.verify(signature.signature());
-            } catch (GeneralSecurityException | NetworkEncryptionException exception) {
-                return false;
-            }
-        });
+        return this.nonce.map(encrypted -> false, signature -> publicKeyInfo.createSignatureInstance().validate(updater -> {
+            updater.update(nonce);
+            updater.update(signature.getSalt());
+        }, signature.signature()));
     }
 
     public boolean verifyEncryptedNonce(byte[] nonce, PrivateKey privateKey) {

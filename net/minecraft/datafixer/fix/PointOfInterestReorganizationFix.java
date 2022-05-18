@@ -19,8 +19,8 @@ import net.minecraft.datafixer.TypeReferences;
 
 public class PointOfInterestReorganizationFix
 extends DataFix {
-    public PointOfInterestReorganizationFix(Schema outputSchema, boolean changesType) {
-        super(outputSchema, changesType);
+    public PointOfInterestReorganizationFix(Schema schema, boolean bl) {
+        super(schema, bl);
     }
 
     @Override

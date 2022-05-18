@@ -21,7 +21,7 @@ import net.minecraft.server.rcon.BufferHelper;
 import net.minecraft.server.rcon.DataStreamHelper;
 import net.minecraft.server.rcon.RconBase;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -287,7 +287,7 @@ extends RconBase {
             this.messageBytes[2] = bs[5];
             this.messageBytes[3] = bs[6];
             this.message = new String(this.messageBytes, StandardCharsets.UTF_8);
-            this.id = AbstractRandom.createAtomic().nextInt(0x1000000);
+            this.id = Random.create().nextInt(0x1000000);
             this.replyBuf = String.format("\t%s%d\u0000", this.message, this.id).getBytes(StandardCharsets.UTF_8);
         }
 

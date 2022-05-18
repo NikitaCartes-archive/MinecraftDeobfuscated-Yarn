@@ -207,15 +207,25 @@ public class CommandManager {
         this.dispatcher.setConsumer((context, success, result) -> ((ServerCommandSource)context.getSource()).onCommandComplete(context, success, result));
     }
 
+    /**
+     * Executes {@code command}. Unlike {@link #execute} the command can be prefixed
+     * with a slash.
+     */
+    public int executeWithPrefix(ServerCommandSource source, String command) {
+        return this.execute(source, command.startsWith("/") ? command.substring(1) : command);
+    }
+
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
+    /**
+     * Executes {@code command}. The command cannot be prefixed with a slash.
+     * 
+     * @see #executeWithPrefix(ServerCommandSource, String)
+     */
     public int execute(ServerCommandSource commandSource, String command) {
         StringReader stringReader = new StringReader(command);
-        if (stringReader.canRead() && stringReader.peek() == '/') {
-            stringReader.skip();
-        }
-        commandSource.getServer().getProfiler().push(command);
+        commandSource.getServer().getProfiler().push(() -> "/" + command);
         try {
             int n = this.dispatcher.execute(stringReader, commandSource);
             return n;
@@ -228,7 +238,7 @@ public class CommandManager {
             commandSource.sendError(Texts.toText(commandSyntaxException.getRawMessage()));
             if (commandSyntaxException.getInput() != null && commandSyntaxException.getCursor() >= 0) {
                 i = Math.min(commandSyntaxException.getInput().length(), commandSyntaxException.getCursor());
-                MutableText mutableText = Text.empty().formatted(Formatting.GRAY).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command)));
+                MutableText mutableText = Text.empty().formatted(Formatting.GRAY).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/" + command)));
                 if (i > 10) {
                     mutableText.append("...");
                 }
@@ -245,7 +255,7 @@ public class CommandManager {
         } catch (Exception exception) {
             MutableText mutableText2 = Text.literal(exception.getMessage() == null ? exception.getClass().getName() : exception.getMessage());
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.error("Command exception: {}", (Object)command, (Object)exception);
+                LOGGER.error("Command exception: /{}", (Object)command, (Object)exception);
                 StackTraceElement[] stackTraceElements = exception.getStackTrace();
                 for (int j = 0; j < Math.min(stackTraceElements.length, 3); ++j) {
                     mutableText2.append("\n\n").append(stackTraceElements[j].getMethodName()).append("\n ").append(stackTraceElements[j].getFileName()).append(":").append(String.valueOf(stackTraceElements[j].getLineNumber()));
@@ -254,7 +264,7 @@ public class CommandManager {
             commandSource.sendError(Text.translatable("command.failed").styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, mutableText2))));
             if (SharedConstants.isDevelopment) {
                 commandSource.sendError(Text.literal(Util.getInnermostMessage(exception)));
-                LOGGER.error("'{}' threw an exception", (Object)command, (Object)exception);
+                LOGGER.error("'/{}' threw an exception", (Object)command, (Object)exception);
             }
             int n = 0;
             return n;

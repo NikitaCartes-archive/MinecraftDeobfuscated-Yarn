@@ -39,7 +39,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -94,6 +94,7 @@ implements Waterloggable {
         map.put(GameEvent.ITEM_INTERACT_START, 15);
         map.put(GameEvent.EXPLODE, 15);
         map.put(GameEvent.LIGHTNING_STRIKE, 15);
+        map.put(GameEvent.INSTRUMENT_PLAY, 15);
     }));
     public static final EnumProperty<SculkSensorPhase> SCULK_SENSOR_PHASE = Properties.SCULK_SENSOR_PHASE;
     public static final IntProperty POWER = Properties.POWER;
@@ -128,7 +129,7 @@ implements Waterloggable {
     }
 
     @Override
-    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (SculkSensorBlock.getPhase(state) != SculkSensorPhase.ACTIVE) {
             if (SculkSensorBlock.getPhase(state) == SculkSensorPhase.COOLDOWN) {
                 world.setBlockState(pos, (BlockState)state.with(SCULK_SENSOR_PHASE, SculkSensorPhase.INACTIVE), Block.NOTIFY_ALL);
@@ -141,7 +142,12 @@ implements Waterloggable {
     @Override
     public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
         if (!world.isClient() && SculkSensorBlock.isInactive(state) && entity.getType() != EntityType.WARDEN) {
-            SculkSensorBlock.setActive(entity, world, pos, state, 1);
+            BlockEntity blockEntity = world.getBlockEntity(pos);
+            if (blockEntity instanceof SculkSensorBlockEntity) {
+                SculkSensorBlockEntity sculkSensorBlockEntity = (SculkSensorBlockEntity)blockEntity;
+                sculkSensorBlockEntity.setLastVibrationFrequency(FREQUENCIES.get(GameEvent.STEP));
+            }
+            SculkSensorBlock.setActive(entity, world, pos, state, 15);
         }
         super.onSteppedOn(world, pos, state, entity);
     }
@@ -253,7 +259,7 @@ implements Waterloggable {
     }
 
     @Override
-    public void randomDisplayTick(BlockState state, World world, BlockPos pos, AbstractRandom random) {
+    public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         if (SculkSensorBlock.getPhase(state) != SculkSensorPhase.ACTIVE) {
             return;
         }

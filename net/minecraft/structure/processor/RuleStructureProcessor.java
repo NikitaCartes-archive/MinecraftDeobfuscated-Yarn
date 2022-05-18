@@ -15,7 +15,7 @@ import net.minecraft.structure.processor.StructureProcessorRule;
 import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,10 +31,10 @@ extends StructureProcessor {
     @Override
     @Nullable
     public Structure.StructureBlockInfo process(WorldView world, BlockPos pos, BlockPos pivot, Structure.StructureBlockInfo originalBlockInfo, Structure.StructureBlockInfo currentBlockInfo, StructurePlacementData data) {
-        AbstractRandom abstractRandom = AbstractRandom.createAtomic(MathHelper.hashCode(currentBlockInfo.pos));
+        Random random = Random.create(MathHelper.hashCode(currentBlockInfo.pos));
         BlockState blockState = world.getBlockState(currentBlockInfo.pos);
         for (StructureProcessorRule structureProcessorRule : this.rules) {
-            if (!structureProcessorRule.test(currentBlockInfo.state, blockState, originalBlockInfo.pos, currentBlockInfo.pos, pivot, abstractRandom)) continue;
+            if (!structureProcessorRule.test(currentBlockInfo.state, blockState, originalBlockInfo.pos, currentBlockInfo.pos, pivot, random)) continue;
             return new Structure.StructureBlockInfo(currentBlockInfo.pos, structureProcessorRule.getOutputState(), structureProcessorRule.getOutputNbt());
         }
         return currentBlockInfo;

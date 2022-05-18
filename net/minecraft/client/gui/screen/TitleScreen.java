@@ -24,7 +24,6 @@ import net.minecraft.client.gui.RotatingCubeMapRenderer;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.CreditsScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerWarningScreen;
 import net.minecraft.client.gui.screen.option.AccessibilityOptionsScreen;
@@ -42,6 +41,7 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
@@ -49,7 +49,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3f;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.gen.WorldPresets;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -86,7 +86,7 @@ extends Screen {
     public TitleScreen(boolean doBackgroundFade) {
         super(Text.translatable("narrator.screen.title"));
         this.doBackgroundFade = doBackgroundFade;
-        this.isMinceraft = (double)AbstractRandom.createAtomic().nextFloat() < 1.0E-4;
+        this.isMinceraft = (double)Random.create().nextFloat() < 1.0E-4;
     }
 
     private boolean areRealmsNotificationsEnabled() {
@@ -174,7 +174,7 @@ extends Screen {
             if (bl) {
                 this.client.createIntegratedServerLoader().start(this, DEMO_WORLD_NAME);
             } else {
-                DynamicRegistryManager dynamicRegistryManager = DynamicRegistryManager.BUILTIN.get();
+                DynamicRegistryManager.Immutable dynamicRegistryManager = DynamicRegistryManager.createAndLoad().toImmutable();
                 this.client.createIntegratedServerLoader().createAndStart(DEMO_WORLD_NAME, MinecraftServer.DEMO_LEVEL_INFO, dynamicRegistryManager, WorldPresets.createDemoOptions(dynamicRegistryManager));
             }
         }));

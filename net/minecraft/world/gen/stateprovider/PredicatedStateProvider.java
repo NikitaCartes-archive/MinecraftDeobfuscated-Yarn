@@ -11,7 +11,7 @@ import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.blockpredicate.BlockPredicate;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
@@ -27,7 +27,7 @@ public record PredicatedStateProvider(BlockStateProvider fallback, List<Rule> ru
         return PredicatedStateProvider.of(BlockStateProvider.of(block));
     }
 
-    public BlockState getBlockState(StructureWorldAccess world, AbstractRandom random, BlockPos pos) {
+    public BlockState getBlockState(StructureWorldAccess world, Random random, BlockPos pos) {
         for (Rule rule : this.rules) {
             if (!rule.ifTrue().test(world, pos)) continue;
             return rule.then().getBlockState(random, pos);

@@ -9,7 +9,7 @@ import net.minecraft.client.sound.AbstractSoundInstance;
 import net.minecraft.client.sound.TickableSoundInstance;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class MovingSoundInstance
@@ -17,8 +17,8 @@ extends AbstractSoundInstance
 implements TickableSoundInstance {
     private boolean done;
 
-    protected MovingSoundInstance(SoundEvent soundEvent, SoundCategory soundCategory, AbstractRandom abstractRandom) {
-        super(soundEvent, soundCategory, abstractRandom);
+    protected MovingSoundInstance(SoundEvent soundEvent, SoundCategory soundCategory, Random random) {
+        super(soundEvent, soundCategory, random);
     }
 
     @Override

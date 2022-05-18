@@ -12,6 +12,8 @@ import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.ParsedArgument;
+import com.mojang.brigadier.context.ParsedCommandNode;
+import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.context.SuggestionContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestion;
@@ -321,6 +323,39 @@ public class CommandSuggestor {
             return "\n" + this.window.getNarration();
         }
         return "";
+    }
+
+    /**
+     * {@return the command node at {@code cursor}}
+     */
+    @Nullable
+    public CommandNode<CommandSource> getNodeAt(int cursor) {
+        return this.parse != null ? CommandSuggestor.getNodeAt(cursor, this.parse.getContext()) : null;
+    }
+
+    @Nullable
+    private static <S> CommandNode<S> getNodeAt(int cursor, CommandContextBuilder<S> builder) {
+        StringRange stringRange = builder.getRange();
+        if (cursor < stringRange.getStart()) {
+            return null;
+        }
+        List<ParsedCommandNode<S>> list = builder.getNodes();
+        if (cursor <= stringRange.getEnd()) {
+            for (ParsedCommandNode<S> parsedCommandNode : list) {
+                StringRange stringRange2 = parsedCommandNode.getRange();
+                if (cursor < stringRange2.getStart() || cursor > stringRange2.getEnd()) continue;
+                return parsedCommandNode.getNode();
+            }
+        } else {
+            if (builder.getChild() != null) {
+                return CommandSuggestor.getNodeAt(cursor, builder.getChild());
+            }
+            if (!list.isEmpty()) {
+                ParsedCommandNode<S> parsedCommandNode2 = list.get(list.size() - 1);
+                return parsedCommandNode2.getNode();
+            }
+        }
+        return builder.getRootNode();
     }
 
     @Environment(value=EnvType.CLIENT)

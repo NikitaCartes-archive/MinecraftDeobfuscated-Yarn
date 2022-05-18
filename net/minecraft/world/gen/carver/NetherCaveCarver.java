@@ -9,7 +9,7 @@ import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
@@ -33,7 +33,7 @@ extends CaveCarver {
     }
 
     @Override
-    protected float getTunnelSystemWidth(AbstractRandom random) {
+    protected float getTunnelSystemWidth(Random random) {
         return (random.nextFloat() * 2.0f + random.nextFloat()) * 2.0f;
     }
 

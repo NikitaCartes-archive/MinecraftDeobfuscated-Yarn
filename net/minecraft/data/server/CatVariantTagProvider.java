@@ -17,7 +17,7 @@ extends AbstractTagProvider<CatVariant> {
 
     @Override
     protected void configure() {
-        this.getOrCreateTagBuilder(CatVariantTags.DEFAULT_SPAWNS).add((CatVariant[])new CatVariant[]{CatVariant.TABBY, CatVariant.BLACK, CatVariant.RED, CatVariant.SIAMESE, CatVariant.BRITISH, CatVariant.CALICO, CatVariant.PERSIAN, CatVariant.RAGDOLL, CatVariant.WHITE, CatVariant.JELLIE});
+        this.getOrCreateTagBuilder(CatVariantTags.DEFAULT_SPAWNS).add((CatVariant[])new CatVariant[]{CatVariant.TABBY, CatVariant.BLACK, CatVariant.RED, CatVariant.SIAMESE, CatVariant.BRITISH_SHORTHAIR, CatVariant.CALICO, CatVariant.PERSIAN, CatVariant.RAGDOLL, CatVariant.WHITE, CatVariant.JELLIE});
         this.getOrCreateTagBuilder(CatVariantTags.FULL_MOON_SPAWNS).addTag(CatVariantTags.DEFAULT_SPAWNS).add(CatVariant.ALL_BLACK);
     }
 }

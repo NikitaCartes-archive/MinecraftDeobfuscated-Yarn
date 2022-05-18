@@ -11,7 +11,7 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.Feature;
@@ -31,12 +31,12 @@ extends Feature<RootSystemFeatureConfig> {
         if (!structureWorldAccess.getBlockState(blockPos = context.getOrigin()).isAir()) {
             return false;
         }
-        AbstractRandom abstractRandom = context.getRandom();
+        Random random = context.getRandom();
         BlockPos blockPos2 = context.getOrigin();
         RootSystemFeatureConfig rootSystemFeatureConfig = context.getConfig();
         BlockPos.Mutable mutable = blockPos2.mutableCopy();
-        if (RootSystemFeature.generateTreeAndRoots(structureWorldAccess, context.getGenerator(), rootSystemFeatureConfig, abstractRandom, mutable, blockPos2)) {
-            RootSystemFeature.generateHangingRoots(structureWorldAccess, rootSystemFeatureConfig, abstractRandom, blockPos2, mutable);
+        if (RootSystemFeature.generateTreeAndRoots(structureWorldAccess, context.getGenerator(), rootSystemFeatureConfig, random, mutable, blockPos2)) {
+            RootSystemFeature.generateHangingRoots(structureWorldAccess, rootSystemFeatureConfig, random, blockPos2, mutable);
         }
         return true;
     }
@@ -60,7 +60,7 @@ extends Feature<RootSystemFeatureConfig> {
         return i <= allowedVerticalWaterForTree && state.getFluidState().isIn(FluidTags.WATER);
     }
 
-    private static boolean generateTreeAndRoots(StructureWorldAccess world, ChunkGenerator generator, RootSystemFeatureConfig config, AbstractRandom abstractRandom, BlockPos.Mutable mutablePos, BlockPos pos) {
+    private static boolean generateTreeAndRoots(StructureWorldAccess world, ChunkGenerator generator, RootSystemFeatureConfig config, Random random, BlockPos.Mutable mutablePos, BlockPos pos) {
         for (int i = 0; i < config.maxRootColumnHeight; ++i) {
             mutablePos.move(Direction.UP);
             if (!config.predicate.test(world, mutablePos) || !RootSystemFeature.hasSpaceForTree(world, config, mutablePos)) continue;
@@ -68,42 +68,42 @@ extends Feature<RootSystemFeatureConfig> {
             if (world.getFluidState((BlockPos)blockPos).isIn(FluidTags.LAVA) || !world.getBlockState((BlockPos)blockPos).getMaterial().isSolid()) {
                 return false;
             }
-            if (!config.feature.value().generateUnregistered(world, generator, abstractRandom, mutablePos)) continue;
-            RootSystemFeature.generateRootsColumn(pos, pos.getY() + i, world, config, abstractRandom);
+            if (!config.feature.value().generateUnregistered(world, generator, random, mutablePos)) continue;
+            RootSystemFeature.generateRootsColumn(pos, pos.getY() + i, world, config, random);
             return true;
         }
         return false;
     }
 
-    private static void generateRootsColumn(BlockPos pos, int maxY, StructureWorldAccess world, RootSystemFeatureConfig config, AbstractRandom abstractRandom) {
+    private static void generateRootsColumn(BlockPos pos, int maxY, StructureWorldAccess world, RootSystemFeatureConfig config, Random random) {
         int i = pos.getX();
         int j = pos.getZ();
         BlockPos.Mutable mutable = pos.mutableCopy();
         for (int k = pos.getY(); k < maxY; ++k) {
-            RootSystemFeature.generateRoots(world, config, abstractRandom, i, j, mutable.set(i, k, j));
+            RootSystemFeature.generateRoots(world, config, random, i, j, mutable.set(i, k, j));
         }
     }
 
-    private static void generateRoots(StructureWorldAccess world, RootSystemFeatureConfig config, AbstractRandom abstractRandom, int x, int z, BlockPos.Mutable mutablePos) {
+    private static void generateRoots(StructureWorldAccess world, RootSystemFeatureConfig config, Random random, int x, int z, BlockPos.Mutable mutablePos) {
         int i = config.rootRadius;
         Predicate<BlockState> predicate = state -> state.isIn(rootSystemFeatureConfig.rootReplaceable);
         for (int j = 0; j < config.rootPlacementAttempts; ++j) {
-            mutablePos.set(mutablePos, abstractRandom.nextInt(i) - abstractRandom.nextInt(i), 0, abstractRandom.nextInt(i) - abstractRandom.nextInt(i));
+            mutablePos.set(mutablePos, random.nextInt(i) - random.nextInt(i), 0, random.nextInt(i) - random.nextInt(i));
             if (predicate.test(world.getBlockState(mutablePos))) {
-                world.setBlockState(mutablePos, config.rootStateProvider.getBlockState(abstractRandom, mutablePos), Block.NOTIFY_LISTENERS);
+                world.setBlockState(mutablePos, config.rootStateProvider.getBlockState(random, mutablePos), Block.NOTIFY_LISTENERS);
             }
             mutablePos.setX(x);
             mutablePos.setZ(z);
         }
     }
 
-    private static void generateHangingRoots(StructureWorldAccess world, RootSystemFeatureConfig config, AbstractRandom abstractRandom, BlockPos pos, BlockPos.Mutable mutablePos) {
+    private static void generateHangingRoots(StructureWorldAccess world, RootSystemFeatureConfig config, Random random, BlockPos pos, BlockPos.Mutable mutablePos) {
         int i = config.hangingRootRadius;
         int j = config.hangingRootVerticalSpan;
         for (int k = 0; k < config.hangingRootPlacementAttempts; ++k) {
             BlockState blockState;
-            mutablePos.set(pos, abstractRandom.nextInt(i) - abstractRandom.nextInt(i), abstractRandom.nextInt(j) - abstractRandom.nextInt(j), abstractRandom.nextInt(i) - abstractRandom.nextInt(i));
-            if (!world.isAir(mutablePos) || !(blockState = config.hangingRootStateProvider.getBlockState(abstractRandom, mutablePos)).canPlaceAt(world, mutablePos) || !world.getBlockState((BlockPos)mutablePos.up()).isSideSolidFullSquare(world, mutablePos, Direction.DOWN)) continue;
+            mutablePos.set(pos, random.nextInt(i) - random.nextInt(i), random.nextInt(j) - random.nextInt(j), random.nextInt(i) - random.nextInt(i));
+            if (!world.isAir(mutablePos) || !(blockState = config.hangingRootStateProvider.getBlockState(random, mutablePos)).canPlaceAt(world, mutablePos) || !world.getBlockState((BlockPos)mutablePos.up()).isSideSolidFullSquare(world, mutablePos, Direction.DOWN)) continue;
             world.setBlockState(mutablePos, blockState, Block.NOTIFY_LISTENERS);
         }
     }

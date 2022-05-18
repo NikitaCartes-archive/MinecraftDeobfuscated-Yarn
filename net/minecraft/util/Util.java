@@ -16,6 +16,7 @@ import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DataResult;
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.io.File;
@@ -58,6 +59,7 @@ import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.function.LongSupplier;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -75,7 +77,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -532,19 +534,19 @@ public class Util {
         return t.toString();
     }
 
-    public static <T> T getRandom(T[] array, AbstractRandom random) {
+    public static <T> T getRandom(T[] array, Random random) {
         return array[random.nextInt(array.length)];
     }
 
-    public static int getRandom(int[] array, AbstractRandom random) {
+    public static int getRandom(int[] array, Random random) {
         return array[random.nextInt(array.length)];
     }
 
-    public static <T> T getRandom(List<T> list, AbstractRandom random) {
+    public static <T> T getRandom(List<T> list, Random random) {
         return list.get(random.nextInt(list.size()));
     }
 
-    public static <T> Optional<T> getRandomOrEmpty(List<T> list, AbstractRandom random) {
+    public static <T> Optional<T> getRandomOrEmpty(List<T> list, Random random) {
         if (list.isEmpty()) {
             return Optional.empty();
         }
@@ -778,13 +780,13 @@ public class Util {
         };
     }
 
-    public static <T> List<T> copyShuffled(Stream<T> stream, AbstractRandom random) {
+    public static <T> List<T> copyShuffled(Stream<T> stream, Random random) {
         ObjectArrayList objectArrayList = stream.collect(ObjectArrayList.toList());
         Util.shuffle(objectArrayList, random);
         return objectArrayList;
     }
 
-    public static IntArrayList shuffle(IntStream stream, AbstractRandom random) {
+    public static IntArrayList shuffle(IntStream stream, Random random) {
         int i;
         IntArrayList intArrayList = IntArrayList.wrap(stream.toArray());
         for (int j = i = intArrayList.size(); j > 1; --j) {
@@ -794,19 +796,19 @@ public class Util {
         return intArrayList;
     }
 
-    public static <T> List<T> copyShuffled(T[] array, AbstractRandom random) {
+    public static <T> List<T> copyShuffled(T[] array, Random random) {
         ObjectArrayList<T> objectArrayList = new ObjectArrayList<T>(array);
         Util.shuffle(objectArrayList, random);
         return objectArrayList;
     }
 
-    public static <T> List<T> copyShuffled(ObjectArrayList<T> list, AbstractRandom random) {
+    public static <T> List<T> copyShuffled(ObjectArrayList<T> list, Random random) {
         ObjectArrayList<T> objectArrayList = new ObjectArrayList<T>(list);
         Util.shuffle(objectArrayList, random);
         return objectArrayList;
     }
 
-    public static <T> void shuffle(ObjectArrayList<T> list, AbstractRandom random) {
+    public static <T> void shuffle(ObjectArrayList<T> list, Random random) {
         int i;
         for (int j = i = list.size(); j > 1; --j) {
             int k = random.nextInt(j);
@@ -866,9 +868,13 @@ public class Util {
      * return {@code 0} when given values not in the passed list.
      */
     public static <T> ToIntFunction<T> lastIndexGetter(List<T> values) {
-        Object2IntOpenHashMap<T> object2IntMap = new Object2IntOpenHashMap<T>();
-        for (int i = 0; i < values.size(); ++i) {
-            object2IntMap.put(values.get(i), i);
+        return Util.method_44146(values, Object2IntOpenHashMap::new);
+    }
+
+    public static <T> ToIntFunction<T> method_44146(List<T> list, IntFunction<Object2IntMap<T>> intFunction) {
+        Object2IntMap<T> object2IntMap = intFunction.apply(list.size());
+        for (int i = 0; i < list.size(); ++i) {
+            object2IntMap.put(list.get(i), i);
         }
         return object2IntMap;
     }

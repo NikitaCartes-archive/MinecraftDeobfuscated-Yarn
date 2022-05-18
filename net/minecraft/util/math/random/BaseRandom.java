@@ -3,10 +3,10 @@
  */
 package net.minecraft.util.math.random;
 
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
-public interface BaseSimpleRandom
-extends AbstractRandom {
+public interface BaseRandom
+extends Random {
     public static final float FLOAT_MULTIPLIER = 5.9604645E-8f;
     public static final double DOUBLE_MULTIPLIER = (double)1.110223E-16f;
 

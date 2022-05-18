@@ -14,7 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.Feature;
@@ -34,14 +34,14 @@ extends Feature<UnderwaterMagmaFeatureConfig> {
         StructureWorldAccess structureWorldAccess = context.getWorld();
         BlockPos blockPos = context.getOrigin();
         UnderwaterMagmaFeatureConfig underwaterMagmaFeatureConfig = context.getConfig();
-        AbstractRandom abstractRandom = context.getRandom();
+        Random random = context.getRandom();
         OptionalInt optionalInt = UnderwaterMagmaFeature.getFloorHeight(structureWorldAccess, blockPos, underwaterMagmaFeatureConfig);
         if (!optionalInt.isPresent()) {
             return false;
         }
         BlockPos blockPos2 = blockPos.withY(optionalInt.getAsInt());
         Box box = new Box(blockPos2.subtract(vec3i = new Vec3i(underwaterMagmaFeatureConfig.placementRadiusAroundFloor, underwaterMagmaFeatureConfig.placementRadiusAroundFloor, underwaterMagmaFeatureConfig.placementRadiusAroundFloor)), blockPos2.add(vec3i));
-        return BlockPos.stream(box).filter(pos -> abstractRandom.nextFloat() < underwaterMagmaFeatureConfig.placementProbabilityPerValidPosition).filter(pos -> this.isValidPosition(structureWorldAccess, (BlockPos)pos)).mapToInt(pos -> {
+        return BlockPos.stream(box).filter(pos -> random.nextFloat() < underwaterMagmaFeatureConfig.placementProbabilityPerValidPosition).filter(pos -> this.isValidPosition(structureWorldAccess, (BlockPos)pos)).mapToInt(pos -> {
             structureWorldAccess.setBlockState((BlockPos)pos, Blocks.MAGMA_BLOCK.getDefaultState(), Block.NOTIFY_LISTENERS);
             return 1;
         }).sum() > 0;

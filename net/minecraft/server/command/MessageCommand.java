@@ -8,6 +8,7 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import java.util.Collection;
+import java.util.concurrent.Executor;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.MessageArgumentType;
 import net.minecraft.network.MessageType;
@@ -25,12 +26,19 @@ public class MessageCommand {
         dispatcher.register((LiteralArgumentBuilder)CommandManager.literal("w").redirect(literalCommandNode));
     }
 
-    private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, SignedChatMessage message) {
-        SignedChatMessage signedChatMessage = source.getServer().getChatDecorator().decorate(source.getPlayer(), message);
-        for (ServerPlayerEntity serverPlayerEntity : targets) {
-            source.sendFeedback(Text.translatable("commands.message.display.outgoing", serverPlayerEntity.getDisplayName(), signedChatMessage.getContent()).formatted(Formatting.GRAY, Formatting.ITALIC), false);
-            serverPlayerEntity.sendChatMessage(signedChatMessage, source.getChatMessageSender(), MessageType.MSG_COMMAND);
+    private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, MessageArgumentType.SignedMessage signedMessage) {
+        if (targets.isEmpty()) {
+            return 0;
         }
+        signedMessage.decorate(source).thenAcceptAsync(decoratedMessage -> {
+            Text text = ((SignedChatMessage)decoratedMessage.raw()).getContent();
+            for (ServerPlayerEntity serverPlayerEntity : targets) {
+                source.sendFeedback(Text.translatable("commands.message.display.outgoing", serverPlayerEntity.getDisplayName(), text).formatted(Formatting.GRAY, Formatting.ITALIC), false);
+                SignedChatMessage signedChatMessage = (SignedChatMessage)decoratedMessage.getFilterableFor(source, serverPlayerEntity);
+                if (signedChatMessage == null) continue;
+                serverPlayerEntity.sendChatMessage(signedChatMessage, source.getChatMessageSender(), MessageType.MSG_COMMAND);
+            }
+        }, (Executor)source.getServer());
         return targets.size();
     }
 }

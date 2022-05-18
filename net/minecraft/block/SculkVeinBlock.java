@@ -29,7 +29,7 @@ import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 
@@ -75,7 +75,7 @@ Waterloggable {
     }
 
     @Override
-    public void spreadAtSamePosition(WorldAccess world, BlockState state, BlockPos pos, AbstractRandom random) {
+    public void spreadAtSamePosition(WorldAccess world, BlockState state, BlockPos pos, Random random) {
         if (!state.isOf(this)) {
             return;
         }
@@ -93,14 +93,14 @@ Waterloggable {
     }
 
     @Override
-    public int spread(SculkSpreadManager.Cursor cursor, WorldAccess world, BlockPos catalystPos, AbstractRandom random, SculkSpreadManager spreadManager, boolean shouldConvertToBlock) {
+    public int spread(SculkSpreadManager.Cursor cursor, WorldAccess world, BlockPos catalystPos, Random random, SculkSpreadManager spreadManager, boolean shouldConvertToBlock) {
         if (shouldConvertToBlock && this.convertToBlock(spreadManager, world, cursor.getPos(), random)) {
             return cursor.getCharge() - 1;
         }
         return random.nextInt(spreadManager.getSpreadChance()) == 0 ? MathHelper.floor((float)cursor.getCharge() * 0.5f) : cursor.getCharge();
     }
 
-    private boolean convertToBlock(SculkSpreadManager spreadManager, WorldAccess world, BlockPos pos, AbstractRandom random) {
+    private boolean convertToBlock(SculkSpreadManager spreadManager, WorldAccess world, BlockPos pos, Random random) {
         BlockState blockState = world.getBlockState(pos);
         TagKey<Block> tagKey = spreadManager.getReplaceableTag();
         for (Direction direction : Direction.shuffle(random)) {

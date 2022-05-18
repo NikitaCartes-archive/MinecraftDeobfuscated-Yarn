@@ -8,7 +8,7 @@ import java.util.List;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.CoralFeature;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
@@ -20,7 +20,7 @@ extends CoralFeature {
     }
 
     @Override
-    protected boolean generateCoral(WorldAccess world, AbstractRandom random, BlockPos pos, BlockState state) {
+    protected boolean generateCoral(WorldAccess world, Random random, BlockPos pos, BlockState state) {
         BlockPos.Mutable mutable = pos.mutableCopy();
         int i = random.nextInt(3) + 1;
         for (int j = 0; j < i; ++j) {

@@ -11,8 +11,8 @@ import net.minecraft.datafixer.fix.EntitySimpleTransformFix;
 
 public class EntityZombieSplitFix
 extends EntitySimpleTransformFix {
-    public EntityZombieSplitFix(Schema outputSchema, boolean changesType) {
-        super("EntityZombieSplitFix", outputSchema, changesType);
+    public EntityZombieSplitFix(Schema schema, boolean bl) {
+        super("EntityZombieSplitFix", schema, bl);
     }
 
     @Override

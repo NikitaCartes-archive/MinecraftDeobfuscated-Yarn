@@ -3,14 +3,14 @@
  */
 package net.minecraft.network.encryption;
 
-import java.security.GeneralSecurityException;
-import java.security.Signature;
-import java.security.SignatureException;
 import java.util.Optional;
 import net.minecraft.network.encryption.ChatMessageSignature;
-import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.PlayerPublicKey;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.filter.FilteredMessage;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Util;
 
 /**
  * A signed chat message, consisting of the signature, the signed content,
@@ -35,6 +35,35 @@ public record SignedChatMessage(Text signedContent, ChatMessageSignature signatu
     }
 
     /**
+     * {@return a new signed chat message from the content supplied by the chat decorator}
+     * 
+     * @implNote If the decorated content is different from the original and is not
+     * previewed, this will create a signed chat message with the signed original content
+     * and the unsigned decorated content. Otherwise, this will create a signed chat message
+     * with the signed decorated content.
+     */
+    public static SignedChatMessage of(Text originalContent, Text decoratedContent, ChatMessageSignature signature, boolean previewed) {
+        if (originalContent.equals(decoratedContent)) {
+            return SignedChatMessage.of(originalContent, signature);
+        }
+        if (!previewed) {
+            return SignedChatMessage.of(originalContent, signature).withUnsigned(decoratedContent);
+        }
+        return SignedChatMessage.of(decoratedContent, signature);
+    }
+
+    public static FilteredMessage<SignedChatMessage> toSignedMessage(FilteredMessage<Text> original, FilteredMessage<Text> decorated, ChatMessageSignature signature, boolean preview) {
+        Text text = original.raw();
+        Text text2 = decorated.raw();
+        SignedChatMessage signedChatMessage = SignedChatMessage.of(text, text2, signature, preview);
+        if (decorated.isFiltered()) {
+            SignedChatMessage signedChatMessage2 = Util.map(decorated.filtered(), SignedChatMessage::of);
+            return new FilteredMessage<SignedChatMessage>(signedChatMessage, signedChatMessage2);
+        }
+        return FilteredMessage.permitted(signedChatMessage);
+    }
+
+    /**
      * {@return a new signed chat message with {@code signedContent} and "none" signature}
      */
     public static SignedChatMessage of(Text content) {
@@ -53,26 +82,28 @@ public record SignedChatMessage(Text signedContent, ChatMessageSignature signatu
     }
 
     /**
-     * {@return whether the message can be verified using {@code signature}}
-     * 
-     * @throws SignatureException when verifying fails
-     */
-    public boolean verify(Signature signature) throws SignatureException {
-        return this.signature.verify(signature, this.signedContent);
-    }
-
-    /**
      * {@return whether the message can be verified using the public key}
      */
     public boolean verify(PlayerPublicKey key) {
-        if (!this.signature.canVerify()) {
-            return false;
-        }
-        try {
-            return this.verify(key.createSignatureInstance());
-        } catch (GeneralSecurityException | NetworkEncryptionException exception) {
-            return false;
-        }
+        return this.signature.verify(key.createSignatureInstance(), this.signedContent);
+    }
+
+    /**
+     * {@return whether the message can be verified using the public key <strong>or if the
+     * player does not have the key</strong>}
+     */
+    public boolean verify(ServerPlayerEntity player) {
+        PlayerPublicKey playerPublicKey = player.getPublicKey();
+        return playerPublicKey == null || this.verify(playerPublicKey);
+    }
+
+    /**
+     * {@return whether the message can be verified using the public key of the source
+     * <strong>or if the source does not have the key</strong>}
+     */
+    public boolean verify(ServerCommandSource source) {
+        ServerPlayerEntity serverPlayerEntity = source.getPlayer();
+        return serverPlayerEntity == null || this.verify(serverPlayerEntity);
     }
 
     /**

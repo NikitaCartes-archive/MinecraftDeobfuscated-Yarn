@@ -28,7 +28,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 
 public class WardenAngerManager {
@@ -37,7 +37,7 @@ public class WardenAngerManager {
     @VisibleForTesting
     protected static final int maxAnger = 150;
     private static final int angerDecreasePerTick = 1;
-    private int updateTimer = MathHelper.nextBetween(AbstractRandom.createAtomic(), 0, 2);
+    private int updateTimer = MathHelper.nextBetween(Random.create(), 0, 2);
     int primeAnger;
     private static final Codec<Pair<UUID, Integer>> SUSPECT_CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codecs.UUID.fieldOf("uuid")).forGetter(Pair::getFirst), ((MapCodec)Codecs.NONNEGATIVE_INT.fieldOf("anger")).forGetter(Pair::getSecond)).apply((Applicative<Pair, ?>)instance, Pair::of));
     private final Predicate<Entity> suspectPredicate;
@@ -146,7 +146,7 @@ public class WardenAngerManager {
     }
 
     @Nullable
-    private Entity getPrimeSuspect() {
+    private Entity getPrimeSuspectInternal() {
         return this.suspects.stream().filter(this.suspectPredicate).findFirst().orElse(null);
     }
 
@@ -155,7 +155,7 @@ public class WardenAngerManager {
     }
 
     public Optional<LivingEntity> getPrimeSuspect() {
-        return Optional.ofNullable(this.getPrimeSuspect()).filter(suspect -> suspect instanceof LivingEntity).map(suspect -> (LivingEntity)suspect);
+        return Optional.ofNullable(this.getPrimeSuspectInternal()).filter(suspect -> suspect instanceof LivingEntity).map(suspect -> (LivingEntity)suspect);
     }
 
     @VisibleForTesting
@@ -179,7 +179,7 @@ public class WardenAngerManager {
             if (bl3 != bl4) {
                 return bl3 ? -1 : 1;
             }
-            return i > j ? -1 : 1;
+            return Integer.compare(j, i);
         }
 
         @Override

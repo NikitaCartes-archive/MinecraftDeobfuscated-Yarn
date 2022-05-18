@@ -3,7 +3,7 @@
  */
 package net.minecraft.util.math.random;
 
-import net.minecraft.world.gen.random.RandomSeed;
+import net.minecraft.util.math.random.RandomSeed;
 
 /**
  * Implementation of Xoroshiro128++ pseudo-random number generator.

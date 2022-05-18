@@ -9,7 +9,7 @@ import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.DirectionTransformation;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public enum BlockRotation implements StringIdentifiable
 {
@@ -118,11 +118,11 @@ public enum BlockRotation implements StringIdentifiable
         return rotation;
     }
 
-    public static BlockRotation random(AbstractRandom random) {
+    public static BlockRotation random(Random random) {
         return Util.getRandom(BlockRotation.values(), random);
     }
 
-    public static List<BlockRotation> randomRotationOrder(AbstractRandom random) {
+    public static List<BlockRotation> randomRotationOrder(Random random) {
         return Util.copyShuffled(BlockRotation.values(), random);
     }
 

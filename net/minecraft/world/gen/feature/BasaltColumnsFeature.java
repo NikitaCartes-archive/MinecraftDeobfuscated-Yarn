@@ -10,7 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.BasaltColumnsFeatureConfig;
@@ -35,20 +35,20 @@ extends Feature<BasaltColumnsFeatureConfig> {
         int i = context.getGenerator().getSeaLevel();
         BlockPos blockPos = context.getOrigin();
         StructureWorldAccess structureWorldAccess = context.getWorld();
-        AbstractRandom abstractRandom = context.getRandom();
+        Random random = context.getRandom();
         BasaltColumnsFeatureConfig basaltColumnsFeatureConfig = context.getConfig();
         if (!BasaltColumnsFeature.canPlaceAt(structureWorldAccess, i, blockPos.mutableCopy())) {
             return false;
         }
-        int j = basaltColumnsFeatureConfig.getHeight().get(abstractRandom);
-        boolean bl = abstractRandom.nextFloat() < 0.9f;
+        int j = basaltColumnsFeatureConfig.getHeight().get(random);
+        boolean bl = random.nextFloat() < 0.9f;
         int k = Math.min(j, bl ? 5 : 8);
         int l = bl ? 50 : 15;
         boolean bl2 = false;
-        for (BlockPos blockPos2 : BlockPos.iterateRandomly(abstractRandom, l, blockPos.getX() - k, blockPos.getY(), blockPos.getZ() - k, blockPos.getX() + k, blockPos.getY(), blockPos.getZ() + k)) {
+        for (BlockPos blockPos2 : BlockPos.iterateRandomly(random, l, blockPos.getX() - k, blockPos.getY(), blockPos.getZ() - k, blockPos.getX() + k, blockPos.getY(), blockPos.getZ() + k)) {
             int m = j - blockPos2.getManhattanDistance(blockPos);
             if (m < 0) continue;
-            bl2 |= this.placeBasaltColumn(structureWorldAccess, i, blockPos2, m, basaltColumnsFeatureConfig.getReach().get(abstractRandom));
+            bl2 |= this.placeBasaltColumn(structureWorldAccess, i, blockPos2, m, basaltColumnsFeatureConfig.getReach().get(random));
         }
         return bl2;
     }

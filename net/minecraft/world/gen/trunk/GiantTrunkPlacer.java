@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
@@ -31,7 +31,7 @@ extends TrunkPlacer {
     }
 
     @Override
-    public List<FoliagePlacer.TreeNode> generate(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, int height, BlockPos startPos, TreeFeatureConfig config) {
+    public List<FoliagePlacer.TreeNode> generate(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, int height, BlockPos startPos, TreeFeatureConfig config) {
         BlockPos blockPos = startPos.down();
         GiantTrunkPlacer.setToDirt(world, replacer, random, blockPos, config);
         GiantTrunkPlacer.setToDirt(world, replacer, random, blockPos.east(), config);
@@ -48,9 +48,9 @@ extends TrunkPlacer {
         return ImmutableList.of(new FoliagePlacer.TreeNode(startPos.up(height), 0, true));
     }
 
-    private void setLog(TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, AbstractRandom abstractRandom, BlockPos.Mutable mutable, TreeFeatureConfig treeFeatureConfig, BlockPos blockPos, int i, int j, int k) {
+    private void setLog(TestableWorld testableWorld, BiConsumer<BlockPos, BlockState> biConsumer, Random random, BlockPos.Mutable mutable, TreeFeatureConfig treeFeatureConfig, BlockPos blockPos, int i, int j, int k) {
         mutable.set(blockPos, i, j, k);
-        this.trySetState(testableWorld, biConsumer, abstractRandom, mutable, treeFeatureConfig);
+        this.trySetState(testableWorld, biConsumer, random, mutable, treeFeatureConfig);
     }
 }
 

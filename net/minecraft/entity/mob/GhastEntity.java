@@ -32,7 +32,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
@@ -77,12 +77,12 @@ implements Monster {
 
     @Override
     public boolean damage(DamageSource source, float amount) {
-        if (this.isInvulnerableTo(source)) {
-            return false;
-        }
         if (source.getSource() instanceof FireballEntity && source.getAttacker() instanceof PlayerEntity) {
             super.damage(source, 1000.0f);
             return true;
+        }
+        if (this.isInvulnerableTo(source)) {
+            return false;
         }
         return super.damage(source, amount);
     }
@@ -122,7 +122,7 @@ implements Monster {
         return 5.0f;
     }
 
-    public static boolean canSpawn(EntityType<GhastEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, AbstractRandom random) {
+    public static boolean canSpawn(EntityType<GhastEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
         return world.getDifficulty() != Difficulty.PEACEFUL && random.nextInt(20) == 0 && GhastEntity.canMobSpawn(type, world, spawnReason, pos, random);
     }
 
@@ -216,10 +216,10 @@ implements Monster {
 
         @Override
         public void start() {
-            AbstractRandom abstractRandom = this.ghast.getRandom();
-            double d = this.ghast.getX() + (double)((abstractRandom.nextFloat() * 2.0f - 1.0f) * 16.0f);
-            double e = this.ghast.getY() + (double)((abstractRandom.nextFloat() * 2.0f - 1.0f) * 16.0f);
-            double f = this.ghast.getZ() + (double)((abstractRandom.nextFloat() * 2.0f - 1.0f) * 16.0f);
+            Random random = this.ghast.getRandom();
+            double d = this.ghast.getX() + (double)((random.nextFloat() * 2.0f - 1.0f) * 16.0f);
+            double e = this.ghast.getY() + (double)((random.nextFloat() * 2.0f - 1.0f) * 16.0f);
+            double f = this.ghast.getZ() + (double)((random.nextFloat() * 2.0f - 1.0f) * 16.0f);
             this.ghast.getMoveControl().moveTo(d, e, f, 1.0);
         }
     }

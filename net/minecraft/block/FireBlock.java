@@ -26,7 +26,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -128,7 +128,7 @@ extends AbstractFireBlock {
     }
 
     @Override
-    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         boolean bl2;
         world.createAndScheduleBlockTick(pos, this, FireBlock.getFireTickDelay(world.random));
         if (!world.getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
@@ -211,7 +211,7 @@ extends AbstractFireBlock {
         return this.burnChances.getInt(state.getBlock());
     }
 
-    private void trySpreadingFire(World world, BlockPos pos, int spreadFactor, AbstractRandom random, int currentAge) {
+    private void trySpreadingFire(World world, BlockPos pos, int spreadFactor, Random random, int currentAge) {
         int i = this.getSpreadChance(world.getBlockState(pos));
         if (random.nextInt(spreadFactor) < i) {
             BlockState blockState = world.getBlockState(pos);
@@ -267,7 +267,7 @@ extends AbstractFireBlock {
         world.createAndScheduleBlockTick(pos, this, FireBlock.getFireTickDelay(world.random));
     }
 
-    private static int getFireTickDelay(AbstractRandom random) {
+    private static int getFireTickDelay(Random random) {
         return 30 + random.nextInt(10);
     }
 

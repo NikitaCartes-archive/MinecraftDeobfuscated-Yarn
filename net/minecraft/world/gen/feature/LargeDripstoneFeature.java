@@ -13,7 +13,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.floatprovider.FloatProvider;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.Feature;
@@ -34,7 +34,7 @@ extends Feature<LargeDripstoneFeatureConfig> {
         StructureWorldAccess structureWorldAccess = context.getWorld();
         BlockPos blockPos = context.getOrigin();
         LargeDripstoneFeatureConfig largeDripstoneFeatureConfig = context.getConfig();
-        AbstractRandom abstractRandom = context.getRandom();
+        Random random = context.getRandom();
         if (!DripstoneHelper.canGenerate(structureWorldAccess, blockPos)) {
             return false;
         }
@@ -48,23 +48,23 @@ extends Feature<LargeDripstoneFeatureConfig> {
         }
         int i = (int)((float)bounded.getHeight() * largeDripstoneFeatureConfig.maxColumnRadiusToCaveHeightRatio);
         int j = MathHelper.clamp(i, largeDripstoneFeatureConfig.columnRadius.getMin(), largeDripstoneFeatureConfig.columnRadius.getMax());
-        int k = MathHelper.nextBetween(abstractRandom, largeDripstoneFeatureConfig.columnRadius.getMin(), j);
-        DripstoneGenerator dripstoneGenerator = LargeDripstoneFeature.createGenerator(blockPos.withY(bounded.getCeiling() - 1), false, abstractRandom, k, largeDripstoneFeatureConfig.stalactiteBluntness, largeDripstoneFeatureConfig.heightScale);
-        DripstoneGenerator dripstoneGenerator2 = LargeDripstoneFeature.createGenerator(blockPos.withY(bounded.getFloor() + 1), true, abstractRandom, k, largeDripstoneFeatureConfig.stalagmiteBluntness, largeDripstoneFeatureConfig.heightScale);
-        WindModifier windModifier = dripstoneGenerator.generateWind(largeDripstoneFeatureConfig) && dripstoneGenerator2.generateWind(largeDripstoneFeatureConfig) ? new WindModifier(blockPos.getY(), abstractRandom, largeDripstoneFeatureConfig.windSpeed) : WindModifier.create();
+        int k = MathHelper.nextBetween(random, largeDripstoneFeatureConfig.columnRadius.getMin(), j);
+        DripstoneGenerator dripstoneGenerator = LargeDripstoneFeature.createGenerator(blockPos.withY(bounded.getCeiling() - 1), false, random, k, largeDripstoneFeatureConfig.stalactiteBluntness, largeDripstoneFeatureConfig.heightScale);
+        DripstoneGenerator dripstoneGenerator2 = LargeDripstoneFeature.createGenerator(blockPos.withY(bounded.getFloor() + 1), true, random, k, largeDripstoneFeatureConfig.stalagmiteBluntness, largeDripstoneFeatureConfig.heightScale);
+        WindModifier windModifier = dripstoneGenerator.generateWind(largeDripstoneFeatureConfig) && dripstoneGenerator2.generateWind(largeDripstoneFeatureConfig) ? new WindModifier(blockPos.getY(), random, largeDripstoneFeatureConfig.windSpeed) : WindModifier.create();
         boolean bl = dripstoneGenerator.canGenerate(structureWorldAccess, windModifier);
         boolean bl2 = dripstoneGenerator2.canGenerate(structureWorldAccess, windModifier);
         if (bl) {
-            dripstoneGenerator.generate(structureWorldAccess, abstractRandom, windModifier);
+            dripstoneGenerator.generate(structureWorldAccess, random, windModifier);
         }
         if (bl2) {
-            dripstoneGenerator2.generate(structureWorldAccess, abstractRandom, windModifier);
+            dripstoneGenerator2.generate(structureWorldAccess, random, windModifier);
         }
         return true;
     }
 
-    private static DripstoneGenerator createGenerator(BlockPos pos, boolean isStalagmite, AbstractRandom abstractRandom, int scale, FloatProvider bluntness, FloatProvider heightScale) {
-        return new DripstoneGenerator(pos, isStalagmite, scale, bluntness.get(abstractRandom), heightScale.get(abstractRandom));
+    private static DripstoneGenerator createGenerator(BlockPos pos, boolean isStalagmite, Random random, int scale, FloatProvider bluntness, FloatProvider heightScale) {
+        return new DripstoneGenerator(pos, isStalagmite, scale, bluntness.get(random), heightScale.get(random));
     }
 
     private void testGeneration(StructureWorldAccess world, BlockPos pos, CaveSurface.Bounded surface, WindModifier wind) {
@@ -136,14 +136,14 @@ extends Feature<LargeDripstoneFeatureConfig> {
             return (int)DripstoneHelper.scaleHeightFromRadius(height, this.scale, this.heightScale, this.bluntness);
         }
 
-        void generate(StructureWorldAccess world, AbstractRandom abstractRandom, WindModifier wind) {
+        void generate(StructureWorldAccess world, Random random, WindModifier wind) {
             for (int i = -this.scale; i <= this.scale; ++i) {
                 block1: for (int j = -this.scale; j <= this.scale; ++j) {
                     int k;
                     float f = MathHelper.sqrt(i * i + j * j);
                     if (f > (float)this.scale || (k = this.scale(f)) <= 0) continue;
-                    if ((double)abstractRandom.nextFloat() < 0.2) {
-                        k = (int)((float)k * MathHelper.nextBetween(abstractRandom, 0.8f, 1.0f));
+                    if ((double)random.nextFloat() < 0.2) {
+                        k = (int)((float)k * MathHelper.nextBetween(random, 0.8f, 1.0f));
                     }
                     BlockPos.Mutable mutable = this.pos.add(i, 0, j).mutableCopy();
                     boolean bl = false;
@@ -171,10 +171,10 @@ extends Feature<LargeDripstoneFeatureConfig> {
         @Nullable
         private final Vec3d wind;
 
-        WindModifier(int y, AbstractRandom abstractRandom, FloatProvider wind) {
+        WindModifier(int y, Random random, FloatProvider wind) {
             this.y = y;
-            float f = wind.get(abstractRandom);
-            float g = MathHelper.nextBetween(abstractRandom, 0.0f, (float)Math.PI);
+            float f = wind.get(random);
+            float g = MathHelper.nextBetween(random, 0.0f, (float)Math.PI);
             this.wind = new Vec3d(MathHelper.cos(g) * f, 0.0, MathHelper.sin(g) * f);
         }
 

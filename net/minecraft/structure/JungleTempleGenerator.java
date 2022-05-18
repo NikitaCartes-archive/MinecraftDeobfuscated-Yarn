@@ -25,7 +25,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -40,7 +40,7 @@ extends ShiftableStructurePiece {
     private boolean placedTrap2;
     private static final CobblestoneRandomizer COBBLESTONE_RANDOMIZER = new CobblestoneRandomizer();
 
-    public JungleTempleGenerator(AbstractRandom random, int x, int z) {
+    public JungleTempleGenerator(Random random, int x, int z) {
         super(StructurePieceType.JUNGLE_TEMPLE, x, 64, z, 12, 10, 15, JungleTempleGenerator.getRandomHorizontalDirection(random));
     }
 
@@ -62,7 +62,7 @@ extends ShiftableStructurePiece {
     }
 
     @Override
-    public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, AbstractRandom random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos) {
+    public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos) {
         int k;
         int i;
         if (!this.adjustToAverageHeight(world, chunkBox, 0)) {
@@ -234,7 +234,7 @@ extends ShiftableStructurePiece {
         }
 
         @Override
-        public void setBlock(AbstractRandom random, int x, int y, int z, boolean placeBlock) {
+        public void setBlock(Random random, int x, int y, int z, boolean placeBlock) {
             this.block = random.nextFloat() < 0.4f ? Blocks.COBBLESTONE.getDefaultState() : Blocks.MOSSY_COBBLESTONE.getDefaultState();
         }
     }

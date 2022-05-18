@@ -12,7 +12,7 @@ import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.function.ConditionalLootFunction;
 import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.function.LootFunctionTypes;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class ExplosionDecayLootFunction
 extends ConditionalLootFunction {
@@ -29,12 +29,12 @@ extends ConditionalLootFunction {
     public ItemStack process(ItemStack stack, LootContext context) {
         Float float_ = context.get(LootContextParameters.EXPLOSION_RADIUS);
         if (float_ != null) {
-            AbstractRandom abstractRandom = context.getRandom();
+            Random random = context.getRandom();
             float f = 1.0f / float_.floatValue();
             int i = stack.getCount();
             int j = 0;
             for (int k = 0; k < i; ++k) {
-                if (!(abstractRandom.nextFloat() <= f)) continue;
+                if (!(random.nextFloat() <= f)) continue;
                 ++j;
             }
             stack.setCount(j);

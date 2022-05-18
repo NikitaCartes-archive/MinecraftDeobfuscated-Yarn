@@ -35,7 +35,7 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.HeightLimitView;
@@ -67,7 +67,7 @@ implements StructureWorldAccess {
     private final ServerWorld world;
     private final long seed;
     private final WorldProperties levelProperties;
-    private final AbstractRandom random;
+    private final Random random;
     private final DimensionType dimension;
     private final MultiTickScheduler<Block> blockTickScheduler = new MultiTickScheduler(pos -> this.getChunk((BlockPos)pos).getBlockTickScheduler());
     private final MultiTickScheduler<Fluid> fluidTickScheduler = new MultiTickScheduler(pos -> this.getChunk((BlockPos)pos).getFluidTickScheduler());
@@ -104,7 +104,7 @@ implements StructureWorldAccess {
         this.world = world;
         this.seed = world.getSeed();
         this.levelProperties = world.getLevelProperties();
-        this.random = world.getChunkManager().getNoiseConfig().getOrCreateRandomDeriver(field_38683).createRandom(this.centerPos.getPos().getStartPos());
+        this.random = world.getChunkManager().getNoiseConfig().getOrCreateRandomDeriver(field_38683).split(this.centerPos.getPos().getStartPos());
         this.dimension = world.getDimension();
         this.biomeAccess = new BiomeAccess(this, BiomeAccess.hashSeed(this.seed));
         this.lowerCorner = chunks.get(0).getPos();
@@ -382,7 +382,7 @@ implements StructureWorldAccess {
     }
 
     @Override
-    public AbstractRandom getRandom() {
+    public Random getRandom() {
         return this.random;
     }
 

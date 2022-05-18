@@ -13,7 +13,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.Feature;
@@ -30,17 +30,17 @@ extends Feature<VegetationPatchFeatureConfig> {
     public boolean generate(FeatureContext<VegetationPatchFeatureConfig> context) {
         StructureWorldAccess structureWorldAccess = context.getWorld();
         VegetationPatchFeatureConfig vegetationPatchFeatureConfig = context.getConfig();
-        AbstractRandom abstractRandom = context.getRandom();
+        Random random = context.getRandom();
         BlockPos blockPos = context.getOrigin();
         Predicate<BlockState> predicate = state -> state.isIn(vegetationPatchFeatureConfig.replaceable);
-        int i = vegetationPatchFeatureConfig.horizontalRadius.get(abstractRandom) + 1;
-        int j = vegetationPatchFeatureConfig.horizontalRadius.get(abstractRandom) + 1;
-        Set<BlockPos> set = this.placeGroundAndGetPositions(structureWorldAccess, vegetationPatchFeatureConfig, abstractRandom, blockPos, predicate, i, j);
-        this.generateVegetation(context, structureWorldAccess, vegetationPatchFeatureConfig, abstractRandom, set, i, j);
+        int i = vegetationPatchFeatureConfig.horizontalRadius.get(random) + 1;
+        int j = vegetationPatchFeatureConfig.horizontalRadius.get(random) + 1;
+        Set<BlockPos> set = this.placeGroundAndGetPositions(structureWorldAccess, vegetationPatchFeatureConfig, random, blockPos, predicate, i, j);
+        this.generateVegetation(context, structureWorldAccess, vegetationPatchFeatureConfig, random, set, i, j);
         return !set.isEmpty();
     }
 
-    protected Set<BlockPos> placeGroundAndGetPositions(StructureWorldAccess world, VegetationPatchFeatureConfig config, AbstractRandom random, BlockPos pos, Predicate<BlockState> replaceable, int radiusX, int radiusZ) {
+    protected Set<BlockPos> placeGroundAndGetPositions(StructureWorldAccess world, VegetationPatchFeatureConfig config, Random random, BlockPos pos, Predicate<BlockState> replaceable, int radiusX, int radiusZ) {
         BlockPos.Mutable mutable = pos.mutableCopy();
         BlockPos.Mutable mutable2 = mutable.mutableCopy();
         Direction direction = config.surface.getDirection();
@@ -76,21 +76,21 @@ extends Feature<VegetationPatchFeatureConfig> {
         return set;
     }
 
-    protected void generateVegetation(FeatureContext<VegetationPatchFeatureConfig> context, StructureWorldAccess world, VegetationPatchFeatureConfig config, AbstractRandom abstractRandom, Set<BlockPos> positions, int radiusX, int radiusZ) {
+    protected void generateVegetation(FeatureContext<VegetationPatchFeatureConfig> context, StructureWorldAccess world, VegetationPatchFeatureConfig config, Random random, Set<BlockPos> positions, int radiusX, int radiusZ) {
         for (BlockPos blockPos : positions) {
-            if (!(config.vegetationChance > 0.0f) || !(abstractRandom.nextFloat() < config.vegetationChance)) continue;
-            this.generateVegetationFeature(world, config, context.getGenerator(), abstractRandom, blockPos);
+            if (!(config.vegetationChance > 0.0f) || !(random.nextFloat() < config.vegetationChance)) continue;
+            this.generateVegetationFeature(world, config, context.getGenerator(), random, blockPos);
         }
     }
 
-    protected boolean generateVegetationFeature(StructureWorldAccess world, VegetationPatchFeatureConfig config, ChunkGenerator generator, AbstractRandom random, BlockPos pos) {
+    protected boolean generateVegetationFeature(StructureWorldAccess world, VegetationPatchFeatureConfig config, ChunkGenerator generator, Random random, BlockPos pos) {
         return config.vegetationFeature.value().generateUnregistered(world, generator, random, pos.offset(config.surface.getDirection().getOpposite()));
     }
 
-    protected boolean placeGround(StructureWorldAccess world, VegetationPatchFeatureConfig config, Predicate<BlockState> replaceable, AbstractRandom abstractRandom, BlockPos.Mutable pos, int depth) {
+    protected boolean placeGround(StructureWorldAccess world, VegetationPatchFeatureConfig config, Predicate<BlockState> replaceable, Random random, BlockPos.Mutable pos, int depth) {
         for (int i = 0; i < depth; ++i) {
             BlockState blockState2;
-            BlockState blockState = config.groundState.getBlockState(abstractRandom, pos);
+            BlockState blockState = config.groundState.getBlockState(random, pos);
             if (blockState.isOf((blockState2 = world.getBlockState(pos)).getBlock())) continue;
             if (!replaceable.test(blockState2)) {
                 return i != 0;

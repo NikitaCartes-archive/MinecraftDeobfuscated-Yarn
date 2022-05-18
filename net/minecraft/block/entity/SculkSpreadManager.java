@@ -38,7 +38,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
 import org.jetbrains.annotations.Nullable;
@@ -139,7 +139,7 @@ public class SculkSpreadManager {
         this.cursors.add(cursor);
     }
 
-    public void tick(WorldAccess world, BlockPos pos2, AbstractRandom random, boolean shouldConvertToBlock) {
+    public void tick(WorldAccess world, BlockPos pos2, Random random, boolean shouldConvertToBlock) {
         BlockPos blockPos;
         if (this.cursors.isEmpty()) {
             return;
@@ -238,7 +238,7 @@ public class SculkSpreadManager {
             return false;
         }
 
-        public void spread(WorldAccess world, BlockPos pos, AbstractRandom random, SculkSpreadManager spreadManager, boolean shouldConvertToBlock) {
+        public void spread(WorldAccess world, BlockPos pos, Random random, SculkSpreadManager spreadManager, boolean shouldConvertToBlock) {
             if (!this.canSpread(world, pos, spreadManager.worldGen)) {
                 return;
             }
@@ -289,12 +289,12 @@ public class SculkSpreadManager {
             return block instanceof SculkSpreadable ? (sculkSpreadable = (SculkSpreadable)((Object)block)) : SculkSpreadable.VEIN_ONLY_SPREADER;
         }
 
-        private static List<Vec3i> shuffleOffsets(AbstractRandom random) {
+        private static List<Vec3i> shuffleOffsets(Random random) {
             return Util.copyShuffled(OFFSETS, random);
         }
 
         @Nullable
-        private static BlockPos getSpreadPos(WorldAccess world, BlockPos pos, AbstractRandom random) {
+        private static BlockPos getSpreadPos(WorldAccess world, BlockPos pos, Random random) {
             BlockPos.Mutable mutable = pos.mutableCopy();
             BlockPos.Mutable mutable2 = pos.mutableCopy();
             for (Vec3i vec3i : Cursor.shuffleOffsets(random)) {

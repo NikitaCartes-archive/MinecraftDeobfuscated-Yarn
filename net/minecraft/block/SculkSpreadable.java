@@ -12,7 +12,7 @@ import net.minecraft.block.entity.SculkSpreadManager;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,7 +34,7 @@ public interface SculkSpreadable {
         }
 
         @Override
-        public int spread(SculkSpreadManager.Cursor cursor, WorldAccess world, BlockPos catalystPos, AbstractRandom random, SculkSpreadManager spreadManager, boolean shouldConvertToBlock) {
+        public int spread(SculkSpreadManager.Cursor cursor, WorldAccess world, BlockPos catalystPos, Random random, SculkSpreadManager spreadManager, boolean shouldConvertToBlock) {
             return cursor.getDecay() > 0 ? cursor.getCharge() : 0;
         }
 
@@ -48,10 +48,10 @@ public interface SculkSpreadable {
         return 1;
     }
 
-    default public void spreadAtSamePosition(WorldAccess world, BlockState state, BlockPos pos, AbstractRandom random) {
+    default public void spreadAtSamePosition(WorldAccess world, BlockState state, BlockPos pos, Random random) {
     }
 
-    default public boolean method_41470(WorldAccess world, BlockPos pos, AbstractRandom random) {
+    default public boolean method_41470(WorldAccess world, BlockPos pos, Random random) {
         return false;
     }
 
@@ -67,6 +67,6 @@ public interface SculkSpreadable {
         return 1;
     }
 
-    public int spread(SculkSpreadManager.Cursor var1, WorldAccess var2, BlockPos var3, AbstractRandom var4, SculkSpreadManager var5, boolean var6);
+    public int spread(SculkSpreadManager.Cursor var1, WorldAccess var2, BlockPos var3, Random var4, SculkSpreadManager var5, boolean var6);
 }
 

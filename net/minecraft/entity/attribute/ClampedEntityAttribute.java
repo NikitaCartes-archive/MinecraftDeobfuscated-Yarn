@@ -39,8 +39,10 @@ extends EntityAttribute {
 
     @Override
     public double clamp(double value) {
-        value = MathHelper.clamp(value, this.minValue, this.maxValue);
-        return value;
+        if (Double.isNaN(value)) {
+            return this.minValue;
+        }
+        return MathHelper.clamp(value, this.minValue, this.maxValue);
     }
 }
 

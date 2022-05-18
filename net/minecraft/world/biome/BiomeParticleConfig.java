@@ -9,7 +9,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class BiomeParticleConfig {
     public static final Codec<BiomeParticleConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)ParticleTypes.TYPE_CODEC.fieldOf("options")).forGetter(biomeParticleConfig -> biomeParticleConfig.particle), ((MapCodec)Codec.FLOAT.fieldOf("probability")).forGetter(biomeParticleConfig -> Float.valueOf(biomeParticleConfig.probability))).apply((Applicative<BiomeParticleConfig, ?>)instance, BiomeParticleConfig::new));
@@ -25,7 +25,7 @@ public class BiomeParticleConfig {
         return this.particle;
     }
 
-    public boolean shouldAddParticle(AbstractRandom random) {
+    public boolean shouldAddParticle(Random random) {
         return random.nextFloat() <= this.probability;
     }
 }

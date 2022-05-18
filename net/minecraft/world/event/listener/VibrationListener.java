@@ -39,14 +39,14 @@ implements GameEventListener {
     protected final Callback callback;
     @Nullable
     protected Vibration vibration;
-    protected int distance;
+    protected float distance;
     protected int delay;
 
     public static Codec<VibrationListener> createCodec(Callback callback) {
-        return RecordCodecBuilder.create(instance -> instance.group(((MapCodec)PositionSource.CODEC.fieldOf("source")).forGetter(listener -> listener.positionSource), ((MapCodec)Codecs.NONNEGATIVE_INT.fieldOf("range")).forGetter(listener -> listener.range), Vibration.CODEC.optionalFieldOf("event").forGetter(listener -> Optional.ofNullable(listener.vibration)), ((MapCodec)Codecs.NONNEGATIVE_INT.fieldOf("event_distance")).orElse(0).forGetter(listener -> listener.distance), ((MapCodec)Codecs.NONNEGATIVE_INT.fieldOf("event_delay")).orElse(0).forGetter(listener -> listener.delay)).apply((Applicative<VibrationListener, ?>)instance, (positionSource, range, vibration, distance, delay) -> new VibrationListener((PositionSource)positionSource, (int)range, callback, vibration.orElse(null), (int)distance, (int)delay)));
+        return RecordCodecBuilder.create(instance -> instance.group(((MapCodec)PositionSource.CODEC.fieldOf("source")).forGetter(listener -> listener.positionSource), ((MapCodec)Codecs.NONNEGATIVE_INT.fieldOf("range")).forGetter(listener -> listener.range), Vibration.CODEC.optionalFieldOf("event").forGetter(listener -> Optional.ofNullable(listener.vibration)), ((MapCodec)Codec.floatRange(0.0f, Float.MAX_VALUE).fieldOf("event_distance")).orElse(Float.valueOf(0.0f)).forGetter(listener -> Float.valueOf(listener.distance)), ((MapCodec)Codecs.NONNEGATIVE_INT.fieldOf("event_delay")).orElse(0).forGetter(listener -> listener.delay)).apply((Applicative<VibrationListener, ?>)instance, (positionSource, range, vibration, float_, delay) -> new VibrationListener((PositionSource)positionSource, (int)range, callback, vibration.orElse(null), float_.floatValue(), (int)delay)));
     }
 
-    public VibrationListener(PositionSource positionSource, int range, Callback callback, @Nullable Vibration vibration, int distance, int delay) {
+    public VibrationListener(PositionSource positionSource, int range, Callback callback, @Nullable Vibration vibration, float distance, int delay) {
         this.positionSource = positionSource;
         this.range = range;
         this.callback = callback;
@@ -106,9 +106,9 @@ implements GameEventListener {
     }
 
     private void listen(ServerWorld world, GameEvent gameEvent, GameEvent.Emitter emitter, Vec3d start, Vec3d end) {
-        this.distance = MathHelper.floor(start.distanceTo(end));
+        this.distance = (float)start.distanceTo(end);
         this.vibration = new Vibration(gameEvent, this.distance, start, emitter.sourceEntity());
-        this.delay = this.distance;
+        this.delay = MathHelper.floor(this.distance);
         world.spawnParticles(new VibrationParticleEffect(this.positionSource, this.delay), start.x, start.y, start.z, 1, 0.0, 0.0, 0.0, 0.0);
         this.callback.onListen();
     }
@@ -161,20 +161,20 @@ implements GameEventListener {
 
         public boolean accepts(ServerWorld var1, GameEventListener var2, BlockPos var3, GameEvent var4, GameEvent.Emitter var5);
 
-        public void accept(ServerWorld var1, GameEventListener var2, BlockPos var3, GameEvent var4, @Nullable Entity var5, @Nullable Entity var6, int var7);
+        public void accept(ServerWorld var1, GameEventListener var2, BlockPos var3, GameEvent var4, @Nullable Entity var5, @Nullable Entity var6, float var7);
 
         default public void onListen() {
         }
     }
 
-    public record Vibration(GameEvent gameEvent, int distance, Vec3d pos, @Nullable UUID uuid, @Nullable UUID projectileOwnerUuid, @Nullable Entity entity) {
-        public static final Codec<Vibration> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Registry.GAME_EVENT.getCodec().fieldOf("game_event")).forGetter(Vibration::gameEvent), ((MapCodec)Codecs.NONNEGATIVE_INT.fieldOf("distance")).forGetter(Vibration::distance), ((MapCodec)Vec3d.CODEC.fieldOf("pos")).forGetter(Vibration::pos), Codecs.UUID.optionalFieldOf("source").forGetter(vibration -> Optional.ofNullable(vibration.uuid())), Codecs.UUID.optionalFieldOf("projectile_owner").forGetter(vibration -> Optional.ofNullable(vibration.projectileOwnerUuid()))).apply((Applicative<Vibration, ?>)instance, (gameEvent, integer, vec3d, optional, optional2) -> new Vibration((GameEvent)gameEvent, (int)integer, (Vec3d)vec3d, optional.orElse(null), optional2.orElse(null))));
+    public record Vibration(GameEvent gameEvent, float distance, Vec3d pos, @Nullable UUID uuid, @Nullable UUID projectileOwnerUuid, @Nullable Entity entity) {
+        public static final Codec<Vibration> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Registry.GAME_EVENT.getCodec().fieldOf("game_event")).forGetter(Vibration::gameEvent), ((MapCodec)Codec.floatRange(0.0f, Float.MAX_VALUE).fieldOf("distance")).forGetter(Vibration::distance), ((MapCodec)Vec3d.CODEC.fieldOf("pos")).forGetter(Vibration::pos), Codecs.UUID.optionalFieldOf("source").forGetter(vibration -> Optional.ofNullable(vibration.uuid())), Codecs.UUID.optionalFieldOf("projectile_owner").forGetter(vibration -> Optional.ofNullable(vibration.projectileOwnerUuid()))).apply((Applicative<Vibration, ?>)instance, (event, distance, pos, uuid, projectileOwnerUuid) -> new Vibration((GameEvent)event, distance.floatValue(), (Vec3d)pos, uuid.orElse(null), projectileOwnerUuid.orElse(null))));
 
-        public Vibration(GameEvent gameEvent, int distance, Vec3d pos, @Nullable UUID uuid, @Nullable UUID sourceUuid) {
-            this(gameEvent, distance, pos, uuid, sourceUuid, null);
+        public Vibration(GameEvent gameEvent, float distance, Vec3d pos, @Nullable UUID uuid, @Nullable UUID projectileOwnerUuid) {
+            this(gameEvent, distance, pos, uuid, projectileOwnerUuid, null);
         }
 
-        public Vibration(GameEvent gameEvent, int distance, Vec3d pos, @Nullable Entity entity) {
+        public Vibration(GameEvent gameEvent, float distance, Vec3d pos, @Nullable Entity entity) {
             this(gameEvent, distance, pos, entity == null ? null : entity.getUuid(), Vibration.getOwnerUuid(entity), entity);
         }
 

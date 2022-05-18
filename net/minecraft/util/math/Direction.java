@@ -26,7 +26,7 @@ import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.Vector4f;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 
 public enum Direction implements StringIdentifiable
@@ -113,7 +113,7 @@ public enum Direction implements StringIdentifiable
         return Direction.getFacing(vector4f.getX(), vector4f.getY(), vector4f.getZ());
     }
 
-    public static Collection<Direction> shuffle(AbstractRandom random) {
+    public static Collection<Direction> shuffle(Random random) {
         return Util.copyShuffled(Direction.values(), random);
     }
 
@@ -350,7 +350,7 @@ public enum Direction implements StringIdentifiable
         return (this.idHorizontal & 3) * 90;
     }
 
-    public static Direction random(AbstractRandom random) {
+    public static Direction random(Random random) {
         return Util.getRandom(ALL, random);
     }
 
@@ -509,7 +509,7 @@ public enum Direction implements StringIdentifiable
             return this.name;
         }
 
-        public static Axis pickRandomAxis(AbstractRandom random) {
+        public static Axis pickRandomAxis(Random random) {
             return Util.getRandom(VALUES, random);
         }
 
@@ -589,11 +589,11 @@ public enum Direction implements StringIdentifiable
             this.axisArray = axisArray;
         }
 
-        public Direction random(AbstractRandom random) {
+        public Direction random(Random random) {
             return Util.getRandom(this.facingArray, random);
         }
 
-        public Axis randomAxis(AbstractRandom random) {
+        public Axis randomAxis(Random random) {
             return Util.getRandom(this.axisArray, random);
         }
 
@@ -611,7 +611,7 @@ public enum Direction implements StringIdentifiable
             return Arrays.stream(this.facingArray);
         }
 
-        public List<Direction> getShuffled(AbstractRandom random) {
+        public List<Direction> getShuffled(Random random) {
             return Util.copyShuffled(this.facingArray, random);
         }
 

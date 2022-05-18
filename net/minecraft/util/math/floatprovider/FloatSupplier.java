@@ -3,9 +3,9 @@
  */
 package net.minecraft.util.math.floatprovider;
 
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public interface FloatSupplier {
-    public float get(AbstractRandom var1);
+    public float get(Random var1);
 }
 

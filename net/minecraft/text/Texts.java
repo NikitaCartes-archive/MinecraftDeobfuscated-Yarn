@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Function;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.entity.Entity;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
@@ -50,7 +50,7 @@ public class Texts {
 
     public static MutableText parse(@Nullable ServerCommandSource source, Text text, @Nullable Entity sender, int depth) throws CommandSyntaxException {
         if (depth > 100) {
-            return text.shallowCopy();
+            return text.copy();
         }
         MutableText mutableText = text.getContent().parse(source, sender, depth + 1);
         for (Text text2 : text.getSiblings()) {
@@ -112,7 +112,7 @@ public class Texts {
             return Text.empty();
         }
         if (elements.size() == 1) {
-            return transformer.apply(elements.iterator().next()).shallowCopy();
+            return transformer.apply(elements.iterator().next()).copy();
         }
         MutableText mutableText = Text.empty();
         boolean bl = true;

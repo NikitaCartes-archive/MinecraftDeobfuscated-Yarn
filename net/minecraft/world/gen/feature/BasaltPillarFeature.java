@@ -10,7 +10,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
@@ -27,7 +27,7 @@ extends Feature<DefaultFeatureConfig> {
     public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
         BlockPos blockPos = context.getOrigin();
         StructureWorldAccess structureWorldAccess = context.getWorld();
-        AbstractRandom abstractRandom = context.getRandom();
+        Random random = context.getRandom();
         if (!structureWorldAccess.isAir(blockPos) || structureWorldAccess.isAir(blockPos.up())) {
             return false;
         }
@@ -42,23 +42,23 @@ extends Feature<DefaultFeatureConfig> {
                 return true;
             }
             structureWorldAccess.setBlockState(mutable, Blocks.BASALT.getDefaultState(), Block.NOTIFY_LISTENERS);
-            bl = bl && this.stopOrPlaceBasalt(structureWorldAccess, abstractRandom, mutable2.set((Vec3i)mutable, Direction.NORTH));
-            bl2 = bl2 && this.stopOrPlaceBasalt(structureWorldAccess, abstractRandom, mutable2.set((Vec3i)mutable, Direction.SOUTH));
-            bl3 = bl3 && this.stopOrPlaceBasalt(structureWorldAccess, abstractRandom, mutable2.set((Vec3i)mutable, Direction.WEST));
-            bl4 = bl4 && this.stopOrPlaceBasalt(structureWorldAccess, abstractRandom, mutable2.set((Vec3i)mutable, Direction.EAST));
+            bl = bl && this.stopOrPlaceBasalt(structureWorldAccess, random, mutable2.set((Vec3i)mutable, Direction.NORTH));
+            bl2 = bl2 && this.stopOrPlaceBasalt(structureWorldAccess, random, mutable2.set((Vec3i)mutable, Direction.SOUTH));
+            bl3 = bl3 && this.stopOrPlaceBasalt(structureWorldAccess, random, mutable2.set((Vec3i)mutable, Direction.WEST));
+            bl4 = bl4 && this.stopOrPlaceBasalt(structureWorldAccess, random, mutable2.set((Vec3i)mutable, Direction.EAST));
             mutable.move(Direction.DOWN);
         }
         mutable.move(Direction.UP);
-        this.tryPlaceBasalt(structureWorldAccess, abstractRandom, mutable2.set((Vec3i)mutable, Direction.NORTH));
-        this.tryPlaceBasalt(structureWorldAccess, abstractRandom, mutable2.set((Vec3i)mutable, Direction.SOUTH));
-        this.tryPlaceBasalt(structureWorldAccess, abstractRandom, mutable2.set((Vec3i)mutable, Direction.WEST));
-        this.tryPlaceBasalt(structureWorldAccess, abstractRandom, mutable2.set((Vec3i)mutable, Direction.EAST));
+        this.tryPlaceBasalt(structureWorldAccess, random, mutable2.set((Vec3i)mutable, Direction.NORTH));
+        this.tryPlaceBasalt(structureWorldAccess, random, mutable2.set((Vec3i)mutable, Direction.SOUTH));
+        this.tryPlaceBasalt(structureWorldAccess, random, mutable2.set((Vec3i)mutable, Direction.WEST));
+        this.tryPlaceBasalt(structureWorldAccess, random, mutable2.set((Vec3i)mutable, Direction.EAST));
         mutable.move(Direction.DOWN);
         BlockPos.Mutable mutable3 = new BlockPos.Mutable();
         for (int i = -3; i < 4; ++i) {
             for (int j = -3; j < 4; ++j) {
                 int k = MathHelper.abs(i) * MathHelper.abs(j);
-                if (abstractRandom.nextInt(10) >= 10 - k) continue;
+                if (random.nextInt(10) >= 10 - k) continue;
                 mutable3.set(mutable.add(i, 0, j));
                 int l = 3;
                 while (structureWorldAccess.isAir(mutable2.set((Vec3i)mutable3, Direction.DOWN))) {
@@ -72,13 +72,13 @@ extends Feature<DefaultFeatureConfig> {
         return true;
     }
 
-    private void tryPlaceBasalt(WorldAccess world, AbstractRandom random, BlockPos pos) {
+    private void tryPlaceBasalt(WorldAccess world, Random random, BlockPos pos) {
         if (random.nextBoolean()) {
             world.setBlockState(pos, Blocks.BASALT.getDefaultState(), Block.NOTIFY_LISTENERS);
         }
     }
 
-    private boolean stopOrPlaceBasalt(WorldAccess world, AbstractRandom random, BlockPos pos) {
+    private boolean stopOrPlaceBasalt(WorldAccess world, Random random, BlockPos pos) {
         if (random.nextInt(10) != 0) {
             world.setBlockState(pos, Blocks.BASALT.getDefaultState(), Block.NOTIFY_LISTENERS);
             return true;

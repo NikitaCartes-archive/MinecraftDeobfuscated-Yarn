@@ -34,7 +34,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
 
 public class SpreadPlayersCommand {
@@ -53,13 +53,13 @@ public class SpreadPlayersCommand {
         if (maxY < i) {
             throw INVALID_HEIGHT_EXCEPTION.create(maxY, i);
         }
-        AbstractRandom abstractRandom = AbstractRandom.createAtomic();
+        Random random = Random.create();
         double d = center.x - maxRange;
         double e = center.y - maxRange;
         double f = center.x + maxRange;
         double g = center.y + maxRange;
-        Pile[] piles = SpreadPlayersCommand.makePiles(abstractRandom, respectTeams ? SpreadPlayersCommand.getPileCountRespectingTeams(players) : players.size(), d, e, f, g);
-        SpreadPlayersCommand.spread(center, spreadDistance, serverWorld, abstractRandom, d, e, f, g, maxY, piles, respectTeams);
+        Pile[] piles = SpreadPlayersCommand.makePiles(random, respectTeams ? SpreadPlayersCommand.getPileCountRespectingTeams(players) : players.size(), d, e, f, g);
+        SpreadPlayersCommand.spread(center, spreadDistance, serverWorld, random, d, e, f, g, maxY, piles, respectTeams);
         double h = SpreadPlayersCommand.getMinDistance(players, serverWorld, piles, maxY, respectTeams);
         source.sendFeedback(Text.translatable("commands.spreadplayers.success." + (respectTeams ? "teams" : "entities"), piles.length, Float.valueOf(center.x), Float.valueOf(center.y), String.format(Locale.ROOT, "%.2f", h)), true);
         return piles.length;
@@ -77,7 +77,7 @@ public class SpreadPlayersCommand {
         return set.size();
     }
 
-    private static void spread(Vec2f center, double spreadDistance, ServerWorld world, AbstractRandom random, double minX, double minZ, double maxX, double maxZ, int maxY, Pile[] piles, boolean respectTeams) throws CommandSyntaxException {
+    private static void spread(Vec2f center, double spreadDistance, ServerWorld world, Random random, double minX, double minZ, double maxX, double maxZ, int maxY, Pile[] piles, boolean respectTeams) throws CommandSyntaxException {
         int i;
         boolean bl = true;
         double d = 3.4028234663852886E38;
@@ -162,7 +162,7 @@ public class SpreadPlayersCommand {
         return d /= (double)entities.size();
     }
 
-    private static Pile[] makePiles(AbstractRandom random, int count, double minX, double minZ, double maxX, double maxZ) {
+    private static Pile[] makePiles(Random random, int count, double minX, double minZ, double maxX, double maxZ) {
         Pile[] piles = new Pile[count];
         for (int i = 0; i < piles.length; ++i) {
             Pile pile = new Pile();
@@ -243,7 +243,7 @@ public class SpreadPlayersCommand {
             return blockPos.getY() < maxY && !material.isLiquid() && material != Material.FIRE;
         }
 
-        public void setPileLocation(AbstractRandom random, double minX, double minZ, double maxX, double maxZ) {
+        public void setPileLocation(Random random, double minX, double minZ, double maxX, double maxZ) {
             this.x = MathHelper.nextDouble(random, minX, maxX);
             this.z = MathHelper.nextDouble(random, minZ, maxZ);
         }

@@ -10,8 +10,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
-import net.minecraft.util.math.random.RandomDeriver;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.util.math.random.RandomSplitter;
 import net.minecraft.world.biome.source.util.VanillaBiomeParameters;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
@@ -21,8 +21,8 @@ import org.apache.commons.lang3.mutable.MutableDouble;
 import org.jetbrains.annotations.Nullable;
 
 public interface AquiferSampler {
-    public static AquiferSampler aquifer(ChunkNoiseSampler chunkNoiseSampler, ChunkPos chunkPos, NoiseRouter noiseRouter, RandomDeriver randomDeriver, int i, int j, FluidLevelSampler fluidLevelSampler) {
-        return new Impl(chunkNoiseSampler, chunkPos, noiseRouter, randomDeriver, i, j, fluidLevelSampler);
+    public static AquiferSampler aquifer(ChunkNoiseSampler chunkNoiseSampler, ChunkPos chunkPos, NoiseRouter noiseRouter, RandomSplitter randomSplitter, int i, int j, FluidLevelSampler fluidLevelSampler) {
+        return new Impl(chunkNoiseSampler, chunkPos, noiseRouter, randomSplitter, i, j, fluidLevelSampler);
     }
 
     public static AquiferSampler seaLevel(final FluidLevelSampler fluidLevelSampler) {
@@ -67,7 +67,7 @@ public interface AquiferSampler {
         private final DensityFunction fluidLevelFloodednessNoise;
         private final DensityFunction fluidLevelSpreadNoise;
         private final DensityFunction fluidTypeNoise;
-        private final RandomDeriver randomDeriver;
+        private final RandomSplitter randomDeriver;
         private final FluidLevel[] waterLevels;
         private final long[] blockPositions;
         private final FluidLevelSampler fluidLevelSampler;
@@ -81,7 +81,7 @@ public interface AquiferSampler {
         private final int sizeZ;
         private static final int[][] field_34581 = new int[][]{{-2, -1}, {-1, -1}, {0, -1}, {1, -1}, {-3, 0}, {-2, 0}, {-1, 0}, {0, 0}, {1, 0}, {-2, 1}, {-1, 1}, {0, 1}, {1, 1}};
 
-        Impl(ChunkNoiseSampler chunkNoiseSampler, ChunkPos chunkPos, NoiseRouter noiseRouter, RandomDeriver randomDeriver, int i, int j, FluidLevelSampler fluidLevelSampler) {
+        Impl(ChunkNoiseSampler chunkNoiseSampler, ChunkPos chunkPos, NoiseRouter noiseRouter, RandomSplitter randomSplitter, int i, int j, FluidLevelSampler fluidLevelSampler) {
             this.chunkNoiseSampler = chunkNoiseSampler;
             this.barrierNoise = noiseRouter.barrierNoise();
             this.fluidLevelFloodednessNoise = noiseRouter.fluidLevelFloodednessNoise();
@@ -89,7 +89,7 @@ public interface AquiferSampler {
             this.fluidTypeNoise = noiseRouter.lavaNoise();
             this.field_38246 = noiseRouter.erosion();
             this.field_38247 = noiseRouter.depth();
-            this.randomDeriver = randomDeriver;
+            this.randomDeriver = randomSplitter;
             this.startX = this.getLocalX(chunkPos.getStartX()) - 1;
             this.fluidLevelSampler = fluidLevelSampler;
             int k = this.getLocalX(chunkPos.getEndX()) + 1;
@@ -152,8 +152,8 @@ public interface AquiferSampler {
                         if (ab != Long.MAX_VALUE) {
                             ac = ab;
                         } else {
-                            AbstractRandom abstractRandom = this.randomDeriver.createRandom(x, y, z);
-                            this.blockPositions[aa] = ac = BlockPos.asLong(x * 16 + abstractRandom.nextInt(10), y * 12 + abstractRandom.nextInt(9), z * 16 + abstractRandom.nextInt(10));
+                            Random random = this.randomDeriver.split(x, y, z);
+                            this.blockPositions[aa] = ac = BlockPos.asLong(x * 16 + random.nextInt(10), y * 12 + random.nextInt(9), z * 16 + random.nextInt(10));
                         }
                         int ad = BlockPos.unpackLongX(ac) - i;
                         int ae = BlockPos.unpackLongY(ac) - j;

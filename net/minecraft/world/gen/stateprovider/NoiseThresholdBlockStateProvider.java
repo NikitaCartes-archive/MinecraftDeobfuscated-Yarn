@@ -12,7 +12,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.gen.stateprovider.AbstractNoiseBlockStateProvider;
 import net.minecraft.world.gen.stateprovider.BlockStateProviderType;
 
@@ -40,7 +40,7 @@ extends AbstractNoiseBlockStateProvider {
     }
 
     @Override
-    public BlockState getBlockState(AbstractRandom random, BlockPos pos) {
+    public BlockState getBlockState(Random random, BlockPos pos) {
         double d = this.getNoiseValue(pos, this.scale);
         if (d < (double)this.threshold) {
             return Util.getRandom(this.lowStates, random);

@@ -3,14 +3,17 @@
  */
 package net.minecraft.util.math.random;
 
-import net.minecraft.util.math.random.AbstractRandom;
-import net.minecraft.util.math.random.AtomicSimpleRandom;
-import net.minecraft.util.math.random.BaseSimpleRandom;
-import net.minecraft.util.math.random.RandomDeriver;
-import net.minecraft.world.gen.random.GaussianGenerator;
+import net.minecraft.util.math.random.BaseRandom;
+import net.minecraft.util.math.random.CheckedRandom;
+import net.minecraft.util.math.random.GaussianGenerator;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.util.math.random.RandomSplitter;
 
-public class SimpleRandom
-implements BaseSimpleRandom {
+/**
+ * A local random, not intended to be shared across threads.
+ */
+public class LocalRandom
+implements BaseRandom {
     private static final int INT_BITS = 48;
     private static final long SEED_MASK = 0xFFFFFFFFFFFFL;
     private static final long MULTIPLIER = 25214903917L;
@@ -18,18 +21,18 @@ implements BaseSimpleRandom {
     private long seed;
     private final GaussianGenerator gaussianGenerator = new GaussianGenerator(this);
 
-    public SimpleRandom(long seed) {
+    public LocalRandom(long seed) {
         this.setSeed(seed);
     }
 
     @Override
-    public AbstractRandom derive() {
-        return new SimpleRandom(this.nextLong());
+    public Random split() {
+        return new LocalRandom(this.nextLong());
     }
 
     @Override
-    public RandomDeriver createRandomDeriver() {
-        return new AtomicSimpleRandom.RandomDeriver(this.nextLong());
+    public RandomSplitter nextSplitter() {
+        return new CheckedRandom.Splitter(this.nextLong());
     }
 
     @Override

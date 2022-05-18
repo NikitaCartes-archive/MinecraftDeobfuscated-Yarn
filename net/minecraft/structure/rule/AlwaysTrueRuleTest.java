@@ -7,7 +7,7 @@ import com.mojang.serialization.Codec;
 import net.minecraft.block.BlockState;
 import net.minecraft.structure.rule.RuleTest;
 import net.minecraft.structure.rule.RuleTestType;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class AlwaysTrueRuleTest
 extends RuleTest {
@@ -18,7 +18,7 @@ extends RuleTest {
     }
 
     @Override
-    public boolean test(BlockState state, AbstractRandom random) {
+    public boolean test(BlockState state, Random random) {
         return true;
     }
 

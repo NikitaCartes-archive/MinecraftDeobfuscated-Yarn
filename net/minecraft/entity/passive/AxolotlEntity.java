@@ -60,7 +60,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -111,7 +111,7 @@ Bucketable {
     private static final Logger field_37260 = LogUtils.getLogger();
     public static final int PLAY_DEAD_TICKS = 200;
     protected static final ImmutableList<? extends SensorType<? extends Sensor<? super AxolotlEntity>>> SENSORS = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_ADULT, SensorType.HURT_BY, SensorType.AXOLOTL_ATTACKABLES, SensorType.AXOLOTL_TEMPTATIONS);
-    protected static final ImmutableList<? extends MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(MemoryModuleType.BREED_TARGET, MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER, MemoryModuleType.LOOK_TARGET, MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.PATH, MemoryModuleType.ATTACK_TARGET, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryModuleType.NEAREST_VISIBLE_ADULT, new MemoryModuleType[]{MemoryModuleType.HURT_BY_ENTITY, MemoryModuleType.PLAY_DEAD_TICKS, MemoryModuleType.NEAREST_ATTACKABLE, MemoryModuleType.TEMPTING_PLAYER, MemoryModuleType.TEMPTATION_COOLDOWN_TICKS, MemoryModuleType.IS_TEMPTED, MemoryModuleType.HAS_HUNTING_COOLDOWN});
+    protected static final ImmutableList<? extends MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(MemoryModuleType.BREED_TARGET, MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER, MemoryModuleType.LOOK_TARGET, MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.PATH, MemoryModuleType.ATTACK_TARGET, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryModuleType.NEAREST_VISIBLE_ADULT, new MemoryModuleType[]{MemoryModuleType.HURT_BY_ENTITY, MemoryModuleType.PLAY_DEAD_TICKS, MemoryModuleType.NEAREST_ATTACKABLE, MemoryModuleType.TEMPTING_PLAYER, MemoryModuleType.TEMPTATION_COOLDOWN_TICKS, MemoryModuleType.IS_TEMPTED, MemoryModuleType.HAS_HUNTING_COOLDOWN, MemoryModuleType.IS_PANICKING});
     private static final TrackedData<Integer> VARIANT = DataTracker.registerData(AxolotlEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Boolean> PLAYING_DEAD = DataTracker.registerData(AxolotlEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> FROM_BUCKET = DataTracker.registerData(AxolotlEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -178,15 +178,15 @@ Bucketable {
         if (spawnReason == SpawnReason.BUCKET) {
             return entityData;
         }
-        AbstractRandom abstractRandom = world.getRandom();
+        Random random = world.getRandom();
         if (entityData instanceof AxolotlData) {
             if (((AxolotlData)entityData).getSpawnedCount() >= 2) {
                 bl = true;
             }
         } else {
-            entityData = new AxolotlData(Variant.getRandomNatural(abstractRandom), Variant.getRandomNatural(abstractRandom));
+            entityData = new AxolotlData(Variant.getRandomNatural(random), Variant.getRandomNatural(random));
         }
-        this.setVariant(((AxolotlData)entityData).getRandomVariant(abstractRandom));
+        this.setVariant(((AxolotlData)entityData).getRandomVariant(random));
         if (bl) {
             this.setBreedingAge(-24000);
         }
@@ -232,7 +232,7 @@ Bucketable {
         this.dataTracker.set(VARIANT, variant.getId());
     }
 
-    private static boolean shouldBabyBeDifferent(AbstractRandom random) {
+    private static boolean shouldBabyBeDifferent(Random random) {
         return random.nextInt(1200) == 0;
     }
 
@@ -507,7 +507,7 @@ Bucketable {
         return !this.isFromBucket() && !this.hasCustomName();
     }
 
-    public static boolean canSpawn(EntityType<? extends LivingEntity> type, ServerWorldAccess world, SpawnReason reason, BlockPos pos, AbstractRandom random) {
+    public static boolean canSpawn(EntityType<? extends LivingEntity> type, ServerWorldAccess world, SpawnReason reason, BlockPos pos, Random random) {
         return world.getBlockState(pos.down()).isIn(BlockTags.AXOLOTLS_SPAWNABLE_ON);
     }
 
@@ -568,15 +568,15 @@ Bucketable {
             return this.name;
         }
 
-        public static Variant getRandomNatural(AbstractRandom random) {
+        public static Variant getRandomNatural(Random random) {
             return Variant.getRandom(random, true);
         }
 
-        public static Variant getRandomUnnatural(AbstractRandom random) {
+        public static Variant getRandomUnnatural(Random random) {
             return Variant.getRandom(random, false);
         }
 
-        private static Variant getRandom(AbstractRandom random, boolean natural) {
+        private static Variant getRandom(Random random, boolean natural) {
             Variant[] variants = (Variant[])Arrays.stream(VARIANTS).filter(variant -> variant.natural == natural).toArray(Variant[]::new);
             return Util.getRandom(variants, random);
         }
@@ -595,7 +595,7 @@ Bucketable {
             this.variants = variants;
         }
 
-        public Variant getRandomVariant(AbstractRandom random) {
+        public Variant getRandomVariant(Random random) {
             return this.variants[random.nextInt(this.variants.length)];
         }
     }

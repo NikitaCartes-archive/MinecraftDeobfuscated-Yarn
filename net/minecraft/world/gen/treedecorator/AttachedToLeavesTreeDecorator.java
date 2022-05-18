@@ -13,7 +13,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 import net.minecraft.world.gen.treedecorator.TreeDecorator;
 import net.minecraft.world.gen.treedecorator.TreeDecoratorType;
@@ -40,17 +40,17 @@ extends TreeDecorator {
     @Override
     public void generate(TreeDecorator.Generator generator) {
         HashSet<BlockPos> set = new HashSet<BlockPos>();
-        AbstractRandom abstractRandom = generator.getRandom();
-        for (BlockPos blockPos : Util.copyShuffled(generator.getLeavesPositions(), abstractRandom)) {
+        Random random = generator.getRandom();
+        for (BlockPos blockPos : Util.copyShuffled(generator.getLeavesPositions(), random)) {
             Direction direction;
-            BlockPos blockPos2 = blockPos.offset(direction = Util.getRandom(this.directions, abstractRandom));
-            if (set.contains(blockPos2) || !(abstractRandom.nextFloat() < this.probability) || !this.meetsRequiredEmptyBlocks(generator, blockPos, direction)) continue;
+            BlockPos blockPos2 = blockPos.offset(direction = Util.getRandom(this.directions, random));
+            if (set.contains(blockPos2) || !(random.nextFloat() < this.probability) || !this.meetsRequiredEmptyBlocks(generator, blockPos, direction)) continue;
             BlockPos blockPos3 = blockPos2.add(-this.exclusionRadiusXZ, -this.exclusionRadiusY, -this.exclusionRadiusXZ);
             BlockPos blockPos4 = blockPos2.add(this.exclusionRadiusXZ, this.exclusionRadiusY, this.exclusionRadiusXZ);
             for (BlockPos blockPos5 : BlockPos.iterate(blockPos3, blockPos4)) {
                 set.add(blockPos5.toImmutable());
             }
-            generator.replace(blockPos2, this.blockProvider.getBlockState(abstractRandom, blockPos2));
+            generator.replace(blockPos2, this.blockProvider.getBlockState(random, blockPos2));
         }
     }
 

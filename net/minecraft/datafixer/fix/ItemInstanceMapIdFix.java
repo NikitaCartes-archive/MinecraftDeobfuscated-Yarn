@@ -19,8 +19,8 @@ import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 
 public class ItemInstanceMapIdFix
 extends DataFix {
-    public ItemInstanceMapIdFix(Schema outputSchema, boolean changesType) {
-        super(outputSchema, changesType);
+    public ItemInstanceMapIdFix(Schema schema, boolean bl) {
+        super(schema, bl);
     }
 
     @Override

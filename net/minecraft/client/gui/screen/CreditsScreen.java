@@ -32,7 +32,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 
@@ -146,13 +146,13 @@ extends Screen {
         int i;
         Object string;
         BufferedReader bufferedReader = new BufferedReader(reader);
-        AbstractRandom abstractRandom = AbstractRandom.createAtomic(8124371L);
+        Random random = Random.create(8124371L);
         while ((string = bufferedReader.readLine()) != null) {
             string = ((String)string).replaceAll("PLAYERNAME", this.client.getSession().getUsername());
             while ((i = ((String)string).indexOf(OBFUSCATION_PLACEHOLDER)) != -1) {
                 String string2 = ((String)string).substring(0, i);
                 String string3 = ((String)string).substring(i + OBFUSCATION_PLACEHOLDER.length());
-                string = string2 + Formatting.WHITE + Formatting.OBFUSCATED + "XXXXXXXX".substring(0, abstractRandom.nextInt(4) + 3) + string3;
+                string = string2 + Formatting.WHITE + Formatting.OBFUSCATED + "XXXXXXXX".substring(0, random.nextInt(4) + 3) + string3;
             }
             this.addText((String)string);
             this.addEmptyLine();

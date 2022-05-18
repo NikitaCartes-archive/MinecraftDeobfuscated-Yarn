@@ -11,7 +11,7 @@ import com.mojang.serialization.MapCodec;
 import java.util.Set;
 import java.util.function.Predicate;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
@@ -48,7 +48,7 @@ implements BiomeAccess.Storage {
 
     @Override
     @Nullable
-    public Pair<BlockPos, RegistryEntry<Biome>> locateBiome(int x, int y, int z, int radius, int blockCheckInterval, Predicate<RegistryEntry<Biome>> predicate, AbstractRandom random, boolean bl, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
+    public Pair<BlockPos, RegistryEntry<Biome>> locateBiome(int x, int y, int z, int radius, int blockCheckInterval, Predicate<RegistryEntry<Biome>> predicate, Random random, boolean bl, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
         if (predicate.test(this.biome)) {
             if (bl) {
                 return Pair.of(new BlockPos(x, y, z), this.biome);
@@ -60,8 +60,8 @@ implements BiomeAccess.Storage {
 
     @Override
     @Nullable
-    public Pair<BlockPos, RegistryEntry<Biome>> method_42310(BlockPos blockPos, int i, int j, int k, Predicate<RegistryEntry<Biome>> predicate, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler, WorldView worldView) {
-        return predicate.test(this.biome) ? Pair.of(blockPos, this.biome) : null;
+    public Pair<BlockPos, RegistryEntry<Biome>> locateBiome(BlockPos origin, int radius, int horizontalBlockCheckInterval, int verticalBlockCheckInterval, Predicate<RegistryEntry<Biome>> predicate, MultiNoiseUtil.MultiNoiseSampler noiseSampler, WorldView world) {
+        return predicate.test(this.biome) ? Pair.of(origin, this.biome) : null;
     }
 
     @Override

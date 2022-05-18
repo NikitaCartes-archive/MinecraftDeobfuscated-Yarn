@@ -27,7 +27,7 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockRenderView;
 
 @Environment(value=EnvType.CLIENT)
@@ -37,7 +37,7 @@ implements SynchronousResourceReloader {
     private final BlockModelRenderer blockModelRenderer;
     private final BuiltinModelItemRenderer builtinModelItemRenderer;
     private final FluidRenderer fluidRenderer;
-    private final AbstractRandom random = AbstractRandom.createAtomic();
+    private final Random random = Random.create();
     private final BlockColors blockColors;
 
     public BlockRenderManager(BlockModels models, BuiltinModelItemRenderer builtinModelItemRenderer, BlockColors blockColors) {
@@ -61,7 +61,7 @@ implements SynchronousResourceReloader {
         this.blockModelRenderer.render(world, bakedModel, state, pos, matrices, vertexConsumer, true, this.random, l, OverlayTexture.DEFAULT_UV);
     }
 
-    public void renderBlock(BlockState state, BlockPos pos, BlockRenderView world, MatrixStack matrices, VertexConsumer vertexConsumer, boolean cull, AbstractRandom random) {
+    public void renderBlock(BlockState state, BlockPos pos, BlockRenderView world, MatrixStack matrices, VertexConsumer vertexConsumer, boolean cull, Random random) {
         try {
             BlockRenderType blockRenderType = state.getRenderType();
             if (blockRenderType == BlockRenderType.MODEL) {

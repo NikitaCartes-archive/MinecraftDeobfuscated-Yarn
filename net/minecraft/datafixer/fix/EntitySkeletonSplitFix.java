@@ -11,8 +11,8 @@ import net.minecraft.datafixer.fix.EntitySimpleTransformFix;
 
 public class EntitySkeletonSplitFix
 extends EntitySimpleTransformFix {
-    public EntitySkeletonSplitFix(Schema outputSchema, boolean changesType) {
-        super("EntitySkeletonSplitFix", outputSchema, changesType);
+    public EntitySkeletonSplitFix(Schema schema, boolean bl) {
+        super("EntitySkeletonSplitFix", schema, bl);
     }
 
     @Override

@@ -13,24 +13,15 @@ import net.minecraft.network.encryption.SignedChatMessage;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.filter.TextStream;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.filter.FilteredMessage;
 
 public class MeCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder)CommandManager.literal("me").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("action", MessageArgumentType.message()).executes(context -> {
-            SignedChatMessage signedChatMessage = MessageArgumentType.getSignedMessage(context, "action");
+            MessageArgumentType.SignedMessage signedMessage = MessageArgumentType.getSignedMessage(context, "action");
             ServerCommandSource serverCommandSource = (ServerCommandSource)context.getSource();
-            if (serverCommandSource.isExecutedByPlayer()) {
-                ServerPlayerEntity serverPlayerEntity = serverCommandSource.getPlayerOrThrow();
-                serverPlayerEntity.getTextStream().filterText(signedChatMessage.signedContent().getString()).thenAcceptAsync(message -> {
-                    PlayerManager playerManager = serverCommandSource.getServer().getPlayerManager();
-                    SignedChatMessage signedChatMessage2 = serverCommandSource.getServer().getChatDecorator().decorate(serverPlayerEntity, signedChatMessage);
-                    playerManager.broadcast(signedChatMessage2, (TextStream.Message)message, serverPlayerEntity, MessageType.EMOTE_COMMAND);
-                }, (Executor)serverCommandSource.getServer());
-            } else {
-                serverCommandSource.getServer().getPlayerManager().broadcast(signedChatMessage, serverCommandSource.getChatMessageSender(), MessageType.EMOTE_COMMAND);
-            }
+            PlayerManager playerManager = serverCommandSource.getServer().getPlayerManager();
+            signedMessage.decorate(serverCommandSource).thenAcceptAsync(decoratedMessage -> playerManager.broadcast((FilteredMessage<SignedChatMessage>)decoratedMessage, serverCommandSource, MessageType.EMOTE_COMMAND), (Executor)serverCommandSource.getServer());
             return 1;
         })));
     }

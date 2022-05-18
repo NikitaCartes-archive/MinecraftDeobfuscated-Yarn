@@ -33,7 +33,7 @@ import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -177,12 +177,12 @@ implements InventoryProvider {
         double d = blockState.getOutlineShape(world, pos).getEndingCoord(Direction.Axis.Y, 0.5, 0.5) + 0.03125;
         double e = 0.13125f;
         double f = 0.7375f;
-        AbstractRandom abstractRandom = world.getRandom();
+        Random random = world.getRandom();
         for (int i = 0; i < 10; ++i) {
-            double g = abstractRandom.nextGaussian() * 0.02;
-            double h = abstractRandom.nextGaussian() * 0.02;
-            double j = abstractRandom.nextGaussian() * 0.02;
-            world.addParticle(ParticleTypes.COMPOSTER, (double)pos.getX() + (double)0.13125f + (double)0.7375f * (double)abstractRandom.nextFloat(), (double)pos.getY() + d + (double)abstractRandom.nextFloat() * (1.0 - d), (double)pos.getZ() + (double)0.13125f + (double)0.7375f * (double)abstractRandom.nextFloat(), g, h, j);
+            double g = random.nextGaussian() * 0.02;
+            double h = random.nextGaussian() * 0.02;
+            double j = random.nextGaussian() * 0.02;
+            world.addParticle(ParticleTypes.COMPOSTER, (double)pos.getX() + (double)0.13125f + (double)0.7375f * (double)random.nextFloat(), (double)pos.getY() + d + (double)random.nextFloat() * (1.0 - d), (double)pos.getZ() + (double)0.13125f + (double)0.7375f * (double)random.nextFloat(), g, h, j);
         }
     }
 
@@ -277,7 +277,7 @@ implements InventoryProvider {
     }
 
     @Override
-    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (state.get(LEVEL) == 7) {
             world.setBlockState(pos, (BlockState)state.cycle(LEVEL), Block.NOTIFY_ALL);
             world.playSound(null, pos, SoundEvents.BLOCK_COMPOSTER_READY, SoundCategory.BLOCKS, 1.0f, 1.0f);

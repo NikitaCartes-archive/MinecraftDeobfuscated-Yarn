@@ -12,8 +12,8 @@ import net.minecraft.datafixer.fix.ChoiceFix;
 
 public class CatTypeFix
 extends ChoiceFix {
-    public CatTypeFix(Schema outputSchema, boolean changesType) {
-        super(outputSchema, changesType, "CatTypeFix", TypeReferences.ENTITY, "minecraft:cat");
+    public CatTypeFix(Schema schema, boolean bl) {
+        super(schema, bl, "CatTypeFix", TypeReferences.ENTITY, "minecraft:cat");
     }
 
     public Dynamic<?> fixCatTypeData(Dynamic<?> dynamic) {

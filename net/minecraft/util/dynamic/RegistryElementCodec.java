@@ -82,8 +82,8 @@ implements Codec<RegistryEntry<E>> {
             if (optional2.isPresent()) {
                 return optional2.get().load(this.registryRef, this.elementCodec, registryKey, registryOps.getEntryOps()).map((? super R entry) -> Pair.of(entry, pair2.getSecond()));
             }
-            RegistryEntry registryEntry = registry.getOrCreateEntry(registryKey);
-            return DataResult.success(Pair.of(registryEntry, pair2.getSecond()), Lifecycle.stable());
+            DataResult dataResult2 = registry.getOrCreateEntryDataResult(registryKey);
+            return dataResult2.map((? super R registryEntry) -> Pair.of(registryEntry, pair2.getSecond())).setLifecycle(Lifecycle.stable());
         }
         return this.elementCodec.decode(ops, input).map((? super R pair) -> pair.mapFirst(RegistryEntry::of));
     }

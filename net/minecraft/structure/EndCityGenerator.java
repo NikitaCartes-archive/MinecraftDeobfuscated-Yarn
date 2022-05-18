@@ -27,7 +27,7 @@ import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
@@ -40,7 +40,7 @@ public class EndCityGenerator {
         }
 
         @Override
-        public boolean create(StructureManager manager, int depth, Piece root, BlockPos pos, List<StructurePiece> pieces, AbstractRandom random) {
+        public boolean create(StructureManager manager, int depth, Piece root, BlockPos pos, List<StructurePiece> pieces, Random random) {
             if (depth > 8) {
                 return false;
             }
@@ -70,7 +70,7 @@ public class EndCityGenerator {
         }
 
         @Override
-        public boolean create(StructureManager manager, int depth, Piece root, BlockPos pos, List<StructurePiece> pieces, AbstractRandom random) {
+        public boolean create(StructureManager manager, int depth, Piece root, BlockPos pos, List<StructurePiece> pieces, Random random) {
             BlockRotation blockRotation = root.method_41626().getRotation();
             Piece piece = root;
             piece = EndCityGenerator.addPiece(pieces, EndCityGenerator.createPiece(manager, piece, new BlockPos(3 + random.nextInt(2), -3, 3 + random.nextInt(2)), "tower_base", blockRotation, true));
@@ -106,7 +106,7 @@ public class EndCityGenerator {
         }
 
         @Override
-        public boolean create(StructureManager manager, int depth, Piece root, BlockPos pos, List<StructurePiece> pieces, AbstractRandom random) {
+        public boolean create(StructureManager manager, int depth, Piece root, BlockPos pos, List<StructurePiece> pieces, Random random) {
             BlockRotation blockRotation = root.method_41626().getRotation();
             int i = random.nextInt(4) + 1;
             Piece piece = EndCityGenerator.addPiece(pieces, EndCityGenerator.createPiece(manager, root, new BlockPos(0, 0, -4), "bridge_piece", blockRotation, true));
@@ -142,7 +142,7 @@ public class EndCityGenerator {
         }
 
         @Override
-        public boolean create(StructureManager manager, int depth, Piece root, BlockPos pos, List<StructurePiece> pieces, AbstractRandom random) {
+        public boolean create(StructureManager manager, int depth, Piece root, BlockPos pos, List<StructurePiece> pieces, Random random) {
             BlockRotation blockRotation = root.method_41626().getRotation();
             Piece piece = EndCityGenerator.addPiece(pieces, EndCityGenerator.createPiece(manager, root, new BlockPos(-3, 4, -3), "fat_tower_base", blockRotation, true));
             piece = EndCityGenerator.addPiece(pieces, EndCityGenerator.createPiece(manager, piece, new BlockPos(0, 4, 0), "fat_tower_middle", blockRotation, true));
@@ -166,7 +166,7 @@ public class EndCityGenerator {
         return piece;
     }
 
-    public static void addPieces(StructureManager structureManager, BlockPos pos, BlockRotation rotation, List<StructurePiece> pieces, AbstractRandom random) {
+    public static void addPieces(StructureManager structureManager, BlockPos pos, BlockRotation rotation, List<StructurePiece> pieces, Random random) {
         FAT_TOWER.init();
         BUILDING.init();
         BRIDGE_PIECE.init();
@@ -183,7 +183,7 @@ public class EndCityGenerator {
         return piece;
     }
 
-    static boolean createPart(StructureManager manager, Part piece, int depth, Piece parent, BlockPos pos, List<StructurePiece> pieces, AbstractRandom random) {
+    static boolean createPart(StructureManager manager, Part piece, int depth, Piece parent, BlockPos pos, List<StructurePiece> pieces, Random random) {
         if (depth > 8) {
             return false;
         }
@@ -238,7 +238,7 @@ public class EndCityGenerator {
         }
 
         @Override
-        protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, AbstractRandom random, BlockBox boundingBox) {
+        protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox) {
             if (metadata.startsWith("Chest")) {
                 BlockPos blockPos = pos.down();
                 if (boundingBox.contains(blockPos)) {
@@ -261,7 +261,7 @@ public class EndCityGenerator {
     static interface Part {
         public void init();
 
-        public boolean create(StructureManager var1, int var2, Piece var3, BlockPos var4, List<StructurePiece> var5, AbstractRandom var6);
+        public boolean create(StructureManager var1, int var2, Piece var3, BlockPos var4, List<StructurePiece> var5, Random var6);
     }
 }
 

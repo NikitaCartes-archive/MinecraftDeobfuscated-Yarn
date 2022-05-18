@@ -7,6 +7,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.Lifecycle;
 import java.util.Optional;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.RegistryOps;
@@ -44,7 +45,11 @@ implements Codec<RegistryEntry<E>> {
         RegistryOps registryOps;
         Optional optional;
         if (ops instanceof RegistryOps && (optional = (registryOps = (RegistryOps)ops).getRegistry(this.registry)).isPresent()) {
-            return Identifier.CODEC.decode(ops, input).map((? super R pair) -> pair.mapFirst(value -> ((Registry)optional.get()).getOrCreateEntry(RegistryKey.of(this.registry, value))));
+            return Identifier.CODEC.decode(ops, input).flatMap((? super R pair) -> {
+                Identifier identifier = (Identifier)pair.getFirst();
+                DataResult<RegistryEntry<Pair>> dataResult = ((Registry)optional.get()).getOrCreateEntryDataResult(RegistryKey.of(this.registry, identifier));
+                return dataResult.map((? super R registryEntry) -> Pair.of(registryEntry, pair.getSecond())).setLifecycle(Lifecycle.stable());
+            });
         }
         return DataResult.error("Can't access registry " + this.registry);
     }

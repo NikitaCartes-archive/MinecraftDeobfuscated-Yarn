@@ -24,7 +24,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.BitSetVoxelSet;
 import net.minecraft.util.shape.VoxelSet;
 import net.minecraft.world.ModifiableWorld;
@@ -72,7 +72,7 @@ extends Feature<TreeFeatureConfig> {
         return TreeFeature.isAirOrLeaves(world, pos) || TreeFeature.isReplaceablePlant(world, pos) || TreeFeature.isWater(world, pos);
     }
 
-    private boolean generate(StructureWorldAccess world, AbstractRandom random, BlockPos pos, BiConsumer<BlockPos, BlockState> rootPlacerReplacer, BiConsumer<BlockPos, BlockState> trunkPlacerReplacer, BiConsumer<BlockPos, BlockState> foliagePlacerReplacer, TreeFeatureConfig config) {
+    private boolean generate(StructureWorldAccess world, Random random, BlockPos pos, BiConsumer<BlockPos, BlockState> rootPlacerReplacer, BiConsumer<BlockPos, BlockState> trunkPlacerReplacer, BiConsumer<BlockPos, BlockState> foliagePlacerReplacer, TreeFeatureConfig config) {
         int i = config.trunkPlacer.getHeight(random);
         int j = config.foliagePlacer.getRandomHeight(random, i, config);
         int k = i - j;
@@ -119,7 +119,7 @@ extends Feature<TreeFeatureConfig> {
     @Override
     public final boolean generate(FeatureContext<TreeFeatureConfig> context) {
         StructureWorldAccess structureWorldAccess = context.getWorld();
-        AbstractRandom abstractRandom = context.getRandom();
+        Random random = context.getRandom();
         BlockPos blockPos = context.getOrigin();
         TreeFeatureConfig treeFeatureConfig = context.getConfig();
         HashSet<BlockPos> set = Sets.newHashSet();
@@ -142,12 +142,12 @@ extends Feature<TreeFeatureConfig> {
             set4.add(pos.toImmutable());
             structureWorldAccess.setBlockState((BlockPos)pos, (BlockState)state, Block.NOTIFY_ALL | Block.FORCE_STATE);
         };
-        boolean bl = this.generate(structureWorldAccess, abstractRandom, blockPos, biConsumer, biConsumer2, biConsumer3, treeFeatureConfig);
+        boolean bl = this.generate(structureWorldAccess, random, blockPos, biConsumer, biConsumer2, biConsumer3, treeFeatureConfig);
         if (!bl || set2.isEmpty() && set3.isEmpty()) {
             return false;
         }
         if (!treeFeatureConfig.decorators.isEmpty()) {
-            TreeDecorator.Generator generator = new TreeDecorator.Generator(structureWorldAccess, biConsumer4, abstractRandom, set2, set3, set);
+            TreeDecorator.Generator generator = new TreeDecorator.Generator(structureWorldAccess, biConsumer4, random, set2, set3, set);
             treeFeatureConfig.decorators.forEach(decorator -> decorator.generate(generator));
         }
         return BlockBox.encompassPositions(Iterables.concat(set, set2, set3, set4)).map(blockBox -> {

@@ -19,7 +19,7 @@ import net.minecraft.client.util.Session;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SinglePreparationResourceReloader;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 public class SplashTextResourceSupplier
 extends SinglePreparationResourceReloader<List<String>> {
     private static final Identifier RESOURCE_ID = new Identifier("texts/splashes.txt");
-    private static final AbstractRandom RANDOM = AbstractRandom.createAtomic();
+    private static final Random RANDOM = Random.create();
     private final List<String> splashTexts = Lists.newArrayList();
     private final Session session;
 

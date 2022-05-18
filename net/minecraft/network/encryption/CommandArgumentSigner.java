@@ -3,37 +3,38 @@
  */
 package net.minecraft.network.encryption;
 
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.time.Instant;
 import java.util.UUID;
 import net.minecraft.network.encryption.ArgumentSignatureDataMap;
 import net.minecraft.network.encryption.ChatMessageSignature;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
-import net.minecraft.network.encryption.SignedChatMessage;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.Text;
 
 /**
  * A signer for command arguments.
  */
 public interface CommandArgumentSigner {
-    public static final CommandArgumentSigner NONE = (context, argumentName, value) -> SignedChatMessage.of(value);
+    public static final CommandArgumentSigner NONE = argumentName -> ChatMessageSignature.none();
 
-    /**
-     * {@return the signed argument's message from the argument name and value}
-     */
-    public SignedChatMessage signArgument(CommandContext<ServerCommandSource> var1, String var2, Text var3) throws CommandSyntaxException;
+    public ChatMessageSignature getArgumentSignature(String var1);
 
-    public record Signatures(UUID sender, Instant timestamp, ArgumentSignatureDataMap argumentSignatures) implements CommandArgumentSigner
+    default public boolean isPreviewSigned(String argumentName) {
+        return false;
+    }
+
+    public record Signatures(UUID sender, Instant timestamp, ArgumentSignatureDataMap argumentSignatures, boolean signedPreview) implements CommandArgumentSigner
     {
         @Override
-        public SignedChatMessage signArgument(CommandContext<ServerCommandSource> commandContext, String string, Text text) {
+        public ChatMessageSignature getArgumentSignature(String string) {
             NetworkEncryptionUtils.SignatureData signatureData = this.argumentSignatures.get(string);
             if (signatureData != null) {
-                return SignedChatMessage.of(text, new ChatMessageSignature(this.sender, this.timestamp, signatureData));
+                return new ChatMessageSignature(this.sender, this.timestamp, signatureData);
             }
-            return SignedChatMessage.of(text);
+            return ChatMessageSignature.none();
+        }
+
+        @Override
+        public boolean isPreviewSigned(String argumentName) {
+            return this.signedPreview;
         }
     }
 }

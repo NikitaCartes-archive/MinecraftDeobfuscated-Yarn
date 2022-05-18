@@ -21,7 +21,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Position;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Unmodifiable;
 import org.slf4j.Logger;
@@ -290,7 +290,7 @@ extends Vec3i {
      * @param around the {@link BlockPos} to iterate around
      * @param count the number of positions to iterate
      */
-    public static Iterable<BlockPos> iterateRandomly(AbstractRandom random, int count, BlockPos around, int range) {
+    public static Iterable<BlockPos> iterateRandomly(Random random, int count, BlockPos around, int range) {
         return BlockPos.iterateRandomly(random, count, around.getX() - range, around.getY() - range, around.getZ() - range, around.getX() + range, around.getY() + range, around.getZ() + range);
     }
 
@@ -308,7 +308,7 @@ extends Vec3i {
      * @param maxY the maximum y value for returned positions
      * @param maxZ the maximum z value for returned positions
      */
-    public static Iterable<BlockPos> iterateRandomly(final AbstractRandom random, final int count, final int minX, final int minY, final int minZ, int maxX, int maxY, int maxZ) {
+    public static Iterable<BlockPos> iterateRandomly(final Random random, final int count, final int minX, final int minY, final int minZ, int maxX, int maxY, int maxZ) {
         final int i = maxX - minX + 1;
         final int j = maxY - minY + 1;
         final int k = maxZ - minZ + 1;

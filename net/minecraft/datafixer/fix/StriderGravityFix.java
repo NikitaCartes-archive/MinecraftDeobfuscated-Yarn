@@ -12,8 +12,8 @@ import net.minecraft.datafixer.fix.ChoiceFix;
 
 public class StriderGravityFix
 extends ChoiceFix {
-    public StriderGravityFix(Schema outputSchema, boolean changesType) {
-        super(outputSchema, changesType, "StriderGravityFix", TypeReferences.ENTITY, "minecraft:strider");
+    public StriderGravityFix(Schema schema, boolean bl) {
+        super(schema, bl, "StriderGravityFix", TypeReferences.ENTITY, "minecraft:strider");
     }
 
     public Dynamic<?> updateNoGravityNbt(Dynamic<?> dynamic) {

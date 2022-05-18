@@ -8,6 +8,7 @@ import java.util.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.FuzzyTargeting;
+import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
@@ -29,7 +30,7 @@ extends Task<PathAwareEntity> {
     private final float speed;
 
     public WalkTask(float speed) {
-        super(ImmutableMap.of(MemoryModuleType.HURT_BY, MemoryModuleState.VALUE_PRESENT), 100, 120);
+        super(ImmutableMap.of(MemoryModuleType.IS_PANICKING, MemoryModuleState.REGISTERED, MemoryModuleType.HURT_BY, MemoryModuleState.VALUE_PRESENT), 100, 120);
         this.speed = speed;
     }
 
@@ -40,7 +41,14 @@ extends Task<PathAwareEntity> {
 
     @Override
     protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
+        pathAwareEntity.getBrain().remember(MemoryModuleType.IS_PANICKING, true);
         pathAwareEntity.getBrain().forget(MemoryModuleType.WALK_TARGET);
+    }
+
+    @Override
+    protected void finishRunning(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
+        Brain<?> brain = pathAwareEntity.getBrain();
+        brain.forget(MemoryModuleType.IS_PANICKING);
     }
 
     @Override
@@ -71,11 +79,6 @@ extends Task<PathAwareEntity> {
     @Override
     protected /* synthetic */ boolean shouldKeepRunning(ServerWorld world, LivingEntity entity, long time) {
         return this.shouldKeepRunning(world, (PathAwareEntity)entity, time);
-    }
-
-    @Override
-    protected /* synthetic */ void keepRunning(ServerWorld world, LivingEntity entity, long time) {
-        this.keepRunning(world, (PathAwareEntity)entity, time);
     }
 
     @Override

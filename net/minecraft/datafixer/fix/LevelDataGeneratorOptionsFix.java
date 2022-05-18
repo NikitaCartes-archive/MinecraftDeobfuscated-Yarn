@@ -110,8 +110,8 @@ extends DataFix {
     });
     public static final String GENERATOR_OPTIONS_KEY = "generatorOptions";
 
-    public LevelDataGeneratorOptionsFix(Schema outputSchema, boolean changesType) {
-        super(outputSchema, changesType);
+    public LevelDataGeneratorOptionsFix(Schema schema, boolean bl) {
+        super(schema, bl);
     }
 
     @Override

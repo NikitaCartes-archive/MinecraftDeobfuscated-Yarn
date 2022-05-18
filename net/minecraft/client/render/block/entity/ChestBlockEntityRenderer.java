@@ -14,8 +14,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.block.DoubleBlockProperties;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.LidOpenable;
 import net.minecraft.block.enums.ChestType;
-import net.minecraft.client.block.ChestAnimationProgress;
 import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.ModelPartBuilder;
@@ -117,7 +117,7 @@ implements BlockEntityRenderer<T> {
         matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-f));
         matrices.translate(-0.5, -0.5, -0.5);
         DoubleBlockProperties.PropertySource<Object> propertySource = bl ? abstractChestBlock.getBlockEntitySource(blockState, world, ((BlockEntity)entity).getPos(), true) : DoubleBlockProperties.PropertyRetriever::getFallback;
-        float g = propertySource.apply(ChestBlock.getAnimationProgressRetriever((ChestAnimationProgress)entity)).get(tickDelta);
+        float g = propertySource.apply(ChestBlock.getAnimationProgressRetriever((LidOpenable)entity)).get(tickDelta);
         g = 1.0f - g;
         g = 1.0f - g * g * g;
         int i = ((Int2IntFunction)propertySource.apply(new LightmapCoordinatesRetriever())).applyAsInt(light);

@@ -18,8 +18,8 @@ import net.minecraft.datafixer.TypeReferences;
 
 public class MobSpawnerEntityIdentifiersFix
 extends DataFix {
-    public MobSpawnerEntityIdentifiersFix(Schema outputSchema, boolean changesType) {
-        super(outputSchema, changesType);
+    public MobSpawnerEntityIdentifiersFix(Schema schema, boolean bl) {
+        super(schema, bl);
     }
 
     private Dynamic<?> fixSpawner(Dynamic<?> dynamic2) {

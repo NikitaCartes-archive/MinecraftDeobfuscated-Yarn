@@ -32,7 +32,7 @@ import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.mutable.MutableInt;
 
@@ -56,7 +56,7 @@ public class LootPool {
     }
 
     private void supplyOnce(Consumer<ItemStack> lootConsumer, LootContext context) {
-        AbstractRandom abstractRandom = context.getRandom();
+        Random random = context.getRandom();
         ArrayList<LootChoice> list = Lists.newArrayList();
         MutableInt mutableInt = new MutableInt();
         for (LootPoolEntry lootPoolEntry : this.entries) {
@@ -76,7 +76,7 @@ public class LootPool {
             ((LootChoice)list.get(0)).generateLoot(lootConsumer, context);
             return;
         }
-        int j = abstractRandom.nextInt(mutableInt.intValue());
+        int j = random.nextInt(mutableInt.intValue());
         for (LootChoice lootChoice : list) {
             if ((j -= lootChoice.getWeight(context.getLuck())) >= 0) continue;
             lootChoice.generateLoot(lootConsumer, context);

@@ -9,7 +9,6 @@ import com.mojang.logging.LogUtils;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
@@ -204,9 +203,7 @@ public class DataCache {
             if (this.isCacheInvalid(path, hashCode)) {
                 ++this.cacheMissCount;
                 Files.createDirectories(path.getParent(), new FileAttribute[0]);
-                try (OutputStream outputStream = Files.newOutputStream(path, new OpenOption[0]);){
-                    outputStream.write(data);
-                }
+                Files.write(path, data, new OpenOption[0]);
             }
             this.newCache.put(path, hashCode);
         }

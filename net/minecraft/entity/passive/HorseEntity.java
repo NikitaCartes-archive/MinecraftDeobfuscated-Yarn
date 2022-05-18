@@ -34,7 +34,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -50,7 +50,7 @@ extends AbstractHorseEntity {
     }
 
     @Override
-    protected void initAttributes(AbstractRandom random) {
+    protected void initAttributes(Random random) {
         this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(this.getChildHealthBonus(random));
         this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(this.getChildMovementSpeedBonus(random));
         this.getAttributeInstance(EntityAttributes.HORSE_JUMP_STRENGTH).setBaseValue(this.getChildJumpStrengthBonus(random));
@@ -261,14 +261,14 @@ extends AbstractHorseEntity {
     @Nullable
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         HorseColor horseColor;
-        AbstractRandom abstractRandom = world.getRandom();
+        Random random = world.getRandom();
         if (entityData instanceof HorseData) {
             horseColor = ((HorseData)entityData).color;
         } else {
-            horseColor = Util.getRandom(HorseColor.values(), abstractRandom);
+            horseColor = Util.getRandom(HorseColor.values(), random);
             entityData = new HorseData(horseColor);
         }
-        this.setVariant(horseColor, Util.getRandom(HorseMarking.values(), abstractRandom));
+        this.setVariant(horseColor, Util.getRandom(HorseMarking.values(), random));
         return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 

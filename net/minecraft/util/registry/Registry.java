@@ -91,7 +91,7 @@ import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.floatprovider.FloatProviderType;
 import net.minecraft.util.math.intprovider.IntProviderType;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.DefaultedRegistry;
 import net.minecraft.util.registry.MutableRegistry;
@@ -104,6 +104,7 @@ import net.minecraft.village.VillagerType;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
+import net.minecraft.world.biome.source.BiomeSources;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.dimension.DimensionType;
@@ -116,6 +117,7 @@ import net.minecraft.world.gen.carver.Carver;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
+import net.minecraft.world.gen.chunk.ChunkGenerators;
 import net.minecraft.world.gen.chunk.placement.StructurePlacementType;
 import net.minecraft.world.gen.densityfunction.DensityFunction;
 import net.minecraft.world.gen.densityfunction.DensityFunctionTypes;
@@ -289,8 +291,8 @@ IndexedIterable<T> {
     public static final Registry<RootPlacerType<?>> ROOT_PLACER_TYPE = Registry.create(ROOT_PLACER_TYPE_KEY, registry -> RootPlacerType.MANGROVE_ROOT_PLACER);
     public static final Registry<TreeDecoratorType<?>> TREE_DECORATOR_TYPE = Registry.create(TREE_DECORATOR_TYPE_KEY, registry -> TreeDecoratorType.LEAVE_VINE);
     public static final Registry<FeatureSizeType<?>> FEATURE_SIZE_TYPE = Registry.create(FEATURE_SIZE_TYPE_KEY, registry -> FeatureSizeType.TWO_LAYERS_FEATURE_SIZE);
-    public static final Registry<Codec<? extends BiomeSource>> BIOME_SOURCE = Registry.create(BIOME_SOURCE_KEY, Lifecycle.stable(), (Registry<T> registry) -> BiomeSource.CODEC);
-    public static final Registry<Codec<? extends ChunkGenerator>> CHUNK_GENERATOR = Registry.create(CHUNK_GENERATOR_KEY, Lifecycle.stable(), (Registry<T> registry) -> ChunkGenerator.CODEC);
+    public static final Registry<Codec<? extends BiomeSource>> BIOME_SOURCE = Registry.create(BIOME_SOURCE_KEY, Lifecycle.stable(), BiomeSources::registerAndGetDefault);
+    public static final Registry<Codec<? extends ChunkGenerator>> CHUNK_GENERATOR = Registry.create(CHUNK_GENERATOR_KEY, Lifecycle.stable(), ChunkGenerators::registerAndGetDefault);
     public static final Registry<Codec<? extends MaterialRules.MaterialCondition>> MATERIAL_CONDITION = Registry.create(MATERIAL_CONDITION_KEY, MaterialRules.MaterialCondition::registerAndGetDefault);
     public static final Registry<Codec<? extends MaterialRules.MaterialRule>> MATERIAL_RULE = Registry.create(MATERIAL_RULE_KEY, MaterialRules.MaterialRule::registerAndGetDefault);
     public static final Registry<Codec<? extends DensityFunction>> DENSITY_FUNCTION_TYPE = Registry.create(DENSITY_FUNCTION_TYPE_KEY, DensityFunctionTypes::registerAndGetDefault);
@@ -450,7 +452,7 @@ IndexedIterable<T> {
 
     public abstract Set<RegistryKey<T>> getKeys();
 
-    public abstract Optional<RegistryEntry<T>> getRandom(AbstractRandom var1);
+    public abstract Optional<RegistryEntry<T>> getRandom(Random var1);
 
     public Stream<T> stream() {
         return StreamSupport.stream(this.spliterator(), false);
@@ -481,6 +483,8 @@ IndexedIterable<T> {
     public abstract Registry<T> freeze();
 
     public abstract RegistryEntry<T> getOrCreateEntry(RegistryKey<T> var1);
+
+    public abstract DataResult<RegistryEntry<T>> getOrCreateEntryDataResult(RegistryKey<T> var1);
 
     public abstract RegistryEntry.Reference<T> createEntry(T var1);
 

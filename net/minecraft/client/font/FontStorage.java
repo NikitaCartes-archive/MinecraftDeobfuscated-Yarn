@@ -23,12 +23,12 @@ import net.minecraft.client.font.RenderableGlyph;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 @Environment(value=EnvType.CLIENT)
 public class FontStorage
 implements AutoCloseable {
-    private static final AbstractRandom RANDOM = AbstractRandom.createAtomic();
+    private static final Random RANDOM = Random.create();
     private final TextureManager textureManager;
     private final Identifier id;
     private GlyphRenderer blankGlyphRenderer;

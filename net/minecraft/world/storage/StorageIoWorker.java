@@ -100,13 +100,18 @@ AutoCloseable {
             ChunkPos chunkPos22 = ChunkPos.fromRegionCenter(chunkX, chunkZ);
             BitSet bitSet = new BitSet();
             ChunkPos.stream(chunkPos2, chunkPos22).forEach(chunkPos -> {
+                NbtCompound nbtCompound;
                 SelectiveNbtCollector selectiveNbtCollector = new SelectiveNbtCollector(new NbtScanQuery(NbtInt.TYPE, "DataVersion"), new NbtScanQuery(NbtCompound.TYPE, "blending_data"));
-                this.scanChunk((ChunkPos)chunkPos, selectiveNbtCollector).join();
+                try {
+                    this.scanChunk((ChunkPos)chunkPos, selectiveNbtCollector).join();
+                } catch (Exception exception) {
+                    LOGGER.warn("Failed to scan chunk {}", chunkPos, (Object)exception);
+                    return;
+                }
                 NbtElement nbtElement = selectiveNbtCollector.getRoot();
-                if (nbtElement instanceof NbtCompound) {
-                    NbtCompound nbtCompound = (NbtCompound)nbtElement;
+                if (nbtElement instanceof NbtCompound && this.needsBlending(nbtCompound = (NbtCompound)nbtElement)) {
                     int i = chunkPos.getRegionRelativeZ() * 32 + chunkPos.getRegionRelativeX();
-                    bitSet.set(i, this.needsBlending(nbtCompound));
+                    bitSet.set(i);
                 }
             });
             return bitSet;

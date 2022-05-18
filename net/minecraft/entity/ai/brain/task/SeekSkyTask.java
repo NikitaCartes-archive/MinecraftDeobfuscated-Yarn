@@ -13,7 +13,7 @@ import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Heightmap;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,10 +41,10 @@ extends Task<LivingEntity> {
 
     @Nullable
     private Vec3d findNearbySky(ServerWorld world, LivingEntity entity) {
-        AbstractRandom abstractRandom = entity.getRandom();
+        Random random = entity.getRandom();
         BlockPos blockPos = entity.getBlockPos();
         for (int i = 0; i < 10; ++i) {
-            BlockPos blockPos2 = blockPos.add(abstractRandom.nextInt(20) - 10, abstractRandom.nextInt(6) - 3, abstractRandom.nextInt(20) - 10);
+            BlockPos blockPos2 = blockPos.add(random.nextInt(20) - 10, random.nextInt(6) - 3, random.nextInt(20) - 10);
             if (!SeekSkyTask.isSkyVisible(world, entity, blockPos2)) continue;
             return Vec3d.ofBottomCenter(blockPos2);
         }

@@ -13,14 +13,14 @@ import net.minecraft.client.sound.SoundManager;
 import net.minecraft.client.sound.SoundSystem;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class WeightedSoundSet
 implements SoundContainer<Sound> {
     private final List<SoundContainer<Sound>> sounds = Lists.newArrayList();
-    private final AbstractRandom random = AbstractRandom.createAtomic();
+    private final Random random = Random.create();
     private final Identifier id;
     @Nullable
     private final Text subtitle;
@@ -40,15 +40,15 @@ implements SoundContainer<Sound> {
     }
 
     @Override
-    public Sound getSound(AbstractRandom abstractRandom) {
+    public Sound getSound(Random random) {
         int i = this.getWeight();
         if (this.sounds.isEmpty() || i == 0) {
             return SoundManager.MISSING_SOUND;
         }
-        int j = abstractRandom.nextInt(i);
+        int j = random.nextInt(i);
         for (SoundContainer<Sound> soundContainer : this.sounds) {
             if ((j -= soundContainer.getWeight()) >= 0) continue;
-            return soundContainer.getSound(abstractRandom);
+            return soundContainer.getSound(random);
         }
         return SoundManager.MISSING_SOUND;
     }
@@ -74,7 +74,7 @@ implements SoundContainer<Sound> {
     }
 
     @Override
-    public /* synthetic */ Object getSound(AbstractRandom random) {
+    public /* synthetic */ Object getSound(Random random) {
         return this.getSound(random);
     }
 }

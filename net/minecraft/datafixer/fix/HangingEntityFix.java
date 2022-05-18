@@ -16,8 +16,8 @@ public class HangingEntityFix
 extends DataFix {
     private static final int[][] OFFSETS = new int[][]{{0, 0, 1}, {-1, 0, 0}, {0, 0, -1}, {1, 0, 0}};
 
-    public HangingEntityFix(Schema outputSchema, boolean changesType) {
-        super(outputSchema, changesType);
+    public HangingEntityFix(Schema schema, boolean bl) {
+        super(schema, bl);
     }
 
     private Dynamic<?> fixDecorationPosition(Dynamic<?> dynamic, boolean isPainting, boolean isItemFrame) {

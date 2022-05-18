@@ -7,7 +7,7 @@ import com.mojang.serialization.Lifecycle;
 import java.util.Optional;
 import java.util.function.Function;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
@@ -67,7 +67,7 @@ extends SimpleRegistry<T> {
     }
 
     @Override
-    public Optional<RegistryEntry<T>> getRandom(AbstractRandom random) {
+    public Optional<RegistryEntry<T>> getRandom(Random random) {
         return super.getRandom(random).or(() -> Optional.of(this.defaultEntry));
     }
 

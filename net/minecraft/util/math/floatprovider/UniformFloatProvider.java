@@ -12,7 +12,7 @@ import java.util.function.Function;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.floatprovider.FloatProvider;
 import net.minecraft.util.math.floatprovider.FloatProviderType;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class UniformFloatProvider
 extends FloatProvider {
@@ -38,7 +38,7 @@ extends FloatProvider {
     }
 
     @Override
-    public float get(AbstractRandom random) {
+    public float get(Random random) {
         return MathHelper.nextBetween(random, this.min, this.max);
     }
 

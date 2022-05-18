@@ -21,7 +21,6 @@ import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
@@ -99,6 +98,7 @@ import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.screen.ScreenHandlerSyncHandler;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.screen.slot.CraftingResultSlot;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.MinecraftServer;
@@ -137,7 +137,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.village.TradeOfferList;
@@ -286,7 +286,7 @@ extends PlayerEntity {
             }
             int k = (m = (l = (long)(i * 2 + 1)) * l) > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int)m;
             int n = this.calculateSpawnOffsetMultiplier(k);
-            int o = AbstractRandom.createAtomic().nextInt(k);
+            int o = Random.create().nextInt(k);
             for (int p = 0; p < k; ++p) {
                 int q = (o + n * p) % k;
                 int r = q % (i * 2 + 1);
@@ -546,7 +546,7 @@ extends PlayerEntity {
     }
 
     @Override
-    public void onDeath(DamageSource source) {
+    public void onDeath(DamageSource damageSource) {
         this.emitGameEvent(GameEvent.ENTITY_DIE);
         boolean bl = this.world.getGameRules().getBoolean(GameRules.SHOW_DEATH_MESSAGES);
         if (bl) {
@@ -576,13 +576,13 @@ extends PlayerEntity {
             this.forgiveMobAnger();
         }
         if (!this.isSpectator()) {
-            this.drop(source);
+            this.drop(damageSource);
         }
         this.getScoreboard().forEachScore(ScoreboardCriterion.DEATH_COUNT, this.getEntityName(), ScoreboardPlayerScore::incrementScore);
         LivingEntity livingEntity = this.getPrimeAdversary();
         if (livingEntity != null) {
             this.incrementStat(Stats.KILLED_BY.getOrCreateStat(livingEntity.getType()));
-            livingEntity.updateKilledAdvancementCriterion(this, this.scoreAmount, source);
+            livingEntity.updateKilledAdvancementCriterion(this, this.scoreAmount, damageSource);
             this.onKilledBy(livingEntity);
         }
         this.world.sendEntityStatus(this, EntityStatuses.PLAY_DEATH_SOUND_OR_ADD_PROJECTILE_HIT_PARTICLES);
@@ -1058,7 +1058,7 @@ extends PlayerEntity {
 
     @Override
     public void sendMessage(Text message, boolean actionBar) {
-        this.sendMessage(message, actionBar ? MessageType.GAME_INFO : MessageType.CHAT);
+        this.sendMessage(message, actionBar ? MessageType.GAME_INFO : MessageType.SYSTEM);
     }
 
     @Override

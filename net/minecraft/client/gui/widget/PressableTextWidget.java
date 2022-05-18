@@ -24,7 +24,7 @@ extends ButtonWidget {
         super(x, y, width, height, text, onPress);
         this.textRenderer = textRenderer;
         this.text = text;
-        this.hoverText = Texts.setStyleIfAbsent(text.shallowCopy(), Style.EMPTY.withUnderline(true));
+        this.hoverText = Texts.setStyleIfAbsent(text.copy(), Style.EMPTY.withUnderline(true));
     }
 
     @Override

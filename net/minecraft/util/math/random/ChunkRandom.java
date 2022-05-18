@@ -4,17 +4,17 @@
 package net.minecraft.util.math.random;
 
 import java.util.function.LongFunction;
-import net.minecraft.util.math.random.AbstractRandom;
-import net.minecraft.util.math.random.AtomicSimpleRandom;
-import net.minecraft.util.math.random.RandomDeriver;
-import net.minecraft.world.gen.random.Xoroshiro128PlusPlusRandom;
+import net.minecraft.util.math.random.CheckedRandom;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.util.math.random.RandomSplitter;
+import net.minecraft.util.math.random.Xoroshiro128PlusPlusRandom;
 
 public class ChunkRandom
-extends AtomicSimpleRandom {
-    private final AbstractRandom baseRandom;
+extends CheckedRandom {
+    private final Random baseRandom;
     private int sampleCount;
 
-    public ChunkRandom(AbstractRandom baseRandom) {
+    public ChunkRandom(Random baseRandom) {
         super(0L);
         this.baseRandom = baseRandom;
     }
@@ -24,22 +24,22 @@ extends AtomicSimpleRandom {
     }
 
     @Override
-    public AbstractRandom derive() {
-        return this.baseRandom.derive();
+    public Random split() {
+        return this.baseRandom.split();
     }
 
     @Override
-    public RandomDeriver createRandomDeriver() {
-        return this.baseRandom.createRandomDeriver();
+    public RandomSplitter nextSplitter() {
+        return this.baseRandom.nextSplitter();
     }
 
     @Override
     public int next(int bits) {
         ++this.sampleCount;
-        AbstractRandom abstractRandom = this.baseRandom;
-        if (abstractRandom instanceof AtomicSimpleRandom) {
-            AtomicSimpleRandom atomicSimpleRandom = (AtomicSimpleRandom)abstractRandom;
-            return atomicSimpleRandom.next(bits);
+        Random random = this.baseRandom;
+        if (random instanceof CheckedRandom) {
+            CheckedRandom checkedRandom = (CheckedRandom)random;
+            return checkedRandom.next(bits);
         }
         return (int)(this.baseRandom.nextLong() >>> 64 - bits);
     }
@@ -122,21 +122,21 @@ extends AtomicSimpleRandom {
         this.setSeed(l);
     }
 
-    public static AbstractRandom getSlimeRandom(int chunkX, int chunkZ, long worldSeed, long scrambler) {
-        return AbstractRandom.createAtomic(worldSeed + (long)(chunkX * chunkX * 4987142) + (long)(chunkX * 5947611) + (long)(chunkZ * chunkZ) * 4392871L + (long)(chunkZ * 389711) ^ scrambler);
+    public static Random getSlimeRandom(int chunkX, int chunkZ, long worldSeed, long scrambler) {
+        return Random.create(worldSeed + (long)(chunkX * chunkX * 4987142) + (long)(chunkX * 5947611) + (long)(chunkZ * chunkZ) * 4392871L + (long)(chunkZ * 389711) ^ scrambler);
     }
 
     public static enum RandomProvider {
-        LEGACY(AtomicSimpleRandom::new),
+        LEGACY(CheckedRandom::new),
         XOROSHIRO(Xoroshiro128PlusPlusRandom::new);
 
-        private final LongFunction<AbstractRandom> provider;
+        private final LongFunction<Random> provider;
 
-        private RandomProvider(LongFunction<AbstractRandom> provider) {
+        private RandomProvider(LongFunction<Random> provider) {
             this.provider = provider;
         }
 
-        public AbstractRandom create(long seed) {
+        public Random create(long seed) {
             return this.provider.apply(seed);
         }
     }

@@ -33,7 +33,6 @@ import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.MessageScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.pack.PackScreen;
 import net.minecraft.client.gui.screen.world.EditGameRulesScreen;
 import net.minecraft.client.gui.screen.world.MoreOptionsDialog;
@@ -51,6 +50,7 @@ import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.VanillaDataPackProvider;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.SaveLoader;
 import net.minecraft.server.SaveLoading;
 import net.minecraft.server.command.CommandManager;
@@ -124,7 +124,7 @@ extends Screen {
         ResourcePackManager resourcePackManager = new ResourcePackManager(ResourceType.SERVER_DATA, new VanillaDataPackProvider());
         SaveLoading.ServerConfig serverConfig = CreateWorldScreen.createServerConfig(resourcePackManager, DataPackSettings.SAFE_MODE);
         CompletableFuture<GeneratorOptionsHolder> completableFuture = SaveLoading.load(serverConfig, (resourceManager, dataPackSettings) -> {
-            DynamicRegistryManager.Immutable immutable = DynamicRegistryManager.BUILTIN.get();
+            DynamicRegistryManager.Immutable immutable = DynamicRegistryManager.createAndLoad().toImmutable();
             GeneratorOptions generatorOptions = WorldPresets.createDefaultOptions(immutable);
             return Pair.of(generatorOptions, immutable);
         }, (resourceManager, dataPackContents, dynamicRegistryManager, generatorOptions) -> {

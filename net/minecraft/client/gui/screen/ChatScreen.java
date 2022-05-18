@@ -4,6 +4,7 @@
 package net.minecraft.client.gui.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.brigadier.tree.CommandNode;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -19,6 +20,8 @@ import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.option.ServerList;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.command.CommandSource;
+import net.minecraft.command.argument.DecoratableArgumentType;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
@@ -51,7 +54,7 @@ extends Screen {
     private String chatLastMessage = "";
     private int messageHistorySize = -1;
     protected TextFieldWidget chatField;
-    private final String originalChatText;
+    private String originalChatText;
     CommandSuggestor commandSuggestor;
     private ChatPreviewer chatPreviewer;
 
@@ -83,7 +86,7 @@ extends Screen {
         this.chatPreviewer = new ChatPreviewer(this.client);
         this.updatePreviewer(this.chatField.getText());
         ServerInfo serverInfo = this.client.getCurrentServerEntry();
-        if (serverInfo != null && (chatPreview = serverInfo.getChatPreview()) != null && chatPreview.showToast()) {
+        if (serverInfo != null && this.client.options.getChatPreview().getValue().booleanValue() && (chatPreview = serverInfo.getChatPreview()) != null && serverInfo.shouldPreviewChat() && chatPreview.showToast()) {
             ServerList.updateServerListEntry(serverInfo);
             SystemToast systemToast = SystemToast.create(this.client, SystemToast.Type.CHAT_PREVIEW_WARNING, CHAT_PREVIEW_WARNING_TOAST_TITLE, CHAT_PREVIEW_WARNING_TOAST_TEXT);
             this.client.getToastManager().add(systemToast);
@@ -107,7 +110,7 @@ extends Screen {
     @Override
     public void tick() {
         this.chatField.tick();
-        this.chatPreviewer.tryQuery();
+        this.chatPreviewer.tryRequestPending();
     }
 
     private void onChatFieldUpdate(String chatText) {
@@ -119,10 +122,31 @@ extends Screen {
 
     private void updatePreviewer(String chatText) {
         String string = this.normalize(chatText);
-        if (this.shouldPreviewChat() && !string.startsWith("/")) {
-            this.chatPreviewer.onInput(string);
+        if (this.shouldPreviewChat()) {
+            this.tryRequestPreview(string);
         } else {
-            this.chatPreviewer.clear();
+            this.chatPreviewer.disablePreview();
+        }
+    }
+
+    private void tryRequestPreview(String chatText) {
+        if (chatText.startsWith("/")) {
+            this.tryRequestCommandPreview(chatText);
+        } else {
+            this.tryRequestChatPreview(chatText);
+        }
+    }
+
+    private void tryRequestChatPreview(String chatText) {
+        this.chatPreviewer.tryRequest(chatText);
+    }
+
+    private void tryRequestCommandPreview(String chatText) {
+        CommandNode<CommandSource> commandNode = this.commandSuggestor.getNodeAt(this.chatField.getCursor());
+        if (commandNode != null && DecoratableArgumentType.isDecoratableArgumentNode(commandNode)) {
+            this.chatPreviewer.tryRequest(chatText);
+        } else {
+            this.chatPreviewer.disablePreview();
         }
     }
 
@@ -146,19 +170,6 @@ extends Screen {
     }
 
     @Override
-    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        if (super.keyReleased(keyCode, scanCode, modifiers)) {
-            return true;
-        }
-        if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
-            this.sendMessage(this.chatField.getText(), true);
-            this.client.setScreen(null);
-            return true;
-        }
-        return false;
-    }
-
-    @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (this.commandSuggestor.keyPressed(keyCode, scanCode, modifiers)) {
             return true;
@@ -167,6 +178,11 @@ extends Screen {
             return true;
         }
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+            this.client.setScreen(null);
+            return true;
+        }
+        if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
+            this.sendMessage(this.chatField.getText(), true);
             this.client.setScreen(null);
             return true;
         }
@@ -213,6 +229,7 @@ extends Screen {
             }
             Style style = this.getTextStyleAt(mouseX, mouseY);
             if (style != null && this.handleTextClick(style)) {
+                this.originalChatText = this.chatField.getText();
                 return true;
             }
         }
@@ -258,8 +275,9 @@ extends Screen {
         this.chatField.render(matrices, mouseX, mouseY, delta);
         if (this.chatPreviewer.shouldRenderPreview()) {
             this.renderChatPreview(matrices);
+        } else {
+            this.commandSuggestor.render(matrices, mouseX, mouseY);
         }
-        this.commandSuggestor.render(matrices, mouseX, mouseY);
         Style style = this.getTextStyleAt(mouseX, mouseY);
         if (style != null && style.getHoverEvent() != null) {
             this.renderTextHoverEffect(matrices, style, mouseX, mouseY);

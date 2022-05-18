@@ -23,8 +23,13 @@ import org.slf4j.Logger;
 
 /**
  * The information of a server entry in the list of servers available in
- * the multiplayer screen from the menu. The list of these servers is
- * stored in the {@code servers.dat} file within the client game directory.
+ * the multiplayer screen, or that of the servers connected directly.
+ * The information for directly-connected servers are also saved (although
+ * hidden from the multiplayer screen) so that chat preview acknowledgements
+ * and other settings are saved. The list of these servers is stored in the
+ * {@code servers.dat} file within the client game directory.
+ * 
+ * @see net.minecraft.client.option.ServerList
  */
 @Environment(value=EnvType.CLIENT)
 public class ServerInfo {
@@ -44,6 +49,7 @@ public class ServerInfo {
     private boolean local;
     @Nullable
     private ChatPreview chatPreview;
+    private boolean temporaryChatPreviewState = true;
 
     public ServerInfo(String name, String address, boolean local) {
         this.name = name;
@@ -129,7 +135,8 @@ public class ServerInfo {
     }
 
     /**
-     * Sets whether the chat preview is enabled.
+     * Sets whether the chat preview is enabled. This affects the saved server info;
+     * to disable the chat preview temporarily use {@link #setTemporaryChatPreviewState}.
      */
     public void setPreviewsChat(boolean enabled) {
         if (enabled && this.chatPreview == null) {
@@ -144,15 +151,27 @@ public class ServerInfo {
         return this.chatPreview;
     }
 
+    /**
+     * Sets the temporary chat preview state. Unlike {@link #setPreviewsChat}, this
+     * does not affect the saved server info.
+     */
+    public void setTemporaryChatPreviewState(boolean temporaryChatPreviewState) {
+        this.temporaryChatPreviewState = temporaryChatPreviewState;
+    }
+
     public boolean shouldPreviewChat() {
-        return this.chatPreview != null;
+        return this.temporaryChatPreviewState && this.chatPreview != null;
     }
 
     public void copyFrom(ServerInfo serverInfo) {
         this.address = serverInfo.address;
         this.name = serverInfo.name;
-        this.setResourcePackPolicy(serverInfo.getResourcePackPolicy());
         this.icon = serverInfo.icon;
+    }
+
+    public void copyWithSettingsFrom(ServerInfo serverInfo) {
+        this.copyFrom(serverInfo);
+        this.setResourcePackPolicy(serverInfo.getResourcePackPolicy());
         this.local = serverInfo.local;
         this.chatPreview = Util.map(serverInfo.chatPreview, ChatPreview::copy);
     }

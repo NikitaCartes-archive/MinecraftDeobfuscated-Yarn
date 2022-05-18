@@ -6,8 +6,8 @@ package net.minecraft.world.gen;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
-import net.minecraft.util.math.random.RandomDeriver;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.util.math.random.RandomSplitter;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
 import net.minecraft.world.gen.densityfunction.DensityFunction;
 
@@ -25,7 +25,7 @@ public final class OreVeinSampler {
     private OreVeinSampler() {
     }
 
-    protected static ChunkNoiseSampler.BlockStateSampler create(DensityFunction veinToggle, DensityFunction veinRidged, DensityFunction veinGap, RandomDeriver randomDeriver) {
+    protected static ChunkNoiseSampler.BlockStateSampler create(DensityFunction veinToggle, DensityFunction veinRidged, DensityFunction veinGap, RandomSplitter randomDeriver) {
         BlockState blockState = null;
         return pos -> {
             double d = veinToggle.sample(pos);
@@ -42,16 +42,16 @@ public final class OreVeinSampler {
             if (e + f < (double)0.4f) {
                 return blockState;
             }
-            AbstractRandom abstractRandom = randomDeriver.createRandom(pos.blockX(), i, pos.blockZ());
-            if (abstractRandom.nextFloat() > 0.7f) {
+            Random random = randomDeriver.split(pos.blockX(), i, pos.blockZ());
+            if (random.nextFloat() > 0.7f) {
                 return blockState;
             }
             if (veinRidged.sample(pos) >= 0.0) {
                 return blockState;
             }
             double g = MathHelper.clampedLerpFromProgress(e, (double)0.4f, (double)0.6f, (double)0.1f, (double)0.3f);
-            if ((double)abstractRandom.nextFloat() < g && veinGap.sample(pos) > (double)-0.3f) {
-                return abstractRandom.nextFloat() < 0.02f ? veinType.rawOreBlock : veinType.ore;
+            if ((double)random.nextFloat() < g && veinGap.sample(pos) > (double)-0.3f) {
+                return random.nextFloat() < 0.02f ? veinType.rawOreBlock : veinType.ore;
             }
             return veinType.stone;
         };

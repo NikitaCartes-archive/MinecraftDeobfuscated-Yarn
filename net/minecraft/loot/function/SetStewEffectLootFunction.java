@@ -31,7 +31,7 @@ import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 
 public class SetStewEffectLootFunction
@@ -58,8 +58,8 @@ extends ConditionalLootFunction {
         if (!stack.isOf(Items.SUSPICIOUS_STEW) || this.effects.isEmpty()) {
             return stack;
         }
-        AbstractRandom abstractRandom = context.getRandom();
-        int i = abstractRandom.nextInt(this.effects.size());
+        Random random = context.getRandom();
+        int i = random.nextInt(this.effects.size());
         Map.Entry<StatusEffect, LootNumberProvider> entry = Iterables.get(this.effects.entrySet(), i);
         StatusEffect statusEffect = entry.getKey();
         int j = entry.getValue().nextInt(context);

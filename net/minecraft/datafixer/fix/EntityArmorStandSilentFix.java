@@ -12,8 +12,8 @@ import net.minecraft.datafixer.fix.ChoiceFix;
 
 public class EntityArmorStandSilentFix
 extends ChoiceFix {
-    public EntityArmorStandSilentFix(Schema outputSchema, boolean changesType) {
-        super(outputSchema, changesType, "EntityArmorStandSilentFix", TypeReferences.ENTITY, "ArmorStand");
+    public EntityArmorStandSilentFix(Schema schema, boolean bl) {
+        super(schema, bl, "EntityArmorStandSilentFix", TypeReferences.ENTITY, "ArmorStand");
     }
 
     public Dynamic<?> fixSilent(Dynamic<?> dynamic) {

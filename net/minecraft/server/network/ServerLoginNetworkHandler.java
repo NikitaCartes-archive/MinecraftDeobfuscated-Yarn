@@ -7,7 +7,6 @@ import com.google.common.primitives.Ints;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.exceptions.AuthenticationUnavailableException;
 import com.mojang.authlib.minecraft.InsecurePublicKeyException;
-import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.logging.LogUtils;
 import java.math.BigInteger;
 import java.net.InetAddress;
@@ -23,6 +22,7 @@ import net.minecraft.network.ClientConnection;
 import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.encryption.PlayerPublicKey;
+import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.network.listener.ServerLoginPacketListener;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginKeyC2SPacket;
@@ -39,7 +39,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.TextifiedException;
 import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -64,7 +64,7 @@ implements ServerLoginPacketListener {
     private static final AtomicInteger NEXT_AUTHENTICATOR_THREAD_ID = new AtomicInteger(0);
     static final Logger LOGGER = LogUtils.getLogger();
     private static final int TIMEOUT_TICKS = 600;
-    private static final AbstractRandom RANDOM = AbstractRandom.createAtomic();
+    private static final Random RANDOM = Random.create();
     private static final Text MISSING_PUBLIC_KEY_TEXT = Text.translatable("multiplayer.disconnect.missing_public_key");
     private static final Text INVALID_PUBLIC_KEY_SIGNATURE_TEXT = Text.translatable("multiplayer.disconnect.invalid_public_key_signature");
     private static final Text INVALID_PUBLIC_KEY_TEXT = Text.translatable("multiplayer.disconnect.invalid_public_key");
@@ -152,7 +152,6 @@ implements ServerLoginPacketListener {
             if (this.server.getNetworkCompressionThreshold() >= 0 && !this.connection.isLocal()) {
                 this.connection.send(new LoginCompressionS2CPacket(this.server.getNetworkCompressionThreshold()), channelFuture -> this.connection.setCompressionThreshold(this.server.getNetworkCompressionThreshold(), true));
             }
-            this.profile = this.server.getSessionService().fillProfileProperties(this.profile, true);
             this.connection.send(new LoginSuccessS2CPacket(this.profile));
             ServerPlayerEntity serverPlayerEntity = this.server.getPlayerManager().getPlayer(this.profile.getId());
             try {
@@ -189,7 +188,7 @@ implements ServerLoginPacketListener {
     }
 
     @Nullable
-    private static PlayerPublicKey getVerifiedPublicKey(LoginHelloC2SPacket packet, MinecraftSessionService minecraftSessionService, boolean shouldThrowOnMissingKey) throws LoginException {
+    private static PlayerPublicKey getVerifiedPublicKey(LoginHelloC2SPacket packet, SignatureVerifier servicesSignatureVerifier, boolean shouldThrowOnMissingKey) throws LoginException {
         try {
             Optional<PlayerPublicKey.PublicKeyData> optional = packet.publicKey();
             if (optional.isEmpty()) {
@@ -198,7 +197,7 @@ implements ServerLoginPacketListener {
                 }
                 return null;
             }
-            return PlayerPublicKey.verifyAndDecode(minecraftSessionService, optional.get());
+            return PlayerPublicKey.verifyAndDecode(servicesSignatureVerifier, optional.get());
         } catch (InsecurePublicKeyException.MissingException missingException) {
             if (shouldThrowOnMissingKey) {
                 throw new LoginException(INVALID_PUBLIC_KEY_SIGNATURE_TEXT, (Throwable)missingException);
@@ -217,7 +216,7 @@ implements ServerLoginPacketListener {
             Validate.validState(this.state == State.HELLO, "Unexpected hello packet", new Object[0]);
             Validate.validState(ServerLoginNetworkHandler.isValidName(packet.name()), "Invalid characters in username", new Object[0]);
             try {
-                this.publicKey = ServerLoginNetworkHandler.getVerifiedPublicKey(packet, this.server.getSessionService(), this.server.shouldEnforceSecureProfile());
+                this.publicKey = ServerLoginNetworkHandler.getVerifiedPublicKey(packet, this.server.getServicesSignatureVerifier(), this.server.shouldEnforceSecureProfile());
             } catch (LoginException loginException) {
                 LOGGER.error(loginException.getMessage(), loginException.getCause());
                 if (this.connection.isLocal()) break block5;
@@ -249,7 +248,6 @@ implements ServerLoginPacketListener {
         String string;
         Validate.validState(this.state == State.KEY, "Unexpected key packet", new Object[0]);
         try {
-            this.profile = this.server.getSessionService().fillProfileProperties(this.profile, true);
             PrivateKey privateKey = this.server.getKeyPair().getPrivate();
             if (this.publicKey != null ? !packet.verifySignedNonce(this.nonce, this.publicKey) : !packet.verifyEncryptedNonce(this.nonce, privateKey)) {
                 throw new IllegalStateException("Protocol error");

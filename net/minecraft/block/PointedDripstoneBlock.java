@@ -42,7 +42,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -144,7 +144,7 @@ Waterloggable {
     }
 
     @Override
-    public void randomDisplayTick(BlockState state, World world, BlockPos pos, AbstractRandom random) {
+    public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         if (!PointedDripstoneBlock.canDrip(state)) {
             return;
         }
@@ -156,7 +156,7 @@ Waterloggable {
     }
 
     @Override
-    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (PointedDripstoneBlock.isPointingUp(state) && !this.canPlaceAt(state, world, pos)) {
             world.breakBlock(pos, true);
         } else {
@@ -165,7 +165,7 @@ Waterloggable {
     }
 
     @Override
-    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
+    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         PointedDripstoneBlock.dripTick(state, world, pos, random.nextFloat());
         if (random.nextFloat() < 0.011377778f && PointedDripstoneBlock.isHeldByPointedDripstone(state, world, pos)) {
             PointedDripstoneBlock.tryGrow(state, world, pos, random);
@@ -304,7 +304,7 @@ Waterloggable {
     }
 
     @VisibleForTesting
-    public static void tryGrow(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
+    public static void tryGrow(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         BlockState blockState2;
         BlockState blockState = world.getBlockState(pos.up(1));
         if (!PointedDripstoneBlock.canGrow(blockState, blockState2 = world.getBlockState(pos.up(2)))) {

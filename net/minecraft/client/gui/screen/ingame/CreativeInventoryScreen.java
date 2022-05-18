@@ -18,7 +18,6 @@ import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryListener;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
@@ -44,6 +43,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.tag.TagKey;
@@ -569,7 +569,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
                 }
             });
             if (itemGroup != null) {
-                list2.add(1, itemGroup.getDisplayName().shallowCopy().formatted(Formatting.BLUE));
+                list2.add(1, itemGroup.getDisplayName().copy().formatted(Formatting.BLUE));
             }
             this.renderTooltip(matrices, list2, stack.getTooltipData(), x, y);
         } else {

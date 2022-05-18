@@ -8,7 +8,7 @@ import com.mojang.serialization.MapCodec;
 import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.feature.FeaturePlacementContext;
 import net.minecraft.world.gen.placementmodifier.PlacementModifier;
@@ -28,7 +28,7 @@ extends PlacementModifier {
     }
 
     @Override
-    public Stream<BlockPos> getPositions(FeaturePlacementContext context, AbstractRandom random, BlockPos pos) {
+    public Stream<BlockPos> getPositions(FeaturePlacementContext context, Random random, BlockPos pos) {
         ChunkPos chunkPos = new ChunkPos(pos);
         return context.getOrCreateCarvingMask(chunkPos, this.step).streamBlockPos(chunkPos);
     }

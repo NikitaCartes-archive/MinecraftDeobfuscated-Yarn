@@ -5,9 +5,9 @@ package net.minecraft.client.gui.widget;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.client.option.GameOptions;
+import net.minecraft.screen.ScreenTexts;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class OptionSliderWidget

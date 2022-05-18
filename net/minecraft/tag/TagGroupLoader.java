@@ -28,10 +28,10 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import net.minecraft.class_7475;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.tag.TagEntry;
+import net.minecraft.tag.TagFile;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -60,12 +60,12 @@ public class TagGroupLoader<T> {
                     try {
                         JsonElement jsonElement = JsonParser.parseReader(reader);
                         List list = map.computeIfAbsent(identifier22, identifier -> new ArrayList());
-                        class_7475 lv = (class_7475)class_7475.field_39269.parse(new Dynamic<JsonElement>(JsonOps.INSTANCE, jsonElement)).getOrThrow(false, LOGGER::error);
-                        if (lv.replace()) {
+                        TagFile tagFile = (TagFile)TagFile.CODEC.parse(new Dynamic<JsonElement>(JsonOps.INSTANCE, jsonElement)).getOrThrow(false, LOGGER::error);
+                        if (tagFile.replace()) {
                             list.clear();
                         }
                         String string2 = resource.getResourcePackName();
-                        lv.entries().forEach(tagEntry -> list.add(new TrackedEntry((TagEntry)tagEntry, string2)));
+                        tagFile.entries().forEach(tagEntry -> list.add(new TrackedEntry((TagEntry)tagEntry, string2)));
                     } finally {
                         if (reader == null) continue;
                         ((Reader)reader).close();

@@ -204,11 +204,11 @@ extends DrawableHelper {
         this.hasUnreadNewMessages = false;
     }
 
-    public void scroll(int i) {
-        this.scrolledLines += i;
-        int j = this.visibleMessages.size();
-        if (this.scrolledLines > j - this.getVisibleLineCount()) {
-            this.scrolledLines = j - this.getVisibleLineCount();
+    public void scroll(int scroll) {
+        this.scrolledLines += scroll;
+        int i = this.visibleMessages.size();
+        if (this.scrolledLines > i - this.getVisibleLineCount()) {
+            this.scrolledLines = i - this.getVisibleLineCount();
         }
         if (this.scrolledLines <= 0) {
             this.scrolledLines = 0;

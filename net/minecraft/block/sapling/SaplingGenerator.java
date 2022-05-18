@@ -8,7 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -17,9 +17,9 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class SaplingGenerator {
     @Nullable
-    protected abstract RegistryEntry<? extends ConfiguredFeature<?, ?>> getTreeFeature(AbstractRandom var1, boolean var2);
+    protected abstract RegistryEntry<? extends ConfiguredFeature<?, ?>> getTreeFeature(Random var1, boolean var2);
 
-    public boolean generate(ServerWorld world, ChunkGenerator chunkGenerator, BlockPos pos, BlockState state, AbstractRandom random) {
+    public boolean generate(ServerWorld world, ChunkGenerator chunkGenerator, BlockPos pos, BlockState state, Random random) {
         RegistryEntry<ConfiguredFeature<?, ?>> registryEntry = this.getTreeFeature(random, this.areFlowersNearby(world, pos));
         if (registryEntry == null) {
             return false;

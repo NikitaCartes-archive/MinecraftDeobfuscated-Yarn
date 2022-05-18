@@ -1265,17 +1265,18 @@ extends ByteBuf {
      * @param maxLength the maximum length of the string read
      */
     public String readString(int maxLength) {
-        int i = this.readVarInt();
-        if (i > maxLength * 4) {
-            throw new DecoderException("The received encoded string buffer length is longer than maximum allowed (" + i + " > " + maxLength * 4 + ")");
+        int i = PacketByteBuf.toEncodedStringLength(maxLength);
+        int j = this.readVarInt();
+        if (j > i) {
+            throw new DecoderException("The received encoded string buffer length is longer than maximum allowed (" + j + " > " + i + ")");
         }
-        if (i < 0) {
+        if (j < 0) {
             throw new DecoderException("The received encoded string buffer length is less than zero! Weird string!");
         }
-        String string = this.toString(this.readerIndex(), i, StandardCharsets.UTF_8);
-        this.readerIndex(this.readerIndex() + i);
+        String string = this.toString(this.readerIndex(), j, StandardCharsets.UTF_8);
+        this.readerIndex(this.readerIndex() + j);
         if (string.length() > maxLength) {
-            throw new DecoderException("The received string length is longer than maximum allowed (" + i + " > " + maxLength + ")");
+            throw new DecoderException("The received string length is longer than maximum allowed (" + string.length() + " > " + maxLength + ")");
         }
         return string;
     }
@@ -1314,13 +1315,21 @@ extends ByteBuf {
      * @param maxLength the max length of the byte array
      */
     public PacketByteBuf writeString(String string, int maxLength) {
+        int i;
+        if (string.length() > maxLength) {
+            throw new EncoderException("String too big (was " + string.length() + " characters, max " + maxLength + ")");
+        }
         byte[] bs = string.getBytes(StandardCharsets.UTF_8);
-        if (bs.length > maxLength) {
-            throw new EncoderException("String too big (was " + bs.length + " bytes encoded, max " + maxLength + ")");
+        if (bs.length > (i = PacketByteBuf.toEncodedStringLength(maxLength))) {
+            throw new EncoderException("String too big (was " + bs.length + " bytes encoded, max " + i + ")");
         }
         this.writeVarInt(bs.length);
         this.writeBytes(bs);
         return this;
+    }
+
+    private static int toEncodedStringLength(int decodedLength) {
+        return decodedLength * 3;
     }
 
     /**

@@ -8,7 +8,7 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.gen.placementmodifier.AbstractCountPlacementModifier;
 import net.minecraft.world.gen.placementmodifier.PlacementModifierType;
 
@@ -30,7 +30,7 @@ extends AbstractCountPlacementModifier {
     }
 
     @Override
-    protected int getCount(AbstractRandom random, BlockPos pos) {
+    protected int getCount(Random random, BlockPos pos) {
         return this.count.get(random);
     }
 

@@ -19,7 +19,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.village.raid.Raid;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.LightType;
@@ -91,7 +91,7 @@ extends HostileEntity {
         return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
-    public static boolean canSpawn(EntityType<? extends PatrolEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, AbstractRandom random) {
+    public static boolean canSpawn(EntityType<? extends PatrolEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
         if (world.getLightLevel(LightType.BLOCK, pos) > 8) {
             return false;
         }
@@ -209,8 +209,8 @@ extends HostileEntity {
         }
 
         private boolean wander() {
-            AbstractRandom abstractRandom = ((LivingEntity)this.entity).getRandom();
-            BlockPos blockPos = ((PatrolEntity)this.entity).world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, ((Entity)this.entity).getBlockPos().add(-8 + abstractRandom.nextInt(16), 0, -8 + abstractRandom.nextInt(16)));
+            Random random = ((LivingEntity)this.entity).getRandom();
+            BlockPos blockPos = ((PatrolEntity)this.entity).world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, ((Entity)this.entity).getBlockPos().add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
             return ((MobEntity)this.entity).getNavigation().startMovingTo(blockPos.getX(), blockPos.getY(), blockPos.getZ(), this.leaderSpeed);
         }
     }

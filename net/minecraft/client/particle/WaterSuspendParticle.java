@@ -15,7 +15,7 @@ import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 @Environment(value=EnvType.CLIENT)
 public class WaterSuspendParticle
@@ -77,10 +77,10 @@ extends SpriteBillboardParticle {
 
         @Override
         public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
-            AbstractRandom abstractRandom = clientWorld.random;
-            double j = abstractRandom.nextGaussian() * (double)1.0E-6f;
-            double k = abstractRandom.nextGaussian() * (double)1.0E-4f;
-            double l = abstractRandom.nextGaussian() * (double)1.0E-6f;
+            Random random = clientWorld.random;
+            double j = random.nextGaussian() * (double)1.0E-6f;
+            double k = random.nextGaussian() * (double)1.0E-4f;
+            double l = random.nextGaussian() * (double)1.0E-6f;
             WaterSuspendParticle waterSuspendParticle = new WaterSuspendParticle(clientWorld, this.spriteProvider, d, e, f, j, k, l);
             waterSuspendParticle.setColor(0.9f, 0.4f, 0.5f);
             return waterSuspendParticle;

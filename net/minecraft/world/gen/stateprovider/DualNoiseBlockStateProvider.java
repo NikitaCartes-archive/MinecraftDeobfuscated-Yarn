@@ -15,9 +15,9 @@ import net.minecraft.util.dynamic.Range;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
-import net.minecraft.util.math.random.AbstractRandom;
-import net.minecraft.util.math.random.AtomicSimpleRandom;
+import net.minecraft.util.math.random.CheckedRandom;
 import net.minecraft.util.math.random.ChunkRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.gen.stateprovider.BlockStateProviderType;
 import net.minecraft.world.gen.stateprovider.NoiseBlockStateProvider;
 
@@ -34,7 +34,7 @@ extends NoiseBlockStateProvider {
         this.variety = variety;
         this.slowNoiseParameters = slowNoiseParameters;
         this.slowScale = slowScale;
-        this.slowNoiseSampler = DoublePerlinNoiseSampler.create(new ChunkRandom(new AtomicSimpleRandom(seed)), slowNoiseParameters);
+        this.slowNoiseSampler = DoublePerlinNoiseSampler.create(new ChunkRandom(new CheckedRandom(seed)), slowNoiseParameters);
     }
 
     @Override
@@ -43,7 +43,7 @@ extends NoiseBlockStateProvider {
     }
 
     @Override
-    public BlockState getBlockState(AbstractRandom random, BlockPos pos) {
+    public BlockState getBlockState(Random random, BlockPos pos) {
         double d = this.getSlowNoiseValue(pos);
         int i = (int)MathHelper.clampedLerpFromProgress(d, -1.0, 1.0, (double)this.variety.minInclusive().intValue(), (double)(this.variety.maxInclusive() + 1));
         ArrayList<BlockState> list = Lists.newArrayListWithCapacity(i);

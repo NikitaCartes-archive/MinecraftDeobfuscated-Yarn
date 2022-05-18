@@ -27,6 +27,7 @@ import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.InteractionObserver;
 import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.LargeEntitySpawnHelper;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
@@ -72,7 +73,6 @@ import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.LargeEntitySpawnHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.GlobalPos;
@@ -541,14 +541,14 @@ VillagerDataContainer {
     }
 
     @Override
-    public void onDeath(DamageSource source) {
-        field_36335.info("Villager {} died, message: '{}'", (Object)this, (Object)source.getDeathMessage(this).getString());
-        Entity entity = source.getAttacker();
+    public void onDeath(DamageSource damageSource) {
+        field_36335.info("Villager {} died, message: '{}'", (Object)this, (Object)damageSource.getDeathMessage(this).getString());
+        Entity entity = damageSource.getAttacker();
         if (entity != null) {
             this.notifyDeath(entity);
         }
         this.releaseAllTickets();
-        super.onDeath(source);
+        super.onDeath(damageSource);
     }
 
     private void releaseAllTickets() {
@@ -786,7 +786,7 @@ VillagerDataContainer {
         if (list2.size() < requiredCount) {
             return;
         }
-        if (!LargeEntitySpawnHelper.trySpawnAt(EntityType.IRON_GOLEM, SpawnReason.MOB_SUMMONED, world, this.getBlockPos(), 10, 8, 6).isPresent()) {
+        if (!LargeEntitySpawnHelper.trySpawnAt(EntityType.IRON_GOLEM, SpawnReason.MOB_SUMMONED, world, this.getBlockPos(), 10, 8, 6, LargeEntitySpawnHelper.Requirements.IRON_GOLEM).isPresent()) {
             return;
         }
         list.forEach(GolemLastSeenSensor::rememberIronGolem);

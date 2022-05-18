@@ -56,7 +56,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
@@ -495,9 +495,9 @@ extends AnimalEntity {
     @Override
     @Nullable
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
-        AbstractRandom abstractRandom = world.getRandom();
-        this.setMainGene(Gene.createRandom(abstractRandom));
-        this.setHiddenGene(Gene.createRandom(abstractRandom));
+        Random random = world.getRandom();
+        this.setMainGene(Gene.createRandom(random));
+        this.setHiddenGene(Gene.createRandom(random));
         this.resetAttributes();
         if (entityData == null) {
             entityData = new PassiveEntity.PassiveData(0.2f);
@@ -708,7 +708,7 @@ extends AnimalEntity {
             return NORMAL;
         }
 
-        public static Gene createRandom(AbstractRandom random) {
+        public static Gene createRandom(Random random) {
             int i = random.nextInt(16);
             if (i == 0) {
                 return LAZY;

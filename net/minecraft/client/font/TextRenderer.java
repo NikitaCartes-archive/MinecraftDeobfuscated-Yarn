@@ -34,7 +34,7 @@ import net.minecraft.util.math.AffineTransformation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -54,7 +54,7 @@ public class TextRenderer {
      * The font height of the text that is rendered by the text renderer.
      */
     public final int fontHeight = 9;
-    public final AbstractRandom random = AbstractRandom.createAtomic();
+    public final Random random = Random.create();
     private final Function<Identifier, FontStorage> fontStorageAccessor;
     private final TextHandler handler;
 

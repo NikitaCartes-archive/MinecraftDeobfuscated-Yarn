@@ -4,7 +4,7 @@
 package net.minecraft.block.sapling;
 
 import net.minecraft.block.sapling.SaplingGenerator;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.TreeConfiguredFeatures;
@@ -20,7 +20,7 @@ extends SaplingGenerator {
 
     @Override
     @Nullable
-    protected RegistryEntry<? extends ConfiguredFeature<?, ?>> getTreeFeature(AbstractRandom random, boolean bees) {
+    protected RegistryEntry<? extends ConfiguredFeature<?, ?>> getTreeFeature(Random random, boolean bees) {
         if (random.nextFloat() < this.tallChance) {
             return TreeConfiguredFeatures.TALL_MANGROVE;
         }

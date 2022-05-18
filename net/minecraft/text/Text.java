@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import net.minecraft.client.gui.screen.ScreenTexts;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.BlockNbtDataSource;
 import net.minecraft.text.EntityNbtDataSource;
 import net.minecraft.text.KeybindTextContent;
@@ -102,18 +102,18 @@ StringVisitable {
     public List<Text> getSiblings();
 
     /**
-     * Copies the text itself, excluding the styles or siblings.
+     * Copies the text's content, excluding the styles or siblings.
      */
-    default public MutableText copy() {
+    default public MutableText copyContentOnly() {
         return MutableText.of(this.getContent());
     }
 
     /**
-     * Copies the text itself, the style, and the siblings.
+     * Copies the text's content, the style, and the siblings.
      * 
      * <p>A shallow copy is made for the siblings.
      */
-    default public MutableText shallowCopy() {
+    default public MutableText copy() {
         return new MutableText(this.getContent(), new ArrayList<Text>(this.getSiblings()), this.getStyle());
     }
 

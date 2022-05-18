@@ -8,6 +8,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Lifecycle;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
@@ -30,7 +31,7 @@ import java.util.stream.Stream;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
@@ -196,14 +197,30 @@ extends MutableRegistry<T> {
     }
 
     @Override
-    public RegistryEntry<T> getOrCreateEntry(RegistryKey<T> key2) {
-        return this.keyToEntry.computeIfAbsent(key2, key -> {
+    public RegistryEntry<T> getOrCreateEntry(RegistryKey<T> key) {
+        return this.keyToEntry.computeIfAbsent(key, entry -> {
             if (this.valueToEntryFunction != null) {
                 throw new IllegalStateException("This registry can't create new holders without value");
             }
-            this.assertNotFrozen((RegistryKey<T>)key);
-            return RegistryEntry.Reference.standAlone(this, key);
+            this.assertNotFrozen((RegistryKey<T>)entry);
+            return RegistryEntry.Reference.standAlone(this, entry);
         });
+    }
+
+    @Override
+    public DataResult<RegistryEntry<T>> getOrCreateEntryDataResult(RegistryKey<T> key) {
+        RegistryEntry.Reference<T> reference = this.keyToEntry.get(key);
+        if (reference == null) {
+            if (this.valueToEntryFunction != null) {
+                return DataResult.error("This registry can't create new holders without value (requested key: " + key + ")");
+            }
+            if (this.frozen) {
+                return DataResult.error("Registry is already frozen (requested key: " + key + ")");
+            }
+            reference = RegistryEntry.Reference.standAlone(this, key);
+            this.keyToEntry.put(key, reference);
+        }
+        return DataResult.success(reference);
     }
 
     @Override
@@ -295,7 +312,7 @@ extends MutableRegistry<T> {
     }
 
     @Override
-    public Optional<RegistryEntry<T>> getRandom(AbstractRandom random) {
+    public Optional<RegistryEntry<T>> getRandom(Random random) {
         return Util.getRandomOrEmpty(this.getEntries(), random).map(RegistryEntry::upcast);
     }
 

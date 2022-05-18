@@ -83,7 +83,7 @@ VibrationListener.Callback {
         super((EntityType<? extends PathAwareEntity>)entityType, world);
         this.moveControl = new FlightMoveControl(this, 20, true);
         this.setCanPickUpLoot(this.canPickUpLoot());
-        this.gameEventHandler = new EntityGameEventHandler<VibrationListener>(new VibrationListener(new EntityPositionSource(this, this.getStandingEyeHeight()), 16, this, null, 0, 0));
+        this.gameEventHandler = new EntityGameEventHandler<VibrationListener>(new VibrationListener(new EntityPositionSource(this, this.getStandingEyeHeight()), 16, this, null, 0.0f, 0));
     }
 
     protected Brain.Profile<AllayEntity> createBrainProfile() {
@@ -338,7 +338,7 @@ VibrationListener.Callback {
     }
 
     @Override
-    public void accept(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity, @Nullable Entity sourceEntity, int delay) {
+    public void accept(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity, @Nullable Entity sourceEntity, float distance) {
         if (event == GameEvent.NOTE_BLOCK_PLAY) {
             AllayBrain.rememberNoteBlock(this, new BlockPos(pos));
         }

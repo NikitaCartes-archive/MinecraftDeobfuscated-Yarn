@@ -9,6 +9,7 @@ import com.mojang.brigadier.context.ParsedCommandNode;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.command.argument.TextConvertibleArgumentType;
 import net.minecraft.network.PacketByteBuf;
@@ -20,10 +21,11 @@ import org.jetbrains.annotations.Nullable;
  * A record holding the salt and signatures for all signable arguments of an executed command.
  */
 public record ArgumentSignatureDataMap(long salt, Map<String, byte[]> signatures) {
+    private static final int MAX_ARGUMENTS = 8;
     private static final int MAX_ARGUMENT_NAME_LENGTH = 16;
 
     public ArgumentSignatureDataMap(PacketByteBuf buf) {
-        this(buf.readLong(), buf.readMap(buf2 -> buf2.readString(16), PacketByteBuf::readByteArray));
+        this(buf.readLong(), buf.readMap(PacketByteBuf.getMaxValidator(HashMap::new, 8), buf2 -> buf2.readString(16), PacketByteBuf::readByteArray));
     }
 
     /**

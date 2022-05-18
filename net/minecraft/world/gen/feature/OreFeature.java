@@ -10,7 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.ChunkSectionCache;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
@@ -27,11 +27,11 @@ extends Feature<OreFeatureConfig> {
 
     @Override
     public boolean generate(FeatureContext<OreFeatureConfig> context) {
-        AbstractRandom abstractRandom = context.getRandom();
+        Random random = context.getRandom();
         BlockPos blockPos = context.getOrigin();
         StructureWorldAccess structureWorldAccess = context.getWorld();
         OreFeatureConfig oreFeatureConfig = context.getConfig();
-        float f = abstractRandom.nextFloat() * (float)Math.PI;
+        float f = random.nextFloat() * (float)Math.PI;
         float g = (float)oreFeatureConfig.size / 8.0f;
         int i = MathHelper.ceil(((float)oreFeatureConfig.size / 16.0f * 2.0f + 1.0f) / 2.0f);
         double d = (double)blockPos.getX() + Math.sin(f) * (double)g;
@@ -39,8 +39,8 @@ extends Feature<OreFeatureConfig> {
         double h = (double)blockPos.getZ() + Math.cos(f) * (double)g;
         double j = (double)blockPos.getZ() - Math.cos(f) * (double)g;
         int k = 2;
-        double l = blockPos.getY() + abstractRandom.nextInt(3) - 2;
-        double m = blockPos.getY() + abstractRandom.nextInt(3) - 2;
+        double l = blockPos.getY() + random.nextInt(3) - 2;
+        double m = blockPos.getY() + random.nextInt(3) - 2;
         int n = blockPos.getX() - MathHelper.ceil(g) - i;
         int o = blockPos.getY() - 2 - i;
         int p = blockPos.getZ() - MathHelper.ceil(g) - i;
@@ -49,13 +49,13 @@ extends Feature<OreFeatureConfig> {
         for (int s = n; s <= n + q; ++s) {
             for (int t = p; t <= p + q; ++t) {
                 if (o > structureWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, s, t)) continue;
-                return this.generateVeinPart(structureWorldAccess, abstractRandom, oreFeatureConfig, d, e, h, j, l, m, n, o, p, q, r);
+                return this.generateVeinPart(structureWorldAccess, random, oreFeatureConfig, d, e, h, j, l, m, n, o, p, q, r);
             }
         }
         return false;
     }
 
-    protected boolean generateVeinPart(StructureWorldAccess world, AbstractRandom abstractRandom, OreFeatureConfig config, double startX, double endX, double startZ, double endZ, double startY, double endY, int x, int y, int z, int horizontalSize, int verticalSize) {
+    protected boolean generateVeinPart(StructureWorldAccess world, Random random, OreFeatureConfig config, double startX, double endX, double startZ, double endZ, double startY, double endY, int x, int y, int z, int horizontalSize, int verticalSize) {
         double h;
         double g;
         double e;
@@ -71,7 +71,7 @@ extends Feature<OreFeatureConfig> {
             d = MathHelper.lerp((double)f, startX, endX);
             e = MathHelper.lerp((double)f, startY, endY);
             g = MathHelper.lerp((double)f, startZ, endZ);
-            h = abstractRandom.nextDouble() * (double)j / 16.0;
+            h = random.nextDouble() * (double)j / 16.0;
             double l = ((double)(MathHelper.sin((float)Math.PI * f) + 1.0f) * h + 1.0) / 2.0;
             ds[k * 4 + 0] = d;
             ds[k * 4 + 1] = e;
@@ -121,7 +121,7 @@ extends Feature<OreFeatureConfig> {
                             int af = ChunkSectionPos.getLocalCoord(aa);
                             BlockState blockState = chunkSection.getBlockState(ad, ae, af);
                             for (OreFeatureConfig.Target target : config.targets) {
-                                if (!OreFeature.shouldPlace(blockState, chunkSectionCache::getBlockState, abstractRandom, config, target, mutable)) continue;
+                                if (!OreFeature.shouldPlace(blockState, chunkSectionCache::getBlockState, random, config, target, mutable)) continue;
                                 chunkSection.setBlockState(ad, ae, af, target.state, false);
                                 ++i;
                                 continue block11;
@@ -134,24 +134,24 @@ extends Feature<OreFeatureConfig> {
         return i > 0;
     }
 
-    public static boolean shouldPlace(BlockState state, Function<BlockPos, BlockState> posToState, AbstractRandom abstractRandom, OreFeatureConfig config, OreFeatureConfig.Target target, BlockPos.Mutable pos) {
-        if (!target.target.test(state, abstractRandom)) {
+    public static boolean shouldPlace(BlockState state, Function<BlockPos, BlockState> posToState, Random random, OreFeatureConfig config, OreFeatureConfig.Target target, BlockPos.Mutable pos) {
+        if (!target.target.test(state, random)) {
             return false;
         }
-        if (OreFeature.shouldNotDiscard(abstractRandom, config.discardOnAirChance)) {
+        if (OreFeature.shouldNotDiscard(random, config.discardOnAirChance)) {
             return true;
         }
         return !OreFeature.isExposedToAir(posToState, pos);
     }
 
-    protected static boolean shouldNotDiscard(AbstractRandom abstractRandom, float chance) {
+    protected static boolean shouldNotDiscard(Random random, float chance) {
         if (chance <= 0.0f) {
             return true;
         }
         if (chance >= 1.0f) {
             return false;
         }
-        return abstractRandom.nextFloat() >= chance;
+        return random.nextFloat() >= chance;
     }
 }
 

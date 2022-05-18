@@ -14,7 +14,7 @@ import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.IntProvider;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 import net.minecraft.world.gen.stateprovider.BlockStateProviderType;
 import org.jetbrains.annotations.Nullable;
@@ -55,7 +55,7 @@ extends BlockStateProvider {
     }
 
     @Override
-    public BlockState getBlockState(AbstractRandom random, BlockPos pos) {
+    public BlockState getBlockState(Random random, BlockPos pos) {
         BlockState blockState = this.source.getBlockState(random, pos);
         if (this.property == null || !blockState.contains(this.property)) {
             this.property = RandomizedIntBlockStateProvider.getIntPropertyByName(blockState, this.propertyName);

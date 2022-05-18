@@ -39,7 +39,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.floatprovider.ConstantFloatProvider;
 import net.minecraft.util.math.floatprovider.MultipliedFloatSupplier;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
@@ -243,12 +243,12 @@ extends SinglePreparationResourceReloader<SoundList> {
                         }
 
                         @Override
-                        public Sound getSound(AbstractRandom abstractRandom) {
+                        public Sound getSound(Random random) {
                             WeightedSoundSet weightedSoundSet = loadedSounds.get(identifier);
                             if (weightedSoundSet == null) {
                                 return MISSING_SOUND;
                             }
-                            Sound sound2 = weightedSoundSet.getSound(abstractRandom);
+                            Sound sound2 = weightedSoundSet.getSound(random);
                             return new Sound(sound2.getIdentifier().toString(), new MultipliedFloatSupplier(sound2.getVolume(), sound.getVolume()), new MultipliedFloatSupplier(sound2.getPitch(), sound.getPitch()), sound.getWeight(), Sound.RegistrationType.FILE, sound2.isStreamed() || sound.isStreamed(), sound2.isPreloaded(), sound2.getAttenuation());
                         }
 
@@ -262,7 +262,7 @@ extends SinglePreparationResourceReloader<SoundList> {
                         }
 
                         @Override
-                        public /* synthetic */ Object getSound(AbstractRandom random) {
+                        public /* synthetic */ Object getSound(Random random) {
                             return this.getSound(random);
                         }
                     };

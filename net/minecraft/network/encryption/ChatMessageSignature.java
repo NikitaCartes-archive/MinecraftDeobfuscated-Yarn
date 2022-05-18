@@ -6,11 +6,12 @@ package net.minecraft.network.encryption;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
-import java.security.Signature;
 import java.security.SignatureException;
 import java.time.Instant;
 import java.util.UUID;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
+import net.minecraft.network.encryption.SignatureUpdatable;
+import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 
@@ -24,15 +25,10 @@ public record ChatMessageSignature(UUID sender, Instant timestamp, NetworkEncryp
 
     /**
      * {@return whether {@code message} can be verified with this signature}
-     * 
-     * @throws SignatureException when verifying fails
-     * 
-     * @param message the message to verify
      */
-    public boolean verify(Signature signature, Text message) throws SignatureException {
+    public boolean verify(SignatureVerifier verifier, Text message) {
         if (this.canVerify()) {
-            ChatMessageSignature.updateSignature(signature, message, this.sender, this.timestamp, this.saltSignature.salt());
-            return signature.verify(this.saltSignature.signature());
+            return verifier.validate(updater -> ChatMessageSignature.updateSignature(updater, message, this.sender, this.timestamp, this.saltSignature.salt()), this.saltSignature.signature());
         }
         return false;
     }
@@ -44,12 +40,12 @@ public record ChatMessageSignature(UUID sender, Instant timestamp, NetworkEncryp
      * 
      * @param message the message to verify
      */
-    public boolean verify(Signature signature, String message) throws SignatureException {
-        return this.verify(signature, Text.literal(message));
+    public boolean verify(SignatureVerifier verifier, String message) throws SignatureException {
+        return this.verify(verifier, Text.literal(message));
     }
 
     /**
-     * Updates {@code signature} with the passed parameters.
+     * Updates {@code updater} with the passed parameters.
      * 
      * @implNote The data to be signed is {@code salt}, followed by big-endian ordered
      * {@code uuid}, followed by {@code time} as seconds from the UTC epoch, followed by
@@ -57,18 +53,17 @@ public record ChatMessageSignature(UUID sender, Instant timestamp, NetworkEncryp
      * 
      * @throws SignatureException when updating signature fails
      * 
-     * @see ChatMessageSigner#sign
+     * @see ChatMessageSigner#sign(net.minecraft.network.encryption.Signer, Text)
      * @see #verify
      */
-    public static void updateSignature(Signature signature, Text message, UUID sender, Instant time, long salt) throws SignatureException {
-        byte[] bs = ChatMessageSignature.toByteArray(message);
-        int i = 32 + bs.length;
-        ByteBuffer byteBuffer = ByteBuffer.allocate(i).order(ByteOrder.BIG_ENDIAN);
+    public static void updateSignature(SignatureUpdatable.SignatureUpdater updater, Text message, UUID sender, Instant time, long salt) throws SignatureException {
+        byte[] bs = new byte[32];
+        ByteBuffer byteBuffer = ByteBuffer.wrap(bs).order(ByteOrder.BIG_ENDIAN);
         byteBuffer.putLong(salt);
         byteBuffer.putLong(sender.getMostSignificantBits()).putLong(sender.getLeastSignificantBits());
         byteBuffer.putLong(time.getEpochSecond());
-        byteBuffer.put(bs);
-        signature.update(byteBuffer.flip());
+        updater.update(bs);
+        updater.update(ChatMessageSignature.toByteArray(message));
     }
 
     private static byte[] toByteArray(Text message) {
@@ -79,8 +74,8 @@ public record ChatMessageSignature(UUID sender, Instant timestamp, NetworkEncryp
     /**
      * {@return whether the signature can be verified}
      * 
-     * <p>Verifiable signature is not the same as verified signature. Signatures are verifiable
-     * if it has proper sender UUID and signature data. However, they can still fail to verify.
+     * <p>Verifiable signature is not the same as verified signature. A signatures is verifiable
+     * if it has proper sender UUID and signature data. However, it can still fail to verify.
      */
     public boolean canVerify() {
         return this.sender != Util.NIL_UUID && this.saltSignature.isSignaturePresent();

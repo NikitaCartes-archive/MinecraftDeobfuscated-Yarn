@@ -40,6 +40,7 @@ import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureHolder;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.GenerationSettings;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.BiomeSupplier;
@@ -74,7 +75,7 @@ StructureHolder {
     private long inhabitedTime;
     @Nullable
     @Deprecated
-    private RegistryEntry<Biome> biome;
+    private GenerationSettings generationSettings;
     @Nullable
     protected ChunkNoiseSampler chunkNoiseSampler;
     protected final UpgradeData upgradeData;
@@ -209,8 +210,8 @@ StructureHolder {
     }
 
     @Override
-    public LongSet getStructureReferences(StructureType structureType) {
-        return this.structureReferences.getOrDefault(structureType, EMPTY_STRUCTURE_REFERENCES);
+    public LongSet getStructureReferences(StructureType strcutureType) {
+        return this.structureReferences.getOrDefault(strcutureType, EMPTY_STRUCTURE_REFERENCES);
     }
 
     @Override
@@ -352,11 +353,11 @@ StructureHolder {
     }
 
     @Deprecated
-    public RegistryEntry<Biome> setBiomeIfAbsent(Supplier<RegistryEntry<Biome>> biomeSupplier) {
-        if (this.biome == null) {
-            this.biome = biomeSupplier.get();
+    public GenerationSettings method_44214(Supplier<GenerationSettings> supplier) {
+        if (this.generationSettings == null) {
+            this.generationSettings = supplier.get();
         }
-        return this.biome;
+        return this.generationSettings;
     }
 
     @Override

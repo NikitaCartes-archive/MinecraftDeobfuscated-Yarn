@@ -11,7 +11,7 @@ import net.minecraft.structure.rule.PosRuleTest;
 import net.minecraft.structure.rule.PosRuleTestType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class LinearPosRuleTest
 extends PosRuleTest {
@@ -32,7 +32,7 @@ extends PosRuleTest {
     }
 
     @Override
-    public boolean test(BlockPos blockPos, BlockPos blockPos2, BlockPos pivot, AbstractRandom random) {
+    public boolean test(BlockPos blockPos, BlockPos blockPos2, BlockPos pivot, Random random) {
         int i = blockPos2.getManhattanDistance(pivot);
         float f = random.nextFloat();
         return f <= MathHelper.clampedLerp(this.minChance, this.maxChance, MathHelper.getLerpProgress(i, this.minDistance, this.maxDistance));

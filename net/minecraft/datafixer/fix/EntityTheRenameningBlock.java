@@ -15,8 +15,8 @@ extends EntityRenameFix {
     public static final Map<String, String> ITEMS = ImmutableMap.builder().putAll(BLOCKS).put("minecraft:clownfish", "minecraft:tropical_fish").put("minecraft:chorus_fruit_popped", "minecraft:popped_chorus_fruit").put("minecraft:evocation_illager_spawn_egg", "minecraft:evoker_spawn_egg").put("minecraft:vindication_illager_spawn_egg", "minecraft:vindicator_spawn_egg").build();
     private static final String field_29882 = "minecraft:bred_";
 
-    public EntityTheRenameningBlock(Schema outputSchema, boolean changesType) {
-        super("EntityTheRenameningBlock", outputSchema, changesType);
+    public EntityTheRenameningBlock(Schema schema, boolean bl) {
+        super("EntityTheRenameningBlock", schema, bl);
     }
 
     @Override

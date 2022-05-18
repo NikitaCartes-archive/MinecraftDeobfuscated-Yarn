@@ -17,7 +17,7 @@ import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.Vector4f;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 @Environment(value=EnvType.CLIENT)
 public final class ModelPart {
@@ -169,7 +169,7 @@ public final class ModelPart {
         }
     }
 
-    public Cuboid getRandomCuboid(AbstractRandom random) {
+    public Cuboid getRandomCuboid(Random random) {
         return this.cuboids.get(random.nextInt(this.cuboids.size()));
     }
 

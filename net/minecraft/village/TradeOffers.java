@@ -43,7 +43,7 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.VillagerDataContainer;
@@ -90,7 +90,7 @@ public class TradeOffers {
 
     public static interface Factory {
         @Nullable
-        public TradeOffer create(Entity var1, AbstractRandom var2);
+        public TradeOffer create(Entity var1, Random var2);
     }
 
     static class BuyForOneEmeraldFactory
@@ -110,7 +110,7 @@ public class TradeOffers {
         }
 
         @Override
-        public TradeOffer create(Entity entity, AbstractRandom random) {
+        public TradeOffer create(Entity entity, Random random) {
             ItemStack itemStack = new ItemStack(this.buy, this.price);
             return new TradeOffer(itemStack, new ItemStack(Items.EMERALD), this.maxUses, this.experience, this.multiplier);
         }
@@ -151,7 +151,7 @@ public class TradeOffers {
         }
 
         @Override
-        public TradeOffer create(Entity entity, AbstractRandom random) {
+        public TradeOffer create(Entity entity, Random random) {
             return new TradeOffer(new ItemStack(Items.EMERALD, this.price), new ItemStack(this.sell.getItem(), this.count), this.maxUses, this.experience, this.multiplier);
         }
     }
@@ -172,7 +172,7 @@ public class TradeOffers {
 
         @Override
         @Nullable
-        public TradeOffer create(Entity entity, AbstractRandom random) {
+        public TradeOffer create(Entity entity, Random random) {
             ItemStack itemStack = new ItemStack(Items.SUSPICIOUS_STEW, 1);
             SuspiciousStewItem.addEffectToStew(itemStack, this.effect, this.duration);
             return new TradeOffer(new ItemStack(Items.EMERALD, 1), itemStack, 12, this.experience, this.multiplier);
@@ -207,7 +207,7 @@ public class TradeOffers {
 
         @Override
         @Nullable
-        public TradeOffer create(Entity entity, AbstractRandom random) {
+        public TradeOffer create(Entity entity, Random random) {
             return new TradeOffer(new ItemStack(Items.EMERALD, this.price), new ItemStack(this.secondBuy.getItem(), this.secondCount), new ItemStack(this.sell.getItem(), this.sellCount), this.maxUses, this.experience, this.multiplier);
         }
     }
@@ -233,7 +233,7 @@ public class TradeOffers {
         }
 
         @Override
-        public TradeOffer create(Entity entity, AbstractRandom random) {
+        public TradeOffer create(Entity entity, Random random) {
             int i = 5 + random.nextInt(15);
             ItemStack itemStack = EnchantmentHelper.enchant(random, new ItemStack(this.tool.getItem()), i, false);
             int j = Math.min(this.basePrice + i, 64);
@@ -261,7 +261,7 @@ public class TradeOffers {
 
         @Override
         @Nullable
-        public TradeOffer create(Entity entity, AbstractRandom random) {
+        public TradeOffer create(Entity entity, Random random) {
             if (entity instanceof VillagerDataContainer) {
                 ItemStack itemStack = new ItemStack(this.map.get(((VillagerDataContainer)((Object)entity)).getVillagerData().getType()), this.count);
                 return new TradeOffer(itemStack, new ItemStack(Items.EMERALD), this.maxUses, this.experience, 0.05f);
@@ -293,7 +293,7 @@ public class TradeOffers {
         }
 
         @Override
-        public TradeOffer create(Entity entity, AbstractRandom random) {
+        public TradeOffer create(Entity entity, Random random) {
             ItemStack itemStack = new ItemStack(Items.EMERALD, this.price);
             List list = Registry.POTION.stream().filter(potion -> !potion.getEffects().isEmpty() && BrewingRecipeRegistry.isBrewable(potion)).collect(Collectors.toList());
             Potion potion2 = (Potion)list.get(random.nextInt(list.size()));
@@ -311,7 +311,7 @@ public class TradeOffers {
         }
 
         @Override
-        public TradeOffer create(Entity entity, AbstractRandom random) {
+        public TradeOffer create(Entity entity, Random random) {
             List list = Registry.ENCHANTMENT.stream().filter(Enchantment::isAvailableForEnchantedBookOffer).collect(Collectors.toList());
             Enchantment enchantment = (Enchantment)list.get(random.nextInt(list.size()));
             int i = MathHelper.nextInt(random, enchantment.getMinLevel(), enchantment.getMaxLevel());
@@ -347,7 +347,7 @@ public class TradeOffers {
 
         @Override
         @Nullable
-        public TradeOffer create(Entity entity, AbstractRandom random) {
+        public TradeOffer create(Entity entity, Random random) {
             if (!(entity.world instanceof ServerWorld)) {
                 return null;
             }
@@ -383,7 +383,7 @@ public class TradeOffers {
         }
 
         @Override
-        public TradeOffer create(Entity entity, AbstractRandom random) {
+        public TradeOffer create(Entity entity, Random random) {
             ItemStack itemStack = new ItemStack(Items.EMERALD, this.price);
             ItemStack itemStack2 = new ItemStack(this.sell);
             if (this.sell instanceof DyeableArmorItem) {
@@ -400,7 +400,7 @@ public class TradeOffers {
             return new TradeOffer(itemStack, itemStack2, this.maxUses, this.experience, 0.2f);
         }
 
-        private static DyeItem getDye(AbstractRandom random) {
+        private static DyeItem getDye(Random random) {
             return DyeItem.byColor(DyeColor.byId(random.nextInt(16)));
         }
     }

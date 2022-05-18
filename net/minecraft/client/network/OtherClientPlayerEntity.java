@@ -13,6 +13,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Represents a player entity that is present on the client but is not the client's own player.
@@ -20,7 +21,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class OtherClientPlayerEntity
 extends AbstractClientPlayerEntity {
-    public OtherClientPlayerEntity(ClientWorld clientWorld, GameProfile gameProfile, PlayerPublicKey playerPublicKey) {
+    public OtherClientPlayerEntity(ClientWorld clientWorld, GameProfile gameProfile, @Nullable PlayerPublicKey playerPublicKey) {
         super(clientWorld, gameProfile, playerPublicKey);
         this.stepHeight = 1.0f;
         this.noClip = true;

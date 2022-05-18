@@ -6,7 +6,6 @@ package net.minecraft.client.gui.screen.ingame;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.render.GameRenderer;
@@ -15,6 +14,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.c2s.play.SelectMerchantTradeC2SPacket;
 import net.minecraft.screen.MerchantScreenHandler;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -86,7 +86,7 @@ extends HandledScreen<MerchantScreenHandler> {
     protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
         int i = ((MerchantScreenHandler)this.handler).getLevelProgress();
         if (i > 0 && i <= 5 && ((MerchantScreenHandler)this.handler).isLeveled()) {
-            MutableText text = this.title.shallowCopy().append(SEPARATOR_TEXT).append(Text.translatable("merchant.level." + i));
+            MutableText text = this.title.copy().append(SEPARATOR_TEXT).append(Text.translatable("merchant.level." + i));
             int j = this.textRenderer.getWidth(text);
             int k = 49 + this.backgroundWidth / 2 - j / 2;
             this.textRenderer.draw(matrices, text, (float)k, 6.0f, 0x404040);

@@ -27,9 +27,9 @@ import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
-import net.minecraft.util.math.random.AbstractRandom;
-import net.minecraft.util.math.random.AtomicSimpleRandom;
+import net.minecraft.util.math.random.CheckedRandom;
 import net.minecraft.util.math.random.ChunkRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryCodecs;
 import net.minecraft.util.registry.RegistryEntry;
@@ -47,10 +47,10 @@ public final class Biome {
     public static final Codec<Biome> NETWORK_CODEC = RecordCodecBuilder.create(instance -> instance.group(Weather.CODEC.forGetter(biome -> biome.weather), ((MapCodec)BiomeEffects.CODEC.fieldOf("effects")).forGetter(biome -> biome.effects)).apply((Applicative<Biome, ?>)instance, (weather, effects) -> new Biome((Weather)weather, (BiomeEffects)effects, GenerationSettings.INSTANCE, SpawnSettings.INSTANCE)));
     public static final Codec<RegistryEntry<Biome>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.BIOME_KEY, CODEC);
     public static final Codec<RegistryEntryList<Biome>> REGISTRY_ENTRY_LIST_CODEC = RegistryCodecs.entryList(Registry.BIOME_KEY, CODEC);
-    private static final OctaveSimplexNoiseSampler TEMPERATURE_NOISE = new OctaveSimplexNoiseSampler((AbstractRandom)new ChunkRandom(new AtomicSimpleRandom(1234L)), ImmutableList.of(Integer.valueOf(0)));
-    static final OctaveSimplexNoiseSampler FROZEN_OCEAN_NOISE = new OctaveSimplexNoiseSampler((AbstractRandom)new ChunkRandom(new AtomicSimpleRandom(3456L)), ImmutableList.of(Integer.valueOf(-2), Integer.valueOf(-1), Integer.valueOf(0)));
+    private static final OctaveSimplexNoiseSampler TEMPERATURE_NOISE = new OctaveSimplexNoiseSampler((Random)new ChunkRandom(new CheckedRandom(1234L)), ImmutableList.of(Integer.valueOf(0)));
+    static final OctaveSimplexNoiseSampler FROZEN_OCEAN_NOISE = new OctaveSimplexNoiseSampler((Random)new ChunkRandom(new CheckedRandom(3456L)), ImmutableList.of(Integer.valueOf(-2), Integer.valueOf(-1), Integer.valueOf(0)));
     @Deprecated(forRemoval=true)
-    public static final OctaveSimplexNoiseSampler FOLIAGE_NOISE = new OctaveSimplexNoiseSampler((AbstractRandom)new ChunkRandom(new AtomicSimpleRandom(2345L)), ImmutableList.of(Integer.valueOf(0)));
+    public static final OctaveSimplexNoiseSampler FOLIAGE_NOISE = new OctaveSimplexNoiseSampler((Random)new ChunkRandom(new CheckedRandom(2345L)), ImmutableList.of(Integer.valueOf(0)));
     private static final int MAX_TEMPERATURE_CACHE_SIZE = 1024;
     private final Weather weather;
     private final GenerationSettings generationSettings;
@@ -193,11 +193,11 @@ public final class Biome {
         return FoliageColors.getColor(d, e);
     }
 
-    public final float getDownfall() {
+    public float getDownfall() {
         return this.weather.downfall;
     }
 
-    public final float getTemperature() {
+    public float getTemperature() {
         return this.weather.temperature;
     }
 
@@ -205,11 +205,11 @@ public final class Biome {
         return this.effects;
     }
 
-    public final int getWaterColor() {
+    public int getWaterColor() {
         return this.effects.getWaterColor();
     }
 
-    public final int getWaterFogColor() {
+    public int getWaterFogColor() {
         return this.effects.getWaterFogColor();
     }
 
@@ -233,19 +233,8 @@ public final class Biome {
         return this.effects.getMusic();
     }
 
-    static class Weather {
+    record Weather(Precipitation precipitation, float temperature, TemperatureModifier temperatureModifier, float downfall) {
         public static final MapCodec<Weather> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec)Precipitation.CODEC.fieldOf("precipitation")).forGetter(weather -> weather.precipitation), ((MapCodec)Codec.FLOAT.fieldOf("temperature")).forGetter(weather -> Float.valueOf(weather.temperature)), TemperatureModifier.CODEC.optionalFieldOf("temperature_modifier", TemperatureModifier.NONE).forGetter(weather -> weather.temperatureModifier), ((MapCodec)Codec.FLOAT.fieldOf("downfall")).forGetter(weather -> Float.valueOf(weather.downfall))).apply((Applicative<Weather, ?>)instance, Weather::new));
-        final Precipitation precipitation;
-        final float temperature;
-        final TemperatureModifier temperatureModifier;
-        final float downfall;
-
-        Weather(Precipitation precipitation, float temperature, TemperatureModifier temperatureModifier, float downfall) {
-            this.precipitation = precipitation;
-            this.temperature = temperature;
-            this.temperatureModifier = temperatureModifier;
-            this.downfall = downfall;
-        }
     }
 
     public static enum Precipitation implements StringIdentifiable
@@ -340,10 +329,6 @@ public final class Biome {
         private SpawnSettings spawnSettings;
         @Nullable
         private GenerationSettings generationSettings;
-
-        public static Builder copy(Biome biome) {
-            return new Builder().precipitation(biome.getPrecipitation()).temperature(biome.getTemperature()).downfall(biome.getDownfall()).effects(biome.getEffects()).generationSettings(biome.getGenerationSettings()).spawnSettings(biome.getSpawnSettings());
-        }
 
         public Builder precipitation(Precipitation precipitation) {
             this.precipitation = precipitation;

@@ -17,7 +17,7 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.collection.Weighted;
 import net.minecraft.util.collection.Weighting;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -34,7 +34,7 @@ implements BakedModel {
     }
 
     @Override
-    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction face, AbstractRandom random) {
+    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction face, Random random) {
         return Weighting.getAt(this.models, Math.abs((int)random.nextLong()) % this.totalWeight).map(present -> ((BakedModel)present.getData()).getQuads(state, face, random)).orElse(Collections.emptyList());
     }
 

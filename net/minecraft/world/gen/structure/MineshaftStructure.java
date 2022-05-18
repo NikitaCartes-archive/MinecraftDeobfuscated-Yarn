@@ -18,8 +18,8 @@ import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.math.random.ChunkRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.structure.StructureType;
@@ -55,7 +55,7 @@ extends StructureType {
         if (this.type == Type.MESA) {
             BlockPos blockPos = collector.getBoundingBox().getCenter();
             int j = chunkGenerator.getHeight(blockPos.getX(), blockPos.getZ(), Heightmap.Type.WORLD_SURFACE_WG, context.world(), context.noiseConfig());
-            int k = j <= i ? i : MathHelper.nextBetween((AbstractRandom)chunkRandom, i, j);
+            int k = j <= i ? i : MathHelper.nextBetween((Random)chunkRandom, i, j);
             int l = k - blockPos.getY();
             collector.shift(l);
             return l;

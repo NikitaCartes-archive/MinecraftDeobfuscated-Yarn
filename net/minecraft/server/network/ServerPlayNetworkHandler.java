@@ -7,7 +7,12 @@ import com.google.common.collect.Lists;
 import com.google.common.primitives.Floats;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.context.CommandContextBuilder;
+import com.mojang.brigadier.context.ParsedCommandNode;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.tree.ArgumentCommandNode;
+import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.logging.LogUtils;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
@@ -21,6 +26,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
@@ -40,6 +46,7 @@ import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.client.option.ChatVisibility;
+import net.minecraft.command.argument.DecoratableArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
@@ -59,12 +66,12 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.network.ChatDecorator;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.Packet;
 import net.minecraft.network.encryption.ChatMessageSignature;
-import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.encryption.SignedChatMessage;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
@@ -132,8 +139,10 @@ import net.minecraft.screen.AnvilScreenHandler;
 import net.minecraft.screen.BeaconScreenHandler;
 import net.minecraft.screen.MerchantScreenHandler;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.filter.TextStream;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.EntityTrackingListener;
@@ -166,6 +175,7 @@ import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -211,6 +221,7 @@ ServerPlayPacketListener {
     private int movePacketsCount;
     private int lastTickMovePacketsCount;
     private final PendingTaskRunner previewTaskRunner = new PendingTaskRunner();
+    private final AtomicReference<Instant> lastMessageTimestamp = new AtomicReference<Instant>(Instant.EPOCH);
 
     public ServerPlayNetworkHandler(MinecraftServer server, ClientConnection connection, ServerPlayerEntity player) {
         this.server = server;
@@ -333,11 +344,11 @@ ServerPlayPacketListener {
         backingFilterer.apply(this.player.getTextStream(), (TextStream)text).thenAcceptAsync(consumer2, (Executor)threadExecutor);
     }
 
-    private void filterText(String text, Consumer<TextStream.Message> consumer) {
+    private void filterText(String text, Consumer<FilteredMessage<String>> consumer) {
         this.filterText(text, consumer, TextStream::filterText);
     }
 
-    private void filterTexts(List<String> texts, Consumer<List<TextStream.Message>> consumer) {
+    private void filterTexts(List<String> texts, Consumer<List<FilteredMessage<String>>> consumer) {
         this.filterText(texts, consumer, TextStream::filterTexts);
     }
 
@@ -698,10 +709,10 @@ ServerPlayPacketListener {
         Optional<String> optional = packet.getTitle();
         optional.ifPresent(list::add);
         packet.getPages().stream().limit(100L).forEach(list::add);
-        this.filterTexts(list, optional.isPresent() ? texts -> this.addBook((TextStream.Message)texts.get(0), texts.subList(1, texts.size()), i) : texts -> this.updateBookContent((List<TextStream.Message>)texts, i));
+        this.filterTexts(list, optional.isPresent() ? texts -> this.addBook((FilteredMessage)texts.get(0), texts.subList(1, texts.size()), i) : texts -> this.updateBookContent((List<FilteredMessage<String>>)texts, i));
     }
 
-    private void updateBookContent(List<TextStream.Message> pages, int slotId) {
+    private void updateBookContent(List<FilteredMessage<String>> pages, int slotId) {
         ItemStack itemStack = this.player.getInventory().getStack(slotId);
         if (!itemStack.isOf(Items.WRITABLE_BOOK)) {
             return;
@@ -709,7 +720,7 @@ ServerPlayPacketListener {
         this.setTextToBook(pages, UnaryOperator.identity(), itemStack);
     }
 
-    private void addBook(TextStream.Message title, List<TextStream.Message> pages, int slotId) {
+    private void addBook(FilteredMessage<String> title, List<FilteredMessage<String>> pages, int slotId) {
         ItemStack itemStack = this.player.getInventory().getStack(slotId);
         if (!itemStack.isOf(Items.WRITABLE_BOOK)) {
             return;
@@ -721,29 +732,28 @@ ServerPlayPacketListener {
         }
         itemStack2.setSubNbt("author", NbtString.of(this.player.getName().getString()));
         if (this.player.shouldFilterText()) {
-            itemStack2.setSubNbt("title", NbtString.of(title.getFiltered()));
+            itemStack2.setSubNbt("title", NbtString.of(title.filteredOrElse("")));
         } else {
-            itemStack2.setSubNbt("filtered_title", NbtString.of(title.getFiltered()));
-            itemStack2.setSubNbt("title", NbtString.of(title.getRaw()));
+            itemStack2.setSubNbt("filtered_title", NbtString.of(title.filteredOrElse("")));
+            itemStack2.setSubNbt("title", NbtString.of(title.raw()));
         }
         this.setTextToBook(pages, text -> Text.Serializer.toJson(Text.literal(text)), itemStack2);
         this.player.getInventory().setStack(slotId, itemStack2);
     }
 
-    private void setTextToBook(List<TextStream.Message> messages, UnaryOperator<String> postProcessor, ItemStack book) {
+    private void setTextToBook(List<FilteredMessage<String>> messages, UnaryOperator<String> postProcessor, ItemStack book) {
         NbtList nbtList = new NbtList();
         if (this.player.shouldFilterText()) {
-            messages.stream().map(message -> NbtString.of((String)postProcessor.apply(message.getFiltered()))).forEach(nbtList::add);
+            messages.stream().map(message -> NbtString.of((String)postProcessor.apply(message.filteredOrElse("")))).forEach(nbtList::add);
         } else {
             NbtCompound nbtCompound = new NbtCompound();
             int j = messages.size();
             for (int i = 0; i < j; ++i) {
-                TextStream.Message message2 = messages.get(i);
-                String string = message2.getRaw();
+                FilteredMessage<String> filteredMessage = messages.get(i);
+                String string = filteredMessage.raw();
                 nbtList.add(NbtString.of((String)postProcessor.apply(string)));
-                String string2 = message2.getFiltered();
-                if (string.equals(string2)) continue;
-                nbtCompound.putString(String.valueOf(i), (String)postProcessor.apply(string2));
+                if (!filteredMessage.isFiltered()) continue;
+                nbtCompound.putString(String.valueOf(i), (String)postProcessor.apply(filteredMessage.filteredOrElse("")));
             }
             if (!nbtCompound.isEmpty()) {
                 book.setSubNbt("filtered_pages", nbtCompound);
@@ -1123,11 +1133,12 @@ ServerPlayPacketListener {
             this.disconnect(Text.translatable("multiplayer.disconnect.illegal_characters"));
             return;
         }
-        if (packet.isExpired(Instant.now())) {
-            LOGGER.warn("{} tried to send expired message: '{}'", (Object)this.player.getName().getString(), (Object)packet.getChatMessage());
+        Instant instant = packet.getTimestamp();
+        if (this.isExpired(instant) || this.isDisordered(instant)) {
+            LOGGER.warn("{} tried to send expired or out-of-order message: '{}'", (Object)this.player.getName().getString(), (Object)packet.getChatMessage());
             return;
         }
-        this.filterText(packet.getChatMessage(), message -> this.handleMessage(packet, (TextStream.Message)message));
+        this.filterText(packet.getChatMessage(), message -> this.handleMessage(packet, (FilteredMessage<String>)message));
     }
 
     @Override
@@ -1136,8 +1147,9 @@ ServerPlayPacketListener {
             this.disconnect(Text.translatable("multiplayer.disconnect.illegal_characters"));
             return;
         }
-        if (packet.isExpired(Instant.now())) {
-            LOGGER.warn("{} tried to send expired command: '{}'", (Object)this.player.getName().getString(), (Object)packet.command());
+        Instant instant = packet.timestamp();
+        if (this.isExpired(instant) || this.isDisordered(instant)) {
+            LOGGER.warn("{} tried to send expired or out-of-order command: '{}'", (Object)this.player.getName().getString(), (Object)packet.command());
             return;
         }
         NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
@@ -1146,6 +1158,32 @@ ServerPlayPacketListener {
             this.server.getCommandManager().execute(serverCommandSource, packet.command());
             this.checkForSpam();
         }
+    }
+
+    /**
+     * {@return whether the message sent at {@code timestamp} is expired}
+     * 
+     * <p>If {@code true}, the message will be discarded.
+     * 
+     * @see ChatMessageC2SPacket#TIME_TO_LIVE
+     */
+    private boolean isExpired(Instant timestamp) {
+        Instant instant = timestamp.plus(ChatMessageC2SPacket.TIME_TO_LIVE);
+        return Instant.now().isAfter(instant);
+    }
+
+    /**
+     * {@return whether the message sent at {@code timestamp} is received with improper order}
+     * 
+     * <p>If {@code true}, the message will be discarded.
+     */
+    private boolean isDisordered(Instant timestamp) {
+        Instant instant;
+        do {
+            if (!timestamp.isBefore(instant = this.lastMessageTimestamp.get())) continue;
+            return true;
+        } while (!this.lastMessageTimestamp.compareAndSet(instant, timestamp));
+        return false;
     }
 
     /**
@@ -1172,19 +1210,22 @@ ServerPlayPacketListener {
         return true;
     }
 
-    private void handleMessage(ChatMessageC2SPacket packet, TextStream.Message message) {
+    private void handleMessage(ChatMessageC2SPacket packet, FilteredMessage<String> message) {
         if (this.checkChatEnabled()) {
-            MutableText text = Text.literal(packet.getChatMessage());
             ChatMessageSignature chatMessageSignature = packet.createSignatureInstance(this.player.getUuid());
-            SignedChatMessage signedChatMessage = this.server.getChatDecorator().decorate(this.player, text, chatMessageSignature, packet.isPreviewed());
-            PlayerPublicKey playerPublicKey = this.player.getPublicKey();
-            if (playerPublicKey != null && !signedChatMessage.verify(playerPublicKey)) {
-                LOGGER.warn("{} sent message with invalid signature: '{}'", (Object)this.player.getName().getString(), (Object)signedChatMessage.signedContent().getString());
-                return;
-            }
-            this.server.getPlayerManager().broadcast(signedChatMessage, message, this.player, MessageType.CHAT);
-            this.checkForSpam();
+            boolean bl = packet.isPreviewed();
+            ChatDecorator chatDecorator = this.server.getChatDecorator();
+            chatDecorator.decorateChat(this.player, message.map(Text::literal), chatMessageSignature, bl).thenAcceptAsync(this::handleDecoratedMessage, (Executor)this.server);
         }
+    }
+
+    private void handleDecoratedMessage(FilteredMessage<SignedChatMessage> message) {
+        if (!message.raw().verify(this.player)) {
+            LOGGER.warn("{} sent message with invalid signature: '{}'", (Object)this.player.getName().getString(), (Object)message.raw().signedContent().getString());
+            return;
+        }
+        this.server.getPlayerManager().broadcast(message, this.player, MessageType.CHAT);
+        this.checkForSpam();
     }
 
     private void checkForSpam() {
@@ -1197,17 +1238,52 @@ ServerPlayPacketListener {
     @Override
     public void onRequestChatPreview(RequestChatPreviewC2SPacket packet) {
         if (this.server.shouldPreviewChat()) {
-            this.previewTaskRunner.run(() -> {
-                Text text2;
+            this.previewTaskRunner.queue(() -> {
+                int i = packet.queryId();
                 String string = packet.query();
-                MutableText text = Text.literal(string);
-                if (!((Object)text).equals(text2 = this.server.getChatDecorator().decorate(this.player, text))) {
-                    this.sendPacket(new ChatPreviewS2CPacket(packet.queryId(), text2));
-                } else {
-                    this.sendPacket(new ChatPreviewS2CPacket(packet.queryId(), null));
-                }
+                return this.decorate(string).thenAccept(decorated -> this.sendPacket(new ChatPreviewS2CPacket(i, (Text)decorated)));
             });
         }
+    }
+
+    private CompletableFuture<Text> decorate(String query) {
+        String string = StringUtils.normalizeSpace(query);
+        if (string.startsWith("/")) {
+            return this.decorateCommand(string.substring(1));
+        }
+        return this.decorateChat(query);
+    }
+
+    private CompletableFuture<Text> decorateChat(String query) {
+        MutableText text = Text.literal(query);
+        return this.server.getChatDecorator().decorate(this.player, text).thenApply(decorated -> !text.equals(decorated) ? decorated : null);
+    }
+
+    private CompletableFuture<Text> decorateCommand(String query) {
+        ServerCommandSource serverCommandSource = this.player.getCommandSource();
+        ParseResults<ServerCommandSource> parseResults = this.server.getCommandManager().getDispatcher().parse(query, serverCommandSource);
+        return this.decorateCommand(parseResults.getContext());
+    }
+
+    private CompletableFuture<Text> decorateCommand(CommandContextBuilder<ServerCommandSource> builder) {
+        CommandContextBuilder<ServerCommandSource> commandContextBuilder = builder.getLastChild();
+        if (commandContextBuilder.getArguments().isEmpty()) {
+            return CompletableFuture.completedFuture(null);
+        }
+        List<ParsedCommandNode<ServerCommandSource>> list = commandContextBuilder.getNodes();
+        for (int i = list.size() - 1; i >= 0; --i) {
+            CommandNode<ServerCommandSource> commandNode = list.get(i).getNode();
+            if (!(commandNode instanceof ArgumentCommandNode)) continue;
+            ArgumentCommandNode argumentCommandNode = (ArgumentCommandNode)commandNode;
+            try {
+                CompletableFuture<Text> completableFuture = DecoratableArgumentType.decorate(argumentCommandNode, commandContextBuilder);
+                if (completableFuture == null) continue;
+                return completableFuture;
+            } catch (CommandSyntaxException commandSyntaxException) {
+                return CompletableFuture.completedFuture(null);
+            }
+        }
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override
@@ -1438,10 +1514,10 @@ ServerPlayPacketListener {
     @Override
     public void onUpdateSign(UpdateSignC2SPacket packet) {
         List<String> list = Stream.of(packet.getText()).map(Formatting::strip).collect(Collectors.toList());
-        this.filterTexts(list, texts -> this.onSignUpdate(packet, (List<TextStream.Message>)texts));
+        this.filterTexts(list, texts -> this.onSignUpdate(packet, (List<FilteredMessage<String>>)texts));
     }
 
-    private void onSignUpdate(UpdateSignC2SPacket packet, List<TextStream.Message> signText) {
+    private void onSignUpdate(UpdateSignC2SPacket packet, List<FilteredMessage<String>> signText) {
         this.player.updateLastActionTime();
         ServerWorld serverWorld = this.player.getWorld();
         BlockPos blockPos = packet.getPos();
@@ -1457,12 +1533,12 @@ ServerPlayPacketListener {
                 return;
             }
             for (int i = 0; i < signText.size(); ++i) {
-                TextStream.Message message = signText.get(i);
+                FilteredMessage<Text> filteredMessage = signText.get(i).map(Text::literal);
                 if (this.player.shouldFilterText()) {
-                    signBlockEntity.setTextOnRow(i, Text.literal(message.getFiltered()));
+                    signBlockEntity.setTextOnRow(i, filteredMessage.filteredOrElse(ScreenTexts.EMPTY));
                     continue;
                 }
-                signBlockEntity.setTextOnRow(i, Text.literal(message.getRaw()), Text.literal(message.getFiltered()));
+                signBlockEntity.setTextOnRow(i, filteredMessage.raw(), filteredMessage.filteredOrElse(ScreenTexts.EMPTY));
             }
             signBlockEntity.markDirty();
             serverWorld.updateListeners(blockPos, blockState, blockState, Block.NOTIFY_ALL);

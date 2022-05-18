@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import net.minecraft.util.collection.Weighted;
 import net.minecraft.util.collection.Weighting;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class Pool<E extends Weighted> {
     private final int totalWeight;
@@ -37,7 +37,7 @@ public class Pool<E extends Weighted> {
         return this.entries.isEmpty();
     }
 
-    public Optional<E> getOrEmpty(AbstractRandom random) {
+    public Optional<E> getOrEmpty(Random random) {
         if (this.totalWeight == 0) {
             return Optional.empty();
         }

@@ -13,7 +13,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.IntProvider;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.TreeFeature;
@@ -36,34 +36,34 @@ public abstract class FoliagePlacer {
 
     protected abstract FoliagePlacerType<?> getType();
 
-    public void generate(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, TreeFeatureConfig config, int trunkHeight, TreeNode treeNode, int foliageHeight, int radius) {
+    public void generate(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, TreeFeatureConfig config, int trunkHeight, TreeNode treeNode, int foliageHeight, int radius) {
         this.generate(world, replacer, random, config, trunkHeight, treeNode, foliageHeight, radius, this.getRandomOffset(random));
     }
 
     /**
      * This is the main method used to generate foliage.
      */
-    protected abstract void generate(TestableWorld var1, BiConsumer<BlockPos, BlockState> var2, AbstractRandom var3, TreeFeatureConfig var4, int var5, TreeNode var6, int var7, int var8, int var9);
+    protected abstract void generate(TestableWorld var1, BiConsumer<BlockPos, BlockState> var2, Random var3, TreeFeatureConfig var4, int var5, TreeNode var6, int var7, int var8, int var9);
 
-    public abstract int getRandomHeight(AbstractRandom var1, int var2, TreeFeatureConfig var3);
+    public abstract int getRandomHeight(Random var1, int var2, TreeFeatureConfig var3);
 
-    public int getRandomRadius(AbstractRandom random, int baseHeight) {
+    public int getRandomRadius(Random random, int baseHeight) {
         return this.radius.get(random);
     }
 
-    private int getRandomOffset(AbstractRandom random) {
+    private int getRandomOffset(Random random) {
         return this.offset.get(random);
     }
 
     /**
      * Used to exclude certain positions such as corners when creating a square of leaves.
      */
-    protected abstract boolean isInvalidForLeaves(AbstractRandom var1, int var2, int var3, int var4, int var5, boolean var6);
+    protected abstract boolean isInvalidForLeaves(Random var1, int var2, int var3, int var4, int var5, boolean var6);
 
     /**
      * Normalizes x and z coords before checking if they are invalid.
      */
-    protected boolean isPositionInvalid(AbstractRandom random, int dx, int y, int dz, int radius, boolean giantTrunk) {
+    protected boolean isPositionInvalid(Random random, int dx, int y, int dz, int radius, boolean giantTrunk) {
         int j;
         int i;
         if (giantTrunk) {
@@ -79,7 +79,7 @@ public abstract class FoliagePlacer {
     /**
      * Generates a square of leaves with the given radius. Sub-classes can use the method {@code isInvalidForLeaves} to exclude certain positions, such as corners.
      */
-    protected void generateSquare(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, TreeFeatureConfig config, BlockPos centerPos, int radius, int y, boolean giantTrunk) {
+    protected void generateSquare(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, TreeFeatureConfig config, BlockPos centerPos, int radius, int y, boolean giantTrunk) {
         int i = giantTrunk ? 1 : 0;
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int j = -radius; j <= radius + i; ++j) {
@@ -91,7 +91,7 @@ public abstract class FoliagePlacer {
         }
     }
 
-    protected static void placeFoliageBlock(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, TreeFeatureConfig config, BlockPos pos) {
+    protected static void placeFoliageBlock(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, TreeFeatureConfig config, BlockPos pos) {
         if (TreeFeature.canReplace(world, pos)) {
             BlockState blockState = config.foliageProvider.getBlockState(random, pos);
             if (blockState.contains(Properties.WATERLOGGED)) {

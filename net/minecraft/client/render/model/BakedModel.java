@@ -12,12 +12,12 @@ import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public interface BakedModel {
-    public List<BakedQuad> getQuads(@Nullable BlockState var1, @Nullable Direction var2, AbstractRandom var3);
+    public List<BakedQuad> getQuads(@Nullable BlockState var1, @Nullable Direction var2, Random var3);
 
     public boolean useAmbientOcclusion();
 

@@ -22,8 +22,8 @@ import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.math.random.ChunkRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
@@ -82,7 +82,7 @@ extends StructureType {
         properties.replaceWithBlackstone = setup4.replaceWithBlackstone();
         Identifier identifier = chunkRandom.nextFloat() < 0.05f ? new Identifier(RARE_PORTAL_STRUCTURE_IDS[chunkRandom.nextInt(RARE_PORTAL_STRUCTURE_IDS.length)]) : new Identifier(COMMON_PORTAL_STRUCTURE_IDS[chunkRandom.nextInt(COMMON_PORTAL_STRUCTURE_IDS.length)]);
         Structure structure = context.structureManager().getStructureOrBlank(identifier);
-        BlockRotation blockRotation = Util.getRandom(BlockRotation.values(), (AbstractRandom)chunkRandom);
+        BlockRotation blockRotation = Util.getRandom(BlockRotation.values(), (Random)chunkRandom);
         BlockMirror blockMirror = chunkRandom.nextFloat() < 0.5f ? BlockMirror.NONE : BlockMirror.FRONT_BACK;
         BlockPos blockPos = new BlockPos(structure.getSize().getX() / 2, 0, structure.getSize().getZ() / 2);
         ChunkGenerator chunkGenerator = context.chunkGenerator();
@@ -116,7 +116,7 @@ extends StructureType {
         return biome.value().isCold(pos);
     }
 
-    private static int getFloorHeight(AbstractRandom random, ChunkGenerator chunkGenerator, RuinedPortalStructurePiece.VerticalPlacement verticalPlacement, boolean airPocket, int height, int blockCountY, BlockBox box, HeightLimitView world, NoiseConfig noiseConfig) {
+    private static int getFloorHeight(Random random, ChunkGenerator chunkGenerator, RuinedPortalStructurePiece.VerticalPlacement verticalPlacement, boolean airPocket, int height, int blockCountY, BlockBox box, HeightLimitView world, NoiseConfig noiseConfig) {
         int l;
         int i = world.getBottomY() + 15;
         if (verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.IN_NETHER) {
@@ -144,7 +144,7 @@ extends StructureType {
         return l;
     }
 
-    private static int choosePlacementHeight(AbstractRandom random, int min, int max) {
+    private static int choosePlacementHeight(Random random, int min, int max) {
         if (min < max) {
             return MathHelper.nextBetween(random, min, max);
         }

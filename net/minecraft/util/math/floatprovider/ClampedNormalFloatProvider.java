@@ -12,7 +12,7 @@ import java.util.function.Function;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.floatprovider.FloatProvider;
 import net.minecraft.util.math.floatprovider.FloatProviderType;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class ClampedNormalFloatProvider
 extends FloatProvider {
@@ -39,11 +39,11 @@ extends FloatProvider {
     }
 
     @Override
-    public float get(AbstractRandom random) {
+    public float get(Random random) {
         return ClampedNormalFloatProvider.get(random, this.mean, this.deviation, this.min, this.max);
     }
 
-    public static float get(AbstractRandom random, float mean, float deviation, float min, float max) {
+    public static float get(Random random, float mean, float deviation, float min, float max) {
         return MathHelper.clamp(MathHelper.nextGaussian(random, mean, deviation), min, max);
     }
 

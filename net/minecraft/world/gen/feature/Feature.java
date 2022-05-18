@@ -16,7 +16,7 @@ import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ModifiableWorld;
 import net.minecraft.world.StructureWorldAccess;
@@ -213,7 +213,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 
     public abstract boolean generate(FeatureContext<FC> var1);
 
-    public boolean generateIfValid(FC config, StructureWorldAccess world, ChunkGenerator chunkGenerator, AbstractRandom random, BlockPos pos) {
+    public boolean generateIfValid(FC config, StructureWorldAccess world, ChunkGenerator chunkGenerator, Random random, BlockPos pos) {
         if (world.isValidForSetBlock(pos)) {
             return this.generate(new FeatureContext<FC>(Optional.empty(), world, chunkGenerator, random, pos, config));
         }

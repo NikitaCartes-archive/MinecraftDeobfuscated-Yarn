@@ -4,8 +4,6 @@
 package net.minecraft.server;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.GameProfileRepository;
-import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.util.Pair;
@@ -47,7 +45,7 @@ import net.minecraft.server.dedicated.MinecraftDedicatedServer;
 import net.minecraft.server.dedicated.ServerPropertiesHandler;
 import net.minecraft.server.dedicated.ServerPropertiesLoader;
 import net.minecraft.text.Text;
-import net.minecraft.util.UserCache;
+import net.minecraft.util.ApiServices;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.crash.CrashReport;
@@ -119,10 +117,7 @@ public class Main {
                 return;
             }
             File file = new File(optionSet.valueOf(optionSpec10));
-            YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(Proxy.NO_PROXY);
-            MinecraftSessionService minecraftSessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
-            GameProfileRepository gameProfileRepository = yggdrasilAuthenticationService.createProfileRepository();
-            UserCache userCache = new UserCache(gameProfileRepository, new File(file, MinecraftServer.USER_CACHE_FILE.getName()));
+            ApiServices apiServices = ApiServices.create(new YggdrasilAuthenticationService(Proxy.NO_PROXY), file);
             String string = Optional.ofNullable(optionSet.valueOf(optionSpec11)).orElse(serverPropertiesLoader.getPropertiesHandler().levelName);
             LevelStorage levelStorage = LevelStorage.create(file.toPath());
             LevelStorage.Session session = levelStorage.createSession(string);
@@ -145,7 +140,7 @@ public class Main {
                 DataPackSettings dataPackSettings = Objects.requireNonNullElse(session.getDataPackSettings(), DataPackSettings.SAFE_MODE);
                 SaveLoading.DataPacks dataPacks = new SaveLoading.DataPacks(resourcePackManager, dataPackSettings, bl);
                 SaveLoading.ServerConfig serverConfig = new SaveLoading.ServerConfig(dataPacks, CommandManager.RegistrationEnvironment.DEDICATED, serverPropertiesLoader.getPropertiesHandler().functionPermissionLevel);
-                saveLoader = (SaveLoader)Util.waitAndApply(executor -> SaveLoader.load(serverConfig, (resourceManager, dataPackSettings) -> {
+                saveLoader = (SaveLoader)Util.waitAndApply(applyExecutor -> SaveLoader.load(serverConfig, (resourceManager, dataPackSettings) -> {
                     GeneratorOptions generatorOptions;
                     LevelInfo levelInfo;
                     DynamicRegistryManager.Mutable mutable = DynamicRegistryManager.createAndLoad();
@@ -164,7 +159,7 @@ public class Main {
                     }
                     LevelProperties levelProperties = new LevelProperties(levelInfo, generatorOptions, Lifecycle.stable());
                     return Pair.of(levelProperties, mutable.toImmutable());
-                }, Util.getMainWorkerExecutor(), executor)).get();
+                }, Util.getMainWorkerExecutor(), applyExecutor)).get();
             } catch (Exception exception) {
                 LOGGER.warn("Failed to load datapacks, can't proceed with server load. You can either fix your datapacks or reset to vanilla with --safeMode", exception);
                 return;
@@ -178,7 +173,7 @@ public class Main {
             session.backupLevelDataFile(immutable, saveProperties);
             final MinecraftDedicatedServer minecraftDedicatedServer = MinecraftServer.startServer(thread -> {
                 boolean bl;
-                MinecraftDedicatedServer minecraftDedicatedServer = new MinecraftDedicatedServer((Thread)thread, session, resourcePackManager, saveLoader, serverPropertiesLoader, Schemas.getFixer(), minecraftSessionService, gameProfileRepository, userCache, WorldGenerationProgressLogger::new);
+                MinecraftDedicatedServer minecraftDedicatedServer = new MinecraftDedicatedServer((Thread)thread, session, resourcePackManager, saveLoader, serverPropertiesLoader, Schemas.getFixer(), apiServices, WorldGenerationProgressLogger::new);
                 minecraftDedicatedServer.setHostProfile(optionSet.has(optionSpec9) ? new GameProfile(null, (String)optionSet.valueOf(optionSpec9)) : null);
                 minecraftDedicatedServer.setServerPort((Integer)optionSet.valueOf(optionSpec12));
                 minecraftDedicatedServer.setDemo(optionSet.has(optionSpec3));

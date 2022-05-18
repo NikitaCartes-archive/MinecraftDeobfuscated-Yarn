@@ -5,15 +5,17 @@ package net.minecraft.client.gui.screen.multiplayer;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screen.ScreenTexts;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.screen.WarningScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.option.ServerList;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class ChatPreviewWarningScreen
@@ -21,12 +23,15 @@ extends WarningScreen {
     private static final Text TITLE = Text.translatable("chatPreview.warning.title").formatted(Formatting.BOLD);
     private static final Text CONTENT = Text.translatable("chatPreview.warning.content");
     private static final Text CHECK_MESSAGE = Text.translatable("chatPreview.warning.check");
-    private static final Text NARRATED_TEXT = TITLE.shallowCopy().append("\n").append(CONTENT);
+    private static final Text NARRATED_TEXT = TITLE.copy().append("\n").append(CONTENT);
     private final ServerInfo serverInfo;
+    @Nullable
+    private final Screen parent;
 
-    public ChatPreviewWarningScreen(ServerInfo serverInfo) {
+    public ChatPreviewWarningScreen(@Nullable Screen parent, ServerInfo serverInfo) {
         super(TITLE, CONTENT, CHECK_MESSAGE, NARRATED_TEXT);
         this.serverInfo = serverInfo;
+        this.parent = parent;
     }
 
     @Override
@@ -58,6 +63,11 @@ extends WarningScreen {
     @Override
     protected int getLineHeight() {
         return this.textRenderer.fontHeight * 3 / 2;
+    }
+
+    @Override
+    public void close() {
+        this.client.setScreen(this.parent);
     }
 }
 

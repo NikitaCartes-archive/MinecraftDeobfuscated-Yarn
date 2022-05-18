@@ -106,25 +106,27 @@ public class FlatChunkGeneratorConfig {
         this.hasLakes = true;
     }
 
-    public RegistryEntry<Biome> createBiome() {
+    public GenerationSettings method_44225(RegistryEntry<Biome> registryEntry) {
         int i;
         List<Object> list;
         boolean bl;
-        Biome biome = this.getBiome().value();
-        GenerationSettings generationSettings = biome.getGenerationSettings();
+        if (!registryEntry.equals(this.biome)) {
+            return registryEntry.value().getGenerationSettings();
+        }
+        GenerationSettings generationSettings = this.getBiome().value().getGenerationSettings();
         GenerationSettings.Builder builder = new GenerationSettings.Builder();
         if (this.hasLakes) {
             builder.feature(GenerationStep.Feature.LAKES, MiscPlacedFeatures.LAKE_LAVA_UNDERGROUND);
             builder.feature(GenerationStep.Feature.LAKES, MiscPlacedFeatures.LAKE_LAVA_SURFACE);
         }
-        boolean bl2 = bl = (!this.hasNoTerrain || this.biome.matchesKey(BiomeKeys.THE_VOID)) && this.hasFeatures;
+        boolean bl2 = bl = (!this.hasNoTerrain || registryEntry.matchesKey(BiomeKeys.THE_VOID)) && this.hasFeatures;
         if (bl) {
             list = generationSettings.getFeatures();
             for (i = 0; i < list.size(); ++i) {
                 if (i == GenerationStep.Feature.UNDERGROUND_STRUCTURES.ordinal() || i == GenerationStep.Feature.SURFACE_STRUCTURES.ordinal()) continue;
                 RegistryEntryList registryEntryList = (RegistryEntryList)list.get(i);
-                for (RegistryEntry registryEntry : registryEntryList) {
-                    builder.feature(i, (RegistryEntry<PlacedFeature>)registryEntry);
+                for (RegistryEntry registryEntry2 : registryEntryList) {
+                    builder.feature(i, (RegistryEntry<PlacedFeature>)registryEntry2);
                 }
             }
         }
@@ -135,7 +137,7 @@ public class FlatChunkGeneratorConfig {
             list.set(i, null);
             builder.feature(GenerationStep.Feature.TOP_LAYER_MODIFICATION, PlacedFeatures.createEntry(Feature.FILL_LAYER, new FillLayerFeatureConfig(i, blockState), new PlacementModifier[0]));
         }
-        return RegistryEntry.of(Biome.Builder.copy(biome).generationSettings(builder.build()).build());
+        return builder.build();
     }
 
     public Optional<RegistryEntryList<StructureSet>> getStructureOverrides() {

@@ -16,8 +16,8 @@ public class EntityRedundantChanceTagsFix
 extends DataFix {
     private static final Codec<List<Float>> field_25695 = Codec.FLOAT.listOf();
 
-    public EntityRedundantChanceTagsFix(Schema outputSchema, boolean changesType) {
-        super(outputSchema, changesType);
+    public EntityRedundantChanceTagsFix(Schema schema, boolean bl) {
+        super(schema, bl);
     }
 
     @Override

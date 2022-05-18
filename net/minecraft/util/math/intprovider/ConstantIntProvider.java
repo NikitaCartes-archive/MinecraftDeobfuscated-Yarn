@@ -10,7 +10,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.intprovider.IntProviderType;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class ConstantIntProvider
 extends IntProvider {
@@ -34,7 +34,7 @@ extends IntProvider {
     }
 
     @Override
-    public int get(AbstractRandom random) {
+    public int get(Random random) {
         return this.value;
     }
 

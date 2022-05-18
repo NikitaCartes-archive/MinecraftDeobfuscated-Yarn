@@ -26,7 +26,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.StructureWorldAccess;
@@ -51,15 +51,15 @@ public abstract class StructurePoolElement {
 
     public abstract Vec3i getStart(StructureManager var1, BlockRotation var2);
 
-    public abstract List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager var1, BlockPos var2, BlockRotation var3, AbstractRandom var4);
+    public abstract List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager var1, BlockPos var2, BlockRotation var3, Random var4);
 
     public abstract BlockBox getBoundingBox(StructureManager var1, BlockPos var2, BlockRotation var3);
 
-    public abstract boolean generate(StructureManager var1, StructureWorldAccess var2, StructureAccessor var3, ChunkGenerator var4, BlockPos var5, BlockPos var6, BlockRotation var7, BlockBox var8, AbstractRandom var9, boolean var10);
+    public abstract boolean generate(StructureManager var1, StructureWorldAccess var2, StructureAccessor var3, ChunkGenerator var4, BlockPos var5, BlockPos var6, BlockRotation var7, BlockBox var8, Random var9, boolean var10);
 
     public abstract StructurePoolElementType<?> getType();
 
-    public void method_16756(WorldAccess world, Structure.StructureBlockInfo structureBlockInfo, BlockPos pos, BlockRotation rotation, AbstractRandom random, BlockBox box) {
+    public void method_16756(WorldAccess world, Structure.StructureBlockInfo structureBlockInfo, BlockPos pos, BlockRotation rotation, Random random, BlockBox box) {
     }
 
     public StructurePoolElement setProjection(StructurePool.Projection projection) {

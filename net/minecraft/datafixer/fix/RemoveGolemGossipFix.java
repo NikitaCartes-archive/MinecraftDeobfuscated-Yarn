@@ -12,8 +12,8 @@ import net.minecraft.datafixer.fix.ChoiceFix;
 
 public class RemoveGolemGossipFix
 extends ChoiceFix {
-    public RemoveGolemGossipFix(Schema outputSchema, boolean changesType) {
-        super(outputSchema, changesType, "Remove Golem Gossip Fix", TypeReferences.ENTITY, "minecraft:villager");
+    public RemoveGolemGossipFix(Schema schema, boolean bl) {
+        super(schema, bl, "Remove Golem Gossip Fix", TypeReferences.ENTITY, "minecraft:villager");
     }
 
     @Override

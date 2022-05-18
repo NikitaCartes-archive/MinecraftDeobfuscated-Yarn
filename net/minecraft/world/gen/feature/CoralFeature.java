@@ -13,7 +13,7 @@ import net.minecraft.block.SeaPickleBlock;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.StructureWorldAccess;
@@ -30,19 +30,19 @@ extends Feature<DefaultFeatureConfig> {
 
     @Override
     public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
-        AbstractRandom abstractRandom = context.getRandom();
+        Random random = context.getRandom();
         StructureWorldAccess structureWorldAccess = context.getWorld();
         BlockPos blockPos = context.getOrigin();
-        Optional<Block> optional = Registry.BLOCK.getEntryList(BlockTags.CORAL_BLOCKS).flatMap(blocks -> blocks.getRandom(abstractRandom)).map(RegistryEntry::value);
+        Optional<Block> optional = Registry.BLOCK.getEntryList(BlockTags.CORAL_BLOCKS).flatMap(blocks -> blocks.getRandom(random)).map(RegistryEntry::value);
         if (optional.isEmpty()) {
             return false;
         }
-        return this.generateCoral(structureWorldAccess, abstractRandom, blockPos, optional.get().getDefaultState());
+        return this.generateCoral(structureWorldAccess, random, blockPos, optional.get().getDefaultState());
     }
 
-    protected abstract boolean generateCoral(WorldAccess var1, AbstractRandom var2, BlockPos var3, BlockState var4);
+    protected abstract boolean generateCoral(WorldAccess var1, Random var2, BlockPos var3, BlockState var4);
 
-    protected boolean generateCoralPiece(WorldAccess world, AbstractRandom random, BlockPos pos, BlockState state) {
+    protected boolean generateCoralPiece(WorldAccess world, Random random, BlockPos pos, BlockState state) {
         BlockPos blockPos = pos.up();
         BlockState blockState = world.getBlockState(pos);
         if (!blockState.isOf(Blocks.WATER) && !blockState.isIn(BlockTags.CORALS) || !world.getBlockState(blockPos).isOf(Blocks.WATER)) {

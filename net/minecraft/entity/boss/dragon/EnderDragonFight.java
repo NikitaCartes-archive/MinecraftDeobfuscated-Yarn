@@ -52,7 +52,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.chunk.Chunk;
@@ -125,7 +125,7 @@ public class EnderDragonFight {
             }
         } else {
             this.gateways.addAll((Collection<Integer>)ContiguousSet.create(Range.closedOpen(0, 20), DiscreteDomain.integers()));
-            Util.shuffle(this.gateways, AbstractRandom.createAtomic(gatewaysSeed));
+            Util.shuffle(this.gateways, Random.create(gatewaysSeed));
         }
         this.endPortalPattern = BlockPatternBuilder.start().aisle("       ", "       ", "       ", "   #   ", "       ", "       ", "       ").aisle("       ", "       ", "       ", "   #   ", "       ", "       ", "       ").aisle("       ", "       ", "       ", "   #   ", "       ", "       ", "       ").aisle("  ###  ", " #   # ", "#     #", "#  #  #", "#     #", " #   # ", "  ###  ").aisle("       ", "  ###  ", " ##### ", " ##### ", " ##### ", "  ###  ", "       ").where('#', CachedBlockPosition.matchesBlockState(BlockPredicate.make(Blocks.BEDROCK))).build();
     }
@@ -351,7 +351,7 @@ public class EnderDragonFight {
 
     private void generateEndGateway(BlockPos pos) {
         this.world.syncWorldEvent(WorldEvents.END_GATEWAY_SPAWNS, pos, 0);
-        EndConfiguredFeatures.END_GATEWAY_DELAYED.value().generate(this.world, this.world.getChunkManager().getChunkGenerator(), AbstractRandom.createAtomic(), pos);
+        EndConfiguredFeatures.END_GATEWAY_DELAYED.value().generate(this.world, this.world.getChunkManager().getChunkGenerator(), Random.create(), pos);
     }
 
     private void generateEndPortal(boolean previouslyKilled) {
@@ -362,7 +362,7 @@ public class EnderDragonFight {
                 this.exitPortalLocation = this.exitPortalLocation.down();
             }
         }
-        endPortalFeature.generateIfValid(FeatureConfig.DEFAULT, this.world, this.world.getChunkManager().getChunkGenerator(), AbstractRandom.createAtomic(), this.exitPortalLocation);
+        endPortalFeature.generateIfValid(FeatureConfig.DEFAULT, this.world, this.world.getChunkManager().getChunkGenerator(), Random.create(), this.exitPortalLocation);
     }
 
     private EnderDragonEntity createDragon() {

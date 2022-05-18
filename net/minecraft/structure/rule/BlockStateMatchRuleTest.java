@@ -8,7 +8,7 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.block.BlockState;
 import net.minecraft.structure.rule.RuleTest;
 import net.minecraft.structure.rule.RuleTestType;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class BlockStateMatchRuleTest
 extends RuleTest {
@@ -20,7 +20,7 @@ extends RuleTest {
     }
 
     @Override
-    public boolean test(BlockState state, AbstractRandom random) {
+    public boolean test(BlockState state, Random random) {
         return state == this.blockState;
     }
 

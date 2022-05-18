@@ -16,8 +16,8 @@ import net.minecraft.datafixer.TypeReferences;
 
 public class BiomeFormatFix
 extends DataFix {
-    public BiomeFormatFix(Schema outputSchema, boolean changesType) {
-        super(outputSchema, changesType);
+    public BiomeFormatFix(Schema schema, boolean bl) {
+        super(schema, bl);
     }
 
     @Override

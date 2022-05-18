@@ -11,7 +11,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.CocoaBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.gen.treedecorator.TreeDecorator;
 import net.minecraft.world.gen.treedecorator.TreeDecoratorType;
 
@@ -31,8 +31,8 @@ extends TreeDecorator {
 
     @Override
     public void generate(TreeDecorator.Generator generator) {
-        AbstractRandom abstractRandom = generator.getRandom();
-        if (abstractRandom.nextFloat() >= this.probability) {
+        Random random = generator.getRandom();
+        if (random.nextFloat() >= this.probability) {
             return;
         }
         ObjectArrayList<BlockPos> list = generator.getLogPositions();
@@ -41,8 +41,8 @@ extends TreeDecorator {
             for (Direction direction : Direction.Type.HORIZONTAL) {
                 Direction direction2;
                 BlockPos blockPos;
-                if (!(abstractRandom.nextFloat() <= 0.25f) || !generator.isAir(blockPos = pos.add((direction2 = direction.getOpposite()).getOffsetX(), 0, direction2.getOffsetZ()))) continue;
-                generator.replace(blockPos, (BlockState)((BlockState)Blocks.COCOA.getDefaultState().with(CocoaBlock.AGE, abstractRandom.nextInt(3))).with(CocoaBlock.FACING, direction));
+                if (!(random.nextFloat() <= 0.25f) || !generator.isAir(blockPos = pos.add((direction2 = direction.getOpposite()).getOffsetX(), 0, direction2.getOffsetZ()))) continue;
+                generator.replace(blockPos, (BlockState)((BlockState)Blocks.COCOA.getDefaultState().with(CocoaBlock.AGE, random.nextInt(3))).with(CocoaBlock.FACING, direction));
             }
         });
     }

@@ -198,8 +198,8 @@ Merchant {
     }
 
     @Override
-    public void onDeath(DamageSource source) {
-        super.onDeath(source);
+    public void onDeath(DamageSource damageSource) {
+        super.onDeath(damageSource);
         this.resetCustomer();
     }
 

@@ -16,8 +16,8 @@ import net.minecraft.util.dynamic.Codecs;
 import org.jetbrains.annotations.Nullable;
 
 public class TagEntry {
-    private static final Codec<TagEntry> field_39266 = RecordCodecBuilder.create((RecordCodecBuilder.Instance<O> instance) -> instance.group(((MapCodec)Codecs.TAG_ENTRY.fieldOf("id")).forGetter(TagEntry::getIdForCodec), Codec.BOOL.optionalFieldOf("required", true).forGetter(tagEntry -> tagEntry.required)).apply((Applicative<TagEntry, ?>)instance, TagEntry::new));
-    public static final Codec<TagEntry> field_39265 = Codec.either(Codecs.TAG_ENTRY, field_39266).xmap(either -> either.map(tagEntryId -> new TagEntry((Codecs.TagEntryId)tagEntryId, true), tagEntry -> tagEntry), tagEntry -> tagEntry.required ? Either.left(tagEntry.getIdForCodec()) : Either.right(tagEntry));
+    private static final Codec<TagEntry> field_39266 = RecordCodecBuilder.create((RecordCodecBuilder.Instance<O> instance) -> instance.group(((MapCodec)Codecs.TAG_ENTRY_ID.fieldOf("id")).forGetter(TagEntry::getIdForCodec), Codec.BOOL.optionalFieldOf("required", true).forGetter(entry -> entry.required)).apply((Applicative<TagEntry, ?>)instance, TagEntry::new));
+    public static final Codec<TagEntry> CODEC = Codec.either(Codecs.TAG_ENTRY_ID, field_39266).xmap(either -> either.map(id -> new TagEntry((Codecs.TagEntryId)id, true), tagEntry -> tagEntry), entry -> entry.required ? Either.left(entry.getIdForCodec()) : Either.right(entry));
     private final Identifier id;
     private final boolean tag;
     private final boolean required;

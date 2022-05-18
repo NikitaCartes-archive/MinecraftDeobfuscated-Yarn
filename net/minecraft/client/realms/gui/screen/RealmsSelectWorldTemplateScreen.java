@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.RealmsClient;
@@ -30,6 +29,7 @@ import net.minecraft.client.realms.util.RealmsTextureManager;
 import net.minecraft.client.realms.util.TextRenderingUtils;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -262,7 +262,7 @@ extends RealmsScreen {
                 if (this.warningURL != null) {
                     if (this.hoverWarning) {
                         k = 7107012;
-                        text = text.shallowCopy().formatted(Formatting.STRIKETHROUGH);
+                        text = text.copy().formatted(Formatting.STRIKETHROUGH);
                     } else {
                         k = 0x3366BB;
                     }

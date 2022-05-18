@@ -13,9 +13,9 @@ import net.minecraft.util.dynamic.CodecHolder;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
 import net.minecraft.util.math.noise.PerlinNoiseSampler;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.util.math.random.Xoroshiro128PlusPlusRandom;
 import net.minecraft.world.gen.densityfunction.DensityFunction;
-import net.minecraft.world.gen.random.Xoroshiro128PlusPlusRandom;
 
 public class InterpolatedNoiseSampler
 implements DensityFunction.class_6913 {
@@ -53,12 +53,12 @@ implements DensityFunction.class_6913 {
     }
 
     @VisibleForTesting
-    public InterpolatedNoiseSampler(AbstractRandom random, double d, double e, double f, double g, double h) {
+    public InterpolatedNoiseSampler(Random random, double d, double e, double f, double g, double h) {
         this(OctavePerlinNoiseSampler.createLegacy(random, IntStream.rangeClosed(-15, 0)), OctavePerlinNoiseSampler.createLegacy(random, IntStream.rangeClosed(-15, 0)), OctavePerlinNoiseSampler.createLegacy(random, IntStream.rangeClosed(-7, 0)), d, e, f, g, h);
     }
 
-    public InterpolatedNoiseSampler method_42386(AbstractRandom abstractRandom) {
-        return new InterpolatedNoiseSampler(abstractRandom, this.xzScale, this.yScale, this.field_38273, this.field_38274, this.field_38275);
+    public InterpolatedNoiseSampler method_42386(Random random) {
+        return new InterpolatedNoiseSampler(random, this.xzScale, this.yScale, this.field_38273, this.field_38274, this.field_38275);
     }
 
     @Override

@@ -6,9 +6,9 @@ package net.minecraft.scoreboard;
 import com.google.common.collect.Sets;
 import java.util.Collection;
 import java.util.Set;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
@@ -56,7 +56,7 @@ extends AbstractTeam {
     }
 
     public MutableText getFormattedName() {
-        MutableText mutableText = Texts.bracketed(this.displayName.shallowCopy().fillStyle(this.nameStyle));
+        MutableText mutableText = Texts.bracketed(this.displayName.copy().fillStyle(this.nameStyle));
         Formatting formatting = this.getColor();
         if (formatting != Formatting.RESET) {
             mutableText.formatted(formatting);
@@ -114,7 +114,7 @@ extends AbstractTeam {
      */
     public static MutableText decorateName(@Nullable AbstractTeam team, Text name) {
         if (team == null) {
-            return name.shallowCopy();
+            return name.copy();
         }
         return team.decorateName(name);
     }

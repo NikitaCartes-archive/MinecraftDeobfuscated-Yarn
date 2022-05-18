@@ -10,7 +10,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.math.floatprovider.FloatProvider;
 import net.minecraft.util.math.floatprovider.FloatProviderType;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 
 public class ConstantFloatProvider
 extends FloatProvider {
@@ -34,7 +34,7 @@ extends FloatProvider {
     }
 
     @Override
-    public float get(AbstractRandom random) {
+    public float get(Random random) {
         return this.value;
     }
 

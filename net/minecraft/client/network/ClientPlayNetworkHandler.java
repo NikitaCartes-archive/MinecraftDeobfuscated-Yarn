@@ -35,6 +35,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
+import net.minecraft.class_7519;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ChatScreen;
@@ -45,7 +46,6 @@ import net.minecraft.client.gui.screen.DemoScreen;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
 import net.minecraft.client.gui.screen.DownloadingTerrainScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.StatsListener;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.screen.ingame.BookScreen;
@@ -256,6 +256,7 @@ import net.minecraft.screen.HorseScreenHandler;
 import net.minecraft.screen.MerchantScreenHandler;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -274,7 +275,7 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.PositionImpl;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
@@ -313,7 +314,7 @@ implements ClientPlayPacketListener {
     private final DataQueryHandler dataQueryHandler = new DataQueryHandler(this);
     private int chunkLoadDistance = 3;
     private int simulationDistance = 3;
-    private final AbstractRandom random = AbstractRandom.createBlocking();
+    private final Random random = Random.createThreadSafe();
     private CommandDispatcher<CommandSource> commandDispatcher = new CommandDispatcher();
     private final RecipeManager recipeManager = new RecipeManager();
     private final UUID sessionId = UUID.randomUUID();
@@ -603,6 +604,16 @@ implements ClientPlayPacketListener {
     }
 
     @Override
+    public void method_44286(class_7519 arg) {
+        NetworkThreadUtils.forceMainThread(arg, this, this.client);
+        ServerInfo serverInfo = this.client.getCurrentServerEntry();
+        if (serverInfo == null) {
+            return;
+        }
+        serverInfo.setTemporaryChatPreviewState(arg.enabled());
+    }
+
+    @Override
     public void onChunkDeltaUpdate(ChunkDeltaUpdateS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         int i = Block.NOTIFY_ALL | Block.FORCE_STATE | (packet.shouldSkipLightingUpdates() ? Block.SKIP_LIGHTING_UPDATES : 0);
@@ -757,7 +768,7 @@ implements ClientPlayPacketListener {
         if (!this.isSignatureValid(message)) {
             LOGGER.warn("Received chat packet without valid signature from {}", (Object)sender.name().getString());
         }
-        Text text = (bl = this.client.options.getOnlyShowSignedChat().getValue().booleanValue()) ? message.signedContent() : message.getContent();
+        Text text = (bl = this.client.options.getOnlyShowSecureChat().getValue().booleanValue()) ? message.signedContent() : message.getContent();
         this.client.inGameHud.onChatMessage(type, text, sender);
     }
 
@@ -1405,6 +1416,7 @@ implements ClientPlayPacketListener {
 
     @Override
     public void onServerMetadata(ServerMetadataS2CPacket packet) {
+        ServerInfo.ChatPreview chatPreview;
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         ServerInfo serverInfo = this.client.getCurrentServerEntry();
         if (serverInfo == null) {
@@ -1422,9 +1434,8 @@ implements ClientPlayPacketListener {
         });
         serverInfo.setPreviewsChat(packet.shouldPreviewChat());
         ServerList.updateServerListEntry(serverInfo);
-        ServerInfo.ChatPreview chatPreview = serverInfo.getChatPreview();
-        if (chatPreview != null && !chatPreview.isAcknowledged()) {
-            this.client.execute(() -> this.client.setScreen(new ChatPreviewWarningScreen(serverInfo)));
+        if (this.client.options.getChatPreview().getValue().booleanValue() && (chatPreview = serverInfo.getChatPreview()) != null && !chatPreview.isAcknowledged()) {
+            this.client.execute(() -> this.client.setScreen(new ChatPreviewWarningScreen(this.client.currentScreen, serverInfo)));
         }
     }
 
@@ -1479,7 +1490,7 @@ implements ClientPlayPacketListener {
             }
             PlayerListEntry playerListEntry = this.playerListEntries.get(entry.getProfile().getId());
             if (packet.getAction() == PlayerListS2CPacket.Action.ADD_PLAYER) {
-                playerListEntry = new PlayerListEntry(entry, this.client.getSessionService());
+                playerListEntry = new PlayerListEntry(entry, this.client.getServicesSignatureVerifier());
                 this.playerListEntries.put(playerListEntry.getProfile().getId(), playerListEntry);
                 this.client.getSocialInteractionsManager().setPlayerOnline(playerListEntry);
             }
@@ -1542,7 +1553,7 @@ implements ClientPlayPacketListener {
     @Override
     public void onPlaySoundId(PlaySoundIdS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
-        this.client.getSoundManager().play(new PositionedSoundInstance(packet.getSoundId(), packet.getCategory(), packet.getVolume(), packet.getPitch(), AbstractRandom.createAtomic(packet.getSeed()), false, 0, SoundInstance.AttenuationType.LINEAR, packet.getX(), packet.getY(), packet.getZ(), false));
+        this.client.getSoundManager().play(new PositionedSoundInstance(packet.getSoundId(), packet.getCategory(), packet.getVolume(), packet.getPitch(), Random.create(packet.getSeed()), false, 0, SoundInstance.AttenuationType.LINEAR, packet.getX(), packet.getY(), packet.getZ(), false));
     }
 
     @Override

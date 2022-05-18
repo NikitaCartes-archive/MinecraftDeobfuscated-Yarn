@@ -53,7 +53,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
@@ -149,24 +149,24 @@ InventoryOwner {
         return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 16.0).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.35f).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 5.0);
     }
 
-    public static boolean canSpawn(EntityType<PiglinEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, AbstractRandom random) {
+    public static boolean canSpawn(EntityType<PiglinEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
         return !world.getBlockState(pos.down()).isOf(Blocks.NETHER_WART_BLOCK);
     }
 
     @Override
     @Nullable
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
-        AbstractRandom abstractRandom = world.getRandom();
+        Random random = world.getRandom();
         if (spawnReason != SpawnReason.STRUCTURE) {
-            if (abstractRandom.nextFloat() < 0.2f) {
+            if (random.nextFloat() < 0.2f) {
                 this.setBaby(true);
             } else if (this.isAdult()) {
                 this.equipStack(EquipmentSlot.MAINHAND, this.makeInitialWeapon());
             }
         }
         PiglinBrain.setHuntedRecently(this, world.getRandom());
-        this.initEquipment(abstractRandom, difficulty);
-        this.updateEnchantments(abstractRandom, difficulty);
+        this.initEquipment(random, difficulty);
+        this.updateEnchantments(random, difficulty);
         return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
@@ -181,7 +181,7 @@ InventoryOwner {
     }
 
     @Override
-    protected void initEquipment(AbstractRandom random, LocalDifficulty localDifficulty) {
+    protected void initEquipment(Random random, LocalDifficulty localDifficulty) {
         if (this.isAdult()) {
             this.equipAtChance(EquipmentSlot.HEAD, new ItemStack(Items.GOLDEN_HELMET), random);
             this.equipAtChance(EquipmentSlot.CHEST, new ItemStack(Items.GOLDEN_CHESTPLATE), random);
@@ -190,7 +190,7 @@ InventoryOwner {
         }
     }
 
-    private void equipAtChance(EquipmentSlot slot, ItemStack stack, AbstractRandom random) {
+    private void equipAtChance(EquipmentSlot slot, ItemStack stack, Random random) {
         if (random.nextFloat() < 0.1f) {
             this.equipStack(slot, stack);
         }

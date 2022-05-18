@@ -10,7 +10,7 @@ import net.minecraft.client.sound.SoundManager;
 import net.minecraft.client.sound.WeightedSoundSet;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -50,8 +50,8 @@ public interface SoundInstance {
         return true;
     }
 
-    public static AbstractRandom createRandom() {
-        return AbstractRandom.createAtomic();
+    public static Random createRandom() {
+        return Random.create();
     }
 
     @Environment(value=EnvType.CLIENT)

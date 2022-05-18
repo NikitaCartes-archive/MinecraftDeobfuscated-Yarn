@@ -8,7 +8,7 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.block.VineBlock;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.gen.treedecorator.TreeDecorator;
 import net.minecraft.world.gen.treedecorator.TreeDecoratorType;
 
@@ -28,19 +28,19 @@ extends TreeDecorator {
 
     @Override
     public void generate(TreeDecorator.Generator generator) {
-        AbstractRandom abstractRandom = generator.getRandom();
+        Random random = generator.getRandom();
         generator.getLeavesPositions().forEach(pos -> {
             BlockPos blockPos;
-            if (abstractRandom.nextFloat() < this.probability && generator.isAir(blockPos = pos.west())) {
+            if (random.nextFloat() < this.probability && generator.isAir(blockPos = pos.west())) {
                 LeavesVineTreeDecorator.placeVines(blockPos, VineBlock.EAST, generator);
             }
-            if (abstractRandom.nextFloat() < this.probability && generator.isAir(blockPos = pos.east())) {
+            if (random.nextFloat() < this.probability && generator.isAir(blockPos = pos.east())) {
                 LeavesVineTreeDecorator.placeVines(blockPos, VineBlock.WEST, generator);
             }
-            if (abstractRandom.nextFloat() < this.probability && generator.isAir(blockPos = pos.north())) {
+            if (random.nextFloat() < this.probability && generator.isAir(blockPos = pos.north())) {
                 LeavesVineTreeDecorator.placeVines(blockPos, VineBlock.SOUTH, generator);
             }
-            if (abstractRandom.nextFloat() < this.probability && generator.isAir(blockPos = pos.south())) {
+            if (random.nextFloat() < this.probability && generator.isAir(blockPos = pos.south())) {
                 LeavesVineTreeDecorator.placeVines(blockPos, VineBlock.NORTH, generator);
             }
         });

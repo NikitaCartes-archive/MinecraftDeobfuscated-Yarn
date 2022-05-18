@@ -198,7 +198,7 @@ extends BlockWithEntity {
                     ++j;
                     if (i > 4) continue;
                     ++i;
-                    MutableText mutableText = itemStack.getName().shallowCopy();
+                    MutableText mutableText = itemStack.getName().copy();
                     mutableText.append(" x").append(String.valueOf(itemStack.getCount()));
                     tooltip.add(mutableText);
                 }
