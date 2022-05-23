@@ -89,7 +89,7 @@ public class StructureTestUtil {
 				String string = Files.readString(path);
 				NbtCompound nbtCompound = NbtHelper.fromNbtProviderString(string);
 				NbtCompound nbtCompound2 = StructureValidatorProvider.update(path.toString(), nbtCompound);
-				NbtProvider.writeTo(DataWriter.field_39439, path, NbtHelper.toNbtProviderString(nbtCompound2));
+				NbtProvider.writeTo(DataWriter.UNCACHED, path, NbtHelper.toNbtProviderString(nbtCompound2));
 			} catch (IOException | CommandSyntaxException var4) {
 				LOGGER.error("Something went wrong upgrading: {}", path, var4);
 			}

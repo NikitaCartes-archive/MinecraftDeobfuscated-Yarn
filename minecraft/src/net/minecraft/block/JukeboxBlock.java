@@ -3,6 +3,7 @@ package net.minecraft.block;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.JukeboxBlockEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -21,6 +22,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
+import net.minecraft.world.event.GameEvent;
 
 public class JukeboxBlock extends BlockWithEntity {
 	public static final BooleanProperty HAS_RECORD = Properties.HAS_RECORD;
@@ -45,17 +47,19 @@ public class JukeboxBlock extends BlockWithEntity {
 			this.removeRecord(world, pos);
 			state = state.with(HAS_RECORD, Boolean.valueOf(false));
 			world.setBlockState(pos, state, Block.NOTIFY_LISTENERS);
+			world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(player, state));
 			return ActionResult.success(world.isClient);
 		} else {
 			return ActionResult.PASS;
 		}
 	}
 
-	public void setRecord(WorldAccess world, BlockPos pos, BlockState state, ItemStack stack) {
+	public void setRecord(@Nullable Entity user, WorldAccess world, BlockPos pos, BlockState state, ItemStack stack) {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof JukeboxBlockEntity) {
 			((JukeboxBlockEntity)blockEntity).setRecord(stack.copy());
 			world.setBlockState(pos, state.with(HAS_RECORD, Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
+			world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(user, state));
 		}
 	}
 

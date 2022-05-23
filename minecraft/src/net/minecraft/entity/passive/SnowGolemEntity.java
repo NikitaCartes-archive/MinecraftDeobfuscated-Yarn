@@ -113,6 +113,7 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 				BlockPos blockPos2 = new BlockPos(i, j, k);
 				if (this.world.getBlockState(blockPos2).isAir() && blockState.canPlaceAt(this.world, blockPos2)) {
 					this.world.setBlockState(blockPos2, blockState);
+					this.world.emitGameEvent(GameEvent.BLOCK_PLACE, blockPos2, GameEvent.Emitter.of(this, blockState));
 				}
 			}
 		}

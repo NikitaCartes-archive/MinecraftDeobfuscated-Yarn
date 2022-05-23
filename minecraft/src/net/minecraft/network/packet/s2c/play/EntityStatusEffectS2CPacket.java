@@ -9,6 +9,7 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.util.registry.Registry;
 
 public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListener> {
+	private static final short field_39448 = 32767;
 	private static final int AMBIENT_MASK = 1;
 	private static final int SHOW_PARTICLES_MASK = 2;
 	private static final int SHOW_ICON_MASK = 4;
@@ -24,12 +25,7 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 		this.entityId = entityId;
 		this.effectId = effect.getEffectType();
 		this.amplifier = (byte)(effect.getAmplifier() & 0xFF);
-		if (effect.getDuration() > 32767) {
-			this.duration = 32767;
-		} else {
-			this.duration = effect.getDuration();
-		}
-
+		this.duration = effect.getDuration();
 		byte b = 0;
 		if (effect.isAmbient()) {
 			b = (byte)(b | 1);
@@ -69,7 +65,7 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 	}
 
 	public boolean isPermanent() {
-		return this.duration == 32767;
+		return this.duration >= 32767;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

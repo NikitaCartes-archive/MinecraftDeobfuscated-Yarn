@@ -295,7 +295,7 @@ public class CreateWorldScreen extends Screen {
 	}
 
 	private void createLevel() {
-		IntegratedServerLoader.tryLoad(this.client, this, this.moreOptionsDialog.method_41884().worldSettingsStability(), this::startServer);
+		IntegratedServerLoader.tryLoad(this.client, this, this.moreOptionsDialog.getGeneratorOptionsHolder().worldSettingsStability(), this::startServer);
 	}
 
 	private void startServer() {
@@ -487,7 +487,7 @@ public class CreateWorldScreen extends Screen {
 			SaveLoading.load(
 					serverConfig,
 					(resourceManager, dataPackSettingsx) -> {
-						GeneratorOptionsHolder generatorOptionsHolder = this.moreOptionsDialog.method_41884();
+						GeneratorOptionsHolder generatorOptionsHolder = this.moreOptionsDialog.getGeneratorOptionsHolder();
 						DynamicRegistryManager dynamicRegistryManager = generatorOptionsHolder.dynamicRegistryManager();
 						DynamicRegistryManager.Mutable mutable = DynamicRegistryManager.createAndLoad();
 						DynamicOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, dynamicRegistryManager);

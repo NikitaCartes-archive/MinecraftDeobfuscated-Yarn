@@ -32,7 +32,7 @@ public class ModelProvider implements DataProvider {
 	}
 
 	@Override
-	public void run(DataWriter cache) {
+	public void run(DataWriter writer) {
 		Map<Block, BlockStateSupplier> map = Maps.<Block, BlockStateSupplier>newHashMap();
 		Consumer<BlockStateSupplier> consumer = blockStateSupplier -> {
 			Block block = blockStateSupplier.getBlock();
@@ -69,8 +69,8 @@ public class ModelProvider implements DataProvider {
 					}
 				}
 			});
-			this.writeJsons(cache, map, block -> this.blockstatesPathResolver.resolveJson(block.getRegistryEntry().registryKey().getValue()));
-			this.writeJsons(cache, map2, this.modelsPathResolver::resolveJson);
+			this.writeJsons(writer, map, block -> this.blockstatesPathResolver.resolveJson(block.getRegistryEntry().registryKey().getValue()));
+			this.writeJsons(writer, map2, this.modelsPathResolver::resolveJson);
 		}
 	}
 

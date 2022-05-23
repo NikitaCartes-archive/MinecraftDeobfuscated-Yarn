@@ -102,7 +102,7 @@ public final class NoiseConfig {
 			private DensityFunction method_42376(DensityFunction densityFunction) {
 				if (densityFunction instanceof InterpolatedNoiseSampler interpolatedNoiseSampler) {
 					Random random = bl ? this.method_42375(0L) : NoiseConfig.this.randomDeriver.split(new Identifier("terrain"));
-					return interpolatedNoiseSampler.method_42386(random);
+					return interpolatedNoiseSampler.copyWithRandom(random);
 				} else {
 					return (DensityFunction)(densityFunction instanceof DensityFunctionTypes.EndIslands ? new DensityFunctionTypes.EndIslands(seed) : densityFunction);
 				}

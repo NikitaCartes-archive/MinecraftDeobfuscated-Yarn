@@ -47,7 +47,7 @@ public final class RegistryFixedCodec<E> implements Codec<RegistryEntry<E>> {
 				return Identifier.CODEC.decode(ops, input).flatMap(pair -> {
 					Identifier identifier = (Identifier)pair.getFirst();
 					DataResult<RegistryEntry<E>> dataResult = ((Registry)optional.get()).getOrCreateEntryDataResult(RegistryKey.of(this.registry, identifier));
-					return dataResult.map(registryEntry -> Pair.of(registryEntry, pair.getSecond())).setLifecycle(Lifecycle.stable());
+					return dataResult.map(entry -> Pair.of(entry, pair.getSecond())).setLifecycle(Lifecycle.stable());
 				});
 			}
 		}

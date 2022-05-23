@@ -80,7 +80,7 @@ public final class RegistryElementCodec<E> implements Codec<RegistryEntry<E>> {
 							.map(entry -> Pair.of(entry, pair.getSecond()));
 					} else {
 						DataResult<RegistryEntry<E>> dataResult2 = registry.getOrCreateEntryDataResult(registryKey);
-						return dataResult2.<Pair<RegistryEntry<E>, T>>map(registryEntry -> Pair.of(registryEntry, pair.getSecond())).setLifecycle(Lifecycle.stable());
+						return dataResult2.<Pair<RegistryEntry<E>, T>>map(entry -> Pair.of(entry, pair.getSecond())).setLifecycle(Lifecycle.stable());
 					}
 				}
 			}

@@ -59,7 +59,7 @@ public class DecorationItem extends Item {
 			if (abstractDecorationEntity.canStayAttached()) {
 				if (!world.isClient) {
 					abstractDecorationEntity.onPlace();
-					world.emitGameEvent(playerEntity, GameEvent.ENTITY_PLACE, blockPos);
+					world.emitGameEvent(playerEntity, GameEvent.ENTITY_PLACE, abstractDecorationEntity.getPos());
 					world.spawnEntity(abstractDecorationEntity);
 				}
 

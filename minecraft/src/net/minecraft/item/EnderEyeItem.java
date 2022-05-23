@@ -23,6 +23,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
+import net.minecraft.world.event.GameEvent;
 
 public class EnderEyeItem extends Item {
 	public EnderEyeItem(Item.Settings settings) {
@@ -76,6 +77,7 @@ public class EnderEyeItem extends Item {
 					EyeOfEnderEntity eyeOfEnderEntity = new EyeOfEnderEntity(world, user.getX(), user.getBodyY(0.5), user.getZ());
 					eyeOfEnderEntity.setItem(itemStack);
 					eyeOfEnderEntity.initTargetPos(blockPos);
+					world.emitGameEvent(GameEvent.PROJECTILE_SHOOT, eyeOfEnderEntity.getPos(), GameEvent.Emitter.of(user));
 					world.spawnEntity(eyeOfEnderEntity);
 					if (user instanceof ServerPlayerEntity) {
 						Criteria.USED_ENDER_EYE.trigger((ServerPlayerEntity)user, blockPos);

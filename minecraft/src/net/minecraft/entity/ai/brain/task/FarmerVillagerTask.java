@@ -23,6 +23,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.event.GameEvent;
 
 public class FarmerVillagerTask extends Task<VillagerEntity> {
 	private static final int MAX_RUN_TIME = 200;
@@ -115,16 +116,24 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 						boolean bl = false;
 						if (!itemStack.isEmpty()) {
 							if (itemStack.isOf(Items.WHEAT_SEEDS)) {
-								serverWorld.setBlockState(this.currentTarget, Blocks.WHEAT.getDefaultState(), Block.NOTIFY_ALL);
+								BlockState blockState2 = Blocks.WHEAT.getDefaultState();
+								serverWorld.setBlockState(this.currentTarget, blockState2);
+								serverWorld.emitGameEvent(GameEvent.BLOCK_PLACE, this.currentTarget, GameEvent.Emitter.of(villagerEntity, blockState2));
 								bl = true;
 							} else if (itemStack.isOf(Items.POTATO)) {
-								serverWorld.setBlockState(this.currentTarget, Blocks.POTATOES.getDefaultState(), Block.NOTIFY_ALL);
+								BlockState blockState2 = Blocks.POTATOES.getDefaultState();
+								serverWorld.setBlockState(this.currentTarget, blockState2);
+								serverWorld.emitGameEvent(GameEvent.BLOCK_PLACE, this.currentTarget, GameEvent.Emitter.of(villagerEntity, blockState2));
 								bl = true;
 							} else if (itemStack.isOf(Items.CARROT)) {
-								serverWorld.setBlockState(this.currentTarget, Blocks.CARROTS.getDefaultState(), Block.NOTIFY_ALL);
+								BlockState blockState2 = Blocks.CARROTS.getDefaultState();
+								serverWorld.setBlockState(this.currentTarget, blockState2);
+								serverWorld.emitGameEvent(GameEvent.BLOCK_PLACE, this.currentTarget, GameEvent.Emitter.of(villagerEntity, blockState2));
 								bl = true;
 							} else if (itemStack.isOf(Items.BEETROOT_SEEDS)) {
-								serverWorld.setBlockState(this.currentTarget, Blocks.BEETROOTS.getDefaultState(), Block.NOTIFY_ALL);
+								BlockState blockState2 = Blocks.BEETROOTS.getDefaultState();
+								serverWorld.setBlockState(this.currentTarget, blockState2);
+								serverWorld.emitGameEvent(GameEvent.BLOCK_PLACE, this.currentTarget, GameEvent.Emitter.of(villagerEntity, blockState2));
 								bl = true;
 							}
 						}

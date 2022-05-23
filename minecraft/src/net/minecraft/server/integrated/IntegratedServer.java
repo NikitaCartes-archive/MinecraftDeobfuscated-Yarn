@@ -154,6 +154,7 @@ public class IntegratedServer extends MinecraftServer {
 	public SystemDetails addExtraSystemDetails(SystemDetails details) {
 		details.addSection("Type", "Integrated Server (map_client.txt)");
 		details.addSection("Is Modded", (Supplier<String>)(() -> this.getModStatus().getMessage()));
+		details.addSection("Launched Version", this.client::getGameVersion);
 		return details;
 	}
 

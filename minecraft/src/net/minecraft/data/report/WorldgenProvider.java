@@ -27,10 +27,10 @@ public class WorldgenProvider implements DataProvider {
 	}
 
 	@Override
-	public void run(DataWriter cache) {
+	public void run(DataWriter writer) {
 		DynamicRegistryManager dynamicRegistryManager = (DynamicRegistryManager)DynamicRegistryManager.BUILTIN.get();
 		DynamicOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, dynamicRegistryManager);
-		DynamicRegistryManager.getInfos().forEach(info -> this.writeRegistryEntries(cache, dynamicRegistryManager, dynamicOps, info));
+		DynamicRegistryManager.getInfos().forEach(info -> this.writeRegistryEntries(writer, dynamicRegistryManager, dynamicOps, info));
 	}
 
 	private <T> void writeRegistryEntries(

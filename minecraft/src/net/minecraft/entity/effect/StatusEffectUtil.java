@@ -48,6 +48,7 @@ public final class StatusEffectUtil {
 		StatusEffect statusEffect = statusEffectInstance.getEffectType();
 		List<ServerPlayerEntity> list = world.getPlayers(
 			player -> player.interactionManager.isSurvivalLike()
+					&& (entity == null || !entity.isTeammate(player))
 					&& origin.isInRange(player.getPos(), range)
 					&& (
 						!player.hasStatusEffect(statusEffect)

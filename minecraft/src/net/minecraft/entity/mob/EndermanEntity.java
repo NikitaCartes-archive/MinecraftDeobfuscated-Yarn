@@ -303,10 +303,14 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 		boolean bl = blockState.getMaterial().blocksMovement();
 		boolean bl2 = blockState.getFluidState().isIn(FluidTags.WATER);
 		if (bl && !bl2) {
+			Vec3d vec3d = this.getPos();
 			boolean bl3 = this.teleport(x, y, z, true);
-			if (bl3 && !this.isSilent()) {
-				this.world.playSound(null, this.prevX, this.prevY, this.prevZ, SoundEvents.ENTITY_ENDERMAN_TELEPORT, this.getSoundCategory(), 1.0F, 1.0F);
-				this.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, 1.0F, 1.0F);
+			if (bl3) {
+				this.world.emitGameEvent(GameEvent.TELEPORT, vec3d, GameEvent.Emitter.of(this));
+				if (!this.isSilent()) {
+					this.world.playSound(null, this.prevX, this.prevY, this.prevZ, SoundEvents.ENTITY_ENDERMAN_TELEPORT, this.getSoundCategory(), 1.0F, 1.0F);
+					this.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, 1.0F, 1.0F);
+				}
 			}
 
 			return bl3;

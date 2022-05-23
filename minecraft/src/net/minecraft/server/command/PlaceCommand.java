@@ -95,23 +95,23 @@ public class PlaceCommand {
 										.then(
 											((RequiredArgumentBuilder)CommandManager.argument("max_depth", IntegerArgumentType.integer(1, 7))
 													.executes(
-														commandContext -> executePlaceJigsaw(
-																(ServerCommandSource)commandContext.getSource(),
-																RegistryKeyArgumentType.getStructurePoolEntry(commandContext, "pool"),
-																IdentifierArgumentType.getIdentifier(commandContext, "target"),
-																IntegerArgumentType.getInteger(commandContext, "max_depth"),
-																new BlockPos(((ServerCommandSource)commandContext.getSource()).getPosition())
+														context -> executePlaceJigsaw(
+																(ServerCommandSource)context.getSource(),
+																RegistryKeyArgumentType.getStructurePoolEntry(context, "pool"),
+																IdentifierArgumentType.getIdentifier(context, "target"),
+																IntegerArgumentType.getInteger(context, "max_depth"),
+																new BlockPos(((ServerCommandSource)context.getSource()).getPosition())
 															)
 													))
 												.then(
 													CommandManager.argument("position", BlockPosArgumentType.blockPos())
 														.executes(
-															commandContext -> executePlaceJigsaw(
-																	commandContext.getSource(),
-																	RegistryKeyArgumentType.getStructurePoolEntry(commandContext, "pool"),
-																	IdentifierArgumentType.getIdentifier(commandContext, "target"),
-																	IntegerArgumentType.getInteger(commandContext, "max_depth"),
-																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "position")
+															context -> executePlaceJigsaw(
+																	context.getSource(),
+																	RegistryKeyArgumentType.getStructurePoolEntry(context, "pool"),
+																	IdentifierArgumentType.getIdentifier(context, "target"),
+																	IntegerArgumentType.getInteger(context, "max_depth"),
+																	BlockPosArgumentType.getLoadedBlockPos(context, "position")
 																)
 														)
 												)
@@ -124,19 +124,15 @@ public class PlaceCommand {
 						.then(
 							CommandManager.argument("structure", RegistryKeyArgumentType.registryKey(Registry.STRUCTURE_KEY))
 								.executes(
-									commandContext -> executePlaceStructure(
-											commandContext.getSource(),
-											RegistryKeyArgumentType.getStructureTypeEntry(commandContext, "structure"),
-											new BlockPos(commandContext.getSource().getPosition())
+									context -> executePlaceStructure(
+											context.getSource(), RegistryKeyArgumentType.getStructureTypeEntry(context, "structure"), new BlockPos(context.getSource().getPosition())
 										)
 								)
 								.then(
 									CommandManager.argument("pos", BlockPosArgumentType.blockPos())
 										.executes(
-											commandContext -> executePlaceStructure(
-													commandContext.getSource(),
-													RegistryKeyArgumentType.getStructureTypeEntry(commandContext, "structure"),
-													BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos")
+											context -> executePlaceStructure(
+													context.getSource(), RegistryKeyArgumentType.getStructureTypeEntry(context, "structure"), BlockPosArgumentType.getLoadedBlockPos(context, "pos")
 												)
 										)
 								)
@@ -148,10 +144,10 @@ public class PlaceCommand {
 							CommandManager.argument("template", IdentifierArgumentType.identifier())
 								.suggests(SUGGESTION_PROVIDER)
 								.executes(
-									commandContext -> executePlaceTemplate(
-											commandContext.getSource(),
-											IdentifierArgumentType.getIdentifier(commandContext, "template"),
-											new BlockPos(commandContext.getSource().getPosition()),
+									context -> executePlaceTemplate(
+											context.getSource(),
+											IdentifierArgumentType.getIdentifier(context, "template"),
+											new BlockPos(context.getSource().getPosition()),
 											BlockRotation.NONE,
 											BlockMirror.NONE,
 											1.0F,
@@ -161,10 +157,10 @@ public class PlaceCommand {
 								.then(
 									CommandManager.argument("pos", BlockPosArgumentType.blockPos())
 										.executes(
-											commandContext -> executePlaceTemplate(
-													commandContext.getSource(),
-													IdentifierArgumentType.getIdentifier(commandContext, "template"),
-													BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
+											context -> executePlaceTemplate(
+													context.getSource(),
+													IdentifierArgumentType.getIdentifier(context, "template"),
+													BlockPosArgumentType.getLoadedBlockPos(context, "pos"),
 													BlockRotation.NONE,
 													BlockMirror.NONE,
 													1.0F,
@@ -174,11 +170,11 @@ public class PlaceCommand {
 										.then(
 											CommandManager.argument("rotation", BlockRotationArgumentType.blockRotation())
 												.executes(
-													commandContext -> executePlaceTemplate(
-															commandContext.getSource(),
-															IdentifierArgumentType.getIdentifier(commandContext, "template"),
-															BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
-															BlockRotationArgumentType.getBlockRotation(commandContext, "rotation"),
+													context -> executePlaceTemplate(
+															context.getSource(),
+															IdentifierArgumentType.getIdentifier(context, "template"),
+															BlockPosArgumentType.getLoadedBlockPos(context, "pos"),
+															BlockRotationArgumentType.getBlockRotation(context, "rotation"),
 															BlockMirror.NONE,
 															1.0F,
 															0
@@ -187,12 +183,12 @@ public class PlaceCommand {
 												.then(
 													CommandManager.argument("mirror", BlockMirrorArgumentType.blockMirror())
 														.executes(
-															commandContext -> executePlaceTemplate(
-																	commandContext.getSource(),
-																	IdentifierArgumentType.getIdentifier(commandContext, "template"),
-																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
-																	BlockRotationArgumentType.getBlockRotation(commandContext, "rotation"),
-																	BlockMirrorArgumentType.getBlockMirror(commandContext, "mirror"),
+															context -> executePlaceTemplate(
+																	context.getSource(),
+																	IdentifierArgumentType.getIdentifier(context, "template"),
+																	BlockPosArgumentType.getLoadedBlockPos(context, "pos"),
+																	BlockRotationArgumentType.getBlockRotation(context, "rotation"),
+																	BlockMirrorArgumentType.getBlockMirror(context, "mirror"),
 																	1.0F,
 																	0
 																)
@@ -200,27 +196,27 @@ public class PlaceCommand {
 														.then(
 															CommandManager.argument("integrity", FloatArgumentType.floatArg(0.0F, 1.0F))
 																.executes(
-																	commandContext -> executePlaceTemplate(
-																			commandContext.getSource(),
-																			IdentifierArgumentType.getIdentifier(commandContext, "template"),
-																			BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
-																			BlockRotationArgumentType.getBlockRotation(commandContext, "rotation"),
-																			BlockMirrorArgumentType.getBlockMirror(commandContext, "mirror"),
-																			FloatArgumentType.getFloat(commandContext, "integrity"),
+																	context -> executePlaceTemplate(
+																			context.getSource(),
+																			IdentifierArgumentType.getIdentifier(context, "template"),
+																			BlockPosArgumentType.getLoadedBlockPos(context, "pos"),
+																			BlockRotationArgumentType.getBlockRotation(context, "rotation"),
+																			BlockMirrorArgumentType.getBlockMirror(context, "mirror"),
+																			FloatArgumentType.getFloat(context, "integrity"),
 																			0
 																		)
 																)
 																.then(
 																	CommandManager.argument("seed", IntegerArgumentType.integer())
 																		.executes(
-																			commandContext -> executePlaceTemplate(
-																					commandContext.getSource(),
-																					IdentifierArgumentType.getIdentifier(commandContext, "template"),
-																					BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
-																					BlockRotationArgumentType.getBlockRotation(commandContext, "rotation"),
-																					BlockMirrorArgumentType.getBlockMirror(commandContext, "mirror"),
-																					FloatArgumentType.getFloat(commandContext, "integrity"),
-																					IntegerArgumentType.getInteger(commandContext, "seed")
+																			context -> executePlaceTemplate(
+																					context.getSource(),
+																					IdentifierArgumentType.getIdentifier(context, "template"),
+																					BlockPosArgumentType.getLoadedBlockPos(context, "pos"),
+																					BlockRotationArgumentType.getBlockRotation(context, "rotation"),
+																					BlockMirrorArgumentType.getBlockMirror(context, "mirror"),
+																					FloatArgumentType.getFloat(context, "integrity"),
+																					IntegerArgumentType.getInteger(context, "seed")
 																				)
 																		)
 																)
@@ -247,9 +243,9 @@ public class PlaceCommand {
 		}
 	}
 
-	public static int executePlaceJigsaw(ServerCommandSource source, RegistryEntry<StructurePool> structurePool, Identifier id, int i, BlockPos pos) throws CommandSyntaxException {
+	public static int executePlaceJigsaw(ServerCommandSource source, RegistryEntry<StructurePool> structurePool, Identifier id, int maxDepth, BlockPos pos) throws CommandSyntaxException {
 		ServerWorld serverWorld = source.getWorld();
-		if (!StructurePoolBasedGenerator.generate(serverWorld, structurePool, id, i, pos, false)) {
+		if (!StructurePoolBasedGenerator.generate(serverWorld, structurePool, id, maxDepth, pos, false)) {
 			throw JIGSAW_FAILED_EXCEPTION.create();
 		} else {
 			source.sendFeedback(Text.translatable("commands.place.jigsaw.success", pos.getX(), pos.getY(), pos.getZ()), true);

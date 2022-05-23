@@ -14,8 +14,8 @@ public class PointOfInterestRemoveFix extends PointOfInterestFix {
 	}
 
 	@Override
-	protected <T> Stream<Dynamic<T>> method_44186(Stream<Dynamic<T>> stream) {
-		return stream.filter(this::shouldKeepRecord);
+	protected <T> Stream<Dynamic<T>> update(Stream<Dynamic<T>> dynamics) {
+		return dynamics.filter(this::shouldKeepRecord);
 	}
 
 	private <T> boolean shouldKeepRecord(Dynamic<T> dynamic) {

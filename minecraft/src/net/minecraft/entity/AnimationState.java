@@ -8,14 +8,14 @@ public class AnimationState {
 	private long updatedAt = Long.MAX_VALUE;
 	private long timeRunning;
 
-	public void start(int i) {
-		this.updatedAt = (long)i * 1000L / 20L;
+	public void start(int age) {
+		this.updatedAt = (long)age * 1000L / 20L;
 		this.timeRunning = 0L;
 	}
 
-	public void startIfNotRunning(int i) {
+	public void startIfNotRunning(int age) {
 		if (!this.isRunning()) {
-			this.start(i);
+			this.start(age);
 		}
 	}
 

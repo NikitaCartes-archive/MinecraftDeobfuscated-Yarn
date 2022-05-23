@@ -185,7 +185,8 @@ public abstract class PlayerManager {
 				bl2,
 				!bl,
 				serverWorld2.isDebugWorld(),
-				serverWorld2.isFlat()
+				serverWorld2.isFlat(),
+				player.getLastDeathPos()
 			)
 		);
 		serverPlayNetworkHandler.sendPacket(
@@ -490,7 +491,8 @@ public abstract class PlayerManager {
 					serverPlayerEntity.interactionManager.getPreviousGameMode(),
 					serverPlayerEntity.getWorld().isDebugWorld(),
 					serverPlayerEntity.getWorld().isFlat(),
-					alive
+					alive,
+					serverPlayerEntity.getLastDeathPos()
 				)
 			);
 		serverPlayerEntity.networkHandler
