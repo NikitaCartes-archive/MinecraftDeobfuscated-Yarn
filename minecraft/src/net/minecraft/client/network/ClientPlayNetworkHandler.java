@@ -26,7 +26,6 @@ import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_7519;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -137,6 +136,7 @@ import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatPreviewS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChatPreviewStateChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkData;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDeltaUpdateS2CPacket;
@@ -385,6 +385,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.client.setScreen(new DownloadingTerrainScreen());
 		this.client.player.setReducedDebugInfo(packet.reducedDebugInfo());
 		this.client.player.setShowsDeathScreen(packet.showDeathScreen());
+		this.client.player.setLastDeathPos(packet.lastDeathLocation());
 		this.client.interactionManager.setGameModes(packet.gameMode(), packet.previousGameMode());
 		this.client.options.setServerViewDistance(packet.viewDistance());
 		this.client.options.sendClientSettings();
@@ -460,21 +461,25 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onPlayerSpawn(PlayerSpawnS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		double d = packet.getX();
-		double e = packet.getY();
-		double f = packet.getZ();
-		float g = (float)(packet.getYaw() * 360) / 256.0F;
-		float h = (float)(packet.getPitch() * 360) / 256.0F;
-		int i = packet.getId();
 		PlayerListEntry playerListEntry = this.getPlayerListEntry(packet.getPlayerUuid());
-		OtherClientPlayerEntity otherClientPlayerEntity = new OtherClientPlayerEntity(
-			this.client.world, playerListEntry.getProfile(), playerListEntry.getPublicKeyData()
-		);
-		otherClientPlayerEntity.setId(i);
-		otherClientPlayerEntity.updateTrackedPosition(d, e, f);
-		otherClientPlayerEntity.updatePositionAndAngles(d, e, f, g, h);
-		otherClientPlayerEntity.resetPosition();
-		this.world.addPlayer(i, otherClientPlayerEntity);
+		if (playerListEntry == null) {
+			LOGGER.warn("Server attempted to add player prior to sending player info (Player id {})", packet.getPlayerUuid());
+		} else {
+			double d = packet.getX();
+			double e = packet.getY();
+			double f = packet.getZ();
+			float g = (float)(packet.getYaw() * 360) / 256.0F;
+			float h = (float)(packet.getPitch() * 360) / 256.0F;
+			int i = packet.getId();
+			OtherClientPlayerEntity otherClientPlayerEntity = new OtherClientPlayerEntity(
+				this.client.world, playerListEntry.getProfile(), playerListEntry.getPublicKeyData()
+			);
+			otherClientPlayerEntity.setId(i);
+			otherClientPlayerEntity.updateTrackedPosition(d, e, f);
+			otherClientPlayerEntity.updatePositionAndAngles(d, e, f, g, h);
+			otherClientPlayerEntity.resetPosition();
+			this.world.addPlayer(i, otherClientPlayerEntity);
+		}
 	}
 
 	@Override
@@ -622,11 +627,11 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_44286(class_7519 arg) {
-		NetworkThreadUtils.forceMainThread(arg, this, this.client);
+	public void onChatPreviewStateChange(ChatPreviewStateChangeS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		ServerInfo serverInfo = this.client.getCurrentServerEntry();
 		if (serverInfo != null) {
-			serverInfo.setTemporaryChatPreviewState(arg.enabled());
+			serverInfo.setTemporaryChatPreviewState(packet.enabled());
 		}
 	}
 
@@ -786,7 +791,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onGameMessage(GameMessageS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		Registry<MessageType> registry = this.world.getRegistryManager().get(Registry.MESSAGE_TYPE_KEY);
+		Registry<MessageType> registry = this.registryManager.get(Registry.MESSAGE_TYPE_KEY);
 		MessageType messageType = packet.getMessageType(registry);
 		this.client.inGameHud.onGameMessage(messageType, packet.content());
 	}
@@ -799,7 +804,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			LOGGER.warn("Received expired chat packet from {}", messageSender.name().getString());
 		}
 
-		Registry<MessageType> registry = this.world.getRegistryManager().get(Registry.MESSAGE_TYPE_KEY);
+		Registry<MessageType> registry = this.registryManager.get(Registry.MESSAGE_TYPE_KEY);
 		MessageType messageType = packet.getMessageType(registry);
 		SignedChatMessage signedChatMessage = packet.getSignedMessage();
 		this.handleMessage(messageType, signedChatMessage, messageSender);
@@ -1014,6 +1019,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.client.interactionManager.copyAbilities(clientPlayerEntity2);
 		clientPlayerEntity2.setReducedDebugInfo(clientPlayerEntity.hasReducedDebugInfo());
 		clientPlayerEntity2.setShowsDeathScreen(clientPlayerEntity.showsDeathScreen());
+		clientPlayerEntity2.setLastDeathPos(packet.getLastDeathPos());
 		if (this.client.currentScreen instanceof DeathScreen) {
 			this.client.setScreen(null);
 		}

@@ -12,7 +12,7 @@ import org.lwjgl.glfw.GLFW;
 @Environment(EnvType.CLIENT)
 public class RealmsClientOutdatedScreen extends RealmsScreen {
 	private static final Text INCOMPATIBLE_TITLE = Text.translatable("mco.client.incompatible.title");
-	private static final Text[] field_39419 = new Text[]{
+	private static final Text[] INCOMPATIBLE_LINES_UNSTABLE = new Text[]{
 		Text.translatable("mco.client.incompatible.msg.line1"),
 		Text.translatable("mco.client.incompatible.msg.line2"),
 		Text.translatable("mco.client.incompatible.msg.line3")
@@ -36,7 +36,7 @@ public class RealmsClientOutdatedScreen extends RealmsScreen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, row(3), 16711680);
-		Text[] texts = this.method_44255();
+		Text[] texts = this.getLines();
 
 		for (int i = 0; i < texts.length; i++) {
 			drawCenteredText(matrices, this.textRenderer, texts[i], this.width / 2, row(5) + i * 12, 16777215);
@@ -45,8 +45,8 @@ public class RealmsClientOutdatedScreen extends RealmsScreen {
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 
-	private Text[] method_44255() {
-		return this.client.getGame().getVersion().isStable() ? INCOMPATIBLE_LINES : field_39419;
+	private Text[] getLines() {
+		return this.client.getGame().getVersion().isStable() ? INCOMPATIBLE_LINES : INCOMPATIBLE_LINES_UNSTABLE;
 	}
 
 	@Override

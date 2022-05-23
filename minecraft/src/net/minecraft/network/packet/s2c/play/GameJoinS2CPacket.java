@@ -1,11 +1,13 @@
 package net.minecraft.network.packet.s2c.play;
 
 import com.google.common.collect.Sets;
+import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
@@ -29,7 +31,8 @@ public record GameJoinS2CPacket(
 	boolean reducedDebugInfo,
 	boolean showDeathScreen,
 	boolean debugWorld,
-	boolean flatWorld
+	boolean flatWorld,
+	Optional<GlobalPos> lastDeathLocation
 ) implements Packet<ClientPlayPacketListener> {
 	public GameJoinS2CPacket(PacketByteBuf buf) {
 		this(
@@ -48,7 +51,8 @@ public record GameJoinS2CPacket(
 			buf.readBoolean(),
 			buf.readBoolean(),
 			buf.readBoolean(),
-			buf.readBoolean()
+			buf.readBoolean(),
+			buf.readOptional(PacketByteBuf::readGlobalPos)
 		);
 	}
 
@@ -70,6 +74,7 @@ public record GameJoinS2CPacket(
 		buf.writeBoolean(this.showDeathScreen);
 		buf.writeBoolean(this.debugWorld);
 		buf.writeBoolean(this.flatWorld);
+		buf.writeOptional(this.lastDeathLocation, PacketByteBuf::writeGlobalPos);
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

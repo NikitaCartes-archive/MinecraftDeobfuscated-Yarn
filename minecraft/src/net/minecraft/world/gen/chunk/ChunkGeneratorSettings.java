@@ -68,12 +68,12 @@ public record ChunkGeneratorSettings(
 	}
 
 	private static RegistryEntry<ChunkGeneratorSettings> register(
-		Registry<ChunkGeneratorSettings> registry, RegistryKey<ChunkGeneratorSettings> registryKey, ChunkGeneratorSettings chunkGeneratorSettings
+		Registry<ChunkGeneratorSettings> registry, RegistryKey<ChunkGeneratorSettings> key, ChunkGeneratorSettings chunkGeneratorSsettings
 	) {
-		return BuiltinRegistries.add(registry, registryKey.getValue(), chunkGeneratorSettings);
+		return BuiltinRegistries.add(registry, key.getValue(), chunkGeneratorSsettings);
 	}
 
-	public static RegistryEntry<ChunkGeneratorSettings> getInstance(Registry<ChunkGeneratorSettings> registry) {
+	public static RegistryEntry<ChunkGeneratorSettings> initAndGetDefault(Registry<ChunkGeneratorSettings> registry) {
 		register(registry, OVERWORLD, createSurfaceSettings(false, false));
 		register(registry, LARGE_BIOMES, createSurfaceSettings(false, true));
 		register(registry, AMPLIFIED, createSurfaceSettings(true, false));
@@ -160,6 +160,22 @@ public record ChunkGeneratorSettings(
 			false,
 			false,
 			true
+		);
+	}
+
+	public static ChunkGeneratorSettings createMissingSettings() {
+		return new ChunkGeneratorSettings(
+			GenerationShapeConfig.SURFACE,
+			Blocks.STONE.getDefaultState(),
+			Blocks.AIR.getDefaultState(),
+			DensityFunctions.createMissingNoiseRouter(),
+			VanillaSurfaceRules.getAirRule(),
+			List.of(),
+			63,
+			true,
+			false,
+			false,
+			false
 		);
 	}
 }

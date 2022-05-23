@@ -26,11 +26,11 @@ public class NbtProvider implements DataProvider {
 	}
 
 	@Override
-	public void run(DataWriter cache) throws IOException {
+	public void run(DataWriter writer) throws IOException {
 		Path path = this.root.getOutput();
 
 		for (Path path2 : this.root.getInputs()) {
-			Files.walk(path2).filter(pathx -> pathx.toString().endsWith(".nbt")).forEach(path3 -> convertNbtToSnbt(cache, path3, this.getLocation(path2, path3), path));
+			Files.walk(path2).filter(pathx -> pathx.toString().endsWith(".nbt")).forEach(pathx -> convertNbtToSnbt(writer, pathx, this.getLocation(path2, pathx), path));
 		}
 	}
 
@@ -45,16 +45,16 @@ public class NbtProvider implements DataProvider {
 	}
 
 	@Nullable
-	public static Path convertNbtToSnbt(DataWriter dataWriter, Path path, String string, Path path2) {
+	public static Path convertNbtToSnbt(DataWriter writer, Path inputPath, String filename, Path outputPath) {
 		try {
-			InputStream inputStream = Files.newInputStream(path);
+			InputStream inputStream = Files.newInputStream(inputPath);
 
 			Path var6;
 			try {
-				Path path3 = path2.resolve(string + ".snbt");
-				writeTo(dataWriter, path3, NbtHelper.toNbtProviderString(NbtIo.readCompressed(inputStream)));
-				LOGGER.info("Converted {} from NBT to SNBT", string);
-				var6 = path3;
+				Path path = outputPath.resolve(filename + ".snbt");
+				writeTo(writer, path, NbtHelper.toNbtProviderString(NbtIo.readCompressed(inputStream)));
+				LOGGER.info("Converted {} from NBT to SNBT", filename);
+				var6 = path;
 			} catch (Throwable var8) {
 				if (inputStream != null) {
 					try {
@@ -73,16 +73,16 @@ public class NbtProvider implements DataProvider {
 
 			return var6;
 		} catch (IOException var9) {
-			LOGGER.error("Couldn't convert {} from NBT to SNBT at {}", string, path, var9);
+			LOGGER.error("Couldn't convert {} from NBT to SNBT at {}", filename, inputPath, var9);
 			return null;
 		}
 	}
 
-	public static void writeTo(DataWriter dataWriter, Path path, String string) throws IOException {
+	public static void writeTo(DataWriter writer, Path path, String content) throws IOException {
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		HashingOutputStream hashingOutputStream = new HashingOutputStream(Hashing.sha1(), byteArrayOutputStream);
-		hashingOutputStream.write(string.getBytes(StandardCharsets.UTF_8));
+		hashingOutputStream.write(content.getBytes(StandardCharsets.UTF_8));
 		hashingOutputStream.write(10);
-		dataWriter.write(path, byteArrayOutputStream.toByteArray(), hashingOutputStream.hash());
+		writer.write(path, byteArrayOutputStream.toByteArray(), hashingOutputStream.hash());
 	}
 }

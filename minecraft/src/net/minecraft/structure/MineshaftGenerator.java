@@ -21,7 +21,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.tag.BiomeTags;
-import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
@@ -32,7 +31,6 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.structure.MineshaftStructure;
@@ -127,7 +125,7 @@ public class MineshaftGenerator {
 		}
 
 		@Nullable
-		public static BlockBox getBoundingBox(StructurePiecesHolder structurePiecesHolder, Random random, int x, int y, int z, Direction orientation) {
+		public static BlockBox getBoundingBox(StructurePiecesHolder holder, Random random, int x, int y, int z, Direction orientation) {
 			for (int i = random.nextInt(3) + 2; i > 0; i--) {
 				int j = i * 5;
 
@@ -138,7 +136,7 @@ public class MineshaftGenerator {
 					case EAST -> new BlockBox(0, 0, 0, j - 1, 2, 2);
 				};
 				blockBox.move(x, y, z);
-				if (structurePiecesHolder.getIntersecting(blockBox) == null) {
+				if (holder.getIntersecting(blockBox) == null) {
 					return blockBox;
 				}
 			}
@@ -779,18 +777,15 @@ public class MineshaftGenerator {
 
 	abstract static class MineshaftPart extends StructurePiece {
 		protected MineshaftStructure.Type mineshaftType;
-		private final TagKey<Biome> biomeTag;
 
 		public MineshaftPart(StructurePieceType structurePieceType, int chainLength, MineshaftStructure.Type type, BlockBox box) {
 			super(structurePieceType, chainLength, box);
 			this.mineshaftType = type;
-			this.biomeTag = type == MineshaftStructure.Type.MESA ? BiomeTags.MINESHAFT_MESA_HAS_STRUCTURE : BiomeTags.MINESHAFT_HAS_STRUCTURE;
 		}
 
 		public MineshaftPart(StructurePieceType structurePieceType, NbtCompound nbtCompound) {
 			super(structurePieceType, nbtCompound);
 			this.mineshaftType = MineshaftStructure.Type.byIndex(nbtCompound.getInt("MST"));
-			this.biomeTag = this.mineshaftType == MineshaftStructure.Type.MESA ? BiomeTags.MINESHAFT_MESA_HAS_STRUCTURE : BiomeTags.MINESHAFT_HAS_STRUCTURE;
 		}
 
 		@Override
@@ -825,7 +820,7 @@ public class MineshaftGenerator {
 			int m = Math.min(this.boundingBox.getMaxY() + 1, box.getMaxY());
 			int n = Math.min(this.boundingBox.getMaxZ() + 1, box.getMaxZ());
 			BlockPos.Mutable mutable = new BlockPos.Mutable((i + l) / 2, (j + m) / 2, (k + n) / 2);
-			if (!world.getBiome(mutable).isIn(this.biomeTag)) {
+			if (world.getBiome(mutable).isIn(BiomeTags.MINESHAFT_BLOCKING)) {
 				return true;
 			} else {
 				for (int o = i; o <= l; o++) {

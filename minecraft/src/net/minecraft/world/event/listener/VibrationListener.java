@@ -46,8 +46,8 @@ public class VibrationListener implements GameEventListener {
 					)
 					.apply(
 						instance,
-						(positionSource, range, vibration, float_, delay) -> new VibrationListener(
-								positionSource, range, callback, (VibrationListener.Vibration)vibration.orElse(null), float_, delay
+						(positionSource, range, vibration, distance, delay) -> new VibrationListener(
+								positionSource, range, callback, (VibrationListener.Vibration)vibration.orElse(null), distance, delay
 							)
 					)
 		);

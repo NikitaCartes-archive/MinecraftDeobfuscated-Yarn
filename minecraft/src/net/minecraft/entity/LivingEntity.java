@@ -690,10 +690,16 @@ public abstract class LivingEntity extends Entity {
 		return true;
 	}
 
-	public void onEquipStack(EquipmentSlot slot, ItemStack stack) {
-		this.playEquipSound(stack);
-		if (this.isArmorSlot(slot)) {
-			this.emitGameEvent(GameEvent.EQUIP);
+	public void onEquipStack(EquipmentSlot slot, ItemStack oldStack, ItemStack newStack) {
+		boolean bl = newStack.isEmpty() && oldStack.isEmpty();
+		if (!bl && !ItemStack.canCombine(oldStack, newStack)) {
+			if (slot.getType() == EquipmentSlot.Type.ARMOR) {
+				this.playEquipSound(newStack);
+			}
+
+			if (this.isArmorSlot(slot)) {
+				this.emitGameEvent(GameEvent.EQUIP);
+			}
 		}
 	}
 

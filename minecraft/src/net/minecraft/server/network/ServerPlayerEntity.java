@@ -746,7 +746,8 @@ public class ServerPlayerEntity extends PlayerEntity {
 						this.interactionManager.getPreviousGameMode(),
 						destination.isDebugWorld(),
 						destination.isFlat(),
-						true
+						true,
+						this.getLastDeathPos()
 					)
 				);
 			this.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
@@ -1497,7 +1498,8 @@ public class ServerPlayerEntity extends PlayerEntity {
 						this.interactionManager.getPreviousGameMode(),
 						targetWorld.isDebugWorld(),
 						targetWorld.isFlat(),
-						true
+						true,
+						this.getLastDeathPos()
 					)
 				);
 			this.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));

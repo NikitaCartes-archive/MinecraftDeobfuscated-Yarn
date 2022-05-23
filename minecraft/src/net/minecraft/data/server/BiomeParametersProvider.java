@@ -28,13 +28,13 @@ public class BiomeParametersProvider implements DataProvider {
 	}
 
 	@Override
-	public void run(DataWriter cache) {
+	public void run(DataWriter writer) {
 		DynamicRegistryManager.Immutable immutable = (DynamicRegistryManager.Immutable)DynamicRegistryManager.BUILTIN.get();
 		DynamicOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, immutable);
 		Registry<Biome> registry = immutable.get(Registry.BIOME_KEY);
-		MultiNoiseBiomeSource.Preset.method_41415().forEach(pair -> {
+		MultiNoiseBiomeSource.Preset.streamPresets().forEach(pair -> {
 			MultiNoiseBiomeSource multiNoiseBiomeSource = ((MultiNoiseBiomeSource.Preset)pair.getSecond()).getBiomeSource(registry, false);
-			method_42030(this.resolvePath((Identifier)pair.getFirst()), cache, dynamicOps, MultiNoiseBiomeSource.CODEC, multiNoiseBiomeSource);
+			method_42030(this.resolvePath((Identifier)pair.getFirst()), writer, dynamicOps, MultiNoiseBiomeSource.CODEC, multiNoiseBiomeSource);
 		});
 	}
 

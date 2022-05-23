@@ -31,7 +31,7 @@ public class AdvancementProvider implements DataProvider {
 	}
 
 	@Override
-	public void run(DataWriter cache) {
+	public void run(DataWriter writer) {
 		Set<Identifier> set = Sets.<Identifier>newHashSet();
 		Consumer<Advancement> consumer = advancement -> {
 			if (!set.add(advancement.getId())) {
@@ -40,7 +40,7 @@ public class AdvancementProvider implements DataProvider {
 				Path path = this.pathResolver.resolveJson(advancement.getId());
 
 				try {
-					DataProvider.writeToPath(cache, advancement.createTask().toJson(), path);
+					DataProvider.writeToPath(writer, advancement.createTask().toJson(), path);
 				} catch (IOException var6) {
 					LOGGER.error("Couldn't save advancement {}", path, var6);
 				}

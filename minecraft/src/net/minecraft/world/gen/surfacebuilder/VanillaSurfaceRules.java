@@ -384,6 +384,10 @@ public class VanillaSurfaceRules {
 		return END_STONE;
 	}
 
+	public static MaterialRules.MaterialRule getAirRule() {
+		return AIR;
+	}
+
 	private static MaterialRules.MaterialCondition surfaceNoiseThreshold(double min) {
 		return MaterialRules.noiseThreshold(NoiseParametersKeys.SURFACE, min / 8.25, Double.MAX_VALUE);
 	}

@@ -67,7 +67,7 @@ public final class Biome {
 	private final ThreadLocal<Long2FloatLinkedOpenHashMap> temperatureCache = ThreadLocal.withInitial(() -> Util.make(() -> {
 			Long2FloatLinkedOpenHashMap long2FloatLinkedOpenHashMap = new Long2FloatLinkedOpenHashMap(1024, 0.25F) {
 				@Override
-				protected void rehash(int i) {
+				protected void rehash(int n) {
 				}
 			};
 			long2FloatLinkedOpenHashMap.defaultReturnValue(Float.NaN);

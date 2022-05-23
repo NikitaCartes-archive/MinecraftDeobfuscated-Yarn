@@ -167,7 +167,7 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 	}
 
 	public Heightmap getHeightmap(Heightmap.Type type) {
-		return (Heightmap)this.heightmaps.computeIfAbsent(type, typex -> new Heightmap(this, typex));
+		return (Heightmap)this.heightmaps.computeIfAbsent(type, type2 -> new Heightmap(this, type2));
 	}
 
 	public boolean hasHeightmap(Heightmap.Type type) {
@@ -221,7 +221,7 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 
 	@Override
 	public void addStructureReference(StructureType structureType, long reference) {
-		((LongSet)this.structureReferences.computeIfAbsent(structureType, structureTypex -> new LongOpenHashSet())).add(reference);
+		((LongSet)this.structureReferences.computeIfAbsent(structureType, type2 -> new LongOpenHashSet())).add(reference);
 		this.needsSaving = true;
 	}
 
@@ -355,18 +355,18 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 		return this.heightLimitView.getHeight();
 	}
 
-	public ChunkNoiseSampler getOrCreateChunkNoiseSampler(Function<Chunk, ChunkNoiseSampler> function) {
+	public ChunkNoiseSampler getOrCreateChunkNoiseSampler(Function<Chunk, ChunkNoiseSampler> chunkNoiseSamplerGetter) {
 		if (this.chunkNoiseSampler == null) {
-			this.chunkNoiseSampler = (ChunkNoiseSampler)function.apply(this);
+			this.chunkNoiseSampler = (ChunkNoiseSampler)chunkNoiseSamplerGetter.apply(this);
 		}
 
 		return this.chunkNoiseSampler;
 	}
 
 	@Deprecated
-	public GenerationSettings method_44214(Supplier<GenerationSettings> supplier) {
+	public GenerationSettings getOrCreateGenerationSettings(Supplier<GenerationSettings> generationSettingsSupplier) {
 		if (this.generationSettings == null) {
-			this.generationSettings = (GenerationSettings)supplier.get();
+			this.generationSettings = (GenerationSettings)generationSettingsSupplier.get();
 		}
 
 		return this.generationSettings;

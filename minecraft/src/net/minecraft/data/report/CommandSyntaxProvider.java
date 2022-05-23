@@ -20,13 +20,13 @@ public class CommandSyntaxProvider implements DataProvider {
 	}
 
 	@Override
-	public void run(DataWriter cache) throws IOException {
+	public void run(DataWriter writer) throws IOException {
 		Path path = this.generator.resolveRootDirectoryPath(DataGenerator.OutputType.REPORTS).resolve("commands.json");
 		CommandDispatcher<ServerCommandSource> commandDispatcher = new CommandManager(
 				CommandManager.RegistrationEnvironment.ALL, new CommandRegistryAccess((DynamicRegistryManager)DynamicRegistryManager.BUILTIN.get())
 			)
 			.getDispatcher();
-		DataProvider.writeToPath(cache, ArgumentHelper.toJson(commandDispatcher, commandDispatcher.getRoot()), path);
+		DataProvider.writeToPath(writer, ArgumentHelper.toJson(commandDispatcher, commandDispatcher.getRoot()), path);
 	}
 
 	@Override

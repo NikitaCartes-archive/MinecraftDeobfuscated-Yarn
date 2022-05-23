@@ -17,6 +17,11 @@ public record ChatPreviewS2CPacket(int queryId, @Nullable Text preview) implemen
 		buf.writeNullable(this.preview, PacketByteBuf::writeText);
 	}
 
+	@Override
+	public boolean isWritingErrorSkippable() {
+		return true;
+	}
+
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onChatPreview(this);
 	}

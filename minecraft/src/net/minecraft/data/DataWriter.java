@@ -7,9 +7,9 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 
 public interface DataWriter {
-	DataWriter field_39439 = (path, bs, hashCode) -> {
+	DataWriter UNCACHED = (path, data, hashCode) -> {
 		Files.createDirectories(path.getParent());
-		Files.write(path, bs, new OpenOption[0]);
+		Files.write(path, data, new OpenOption[0]);
 	};
 
 	void write(Path path, byte[] data, HashCode hashCode) throws IOException;

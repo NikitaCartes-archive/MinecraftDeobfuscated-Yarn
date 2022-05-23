@@ -38,24 +38,24 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 		instance -> instance.group(
 					Codecs.nonEmptyList(
 							RecordCodecBuilder.create(
-									instancex -> instancex.group(
+									instance2 -> instance2.group(
 												MultiNoiseUtil.NoiseHypercube.CODEC.fieldOf("parameters").forGetter(Pair::getFirst),
 												Biome.REGISTRY_CODEC.fieldOf("biome").forGetter(Pair::getSecond)
 											)
-											.apply(instancex, Pair::of)
+											.apply(instance2, Pair::of)
 								)
 								.listOf()
 						)
 						.xmap(MultiNoiseUtil.Entries::new, MultiNoiseUtil.Entries::getEntries)
 						.fieldOf("biomes")
-						.forGetter(multiNoiseBiomeSource -> multiNoiseBiomeSource.biomeEntries)
+						.forGetter(biomeSource -> biomeSource.biomeEntries)
 				)
 				.apply(instance, MultiNoiseBiomeSource::new)
 	);
 	public static final Codec<MultiNoiseBiomeSource> CODEC = Codec.mapEither(MultiNoiseBiomeSource.Instance.CODEC, CUSTOM_CODEC)
 		.<MultiNoiseBiomeSource>xmap(
 			either -> either.map(MultiNoiseBiomeSource.Instance::getBiomeSource, Function.identity()),
-			multiNoiseBiomeSource -> (Either)multiNoiseBiomeSource.getInstance().map(Either::left).orElseGet(() -> Either.right(multiNoiseBiomeSource))
+			biomeSource -> (Either)biomeSource.getInstance().map(Either::left).orElseGet(() -> Either.right(biomeSource))
 		)
 		.codec();
 	private final MultiNoiseUtil.Entries<RegistryEntry<Biome>> biomeEntries;
@@ -148,19 +148,19 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 		static final Map<Identifier, MultiNoiseBiomeSource.Preset> BY_IDENTIFIER = Maps.<Identifier, MultiNoiseBiomeSource.Preset>newHashMap();
 		public static final MultiNoiseBiomeSource.Preset NETHER = new MultiNoiseBiomeSource.Preset(
 			new Identifier("nether"),
-			registry -> new MultiNoiseUtil.Entries(
+			biomeRegistry -> new MultiNoiseUtil.Entries(
 					ImmutableList.of(
-						Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F), registry.getOrCreateEntry(BiomeKeys.NETHER_WASTES)),
-						Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0F, -0.5F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F), registry.getOrCreateEntry(BiomeKeys.SOUL_SAND_VALLEY)),
-						Pair.of(MultiNoiseUtil.createNoiseHypercube(0.4F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F), registry.getOrCreateEntry(BiomeKeys.CRIMSON_FOREST)),
-						Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0F, 0.5F, 0.0F, 0.0F, 0.0F, 0.0F, 0.375F), registry.getOrCreateEntry(BiomeKeys.WARPED_FOREST)),
-						Pair.of(MultiNoiseUtil.createNoiseHypercube(-0.5F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.175F), registry.getOrCreateEntry(BiomeKeys.BASALT_DELTAS))
+						Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F), biomeRegistry.getOrCreateEntry(BiomeKeys.NETHER_WASTES)),
+						Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0F, -0.5F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F), biomeRegistry.getOrCreateEntry(BiomeKeys.SOUL_SAND_VALLEY)),
+						Pair.of(MultiNoiseUtil.createNoiseHypercube(0.4F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F), biomeRegistry.getOrCreateEntry(BiomeKeys.CRIMSON_FOREST)),
+						Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0F, 0.5F, 0.0F, 0.0F, 0.0F, 0.0F, 0.375F), biomeRegistry.getOrCreateEntry(BiomeKeys.WARPED_FOREST)),
+						Pair.of(MultiNoiseUtil.createNoiseHypercube(-0.5F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.175F), biomeRegistry.getOrCreateEntry(BiomeKeys.BASALT_DELTAS))
 					)
 				)
 		);
-		public static final MultiNoiseBiomeSource.Preset OVERWORLD = new MultiNoiseBiomeSource.Preset(new Identifier("overworld"), registry -> {
+		public static final MultiNoiseBiomeSource.Preset OVERWORLD = new MultiNoiseBiomeSource.Preset(new Identifier("overworld"), biomeRegistry -> {
 			Builder<Pair<MultiNoiseUtil.NoiseHypercube, RegistryEntry<Biome>>> builder = ImmutableList.builder();
-			new VanillaBiomeParameters().writeVanillaBiomeParameters(pair -> builder.add(pair.mapSecond(registry::getOrCreateEntry)));
+			new VanillaBiomeParameters().writeVanillaBiomeParameters(pair -> builder.add(pair.mapSecond(biomeRegistry::getOrCreateEntry)));
 			return new MultiNoiseUtil.Entries(builder.build());
 		});
 		final Identifier id;
@@ -173,7 +173,7 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 		}
 
 		@Debug
-		public static Stream<Pair<Identifier, MultiNoiseBiomeSource.Preset>> method_41415() {
+		public static Stream<Pair<Identifier, MultiNoiseBiomeSource.Preset>> streamPresets() {
 			return BY_IDENTIFIER.entrySet().stream().map(entry -> Pair.of((Identifier)entry.getKey(), (MultiNoiseBiomeSource.Preset)entry.getValue()));
 		}
 

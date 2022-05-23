@@ -391,6 +391,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 						this.setAttachedFace(direction);
 						this.playSound(SoundEvents.ENTITY_SHULKER_TELEPORT, 1.0F, 1.0F);
 						this.setPosition((double)blockPos2.getX() + 0.5, (double)blockPos2.getY(), (double)blockPos2.getZ() + 0.5);
+						this.world.emitGameEvent(GameEvent.TELEPORT, blockPos, GameEvent.Emitter.of(this));
 						this.dataTracker.set(PEEK_AMOUNT, (byte)0);
 						this.setTarget(null);
 						return true;

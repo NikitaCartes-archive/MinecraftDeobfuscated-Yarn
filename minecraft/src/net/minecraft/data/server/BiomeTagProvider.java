@@ -88,6 +88,7 @@ public class BiomeTagProvider extends AbstractTagProvider<Biome> {
 			.add(BiomeKeys.DRIPSTONE_CAVES)
 			.add(BiomeKeys.LUSH_CAVES);
 		this.getOrCreateTagBuilder(BiomeTags.MINESHAFT_MESA_HAS_STRUCTURE).addTag(BiomeTags.IS_BADLANDS);
+		this.getOrCreateTagBuilder(BiomeTags.MINESHAFT_BLOCKING).add(BiomeKeys.DEEP_DARK);
 		this.getOrCreateTagBuilder(BiomeTags.OCEAN_MONUMENT_HAS_STRUCTURE).addTag(BiomeTags.IS_DEEP_OCEAN);
 		this.getOrCreateTagBuilder(BiomeTags.REQUIRED_OCEAN_MONUMENT_SURROUNDING).addTag(BiomeTags.IS_OCEAN).addTag(BiomeTags.IS_RIVER);
 		this.getOrCreateTagBuilder(BiomeTags.OCEAN_RUIN_COLD_HAS_STRUCTURE)

@@ -53,6 +53,7 @@ public class GameEvent {
 	public static final GameEvent SPLASH = register("splash");
 	public static final GameEvent STEP = register("step");
 	public static final GameEvent SWIM = register("swim");
+	public static final GameEvent TELEPORT = register("teleport");
 	public static final int DEFAULT_RANGE = 16;
 	private final String id;
 	private final int range;

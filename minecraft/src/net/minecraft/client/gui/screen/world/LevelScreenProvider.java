@@ -44,8 +44,8 @@ public interface LevelScreenProvider {
 			);
 		},
 		Optional.of(WorldPresets.SINGLE_BIOME_SURFACE),
-		(LevelScreenProvider)(createWorldScreen, generatorOptionsHolder) -> new CustomizeBuffetLevelScreen(
-				createWorldScreen, generatorOptionsHolder, registryEntry -> createWorldScreen.moreOptionsDialog.apply(createModifier(registryEntry))
+		(LevelScreenProvider)(parent, generatorOptionsHolder) -> new CustomizeBuffetLevelScreen(
+				parent, generatorOptionsHolder, biomeEntry -> parent.moreOptionsDialog.apply(createModifier(biomeEntry))
 			)
 	);
 

@@ -19,11 +19,11 @@ public class RegistryDumpProvider implements DataProvider {
 	}
 
 	@Override
-	public void run(DataWriter cache) throws IOException {
+	public void run(DataWriter writer) throws IOException {
 		JsonObject jsonObject = new JsonObject();
 		Registry.REGISTRIES.streamEntries().forEach(entry -> jsonObject.add(entry.registryKey().getValue().toString(), toJson((Registry)entry.value())));
 		Path path = this.generator.resolveRootDirectoryPath(DataGenerator.OutputType.REPORTS).resolve("registries.json");
-		DataProvider.writeToPath(cache, jsonObject, path);
+		DataProvider.writeToPath(writer, jsonObject, path);
 	}
 
 	private static <T> JsonElement toJson(Registry<T> registry) {

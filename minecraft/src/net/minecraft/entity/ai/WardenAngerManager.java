@@ -48,10 +48,10 @@ public class WardenAngerManager {
 	@VisibleForTesting
 	protected final Object2IntMap<UUID> suspectUuidsToAngerLevel;
 
-	public static Codec<WardenAngerManager> method_43692(Predicate<Entity> predicate) {
+	public static Codec<WardenAngerManager> createCodec(Predicate<Entity> suspectPredicate) {
 		return RecordCodecBuilder.create(
 			instance -> instance.group(SUSPECT_CODEC.listOf().fieldOf("suspects").orElse(Collections.emptyList()).forGetter(WardenAngerManager::getSuspects))
-					.apply(instance, list -> new WardenAngerManager(predicate, list))
+					.apply(instance, suspectUuidsToAngerLevel -> new WardenAngerManager(suspectPredicate, suspectUuidsToAngerLevel))
 		);
 	}
 
@@ -61,13 +61,13 @@ public class WardenAngerManager {
 		this.suspectComparator = new WardenAngerManager.SuspectComparator(this);
 		this.suspectsToAngerLevel = new Object2IntOpenHashMap<>();
 		this.suspectUuidsToAngerLevel = new Object2IntOpenHashMap<>(suspectUuidsToAngerLevel.size());
-		suspectUuidsToAngerLevel.forEach(pair -> this.suspectUuidsToAngerLevel.put((UUID)pair.getFirst(), (Integer)pair.getSecond()));
+		suspectUuidsToAngerLevel.forEach(suspect -> this.suspectUuidsToAngerLevel.put((UUID)suspect.getFirst(), (Integer)suspect.getSecond()));
 	}
 
 	private List<Pair<UUID, Integer>> getSuspects() {
 		return (List<Pair<UUID, Integer>>)Streams.concat(
 				this.suspects.stream().map(suspect -> Pair.of(suspect.getUuid(), this.suspectsToAngerLevel.getInt(suspect))),
-				this.suspectUuidsToAngerLevel.object2IntEntrySet().stream().map(entry -> Pair.of((UUID)entry.getKey(), entry.getIntValue()))
+				this.suspectUuidsToAngerLevel.object2IntEntrySet().stream().map(suspect -> Pair.of((UUID)suspect.getKey(), suspect.getIntValue()))
 			)
 			.collect(Collectors.toList());
 	}

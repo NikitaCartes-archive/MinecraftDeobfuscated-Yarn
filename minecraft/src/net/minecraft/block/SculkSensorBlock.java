@@ -46,6 +46,7 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 		map.put(GameEvent.SWIM, 3);
 		map.put(GameEvent.ELYTRA_GLIDE, 4);
 		map.put(GameEvent.HIT_GROUND, 5);
+		map.put(GameEvent.TELEPORT, 5);
 		map.put(GameEvent.SPLASH, 6);
 		map.put(GameEvent.ENTITY_SHAKE, 6);
 		map.put(GameEvent.BLOCK_CHANGE, 6);

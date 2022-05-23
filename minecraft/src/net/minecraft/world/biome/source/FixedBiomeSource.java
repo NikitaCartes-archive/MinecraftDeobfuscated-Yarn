@@ -79,7 +79,7 @@ public class FixedBiomeSource extends BiomeSource implements BiomeAccess.Storage
 	}
 
 	@Override
-	public Set<RegistryEntry<Biome>> getBiomesInArea(int x, int y, int z, int radius, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler) {
+	public Set<RegistryEntry<Biome>> getBiomesInArea(int x, int y, int z, int radius, MultiNoiseUtil.MultiNoiseSampler sampler) {
 		return Sets.<RegistryEntry<Biome>>newHashSet(Set.of(this.biome));
 	}
 }

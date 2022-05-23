@@ -46,7 +46,8 @@ public class GameEventTagProvider extends AbstractTagProvider<GameEvent> {
 		GameEvent.SHEAR,
 		GameEvent.SPLASH,
 		GameEvent.STEP,
-		GameEvent.SWIM
+		GameEvent.SWIM,
+		GameEvent.TELEPORT
 	};
 
 	public GameEventTagProvider(DataGenerator root) {

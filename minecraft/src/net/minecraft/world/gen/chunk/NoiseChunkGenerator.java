@@ -306,7 +306,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 			for (int k = -8; k <= 8; k++) {
 				ChunkPos chunkPos2 = new ChunkPos(chunkPos.x + j, chunkPos.z + k);
 				Chunk chunk2 = chunkRegion.getChunk(chunkPos2.x, chunkPos2.z);
-				GenerationSettings generationSettings = chunk2.method_44214(
+				GenerationSettings generationSettings = chunk2.getOrCreateGenerationSettings(
 					() -> this.method_44216(
 							this.populationSource
 								.getBiome(BiomeCoords.fromBlock(chunkPos2.getStartX()), 0, BiomeCoords.fromBlock(chunkPos2.getStartZ()), noiseConfig.getMultiNoiseSampler())

@@ -14,6 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.event.GameEvent;
 
 public class LeveledCauldronBlock extends AbstractCauldronBlock {
 	public static final int field_31107 = 1;
@@ -62,13 +63,17 @@ public class LeveledCauldronBlock extends AbstractCauldronBlock {
 
 	public static void decrementFluidLevel(BlockState state, World world, BlockPos pos) {
 		int i = (Integer)state.get(LEVEL) - 1;
-		world.setBlockState(pos, i == 0 ? Blocks.CAULDRON.getDefaultState() : state.with(LEVEL, Integer.valueOf(i)));
+		BlockState blockState = i == 0 ? Blocks.CAULDRON.getDefaultState() : state.with(LEVEL, Integer.valueOf(i));
+		world.setBlockState(pos, blockState);
+		world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(blockState));
 	}
 
 	@Override
 	public void precipitationTick(BlockState state, World world, BlockPos pos, Biome.Precipitation precipitation) {
 		if (CauldronBlock.canFillWithPrecipitation(world, precipitation) && (Integer)state.get(LEVEL) != 3 && this.precipitationPredicate.test(precipitation)) {
-			world.setBlockState(pos, state.cycle(LEVEL));
+			BlockState blockState = state.cycle(LEVEL);
+			world.setBlockState(pos, blockState);
+			world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(blockState));
 		}
 	}
 
@@ -85,7 +90,9 @@ public class LeveledCauldronBlock extends AbstractCauldronBlock {
 	@Override
 	protected void fillFromDripstone(BlockState state, World world, BlockPos pos, Fluid fluid) {
 		if (!this.isFull(state)) {
-			world.setBlockState(pos, state.with(LEVEL, Integer.valueOf((Integer)state.get(LEVEL) + 1)));
+			BlockState blockState = state.with(LEVEL, Integer.valueOf((Integer)state.get(LEVEL) + 1));
+			world.setBlockState(pos, blockState);
+			world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(blockState));
 			world.syncWorldEvent(WorldEvents.POINTED_DRIPSTONE_DRIPS_WATER_INTO_CAULDRON, pos, 0);
 		}
 	}

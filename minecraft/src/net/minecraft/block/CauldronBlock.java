@@ -35,10 +35,10 @@ public class CauldronBlock extends AbstractCauldronBlock {
 		if (canFillWithPrecipitation(world, precipitation)) {
 			if (precipitation == Biome.Precipitation.RAIN) {
 				world.setBlockState(pos, Blocks.WATER_CAULDRON.getDefaultState());
-				world.emitGameEvent(null, GameEvent.FLUID_PLACE, pos);
+				world.emitGameEvent(null, GameEvent.BLOCK_CHANGE, pos);
 			} else if (precipitation == Biome.Precipitation.SNOW) {
 				world.setBlockState(pos, Blocks.POWDER_SNOW_CAULDRON.getDefaultState());
-				world.emitGameEvent(null, GameEvent.FLUID_PLACE, pos);
+				world.emitGameEvent(null, GameEvent.BLOCK_CHANGE, pos);
 			}
 		}
 	}
@@ -51,13 +51,15 @@ public class CauldronBlock extends AbstractCauldronBlock {
 	@Override
 	protected void fillFromDripstone(BlockState state, World world, BlockPos pos, Fluid fluid) {
 		if (fluid == Fluids.WATER) {
-			world.setBlockState(pos, Blocks.WATER_CAULDRON.getDefaultState());
+			BlockState blockState = Blocks.WATER_CAULDRON.getDefaultState();
+			world.setBlockState(pos, blockState);
+			world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(blockState));
 			world.syncWorldEvent(WorldEvents.POINTED_DRIPSTONE_DRIPS_WATER_INTO_CAULDRON, pos, 0);
-			world.emitGameEvent(null, GameEvent.FLUID_PLACE, pos);
 		} else if (fluid == Fluids.LAVA) {
-			world.setBlockState(pos, Blocks.LAVA_CAULDRON.getDefaultState());
+			BlockState blockState = Blocks.LAVA_CAULDRON.getDefaultState();
+			world.setBlockState(pos, blockState);
+			world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(blockState));
 			world.syncWorldEvent(WorldEvents.POINTED_DRIPSTONE_DRIPS_LAVA_INTO_CAULDRON, pos, 0);
-			world.emitGameEvent(null, GameEvent.FLUID_PLACE, pos);
 		}
 	}
 }

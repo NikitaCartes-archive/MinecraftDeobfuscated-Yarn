@@ -341,7 +341,12 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 				} else if (clickEvent.getAction() == ClickEvent.Action.SUGGEST_COMMAND) {
 					this.insertText(clickEvent.getValue(), true);
 				} else if (clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
-					this.client.player.sendCommand(clickEvent.getValue());
+					String string2 = clickEvent.getValue();
+					if (string2.startsWith("/")) {
+						this.client.player.sendCommand(string2.substring(1));
+					} else {
+						this.client.player.sendChatMessage(string2);
+					}
 				} else if (clickEvent.getAction() == ClickEvent.Action.COPY_TO_CLIPBOARD) {
 					this.client.keyboard.setClipboard(clickEvent.getValue());
 				} else {

@@ -108,13 +108,13 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		MutableWorldProperties properties,
 		RegistryKey<World> registryRef,
 		RegistryEntry<DimensionType> dimension,
-		Supplier<Profiler> supplier,
+		Supplier<Profiler> profiler,
 		boolean isClient,
 		boolean debugWorld,
 		long seed,
 		int maxChainedNeighborUpdates
 	) {
-		this.profiler = supplier;
+		this.profiler = profiler;
 		this.properties = properties;
 		this.dimensionEntry = dimension;
 		this.dimension = (RegistryKey<DimensionType>)dimension.getKey()

@@ -54,13 +54,21 @@ public class Slot {
 		return !this.getStack().isEmpty();
 	}
 
+	/**
+	 * Sets the slot's stack to {@code stack} and marks the slot as dirty. Subclasses
+	 * may override this method to perform additional operations.
+	 */
 	public void setStack(ItemStack stack) {
 		this.inventory.setStack(this.index, stack);
 		this.markDirty();
 	}
 
-	public void method_44206(ItemStack itemStack) {
-		this.inventory.setStack(this.index, itemStack);
+	/**
+	 * Sets the slot's stack to {@code stack} and marks the slot as dirty. Unlike
+	 * {@link #setStack} subclasses may not override this method to perform additional operations.
+	 */
+	public void setStackNoCallbacks(ItemStack stack) {
+		this.inventory.setStack(this.index, stack);
 		this.markDirty();
 	}
 

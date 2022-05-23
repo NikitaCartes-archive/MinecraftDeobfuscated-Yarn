@@ -862,14 +862,24 @@ public class Util {
 	 * return {@code 0} when given values not in the passed list.
 	 */
 	public static <T> ToIntFunction<T> lastIndexGetter(List<T> values) {
-		return method_44146(values, Object2IntOpenHashMap::new);
+		return lastIndexGetter(values, Object2IntOpenHashMap::new);
 	}
 
-	public static <T> ToIntFunction<T> method_44146(List<T> list, IntFunction<Object2IntMap<T>> intFunction) {
-		Object2IntMap<T> object2IntMap = (Object2IntMap<T>)intFunction.apply(list.size());
+	/**
+	 * {@return a function that, when given a value in {@code values}, returns the last
+	 * index of the value in the list}
+	 * 
+	 * @implNote Unlike {@link java.util.List#lastIndexOf}, the returned function will
+	 * return {@code 0} when given values not in the passed list.
+	 * 
+	 * @param mapCreator a function that, when given the size of {@code values},
+	 * returns a map for storing the indices of the values
+	 */
+	public static <T> ToIntFunction<T> lastIndexGetter(List<T> values, IntFunction<Object2IntMap<T>> mapCreator) {
+		Object2IntMap<T> object2IntMap = (Object2IntMap<T>)mapCreator.apply(values.size());
 
-		for (int i = 0; i < list.size(); i++) {
-			object2IntMap.put((T)list.get(i), i);
+		for (int i = 0; i < values.size(); i++) {
+			object2IntMap.put((T)values.get(i), i);
 		}
 
 		return object2IntMap;

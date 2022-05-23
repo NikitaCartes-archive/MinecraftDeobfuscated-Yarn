@@ -14,7 +14,7 @@ import net.minecraft.world.gen.densityfunction.DensityFunction;
 
 public class TheEndBiomeSource extends BiomeSource {
 	public static final Codec<TheEndBiomeSource> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(RegistryOps.createRegistryCodec(Registry.BIOME_KEY).forGetter(theEndBiomeSource -> null))
+		instance -> instance.group(RegistryOps.createRegistryCodec(Registry.BIOME_KEY).forGetter(biomeSource -> null))
 				.apply(instance, instance.stable(TheEndBiomeSource::new))
 	);
 	private final RegistryEntry<Biome> centerBiome;

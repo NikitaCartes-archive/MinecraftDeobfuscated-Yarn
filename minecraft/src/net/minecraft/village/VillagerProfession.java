@@ -57,7 +57,7 @@ public record VillagerProfession(
 	}
 
 	private static VillagerProfession register(String id, RegistryKey<PointOfInterestType> heldWorkstation, @Nullable SoundEvent workSound) {
-		return register(id, entry -> entry.matchesKey(heldWorkstation), PointOfInterestType.NONE, workSound);
+		return register(id, entry -> entry.matchesKey(heldWorkstation), entry -> entry.matchesKey(heldWorkstation), workSound);
 	}
 
 	private static VillagerProfession register(
@@ -76,7 +76,7 @@ public record VillagerProfession(
 		ImmutableSet<Block> secondaryJobSites,
 		@Nullable SoundEvent workSound
 	) {
-		return register(id, entry -> entry.matchesKey(heldWorkstation), PointOfInterestType.NONE, gatherableItems, secondaryJobSites, workSound);
+		return register(id, entry -> entry.matchesKey(heldWorkstation), entry -> entry.matchesKey(heldWorkstation), gatherableItems, secondaryJobSites, workSound);
 	}
 
 	private static VillagerProfession register(

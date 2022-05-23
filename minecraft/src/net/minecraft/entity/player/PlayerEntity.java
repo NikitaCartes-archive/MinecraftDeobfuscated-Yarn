@@ -141,9 +141,6 @@ public abstract class PlayerEntity extends LivingEntity {
 	private static final TrackedData<Integer> SCORE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	protected static final TrackedData<Byte> PLAYER_MODEL_PARTS = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.BYTE);
 	protected static final TrackedData<Byte> MAIN_ARM = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.BYTE);
-	protected static final TrackedData<Optional<GlobalPos>> LAST_DEATH_POS = DataTracker.registerData(
-		PlayerEntity.class, TrackedDataHandlerRegistry.OPTIONAL_GLOBAL_POS
-	);
 	protected static final TrackedData<NbtCompound> LEFT_SHOULDER_ENTITY = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
 	protected static final TrackedData<NbtCompound> RIGHT_SHOULDER_ENTITY = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
 	private long shoulderEntityAddedTime;
@@ -178,13 +175,14 @@ public abstract class PlayerEntity extends LivingEntity {
 	private boolean reducedDebugInfo;
 	private ItemStack selectedItem = ItemStack.EMPTY;
 	private final ItemCooldownManager itemCooldownManager = this.createCooldownManager();
+	private Optional<GlobalPos> lastDeathPos = Optional.empty();
 	@Nullable
 	public FishingBobberEntity fishHook;
 
-	public PlayerEntity(World world, BlockPos pos, float yaw, GameProfile profile, @Nullable PlayerPublicKey publicKey) {
+	public PlayerEntity(World world, BlockPos pos, float yaw, GameProfile gameProfile, @Nullable PlayerPublicKey publicKey) {
 		super(EntityType.PLAYER, world);
-		this.setUuid(DynamicSerializableUuid.getUuidFromProfile(profile));
-		this.gameProfile = profile;
+		this.setUuid(DynamicSerializableUuid.getUuidFromProfile(gameProfile));
+		this.gameProfile = gameProfile;
 		this.publicKey = publicKey;
 		this.playerScreenHandler = new PlayerScreenHandler(this.inventory, !world.isClient, this);
 		this.currentScreenHandler = this.playerScreenHandler;
@@ -222,7 +220,6 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.dataTracker.startTracking(MAIN_ARM, (byte)1);
 		this.dataTracker.startTracking(LEFT_SHOULDER_ENTITY, new NbtCompound());
 		this.dataTracker.startTracking(RIGHT_SHOULDER_ENTITY, new NbtCompound());
-		this.dataTracker.startTracking(LAST_DEATH_POS, Optional.empty());
 	}
 
 	@Override
@@ -1867,14 +1864,12 @@ public abstract class PlayerEntity extends LivingEntity {
 	public void equipStack(EquipmentSlot slot, ItemStack stack) {
 		this.processEquippedStack(stack);
 		if (slot == EquipmentSlot.MAINHAND) {
-			this.inventory.main.set(this.inventory.selectedSlot, stack);
+			this.onEquipStack(slot, this.inventory.main.set(this.inventory.selectedSlot, stack), stack);
 		} else if (slot == EquipmentSlot.OFFHAND) {
-			this.inventory.offHand.set(0, stack);
+			this.onEquipStack(slot, this.inventory.offHand.set(0, stack), stack);
 		} else if (slot.getType() == EquipmentSlot.Type.ARMOR) {
-			this.inventory.armor.set(slot.getEntitySlotId(), stack);
+			this.onEquipStack(slot, this.inventory.armor.set(slot.getEntitySlotId(), stack), stack);
 		}
-
-		this.onEquipStack(slot, stack);
 	}
 
 	public boolean giveItemStack(ItemStack stack) {
@@ -2183,11 +2178,11 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	public Optional<GlobalPos> getLastDeathPos() {
-		return this.dataTracker.get(LAST_DEATH_POS);
+		return this.lastDeathPos;
 	}
 
 	public void setLastDeathPos(Optional<GlobalPos> lastDeathPos) {
-		this.dataTracker.set(LAST_DEATH_POS, lastDeathPos);
+		this.lastDeathPos = lastDeathPos;
 	}
 
 	/**

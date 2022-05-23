@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import javax.annotation.Nullable;
-import net.minecraft.class_7519;
 import net.minecraft.network.listener.PacketListener;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
@@ -81,6 +80,7 @@ import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatPreviewS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChatPreviewStateChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDeltaUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkLoadDistanceS2CPacket;
@@ -267,7 +267,7 @@ public enum NetworkState {
 					.register(ChunkRenderDistanceCenterS2CPacket.class, ChunkRenderDistanceCenterS2CPacket::new)
 					.register(ChunkLoadDistanceS2CPacket.class, ChunkLoadDistanceS2CPacket::new)
 					.register(PlayerSpawnPositionS2CPacket.class, PlayerSpawnPositionS2CPacket::new)
-					.register(class_7519.class, class_7519::new)
+					.register(ChatPreviewStateChangeS2CPacket.class, ChatPreviewStateChangeS2CPacket::new)
 					.register(ScoreboardDisplayS2CPacket.class, ScoreboardDisplayS2CPacket::new)
 					.register(EntityTrackerUpdateS2CPacket.class, EntityTrackerUpdateS2CPacket::new)
 					.register(EntityAttachS2CPacket.class, EntityAttachS2CPacket::new)
@@ -468,7 +468,7 @@ public enum NetworkState {
 	}
 
 	static class PacketHandler<T extends PacketListener> {
-		private static final Logger field_36381 = LogUtils.getLogger();
+		private static final Logger LOGGER = LogUtils.getLogger();
 		final Object2IntMap<Class<? extends Packet<T>>> packetIds = Util.make(new Object2IntOpenHashMap<>(), map -> map.defaultReturnValue(-1));
 		private final List<Function<PacketByteBuf, ? extends Packet<T>>> packetFactories = Lists.<Function<PacketByteBuf, ? extends Packet<T>>>newArrayList();
 
@@ -477,7 +477,7 @@ public enum NetworkState {
 			int j = this.packetIds.put(type, i);
 			if (j != -1) {
 				String string = "Packet " + type + " is already registered to ID " + j;
-				field_36381.error(LogUtils.FATAL_MARKER, string);
+				LOGGER.error(LogUtils.FATAL_MARKER, string);
 				throw new IllegalArgumentException(string);
 			} else {
 				this.packetFactories.add(packetFactory);

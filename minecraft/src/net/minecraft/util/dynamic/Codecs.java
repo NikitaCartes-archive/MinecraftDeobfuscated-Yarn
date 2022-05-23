@@ -56,23 +56,23 @@ public class Codecs {
 		}
 	}, Pattern::pattern);
 	public static final Codec<Instant> INSTANT = instant(DateTimeFormatter.ISO_INSTANT);
-	public static final Codec<byte[]> BASE_64 = Codec.STRING.comapFlatMap(string -> {
+	public static final Codec<byte[]> BASE_64 = Codec.STRING.comapFlatMap(encoded -> {
 		try {
-			return DataResult.success(Base64.getDecoder().decode(string));
+			return DataResult.success(Base64.getDecoder().decode(encoded));
 		} catch (IllegalArgumentException var2) {
 			return DataResult.error("Malformed base64 string");
 		}
-	}, bs -> Base64.getEncoder().encodeToString(bs));
+	}, data -> Base64.getEncoder().encodeToString(data));
 	public static final Codec<Codecs.TagEntryId> TAG_ENTRY_ID = Codec.STRING
 		.comapFlatMap(
-			string -> string.startsWith("#")
-					? Identifier.validate(string.substring(1)).map(identifier -> new Codecs.TagEntryId(identifier, true))
-					: Identifier.validate(string).map(identifier -> new Codecs.TagEntryId(identifier, false)),
+			tagEntry -> tagEntry.startsWith("#")
+					? Identifier.validate(tagEntry.substring(1)).map(id -> new Codecs.TagEntryId(id, true))
+					: Identifier.validate(tagEntry).map(id -> new Codecs.TagEntryId(id, false)),
 			Codecs.TagEntryId::asString
 		);
-	public static final Function<Optional<Long>, OptionalLong> field_39395 = optional -> (OptionalLong)optional.map(OptionalLong::of)
+	public static final Function<Optional<Long>, OptionalLong> OPTIONAL_OF_LONG_TO_OPTIONAL_LONG = optional -> (OptionalLong)optional.map(OptionalLong::of)
 			.orElseGet(OptionalLong::empty);
-	public static final Function<OptionalLong, Optional<Long>> field_39396 = optionalLong -> optionalLong.isPresent()
+	public static final Function<OptionalLong, Optional<Long>> OPTIONAL_LONG_TO_OPTIONAL_OF_LONG = optionalLong -> optionalLong.isPresent()
 			? Optional.of(optionalLong.getAsLong())
 			: Optional.empty();
 
@@ -306,17 +306,17 @@ public class Codecs {
 	}
 
 	public static Codec<Instant> instant(DateTimeFormatter formatter) {
-		return Codec.STRING.comapFlatMap(string -> {
+		return Codec.STRING.comapFlatMap(dateTimeString -> {
 			try {
-				return DataResult.success(Instant.from(formatter.parse(string)));
+				return DataResult.success(Instant.from(formatter.parse(dateTimeString)));
 			} catch (Exception var3) {
 				return DataResult.error(var3.getMessage());
 			}
 		}, formatter::format);
 	}
 
-	public static MapCodec<OptionalLong> method_44167(MapCodec<Optional<Long>> mapCodec) {
-		return mapCodec.xmap(field_39395, field_39396);
+	public static MapCodec<OptionalLong> optionalLong(MapCodec<Optional<Long>> codec) {
+		return codec.xmap(OPTIONAL_OF_LONG_TO_OPTIONAL_LONG, OPTIONAL_LONG_TO_OPTIONAL_OF_LONG);
 	}
 
 	static final class Either<F, S> implements Codec<com.mojang.datafixers.util.Either<F, S>> {

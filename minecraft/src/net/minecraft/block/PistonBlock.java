@@ -284,6 +284,7 @@ public class PistonBlock extends FacingBlock {
 				BlockEntity blockEntity = blockState2.hasBlockEntity() ? world.getBlockEntity(blockPos3) : null;
 				dropStacks(blockState2, world, blockPos3, blockEntity);
 				world.setBlockState(blockPos3, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
+				world.emitGameEvent(GameEvent.BLOCK_DESTROY, blockPos3, GameEvent.Emitter.of(blockState2));
 				if (!blockState2.isIn(BlockTags.FIRE)) {
 					world.addBlockBreakParticles(blockPos3, blockState2);
 				}

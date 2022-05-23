@@ -30,7 +30,7 @@ public class FlatChunkGenerator extends ChunkGenerator {
 	private final FlatChunkGeneratorConfig config;
 
 	public FlatChunkGenerator(Registry<StructureSet> structureSetRegistry, FlatChunkGeneratorConfig config) {
-		super(structureSetRegistry, config.getStructureOverrides(), new FixedBiomeSource(config.getBiome()), Util.memoize(config::method_44225));
+		super(structureSetRegistry, config.getStructureOverrides(), new FixedBiomeSource(config.getBiome()), Util.memoize(config::createGenerationSettings));
 		this.config = config;
 	}
 

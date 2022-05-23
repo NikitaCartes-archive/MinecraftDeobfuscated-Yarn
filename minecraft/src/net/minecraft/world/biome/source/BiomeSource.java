@@ -40,7 +40,7 @@ public abstract class BiomeSource implements BiomeSupplier {
 		return this.biomes;
 	}
 
-	public Set<RegistryEntry<Biome>> getBiomesInArea(int x, int y, int z, int radius, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler) {
+	public Set<RegistryEntry<Biome>> getBiomesInArea(int x, int y, int z, int radius, MultiNoiseUtil.MultiNoiseSampler sampler) {
 		int i = BiomeCoords.fromBlock(x - radius);
 		int j = BiomeCoords.fromBlock(y - radius);
 		int k = BiomeCoords.fromBlock(z - radius);
@@ -58,7 +58,7 @@ public abstract class BiomeSource implements BiomeSupplier {
 					int u = i + s;
 					int v = j + t;
 					int w = k + r;
-					set.add(this.getBiome(u, v, w, multiNoiseSampler));
+					set.add(this.getBiome(u, v, w, sampler));
 				}
 			}
 		}

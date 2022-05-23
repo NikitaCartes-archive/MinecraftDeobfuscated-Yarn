@@ -43,7 +43,7 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 	protected abstract void configure();
 
 	@Override
-	public void run(DataWriter cache) {
+	public void run(DataWriter writer) {
 		this.tagBuilders.clear();
 		this.configure();
 		this.tagBuilders
@@ -62,7 +62,7 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 						Path path = this.pathResolver.resolveJson(id);
 
 						try {
-							DataProvider.writeToPath(cache, jsonElement, path);
+							DataProvider.writeToPath(writer, jsonElement, path);
 						} catch (IOException var9) {
 							LOGGER.error("Couldn't save tags to {}", path, var9);
 						}

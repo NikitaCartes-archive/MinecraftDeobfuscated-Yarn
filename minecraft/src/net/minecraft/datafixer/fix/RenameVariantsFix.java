@@ -21,8 +21,8 @@ public class RenameVariantsFix extends ChoiceFix {
 			DSL.remainderFinder(),
 			dynamic -> dynamic.update(
 					"variant",
-					dynamicx -> DataFixUtils.orElse(
-							dynamicx.asString().map(variantName -> dynamicx.createString((String)this.oldToNewNames.getOrDefault(variantName, variantName))).result(), dynamicx
+					variant -> DataFixUtils.orElse(
+							variant.asString().map(variantName -> variant.createString((String)this.oldToNewNames.getOrDefault(variantName, variantName))).result(), variant
 						)
 				)
 		);

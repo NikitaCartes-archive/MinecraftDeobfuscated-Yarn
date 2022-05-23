@@ -68,9 +68,9 @@ public class BuiltinRegistries {
 	public static final Registry<StructurePool> STRUCTURE_POOL = addRegistry(Registry.STRUCTURE_POOL_KEY, StructurePools::initDefaultPools);
 	public static final Registry<Biome> BIOME = addRegistry(Registry.BIOME_KEY, BuiltinBiomes::getDefaultBiome);
 	public static final Registry<DoublePerlinNoiseSampler.NoiseParameters> NOISE_PARAMETERS = addRegistry(Registry.NOISE_KEY, BuiltinNoiseParameters::init);
-	public static final Registry<DensityFunction> DENSITY_FUNCTION = addRegistry(Registry.DENSITY_FUNCTION_KEY, DensityFunctions::init);
+	public static final Registry<DensityFunction> DENSITY_FUNCTION = addRegistry(Registry.DENSITY_FUNCTION_KEY, DensityFunctions::initAndGetDefault);
 	public static final Registry<ChunkGeneratorSettings> CHUNK_GENERATOR_SETTINGS = addRegistry(
-		Registry.CHUNK_GENERATOR_SETTINGS_KEY, ChunkGeneratorSettings::getInstance
+		Registry.CHUNK_GENERATOR_SETTINGS_KEY, ChunkGeneratorSettings::initAndGetDefault
 	);
 	public static final Registry<WorldPreset> WORLD_PRESET = addRegistry(Registry.WORLD_PRESET_KEY, WorldPresets::initAndGetDefault);
 	public static final Registry<FlatLevelGeneratorPreset> FLAT_LEVEL_GENERATOR_PRESET = addRegistry(

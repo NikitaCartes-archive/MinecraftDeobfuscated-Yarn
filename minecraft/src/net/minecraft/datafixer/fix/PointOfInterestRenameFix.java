@@ -15,8 +15,8 @@ public class PointOfInterestRenameFix extends PointOfInterestFix {
 	}
 
 	@Override
-	protected <T> Stream<Dynamic<T>> method_44186(Stream<Dynamic<T>> stream) {
-		return stream.map(
+	protected <T> Stream<Dynamic<T>> update(Stream<Dynamic<T>> dynamics) {
+		return dynamics.map(
 			dynamic -> dynamic.update("type", dynamicx -> DataFixUtils.orElse(dynamicx.asString().map(this.renamer).map(dynamicx::createString).result(), dynamicx))
 		);
 	}

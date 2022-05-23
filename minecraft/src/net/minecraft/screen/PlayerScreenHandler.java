@@ -63,8 +63,9 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingInv
 			this.addSlot(new Slot(inventory, 39 - i, 8, 8 + i * 18) {
 				@Override
 				public void setStack(ItemStack stack) {
+					ItemStack itemStack = this.getStack();
 					super.setStack(stack);
-					owner.onEquipStack(equipmentSlot, stack);
+					owner.onEquipStack(equipmentSlot, itemStack, stack);
 				}
 
 				@Override

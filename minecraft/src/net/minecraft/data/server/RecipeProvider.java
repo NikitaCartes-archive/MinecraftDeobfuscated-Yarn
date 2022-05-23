@@ -86,21 +86,21 @@ public class RecipeProvider implements DataProvider {
 	}
 
 	@Override
-	public void run(DataWriter cache) {
+	public void run(DataWriter writer) {
 		Set<Identifier> set = Sets.<Identifier>newHashSet();
 		generate(provider -> {
 			if (!set.add(provider.getRecipeId())) {
 				throw new IllegalStateException("Duplicate recipe " + provider.getRecipeId());
 			} else {
-				saveRecipe(cache, provider.toJson(), this.recipesPathResolver.resolveJson(provider.getRecipeId()));
+				saveRecipe(writer, provider.toJson(), this.recipesPathResolver.resolveJson(provider.getRecipeId()));
 				JsonObject jsonObject = provider.toAdvancementJson();
 				if (jsonObject != null) {
-					saveRecipeAdvancement(cache, jsonObject, this.advancementsPathResolver.resolveJson(provider.getAdvancementId()));
+					saveRecipeAdvancement(writer, jsonObject, this.advancementsPathResolver.resolveJson(provider.getAdvancementId()));
 				}
 			}
 		});
 		saveRecipeAdvancement(
-			cache,
+			writer,
 			Advancement.Builder.create().criterion("impossible", new ImpossibleCriterion.Conditions()).toJson(),
 			this.advancementsPathResolver.resolveJson(CraftingRecipeJsonBuilder.field_39377)
 		);
