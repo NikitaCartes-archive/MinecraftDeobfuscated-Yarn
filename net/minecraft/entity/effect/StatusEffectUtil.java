@@ -47,7 +47,7 @@ public final class StatusEffectUtil {
 
     public static List<ServerPlayerEntity> addEffectToPlayersWithinDistance(ServerWorld world, @Nullable Entity entity, Vec3d origin, double range, StatusEffectInstance statusEffectInstance, int duration) {
         StatusEffect statusEffect = statusEffectInstance.getEffectType();
-        List<ServerPlayerEntity> list = world.getPlayers(player -> player.interactionManager.isSurvivalLike() && origin.isInRange(player.getPos(), range) && (!player.hasStatusEffect(statusEffect) || player.getStatusEffect(statusEffect).getAmplifier() < statusEffectInstance.getAmplifier() || player.getStatusEffect(statusEffect).getDuration() < duration));
+        List<ServerPlayerEntity> list = world.getPlayers(player -> !(!player.interactionManager.isSurvivalLike() || entity != null && entity.isTeammate((Entity)player) || !origin.isInRange(player.getPos(), range) || player.hasStatusEffect(statusEffect) && player.getStatusEffect(statusEffect).getAmplifier() >= statusEffectInstance.getAmplifier() && player.getStatusEffect(statusEffect).getDuration() >= duration));
         list.forEach(player -> player.addStatusEffect(new StatusEffectInstance(statusEffectInstance), entity));
         return list;
     }

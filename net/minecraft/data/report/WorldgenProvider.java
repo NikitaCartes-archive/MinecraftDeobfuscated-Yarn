@@ -31,10 +31,10 @@ implements DataProvider {
     }
 
     @Override
-    public void run(DataWriter cache) {
+    public void run(DataWriter writer) {
         DynamicRegistryManager dynamicRegistryManager = DynamicRegistryManager.BUILTIN.get();
         RegistryOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, dynamicRegistryManager);
-        DynamicRegistryManager.getInfos().forEach(info -> this.writeRegistryEntries(cache, dynamicRegistryManager, (DynamicOps<JsonElement>)dynamicOps, (DynamicRegistryManager.Info)info));
+        DynamicRegistryManager.getInfos().forEach(info -> this.writeRegistryEntries(writer, dynamicRegistryManager, (DynamicOps<JsonElement>)dynamicOps, (DynamicRegistryManager.Info)info));
     }
 
     private <T> void writeRegistryEntries(DataWriter dataWriter, DynamicRegistryManager dynamicRegistryManager, DynamicOps<JsonElement> dynamicOps, DynamicRegistryManager.Info<T> info) {

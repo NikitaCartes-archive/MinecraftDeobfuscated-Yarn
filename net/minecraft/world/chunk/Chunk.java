@@ -163,8 +163,8 @@ StructureHolder {
         this.getHeightmap(type).setTo(this, type, heightmap);
     }
 
-    public Heightmap getHeightmap(Heightmap.Type type2) {
-        return this.heightmaps.computeIfAbsent(type2, type -> new Heightmap(this, (Heightmap.Type)type));
+    public Heightmap getHeightmap(Heightmap.Type type) {
+        return this.heightmaps.computeIfAbsent(type, type2 -> new Heightmap(this, (Heightmap.Type)type2));
     }
 
     public boolean hasHeightmap(Heightmap.Type type) {
@@ -215,8 +215,8 @@ StructureHolder {
     }
 
     @Override
-    public void addStructureReference(StructureType structureType2, long reference) {
-        this.structureReferences.computeIfAbsent(structureType2, structureType -> new LongOpenHashSet()).add(reference);
+    public void addStructureReference(StructureType structureType, long reference) {
+        this.structureReferences.computeIfAbsent(structureType, type2 -> new LongOpenHashSet()).add(reference);
         this.needsSaving = true;
     }
 
@@ -345,17 +345,17 @@ StructureHolder {
         return this.heightLimitView.getHeight();
     }
 
-    public ChunkNoiseSampler getOrCreateChunkNoiseSampler(Function<Chunk, ChunkNoiseSampler> function) {
+    public ChunkNoiseSampler getOrCreateChunkNoiseSampler(Function<Chunk, ChunkNoiseSampler> chunkNoiseSamplerGetter) {
         if (this.chunkNoiseSampler == null) {
-            this.chunkNoiseSampler = function.apply(this);
+            this.chunkNoiseSampler = chunkNoiseSamplerGetter.apply(this);
         }
         return this.chunkNoiseSampler;
     }
 
     @Deprecated
-    public GenerationSettings method_44214(Supplier<GenerationSettings> supplier) {
+    public GenerationSettings getOrCreateGenerationSettings(Supplier<GenerationSettings> generationSettingsSupplier) {
         if (this.generationSettings == null) {
-            this.generationSettings = supplier.get();
+            this.generationSettings = generationSettingsSupplier.get();
         }
         return this.generationSettings;
     }

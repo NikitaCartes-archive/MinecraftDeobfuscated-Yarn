@@ -168,7 +168,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             NoiseChunkGenerator noiseChunkGenerator = (NoiseChunkGenerator)chunkGenerator;
             this.noiseConfig = NoiseConfig.create(noiseChunkGenerator.getSettings().value(), world.getRegistryManager().get(Registry.NOISE_KEY), world.getSeed());
         } else {
-            this.noiseConfig = NoiseConfig.create(world.getRegistryManager(), ChunkGeneratorSettings.OVERWORLD, world.getSeed());
+            this.noiseConfig = NoiseConfig.create(ChunkGeneratorSettings.createMissingSettings(), world.getRegistryManager().get(Registry.NOISE_KEY), world.getSeed());
         }
         this.mainThreadExecutor = mainThreadExecutor;
         TaskExecutor<Runnable> taskExecutor = TaskExecutor.create(executor, "worldgen");

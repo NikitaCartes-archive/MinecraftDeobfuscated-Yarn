@@ -17,7 +17,7 @@ import org.lwjgl.glfw.GLFW;
 public class RealmsClientOutdatedScreen
 extends RealmsScreen {
     private static final Text INCOMPATIBLE_TITLE = Text.translatable("mco.client.incompatible.title");
-    private static final Text[] field_39419 = new Text[]{Text.translatable("mco.client.incompatible.msg.line1"), Text.translatable("mco.client.incompatible.msg.line2"), Text.translatable("mco.client.incompatible.msg.line3")};
+    private static final Text[] INCOMPATIBLE_LINES_UNSTABLE = new Text[]{Text.translatable("mco.client.incompatible.msg.line1"), Text.translatable("mco.client.incompatible.msg.line2"), Text.translatable("mco.client.incompatible.msg.line3")};
     private static final Text[] INCOMPATIBLE_LINES = new Text[]{Text.translatable("mco.client.incompatible.msg.line1"), Text.translatable("mco.client.incompatible.msg.line2")};
     private final Screen parent;
 
@@ -35,18 +35,18 @@ extends RealmsScreen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
         RealmsClientOutdatedScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, RealmsClientOutdatedScreen.row(3), 0xFF0000);
-        Text[] texts = this.method_44255();
+        Text[] texts = this.getLines();
         for (int i = 0; i < texts.length; ++i) {
             RealmsClientOutdatedScreen.drawCenteredText(matrices, this.textRenderer, texts[i], this.width / 2, RealmsClientOutdatedScreen.row(5) + i * 12, 0xFFFFFF);
         }
         super.render(matrices, mouseX, mouseY, delta);
     }
 
-    private Text[] method_44255() {
+    private Text[] getLines() {
         if (this.client.getGame().getVersion().isStable()) {
             return INCOMPATIBLE_LINES;
         }
-        return field_39419;
+        return INCOMPATIBLE_LINES_UNSTABLE;
     }
 
     @Override

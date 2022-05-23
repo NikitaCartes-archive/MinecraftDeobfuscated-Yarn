@@ -10,6 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.JukeboxBlockEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -28,6 +29,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public class JukeboxBlock
@@ -54,18 +56,20 @@ extends BlockWithEntity {
             this.removeRecord(world, pos);
             state = (BlockState)state.with(HAS_RECORD, false);
             world.setBlockState(pos, state, Block.NOTIFY_LISTENERS);
+            world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(player, state));
             return ActionResult.success(world.isClient);
         }
         return ActionResult.PASS;
     }
 
-    public void setRecord(WorldAccess world, BlockPos pos, BlockState state, ItemStack stack) {
+    public void setRecord(@Nullable Entity user, WorldAccess world, BlockPos pos, BlockState state, ItemStack stack) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (!(blockEntity instanceof JukeboxBlockEntity)) {
             return;
         }
         ((JukeboxBlockEntity)blockEntity).setRecord(stack.copy());
         world.setBlockState(pos, (BlockState)state.with(HAS_RECORD, true), Block.NOTIFY_LISTENERS);
+        world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(user, state));
     }
 
     private void removeRecord(World world, BlockPos pos) {

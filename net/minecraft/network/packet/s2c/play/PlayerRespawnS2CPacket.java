@@ -3,9 +3,11 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
+import java.util.Optional;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.GameMode;
@@ -24,8 +26,9 @@ implements Packet<ClientPlayPacketListener> {
     private final boolean debugWorld;
     private final boolean flatWorld;
     private final boolean keepPlayerAttributes;
+    private final Optional<GlobalPos> lastDeathPos;
 
-    public PlayerRespawnS2CPacket(RegistryKey<DimensionType> dimensionType, RegistryKey<World> dimension, long sha256Seed, GameMode gameMode, @Nullable GameMode previousGameMode, boolean debugWorld, boolean flatWorld, boolean keepPlayerAttributes) {
+    public PlayerRespawnS2CPacket(RegistryKey<DimensionType> dimensionType, RegistryKey<World> dimension, long sha256Seed, GameMode gameMode, @Nullable GameMode previousGameMode, boolean debugWorld, boolean flatWorld, boolean keepPlayerAttributes, Optional<GlobalPos> lastDeathPos) {
         this.dimensionType = dimensionType;
         this.dimension = dimension;
         this.sha256Seed = sha256Seed;
@@ -34,6 +37,7 @@ implements Packet<ClientPlayPacketListener> {
         this.debugWorld = debugWorld;
         this.flatWorld = flatWorld;
         this.keepPlayerAttributes = keepPlayerAttributes;
+        this.lastDeathPos = lastDeathPos;
     }
 
     public PlayerRespawnS2CPacket(PacketByteBuf buf) {
@@ -45,6 +49,7 @@ implements Packet<ClientPlayPacketListener> {
         this.debugWorld = buf.readBoolean();
         this.flatWorld = buf.readBoolean();
         this.keepPlayerAttributes = buf.readBoolean();
+        this.lastDeathPos = buf.readOptional(PacketByteBuf::readGlobalPos);
     }
 
     @Override
@@ -57,6 +62,7 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeBoolean(this.debugWorld);
         buf.writeBoolean(this.flatWorld);
         buf.writeBoolean(this.keepPlayerAttributes);
+        buf.writeOptional(this.lastDeathPos, PacketByteBuf::writeGlobalPos);
     }
 
     @Override
@@ -95,6 +101,10 @@ implements Packet<ClientPlayPacketListener> {
 
     public boolean shouldKeepPlayerAttributes() {
         return this.keepPlayerAttributes;
+    }
+
+    public Optional<GlobalPos> getLastDeathPos() {
+        return this.lastDeathPos;
     }
 }
 

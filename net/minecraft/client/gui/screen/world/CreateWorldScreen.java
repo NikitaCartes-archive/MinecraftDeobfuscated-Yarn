@@ -254,7 +254,7 @@ extends Screen {
     }
 
     private void createLevel() {
-        IntegratedServerLoader.tryLoad(this.client, this, this.moreOptionsDialog.method_41884().worldSettingsStability(), this::startServer);
+        IntegratedServerLoader.tryLoad(this.client, this, this.moreOptionsDialog.getGeneratorOptionsHolder().worldSettingsStability(), this::startServer);
     }
 
     private void startServer() {
@@ -431,7 +431,7 @@ extends Screen {
         this.client.send(() -> this.client.setScreen(new MessageScreen(Text.translatable("dataPack.validation.working"))));
         SaveLoading.ServerConfig serverConfig = CreateWorldScreen.createServerConfig(dataPackManager, dataPackSettings2);
         ((CompletableFuture)SaveLoading.load(serverConfig, (resourceManager, dataPackSettings) -> {
-            GeneratorOptionsHolder generatorOptionsHolder = this.moreOptionsDialog.method_41884();
+            GeneratorOptionsHolder generatorOptionsHolder = this.moreOptionsDialog.getGeneratorOptionsHolder();
             DynamicRegistryManager.Immutable dynamicRegistryManager = generatorOptionsHolder.dynamicRegistryManager();
             DynamicRegistryManager.Mutable mutable = DynamicRegistryManager.createAndLoad();
             RegistryOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, dynamicRegistryManager);

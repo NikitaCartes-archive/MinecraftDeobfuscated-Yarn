@@ -285,10 +285,14 @@ implements Angerable {
         if (!bl || bl2) {
             return false;
         }
+        Vec3d vec3d = this.getPos();
         boolean bl3 = this.teleport(x, y, z, true);
-        if (bl3 && !this.isSilent()) {
-            this.world.playSound(null, this.prevX, this.prevY, this.prevZ, SoundEvents.ENTITY_ENDERMAN_TELEPORT, this.getSoundCategory(), 1.0f, 1.0f);
-            this.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f);
+        if (bl3) {
+            this.world.emitGameEvent(GameEvent.TELEPORT, vec3d, GameEvent.Emitter.of(this));
+            if (!this.isSilent()) {
+                this.world.playSound(null, this.prevX, this.prevY, this.prevZ, SoundEvents.ENTITY_ENDERMAN_TELEPORT, this.getSoundCategory(), 1.0f, 1.0f);
+                this.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, 1.0f, 1.0f);
+            }
         }
         return bl3;
     }

@@ -65,8 +65,9 @@ extends AbstractRecipeScreenHandler<CraftingInventory> {
 
                 @Override
                 public void setStack(ItemStack stack) {
+                    ItemStack itemStack = this.getStack();
                     super.setStack(stack);
-                    owner.onEquipStack(equipmentSlot, stack);
+                    owner.onEquipStack(equipmentSlot, itemStack, stack);
                 }
 
                 @Override

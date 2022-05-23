@@ -71,8 +71,8 @@ public class BuiltinRegistries {
     public static final Registry<StructurePool> STRUCTURE_POOL = BuiltinRegistries.addRegistry(Registry.STRUCTURE_POOL_KEY, StructurePools::initDefaultPools);
     public static final Registry<Biome> BIOME = BuiltinRegistries.addRegistry(Registry.BIOME_KEY, BuiltinBiomes::getDefaultBiome);
     public static final Registry<DoublePerlinNoiseSampler.NoiseParameters> NOISE_PARAMETERS = BuiltinRegistries.addRegistry(Registry.NOISE_KEY, BuiltinNoiseParameters::init);
-    public static final Registry<DensityFunction> DENSITY_FUNCTION = BuiltinRegistries.addRegistry(Registry.DENSITY_FUNCTION_KEY, DensityFunctions::init);
-    public static final Registry<ChunkGeneratorSettings> CHUNK_GENERATOR_SETTINGS = BuiltinRegistries.addRegistry(Registry.CHUNK_GENERATOR_SETTINGS_KEY, ChunkGeneratorSettings::getInstance);
+    public static final Registry<DensityFunction> DENSITY_FUNCTION = BuiltinRegistries.addRegistry(Registry.DENSITY_FUNCTION_KEY, DensityFunctions::initAndGetDefault);
+    public static final Registry<ChunkGeneratorSettings> CHUNK_GENERATOR_SETTINGS = BuiltinRegistries.addRegistry(Registry.CHUNK_GENERATOR_SETTINGS_KEY, ChunkGeneratorSettings::initAndGetDefault);
     public static final Registry<WorldPreset> WORLD_PRESET = BuiltinRegistries.addRegistry(Registry.WORLD_PRESET_KEY, WorldPresets::initAndGetDefault);
     public static final Registry<FlatLevelGeneratorPreset> FLAT_LEVEL_GENERATOR_PRESET = BuiltinRegistries.addRegistry(Registry.FLAT_LEVEL_GENERATOR_PRESET_KEY, FlatLevelGeneratorPresets::initAndGetDefault);
     public static final Registry<MessageType> MESSAGE_TYPE = BuiltinRegistries.addRegistry(Registry.MESSAGE_TYPE_KEY, MessageType::initialize);

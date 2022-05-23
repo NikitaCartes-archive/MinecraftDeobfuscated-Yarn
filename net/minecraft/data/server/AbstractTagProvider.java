@@ -47,7 +47,7 @@ implements DataProvider {
     protected abstract void configure();
 
     @Override
-    public void run(DataWriter cache) {
+    public void run(DataWriter writer) {
         this.tagBuilders.clear();
         this.configure();
         this.tagBuilders.forEach((id, builder) -> {
@@ -59,7 +59,7 @@ implements DataProvider {
             JsonElement jsonElement = TagFile.CODEC.encodeStart(JsonOps.INSTANCE, new TagFile(list, false)).getOrThrow(false, LOGGER::error);
             Path path = this.pathResolver.resolveJson((Identifier)id);
             try {
-                DataProvider.writeToPath(cache, jsonElement, path);
+                DataProvider.writeToPath(writer, jsonElement, path);
             } catch (IOException iOException) {
                 LOGGER.error("Couldn't save tags to {}", (Object)path, (Object)iOException);
             }

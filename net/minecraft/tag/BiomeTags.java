@@ -57,6 +57,7 @@ public class BiomeTags {
     public static final TagKey<Biome> RUINED_PORTAL_NETHER_HAS_STRUCTURE = BiomeTags.of("has_structure/ruined_portal_nether");
     public static final TagKey<Biome> END_CITY_HAS_STRUCTURE = BiomeTags.of("has_structure/end_city");
     public static final TagKey<Biome> REQUIRED_OCEAN_MONUMENT_SURROUNDING = BiomeTags.of("required_ocean_monument_surrounding");
+    public static final TagKey<Biome> MINESHAFT_BLOCKING = BiomeTags.of("mineshaft_blocking");
     public static final TagKey<Biome> PLAYS_UNDERWATER_MUSIC = BiomeTags.of("plays_underwater_music");
     public static final TagKey<Biome> HAS_CLOSER_WATER_FOG = BiomeTags.of("has_closer_water_fog");
     public static final TagKey<Biome> WATER_ON_MAP_OUTLINES = BiomeTags.of("water_on_map_outlines");

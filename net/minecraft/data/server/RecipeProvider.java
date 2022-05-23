@@ -73,19 +73,19 @@ implements DataProvider {
     }
 
     @Override
-    public void run(DataWriter cache) {
+    public void run(DataWriter writer) {
         HashSet set = Sets.newHashSet();
         RecipeProvider.generate(provider -> {
             if (!set.add(provider.getRecipeId())) {
                 throw new IllegalStateException("Duplicate recipe " + provider.getRecipeId());
             }
-            RecipeProvider.saveRecipe(cache, provider.toJson(), this.recipesPathResolver.resolveJson(provider.getRecipeId()));
+            RecipeProvider.saveRecipe(writer, provider.toJson(), this.recipesPathResolver.resolveJson(provider.getRecipeId()));
             JsonObject jsonObject = provider.toAdvancementJson();
             if (jsonObject != null) {
-                RecipeProvider.saveRecipeAdvancement(cache, jsonObject, this.advancementsPathResolver.resolveJson(provider.getAdvancementId()));
+                RecipeProvider.saveRecipeAdvancement(writer, jsonObject, this.advancementsPathResolver.resolveJson(provider.getAdvancementId()));
             }
         });
-        RecipeProvider.saveRecipeAdvancement(cache, Advancement.Builder.create().criterion("impossible", new ImpossibleCriterion.Conditions()).toJson(), this.advancementsPathResolver.resolveJson(CraftingRecipeJsonBuilder.field_39377));
+        RecipeProvider.saveRecipeAdvancement(writer, Advancement.Builder.create().criterion("impossible", new ImpossibleCriterion.Conditions()).toJson(), this.advancementsPathResolver.resolveJson(CraftingRecipeJsonBuilder.field_39377));
     }
 
     private static void saveRecipe(DataWriter cache, JsonObject json, Path path) {

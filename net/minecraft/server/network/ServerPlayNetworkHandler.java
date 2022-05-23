@@ -1241,9 +1241,17 @@ ServerPlayPacketListener {
             this.previewTaskRunner.queue(() -> {
                 int i = packet.queryId();
                 String string = packet.query();
-                return this.decorate(string).thenAccept(decorated -> this.sendPacket(new ChatPreviewS2CPacket(i, (Text)decorated)));
+                return this.decorate(string).thenAccept(decorated -> this.sendChatPreviewPacket(i, (Text)decorated));
             });
         }
+    }
+
+    private void sendChatPreviewPacket(int queryId, Text preview) {
+        this.sendPacket(new ChatPreviewS2CPacket(queryId, preview), future -> {
+            if (!future.isSuccess()) {
+                this.sendPacket(new ChatPreviewS2CPacket(queryId, null));
+            }
+        });
     }
 
     private CompletableFuture<Text> decorate(String query) {

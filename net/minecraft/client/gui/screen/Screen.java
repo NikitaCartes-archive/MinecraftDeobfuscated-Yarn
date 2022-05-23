@@ -310,7 +310,7 @@ implements Drawable {
                 this.insertText(style.getInsertion(), false);
             }
         } else if (clickEvent != null) {
-            block21: {
+            block23: {
                 if (clickEvent.getAction() == ClickEvent.Action.OPEN_URL) {
                     if (!this.client.options.getChatLinks().getValue().booleanValue()) {
                         return false;
@@ -327,7 +327,7 @@ implements Drawable {
                         if (this.client.options.getChatLinksPrompt().getValue().booleanValue()) {
                             this.clickedLink = uRI;
                             this.client.setScreen(new ConfirmChatLinkScreen(this::confirmLink, clickEvent.getValue(), false));
-                            break block21;
+                            break block23;
                         }
                         this.openLink(uRI);
                     } catch (URISyntaxException uRISyntaxException) {
@@ -339,7 +339,12 @@ implements Drawable {
                 } else if (clickEvent.getAction() == ClickEvent.Action.SUGGEST_COMMAND) {
                     this.insertText(clickEvent.getValue(), true);
                 } else if (clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
-                    this.client.player.sendCommand(clickEvent.getValue());
+                    String string2 = clickEvent.getValue();
+                    if (string2.startsWith("/")) {
+                        this.client.player.sendCommand(string2.substring(1));
+                    } else {
+                        this.client.player.sendChatMessage(string2);
+                    }
                 } else if (clickEvent.getAction() == ClickEvent.Action.COPY_TO_CLIPBOARD) {
                     this.client.keyboard.setClipboard(clickEvent.getValue());
                 } else {

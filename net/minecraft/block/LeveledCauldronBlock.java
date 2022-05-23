@@ -23,6 +23,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.event.GameEvent;
 
 public class LeveledCauldronBlock
 extends AbstractCauldronBlock {
@@ -72,7 +73,9 @@ extends AbstractCauldronBlock {
 
     public static void decrementFluidLevel(BlockState state, World world, BlockPos pos) {
         int i = state.get(LEVEL) - 1;
-        world.setBlockState(pos, i == 0 ? Blocks.CAULDRON.getDefaultState() : (BlockState)state.with(LEVEL, i));
+        BlockState blockState = i == 0 ? Blocks.CAULDRON.getDefaultState() : (BlockState)state.with(LEVEL, i);
+        world.setBlockState(pos, blockState);
+        world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(blockState));
     }
 
     @Override
@@ -80,7 +83,9 @@ extends AbstractCauldronBlock {
         if (!CauldronBlock.canFillWithPrecipitation(world, precipitation) || state.get(LEVEL) == 3 || !this.precipitationPredicate.test(precipitation)) {
             return;
         }
-        world.setBlockState(pos, (BlockState)state.cycle(LEVEL));
+        BlockState blockState = (BlockState)state.cycle(LEVEL);
+        world.setBlockState(pos, blockState);
+        world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(blockState));
     }
 
     @Override
@@ -98,7 +103,9 @@ extends AbstractCauldronBlock {
         if (this.isFull(state)) {
             return;
         }
-        world.setBlockState(pos, (BlockState)state.with(LEVEL, state.get(LEVEL) + 1));
+        BlockState blockState = (BlockState)state.with(LEVEL, state.get(LEVEL) + 1);
+        world.setBlockState(pos, blockState);
+        world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(blockState));
         world.syncWorldEvent(WorldEvents.POINTED_DRIPSTONE_DRIPS_WATER_INTO_CAULDRON, pos, 0);
     }
 }

@@ -60,7 +60,7 @@ public final class Biome {
         Long2FloatLinkedOpenHashMap long2FloatLinkedOpenHashMap = new Long2FloatLinkedOpenHashMap(1024, 0.25f){
 
             @Override
-            protected void rehash(int i) {
+            protected void rehash(int n) {
             }
         };
         long2FloatLinkedOpenHashMap.defaultReturnValue(Float.NaN);

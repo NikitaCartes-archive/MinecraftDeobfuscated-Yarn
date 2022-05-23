@@ -874,14 +874,13 @@ extends LivingEntity {
         this.processEquippedStack(stack);
         switch (slot.getType()) {
             case HAND: {
-                this.handItems.set(slot.getEntitySlotId(), stack);
+                this.onEquipStack(slot, this.handItems.set(slot.getEntitySlotId(), stack), stack);
                 break;
             }
             case ARMOR: {
-                this.armorItems.set(slot.getEntitySlotId(), stack);
+                this.onEquipStack(slot, this.armorItems.set(slot.getEntitySlotId(), stack), stack);
             }
         }
-        this.onEquipStack(slot, stack);
     }
 
     @Override

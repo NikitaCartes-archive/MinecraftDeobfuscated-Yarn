@@ -49,8 +49,8 @@ public class WardenAngerManager {
     @VisibleForTesting
     protected final Object2IntMap<UUID> suspectUuidsToAngerLevel;
 
-    public static Codec<WardenAngerManager> method_43692(Predicate<Entity> predicate) {
-        return RecordCodecBuilder.create(instance -> instance.group(((MapCodec)SUSPECT_CODEC.listOf().fieldOf("suspects")).orElse(Collections.emptyList()).forGetter(WardenAngerManager::getSuspects)).apply((Applicative<WardenAngerManager, ?>)instance, list -> new WardenAngerManager(predicate, (List<Pair<UUID, Integer>>)list)));
+    public static Codec<WardenAngerManager> createCodec(Predicate<Entity> suspectPredicate) {
+        return RecordCodecBuilder.create(instance -> instance.group(((MapCodec)SUSPECT_CODEC.listOf().fieldOf("suspects")).orElse(Collections.emptyList()).forGetter(WardenAngerManager::getSuspects)).apply((Applicative<WardenAngerManager, ?>)instance, suspectUuidsToAngerLevel -> new WardenAngerManager(suspectPredicate, (List<Pair<UUID, Integer>>)suspectUuidsToAngerLevel)));
     }
 
     public WardenAngerManager(Predicate<Entity> suspectPredicate, List<Pair<UUID, Integer>> suspectUuidsToAngerLevel) {
@@ -59,11 +59,11 @@ public class WardenAngerManager {
         this.suspectComparator = new SuspectComparator(this);
         this.suspectsToAngerLevel = new Object2IntOpenHashMap<Entity>();
         this.suspectUuidsToAngerLevel = new Object2IntOpenHashMap<UUID>(suspectUuidsToAngerLevel.size());
-        suspectUuidsToAngerLevel.forEach(pair -> this.suspectUuidsToAngerLevel.put((UUID)pair.getFirst(), (Integer)pair.getSecond()));
+        suspectUuidsToAngerLevel.forEach(suspect -> this.suspectUuidsToAngerLevel.put((UUID)suspect.getFirst(), (Integer)suspect.getSecond()));
     }
 
     private List<Pair<UUID, Integer>> getSuspects() {
-        return Streams.concat(this.suspects.stream().map(suspect -> Pair.of(suspect.getUuid(), this.suspectsToAngerLevel.getInt(suspect))), this.suspectUuidsToAngerLevel.object2IntEntrySet().stream().map(entry -> Pair.of((UUID)entry.getKey(), entry.getIntValue()))).collect(Collectors.toList());
+        return Streams.concat(this.suspects.stream().map(suspect -> Pair.of(suspect.getUuid(), this.suspectsToAngerLevel.getInt(suspect))), this.suspectUuidsToAngerLevel.object2IntEntrySet().stream().map(suspect -> Pair.of((UUID)suspect.getKey(), suspect.getIntValue()))).collect(Collectors.toList());
     }
 
     public void tick(ServerWorld world, Predicate<Entity> suspectPredicate) {

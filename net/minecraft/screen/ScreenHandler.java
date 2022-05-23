@@ -613,7 +613,7 @@ public abstract class ScreenHandler {
 
     public void updateSlotStacks(int revision, List<ItemStack> stacks, ItemStack cursorStack) {
         for (int i = 0; i < stacks.size(); ++i) {
-            this.getSlot(i).method_44206(stacks.get(i));
+            this.getSlot(i).setStackNoCallbacks(stacks.get(i));
         }
         this.cursorStack = cursorStack;
         this.revision = revision;

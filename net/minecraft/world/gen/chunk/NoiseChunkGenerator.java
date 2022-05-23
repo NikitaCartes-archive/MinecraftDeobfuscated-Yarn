@@ -231,7 +231,7 @@ extends ChunkGenerator {
             for (int k2 = -8; k2 <= 8; ++k2) {
                 ChunkPos chunkPos2 = new ChunkPos(chunkPos.x + j2, chunkPos.z + k2);
                 Chunk chunk22 = chunkRegion.getChunk(chunkPos2.x, chunkPos2.z);
-                GenerationSettings generationSettings = chunk22.method_44214(() -> this.method_44216(this.populationSource.getBiome(BiomeCoords.fromBlock(chunkPos2.getStartX()), 0, BiomeCoords.fromBlock(chunkPos2.getStartZ()), noiseConfig.getMultiNoiseSampler())));
+                GenerationSettings generationSettings = chunk22.getOrCreateGenerationSettings(() -> this.method_44216(this.populationSource.getBiome(BiomeCoords.fromBlock(chunkPos2.getStartX()), 0, BiomeCoords.fromBlock(chunkPos2.getStartZ()), noiseConfig.getMultiNoiseSampler())));
                 Iterable<RegistryEntry<ConfiguredCarver<?>>> iterable = generationSettings.getCarversForStep(carverStep);
                 int l = 0;
                 for (RegistryEntry<ConfiguredCarver<?>> registryEntry : iterable) {

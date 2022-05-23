@@ -59,11 +59,11 @@ public record ChunkGeneratorSettings(GenerationShapeConfig generationShapeConfig
         return this.usesLegacyRandom ? ChunkRandom.RandomProvider.LEGACY : ChunkRandom.RandomProvider.XOROSHIRO;
     }
 
-    private static RegistryEntry<ChunkGeneratorSettings> register(Registry<ChunkGeneratorSettings> registry, RegistryKey<ChunkGeneratorSettings> registryKey, ChunkGeneratorSettings chunkGeneratorSettings) {
-        return BuiltinRegistries.add(registry, registryKey.getValue(), chunkGeneratorSettings);
+    private static RegistryEntry<ChunkGeneratorSettings> register(Registry<ChunkGeneratorSettings> registry, RegistryKey<ChunkGeneratorSettings> key, ChunkGeneratorSettings chunkGeneratorSsettings) {
+        return BuiltinRegistries.add(registry, key.getValue(), chunkGeneratorSsettings);
     }
 
-    public static RegistryEntry<ChunkGeneratorSettings> getInstance(Registry<ChunkGeneratorSettings> registry) {
+    public static RegistryEntry<ChunkGeneratorSettings> initAndGetDefault(Registry<ChunkGeneratorSettings> registry) {
         ChunkGeneratorSettings.register(registry, OVERWORLD, ChunkGeneratorSettings.createSurfaceSettings(false, false));
         ChunkGeneratorSettings.register(registry, LARGE_BIOMES, ChunkGeneratorSettings.createSurfaceSettings(false, true));
         ChunkGeneratorSettings.register(registry, AMPLIFIED, ChunkGeneratorSettings.createSurfaceSettings(true, false));
@@ -91,6 +91,10 @@ public record ChunkGeneratorSettings(GenerationShapeConfig generationShapeConfig
 
     private static ChunkGeneratorSettings createFloatingIslandsSettings() {
         return new ChunkGeneratorSettings(GenerationShapeConfig.FLOATING_ISLANDS, Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), DensityFunctions.createFloatingIslandsNoiseRouter(BuiltinRegistries.DENSITY_FUNCTION), VanillaSurfaceRules.createDefaultRule(false, false, false), List.of(), -64, false, false, false, true);
+    }
+
+    public static ChunkGeneratorSettings createMissingSettings() {
+        return new ChunkGeneratorSettings(GenerationShapeConfig.SURFACE, Blocks.STONE.getDefaultState(), Blocks.AIR.getDefaultState(), DensityFunctions.createMissingNoiseRouter(), VanillaSurfaceRules.getAirRule(), List.of(), 63, true, false, false, false);
     }
 }
 

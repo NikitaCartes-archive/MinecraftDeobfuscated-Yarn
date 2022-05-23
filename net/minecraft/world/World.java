@@ -117,8 +117,8 @@ AutoCloseable {
     private final RegistryKey<World> registryKey;
     private long tickOrder;
 
-    protected World(MutableWorldProperties properties, RegistryKey<World> registryRef, RegistryEntry<DimensionType> dimension, Supplier<Profiler> supplier, boolean isClient, boolean debugWorld, long seed, int maxChainedNeighborUpdates) {
-        this.profiler = supplier;
+    protected World(MutableWorldProperties properties, RegistryKey<World> registryRef, RegistryEntry<DimensionType> dimension, Supplier<Profiler> profiler, boolean isClient, boolean debugWorld, long seed, int maxChainedNeighborUpdates) {
+        this.profiler = profiler;
         this.properties = properties;
         this.dimensionEntry = dimension;
         this.dimension = dimension.getKey().orElseThrow(() -> new IllegalArgumentException("Dimension must be registered, got " + dimension));

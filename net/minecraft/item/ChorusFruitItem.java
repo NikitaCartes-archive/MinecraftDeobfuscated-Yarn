@@ -13,7 +13,9 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class ChorusFruitItem
 extends Item {
@@ -35,7 +37,9 @@ extends Item {
                 if (user.hasVehicle()) {
                     user.stopRiding();
                 }
+                Vec3d vec3d = user.getPos();
                 if (!user.teleport(g, h, j, true)) continue;
+                world.emitGameEvent(GameEvent.TELEPORT, vec3d, GameEvent.Emitter.of(user));
                 SoundEvent soundEvent = user instanceof FoxEntity ? SoundEvents.ENTITY_FOX_TELEPORT : SoundEvents.ITEM_CHORUS_FRUIT_TELEPORT;
                 world.playSound(null, d, e, f, soundEvent, SoundCategory.PLAYERS, 1.0f, 1.0f);
                 user.playSound(soundEvent, 1.0f, 1.0f);

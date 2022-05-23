@@ -42,7 +42,7 @@ implements DataProvider {
     }
 
     @Override
-    public void run(DataWriter cache) {
+    public void run(DataWriter writer) {
         HashMap map = Maps.newHashMap();
         Consumer<BlockStateSupplier> consumer = blockStateSupplier -> {
             Block block = blockStateSupplier.getBlock();
@@ -78,8 +78,8 @@ implements DataProvider {
                 }
             }
         });
-        this.writeJsons(cache, map, block -> this.blockstatesPathResolver.resolveJson(block.getRegistryEntry().registryKey().getValue()));
-        this.writeJsons(cache, map2, this.modelsPathResolver::resolveJson);
+        this.writeJsons(writer, map, block -> this.blockstatesPathResolver.resolveJson(block.getRegistryEntry().registryKey().getValue()));
+        this.writeJsons(writer, map2, this.modelsPathResolver::resolveJson);
     }
 
     private <T> void writeJsons(DataWriter cache, Map<T, ? extends Supplier<JsonElement>> map, Function<T, Path> function) {

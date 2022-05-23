@@ -40,8 +40,8 @@ extends BiomeSource {
     /**
      * Used to parse a custom biome source, when a preset hasn't been provided.
      */
-    public static final MapCodec<MultiNoiseBiomeSource> CUSTOM_CODEC = RecordCodecBuilder.mapCodec(instance2 -> instance2.group(((MapCodec)Codecs.nonEmptyList(RecordCodecBuilder.create(instance -> instance.group(((MapCodec)MultiNoiseUtil.NoiseHypercube.CODEC.fieldOf("parameters")).forGetter(Pair::getFirst), ((MapCodec)Biome.REGISTRY_CODEC.fieldOf("biome")).forGetter(Pair::getSecond)).apply((Applicative<Pair, ?>)instance, Pair::of)).listOf()).xmap(MultiNoiseUtil.Entries::new, MultiNoiseUtil.Entries::getEntries).fieldOf("biomes")).forGetter(multiNoiseBiomeSource -> multiNoiseBiomeSource.biomeEntries)).apply((Applicative<MultiNoiseBiomeSource, ?>)instance2, MultiNoiseBiomeSource::new));
-    public static final Codec<MultiNoiseBiomeSource> CODEC = Codec.mapEither(Instance.CODEC, CUSTOM_CODEC).xmap(either -> either.map(Instance::getBiomeSource, Function.identity()), multiNoiseBiomeSource -> multiNoiseBiomeSource.getInstance().map(Either::left).orElseGet(() -> Either.right(multiNoiseBiomeSource))).codec();
+    public static final MapCodec<MultiNoiseBiomeSource> CUSTOM_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec)Codecs.nonEmptyList(RecordCodecBuilder.create(instance2 -> instance2.group(((MapCodec)MultiNoiseUtil.NoiseHypercube.CODEC.fieldOf("parameters")).forGetter(Pair::getFirst), ((MapCodec)Biome.REGISTRY_CODEC.fieldOf("biome")).forGetter(Pair::getSecond)).apply((Applicative<Pair, ?>)instance2, Pair::of)).listOf()).xmap(MultiNoiseUtil.Entries::new, MultiNoiseUtil.Entries::getEntries).fieldOf("biomes")).forGetter(biomeSource -> biomeSource.biomeEntries)).apply((Applicative<MultiNoiseBiomeSource, ?>)instance, MultiNoiseBiomeSource::new));
+    public static final Codec<MultiNoiseBiomeSource> CODEC = Codec.mapEither(Instance.CODEC, CUSTOM_CODEC).xmap(either -> either.map(Instance::getBiomeSource, Function.identity()), biomeSource -> biomeSource.getInstance().map(Either::left).orElseGet(() -> Either.right(biomeSource))).codec();
     private final MultiNoiseUtil.Entries<RegistryEntry<Biome>> biomeEntries;
     private final Optional<Instance> instance;
 
@@ -104,10 +104,10 @@ extends BiomeSource {
 
     public static class Preset {
         static final Map<Identifier, Preset> BY_IDENTIFIER = Maps.newHashMap();
-        public static final Preset NETHER = new Preset(new Identifier("nether"), registry -> new MultiNoiseUtil.Entries(ImmutableList.of(Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), registry.getOrCreateEntry(BiomeKeys.NETHER_WASTES)), Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), registry.getOrCreateEntry(BiomeKeys.SOUL_SAND_VALLEY)), Pair.of(MultiNoiseUtil.createNoiseHypercube(0.4f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), registry.getOrCreateEntry(BiomeKeys.CRIMSON_FOREST)), Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.375f), registry.getOrCreateEntry(BiomeKeys.WARPED_FOREST)), Pair.of(MultiNoiseUtil.createNoiseHypercube(-0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.175f), registry.getOrCreateEntry(BiomeKeys.BASALT_DELTAS)))));
-        public static final Preset OVERWORLD = new Preset(new Identifier("overworld"), registry -> {
+        public static final Preset NETHER = new Preset(new Identifier("nether"), biomeRegistry -> new MultiNoiseUtil.Entries(ImmutableList.of(Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), biomeRegistry.getOrCreateEntry(BiomeKeys.NETHER_WASTES)), Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), biomeRegistry.getOrCreateEntry(BiomeKeys.SOUL_SAND_VALLEY)), Pair.of(MultiNoiseUtil.createNoiseHypercube(0.4f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), biomeRegistry.getOrCreateEntry(BiomeKeys.CRIMSON_FOREST)), Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.375f), biomeRegistry.getOrCreateEntry(BiomeKeys.WARPED_FOREST)), Pair.of(MultiNoiseUtil.createNoiseHypercube(-0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.175f), biomeRegistry.getOrCreateEntry(BiomeKeys.BASALT_DELTAS)))));
+        public static final Preset OVERWORLD = new Preset(new Identifier("overworld"), biomeRegistry -> {
             ImmutableList.Builder builder = ImmutableList.builder();
-            new VanillaBiomeParameters().writeVanillaBiomeParameters(pair -> builder.add(pair.mapSecond(registry::getOrCreateEntry)));
+            new VanillaBiomeParameters().writeVanillaBiomeParameters(pair -> builder.add(pair.mapSecond(biomeRegistry::getOrCreateEntry)));
             return new MultiNoiseUtil.Entries(builder.build());
         });
         final Identifier id;
@@ -120,7 +120,7 @@ extends BiomeSource {
         }
 
         @Debug
-        public static Stream<Pair<Identifier, Preset>> method_41415() {
+        public static Stream<Pair<Identifier, Preset>> streamPresets() {
             return BY_IDENTIFIER.entrySet().stream().map(entry -> Pair.of((Identifier)entry.getKey(), (Preset)entry.getValue()));
         }
 

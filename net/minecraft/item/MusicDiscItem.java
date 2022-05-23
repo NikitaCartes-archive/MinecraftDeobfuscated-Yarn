@@ -48,7 +48,7 @@ extends Item {
         }
         ItemStack itemStack = context.getStack();
         if (!world.isClient) {
-            ((JukeboxBlock)Blocks.JUKEBOX).setRecord(world, blockPos, blockState, itemStack);
+            ((JukeboxBlock)Blocks.JUKEBOX).setRecord(context.getPlayer(), world, blockPos, blockState, itemStack);
             world.syncWorldEvent(null, WorldEvents.MUSIC_DISC_PLAYED, blockPos, Item.getRawId(this));
             itemStack.decrement(1);
             PlayerEntity playerEntity = context.getPlayer();

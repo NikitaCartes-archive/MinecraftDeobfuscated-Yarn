@@ -11,9 +11,9 @@ import java.nio.file.Path;
 import java.nio.file.attribute.FileAttribute;
 
 public interface DataWriter {
-    public static final DataWriter field_39439 = (path, bs, hashCode) -> {
+    public static final DataWriter UNCACHED = (path, data, hashCode) -> {
         Files.createDirectories(path.getParent(), new FileAttribute[0]);
-        Files.write(path, bs, new OpenOption[0]);
+        Files.write(path, data, new OpenOption[0]);
     };
 
     public void write(Path var1, byte[] var2, HashCode var3) throws IOException;

@@ -286,6 +286,7 @@ extends FacingBlock {
             BlockEntity blockEntity = blockState.hasBlockEntity() ? world.getBlockEntity(blockPos3) : null;
             PistonBlock.dropStacks(blockState, world, blockPos3, blockEntity);
             world.setBlockState(blockPos3, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
+            world.emitGameEvent(GameEvent.BLOCK_DESTROY, blockPos3, GameEvent.Emitter.of(blockState));
             if (!blockState.isIn(BlockTags.FIRE)) {
                 world.addBlockBreakParticles(blockPos3, blockState);
             }

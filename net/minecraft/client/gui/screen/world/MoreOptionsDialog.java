@@ -237,7 +237,7 @@ implements Drawable {
         }
     }
 
-    public GeneratorOptionsHolder method_41884() {
+    public GeneratorOptionsHolder getGeneratorOptionsHolder() {
         return this.generatorOptionsHolder;
     }
 

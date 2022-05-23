@@ -22,23 +22,30 @@ extends Task<E> {
 
     @Override
     protected boolean shouldKeepRunning(ServerWorld serverWorld, E wardenEntity, long l) {
-        return true;
+        return ((Entity)wardenEntity).getRemovalReason() == null;
     }
 
     @Override
     protected boolean shouldRun(ServerWorld serverWorld, E wardenEntity) {
-        return ((Entity)wardenEntity).isOnGround();
+        return ((Entity)wardenEntity).isOnGround() || ((Entity)wardenEntity).isTouchingWater() || ((Entity)wardenEntity).isInLava();
     }
 
     @Override
     protected void run(ServerWorld serverWorld, E wardenEntity, long l) {
-        ((Entity)wardenEntity).setPose(EntityPose.DIGGING);
-        ((Entity)wardenEntity).playSound(SoundEvents.ENTITY_WARDEN_DIG, 5.0f, 1.0f);
+        if (((Entity)wardenEntity).isOnGround()) {
+            ((Entity)wardenEntity).setPose(EntityPose.DIGGING);
+            ((Entity)wardenEntity).playSound(SoundEvents.ENTITY_WARDEN_DIG, 5.0f, 1.0f);
+        } else {
+            ((Entity)wardenEntity).playSound(SoundEvents.ENTITY_WARDEN_AGITATED, 5.0f, 1.0f);
+            this.finishRunning(serverWorld, wardenEntity, l);
+        }
     }
 
     @Override
     protected void finishRunning(ServerWorld serverWorld, E wardenEntity, long l) {
-        ((Entity)wardenEntity).remove(Entity.RemovalReason.DISCARDED);
+        if (((Entity)wardenEntity).getRemovalReason() == null) {
+            ((Entity)wardenEntity).remove(Entity.RemovalReason.DISCARDED);
+        }
     }
 
     @Override

@@ -106,12 +106,12 @@ public class FlatChunkGeneratorConfig {
         this.hasLakes = true;
     }
 
-    public GenerationSettings method_44225(RegistryEntry<Biome> registryEntry) {
+    public GenerationSettings createGenerationSettings(RegistryEntry<Biome> biomeEntry) {
         int i;
         List<Object> list;
         boolean bl;
-        if (!registryEntry.equals(this.biome)) {
-            return registryEntry.value().getGenerationSettings();
+        if (!biomeEntry.equals(this.biome)) {
+            return biomeEntry.value().getGenerationSettings();
         }
         GenerationSettings generationSettings = this.getBiome().value().getGenerationSettings();
         GenerationSettings.Builder builder = new GenerationSettings.Builder();
@@ -119,14 +119,14 @@ public class FlatChunkGeneratorConfig {
             builder.feature(GenerationStep.Feature.LAKES, MiscPlacedFeatures.LAKE_LAVA_UNDERGROUND);
             builder.feature(GenerationStep.Feature.LAKES, MiscPlacedFeatures.LAKE_LAVA_SURFACE);
         }
-        boolean bl2 = bl = (!this.hasNoTerrain || registryEntry.matchesKey(BiomeKeys.THE_VOID)) && this.hasFeatures;
+        boolean bl2 = bl = (!this.hasNoTerrain || biomeEntry.matchesKey(BiomeKeys.THE_VOID)) && this.hasFeatures;
         if (bl) {
             list = generationSettings.getFeatures();
             for (i = 0; i < list.size(); ++i) {
                 if (i == GenerationStep.Feature.UNDERGROUND_STRUCTURES.ordinal() || i == GenerationStep.Feature.SURFACE_STRUCTURES.ordinal()) continue;
                 RegistryEntryList registryEntryList = (RegistryEntryList)list.get(i);
-                for (RegistryEntry registryEntry2 : registryEntryList) {
-                    builder.feature(i, (RegistryEntry<PlacedFeature>)registryEntry2);
+                for (RegistryEntry registryEntry : registryEntryList) {
+                    builder.feature(i, (RegistryEntry<PlacedFeature>)registryEntry);
                 }
             }
         }

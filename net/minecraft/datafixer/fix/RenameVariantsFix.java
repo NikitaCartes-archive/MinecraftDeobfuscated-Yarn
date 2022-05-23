@@ -21,7 +21,7 @@ extends ChoiceFix {
 
     @Override
     protected Typed<?> transform(Typed<?> inputType) {
-        return inputType.update(DSL.remainderFinder(), dynamic2 -> dynamic2.update("variant", dynamic -> DataFixUtils.orElse(dynamic.asString().map(variantName -> dynamic.createString(this.oldToNewNames.getOrDefault(variantName, (String)variantName))).result(), dynamic)));
+        return inputType.update(DSL.remainderFinder(), dynamic -> dynamic.update("variant", variant -> DataFixUtils.orElse(variant.asString().map(variantName -> variant.createString(this.oldToNewNames.getOrDefault(variantName, (String)variantName))).result(), variant)));
     }
 }
 

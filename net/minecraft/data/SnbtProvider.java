@@ -55,16 +55,16 @@ implements DataProvider {
     }
 
     @Override
-    public void run(DataWriter cache) throws IOException {
-        Path path3 = this.root.getOutput();
+    public void run(DataWriter writer) throws IOException {
+        Path path2 = this.root.getOutput();
         ArrayList<CompletableFuture> list = Lists.newArrayList();
         for (Path path22 : this.root.getInputs()) {
-            Files.walk(path22, new FileVisitOption[0]).filter(path -> path.toString().endsWith(".snbt")).forEach(path2 -> list.add(CompletableFuture.supplyAsync(() -> this.toCompressedNbt((Path)path2, this.getFileName(path22, (Path)path2)), Util.getMainWorkerExecutor())));
+            Files.walk(path22, new FileVisitOption[0]).filter(path -> path.toString().endsWith(".snbt")).forEach(path -> list.add(CompletableFuture.supplyAsync(() -> this.toCompressedNbt((Path)path, this.getFileName(path22, (Path)path)), Util.getMainWorkerExecutor())));
         }
         boolean bl = false;
         for (CompletableFuture completableFuture : list) {
             try {
-                this.write(cache, (CompressedData)completableFuture.get(), path3);
+                this.write(writer, (CompressedData)completableFuture.get(), path2);
             } catch (Exception exception) {
                 LOGGER.error("Failed to process structure", exception);
                 bl = true;
@@ -124,7 +124,7 @@ implements DataProvider {
         if (data.snbtContent != null) {
             path = DEBUG_OUTPUT_DIRECTORY.resolve(data.name + ".snbt");
             try {
-                NbtProvider.writeTo(DataWriter.field_39439, path, data.snbtContent);
+                NbtProvider.writeTo(DataWriter.UNCACHED, path, data.snbtContent);
             } catch (IOException iOException) {
                 LOGGER.error("Couldn't write structure SNBT {} at {}", data.name, path, iOException);
             }

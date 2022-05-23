@@ -75,9 +75,24 @@ implements Monster {
         return true;
     }
 
+    /**
+     * {@return whether {@code damageSource} is caused by a player's fireball}
+     * 
+     * <p>This returns {@code true} for ghast fireballs reflected by a player,
+     * since the attacker is set as the player in that case.
+     */
+    private static boolean isFireballFromPlayer(DamageSource damageSource) {
+        return damageSource.getSource() instanceof FireballEntity && damageSource.getAttacker() instanceof PlayerEntity;
+    }
+
+    @Override
+    public boolean isInvulnerableTo(DamageSource damageSource) {
+        return !GhastEntity.isFireballFromPlayer(damageSource) && super.isInvulnerableTo(damageSource);
+    }
+
     @Override
     public boolean damage(DamageSource source, float amount) {
-        if (source.getSource() instanceof FireballEntity && source.getAttacker() instanceof PlayerEntity) {
+        if (GhastEntity.isFireballFromPlayer(source)) {
             super.damage(source, 1000.0f);
             return true;
         }

@@ -9,6 +9,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.Entity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
@@ -29,6 +30,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
+import org.jetbrains.annotations.Nullable;
 
 public class CampfireBlockEntity
 extends BlockEntity
@@ -58,6 +61,7 @@ implements Clearable {
             ItemScatterer.spawn(world, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), itemStack2);
             campfire.itemsBeingCooked.set(i, ItemStack.EMPTY);
             world.updateListeners(pos, state, state, Block.NOTIFY_ALL);
+            world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(state));
         }
         if (bl) {
             CampfireBlockEntity.markDirty(world, pos, state);
@@ -137,20 +141,21 @@ implements Clearable {
         return nbtCompound;
     }
 
-    public Optional<CampfireCookingRecipe> getRecipeFor(ItemStack item) {
+    public Optional<CampfireCookingRecipe> getRecipeFor(ItemStack stack) {
         if (this.itemsBeingCooked.stream().noneMatch(ItemStack::isEmpty)) {
             return Optional.empty();
         }
-        return this.matchGetter.getFirstMatch(new SimpleInventory(item), this.world);
+        return this.matchGetter.getFirstMatch(new SimpleInventory(stack), this.world);
     }
 
-    public boolean addItem(ItemStack item, int cookTime) {
+    public boolean addItem(@Nullable Entity user, ItemStack stack, int cookTime) {
         for (int i = 0; i < this.itemsBeingCooked.size(); ++i) {
             ItemStack itemStack = this.itemsBeingCooked.get(i);
             if (!itemStack.isEmpty()) continue;
             this.cookingTotalTimes[i] = cookTime;
             this.cookingTimes[i] = 0;
-            this.itemsBeingCooked.set(i, item.split(1));
+            this.itemsBeingCooked.set(i, stack.split(1));
+            this.world.emitGameEvent(GameEvent.BLOCK_CHANGE, this.getPos(), GameEvent.Emitter.of(user, this.getCachedState()));
             this.updateListeners();
             return true;
         }

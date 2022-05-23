@@ -1,16 +1,16 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.network.packet.s2c.play;
 
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 
-public record class_7519(boolean enabled) implements Packet<ClientPlayPacketListener>
+public record ChatPreviewStateChangeS2CPacket(boolean enabled) implements Packet<ClientPlayPacketListener>
 {
-    public class_7519(PacketByteBuf packetByteBuf) {
-        this(packetByteBuf.readBoolean());
+    public ChatPreviewStateChangeS2CPacket(PacketByteBuf buf) {
+        this(buf.readBoolean());
     }
 
     @Override
@@ -20,7 +20,7 @@ public record class_7519(boolean enabled) implements Packet<ClientPlayPacketList
 
     @Override
     public void apply(ClientPlayPacketListener clientPlayPacketListener) {
-        clientPlayPacketListener.method_44286(this);
+        clientPlayPacketListener.onChatPreviewStateChange(this);
     }
 }
 

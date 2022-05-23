@@ -32,7 +32,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_7510;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
@@ -83,6 +82,7 @@ import net.minecraft.world.gen.chunk.placement.ConcentricRingsStructurePlacement
 import net.minecraft.world.gen.chunk.placement.RandomSpreadStructurePlacement;
 import net.minecraft.world.gen.chunk.placement.StructurePlacement;
 import net.minecraft.world.gen.feature.PlacedFeature;
+import net.minecraft.world.gen.feature.util.PlacedFeatureIndexer;
 import net.minecraft.world.gen.noise.NoiseConfig;
 import net.minecraft.world.gen.structure.StructureType;
 import org.apache.commons.lang3.mutable.MutableBoolean;
@@ -104,7 +104,7 @@ public abstract class ChunkGenerator {
      * <p>This is used by {@link FlatChunkGenerator} to overwrite biome properties like whether lakes generate, while preserving the original biome ID.
      */
     protected final BiomeSource populationSource;
-    private final Supplier<List<class_7510.IndexedFeatures>> field_39412;
+    private final Supplier<List<PlacedFeatureIndexer.IndexedFeatures>> field_39412;
     protected final Optional<RegistryEntryList<StructureSet>> structureOverrides;
     private final Function<RegistryEntry<Biome>, GenerationSettings> field_39413;
     private final Map<StructureType, List<StructurePlacement>> structurePlacements = new Object2ObjectOpenHashMap<StructureType, List<StructurePlacement>>();
@@ -124,7 +124,7 @@ public abstract class ChunkGenerator {
         this.populationSource = populationSource;
         this.field_39413 = function;
         this.structureOverrides = structureOverrides;
-        this.field_39412 = Suppliers.memoize(() -> class_7510.method_44210(List.copyOf(populationSource.getBiomes()), registryEntry -> ((GenerationSettings)function.apply((RegistryEntry<Biome>)registryEntry)).getFeatures(), true));
+        this.field_39412 = Suppliers.memoize(() -> PlacedFeatureIndexer.collectIndexedFeatures(List.copyOf(populationSource.getBiomes()), registryEntry -> ((GenerationSettings)function.apply((RegistryEntry<Biome>)registryEntry)).getFeatures(), true));
     }
 
     public Stream<RegistryEntry<StructureSet>> streamStructureSets() {
@@ -348,7 +348,7 @@ public abstract class ChunkGenerator {
         BlockPos blockPos = chunkSectionPos.getMinPos();
         Registry<StructureType> registry = world.getRegistryManager().get(Registry.STRUCTURE_KEY);
         Map<Integer, List<StructureType>> map = registry.stream().collect(Collectors.groupingBy(structureType -> structureType.getFeatureGenerationStep().ordinal()));
-        List<class_7510.IndexedFeatures> list = this.field_39412.get();
+        List<PlacedFeatureIndexer.IndexedFeatures> list = this.field_39412.get();
         ChunkRandom chunkRandom = new ChunkRandom(new Xoroshiro128PlusPlusRandom(RandomSeed.getSeed()));
         long l = chunkRandom.setPopulationSeed(world.getSeed(), blockPos.getX(), blockPos.getZ());
         ObjectArraySet set = new ObjectArraySet();
@@ -387,13 +387,13 @@ public abstract class ChunkGenerator {
                     List<RegistryEntryList<PlacedFeature>> list3 = this.field_39413.apply(registryEntry).getFeatures();
                     if (k >= list3.size()) continue;
                     RegistryEntryList<PlacedFeature> registryEntryList = list3.get(k);
-                    class_7510.IndexedFeatures indexedFeatures = list.get(k);
+                    PlacedFeatureIndexer.IndexedFeatures indexedFeatures = list.get(k);
                     registryEntryList.stream().map(RegistryEntry::value).forEach(placedFeature -> intSet.add(indexedFeatures.indexMapping().applyAsInt((PlacedFeature)placedFeature)));
                 }
                 int n = intSet.size();
                 int[] is = intSet.toIntArray();
                 Arrays.sort(is);
-                class_7510.IndexedFeatures indexedFeatures2 = list.get(k);
+                PlacedFeatureIndexer.IndexedFeatures indexedFeatures2 = list.get(k);
                 for (int o = 0; o < n; ++o) {
                     int p = is[o];
                     PlacedFeature placedFeature2 = indexedFeatures2.features().get(p);

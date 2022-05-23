@@ -19,6 +19,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.brain.task.DigTask;
+import net.minecraft.entity.ai.brain.task.DismountVehicleTask;
 import net.minecraft.entity.ai.brain.task.EmergeTask;
 import net.minecraft.entity.ai.brain.task.FindRoarTargetTask;
 import net.minecraft.entity.ai.brain.task.FollowMobTask;
@@ -96,7 +97,7 @@ public class WardenBrain {
     }
 
     private static void addDigActivities(Brain<WardenEntity> brain) {
-        brain.setTaskList(Activity.DIG, ImmutableList.of(Pair.of(0, new DigTask(DIG_DURATION))), ImmutableSet.of(Pair.of(MemoryModuleType.ROAR_TARGET, MemoryModuleState.VALUE_ABSENT), Pair.of(MemoryModuleType.DIG_COOLDOWN, MemoryModuleState.VALUE_ABSENT)));
+        brain.setTaskList(Activity.DIG, ImmutableList.of(Pair.of(0, new DismountVehicleTask()), Pair.of(1, new DigTask(DIG_DURATION))), ImmutableSet.of(Pair.of(MemoryModuleType.ROAR_TARGET, MemoryModuleState.VALUE_ABSENT), Pair.of(MemoryModuleType.DIG_COOLDOWN, MemoryModuleState.VALUE_ABSENT)));
     }
 
     private static void addIdleActivities(Brain<WardenEntity> brain) {

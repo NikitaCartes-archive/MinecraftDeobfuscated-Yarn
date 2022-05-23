@@ -71,7 +71,7 @@ extends AnimalEntity {
     private static final TrackedData<Boolean> LEFT_HORN = DataTracker.registerData(GoatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> RIGHT_HORN = DataTracker.registerData(GoatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private boolean preparingRam;
-    private int field_33488;
+    private int headPitch;
 
     public GoatEntity(EntityType<? extends GoatEntity> entityType, World world) {
         super((EntityType<? extends AnimalEntity>)entityType, world);
@@ -80,7 +80,7 @@ extends AnimalEntity {
         this.setPathfindingPenalty(PathNodeType.DANGER_POWDER_SNOW, -1.0f);
     }
 
-    public ItemStack method_43690() {
+    public ItemStack getGoatHornStack() {
         Random random = Random.create(this.getUuid().hashCode());
         TagKey<Instrument> tagKey = this.isScreaming() ? InstrumentTags.SCREAMING_GOAT_HORNS : InstrumentTags.REGULAR_GOAT_HORNS;
         RegistryEntryList.Named<Instrument> registryEntryList = Registry.INSTRUMENT.getOrCreateEntryList(tagKey);
@@ -265,8 +265,8 @@ extends AnimalEntity {
 
     @Override
     public void tickMovement() {
-        this.field_33488 = this.preparingRam ? ++this.field_33488 : (this.field_33488 -= 2);
-        this.field_33488 = MathHelper.clamp(this.field_33488, 0, 20);
+        this.headPitch = this.preparingRam ? ++this.headPitch : (this.headPitch -= 2);
+        this.headPitch = MathHelper.clamp(this.headPitch, 0, 20);
         super.tickMovement();
     }
 
@@ -295,7 +295,7 @@ extends AnimalEntity {
         TrackedData<Boolean> trackedData = !bl ? RIGHT_HORN : (!bl2 ? LEFT_HORN : (this.random.nextBoolean() ? LEFT_HORN : RIGHT_HORN));
         this.dataTracker.set(trackedData, false);
         Vec3d vec3d = this.getPos();
-        ItemStack itemStack = this.method_43690();
+        ItemStack itemStack = this.getGoatHornStack();
         double d = MathHelper.nextBetween(this.random, -0.2f, 0.2f);
         double e = MathHelper.nextBetween(this.random, 0.3f, 0.7f);
         double f = MathHelper.nextBetween(this.random, -0.2f, 0.2f);
@@ -323,7 +323,7 @@ extends AnimalEntity {
     }
 
     public float getHeadPitch() {
-        return (float)this.field_33488 / 20.0f * 30.0f * ((float)Math.PI / 180);
+        return (float)this.headPitch / 20.0f * 30.0f * ((float)Math.PI / 180);
     }
 
     public static boolean canSpawn(EntityType<? extends AnimalEntity> entityType, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {

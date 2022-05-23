@@ -27,7 +27,7 @@ implements DataProvider {
     }
 
     @Override
-    public void run(DataWriter cache) throws IOException {
+    public void run(DataWriter writer) throws IOException {
         JsonObject jsonObject = new JsonObject();
         for (Block block : Registry.BLOCK) {
             Identifier identifier = Registry.BLOCK.getId(block);
@@ -64,7 +64,7 @@ implements DataProvider {
             jsonObject.add(identifier.toString(), jsonObject2);
         }
         Path path = this.generator.resolveRootDirectoryPath(DataGenerator.OutputType.REPORTS).resolve("blocks.json");
-        DataProvider.writeToPath(cache, jsonObject, path);
+        DataProvider.writeToPath(writer, jsonObject, path);
     }
 
     @Override

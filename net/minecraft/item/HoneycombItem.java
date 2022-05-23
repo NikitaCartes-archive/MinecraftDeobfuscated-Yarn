@@ -21,6 +21,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
+import net.minecraft.world.event.GameEvent;
 
 public class HoneycombItem
 extends Item {
@@ -44,6 +45,7 @@ extends Item {
             }
             itemStack.decrement(1);
             world.setBlockState(blockPos, (BlockState)state, Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
+            world.emitGameEvent(GameEvent.BLOCK_CHANGE, blockPos, GameEvent.Emitter.of(playerEntity, state));
             world.syncWorldEvent(playerEntity, WorldEvents.BLOCK_WAXED, blockPos, 0);
             return ActionResult.success(world.isClient);
         }).orElse(ActionResult.PASS);

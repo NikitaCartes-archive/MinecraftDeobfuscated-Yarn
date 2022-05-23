@@ -32,12 +32,12 @@ extends DataFix {
         Type<?> type = this.getInputSchema().getType(TypeReferences.ITEM_STACK);
         OpticFinder<Pair<String, String>> opticFinder = DSL.fieldFinder("id", DSL.named(TypeReferences.ITEM_NAME.typeName(), IdentifierNormalizingSchema.getIdentifierType()));
         OpticFinder<?> opticFinder2 = type.findField("tag");
-        return this.fixTypeEverywhereTyped(this.name, type, typed2 -> {
-            Optional optional = typed2.getOptional(opticFinder);
+        return this.fixTypeEverywhereTyped(this.name, type, typed -> {
+            Optional optional = typed.getOptional(opticFinder);
             if (optional.isPresent() && this.itemIdPredicate.test((String)((Pair)optional.get()).getSecond())) {
-                return typed2.updateTyped(opticFinder2, typed -> typed.update(DSL.remainderFinder(), this::fixNbt));
+                return typed.updateTyped(opticFinder2, nbt -> nbt.update(DSL.remainderFinder(), this::fixNbt));
             }
-            return typed2;
+            return typed;
         });
     }
 

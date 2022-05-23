@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class EntityStatusEffectS2CPacket
 implements Packet<ClientPlayPacketListener> {
+    private static final short field_39448 = Short.MAX_VALUE;
     private static final int AMBIENT_MASK = 1;
     private static final int SHOW_PARTICLES_MASK = 2;
     private static final int SHOW_ICON_MASK = 4;
@@ -28,7 +29,7 @@ implements Packet<ClientPlayPacketListener> {
         this.entityId = entityId;
         this.effectId = effect.getEffectType();
         this.amplifier = (byte)(effect.getAmplifier() & 0xFF);
-        this.duration = effect.getDuration() > Short.MAX_VALUE ? Short.MAX_VALUE : effect.getDuration();
+        this.duration = effect.getDuration();
         byte b = 0;
         if (effect.isAmbient()) {
             b = (byte)(b | 1);
@@ -63,7 +64,7 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     public boolean isPermanent() {
-        return this.duration == Short.MAX_VALUE;
+        return this.duration >= Short.MAX_VALUE;
     }
 
     @Override

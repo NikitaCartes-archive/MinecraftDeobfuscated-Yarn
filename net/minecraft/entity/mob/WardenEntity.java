@@ -104,10 +104,10 @@ implements VibrationListener.Callback {
     private static final float field_38160 = 4.5f;
     private static final float field_38161 = 0.7f;
     private static final int field_39305 = 30;
-    private int field_38162;
-    private int field_38163;
-    private int field_38164;
-    private int field_38165;
+    private int tendrilPitch;
+    private int lastTendrilPitch;
+    private int heartbeatCooldown;
+    private int lastHeartbeatCooldown;
     public AnimationState roaringAnimationState = new AnimationState();
     public AnimationState sniffingAnimationState = new AnimationState();
     public AnimationState emergingAnimationState = new AnimationState();
@@ -246,25 +246,25 @@ implements VibrationListener.Callback {
         if (world instanceof ServerWorld) {
             ServerWorld serverWorld = (ServerWorld)world;
             this.gameEventHandler.getListener().tick(serverWorld);
-            if (this.hasCustomName()) {
+            if (this.isPersistent() || this.cannotDespawn()) {
                 WardenBrain.resetDigCooldown(this);
             }
         }
         super.tick();
         if (this.world.isClient()) {
             if (this.age % this.getHeartRate() == 0) {
-                this.field_38164 = 10;
+                this.heartbeatCooldown = 10;
                 if (!this.isSilent()) {
                     this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_WARDEN_HEARTBEAT, this.getSoundCategory(), 5.0f, this.getSoundPitch(), false);
                 }
             }
-            this.field_38163 = this.field_38162;
-            if (this.field_38162 > 0) {
-                --this.field_38162;
+            this.lastTendrilPitch = this.tendrilPitch;
+            if (this.tendrilPitch > 0) {
+                --this.tendrilPitch;
             }
-            this.field_38165 = this.field_38164;
-            if (this.field_38164 > 0) {
-                --this.field_38164;
+            this.lastHeartbeatCooldown = this.heartbeatCooldown;
+            if (this.heartbeatCooldown > 0) {
+                --this.heartbeatCooldown;
             }
             switch (this.getPose()) {
                 case EMERGING: {
@@ -301,7 +301,7 @@ implements VibrationListener.Callback {
             this.roaringAnimationState.stop();
             this.attackingAnimationState.start(this.age);
         } else if (status == EntityStatuses.EARS_TWITCH) {
-            this.field_38162 = 10;
+            this.tendrilPitch = 10;
         } else if (status == EntityStatuses.SONIC_BOOM) {
             this.chargingSonicBoomAnimationState.start(this.age);
         } else {
@@ -315,17 +315,17 @@ implements VibrationListener.Callback {
     }
 
     public float getTendrilPitch(float tickDelta) {
-        return MathHelper.lerp(tickDelta, this.field_38163, this.field_38162) / 10.0f;
+        return MathHelper.lerp(tickDelta, this.lastTendrilPitch, this.tendrilPitch) / 10.0f;
     }
 
     public float getHeartPitch(float tickDelta) {
-        return MathHelper.lerp(tickDelta, this.field_38165, this.field_38164) / 10.0f;
+        return MathHelper.lerp(tickDelta, this.lastHeartbeatCooldown, this.heartbeatCooldown) / 10.0f;
     }
 
     private void addDigParticles(AnimationState animationState) {
         if ((float)animationState.getTimeRunning() < 4500.0f) {
             Random random = this.getRandom();
-            BlockState blockState = this.world.getBlockState(this.getBlockPos().down());
+            BlockState blockState = this.getSteppingBlockState();
             if (blockState.getRenderType() != BlockRenderType.INVISIBLE) {
                 for (int i = 0; i < 30; ++i) {
                     double d = this.getX() + (double)MathHelper.nextBetween(random, -0.7f, 0.7f);
@@ -427,7 +427,7 @@ implements VibrationListener.Callback {
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-        WardenAngerManager.method_43692(this::isValidTarget).encodeStart(NbtOps.INSTANCE, this.angerManager).resultOrPartial(field_38138::error).ifPresent(angerNbt -> nbt.put("anger", (NbtElement)angerNbt));
+        WardenAngerManager.createCodec(this::isValidTarget).encodeStart(NbtOps.INSTANCE, this.angerManager).resultOrPartial(field_38138::error).ifPresent(angerNbt -> nbt.put("anger", (NbtElement)angerNbt));
         VibrationListener.createCodec(this).encodeStart(NbtOps.INSTANCE, this.gameEventHandler.getListener()).resultOrPartial(field_38138::error).ifPresent(nbtElement -> nbt.put("listener", (NbtElement)nbtElement));
     }
 
@@ -435,7 +435,7 @@ implements VibrationListener.Callback {
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
         if (nbt.contains("anger")) {
-            WardenAngerManager.method_43692(this::isValidTarget).parse(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt.get("anger"))).resultOrPartial(field_38138::error).ifPresent(angerManager -> {
+            WardenAngerManager.createCodec(this::isValidTarget).parse(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt.get("anger"))).resultOrPartial(field_38138::error).ifPresent(angerManager -> {
                 this.angerManager = angerManager;
             });
             this.updateAnger();
@@ -496,8 +496,13 @@ implements VibrationListener.Callback {
     }
 
     @Override
+    public boolean cannotDespawn() {
+        return super.cannotDespawn() || this.hasCustomName();
+    }
+
+    @Override
     public boolean canImmediatelyDespawn(double distanceSquared) {
-        return !this.isPersistent();
+        return false;
     }
 
     @Override
@@ -509,14 +514,13 @@ implements VibrationListener.Callback {
             this.getBrain().remember(MemoryModuleType.IS_EMERGING, Unit.INSTANCE, WardenBrain.EMERGE_DURATION);
             this.playSound(SoundEvents.ENTITY_WARDEN_AGITATED, 5.0f, 1.0f);
         }
-        this.setPersistent();
         return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
     @Override
     public boolean damage(DamageSource source, float amount) {
         boolean bl = super.damage(source, amount);
-        if (!this.world.isClient && !this.isAiDisabled() && amount > 0.0f) {
+        if (!this.world.isClient && !this.isAiDisabled()) {
             Entity entity = source.getAttacker();
             this.increaseAngerAt(entity, Angriness.ANGRY.getThreshold() + 20, false);
             if (this.brain.getOptionalMemory(MemoryModuleType.ATTACK_TARGET).isEmpty() && entity instanceof LivingEntity) {

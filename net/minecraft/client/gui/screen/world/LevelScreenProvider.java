@@ -38,7 +38,7 @@ public interface LevelScreenProvider {
         Registry<Biome> registry = dynamicRegistryManager.get(Registry.BIOME_KEY);
         Registry<StructureSet> registry2 = dynamicRegistryManager.get(Registry.STRUCTURE_SET_KEY);
         return new CustomizeFlatLevelScreen(parent, config -> createWorldScreen.moreOptionsDialog.apply(LevelScreenProvider.createModifier(config)), chunkGenerator instanceof FlatChunkGenerator ? ((FlatChunkGenerator)chunkGenerator).getConfig() : FlatChunkGeneratorConfig.getDefaultConfig(registry, registry2));
-    }, Optional.of(WorldPresets.SINGLE_BIOME_SURFACE), (createWorldScreen, generatorOptionsHolder) -> new CustomizeBuffetLevelScreen(createWorldScreen, generatorOptionsHolder, registryEntry -> createWorldScreen.moreOptionsDialog.apply(LevelScreenProvider.createModifier(registryEntry))));
+    }, Optional.of(WorldPresets.SINGLE_BIOME_SURFACE), (parent, generatorOptionsHolder) -> new CustomizeBuffetLevelScreen(parent, generatorOptionsHolder, biomeEntry -> createWorldScreen.moreOptionsDialog.apply(LevelScreenProvider.createModifier(biomeEntry))));
 
     public Screen createEditScreen(CreateWorldScreen var1, GeneratorOptionsHolder var2);
 

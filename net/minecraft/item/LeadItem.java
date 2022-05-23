@@ -15,6 +15,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class LeadItem
 extends Item {
@@ -32,6 +33,7 @@ extends Item {
             if (!world.isClient && playerEntity != null) {
                 LeadItem.attachHeldMobsToBlock(playerEntity, world, blockPos);
             }
+            world.emitGameEvent(GameEvent.BLOCK_ATTACH, blockPos, GameEvent.Emitter.of(playerEntity));
             return ActionResult.success(world.isClient);
         }
         return ActionResult.PASS;

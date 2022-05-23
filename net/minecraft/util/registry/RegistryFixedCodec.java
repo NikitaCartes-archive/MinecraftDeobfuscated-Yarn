@@ -48,7 +48,7 @@ implements Codec<RegistryEntry<E>> {
             return Identifier.CODEC.decode(ops, input).flatMap((? super R pair) -> {
                 Identifier identifier = (Identifier)pair.getFirst();
                 DataResult<RegistryEntry<Pair>> dataResult = ((Registry)optional.get()).getOrCreateEntryDataResult(RegistryKey.of(this.registry, identifier));
-                return dataResult.map((? super R registryEntry) -> Pair.of(registryEntry, pair.getSecond())).setLifecycle(Lifecycle.stable());
+                return dataResult.map((? super R entry) -> Pair.of(entry, pair.getSecond())).setLifecycle(Lifecycle.stable());
             });
         }
         return DataResult.error("Can't access registry " + this.registry);

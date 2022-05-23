@@ -65,7 +65,7 @@ implements BiomeAccess.Storage {
     }
 
     @Override
-    public Set<RegistryEntry<Biome>> getBiomesInArea(int x, int y, int z, int radius, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler) {
+    public Set<RegistryEntry<Biome>> getBiomesInArea(int x, int y, int z, int radius, MultiNoiseUtil.MultiNoiseSampler sampler) {
         return Sets.newHashSet(Set.of(this.biome));
     }
 }

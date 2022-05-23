@@ -32,10 +32,10 @@ implements DataProvider {
     }
 
     @Override
-    public void run(DataWriter cache) throws IOException {
+    public void run(DataWriter writer) throws IOException {
         Path path2 = this.root.getOutput();
         for (Path path22 : this.root.getInputs()) {
-            Files.walk(path22, new FileVisitOption[0]).filter(path -> path.toString().endsWith(".nbt")).forEach(path3 -> NbtProvider.convertNbtToSnbt(cache, path3, this.getLocation(path22, (Path)path3), path2));
+            Files.walk(path22, new FileVisitOption[0]).filter(path -> path.toString().endsWith(".nbt")).forEach(path -> NbtProvider.convertNbtToSnbt(writer, path, this.getLocation(path22, (Path)path), path2));
         }
     }
 
@@ -50,15 +50,15 @@ implements DataProvider {
     }
 
     @Nullable
-    public static Path convertNbtToSnbt(DataWriter dataWriter, Path path, String string, Path path2) {
-        Path path3;
+    public static Path convertNbtToSnbt(DataWriter writer, Path inputPath, String filename, Path outputPath) {
+        Path path;
         block8: {
-            InputStream inputStream = Files.newInputStream(path, new OpenOption[0]);
+            InputStream inputStream = Files.newInputStream(inputPath, new OpenOption[0]);
             try {
-                Path path32 = path2.resolve(string + ".snbt");
-                NbtProvider.writeTo(dataWriter, path32, NbtHelper.toNbtProviderString(NbtIo.readCompressed(inputStream)));
-                LOGGER.info("Converted {} from NBT to SNBT", (Object)string);
-                path3 = path32;
+                Path path2 = outputPath.resolve(filename + ".snbt");
+                NbtProvider.writeTo(writer, path2, NbtHelper.toNbtProviderString(NbtIo.readCompressed(inputStream)));
+                LOGGER.info("Converted {} from NBT to SNBT", (Object)filename);
+                path = path2;
                 if (inputStream == null) break block8;
             } catch (Throwable throwable) {
                 try {
@@ -71,21 +71,21 @@ implements DataProvider {
                     }
                     throw throwable;
                 } catch (IOException iOException) {
-                    LOGGER.error("Couldn't convert {} from NBT to SNBT at {}", string, path, iOException);
+                    LOGGER.error("Couldn't convert {} from NBT to SNBT at {}", filename, inputPath, iOException);
                     return null;
                 }
             }
             inputStream.close();
         }
-        return path3;
+        return path;
     }
 
-    public static void writeTo(DataWriter dataWriter, Path path, String string) throws IOException {
+    public static void writeTo(DataWriter writer, Path path, String content) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         HashingOutputStream hashingOutputStream = new HashingOutputStream(Hashing.sha1(), byteArrayOutputStream);
-        hashingOutputStream.write(string.getBytes(StandardCharsets.UTF_8));
+        hashingOutputStream.write(content.getBytes(StandardCharsets.UTF_8));
         hashingOutputStream.write(10);
-        dataWriter.write(path, byteArrayOutputStream.toByteArray(), hashingOutputStream.hash());
+        writer.write(path, byteArrayOutputStream.toByteArray(), hashingOutputStream.hash());
     }
 }
 

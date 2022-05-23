@@ -93,6 +93,7 @@ import net.minecraft.datafixer.fix.EntityZombifiedPiglinRenameFix;
 import net.minecraft.datafixer.fix.FurnaceRecipesFix;
 import net.minecraft.datafixer.fix.GameEventRenamesFix;
 import net.minecraft.datafixer.fix.GoatHornIdFix;
+import net.minecraft.datafixer.fix.GoatMissingStateFix;
 import net.minecraft.datafixer.fix.HangingEntityFix;
 import net.minecraft.datafixer.fix.HeightmapRenamingFix;
 import net.minecraft.datafixer.fix.IglooMetadataRemovalFix;
@@ -707,15 +708,17 @@ public class Schemas {
         builder.addFixer(new BlendingDataFix(schema165));
         Schema schema166 = builder.addSchema(3090, EMPTY_IDENTIFIER_NORMALIZE);
         builder.addFixer(new EntityPaintingFieldsRenameFix(schema166));
-        Schema schema167 = builder.addSchema(3094, EMPTY_IDENTIFIER_NORMALIZE);
-        builder.addFixer(new GoatHornIdFix(schema167));
-        Schema schema168 = builder.addSchema(3097, EMPTY_IDENTIFIER_NORMALIZE);
-        builder.addFixer(new RemoveFilteredBookTextFix(schema168));
-        builder.addFixer(new RemoveFilteredSignTextFix(schema168));
+        Schema schema167 = builder.addSchema(3093, EMPTY_IDENTIFIER_NORMALIZE);
+        builder.addFixer(new GoatMissingStateFix(schema167));
+        Schema schema168 = builder.addSchema(3094, EMPTY_IDENTIFIER_NORMALIZE);
+        builder.addFixer(new GoatHornIdFix(schema168));
+        Schema schema169 = builder.addSchema(3097, EMPTY_IDENTIFIER_NORMALIZE);
+        builder.addFixer(new RemoveFilteredBookTextFix(schema169));
+        builder.addFixer(new RemoveFilteredSignTextFix(schema169));
         Map<String, String> map = Map.of("minecraft:british", "minecraft:british_shorthair");
-        builder.addFixer(new RenameVariantsFix(schema168, "Rename british shorthair", TypeReferences.ENTITY, "minecraft:cat", map));
-        builder.addFixer(new AdvancementCriteriaRenameFix(schema168, "Migrate cat variant advancement for british shorthair", "minecraft:husbandry/complete_catalogue", string -> map.getOrDefault(string, (String)string)));
-        builder.addFixer(new PointOfInterestRemoveFix(schema168, "Remove unpopulated villager PoI types", Set.of("minecraft:unemployed", "minecraft:nitwit")::contains));
+        builder.addFixer(new RenameVariantsFix(schema169, "Rename british shorthair", TypeReferences.ENTITY, "minecraft:cat", map));
+        builder.addFixer(new AdvancementCriteriaRenameFix(schema169, "Migrate cat variant advancement for british shorthair", "minecraft:husbandry/complete_catalogue", string -> map.getOrDefault(string, (String)string)));
+        builder.addFixer(new PointOfInterestRemoveFix(schema169, "Remove unpopulated villager PoI types", Set.of("minecraft:unemployed", "minecraft:nitwit")::contains));
     }
 
     private static UnaryOperator<String> replacing(Map<String, String> replacements) {

@@ -148,6 +148,7 @@ extends MinecraftServer {
     public SystemDetails addExtraSystemDetails(SystemDetails details) {
         details.addSection("Type", "Integrated Server (map_client.txt)");
         details.addSection("Is Modded", () -> this.getModStatus().getMessage());
+        details.addSection("Launched Version", this.client::getGameVersion);
         return details;
     }
 

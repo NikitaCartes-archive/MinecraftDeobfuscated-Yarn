@@ -22,6 +22,11 @@ public record ChatPreviewS2CPacket(int queryId, @Nullable Text preview) implemen
     }
 
     @Override
+    public boolean isWritingErrorSkippable() {
+        return true;
+    }
+
+    @Override
     public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onChatPreview(this);
     }

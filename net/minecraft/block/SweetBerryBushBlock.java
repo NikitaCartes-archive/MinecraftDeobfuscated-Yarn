@@ -31,6 +31,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class SweetBerryBushBlock
 extends PlantBlock
@@ -71,7 +72,9 @@ implements Fertilizable {
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         int i = state.get(AGE);
         if (i < 3 && random.nextInt(5) == 0 && world.getBaseLightLevel(pos.up(), 0) >= 9) {
-            world.setBlockState(pos, (BlockState)state.with(AGE, i + 1), Block.NOTIFY_LISTENERS);
+            BlockState blockState = (BlockState)state.with(AGE, i + 1);
+            world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
+            world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(blockState));
         }
     }
 
@@ -102,7 +105,9 @@ implements Fertilizable {
             int j = 1 + world.random.nextInt(2);
             SweetBerryBushBlock.dropStack(world, pos, new ItemStack(Items.SWEET_BERRIES, j + (bl ? 1 : 0)));
             world.playSound(null, pos, SoundEvents.BLOCK_SWEET_BERRY_BUSH_PICK_BERRIES, SoundCategory.BLOCKS, 1.0f, 0.8f + world.random.nextFloat() * 0.4f);
-            world.setBlockState(pos, (BlockState)state.with(AGE, 1), Block.NOTIFY_LISTENERS);
+            BlockState blockState = (BlockState)state.with(AGE, 1);
+            world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
+            world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(player, blockState));
             return ActionResult.success(world.isClient);
         }
         return super.onUse(state, world, pos, player, hand, hit);

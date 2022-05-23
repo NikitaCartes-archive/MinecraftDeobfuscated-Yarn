@@ -9,15 +9,15 @@ import com.mojang.datafixers.schemas.Schema;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.fix.ChoiceFix;
 
-public class RemoveFilteredSignTextFix
+public class GoatMissingStateFix
 extends ChoiceFix {
-    public RemoveFilteredSignTextFix(Schema schema) {
-        super(schema, false, "Remove filtered text from signs", TypeReferences.BLOCK_ENTITY, "minecraft:sign");
+    public GoatMissingStateFix(Schema schema) {
+        super(schema, false, "EntityGoatMissingStateFix", TypeReferences.ENTITY, "minecraft:goat");
     }
 
     @Override
     protected Typed<?> transform(Typed<?> inputType) {
-        return inputType.update(DSL.remainderFinder(), blockEntity -> blockEntity.remove("FilteredText1").remove("FilteredText2").remove("FilteredText3").remove("FilteredText4"));
+        return inputType.update(DSL.remainderFinder(), dynamic -> dynamic.set("HasLeftHorn", dynamic.createBoolean(true)).set("HasRightHorn", dynamic.createBoolean(true)));
     }
 }
 

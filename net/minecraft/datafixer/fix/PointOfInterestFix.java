@@ -30,21 +30,21 @@ extends DataFix {
         if (!Objects.equals(type, this.getInputSchema().getType(TypeReferences.POI_CHUNK))) {
             throw new IllegalStateException("Poi type is not what was expected.");
         }
-        return this.fixTypeEverywhere(this.name, type, dynamicOps -> pair -> pair.mapSecond(this::fixSections));
+        return this.fixTypeEverywhere(this.name, type, ops -> pair -> pair.mapSecond(this::fixSections));
     }
 
-    private <T> Dynamic<T> fixSections(Dynamic<T> dynamic2) {
-        return dynamic2.update("Sections", dynamic -> dynamic.updateMapValues(pair -> pair.mapSecond(this::fixRecords)));
+    private <T> Dynamic<T> fixSections(Dynamic<T> dynamic) {
+        return dynamic.update("Sections", sections -> sections.updateMapValues(pair -> pair.mapSecond(this::fixRecords)));
     }
 
     private Dynamic<?> fixRecords(Dynamic<?> dynamic) {
-        return dynamic.update("Records", this::method_44188);
+        return dynamic.update("Records", this::fixRecord);
     }
 
-    private <T> Dynamic<T> method_44188(Dynamic<T> dynamic) {
-        return DataFixUtils.orElse(dynamic.asStreamOpt().result().map(stream -> dynamic.createList(this.method_44186((Stream)stream))), dynamic);
+    private <T> Dynamic<T> fixRecord(Dynamic<T> dynamic) {
+        return DataFixUtils.orElse(dynamic.asStreamOpt().result().map(dynamics -> dynamic.createList(this.update((Stream)dynamics))), dynamic);
     }
 
-    protected abstract <T> Stream<Dynamic<T>> method_44186(Stream<Dynamic<T>> var1);
+    protected abstract <T> Stream<Dynamic<T>> update(Stream<Dynamic<T>> var1);
 }
 

@@ -88,7 +88,7 @@ extends PathAwareEntity {
     }
 
     public void setBreedingAge(int age) {
-        int i = this.breedingAge;
+        int i = this.getBreedingAge();
         this.breedingAge = age;
         if (i < 0 && age >= 0 || i >= 0 && age < 0) {
             this.dataTracker.set(CHILD, age < 0);

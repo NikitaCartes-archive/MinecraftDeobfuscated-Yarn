@@ -41,6 +41,7 @@ extends AbstractTagProvider<Biome> {
         this.getOrCreateTagBuilder(BiomeTags.JUNGLE_TEMPLE_HAS_STRUCTURE).add(BiomeKeys.BAMBOO_JUNGLE).add(BiomeKeys.JUNGLE);
         this.getOrCreateTagBuilder(BiomeTags.MINESHAFT_HAS_STRUCTURE).addTag(BiomeTags.IS_OCEAN).addTag(BiomeTags.IS_RIVER).addTag(BiomeTags.IS_BEACH).addTag(BiomeTags.IS_MOUNTAIN).addTag(BiomeTags.IS_HILL).addTag(BiomeTags.IS_TAIGA).addTag(BiomeTags.IS_JUNGLE).addTag(BiomeTags.IS_FOREST).add(BiomeKeys.STONY_SHORE).add(BiomeKeys.MUSHROOM_FIELDS).add(BiomeKeys.ICE_SPIKES).add(BiomeKeys.WINDSWEPT_SAVANNA).add(BiomeKeys.DESERT).add(BiomeKeys.SAVANNA).add(BiomeKeys.SNOWY_PLAINS).add(BiomeKeys.PLAINS).add(BiomeKeys.SUNFLOWER_PLAINS).add(BiomeKeys.SWAMP).add(BiomeKeys.MANGROVE_SWAMP).add(BiomeKeys.SAVANNA_PLATEAU).add(BiomeKeys.DRIPSTONE_CAVES).add(BiomeKeys.LUSH_CAVES);
         this.getOrCreateTagBuilder(BiomeTags.MINESHAFT_MESA_HAS_STRUCTURE).addTag(BiomeTags.IS_BADLANDS);
+        this.getOrCreateTagBuilder(BiomeTags.MINESHAFT_BLOCKING).add(BiomeKeys.DEEP_DARK);
         this.getOrCreateTagBuilder(BiomeTags.OCEAN_MONUMENT_HAS_STRUCTURE).addTag(BiomeTags.IS_DEEP_OCEAN);
         this.getOrCreateTagBuilder(BiomeTags.REQUIRED_OCEAN_MONUMENT_SURROUNDING).addTag(BiomeTags.IS_OCEAN).addTag(BiomeTags.IS_RIVER);
         this.getOrCreateTagBuilder(BiomeTags.OCEAN_RUIN_COLD_HAS_STRUCTURE).add(BiomeKeys.FROZEN_OCEAN).add(BiomeKeys.COLD_OCEAN).add(BiomeKeys.OCEAN).add(BiomeKeys.DEEP_FROZEN_OCEAN).add(BiomeKeys.DEEP_COLD_OCEAN).add(BiomeKeys.DEEP_OCEAN);
