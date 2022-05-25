@@ -26,7 +26,7 @@ public class DemoScreen extends Screen {
 		int i = -16;
 		this.addDrawableChild(new ButtonWidget(this.width / 2 - 116, this.height / 2 + 62 + -16, 114, 20, Text.translatable("demo.help.buy"), button -> {
 			button.active = false;
-			Util.getOperatingSystem().open("http://www.minecraft.net/store?source=demo");
+			Util.getOperatingSystem().open("https://aka.ms/BuyMinecraftJava");
 		}));
 		this.addDrawableChild(new ButtonWidget(this.width / 2 + 2, this.height / 2 + 62 + -16, 114, 20, Text.translatable("demo.help.later"), button -> {
 			this.client.setScreen(null);

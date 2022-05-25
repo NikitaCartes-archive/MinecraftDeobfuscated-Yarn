@@ -20,6 +20,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class DaylightDetectorBlock extends BlockWithEntity {
 	public static final IntProperty POWER = Properties.POWER;
@@ -72,6 +73,7 @@ public class DaylightDetectorBlock extends BlockWithEntity {
 			} else {
 				BlockState blockState = state.cycle(INVERTED);
 				world.setBlockState(pos, blockState, Block.NO_REDRAW);
+				world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(player, blockState));
 				updateState(blockState, world, pos);
 				return ActionResult.CONSUME;
 			}

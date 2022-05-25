@@ -83,7 +83,7 @@ public class SubtitlesHud extends DrawableHelper implements SoundInstanceListene
 				matrices.push();
 				matrices.translate(
 					(double)((float)this.client.getWindow().getScaledWidth() - (float)l * 1.0F - 2.0F),
-					(double)((float)(this.client.getWindow().getScaledHeight() - 40) - (float)(i * (m + 1)) * 1.0F),
+					(double)((float)(this.client.getWindow().getScaledHeight() - 35) - (float)(i * (m + 1)) * 1.0F),
 					0.0
 				);
 				matrices.scale(1.0F, 1.0F, 1.0F);

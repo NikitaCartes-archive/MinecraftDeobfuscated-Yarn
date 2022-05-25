@@ -16,7 +16,7 @@ public class RuleStructureProcessor extends StructureProcessor {
 	public static final Codec<RuleStructureProcessor> CODEC = StructureProcessorRule.CODEC
 		.listOf()
 		.fieldOf("rules")
-		.<RuleStructureProcessor>xmap(RuleStructureProcessor::new, ruleStructureProcessor -> ruleStructureProcessor.rules)
+		.<RuleStructureProcessor>xmap(RuleStructureProcessor::new, processor -> processor.rules)
 		.codec();
 	private final ImmutableList<StructureProcessorRule> rules;
 

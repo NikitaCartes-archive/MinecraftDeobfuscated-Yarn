@@ -18,7 +18,7 @@ public class BlockIgnoreStructureProcessor extends StructureProcessor {
 		.xmap(AbstractBlock.AbstractBlockState::getBlock, Block::getDefaultState)
 		.listOf()
 		.fieldOf("blocks")
-		.<BlockIgnoreStructureProcessor>xmap(BlockIgnoreStructureProcessor::new, blockIgnoreStructureProcessor -> blockIgnoreStructureProcessor.blocks)
+		.<BlockIgnoreStructureProcessor>xmap(BlockIgnoreStructureProcessor::new, processor -> processor.blocks)
 		.codec();
 	public static final BlockIgnoreStructureProcessor IGNORE_STRUCTURE_BLOCKS = new BlockIgnoreStructureProcessor(ImmutableList.of(Blocks.STRUCTURE_BLOCK));
 	public static final BlockIgnoreStructureProcessor IGNORE_AIR = new BlockIgnoreStructureProcessor(ImmutableList.of(Blocks.AIR));

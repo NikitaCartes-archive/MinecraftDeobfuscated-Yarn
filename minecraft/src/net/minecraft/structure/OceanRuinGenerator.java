@@ -265,7 +265,7 @@ public class OceanRuinGenerator {
 			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
-			BlockPos pos
+			BlockPos pivot
 		) {
 			this.placementData
 				.clearProcessors()
@@ -281,7 +281,7 @@ public class OceanRuinGenerator {
 				)
 				.add(this.pos);
 			this.pos = new BlockPos(this.pos.getX(), this.method_14829(this.pos, world, blockPos), this.pos.getZ());
-			super.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pos);
+			super.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pivot);
 		}
 
 		private int method_14829(BlockPos start, BlockView world, BlockPos end) {

@@ -7,7 +7,7 @@ import net.minecraft.util.math.random.Random;
 public class BlockStateMatchRuleTest extends RuleTest {
 	public static final Codec<BlockStateMatchRuleTest> CODEC = BlockState.CODEC
 		.fieldOf("block_state")
-		.<BlockStateMatchRuleTest>xmap(BlockStateMatchRuleTest::new, blockStateMatchRuleTest -> blockStateMatchRuleTest.blockState)
+		.<BlockStateMatchRuleTest>xmap(BlockStateMatchRuleTest::new, ruleTest -> ruleTest.blockState)
 		.codec();
 	private final BlockState blockState;
 

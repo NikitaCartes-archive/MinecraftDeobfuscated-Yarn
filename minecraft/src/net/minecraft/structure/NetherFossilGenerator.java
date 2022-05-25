@@ -72,10 +72,10 @@ public class NetherFossilGenerator {
 			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
-			BlockPos pos
+			BlockPos pivot
 		) {
 			chunkBox.encompass(this.structure.calculateBoundingBox(this.placementData, this.pos));
-			super.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pos);
+			super.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pivot);
 		}
 	}
 }

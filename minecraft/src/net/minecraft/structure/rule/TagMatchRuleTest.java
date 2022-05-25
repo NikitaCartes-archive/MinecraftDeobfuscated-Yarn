@@ -10,7 +10,7 @@ import net.minecraft.util.registry.Registry;
 public class TagMatchRuleTest extends RuleTest {
 	public static final Codec<TagMatchRuleTest> CODEC = TagKey.unprefixedCodec(Registry.BLOCK_KEY)
 		.fieldOf("tag")
-		.<TagMatchRuleTest>xmap(TagMatchRuleTest::new, tagMatchRuleTest -> tagMatchRuleTest.tag)
+		.<TagMatchRuleTest>xmap(TagMatchRuleTest::new, ruleTest -> ruleTest.tag)
 		.codec();
 	private final TagKey<Block> tag;
 

@@ -90,7 +90,8 @@ public class FrogEntity extends AnimalEntity {
 		MemoryModuleType.NEAREST_ATTACKABLE,
 		MemoryModuleType.IS_IN_WATER,
 		MemoryModuleType.IS_PREGNANT,
-		MemoryModuleType.IS_PANICKING
+		MemoryModuleType.IS_PANICKING,
+		MemoryModuleType.UNREACHABLE_TONGUE_TARGETS
 	);
 	private static final TrackedData<FrogVariant> VARIANT = DataTracker.registerData(FrogEntity.class, TrackedDataHandlerRegistry.FROG_VARIANT);
 	private static final TrackedData<OptionalInt> TARGET = DataTracker.registerData(FrogEntity.class, TrackedDataHandlerRegistry.OPTIONAL_INT);

@@ -497,7 +497,7 @@ public class WorldEvents {
 	/**
 	 * Sculk... charges? Sculk is weird.
 	 * <br>Spawns sculk charge particles.
-	 * <br>Called by {@link net.minecraft.block.entity.SculkSpreadManager#tick(net.minecraft.world.World, net.minecraft.util.math.BlockPos,  net.minecraft.util.math.random.AbstractRandom, boolean) SculkSpreadManager#tick}
+	 * <br>Called by {@link net.minecraft.block.entity.SculkSpreadManager#tick(net.minecraft.world.WorldAccess, net.minecraft.util.math.BlockPos,  net.minecraft.util.math.random.Random, boolean) SculkSpreadManager#tick}
 	 */
 	public static final int SCULK_CHARGE = 3006;
 	/**

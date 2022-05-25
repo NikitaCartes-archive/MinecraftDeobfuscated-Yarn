@@ -19,9 +19,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class ListPoolElement extends StructurePoolElement {
 	public static final Codec<ListPoolElement> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(
-					StructurePoolElement.CODEC.listOf().fieldOf("elements").forGetter(listPoolElement -> listPoolElement.elements), projectionGetter()
-				)
+		instance -> instance.group(StructurePoolElement.CODEC.listOf().fieldOf("elements").forGetter(pool -> pool.elements), projectionGetter())
 				.apply(instance, ListPoolElement::new)
 	);
 	private final List<StructurePoolElement> elements;
@@ -73,14 +71,14 @@ public class ListPoolElement extends StructurePoolElement {
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
 		BlockPos pos,
-		BlockPos blockPos,
+		BlockPos pivot,
 		BlockRotation rotation,
 		BlockBox box,
 		Random random,
 		boolean keepJigsaws
 	) {
 		for(StructurePoolElement structurePoolElement : this.elements) {
-			if (!structurePoolElement.generate(structureManager, world, structureAccessor, chunkGenerator, pos, blockPos, rotation, box, random, keepJigsaws)) {
+			if (!structurePoolElement.generate(structureManager, world, structureAccessor, chunkGenerator, pos, pivot, rotation, box, random, keepJigsaws)) {
 				return false;
 			}
 		}

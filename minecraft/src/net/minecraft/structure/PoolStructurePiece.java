@@ -87,9 +87,9 @@ public class PoolStructurePiece extends StructurePiece {
 		Random random,
 		BlockBox chunkBox,
 		ChunkPos chunkPos,
-		BlockPos pos
+		BlockPos pivot
 	) {
-		this.generate(world, structureAccessor, chunkGenerator, random, chunkBox, pos, false);
+		this.generate(world, structureAccessor, chunkGenerator, random, chunkBox, pivot, false);
 	}
 
 	public void generate(
@@ -98,10 +98,10 @@ public class PoolStructurePiece extends StructurePiece {
 		ChunkGenerator chunkGenerator,
 		Random random,
 		BlockBox boundingBox,
-		BlockPos pos,
+		BlockPos pivot,
 		boolean keepJigsaws
 	) {
-		this.poolElement.generate(this.structureManager, world, structureAccessor, chunkGenerator, this.pos, pos, this.rotation, boundingBox, random, keepJigsaws);
+		this.poolElement.generate(this.structureManager, world, structureAccessor, chunkGenerator, this.pos, pivot, this.rotation, boundingBox, random, keepJigsaws);
 	}
 
 	@Override

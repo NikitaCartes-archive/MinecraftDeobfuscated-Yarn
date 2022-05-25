@@ -65,7 +65,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 				.and(
 					instance.group(
 						RegistryOps.createRegistryCodec(Registry.NOISE_KEY).forGetter(generator -> generator.noiseRegistry),
-						BiomeSource.CODEC.fieldOf("biome_source").forGetter(generator -> generator.populationSource),
+						BiomeSource.CODEC.fieldOf("biome_source").forGetter(generator -> generator.biomeSource),
 						ChunkGeneratorSettings.REGISTRY_CODEC.fieldOf("settings").forGetter(generator -> generator.settings)
 					)
 				)
@@ -107,7 +107,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 
 	private void populateBiomes(Blender blender, NoiseConfig noiseConfig, StructureAccessor structureAccessor, Chunk chunk) {
 		ChunkNoiseSampler chunkNoiseSampler = chunk.getOrCreateChunkNoiseSampler(chunkx -> this.method_41537(chunkx, structureAccessor, blender, noiseConfig));
-		BiomeSupplier biomeSupplier = BelowZeroRetrogen.getBiomeSupplier(blender.getBiomeSupplier(this.populationSource), chunk);
+		BiomeSupplier biomeSupplier = BelowZeroRetrogen.getBiomeSupplier(blender.getBiomeSupplier(this.biomeSource), chunk);
 		chunk.populateBiomes(
 			biomeSupplier, chunkNoiseSampler.createMultiNoiseSampler(noiseConfig.getNoiseRouter(), ((ChunkGeneratorSettings)this.settings.value()).spawnTarget())
 		);
@@ -297,7 +297,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		Chunk chunk,
 		GenerationStep.Carver carverStep
 	) {
-		BiomeAccess biomeAccess = world.withSource((ix, jx, kx) -> this.populationSource.getBiome(ix, jx, kx, noiseConfig.getMultiNoiseSampler()));
+		BiomeAccess biomeAccess = world.withSource((ix, jx, kx) -> this.biomeSource.getBiome(ix, jx, kx, noiseConfig.getMultiNoiseSampler()));
 		ChunkRandom chunkRandom = new ChunkRandom(new CheckedRandom(RandomSeed.getSeed()));
 		int i = 8;
 		ChunkPos chunkPos = chunk.getPos();
@@ -320,8 +320,8 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 				ChunkPos chunkPos2 = new ChunkPos(chunkPos.x + j, chunkPos.z + k);
 				Chunk chunk2 = chunkRegion.getChunk(chunkPos2.x, chunkPos2.z);
 				GenerationSettings generationSettings = chunk2.getOrCreateGenerationSettings(
-					() -> this.method_44216(
-							this.populationSource
+					() -> this.getGenerationSettings(
+							this.biomeSource
 								.getBiome(BiomeCoords.fromBlock(chunkPos2.getStartX()), 0, BiomeCoords.fromBlock(chunkPos2.getStartZ()), noiseConfig.getMultiNoiseSampler())
 						)
 				);

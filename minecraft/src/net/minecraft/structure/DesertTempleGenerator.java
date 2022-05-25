@@ -48,7 +48,7 @@ public class DesertTempleGenerator extends ShiftableStructurePiece {
 		Random random,
 		BlockBox chunkBox,
 		ChunkPos chunkPos,
-		BlockPos pos
+		BlockPos pivot
 	) {
 		if (this.adjustToMinHeight(world, -random.nextInt(3))) {
 			this.fillWithOutline(

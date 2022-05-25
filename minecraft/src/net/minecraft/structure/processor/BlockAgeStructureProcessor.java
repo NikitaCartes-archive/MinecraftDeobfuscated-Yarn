@@ -18,7 +18,7 @@ import net.minecraft.world.WorldView;
 public class BlockAgeStructureProcessor extends StructureProcessor {
 	public static final Codec<BlockAgeStructureProcessor> CODEC = Codec.FLOAT
 		.fieldOf("mossiness")
-		.<BlockAgeStructureProcessor>xmap(BlockAgeStructureProcessor::new, blockAgeStructureProcessor -> blockAgeStructureProcessor.mossiness)
+		.<BlockAgeStructureProcessor>xmap(BlockAgeStructureProcessor::new, processor -> processor.mossiness)
 		.codec();
 	private static final float field_31681 = 0.5F;
 	private static final float field_31682 = 0.5F;
