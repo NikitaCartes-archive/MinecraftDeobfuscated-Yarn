@@ -575,6 +575,9 @@ implements VibrationListener.Callback {
 
     @Override
     public void accept(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity, @Nullable Entity sourceEntity, float distance) {
+        if (this.isDead()) {
+            return;
+        }
         this.brain.remember(MemoryModuleType.VIBRATION_COOLDOWN, Unit.INSTANCE, 40L);
         world.sendEntityStatus(this, EntityStatuses.EARS_TWITCH);
         this.playSound(SoundEvents.ENTITY_WARDEN_TENDRIL_CLICKS, 5.0f, this.getSoundPitch());

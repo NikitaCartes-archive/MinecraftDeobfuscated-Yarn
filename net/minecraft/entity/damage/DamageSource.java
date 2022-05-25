@@ -47,6 +47,7 @@ public class DamageSource {
     private boolean bypassesArmor;
     private boolean outOfWorld;
     private boolean unblockable;
+    private boolean bypassesProtection;
     private float exhaustion = 0.1f;
     private boolean fire;
     private boolean projectile;
@@ -127,7 +128,7 @@ public class DamageSource {
     }
 
     public static DamageSource sonicBoom(Entity attacker) {
-        return new EntityDamageSource("sonic_boom", attacker).setBypassesArmor().setUsesMagic();
+        return new EntityDamageSource("sonic_boom", attacker).setBypassesArmor().setBypassesProtection().setUsesMagic();
     }
 
     public static DamageSource badRespawnPoint() {
@@ -176,6 +177,10 @@ public class DamageSource {
         return this.unblockable;
     }
 
+    public boolean bypassesProtection() {
+        return this.bypassesProtection;
+    }
+
     protected DamageSource(String name) {
         this.name = name;
     }
@@ -209,6 +214,11 @@ public class DamageSource {
     protected DamageSource setUnblockable() {
         this.unblockable = true;
         this.exhaustion = 0.0f;
+        return this;
+    }
+
+    protected DamageSource setBypassesProtection() {
+        this.bypassesProtection = true;
         return this;
     }
 

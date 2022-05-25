@@ -167,38 +167,34 @@ public class BlockModelRenderer {
         switch (face) {
             case DOWN: {
                 flags.set(1, f >= 1.0E-4f || h >= 1.0E-4f || i <= 0.9999f || k <= 0.9999f);
-                flags.set(0, g == j && (g < 1.0E-4f || BlockModelRenderer.isOpaqueFullCube(world, state, pos)));
+                flags.set(0, g == j && (g < 1.0E-4f || state.isFullCube(world, pos)));
                 break;
             }
             case UP: {
                 flags.set(1, f >= 1.0E-4f || h >= 1.0E-4f || i <= 0.9999f || k <= 0.9999f);
-                flags.set(0, g == j && (j > 0.9999f || BlockModelRenderer.isOpaqueFullCube(world, state, pos)));
+                flags.set(0, g == j && (j > 0.9999f || state.isFullCube(world, pos)));
                 break;
             }
             case NORTH: {
                 flags.set(1, f >= 1.0E-4f || g >= 1.0E-4f || i <= 0.9999f || j <= 0.9999f);
-                flags.set(0, h == k && (h < 1.0E-4f || BlockModelRenderer.isOpaqueFullCube(world, state, pos)));
+                flags.set(0, h == k && (h < 1.0E-4f || state.isFullCube(world, pos)));
                 break;
             }
             case SOUTH: {
                 flags.set(1, f >= 1.0E-4f || g >= 1.0E-4f || i <= 0.9999f || j <= 0.9999f);
-                flags.set(0, h == k && (k > 0.9999f || BlockModelRenderer.isOpaqueFullCube(world, state, pos)));
+                flags.set(0, h == k && (k > 0.9999f || state.isFullCube(world, pos)));
                 break;
             }
             case WEST: {
                 flags.set(1, g >= 1.0E-4f || h >= 1.0E-4f || j <= 0.9999f || k <= 0.9999f);
-                flags.set(0, f == i && (f < 1.0E-4f || BlockModelRenderer.isOpaqueFullCube(world, state, pos)));
+                flags.set(0, f == i && (f < 1.0E-4f || state.isFullCube(world, pos)));
                 break;
             }
             case EAST: {
                 flags.set(1, g >= 1.0E-4f || h >= 1.0E-4f || j <= 0.9999f || k <= 0.9999f);
-                flags.set(0, f == i && (i > 0.9999f || BlockModelRenderer.isOpaqueFullCube(world, state, pos)));
+                flags.set(0, f == i && (i > 0.9999f || state.isFullCube(world, pos)));
             }
         }
-    }
-
-    private static boolean isOpaqueFullCube(BlockRenderView world, BlockState state, BlockPos pos) {
-        return state.isOpaque() && state.isFullCube(world, pos);
     }
 
     private void renderQuadsFlat(BlockRenderView world, BlockState state, BlockPos pos, int light, int overlay, boolean useWorldLight, MatrixStack matrices, VertexConsumer vertexConsumer, List<BakedQuad> quads, BitSet flags) {

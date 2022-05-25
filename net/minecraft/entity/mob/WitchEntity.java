@@ -177,8 +177,8 @@ implements RangedAttackMob {
     }
 
     @Override
-    protected float applyEnchantmentsToDamage(DamageSource source, float amount) {
-        amount = super.applyEnchantmentsToDamage(source, amount);
+    protected float modifyAppliedDamage(DamageSource source, float amount) {
+        amount = super.modifyAppliedDamage(source, amount);
         if (source.getAttacker() == this) {
             amount = 0.0f;
         }

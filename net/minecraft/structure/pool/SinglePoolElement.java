@@ -48,20 +48,20 @@ extends StructurePoolElement {
     protected final Either<Identifier, Structure> location;
     protected final RegistryEntry<StructureProcessorList> processors;
 
-    private static <T> DataResult<T> encodeLocation(Either<Identifier, Structure> either, DynamicOps<T> dynamicOps, T object) {
-        Optional<Identifier> optional = either.left();
+    private static <T> DataResult<T> encodeLocation(Either<Identifier, Structure> location, DynamicOps<T> ops, T prefix) {
+        Optional<Identifier> optional = location.left();
         if (!optional.isPresent()) {
             return DataResult.error("Can not serialize a runtime pool element");
         }
-        return Identifier.CODEC.encode(optional.get(), dynamicOps, object);
+        return Identifier.CODEC.encode(optional.get(), ops, prefix);
     }
 
     protected static <E extends SinglePoolElement> RecordCodecBuilder<E, RegistryEntry<StructureProcessorList>> processorsGetter() {
-        return ((MapCodec)StructureProcessorType.REGISTRY_CODEC.fieldOf("processors")).forGetter(singlePoolElement -> singlePoolElement.processors);
+        return ((MapCodec)StructureProcessorType.REGISTRY_CODEC.fieldOf("processors")).forGetter(pool -> pool.processors);
     }
 
     protected static <E extends SinglePoolElement> RecordCodecBuilder<E, Either<Identifier, Structure>> locationGetter() {
-        return ((MapCodec)LOCATION_CODEC.fieldOf("location")).forGetter(singlePoolElement -> singlePoolElement.location);
+        return ((MapCodec)LOCATION_CODEC.fieldOf("location")).forGetter(pool -> pool.location);
     }
 
     protected SinglePoolElement(Either<Identifier, Structure> location, RegistryEntry<StructureProcessorList> processors, StructurePool.Projection projection) {
@@ -111,11 +111,11 @@ extends StructurePoolElement {
     }
 
     @Override
-    public boolean generate(StructureManager structureManager, StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, BlockPos pos, BlockPos blockPos, BlockRotation rotation, BlockBox box, Random random, boolean keepJigsaws) {
+    public boolean generate(StructureManager structureManager, StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, BlockPos pos, BlockPos pivot, BlockRotation rotation, BlockBox box, Random random, boolean keepJigsaws) {
         StructurePlacementData structurePlacementData;
         Structure structure = this.getStructure(structureManager);
-        if (structure.place(world, pos, blockPos, structurePlacementData = this.createPlacementData(rotation, box, keepJigsaws), random, 18)) {
-            List<Structure.StructureBlockInfo> list = Structure.process(world, pos, blockPos, structurePlacementData, this.getDataStructureBlocks(structureManager, pos, rotation, false));
+        if (structure.place(world, pos, pivot, structurePlacementData = this.createPlacementData(rotation, box, keepJigsaws), random, 18)) {
+            List<Structure.StructureBlockInfo> list = Structure.process(world, pos, pivot, structurePlacementData, this.getDataStructureBlocks(structureManager, pos, rotation, false));
             for (Structure.StructureBlockInfo structureBlockInfo : list) {
                 this.method_16756(world, structureBlockInfo, pos, rotation, random, box);
             }

@@ -103,8 +103,8 @@ public abstract class StructurePiece {
         return this.chainLength;
     }
 
-    public void method_41620(int i) {
-        this.chainLength = i;
+    public void setChainLength(int chainLength) {
+        this.chainLength = chainLength;
     }
 
     public boolean intersectsChunk(ChunkPos pos, int offset) {

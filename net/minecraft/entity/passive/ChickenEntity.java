@@ -36,6 +36,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class ChickenEntity
 extends AnimalEntity {
@@ -94,6 +95,7 @@ extends AnimalEntity {
         if (!this.world.isClient && this.isAlive() && !this.isBaby() && !this.hasJockey() && --this.eggLayTime <= 0) {
             this.playSound(SoundEvents.ENTITY_CHICKEN_EGG, 1.0f, (this.random.nextFloat() - this.random.nextFloat()) * 0.2f + 1.0f);
             this.dropItem(Items.EGG);
+            this.emitGameEvent(GameEvent.ENTITY_PLACE);
             this.eggLayTime = this.random.nextInt(6000) + 6000;
         }
     }

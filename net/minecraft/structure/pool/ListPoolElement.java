@@ -27,7 +27,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class ListPoolElement
 extends StructurePoolElement {
-    public static final Codec<ListPoolElement> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)StructurePoolElement.CODEC.listOf().fieldOf("elements")).forGetter(listPoolElement -> listPoolElement.elements), ListPoolElement.projectionGetter()).apply((Applicative<ListPoolElement, ?>)instance, ListPoolElement::new));
+    public static final Codec<ListPoolElement> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)StructurePoolElement.CODEC.listOf().fieldOf("elements")).forGetter(pool -> pool.elements), ListPoolElement.projectionGetter()).apply((Applicative<ListPoolElement, ?>)instance, ListPoolElement::new));
     private final List<StructurePoolElement> elements;
 
     public ListPoolElement(List<StructurePoolElement> elements, StructurePool.Projection projection) {
@@ -65,9 +65,9 @@ extends StructurePoolElement {
     }
 
     @Override
-    public boolean generate(StructureManager structureManager, StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, BlockPos pos, BlockPos blockPos, BlockRotation rotation, BlockBox box, Random random, boolean keepJigsaws) {
+    public boolean generate(StructureManager structureManager, StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, BlockPos pos, BlockPos pivot, BlockRotation rotation, BlockBox box, Random random, boolean keepJigsaws) {
         for (StructurePoolElement structurePoolElement : this.elements) {
-            if (structurePoolElement.generate(structureManager, world, structureAccessor, chunkGenerator, pos, blockPos, rotation, box, random, keepJigsaws)) continue;
+            if (structurePoolElement.generate(structureManager, world, structureAccessor, chunkGenerator, pos, pivot, rotation, box, random, keepJigsaws)) continue;
             return false;
         }
         return true;

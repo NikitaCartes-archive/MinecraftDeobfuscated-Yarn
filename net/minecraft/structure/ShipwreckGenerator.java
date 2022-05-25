@@ -74,7 +74,7 @@ public class ShipwreckGenerator {
         }
 
         @Override
-        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
             int i = world.getTopY();
             int j = 0;
             Vec3i vec3i = this.structure.getSize();
@@ -93,7 +93,7 @@ public class ShipwreckGenerator {
             }
             int m = this.grounded ? i - vec3i.getY() / 2 - random.nextInt(3) : j;
             this.pos = new BlockPos(this.pos.getX(), m, this.pos.getZ());
-            super.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pos);
+            super.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pivot);
         }
     }
 }

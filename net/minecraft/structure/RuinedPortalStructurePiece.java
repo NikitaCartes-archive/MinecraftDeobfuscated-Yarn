@@ -116,13 +116,13 @@ extends SimpleStructurePiece {
     }
 
     @Override
-    public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos2) {
+    public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
         BlockBox blockBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
         if (!chunkBox.contains(blockBox.getCenter())) {
             return;
         }
         chunkBox.encompass(blockBox);
-        super.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pos2);
+        super.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pivot);
         this.placeNetherrackBase(random, world);
         this.updateNetherracksInBound(random, world);
         if (this.properties.vines || this.properties.overgrown) {

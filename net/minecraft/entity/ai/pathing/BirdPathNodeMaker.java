@@ -3,7 +3,6 @@
  */
 package net.minecraft.entity.ai.pathing;
 
-import com.google.common.collect.ImmutableSet;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import java.util.EnumSet;
@@ -56,9 +55,8 @@ extends LandPathNodeMaker {
             i = MathHelper.floor(this.entity.getY() + 0.5);
         }
         if (this.entity.getPathfindingPenalty(pathNodeType = this.getNodeType((blockPos = this.entity.getBlockPos()).getX(), i, blockPos.getZ())) < 0.0f) {
-            ImmutableSet<BlockPos> set = ImmutableSet.of(new BlockPos(this.entity.getBoundingBox().minX, (double)i, this.entity.getBoundingBox().minZ), new BlockPos(this.entity.getBoundingBox().minX, (double)i, this.entity.getBoundingBox().maxZ), new BlockPos(this.entity.getBoundingBox().maxX, (double)i, this.entity.getBoundingBox().minZ), new BlockPos(this.entity.getBoundingBox().maxX, (double)i, this.entity.getBoundingBox().maxZ));
-            for (BlockPos blockPos2 : set) {
-                PathNodeType pathNodeType2 = this.getNodeType(blockPos.getX(), i, blockPos.getZ());
+            for (BlockPos blockPos2 : this.entity.getPotentialEscapePositions()) {
+                PathNodeType pathNodeType2 = this.getNodeType(blockPos2.getX(), blockPos2.getY(), blockPos2.getZ());
                 if (!(this.entity.getPathfindingPenalty(pathNodeType2) >= 0.0f)) continue;
                 return super.getStart(blockPos2);
             }
@@ -247,7 +245,9 @@ extends LandPathNodeMaker {
             } else if (pathNodeType2 == PathNodeType.COCOA) {
                 pathNodeType = PathNodeType.COCOA;
             } else if (pathNodeType2 == PathNodeType.FENCE) {
-                pathNodeType = PathNodeType.FENCE;
+                if (!mutable.equals(this.entity.getBlockPos())) {
+                    pathNodeType = PathNodeType.FENCE;
+                }
             } else {
                 PathNodeType pathNodeType3 = pathNodeType = pathNodeType2 == PathNodeType.WALKABLE || pathNodeType2 == PathNodeType.OPEN || pathNodeType2 == PathNodeType.WATER ? PathNodeType.OPEN : PathNodeType.WALKABLE;
             }

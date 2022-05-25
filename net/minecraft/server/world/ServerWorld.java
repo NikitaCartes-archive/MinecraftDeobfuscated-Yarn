@@ -219,7 +219,7 @@ implements StructureWorldAccess {
         EntityChunkDataAccess chunkDataAccess = new EntityChunkDataAccess(this, session.getWorldDirectory(worldKey).resolve("entities"), dataFixer, bl, server);
         this.entityManager = new ServerEntityManager<Entity>(Entity.class, new ServerEntityHandler(), chunkDataAccess);
         this.chunkManager = new ServerChunkManager(this, session, dataFixer, server.getStructureManager(), workerExecutor, chunkGenerator, server.getPlayerManager().getViewDistance(), server.getPlayerManager().getSimulationDistance(), bl, worldGenerationProgressListener, this.entityManager::updateTrackingStatus, () -> server.getOverworld().getPersistentStateManager());
-        chunkGenerator.method_41058(this.chunkManager.getNoiseConfig());
+        chunkGenerator.computeStructurePlacementsIfNeeded(this.chunkManager.getNoiseConfig());
         this.portalForcer = new PortalForcer(this);
         this.calculateAmbientDarkness();
         this.initWeatherGradients();
@@ -1137,14 +1137,15 @@ implements StructureWorldAccess {
      * 
      * @return the position of the structure, or {@code null} if no structure could be found within the given search radius
      * 
-     * @see ChunkGenerator#locateStructure(ServerWorld, RegistryEntryList, BlockPos, int, boolean)
+     * @see net.minecraft.world.gen.chunk.ChunkGenerator#locateStructure(ServerWorld, RegistryEntryList, BlockPos, int, boolean)
      * 
      * @param pos the position to start the searching at
-     * @param skipExistingChunks whether only structures that are not referenced by generated chunks (chunks past the {@code STRUCTURE_STARTS} stage) are returned, excluding strongholds
+     * @param skipReferencedStructures whether to exclude structures that were previously located (has positive
+     * {@link net.minecraft.structure.StructureStart#references})
      * @param radius the search radius in chunks around the chunk the given block position is in; a radius of 0 will only search in the given chunk
      */
     @Nullable
-    public BlockPos locateStructure(TagKey<StructureType> structureTag, BlockPos pos, int radius, boolean skipExistingChunks) {
+    public BlockPos locateStructure(TagKey<StructureType> structureTag, BlockPos pos, int radius, boolean skipReferencedStructures) {
         if (!this.server.getSaveProperties().getGeneratorOptions().shouldGenerateStructures()) {
             return null;
         }
@@ -1152,7 +1153,7 @@ implements StructureWorldAccess {
         if (optional.isEmpty()) {
             return null;
         }
-        Pair<BlockPos, RegistryEntry<StructureType>> pair = this.getChunkManager().getChunkGenerator().locateStructure(this, (RegistryEntryList<StructureType>)optional.get(), pos, radius, skipExistingChunks);
+        Pair<BlockPos, RegistryEntry<StructureType>> pair = this.getChunkManager().getChunkGenerator().locateStructure(this, (RegistryEntryList<StructureType>)optional.get(), pos, radius, skipReferencedStructures);
         return pair != null ? pair.getFirst() : null;
     }
 

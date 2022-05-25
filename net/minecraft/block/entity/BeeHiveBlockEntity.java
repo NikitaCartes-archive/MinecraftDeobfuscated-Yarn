@@ -31,6 +31,7 @@ import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public class BeehiveBlockEntity
@@ -140,6 +141,7 @@ extends BlockEntity {
             }
             BlockPos blockPos = this.getPos();
             this.world.playSound(null, (double)blockPos.getX(), (double)blockPos.getY(), blockPos.getZ(), SoundEvents.BLOCK_BEEHIVE_ENTER, SoundCategory.BLOCKS, 1.0f, 1.0f);
+            this.world.emitGameEvent(GameEvent.BLOCK_CHANGE, blockPos, GameEvent.Emitter.of(entity, this.getCachedState()));
         }
         entity.discard();
         super.markDirty();
@@ -198,6 +200,7 @@ extends BlockEntity {
                 entity2.refreshPositionAndAngles(e, g, h, entity2.getYaw(), entity2.getPitch());
             }
             world.playSound(null, pos, SoundEvents.BLOCK_BEEHIVE_EXIT, SoundCategory.BLOCKS, 1.0f, 1.0f);
+            world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(entity2, world.getBlockState(pos)));
             return world.spawnEntity(entity2);
         }
         return false;

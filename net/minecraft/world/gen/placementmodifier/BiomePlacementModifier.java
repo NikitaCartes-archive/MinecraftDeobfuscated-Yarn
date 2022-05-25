@@ -29,7 +29,7 @@ extends AbstractConditionalPlacementModifier {
     protected boolean shouldPlace(FeaturePlacementContext context, Random random, BlockPos pos) {
         PlacedFeature placedFeature = context.getPlacedFeature().orElseThrow(() -> new IllegalStateException("Tried to biome check an unregistered feature, or a feature that should not restrict the biome"));
         RegistryEntry<Biome> registryEntry = context.getWorld().getBiome(pos);
-        return context.getChunkGenerator().method_44216(registryEntry).isFeatureAllowed(placedFeature);
+        return context.getChunkGenerator().getGenerationSettings(registryEntry).isFeatureAllowed(placedFeature);
     }
 
     @Override

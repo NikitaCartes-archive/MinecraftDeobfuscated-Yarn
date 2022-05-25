@@ -35,7 +35,7 @@ import net.minecraft.world.gen.feature.PlacedFeature;
 
 public class FeaturePoolElement
 extends StructurePoolElement {
-    public static final Codec<FeaturePoolElement> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)PlacedFeature.REGISTRY_CODEC.fieldOf("feature")).forGetter(featurePoolElement -> featurePoolElement.feature), FeaturePoolElement.projectionGetter()).apply((Applicative<FeaturePoolElement, ?>)instance, FeaturePoolElement::new));
+    public static final Codec<FeaturePoolElement> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)PlacedFeature.REGISTRY_CODEC.fieldOf("feature")).forGetter(pool -> pool.feature), FeaturePoolElement.projectionGetter()).apply((Applicative<FeaturePoolElement, ?>)instance, FeaturePoolElement::new));
     private final RegistryEntry<PlacedFeature> feature;
     private final NbtCompound nbt;
 
@@ -74,7 +74,7 @@ extends StructurePoolElement {
     }
 
     @Override
-    public boolean generate(StructureManager structureManager, StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, BlockPos pos, BlockPos blockPos, BlockRotation rotation, BlockBox box, Random random, boolean keepJigsaws) {
+    public boolean generate(StructureManager structureManager, StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, BlockPos pos, BlockPos pivot, BlockRotation rotation, BlockBox box, Random random, boolean keepJigsaws) {
         return this.feature.value().generateUnregistered(world, chunkGenerator, random, pos);
     }
 

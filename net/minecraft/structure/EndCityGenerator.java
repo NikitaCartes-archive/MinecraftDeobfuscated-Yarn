@@ -110,7 +110,7 @@ public class EndCityGenerator {
             BlockRotation blockRotation = root.method_41626().getRotation();
             int i = random.nextInt(4) + 1;
             Piece piece = EndCityGenerator.addPiece(pieces, EndCityGenerator.createPiece(manager, root, new BlockPos(0, 0, -4), "bridge_piece", blockRotation, true));
-            piece.method_41620(-1);
+            piece.setChainLength(-1);
             int j = 0;
             for (int k = 0; k < i; ++k) {
                 if (random.nextBoolean()) {
@@ -130,7 +130,7 @@ public class EndCityGenerator {
                 this.shipGenerated = true;
             }
             piece = EndCityGenerator.addPiece(pieces, EndCityGenerator.createPiece(manager, piece, new BlockPos(4, j, 0), "bridge_end", blockRotation.rotate(BlockRotation.CLOCKWISE_180), true));
-            piece.method_41620(-1);
+            piece.setChainLength(-1);
             return true;
         }
     };
@@ -192,7 +192,7 @@ public class EndCityGenerator {
             boolean bl = false;
             int i = random.nextInt();
             for (StructurePiece structurePiece : list) {
-                structurePiece.method_41620(i);
+                structurePiece.setChainLength(i);
                 StructurePiece structurePiece2 = StructurePiece.firstIntersecting(pieces, structurePiece.getBoundingBox());
                 if (structurePiece2 == null || structurePiece2.getChainLength() == parent.getChainLength()) continue;
                 bl = true;

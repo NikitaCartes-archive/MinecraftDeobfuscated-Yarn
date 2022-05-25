@@ -266,7 +266,7 @@ public class TestCommand {
     private static int executeExport(ServerCommandSource source, String structure) {
         Path path = Paths.get(StructureTestUtil.testStructuresDirectoryName, new String[0]);
         Identifier identifier = new Identifier("minecraft", structure);
-        Path path2 = source.getWorld().getStructureManager().method_44228(identifier, ".nbt");
+        Path path2 = source.getWorld().getStructureManager().getStructurePath(identifier, ".nbt");
         Path path3 = NbtProvider.convertNbtToSnbt(DataWriter.UNCACHED, path2, structure, path);
         if (path3 == null) {
             TestCommand.sendMessage(source, "Failed to export " + path2);
@@ -286,7 +286,7 @@ public class TestCommand {
     private static int executeImport(ServerCommandSource source, String structure) {
         Path path = Paths.get(StructureTestUtil.testStructuresDirectoryName, structure + ".snbt");
         Identifier identifier = new Identifier("minecraft", structure);
-        Path path2 = source.getWorld().getStructureManager().method_44228(identifier, ".nbt");
+        Path path2 = source.getWorld().getStructureManager().getStructurePath(identifier, ".nbt");
         try {
             BufferedReader bufferedReader = Files.newBufferedReader(path);
             String string = IOUtils.toString(bufferedReader);

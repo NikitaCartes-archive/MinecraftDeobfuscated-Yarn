@@ -379,7 +379,7 @@ public class ChunkSerializer {
                 LOGGER.error("Unknown structure start: {}", (Object)identifier);
                 continue;
             }
-            StructureStart structureStart = StructureStart.method_41621(context, nbtCompound.getCompound(string), worldSeed);
+            StructureStart structureStart = StructureStart.fromNbt(context, nbtCompound.getCompound(string), worldSeed);
             if (structureStart == null) continue;
             map.put(structureType, structureStart);
         }

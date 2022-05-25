@@ -57,9 +57,9 @@ public class NetherFossilGenerator {
         }
 
         @Override
-        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
             chunkBox.encompass(this.structure.calculateBoundingBox(this.placementData, this.pos));
-            super.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pos);
+            super.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pivot);
         }
     }
 }

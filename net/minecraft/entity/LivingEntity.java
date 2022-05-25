@@ -1496,7 +1496,17 @@ extends Entity {
         return amount;
     }
 
-    protected float applyEnchantmentsToDamage(DamageSource source, float amount) {
+    /**
+     * {@return the modified damage value for the applied {@code damage}}
+     * 
+     * @apiNote Subclasses should override this to make the entity take reduced damage.
+     * 
+     * @implNote This applies various {@linkplain net.minecraft.enchantment.ProtectionEnchantment
+     * protection enchantments} and the resistance effect. {@link
+     * net.minecraft.entity.mob.WitchEntity} uses this to negate their own damage and reduce the
+     * applied status effect damage.
+     */
+    protected float modifyAppliedDamage(DamageSource source, float amount) {
         int i;
         int j;
         float f;
@@ -1515,6 +1525,9 @@ extends Entity {
         if (amount <= 0.0f) {
             return 0.0f;
         }
+        if (source.bypassesProtection()) {
+            return amount;
+        }
         i = EnchantmentHelper.getProtectionAmount(this.getArmorItems(), source);
         if (i > 0) {
             amount = DamageUtil.getInflictedDamage(amount, i);
@@ -1527,7 +1540,7 @@ extends Entity {
             return;
         }
         amount = this.applyArmorToDamage(source, amount);
-        float f = amount = this.applyEnchantmentsToDamage(source, amount);
+        float f = amount = this.modifyAppliedDamage(source, amount);
         amount = Math.max(amount - this.getAbsorptionAmount(), 0.0f);
         this.setAbsorptionAmount(this.getAbsorptionAmount() - (f - amount));
         float g = f - amount;

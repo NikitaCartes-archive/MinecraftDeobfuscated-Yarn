@@ -4,6 +4,8 @@
 package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
@@ -13,6 +15,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.entity.ai.brain.task.LookTargetUtil;
 import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.passive.FrogEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -26,6 +29,8 @@ extends Task<FrogEntity> {
     public static final int EAT_DURATION = 10;
     private static final float MAX_DISTANCE = 1.75f;
     private static final float VELOCITY_MULTIPLIER = 0.75f;
+    public static final int UNREACHABLE_TONGUE_TARGETS_START_TIME = 100;
+    public static final int MAX_UNREACHABLE_TONGUE_TARGETS = 5;
     private int eatTick;
     private int moveToTargetTick;
     private final SoundEvent tongueSound;
@@ -34,19 +39,25 @@ extends Task<FrogEntity> {
     private Phase phase = Phase.DONE;
 
     public FrogEatEntityTask(SoundEvent tongueSound, SoundEvent eatSound) {
-        super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_PRESENT), 100);
+        super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.IS_PANICKING, MemoryModuleState.VALUE_ABSENT), 100);
         this.tongueSound = tongueSound;
         this.eatSound = eatSound;
     }
 
     @Override
     protected boolean shouldRun(ServerWorld serverWorld, FrogEntity frogEntity) {
-        return super.shouldRun(serverWorld, frogEntity) && FrogEntity.isValidFrogFood(frogEntity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).get()) && frogEntity.getPose() != EntityPose.CROAKING;
+        LivingEntity livingEntity = frogEntity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).get();
+        boolean bl = this.isTargetReachable(frogEntity, livingEntity);
+        if (!bl) {
+            frogEntity.getBrain().forget(MemoryModuleType.ATTACK_TARGET);
+            this.markTargetAsUnreachable(frogEntity, livingEntity);
+        }
+        return bl && frogEntity.getPose() != EntityPose.CROAKING && FrogEntity.isValidFrogFood(livingEntity);
     }
 
     @Override
     protected boolean shouldKeepRunning(ServerWorld serverWorld, FrogEntity frogEntity, long l) {
-        return frogEntity.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET) && this.phase != Phase.DONE;
+        return frogEntity.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET) && this.phase != Phase.DONE && !frogEntity.getBrain().hasMemoryModule(MemoryModuleType.IS_PANICKING);
     }
 
     @Override
@@ -61,6 +72,8 @@ extends Task<FrogEntity> {
 
     @Override
     protected void finishRunning(ServerWorld serverWorld, FrogEntity frogEntity, long l) {
+        frogEntity.getBrain().forget(MemoryModuleType.ATTACK_TARGET);
+        frogEntity.clearFrogTarget();
         frogEntity.setPose(EntityPose.STANDING);
     }
 
@@ -74,7 +87,6 @@ extends Task<FrogEntity> {
                 entity.remove(Entity.RemovalReason.KILLED);
             }
         }
-        frog.clearFrogTarget();
     }
 
     @Override
@@ -115,6 +127,24 @@ extends Task<FrogEntity> {
                 break;
             }
         }
+    }
+
+    private boolean isTargetReachable(FrogEntity entity, LivingEntity target) {
+        Path path = entity.getNavigation().findPathTo(target, 0);
+        return path.getManhattanDistanceFromTarget() < 1.75f;
+    }
+
+    private void markTargetAsUnreachable(FrogEntity entity, LivingEntity target) {
+        boolean bl;
+        List list = entity.getBrain().getOptionalMemory(MemoryModuleType.UNREACHABLE_TONGUE_TARGETS).orElseGet(ArrayList::new);
+        boolean bl2 = bl = !list.contains(target.getUuid());
+        if (list.size() == 5 && bl) {
+            list.remove(0);
+        }
+        if (bl) {
+            list.add(target.getUuid());
+        }
+        entity.getBrain().remember(MemoryModuleType.UNREACHABLE_TONGUE_TARGETS, list, 100L);
     }
 
     @Override

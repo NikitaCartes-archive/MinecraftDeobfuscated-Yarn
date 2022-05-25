@@ -28,6 +28,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public class DaylightDetectorBlock
@@ -81,6 +82,7 @@ extends BlockWithEntity {
             }
             BlockState blockState = (BlockState)state.cycle(INVERTED);
             world.setBlockState(pos, blockState, Block.NO_REDRAW);
+            world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(player, blockState));
             DaylightDetectorBlock.updateState(blockState, world, pos);
             return ActionResult.CONSUME;
         }

@@ -189,12 +189,12 @@ extends AbstractDecorationEntity {
 
     @Override
     public int getWidthPixels() {
-        return this.containsMap() ? 16 : 12;
+        return 12;
     }
 
     @Override
     public int getHeightPixels() {
-        return this.containsMap() ? 16 : 12;
+        return 12;
     }
 
     @Override

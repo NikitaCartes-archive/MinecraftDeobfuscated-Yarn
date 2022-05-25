@@ -12,7 +12,7 @@ import net.minecraft.util.math.random.Random;
 
 public class BlockStateMatchRuleTest
 extends RuleTest {
-    public static final Codec<BlockStateMatchRuleTest> CODEC = ((MapCodec)BlockState.CODEC.fieldOf("block_state")).xmap(BlockStateMatchRuleTest::new, blockStateMatchRuleTest -> blockStateMatchRuleTest.blockState).codec();
+    public static final Codec<BlockStateMatchRuleTest> CODEC = ((MapCodec)BlockState.CODEC.fieldOf("block_state")).xmap(BlockStateMatchRuleTest::new, ruleTest -> ruleTest.blockState).codec();
     private final BlockState blockState;
 
     public BlockStateMatchRuleTest(BlockState blockState) {

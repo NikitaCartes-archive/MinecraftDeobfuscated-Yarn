@@ -848,7 +848,7 @@ extends LivingEntity {
             return;
         }
         amount = this.applyArmorToDamage(source, amount);
-        float f = amount = this.applyEnchantmentsToDamage(source, amount);
+        float f = amount = this.modifyAppliedDamage(source, amount);
         amount = Math.max(amount - this.getAbsorptionAmount(), 0.0f);
         this.setAbsorptionAmount(this.getAbsorptionAmount() - (f - amount));
         float g = f - amount;

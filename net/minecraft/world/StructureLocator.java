@@ -47,11 +47,11 @@ public class StructureLocator {
     private final NbtScannable chunkIoWorker;
     private final DynamicRegistryManager registryManager;
     private final Registry<Biome> biomeRegistry;
-    private final Registry<StructureType> configuredStructureFeatureRegistry;
+    private final Registry<StructureType> structureTypeRegistry;
     private final StructureManager structureManager;
     private final RegistryKey<World> worldKey;
     private final ChunkGenerator chunkGenerator;
-    private final NoiseConfig field_37750;
+    private final NoiseConfig noiseConfig;
     private final HeightLimitView world;
     private final BiomeSource biomeSource;
     private final long seed;
@@ -59,32 +59,32 @@ public class StructureLocator {
     private final Long2ObjectMap<Object2IntMap<StructureType>> cachedFeaturesByChunkPos = new Long2ObjectOpenHashMap<Object2IntMap<StructureType>>();
     private final Map<StructureType, Long2BooleanMap> generationPossibilityByFeature = new HashMap<StructureType, Long2BooleanMap>();
 
-    public StructureLocator(NbtScannable chunkIoWorker, DynamicRegistryManager registryManager, StructureManager structureManager, RegistryKey<World> worldKey, ChunkGenerator chunkGenerator, NoiseConfig noiseConfig, HeightLimitView heightLimitView, BiomeSource biomeSource, long l, DataFixer dataFixer) {
+    public StructureLocator(NbtScannable chunkIoWorker, DynamicRegistryManager registryManager, StructureManager structureManager, RegistryKey<World> worldKey, ChunkGenerator chunkGenerator, NoiseConfig noiseConfig, HeightLimitView world, BiomeSource biomeSource, long seed, DataFixer dataFixer) {
         this.chunkIoWorker = chunkIoWorker;
         this.registryManager = registryManager;
         this.structureManager = structureManager;
         this.worldKey = worldKey;
         this.chunkGenerator = chunkGenerator;
-        this.field_37750 = noiseConfig;
-        this.world = heightLimitView;
+        this.noiseConfig = noiseConfig;
+        this.world = world;
         this.biomeSource = biomeSource;
-        this.seed = l;
+        this.seed = seed;
         this.dataFixer = dataFixer;
         this.biomeRegistry = registryManager.getManaged(Registry.BIOME_KEY);
-        this.configuredStructureFeatureRegistry = registryManager.getManaged(Registry.STRUCTURE_KEY);
+        this.structureTypeRegistry = registryManager.getManaged(Registry.STRUCTURE_KEY);
     }
 
-    public StructurePresence getStructurePresence(ChunkPos chunkPos, StructureType structureType, boolean skipExistingChunk) {
-        long l2 = chunkPos.toLong();
-        Object2IntMap object2IntMap = (Object2IntMap)this.cachedFeaturesByChunkPos.get(l2);
+    public StructurePresence getStructurePresence(ChunkPos pos, StructureType type, boolean skipReferencedStructures) {
+        long l = pos.toLong();
+        Object2IntMap object2IntMap = (Object2IntMap)this.cachedFeaturesByChunkPos.get(l);
         if (object2IntMap != null) {
-            return this.getStructurePresence(object2IntMap, structureType, skipExistingChunk);
+            return this.getStructurePresence(object2IntMap, type, skipReferencedStructures);
         }
-        StructurePresence structurePresence = this.getStructurePresence(chunkPos, structureType, skipExistingChunk, l2);
+        StructurePresence structurePresence = this.getStructurePresence(pos, type, skipReferencedStructures, l);
         if (structurePresence != null) {
             return structurePresence;
         }
-        boolean bl = this.generationPossibilityByFeature.computeIfAbsent(structureType, feature -> new Long2BooleanOpenHashMap()).computeIfAbsent(l2, l -> this.isGenerationPossible(chunkPos, structureType));
+        boolean bl = this.generationPossibilityByFeature.computeIfAbsent(type, feature -> new Long2BooleanOpenHashMap()).computeIfAbsent(l, chunkPos -> this.isGenerationPossible(pos, type));
         if (!bl) {
             return StructurePresence.START_NOT_PRESENT;
         }
@@ -97,11 +97,11 @@ public class StructureLocator {
      * <p>This method only performs simple checks like biomes.
      */
     private boolean isGenerationPossible(ChunkPos pos, StructureType feature) {
-        return feature.getStructurePosition(new StructureType.Context(this.registryManager, this.chunkGenerator, this.biomeSource, this.field_37750, this.structureManager, this.seed, pos, this.world, feature.getValidBiomes()::contains)).isPresent();
+        return feature.getStructurePosition(new StructureType.Context(this.registryManager, this.chunkGenerator, this.biomeSource, this.noiseConfig, this.structureManager, this.seed, pos, this.world, feature.getValidBiomes()::contains)).isPresent();
     }
 
     @Nullable
-    private StructurePresence getStructurePresence(ChunkPos pos, StructureType feature, boolean skipExistingChunk, long posLong) {
+    private StructurePresence getStructurePresence(ChunkPos pos, StructureType feature, boolean skipReferencedStructures, long posLong) {
         NbtCompound nbtCompound2;
         SelectiveNbtCollector selectiveNbtCollector = new SelectiveNbtCollector(new NbtScanQuery(NbtInt.TYPE, "DataVersion"), new NbtScanQuery("Level", "Structures", NbtCompound.TYPE, "Starts"), new NbtScanQuery("structures", NbtCompound.TYPE, "starts"));
         try {
@@ -131,7 +131,7 @@ public class StructureLocator {
             return null;
         }
         this.cache(posLong, object2IntMap);
-        return this.getStructurePresence(object2IntMap, feature, skipExistingChunk);
+        return this.getStructurePresence(object2IntMap, feature, skipReferencedStructures);
     }
 
     @Nullable
@@ -165,9 +165,9 @@ public class StructureLocator {
         return map.isEmpty() ? Object2IntMaps.emptyMap() : map;
     }
 
-    private StructurePresence getStructurePresence(Object2IntMap<StructureType> referencesByStructure, StructureType feature, boolean skipExistingChunk) {
+    private StructurePresence getStructurePresence(Object2IntMap<StructureType> referencesByStructure, StructureType feature, boolean skipReferencedStructures) {
         int i = referencesByStructure.getOrDefault((Object)feature, -1);
-        return i != -1 && (!skipExistingChunk || i == 0) ? StructurePresence.START_PRESENT : StructurePresence.START_NOT_PRESENT;
+        return i != -1 && (!skipReferencedStructures || i == 0) ? StructurePresence.START_PRESENT : StructurePresence.START_NOT_PRESENT;
     }
 
     public void cache(ChunkPos pos, Map<StructureType, StructureStart> structureStarts) {

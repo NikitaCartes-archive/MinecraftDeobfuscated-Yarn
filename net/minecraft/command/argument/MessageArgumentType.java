@@ -18,6 +18,7 @@ import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
 import net.minecraft.command.argument.TextConvertibleArgumentType;
 import net.minecraft.network.ChatDecorator;
+import net.minecraft.network.MessageSender;
 import net.minecraft.network.encryption.ChatMessageSignature;
 import net.minecraft.network.encryption.CommandArgumentSigner;
 import net.minecraft.network.encryption.SignedChatMessage;
@@ -45,11 +46,15 @@ implements TextConvertibleArgumentType<MessageFormat> {
 
     public static SignedMessage getSignedMessage(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
         MessageFormat messageFormat = context.getArgument(name, MessageFormat.class);
+        Text text = messageFormat.format(context.getSource());
         CommandArgumentSigner commandArgumentSigner = context.getSource().getSigner();
         ChatMessageSignature chatMessageSignature = commandArgumentSigner.getArgumentSignature(name);
         boolean bl = commandArgumentSigner.isPreviewSigned(name);
-        Text text = messageFormat.format(context.getSource());
-        return new SignedMessage(text, chatMessageSignature, bl);
+        MessageSender messageSender = context.getSource().getChatMessageSender();
+        if (chatMessageSignature.canVerifyFrom(messageSender.uuid())) {
+            return new SignedMessage(messageFormat.contents, text, chatMessageSignature, bl);
+        }
+        return new SignedMessage(messageFormat.contents, text, ChatMessageSignature.none(), false);
     }
 
     @Override
@@ -90,7 +95,7 @@ implements TextConvertibleArgumentType<MessageFormat> {
     }
 
     public static class MessageFormat {
-        private final String contents;
+        final String contents;
         private final MessageSelector[] selectors;
 
         public MessageFormat(String contents, MessageSelector[] selectors) {
@@ -170,21 +175,34 @@ implements TextConvertibleArgumentType<MessageFormat> {
         }
     }
 
-    public record SignedMessage(Text plain, ChatMessageSignature signature, boolean signedPreview) {
+    public record SignedMessage(String plain, Text formatted, ChatMessageSignature signature, boolean signedPreview) {
         public CompletableFuture<FilteredMessage<SignedChatMessage>> decorate(ServerCommandSource source) {
-            CompletionStage completableFuture = ((CompletableFuture)this.filter(source, this.plain).thenComposeAsync(filtered -> {
+            CompletionStage completableFuture = ((CompletableFuture)this.filter(source, this.formatted).thenComposeAsync(filtered -> {
                 ChatDecorator chatDecorator = source.getServer().getChatDecorator();
                 return chatDecorator.decorateChat(source.getPlayer(), (FilteredMessage<Text>)filtered, this.signature, this.signedPreview);
-            }, (Executor)source.getServer())).thenApply(decorated -> this.logInvalidSignatureWarning(source, (FilteredMessage<SignedChatMessage>)decorated));
+            }, (Executor)source.getServer())).thenApply(decorated -> {
+                SignedChatMessage signedChatMessage = this.getVerifiable((FilteredMessage<SignedChatMessage>)decorated);
+                if (signedChatMessage != null) {
+                    this.logInvalidSignatureWarning(source, signedChatMessage);
+                }
+                return decorated;
+            });
             MessageArgumentType.handleResolvingFailure(source, completableFuture);
             return completableFuture;
         }
 
-        private FilteredMessage<SignedChatMessage> logInvalidSignatureWarning(ServerCommandSource source, FilteredMessage<SignedChatMessage> decorated) {
-            if (!decorated.raw().verify(source)) {
-                LOGGER.warn("{} sent message with invalid signature: '{}'", (Object)source.getDisplayName().getString(), (Object)decorated.raw().signedContent().getString());
+        @Nullable
+        private SignedChatMessage getVerifiable(FilteredMessage<SignedChatMessage> decorated) {
+            if (this.signature.canVerify()) {
+                return this.signedPreview ? decorated.raw() : SignedChatMessage.of(this.plain, this.signature);
             }
-            return decorated;
+            return null;
+        }
+
+        private void logInvalidSignatureWarning(ServerCommandSource source, SignedChatMessage message) {
+            if (!message.verify(source)) {
+                LOGGER.warn("{} sent message with invalid signature: '{}'", (Object)source.getDisplayName().getString(), (Object)message.signedContent().getString());
+            }
         }
 
         private CompletableFuture<FilteredMessage<Text>> filter(ServerCommandSource source, Text message) {

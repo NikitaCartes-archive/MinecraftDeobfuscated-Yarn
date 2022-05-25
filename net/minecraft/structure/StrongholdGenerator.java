@@ -236,7 +236,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
             this.fillWithOutline(world, chunkBox, 0, 0, 0, 4, 4, 6, true, random, STONE_BRICK_RANDOMIZER);
             this.generateEntrance(world, random, chunkBox, this.entryDoor, 1, 1, 0);
             this.generateEntrance(world, random, chunkBox, Piece.EntranceType.OPENING, 1, 1, 6);
@@ -285,7 +285,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
             this.fillWithOutline(world, chunkBox, 0, 0, 0, 8, 4, 10, true, random, STONE_BRICK_RANDOMIZER);
             this.generateEntrance(world, random, chunkBox, this.entryDoor, 1, 1, 0);
             this.fillWithOutline(world, chunkBox, 1, 1, 10, 3, 3, 10, AIR, AIR, false);
@@ -343,7 +343,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
             this.fillWithOutline(world, chunkBox, 0, 0, 0, 4, 4, 4, true, random, STONE_BRICK_RANDOMIZER);
             this.generateEntrance(world, random, chunkBox, this.entryDoor, 1, 1, 0);
             Direction direction = this.getFacing();
@@ -386,7 +386,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
             this.fillWithOutline(world, chunkBox, 0, 0, 0, 4, 4, 4, true, random, STONE_BRICK_RANDOMIZER);
             this.generateEntrance(world, random, chunkBox, this.entryDoor, 1, 1, 0);
             Direction direction = this.getFacing();
@@ -439,7 +439,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
             this.fillWithOutline(world, chunkBox, 0, 0, 0, 10, 6, 10, true, random, STONE_BRICK_RANDOMIZER);
             this.generateEntrance(world, random, chunkBox, this.entryDoor, 4, 1, 0);
             this.fillWithOutline(world, chunkBox, 4, 1, 10, 6, 3, 10, AIR, AIR, false);
@@ -556,7 +556,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
             this.fillWithOutline(world, chunkBox, 0, 0, 0, 4, 10, 7, true, random, STONE_BRICK_RANDOMIZER);
             this.generateEntrance(world, random, chunkBox, this.entryDoor, 1, 7, 0);
             this.generateEntrance(world, random, chunkBox, Piece.EntranceType.OPENING, 1, 1, 7);
@@ -626,7 +626,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
             this.fillWithOutline(world, chunkBox, 0, 0, 0, 4, 10, 4, true, random, STONE_BRICK_RANDOMIZER);
             this.generateEntrance(world, random, chunkBox, this.entryDoor, 1, 7, 0);
             this.generateEntrance(world, random, chunkBox, Piece.EntranceType.OPENING, 1, 1, 4);
@@ -720,7 +720,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
             this.fillWithOutline(world, chunkBox, 0, 0, 0, 9, 8, 10, true, random, STONE_BRICK_RANDOMIZER);
             this.generateEntrance(world, random, chunkBox, this.entryDoor, 4, 3, 0);
             if (this.lowerLeftExists) {
@@ -791,7 +791,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
             this.fillWithOutline(world, chunkBox, 0, 0, 0, 4, 4, 6, true, random, STONE_BRICK_RANDOMIZER);
             this.generateEntrance(world, random, chunkBox, this.entryDoor, 1, 1, 0);
             this.generateEntrance(world, random, chunkBox, Piece.EntranceType.OPENING, 1, 1, 6);
@@ -845,7 +845,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
             int l;
             int i = 11;
             if (!this.tall) {
@@ -980,7 +980,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
             BlockPos.Mutable blockPos;
             int j;
             this.fillWithOutline(world, chunkBox, 0, 0, 0, 10, 7, 15, false, random, STONE_BRICK_RANDOMIZER);
@@ -1282,7 +1282,7 @@ public class StrongholdGenerator {
         }
 
         @Override
-        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pos) {
+        public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
             for (int i = 0; i < this.length; ++i) {
                 this.addBlock(world, Blocks.STONE_BRICKS.getDefaultState(), 0, 0, i, chunkBox);
                 this.addBlock(world, Blocks.STONE_BRICKS.getDefaultState(), 1, 0, i, chunkBox);

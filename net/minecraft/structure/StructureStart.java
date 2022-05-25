@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 public final class StructureStart {
     public static final String INVALID = "INVALID";
     public static final StructureStart DEFAULT = new StructureStart(null, new ChunkPos(0, 0), 0, new StructurePiecesList(List.of()));
-    private static final Logger field_37751 = LogUtils.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final StructureType feature;
     private final StructurePiecesList children;
     private final ChunkPos pos;
@@ -58,28 +58,28 @@ public final class StructureStart {
     }
 
     @Nullable
-    public static StructureStart method_41621(StructureContext structureContext, NbtCompound nbtCompound, long l) {
-        String string = nbtCompound.getString("id");
+    public static StructureStart fromNbt(StructureContext context, NbtCompound nbt, long seed) {
+        String string = nbt.getString("id");
         if (INVALID.equals(string)) {
             return DEFAULT;
         }
-        Registry<StructureType> registry = structureContext.registryManager().get(Registry.STRUCTURE_KEY);
+        Registry<StructureType> registry = context.registryManager().get(Registry.STRUCTURE_KEY);
         StructureType structureType = registry.get(new Identifier(string));
         if (structureType == null) {
-            field_37751.error("Unknown stucture id: {}", (Object)string);
+            LOGGER.error("Unknown stucture id: {}", (Object)string);
             return null;
         }
-        ChunkPos chunkPos = new ChunkPos(nbtCompound.getInt("ChunkX"), nbtCompound.getInt("ChunkZ"));
-        int i = nbtCompound.getInt("references");
-        NbtList nbtList = nbtCompound.getList("Children", NbtElement.COMPOUND_TYPE);
+        ChunkPos chunkPos = new ChunkPos(nbt.getInt("ChunkX"), nbt.getInt("ChunkZ"));
+        int i = nbt.getInt("references");
+        NbtList nbtList = nbt.getList("Children", NbtElement.COMPOUND_TYPE);
         try {
-            StructurePiecesList structurePiecesList = StructurePiecesList.fromNbt(nbtList, structureContext);
+            StructurePiecesList structurePiecesList = StructurePiecesList.fromNbt(nbtList, context);
             if (structureType instanceof OceanMonumentStructure) {
-                structurePiecesList = OceanMonumentStructure.modifyPiecesOnRead(chunkPos, l, structurePiecesList);
+                structurePiecesList = OceanMonumentStructure.modifyPiecesOnRead(chunkPos, seed, structurePiecesList);
             }
             return new StructureStart(structureType, chunkPos, i, structurePiecesList);
         } catch (Exception exception) {
-            field_37751.error("Failed Start with id {}", (Object)string, (Object)exception);
+            LOGGER.error("Failed Start with id {}", (Object)string, (Object)exception);
             return null;
         }
     }
@@ -129,8 +129,8 @@ public final class StructureStart {
         return this.pos;
     }
 
-    public boolean isInExistingChunk() {
-        return this.references < this.getReferenceCountToBeInExistingChunk();
+    public boolean isNeverReferenced() {
+        return this.references < this.getMinReferencedStructureReferenceCount();
     }
 
     public void incrementReferences() {
@@ -141,7 +141,7 @@ public final class StructureStart {
         return this.references;
     }
 
-    protected int getReferenceCountToBeInExistingChunk() {
+    protected int getMinReferencedStructureReferenceCount() {
         return 1;
     }
 

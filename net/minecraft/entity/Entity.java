@@ -719,7 +719,7 @@ CommandOutput {
                         this.playStepSound(blockPos, blockState);
                     }
                     if (moveEffect.emitsGameEvents() && (this.onGround || movement.y == 0.0 || this.inPowderSnow || bl3)) {
-                        this.world.emitGameEvent(GameEvent.STEP, this.pos, GameEvent.Emitter.of(this, this.getSteppingBlockState()));
+                        this.world.emitGameEvent(GameEvent.STEP, this.pos, GameEvent.Emitter.of(this.getEventSource(), this.getSteppingBlockState()));
                     }
                 }
             } else if (blockState.isAir()) {
@@ -1083,12 +1083,17 @@ CommandOutput {
         if (onGround) {
             if (this.fallDistance > 0.0f) {
                 state.getBlock().onLandedUpon(this.world, state, landedPosition, this, this.fallDistance);
-                this.world.emitGameEvent(GameEvent.HIT_GROUND, this.pos, GameEvent.Emitter.of(this, this.getSteppingBlockState()));
+                this.world.emitGameEvent(GameEvent.HIT_GROUND, this.pos, GameEvent.Emitter.of(this.getEventSource(), this.getSteppingBlockState()));
             }
             this.onLanding();
         } else if (heightDifference < 0.0) {
             this.fallDistance -= (float)heightDifference;
         }
+    }
+
+    @Nullable
+    public Entity getEventSource() {
+        return this;
     }
 
     public boolean isFireImmune() {

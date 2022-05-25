@@ -3,6 +3,8 @@
  */
 package net.minecraft.entity.ai.brain.sensor;
 
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.NearestVisibleLivingEntitySensor;
@@ -15,10 +17,15 @@ extends NearestVisibleLivingEntitySensor {
 
     @Override
     protected boolean matches(LivingEntity entity, LivingEntity target) {
-        if (!entity.getBrain().hasMemoryModule(MemoryModuleType.HAS_HUNTING_COOLDOWN) && Sensor.testAttackableTargetPredicate(entity, target) && FrogEntity.isValidFrogFood(target)) {
+        if (!entity.getBrain().hasMemoryModule(MemoryModuleType.HAS_HUNTING_COOLDOWN) && Sensor.testAttackableTargetPredicate(entity, target) && FrogEntity.isValidFrogFood(target) && !this.isTargetUnreachable(entity, target)) {
             return target.isInRange(entity, 10.0);
         }
         return false;
+    }
+
+    private boolean isTargetUnreachable(LivingEntity entity, LivingEntity target) {
+        List list = entity.getBrain().getOptionalMemory(MemoryModuleType.UNREACHABLE_TONGUE_TARGETS).orElseGet(ArrayList::new);
+        return list.contains(target.getUuid());
     }
 
     @Override

@@ -52,7 +52,7 @@ import org.slf4j.Logger;
 public class StructurePoolBasedGenerator {
     static final Logger LOGGER = LogUtils.getLogger();
 
-    public static Optional<StructureType.StructurePosition> generate(StructureType.Context context, RegistryEntry<StructurePool> structurePool, Optional<Identifier> id, int i, BlockPos pos, boolean bl, Optional<Heightmap.Type> heightmapType, int j) {
+    public static Optional<StructureType.StructurePosition> generate(StructureType.Context context, RegistryEntry<StructurePool> structurePool, Optional<Identifier> id, int size, BlockPos pos, boolean useExpansionHack, Optional<Heightmap.Type> projectStartToHeightmap, int maxDistanceFromCenter) {
         BlockPos blockPos;
         DynamicRegistryManager dynamicRegistryManager = context.dynamicRegistryManager();
         ChunkGenerator chunkGenerator = context.chunkGenerator();
@@ -68,7 +68,7 @@ public class StructurePoolBasedGenerator {
         }
         if (id.isPresent()) {
             Identifier identifier = id.get();
-            Optional<BlockPos> optional = StructurePoolBasedGenerator.method_43566(structurePoolElement, identifier, pos, blockRotation, structureManager, chunkRandom);
+            Optional<BlockPos> optional = StructurePoolBasedGenerator.findStartingJigsawPos(structurePoolElement, identifier, pos, blockRotation, structureManager, chunkRandom);
             if (optional.isEmpty()) {
                 LOGGER.error("No starting jigsaw {} found in start pool {}", (Object)identifier, (Object)structurePool.getKey().get().getValue());
                 return Optional.empty();
@@ -81,31 +81,31 @@ public class StructurePoolBasedGenerator {
         BlockPos blockPos2 = pos.subtract(vec3i);
         PoolStructurePiece poolStructurePiece = new PoolStructurePiece(structureManager, structurePoolElement, blockPos2, structurePoolElement.getGroundLevelDelta(), blockRotation, structurePoolElement.getBoundingBox(structureManager, blockPos2, blockRotation));
         BlockBox blockBox = poolStructurePiece.getBoundingBox();
-        int k = (blockBox.getMaxX() + blockBox.getMinX()) / 2;
-        int l = (blockBox.getMaxZ() + blockBox.getMinZ()) / 2;
-        int m = heightmapType.isPresent() ? pos.getY() + chunkGenerator.getHeightOnGround(k, l, heightmapType.get(), heightLimitView, context.noiseConfig()) : blockPos2.getY();
-        int n = blockBox.getMinY() + poolStructurePiece.getGroundLevelDelta();
-        poolStructurePiece.translate(0, m - n, 0);
-        int o = m + vec3i.getY();
-        return Optional.of(new StructureType.StructurePosition(new BlockPos(k, o, l), structurePiecesCollector -> {
+        int i = (blockBox.getMaxX() + blockBox.getMinX()) / 2;
+        int j = (blockBox.getMaxZ() + blockBox.getMinZ()) / 2;
+        int k = projectStartToHeightmap.isPresent() ? pos.getY() + chunkGenerator.getHeightOnGround(i, j, projectStartToHeightmap.get(), heightLimitView, context.noiseConfig()) : blockPos2.getY();
+        int l = blockBox.getMinY() + poolStructurePiece.getGroundLevelDelta();
+        poolStructurePiece.translate(0, k - l, 0);
+        int m = k + vec3i.getY();
+        return Optional.of(new StructureType.StructurePosition(new BlockPos(i, m, j), collector -> {
             ArrayList<PoolStructurePiece> list = Lists.newArrayList();
             list.add(poolStructurePiece);
-            if (i <= 0) {
+            if (size <= 0) {
                 return;
             }
-            Box box = new Box(k - j, o - j, l - j, k + j + 1, o + j + 1, l + j + 1);
+            Box box = new Box(i - maxDistanceFromCenter, m - maxDistanceFromCenter, j - maxDistanceFromCenter, i + maxDistanceFromCenter + 1, m + maxDistanceFromCenter + 1, j + maxDistanceFromCenter + 1);
             VoxelShape voxelShape = VoxelShapes.combineAndSimplify(VoxelShapes.cuboid(box), VoxelShapes.cuboid(Box.from(blockBox)), BooleanBiFunction.ONLY_FIRST);
-            StructurePoolBasedGenerator.generate(context.noiseConfig(), i, bl, chunkGenerator, structureManager, heightLimitView, chunkRandom, registry, poolStructurePiece, list, voxelShape);
-            list.forEach(structurePiecesCollector::addPiece);
+            StructurePoolBasedGenerator.generate(context.noiseConfig(), size, useExpansionHack, chunkGenerator, structureManager, heightLimitView, chunkRandom, registry, poolStructurePiece, list, voxelShape);
+            list.forEach(collector::addPiece);
         }));
     }
 
-    private static Optional<BlockPos> method_43566(StructurePoolElement structurePoolElement, Identifier identifier, BlockPos blockPos, BlockRotation blockRotation, StructureManager structureManager, ChunkRandom chunkRandom) {
-        List<Structure.StructureBlockInfo> list = structurePoolElement.getStructureBlockInfos(structureManager, blockPos, blockRotation, chunkRandom);
+    private static Optional<BlockPos> findStartingJigsawPos(StructurePoolElement pool, Identifier id, BlockPos pos, BlockRotation rotation, StructureManager structureManager, ChunkRandom random) {
+        List<Structure.StructureBlockInfo> list = pool.getStructureBlockInfos(structureManager, pos, rotation, random);
         Optional<BlockPos> optional = Optional.empty();
         for (Structure.StructureBlockInfo structureBlockInfo : list) {
-            Identifier identifier2 = Identifier.tryParse(structureBlockInfo.nbt.getString("name"));
-            if (!identifier.equals(identifier2)) continue;
+            Identifier identifier = Identifier.tryParse(structureBlockInfo.nbt.getString("name"));
+            if (!id.equals(identifier)) continue;
             optional = Optional.of(structureBlockInfo.pos);
             break;
         }

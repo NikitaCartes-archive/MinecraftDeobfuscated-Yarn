@@ -312,12 +312,12 @@ public class Structure {
         return true;
     }
 
-    public static void updateCorner(WorldAccess world, int flags, VoxelSet voxelSet, int startX, int startY, int startZ) {
-        voxelSet.forEachDirection((direction, m, n, o) -> {
+    public static void updateCorner(WorldAccess world, int flags, VoxelSet set, int startX, int startY, int startZ) {
+        set.forEachDirection((direction, x, y, z) -> {
             BlockState blockState4;
             BlockState blockState2;
             BlockState blockState3;
-            BlockPos blockPos = new BlockPos(startX + m, startY + n, startZ + o);
+            BlockPos blockPos = new BlockPos(startX + x, startY + y, startZ + z);
             BlockPos blockPos2 = blockPos.offset(direction);
             BlockState blockState = world.getBlockState(blockPos);
             if (blockState != (blockState3 = blockState.getStateForNeighborUpdate(direction, blockState2 = world.getBlockState(blockPos2), world, blockPos, blockPos2))) {
@@ -329,9 +329,9 @@ public class Structure {
         });
     }
 
-    public static List<StructureBlockInfo> process(WorldAccess world, BlockPos pos, BlockPos pivot, StructurePlacementData placementData, List<StructureBlockInfo> list) {
-        ArrayList<StructureBlockInfo> list2 = Lists.newArrayList();
-        for (StructureBlockInfo structureBlockInfo : list) {
+    public static List<StructureBlockInfo> process(WorldAccess world, BlockPos pos, BlockPos pivot, StructurePlacementData placementData, List<StructureBlockInfo> infos) {
+        ArrayList<StructureBlockInfo> list = Lists.newArrayList();
+        for (StructureBlockInfo structureBlockInfo : infos) {
             BlockPos blockPos = Structure.transform(placementData, structureBlockInfo.pos).add(pos);
             StructureBlockInfo structureBlockInfo2 = new StructureBlockInfo(blockPos, structureBlockInfo.state, structureBlockInfo.nbt != null ? structureBlockInfo.nbt.copy() : null);
             Iterator<StructureProcessor> iterator = placementData.getProcessors().iterator();
@@ -339,17 +339,17 @@ public class Structure {
                 structureBlockInfo2 = iterator.next().process(world, pos, pivot, structureBlockInfo, structureBlockInfo2, placementData);
             }
             if (structureBlockInfo2 == null) continue;
-            list2.add(structureBlockInfo2);
+            list.add(structureBlockInfo2);
         }
-        return list2;
+        return list;
     }
 
-    private void spawnEntities(ServerWorldAccess world, BlockPos pos, BlockMirror blockMirror, BlockRotation blockRotation, BlockPos pivot, @Nullable BlockBox area, boolean initializeMobs) {
+    private void spawnEntities(ServerWorldAccess world, BlockPos pos, BlockMirror mirror, BlockRotation rotation, BlockPos pivot, @Nullable BlockBox area, boolean initializeMobs) {
         for (StructureEntityInfo structureEntityInfo : this.entities) {
-            BlockPos blockPos = Structure.transformAround(structureEntityInfo.blockPos, blockMirror, blockRotation, pivot).add(pos);
+            BlockPos blockPos = Structure.transformAround(structureEntityInfo.blockPos, mirror, rotation, pivot).add(pos);
             if (area != null && !area.contains(blockPos)) continue;
             NbtCompound nbtCompound = structureEntityInfo.nbt.copy();
-            Vec3d vec3d = Structure.transformAround(structureEntityInfo.pos, blockMirror, blockRotation, pivot);
+            Vec3d vec3d = Structure.transformAround(structureEntityInfo.pos, mirror, rotation, pivot);
             Vec3d vec3d2 = vec3d.add(pos.getX(), pos.getY(), pos.getZ());
             NbtList nbtList = new NbtList();
             nbtList.add(NbtDouble.of(vec3d2.x));
@@ -358,8 +358,8 @@ public class Structure {
             nbtCompound.put("Pos", nbtList);
             nbtCompound.remove("UUID");
             Structure.getEntity(world, nbtCompound).ifPresent(entity -> {
-                float f = entity.applyRotation(blockRotation);
-                entity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, f += entity.applyMirror(blockMirror) - entity.getYaw(), entity.getPitch());
+                float f = entity.applyRotation(rotation);
+                entity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, f += entity.applyMirror(mirror) - entity.getYaw(), entity.getPitch());
                 if (initializeMobs && entity instanceof MobEntity) {
                     ((MobEntity)entity).initialize(world, world.getLocalDifficulty(new BlockPos(vec3d2)), SpawnReason.STRUCTURE, null, nbtCompound);
                 }
@@ -655,8 +655,8 @@ public class Structure {
             return this.infos;
         }
 
-        public List<StructureBlockInfo> getAllOf(Block block2) {
-            return this.blockToInfos.computeIfAbsent(block2, block -> this.infos.stream().filter(structureBlockInfo -> structureBlockInfo.state.isOf((Block)block)).collect(Collectors.toList()));
+        public List<StructureBlockInfo> getAllOf(Block block) {
+            return this.blockToInfos.computeIfAbsent(block, block2 -> this.infos.stream().filter(info -> info.state.isOf((Block)block2)).collect(Collectors.toList()));
         }
     }
 
