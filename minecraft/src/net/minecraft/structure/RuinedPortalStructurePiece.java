@@ -149,22 +149,22 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 		Random random,
 		BlockBox chunkBox,
 		ChunkPos chunkPos,
-		BlockPos pos
+		BlockPos pivot
 	) {
 		BlockBox blockBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
 		if (chunkBox.contains(blockBox.getCenter())) {
 			chunkBox.encompass(blockBox);
-			super.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pos);
+			super.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pivot);
 			this.placeNetherrackBase(random, world);
 			this.updateNetherracksInBound(random, world);
 			if (this.properties.vines || this.properties.overgrown) {
-				BlockPos.stream(this.getBoundingBox()).forEach(posx -> {
+				BlockPos.stream(this.getBoundingBox()).forEach(pos -> {
 					if (this.properties.vines) {
-						this.generateVines(random, world, posx);
+						this.generateVines(random, world, pos);
 					}
 
 					if (this.properties.overgrown) {
-						this.generateOvergrownLeaves(random, world, posx);
+						this.generateOvergrownLeaves(random, world, pos);
 					}
 				});
 			}

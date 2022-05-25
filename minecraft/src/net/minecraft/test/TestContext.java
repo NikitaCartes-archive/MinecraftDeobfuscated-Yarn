@@ -282,11 +282,16 @@ public class TestContext {
 	}
 
 	public void expectEntityAround(EntityType<?> type, BlockPos pos, double radius) {
-		BlockPos blockPos = this.getAbsolutePos(pos);
-		List<? extends Entity> list = this.getWorld().getEntitiesByType(type, new Box(blockPos).expand(radius), Entity::isAlive);
+		List<? extends Entity> list = this.getEntitiesAround((EntityType<? extends Entity>)type, pos, radius);
 		if (list.isEmpty()) {
+			BlockPos blockPos = this.getAbsolutePos(pos);
 			throw new PositionedException("Expected " + type.getUntranslatedName(), blockPos, pos, this.test.getTick());
 		}
+	}
+
+	public <T extends Entity> List<T> getEntitiesAround(EntityType<T> type, BlockPos pos, double radius) {
+		BlockPos blockPos = this.getAbsolutePos(pos);
+		return this.getWorld().getEntitiesByType(type, new Box(blockPos).expand(radius), Entity::isAlive);
 	}
 
 	public void expectEntityAt(Entity entity, int x, int y, int z) {

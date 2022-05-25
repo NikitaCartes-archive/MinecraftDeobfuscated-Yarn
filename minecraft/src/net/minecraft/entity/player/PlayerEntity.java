@@ -949,7 +949,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	protected void applyDamage(DamageSource source, float amount) {
 		if (!this.isInvulnerableTo(source)) {
 			amount = this.applyArmorToDamage(source, amount);
-			amount = this.applyEnchantmentsToDamage(source, amount);
+			amount = this.modifyAppliedDamage(source, amount);
 			float var8 = Math.max(amount - this.getAbsorptionAmount(), 0.0F);
 			this.setAbsorptionAmount(this.getAbsorptionAmount() - (amount - var8));
 			float g = amount - var8;

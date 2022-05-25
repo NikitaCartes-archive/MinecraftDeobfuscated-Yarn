@@ -37,7 +37,7 @@ public class BuriedTreasureGenerator {
 			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
-			BlockPos pos
+			BlockPos pivot
 		) {
 			int i = world.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, this.boundingBox.getMinX(), this.boundingBox.getMinZ());
 			BlockPos.Mutable mutable = new BlockPos.Mutable(this.boundingBox.getMinX(), i, this.boundingBox.getMinZ());

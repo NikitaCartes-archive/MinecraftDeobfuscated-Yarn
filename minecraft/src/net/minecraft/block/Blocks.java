@@ -196,7 +196,6 @@ public class Blocks {
 				.ticksRandomly()
 				.sounds(BlockSoundGroup.MANGROVE_ROOTS)
 				.nonOpaque()
-				.allowsSpawning(Blocks::canSpawnOnLeaves)
 				.suffocates(Blocks::never)
 				.blockVision(Blocks::never)
 				.nonOpaque()

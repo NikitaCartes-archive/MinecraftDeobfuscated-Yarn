@@ -318,7 +318,7 @@ public class MineshaftGenerator {
 			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
-			BlockPos pos
+			BlockPos pivot
 		) {
 			if (!this.cannotGenerate(world, chunkBox)) {
 				int i = 0;
@@ -647,7 +647,7 @@ public class MineshaftGenerator {
 			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
-			BlockPos pos
+			BlockPos pivot
 		) {
 			if (!this.cannotGenerate(world, chunkBox)) {
 				BlockState blockState = this.mineshaftType.getPlanks();
@@ -1026,7 +1026,7 @@ public class MineshaftGenerator {
 			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
-			BlockPos pos
+			BlockPos pivot
 		) {
 			if (!this.cannotGenerate(world, chunkBox)) {
 				this.fillWithOutline(
@@ -1154,7 +1154,7 @@ public class MineshaftGenerator {
 			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
-			BlockPos pos
+			BlockPos pivot
 		) {
 			if (!this.cannotGenerate(world, chunkBox)) {
 				this.fillWithOutline(world, chunkBox, 0, 5, 0, 2, 7, 1, AIR, AIR, false);

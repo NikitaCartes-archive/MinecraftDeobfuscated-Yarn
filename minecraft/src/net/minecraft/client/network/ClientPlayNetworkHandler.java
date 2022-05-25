@@ -814,11 +814,15 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	 * Handles an incoming chat message.
 	 */
 	private void handleMessage(MessageType type, SignedChatMessage message, MessageSender sender) {
-		if (!this.isSignatureValid(message)) {
-			LOGGER.warn("Received chat packet without valid signature from {}", sender.name().getString());
+		boolean bl = this.client.options.getOnlyShowSecureChat().getValue();
+		PlayerListEntry playerListEntry = this.getPlayerListEntry(message.signature().sender());
+		if (playerListEntry != null && !this.isSignatureValid(message, playerListEntry)) {
+			LOGGER.warn("Received chat packet without valid signature from {}", playerListEntry.getProfile().getName());
+			if (bl) {
+				return;
+			}
 		}
 
-		boolean bl = this.client.options.getOnlyShowSecureChat().getValue();
 		Text text = bl ? message.signedContent() : message.getContent();
 		this.client.inGameHud.onChatMessage(type, text, sender);
 	}
@@ -828,14 +832,9 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	 * 
 	 * <p>This returns {@code false} when the chat sender is unknown.
 	 */
-	private boolean isSignatureValid(SignedChatMessage message) {
-		PlayerListEntry playerListEntry = this.getPlayerListEntry(message.signature().sender());
-		if (playerListEntry == null) {
-			return false;
-		} else {
-			PlayerPublicKey playerPublicKey = playerListEntry.getPublicKeyData();
-			return playerPublicKey != null && message.verify(playerPublicKey);
-		}
+	private boolean isSignatureValid(SignedChatMessage message, PlayerListEntry playerListEntry) {
+		PlayerPublicKey playerPublicKey = playerListEntry.getPublicKeyData();
+		return playerPublicKey != null && message.verify(playerPublicKey);
 	}
 
 	@Override

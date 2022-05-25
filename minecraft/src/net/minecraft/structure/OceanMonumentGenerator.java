@@ -203,7 +203,7 @@ public class OceanMonumentGenerator {
 			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
-			BlockPos pos
+			BlockPos pivot
 		) {
 			int i = Math.max(world.getSeaLevel(), 64) - this.boundingBox.getMinY();
 			this.setAirAndWater(world, chunkBox, 0, 0, 0, 58, i, 58);
@@ -251,7 +251,7 @@ public class OceanMonumentGenerator {
 
 			for (OceanMonumentGenerator.Piece piece : this.field_14465) {
 				if (piece.getBoundingBox().intersects(chunkBox)) {
-					piece.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pos);
+					piece.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pivot);
 				}
 			}
 		}
@@ -590,7 +590,7 @@ public class OceanMonumentGenerator {
 			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
-			BlockPos pos
+			BlockPos pivot
 		) {
 			this.fillArea(world, chunkBox, 1, 8, 0, 14, 8, 14, PRISMARINE);
 			int i = 7;
@@ -676,7 +676,7 @@ public class OceanMonumentGenerator {
 			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
-			BlockPos pos
+			BlockPos pivot
 		) {
 			OceanMonumentGenerator.PieceSetting pieceSetting = this.setting.neighbors[Direction.EAST.getId()];
 			OceanMonumentGenerator.PieceSetting pieceSetting2 = this.setting;
@@ -767,7 +767,7 @@ public class OceanMonumentGenerator {
 			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
-			BlockPos pos
+			BlockPos pivot
 		) {
 			OceanMonumentGenerator.PieceSetting pieceSetting = this.setting.neighbors[Direction.EAST.getId()];
 			OceanMonumentGenerator.PieceSetting pieceSetting2 = this.setting;
@@ -912,7 +912,7 @@ public class OceanMonumentGenerator {
 			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
-			BlockPos pos
+			BlockPos pivot
 		) {
 			if (this.setting.roomIndex / 25 > 0) {
 				this.method_14774(world, chunkBox, 0, 0, this.setting.neighborPresences[Direction.DOWN.getId()]);
@@ -1014,7 +1014,7 @@ public class OceanMonumentGenerator {
 			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
-			BlockPos pos
+			BlockPos pivot
 		) {
 			OceanMonumentGenerator.PieceSetting pieceSetting = this.setting.neighbors[Direction.NORTH.getId()];
 			OceanMonumentGenerator.PieceSetting pieceSetting2 = this.setting;
@@ -1157,7 +1157,7 @@ public class OceanMonumentGenerator {
 			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
-			BlockPos pos
+			BlockPos pivot
 		) {
 			OceanMonumentGenerator.PieceSetting pieceSetting = this.setting.neighbors[Direction.NORTH.getId()];
 			OceanMonumentGenerator.PieceSetting pieceSetting2 = this.setting;
@@ -1272,7 +1272,7 @@ public class OceanMonumentGenerator {
 			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
-			BlockPos pos
+			BlockPos pivot
 		) {
 			this.fillWithOutline(world, chunkBox, 0, 3, 0, 2, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 			this.fillWithOutline(world, chunkBox, 5, 3, 0, 7, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
@@ -1314,7 +1314,7 @@ public class OceanMonumentGenerator {
 			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
-			BlockPos pos
+			BlockPos pivot
 		) {
 			this.fillWithOutline(world, chunkBox, 2, -1, 2, 11, -1, 11, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 			this.fillWithOutline(world, chunkBox, 0, -1, 0, 1, -1, 11, PRISMARINE, PRISMARINE, false);
@@ -1587,7 +1587,7 @@ public class OceanMonumentGenerator {
 			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
-			BlockPos pos
+			BlockPos pivot
 		) {
 			if (this.setting.roomIndex / 25 > 0) {
 				this.method_14774(world, chunkBox, 0, 0, this.setting.neighborPresences[Direction.DOWN.getId()]);
@@ -1774,7 +1774,7 @@ public class OceanMonumentGenerator {
 			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
-			BlockPos pos
+			BlockPos pivot
 		) {
 			if (this.setting.roomIndex / 25 > 0) {
 				this.method_14774(world, chunkBox, 0, 0, this.setting.neighborPresences[Direction.DOWN.getId()]);
@@ -1853,7 +1853,7 @@ public class OceanMonumentGenerator {
 			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
-			BlockPos pos
+			BlockPos pivot
 		) {
 			if (this.field_14481 == 0) {
 				for (int i = 0; i < 4; i++) {

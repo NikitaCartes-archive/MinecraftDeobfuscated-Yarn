@@ -48,11 +48,11 @@ public class StructurePoolBasedGenerator {
 		StructureType.Context context,
 		RegistryEntry<StructurePool> structurePool,
 		Optional<Identifier> id,
-		int i,
+		int size,
 		BlockPos pos,
-		boolean bl,
-		Optional<Heightmap.Type> heightmapType,
-		int j
+		boolean useExpansionHack,
+		Optional<Heightmap.Type> projectStartToHeightmap,
+		int maxDistanceFromCenter
 	) {
 		DynamicRegistryManager dynamicRegistryManager = context.dynamicRegistryManager();
 		ChunkGenerator chunkGenerator = context.chunkGenerator();
@@ -69,7 +69,7 @@ public class StructurePoolBasedGenerator {
 			BlockPos blockPos;
 			if (id.isPresent()) {
 				Identifier identifier = (Identifier)id.get();
-				Optional<BlockPos> optional = method_43566(structurePoolElement, identifier, pos, blockRotation, structureManager, chunkRandom);
+				Optional<BlockPos> optional = findStartingJigsawPos(structurePoolElement, identifier, pos, blockRotation, structureManager, chunkRandom);
 				if (optional.isEmpty()) {
 					LOGGER.error("No starting jigsaw {} found in start pool {}", identifier, ((RegistryKey)structurePool.getKey().get()).getValue());
 					return Optional.empty();
@@ -91,45 +91,64 @@ public class StructurePoolBasedGenerator {
 				structurePoolElement.getBoundingBox(structureManager, blockPos2, blockRotation)
 			);
 			BlockBox blockBox = poolStructurePiece.getBoundingBox();
-			int k = (blockBox.getMaxX() + blockBox.getMinX()) / 2;
-			int l = (blockBox.getMaxZ() + blockBox.getMinZ()) / 2;
-			int m;
-			if (heightmapType.isPresent()) {
-				m = pos.getY() + chunkGenerator.getHeightOnGround(k, l, (Heightmap.Type)heightmapType.get(), heightLimitView, context.noiseConfig());
+			int i = (blockBox.getMaxX() + blockBox.getMinX()) / 2;
+			int j = (blockBox.getMaxZ() + blockBox.getMinZ()) / 2;
+			int k;
+			if (projectStartToHeightmap.isPresent()) {
+				k = pos.getY() + chunkGenerator.getHeightOnGround(i, j, (Heightmap.Type)projectStartToHeightmap.get(), heightLimitView, context.noiseConfig());
 			} else {
-				m = blockPos2.getY();
+				k = blockPos2.getY();
 			}
 
-			int n = blockBox.getMinY() + poolStructurePiece.getGroundLevelDelta();
-			poolStructurePiece.translate(0, m - n, 0);
-			int o = m + vec3i.getY();
-			return Optional.of(new StructureType.StructurePosition(new BlockPos(k, o, l), structurePiecesCollector -> {
-				List<PoolStructurePiece> list = Lists.<PoolStructurePiece>newArrayList();
-				list.add(poolStructurePiece);
-				if (i > 0) {
-					Box box = new Box((double)(k - j), (double)(o - j), (double)(l - j), (double)(k + j + 1), (double)(o + j + 1), (double)(l + j + 1));
-					VoxelShape voxelShape = VoxelShapes.combineAndSimplify(VoxelShapes.cuboid(box), VoxelShapes.cuboid(Box.from(blockBox)), BooleanBiFunction.ONLY_FIRST);
-					generate(context.noiseConfig(), i, bl, chunkGenerator, structureManager, heightLimitView, chunkRandom, registry, poolStructurePiece, list, voxelShape);
-					list.forEach(structurePiecesCollector::addPiece);
-				}
-			}));
+			int l = blockBox.getMinY() + poolStructurePiece.getGroundLevelDelta();
+			poolStructurePiece.translate(0, k - l, 0);
+			int m = k + vec3i.getY();
+			return Optional.of(
+				new StructureType.StructurePosition(
+					new BlockPos(i, m, j),
+					collector -> {
+						List<PoolStructurePiece> list = Lists.<PoolStructurePiece>newArrayList();
+						list.add(poolStructurePiece);
+						if (size > 0) {
+							Box box = new Box(
+								(double)(i - maxDistanceFromCenter),
+								(double)(m - maxDistanceFromCenter),
+								(double)(j - maxDistanceFromCenter),
+								(double)(i + maxDistanceFromCenter + 1),
+								(double)(m + maxDistanceFromCenter + 1),
+								(double)(j + maxDistanceFromCenter + 1)
+							);
+							VoxelShape voxelShape = VoxelShapes.combineAndSimplify(VoxelShapes.cuboid(box), VoxelShapes.cuboid(Box.from(blockBox)), BooleanBiFunction.ONLY_FIRST);
+							generate(
+								context.noiseConfig(),
+								size,
+								useExpansionHack,
+								chunkGenerator,
+								structureManager,
+								heightLimitView,
+								chunkRandom,
+								registry,
+								poolStructurePiece,
+								list,
+								voxelShape
+							);
+							list.forEach(collector::addPiece);
+						}
+					}
+				)
+			);
 		}
 	}
 
-	private static Optional<BlockPos> method_43566(
-		StructurePoolElement structurePoolElement,
-		Identifier identifier,
-		BlockPos blockPos,
-		BlockRotation blockRotation,
-		StructureManager structureManager,
-		ChunkRandom chunkRandom
+	private static Optional<BlockPos> findStartingJigsawPos(
+		StructurePoolElement pool, Identifier id, BlockPos pos, BlockRotation rotation, StructureManager structureManager, ChunkRandom random
 	) {
-		List<Structure.StructureBlockInfo> list = structurePoolElement.getStructureBlockInfos(structureManager, blockPos, blockRotation, chunkRandom);
+		List<Structure.StructureBlockInfo> list = pool.getStructureBlockInfos(structureManager, pos, rotation, random);
 		Optional<BlockPos> optional = Optional.empty();
 
 		for (Structure.StructureBlockInfo structureBlockInfo : list) {
-			Identifier identifier2 = Identifier.tryParse(structureBlockInfo.nbt.getString("name"));
-			if (identifier.equals(identifier2)) {
+			Identifier identifier = Identifier.tryParse(structureBlockInfo.nbt.getString("name"));
+			if (id.equals(identifier)) {
 				optional = Optional.of(structureBlockInfo.pos);
 				break;
 			}

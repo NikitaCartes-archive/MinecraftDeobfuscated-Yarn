@@ -25,6 +25,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
+import net.minecraft.world.event.GameEvent;
 
 public class TurtleEggBlock extends Block {
 	public static final int field_31272 = 2;
@@ -73,6 +74,7 @@ public class TurtleEggBlock extends Block {
 			world.breakBlock(pos, false);
 		} else {
 			world.setBlockState(pos, state.with(EGGS, Integer.valueOf(i - 1)), Block.NOTIFY_LISTENERS);
+			world.emitGameEvent(GameEvent.BLOCK_DESTROY, pos, GameEvent.Emitter.of(state));
 			world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(state));
 		}
 	}

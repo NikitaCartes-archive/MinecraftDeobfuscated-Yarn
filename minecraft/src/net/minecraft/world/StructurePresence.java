@@ -12,7 +12,7 @@ public enum StructurePresence {
 	START_PRESENT,
 	/**
 	 * The structure start is not present in the chunk, or the
-	 * start was already referenced and the {@code skipExistingChunk}
+	 * start was already referenced and the {@code skipReferencedStructures}
 	 * is set to {@code true}.
 	 */
 	START_NOT_PRESENT,

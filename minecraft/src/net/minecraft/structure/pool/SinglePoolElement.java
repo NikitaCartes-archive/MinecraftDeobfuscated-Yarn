@@ -40,19 +40,19 @@ public class SinglePoolElement extends StructurePoolElement {
 	protected final Either<Identifier, Structure> location;
 	protected final RegistryEntry<StructureProcessorList> processors;
 
-	private static <T> DataResult<T> encodeLocation(Either<Identifier, Structure> either, DynamicOps<T> dynamicOps, T object) {
-		Optional<Identifier> optional = either.left();
+	private static <T> DataResult<T> encodeLocation(Either<Identifier, Structure> location, DynamicOps<T> ops, T prefix) {
+		Optional<Identifier> optional = location.left();
 		return !optional.isPresent()
 			? DataResult.error("Can not serialize a runtime pool element")
-			: Identifier.CODEC.encode((Identifier)optional.get(), dynamicOps, object);
+			: Identifier.CODEC.encode((Identifier)optional.get(), ops, prefix);
 	}
 
 	protected static <E extends SinglePoolElement> RecordCodecBuilder<E, RegistryEntry<StructureProcessorList>> processorsGetter() {
-		return StructureProcessorType.REGISTRY_CODEC.fieldOf("processors").forGetter(singlePoolElement -> singlePoolElement.processors);
+		return StructureProcessorType.REGISTRY_CODEC.fieldOf("processors").forGetter(pool -> pool.processors);
 	}
 
 	protected static <E extends SinglePoolElement> RecordCodecBuilder<E, Either<Identifier, Structure>> locationGetter() {
-		return LOCATION_CODEC.fieldOf("location").forGetter(singlePoolElement -> singlePoolElement.location);
+		return LOCATION_CODEC.fieldOf("location").forGetter(pool -> pool.location);
 	}
 
 	protected SinglePoolElement(Either<Identifier, Structure> location, RegistryEntry<StructureProcessorList> processors, StructurePool.Projection projection) {
@@ -119,7 +119,7 @@ public class SinglePoolElement extends StructurePoolElement {
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
 		BlockPos pos,
-		BlockPos blockPos,
+		BlockPos pivot,
 		BlockRotation rotation,
 		BlockBox box,
 		Random random,
@@ -127,11 +127,11 @@ public class SinglePoolElement extends StructurePoolElement {
 	) {
 		Structure structure = this.getStructure(structureManager);
 		StructurePlacementData structurePlacementData = this.createPlacementData(rotation, box, keepJigsaws);
-		if (!structure.place(world, pos, blockPos, structurePlacementData, random, 18)) {
+		if (!structure.place(world, pos, pivot, structurePlacementData, random, 18)) {
 			return false;
 		} else {
 			for (Structure.StructureBlockInfo structureBlockInfo : Structure.process(
-				world, pos, blockPos, structurePlacementData, this.getDataStructureBlocks(structureManager, pos, rotation, false)
+				world, pos, pivot, structurePlacementData, this.getDataStructureBlocks(structureManager, pos, rotation, false)
 			)) {
 				this.method_16756(world, structureBlockInfo, pos, rotation, random, box);
 			}

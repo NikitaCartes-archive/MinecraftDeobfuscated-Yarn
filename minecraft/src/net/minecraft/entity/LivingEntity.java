@@ -1648,7 +1648,17 @@ public abstract class LivingEntity extends Entity {
 		return amount;
 	}
 
-	protected float applyEnchantmentsToDamage(DamageSource source, float amount) {
+	/**
+	 * {@return the modified damage value for the applied {@code damage}}
+	 * 
+	 * @apiNote Subclasses should override this to make the entity take reduced damage.
+	 * 
+	 * @implNote This applies various {@linkplain net.minecraft.enchantment.ProtectionEnchantment
+	 * protection enchantments} and the resistance effect. {@link
+	 * net.minecraft.entity.mob.WitchEntity} uses this to negate their own damage and reduce the
+	 * applied status effect damage.
+	 */
+	protected float modifyAppliedDamage(DamageSource source, float amount) {
 		if (source.isUnblockable()) {
 			return amount;
 		} else {
@@ -1670,6 +1680,8 @@ public abstract class LivingEntity extends Entity {
 
 			if (amount <= 0.0F) {
 				return 0.0F;
+			} else if (source.bypassesProtection()) {
+				return amount;
 			} else {
 				int i = EnchantmentHelper.getProtectionAmount(this.getArmorItems(), source);
 				if (i > 0) {
@@ -1684,7 +1696,7 @@ public abstract class LivingEntity extends Entity {
 	protected void applyDamage(DamageSource source, float amount) {
 		if (!this.isInvulnerableTo(source)) {
 			amount = this.applyArmorToDamage(source, amount);
-			amount = this.applyEnchantmentsToDamage(source, amount);
+			amount = this.modifyAppliedDamage(source, amount);
 			float var8 = Math.max(amount - this.getAbsorptionAmount(), 0.0F);
 			this.setAbsorptionAmount(this.getAbsorptionAmount() - (amount - var8));
 			float g = amount - var8;

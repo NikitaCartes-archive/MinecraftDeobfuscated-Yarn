@@ -35,7 +35,7 @@ public class StructurePool {
 						.codec()
 						.listOf()
 						.fieldOf("elements")
-						.forGetter(structurePool -> structurePool.elementCounts)
+						.forGetter(pool -> pool.elementCounts)
 				)
 				.apply(instance, StructurePool::new)
 	);
@@ -88,7 +88,7 @@ public class StructurePool {
 		if (this.highestY == Integer.MIN_VALUE) {
 			this.highestY = this.elements
 				.stream()
-				.filter(structurePoolElement -> structurePoolElement != EmptyPoolElement.INSTANCE)
+				.filter(element -> element != EmptyPoolElement.INSTANCE)
 				.mapToInt(element -> element.getBoundingBox(structureManager, BlockPos.ORIGIN, BlockRotation.NONE).getBlockCountY())
 				.max()
 				.orElse(0);

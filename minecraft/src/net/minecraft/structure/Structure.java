@@ -368,9 +368,9 @@ public class Structure {
 		}
 	}
 
-	public static void updateCorner(WorldAccess world, int flags, VoxelSet voxelSet, int startX, int startY, int startZ) {
-		voxelSet.forEachDirection((direction, m, n, o) -> {
-			BlockPos blockPos = new BlockPos(startX + m, startY + n, startZ + o);
+	public static void updateCorner(WorldAccess world, int flags, VoxelSet set, int startX, int startY, int startZ) {
+		set.forEachDirection((direction, x, y, z) -> {
+			BlockPos blockPos = new BlockPos(startX + x, startY + y, startZ + z);
 			BlockPos blockPos2 = blockPos.offset(direction);
 			BlockState blockState = world.getBlockState(blockPos);
 			BlockState blockState2 = world.getBlockState(blockPos2);
@@ -387,11 +387,11 @@ public class Structure {
 	}
 
 	public static List<Structure.StructureBlockInfo> process(
-		WorldAccess world, BlockPos pos, BlockPos pivot, StructurePlacementData placementData, List<Structure.StructureBlockInfo> list
+		WorldAccess world, BlockPos pos, BlockPos pivot, StructurePlacementData placementData, List<Structure.StructureBlockInfo> infos
 	) {
-		List<Structure.StructureBlockInfo> list2 = Lists.<Structure.StructureBlockInfo>newArrayList();
+		List<Structure.StructureBlockInfo> list = Lists.<Structure.StructureBlockInfo>newArrayList();
 
-		for (Structure.StructureBlockInfo structureBlockInfo : list) {
+		for (Structure.StructureBlockInfo structureBlockInfo : infos) {
 			BlockPos blockPos = transform(placementData, structureBlockInfo.pos).add(pos);
 			Structure.StructureBlockInfo structureBlockInfo2 = new Structure.StructureBlockInfo(
 				blockPos, structureBlockInfo.state, structureBlockInfo.nbt != null ? structureBlockInfo.nbt.copy() : null
@@ -403,21 +403,21 @@ public class Structure {
 			}
 
 			if (structureBlockInfo2 != null) {
-				list2.add(structureBlockInfo2);
+				list.add(structureBlockInfo2);
 			}
 		}
 
-		return list2;
+		return list;
 	}
 
 	private void spawnEntities(
-		ServerWorldAccess world, BlockPos pos, BlockMirror blockMirror, BlockRotation blockRotation, BlockPos pivot, @Nullable BlockBox area, boolean initializeMobs
+		ServerWorldAccess world, BlockPos pos, BlockMirror mirror, BlockRotation rotation, BlockPos pivot, @Nullable BlockBox area, boolean initializeMobs
 	) {
 		for (Structure.StructureEntityInfo structureEntityInfo : this.entities) {
-			BlockPos blockPos = transformAround(structureEntityInfo.blockPos, blockMirror, blockRotation, pivot).add(pos);
+			BlockPos blockPos = transformAround(structureEntityInfo.blockPos, mirror, rotation, pivot).add(pos);
 			if (area == null || area.contains(blockPos)) {
 				NbtCompound nbtCompound = structureEntityInfo.nbt.copy();
-				Vec3d vec3d = transformAround(structureEntityInfo.pos, blockMirror, blockRotation, pivot);
+				Vec3d vec3d = transformAround(structureEntityInfo.pos, mirror, rotation, pivot);
 				Vec3d vec3d2 = vec3d.add((double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
 				NbtList nbtList = new NbtList();
 				nbtList.add(NbtDouble.of(vec3d2.x));
@@ -426,8 +426,8 @@ public class Structure {
 				nbtCompound.put("Pos", nbtList);
 				nbtCompound.remove("UUID");
 				getEntity(world, nbtCompound).ifPresent(entity -> {
-					float f = entity.applyRotation(blockRotation);
-					f += entity.applyMirror(blockMirror) - entity.getYaw();
+					float f = entity.applyRotation(rotation);
+					f += entity.applyMirror(mirror) - entity.getYaw();
 					entity.refreshPositionAndAngles(vec3d2.x, vec3d2.y, vec3d2.z, f, entity.getPitch());
 					if (initializeMobs && entity instanceof MobEntity) {
 						((MobEntity)entity).initialize(world, world.getLocalDifficulty(new BlockPos(vec3d2)), SpawnReason.STRUCTURE, null, nbtCompound);
@@ -767,9 +767,7 @@ public class Structure {
 
 		public List<Structure.StructureBlockInfo> getAllOf(Block block) {
 			return (List<Structure.StructureBlockInfo>)this.blockToInfos
-				.computeIfAbsent(
-					block, blockx -> (List)this.infos.stream().filter(structureBlockInfo -> structureBlockInfo.state.isOf(blockx)).collect(Collectors.toList())
-				);
+				.computeIfAbsent(block, block2 -> (List)this.infos.stream().filter(info -> info.state.isOf(block2)).collect(Collectors.toList()));
 		}
 	}
 

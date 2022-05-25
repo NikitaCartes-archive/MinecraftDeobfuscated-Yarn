@@ -25,7 +25,7 @@ import net.minecraft.world.gen.feature.PlacedFeature;
 
 public class FeaturePoolElement extends StructurePoolElement {
 	public static final Codec<FeaturePoolElement> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(PlacedFeature.REGISTRY_CODEC.fieldOf("feature").forGetter(featurePoolElement -> featurePoolElement.feature), projectionGetter())
+		instance -> instance.group(PlacedFeature.REGISTRY_CODEC.fieldOf("feature").forGetter(pool -> pool.feature), projectionGetter())
 				.apply(instance, FeaturePoolElement::new)
 	);
 	private final RegistryEntry<PlacedFeature> feature;
@@ -76,7 +76,7 @@ public class FeaturePoolElement extends StructurePoolElement {
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
 		BlockPos pos,
-		BlockPos blockPos,
+		BlockPos pivot,
 		BlockRotation rotation,
 		BlockBox box,
 		Random random,

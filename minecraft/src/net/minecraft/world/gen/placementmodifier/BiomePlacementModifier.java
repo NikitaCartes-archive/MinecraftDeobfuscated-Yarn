@@ -25,7 +25,7 @@ public class BiomePlacementModifier extends AbstractConditionalPlacementModifier
 		PlacedFeature placedFeature = (PlacedFeature)context.getPlacedFeature()
 			.orElseThrow(() -> new IllegalStateException("Tried to biome check an unregistered feature, or a feature that should not restrict the biome"));
 		RegistryEntry<Biome> registryEntry = context.getWorld().getBiome(pos);
-		return context.getChunkGenerator().method_44216(registryEntry).isFeatureAllowed(placedFeature);
+		return context.getChunkGenerator().getGenerationSettings(registryEntry).isFeatureAllowed(placedFeature);
 	}
 
 	@Override

@@ -54,7 +54,7 @@ public abstract class StructurePoolElement {
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
 		BlockPos pos,
-		BlockPos blockPos,
+		BlockPos pivot,
 		BlockRotation rotation,
 		BlockBox box,
 		Random random,
@@ -93,26 +93,31 @@ public abstract class StructurePoolElement {
 	}
 
 	public static Function<StructurePool.Projection, LegacySinglePoolElement> ofProcessedLegacySingle(
-		String id, RegistryEntry<StructureProcessorList> registryEntry
+		String id, RegistryEntry<StructureProcessorList> processorListEntry
 	) {
-		return projection -> new LegacySinglePoolElement(Either.left(new Identifier(id)), registryEntry, projection);
+		return projection -> new LegacySinglePoolElement(Either.left(new Identifier(id)), processorListEntry, projection);
 	}
 
 	public static Function<StructurePool.Projection, SinglePoolElement> ofSingle(String id) {
 		return projection -> new SinglePoolElement(Either.left(new Identifier(id)), StructureProcessorLists.EMPTY, projection);
 	}
 
-	public static Function<StructurePool.Projection, SinglePoolElement> ofProcessedSingle(String id, RegistryEntry<StructureProcessorList> registryEntry) {
-		return projection -> new SinglePoolElement(Either.left(new Identifier(id)), registryEntry, projection);
+	public static Function<StructurePool.Projection, SinglePoolElement> ofProcessedSingle(String id, RegistryEntry<StructureProcessorList> processorListEntry) {
+		return projection -> new SinglePoolElement(Either.left(new Identifier(id)), processorListEntry, projection);
 	}
 
-	public static Function<StructurePool.Projection, FeaturePoolElement> ofFeature(RegistryEntry<PlacedFeature> registryEntry) {
-		return projection -> new FeaturePoolElement(registryEntry, projection);
+	public static Function<StructurePool.Projection, FeaturePoolElement> ofFeature(RegistryEntry<PlacedFeature> placedFeatureEntry) {
+		return projection -> new FeaturePoolElement(placedFeatureEntry, projection);
 	}
 
-	public static Function<StructurePool.Projection, ListPoolElement> ofList(List<Function<StructurePool.Projection, ? extends StructurePoolElement>> list) {
+	public static Function<StructurePool.Projection, ListPoolElement> ofList(
+		List<Function<StructurePool.Projection, ? extends StructurePoolElement>> elementGetters
+	) {
 		return projection -> new ListPoolElement(
-				(List<StructurePoolElement>)list.stream().map(function -> (StructurePoolElement)function.apply(projection)).collect(Collectors.toList()), projection
+				(List<StructurePoolElement>)elementGetters.stream()
+					.map(elementGetetr -> (StructurePoolElement)elementGetetr.apply(projection))
+					.collect(Collectors.toList()),
+				projection
 			);
 	}
 }

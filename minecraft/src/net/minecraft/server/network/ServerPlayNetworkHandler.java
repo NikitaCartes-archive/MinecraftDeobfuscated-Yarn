@@ -451,6 +451,11 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	public void onTeleportConfirm(TeleportConfirmC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		if (packet.getTeleportId() == this.requestedTeleportId) {
+			if (this.requestedTeleportPos == null) {
+				this.disconnect(Text.translatable("multiplayer.disconnect.invalid_player_movement"));
+				return;
+			}
+
 			this.player
 				.updatePositionAndAngles(
 					this.requestedTeleportPos.x, this.requestedTeleportPos.y, this.requestedTeleportPos.z, this.player.getYaw(), this.player.getPitch()

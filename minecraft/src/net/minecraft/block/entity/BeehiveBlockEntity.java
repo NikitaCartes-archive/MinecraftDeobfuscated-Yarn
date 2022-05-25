@@ -26,6 +26,7 @@ import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class BeehiveBlockEntity extends BlockEntity {
 	public static final String FLOWER_POS_KEY = "FlowerPos";
@@ -169,6 +170,7 @@ public class BeehiveBlockEntity extends BlockEntity {
 					.playSound(
 						null, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), SoundEvents.BLOCK_BEEHIVE_ENTER, SoundCategory.BLOCKS, 1.0F, 1.0F
 					);
+				this.world.emitGameEvent(GameEvent.BLOCK_CHANGE, blockPos, GameEvent.Emitter.of(entity, this.getCachedState()));
 			}
 
 			entity.discard();
@@ -241,6 +243,7 @@ public class BeehiveBlockEntity extends BlockEntity {
 						}
 
 						world.playSound(null, pos, SoundEvents.BLOCK_BEEHIVE_EXIT, SoundCategory.BLOCKS, 1.0F, 1.0F);
+						world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(entity, world.getBlockState(pos)));
 						return world.spawnEntity(entity);
 					}
 				} else {

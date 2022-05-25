@@ -73,4 +73,15 @@ public record ChatMessageSignature(UUID sender, Instant timestamp, NetworkEncryp
 	public boolean canVerify() {
 		return this.sender != Util.NIL_UUID && this.saltSignature.isSignaturePresent();
 	}
+
+	/**
+	 * {@return whether the message is from {@code expectedSender} and the signature
+	 * can be verified}
+	 * 
+	 * <p>Verifiable signature is not the same as verified signature. A signatures is verifiable
+	 * if it has proper sender UUID and signature data. However, it can still fail to verify.
+	 */
+	public boolean canVerifyFrom(UUID expectedSender) {
+		return this.canVerify() && expectedSender.equals(this.sender);
+	}
 }

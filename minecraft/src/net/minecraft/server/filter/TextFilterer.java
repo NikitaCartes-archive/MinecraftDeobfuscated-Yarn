@@ -123,6 +123,7 @@ public class TextFilterer implements AutoCloseable {
 							jsonObjectx.addProperty("player", profile.getId().toString());
 							jsonObjectx.addProperty("player_display_name", profile.getName());
 							jsonObjectx.addProperty("text", message);
+							jsonObjectx.addProperty("language", "*");
 							return jsonObjectx;
 						};
 					} else {
@@ -135,6 +136,7 @@ public class TextFilterer implements AutoCloseable {
 							jsonObjectx.addProperty("user_id", profile.getId().toString());
 							jsonObjectx.addProperty("user_display_name", profile.getName());
 							jsonObjectx.addProperty("text", message);
+							jsonObjectx.addProperty("language", "*");
 							return jsonObjectx;
 						};
 					}

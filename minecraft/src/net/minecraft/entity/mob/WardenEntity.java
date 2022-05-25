@@ -586,32 +586,34 @@ public class WardenEntity extends HostileEntity implements VibrationListener.Cal
 	public void accept(
 		ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity, @Nullable Entity sourceEntity, float distance
 	) {
-		this.brain.remember(MemoryModuleType.VIBRATION_COOLDOWN, Unit.INSTANCE, 40L);
-		world.sendEntityStatus(this, EntityStatuses.EARS_TWITCH);
-		this.playSound(SoundEvents.ENTITY_WARDEN_TENDRIL_CLICKS, 5.0F, this.getSoundPitch());
-		BlockPos blockPos = pos;
-		if (sourceEntity != null) {
-			if (this.isInRange(sourceEntity, 30.0)) {
-				if (this.getBrain().hasMemoryModule(MemoryModuleType.RECENT_PROJECTILE)) {
-					if (this.isValidTarget(sourceEntity)) {
-						blockPos = sourceEntity.getBlockPos();
-					}
+		if (!this.isDead()) {
+			this.brain.remember(MemoryModuleType.VIBRATION_COOLDOWN, Unit.INSTANCE, 40L);
+			world.sendEntityStatus(this, EntityStatuses.EARS_TWITCH);
+			this.playSound(SoundEvents.ENTITY_WARDEN_TENDRIL_CLICKS, 5.0F, this.getSoundPitch());
+			BlockPos blockPos = pos;
+			if (sourceEntity != null) {
+				if (this.isInRange(sourceEntity, 30.0)) {
+					if (this.getBrain().hasMemoryModule(MemoryModuleType.RECENT_PROJECTILE)) {
+						if (this.isValidTarget(sourceEntity)) {
+							blockPos = sourceEntity.getBlockPos();
+						}
 
-					this.increaseAngerAt(sourceEntity);
-				} else {
-					this.increaseAngerAt(sourceEntity, 10, true);
+						this.increaseAngerAt(sourceEntity);
+					} else {
+						this.increaseAngerAt(sourceEntity, 10, true);
+					}
 				}
+
+				this.getBrain().remember(MemoryModuleType.RECENT_PROJECTILE, Unit.INSTANCE, 100L);
+			} else {
+				this.increaseAngerAt(entity);
 			}
 
-			this.getBrain().remember(MemoryModuleType.RECENT_PROJECTILE, Unit.INSTANCE, 100L);
-		} else {
-			this.increaseAngerAt(entity);
-		}
-
-		if (!this.getAngriness().isAngry()) {
-			Optional<LivingEntity> optional = this.angerManager.getPrimeSuspect();
-			if (sourceEntity != null || optional.isEmpty() || optional.get() == entity) {
-				WardenBrain.lookAtDisturbance(this, blockPos);
+			if (!this.getAngriness().isAngry()) {
+				Optional<LivingEntity> optional = this.angerManager.getPrimeSuspect();
+				if (sourceEntity != null || optional.isEmpty() || optional.get() == entity) {
+					WardenBrain.lookAtDisturbance(this, blockPos);
+				}
 			}
 		}
 	}

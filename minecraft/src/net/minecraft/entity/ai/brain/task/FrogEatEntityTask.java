@@ -1,13 +1,17 @@
 package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
+import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.passive.FrogEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -20,6 +24,8 @@ public class FrogEatEntityTask extends Task<FrogEntity> {
 	public static final int EAT_DURATION = 10;
 	private static final float MAX_DISTANCE = 1.75F;
 	private static final float VELOCITY_MULTIPLIER = 0.75F;
+	public static final int UNREACHABLE_TONGUE_TARGETS_START_TIME = 100;
+	public static final int MAX_UNREACHABLE_TONGUE_TARGETS = 5;
 	private int eatTick;
 	private int moveToTargetTick;
 	private final SoundEvent tongueSound;
@@ -35,7 +41,9 @@ public class FrogEatEntityTask extends Task<FrogEntity> {
 				MemoryModuleType.LOOK_TARGET,
 				MemoryModuleState.REGISTERED,
 				MemoryModuleType.ATTACK_TARGET,
-				MemoryModuleState.VALUE_PRESENT
+				MemoryModuleState.VALUE_PRESENT,
+				MemoryModuleType.IS_PANICKING,
+				MemoryModuleState.VALUE_ABSENT
 			),
 			100
 		);
@@ -44,13 +52,20 @@ public class FrogEatEntityTask extends Task<FrogEntity> {
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, FrogEntity frogEntity) {
-		return super.shouldRun(serverWorld, frogEntity)
-			&& FrogEntity.isValidFrogFood((LivingEntity)frogEntity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).get())
-			&& frogEntity.getPose() != EntityPose.CROAKING;
+		LivingEntity livingEntity = (LivingEntity)frogEntity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).get();
+		boolean bl = this.isTargetReachable(frogEntity, livingEntity);
+		if (!bl) {
+			frogEntity.getBrain().forget(MemoryModuleType.ATTACK_TARGET);
+			this.markTargetAsUnreachable(frogEntity, livingEntity);
+		}
+
+		return bl && frogEntity.getPose() != EntityPose.CROAKING && FrogEntity.isValidFrogFood(livingEntity);
 	}
 
 	protected boolean shouldKeepRunning(ServerWorld serverWorld, FrogEntity frogEntity, long l) {
-		return frogEntity.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET) && this.phase != FrogEatEntityTask.Phase.DONE;
+		return frogEntity.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET)
+			&& this.phase != FrogEatEntityTask.Phase.DONE
+			&& !frogEntity.getBrain().hasMemoryModule(MemoryModuleType.IS_PANICKING);
 	}
 
 	protected void run(ServerWorld serverWorld, FrogEntity frogEntity, long l) {
@@ -63,6 +78,8 @@ public class FrogEatEntityTask extends Task<FrogEntity> {
 	}
 
 	protected void finishRunning(ServerWorld serverWorld, FrogEntity frogEntity, long l) {
+		frogEntity.getBrain().forget(MemoryModuleType.ATTACK_TARGET);
+		frogEntity.clearFrogTarget();
 		frogEntity.setPose(EntityPose.STANDING);
 	}
 
@@ -78,8 +95,6 @@ public class FrogEatEntityTask extends Task<FrogEntity> {
 				}
 			}
 		}
-
-		frog.clearFrogTarget();
 	}
 
 	protected void keepRunning(ServerWorld serverWorld, FrogEntity frogEntity, long l) {
@@ -115,6 +130,25 @@ public class FrogEatEntityTask extends Task<FrogEntity> {
 				}
 			case DONE:
 		}
+	}
+
+	private boolean isTargetReachable(FrogEntity entity, LivingEntity target) {
+		Path path = entity.getNavigation().findPathTo(target, 0);
+		return path.getManhattanDistanceFromTarget() < 1.75F;
+	}
+
+	private void markTargetAsUnreachable(FrogEntity entity, LivingEntity target) {
+		List<UUID> list = (List<UUID>)entity.getBrain().getOptionalMemory(MemoryModuleType.UNREACHABLE_TONGUE_TARGETS).orElseGet(ArrayList::new);
+		boolean bl = !list.contains(target.getUuid());
+		if (list.size() == 5 && bl) {
+			list.remove(0);
+		}
+
+		if (bl) {
+			list.add(target.getUuid());
+		}
+
+		entity.getBrain().remember(MemoryModuleType.UNREACHABLE_TONGUE_TARGETS, list, 100L);
 	}
 
 	static enum Phase {

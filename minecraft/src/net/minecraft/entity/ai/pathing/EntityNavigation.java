@@ -50,10 +50,10 @@ public abstract class EntityNavigation {
 	private final PathNodeNavigator pathNodeNavigator;
 	private boolean nearPathStartPos;
 
-	public EntityNavigation(MobEntity mobEntity, World world) {
-		this.entity = mobEntity;
+	public EntityNavigation(MobEntity entity, World world) {
+		this.entity = entity;
 		this.world = world;
-		int i = MathHelper.floor(mobEntity.getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE) * 16.0);
+		int i = MathHelper.floor(entity.getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE) * 16.0);
 		this.pathNodeNavigator = this.createPathNodeNavigator(i);
 	}
 

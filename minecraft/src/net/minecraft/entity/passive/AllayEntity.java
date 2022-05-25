@@ -46,6 +46,7 @@ import net.minecraft.tag.TagKey;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -64,6 +65,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	private static final int field_38405 = 16;
 	private static final Vec3i ITEM_PICKUP_RANGE_EXPANDER = new Vec3i(1, 1, 1);
 	private static final int field_38934 = 5;
+	private static final float field_39451 = 0.5F;
 	protected static final ImmutableList<SensorType<? extends Sensor<? super AllayEntity>>> SENSORS = ImmutableList.of(
 		SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.HURT_BY, SensorType.NEAREST_ITEMS
 	);
@@ -78,7 +80,8 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 		MemoryModuleType.LIKED_PLAYER,
 		MemoryModuleType.LIKED_NOTEBLOCK,
 		MemoryModuleType.LIKED_NOTEBLOCK_COOLDOWN_TICKS,
-		MemoryModuleType.ITEM_PICKUP_COOLDOWN_TICKS
+		MemoryModuleType.ITEM_PICKUP_COOLDOWN_TICKS,
+		MemoryModuleType.IS_PANICKING
 	);
 	public static final ImmutableList<Float> THROW_SOUND_PITCHES = ImmutableList.of(
 		0.5625F, 0.625F, 0.75F, 0.9375F, 1.0F, 1.0F, 1.125F, 1.25F, 1.5F, 1.875F, 2.0F, 2.25F, 2.5F, 3.0F, 3.75F, 4.0F
@@ -399,5 +402,17 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	@Override
 	protected boolean shouldFollowLeash() {
 		return false;
+	}
+
+	@Override
+	public Iterable<BlockPos> getPotentialEscapePositions() {
+		Box box = this.getBoundingBox();
+		int i = MathHelper.floor(box.minX - 0.5);
+		int j = MathHelper.floor(box.maxX + 0.5);
+		int k = MathHelper.floor(box.minZ - 0.5);
+		int l = MathHelper.floor(box.maxZ + 0.5);
+		int m = MathHelper.floor(box.minY - 0.5);
+		int n = MathHelper.floor(box.maxY + 0.5);
+		return BlockPos.iterate(i, m, k, j, n, l);
 	}
 }

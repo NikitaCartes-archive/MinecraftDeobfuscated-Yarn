@@ -252,32 +252,28 @@ public class BlockModelRenderer {
 		switch (face) {
 			case DOWN:
 				flags.set(1, f >= 1.0E-4F || h >= 1.0E-4F || i <= 0.9999F || k <= 0.9999F);
-				flags.set(0, g == j && (g < 1.0E-4F || isOpaqueFullCube(world, state, pos)));
+				flags.set(0, g == j && (g < 1.0E-4F || state.isFullCube(world, pos)));
 				break;
 			case UP:
 				flags.set(1, f >= 1.0E-4F || h >= 1.0E-4F || i <= 0.9999F || k <= 0.9999F);
-				flags.set(0, g == j && (j > 0.9999F || isOpaqueFullCube(world, state, pos)));
+				flags.set(0, g == j && (j > 0.9999F || state.isFullCube(world, pos)));
 				break;
 			case NORTH:
 				flags.set(1, f >= 1.0E-4F || g >= 1.0E-4F || i <= 0.9999F || j <= 0.9999F);
-				flags.set(0, h == k && (h < 1.0E-4F || isOpaqueFullCube(world, state, pos)));
+				flags.set(0, h == k && (h < 1.0E-4F || state.isFullCube(world, pos)));
 				break;
 			case SOUTH:
 				flags.set(1, f >= 1.0E-4F || g >= 1.0E-4F || i <= 0.9999F || j <= 0.9999F);
-				flags.set(0, h == k && (k > 0.9999F || isOpaqueFullCube(world, state, pos)));
+				flags.set(0, h == k && (k > 0.9999F || state.isFullCube(world, pos)));
 				break;
 			case WEST:
 				flags.set(1, g >= 1.0E-4F || h >= 1.0E-4F || j <= 0.9999F || k <= 0.9999F);
-				flags.set(0, f == i && (f < 1.0E-4F || isOpaqueFullCube(world, state, pos)));
+				flags.set(0, f == i && (f < 1.0E-4F || state.isFullCube(world, pos)));
 				break;
 			case EAST:
 				flags.set(1, g >= 1.0E-4F || h >= 1.0E-4F || j <= 0.9999F || k <= 0.9999F);
-				flags.set(0, f == i && (i > 0.9999F || isOpaqueFullCube(world, state, pos)));
+				flags.set(0, f == i && (i > 0.9999F || state.isFullCube(world, pos)));
 		}
-	}
-
-	private static boolean isOpaqueFullCube(BlockRenderView world, BlockState state, BlockPos pos) {
-		return state.isOpaque() && state.isFullCube(world, pos);
 	}
 
 	private void renderQuadsFlat(

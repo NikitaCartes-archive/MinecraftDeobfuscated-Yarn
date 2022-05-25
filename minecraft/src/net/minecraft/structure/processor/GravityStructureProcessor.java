@@ -13,11 +13,8 @@ import net.minecraft.world.WorldView;
 public class GravityStructureProcessor extends StructureProcessor {
 	public static final Codec<GravityStructureProcessor> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Heightmap.Type.CODEC
-						.fieldOf("heightmap")
-						.orElse(Heightmap.Type.WORLD_SURFACE_WG)
-						.forGetter(gravityStructureProcessor -> gravityStructureProcessor.heightmap),
-					Codec.INT.fieldOf("offset").orElse(0).forGetter(gravityStructureProcessor -> gravityStructureProcessor.offset)
+					Heightmap.Type.CODEC.fieldOf("heightmap").orElse(Heightmap.Type.WORLD_SURFACE_WG).forGetter(processor -> processor.heightmap),
+					Codec.INT.fieldOf("offset").orElse(0).forGetter(processor -> processor.offset)
 				)
 				.apply(instance, GravityStructureProcessor::new)
 	);

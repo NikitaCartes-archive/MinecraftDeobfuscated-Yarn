@@ -1,6 +1,5 @@
 package net.minecraft.entity.ai.pathing;
 
-import com.google.common.collect.ImmutableSet;
 import it.unimi.dsi.fastutil.longs.Long2ObjectFunction;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
@@ -49,13 +48,8 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 		BlockPos blockPos = this.entity.getBlockPos();
 		PathNodeType pathNodeType = this.getNodeType(blockPos.getX(), i, blockPos.getZ());
 		if (this.entity.getPathfindingPenalty(pathNodeType) < 0.0F) {
-			for (BlockPos blockPos2 : ImmutableSet.of(
-				new BlockPos(this.entity.getBoundingBox().minX, (double)i, this.entity.getBoundingBox().minZ),
-				new BlockPos(this.entity.getBoundingBox().minX, (double)i, this.entity.getBoundingBox().maxZ),
-				new BlockPos(this.entity.getBoundingBox().maxX, (double)i, this.entity.getBoundingBox().minZ),
-				new BlockPos(this.entity.getBoundingBox().maxX, (double)i, this.entity.getBoundingBox().maxZ)
-			)) {
-				PathNodeType pathNodeType2 = this.getNodeType(blockPos.getX(), i, blockPos.getZ());
+			for (BlockPos blockPos2 : this.entity.getPotentialEscapePositions()) {
+				PathNodeType pathNodeType2 = this.getNodeType(blockPos2.getX(), blockPos2.getY(), blockPos2.getZ());
 				if (this.entity.getPathfindingPenalty(pathNodeType2) >= 0.0F) {
 					return super.getStart(blockPos2);
 				}
@@ -343,7 +337,9 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 			} else if (pathNodeType2 == PathNodeType.COCOA) {
 				pathNodeType = PathNodeType.COCOA;
 			} else if (pathNodeType2 == PathNodeType.FENCE) {
-				pathNodeType = PathNodeType.FENCE;
+				if (!mutable.equals(this.entity.getBlockPos())) {
+					pathNodeType = PathNodeType.FENCE;
+				}
 			} else {
 				pathNodeType = pathNodeType2 != PathNodeType.WALKABLE && pathNodeType2 != PathNodeType.OPEN && pathNodeType2 != PathNodeType.WATER
 					? PathNodeType.WALKABLE

@@ -166,8 +166,8 @@ public class StructureAccessor {
 		return this.world.getChunk(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), ChunkStatus.STRUCTURE_REFERENCES).hasStructureReferences();
 	}
 
-	public Map<StructureType, LongSet> method_41037(BlockPos blockPos) {
-		ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(blockPos);
+	public Map<StructureType, LongSet> getStructureReferences(BlockPos pos) {
+		ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(pos);
 		return this.world.getChunk(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), ChunkStatus.STRUCTURE_REFERENCES).getStructureReferences();
 	}
 

@@ -45,27 +45,27 @@ import org.slf4j.Logger;
 public class StructureManager {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final String STRUCTURES_DIRECTORY = "structures";
-	private static final String field_39416 = "gameteststructures";
+	private static final String GAME_TEST_STRUCTURES_DIRECTORY = "gameteststructures";
 	private static final String NBT_FILE_EXTENSION = ".nbt";
 	private static final String SNBT_FILE_EXTENSION = ".snbt";
 	private final Map<Identifier, Optional<Structure>> structures = Maps.<Identifier, Optional<Structure>>newConcurrentMap();
 	private final DataFixer dataFixer;
 	private ResourceManager resourceManager;
 	private final Path generatedPath;
-	private final List<StructureManager.class_7514> field_39417;
+	private final List<StructureManager.Provider> providers;
 
 	public StructureManager(ResourceManager resourceManager, LevelStorage.Session session, DataFixer dataFixer) {
 		this.resourceManager = resourceManager;
 		this.dataFixer = dataFixer;
 		this.generatedPath = session.getDirectory(WorldSavePath.GENERATED).normalize();
-		Builder<StructureManager.class_7514> builder = ImmutableList.builder();
-		builder.add(new StructureManager.class_7514(this::loadStructureFromFile, this::method_44243));
+		Builder<StructureManager.Provider> builder = ImmutableList.builder();
+		builder.add(new StructureManager.Provider(this::loadStructureFromFile, this::streamStructuresFromFile));
 		if (SharedConstants.isDevelopment) {
-			builder.add(new StructureManager.class_7514(this::method_44246, this::method_44241));
+			builder.add(new StructureManager.Provider(this::loadStructureFromGameTestFile, this::streamStructuresFromGameTestFile));
 		}
 
-		builder.add(new StructureManager.class_7514(this::loadStructureFromResource, this::method_44239));
-		this.field_39417 = builder.build();
+		builder.add(new StructureManager.Provider(this::loadStructureFromResource, this::streamStructuresFromResource));
+		this.providers = builder.build();
 	}
 
 	public Structure getStructureOrBlank(Identifier id) {
@@ -80,17 +80,17 @@ public class StructureManager {
 	}
 
 	public Optional<Structure> getStructure(Identifier id) {
-		return (Optional<Structure>)this.structures.computeIfAbsent(id, this::method_44245);
+		return (Optional<Structure>)this.structures.computeIfAbsent(id, this::loadStructure);
 	}
 
-	public Stream<Identifier> method_44226() {
-		return this.field_39417.stream().flatMap(arg -> (Stream)arg.lister().get()).distinct();
+	public Stream<Identifier> streamStructures() {
+		return this.providers.stream().flatMap(provider -> (Stream)provider.lister().get()).distinct();
 	}
 
-	private Optional<Structure> method_44245(Identifier identifier) {
-		for (StructureManager.class_7514 lv : this.field_39417) {
+	private Optional<Structure> loadStructure(Identifier id) {
+		for (StructureManager.Provider provider : this.providers) {
 			try {
-				Optional<Structure> optional = (Optional<Structure>)lv.loader().apply(identifier);
+				Optional<Structure> optional = (Optional<Structure>)provider.loader().apply(id);
 				if (optional.isPresent()) {
 					return optional;
 				}
@@ -108,27 +108,23 @@ public class StructureManager {
 
 	private Optional<Structure> loadStructureFromResource(Identifier id) {
 		Identifier identifier = new Identifier(id.getNamespace(), "structures/" + id.getPath() + ".nbt");
-		return this.method_44231(() -> this.resourceManager.open(identifier), throwable -> LOGGER.error("Couldn't load structure {}", id, throwable));
+		return this.loadStructure(() -> this.resourceManager.open(identifier), throwable -> LOGGER.error("Couldn't load structure {}", id, throwable));
 	}
 
-	private Stream<Identifier> method_44239() {
+	private Stream<Identifier> streamStructuresFromResource() {
 		return this.resourceManager
-			.findResources("structures", identifier -> true)
+			.findResources("structures", id -> true)
 			.keySet()
 			.stream()
-			.map(
-				identifier -> new Identifier(
-						identifier.getNamespace(), identifier.getPath().substring("structures".length() + 1, identifier.getPath().length() - ".nbt".length())
-					)
-			);
+			.map(id -> new Identifier(id.getNamespace(), id.getPath().substring("structures".length() + 1, id.getPath().length() - ".nbt".length())));
 	}
 
-	private Optional<Structure> method_44246(Identifier identifier) {
-		return this.method_44230(identifier, Paths.get("gameteststructures"));
+	private Optional<Structure> loadStructureFromGameTestFile(Identifier id) {
+		return this.loadStructureFromSnbt(id, Paths.get("gameteststructures"));
 	}
 
-	private Stream<Identifier> method_44241() {
-		return this.method_44236(Paths.get("gameteststructures"), "minecraft", ".snbt");
+	private Stream<Identifier> streamStructuresFromGameTestFile() {
+		return this.streamStructures(Paths.get("gameteststructures"), "minecraft", ".snbt");
 	}
 
 	private Optional<Structure> loadStructureFromFile(Identifier id) {
@@ -136,38 +132,38 @@ public class StructureManager {
 			return Optional.empty();
 		} else {
 			Path path = getAndCheckStructurePath(this.generatedPath, id, ".nbt");
-			return this.method_44231(() -> new FileInputStream(path.toFile()), throwable -> LOGGER.error("Couldn't load structure from {}", path, throwable));
+			return this.loadStructure(() -> new FileInputStream(path.toFile()), throwable -> LOGGER.error("Couldn't load structure from {}", path, throwable));
 		}
 	}
 
-	private Stream<Identifier> method_44243() {
+	private Stream<Identifier> streamStructuresFromFile() {
 		if (!Files.isDirectory(this.generatedPath, new LinkOption[0])) {
 			return Stream.empty();
 		} else {
 			try {
-				return Files.list(this.generatedPath).filter(path -> Files.isDirectory(path, new LinkOption[0])).flatMap(path -> this.method_44235(path));
+				return Files.list(this.generatedPath).filter(path -> Files.isDirectory(path, new LinkOption[0])).flatMap(path -> this.streamStructures(path));
 			} catch (IOException var2) {
 				return Stream.empty();
 			}
 		}
 	}
 
-	private Stream<Identifier> method_44235(Path path) {
-		Path path2 = path.resolve("structures");
-		return this.method_44236(path2, path.getFileName().toString(), ".nbt");
+	private Stream<Identifier> streamStructures(Path namespaceDirectory) {
+		Path path = namespaceDirectory.resolve("structures");
+		return this.streamStructures(path, namespaceDirectory.getFileName().toString(), ".nbt");
 	}
 
-	private Stream<Identifier> method_44236(Path path, String string, String string2) {
-		if (!Files.isDirectory(path, new LinkOption[0])) {
+	private Stream<Identifier> streamStructures(Path structuresDirectoryPath, String namespace, String extension) {
+		if (!Files.isDirectory(structuresDirectoryPath, new LinkOption[0])) {
 			return Stream.empty();
 		} else {
-			int i = string2.length();
-			Function<String, String> function = stringx -> stringx.substring(0, stringx.length() - i);
+			int i = extension.length();
+			Function<String, String> function = filename -> filename.substring(0, filename.length() - i);
 
 			try {
-				return Files.walk(path).filter(pathx -> pathx.toString().endsWith(string2)).mapMulti((path2, consumer) -> {
+				return Files.walk(structuresDirectoryPath).filter(path -> path.toString().endsWith(extension)).mapMulti((path, consumer) -> {
 					try {
-						consumer.accept(new Identifier(string, (String)function.apply(this.method_44238(path, path2))));
+						consumer.accept(new Identifier(namespace, (String)function.apply(this.toRelativePath(structuresDirectoryPath, path))));
 					} catch (InvalidIdentifierException var7x) {
 						LOGGER.error("Invalid location while listing pack contents", (Throwable)var7x);
 					}
@@ -179,15 +175,15 @@ public class StructureManager {
 		}
 	}
 
-	private String method_44238(Path path, Path path2) {
-		return path.relativize(path2).toString().replace(File.separator, "/");
+	private String toRelativePath(Path root, Path path) {
+		return root.relativize(path).toString().replace(File.separator, "/");
 	}
 
-	private Optional<Structure> method_44230(Identifier identifier, Path path) {
+	private Optional<Structure> loadStructureFromSnbt(Identifier id, Path path) {
 		if (!Files.isDirectory(path, new LinkOption[0])) {
 			return Optional.empty();
 		} else {
-			Path path2 = FileNameUtil.getResourcePath(path, identifier.getPath(), ".snbt");
+			Path path2 = FileNameUtil.getResourcePath(path, id.getPath(), ".snbt");
 
 			try {
 				BufferedReader bufferedReader = Files.newBufferedReader(path2);
@@ -222,9 +218,9 @@ public class StructureManager {
 		}
 	}
 
-	private Optional<Structure> method_44231(StructureManager.class_7513 arg, Consumer<Throwable> consumer) {
+	private Optional<Structure> loadStructure(StructureManager.StructureFileOpener opener, Consumer<Throwable> exceptionConsumer) {
 		try {
-			InputStream inputStream = arg.open();
+			InputStream inputStream = opener.open();
 
 			Optional var4;
 			try {
@@ -249,7 +245,7 @@ public class StructureManager {
 		} catch (FileNotFoundException var8) {
 			return Optional.empty();
 		} catch (Throwable var9) {
-			consumer.accept(var9);
+			exceptionConsumer.accept(var9);
 			return Optional.empty();
 		}
 	}
@@ -313,8 +309,8 @@ public class StructureManager {
 		}
 	}
 
-	public Path method_44228(Identifier identifier, String string) {
-		return getStructurePath(this.generatedPath, identifier, string);
+	public Path getStructurePath(Identifier id, String extension) {
+		return getStructurePath(this.generatedPath, id, extension);
 	}
 
 	public static Path getStructurePath(Path path, Identifier id, String extension) {
@@ -344,11 +340,11 @@ public class StructureManager {
 		this.structures.remove(id);
 	}
 
-	@FunctionalInterface
-	interface class_7513 {
-		InputStream open() throws IOException;
+	static record Provider(Function<Identifier, Optional<Structure>> loader, Supplier<Stream<Identifier>> lister) {
 	}
 
-	static record class_7514(Function<Identifier, Optional<Structure>> loader, Supplier<Stream<Identifier>> lister) {
+	@FunctionalInterface
+	interface StructureFileOpener {
+		InputStream open() throws IOException;
 	}
 }

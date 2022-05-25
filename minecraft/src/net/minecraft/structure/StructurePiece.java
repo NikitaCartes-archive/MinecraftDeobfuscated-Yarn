@@ -111,7 +111,7 @@ public abstract class StructurePiece {
 		Random random,
 		BlockBox chunkBox,
 		ChunkPos chunkPos,
-		BlockPos pos
+		BlockPos pivot
 	);
 
 	public BlockBox getBoundingBox() {
@@ -122,8 +122,8 @@ public abstract class StructurePiece {
 		return this.chainLength;
 	}
 
-	public void method_41620(int i) {
-		this.chainLength = i;
+	public void setChainLength(int chainLength) {
+		this.chainLength = chainLength;
 	}
 
 	public boolean intersectsChunk(ChunkPos pos, int offset) {

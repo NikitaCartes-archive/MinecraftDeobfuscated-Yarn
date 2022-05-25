@@ -8,8 +8,8 @@ import net.minecraft.util.math.random.Random;
 public class RandomBlockStateMatchRuleTest extends RuleTest {
 	public static final Codec<RandomBlockStateMatchRuleTest> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					BlockState.CODEC.fieldOf("block_state").forGetter(randomBlockStateMatchRuleTest -> randomBlockStateMatchRuleTest.blockState),
-					Codec.FLOAT.fieldOf("probability").forGetter(randomBlockStateMatchRuleTest -> randomBlockStateMatchRuleTest.probability)
+					BlockState.CODEC.fieldOf("block_state").forGetter(ruleTest -> ruleTest.blockState),
+					Codec.FLOAT.fieldOf("probability").forGetter(ruleTest -> ruleTest.probability)
 				)
 				.apply(instance, RandomBlockStateMatchRuleTest::new)
 	);

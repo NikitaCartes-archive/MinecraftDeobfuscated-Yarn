@@ -45,7 +45,7 @@ public class EmptyPoolElement extends StructurePoolElement {
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
 		BlockPos pos,
-		BlockPos blockPos,
+		BlockPos pivot,
 		BlockRotation rotation,
 		BlockBox box,
 		Random random,

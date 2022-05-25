@@ -48,7 +48,7 @@ public class SwampHutGenerator extends ShiftableStructurePiece {
 		Random random,
 		BlockBox chunkBox,
 		ChunkPos chunkPos,
-		BlockPos pos
+		BlockPos pivot
 	) {
 		if (this.adjustToAverageHeight(world, chunkBox, 0)) {
 			this.fillWithOutline(world, chunkBox, 1, 1, 1, 5, 1, 7, Blocks.SPRUCE_PLANKS.getDefaultState(), Blocks.SPRUCE_PLANKS.getDefaultState(), false);

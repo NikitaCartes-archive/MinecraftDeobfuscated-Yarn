@@ -61,7 +61,7 @@ public class JungleTempleGenerator extends ShiftableStructurePiece {
 		Random random,
 		BlockBox chunkBox,
 		ChunkPos chunkPos,
-		BlockPos pos
+		BlockPos pivot
 	) {
 		if (this.adjustToAverageHeight(world, chunkBox, 0)) {
 			this.fillWithOutline(world, chunkBox, 0, -4, 0, this.width - 1, 0, this.depth - 1, false, random, COBBLESTONE_RANDOMIZER);

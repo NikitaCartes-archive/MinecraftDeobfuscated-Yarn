@@ -10,7 +10,7 @@ public class BlockMatchRuleTest extends RuleTest {
 	public static final Codec<BlockMatchRuleTest> CODEC = Registry.BLOCK
 		.getCodec()
 		.fieldOf("block")
-		.<BlockMatchRuleTest>xmap(BlockMatchRuleTest::new, blockMatchRuleTest -> blockMatchRuleTest.block)
+		.<BlockMatchRuleTest>xmap(BlockMatchRuleTest::new, ruleTest -> ruleTest.block)
 		.codec();
 	private final Block block;
 

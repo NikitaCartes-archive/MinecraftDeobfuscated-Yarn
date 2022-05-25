@@ -20,6 +20,7 @@ import net.minecraft.stat.Stats;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.text.Text;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -74,6 +75,12 @@ public class ItemEntity extends Entity {
 	@Override
 	public boolean occludeVibrationSignals() {
 		return this.getStack().isIn(ItemTags.DAMPENS_VIBRATIONS);
+	}
+
+	@Nullable
+	@Override
+	public Entity getEventSource() {
+		return Util.map(this.getThrower(), this.world::getPlayerByUuid);
 	}
 
 	@Override

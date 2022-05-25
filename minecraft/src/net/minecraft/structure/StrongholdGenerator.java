@@ -239,7 +239,7 @@ public class StrongholdGenerator {
 			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
-			BlockPos pos
+			BlockPos pivot
 		) {
 			this.fillWithOutline(world, chunkBox, 0, 0, 0, 4, 4, 6, true, random, StrongholdGenerator.STONE_BRICK_RANDOMIZER);
 			this.generateEntrance(world, random, chunkBox, this.entryDoor, 1, 1, 0);
@@ -316,7 +316,7 @@ public class StrongholdGenerator {
 			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
-			BlockPos pos
+			BlockPos pivot
 		) {
 			this.fillWithOutline(world, chunkBox, 0, 0, 0, 4, 4, 6, true, random, StrongholdGenerator.STONE_BRICK_RANDOMIZER);
 			this.generateEntrance(world, random, chunkBox, this.entryDoor, 1, 1, 0);
@@ -418,7 +418,7 @@ public class StrongholdGenerator {
 			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
-			BlockPos pos
+			BlockPos pivot
 		) {
 			this.fillWithOutline(world, chunkBox, 0, 0, 0, 9, 8, 10, true, random, StrongholdGenerator.STONE_BRICK_RANDOMIZER);
 			this.generateEntrance(world, random, chunkBox, this.entryDoor, 4, 3, 0);
@@ -504,7 +504,7 @@ public class StrongholdGenerator {
 			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
-			BlockPos pos
+			BlockPos pivot
 		) {
 			this.fillWithOutline(world, chunkBox, 0, 0, 0, 4, 4, 4, true, random, StrongholdGenerator.STONE_BRICK_RANDOMIZER);
 			this.generateEntrance(world, random, chunkBox, this.entryDoor, 1, 1, 0);
@@ -562,7 +562,7 @@ public class StrongholdGenerator {
 			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
-			BlockPos pos
+			BlockPos pivot
 		) {
 			int i = 11;
 			if (!this.tall) {
@@ -1030,7 +1030,7 @@ public class StrongholdGenerator {
 			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
-			BlockPos pos
+			BlockPos pivot
 		) {
 			this.fillWithOutline(world, chunkBox, 0, 0, 0, 10, 7, 15, false, random, StrongholdGenerator.STONE_BRICK_RANDOMIZER);
 			this.generateEntrance(world, random, chunkBox, StrongholdGenerator.Piece.EntranceType.GRATES, 4, 1, 0);
@@ -1154,7 +1154,7 @@ public class StrongholdGenerator {
 			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
-			BlockPos pos
+			BlockPos pivot
 		) {
 			this.fillWithOutline(world, chunkBox, 0, 0, 0, 8, 4, 10, true, random, StrongholdGenerator.STONE_BRICK_RANDOMIZER);
 			this.generateEntrance(world, random, chunkBox, this.entryDoor, 1, 1, 0);
@@ -1245,7 +1245,7 @@ public class StrongholdGenerator {
 			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
-			BlockPos pos
+			BlockPos pivot
 		) {
 			this.fillWithOutline(world, chunkBox, 0, 0, 0, 4, 4, 4, true, random, StrongholdGenerator.STONE_BRICK_RANDOMIZER);
 			this.generateEntrance(world, random, chunkBox, this.entryDoor, 1, 1, 0);
@@ -1306,7 +1306,7 @@ public class StrongholdGenerator {
 			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
-			BlockPos pos
+			BlockPos pivot
 		) {
 			for (int i = 0; i < this.length; i++) {
 				this.addBlock(world, Blocks.STONE_BRICKS.getDefaultState(), 0, 0, i, chunkBox);
@@ -1393,7 +1393,7 @@ public class StrongholdGenerator {
 			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
-			BlockPos pos
+			BlockPos pivot
 		) {
 			this.fillWithOutline(world, chunkBox, 0, 0, 0, 4, 10, 4, true, random, StrongholdGenerator.STONE_BRICK_RANDOMIZER);
 			this.generateEntrance(world, random, chunkBox, this.entryDoor, 1, 7, 0);
@@ -1464,7 +1464,7 @@ public class StrongholdGenerator {
 			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
-			BlockPos pos
+			BlockPos pivot
 		) {
 			this.fillWithOutline(world, chunkBox, 0, 0, 0, 10, 6, 10, true, random, StrongholdGenerator.STONE_BRICK_RANDOMIZER);
 			this.generateEntrance(world, random, chunkBox, this.entryDoor, 4, 1, 0);
@@ -1586,7 +1586,7 @@ public class StrongholdGenerator {
 			Random random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
-			BlockPos pos
+			BlockPos pivot
 		) {
 			this.fillWithOutline(world, chunkBox, 0, 0, 0, 4, 10, 7, true, random, StrongholdGenerator.STONE_BRICK_RANDOMIZER);
 			this.generateEntrance(world, random, chunkBox, this.entryDoor, 1, 7, 0);

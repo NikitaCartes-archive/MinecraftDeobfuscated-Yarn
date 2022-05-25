@@ -15,13 +15,11 @@ import net.minecraft.util.math.random.Random;
 public class StructureProcessorRule {
 	public static final Codec<StructureProcessorRule> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					RuleTest.TYPE_CODEC.fieldOf("input_predicate").forGetter(structureProcessorRule -> structureProcessorRule.inputPredicate),
-					RuleTest.TYPE_CODEC.fieldOf("location_predicate").forGetter(structureProcessorRule -> structureProcessorRule.locationPredicate),
-					PosRuleTest.field_25007
-						.optionalFieldOf("position_predicate", AlwaysTruePosRuleTest.INSTANCE)
-						.forGetter(structureProcessorRule -> structureProcessorRule.positionPredicate),
-					BlockState.CODEC.fieldOf("output_state").forGetter(structureProcessorRule -> structureProcessorRule.outputState),
-					NbtCompound.CODEC.optionalFieldOf("output_nbt").forGetter(structureProcessorRule -> Optional.ofNullable(structureProcessorRule.outputNbt))
+					RuleTest.TYPE_CODEC.fieldOf("input_predicate").forGetter(rule -> rule.inputPredicate),
+					RuleTest.TYPE_CODEC.fieldOf("location_predicate").forGetter(rule -> rule.locationPredicate),
+					PosRuleTest.field_25007.optionalFieldOf("position_predicate", AlwaysTruePosRuleTest.INSTANCE).forGetter(rule -> rule.positionPredicate),
+					BlockState.CODEC.fieldOf("output_state").forGetter(rule -> rule.outputState),
+					NbtCompound.CODEC.optionalFieldOf("output_nbt").forGetter(rule -> Optional.ofNullable(rule.outputNbt))
 				)
 				.apply(instance, StructureProcessorRule::new)
 	);

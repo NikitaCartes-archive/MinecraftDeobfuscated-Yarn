@@ -50,7 +50,7 @@ public class PlaceCommand {
 	private static final SimpleCommandExceptionType TEMPLATE_FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.place.template.failed"));
 	private static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) -> {
 		StructureManager structureManager = context.getSource().getWorld().getStructureManager();
-		return CommandSource.suggestIdentifiers(structureManager.method_44226(), builder);
+		return CommandSource.suggestIdentifiers(structureManager.streamStructures(), builder);
 	};
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
