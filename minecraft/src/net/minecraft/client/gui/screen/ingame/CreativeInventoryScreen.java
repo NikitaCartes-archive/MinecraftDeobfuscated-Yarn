@@ -427,6 +427,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		selectedTab = group.getIndex();
 		this.cursorDragSlots.clear();
 		this.handler.itemList.clear();
+		this.method_44339();
 		if (group == ItemGroup.HOTBAR) {
 			HotbarStorage hotbarStorage = this.client.getCreativeHotbarStorage();
 

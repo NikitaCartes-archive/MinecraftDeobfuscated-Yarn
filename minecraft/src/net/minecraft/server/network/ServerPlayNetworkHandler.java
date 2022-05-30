@@ -1181,11 +1181,8 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		if (hasIllegalCharacter(packet.getChatMessage())) {
 			this.disconnect(Text.translatable("multiplayer.disconnect.illegal_characters"));
 		} else {
-			Instant instant = packet.getTimestamp();
-			if (!this.isExpired(instant) && !this.isDisordered(instant)) {
+			if (this.method_44337(packet.getChatMessage(), packet.getTimestamp())) {
 				this.filterText(packet.getChatMessage(), message -> this.handleMessage(packet, message));
-			} else {
-				LOGGER.warn("{} tried to send expired or out-of-order message: '{}'", this.player.getName().getString(), packet.getChatMessage());
 			}
 		}
 	}
@@ -1195,17 +1192,26 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		if (hasIllegalCharacter(packet.command())) {
 			this.disconnect(Text.translatable("multiplayer.disconnect.illegal_characters"));
 		} else {
-			Instant instant = packet.timestamp();
-			if (!this.isExpired(instant) && !this.isDisordered(instant)) {
-				NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
-				if (this.checkChatEnabled()) {
-					ServerCommandSource serverCommandSource = this.player.getCommandSource().withSigner(packet.createArgumentsSigner(this.player.getUuid()));
-					this.server.getCommandManager().execute(serverCommandSource, packet.command());
-					this.checkForSpam();
-				}
-			} else {
-				LOGGER.warn("{} tried to send expired or out-of-order command: '{}'", this.player.getName().getString(), packet.command());
+			NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+			if (this.method_44337(packet.command(), packet.timestamp())) {
+				ServerCommandSource serverCommandSource = this.player.getCommandSource().withSigner(packet.createArgumentsSigner(this.player.getUuid()));
+				this.server.getCommandManager().execute(serverCommandSource, packet.command());
+				this.checkForSpam();
 			}
+		}
+	}
+
+	private boolean method_44337(String string, Instant instant) {
+		if (!this.isDisordered(instant)) {
+			LOGGER.warn("{} sent out-of-order chat: '{}'", this.player.getName().getString(), string);
+			this.disconnect(Text.translatable("multiplayer.disconnect.out_of_order_chat"));
+			return false;
+		} else {
+			if (this.isExpired(instant)) {
+				LOGGER.warn("{} sent expired chat: '{}'. Is the client/server system time unsynchronized?", this.player.getName().getString(), string);
+			}
+
+			return this.checkChatEnabled();
 		}
 	}
 
@@ -1231,11 +1237,11 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		do {
 			instant = (Instant)this.lastMessageTimestamp.get();
 			if (timestamp.isBefore(instant)) {
-				return true;
+				return false;
 			}
 		} while (!this.lastMessageTimestamp.compareAndSet(instant, timestamp));
 
-		return false;
+		return true;
 	}
 
 	/**

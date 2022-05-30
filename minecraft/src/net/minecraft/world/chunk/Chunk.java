@@ -215,8 +215,8 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 	}
 
 	@Override
-	public LongSet getStructureReferences(StructureType strcutureType) {
-		return (LongSet)this.structureReferences.getOrDefault(strcutureType, EMPTY_STRUCTURE_REFERENCES);
+	public LongSet getStructureReferences(StructureType structureType) {
+		return (LongSet)this.structureReferences.getOrDefault(structureType, EMPTY_STRUCTURE_REFERENCES);
 	}
 
 	@Override

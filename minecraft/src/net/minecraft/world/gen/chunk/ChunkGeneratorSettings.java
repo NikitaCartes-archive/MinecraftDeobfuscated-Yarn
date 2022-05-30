@@ -68,9 +68,9 @@ public record ChunkGeneratorSettings(
 	}
 
 	private static RegistryEntry<ChunkGeneratorSettings> register(
-		Registry<ChunkGeneratorSettings> registry, RegistryKey<ChunkGeneratorSettings> key, ChunkGeneratorSettings chunkGeneratorSsettings
+		Registry<ChunkGeneratorSettings> registry, RegistryKey<ChunkGeneratorSettings> key, ChunkGeneratorSettings chunkGeneratorSettings
 	) {
-		return BuiltinRegistries.add(registry, key.getValue(), chunkGeneratorSsettings);
+		return BuiltinRegistries.add(registry, key.getValue(), chunkGeneratorSettings);
 	}
 
 	public static RegistryEntry<ChunkGeneratorSettings> initAndGetDefault(Registry<ChunkGeneratorSettings> registry) {

@@ -115,7 +115,7 @@ public abstract class StructurePoolElement {
 	) {
 		return projection -> new ListPoolElement(
 				(List<StructurePoolElement>)elementGetters.stream()
-					.map(elementGetetr -> (StructurePoolElement)elementGetetr.apply(projection))
+					.map(elementGetter -> (StructurePoolElement)elementGetter.apply(projection))
 					.collect(Collectors.toList()),
 				projection
 			);

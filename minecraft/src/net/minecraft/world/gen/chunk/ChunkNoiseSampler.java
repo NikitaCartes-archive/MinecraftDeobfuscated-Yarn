@@ -206,7 +206,9 @@ public class ChunkNoiseSampler implements DensityFunction.class_6911, DensityFun
 	}
 
 	public int method_39900(int i, int j) {
-		return this.field_36273.computeIfAbsent(ColumnPos.pack(i, j), this::method_39899);
+		int k = BiomeCoords.toBlock(BiomeCoords.fromBlock(i));
+		int l = BiomeCoords.toBlock(BiomeCoords.fromBlock(j));
+		return this.field_36273.computeIfAbsent(ColumnPos.pack(k, l), this::method_39899);
 	}
 
 	private int method_39899(long l) {
