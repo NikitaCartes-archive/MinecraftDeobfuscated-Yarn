@@ -12,7 +12,7 @@ public interface StructureHolder {
 
 	void setStructureStart(StructureType structureType, StructureStart start);
 
-	LongSet getStructureReferences(StructureType strcutureType);
+	LongSet getStructureReferences(StructureType structureType);
 
 	void addStructureReference(StructureType structureType, long reference);
 

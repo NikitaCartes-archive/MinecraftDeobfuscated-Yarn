@@ -29,7 +29,7 @@ import net.minecraft.util.StringHelper;
  * @see net.minecraft.server.network.ServerPlayNetworkHandler#onChatMessage
  */
 public class ChatMessageC2SPacket implements Packet<ServerPlayPacketListener> {
-	public static final Duration TIME_TO_LIVE = Duration.ofMinutes(2L);
+	public static final Duration TIME_TO_LIVE = Duration.ofMinutes(5L);
 	private final String chatMessage;
 	private final Instant timestamp;
 	private final NetworkEncryptionUtils.SignatureData signature;
