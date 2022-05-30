@@ -104,7 +104,7 @@ public abstract class StructurePoolElement {
     }
 
     public static Function<StructurePool.Projection, ListPoolElement> ofList(List<Function<StructurePool.Projection, ? extends StructurePoolElement>> elementGetters) {
-        return projection -> new ListPoolElement(elementGetters.stream().map(elementGetetr -> (StructurePoolElement)elementGetetr.apply(projection)).collect(Collectors.toList()), (StructurePool.Projection)projection);
+        return projection -> new ListPoolElement(elementGetters.stream().map(elementGetter -> (StructurePoolElement)elementGetter.apply(projection)).collect(Collectors.toList()), (StructurePool.Projection)projection);
     }
 }
 

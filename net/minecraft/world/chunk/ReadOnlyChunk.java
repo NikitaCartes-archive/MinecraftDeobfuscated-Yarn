@@ -169,8 +169,8 @@ extends ProtoChunk {
     }
 
     @Override
-    public LongSet getStructureReferences(StructureType strcutureType) {
-        return this.wrapped.getStructureReferences(strcutureType);
+    public LongSet getStructureReferences(StructureType structureType) {
+        return this.wrapped.getStructureReferences(structureType);
     }
 
     @Override

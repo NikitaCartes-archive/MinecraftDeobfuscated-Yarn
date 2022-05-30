@@ -651,7 +651,7 @@ extends Entity {
     public void onEquipStack(EquipmentSlot slot, ItemStack oldStack, ItemStack newStack) {
         boolean bl;
         boolean bl2 = bl = newStack.isEmpty() && oldStack.isEmpty();
-        if (bl || ItemStack.canCombine(oldStack, newStack)) {
+        if (bl || ItemStack.areItemsEqual(oldStack, newStack)) {
             return;
         }
         if (slot.getType() == EquipmentSlot.Type.ARMOR) {

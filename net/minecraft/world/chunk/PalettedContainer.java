@@ -297,7 +297,7 @@ implements PaletteResizeListener<T> {
     }
 
     public PalettedContainer<T> copy() {
-        return new PalettedContainer<T>(this.idList, this.paletteProvider, new Data<T>(this.data.configuration(), this.data.storage().copy(), this.data.palette().copy()));
+        return new PalettedContainer<T>(this.idList, this.paletteProvider, this.data.method_44338());
     }
 
     public void count(Counter<T> counter) {
@@ -377,6 +377,10 @@ implements PaletteResizeListener<T> {
             buf.writeByte(this.storage.getElementBits());
             this.palette.writePacket(buf);
             buf.writeLongArray(this.storage.getData());
+        }
+
+        public Data<T> method_44338() {
+            return new Data<T>(this.configuration, this.storage.copy(), this.palette.copy());
         }
     }
 

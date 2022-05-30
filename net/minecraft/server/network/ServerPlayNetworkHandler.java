@@ -1137,12 +1137,9 @@ ServerPlayPacketListener {
             this.disconnect(Text.translatable("multiplayer.disconnect.illegal_characters"));
             return;
         }
-        Instant instant = packet.getTimestamp();
-        if (this.isExpired(instant) || this.isDisordered(instant)) {
-            LOGGER.warn("{} tried to send expired or out-of-order message: '{}'", (Object)this.player.getName().getString(), (Object)packet.getChatMessage());
-            return;
+        if (this.method_44337(packet.getChatMessage(), packet.getTimestamp())) {
+            this.filterText(packet.getChatMessage(), message -> this.handleMessage(packet, (FilteredMessage<String>)message));
         }
-        this.filterText(packet.getChatMessage(), message -> this.handleMessage(packet, (FilteredMessage<String>)message));
     }
 
     @Override
@@ -1151,17 +1148,24 @@ ServerPlayPacketListener {
             this.disconnect(Text.translatable("multiplayer.disconnect.illegal_characters"));
             return;
         }
-        Instant instant = packet.timestamp();
-        if (this.isExpired(instant) || this.isDisordered(instant)) {
-            LOGGER.warn("{} tried to send expired or out-of-order command: '{}'", (Object)this.player.getName().getString(), (Object)packet.command());
-            return;
-        }
         NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
-        if (this.checkChatEnabled()) {
+        if (this.method_44337(packet.command(), packet.timestamp())) {
             ServerCommandSource serverCommandSource = this.player.getCommandSource().withSigner(packet.createArgumentsSigner(this.player.getUuid()));
             this.server.getCommandManager().execute(serverCommandSource, packet.command());
             this.checkForSpam();
         }
+    }
+
+    private boolean method_44337(String string, Instant instant) {
+        if (!this.isDisordered(instant)) {
+            LOGGER.warn("{} sent out-of-order chat: '{}'", (Object)this.player.getName().getString(), (Object)string);
+            this.disconnect(Text.translatable("multiplayer.disconnect.out_of_order_chat"));
+            return false;
+        }
+        if (this.isExpired(instant)) {
+            LOGGER.warn("{} sent expired chat: '{}'. Is the client/server system time unsynchronized?", (Object)this.player.getName().getString(), (Object)string);
+        }
+        return this.checkChatEnabled();
     }
 
     /**
@@ -1185,9 +1189,9 @@ ServerPlayPacketListener {
         Instant instant;
         do {
             if (!timestamp.isBefore(instant = this.lastMessageTimestamp.get())) continue;
-            return true;
+            return false;
         } while (!this.lastMessageTimestamp.compareAndSet(instant, timestamp));
-        return false;
+        return true;
     }
 
     /**

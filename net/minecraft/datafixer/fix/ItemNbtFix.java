@@ -21,10 +21,10 @@ extends DataFix {
     private final String name;
     private final Predicate<String> itemIdPredicate;
 
-    public ItemNbtFix(Schema schema, String name, Predicate<String> itemIdPrecicate) {
+    public ItemNbtFix(Schema schema, String name, Predicate<String> itemIdPredicate) {
         super(schema, false);
         this.name = name;
-        this.itemIdPredicate = itemIdPrecicate;
+        this.itemIdPredicate = itemIdPredicate;
     }
 
     @Override
