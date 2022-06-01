@@ -20,6 +20,14 @@ extends ConfirmScreen {
     private final String link;
     private final boolean drawWarning;
 
+    public ConfirmChatLinkScreen(BooleanConsumer booleanConsumer, Text text, String string, boolean bl) {
+        super(booleanConsumer, text, Text.translatable(bl ? "chat.link.confirmTrusted" : "chat.link.confirm").append(" ").append(Text.literal(string)));
+        this.yesTranslated = bl ? Text.translatable("chat.link.open") : ScreenTexts.YES;
+        this.noTranslated = bl ? ScreenTexts.CANCEL : ScreenTexts.NO;
+        this.drawWarning = !bl;
+        this.link = string;
+    }
+
     public ConfirmChatLinkScreen(BooleanConsumer callback, String link, boolean trusted) {
         super(callback, Text.translatable(trusted ? "chat.link.confirmTrusted" : "chat.link.confirm"), Text.literal(link));
         this.yesTranslated = trusted ? Text.translatable("chat.link.open") : ScreenTexts.YES;

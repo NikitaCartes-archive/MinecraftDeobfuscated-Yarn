@@ -81,7 +81,7 @@ public class ResetChunksCommand {
                             list.add(chunk2);
                         }
                     }
-                    completableFuture = completableFuture.thenComposeAsync(unit -> chunkStatus.runGenerationTask(taskExecutor::send, serverWorld, serverChunkManager.getChunkGenerator(), serverWorld.getStructureManager(), serverChunkManager.getLightingProvider(), chunk -> {
+                    completableFuture = completableFuture.thenComposeAsync(unit -> chunkStatus.runGenerationTask(taskExecutor::send, serverWorld, serverChunkManager.getChunkGenerator(), serverWorld.getStructureTemplateManager(), serverChunkManager.getLightingProvider(), chunk -> {
                         throw new UnsupportedOperationException("Not creating full chunks here");
                     }, list, true).thenApply(either -> {
                         if (chunkStatus == ChunkStatus.NOISE) {

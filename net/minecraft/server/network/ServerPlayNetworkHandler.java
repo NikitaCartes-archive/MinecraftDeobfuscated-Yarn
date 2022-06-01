@@ -66,14 +66,14 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
-import net.minecraft.network.ChatDecorator;
 import net.minecraft.network.ClientConnection;
-import net.minecraft.network.MessageType;
+import net.minecraft.network.MessageDecorator;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.Packet;
-import net.minecraft.network.encryption.ChatMessageSignature;
-import net.minecraft.network.encryption.SignedChatMessage;
 import net.minecraft.network.listener.ServerPlayPacketListener;
+import net.minecraft.network.message.MessageSignature;
+import net.minecraft.network.message.MessageType;
+import net.minecraft.network.message.SignedMessage;
 import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
 import net.minecraft.network.packet.c2s.play.BoatPaddleStateC2SPacket;
 import net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket;
@@ -301,7 +301,7 @@ ServerPlayPacketListener {
         if (this.player.getLastActionTime() > 0L && this.server.getPlayerIdleTimeout() > 0 && Util.getMeasuringTimeMs() - this.player.getLastActionTime() > (long)(this.server.getPlayerIdleTimeout() * 1000 * 60)) {
             this.disconnect(Text.translatable("multiplayer.disconnect.idling"));
         }
-        this.previewTaskRunner.runPending();
+        this.previewTaskRunner.tick();
     }
 
     public void syncWithPlayerPosition() {
@@ -614,7 +614,7 @@ ServerPlayPacketListener {
         if (blockEntity instanceof StructureBlockBlockEntity) {
             StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)blockEntity;
             structureBlockBlockEntity.setMode(packet.getMode());
-            structureBlockBlockEntity.setStructureName(packet.getStructureName());
+            structureBlockBlockEntity.setTemplateName(packet.getTemplateName());
             structureBlockBlockEntity.setOffset(packet.getOffset());
             structureBlockBlockEntity.setSize(packet.getSize());
             structureBlockBlockEntity.setMirror(packet.getMirror());
@@ -626,7 +626,7 @@ ServerPlayPacketListener {
             structureBlockBlockEntity.setIntegrity(packet.getIntegrity());
             structureBlockBlockEntity.setSeed(packet.getSeed());
             if (structureBlockBlockEntity.hasStructureName()) {
-                String string = structureBlockBlockEntity.getStructureName();
+                String string = structureBlockBlockEntity.getTemplateName();
                 if (packet.getAction() == StructureBlockBlockEntity.Action.SAVE_AREA) {
                     if (structureBlockBlockEntity.saveStructure()) {
                         this.player.sendMessage((Text)Text.translatable("structure_block.save_success", string), false);
@@ -649,7 +649,7 @@ ServerPlayPacketListener {
                     }
                 }
             } else {
-                this.player.sendMessage((Text)Text.translatable("structure_block.invalid_structure_name", packet.getStructureName()), false);
+                this.player.sendMessage((Text)Text.translatable("structure_block.invalid_structure_name", packet.getTemplateName()), false);
             }
             structureBlockBlockEntity.markDirty();
             this.player.world.updateListeners(blockPos, blockState, blockState, Block.NOTIFY_ALL);
@@ -1220,14 +1220,14 @@ ServerPlayPacketListener {
 
     private void handleMessage(ChatMessageC2SPacket packet, FilteredMessage<String> message) {
         if (this.checkChatEnabled()) {
-            ChatMessageSignature chatMessageSignature = packet.createSignatureInstance(this.player.getUuid());
+            MessageSignature messageSignature = packet.createSignatureInstance(this.player.getUuid());
             boolean bl = packet.isPreviewed();
-            ChatDecorator chatDecorator = this.server.getChatDecorator();
-            chatDecorator.decorateChat(this.player, message.map(Text::literal), chatMessageSignature, bl).thenAcceptAsync(this::handleDecoratedMessage, (Executor)this.server);
+            MessageDecorator messageDecorator = this.server.getMessageDecorator();
+            messageDecorator.decorateChat(this.player, message.map(Text::literal), messageSignature, bl).thenAcceptAsync(this::handleDecoratedMessage, (Executor)this.server);
         }
     }
 
-    private void handleDecoratedMessage(FilteredMessage<SignedChatMessage> message) {
+    private void handleDecoratedMessage(FilteredMessage<SignedMessage> message) {
         if (!message.raw().verify(this.player)) {
             LOGGER.warn("{} sent message with invalid signature: '{}'", (Object)this.player.getName().getString(), (Object)message.raw().signedContent().getString());
             return;
@@ -1272,7 +1272,7 @@ ServerPlayPacketListener {
 
     private CompletableFuture<Text> decorateChat(String query) {
         MutableText text = Text.literal(query);
-        return this.server.getChatDecorator().decorate(this.player, text).thenApply(decorated -> !text.equals(decorated) ? decorated : null);
+        return this.server.getMessageDecorator().decorate(this.player, text).thenApply(decorated -> !text.equals(decorated) ? decorated : null);
     }
 
     private CompletableFuture<Text> decorateCommand(String query) {

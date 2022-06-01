@@ -3,7 +3,6 @@
  */
 package net.minecraft.nbt;
 
-import com.mojang.logging.LogUtils;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -15,7 +14,6 @@ import net.minecraft.nbt.NbtType;
 import net.minecraft.nbt.scanner.NbtScanner;
 import net.minecraft.nbt.visitor.NbtElementVisitor;
 import net.minecraft.util.Util;
-import org.slf4j.Logger;
 
 /**
  * Represents an NBT string. Its type is {@value NbtElement#STRING_TYPE}.
@@ -24,7 +22,6 @@ import org.slf4j.Logger;
 public class NbtString
 implements NbtElement {
     private static final int SIZE = 288;
-    private static final Logger field_39454 = LogUtils.getLogger();
     public static final NbtType<NbtString> TYPE = new NbtType.OfVariableSize<NbtString>(){
 
         @Override

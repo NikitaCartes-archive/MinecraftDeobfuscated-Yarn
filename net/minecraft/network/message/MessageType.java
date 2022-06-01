@@ -1,14 +1,14 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.network;
+package net.minecraft.network.message;
 
 import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
-import net.minecraft.network.MessageSender;
+import net.minecraft.network.message.MessageSender;
 import net.minecraft.text.Decoration;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;

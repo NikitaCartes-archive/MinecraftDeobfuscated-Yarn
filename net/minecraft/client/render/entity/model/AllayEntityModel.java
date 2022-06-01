@@ -27,6 +27,7 @@ public class AllayEntityModel
 extends SinglePartEntityModel<AllayEntity>
 implements ModelWithArms {
     private final ModelPart root;
+    private final ModelPart field_39459;
     private final ModelPart body;
     private final ModelPart rightArm;
     private final ModelPart leftArm;
@@ -38,6 +39,7 @@ implements ModelWithArms {
 
     public AllayEntityModel(ModelPart root) {
         this.root = root.getChild(EntityModelPartNames.ROOT);
+        this.field_39459 = this.root.getChild(EntityModelPartNames.HEAD);
         this.body = this.root.getChild(EntityModelPartNames.BODY);
         this.rightArm = this.body.getChild(EntityModelPartNames.RIGHT_ARM);
         this.leftArm = this.body.getChild(EntityModelPartNames.LEFT_ARM);
@@ -67,6 +69,8 @@ implements ModelWithArms {
     public void setAngles(AllayEntity allayEntity, float f, float g, float h, float i, float j) {
         float r;
         this.getPart().traverse().forEach(ModelPart::resetTransform);
+        this.field_39459.pitch = j * ((float)Math.PI / 180);
+        this.field_39459.yaw = i * ((float)Math.PI / 180);
         float k = h * 20.0f * ((float)Math.PI / 180) + g;
         float l = MathHelper.cos(k) * (float)Math.PI * 0.15f;
         float m = h - (float)allayEntity.age;

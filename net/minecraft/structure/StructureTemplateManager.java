@@ -37,7 +37,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.structure.Structure;
+import net.minecraft.structure.StructureTemplate;
 import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
@@ -46,53 +46,53 @@ import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
-public class StructureManager {
+public class StructureTemplateManager {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final String STRUCTURES_DIRECTORY = "structures";
     private static final String GAME_TEST_STRUCTURES_DIRECTORY = "gameteststructures";
     private static final String NBT_FILE_EXTENSION = ".nbt";
     private static final String SNBT_FILE_EXTENSION = ".snbt";
-    private final Map<Identifier, Optional<Structure>> structures = Maps.newConcurrentMap();
+    private final Map<Identifier, Optional<StructureTemplate>> templates = Maps.newConcurrentMap();
     private final DataFixer dataFixer;
     private ResourceManager resourceManager;
     private final Path generatedPath;
     private final List<Provider> providers;
 
-    public StructureManager(ResourceManager resourceManager, LevelStorage.Session session, DataFixer dataFixer) {
+    public StructureTemplateManager(ResourceManager resourceManager, LevelStorage.Session session, DataFixer dataFixer) {
         this.resourceManager = resourceManager;
         this.dataFixer = dataFixer;
         this.generatedPath = session.getDirectory(WorldSavePath.GENERATED).normalize();
         ImmutableList.Builder builder = ImmutableList.builder();
-        builder.add(new Provider(this::loadStructureFromFile, this::streamStructuresFromFile));
+        builder.add(new Provider(this::loadTemplateFromFile, this::streamTemplatesFromFile));
         if (SharedConstants.isDevelopment) {
-            builder.add(new Provider(this::loadStructureFromGameTestFile, this::streamStructuresFromGameTestFile));
+            builder.add(new Provider(this::loadTemplateFromGameTestFile, this::streamTemplatesFromGameTestFile));
         }
-        builder.add(new Provider(this::loadStructureFromResource, this::streamStructuresFromResource));
+        builder.add(new Provider(this::loadTemplateFromResource, this::streamTemplatesFromResource));
         this.providers = builder.build();
     }
 
-    public Structure getStructureOrBlank(Identifier id) {
-        Optional<Structure> optional = this.getStructure(id);
+    public StructureTemplate getTemplateOrBlank(Identifier id) {
+        Optional<StructureTemplate> optional = this.getTemplate(id);
         if (optional.isPresent()) {
             return optional.get();
         }
-        Structure structure = new Structure();
-        this.structures.put(id, Optional.of(structure));
-        return structure;
+        StructureTemplate structureTemplate = new StructureTemplate();
+        this.templates.put(id, Optional.of(structureTemplate));
+        return structureTemplate;
     }
 
-    public Optional<Structure> getStructure(Identifier id) {
-        return this.structures.computeIfAbsent(id, this::loadStructure);
+    public Optional<StructureTemplate> getTemplate(Identifier id) {
+        return this.templates.computeIfAbsent(id, this::loadTemplate);
     }
 
-    public Stream<Identifier> streamStructures() {
+    public Stream<Identifier> streamTemplates() {
         return this.providers.stream().flatMap(provider -> provider.lister().get()).distinct();
     }
 
-    private Optional<Structure> loadStructure(Identifier id) {
+    private Optional<StructureTemplate> loadTemplate(Identifier id) {
         for (Provider provider : this.providers) {
             try {
-                Optional<Structure> optional = provider.loader().apply(id);
+                Optional<StructureTemplate> optional = provider.loader().apply(id);
                 if (!optional.isPresent()) continue;
                 return optional;
             } catch (Exception exception) {
@@ -103,51 +103,51 @@ public class StructureManager {
 
     public void setResourceManager(ResourceManager resourceManager) {
         this.resourceManager = resourceManager;
-        this.structures.clear();
+        this.templates.clear();
     }
 
-    private Optional<Structure> loadStructureFromResource(Identifier id) {
+    private Optional<StructureTemplate> loadTemplateFromResource(Identifier id) {
         Identifier identifier = new Identifier(id.getNamespace(), "structures/" + id.getPath() + NBT_FILE_EXTENSION);
-        return this.loadStructure(() -> this.resourceManager.open(identifier), throwable -> LOGGER.error("Couldn't load structure {}", (Object)id, throwable));
+        return this.loadTemplate(() -> this.resourceManager.open(identifier), throwable -> LOGGER.error("Couldn't load structure {}", (Object)id, throwable));
     }
 
-    private Stream<Identifier> streamStructuresFromResource() {
+    private Stream<Identifier> streamTemplatesFromResource() {
         return this.resourceManager.findResources(STRUCTURES_DIRECTORY, id -> true).keySet().stream().map(id -> new Identifier(id.getNamespace(), id.getPath().substring(STRUCTURES_DIRECTORY.length() + 1, id.getPath().length() - NBT_FILE_EXTENSION.length())));
     }
 
-    private Optional<Structure> loadStructureFromGameTestFile(Identifier id) {
-        return this.loadStructureFromSnbt(id, Paths.get(GAME_TEST_STRUCTURES_DIRECTORY, new String[0]));
+    private Optional<StructureTemplate> loadTemplateFromGameTestFile(Identifier id) {
+        return this.loadTemplateFromSnbt(id, Paths.get(GAME_TEST_STRUCTURES_DIRECTORY, new String[0]));
     }
 
-    private Stream<Identifier> streamStructuresFromGameTestFile() {
-        return this.streamStructures(Paths.get(GAME_TEST_STRUCTURES_DIRECTORY, new String[0]), "minecraft", SNBT_FILE_EXTENSION);
+    private Stream<Identifier> streamTemplatesFromGameTestFile() {
+        return this.streamTemplates(Paths.get(GAME_TEST_STRUCTURES_DIRECTORY, new String[0]), "minecraft", SNBT_FILE_EXTENSION);
     }
 
-    private Optional<Structure> loadStructureFromFile(Identifier id) {
+    private Optional<StructureTemplate> loadTemplateFromFile(Identifier id) {
         if (!Files.isDirectory(this.generatedPath, new LinkOption[0])) {
             return Optional.empty();
         }
-        Path path = StructureManager.getAndCheckStructurePath(this.generatedPath, id, NBT_FILE_EXTENSION);
-        return this.loadStructure(() -> new FileInputStream(path.toFile()), throwable -> LOGGER.error("Couldn't load structure from {}", (Object)path, throwable));
+        Path path = StructureTemplateManager.getAndCheckTemplatePath(this.generatedPath, id, NBT_FILE_EXTENSION);
+        return this.loadTemplate(() -> new FileInputStream(path.toFile()), throwable -> LOGGER.error("Couldn't load structure from {}", (Object)path, throwable));
     }
 
-    private Stream<Identifier> streamStructuresFromFile() {
+    private Stream<Identifier> streamTemplatesFromFile() {
         if (!Files.isDirectory(this.generatedPath, new LinkOption[0])) {
             return Stream.empty();
         }
         try {
-            return Files.list(this.generatedPath).filter(path -> Files.isDirectory(path, new LinkOption[0])).flatMap(path -> this.streamStructures((Path)path));
+            return Files.list(this.generatedPath).filter(path -> Files.isDirectory(path, new LinkOption[0])).flatMap(path -> this.streamTemplates((Path)path));
         } catch (IOException iOException) {
             return Stream.empty();
         }
     }
 
-    private Stream<Identifier> streamStructures(Path namespaceDirectory) {
+    private Stream<Identifier> streamTemplates(Path namespaceDirectory) {
         Path path = namespaceDirectory.resolve(STRUCTURES_DIRECTORY);
-        return this.streamStructures(path, namespaceDirectory.getFileName().toString(), NBT_FILE_EXTENSION);
+        return this.streamTemplates(path, namespaceDirectory.getFileName().toString(), NBT_FILE_EXTENSION);
     }
 
-    private Stream<Identifier> streamStructures(Path structuresDirectoryPath, String namespace, String extension) {
+    private Stream<Identifier> streamTemplates(Path structuresDirectoryPath, String namespace, String extension) {
         if (!Files.isDirectory(structuresDirectoryPath, new LinkOption[0])) {
             return Stream.empty();
         }
@@ -171,8 +171,8 @@ public class StructureManager {
         return root.relativize(path).toString().replace(File.separator, "/");
     }
 
-    private Optional<Structure> loadStructureFromSnbt(Identifier id, Path path) {
-        Optional<Structure> optional;
+    private Optional<StructureTemplate> loadTemplateFromSnbt(Identifier id, Path path) {
+        Optional<StructureTemplate> optional;
         block10: {
             if (!Files.isDirectory(path, new LinkOption[0])) {
                 return Optional.empty();
@@ -181,7 +181,7 @@ public class StructureManager {
             BufferedReader bufferedReader = Files.newBufferedReader(path2);
             try {
                 String string = IOUtils.toString(bufferedReader);
-                optional = Optional.of(this.createStructure(NbtHelper.fromNbtProviderString(string)));
+                optional = Optional.of(this.createTemplate(NbtHelper.fromNbtProviderString(string)));
                 if (bufferedReader == null) break block10;
             } catch (Throwable throwable) {
                 try {
@@ -205,12 +205,12 @@ public class StructureManager {
         return optional;
     }
 
-    private Optional<Structure> loadStructure(StructureFileOpener opener, Consumer<Throwable> exceptionConsumer) {
-        Optional<Structure> optional;
+    private Optional<StructureTemplate> loadTemplate(TemplateFileOpener opener, Consumer<Throwable> exceptionConsumer) {
+        Optional<StructureTemplate> optional;
         block9: {
             InputStream inputStream = opener.open();
             try {
-                optional = Optional.of(this.readStructure(inputStream));
+                optional = Optional.of(this.readTemplate(inputStream));
                 if (inputStream == null) break block9;
             } catch (Throwable throwable) {
                 try {
@@ -234,27 +234,27 @@ public class StructureManager {
         return optional;
     }
 
-    private Structure readStructure(InputStream structureInputStream) throws IOException {
-        NbtCompound nbtCompound = NbtIo.readCompressed(structureInputStream);
-        return this.createStructure(nbtCompound);
+    private StructureTemplate readTemplate(InputStream templateIInputStream) throws IOException {
+        NbtCompound nbtCompound = NbtIo.readCompressed(templateIInputStream);
+        return this.createTemplate(nbtCompound);
     }
 
-    public Structure createStructure(NbtCompound nbt) {
+    public StructureTemplate createTemplate(NbtCompound nbt) {
         if (!nbt.contains("DataVersion", NbtElement.NUMBER_TYPE)) {
             nbt.putInt("DataVersion", 500);
         }
-        Structure structure = new Structure();
-        structure.readNbt(NbtHelper.update(this.dataFixer, DataFixTypes.STRUCTURE, nbt, nbt.getInt("DataVersion")));
-        return structure;
+        StructureTemplate structureTemplate = new StructureTemplate();
+        structureTemplate.readNbt(NbtHelper.update(this.dataFixer, DataFixTypes.STRUCTURE, nbt, nbt.getInt("DataVersion")));
+        return structureTemplate;
     }
 
-    public boolean saveStructure(Identifier id) {
-        Optional<Structure> optional = this.structures.get(id);
+    public boolean saveTemplate(Identifier id) {
+        Optional<StructureTemplate> optional = this.templates.get(id);
         if (!optional.isPresent()) {
             return false;
         }
-        Structure structure = optional.get();
-        Path path = StructureManager.getAndCheckStructurePath(this.generatedPath, id, NBT_FILE_EXTENSION);
+        StructureTemplate structureTemplate = optional.get();
+        Path path = StructureTemplateManager.getAndCheckTemplatePath(this.generatedPath, id, NBT_FILE_EXTENSION);
         Path path2 = path.getParent();
         if (path2 == null) {
             return false;
@@ -265,7 +265,7 @@ public class StructureManager {
             LOGGER.error("Failed to create parent directory: {}", (Object)path2);
             return false;
         }
-        NbtCompound nbtCompound = structure.writeNbt(new NbtCompound());
+        NbtCompound nbtCompound = structureTemplate.writeNbt(new NbtCompound());
         try (FileOutputStream outputStream = new FileOutputStream(path.toFile());){
             NbtIo.writeCompressed(nbtCompound, outputStream);
         } catch (Throwable throwable) {
@@ -274,11 +274,11 @@ public class StructureManager {
         return true;
     }
 
-    public Path getStructurePath(Identifier id, String extension) {
-        return StructureManager.getStructurePath(this.generatedPath, id, extension);
+    public Path getTemplatePath(Identifier id, String extension) {
+        return StructureTemplateManager.getTemplatePath(this.generatedPath, id, extension);
     }
 
-    public static Path getStructurePath(Path path, Identifier id, String extension) {
+    public static Path getTemplatePath(Path path, Identifier id, String extension) {
         try {
             Path path2 = path.resolve(id.getNamespace());
             Path path3 = path2.resolve(STRUCTURES_DIRECTORY);
@@ -288,26 +288,26 @@ public class StructureManager {
         }
     }
 
-    private static Path getAndCheckStructurePath(Path path, Identifier id, String extension) {
+    private static Path getAndCheckTemplatePath(Path path, Identifier id, String extension) {
         if (id.getPath().contains("//")) {
             throw new InvalidIdentifierException("Invalid resource path: " + id);
         }
-        Path path2 = StructureManager.getStructurePath(path, id, extension);
+        Path path2 = StructureTemplateManager.getTemplatePath(path, id, extension);
         if (!(path2.startsWith(path) && FileNameUtil.isNormal(path2) && FileNameUtil.isAllowedName(path2))) {
             throw new InvalidIdentifierException("Invalid resource path: " + path2);
         }
         return path2;
     }
 
-    public void unloadStructure(Identifier id) {
-        this.structures.remove(id);
+    public void unloadTemplate(Identifier id) {
+        this.templates.remove(id);
     }
 
-    record Provider(Function<Identifier, Optional<Structure>> loader, Supplier<Stream<Identifier>> lister) {
+    record Provider(Function<Identifier, Optional<StructureTemplate>> loader, Supplier<Stream<Identifier>> lister) {
     }
 
     @FunctionalInterface
-    static interface StructureFileOpener {
+    static interface TemplateFileOpener {
         public InputStream open() throws IOException;
     }
 }

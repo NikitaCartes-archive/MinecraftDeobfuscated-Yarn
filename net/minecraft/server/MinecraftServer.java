@@ -61,11 +61,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.loot.LootManager;
 import net.minecraft.loot.condition.LootConditionManager;
 import net.minecraft.loot.function.LootFunctionManager;
-import net.minecraft.network.ChatDecorator;
-import net.minecraft.network.MessageSender;
+import net.minecraft.network.MessageDecorator;
 import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.encryption.SignatureVerifier;
+import net.minecraft.network.message.MessageSender;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.obfuscate.DontObfuscate;
@@ -102,7 +102,7 @@ import net.minecraft.server.network.SpawnLocating;
 import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.structure.StructureManager;
+import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.test.TestManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.ApiServices;
@@ -269,7 +269,7 @@ AutoCloseable {
     @Nullable
     private String serverId;
     private ResourceManagerHolder resourceManagerHolder;
-    private final StructureManager structureManager;
+    private final StructureTemplateManager structureTemplateManager;
     protected final SaveProperties saveProperties;
     private volatile boolean saving;
 
@@ -306,7 +306,7 @@ AutoCloseable {
         this.saveHandler = session.createSaveHandler();
         this.dataFixer = dataFixer;
         this.commandFunctionManager = new CommandFunctionManager(this, this.resourceManagerHolder.dataPackContents.getFunctionLoader());
-        this.structureManager = new StructureManager(saveLoader.resourceManager(), session, dataFixer);
+        this.structureTemplateManager = new StructureTemplateManager(saveLoader.resourceManager(), session, dataFixer);
         this.serverThread = serverThread;
         this.workerExecutor = Util.getMainWorkerExecutor();
     }
@@ -1312,7 +1312,7 @@ AutoCloseable {
             this.getPlayerManager().saveAllPlayerData();
             this.getPlayerManager().onDataPacksReloaded();
             this.commandFunctionManager.setFunctions(this.resourceManagerHolder.dataPackContents.getFunctionLoader());
-            this.structureManager.setResourceManager(this.resourceManagerHolder.resourceManager);
+            this.structureTemplateManager.setResourceManager(this.resourceManagerHolder.resourceManager);
         }, (Executor)this);
         if (this.isOnThread()) {
             this.runTasks(((CompletableFuture)completableFuture)::isDone);
@@ -1629,8 +1629,8 @@ AutoCloseable {
         return true;
     }
 
-    public StructureManager getStructureManager() {
-        return this.structureManager;
+    public StructureTemplateManager getStructureTemplateManager() {
+        return this.structureTemplateManager;
     }
 
     public SaveProperties getSaveProperties() {
@@ -1691,12 +1691,12 @@ AutoCloseable {
     }
 
     /**
-     * {@return the chat decorator used by the server}
+     * {@return the message decorator used by the server}
      * 
-     * <p>See the documentation of {@link ChatDecorator} for more information.
+     * @see MessageDecorator
      */
-    public ChatDecorator getChatDecorator() {
-        return ChatDecorator.NOOP;
+    public MessageDecorator getMessageDecorator() {
+        return MessageDecorator.NOOP;
     }
 
     @Override

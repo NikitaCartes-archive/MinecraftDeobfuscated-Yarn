@@ -22,29 +22,30 @@ import net.minecraft.util.math.random.ChunkRandom;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.gen.structure.StructureType;
 
 public class MineshaftStructure
-extends StructureType {
+extends Structure {
     public static final Codec<MineshaftStructure> CODEC = RecordCodecBuilder.create(instance -> instance.group(MineshaftStructure.configCodecBuilder(instance), ((MapCodec)Type.CODEC.fieldOf("mineshaft_type")).forGetter(mineshaftStructure -> mineshaftStructure.type)).apply((Applicative<MineshaftStructure, ?>)instance, MineshaftStructure::new));
     private final Type type;
 
-    public MineshaftStructure(StructureType.Config config, Type type) {
+    public MineshaftStructure(Structure.Config config, Type type) {
         super(config);
         this.type = type;
     }
 
     @Override
-    public Optional<StructureType.StructurePosition> getStructurePosition(StructureType.Context context) {
+    public Optional<Structure.StructurePosition> getStructurePosition(Structure.Context context) {
         context.random().nextDouble();
         ChunkPos chunkPos = context.chunkPos();
         BlockPos blockPos = new BlockPos(chunkPos.getCenterX(), 50, chunkPos.getStartZ());
         StructurePiecesCollector structurePiecesCollector = new StructurePiecesCollector();
         int i = this.addPieces(structurePiecesCollector, context);
-        return Optional.of(new StructureType.StructurePosition(blockPos.add(0, i, 0), Either.right(structurePiecesCollector)));
+        return Optional.of(new Structure.StructurePosition(blockPos.add(0, i, 0), Either.right(structurePiecesCollector)));
     }
 
-    private int addPieces(StructurePiecesCollector collector, StructureType.Context context) {
+    private int addPieces(StructurePiecesCollector collector, Structure.Context context) {
         ChunkPos chunkPos = context.chunkPos();
         ChunkRandom chunkRandom = context.random();
         ChunkGenerator chunkGenerator = context.chunkGenerator();
@@ -64,8 +65,8 @@ extends StructureType {
     }
 
     @Override
-    public net.minecraft.structure.StructureType<?> getType() {
-        return net.minecraft.structure.StructureType.MINESHAFT;
+    public StructureType<?> getType() {
+        return StructureType.MINESHAFT;
     }
 
     public static enum Type implements StringIdentifiable

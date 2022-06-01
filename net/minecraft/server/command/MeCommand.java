@@ -8,8 +8,8 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import java.util.concurrent.Executor;
 import net.minecraft.command.argument.MessageArgumentType;
-import net.minecraft.network.MessageType;
-import net.minecraft.network.encryption.SignedChatMessage;
+import net.minecraft.network.message.MessageType;
+import net.minecraft.network.message.SignedMessage;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -21,7 +21,7 @@ public class MeCommand {
             MessageArgumentType.SignedMessage signedMessage = MessageArgumentType.getSignedMessage(context, "action");
             ServerCommandSource serverCommandSource = (ServerCommandSource)context.getSource();
             PlayerManager playerManager = serverCommandSource.getServer().getPlayerManager();
-            signedMessage.decorate(serverCommandSource).thenAcceptAsync(decoratedMessage -> playerManager.broadcast((FilteredMessage<SignedChatMessage>)decoratedMessage, serverCommandSource, MessageType.EMOTE_COMMAND), (Executor)serverCommandSource.getServer());
+            signedMessage.decorate(serverCommandSource).thenAcceptAsync(decoratedMessage -> playerManager.broadcast((FilteredMessage<SignedMessage>)decoratedMessage, serverCommandSource, MessageType.EMOTE_COMMAND), (Executor)serverCommandSource.getServer());
             return 1;
         })));
     }

@@ -204,6 +204,7 @@ Waterloggable {
         if (optional.get().sourceState.isOf(Blocks.MUD) && fluid == Fluids.WATER) {
             BlockState blockState = Blocks.CLAY.getDefaultState();
             world.setBlockState(optional.get().pos, blockState);
+            Block.pushEntitiesUpBeforeBlockChange(optional.get().sourceState, blockState, world, optional.get().pos);
             world.emitGameEvent(GameEvent.BLOCK_CHANGE, optional.get().pos, GameEvent.Emitter.of(blockState));
             world.syncWorldEvent(WorldEvents.POINTED_DRIPSTONE_DRIPS, blockPos, 0);
             return;

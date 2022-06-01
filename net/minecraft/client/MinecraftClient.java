@@ -70,6 +70,7 @@ import net.minecraft.client.gl.WindowFramebuffer;
 import net.minecraft.client.gui.WorldGenerationProgressTracker;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.gui.screen.ConfirmChatLinkScreen;
 import net.minecraft.client.gui.screen.ConnectScreen;
 import net.minecraft.client.gui.screen.CreditsScreen;
 import net.minecraft.client.gui.screen.DeathScreen;
@@ -301,7 +302,7 @@ import org.slf4j.Logger;
 public class MinecraftClient
 extends ReentrantThreadExecutor<Runnable>
 implements WindowEventHandler {
-    private static MinecraftClient instance;
+    static MinecraftClient instance;
     private static final Logger LOGGER;
     public static final boolean IS_SYSTEM_MAC;
     private static final int field_32145 = 10;
@@ -881,7 +882,20 @@ implements WindowEventHandler {
     private void openChatScreen(String text) {
         ChatRestriction chatRestriction = this.getChatRestriction();
         if (!chatRestriction.allowsChat(this.isInSingleplayer())) {
-            this.inGameHud.setOverlayMessage(chatRestriction.getDescription(), false);
+            if (this.inGameHud.method_44353()) {
+                this.inGameHud.method_44354(false);
+                this.setScreen(new ConfirmChatLinkScreen(bl -> {
+                    if (bl) {
+                        Util.getOperatingSystem().open("https://aka.ms/JavaAccountSettings");
+                    }
+                    this.setScreen(null);
+                }, ChatRestriction.field_39456, "https://aka.ms/JavaAccountSettings", true));
+            } else {
+                Text text2 = chatRestriction.getDescription();
+                this.inGameHud.setOverlayMessage(text2, false);
+                NarratorManager.INSTANCE.narrate(text2);
+                this.inGameHud.method_44354(chatRestriction == ChatRestriction.DISABLED_BY_PROFILE);
+            }
         } else {
             this.setScreen(new ChatScreen(text));
         }
@@ -2564,7 +2578,7 @@ implements WindowEventHandler {
             }
         }
         ,
-        DISABLED_BY_PROFILE(Text.translatable("chat.disabled.profile").formatted(Formatting.RED)){
+        DISABLED_BY_PROFILE(Text.translatable("chat.disabled.profile", Text.keybind(MinecraftClient.instance.options.chatKey.getTranslationKey())).formatted(Formatting.RED)){
 
             @Override
             public boolean allowsChat(boolean singlePlayer) {
@@ -2572,6 +2586,8 @@ implements WindowEventHandler {
             }
         };
 
+        static final Text field_39456;
+        private static final String field_39457 = "https://aka.ms/JavaAccountSettings";
         private final Text description;
 
         ChatRestriction(Text description) {
@@ -2583,6 +2599,10 @@ implements WindowEventHandler {
         }
 
         public abstract boolean allowsChat(boolean var1);
+
+        static {
+            field_39456 = Text.translatable("chat.disabled.profile.moreInfo");
+        }
     }
 }
 

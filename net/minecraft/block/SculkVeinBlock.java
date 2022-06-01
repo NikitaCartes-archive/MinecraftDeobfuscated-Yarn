@@ -105,17 +105,19 @@ Waterloggable {
         TagKey<Block> tagKey = spreadManager.getReplaceableTag();
         for (Direction direction : Direction.shuffle(random)) {
             BlockPos blockPos;
-            if (!SculkVeinBlock.hasDirection(blockState, direction) || !world.getBlockState(blockPos = pos.offset(direction)).isIn(tagKey)) continue;
-            BlockState blockState2 = Blocks.SCULK.getDefaultState();
-            world.setBlockState(blockPos, blockState2, Block.NOTIFY_ALL);
+            BlockState blockState2;
+            if (!SculkVeinBlock.hasDirection(blockState, direction) || !(blockState2 = world.getBlockState(blockPos = pos.offset(direction))).isIn(tagKey)) continue;
+            BlockState blockState3 = Blocks.SCULK.getDefaultState();
+            world.setBlockState(blockPos, blockState3, Block.NOTIFY_ALL);
+            Block.pushEntitiesUpBeforeBlockChange(blockState2, blockState3, world, blockPos);
             world.playSound(null, blockPos, SoundEvents.BLOCK_SCULK_SPREAD, SoundCategory.BLOCKS, 1.0f, 1.0f);
-            this.allGrowTypeGrower.grow(blockState2, world, blockPos, spreadManager.isWorldGen());
+            this.allGrowTypeGrower.grow(blockState3, world, blockPos, spreadManager.isWorldGen());
             Direction direction2 = direction.getOpposite();
             for (Direction direction3 : DIRECTIONS) {
                 BlockPos blockPos2;
-                BlockState blockState3;
-                if (direction3 == direction2 || !(blockState3 = world.getBlockState(blockPos2 = blockPos.offset(direction3))).isOf(this)) continue;
-                this.spreadAtSamePosition(world, blockState3, blockPos2, random);
+                BlockState blockState4;
+                if (direction3 == direction2 || !(blockState4 = world.getBlockState(blockPos2 = blockPos.offset(direction3))).isOf(this)) continue;
+                this.spreadAtSamePosition(world, blockState4, blockPos2, random);
             }
             return true;
         }

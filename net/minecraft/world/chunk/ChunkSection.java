@@ -7,6 +7,7 @@ import java.util.function.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_7522;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.registry.Registry;
@@ -28,12 +29,12 @@ public class ChunkSection {
     private short randomTickableBlockCount;
     private short nonEmptyFluidCount;
     private final PalettedContainer<BlockState> blockStateContainer;
-    private final PalettedContainer<RegistryEntry<Biome>> biomeContainer;
+    private class_7522<RegistryEntry<Biome>> biomeContainer;
 
-    public ChunkSection(int chunkPos, PalettedContainer<BlockState> blockStateContainer, PalettedContainer<RegistryEntry<Biome>> biomeContainer) {
+    public ChunkSection(int chunkPos, PalettedContainer<BlockState> blockStateContainer, class_7522<RegistryEntry<Biome>> arg) {
         this.yOffset = ChunkSection.blockCoordFromChunkCoord(chunkPos);
         this.blockStateContainer = blockStateContainer;
-        this.biomeContainer = biomeContainer;
+        this.biomeContainer = arg;
         this.calculateCounts();
     }
 
@@ -155,14 +156,16 @@ public class ChunkSection {
         return this.blockStateContainer;
     }
 
-    public PalettedContainer<RegistryEntry<Biome>> getBiomeContainer() {
+    public class_7522<RegistryEntry<Biome>> getBiomeContainer() {
         return this.biomeContainer;
     }
 
     public void fromPacket(PacketByteBuf buf) {
         this.nonEmptyBlockCount = buf.readShort();
         this.blockStateContainer.readPacket(buf);
-        this.biomeContainer.readPacket(buf);
+        PalettedContainer<RegistryEntry<Biome>> palettedContainer = this.biomeContainer.method_44350();
+        palettedContainer.readPacket(buf);
+        this.biomeContainer = palettedContainer;
     }
 
     public void toPacket(PacketByteBuf buf) {
@@ -183,25 +186,18 @@ public class ChunkSection {
         return this.biomeContainer.get(x, y, z);
     }
 
-    /*
-     * WARNING - Removed try catching itself - possible behaviour change.
-     */
     public void populateBiomes(BiomeSupplier biomeSupplier, MultiNoiseUtil.MultiNoiseSampler sampler, int x, int z) {
-        PalettedContainer<RegistryEntry<Biome>> palettedContainer = this.getBiomeContainer();
-        palettedContainer.lock();
-        try {
-            int i = BiomeCoords.fromBlock(this.getYOffset());
-            int j = 4;
-            for (int k = 0; k < 4; ++k) {
-                for (int l = 0; l < 4; ++l) {
-                    for (int m = 0; m < 4; ++m) {
-                        palettedContainer.swapUnsafe(k, l, m, biomeSupplier.getBiome(x + k, i + l, z + m, sampler));
-                    }
+        PalettedContainer<RegistryEntry<Biome>> palettedContainer = this.biomeContainer.method_44350();
+        int i = BiomeCoords.fromBlock(this.getYOffset());
+        int j = 4;
+        for (int k = 0; k < 4; ++k) {
+            for (int l = 0; l < 4; ++l) {
+                for (int m = 0; m < 4; ++m) {
+                    palettedContainer.swapUnsafe(k, l, m, biomeSupplier.getBiome(x + k, i + l, z + m, sampler));
                 }
             }
-        } finally {
-            palettedContainer.unlock();
         }
+        this.biomeContainer = palettedContainer;
     }
 }
 

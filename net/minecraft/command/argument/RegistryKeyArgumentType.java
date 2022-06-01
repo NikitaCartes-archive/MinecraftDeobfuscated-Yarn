@@ -28,7 +28,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.structure.StructureType;
+import net.minecraft.world.gen.structure.Structure;
 
 public class RegistryKeyArgumentType<T>
 implements ArgumentType<RegistryKey<T>> {
@@ -71,7 +71,7 @@ implements ArgumentType<RegistryKey<T>> {
         return RegistryKeyArgumentType.getRegistryEntry(context, name, Registry.CONFIGURED_FEATURE_KEY, INVALID_FEATURE_EXCEPTION);
     }
 
-    public static RegistryEntry<StructureType> getStructureTypeEntry(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
+    public static RegistryEntry<Structure> getStructureEntry(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
         return RegistryKeyArgumentType.getRegistryEntry(context, name, Registry.STRUCTURE_KEY, INVALID_STRUCTURE_EXCEPTION);
     }
 

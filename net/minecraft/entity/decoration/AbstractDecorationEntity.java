@@ -3,6 +3,7 @@
  */
 package net.minecraft.entity.decoration;
 
+import com.mojang.logging.LogUtils;
 import java.util.function.Predicate;
 import net.minecraft.block.AbstractRedstoneGateBlock;
 import net.minecraft.block.BlockState;
@@ -26,9 +27,11 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public abstract class AbstractDecorationEntity
 extends Entity {
+    private static final Logger field_39455 = LogUtils.getLogger();
     protected static final Predicate<Entity> PREDICATE = entity -> entity instanceof AbstractDecorationEntity;
     private int obstructionCheckCounter;
     protected BlockPos attachmentPos;
@@ -182,7 +185,12 @@ extends Entity {
 
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
-        this.attachmentPos = new BlockPos(nbt.getInt("TileX"), nbt.getInt("TileY"), nbt.getInt("TileZ"));
+        BlockPos blockPos = new BlockPos(nbt.getInt("TileX"), nbt.getInt("TileY"), nbt.getInt("TileZ"));
+        if (!blockPos.isWithinDistance(this.getBlockPos(), 16.0)) {
+            field_39455.error("Hanging entity at invalid position: {}", (Object)blockPos);
+            return;
+        }
+        this.attachmentPos = blockPos;
     }
 
     public abstract int getWidthPixels();

@@ -13,9 +13,9 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import net.minecraft.command.argument.MessageArgumentType;
 import net.minecraft.entity.Entity;
-import net.minecraft.network.MessageSender;
-import net.minecraft.network.MessageType;
-import net.minecraft.network.encryption.SignedChatMessage;
+import net.minecraft.network.message.MessageSender;
+import net.minecraft.network.message.MessageType;
+import net.minecraft.network.message.SignedMessage;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -50,12 +50,12 @@ public class TeamMsgCommand {
         signedMessage.decorate(source).thenAcceptAsync(decoratedMessage -> {
             for (ServerPlayerEntity serverPlayerEntity : list) {
                 if (serverPlayerEntity == entity) {
-                    serverPlayerEntity.sendMessage(Text.translatable("chat.type.team.sent", text, source.getDisplayName(), ((SignedChatMessage)decoratedMessage.raw()).getContent()));
+                    serverPlayerEntity.sendMessage(Text.translatable("chat.type.team.sent", text, source.getDisplayName(), ((SignedMessage)decoratedMessage.raw()).getContent()));
                     continue;
                 }
-                SignedChatMessage signedChatMessage = (SignedChatMessage)decoratedMessage.getFilterableFor(source, serverPlayerEntity);
-                if (signedChatMessage == null) continue;
-                serverPlayerEntity.sendChatMessage(signedChatMessage, messageSender, MessageType.TEAM_MSG_COMMAND);
+                SignedMessage signedMessage = (SignedMessage)decoratedMessage.getFilterableFor(source, serverPlayerEntity);
+                if (signedMessage == null) continue;
+                serverPlayerEntity.sendChatMessage(signedMessage, messageSender, MessageType.TEAM_MSG_COMMAND);
             }
         }, (Executor)source.getServer());
         return list.size();

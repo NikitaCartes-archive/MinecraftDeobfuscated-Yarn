@@ -34,12 +34,12 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.ClientConnection;
-import net.minecraft.network.MessageSender;
-import net.minecraft.network.MessageType;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.encryption.PlayerPublicKey;
-import net.minecraft.network.encryption.SignedChatMessage;
+import net.minecraft.network.message.MessageSender;
+import net.minecraft.network.message.MessageType;
+import net.minecraft.network.message.SignedMessage;
 import net.minecraft.network.packet.s2c.play.ChunkLoadDistanceS2CPacket;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
@@ -667,8 +667,8 @@ public abstract class PlayerManager {
      * @see #broadcast(Text, Function, RegistryKey)
      * @see #broadcast(FilteredMessage, ServerCommandSource, RegistryKey)
      * @see #broadcast(FilteredMessage, ServerPlayerEntity, RegistryKey)
-     * @see #broadcast(SignedChatMessage, MessageSender, RegistryKey)
-     * @see #broadcast(SignedChatMessage, Function, MessageSender, RegistryKey)
+     * @see #broadcast(SignedMessage, MessageSender, RegistryKey)
+     * @see #broadcast(SignedMessage, Function, MessageSender, RegistryKey)
      */
     public void broadcast(Text message, RegistryKey<MessageType> typeKey) {
         this.broadcast(message, (ServerPlayerEntity player) -> message, typeKey);
@@ -681,8 +681,8 @@ public abstract class PlayerManager {
      * @see #broadcast(Text, RegistryKey)
      * @see #broadcast(FilteredMessage, ServerCommandSource, RegistryKey)
      * @see #broadcast(FilteredMessage, ServerPlayerEntity, RegistryKey)
-     * @see #broadcast(SignedChatMessage, MessageSender, RegistryKey)
-     * @see #broadcast(SignedChatMessage, Function, MessageSender, RegistryKey)
+     * @see #broadcast(SignedMessage, MessageSender, RegistryKey)
+     * @see #broadcast(SignedMessage, Function, MessageSender, RegistryKey)
      * 
      * @param playerMessageFactory a function that takes the player to send the message to
      * and returns either the text to send to them or {@code null}
@@ -707,10 +707,10 @@ public abstract class PlayerManager {
      * @see #broadcast(Text, RegistryKey)
      * @see #broadcast(Text, Function, RegistryKey)
      * @see #broadcast(FilteredMessage, ServerPlayerEntity, RegistryKey)
-     * @see #broadcast(SignedChatMessage, MessageSender, RegistryKey)
-     * @see #broadcast(SignedChatMessage, Function, MessageSender, RegistryKey)
+     * @see #broadcast(SignedMessage, MessageSender, RegistryKey)
+     * @see #broadcast(SignedMessage, Function, MessageSender, RegistryKey)
      */
-    public void broadcast(FilteredMessage<SignedChatMessage> message, ServerCommandSource source, RegistryKey<MessageType> typeKey) {
+    public void broadcast(FilteredMessage<SignedMessage> message, ServerCommandSource source, RegistryKey<MessageType> typeKey) {
         ServerPlayerEntity serverPlayerEntity = source.getPlayer();
         if (serverPlayerEntity != null) {
             this.broadcast(message, serverPlayerEntity, typeKey);
@@ -723,11 +723,11 @@ public abstract class PlayerManager {
      * Broadcasts a chat message to all players and the server console.
      * 
      * <p>Chat messages have signatures. It is possible to use a bogus signature - such as
-     * {@link net.minecraft.network.encryption.ChatMessageSignature#none} - to send a chat
+     * {@link net.minecraft.network.message.MessageSignature#none} - to send a chat
      * message; however if the signature is invalid (e.g. because the text's content differs
      * from the one sent by the client, or because the passed signature is invalid) the client
      * will log a warning. See {@link
-     * net.minecraft.network.encryption.ChatMessageSignature#updateSignature} for how the
+     * net.minecraft.network.message.MessageSignature#updateSignature} for how the
      * message is signed.
      * 
      * @apiNote This method is used to broadcast a message sent by a player
@@ -738,22 +738,22 @@ public abstract class PlayerManager {
      * @see #broadcast(Text, RegistryKey)
      * @see #broadcast(Text, Function, RegistryKey)
      * @see #broadcast(FilteredMessage, ServerCommandSource, RegistryKey)
-     * @see #broadcast(SignedChatMessage, MessageSender, RegistryKey)
-     * @see #broadcast(SignedChatMessage, Function, MessageSender, RegistryKey)
+     * @see #broadcast(SignedMessage, MessageSender, RegistryKey)
+     * @see #broadcast(SignedMessage, Function, MessageSender, RegistryKey)
      */
-    public void broadcast(FilteredMessage<SignedChatMessage> message, ServerPlayerEntity sender, RegistryKey<MessageType> typeKey) {
-        this.broadcast(message.raw(), player -> (SignedChatMessage)message.getFilterableFor(sender, (ServerPlayerEntity)player), sender.asMessageSender(), typeKey);
+    public void broadcast(FilteredMessage<SignedMessage> message, ServerPlayerEntity sender, RegistryKey<MessageType> typeKey) {
+        this.broadcast(message.raw(), player -> (SignedMessage)message.getFilterableFor(sender, (ServerPlayerEntity)player), sender.asMessageSender(), typeKey);
     }
 
     /**
      * Broadcasts a chat message to all players and the server console.
      * 
      * <p>Chat messages have signatures. It is possible to use a bogus signature - such as
-     * {@link net.minecraft.network.encryption.ChatMessageSignature#none} - to send a chat
+     * {@link net.minecraft.network.message.MessageSignature#none} - to send a chat
      * message; however if the signature is invalid (e.g. because the text's content differs
      * from the one sent by the client, or because the passed signature is invalid) the client
      * will log a warning. See {@link
-     * net.minecraft.network.encryption.ChatMessageSignature#updateSignature} for how the
+     * net.minecraft.network.message.MessageSignature#updateSignature} for how the
      * message is signed.
      * 
      * @apiNote This method is used to broadcast messages from commands like {@link
@@ -763,9 +763,9 @@ public abstract class PlayerManager {
      * @see #broadcast(Text, Function, RegistryKey)
      * @see #broadcast(FilteredMessage, ServerCommandSource, RegistryKey)
      * @see #broadcast(FilteredMessage, ServerPlayerEntity, RegistryKey)
-     * @see #broadcast(SignedChatMessage, Function, MessageSender, RegistryKey)
+     * @see #broadcast(SignedMessage, Function, MessageSender, RegistryKey)
      */
-    public void broadcast(SignedChatMessage message, MessageSender sender, RegistryKey<MessageType> typeKey) {
+    public void broadcast(SignedMessage message, MessageSender sender, RegistryKey<MessageType> typeKey) {
         this.broadcast(message, player -> message, sender, typeKey);
     }
 
@@ -774,11 +774,11 @@ public abstract class PlayerManager {
      * message can be sent to a different player.
      * 
      * <p>Chat messages have signatures. It is possible to use a bogus signature - such as
-     * {@link net.minecraft.network.encryption.ChatMessageSignature#none} - to send a chat
+     * {@link net.minecraft.network.message.MessageSignature#none} - to send a chat
      * message; however if the signature is invalid (e.g. because the text's content differs
      * from the one sent by the client, or because the passed signature is invalid) the client
      * will log a warning. See {@link
-     * net.minecraft.network.encryption.ChatMessageSignature#updateSignature} for how the
+     * net.minecraft.network.message.MessageSignature#updateSignature} for how the
      * message is signed.
      * 
      * @apiNote This method is used to broadcast a message sent by a player
@@ -790,18 +790,18 @@ public abstract class PlayerManager {
      * @see #broadcast(Text, Function, RegistryKey)
      * @see #broadcast(FilteredMessage, ServerCommandSource, RegistryKey)
      * @see #broadcast(FilteredMessage, ServerPlayerEntity, RegistryKey)
-     * @see #broadcast(SignedChatMessage, MessageSender, RegistryKey)
+     * @see #broadcast(SignedMessage, MessageSender, RegistryKey)
      * 
      * @param playerMessageFactory a function that takes the player to send the message to
      * and returns either the message to send to them or {@code null}
      * to indicate the message should not be sent to them
      */
-    public void broadcast(SignedChatMessage message, Function<ServerPlayerEntity, SignedChatMessage> playerMessageFactory, MessageSender sender, RegistryKey<MessageType> typeKey) {
+    public void broadcast(SignedMessage message, Function<ServerPlayerEntity, SignedMessage> playerMessageFactory, MessageSender sender, RegistryKey<MessageType> typeKey) {
         this.server.logChatMessage(sender, message.getContent());
         for (ServerPlayerEntity serverPlayerEntity : this.players) {
-            SignedChatMessage signedChatMessage = playerMessageFactory.apply(serverPlayerEntity);
-            if (signedChatMessage == null) continue;
-            serverPlayerEntity.sendChatMessage(signedChatMessage, sender, typeKey);
+            SignedMessage signedMessage = playerMessageFactory.apply(serverPlayerEntity);
+            if (signedMessage == null) continue;
+            serverPlayerEntity.sendChatMessage(signedMessage, sender, typeKey);
         }
     }
 

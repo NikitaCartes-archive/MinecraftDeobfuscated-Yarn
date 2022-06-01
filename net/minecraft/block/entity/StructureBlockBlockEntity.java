@@ -20,9 +20,9 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.structure.Structure;
-import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePlacementData;
+import net.minecraft.structure.StructureTemplate;
+import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.structure.processor.BlockRotStructureProcessor;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -43,7 +43,7 @@ extends BlockEntity {
     public static final int field_31364 = 48;
     public static final int field_31365 = 48;
     public static final String AUTHOR_KEY = "author";
-    private Identifier structureName;
+    private Identifier templateName;
     private String author = "";
     private String metadata = "";
     private BlockPos offset = new BlockPos(0, 1, 0);
@@ -66,7 +66,7 @@ extends BlockEntity {
     @Override
     protected void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
-        nbt.putString("name", this.getStructureName());
+        nbt.putString("name", this.getTemplateName());
         nbt.putString(AUTHOR_KEY, this.author);
         nbt.putString("metadata", this.metadata);
         nbt.putInt("posX", this.offset.getX());
@@ -89,7 +89,7 @@ extends BlockEntity {
     @Override
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
-        this.setStructureName(nbt.getString("name"));
+        this.setTemplateName(nbt.getString("name"));
         this.author = nbt.getString(AUTHOR_KEY);
         this.metadata = nbt.getString("metadata");
         int i = MathHelper.clamp(nbt.getInt("posX"), -48, 48);
@@ -154,24 +154,24 @@ extends BlockEntity {
         return true;
     }
 
-    public String getStructureName() {
-        return this.structureName == null ? "" : this.structureName.toString();
+    public String getTemplateName() {
+        return this.templateName == null ? "" : this.templateName.toString();
     }
 
     public String getStructurePath() {
-        return this.structureName == null ? "" : this.structureName.getPath();
+        return this.templateName == null ? "" : this.templateName.getPath();
     }
 
     public boolean hasStructureName() {
-        return this.structureName != null;
+        return this.templateName != null;
     }
 
-    public void setStructureName(@Nullable String name) {
-        this.setStructureName(StringHelper.isEmpty(name) ? null : Identifier.tryParse(name));
+    public void setTemplateName(@Nullable String templateName) {
+        this.setTemplateName(StringHelper.isEmpty(templateName) ? null : Identifier.tryParse(templateName));
     }
 
-    public void setStructureName(@Nullable Identifier structureName) {
-        this.structureName = structureName;
+    public void setTemplateName(@Nullable Identifier templateName) {
+        this.templateName = templateName;
     }
 
     public void setAuthor(LivingEntity entity) {
@@ -283,7 +283,7 @@ extends BlockEntity {
      * Streams positions of {@link StructureBlockMode#CORNER} mode structure blocks with matching names.
      */
     private Stream<BlockPos> streamCornerPos(BlockPos start, BlockPos end) {
-        return BlockPos.stream(start, end).filter(pos -> this.world.getBlockState((BlockPos)pos).isOf(Blocks.STRUCTURE_BLOCK)).map(this.world::getBlockEntity).filter(blockEntity -> blockEntity instanceof StructureBlockBlockEntity).map(blockEntity -> (StructureBlockBlockEntity)blockEntity).filter(blockEntity -> blockEntity.mode == StructureBlockMode.CORNER && Objects.equals(this.structureName, blockEntity.structureName)).map(BlockEntity::getPos);
+        return BlockPos.stream(start, end).filter(pos -> this.world.getBlockState((BlockPos)pos).isOf(Blocks.STRUCTURE_BLOCK)).map(this.world::getBlockEntity).filter(blockEntity -> blockEntity instanceof StructureBlockBlockEntity).map(blockEntity -> (StructureBlockBlockEntity)blockEntity).filter(blockEntity -> blockEntity.mode == StructureBlockMode.CORNER && Objects.equals(this.templateName, blockEntity.templateName)).map(BlockEntity::getPos);
     }
 
     private static Optional<BlockBox> getStructureBox(BlockPos pos, Stream<BlockPos> corners) {
@@ -306,23 +306,23 @@ extends BlockEntity {
     }
 
     public boolean saveStructure(boolean bl) {
-        Structure structure;
-        if (this.mode != StructureBlockMode.SAVE || this.world.isClient || this.structureName == null) {
+        StructureTemplate structureTemplate;
+        if (this.mode != StructureBlockMode.SAVE || this.world.isClient || this.templateName == null) {
             return false;
         }
         BlockPos blockPos = this.getPos().add(this.offset);
         ServerWorld serverWorld = (ServerWorld)this.world;
-        StructureManager structureManager = serverWorld.getStructureManager();
+        StructureTemplateManager structureTemplateManager = serverWorld.getStructureTemplateManager();
         try {
-            structure = structureManager.getStructureOrBlank(this.structureName);
+            structureTemplate = structureTemplateManager.getTemplateOrBlank(this.templateName);
         } catch (InvalidIdentifierException invalidIdentifierException) {
             return false;
         }
-        structure.saveFromWorld(this.world, blockPos, this.size, !this.ignoreEntities, Blocks.STRUCTURE_VOID);
-        structure.setAuthor(this.author);
+        structureTemplate.saveFromWorld(this.world, blockPos, this.size, !this.ignoreEntities, Blocks.STRUCTURE_VOID);
+        structureTemplate.setAuthor(this.author);
         if (bl) {
             try {
-                return structureManager.saveStructure(this.structureName);
+                return structureTemplateManager.saveTemplate(this.templateName);
             } catch (InvalidIdentifierException invalidIdentifierException) {
                 return false;
             }
@@ -342,13 +342,13 @@ extends BlockEntity {
     }
 
     public boolean loadStructure(ServerWorld world, boolean bl) {
-        Optional<Structure> optional;
-        if (this.mode != StructureBlockMode.LOAD || this.structureName == null) {
+        Optional<StructureTemplate> optional;
+        if (this.mode != StructureBlockMode.LOAD || this.templateName == null) {
             return false;
         }
-        StructureManager structureManager = world.getStructureManager();
+        StructureTemplateManager structureTemplateManager = world.getStructureTemplateManager();
         try {
-            optional = structureManager.getStructure(this.structureName);
+            optional = structureTemplateManager.getTemplate(this.templateName);
         } catch (InvalidIdentifierException invalidIdentifierException) {
             return false;
         }
@@ -358,14 +358,14 @@ extends BlockEntity {
         return this.place(world, bl, optional.get());
     }
 
-    public boolean place(ServerWorld world, boolean bl, Structure structure) {
+    public boolean place(ServerWorld world, boolean bl, StructureTemplate template) {
         Vec3i vec3i;
         boolean bl2;
         BlockPos blockPos = this.getPos();
-        if (!StringHelper.isEmpty(structure.getAuthor())) {
-            this.author = structure.getAuthor();
+        if (!StringHelper.isEmpty(template.getAuthor())) {
+            this.author = template.getAuthor();
         }
-        if (!(bl2 = this.size.equals(vec3i = structure.getSize()))) {
+        if (!(bl2 = this.size.equals(vec3i = template.getSize()))) {
             this.size = vec3i;
             this.markDirty();
             BlockState blockState = world.getBlockState(blockPos);
@@ -377,29 +377,29 @@ extends BlockEntity {
                 structurePlacementData.clearProcessors().addProcessor(new BlockRotStructureProcessor(MathHelper.clamp(this.integrity, 0.0f, 1.0f))).setRandom(StructureBlockBlockEntity.createRandom(this.seed));
             }
             BlockPos blockPos2 = blockPos.add(this.offset);
-            structure.place(world, blockPos2, blockPos2, structurePlacementData, StructureBlockBlockEntity.createRandom(this.seed), 2);
+            template.place(world, blockPos2, blockPos2, structurePlacementData, StructureBlockBlockEntity.createRandom(this.seed), 2);
             return true;
         }
         return false;
     }
 
     public void unloadStructure() {
-        if (this.structureName == null) {
+        if (this.templateName == null) {
             return;
         }
         ServerWorld serverWorld = (ServerWorld)this.world;
-        StructureManager structureManager = serverWorld.getStructureManager();
-        structureManager.unloadStructure(this.structureName);
+        StructureTemplateManager structureTemplateManager = serverWorld.getStructureTemplateManager();
+        structureTemplateManager.unloadTemplate(this.templateName);
     }
 
     public boolean isStructureAvailable() {
-        if (this.mode != StructureBlockMode.LOAD || this.world.isClient || this.structureName == null) {
+        if (this.mode != StructureBlockMode.LOAD || this.world.isClient || this.templateName == null) {
             return false;
         }
         ServerWorld serverWorld = (ServerWorld)this.world;
-        StructureManager structureManager = serverWorld.getStructureManager();
+        StructureTemplateManager structureTemplateManager = serverWorld.getStructureTemplateManager();
         try {
-            return structureManager.getStructure(this.structureName).isPresent();
+            return structureTemplateManager.getTemplate(this.templateName).isPresent();
         } catch (InvalidIdentifierException invalidIdentifierException) {
             return false;
         }

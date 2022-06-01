@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.network;
+package net.minecraft.network.message;
 
 import java.util.UUID;
 import net.minecraft.network.PacketByteBuf;

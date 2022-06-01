@@ -351,7 +351,7 @@ extends MutableRegistry<T> {
         if (this.frozen || this.unfrozenValueToEntry == null) {
             throw new IllegalStateException("Registry is already frozen");
         }
-        return this.unfrozenValueToEntry.computeIfAbsent(value, key -> RegistryEntry.Reference.intrusive(this, key));
+        return this.unfrozenValueToEntry.computeIfAbsent(value, valuex -> RegistryEntry.Reference.intrusive(this, valuex));
     }
 
     @Override

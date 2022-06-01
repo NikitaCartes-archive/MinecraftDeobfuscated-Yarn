@@ -8,7 +8,6 @@ import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
@@ -85,7 +84,7 @@ extends Item {
                 playerEntity.getInventory().insertStack(new ItemStack(Items.GLASS_BOTTLE));
             }
         }
-        world.emitGameEvent((Entity)user, GameEvent.DRINK, user.getEyePos());
+        user.emitGameEvent(GameEvent.DRINK);
         return stack;
     }
 

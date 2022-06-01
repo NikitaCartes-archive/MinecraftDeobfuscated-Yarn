@@ -18,20 +18,21 @@ import net.minecraft.world.EmptyBlockView;
 import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.chunk.VerticalBlockSample;
 import net.minecraft.world.gen.heightprovider.HeightProvider;
+import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.gen.structure.StructureType;
 
 public class NetherFossilStructure
-extends StructureType {
+extends Structure {
     public static final Codec<NetherFossilStructure> CODEC = RecordCodecBuilder.create(instance -> instance.group(NetherFossilStructure.configCodecBuilder(instance), ((MapCodec)HeightProvider.CODEC.fieldOf("height")).forGetter(structure -> structure.height)).apply((Applicative<NetherFossilStructure, ?>)instance, NetherFossilStructure::new));
     public final HeightProvider height;
 
-    public NetherFossilStructure(StructureType.Config config, HeightProvider height) {
+    public NetherFossilStructure(Structure.Config config, HeightProvider height) {
         super(config);
         this.height = height;
     }
 
     @Override
-    public Optional<StructureType.StructurePosition> getStructurePosition(StructureType.Context context) {
+    public Optional<Structure.StructurePosition> getStructurePosition(Structure.Context context) {
         ChunkRandom chunkRandom = context.random();
         int i = context.chunkPos().getStartX() + chunkRandom.nextInt(16);
         int j = context.chunkPos().getStartZ() + chunkRandom.nextInt(16);
@@ -50,12 +51,12 @@ extends StructureType {
             return Optional.empty();
         }
         BlockPos blockPos = new BlockPos(i, l, j);
-        return Optional.of(new StructureType.StructurePosition(blockPos, structurePiecesCollector -> NetherFossilGenerator.addPieces(context.structureManager(), structurePiecesCollector, chunkRandom, blockPos)));
+        return Optional.of(new Structure.StructurePosition(blockPos, structurePiecesCollector -> NetherFossilGenerator.addPieces(context.structureTemplateManager(), structurePiecesCollector, chunkRandom, blockPos)));
     }
 
     @Override
-    public net.minecraft.structure.StructureType<?> getType() {
-        return net.minecraft.structure.StructureType.NETHER_FOSSIL;
+    public StructureType<?> getType() {
+        return StructureType.NETHER_FOSSIL;
     }
 }
 

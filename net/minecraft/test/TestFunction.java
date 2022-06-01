@@ -9,8 +9,8 @@ import net.minecraft.util.BlockRotation;
 
 public class TestFunction {
     private final String batchId;
-    private final String structurePath;
-    private final String structureName;
+    private final String templatePath;
+    private final String templateName;
     private final boolean required;
     private final int maxAttempts;
     private final int requiredSuccesses;
@@ -19,18 +19,18 @@ public class TestFunction {
     private final long duration;
     private final BlockRotation rotation;
 
-    public TestFunction(String batchId, String structurePath, String structureName, int tickLimit, long duration, boolean required, Consumer<TestContext> starter) {
-        this(batchId, structurePath, structureName, BlockRotation.NONE, tickLimit, duration, required, 1, 1, starter);
+    public TestFunction(String batchId, String templatePath, String templateName, int tickLimit, long duration, boolean required, Consumer<TestContext> starter) {
+        this(batchId, templatePath, templateName, BlockRotation.NONE, tickLimit, duration, required, 1, 1, starter);
     }
 
-    public TestFunction(String batchId, String structurePath, String structureName, BlockRotation rotation, int tickLimit, long duration, boolean required, Consumer<TestContext> starter) {
-        this(batchId, structurePath, structureName, rotation, tickLimit, duration, required, 1, 1, starter);
+    public TestFunction(String batchId, String templatePath, String templateName, BlockRotation rotation, int tickLimit, long duration, boolean required, Consumer<TestContext> starter) {
+        this(batchId, templatePath, templateName, rotation, tickLimit, duration, required, 1, 1, starter);
     }
 
-    public TestFunction(String batchId, String structurePath, String structureName, BlockRotation rotation, int tickLimit, long duration, boolean required, int requiredSuccesses, int maxAttempts, Consumer<TestContext> starter) {
+    public TestFunction(String batchId, String templatePath, String templateName, BlockRotation rotation, int tickLimit, long duration, boolean required, int requiredSuccesses, int maxAttempts, Consumer<TestContext> starter) {
         this.batchId = batchId;
-        this.structurePath = structurePath;
-        this.structureName = structureName;
+        this.templatePath = templatePath;
+        this.templateName = templateName;
         this.rotation = rotation;
         this.tickLimit = tickLimit;
         this.required = required;
@@ -44,16 +44,16 @@ public class TestFunction {
         this.starter.accept(context);
     }
 
-    public String getStructurePath() {
-        return this.structurePath;
+    public String getTemplatePath() {
+        return this.templatePath;
     }
 
-    public String getStructureName() {
-        return this.structureName;
+    public String getTemplateName() {
+        return this.templateName;
     }
 
     public String toString() {
-        return this.structurePath;
+        return this.templatePath;
     }
 
     public int getTickLimit() {

@@ -20,8 +20,8 @@ import net.minecraft.structure.RuinedPortalStructurePiece;
 import net.minecraft.structure.ShipwreckGenerator;
 import net.minecraft.structure.StrongholdGenerator;
 import net.minecraft.structure.StructureContext;
-import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
+import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.structure.SwampHutGenerator;
 import net.minecraft.structure.WoodlandMansionGenerator;
 import net.minecraft.util.registry.Registry;
@@ -110,7 +110,7 @@ public interface StructurePieceType {
 
     public static interface ManagerAware
     extends StructurePieceType {
-        public StructurePiece load(StructureManager var1, NbtCompound var2);
+        public StructurePiece load(StructureTemplateManager var1, NbtCompound var2);
 
         @Override
         default public StructurePiece load(StructureContext structureContext, NbtCompound nbtCompound) {

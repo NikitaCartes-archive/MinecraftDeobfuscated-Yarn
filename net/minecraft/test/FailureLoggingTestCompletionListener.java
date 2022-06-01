@@ -16,9 +16,9 @@ implements TestCompletionListener {
     @Override
     public void onTestFailed(GameTestState test) {
         if (test.isRequired()) {
-            LOGGER.error("{} failed! {}", (Object)test.getStructurePath(), (Object)Util.getInnermostMessage(test.getThrowable()));
+            LOGGER.error("{} failed! {}", (Object)test.getTemplatePath(), (Object)Util.getInnermostMessage(test.getThrowable()));
         } else {
-            LOGGER.warn("(optional) {} failed. {}", (Object)test.getStructurePath(), (Object)Util.getInnermostMessage(test.getThrowable()));
+            LOGGER.warn("(optional) {} failed. {}", (Object)test.getTemplatePath(), (Object)Util.getInnermostMessage(test.getThrowable()));
         }
     }
 

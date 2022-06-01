@@ -13,12 +13,12 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.StructureBlockMode;
 import net.minecraft.command.argument.BlockArgumentParser;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureContext;
-import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.structure.StructurePlacementData;
+import net.minecraft.structure.StructureTemplate;
+import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
@@ -36,33 +36,33 @@ import org.slf4j.Logger;
 public abstract class SimpleStructurePiece
 extends StructurePiece {
     private static final Logger LOGGER = LogUtils.getLogger();
-    protected final String template;
-    protected Structure structure;
+    protected final String templateIdString;
+    protected StructureTemplate template;
     protected StructurePlacementData placementData;
     protected BlockPos pos;
 
-    public SimpleStructurePiece(StructurePieceType type, int length, StructureManager structureManager, Identifier id, String template, StructurePlacementData placementData, BlockPos pos) {
-        super(type, length, structureManager.getStructureOrBlank(id).calculateBoundingBox(placementData, pos));
+    public SimpleStructurePiece(StructurePieceType type, int length, StructureTemplateManager structureTemplateManager, Identifier id, String template, StructurePlacementData placementData, BlockPos pos) {
+        super(type, length, structureTemplateManager.getTemplateOrBlank(id).calculateBoundingBox(placementData, pos));
         this.setOrientation(Direction.NORTH);
-        this.template = template;
+        this.templateIdString = template;
         this.pos = pos;
-        this.structure = structureManager.getStructureOrBlank(id);
+        this.template = structureTemplateManager.getTemplateOrBlank(id);
         this.placementData = placementData;
     }
 
-    public SimpleStructurePiece(StructurePieceType type, NbtCompound nbt, StructureManager structureManager, Function<Identifier, StructurePlacementData> placementDataGetter) {
+    public SimpleStructurePiece(StructurePieceType type, NbtCompound nbt, StructureTemplateManager structureTemplateManager, Function<Identifier, StructurePlacementData> placementDataGetter) {
         super(type, nbt);
         this.setOrientation(Direction.NORTH);
-        this.template = nbt.getString("Template");
+        this.templateIdString = nbt.getString("Template");
         this.pos = new BlockPos(nbt.getInt("TPX"), nbt.getInt("TPY"), nbt.getInt("TPZ"));
         Identifier identifier = this.getId();
-        this.structure = structureManager.getStructureOrBlank(identifier);
+        this.template = structureTemplateManager.getTemplateOrBlank(identifier);
         this.placementData = placementDataGetter.apply(identifier);
-        this.boundingBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
+        this.boundingBox = this.template.calculateBoundingBox(this.placementData, this.pos);
     }
 
     protected Identifier getId() {
-        return new Identifier(this.template);
+        return new Identifier(this.templateIdString);
     }
 
     @Override
@@ -70,22 +70,22 @@ extends StructurePiece {
         nbt.putInt("TPX", this.pos.getX());
         nbt.putInt("TPY", this.pos.getY());
         nbt.putInt("TPZ", this.pos.getZ());
-        nbt.putString("Template", this.template);
+        nbt.putString("Template", this.templateIdString);
     }
 
     @Override
     public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
         this.placementData.setBoundingBox(chunkBox);
-        this.boundingBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
-        if (this.structure.place(world, this.pos, pivot, this.placementData, random, 2)) {
-            List<Structure.StructureBlockInfo> list = this.structure.getInfosForBlock(this.pos, this.placementData, Blocks.STRUCTURE_BLOCK);
-            for (Structure.StructureBlockInfo structureBlockInfo : list) {
+        this.boundingBox = this.template.calculateBoundingBox(this.placementData, this.pos);
+        if (this.template.place(world, this.pos, pivot, this.placementData, random, 2)) {
+            List<StructureTemplate.StructureBlockInfo> list = this.template.getInfosForBlock(this.pos, this.placementData, Blocks.STRUCTURE_BLOCK);
+            for (StructureTemplate.StructureBlockInfo structureBlockInfo : list) {
                 StructureBlockMode structureBlockMode;
                 if (structureBlockInfo.nbt == null || (structureBlockMode = StructureBlockMode.valueOf(structureBlockInfo.nbt.getString("mode"))) != StructureBlockMode.DATA) continue;
                 this.handleMetadata(structureBlockInfo.nbt.getString("metadata"), structureBlockInfo.pos, world, random, chunkBox);
             }
-            List<Structure.StructureBlockInfo> list2 = this.structure.getInfosForBlock(this.pos, this.placementData, Blocks.JIGSAW);
-            for (Structure.StructureBlockInfo structureBlockInfo2 : list2) {
+            List<StructureTemplate.StructureBlockInfo> list2 = this.template.getInfosForBlock(this.pos, this.placementData, Blocks.JIGSAW);
+            for (StructureTemplate.StructureBlockInfo structureBlockInfo2 : list2) {
                 if (structureBlockInfo2.nbt == null) continue;
                 String string = structureBlockInfo2.nbt.getString("final_state");
                 BlockState blockState = Blocks.AIR.getDefaultState();
@@ -113,8 +113,8 @@ extends StructurePiece {
         return this.placementData.getRotation();
     }
 
-    public Structure method_41624() {
-        return this.structure;
+    public StructureTemplate getTemplate() {
+        return this.template;
     }
 
     public BlockPos method_41625() {

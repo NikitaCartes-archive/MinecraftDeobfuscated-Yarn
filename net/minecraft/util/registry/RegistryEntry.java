@@ -126,8 +126,8 @@ public interface RegistryEntry<T> {
         }
 
         @Deprecated
-        public static <T> Reference<T> intrusive(Registry<T> registry, @Nullable T registryKey) {
-            return new Reference<T>(Type.INTRUSIVE, registry, null, registryKey);
+        public static <T> Reference<T> intrusive(Registry<T> registry, @Nullable T value) {
+            return new Reference<T>(Type.INTRUSIVE, registry, null, value);
         }
 
         public RegistryKey<T> registryKey() {

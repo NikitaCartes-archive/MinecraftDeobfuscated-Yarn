@@ -78,14 +78,14 @@ public class TestCommand {
         dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("test").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal("runthis").executes(context -> TestCommand.executeRunThis((ServerCommandSource)context.getSource())))).then(CommandManager.literal("runthese").executes(context -> TestCommand.executeRunThese((ServerCommandSource)context.getSource())))).then(((LiteralArgumentBuilder)CommandManager.literal("runfailed").executes(context -> TestCommand.executeRerunFailed((ServerCommandSource)context.getSource(), false, 0, 8))).then(((RequiredArgumentBuilder)CommandManager.argument("onlyRequiredTests", BoolArgumentType.bool()).executes(context -> TestCommand.executeRerunFailed((ServerCommandSource)context.getSource(), BoolArgumentType.getBool(context, "onlyRequiredTests"), 0, 8))).then(((RequiredArgumentBuilder)CommandManager.argument("rotationSteps", IntegerArgumentType.integer()).executes(context -> TestCommand.executeRerunFailed((ServerCommandSource)context.getSource(), BoolArgumentType.getBool(context, "onlyRequiredTests"), IntegerArgumentType.getInteger(context, "rotationSteps"), 8))).then(CommandManager.argument("testsPerRow", IntegerArgumentType.integer()).executes(context -> TestCommand.executeRerunFailed((ServerCommandSource)context.getSource(), BoolArgumentType.getBool(context, "onlyRequiredTests"), IntegerArgumentType.getInteger(context, "rotationSteps"), IntegerArgumentType.getInteger(context, "testsPerRow")))))))).then(CommandManager.literal("run").then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)CommandManager.argument("testName", TestFunctionArgumentType.testFunction()).executes(context -> TestCommand.executeRun((ServerCommandSource)context.getSource(), TestFunctionArgumentType.getFunction(context, "testName"), 0))).then(CommandManager.argument("rotationSteps", IntegerArgumentType.integer()).executes(context -> TestCommand.executeRun((ServerCommandSource)context.getSource(), TestFunctionArgumentType.getFunction(context, "testName"), IntegerArgumentType.getInteger(context, "rotationSteps"))))))).then(((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("runall").executes(context -> TestCommand.executeRunAll((ServerCommandSource)context.getSource(), 0, 8))).then(((RequiredArgumentBuilder)CommandManager.argument("testClassName", TestClassArgumentType.testClass()).executes(context -> TestCommand.executeRunAll((ServerCommandSource)context.getSource(), TestClassArgumentType.getTestClass(context, "testClassName"), 0, 8))).then(((RequiredArgumentBuilder)CommandManager.argument("rotationSteps", IntegerArgumentType.integer()).executes(context -> TestCommand.executeRunAll((ServerCommandSource)context.getSource(), TestClassArgumentType.getTestClass(context, "testClassName"), IntegerArgumentType.getInteger(context, "rotationSteps"), 8))).then(CommandManager.argument("testsPerRow", IntegerArgumentType.integer()).executes(context -> TestCommand.executeRunAll((ServerCommandSource)context.getSource(), TestClassArgumentType.getTestClass(context, "testClassName"), IntegerArgumentType.getInteger(context, "rotationSteps"), IntegerArgumentType.getInteger(context, "testsPerRow"))))))).then(((RequiredArgumentBuilder)CommandManager.argument("rotationSteps", IntegerArgumentType.integer()).executes(context -> TestCommand.executeRunAll((ServerCommandSource)context.getSource(), IntegerArgumentType.getInteger(context, "rotationSteps"), 8))).then(CommandManager.argument("testsPerRow", IntegerArgumentType.integer()).executes(context -> TestCommand.executeRunAll((ServerCommandSource)context.getSource(), IntegerArgumentType.getInteger(context, "rotationSteps"), IntegerArgumentType.getInteger(context, "testsPerRow"))))))).then(CommandManager.literal("export").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("testName", StringArgumentType.word()).executes(context -> TestCommand.executeExport((ServerCommandSource)context.getSource(), StringArgumentType.getString(context, "testName")))))).then(CommandManager.literal("exportthis").executes(context -> TestCommand.executeExport((ServerCommandSource)context.getSource())))).then(CommandManager.literal("import").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("testName", StringArgumentType.word()).executes(context -> TestCommand.executeImport((ServerCommandSource)context.getSource(), StringArgumentType.getString(context, "testName")))))).then(((LiteralArgumentBuilder)CommandManager.literal("pos").executes(context -> TestCommand.executePos((ServerCommandSource)context.getSource(), "pos"))).then(CommandManager.argument("var", StringArgumentType.word()).executes(context -> TestCommand.executePos((ServerCommandSource)context.getSource(), StringArgumentType.getString(context, "var")))))).then(CommandManager.literal("create").then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)CommandManager.argument("testName", StringArgumentType.word()).executes(context -> TestCommand.executeCreate((ServerCommandSource)context.getSource(), StringArgumentType.getString(context, "testName"), 5, 5, 5))).then(((RequiredArgumentBuilder)CommandManager.argument("width", IntegerArgumentType.integer()).executes(context -> TestCommand.executeCreate((ServerCommandSource)context.getSource(), StringArgumentType.getString(context, "testName"), IntegerArgumentType.getInteger(context, "width"), IntegerArgumentType.getInteger(context, "width"), IntegerArgumentType.getInteger(context, "width")))).then(CommandManager.argument("height", IntegerArgumentType.integer()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("depth", IntegerArgumentType.integer()).executes(context -> TestCommand.executeCreate((ServerCommandSource)context.getSource(), StringArgumentType.getString(context, "testName"), IntegerArgumentType.getInteger(context, "width"), IntegerArgumentType.getInteger(context, "height"), IntegerArgumentType.getInteger(context, "depth"))))))))).then(((LiteralArgumentBuilder)CommandManager.literal("clearall").executes(context -> TestCommand.executeClearAll((ServerCommandSource)context.getSource(), 200))).then(CommandManager.argument("radius", IntegerArgumentType.integer()).executes(context -> TestCommand.executeClearAll((ServerCommandSource)context.getSource(), IntegerArgumentType.getInteger(context, "radius"))))));
     }
 
-    private static int executeCreate(ServerCommandSource source, String structure, int x, int y, int z) {
+    private static int executeCreate(ServerCommandSource source, String testName, int x, int y, int z) {
         if (x > 48 || y > 48 || z > 48) {
             throw new IllegalArgumentException("The structure must be less than 48 blocks big in each axis");
         }
         ServerWorld serverWorld = source.getWorld();
         BlockPos blockPos = new BlockPos(source.getPosition());
         BlockPos blockPos2 = new BlockPos(blockPos.getX(), source.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY(), blockPos.getZ() + 3);
-        StructureTestUtil.createTestArea(structure.toLowerCase(), blockPos2, new Vec3i(x, y, z), BlockRotation.NONE, serverWorld);
+        StructureTestUtil.createTestArea(testName.toLowerCase(), blockPos2, new Vec3i(x, y, z), BlockRotation.NONE, serverWorld);
         for (int i = 0; i < x; ++i) {
             for (int j = 0; j < z; ++j) {
                 BlockPos blockPos3 = new BlockPos(blockPos2.getX() + i, blockPos2.getY() + 1, blockPos2.getZ() + j);
@@ -263,11 +263,11 @@ public class TestCommand {
         return TestCommand.executeExport(source, string);
     }
 
-    private static int executeExport(ServerCommandSource source, String structure) {
+    private static int executeExport(ServerCommandSource source, String testName) {
         Path path = Paths.get(StructureTestUtil.testStructuresDirectoryName, new String[0]);
-        Identifier identifier = new Identifier("minecraft", structure);
-        Path path2 = source.getWorld().getStructureManager().getStructurePath(identifier, ".nbt");
-        Path path3 = NbtProvider.convertNbtToSnbt(DataWriter.UNCACHED, path2, structure, path);
+        Identifier identifier = new Identifier("minecraft", testName);
+        Path path2 = source.getWorld().getStructureTemplateManager().getTemplatePath(identifier, ".nbt");
+        Path path3 = NbtProvider.convertNbtToSnbt(DataWriter.UNCACHED, path2, testName, path);
         if (path3 == null) {
             TestCommand.sendMessage(source, "Failed to export " + path2);
             return 1;
@@ -279,14 +279,14 @@ public class TestCommand {
             iOException.printStackTrace();
             return 1;
         }
-        TestCommand.sendMessage(source, "Exported " + structure + " to " + path3.toAbsolutePath());
+        TestCommand.sendMessage(source, "Exported " + testName + " to " + path3.toAbsolutePath());
         return 0;
     }
 
-    private static int executeImport(ServerCommandSource source, String structure) {
-        Path path = Paths.get(StructureTestUtil.testStructuresDirectoryName, structure + ".snbt");
-        Identifier identifier = new Identifier("minecraft", structure);
-        Path path2 = source.getWorld().getStructureManager().getStructurePath(identifier, ".nbt");
+    private static int executeImport(ServerCommandSource source, String testName) {
+        Path path = Paths.get(StructureTestUtil.testStructuresDirectoryName, testName + ".snbt");
+        Identifier identifier = new Identifier("minecraft", testName);
+        Path path2 = source.getWorld().getStructureTemplateManager().getTemplatePath(identifier, ".nbt");
         try {
             BufferedReader bufferedReader = Files.newBufferedReader(path);
             String string = IOUtils.toString(bufferedReader);
@@ -297,7 +297,7 @@ public class TestCommand {
             TestCommand.sendMessage(source, "Imported to " + path2.toAbsolutePath());
             return 0;
         } catch (CommandSyntaxException | IOException exception) {
-            System.err.println("Failed to load structure " + structure);
+            System.err.println("Failed to load structure " + testName);
             exception.printStackTrace();
             return 1;
         }

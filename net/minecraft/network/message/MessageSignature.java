@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.network.encryption;
+package net.minecraft.network.message;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -16,11 +16,12 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 
 /**
- * A signature for chat messages, consisting of the sender, the timestamp, and the signature data.
+ * A signature for chat messages and message command arguments, consisting
+ * of the sender, the timestamp, and the signature data.
  */
-public record ChatMessageSignature(UUID sender, Instant timestamp, NetworkEncryptionUtils.SignatureData saltSignature) {
-    public static ChatMessageSignature none() {
-        return new ChatMessageSignature(Util.NIL_UUID, Instant.now(), NetworkEncryptionUtils.SignatureData.NONE);
+public record MessageSignature(UUID sender, Instant timestamp, NetworkEncryptionUtils.SignatureData saltSignature) {
+    public static MessageSignature none() {
+        return new MessageSignature(Util.NIL_UUID, Instant.now(), NetworkEncryptionUtils.SignatureData.NONE);
     }
 
     /**
@@ -28,7 +29,7 @@ public record ChatMessageSignature(UUID sender, Instant timestamp, NetworkEncryp
      */
     public boolean verify(SignatureVerifier verifier, Text message) {
         if (this.canVerify()) {
-            return verifier.validate(updater -> ChatMessageSignature.updateSignature(updater, message, this.sender, this.timestamp, this.saltSignature.salt()), this.saltSignature.signature());
+            return verifier.validate(updater -> MessageSignature.updateSignature(updater, message, this.sender, this.timestamp, this.saltSignature.salt()), this.saltSignature.signature());
         }
         return false;
     }
@@ -63,7 +64,7 @@ public record ChatMessageSignature(UUID sender, Instant timestamp, NetworkEncryp
         byteBuffer.putLong(sender.getMostSignificantBits()).putLong(sender.getLeastSignificantBits());
         byteBuffer.putLong(time.getEpochSecond());
         updater.update(bs);
-        updater.update(ChatMessageSignature.toByteArray(message));
+        updater.update(MessageSignature.toByteArray(message));
     }
 
     private static byte[] toByteArray(Text message) {

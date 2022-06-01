@@ -27,7 +27,7 @@ import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.structure.StructureType;
+import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
 
@@ -48,16 +48,16 @@ public class LocateCommand {
         dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("locate").requires(source -> source.hasPermissionLevel(2))).then(CommandManager.literal("structure").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("structure", RegistryPredicateArgumentType.registryPredicate(Registry.STRUCTURE_KEY)).executes(commandContext -> LocateCommand.executeLocateStructure((ServerCommandSource)commandContext.getSource(), RegistryPredicateArgumentType.getPredicate(commandContext, "structure", Registry.STRUCTURE_KEY, STRUCTURE_INVALID_EXCEPTION)))))).then(CommandManager.literal("biome").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("biome", RegistryPredicateArgumentType.registryPredicate(Registry.BIOME_KEY)).executes(commandContext -> LocateCommand.executeLocateBiome((ServerCommandSource)commandContext.getSource(), RegistryPredicateArgumentType.getPredicate(commandContext, "biome", Registry.BIOME_KEY, BIOME_INVALID_EXCEPTION)))))).then(CommandManager.literal("poi").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("poi", RegistryPredicateArgumentType.registryPredicate(Registry.POINT_OF_INTEREST_TYPE_KEY)).executes(commandContext -> LocateCommand.executeLocatePoi((ServerCommandSource)commandContext.getSource(), RegistryPredicateArgumentType.getPredicate(commandContext, "poi", Registry.POINT_OF_INTEREST_TYPE_KEY, POI_INVALID_EXCEPTION))))));
     }
 
-    private static Optional<? extends RegistryEntryList.ListBacked<StructureType>> getStructureListForPredicate(RegistryPredicateArgumentType.RegistryPredicate<StructureType> predicate, Registry<StructureType> structureTypeRegistry) {
-        return predicate.getKey().map(key -> structureTypeRegistry.getEntry((RegistryKey<StructureType>)key).map(entry -> RegistryEntryList.of(entry)), structureTypeRegistry::getEntryList);
+    private static Optional<? extends RegistryEntryList.ListBacked<Structure>> getStructureListForPredicate(RegistryPredicateArgumentType.RegistryPredicate<Structure> predicate, Registry<Structure> structureRegistry) {
+        return predicate.getKey().map(key -> structureRegistry.getEntry((RegistryKey<Structure>)key).map(entry -> RegistryEntryList.of(entry)), structureRegistry::getEntryList);
     }
 
-    private static int executeLocateStructure(ServerCommandSource source, RegistryPredicateArgumentType.RegistryPredicate<StructureType> predicate) throws CommandSyntaxException {
-        Registry<StructureType> registry = source.getWorld().getRegistryManager().get(Registry.STRUCTURE_KEY);
+    private static int executeLocateStructure(ServerCommandSource source, RegistryPredicateArgumentType.RegistryPredicate<Structure> predicate) throws CommandSyntaxException {
+        Registry<Structure> registry = source.getWorld().getRegistryManager().get(Registry.STRUCTURE_KEY);
         RegistryEntryList registryEntryList = LocateCommand.getStructureListForPredicate(predicate, registry).orElseThrow(() -> STRUCTURE_INVALID_EXCEPTION.create(predicate.asString()));
         BlockPos blockPos = new BlockPos(source.getPosition());
         ServerWorld serverWorld = source.getWorld();
-        Pair<BlockPos, RegistryEntry<StructureType>> pair = serverWorld.getChunkManager().getChunkGenerator().locateStructure(serverWorld, registryEntryList, blockPos, 100, false);
+        Pair<BlockPos, RegistryEntry<Structure>> pair = serverWorld.getChunkManager().getChunkGenerator().locateStructure(serverWorld, registryEntryList, blockPos, 100, false);
         if (pair == null) {
             throw STRUCTURE_NOT_FOUND_EXCEPTION.create(predicate.asString());
         }
@@ -83,9 +83,9 @@ public class LocateCommand {
         return LocateCommand.sendCoordinates(source, predicate, blockPos, optional.get().swap(), "commands.locate.poi.success", false);
     }
 
-    public static int sendCoordinates(ServerCommandSource source, RegistryPredicateArgumentType.RegistryPredicate<?> structureFeature, BlockPos currentPos, Pair<BlockPos, ? extends RegistryEntry<?>> structurePosAndEntry, String successMessage, boolean bl) {
+    public static int sendCoordinates(ServerCommandSource source, RegistryPredicateArgumentType.RegistryPredicate<?> structure, BlockPos currentPos, Pair<BlockPos, ? extends RegistryEntry<?>> structurePosAndEntry, String successMessage, boolean bl) {
         BlockPos blockPos = structurePosAndEntry.getFirst();
-        String string = structureFeature.getKey().map(key -> key.getValue().toString(), key2 -> "#" + key2.id() + " (" + ((RegistryEntry)structurePosAndEntry.getSecond()).getKey().map(key -> key.getValue().toString()).orElse("[unregistered]") + ")");
+        String string = structure.getKey().map(key -> key.getValue().toString(), key2 -> "#" + key2.id() + " (" + ((RegistryEntry)structurePosAndEntry.getSecond()).getKey().map(key -> key.getValue().toString()).orElse("[unregistered]") + ")");
         int i = bl ? MathHelper.floor(MathHelper.sqrt((float)currentPos.getSquaredDistance(blockPos))) : MathHelper.floor(LocateCommand.getDistance(currentPos.getX(), currentPos.getZ(), blockPos.getX(), blockPos.getZ()));
         String string2 = bl ? String.valueOf(blockPos.getY()) : "~";
         MutableText text = Texts.bracketed(Text.translatable("chat.coordinates", blockPos.getX(), string2, blockPos.getZ())).styled(style -> style.withColor(Formatting.GREEN).withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + blockPos.getX() + " " + string2 + " " + blockPos.getZ())).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("chat.coordinates.tooltip"))));

@@ -62,7 +62,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.CatVariantTags;
-import net.minecraft.tag.ConfiguredStructureFeatureTags;
+import net.minecraft.tag.StructureTags;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DyeColor;
@@ -364,7 +364,7 @@ extends TameableEntity {
         TagKey<CatVariant> tagKey = bl ? CatVariantTags.FULL_MOON_SPAWNS : CatVariantTags.DEFAULT_SPAWNS;
         Registry.CAT_VARIANT.getEntryList(tagKey).flatMap(list -> list.getRandom(world.getRandom())).ifPresent(variant -> this.setVariant((CatVariant)variant.value()));
         ServerWorld serverWorld = world.toServerWorld();
-        if (serverWorld.getStructureAccessor().getStructureContaining(this.getBlockPos(), ConfiguredStructureFeatureTags.CATS_SPAWN_AS_BLACK).hasChildren()) {
+        if (serverWorld.getStructureAccessor().getStructureContaining(this.getBlockPos(), StructureTags.CATS_SPAWN_AS_BLACK).hasChildren()) {
             this.setVariant(CatVariant.ALL_BLACK);
             this.setPersistent();
         }

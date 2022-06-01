@@ -41,7 +41,7 @@ implements TestCompletionListener {
     private Element addTestCase(GameTestState test, String name) {
         Element element = this.document.createElement("testcase");
         element.setAttribute("name", name);
-        element.setAttribute("classname", test.getStructureName());
+        element.setAttribute("classname", test.getTemplateName());
         element.setAttribute("time", String.valueOf((double)test.getElapsedMilliseconds() / 1000.0));
         this.testSuiteElement.appendChild(element);
         return element;
@@ -50,7 +50,7 @@ implements TestCompletionListener {
     @Override
     public void onTestFailed(GameTestState test) {
         Element element;
-        String string = test.getStructurePath();
+        String string = test.getTemplatePath();
         String string2 = test.getThrowable().getMessage();
         if (test.isRequired()) {
             element = this.document.createElement("failure");
@@ -65,7 +65,7 @@ implements TestCompletionListener {
 
     @Override
     public void onTestPassed(GameTestState test) {
-        String string = test.getStructurePath();
+        String string = test.getTemplatePath();
         this.addTestCase(test, string);
     }
 

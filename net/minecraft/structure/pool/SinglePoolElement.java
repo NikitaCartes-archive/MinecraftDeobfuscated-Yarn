@@ -18,9 +18,9 @@ import java.util.Optional;
 import java.util.function.Function;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.StructureBlockMode;
-import net.minecraft.structure.Structure;
-import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePlacementData;
+import net.minecraft.structure.StructureTemplate;
+import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.structure.pool.StructurePoolElementType;
@@ -43,12 +43,12 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class SinglePoolElement
 extends StructurePoolElement {
-    private static final Codec<Either<Identifier, Structure>> LOCATION_CODEC = Codec.of(SinglePoolElement::encodeLocation, Identifier.CODEC.map(Either::left));
+    private static final Codec<Either<Identifier, StructureTemplate>> LOCATION_CODEC = Codec.of(SinglePoolElement::encodeLocation, Identifier.CODEC.map(Either::left));
     public static final Codec<SinglePoolElement> CODEC = RecordCodecBuilder.create(instance -> instance.group(SinglePoolElement.locationGetter(), SinglePoolElement.processorsGetter(), SinglePoolElement.projectionGetter()).apply((Applicative)instance, SinglePoolElement::new));
-    protected final Either<Identifier, Structure> location;
+    protected final Either<Identifier, StructureTemplate> location;
     protected final RegistryEntry<StructureProcessorList> processors;
 
-    private static <T> DataResult<T> encodeLocation(Either<Identifier, Structure> location, DynamicOps<T> ops, T prefix) {
+    private static <T> DataResult<T> encodeLocation(Either<Identifier, StructureTemplate> location, DynamicOps<T> ops, T prefix) {
         Optional<Identifier> optional = location.left();
         if (!optional.isPresent()) {
             return DataResult.error("Can not serialize a runtime pool element");
@@ -60,35 +60,35 @@ extends StructurePoolElement {
         return ((MapCodec)StructureProcessorType.REGISTRY_CODEC.fieldOf("processors")).forGetter(pool -> pool.processors);
     }
 
-    protected static <E extends SinglePoolElement> RecordCodecBuilder<E, Either<Identifier, Structure>> locationGetter() {
+    protected static <E extends SinglePoolElement> RecordCodecBuilder<E, Either<Identifier, StructureTemplate>> locationGetter() {
         return ((MapCodec)LOCATION_CODEC.fieldOf("location")).forGetter(pool -> pool.location);
     }
 
-    protected SinglePoolElement(Either<Identifier, Structure> location, RegistryEntry<StructureProcessorList> processors, StructurePool.Projection projection) {
+    protected SinglePoolElement(Either<Identifier, StructureTemplate> location, RegistryEntry<StructureProcessorList> processors, StructurePool.Projection projection) {
         super(projection);
         this.location = location;
         this.processors = processors;
     }
 
-    public SinglePoolElement(Structure structure) {
-        this(Either.right(structure), StructureProcessorLists.EMPTY, StructurePool.Projection.RIGID);
+    public SinglePoolElement(StructureTemplate template) {
+        this(Either.right(template), StructureProcessorLists.EMPTY, StructurePool.Projection.RIGID);
     }
 
     @Override
-    public Vec3i getStart(StructureManager structureManager, BlockRotation rotation) {
-        Structure structure = this.getStructure(structureManager);
-        return structure.getRotatedSize(rotation);
+    public Vec3i getStart(StructureTemplateManager structureTemplateManager, BlockRotation rotation) {
+        StructureTemplate structureTemplate = this.getStructure(structureTemplateManager);
+        return structureTemplate.getRotatedSize(rotation);
     }
 
-    private Structure getStructure(StructureManager structureManager) {
-        return this.location.map(structureManager::getStructureOrBlank, Function.identity());
+    private StructureTemplate getStructure(StructureTemplateManager structureTemplateManager) {
+        return this.location.map(structureTemplateManager::getTemplateOrBlank, Function.identity());
     }
 
-    public List<Structure.StructureBlockInfo> getDataStructureBlocks(StructureManager structureManager, BlockPos pos, BlockRotation rotation, boolean mirroredAndRotated) {
-        Structure structure = this.getStructure(structureManager);
-        ObjectArrayList<Structure.StructureBlockInfo> list = structure.getInfosForBlock(pos, new StructurePlacementData().setRotation(rotation), Blocks.STRUCTURE_BLOCK, mirroredAndRotated);
-        ArrayList<Structure.StructureBlockInfo> list2 = Lists.newArrayList();
-        for (Structure.StructureBlockInfo structureBlockInfo : list) {
+    public List<StructureTemplate.StructureBlockInfo> getDataStructureBlocks(StructureTemplateManager structureTemplateManager, BlockPos pos, BlockRotation rotation, boolean mirroredAndRotated) {
+        StructureTemplate structureTemplate = this.getStructure(structureTemplateManager);
+        ObjectArrayList<StructureTemplate.StructureBlockInfo> list = structureTemplate.getInfosForBlock(pos, new StructurePlacementData().setRotation(rotation), Blocks.STRUCTURE_BLOCK, mirroredAndRotated);
+        ArrayList<StructureTemplate.StructureBlockInfo> list2 = Lists.newArrayList();
+        for (StructureTemplate.StructureBlockInfo structureBlockInfo : list) {
             StructureBlockMode structureBlockMode;
             if (structureBlockInfo.nbt == null || (structureBlockMode = StructureBlockMode.valueOf(structureBlockInfo.nbt.getString("mode"))) != StructureBlockMode.DATA) continue;
             list2.add(structureBlockInfo);
@@ -97,26 +97,26 @@ extends StructurePoolElement {
     }
 
     @Override
-    public List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager structureManager, BlockPos pos, BlockRotation rotation, Random random) {
-        Structure structure = this.getStructure(structureManager);
-        ObjectArrayList<Structure.StructureBlockInfo> objectArrayList = structure.getInfosForBlock(pos, new StructurePlacementData().setRotation(rotation), Blocks.JIGSAW, true);
+    public List<StructureTemplate.StructureBlockInfo> getStructureBlockInfos(StructureTemplateManager structureTemplateManager, BlockPos pos, BlockRotation rotation, Random random) {
+        StructureTemplate structureTemplate = this.getStructure(structureTemplateManager);
+        ObjectArrayList<StructureTemplate.StructureBlockInfo> objectArrayList = structureTemplate.getInfosForBlock(pos, new StructurePlacementData().setRotation(rotation), Blocks.JIGSAW, true);
         Util.shuffle(objectArrayList, random);
         return objectArrayList;
     }
 
     @Override
-    public BlockBox getBoundingBox(StructureManager structureManager, BlockPos pos, BlockRotation rotation) {
-        Structure structure = this.getStructure(structureManager);
-        return structure.calculateBoundingBox(new StructurePlacementData().setRotation(rotation), pos);
+    public BlockBox getBoundingBox(StructureTemplateManager structureTemplateManager, BlockPos pos, BlockRotation rotation) {
+        StructureTemplate structureTemplate = this.getStructure(structureTemplateManager);
+        return structureTemplate.calculateBoundingBox(new StructurePlacementData().setRotation(rotation), pos);
     }
 
     @Override
-    public boolean generate(StructureManager structureManager, StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, BlockPos pos, BlockPos pivot, BlockRotation rotation, BlockBox box, Random random, boolean keepJigsaws) {
+    public boolean generate(StructureTemplateManager structureTemplateManager, StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, BlockPos pos, BlockPos pivot, BlockRotation rotation, BlockBox box, Random random, boolean keepJigsaws) {
         StructurePlacementData structurePlacementData;
-        Structure structure = this.getStructure(structureManager);
-        if (structure.place(world, pos, pivot, structurePlacementData = this.createPlacementData(rotation, box, keepJigsaws), random, 18)) {
-            List<Structure.StructureBlockInfo> list = Structure.process(world, pos, pivot, structurePlacementData, this.getDataStructureBlocks(structureManager, pos, rotation, false));
-            for (Structure.StructureBlockInfo structureBlockInfo : list) {
+        StructureTemplate structureTemplate = this.getStructure(structureTemplateManager);
+        if (structureTemplate.place(world, pos, pivot, structurePlacementData = this.createPlacementData(rotation, box, keepJigsaws), random, 18)) {
+            List<StructureTemplate.StructureBlockInfo> list = StructureTemplate.process(world, pos, pivot, structurePlacementData, this.getDataStructureBlocks(structureTemplateManager, pos, rotation, false));
+            for (StructureTemplate.StructureBlockInfo structureBlockInfo : list) {
                 this.method_16756(world, structureBlockInfo, pos, rotation, random, box);
             }
             return true;

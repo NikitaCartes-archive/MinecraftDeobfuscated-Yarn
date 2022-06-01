@@ -21,18 +21,19 @@ import net.minecraft.util.math.random.RandomSeed;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.gen.structure.StructureType;
 
 public class OceanMonumentStructure
-extends StructureType {
+extends Structure {
     public static final Codec<OceanMonumentStructure> CODEC = OceanMonumentStructure.createCodec(OceanMonumentStructure::new);
 
-    public OceanMonumentStructure(StructureType.Config config) {
+    public OceanMonumentStructure(Structure.Config config) {
         super(config);
     }
 
     @Override
-    public Optional<StructureType.StructurePosition> getStructurePosition(StructureType.Context context) {
+    public Optional<Structure.StructurePosition> getStructurePosition(Structure.Context context) {
         int i = context.chunkPos().getOffsetX(9);
         int j = context.chunkPos().getOffsetZ(9);
         Set<RegistryEntry<Biome>> set = context.biomeSource().getBiomesInArea(i, context.chunkGenerator().getSeaLevel(), j, 29, context.noiseConfig().getMultiNoiseSampler());
@@ -50,7 +51,7 @@ extends StructureType {
         return new OceanMonumentGenerator.Base(random, i, j, direction);
     }
 
-    private static void addPieces(StructurePiecesCollector collector, StructureType.Context context) {
+    private static void addPieces(StructurePiecesCollector collector, Structure.Context context) {
         collector.addPiece(OceanMonumentStructure.createBasePiece(context.chunkPos(), context.random()));
     }
 
@@ -73,8 +74,8 @@ extends StructureType {
     }
 
     @Override
-    public net.minecraft.structure.StructureType<?> getType() {
-        return net.minecraft.structure.StructureType.OCEAN_MONUMENT;
+    public StructureType<?> getType() {
+        return StructureType.OCEAN_MONUMENT;
     }
 }
 

@@ -9,22 +9,23 @@ import java.util.Optional;
 import net.minecraft.structure.StrongholdGenerator;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePiecesCollector;
+import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.gen.structure.StructureType;
 
 public class StrongholdStructure
-extends StructureType {
+extends Structure {
     public static final Codec<StrongholdStructure> CODEC = StrongholdStructure.createCodec(StrongholdStructure::new);
 
-    public StrongholdStructure(StructureType.Config config) {
+    public StrongholdStructure(Structure.Config config) {
         super(config);
     }
 
     @Override
-    public Optional<StructureType.StructurePosition> getStructurePosition(StructureType.Context context) {
-        return Optional.of(new StructureType.StructurePosition(context.chunkPos().getStartPos(), collector -> StrongholdStructure.addPieces(collector, context)));
+    public Optional<Structure.StructurePosition> getStructurePosition(Structure.Context context) {
+        return Optional.of(new Structure.StructurePosition(context.chunkPos().getStartPos(), collector -> StrongholdStructure.addPieces(collector, context)));
     }
 
-    private static void addPieces(StructurePiecesCollector collector, StructureType.Context context) {
+    private static void addPieces(StructurePiecesCollector collector, Structure.Context context) {
         StrongholdGenerator.Start start;
         int i = 0;
         do {
@@ -45,8 +46,8 @@ extends StructureType {
     }
 
     @Override
-    public net.minecraft.structure.StructureType<?> getType() {
-        return net.minecraft.structure.StructureType.STRONGHOLD;
+    public StructureType<?> getType() {
+        return StructureType.STRONGHOLD;
     }
 }
 

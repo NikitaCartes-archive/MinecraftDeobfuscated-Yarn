@@ -90,7 +90,7 @@ public class TestFunctions {
     }
 
     public static Optional<TestFunction> getTestFunction(String structurePath) {
-        return TestFunctions.getTestFunctions().stream().filter(testFunction -> testFunction.getStructurePath().equalsIgnoreCase(structurePath)).findFirst();
+        return TestFunctions.getTestFunctions().stream().filter(testFunction -> testFunction.getTemplatePath().equalsIgnoreCase(structurePath)).findFirst();
     }
 
     public static TestFunction getTestFunctionOrThrow(String structurePath) {
@@ -115,7 +115,7 @@ public class TestFunctions {
         String string = method.getDeclaringClass().getSimpleName();
         String string2 = string.toLowerCase();
         String string3 = string2 + "." + method.getName().toLowerCase();
-        String string4 = gameTest.structureName().isEmpty() ? string3 : string2 + "." + gameTest.structureName();
+        String string4 = gameTest.templateName().isEmpty() ? string3 : string2 + "." + gameTest.templateName();
         String string5 = gameTest.batchId();
         BlockRotation blockRotation = StructureTestUtil.getRotation(gameTest.rotation());
         return new TestFunction(string5, string3, string4, blockRotation, gameTest.tickLimit(), gameTest.duration(), gameTest.required(), gameTest.requiredSuccesses(), gameTest.maxAttempts(), TestFunctions.getInvoker(method));
@@ -138,7 +138,7 @@ public class TestFunctions {
     }
 
     private static boolean isInClass(TestFunction testFunction, String testClass) {
-        return testFunction.getStructurePath().toLowerCase().startsWith(testClass.toLowerCase() + ".");
+        return testFunction.getTemplatePath().toLowerCase().startsWith(testClass.toLowerCase() + ".");
     }
 
     public static Collection<TestFunction> getFailedTestFunctions() {

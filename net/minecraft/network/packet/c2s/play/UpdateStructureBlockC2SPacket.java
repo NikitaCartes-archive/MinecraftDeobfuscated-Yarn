@@ -22,7 +22,7 @@ implements Packet<ServerPlayPacketListener> {
     private final BlockPos pos;
     private final StructureBlockBlockEntity.Action action;
     private final StructureBlockMode mode;
-    private final String structureName;
+    private final String templateName;
     private final BlockPos offset;
     private final Vec3i size;
     private final BlockMirror mirror;
@@ -34,11 +34,11 @@ implements Packet<ServerPlayPacketListener> {
     private final float integrity;
     private final long seed;
 
-    public UpdateStructureBlockC2SPacket(BlockPos pos, StructureBlockBlockEntity.Action action, StructureBlockMode mode, String structureName, BlockPos offset, Vec3i size, BlockMirror mirror, BlockRotation rotation, String metadata, boolean ignoreEntities, boolean showAir, boolean showBoundingBox, float integrity, long seed) {
+    public UpdateStructureBlockC2SPacket(BlockPos pos, StructureBlockBlockEntity.Action action, StructureBlockMode mode, String templateName, BlockPos offset, Vec3i size, BlockMirror mirror, BlockRotation rotation, String metadata, boolean ignoreEntities, boolean showAir, boolean showBoundingBox, float integrity, long seed) {
         this.pos = pos;
         this.action = action;
         this.mode = mode;
-        this.structureName = structureName;
+        this.templateName = templateName;
         this.offset = offset;
         this.size = size;
         this.mirror = mirror;
@@ -55,7 +55,7 @@ implements Packet<ServerPlayPacketListener> {
         this.pos = buf.readBlockPos();
         this.action = buf.readEnumConstant(StructureBlockBlockEntity.Action.class);
         this.mode = buf.readEnumConstant(StructureBlockMode.class);
-        this.structureName = buf.readString();
+        this.templateName = buf.readString();
         int i = 48;
         this.offset = new BlockPos(MathHelper.clamp((int)buf.readByte(), -48, 48), MathHelper.clamp((int)buf.readByte(), -48, 48), MathHelper.clamp((int)buf.readByte(), -48, 48));
         int j = 48;
@@ -76,7 +76,7 @@ implements Packet<ServerPlayPacketListener> {
         buf.writeBlockPos(this.pos);
         buf.writeEnumConstant(this.action);
         buf.writeEnumConstant(this.mode);
-        buf.writeString(this.structureName);
+        buf.writeString(this.templateName);
         buf.writeByte(this.offset.getX());
         buf.writeByte(this.offset.getY());
         buf.writeByte(this.offset.getZ());
@@ -118,8 +118,8 @@ implements Packet<ServerPlayPacketListener> {
         return this.mode;
     }
 
-    public String getStructureName() {
-        return this.structureName;
+    public String getTemplateName() {
+        return this.templateName;
     }
 
     public BlockPos getOffset() {

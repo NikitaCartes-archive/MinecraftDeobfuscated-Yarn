@@ -16,10 +16,10 @@ import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.structure.SimpleStructurePiece;
 import net.minecraft.structure.StructureContext;
-import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.structure.StructurePlacementData;
+import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
@@ -40,7 +40,7 @@ public class EndCityGenerator {
         }
 
         @Override
-        public boolean create(StructureManager manager, int depth, Piece root, BlockPos pos, List<StructurePiece> pieces, Random random) {
+        public boolean create(StructureTemplateManager manager, int depth, Piece root, BlockPos pos, List<StructurePiece> pieces, Random random) {
             if (depth > 8) {
                 return false;
             }
@@ -70,7 +70,7 @@ public class EndCityGenerator {
         }
 
         @Override
-        public boolean create(StructureManager manager, int depth, Piece root, BlockPos pos, List<StructurePiece> pieces, Random random) {
+        public boolean create(StructureTemplateManager manager, int depth, Piece root, BlockPos pos, List<StructurePiece> pieces, Random random) {
             BlockRotation blockRotation = root.method_41626().getRotation();
             Piece piece = root;
             piece = EndCityGenerator.addPiece(pieces, EndCityGenerator.createPiece(manager, piece, new BlockPos(3 + random.nextInt(2), -3, 3 + random.nextInt(2)), "tower_base", blockRotation, true));
@@ -106,7 +106,7 @@ public class EndCityGenerator {
         }
 
         @Override
-        public boolean create(StructureManager manager, int depth, Piece root, BlockPos pos, List<StructurePiece> pieces, Random random) {
+        public boolean create(StructureTemplateManager manager, int depth, Piece root, BlockPos pos, List<StructurePiece> pieces, Random random) {
             BlockRotation blockRotation = root.method_41626().getRotation();
             int i = random.nextInt(4) + 1;
             Piece piece = EndCityGenerator.addPiece(pieces, EndCityGenerator.createPiece(manager, root, new BlockPos(0, 0, -4), "bridge_piece", blockRotation, true));
@@ -142,7 +142,7 @@ public class EndCityGenerator {
         }
 
         @Override
-        public boolean create(StructureManager manager, int depth, Piece root, BlockPos pos, List<StructurePiece> pieces, Random random) {
+        public boolean create(StructureTemplateManager manager, int depth, Piece root, BlockPos pos, List<StructurePiece> pieces, Random random) {
             BlockRotation blockRotation = root.method_41626().getRotation();
             Piece piece = EndCityGenerator.addPiece(pieces, EndCityGenerator.createPiece(manager, root, new BlockPos(-3, 4, -3), "fat_tower_base", blockRotation, true));
             piece = EndCityGenerator.addPiece(pieces, EndCityGenerator.createPiece(manager, piece, new BlockPos(0, 4, 0), "fat_tower_middle", blockRotation, true));
@@ -159,23 +159,23 @@ public class EndCityGenerator {
         }
     };
 
-    static Piece createPiece(StructureManager structureManager, Piece lastPiece, BlockPos relativePosition, String template, BlockRotation rotation, boolean ignoreAir) {
-        Piece piece = new Piece(structureManager, template, lastPiece.method_41625(), rotation, ignoreAir);
-        BlockPos blockPos = lastPiece.method_41624().transformBox(lastPiece.method_41626(), relativePosition, piece.method_41626(), BlockPos.ORIGIN);
+    static Piece createPiece(StructureTemplateManager structureTemplateManager, Piece lastPiece, BlockPos relativePosition, String template, BlockRotation rotation, boolean ignoreAir) {
+        Piece piece = new Piece(structureTemplateManager, template, lastPiece.method_41625(), rotation, ignoreAir);
+        BlockPos blockPos = lastPiece.getTemplate().transformBox(lastPiece.method_41626(), relativePosition, piece.method_41626(), BlockPos.ORIGIN);
         piece.translate(blockPos.getX(), blockPos.getY(), blockPos.getZ());
         return piece;
     }
 
-    public static void addPieces(StructureManager structureManager, BlockPos pos, BlockRotation rotation, List<StructurePiece> pieces, Random random) {
+    public static void addPieces(StructureTemplateManager structureTemplateManager, BlockPos pos, BlockRotation rotation, List<StructurePiece> pieces, Random random) {
         FAT_TOWER.init();
         BUILDING.init();
         BRIDGE_PIECE.init();
         SMALL_TOWER.init();
-        Piece piece = EndCityGenerator.addPiece(pieces, new Piece(structureManager, "base_floor", pos, rotation, true));
-        piece = EndCityGenerator.addPiece(pieces, EndCityGenerator.createPiece(structureManager, piece, new BlockPos(-1, 0, -1), "second_floor_1", rotation, false));
-        piece = EndCityGenerator.addPiece(pieces, EndCityGenerator.createPiece(structureManager, piece, new BlockPos(-1, 4, -1), "third_floor_1", rotation, false));
-        piece = EndCityGenerator.addPiece(pieces, EndCityGenerator.createPiece(structureManager, piece, new BlockPos(-1, 8, -1), "third_roof", rotation, true));
-        EndCityGenerator.createPart(structureManager, SMALL_TOWER, 1, piece, null, pieces, random);
+        Piece piece = EndCityGenerator.addPiece(pieces, new Piece(structureTemplateManager, "base_floor", pos, rotation, true));
+        piece = EndCityGenerator.addPiece(pieces, EndCityGenerator.createPiece(structureTemplateManager, piece, new BlockPos(-1, 0, -1), "second_floor_1", rotation, false));
+        piece = EndCityGenerator.addPiece(pieces, EndCityGenerator.createPiece(structureTemplateManager, piece, new BlockPos(-1, 4, -1), "third_floor_1", rotation, false));
+        piece = EndCityGenerator.addPiece(pieces, EndCityGenerator.createPiece(structureTemplateManager, piece, new BlockPos(-1, 8, -1), "third_roof", rotation, true));
+        EndCityGenerator.createPart(structureTemplateManager, SMALL_TOWER, 1, piece, null, pieces, random);
     }
 
     static Piece addPiece(List<StructurePiece> pieces, Piece piece) {
@@ -183,7 +183,7 @@ public class EndCityGenerator {
         return piece;
     }
 
-    static boolean createPart(StructureManager manager, Part piece, int depth, Piece parent, BlockPos pos, List<StructurePiece> pieces, Random random) {
+    static boolean createPart(StructureTemplateManager manager, Part piece, int depth, Piece parent, BlockPos pos, List<StructurePiece> pieces, Random random) {
         if (depth > 8) {
             return false;
         }
@@ -208,11 +208,11 @@ public class EndCityGenerator {
 
     public static class Piece
     extends SimpleStructurePiece {
-        public Piece(StructureManager manager, String template, BlockPos pos, BlockRotation rotation, boolean includeAir) {
+        public Piece(StructureTemplateManager manager, String template, BlockPos pos, BlockRotation rotation, boolean includeAir) {
             super(StructurePieceType.END_CITY, 0, manager, Piece.getId(template), template, Piece.createPlacementData(includeAir, rotation), pos);
         }
 
-        public Piece(StructureManager manager, NbtCompound nbt) {
+        public Piece(StructureTemplateManager manager, NbtCompound nbt) {
             super(StructurePieceType.END_CITY, nbt, manager, identifier -> Piece.createPlacementData(nbt.getBoolean("OW"), BlockRotation.valueOf(nbt.getString("Rot"))));
         }
 
@@ -223,7 +223,7 @@ public class EndCityGenerator {
 
         @Override
         protected Identifier getId() {
-            return Piece.getId(this.template);
+            return Piece.getId(this.templateIdString);
         }
 
         private static Identifier getId(String template) {
@@ -261,7 +261,7 @@ public class EndCityGenerator {
     static interface Part {
         public void init();
 
-        public boolean create(StructureManager var1, int var2, Piece var3, BlockPos var4, List<StructurePiece> var5, Random var6);
+        public boolean create(StructureTemplateManager var1, int var2, Piece var3, BlockPos var4, List<StructurePiece> var5, Random var6);
     }
 }
 

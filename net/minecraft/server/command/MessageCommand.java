@@ -11,8 +11,8 @@ import java.util.Collection;
 import java.util.concurrent.Executor;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.MessageArgumentType;
-import net.minecraft.network.MessageType;
-import net.minecraft.network.encryption.SignedChatMessage;
+import net.minecraft.network.message.MessageType;
+import net.minecraft.network.message.SignedMessage;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -31,12 +31,12 @@ public class MessageCommand {
             return 0;
         }
         signedMessage.decorate(source).thenAcceptAsync(decoratedMessage -> {
-            Text text = ((SignedChatMessage)decoratedMessage.raw()).getContent();
+            Text text = ((SignedMessage)decoratedMessage.raw()).getContent();
             for (ServerPlayerEntity serverPlayerEntity : targets) {
                 source.sendFeedback(Text.translatable("commands.message.display.outgoing", serverPlayerEntity.getDisplayName(), text).formatted(Formatting.GRAY, Formatting.ITALIC), false);
-                SignedChatMessage signedChatMessage = (SignedChatMessage)decoratedMessage.getFilterableFor(source, serverPlayerEntity);
-                if (signedChatMessage == null) continue;
-                serverPlayerEntity.sendChatMessage(signedChatMessage, source.getChatMessageSender(), MessageType.MSG_COMMAND);
+                SignedMessage signedMessage = (SignedMessage)decoratedMessage.getFilterableFor(source, serverPlayerEntity);
+                if (signedMessage == null) continue;
+                serverPlayerEntity.sendChatMessage(signedMessage, source.getChatMessageSender(), MessageType.MSG_COMMAND);
             }
         }, (Executor)source.getServer());
         return targets.size();

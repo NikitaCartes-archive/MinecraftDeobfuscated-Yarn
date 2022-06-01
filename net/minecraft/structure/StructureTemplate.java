@@ -56,7 +56,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
-public class Structure {
+public class StructureTemplate {
     public static final String PALETTE_KEY = "palette";
     public static final String PALETTES_KEY = "palettes";
     public static final String ENTITIES_KEY = "entities";
@@ -103,9 +103,9 @@ public class Structure {
             if (ignoredBlock != null && blockState.isOf(ignoredBlock)) continue;
             BlockEntity blockEntity = world.getBlockEntity(blockPos4);
             StructureBlockInfo structureBlockInfo = blockEntity != null ? new StructureBlockInfo(blockPos5, blockState, blockEntity.createNbtWithId()) : new StructureBlockInfo(blockPos5, blockState, null);
-            Structure.categorize(structureBlockInfo, list, list2, list3);
+            StructureTemplate.categorize(structureBlockInfo, list, list2, list3);
         }
-        List<StructureBlockInfo> list4 = Structure.combineSorted(list, list2, list3);
+        List<StructureBlockInfo> list4 = StructureTemplate.combineSorted(list, list2, list3);
         this.blockInfoLists.clear();
         this.blockInfoLists.add(new PalettedBlockInfoList(list4));
         if (includeEntities) {
@@ -186,7 +186,7 @@ public class Structure {
         }
         for (StructureBlockInfo structureBlockInfo : placementData.getRandomBlockInfos(this.blockInfoLists, pos).getAllOf(block)) {
             BlockPos blockPos;
-            BlockPos blockPos2 = blockPos = transformed ? Structure.transform(placementData, structureBlockInfo.pos).add(pos) : structureBlockInfo.pos;
+            BlockPos blockPos2 = blockPos = transformed ? StructureTemplate.transform(placementData, structureBlockInfo.pos).add(pos) : structureBlockInfo.pos;
             if (blockBox != null && !blockBox.contains(blockPos)) continue;
             objectArrayList.add(new StructureBlockInfo(blockPos, structureBlockInfo.state.rotate(placementData.getRotation()), structureBlockInfo.nbt));
         }
@@ -194,13 +194,13 @@ public class Structure {
     }
 
     public BlockPos transformBox(StructurePlacementData placementData1, BlockPos pos1, StructurePlacementData placementData2, BlockPos pos2) {
-        BlockPos blockPos = Structure.transform(placementData1, pos1);
-        BlockPos blockPos2 = Structure.transform(placementData2, pos2);
+        BlockPos blockPos = StructureTemplate.transform(placementData1, pos1);
+        BlockPos blockPos2 = StructureTemplate.transform(placementData2, pos2);
         return blockPos.subtract(blockPos2);
     }
 
     public static BlockPos transform(StructurePlacementData placementData, BlockPos pos) {
-        return Structure.transformAround(pos, placementData.getMirror(), placementData.getRotation(), placementData.getPosition());
+        return StructureTemplate.transformAround(pos, placementData.getMirror(), placementData.getRotation(), placementData.getPosition());
     }
 
     public boolean place(ServerWorldAccess world, BlockPos pos, BlockPos pivot, StructurePlacementData placementData, Random random, int flags) {
@@ -221,7 +221,7 @@ public class Structure {
         int l = Integer.MIN_VALUE;
         int m = Integer.MIN_VALUE;
         int n = Integer.MIN_VALUE;
-        List<StructureBlockInfo> list5 = Structure.process(world, pos, pivot, placementData, list);
+        List<StructureBlockInfo> list5 = StructureTemplate.process(world, pos, pivot, placementData, list);
         for (StructureBlockInfo structureBlockInfo : list5) {
             BlockEntity blockEntity;
             BlockPos blockPos = structureBlockInfo.pos;
@@ -289,7 +289,7 @@ public class Structure {
                     BlockPos blockPos4 = (BlockPos)pair.getFirst();
                     ((VoxelSet)voxelSet).set(blockPos4.getX() - n2, blockPos4.getY() - q, blockPos4.getZ() - o);
                 }
-                Structure.updateCorner(world, flags, voxelSet, n2, q, o);
+                StructureTemplate.updateCorner(world, flags, voxelSet, n2, q, o);
             }
             for (Pair pair : list4) {
                 BlockEntity blockEntity;
@@ -332,7 +332,7 @@ public class Structure {
     public static List<StructureBlockInfo> process(WorldAccess world, BlockPos pos, BlockPos pivot, StructurePlacementData placementData, List<StructureBlockInfo> infos) {
         ArrayList<StructureBlockInfo> list = Lists.newArrayList();
         for (StructureBlockInfo structureBlockInfo : infos) {
-            BlockPos blockPos = Structure.transform(placementData, structureBlockInfo.pos).add(pos);
+            BlockPos blockPos = StructureTemplate.transform(placementData, structureBlockInfo.pos).add(pos);
             StructureBlockInfo structureBlockInfo2 = new StructureBlockInfo(blockPos, structureBlockInfo.state, structureBlockInfo.nbt != null ? structureBlockInfo.nbt.copy() : null);
             Iterator<StructureProcessor> iterator = placementData.getProcessors().iterator();
             while (structureBlockInfo2 != null && iterator.hasNext()) {
@@ -346,10 +346,10 @@ public class Structure {
 
     private void spawnEntities(ServerWorldAccess world, BlockPos pos, BlockMirror mirror, BlockRotation rotation, BlockPos pivot, @Nullable BlockBox area, boolean initializeMobs) {
         for (StructureEntityInfo structureEntityInfo : this.entities) {
-            BlockPos blockPos = Structure.transformAround(structureEntityInfo.blockPos, mirror, rotation, pivot).add(pos);
+            BlockPos blockPos = StructureTemplate.transformAround(structureEntityInfo.blockPos, mirror, rotation, pivot).add(pos);
             if (area != null && !area.contains(blockPos)) continue;
             NbtCompound nbtCompound = structureEntityInfo.nbt.copy();
-            Vec3d vec3d = Structure.transformAround(structureEntityInfo.pos, mirror, rotation, pivot);
+            Vec3d vec3d = StructureTemplate.transformAround(structureEntityInfo.pos, mirror, rotation, pivot);
             Vec3d vec3d2 = vec3d.add(pos.getX(), pos.getY(), pos.getZ());
             NbtList nbtList = new NbtList();
             nbtList.add(NbtDouble.of(vec3d2.x));
@@ -357,7 +357,7 @@ public class Structure {
             nbtList.add(NbtDouble.of(vec3d2.z));
             nbtCompound.put("Pos", nbtList);
             nbtCompound.remove("UUID");
-            Structure.getEntity(world, nbtCompound).ifPresent(entity -> {
+            StructureTemplate.getEntity(world, nbtCompound).ifPresent(entity -> {
                 float f = entity.applyRotation(rotation);
                 entity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, f += entity.applyMirror(mirror) - entity.getYaw(), entity.getPitch());
                 if (initializeMobs && entity instanceof MobEntity) {
@@ -455,7 +455,7 @@ public class Structure {
     }
 
     public BlockPos offsetByTransformedSize(BlockPos pos, BlockMirror mirror, BlockRotation rotation) {
-        return Structure.applyTransformedOffset(pos, mirror, rotation, this.getSize().getX(), this.getSize().getZ());
+        return StructureTemplate.applyTransformedOffset(pos, mirror, rotation, this.getSize().getX(), this.getSize().getZ());
     }
 
     public static BlockPos applyTransformedOffset(BlockPos pos, BlockMirror mirror, BlockRotation rotation, int offsetX, int offsetZ) {
@@ -487,14 +487,14 @@ public class Structure {
     }
 
     public BlockBox calculateBoundingBox(BlockPos pos, BlockRotation rotation, BlockPos pivot, BlockMirror mirror) {
-        return Structure.createBox(pos, rotation, pivot, mirror, this.size);
+        return StructureTemplate.createBox(pos, rotation, pivot, mirror, this.size);
     }
 
     @VisibleForTesting
     protected static BlockBox createBox(BlockPos pos, BlockRotation rotation, BlockPos pivot, BlockMirror mirror, Vec3i dimensions) {
         Vec3i vec3i = dimensions.add(-1, -1, -1);
-        BlockPos blockPos = Structure.transformAround(BlockPos.ORIGIN, mirror, rotation, pivot);
-        BlockPos blockPos2 = Structure.transformAround(BlockPos.ORIGIN.add(vec3i), mirror, rotation, pivot);
+        BlockPos blockPos = StructureTemplate.transformAround(BlockPos.ORIGIN, mirror, rotation, pivot);
+        BlockPos blockPos2 = StructureTemplate.transformAround(BlockPos.ORIGIN.add(vec3i), mirror, rotation, pivot);
         return BlockBox.create(blockPos, blockPos2).move(pos);
     }
 
@@ -605,9 +605,9 @@ public class Structure {
             BlockState blockState = palette.getState(nbtCompound.getInt(BLOCKS_STATE_KEY));
             NbtCompound nbtCompound2 = nbtCompound.contains("nbt") ? nbtCompound.getCompound("nbt") : null;
             StructureBlockInfo structureBlockInfo = new StructureBlockInfo(blockPos, blockState, nbtCompound2);
-            Structure.categorize(structureBlockInfo, list, list2, list3);
+            StructureTemplate.categorize(structureBlockInfo, list, list2, list3);
         }
-        List<StructureBlockInfo> list4 = Structure.combineSorted(list, list2, list3);
+        List<StructureBlockInfo> list4 = StructureTemplate.combineSorted(list, list2, list3);
         this.blockInfoLists.add(new PalettedBlockInfoList(list4));
     }
 

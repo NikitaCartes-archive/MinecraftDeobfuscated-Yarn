@@ -89,7 +89,7 @@ import net.minecraft.server.world.SleepManager;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.structure.StructureManager;
+import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.tag.TagKey;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -147,7 +147,7 @@ import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.structure.StructureType;
+import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.poi.PointOfInterestStorage;
@@ -218,7 +218,7 @@ implements StructureWorldAccess {
         DataFixer dataFixer = server.getDataFixer();
         EntityChunkDataAccess chunkDataAccess = new EntityChunkDataAccess(this, session.getWorldDirectory(worldKey).resolve("entities"), dataFixer, bl, server);
         this.entityManager = new ServerEntityManager<Entity>(Entity.class, new ServerEntityHandler(), chunkDataAccess);
-        this.chunkManager = new ServerChunkManager(this, session, dataFixer, server.getStructureManager(), workerExecutor, chunkGenerator, server.getPlayerManager().getViewDistance(), server.getPlayerManager().getSimulationDistance(), bl, worldGenerationProgressListener, this.entityManager::updateTrackingStatus, () -> server.getOverworld().getPersistentStateManager());
+        this.chunkManager = new ServerChunkManager(this, session, dataFixer, server.getStructureTemplateManager(), workerExecutor, chunkGenerator, server.getPlayerManager().getViewDistance(), server.getPlayerManager().getSimulationDistance(), bl, worldGenerationProgressListener, this.entityManager::updateTrackingStatus, () -> server.getOverworld().getPersistentStateManager());
         chunkGenerator.computeStructurePlacementsIfNeeded(this.chunkManager.getNoiseConfig());
         this.portalForcer = new PortalForcer(this);
         this.calculateAmbientDarkness();
@@ -229,7 +229,7 @@ implements StructureWorldAccess {
             properties.setGameMode(server.getDefaultGameMode());
         }
         long l = server.getSaveProperties().getGeneratorOptions().getSeed();
-        this.structureLocator = new StructureLocator(this.chunkManager.getChunkIoWorker(), this.getRegistryManager(), server.getStructureManager(), worldKey, chunkGenerator, this.chunkManager.getNoiseConfig(), this, chunkGenerator.getBiomeSource(), l, dataFixer);
+        this.structureLocator = new StructureLocator(this.chunkManager.getChunkIoWorker(), this.getRegistryManager(), server.getStructureTemplateManager(), worldKey, chunkGenerator, this.chunkManager.getNoiseConfig(), this, chunkGenerator.getBiomeSource(), l, dataFixer);
         this.structureAccessor = new StructureAccessor(this, server.getSaveProperties().getGeneratorOptions(), this.structureLocator);
         this.enderDragonFight = this.getRegistryKey() == World.END && this.getDimensionEntry().matchesKey(DimensionTypes.THE_END) ? new EnderDragonFight(this, l, server.getSaveProperties().getDragonFight()) : null;
         this.sleepManager = new SleepManager();
@@ -1046,8 +1046,8 @@ implements StructureWorldAccess {
         return this.portalForcer;
     }
 
-    public StructureManager getStructureManager() {
-        return this.server.getStructureManager();
+    public StructureTemplateManager getStructureTemplateManager() {
+        return this.server.getStructureTemplateManager();
     }
 
     /**
@@ -1145,15 +1145,15 @@ implements StructureWorldAccess {
      * @param radius the search radius in chunks around the chunk the given block position is in; a radius of 0 will only search in the given chunk
      */
     @Nullable
-    public BlockPos locateStructure(TagKey<StructureType> structureTag, BlockPos pos, int radius, boolean skipReferencedStructures) {
+    public BlockPos locateStructure(TagKey<Structure> structureTag, BlockPos pos, int radius, boolean skipReferencedStructures) {
         if (!this.server.getSaveProperties().getGeneratorOptions().shouldGenerateStructures()) {
             return null;
         }
-        Optional<RegistryEntryList.Named<StructureType>> optional = this.getRegistryManager().get(Registry.STRUCTURE_KEY).getEntryList(structureTag);
+        Optional<RegistryEntryList.Named<Structure>> optional = this.getRegistryManager().get(Registry.STRUCTURE_KEY).getEntryList(structureTag);
         if (optional.isEmpty()) {
             return null;
         }
-        Pair<BlockPos, RegistryEntry<StructureType>> pair = this.getChunkManager().getChunkGenerator().locateStructure(this, (RegistryEntryList<StructureType>)optional.get(), pos, radius, skipReferencedStructures);
+        Pair<BlockPos, RegistryEntry<Structure>> pair = this.getChunkManager().getChunkGenerator().locateStructure(this, (RegistryEntryList<Structure>)optional.get(), pos, radius, skipReferencedStructures);
         return pair != null ? pair.getFirst() : null;
     }
 

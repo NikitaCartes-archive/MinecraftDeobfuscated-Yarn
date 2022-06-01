@@ -71,8 +71,8 @@ import net.minecraft.server.world.LevelPrioritizedQueue;
 import net.minecraft.server.world.PlayerChunkWatchingManager;
 import net.minecraft.server.world.ServerLightingProvider;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
+import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.util.CsvWriter;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
@@ -148,7 +148,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     private final ChunkStatusChangeListener chunkStatusChangeListener;
     private final TicketManager ticketManager;
     private final AtomicInteger totalChunksLoadedCount = new AtomicInteger();
-    private final StructureManager structureManager;
+    private final StructureTemplateManager structureTemplateManager;
     private final String saveDir;
     private final PlayerChunkWatchingManager playerChunkWatchingManager = new PlayerChunkWatchingManager();
     private final Int2ObjectMap<EntityTracker> entityTrackers = new Int2ObjectOpenHashMap<EntityTracker>();
@@ -157,9 +157,9 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     private final Queue<Runnable> unloadTaskQueue = Queues.newConcurrentLinkedQueue();
     int watchDistance;
 
-    public ThreadedAnvilChunkStorage(ServerWorld world, LevelStorage.Session session, DataFixer dataFixer, StructureManager structureManager, Executor executor, ThreadExecutor<Runnable> mainThreadExecutor, ChunkProvider chunkProvider, ChunkGenerator chunkGenerator, WorldGenerationProgressListener worldGenerationProgressListener, ChunkStatusChangeListener chunkStatusChangeListener, Supplier<PersistentStateManager> persistentStateManagerFactory, int viewDistance, boolean dsync) {
+    public ThreadedAnvilChunkStorage(ServerWorld world, LevelStorage.Session session, DataFixer dataFixer, StructureTemplateManager structureTemplateManager, Executor executor, ThreadExecutor<Runnable> mainThreadExecutor, ChunkProvider chunkProvider, ChunkGenerator chunkGenerator, WorldGenerationProgressListener worldGenerationProgressListener, ChunkStatusChangeListener chunkStatusChangeListener, Supplier<PersistentStateManager> persistentStateManagerFactory, int viewDistance, boolean dsync) {
         super(session.getWorldDirectory(world.getRegistryKey()).resolve("region"), dataFixer, dsync);
-        this.structureManager = structureManager;
+        this.structureTemplateManager = structureTemplateManager;
         Path path = session.getWorldDirectory(world.getRegistryKey());
         this.saveDir = path.getFileName().toString();
         this.world = world;
@@ -510,7 +510,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             this.ticketManager.addTicketWithLevel(ChunkTicketType.LIGHT, chunkPos, 33 + ChunkStatus.getDistanceFromFull(ChunkStatus.LIGHT), chunkPos);
         }
         if ((optional = holder.getChunkAt(requiredStatus.getPrevious(), this).getNow(ChunkHolder.UNLOADED_CHUNK).left()).isPresent() && optional.get().getStatus().isAtLeast(requiredStatus)) {
-            CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = requiredStatus.runLoadTask(this.world, this.structureManager, this.lightingProvider, chunk -> this.convertToFullChunk(holder), optional.get());
+            CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = requiredStatus.runLoadTask(this.world, this.structureTemplateManager, this.lightingProvider, chunk -> this.convertToFullChunk(holder), optional.get());
             this.worldGenerationProgressListener.setChunkStatus(chunkPos, requiredStatus);
             return completableFuture;
         }
@@ -578,7 +578,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         Executor executor = task -> this.worldGenExecutor.send(ChunkTaskPrioritySystem.createMessage(holder, task));
         return completableFuture.thenComposeAsync(either -> either.map(chunks -> {
             try {
-                CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = requiredStatus.runGenerationTask(executor, this.world, this.chunkGenerator, this.structureManager, this.lightingProvider, chunk -> this.convertToFullChunk(holder), (List<Chunk>)chunks, false);
+                CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = requiredStatus.runGenerationTask(executor, this.world, this.chunkGenerator, this.structureTemplateManager, this.lightingProvider, chunk -> this.convertToFullChunk(holder), (List<Chunk>)chunks, false);
                 this.worldGenerationProgressListener.setChunkStatus(chunkPos, requiredStatus);
                 return completableFuture;
             } catch (Exception exception) {

@@ -125,13 +125,13 @@ extends MinecraftServer {
             LOGGER.info("========= {} GAME TESTS COMPLETE ======================", (Object)this.testSet.getTestCount());
             if (this.testSet.failed()) {
                 LOGGER.info("{} required tests failed :(", (Object)this.testSet.getFailedRequiredTestCount());
-                this.testSet.getRequiredTests().forEach(test -> LOGGER.info("   - {}", (Object)test.getStructurePath()));
+                this.testSet.getRequiredTests().forEach(test -> LOGGER.info("   - {}", (Object)test.getTemplatePath()));
             } else {
                 LOGGER.info("All {} required tests passed :)", (Object)this.testSet.getTestCount());
             }
             if (this.testSet.hasFailedOptionalTests()) {
                 LOGGER.info("{} optional tests failed", (Object)this.testSet.getFailedOptionalTestCount());
-                this.testSet.getOptionalTests().forEach(test -> LOGGER.info("   - {}", (Object)test.getStructurePath()));
+                this.testSet.getOptionalTests().forEach(test -> LOGGER.info("   - {}", (Object)test.getTemplatePath()));
             }
             LOGGER.info("====================================================");
         }

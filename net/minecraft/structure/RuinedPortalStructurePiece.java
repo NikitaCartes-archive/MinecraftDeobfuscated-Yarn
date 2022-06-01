@@ -21,11 +21,11 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.structure.SimpleStructurePiece;
-import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureContext;
-import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.structure.StructurePlacementData;
+import net.minecraft.structure.StructureTemplate;
+import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.structure.processor.BlackstoneReplacementStructureProcessor;
 import net.minecraft.structure.processor.BlockAgeStructureProcessor;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
@@ -63,13 +63,13 @@ extends SimpleStructurePiece {
     private final VerticalPlacement verticalPlacement;
     private final Properties properties;
 
-    public RuinedPortalStructurePiece(StructureManager manager, BlockPos pos, VerticalPlacement verticalPlacement, Properties properties, Identifier id, Structure structure, BlockRotation rotation, BlockMirror mirror, BlockPos blockPos) {
+    public RuinedPortalStructurePiece(StructureTemplateManager manager, BlockPos pos, VerticalPlacement verticalPlacement, Properties properties, Identifier id, StructureTemplate template, BlockRotation rotation, BlockMirror mirror, BlockPos blockPos) {
         super(StructurePieceType.RUINED_PORTAL, 0, manager, id, id.toString(), RuinedPortalStructurePiece.createPlacementData(mirror, rotation, verticalPlacement, blockPos, properties), pos);
         this.verticalPlacement = verticalPlacement;
         this.properties = properties;
     }
 
-    public RuinedPortalStructurePiece(StructureManager manager, NbtCompound nbt) {
+    public RuinedPortalStructurePiece(StructureTemplateManager manager, NbtCompound nbt) {
         super(StructurePieceType.RUINED_PORTAL, nbt, manager, id -> RuinedPortalStructurePiece.createPlacementData(manager, nbt, id));
         this.verticalPlacement = VerticalPlacement.getFromId(nbt.getString("VerticalPlacement"));
         this.properties = (Properties)Properties.CODEC.parse(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt.get("Properties"))).getOrThrow(true, field_24992::error);
@@ -84,9 +84,9 @@ extends SimpleStructurePiece {
         Properties.CODEC.encodeStart(NbtOps.INSTANCE, this.properties).resultOrPartial(field_24992::error).ifPresent(nbtElement -> nbt.put("Properties", (NbtElement)nbtElement));
     }
 
-    private static StructurePlacementData createPlacementData(StructureManager manager, NbtCompound nbt, Identifier id) {
-        Structure structure = manager.getStructureOrBlank(id);
-        BlockPos blockPos = new BlockPos(structure.getSize().getX() / 2, 0, structure.getSize().getZ() / 2);
+    private static StructurePlacementData createPlacementData(StructureTemplateManager manager, NbtCompound nbt, Identifier id) {
+        StructureTemplate structureTemplate = manager.getTemplateOrBlank(id);
+        BlockPos blockPos = new BlockPos(structureTemplate.getSize().getX() / 2, 0, structureTemplate.getSize().getZ() / 2);
         return RuinedPortalStructurePiece.createPlacementData(BlockMirror.valueOf(nbt.getString("Mirror")), BlockRotation.valueOf(nbt.getString("Rotation")), VerticalPlacement.getFromId(nbt.getString("VerticalPlacement")), blockPos, (Properties)Properties.CODEC.parse(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt.get("Properties"))).getOrThrow(true, field_24992::error));
     }
 
@@ -117,7 +117,7 @@ extends SimpleStructurePiece {
 
     @Override
     public void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
-        BlockBox blockBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
+        BlockBox blockBox = this.template.calculateBoundingBox(this.placementData, this.pos);
         if (!chunkBox.contains(blockBox.getCenter())) {
             return;
         }

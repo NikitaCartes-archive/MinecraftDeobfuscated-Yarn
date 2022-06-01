@@ -21,8 +21,8 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtInt;
 import net.minecraft.nbt.scanner.NbtScanQuery;
 import net.minecraft.nbt.scanner.SelectiveNbtCollector;
-import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
+import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
@@ -35,7 +35,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.noise.NoiseConfig;
-import net.minecraft.world.gen.structure.StructureType;
+import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.storage.NbtScannable;
 import net.minecraft.world.storage.VersionedChunkStorage;
 import org.jetbrains.annotations.Nullable;
@@ -47,8 +47,8 @@ public class StructureLocator {
     private final NbtScannable chunkIoWorker;
     private final DynamicRegistryManager registryManager;
     private final Registry<Biome> biomeRegistry;
-    private final Registry<StructureType> structureTypeRegistry;
-    private final StructureManager structureManager;
+    private final Registry<Structure> structureRegistry;
+    private final StructureTemplateManager structureTemplateManager;
     private final RegistryKey<World> worldKey;
     private final ChunkGenerator chunkGenerator;
     private final NoiseConfig noiseConfig;
@@ -56,13 +56,13 @@ public class StructureLocator {
     private final BiomeSource biomeSource;
     private final long seed;
     private final DataFixer dataFixer;
-    private final Long2ObjectMap<Object2IntMap<StructureType>> cachedFeaturesByChunkPos = new Long2ObjectOpenHashMap<Object2IntMap<StructureType>>();
-    private final Map<StructureType, Long2BooleanMap> generationPossibilityByFeature = new HashMap<StructureType, Long2BooleanMap>();
+    private final Long2ObjectMap<Object2IntMap<Structure>> cachedStructuresByChunkPos = new Long2ObjectOpenHashMap<Object2IntMap<Structure>>();
+    private final Map<Structure, Long2BooleanMap> generationPossibilityByStructure = new HashMap<Structure, Long2BooleanMap>();
 
-    public StructureLocator(NbtScannable chunkIoWorker, DynamicRegistryManager registryManager, StructureManager structureManager, RegistryKey<World> worldKey, ChunkGenerator chunkGenerator, NoiseConfig noiseConfig, HeightLimitView world, BiomeSource biomeSource, long seed, DataFixer dataFixer) {
+    public StructureLocator(NbtScannable chunkIoWorker, DynamicRegistryManager registryManager, StructureTemplateManager structureTemplateManager, RegistryKey<World> worldKey, ChunkGenerator chunkGenerator, NoiseConfig noiseConfig, HeightLimitView world, BiomeSource biomeSource, long seed, DataFixer dataFixer) {
         this.chunkIoWorker = chunkIoWorker;
         this.registryManager = registryManager;
-        this.structureManager = structureManager;
+        this.structureTemplateManager = structureTemplateManager;
         this.worldKey = worldKey;
         this.chunkGenerator = chunkGenerator;
         this.noiseConfig = noiseConfig;
@@ -71,12 +71,12 @@ public class StructureLocator {
         this.seed = seed;
         this.dataFixer = dataFixer;
         this.biomeRegistry = registryManager.getManaged(Registry.BIOME_KEY);
-        this.structureTypeRegistry = registryManager.getManaged(Registry.STRUCTURE_KEY);
+        this.structureRegistry = registryManager.getManaged(Registry.STRUCTURE_KEY);
     }
 
-    public StructurePresence getStructurePresence(ChunkPos pos, StructureType type, boolean skipReferencedStructures) {
+    public StructurePresence getStructurePresence(ChunkPos pos, Structure type, boolean skipReferencedStructures) {
         long l = pos.toLong();
-        Object2IntMap object2IntMap = (Object2IntMap)this.cachedFeaturesByChunkPos.get(l);
+        Object2IntMap object2IntMap = (Object2IntMap)this.cachedStructuresByChunkPos.get(l);
         if (object2IntMap != null) {
             return this.getStructurePresence(object2IntMap, type, skipReferencedStructures);
         }
@@ -84,7 +84,7 @@ public class StructureLocator {
         if (structurePresence != null) {
             return structurePresence;
         }
-        boolean bl = this.generationPossibilityByFeature.computeIfAbsent(type, feature -> new Long2BooleanOpenHashMap()).computeIfAbsent(l, chunkPos -> this.isGenerationPossible(pos, type));
+        boolean bl = this.generationPossibilityByStructure.computeIfAbsent(type, structure2 -> new Long2BooleanOpenHashMap()).computeIfAbsent(l, chunkPos -> this.isGenerationPossible(pos, type));
         if (!bl) {
             return StructurePresence.START_NOT_PRESENT;
         }
@@ -92,16 +92,16 @@ public class StructureLocator {
     }
 
     /**
-     * {@return whether {@code feature} is able to generate in {@code pos}}
+     * {@return whether {@code structure} is able to generate in {@code pos}}
      * 
      * <p>This method only performs simple checks like biomes.
      */
-    private boolean isGenerationPossible(ChunkPos pos, StructureType feature) {
-        return feature.getStructurePosition(new StructureType.Context(this.registryManager, this.chunkGenerator, this.biomeSource, this.noiseConfig, this.structureManager, this.seed, pos, this.world, feature.getValidBiomes()::contains)).isPresent();
+    private boolean isGenerationPossible(ChunkPos pos, Structure structure) {
+        return structure.getStructurePosition(new Structure.Context(this.registryManager, this.chunkGenerator, this.biomeSource, this.noiseConfig, this.structureTemplateManager, this.seed, pos, this.world, structure.getValidBiomes()::contains)).isPresent();
     }
 
     @Nullable
-    private StructurePresence getStructurePresence(ChunkPos pos, StructureType feature, boolean skipReferencedStructures, long posLong) {
+    private StructurePresence getStructurePresence(ChunkPos pos, Structure structure, boolean skipReferencedStructures, long posLong) {
         NbtCompound nbtCompound2;
         SelectiveNbtCollector selectiveNbtCollector = new SelectiveNbtCollector(new NbtScanQuery(NbtInt.TYPE, "DataVersion"), new NbtScanQuery("Level", "Structures", NbtCompound.TYPE, "Starts"), new NbtScanQuery("structures", NbtCompound.TYPE, "starts"));
         try {
@@ -126,16 +126,16 @@ public class StructureLocator {
             LOGGER.warn("Failed to partially datafix chunk {}", (Object)pos, (Object)exception2);
             return StructurePresence.CHUNK_LOAD_NEEDED;
         }
-        Object2IntMap<StructureType> object2IntMap = this.collectStructuresAndReferences(nbtCompound2);
+        Object2IntMap<Structure> object2IntMap = this.collectStructuresAndReferences(nbtCompound2);
         if (object2IntMap == null) {
             return null;
         }
         this.cache(posLong, object2IntMap);
-        return this.getStructurePresence(object2IntMap, feature, skipReferencedStructures);
+        return this.getStructurePresence(object2IntMap, structure, skipReferencedStructures);
     }
 
     @Nullable
-    private Object2IntMap<StructureType> collectStructuresAndReferences(NbtCompound nbt) {
+    private Object2IntMap<Structure> collectStructuresAndReferences(NbtCompound nbt) {
         if (!nbt.contains("structures", NbtElement.COMPOUND_TYPE)) {
             return null;
         }
@@ -147,51 +147,51 @@ public class StructureLocator {
         if (nbtCompound2.isEmpty()) {
             return Object2IntMaps.emptyMap();
         }
-        Object2IntOpenHashMap<StructureType> object2IntMap = new Object2IntOpenHashMap<StructureType>();
-        Registry<StructureType> registry = this.registryManager.get(Registry.STRUCTURE_KEY);
+        Object2IntOpenHashMap<Structure> object2IntMap = new Object2IntOpenHashMap<Structure>();
+        Registry<Structure> registry = this.registryManager.get(Registry.STRUCTURE_KEY);
         for (String string : nbtCompound2.getKeys()) {
             String string2;
             NbtCompound nbtCompound3;
-            StructureType structureType;
+            Structure structure;
             Identifier identifier = Identifier.tryParse(string);
-            if (identifier == null || (structureType = registry.get(identifier)) == null || (nbtCompound3 = nbtCompound2.getCompound(string)).isEmpty() || "INVALID".equals(string2 = nbtCompound3.getString("id"))) continue;
+            if (identifier == null || (structure = registry.get(identifier)) == null || (nbtCompound3 = nbtCompound2.getCompound(string)).isEmpty() || "INVALID".equals(string2 = nbtCompound3.getString("id"))) continue;
             int i = nbtCompound3.getInt("references");
-            object2IntMap.put(structureType, i);
+            object2IntMap.put(structure, i);
         }
         return object2IntMap;
     }
 
-    private static Object2IntMap<StructureType> createMapIfEmpty(Object2IntMap<StructureType> map) {
+    private static Object2IntMap<Structure> createMapIfEmpty(Object2IntMap<Structure> map) {
         return map.isEmpty() ? Object2IntMaps.emptyMap() : map;
     }
 
-    private StructurePresence getStructurePresence(Object2IntMap<StructureType> referencesByStructure, StructureType feature, boolean skipReferencedStructures) {
-        int i = referencesByStructure.getOrDefault((Object)feature, -1);
+    private StructurePresence getStructurePresence(Object2IntMap<Structure> referencesByStructure, Structure structure, boolean skipReferencedStructures) {
+        int i = referencesByStructure.getOrDefault((Object)structure, -1);
         return i != -1 && (!skipReferencedStructures || i == 0) ? StructurePresence.START_PRESENT : StructurePresence.START_NOT_PRESENT;
     }
 
-    public void cache(ChunkPos pos, Map<StructureType, StructureStart> structureStarts) {
+    public void cache(ChunkPos pos, Map<Structure, StructureStart> structureStarts) {
         long l = pos.toLong();
-        Object2IntOpenHashMap<StructureType> object2IntMap = new Object2IntOpenHashMap<StructureType>();
+        Object2IntOpenHashMap<Structure> object2IntMap = new Object2IntOpenHashMap<Structure>();
         structureStarts.forEach((start, structureStart) -> {
             if (structureStart.hasChildren()) {
-                object2IntMap.put((StructureType)start, structureStart.getReferences());
+                object2IntMap.put((Structure)start, structureStart.getReferences());
             }
         });
         this.cache(l, object2IntMap);
     }
 
-    private void cache(long pos, Object2IntMap<StructureType> referencesByStructure) {
-        this.cachedFeaturesByChunkPos.put(pos, StructureLocator.createMapIfEmpty(referencesByStructure));
-        this.generationPossibilityByFeature.values().forEach(generationPossibilityByChunkPos -> generationPossibilityByChunkPos.remove(pos));
+    private void cache(long pos, Object2IntMap<Structure> referencesByStructure) {
+        this.cachedStructuresByChunkPos.put(pos, StructureLocator.createMapIfEmpty(referencesByStructure));
+        this.generationPossibilityByStructure.values().forEach(generationPossibilityByChunkPos -> generationPossibilityByChunkPos.remove(pos));
     }
 
-    public void incrementReferences(ChunkPos pos2, StructureType feature) {
-        this.cachedFeaturesByChunkPos.compute(pos2.toLong(), (pos, referencesByStructure) -> {
+    public void incrementReferences(ChunkPos pos2, Structure structure) {
+        this.cachedStructuresByChunkPos.compute(pos2.toLong(), (pos, referencesByStructure) -> {
             if (referencesByStructure == null || referencesByStructure.isEmpty()) {
-                referencesByStructure = new Object2IntOpenHashMap<StructureType>();
+                referencesByStructure = new Object2IntOpenHashMap<Structure>();
             }
-            referencesByStructure.computeInt(feature, (feature, references) -> references == null ? 1 : references + 1);
+            referencesByStructure.computeInt(structure, (feature, references) -> references == null ? 1 : references + 1);
             return referencesByStructure;
         });
     }

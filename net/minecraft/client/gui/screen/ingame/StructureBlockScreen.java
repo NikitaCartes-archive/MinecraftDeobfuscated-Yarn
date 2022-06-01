@@ -172,7 +172,7 @@ extends Screen {
             }
         };
         this.inputName.setMaxLength(128);
-        this.inputName.setText(this.structureBlock.getStructureName());
+        this.inputName.setText(this.structureBlock.getTemplateName());
         this.addSelectableChild(this.inputName);
         BlockPos blockPos = this.structureBlock.getOffset();
         this.inputPosX = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 80, 80, 20, Text.translatable("structure_block.position.x"));

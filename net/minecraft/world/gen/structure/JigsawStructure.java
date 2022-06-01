@@ -20,10 +20,11 @@ import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.heightprovider.HeightProvider;
+import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.gen.structure.StructureType;
 
 public final class JigsawStructure
-extends StructureType {
+extends Structure {
     public static final int MAX_SIZE = 128;
     public static final Codec<JigsawStructure> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(JigsawStructure.configCodecBuilder(instance), ((MapCodec)StructurePool.REGISTRY_CODEC.fieldOf("start_pool")).forGetter(structure -> structure.startPool), Identifier.CODEC.optionalFieldOf("start_jigsaw_name").forGetter(structure -> structure.startJigsawName), ((MapCodec)Codec.intRange(0, 7).fieldOf("size")).forGetter(structure -> structure.size), ((MapCodec)HeightProvider.CODEC.fieldOf("start_height")).forGetter(structure -> structure.startHeight), ((MapCodec)Codec.BOOL.fieldOf("use_expansion_hack")).forGetter(structure -> structure.useExpansionHack), Heightmap.Type.CODEC.optionalFieldOf("project_start_to_heightmap").forGetter(structure -> structure.projectStartToHeightmap), ((MapCodec)Codec.intRange(1, 128).fieldOf("max_distance_from_center")).forGetter(structure -> structure.maxDistanceFromCenter)).apply((Applicative<JigsawStructure, ?>)instance, JigsawStructure::new)).flatXmap(JigsawStructure.createValidator(), JigsawStructure.createValidator()).codec();
     private final RegistryEntry<StructurePool> startPool;
@@ -58,7 +59,7 @@ extends StructureType {
         };
     }
 
-    public JigsawStructure(StructureType.Config config, RegistryEntry<StructurePool> startPool, Optional<Identifier> startJigsawName, int size, HeightProvider startHeight, boolean useExpansionHack, Optional<Heightmap.Type> projectStartToHeightmap, int maxDistanceFromCenter) {
+    public JigsawStructure(Structure.Config config, RegistryEntry<StructurePool> startPool, Optional<Identifier> startJigsawName, int size, HeightProvider startHeight, boolean useExpansionHack, Optional<Heightmap.Type> projectStartToHeightmap, int maxDistanceFromCenter) {
         super(config);
         this.startPool = startPool;
         this.startJigsawName = startJigsawName;
@@ -69,16 +70,16 @@ extends StructureType {
         this.maxDistanceFromCenter = maxDistanceFromCenter;
     }
 
-    public JigsawStructure(StructureType.Config config, RegistryEntry<StructurePool> startPool, int size, HeightProvider startHeight, boolean useExpansionHack, Heightmap.Type projectStartToHeightmap) {
+    public JigsawStructure(Structure.Config config, RegistryEntry<StructurePool> startPool, int size, HeightProvider startHeight, boolean useExpansionHack, Heightmap.Type projectStartToHeightmap) {
         this(config, startPool, Optional.empty(), size, startHeight, useExpansionHack, Optional.of(projectStartToHeightmap), 80);
     }
 
-    public JigsawStructure(StructureType.Config config, RegistryEntry<StructurePool> startPool, int size, HeightProvider startHeight, boolean useExpansionHack) {
+    public JigsawStructure(Structure.Config config, RegistryEntry<StructurePool> startPool, int size, HeightProvider startHeight, boolean useExpansionHack) {
         this(config, startPool, Optional.empty(), size, startHeight, useExpansionHack, Optional.empty(), 80);
     }
 
     @Override
-    public Optional<StructureType.StructurePosition> getStructurePosition(StructureType.Context context) {
+    public Optional<Structure.StructurePosition> getStructurePosition(Structure.Context context) {
         ChunkPos chunkPos = context.chunkPos();
         int i = this.startHeight.get(context.random(), new HeightContext(context.chunkGenerator(), context.world()));
         BlockPos blockPos = new BlockPos(chunkPos.getStartX(), i, chunkPos.getStartZ());
@@ -87,8 +88,8 @@ extends StructureType {
     }
 
     @Override
-    public net.minecraft.structure.StructureType<?> getType() {
-        return net.minecraft.structure.StructureType.JIGSAW;
+    public StructureType<?> getType() {
+        return StructureType.JIGSAW;
     }
 }
 

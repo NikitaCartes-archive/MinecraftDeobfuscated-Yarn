@@ -29,7 +29,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Property;
-import net.minecraft.structure.Structure;
+import net.minecraft.structure.StructureTemplate;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.test.GameTestException;
 import net.minecraft.test.GameTestState;
@@ -543,19 +543,19 @@ public class TestContext {
     public BlockPos getAbsolutePos(BlockPos pos) {
         BlockPos blockPos = this.test.getPos();
         BlockPos blockPos2 = blockPos.add(pos);
-        return Structure.transformAround(blockPos2, BlockMirror.NONE, this.test.getRotation(), blockPos);
+        return StructureTemplate.transformAround(blockPos2, BlockMirror.NONE, this.test.getRotation(), blockPos);
     }
 
     public BlockPos getRelativePos(BlockPos pos) {
         BlockPos blockPos = this.test.getPos();
         BlockRotation blockRotation = this.test.getRotation().rotate(BlockRotation.CLOCKWISE_180);
-        BlockPos blockPos2 = Structure.transformAround(pos, BlockMirror.NONE, blockRotation, blockPos);
+        BlockPos blockPos2 = StructureTemplate.transformAround(pos, BlockMirror.NONE, blockRotation, blockPos);
         return blockPos2.subtract(blockPos);
     }
 
     public Vec3d getAbsolute(Vec3d pos) {
         Vec3d vec3d = Vec3d.of(this.test.getPos());
-        return Structure.transformAround(vec3d.add(pos), BlockMirror.NONE, this.test.getRotation(), this.test.getPos());
+        return StructureTemplate.transformAround(vec3d.add(pos), BlockMirror.NONE, this.test.getRotation(), this.test.getPos());
     }
 
     public long getTick() {

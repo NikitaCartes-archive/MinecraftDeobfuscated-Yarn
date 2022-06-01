@@ -5,8 +5,8 @@ package net.minecraft.structure;
 
 import java.util.Optional;
 import java.util.function.Predicate;
-import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiecesGenerator;
+import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.RegistryEntry;
@@ -32,7 +32,7 @@ public interface StructureGeneratorFactory<C extends FeatureConfig> {
         return context -> context.isBiomeValid(heightmapType);
     }
 
-    public record Context<C extends FeatureConfig>(ChunkGenerator chunkGenerator, BiomeSource biomeSource, NoiseConfig noiseConfig, long seed, ChunkPos chunkPos, C config, HeightLimitView world, Predicate<RegistryEntry<Biome>> validBiome, StructureManager structureManager, DynamicRegistryManager registryManager) {
+    public record Context<C extends FeatureConfig>(ChunkGenerator chunkGenerator, BiomeSource biomeSource, NoiseConfig noiseConfig, long seed, ChunkPos chunkPos, C config, HeightLimitView world, Predicate<RegistryEntry<Biome>> validBiome, StructureTemplateManager structureTemplateManager, DynamicRegistryManager registryManager) {
         public boolean isBiomeValid(Heightmap.Type heightmapType) {
             int i = this.chunkPos.getCenterX();
             int j = this.chunkPos.getCenterZ();

@@ -13,7 +13,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import net.minecraft.block.BlockState;
 import net.minecraft.structure.RuinedPortalStructurePiece;
-import net.minecraft.structure.Structure;
+import net.minecraft.structure.StructureTemplate;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
@@ -32,10 +32,11 @@ import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.VerticalBlockSample;
 import net.minecraft.world.gen.noise.NoiseConfig;
+import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.gen.structure.StructureType;
 
 public class RuinedPortalStructure
-extends StructureType {
+extends Structure {
     private static final String[] COMMON_PORTAL_STRUCTURE_IDS = new String[]{"ruined_portal/portal_1", "ruined_portal/portal_2", "ruined_portal/portal_3", "ruined_portal/portal_4", "ruined_portal/portal_5", "ruined_portal/portal_6", "ruined_portal/portal_7", "ruined_portal/portal_8", "ruined_portal/portal_9", "ruined_portal/portal_10"};
     private static final String[] RARE_PORTAL_STRUCTURE_IDS = new String[]{"ruined_portal/giant_portal_1", "ruined_portal/giant_portal_2", "ruined_portal/giant_portal_3"};
     private static final float field_31512 = 0.05f;
@@ -43,17 +44,17 @@ extends StructureType {
     private final List<Setup> setups;
     public static final Codec<RuinedPortalStructure> CODEC = RecordCodecBuilder.create(instance -> instance.group(RuinedPortalStructure.configCodecBuilder(instance), ((MapCodec)Codecs.nonEmptyList(Setup.field_37814.listOf()).fieldOf("setups")).forGetter(structure -> structure.setups)).apply((Applicative<RuinedPortalStructure, ?>)instance, RuinedPortalStructure::new));
 
-    public RuinedPortalStructure(StructureType.Config config, List<Setup> setups) {
+    public RuinedPortalStructure(Structure.Config config, List<Setup> setups) {
         super(config);
         this.setups = setups;
     }
 
-    public RuinedPortalStructure(StructureType.Config config, Setup setup) {
+    public RuinedPortalStructure(Structure.Config config, Setup setup) {
         this(config, List.of(setup));
     }
 
     @Override
-    public Optional<StructureType.StructurePosition> getStructurePosition(StructureType.Context context) {
+    public Optional<Structure.StructurePosition> getStructurePosition(Structure.Context context) {
         RuinedPortalStructurePiece.Properties properties = new RuinedPortalStructurePiece.Properties();
         ChunkRandom chunkRandom = context.random();
         Setup setup = null;
@@ -81,24 +82,24 @@ extends StructureType {
         properties.vines = setup4.vines();
         properties.replaceWithBlackstone = setup4.replaceWithBlackstone();
         Identifier identifier = chunkRandom.nextFloat() < 0.05f ? new Identifier(RARE_PORTAL_STRUCTURE_IDS[chunkRandom.nextInt(RARE_PORTAL_STRUCTURE_IDS.length)]) : new Identifier(COMMON_PORTAL_STRUCTURE_IDS[chunkRandom.nextInt(COMMON_PORTAL_STRUCTURE_IDS.length)]);
-        Structure structure = context.structureManager().getStructureOrBlank(identifier);
+        StructureTemplate structureTemplate = context.structureTemplateManager().getTemplateOrBlank(identifier);
         BlockRotation blockRotation = Util.getRandom(BlockRotation.values(), (Random)chunkRandom);
         BlockMirror blockMirror = chunkRandom.nextFloat() < 0.5f ? BlockMirror.NONE : BlockMirror.FRONT_BACK;
-        BlockPos blockPos = new BlockPos(structure.getSize().getX() / 2, 0, structure.getSize().getZ() / 2);
+        BlockPos blockPos = new BlockPos(structureTemplate.getSize().getX() / 2, 0, structureTemplate.getSize().getZ() / 2);
         ChunkGenerator chunkGenerator = context.chunkGenerator();
         HeightLimitView heightLimitView = context.world();
         NoiseConfig noiseConfig = context.noiseConfig();
         BlockPos blockPos2 = context.chunkPos().getStartPos();
-        BlockBox blockBox = structure.calculateBoundingBox(blockPos2, blockRotation, blockPos, blockMirror);
+        BlockBox blockBox = structureTemplate.calculateBoundingBox(blockPos2, blockRotation, blockPos, blockMirror);
         BlockPos blockPos3 = blockBox.getCenter();
         int i = chunkGenerator.getHeight(blockPos3.getX(), blockPos3.getZ(), RuinedPortalStructurePiece.getHeightmapType(setup4.placement()), heightLimitView, noiseConfig) - 1;
         int j = RuinedPortalStructure.getFloorHeight(chunkRandom, chunkGenerator, setup4.placement(), properties.airPocket, i, blockBox.getBlockCountY(), blockBox, heightLimitView, noiseConfig);
         BlockPos blockPos4 = new BlockPos(blockPos2.getX(), j, blockPos2.getZ());
-        return Optional.of(new StructureType.StructurePosition(blockPos4, structurePiecesCollector -> {
+        return Optional.of(new Structure.StructurePosition(blockPos4, structurePiecesCollector -> {
             if (setup4.canBeCold()) {
                 properties.cold = RuinedPortalStructure.isColdAt(blockPos4, context.chunkGenerator().getBiomeSource().getBiome(BiomeCoords.fromBlock(blockPos4.getX()), BiomeCoords.fromBlock(blockPos4.getY()), BiomeCoords.fromBlock(blockPos4.getZ()), noiseConfig.getMultiNoiseSampler()));
             }
-            structurePiecesCollector.addPiece(new RuinedPortalStructurePiece(context.structureManager(), blockPos4, setup4.placement(), properties, identifier, structure, blockRotation, blockMirror, blockPos));
+            structurePiecesCollector.addPiece(new RuinedPortalStructurePiece(context.structureTemplateManager(), blockPos4, setup4.placement(), properties, identifier, structureTemplate, blockRotation, blockMirror, blockPos));
         }));
     }
 
@@ -152,8 +153,8 @@ extends StructureType {
     }
 
     @Override
-    public net.minecraft.structure.StructureType<?> getType() {
-        return net.minecraft.structure.StructureType.RUINED_PORTAL;
+    public StructureType<?> getType() {
+        return StructureType.RUINED_PORTAL;
     }
 
     public record Setup(RuinedPortalStructurePiece.VerticalPlacement placement, float airPocketProbability, float mossiness, boolean overgrown, boolean vines, boolean canBeCold, boolean replaceWithBlackstone, float weight) {

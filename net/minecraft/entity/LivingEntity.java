@@ -3068,7 +3068,7 @@ extends Entity {
             if (!(this instanceof PlayerEntity) || !((PlayerEntity)this).getAbilities().creativeMode) {
                 stack.decrement(1);
             }
-            world.emitGameEvent((Entity)this, GameEvent.EAT, this.getEyePos());
+            this.emitGameEvent(GameEvent.EAT);
         }
         return stack;
     }

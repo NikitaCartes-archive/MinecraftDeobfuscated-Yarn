@@ -17,6 +17,7 @@ import java.util.function.Consumer;
 import java.util.function.IntUnaryOperator;
 import java.util.function.Predicate;
 import java.util.stream.LongStream;
+import net.minecraft.class_7522;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.collection.EmptyPaletteStorage;
 import net.minecraft.util.collection.IndexedIterable;
@@ -40,7 +41,8 @@ import org.jetbrains.annotations.Nullable;
  * @see Palette
  */
 public class PalettedContainer<T>
-implements PaletteResizeListener<T> {
+implements PaletteResizeListener<T>,
+class_7522<T> {
     private static final int field_34557 = 0;
     private final PaletteResizeListener<T> dummyListener = (newSize, added) -> 0;
     private final IndexedIterable<T> idList;
@@ -63,6 +65,16 @@ implements PaletteResizeListener<T> {
         this.lockHelper.unlock();
     }
 
+    public static <T> Codec<PalettedContainer<T>> method_44343(IndexedIterable<T> indexedIterable, Codec<T> codec, PaletteProvider paletteProvider, T object) {
+        class_7522.class_7523 lv = PalettedContainer::method_44346;
+        return PalettedContainer.createCodec(indexedIterable, codec, paletteProvider, object, lv);
+    }
+
+    public static <T> Codec<class_7522<T>> method_44347(IndexedIterable<T> indexedIterable2, Codec<T> codec, PaletteProvider paletteProvider2, T object) {
+        class_7522.class_7523 lv = (indexedIterable, paletteProvider, serialized) -> PalettedContainer.method_44346(indexedIterable, paletteProvider, serialized).map(palettedContainer -> palettedContainer);
+        return PalettedContainer.createCodec(indexedIterable2, codec, paletteProvider2, object, lv);
+    }
+
     /**
      * Creates a codec for a paletted container with a specific palette provider.
      * 
@@ -71,10 +83,9 @@ implements PaletteResizeListener<T> {
      * @param entryCodec the codec for each entry in the palette
      * @param provider the palette provider that controls how the data are serialized and what
      * types of palette are used for what entry bit sizes
-     * @param idList the id list to map between objects and full integer IDs
      */
-    public static <T> Codec<PalettedContainer<T>> createCodec(IndexedIterable<T> idList, Codec<T> entryCodec, PaletteProvider provider, T object) {
-        return RecordCodecBuilder.create(instance -> instance.group(((MapCodec)entryCodec.mapResult(Codecs.orElsePartial(object)).listOf().fieldOf("palette")).forGetter(Serialized::paletteEntries), Codec.LONG_STREAM.optionalFieldOf("data").forGetter(Serialized::storage)).apply((Applicative<Serialized, ?>)instance, Serialized::new)).comapFlatMap(serialized -> PalettedContainer.read(idList, provider, serialized), container -> container.write(idList, provider));
+    private static <T, C extends class_7522<T>> Codec<C> createCodec(IndexedIterable<T> indexedIterable, Codec<T> entryCodec, PaletteProvider provider, T object, class_7522.class_7523<T, C> arg2) {
+        return RecordCodecBuilder.create(instance -> instance.group(((MapCodec)entryCodec.mapResult(Codecs.orElsePartial(object)).listOf().fieldOf("palette")).forGetter(class_7522.Serialized::paletteEntries), Codec.LONG_STREAM.optionalFieldOf("data").forGetter(class_7522.Serialized::storage)).apply((Applicative<class_7522.Serialized, ?>)instance, class_7522.Serialized::new)).comapFlatMap(serialized -> arg2.read(indexedIterable, provider, (class_7522.Serialized)serialized), arg -> arg.method_44345(indexedIterable, provider));
     }
 
     public PalettedContainer(IndexedIterable<T> idList, PaletteProvider paletteProvider, DataProvider<T> dataProvider, PaletteStorage storage, List<T> paletteEntries) {
@@ -161,8 +172,9 @@ implements PaletteResizeListener<T> {
         this.data.storage.set(index, i);
     }
 
-    public T get(int x, int y, int z) {
-        return this.get(this.paletteProvider.computeIndex(x, y, z));
+    @Override
+    public T get(int i, int j, int k) {
+        return this.get(this.paletteProvider.computeIndex(i, j, k));
     }
 
     protected T get(int index) {
@@ -170,6 +182,7 @@ implements PaletteResizeListener<T> {
         return data.palette.get(data.storage.get(index));
     }
 
+    @Override
     public void method_39793(Consumer<T> consumer) {
         Palette palette = this.data.palette();
         IntArraySet intSet = new IntArraySet();
@@ -199,26 +212,22 @@ implements PaletteResizeListener<T> {
         }
     }
 
-    /**
-     * Writes this container to the packet byte buffer.
-     * 
-     * @param buf the packet byte buffer
-     */
-    public void writePacket(PacketByteBuf buf) {
+    @Override
+    public void writePacket(PacketByteBuf packetByteBuf) {
         this.lock();
         try {
-            this.data.writePacket(buf);
+            this.data.writePacket(packetByteBuf);
         } finally {
             this.unlock();
         }
     }
 
-    private static <T> DataResult<PalettedContainer<T>> read(IndexedIterable<T> idList, PaletteProvider provider, Serialized<T> serialized) {
+    private static <T> DataResult<PalettedContainer<T>> method_44346(IndexedIterable<T> indexedIterable, PaletteProvider paletteProvider, class_7522.Serialized<T> serialized) {
         PaletteStorage paletteStorage;
         List<T> list = serialized.paletteEntries();
-        int i2 = provider.getContainerSize();
-        int j = provider.getBits(idList, list.size());
-        DataProvider<T> dataProvider = provider.createDataProvider(idList, j);
+        int i2 = paletteProvider.getContainerSize();
+        int j = paletteProvider.getBits(indexedIterable, list.size());
+        DataProvider<T> dataProvider = paletteProvider.createDataProvider(indexedIterable, j);
         if (j == 0) {
             paletteStorage = new EmptyPaletteStorage(i2);
         } else {
@@ -229,11 +238,11 @@ implements PaletteResizeListener<T> {
             long[] ls = optional.get().toArray();
             try {
                 if (dataProvider.factory() == PaletteProvider.ID_LIST) {
-                    BiMapPalette<Object> palette = new BiMapPalette<Object>(idList, j, (i, object) -> 0, list);
+                    BiMapPalette<Object> palette = new BiMapPalette<Object>(indexedIterable, j, (i, object) -> 0, list);
                     PackedIntegerArray packedIntegerArray = new PackedIntegerArray(j, i2, ls);
                     int[] is = new int[i2];
                     packedIntegerArray.method_39892(is);
-                    PalettedContainer.method_39894(is, i -> idList.getRawId(palette.get(i)));
+                    PalettedContainer.method_39894(is, i -> indexedIterable.getRawId(palette.get(i)));
                     paletteStorage = new PackedIntegerArray(dataProvider.bits(), i2, is);
                 } else {
                     paletteStorage = new PackedIntegerArray(dataProvider.bits(), i2, ls);
@@ -242,29 +251,30 @@ implements PaletteResizeListener<T> {
                 return DataResult.error("Failed to read PalettedContainer: " + invalidLengthException.getMessage());
             }
         }
-        return DataResult.success(new PalettedContainer<T>(idList, provider, dataProvider, paletteStorage, list));
+        return DataResult.success(new PalettedContainer<T>(indexedIterable, paletteProvider, dataProvider, paletteStorage, list));
     }
 
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    private Serialized<T> write(IndexedIterable<T> idList, PaletteProvider provider) {
+    @Override
+    public class_7522.Serialized<T> method_44345(IndexedIterable<T> indexedIterable, PaletteProvider paletteProvider) {
         this.lock();
         try {
             Optional<LongStream> optional;
-            BiMapPalette<T> biMapPalette = new BiMapPalette<T>(idList, this.data.storage.getElementBits(), this.dummyListener);
-            int i = provider.getContainerSize();
-            int[] is = new int[i];
+            BiMapPalette<T> biMapPalette = new BiMapPalette<T>(indexedIterable, this.data.storage.getElementBits(), this.dummyListener);
+            int i2 = paletteProvider.getContainerSize();
+            int[] is = new int[i2];
             this.data.storage.method_39892(is);
-            PalettedContainer.method_39894(is, id -> biMapPalette.index(this.data.palette.get(id)));
-            int j = provider.getBits(idList, biMapPalette.getSize());
+            PalettedContainer.method_39894(is, i -> biMapPalette.index(this.data.palette.get(i)));
+            int j = paletteProvider.getBits(indexedIterable, biMapPalette.getSize());
             if (j != 0) {
-                PackedIntegerArray packedIntegerArray = new PackedIntegerArray(j, i, is);
+                PackedIntegerArray packedIntegerArray = new PackedIntegerArray(j, i2, is);
                 optional = Optional.of(Arrays.stream(packedIntegerArray.getData()));
             } else {
                 optional = Optional.empty();
             }
-            Serialized<T> serialized = new Serialized<T>(biMapPalette.getElements(), optional);
+            class_7522.Serialized<T> serialized = new class_7522.Serialized<T>(biMapPalette.getElements(), optional);
             return serialized;
         } finally {
             this.unlock();
@@ -284,14 +294,12 @@ implements PaletteResizeListener<T> {
         }
     }
 
+    @Override
     public int getPacketSize() {
         return this.data.getPacketSize();
     }
 
-    /**
-     * {@return {@code true} if any object in this container's palette matches
-     * this predicate}
-     */
+    @Override
     public boolean hasAny(Predicate<T> predicate) {
         return this.data.palette.hasAny(predicate);
     }
@@ -300,6 +308,12 @@ implements PaletteResizeListener<T> {
         return new PalettedContainer<T>(this.idList, this.paletteProvider, this.data.method_44338());
     }
 
+    @Override
+    public PalettedContainer<T> method_44350() {
+        return new PalettedContainer<T>(this.idList, this.data.palette.get(0), this.paletteProvider);
+    }
+
+    @Override
     public void count(Counter<T> counter) {
         if (this.data.palette.getSize() == 1) {
             counter.accept(this.data.palette.get(0), this.data.storage.getSize());
@@ -390,9 +404,6 @@ implements PaletteResizeListener<T> {
             Palette<T> palette = this.factory.create(this.bits, idList, listener, List.of());
             return new Data<T>(this, paletteStorage, palette);
         }
-    }
-
-    record Serialized<T>(List<T> paletteEntries, Optional<LongStream> storage) {
     }
 
     @FunctionalInterface

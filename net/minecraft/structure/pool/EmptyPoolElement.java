@@ -6,8 +6,8 @@ package net.minecraft.structure.pool;
 import com.mojang.serialization.Codec;
 import java.util.Collections;
 import java.util.List;
-import net.minecraft.structure.Structure;
-import net.minecraft.structure.StructureManager;
+import net.minecraft.structure.StructureTemplate;
+import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.structure.pool.StructurePoolElementType;
@@ -30,22 +30,22 @@ extends StructurePoolElement {
     }
 
     @Override
-    public Vec3i getStart(StructureManager structureManager, BlockRotation rotation) {
+    public Vec3i getStart(StructureTemplateManager structureTemplateManager, BlockRotation rotation) {
         return Vec3i.ZERO;
     }
 
     @Override
-    public List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager structureManager, BlockPos pos, BlockRotation rotation, Random random) {
+    public List<StructureTemplate.StructureBlockInfo> getStructureBlockInfos(StructureTemplateManager structureTemplateManager, BlockPos pos, BlockRotation rotation, Random random) {
         return Collections.emptyList();
     }
 
     @Override
-    public BlockBox getBoundingBox(StructureManager structureManager, BlockPos pos, BlockRotation rotation) {
+    public BlockBox getBoundingBox(StructureTemplateManager structureTemplateManager, BlockPos pos, BlockRotation rotation) {
         throw new IllegalStateException("Invalid call to EmtyPoolElement.getBoundingBox, filter me!");
     }
 
     @Override
-    public boolean generate(StructureManager structureManager, StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, BlockPos pos, BlockPos pivot, BlockRotation rotation, BlockBox box, Random random, boolean keepJigsaws) {
+    public boolean generate(StructureTemplateManager structureTemplateManager, StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, BlockPos pos, BlockPos pivot, BlockRotation rotation, BlockBox box, Random random, boolean keepJigsaws) {
         return true;
     }
 
