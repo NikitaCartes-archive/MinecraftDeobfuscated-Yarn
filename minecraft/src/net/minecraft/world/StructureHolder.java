@@ -4,19 +4,19 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.structure.StructureStart;
-import net.minecraft.world.gen.structure.StructureType;
+import net.minecraft.world.gen.structure.Structure;
 
 public interface StructureHolder {
 	@Nullable
-	StructureStart getStructureStart(StructureType structureType);
+	StructureStart getStructureStart(Structure structure);
 
-	void setStructureStart(StructureType structureType, StructureStart start);
+	void setStructureStart(Structure structure, StructureStart start);
 
-	LongSet getStructureReferences(StructureType structureType);
+	LongSet getStructureReferences(Structure structure);
 
-	void addStructureReference(StructureType structureType, long reference);
+	void addStructureReference(Structure structure, long reference);
 
-	Map<StructureType, LongSet> getStructureReferences();
+	Map<Structure, LongSet> getStructureReferences();
 
-	void setStructureReferences(Map<StructureType, LongSet> structureReferences);
+	void setStructureReferences(Map<Structure, LongSet> structureReferences);
 }

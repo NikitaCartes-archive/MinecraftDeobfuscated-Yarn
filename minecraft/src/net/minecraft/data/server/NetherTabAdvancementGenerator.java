@@ -47,7 +47,7 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
-import net.minecraft.world.gen.structure.StructureTypeKeys;
+import net.minecraft.world.gen.structure.StructureKeys;
 
 public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
 	private static final List<RegistryKey<Biome>> NETHER_BIOMES = ImmutableList.of(
@@ -131,7 +131,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				true,
 				false
 			)
-			.criterion("fortress", TickCriterion.Conditions.createLocation(LocationPredicate.feature(StructureTypeKeys.FORTRESS)))
+			.criterion("fortress", TickCriterion.Conditions.createLocation(LocationPredicate.feature(StructureKeys.FORTRESS)))
 			.build(consumer, "nether/find_fortress");
 		Advancement.Builder.create()
 			.parent(advancement)
@@ -493,7 +493,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				true,
 				false
 			)
-			.criterion("bastion", TickCriterion.Conditions.createLocation(LocationPredicate.feature(StructureTypeKeys.BASTION_REMNANT)))
+			.criterion("bastion", TickCriterion.Conditions.createLocation(LocationPredicate.feature(StructureKeys.BASTION_REMNANT)))
 			.build(consumer, "nether/find_bastion");
 		Advancement.Builder.create()
 			.parent(advancement13)

@@ -4,9 +4,9 @@ import java.time.Instant;
 import java.util.UUID;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.encryption.ArgumentSignatureDataMap;
-import net.minecraft.network.encryption.CommandArgumentSigner;
 import net.minecraft.network.listener.ServerPlayPacketListener;
+import net.minecraft.network.message.ArgumentSignatureDataMap;
+import net.minecraft.network.message.CommandArgumentSigner;
 import net.minecraft.util.StringHelper;
 
 /**

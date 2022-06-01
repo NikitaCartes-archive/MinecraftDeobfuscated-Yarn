@@ -35,7 +35,7 @@ public class XmlReportingTestCompletionListener implements TestCompletionListene
 	private Element addTestCase(GameTestState test, String name) {
 		Element element = this.document.createElement("testcase");
 		element.setAttribute("name", name);
-		element.setAttribute("classname", test.getStructureName());
+		element.setAttribute("classname", test.getTemplateName());
 		element.setAttribute("time", String.valueOf((double)test.getElapsedMilliseconds() / 1000.0));
 		this.testSuiteElement.appendChild(element);
 		return element;
@@ -43,7 +43,7 @@ public class XmlReportingTestCompletionListener implements TestCompletionListene
 
 	@Override
 	public void onTestFailed(GameTestState test) {
-		String string = test.getStructurePath();
+		String string = test.getTemplatePath();
 		String string2 = test.getThrowable().getMessage();
 		Element element;
 		if (test.isRequired()) {
@@ -60,7 +60,7 @@ public class XmlReportingTestCompletionListener implements TestCompletionListene
 
 	@Override
 	public void onTestPassed(GameTestState test) {
-		String string = test.getStructurePath();
+		String string = test.getTemplatePath();
 		this.addTestCase(test, string);
 	}
 

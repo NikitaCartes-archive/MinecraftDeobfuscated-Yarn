@@ -38,7 +38,7 @@ public interface StructureGeneratorFactory<C extends FeatureConfig> {
 		C config,
 		HeightLimitView world,
 		Predicate<RegistryEntry<Biome>> validBiome,
-		StructureManager structureManager,
+		StructureTemplateManager structureTemplateManager,
 		DynamicRegistryManager registryManager
 	) {
 		public boolean isBiomeValid(Heightmap.Type heightmapType) {

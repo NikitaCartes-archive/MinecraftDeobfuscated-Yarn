@@ -17,7 +17,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.heightprovider.HeightProvider;
 
-public final class JigsawStructure extends StructureType {
+public final class JigsawStructure extends Structure {
 	public static final int MAX_SIZE = 128;
 	public static final Codec<JigsawStructure> CODEC = RecordCodecBuilder.mapCodec(
 			instance -> instance.group(
@@ -55,7 +55,7 @@ public final class JigsawStructure extends StructureType {
 	}
 
 	public JigsawStructure(
-		StructureType.Config config,
+		Structure.Config config,
 		RegistryEntry<StructurePool> startPool,
 		Optional<Identifier> startJigsawName,
 		int size,
@@ -75,7 +75,7 @@ public final class JigsawStructure extends StructureType {
 	}
 
 	public JigsawStructure(
-		StructureType.Config config,
+		Structure.Config config,
 		RegistryEntry<StructurePool> startPool,
 		int size,
 		HeightProvider startHeight,
@@ -85,12 +85,12 @@ public final class JigsawStructure extends StructureType {
 		this(config, startPool, Optional.empty(), size, startHeight, useExpansionHack, Optional.of(projectStartToHeightmap), 80);
 	}
 
-	public JigsawStructure(StructureType.Config config, RegistryEntry<StructurePool> startPool, int size, HeightProvider startHeight, boolean useExpansionHack) {
+	public JigsawStructure(Structure.Config config, RegistryEntry<StructurePool> startPool, int size, HeightProvider startHeight, boolean useExpansionHack) {
 		this(config, startPool, Optional.empty(), size, startHeight, useExpansionHack, Optional.empty(), 80);
 	}
 
 	@Override
-	public Optional<StructureType.StructurePosition> getStructurePosition(StructureType.Context context) {
+	public Optional<Structure.StructurePosition> getStructurePosition(Structure.Context context) {
 		ChunkPos chunkPos = context.chunkPos();
 		int i = this.startHeight.get(context.random(), new HeightContext(context.chunkGenerator(), context.world()));
 		BlockPos blockPos = new BlockPos(chunkPos.getStartX(), i, chunkPos.getStartZ());
@@ -101,7 +101,7 @@ public final class JigsawStructure extends StructureType {
 	}
 
 	@Override
-	public net.minecraft.structure.StructureType<?> getType() {
-		return net.minecraft.structure.StructureType.JIGSAW;
+	public StructureType<?> getType() {
+		return StructureType.JIGSAW;
 	}
 }

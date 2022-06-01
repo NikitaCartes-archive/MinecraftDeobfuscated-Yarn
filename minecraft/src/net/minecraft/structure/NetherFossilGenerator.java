@@ -33,17 +33,17 @@ public class NetherFossilGenerator {
 		new Identifier("nether_fossils/fossil_14")
 	};
 
-	public static void addPieces(StructureManager manager, StructurePiecesHolder holder, Random random, BlockPos pos) {
+	public static void addPieces(StructureTemplateManager manager, StructurePiecesHolder holder, Random random, BlockPos pos) {
 		BlockRotation blockRotation = BlockRotation.random(random);
 		holder.addPiece(new NetherFossilGenerator.Piece(manager, Util.getRandom(FOSSILS, random), pos, blockRotation));
 	}
 
 	public static class Piece extends SimpleStructurePiece {
-		public Piece(StructureManager manager, Identifier template, BlockPos pos, BlockRotation rotation) {
+		public Piece(StructureTemplateManager manager, Identifier template, BlockPos pos, BlockRotation rotation) {
 			super(StructurePieceType.NETHER_FOSSIL, 0, manager, template, template.toString(), createPlacementData(rotation), pos);
 		}
 
-		public Piece(StructureManager manager, NbtCompound nbt) {
+		public Piece(StructureTemplateManager manager, NbtCompound nbt) {
 			super(StructurePieceType.NETHER_FOSSIL, nbt, manager, id -> createPlacementData(BlockRotation.valueOf(nbt.getString("Rot"))));
 		}
 
@@ -74,7 +74,7 @@ public class NetherFossilGenerator {
 			ChunkPos chunkPos,
 			BlockPos pivot
 		) {
-			chunkBox.encompass(this.structure.calculateBoundingBox(this.placementData, this.pos));
+			chunkBox.encompass(this.template.calculateBoundingBox(this.placementData, this.pos));
 			super.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pivot);
 		}
 	}

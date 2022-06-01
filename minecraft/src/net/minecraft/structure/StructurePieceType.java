@@ -77,7 +77,7 @@ public interface StructurePieceType {
 	}
 
 	public interface ManagerAware extends StructurePieceType {
-		StructurePiece load(StructureManager structureManager, NbtCompound nbt);
+		StructurePiece load(StructureTemplateManager structureTemplateManager, NbtCompound nbt);
 
 		@Override
 		default StructurePiece load(StructureContext structureContext, NbtCompound nbtCompound) {

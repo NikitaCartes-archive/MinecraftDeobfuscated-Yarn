@@ -30,8 +30,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.structure.Structure;
-import net.minecraft.structure.StructureManager;
+import net.minecraft.structure.StructureTemplate;
+import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
@@ -99,40 +99,42 @@ public class StructureTestUtil {
 	public static Box getStructureBoundingBox(StructureBlockBlockEntity structureBlockEntity) {
 		BlockPos blockPos = structureBlockEntity.getPos();
 		BlockPos blockPos2 = blockPos.add(structureBlockEntity.getSize().add(-1, -1, -1));
-		BlockPos blockPos3 = Structure.transformAround(blockPos2, BlockMirror.NONE, structureBlockEntity.getRotation(), blockPos);
+		BlockPos blockPos3 = StructureTemplate.transformAround(blockPos2, BlockMirror.NONE, structureBlockEntity.getRotation(), blockPos);
 		return new Box(blockPos, blockPos3);
 	}
 
 	public static BlockBox getStructureBlockBox(StructureBlockBlockEntity structureBlockEntity) {
 		BlockPos blockPos = structureBlockEntity.getPos();
 		BlockPos blockPos2 = blockPos.add(structureBlockEntity.getSize().add(-1, -1, -1));
-		BlockPos blockPos3 = Structure.transformAround(blockPos2, BlockMirror.NONE, structureBlockEntity.getRotation(), blockPos);
+		BlockPos blockPos3 = StructureTemplate.transformAround(blockPos2, BlockMirror.NONE, structureBlockEntity.getRotation(), blockPos);
 		return BlockBox.create(blockPos, blockPos3);
 	}
 
 	public static void placeStartButton(BlockPos pos, BlockPos relativePos, BlockRotation rotation, ServerWorld world) {
-		BlockPos blockPos = Structure.transformAround(pos.add(relativePos), BlockMirror.NONE, rotation, pos);
+		BlockPos blockPos = StructureTemplate.transformAround(pos.add(relativePos), BlockMirror.NONE, rotation, pos);
 		world.setBlockState(blockPos, Blocks.COMMAND_BLOCK.getDefaultState());
 		CommandBlockBlockEntity commandBlockBlockEntity = (CommandBlockBlockEntity)world.getBlockEntity(blockPos);
 		commandBlockBlockEntity.getCommandExecutor().setCommand("test runthis");
-		BlockPos blockPos2 = Structure.transformAround(blockPos.add(0, 0, -1), BlockMirror.NONE, rotation, blockPos);
+		BlockPos blockPos2 = StructureTemplate.transformAround(blockPos.add(0, 0, -1), BlockMirror.NONE, rotation, blockPos);
 		world.setBlockState(blockPos2, Blocks.STONE_BUTTON.getDefaultState().rotate(rotation));
 	}
 
-	public static void createTestArea(String structure, BlockPos pos, Vec3i relativePos, BlockRotation rotation, ServerWorld world) {
+	public static void createTestArea(String testName, BlockPos pos, Vec3i relativePos, BlockRotation rotation, ServerWorld world) {
 		BlockBox blockBox = getStructureBlockBox(pos, relativePos, rotation);
 		clearArea(blockBox, pos.getY(), world);
 		world.setBlockState(pos, Blocks.STRUCTURE_BLOCK.getDefaultState());
 		StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)world.getBlockEntity(pos);
 		structureBlockBlockEntity.setIgnoreEntities(false);
-		structureBlockBlockEntity.setStructureName(new Identifier(structure));
+		structureBlockBlockEntity.setTemplateName(new Identifier(testName));
 		structureBlockBlockEntity.setSize(relativePos);
 		structureBlockBlockEntity.setMode(StructureBlockMode.SAVE);
 		structureBlockBlockEntity.setShowBoundingBox(true);
 	}
 
-	public static StructureBlockBlockEntity createStructure(String structureName, BlockPos pos, BlockRotation rotation, int i, ServerWorld world, boolean bl) {
-		Vec3i vec3i = createStructure(structureName, world).getSize();
+	public static StructureBlockBlockEntity createStructureTemplate(
+		String templateName, BlockPos pos, BlockRotation rotation, int i, ServerWorld world, boolean bl
+	) {
+		Vec3i vec3i = createStructureTemplate(templateName, world).getSize();
 		BlockBox blockBox = getStructureBlockBox(pos, vec3i, rotation);
 		BlockPos blockPos;
 		if (rotation == BlockRotation.NONE) {
@@ -151,7 +153,7 @@ public class StructureTestUtil {
 
 		forceLoadNearbyChunks(pos, world);
 		clearArea(blockBox, pos.getY(), world);
-		StructureBlockBlockEntity structureBlockBlockEntity = placeStructure(structureName, blockPos, rotation, world, bl);
+		StructureBlockBlockEntity structureBlockBlockEntity = placeStructureTemplate(templateName, blockPos, rotation, world, bl);
 		world.getBlockTickScheduler().clearNextTicks(blockBox);
 		world.clearUpdatesInArea(blockBox);
 		return structureBlockBlockEntity;
@@ -188,7 +190,7 @@ public class StructureTestUtil {
 
 	public static BlockBox getStructureBlockBox(BlockPos pos, Vec3i relativePos, BlockRotation rotation) {
 		BlockPos blockPos = pos.add(relativePos).add(-1, -1, -1);
-		BlockPos blockPos2 = Structure.transformAround(blockPos, BlockMirror.NONE, rotation, pos);
+		BlockPos blockPos2 = StructureTemplate.transformAround(blockPos, BlockMirror.NONE, rotation, pos);
 		BlockBox blockBox = BlockBox.create(pos, blockPos2);
 		int i = Math.min(blockBox.getMinX(), blockBox.getMaxX());
 		int j = Math.min(blockBox.getMinZ(), blockBox.getMaxZ());
@@ -227,36 +229,36 @@ public class StructureTestUtil {
 		return collection;
 	}
 
-	private static Structure createStructure(String structureId, ServerWorld world) {
-		StructureManager structureManager = world.getStructureManager();
-		Optional<Structure> optional = structureManager.getStructure(new Identifier(structureId));
+	private static StructureTemplate createStructureTemplate(String templateId, ServerWorld world) {
+		StructureTemplateManager structureTemplateManager = world.getStructureTemplateManager();
+		Optional<StructureTemplate> optional = structureTemplateManager.getTemplate(new Identifier(templateId));
 		if (optional.isPresent()) {
-			return (Structure)optional.get();
+			return (StructureTemplate)optional.get();
 		} else {
-			String string = structureId + ".snbt";
+			String string = templateId + ".snbt";
 			Path path = Paths.get(testStructuresDirectoryName, string);
 			NbtCompound nbtCompound = loadSnbt(path);
 			if (nbtCompound == null) {
 				throw new RuntimeException("Could not find structure file " + path + ", and the structure is not available in the world structures either.");
 			} else {
-				return structureManager.createStructure(nbtCompound);
+				return structureTemplateManager.createTemplate(nbtCompound);
 			}
 		}
 	}
 
-	private static StructureBlockBlockEntity placeStructure(String name, BlockPos pos, BlockRotation rotation, ServerWorld world, boolean bl) {
+	private static StructureBlockBlockEntity placeStructureTemplate(String name, BlockPos pos, BlockRotation rotation, ServerWorld world, boolean bl) {
 		world.setBlockState(pos, Blocks.STRUCTURE_BLOCK.getDefaultState());
 		StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)world.getBlockEntity(pos);
 		structureBlockBlockEntity.setMode(StructureBlockMode.LOAD);
 		structureBlockBlockEntity.setRotation(rotation);
 		structureBlockBlockEntity.setIgnoreEntities(false);
-		structureBlockBlockEntity.setStructureName(new Identifier(name));
+		structureBlockBlockEntity.setTemplateName(new Identifier(name));
 		structureBlockBlockEntity.loadStructure(world, bl);
 		if (structureBlockBlockEntity.getSize() != Vec3i.ZERO) {
 			return structureBlockBlockEntity;
 		} else {
-			Structure structure = createStructure(name, world);
-			structureBlockBlockEntity.place(world, bl, structure);
+			StructureTemplate structureTemplate = createStructureTemplate(name, world);
+			structureBlockBlockEntity.place(world, bl, structureTemplate);
 			if (structureBlockBlockEntity.getSize() == Vec3i.ZERO) {
 				throw new RuntimeException("Failed to load structure " + name);
 			} else {

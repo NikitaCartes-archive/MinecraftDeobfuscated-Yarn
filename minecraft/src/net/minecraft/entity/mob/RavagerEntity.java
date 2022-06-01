@@ -257,7 +257,7 @@ public class RavagerEntity extends RaiderEntity {
 				this.world.addParticle(ParticleTypes.POOF, vec3d.x, vec3d.y, vec3d.z, d, e, f);
 			}
 
-			this.world.emitGameEvent(this, GameEvent.ENTITY_ROAR, this.getEyePos());
+			this.emitGameEvent(GameEvent.ENTITY_ROAR);
 		}
 	}
 

@@ -139,12 +139,12 @@ public class StructurePlacementData {
 		return this.placeFluids;
 	}
 
-	public Structure.PalettedBlockInfoList getRandomBlockInfos(List<Structure.PalettedBlockInfoList> list, @Nullable BlockPos pos) {
+	public StructureTemplate.PalettedBlockInfoList getRandomBlockInfos(List<StructureTemplate.PalettedBlockInfoList> list, @Nullable BlockPos pos) {
 		int i = list.size();
 		if (i == 0) {
 			throw new IllegalStateException("No palettes");
 		} else {
-			return (Structure.PalettedBlockInfoList)list.get(this.getRandom(pos).nextInt(i));
+			return (StructureTemplate.PalettedBlockInfoList)list.get(this.getRandom(pos).nextInt(i));
 		}
 	}
 

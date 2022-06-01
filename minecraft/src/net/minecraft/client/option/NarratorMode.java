@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.network.MessageType;
+import net.minecraft.network.message.MessageType;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 

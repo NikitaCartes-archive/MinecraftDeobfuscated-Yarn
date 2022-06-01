@@ -3,7 +3,7 @@ package net.minecraft.server.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.command.argument.MessageArgumentType;
-import net.minecraft.network.MessageType;
+import net.minecraft.network.message.MessageType;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.filter.FilteredMessage;
 

@@ -7,8 +7,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.StairsBlock;
 import net.minecraft.block.enums.BlockHalf;
-import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructurePlacementData;
+import net.minecraft.structure.StructureTemplate;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -32,12 +32,12 @@ public class BlockAgeStructureProcessor extends StructureProcessor {
 
 	@Nullable
 	@Override
-	public Structure.StructureBlockInfo process(
+	public StructureTemplate.StructureBlockInfo process(
 		WorldView world,
 		BlockPos pos,
 		BlockPos pivot,
-		Structure.StructureBlockInfo originalBlockInfo,
-		Structure.StructureBlockInfo currentBlockInfo,
+		StructureTemplate.StructureBlockInfo originalBlockInfo,
+		StructureTemplate.StructureBlockInfo currentBlockInfo,
 		StructurePlacementData data
 	) {
 		Random random = data.getRandom(currentBlockInfo.pos);
@@ -56,7 +56,7 @@ public class BlockAgeStructureProcessor extends StructureProcessor {
 			blockState2 = this.processObsidian(random);
 		}
 
-		return blockState2 != null ? new Structure.StructureBlockInfo(blockPos, blockState2, currentBlockInfo.nbt) : currentBlockInfo;
+		return blockState2 != null ? new StructureTemplate.StructureBlockInfo(blockPos, blockState2, currentBlockInfo.nbt) : currentBlockInfo;
 	}
 
 	@Nullable

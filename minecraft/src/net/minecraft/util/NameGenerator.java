@@ -1,10 +1,9 @@
-package net.minecraft.client.render.debug;
+package net.minecraft.util;
 
 import java.util.UUID;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.random.Random;
 
 public class NameGenerator {

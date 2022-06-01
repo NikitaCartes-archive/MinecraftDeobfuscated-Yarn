@@ -35,9 +35,9 @@ import net.minecraft.world.gen.YOffset;
 import net.minecraft.world.gen.heightprovider.ConstantHeightProvider;
 import net.minecraft.world.gen.heightprovider.UniformHeightProvider;
 
-public class StructureTypes {
-	public static final RegistryEntry<StructureType> PILLAGER_OUTPOST = register(
-		StructureTypeKeys.PILLAGER_OUTPOST,
+public class Structures {
+	public static final RegistryEntry<Structure> PILLAGER_OUTPOST = register(
+		StructureKeys.PILLAGER_OUTPOST,
 		new JigsawStructure(
 			createConfig(
 				BiomeTags.PILLAGER_OUTPOST_HAS_STRUCTURE,
@@ -52,40 +52,40 @@ public class StructureTypes {
 			Heightmap.Type.WORLD_SURFACE_WG
 		)
 	);
-	public static final RegistryEntry<StructureType> MINESHAFT = register(
-		StructureTypeKeys.MINESHAFT,
+	public static final RegistryEntry<Structure> MINESHAFT = register(
+		StructureKeys.MINESHAFT,
 		new MineshaftStructure(
 			createConfig(BiomeTags.MINESHAFT_HAS_STRUCTURE, GenerationStep.Feature.UNDERGROUND_STRUCTURES, StructureTerrainAdaptation.NONE),
 			MineshaftStructure.Type.NORMAL
 		)
 	);
-	public static final RegistryEntry<StructureType> MINESHAFT_MESA = register(
-		StructureTypeKeys.MINESHAFT_MESA,
+	public static final RegistryEntry<Structure> MINESHAFT_MESA = register(
+		StructureKeys.MINESHAFT_MESA,
 		new MineshaftStructure(
 			createConfig(BiomeTags.MINESHAFT_MESA_HAS_STRUCTURE, GenerationStep.Feature.UNDERGROUND_STRUCTURES, StructureTerrainAdaptation.NONE),
 			MineshaftStructure.Type.MESA
 		)
 	);
-	public static final RegistryEntry<StructureType> MANSION = register(
-		StructureTypeKeys.MANSION, new WoodlandMansionStructure(createConfig(BiomeTags.WOODLAND_MANSION_HAS_STRUCTURE, StructureTerrainAdaptation.NONE))
+	public static final RegistryEntry<Structure> MANSION = register(
+		StructureKeys.MANSION, new WoodlandMansionStructure(createConfig(BiomeTags.WOODLAND_MANSION_HAS_STRUCTURE, StructureTerrainAdaptation.NONE))
 	);
-	public static final RegistryEntry<StructureType> JUNGLE_PYRAMID = register(
-		StructureTypeKeys.JUNGLE_PYRAMID, new JungleTempleStructure(createConfig(BiomeTags.JUNGLE_TEMPLE_HAS_STRUCTURE, StructureTerrainAdaptation.NONE))
+	public static final RegistryEntry<Structure> JUNGLE_PYRAMID = register(
+		StructureKeys.JUNGLE_PYRAMID, new JungleTempleStructure(createConfig(BiomeTags.JUNGLE_TEMPLE_HAS_STRUCTURE, StructureTerrainAdaptation.NONE))
 	);
-	public static final RegistryEntry<StructureType> DESERT_PYRAMID = register(
-		StructureTypeKeys.DESERT_PYRAMID, new DesertPyramidStructure(createConfig(BiomeTags.DESERT_PYRAMID_HAS_STRUCTURE, StructureTerrainAdaptation.NONE))
+	public static final RegistryEntry<Structure> DESERT_PYRAMID = register(
+		StructureKeys.DESERT_PYRAMID, new DesertPyramidStructure(createConfig(BiomeTags.DESERT_PYRAMID_HAS_STRUCTURE, StructureTerrainAdaptation.NONE))
 	);
-	public static final RegistryEntry<StructureType> IGLOO = register(
-		StructureTypeKeys.IGLOO, new IglooStructure(createConfig(BiomeTags.IGLOO_HAS_STRUCTURE, StructureTerrainAdaptation.NONE))
+	public static final RegistryEntry<Structure> IGLOO = register(
+		StructureKeys.IGLOO, new IglooStructure(createConfig(BiomeTags.IGLOO_HAS_STRUCTURE, StructureTerrainAdaptation.NONE))
 	);
-	public static final RegistryEntry<StructureType> SHIPWRECK = register(
-		StructureTypeKeys.SHIPWRECK, new ShipwreckStructure(createConfig(BiomeTags.SHIPWRECK_HAS_STRUCTURE, StructureTerrainAdaptation.NONE), false)
+	public static final RegistryEntry<Structure> SHIPWRECK = register(
+		StructureKeys.SHIPWRECK, new ShipwreckStructure(createConfig(BiomeTags.SHIPWRECK_HAS_STRUCTURE, StructureTerrainAdaptation.NONE), false)
 	);
-	public static final RegistryEntry<StructureType> SHIPWRECK_BEACHED = register(
-		StructureTypeKeys.SHIPWRECK_BEACHED, new ShipwreckStructure(createConfig(BiomeTags.SHIPWRECK_BEACHED_HAS_STRUCTURE, StructureTerrainAdaptation.NONE), true)
+	public static final RegistryEntry<Structure> SHIPWRECK_BEACHED = register(
+		StructureKeys.SHIPWRECK_BEACHED, new ShipwreckStructure(createConfig(BiomeTags.SHIPWRECK_BEACHED_HAS_STRUCTURE, StructureTerrainAdaptation.NONE), true)
 	);
-	public static final RegistryEntry<StructureType> SWAMP_HUT = register(
-		StructureTypeKeys.SWAMP_HUT,
+	public static final RegistryEntry<Structure> SWAMP_HUT = register(
+		StructureKeys.SWAMP_HUT,
 		new SwampHutStructure(
 			createConfig(
 				BiomeTags.SWAMP_HUT_HAS_STRUCTURE,
@@ -100,11 +100,11 @@ public class StructureTypes {
 			)
 		)
 	);
-	public static final RegistryEntry<StructureType> STRONGHOLD = register(
-		StructureTypeKeys.STRONGHOLD, new StrongholdStructure(createConfig(BiomeTags.STRONGHOLD_HAS_STRUCTURE, StructureTerrainAdaptation.BURY))
+	public static final RegistryEntry<Structure> STRONGHOLD = register(
+		StructureKeys.STRONGHOLD, new StrongholdStructure(createConfig(BiomeTags.STRONGHOLD_HAS_STRUCTURE, StructureTerrainAdaptation.BURY))
 	);
-	public static final RegistryEntry<StructureType> MONUMENT = register(
-		StructureTypeKeys.MONUMENT,
+	public static final RegistryEntry<Structure> MONUMENT = register(
+		StructureKeys.MONUMENT,
 		new OceanMonumentStructure(
 			createConfig(
 				BiomeTags.OCEAN_MONUMENT_HAS_STRUCTURE,
@@ -121,20 +121,20 @@ public class StructureTypes {
 			)
 		)
 	);
-	public static final RegistryEntry<StructureType> OCEAN_RUIN_COLD = register(
-		StructureTypeKeys.OCEAN_RUIN_COLD,
+	public static final RegistryEntry<Structure> OCEAN_RUIN_COLD = register(
+		StructureKeys.OCEAN_RUIN_COLD,
 		new OceanRuinStructure(
 			createConfig(BiomeTags.OCEAN_RUIN_COLD_HAS_STRUCTURE, StructureTerrainAdaptation.NONE), OceanRuinStructure.BiomeTemperature.COLD, 0.3F, 0.9F
 		)
 	);
-	public static final RegistryEntry<StructureType> OCEAN_RUIN_WARM = register(
-		StructureTypeKeys.OCEAN_RUIN_WARM,
+	public static final RegistryEntry<Structure> OCEAN_RUIN_WARM = register(
+		StructureKeys.OCEAN_RUIN_WARM,
 		new OceanRuinStructure(
 			createConfig(BiomeTags.OCEAN_RUIN_WARM_HAS_STRUCTURE, StructureTerrainAdaptation.NONE), OceanRuinStructure.BiomeTemperature.WARM, 0.3F, 0.9F
 		)
 	);
-	public static final RegistryEntry<StructureType> FORTRESS = register(
-		StructureTypeKeys.FORTRESS,
+	public static final RegistryEntry<Structure> FORTRESS = register(
+		StructureKeys.FORTRESS,
 		new NetherFortressStructure(
 			createConfig(
 				BiomeTags.NETHER_FORTRESS_HAS_STRUCTURE,
@@ -144,24 +144,24 @@ public class StructureTypes {
 			)
 		)
 	);
-	public static final RegistryEntry<StructureType> NETHER_FOSSIL = register(
-		StructureTypeKeys.NETHER_FOSSIL,
+	public static final RegistryEntry<Structure> NETHER_FOSSIL = register(
+		StructureKeys.NETHER_FOSSIL,
 		new NetherFossilStructure(
 			createConfig(BiomeTags.NETHER_FOSSIL_HAS_STRUCTURE, GenerationStep.Feature.UNDERGROUND_DECORATION, StructureTerrainAdaptation.BEARD_THIN),
 			UniformHeightProvider.create(YOffset.fixed(32), YOffset.belowTop(2))
 		)
 	);
-	public static final RegistryEntry<StructureType> END_CITY = register(
-		StructureTypeKeys.END_CITY, new EndCityStructure(createConfig(BiomeTags.END_CITY_HAS_STRUCTURE, StructureTerrainAdaptation.NONE))
+	public static final RegistryEntry<Structure> END_CITY = register(
+		StructureKeys.END_CITY, new EndCityStructure(createConfig(BiomeTags.END_CITY_HAS_STRUCTURE, StructureTerrainAdaptation.NONE))
 	);
-	public static final RegistryEntry<StructureType> BURIED_TREASURE = register(
-		StructureTypeKeys.BURIED_TREASURE,
+	public static final RegistryEntry<Structure> BURIED_TREASURE = register(
+		StructureKeys.BURIED_TREASURE,
 		new BuriedTreasureStructure(
 			createConfig(BiomeTags.BURIED_TREASURE_HAS_STRUCTURE, GenerationStep.Feature.UNDERGROUND_STRUCTURES, StructureTerrainAdaptation.NONE)
 		)
 	);
-	public static final RegistryEntry<StructureType> BASTION_REMNANT = register(
-		StructureTypeKeys.BASTION_REMNANT,
+	public static final RegistryEntry<Structure> BASTION_REMNANT = register(
+		StructureKeys.BASTION_REMNANT,
 		new JigsawStructure(
 			createConfig(BiomeTags.BASTION_REMNANT_HAS_STRUCTURE, StructureTerrainAdaptation.NONE),
 			BastionRemnantGenerator.STRUCTURE_POOLS,
@@ -170,8 +170,8 @@ public class StructureTypes {
 			false
 		)
 	);
-	public static final RegistryEntry<StructureType> VILLAGE_PLAINS = register(
-		StructureTypeKeys.VILLAGE_PLAINS,
+	public static final RegistryEntry<Structure> VILLAGE_PLAINS = register(
+		StructureKeys.VILLAGE_PLAINS,
 		new JigsawStructure(
 			createConfig(BiomeTags.VILLAGE_PLAINS_HAS_STRUCTURE, StructureTerrainAdaptation.BEARD_THIN),
 			PlainsVillageData.STRUCTURE_POOLS,
@@ -181,8 +181,8 @@ public class StructureTypes {
 			Heightmap.Type.WORLD_SURFACE_WG
 		)
 	);
-	public static final RegistryEntry<StructureType> VILLAGE_DESERT = register(
-		StructureTypeKeys.VILLAGE_DESERT,
+	public static final RegistryEntry<Structure> VILLAGE_DESERT = register(
+		StructureKeys.VILLAGE_DESERT,
 		new JigsawStructure(
 			createConfig(BiomeTags.VILLAGE_DESERT_HAS_STRUCTURE, StructureTerrainAdaptation.BEARD_THIN),
 			DesertVillageData.STRUCTURE_POOLS,
@@ -192,8 +192,8 @@ public class StructureTypes {
 			Heightmap.Type.WORLD_SURFACE_WG
 		)
 	);
-	public static final RegistryEntry<StructureType> VILLAGE_SAVANNA = register(
-		StructureTypeKeys.VILLAGE_SAVANNA,
+	public static final RegistryEntry<Structure> VILLAGE_SAVANNA = register(
+		StructureKeys.VILLAGE_SAVANNA,
 		new JigsawStructure(
 			createConfig(BiomeTags.VILLAGE_SAVANNA_HAS_STRUCTURE, StructureTerrainAdaptation.BEARD_THIN),
 			SavannaVillageData.STRUCTURE_POOLS,
@@ -203,8 +203,8 @@ public class StructureTypes {
 			Heightmap.Type.WORLD_SURFACE_WG
 		)
 	);
-	public static final RegistryEntry<StructureType> VILLAGE_SNOWY = register(
-		StructureTypeKeys.VILLAGE_SNOWY,
+	public static final RegistryEntry<Structure> VILLAGE_SNOWY = register(
+		StructureKeys.VILLAGE_SNOWY,
 		new JigsawStructure(
 			createConfig(BiomeTags.VILLAGE_SNOWY_HAS_STRUCTURE, StructureTerrainAdaptation.BEARD_THIN),
 			SnowyVillageData.STRUCTURE_POOLS,
@@ -214,8 +214,8 @@ public class StructureTypes {
 			Heightmap.Type.WORLD_SURFACE_WG
 		)
 	);
-	public static final RegistryEntry<StructureType> VILLAGE_TAIGA = register(
-		StructureTypeKeys.VILLAGE_TAIGA,
+	public static final RegistryEntry<Structure> VILLAGE_TAIGA = register(
+		StructureKeys.VILLAGE_TAIGA,
 		new JigsawStructure(
 			createConfig(BiomeTags.VILLAGE_TAIGA_HAS_STRUCTURE, StructureTerrainAdaptation.BEARD_THIN),
 			TaigaVillageData.STRUCTURE_POOLS,
@@ -225,8 +225,8 @@ public class StructureTypes {
 			Heightmap.Type.WORLD_SURFACE_WG
 		)
 	);
-	public static final RegistryEntry<StructureType> RUINED_PORTAL = register(
-		StructureTypeKeys.RUINED_PORTAL,
+	public static final RegistryEntry<Structure> RUINED_PORTAL = register(
+		StructureKeys.RUINED_PORTAL,
 		new RuinedPortalStructure(
 			createConfig(BiomeTags.RUINED_PORTAL_STANDARD_HAS_STRUCTURE, StructureTerrainAdaptation.NONE),
 			List.of(
@@ -235,29 +235,29 @@ public class StructureTypes {
 			)
 		)
 	);
-	public static final RegistryEntry<StructureType> RUINED_PORTAL_DESERT = register(
-		StructureTypeKeys.RUINED_PORTAL_DESERT,
+	public static final RegistryEntry<Structure> RUINED_PORTAL_DESERT = register(
+		StructureKeys.RUINED_PORTAL_DESERT,
 		new RuinedPortalStructure(
 			createConfig(BiomeTags.RUINED_PORTAL_DESERT_HAS_STRUCTURE, StructureTerrainAdaptation.NONE),
 			new RuinedPortalStructure.Setup(RuinedPortalStructurePiece.VerticalPlacement.PARTLY_BURIED, 0.0F, 0.0F, false, false, false, false, 1.0F)
 		)
 	);
-	public static final RegistryEntry<StructureType> RUINED_PORTAL_JUNGLE = register(
-		StructureTypeKeys.RUINED_PORTAL_JUNGLE,
+	public static final RegistryEntry<Structure> RUINED_PORTAL_JUNGLE = register(
+		StructureKeys.RUINED_PORTAL_JUNGLE,
 		new RuinedPortalStructure(
 			createConfig(BiomeTags.RUINED_PORTAL_JUNGLE_HAS_STRUCTURE, StructureTerrainAdaptation.NONE),
 			new RuinedPortalStructure.Setup(RuinedPortalStructurePiece.VerticalPlacement.ON_LAND_SURFACE, 0.5F, 0.8F, true, true, false, false, 1.0F)
 		)
 	);
-	public static final RegistryEntry<StructureType> RUINED_PORTAL_SWAMP = register(
-		StructureTypeKeys.RUINED_PORTAL_SWAMP,
+	public static final RegistryEntry<Structure> RUINED_PORTAL_SWAMP = register(
+		StructureKeys.RUINED_PORTAL_SWAMP,
 		new RuinedPortalStructure(
 			createConfig(BiomeTags.RUINED_PORTAL_SWAMP_HAS_STRUCTURE, StructureTerrainAdaptation.NONE),
 			new RuinedPortalStructure.Setup(RuinedPortalStructurePiece.VerticalPlacement.ON_OCEAN_FLOOR, 0.0F, 0.5F, false, true, false, false, 1.0F)
 		)
 	);
-	public static final RegistryEntry<StructureType> RUINED_PORTAL_MOUNTAIN = register(
-		StructureTypeKeys.RUINED_PORTAL_MOUNTAIN,
+	public static final RegistryEntry<Structure> RUINED_PORTAL_MOUNTAIN = register(
+		StructureKeys.RUINED_PORTAL_MOUNTAIN,
 		new RuinedPortalStructure(
 			createConfig(BiomeTags.RUINED_PORTAL_MOUNTAIN_HAS_STRUCTURE, StructureTerrainAdaptation.NONE),
 			List.of(
@@ -266,22 +266,22 @@ public class StructureTypes {
 			)
 		)
 	);
-	public static final RegistryEntry<StructureType> RUINED_PORTAL_OCEAN = register(
-		StructureTypeKeys.RUINED_PORTAL_OCEAN,
+	public static final RegistryEntry<Structure> RUINED_PORTAL_OCEAN = register(
+		StructureKeys.RUINED_PORTAL_OCEAN,
 		new RuinedPortalStructure(
 			createConfig(BiomeTags.RUINED_PORTAL_OCEAN_HAS_STRUCTURE, StructureTerrainAdaptation.NONE),
 			new RuinedPortalStructure.Setup(RuinedPortalStructurePiece.VerticalPlacement.ON_OCEAN_FLOOR, 0.0F, 0.8F, false, false, true, false, 1.0F)
 		)
 	);
-	public static final RegistryEntry<StructureType> RUINED_PORTAL_NETHER = register(
-		StructureTypeKeys.RUINED_PORTAL_NETHER,
+	public static final RegistryEntry<Structure> RUINED_PORTAL_NETHER = register(
+		StructureKeys.RUINED_PORTAL_NETHER,
 		new RuinedPortalStructure(
 			createConfig(BiomeTags.RUINED_PORTAL_NETHER_HAS_STRUCTURE, StructureTerrainAdaptation.NONE),
 			new RuinedPortalStructure.Setup(RuinedPortalStructurePiece.VerticalPlacement.IN_NETHER, 0.5F, 0.0F, false, false, false, true, 1.0F)
 		)
 	);
-	public static final RegistryEntry<StructureType> ANCIENT_CITY = register(
-		StructureTypeKeys.ANCIENT_CITY,
+	public static final RegistryEntry<Structure> ANCIENT_CITY = register(
+		StructureKeys.ANCIENT_CITY,
 		new JigsawStructure(
 			createConfig(
 				BiomeTags.ANCIENT_CITY_HAS_STRUCTURE,
@@ -300,26 +300,26 @@ public class StructureTypes {
 		)
 	);
 
-	public static RegistryEntry<? extends StructureType> getDefault(Registry<StructureType> registry) {
+	public static RegistryEntry<? extends Structure> getDefault(Registry<Structure> registry) {
 		return MINESHAFT;
 	}
 
-	private static StructureType.Config createConfig(
+	private static Structure.Config createConfig(
 		TagKey<Biome> biomeTag, Map<SpawnGroup, StructureSpawns> spawns, GenerationStep.Feature featureStep, StructureTerrainAdaptation terrainAdaptation
 	) {
-		return new StructureType.Config(getOrCreateBiomeTag(biomeTag), spawns, featureStep, terrainAdaptation);
+		return new Structure.Config(getOrCreateBiomeTag(biomeTag), spawns, featureStep, terrainAdaptation);
 	}
 
-	private static StructureType.Config createConfig(TagKey<Biome> biomeTag, GenerationStep.Feature featureStep, StructureTerrainAdaptation terrainAdaptation) {
+	private static Structure.Config createConfig(TagKey<Biome> biomeTag, GenerationStep.Feature featureStep, StructureTerrainAdaptation terrainAdaptation) {
 		return createConfig(biomeTag, Map.of(), featureStep, terrainAdaptation);
 	}
 
-	private static StructureType.Config createConfig(TagKey<Biome> biomeTag, StructureTerrainAdaptation terrainAdaptation) {
+	private static Structure.Config createConfig(TagKey<Biome> biomeTag, StructureTerrainAdaptation terrainAdaptation) {
 		return createConfig(biomeTag, Map.of(), GenerationStep.Feature.SURFACE_STRUCTURES, terrainAdaptation);
 	}
 
-	private static RegistryEntry<StructureType> register(RegistryKey<StructureType> key, StructureType configuredStructureFeature) {
-		return BuiltinRegistries.add(BuiltinRegistries.STRUCTURE, key, configuredStructureFeature);
+	private static RegistryEntry<Structure> register(RegistryKey<Structure> key, Structure structure) {
+		return BuiltinRegistries.add(BuiltinRegistries.STRUCTURE, key, structure);
 	}
 
 	private static RegistryEntryList<Biome> getOrCreateBiomeTag(TagKey<Biome> key) {

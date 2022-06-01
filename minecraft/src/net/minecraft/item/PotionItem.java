@@ -77,7 +77,7 @@ public class PotionItem extends Item {
 			}
 		}
 
-		world.emitGameEvent(user, GameEvent.DRINK, user.getEyePos());
+		user.emitGameEvent(GameEvent.DRINK);
 		return stack;
 	}
 

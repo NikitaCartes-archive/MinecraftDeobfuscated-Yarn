@@ -1,19 +1,19 @@
 package net.minecraft.structure.processor;
 
 import javax.annotation.Nullable;
-import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructurePlacementData;
+import net.minecraft.structure.StructureTemplate;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldView;
 
 public abstract class StructureProcessor {
 	@Nullable
-	public abstract Structure.StructureBlockInfo process(
+	public abstract StructureTemplate.StructureBlockInfo process(
 		WorldView world,
 		BlockPos pos,
 		BlockPos pivot,
-		Structure.StructureBlockInfo originalBlockInfo,
-		Structure.StructureBlockInfo currentBlockInfo,
+		StructureTemplate.StructureBlockInfo originalBlockInfo,
+		StructureTemplate.StructureBlockInfo currentBlockInfo,
 		StructurePlacementData data
 	);
 

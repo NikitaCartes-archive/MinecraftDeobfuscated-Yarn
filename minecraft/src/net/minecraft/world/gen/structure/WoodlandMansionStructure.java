@@ -18,25 +18,25 @@ import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
-public class WoodlandMansionStructure extends StructureType {
+public class WoodlandMansionStructure extends Structure {
 	public static final Codec<WoodlandMansionStructure> CODEC = createCodec(WoodlandMansionStructure::new);
 
-	public WoodlandMansionStructure(StructureType.Config config) {
+	public WoodlandMansionStructure(Structure.Config config) {
 		super(config);
 	}
 
 	@Override
-	public Optional<StructureType.StructurePosition> getStructurePosition(StructureType.Context context) {
+	public Optional<Structure.StructurePosition> getStructurePosition(Structure.Context context) {
 		BlockRotation blockRotation = BlockRotation.random(context.random());
 		BlockPos blockPos = this.getShiftedPos(context, blockRotation);
 		return blockPos.getY() < 60
 			? Optional.empty()
-			: Optional.of(new StructureType.StructurePosition(blockPos, collector -> this.addPieces(collector, context, blockPos, blockRotation)));
+			: Optional.of(new Structure.StructurePosition(blockPos, collector -> this.addPieces(collector, context, blockPos, blockRotation)));
 	}
 
-	private void addPieces(StructurePiecesCollector collector, StructureType.Context context, BlockPos pos, BlockRotation rotation) {
+	private void addPieces(StructurePiecesCollector collector, Structure.Context context, BlockPos pos, BlockRotation rotation) {
 		List<WoodlandMansionGenerator.Piece> list = Lists.<WoodlandMansionGenerator.Piece>newLinkedList();
-		WoodlandMansionGenerator.addPieces(context.structureManager(), pos, rotation, list, context.random());
+		WoodlandMansionGenerator.addPieces(context.structureTemplateManager(), pos, rotation, list, context.random());
 		list.forEach(collector::addPiece);
 	}
 
@@ -73,7 +73,7 @@ public class WoodlandMansionStructure extends StructureType {
 	}
 
 	@Override
-	public net.minecraft.structure.StructureType<?> getType() {
-		return net.minecraft.structure.StructureType.WOODLAND_MANSION;
+	public StructureType<?> getType() {
+		return StructureType.WOODLAND_MANSION;
 	}
 }

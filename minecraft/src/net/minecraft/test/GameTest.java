@@ -21,7 +21,7 @@ public @interface GameTest {
 
 	boolean required() default true;
 
-	String structureName() default "";
+	String templateName() default "";
 
 	long duration() default 0L;
 

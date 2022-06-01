@@ -497,11 +497,6 @@ public class WardenEntity extends HostileEntity implements VibrationListener.Cal
 	}
 
 	@Override
-	public boolean cannotDespawn() {
-		return super.cannotDespawn() || this.hasCustomName();
-	}
-
-	@Override
 	public boolean canImmediatelyDespawn(double distanceSquared) {
 		return false;
 	}
@@ -524,7 +519,7 @@ public class WardenEntity extends HostileEntity implements VibrationListener.Cal
 	@Override
 	public boolean damage(DamageSource source, float amount) {
 		boolean bl = super.damage(source, amount);
-		if (!this.world.isClient && !this.isAiDisabled()) {
+		if (!this.world.isClient && !this.isAiDisabled() && !this.isDiggingOrEmerging()) {
 			Entity entity = source.getAttacker();
 			this.increaseAngerAt(entity, Angriness.ANGRY.getThreshold() + 20, false);
 			if (this.brain.getOptionalMemory(MemoryModuleType.ATTACK_TARGET).isEmpty()

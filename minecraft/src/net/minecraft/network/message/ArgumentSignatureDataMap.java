@@ -1,4 +1,4 @@
-package net.minecraft.network.encryption;
+package net.minecraft.network.message;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContextBuilder;
@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.command.argument.TextConvertibleArgumentType;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.text.Text;
 
 /**

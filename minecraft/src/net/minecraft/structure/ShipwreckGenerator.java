@@ -61,20 +61,22 @@ public class ShipwreckGenerator {
 		"map_chest", LootTables.SHIPWRECK_MAP_CHEST, "treasure_chest", LootTables.SHIPWRECK_TREASURE_CHEST, "supply_chest", LootTables.SHIPWRECK_SUPPLY_CHEST
 	);
 
-	public static void addParts(StructureManager structureManager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder holder, Random random, boolean bl) {
+	public static void addParts(
+		StructureTemplateManager structureTemplateManager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder holder, Random random, boolean bl
+	) {
 		Identifier identifier = Util.getRandom(bl ? BEACHED_TEMPLATES : REGULAR_TEMPLATES, random);
-		holder.addPiece(new ShipwreckGenerator.Piece(structureManager, identifier, pos, rotation, bl));
+		holder.addPiece(new ShipwreckGenerator.Piece(structureTemplateManager, identifier, pos, rotation, bl));
 	}
 
 	public static class Piece extends SimpleStructurePiece {
 		private final boolean grounded;
 
-		public Piece(StructureManager manager, Identifier identifier, BlockPos pos, BlockRotation rotation, boolean grounded) {
+		public Piece(StructureTemplateManager manager, Identifier identifier, BlockPos pos, BlockRotation rotation, boolean grounded) {
 			super(StructurePieceType.SHIPWRECK, 0, manager, identifier, identifier.toString(), createPlacementData(rotation), pos);
 			this.grounded = grounded;
 		}
 
-		public Piece(StructureManager manager, NbtCompound nbt) {
+		public Piece(StructureTemplateManager manager, NbtCompound nbt) {
 			super(StructurePieceType.SHIPWRECK, nbt, manager, identifier -> createPlacementData(BlockRotation.valueOf(nbt.getString("Rot"))));
 			this.grounded = nbt.getBoolean("isBeached");
 		}
@@ -114,7 +116,7 @@ public class ShipwreckGenerator {
 		) {
 			int i = world.getTopY();
 			int j = 0;
-			Vec3i vec3i = this.structure.getSize();
+			Vec3i vec3i = this.template.getSize();
 			Heightmap.Type type = this.grounded ? Heightmap.Type.WORLD_SURFACE_WG : Heightmap.Type.OCEAN_FLOOR_WG;
 			int k = vec3i.getX() * vec3i.getZ();
 			if (k == 0) {

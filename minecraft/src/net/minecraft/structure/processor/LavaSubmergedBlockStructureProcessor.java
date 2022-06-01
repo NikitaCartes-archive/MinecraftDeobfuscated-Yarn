@@ -5,8 +5,8 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructurePlacementData;
+import net.minecraft.structure.StructureTemplate;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldView;
 
@@ -18,18 +18,18 @@ public class LavaSubmergedBlockStructureProcessor extends StructureProcessor {
 
 	@Nullable
 	@Override
-	public Structure.StructureBlockInfo process(
+	public StructureTemplate.StructureBlockInfo process(
 		WorldView world,
 		BlockPos pos,
 		BlockPos pivot,
-		Structure.StructureBlockInfo originalBlockInfo,
-		Structure.StructureBlockInfo currentBlockInfo,
+		StructureTemplate.StructureBlockInfo originalBlockInfo,
+		StructureTemplate.StructureBlockInfo currentBlockInfo,
 		StructurePlacementData data
 	) {
 		BlockPos blockPos = currentBlockInfo.pos;
 		boolean bl = world.getBlockState(blockPos).isOf(Blocks.LAVA);
 		return bl && !Block.isShapeFullCube(currentBlockInfo.state.getOutlineShape(world, blockPos))
-			? new Structure.StructureBlockInfo(blockPos, Blocks.LAVA.getDefaultState(), currentBlockInfo.nbt)
+			? new StructureTemplate.StructureBlockInfo(blockPos, Blocks.LAVA.getDefaultState(), currentBlockInfo.nbt)
 			: currentBlockInfo;
 	}
 

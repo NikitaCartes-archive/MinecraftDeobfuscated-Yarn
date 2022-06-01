@@ -5,9 +5,9 @@ import java.time.Instant;
 import java.util.UUID;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.encryption.ChatMessageSignature;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.listener.ServerPlayPacketListener;
+import net.minecraft.network.message.MessageSignature;
 import net.minecraft.util.StringHelper;
 
 /**
@@ -35,7 +35,7 @@ public class ChatMessageC2SPacket implements Packet<ServerPlayPacketListener> {
 	private final NetworkEncryptionUtils.SignatureData signature;
 	private final boolean previewed;
 
-	public ChatMessageC2SPacket(String chatMessage, ChatMessageSignature signature, boolean previewed) {
+	public ChatMessageC2SPacket(String chatMessage, MessageSignature signature, boolean previewed) {
 		this.chatMessage = StringHelper.truncateChat(chatMessage);
 		this.timestamp = signature.timestamp();
 		this.signature = signature.saltSignature();
@@ -65,8 +65,8 @@ public class ChatMessageC2SPacket implements Packet<ServerPlayPacketListener> {
 		return this.chatMessage;
 	}
 
-	public ChatMessageSignature createSignatureInstance(UUID sender) {
-		return new ChatMessageSignature(sender, this.timestamp, this.signature);
+	public MessageSignature createSignatureInstance(UUID sender) {
+		return new MessageSignature(sender, this.timestamp, this.signature);
 	}
 
 	public Instant getTimestamp() {

@@ -6,24 +6,24 @@ import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.structure.SwampHutGenerator;
 import net.minecraft.world.Heightmap;
 
-public class SwampHutStructure extends StructureType {
+public class SwampHutStructure extends Structure {
 	public static final Codec<SwampHutStructure> CODEC = createCodec(SwampHutStructure::new);
 
-	public SwampHutStructure(StructureType.Config config) {
+	public SwampHutStructure(Structure.Config config) {
 		super(config);
 	}
 
 	@Override
-	public Optional<StructureType.StructurePosition> getStructurePosition(StructureType.Context context) {
+	public Optional<Structure.StructurePosition> getStructurePosition(Structure.Context context) {
 		return getStructurePosition(context, Heightmap.Type.WORLD_SURFACE_WG, collector -> addPieces(collector, context));
 	}
 
-	private static void addPieces(StructurePiecesCollector collector, StructureType.Context context) {
+	private static void addPieces(StructurePiecesCollector collector, Structure.Context context) {
 		collector.addPiece(new SwampHutGenerator(context.random(), context.chunkPos().getStartX(), context.chunkPos().getStartZ()));
 	}
 
 	@Override
-	public net.minecraft.structure.StructureType<?> getType() {
-		return net.minecraft.structure.StructureType.SWAMP_HUT;
+	public StructureType<?> getType() {
+		return StructureType.SWAMP_HUT;
 	}
 }

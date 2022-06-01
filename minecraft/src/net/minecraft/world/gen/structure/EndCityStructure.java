@@ -10,30 +10,30 @@ import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 
-public class EndCityStructure extends StructureType {
+public class EndCityStructure extends Structure {
 	public static final Codec<EndCityStructure> CODEC = createCodec(EndCityStructure::new);
 
-	public EndCityStructure(StructureType.Config config) {
+	public EndCityStructure(Structure.Config config) {
 		super(config);
 	}
 
 	@Override
-	public Optional<StructureType.StructurePosition> getStructurePosition(StructureType.Context context) {
+	public Optional<Structure.StructurePosition> getStructurePosition(Structure.Context context) {
 		BlockRotation blockRotation = BlockRotation.random(context.random());
 		BlockPos blockPos = this.getShiftedPos(context, blockRotation);
 		return blockPos.getY() < 60
 			? Optional.empty()
-			: Optional.of(new StructureType.StructurePosition(blockPos, collector -> this.addPieces(collector, blockPos, blockRotation, context)));
+			: Optional.of(new Structure.StructurePosition(blockPos, collector -> this.addPieces(collector, blockPos, blockRotation, context)));
 	}
 
-	private void addPieces(StructurePiecesCollector collector, BlockPos pos, BlockRotation rotation, StructureType.Context context) {
+	private void addPieces(StructurePiecesCollector collector, BlockPos pos, BlockRotation rotation, Structure.Context context) {
 		List<StructurePiece> list = Lists.<StructurePiece>newArrayList();
-		EndCityGenerator.addPieces(context.structureManager(), pos, rotation, list, context.random());
+		EndCityGenerator.addPieces(context.structureTemplateManager(), pos, rotation, list, context.random());
 		list.forEach(collector::addPiece);
 	}
 
 	@Override
-	public net.minecraft.structure.StructureType<?> getType() {
-		return net.minecraft.structure.StructureType.END_CITY;
+	public StructureType<?> getType() {
+		return StructureType.END_CITY;
 	}
 }

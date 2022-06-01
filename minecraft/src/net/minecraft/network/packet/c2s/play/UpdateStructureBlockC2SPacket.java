@@ -18,7 +18,7 @@ public class UpdateStructureBlockC2SPacket implements Packet<ServerPlayPacketLis
 	private final BlockPos pos;
 	private final StructureBlockBlockEntity.Action action;
 	private final StructureBlockMode mode;
-	private final String structureName;
+	private final String templateName;
 	private final BlockPos offset;
 	private final Vec3i size;
 	private final BlockMirror mirror;
@@ -34,7 +34,7 @@ public class UpdateStructureBlockC2SPacket implements Packet<ServerPlayPacketLis
 		BlockPos pos,
 		StructureBlockBlockEntity.Action action,
 		StructureBlockMode mode,
-		String structureName,
+		String templateName,
 		BlockPos offset,
 		Vec3i size,
 		BlockMirror mirror,
@@ -49,7 +49,7 @@ public class UpdateStructureBlockC2SPacket implements Packet<ServerPlayPacketLis
 		this.pos = pos;
 		this.action = action;
 		this.mode = mode;
-		this.structureName = structureName;
+		this.templateName = templateName;
 		this.offset = offset;
 		this.size = size;
 		this.mirror = mirror;
@@ -66,7 +66,7 @@ public class UpdateStructureBlockC2SPacket implements Packet<ServerPlayPacketLis
 		this.pos = buf.readBlockPos();
 		this.action = buf.readEnumConstant(StructureBlockBlockEntity.Action.class);
 		this.mode = buf.readEnumConstant(StructureBlockMode.class);
-		this.structureName = buf.readString();
+		this.templateName = buf.readString();
 		int i = 48;
 		this.offset = new BlockPos(MathHelper.clamp(buf.readByte(), -48, 48), MathHelper.clamp(buf.readByte(), -48, 48), MathHelper.clamp(buf.readByte(), -48, 48));
 		int j = 48;
@@ -87,7 +87,7 @@ public class UpdateStructureBlockC2SPacket implements Packet<ServerPlayPacketLis
 		buf.writeBlockPos(this.pos);
 		buf.writeEnumConstant(this.action);
 		buf.writeEnumConstant(this.mode);
-		buf.writeString(this.structureName);
+		buf.writeString(this.templateName);
 		buf.writeByte(this.offset.getX());
 		buf.writeByte(this.offset.getY());
 		buf.writeByte(this.offset.getZ());
@@ -131,8 +131,8 @@ public class UpdateStructureBlockC2SPacket implements Packet<ServerPlayPacketLis
 		return this.mode;
 	}
 
-	public String getStructureName() {
-		return this.structureName;
+	public String getTemplateName() {
+		return this.templateName;
 	}
 
 	public BlockPos getOffset() {
