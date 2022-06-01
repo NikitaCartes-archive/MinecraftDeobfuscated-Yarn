@@ -5,7 +5,7 @@ import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Lifecycle;
 import java.util.Map;
 import java.util.function.Supplier;
-import net.minecraft.network.MessageType;
+import net.minecraft.network.message.MessageType;
 import net.minecraft.structure.StructureSet;
 import net.minecraft.structure.StructureSets;
 import net.minecraft.structure.pool.StructurePool;
@@ -32,8 +32,8 @@ import net.minecraft.world.gen.feature.ConfiguredFeatures;
 import net.minecraft.world.gen.feature.PlacedFeature;
 import net.minecraft.world.gen.feature.PlacedFeatures;
 import net.minecraft.world.gen.noise.BuiltinNoiseParameters;
-import net.minecraft.world.gen.structure.StructureType;
-import net.minecraft.world.gen.structure.StructureTypes;
+import net.minecraft.world.gen.structure.Structure;
+import net.minecraft.world.gen.structure.Structures;
 import org.slf4j.Logger;
 
 /**
@@ -60,7 +60,7 @@ public class BuiltinRegistries {
 		Registry.CONFIGURED_FEATURE_KEY, ConfiguredFeatures::getDefaultConfiguredFeature
 	);
 	public static final Registry<PlacedFeature> PLACED_FEATURE = addRegistry(Registry.PLACED_FEATURE_KEY, PlacedFeatures::getDefaultPlacedFeature);
-	public static final Registry<StructureType> STRUCTURE = addRegistry(Registry.STRUCTURE_KEY, StructureTypes::getDefault);
+	public static final Registry<Structure> STRUCTURE = addRegistry(Registry.STRUCTURE_KEY, Structures::getDefault);
 	public static final Registry<StructureSet> STRUCTURE_SET = addRegistry(Registry.STRUCTURE_SET_KEY, StructureSets::initAndGetDefault);
 	public static final Registry<StructureProcessorList> STRUCTURE_PROCESSOR_LIST = addRegistry(
 		Registry.STRUCTURE_PROCESSOR_LIST_KEY, registry -> StructureProcessorLists.ZOMBIE_PLAINS

@@ -7,9 +7,9 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import java.util.List;
 import net.minecraft.command.argument.MessageArgumentType;
 import net.minecraft.entity.Entity;
-import net.minecraft.network.MessageSender;
-import net.minecraft.network.MessageType;
-import net.minecraft.network.encryption.SignedChatMessage;
+import net.minecraft.network.message.MessageSender;
+import net.minecraft.network.message.MessageType;
+import net.minecraft.network.message.SignedMessage;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.ClickEvent;
@@ -57,12 +57,12 @@ public class TeamMsgCommand {
 							for (ServerPlayerEntity serverPlayerEntity : list) {
 								if (serverPlayerEntity == entity) {
 									serverPlayerEntity.sendMessage(
-										Text.translatable("chat.type.team.sent", text, source.getDisplayName(), ((SignedChatMessage)decoratedMessage.raw()).getContent())
+										Text.translatable("chat.type.team.sent", text, source.getDisplayName(), ((SignedMessage)decoratedMessage.raw()).getContent())
 									);
 								} else {
-									SignedChatMessage signedChatMessage = (SignedChatMessage)decoratedMessage.getFilterableFor(source, serverPlayerEntity);
-									if (signedChatMessage != null) {
-										serverPlayerEntity.sendChatMessage(signedChatMessage, messageSender, MessageType.TEAM_MSG_COMMAND);
+									SignedMessage signedMessagex = (SignedMessage)decoratedMessage.getFilterableFor(source, serverPlayerEntity);
+									if (signedMessagex != null) {
+										serverPlayerEntity.sendChatMessage(signedMessagex, messageSender, MessageType.TEAM_MSG_COMMAND);
 									}
 								}
 							}

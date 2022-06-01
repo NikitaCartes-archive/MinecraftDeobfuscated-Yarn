@@ -3,9 +3,9 @@ package net.minecraft.world.gen.feature;
 import com.mojang.serialization.Codec;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.structure.Structure;
-import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePlacementData;
+import net.minecraft.structure.StructureTemplate;
+import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
@@ -32,9 +32,9 @@ public class FossilFeature extends Feature<FossilFeatureConfig> {
 		BlockRotation blockRotation = BlockRotation.random(random);
 		FossilFeatureConfig fossilFeatureConfig = context.getConfig();
 		int i = random.nextInt(fossilFeatureConfig.fossilStructures.size());
-		StructureManager structureManager = structureWorldAccess.toServerWorld().getServer().getStructureManager();
-		Structure structure = structureManager.getStructureOrBlank((Identifier)fossilFeatureConfig.fossilStructures.get(i));
-		Structure structure2 = structureManager.getStructureOrBlank((Identifier)fossilFeatureConfig.overlayStructures.get(i));
+		StructureTemplateManager structureTemplateManager = structureWorldAccess.toServerWorld().getServer().getStructureTemplateManager();
+		StructureTemplate structureTemplate = structureTemplateManager.getTemplateOrBlank((Identifier)fossilFeatureConfig.fossilStructures.get(i));
+		StructureTemplate structureTemplate2 = structureTemplateManager.getTemplateOrBlank((Identifier)fossilFeatureConfig.overlayStructures.get(i));
 		ChunkPos chunkPos = new ChunkPos(blockPos);
 		BlockBox blockBox = new BlockBox(
 			chunkPos.getStartX() - 16,
@@ -45,7 +45,7 @@ public class FossilFeature extends Feature<FossilFeatureConfig> {
 			chunkPos.getEndZ() + 16
 		);
 		StructurePlacementData structurePlacementData = new StructurePlacementData().setRotation(blockRotation).setBoundingBox(blockBox).setRandom(random);
-		Vec3i vec3i = structure.getRotatedSize(blockRotation);
+		Vec3i vec3i = structureTemplate.getRotatedSize(blockRotation);
 		BlockPos blockPos2 = blockPos.add(-vec3i.getX() / 2, 0, -vec3i.getZ() / 2);
 		int j = blockPos.getY();
 
@@ -56,16 +56,16 @@ public class FossilFeature extends Feature<FossilFeatureConfig> {
 		}
 
 		int k = Math.max(j - 15 - random.nextInt(10), structureWorldAccess.getBottomY() + 10);
-		BlockPos blockPos3 = structure.offsetByTransformedSize(blockPos2.withY(k), BlockMirror.NONE, blockRotation);
-		if (getEmptyCorners(structureWorldAccess, structure.calculateBoundingBox(structurePlacementData, blockPos3)) > fossilFeatureConfig.maxEmptyCorners) {
+		BlockPos blockPos3 = structureTemplate.offsetByTransformedSize(blockPos2.withY(k), BlockMirror.NONE, blockRotation);
+		if (getEmptyCorners(structureWorldAccess, structureTemplate.calculateBoundingBox(structurePlacementData, blockPos3)) > fossilFeatureConfig.maxEmptyCorners) {
 			return false;
 		} else {
 			structurePlacementData.clearProcessors();
 			fossilFeatureConfig.fossilProcessors.value().getList().forEach(structurePlacementData::addProcessor);
-			structure.place(structureWorldAccess, blockPos3, blockPos3, structurePlacementData, random, 4);
+			structureTemplate.place(structureWorldAccess, blockPos3, blockPos3, structurePlacementData, random, 4);
 			structurePlacementData.clearProcessors();
 			fossilFeatureConfig.overlayProcessors.value().getList().forEach(structurePlacementData::addProcessor);
-			structure2.place(structureWorldAccess, blockPos3, blockPos3, structurePlacementData, random, 4);
+			structureTemplate2.place(structureWorldAccess, blockPos3, blockPos3, structurePlacementData, random, 4);
 			return true;
 		}
 	}

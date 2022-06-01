@@ -9,7 +9,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
 import java.util.function.Function;
-import net.minecraft.structure.StructureManager;
+import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.structure.processor.GravityStructureProcessor;
 import net.minecraft.structure.processor.StructureProcessor;
 import net.minecraft.util.BlockRotation;
@@ -84,12 +84,12 @@ public class StructurePool {
 		this.terminatorsId = terminatorsId;
 	}
 
-	public int getHighestY(StructureManager structureManager) {
+	public int getHighestY(StructureTemplateManager structureTemplateManager) {
 		if (this.highestY == Integer.MIN_VALUE) {
 			this.highestY = this.elements
 				.stream()
 				.filter(element -> element != EmptyPoolElement.INSTANCE)
-				.mapToInt(element -> element.getBoundingBox(structureManager, BlockPos.ORIGIN, BlockRotation.NONE).getBlockCountY())
+				.mapToInt(element -> element.getBoundingBox(structureTemplateManager, BlockPos.ORIGIN, BlockRotation.NONE).getBlockCountY())
 				.max()
 				.orElse(0);
 		}

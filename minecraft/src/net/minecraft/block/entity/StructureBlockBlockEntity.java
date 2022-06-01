@@ -15,9 +15,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.structure.Structure;
-import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePlacementData;
+import net.minecraft.structure.StructureTemplate;
+import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.structure.processor.BlockRotStructureProcessor;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -36,7 +36,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	public static final int field_31364 = 48;
 	public static final int field_31365 = 48;
 	public static final String AUTHOR_KEY = "author";
-	private Identifier structureName;
+	private Identifier templateName;
 	private String author = "";
 	private String metadata = "";
 	private BlockPos offset = new BlockPos(0, 1, 0);
@@ -59,7 +59,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	@Override
 	protected void writeNbt(NbtCompound nbt) {
 		super.writeNbt(nbt);
-		nbt.putString("name", this.getStructureName());
+		nbt.putString("name", this.getTemplateName());
 		nbt.putString("author", this.author);
 		nbt.putString("metadata", this.metadata);
 		nbt.putInt("posX", this.offset.getX());
@@ -82,7 +82,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	@Override
 	public void readNbt(NbtCompound nbt) {
 		super.readNbt(nbt);
-		this.setStructureName(nbt.getString("name"));
+		this.setTemplateName(nbt.getString("name"));
 		this.author = nbt.getString("author");
 		this.metadata = nbt.getString("metadata");
 		int i = MathHelper.clamp(nbt.getInt("posX"), -48, 48);
@@ -157,24 +157,24 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		}
 	}
 
-	public String getStructureName() {
-		return this.structureName == null ? "" : this.structureName.toString();
+	public String getTemplateName() {
+		return this.templateName == null ? "" : this.templateName.toString();
 	}
 
 	public String getStructurePath() {
-		return this.structureName == null ? "" : this.structureName.getPath();
+		return this.templateName == null ? "" : this.templateName.getPath();
 	}
 
 	public boolean hasStructureName() {
-		return this.structureName != null;
+		return this.templateName != null;
 	}
 
-	public void setStructureName(@Nullable String name) {
-		this.setStructureName(StringHelper.isEmpty(name) ? null : Identifier.tryParse(name));
+	public void setTemplateName(@Nullable String templateName) {
+		this.setTemplateName(StringHelper.isEmpty(templateName) ? null : Identifier.tryParse(templateName));
 	}
 
-	public void setStructureName(@Nullable Identifier structureName) {
-		this.structureName = structureName;
+	public void setTemplateName(@Nullable Identifier templateName) {
+		this.templateName = templateName;
 	}
 
 	public void setAuthor(LivingEntity entity) {
@@ -293,7 +293,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 			.map(this.world::getBlockEntity)
 			.filter(blockEntity -> blockEntity instanceof StructureBlockBlockEntity)
 			.map(blockEntity -> (StructureBlockBlockEntity)blockEntity)
-			.filter(blockEntity -> blockEntity.mode == StructureBlockMode.CORNER && Objects.equals(this.structureName, blockEntity.structureName))
+			.filter(blockEntity -> blockEntity.mode == StructureBlockMode.CORNER && Objects.equals(this.templateName, blockEntity.templateName))
 			.map(BlockEntity::getPos);
 	}
 
@@ -319,23 +319,23 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	public boolean saveStructure(boolean bl) {
-		if (this.mode == StructureBlockMode.SAVE && !this.world.isClient && this.structureName != null) {
+		if (this.mode == StructureBlockMode.SAVE && !this.world.isClient && this.templateName != null) {
 			BlockPos blockPos = this.getPos().add(this.offset);
 			ServerWorld serverWorld = (ServerWorld)this.world;
-			StructureManager structureManager = serverWorld.getStructureManager();
+			StructureTemplateManager structureTemplateManager = serverWorld.getStructureTemplateManager();
 
-			Structure structure;
+			StructureTemplate structureTemplate;
 			try {
-				structure = structureManager.getStructureOrBlank(this.structureName);
+				structureTemplate = structureTemplateManager.getTemplateOrBlank(this.templateName);
 			} catch (InvalidIdentifierException var8) {
 				return false;
 			}
 
-			structure.saveFromWorld(this.world, blockPos, this.size, !this.ignoreEntities, Blocks.STRUCTURE_VOID);
-			structure.setAuthor(this.author);
+			structureTemplate.saveFromWorld(this.world, blockPos, this.size, !this.ignoreEntities, Blocks.STRUCTURE_VOID);
+			structureTemplate.setAuthor(this.author);
 			if (bl) {
 				try {
-					return structureManager.saveStructure(this.structureName);
+					return structureTemplateManager.saveTemplate(this.templateName);
 				} catch (InvalidIdentifierException var7) {
 					return false;
 				}
@@ -356,29 +356,29 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	public boolean loadStructure(ServerWorld world, boolean bl) {
-		if (this.mode == StructureBlockMode.LOAD && this.structureName != null) {
-			StructureManager structureManager = world.getStructureManager();
+		if (this.mode == StructureBlockMode.LOAD && this.templateName != null) {
+			StructureTemplateManager structureTemplateManager = world.getStructureTemplateManager();
 
-			Optional<Structure> optional;
+			Optional<StructureTemplate> optional;
 			try {
-				optional = structureManager.getStructure(this.structureName);
+				optional = structureTemplateManager.getTemplate(this.templateName);
 			} catch (InvalidIdentifierException var6) {
 				return false;
 			}
 
-			return !optional.isPresent() ? false : this.place(world, bl, (Structure)optional.get());
+			return !optional.isPresent() ? false : this.place(world, bl, (StructureTemplate)optional.get());
 		} else {
 			return false;
 		}
 	}
 
-	public boolean place(ServerWorld world, boolean bl, Structure structure) {
+	public boolean place(ServerWorld world, boolean bl, StructureTemplate template) {
 		BlockPos blockPos = this.getPos();
-		if (!StringHelper.isEmpty(structure.getAuthor())) {
-			this.author = structure.getAuthor();
+		if (!StringHelper.isEmpty(template.getAuthor())) {
+			this.author = template.getAuthor();
 		}
 
-		Vec3i vec3i = structure.getSize();
+		Vec3i vec3i = template.getSize();
 		boolean bl2 = this.size.equals(vec3i);
 		if (!bl2) {
 			this.size = vec3i;
@@ -401,26 +401,26 @@ public class StructureBlockBlockEntity extends BlockEntity {
 			}
 
 			BlockPos blockPos2 = blockPos.add(this.offset);
-			structure.place(world, blockPos2, blockPos2, structurePlacementData, createRandom(this.seed), 2);
+			template.place(world, blockPos2, blockPos2, structurePlacementData, createRandom(this.seed), 2);
 			return true;
 		}
 	}
 
 	public void unloadStructure() {
-		if (this.structureName != null) {
+		if (this.templateName != null) {
 			ServerWorld serverWorld = (ServerWorld)this.world;
-			StructureManager structureManager = serverWorld.getStructureManager();
-			structureManager.unloadStructure(this.structureName);
+			StructureTemplateManager structureTemplateManager = serverWorld.getStructureTemplateManager();
+			structureTemplateManager.unloadTemplate(this.templateName);
 		}
 	}
 
 	public boolean isStructureAvailable() {
-		if (this.mode == StructureBlockMode.LOAD && !this.world.isClient && this.structureName != null) {
+		if (this.mode == StructureBlockMode.LOAD && !this.world.isClient && this.templateName != null) {
 			ServerWorld serverWorld = (ServerWorld)this.world;
-			StructureManager structureManager = serverWorld.getStructureManager();
+			StructureTemplateManager structureTemplateManager = serverWorld.getStructureTemplateManager();
 
 			try {
-				return structureManager.getStructure(this.structureName).isPresent();
+				return structureTemplateManager.getTemplate(this.templateName).isPresent();
 			} catch (InvalidIdentifierException var4) {
 				return false;
 			}

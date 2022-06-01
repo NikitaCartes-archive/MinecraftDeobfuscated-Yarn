@@ -79,7 +79,7 @@ import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.structure.StructureManager;
+import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.tag.TagKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.CsvWriter;
@@ -135,7 +135,7 @@ import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.structure.StructureType;
+import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.poi.PointOfInterestStorage;
@@ -218,7 +218,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			this,
 			session,
 			dataFixer,
-			server.getStructureManager(),
+			server.getStructureTemplateManager(),
 			workerExecutor,
 			chunkGenerator,
 			server.getPlayerManager().getViewDistance(),
@@ -243,7 +243,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		this.structureLocator = new StructureLocator(
 			this.chunkManager.getChunkIoWorker(),
 			this.getRegistryManager(),
-			server.getStructureManager(),
+			server.getStructureTemplateManager(),
 			worldKey,
 			chunkGenerator,
 			this.chunkManager.getNoiseConfig(),
@@ -1193,8 +1193,8 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		return this.portalForcer;
 	}
 
-	public StructureManager getStructureManager() {
-		return this.server.getStructureManager();
+	public StructureTemplateManager getStructureTemplateManager() {
+		return this.server.getStructureTemplateManager();
 	}
 
 	/**
@@ -1298,17 +1298,17 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	 * {@link net.minecraft.structure.StructureStart#references})
 	 */
 	@Nullable
-	public BlockPos locateStructure(TagKey<StructureType> structureTag, BlockPos pos, int radius, boolean skipReferencedStructures) {
+	public BlockPos locateStructure(TagKey<Structure> structureTag, BlockPos pos, int radius, boolean skipReferencedStructures) {
 		if (!this.server.getSaveProperties().getGeneratorOptions().shouldGenerateStructures()) {
 			return null;
 		} else {
-			Optional<RegistryEntryList.Named<StructureType>> optional = this.getRegistryManager().get(Registry.STRUCTURE_KEY).getEntryList(structureTag);
+			Optional<RegistryEntryList.Named<Structure>> optional = this.getRegistryManager().get(Registry.STRUCTURE_KEY).getEntryList(structureTag);
 			if (optional.isEmpty()) {
 				return null;
 			} else {
-				Pair<BlockPos, RegistryEntry<StructureType>> pair = this.getChunkManager()
+				Pair<BlockPos, RegistryEntry<Structure>> pair = this.getChunkManager()
 					.getChunkGenerator()
-					.locateStructure(this, (RegistryEntryList<StructureType>)optional.get(), pos, radius, skipReferencedStructures);
+					.locateStructure(this, (RegistryEntryList<Structure>)optional.get(), pos, radius, skipReferencedStructures);
 				return pair != null ? pair.getFirst() : null;
 			}
 		}

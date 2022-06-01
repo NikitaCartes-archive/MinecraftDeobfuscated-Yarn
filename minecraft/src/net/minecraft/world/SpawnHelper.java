@@ -44,8 +44,8 @@ import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.structure.NetherFortressStructure;
-import net.minecraft.world.gen.structure.StructureType;
-import net.minecraft.world.gen.structure.StructureTypeKeys;
+import net.minecraft.world.gen.structure.Structure;
+import net.minecraft.world.gen.structure.StructureKeys;
 import org.slf4j.Logger;
 
 public final class SpawnHelper {
@@ -288,8 +288,8 @@ public final class SpawnHelper {
 
 	public static boolean shouldUseNetherFortressSpawns(BlockPos pos, ServerWorld world, SpawnGroup spawnGroup, StructureAccessor structureAccessor) {
 		if (spawnGroup == SpawnGroup.MONSTER && world.getBlockState(pos.down()).isOf(Blocks.NETHER_BRICKS)) {
-			StructureType structureType = structureAccessor.getRegistryManager().get(Registry.STRUCTURE_KEY).get(StructureTypeKeys.FORTRESS);
-			return structureType == null ? false : structureAccessor.getStructureAt(pos, structureType).hasChildren();
+			Structure structure = structureAccessor.getRegistryManager().get(Registry.STRUCTURE_KEY).get(StructureKeys.FORTRESS);
+			return structure == null ? false : structureAccessor.getStructureAt(pos, structure).hasChildren();
 		} else {
 			return false;
 		}

@@ -7,8 +7,8 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.command.argument.BlockArgumentParser;
-import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructurePlacementData;
+import net.minecraft.structure.StructureTemplate;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.WorldView;
@@ -24,12 +24,12 @@ public class JigsawReplacementStructureProcessor extends StructureProcessor {
 
 	@Nullable
 	@Override
-	public Structure.StructureBlockInfo process(
+	public StructureTemplate.StructureBlockInfo process(
 		WorldView world,
 		BlockPos pos,
 		BlockPos pivot,
-		Structure.StructureBlockInfo originalBlockInfo,
-		Structure.StructureBlockInfo currentBlockInfo,
+		StructureTemplate.StructureBlockInfo originalBlockInfo,
+		StructureTemplate.StructureBlockInfo currentBlockInfo,
 		StructurePlacementData data
 	) {
 		BlockState blockState = currentBlockInfo.state;
@@ -44,7 +44,7 @@ public class JigsawReplacementStructureProcessor extends StructureProcessor {
 				throw new RuntimeException(var11);
 			}
 
-			return blockState2.isOf(Blocks.STRUCTURE_VOID) ? null : new Structure.StructureBlockInfo(currentBlockInfo.pos, blockState2, null);
+			return blockState2.isOf(Blocks.STRUCTURE_VOID) ? null : new StructureTemplate.StructureBlockInfo(currentBlockInfo.pos, blockState2, null);
 		} else {
 			return currentBlockInfo;
 		}

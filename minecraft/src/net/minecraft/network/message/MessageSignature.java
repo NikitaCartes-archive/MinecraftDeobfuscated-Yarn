@@ -1,4 +1,4 @@
-package net.minecraft.network.encryption;
+package net.minecraft.network.message;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -6,15 +6,19 @@ import java.nio.charset.StandardCharsets;
 import java.security.SignatureException;
 import java.time.Instant;
 import java.util.UUID;
+import net.minecraft.network.encryption.NetworkEncryptionUtils;
+import net.minecraft.network.encryption.SignatureUpdatable;
+import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 
 /**
- * A signature for chat messages, consisting of the sender, the timestamp, and the signature data.
+ * A signature for chat messages and message command arguments, consisting
+ * of the sender, the timestamp, and the signature data.
  */
-public record ChatMessageSignature(UUID sender, Instant timestamp, NetworkEncryptionUtils.SignatureData saltSignature) {
-	public static ChatMessageSignature none() {
-		return new ChatMessageSignature(Util.NIL_UUID, Instant.now(), NetworkEncryptionUtils.SignatureData.NONE);
+public record MessageSignature(UUID sender, Instant timestamp, NetworkEncryptionUtils.SignatureData saltSignature) {
+	public static MessageSignature none() {
+		return new MessageSignature(Util.NIL_UUID, Instant.now(), NetworkEncryptionUtils.SignatureData.NONE);
 	}
 
 	/**

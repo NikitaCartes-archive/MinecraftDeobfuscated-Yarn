@@ -4,14 +4,14 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
-import net.minecraft.network.MessageSender;
-import net.minecraft.network.MessageType;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.encryption.ChatMessageSignature;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
-import net.minecraft.network.encryption.SignedChatMessage;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.message.MessageSender;
+import net.minecraft.network.message.MessageSignature;
+import net.minecraft.network.message.MessageType;
+import net.minecraft.network.message.SignedMessage;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.text.Text;
 import net.minecraft.util.registry.Registry;
@@ -30,11 +30,11 @@ import net.minecraft.util.registry.Registry;
  * discarded by the clients; they instead log a warning.
  * 
  * <p>Chat messages have signatures. It is possible to use a bogus signature - such as
- * {@link net.minecraft.network.encryption.ChatMessageSignature#none} - to send a chat
+ * {@link net.minecraft.network.message.MessageSignature#none} - to send a chat
  * message; however if the signature is invalid (e.g. because the text's content differs
  * from the one sent by the client, or because the passed signature is invalid) the client
  * will log a warning. See {@link
- * net.minecraft.network.encryption.ChatMessageSignature#updateSignature} for how the
+ * net.minecraft.network.message.MessageSignature#updateSignature} for how the
  * message is signed.
  * 
  * @see net.minecraft.server.network.ServerPlayerEntity#sendChatMessage
@@ -75,9 +75,9 @@ public record ChatMessageS2CPacket(
 		return true;
 	}
 
-	public SignedChatMessage getSignedMessage() {
-		ChatMessageSignature chatMessageSignature = new ChatMessageSignature(this.sender.uuid(), this.timestamp, this.saltSignature);
-		return new SignedChatMessage(this.signedContent, chatMessageSignature, this.unsignedContent);
+	public SignedMessage getSignedMessage() {
+		MessageSignature messageSignature = new MessageSignature(this.sender.uuid(), this.timestamp, this.saltSignature);
+		return new SignedMessage(this.signedContent, messageSignature, this.unsignedContent);
 	}
 
 	/**

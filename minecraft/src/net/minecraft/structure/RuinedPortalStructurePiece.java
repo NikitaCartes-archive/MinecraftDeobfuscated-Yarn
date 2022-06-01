@@ -51,12 +51,12 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 	private final RuinedPortalStructurePiece.Properties properties;
 
 	public RuinedPortalStructurePiece(
-		StructureManager manager,
+		StructureTemplateManager manager,
 		BlockPos pos,
 		RuinedPortalStructurePiece.VerticalPlacement verticalPlacement,
 		RuinedPortalStructurePiece.Properties properties,
 		Identifier id,
-		Structure structure,
+		StructureTemplate template,
 		BlockRotation rotation,
 		BlockMirror mirror,
 		BlockPos blockPos
@@ -66,7 +66,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 		this.properties = properties;
 	}
 
-	public RuinedPortalStructurePiece(StructureManager manager, NbtCompound nbt) {
+	public RuinedPortalStructurePiece(StructureTemplateManager manager, NbtCompound nbt) {
 		super(StructurePieceType.RUINED_PORTAL, nbt, manager, id -> createPlacementData(manager, nbt, id));
 		this.verticalPlacement = RuinedPortalStructurePiece.VerticalPlacement.getFromId(nbt.getString("VerticalPlacement"));
 		this.properties = RuinedPortalStructurePiece.Properties.CODEC
@@ -86,9 +86,9 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 			.ifPresent(nbtElement -> nbt.put("Properties", nbtElement));
 	}
 
-	private static StructurePlacementData createPlacementData(StructureManager manager, NbtCompound nbt, Identifier id) {
-		Structure structure = manager.getStructureOrBlank(id);
-		BlockPos blockPos = new BlockPos(structure.getSize().getX() / 2, 0, structure.getSize().getZ() / 2);
+	private static StructurePlacementData createPlacementData(StructureTemplateManager manager, NbtCompound nbt, Identifier id) {
+		StructureTemplate structureTemplate = manager.getTemplateOrBlank(id);
+		BlockPos blockPos = new BlockPos(structureTemplate.getSize().getX() / 2, 0, structureTemplate.getSize().getZ() / 2);
 		return createPlacementData(
 			BlockMirror.valueOf(nbt.getString("Mirror")),
 			BlockRotation.valueOf(nbt.getString("Rotation")),
@@ -151,7 +151,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 		ChunkPos chunkPos,
 		BlockPos pivot
 	) {
-		BlockBox blockBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
+		BlockBox blockBox = this.template.calculateBoundingBox(this.placementData, this.pos);
 		if (chunkBox.contains(blockBox.getCenter())) {
 			chunkBox.encompass(blockBox);
 			super.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pivot);

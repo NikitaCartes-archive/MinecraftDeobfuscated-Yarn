@@ -25,37 +25,43 @@ import org.slf4j.Logger;
 
 public abstract class SimpleStructurePiece extends StructurePiece {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	protected final String template;
-	protected Structure structure;
+	protected final String templateIdString;
+	protected StructureTemplate template;
 	protected StructurePlacementData placementData;
 	protected BlockPos pos;
 
 	public SimpleStructurePiece(
-		StructurePieceType type, int length, StructureManager structureManager, Identifier id, String template, StructurePlacementData placementData, BlockPos pos
+		StructurePieceType type,
+		int length,
+		StructureTemplateManager structureTemplateManager,
+		Identifier id,
+		String template,
+		StructurePlacementData placementData,
+		BlockPos pos
 	) {
-		super(type, length, structureManager.getStructureOrBlank(id).calculateBoundingBox(placementData, pos));
+		super(type, length, structureTemplateManager.getTemplateOrBlank(id).calculateBoundingBox(placementData, pos));
 		this.setOrientation(Direction.NORTH);
-		this.template = template;
+		this.templateIdString = template;
 		this.pos = pos;
-		this.structure = structureManager.getStructureOrBlank(id);
+		this.template = structureTemplateManager.getTemplateOrBlank(id);
 		this.placementData = placementData;
 	}
 
 	public SimpleStructurePiece(
-		StructurePieceType type, NbtCompound nbt, StructureManager structureManager, Function<Identifier, StructurePlacementData> placementDataGetter
+		StructurePieceType type, NbtCompound nbt, StructureTemplateManager structureTemplateManager, Function<Identifier, StructurePlacementData> placementDataGetter
 	) {
 		super(type, nbt);
 		this.setOrientation(Direction.NORTH);
-		this.template = nbt.getString("Template");
+		this.templateIdString = nbt.getString("Template");
 		this.pos = new BlockPos(nbt.getInt("TPX"), nbt.getInt("TPY"), nbt.getInt("TPZ"));
 		Identifier identifier = this.getId();
-		this.structure = structureManager.getStructureOrBlank(identifier);
+		this.template = structureTemplateManager.getTemplateOrBlank(identifier);
 		this.placementData = (StructurePlacementData)placementDataGetter.apply(identifier);
-		this.boundingBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
+		this.boundingBox = this.template.calculateBoundingBox(this.placementData, this.pos);
 	}
 
 	protected Identifier getId() {
-		return new Identifier(this.template);
+		return new Identifier(this.templateIdString);
 	}
 
 	@Override
@@ -63,7 +69,7 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 		nbt.putInt("TPX", this.pos.getX());
 		nbt.putInt("TPY", this.pos.getY());
 		nbt.putInt("TPZ", this.pos.getZ());
-		nbt.putString("Template", this.template);
+		nbt.putString("Template", this.templateIdString);
 	}
 
 	@Override
@@ -77,9 +83,9 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 		BlockPos pivot
 	) {
 		this.placementData.setBoundingBox(chunkBox);
-		this.boundingBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
-		if (this.structure.place(world, this.pos, pivot, this.placementData, random, 2)) {
-			for (Structure.StructureBlockInfo structureBlockInfo : this.structure.getInfosForBlock(this.pos, this.placementData, Blocks.STRUCTURE_BLOCK)) {
+		this.boundingBox = this.template.calculateBoundingBox(this.placementData, this.pos);
+		if (this.template.place(world, this.pos, pivot, this.placementData, random, 2)) {
+			for (StructureTemplate.StructureBlockInfo structureBlockInfo : this.template.getInfosForBlock(this.pos, this.placementData, Blocks.STRUCTURE_BLOCK)) {
 				if (structureBlockInfo.nbt != null) {
 					StructureBlockMode structureBlockMode = StructureBlockMode.valueOf(structureBlockInfo.nbt.getString("mode"));
 					if (structureBlockMode == StructureBlockMode.DATA) {
@@ -88,7 +94,7 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 				}
 			}
 
-			for (Structure.StructureBlockInfo structureBlockInfo2 : this.structure.getInfosForBlock(this.pos, this.placementData, Blocks.JIGSAW)) {
+			for (StructureTemplate.StructureBlockInfo structureBlockInfo2 : this.template.getInfosForBlock(this.pos, this.placementData, Blocks.JIGSAW)) {
 				if (structureBlockInfo2.nbt != null) {
 					String string = structureBlockInfo2.nbt.getString("final_state");
 					BlockState blockState = Blocks.AIR.getDefaultState();
@@ -119,8 +125,8 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 		return this.placementData.getRotation();
 	}
 
-	public Structure method_41624() {
-		return this.structure;
+	public StructureTemplate getTemplate() {
+		return this.template;
 	}
 
 	public BlockPos method_41625() {

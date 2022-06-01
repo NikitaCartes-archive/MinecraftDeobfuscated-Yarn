@@ -8,7 +8,7 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.structure.Structure;
+import net.minecraft.structure.StructureTemplate;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -70,7 +70,7 @@ public class JigsawBlock extends Block implements BlockEntityProvider, OperatorB
 		}
 	}
 
-	public static boolean attachmentMatches(Structure.StructureBlockInfo info1, Structure.StructureBlockInfo info2) {
+	public static boolean attachmentMatches(StructureTemplate.StructureBlockInfo info1, StructureTemplate.StructureBlockInfo info2) {
 		Direction direction = getFacing(info1.state);
 		Direction direction2 = getFacing(info2.state);
 		Direction direction3 = getRotation(info1.state);

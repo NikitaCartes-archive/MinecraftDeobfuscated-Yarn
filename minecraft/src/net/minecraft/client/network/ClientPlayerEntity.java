@@ -58,11 +58,11 @@ import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.ElytraItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.network.encryption.ArgumentSignatureDataMap;
-import net.minecraft.network.encryption.ChatMessageSignature;
-import net.minecraft.network.encryption.ChatMessageSigner;
 import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.encryption.Signer;
+import net.minecraft.network.message.ArgumentSignatureDataMap;
+import net.minecraft.network.message.ChatMessageSigner;
+import net.minecraft.network.message.MessageSignature;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
@@ -366,19 +366,19 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	private void sendChatMessagePacket(ChatMessageSigner signer, String message, @Nullable Text preview) {
 		if (preview != null) {
-			ChatMessageSignature chatMessageSignature = this.signChatMessage(signer, preview);
-			this.networkHandler.sendPacket(new ChatMessageC2SPacket(message, chatMessageSignature, true));
+			MessageSignature messageSignature = this.signChatMessage(signer, preview);
+			this.networkHandler.sendPacket(new ChatMessageC2SPacket(message, messageSignature, true));
 		} else {
-			ChatMessageSignature chatMessageSignature = this.signChatMessage(signer, Text.literal(message));
-			this.networkHandler.sendPacket(new ChatMessageC2SPacket(message, chatMessageSignature, false));
+			MessageSignature messageSignature = this.signChatMessage(signer, Text.literal(message));
+			this.networkHandler.sendPacket(new ChatMessageC2SPacket(message, messageSignature, false));
 		}
 	}
 
 	/**
 	 * Signs the chat message. If the chat message cannot be signed, this will return
-	 * {@link ChatMessageSignature#none()}.
+	 * {@link MessageSignature#none()}.
 	 */
-	private ChatMessageSignature signChatMessage(ChatMessageSigner signer, Text message) {
+	private MessageSignature signChatMessage(ChatMessageSigner signer, Text message) {
 		try {
 			Signer signer2 = this.client.getProfileKeys().getSigner();
 			if (signer2 != null) {
@@ -388,7 +388,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			field_39078.error("Failed to sign chat message: '{}'", message.getString(), var4);
 		}
 
-		return ChatMessageSignature.none();
+		return MessageSignature.none();
 	}
 
 	/**
@@ -421,8 +421,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 					Builder<String, byte[]> builder = ImmutableMap.builder();
 					map.forEach((argumentName, value) -> {
 						Text text2 = preview != null ? preview : value;
-						ChatMessageSignature chatMessageSignature = signer.sign(signer2, text2);
-						builder.put(argumentName, chatMessageSignature.saltSignature().signature());
+						MessageSignature messageSignature = signer.sign(signer2, text2);
+						builder.put(argumentName, messageSignature.saltSignature().signature());
 					});
 					return new ArgumentSignatureDataMap(signer.salt(), builder.build());
 				} catch (Exception var7) {

@@ -16,7 +16,13 @@ public interface StructurePiecesGenerator<C extends FeatureConfig> {
 	void generatePieces(StructurePiecesCollector collector, StructurePiecesGenerator.Context<C> context);
 
 	public static record Context<C extends FeatureConfig>(
-		C config, ChunkGenerator chunkGenerator, StructureManager structureTemplateManager, ChunkPos chunkPos, HeightLimitView world, ChunkRandom random, long seed
+		C config,
+		ChunkGenerator chunkGenerator,
+		StructureTemplateManager structureTemplateManager,
+		ChunkPos chunkPos,
+		HeightLimitView world,
+		ChunkRandom random,
+		long seed
 	) {
 	}
 }

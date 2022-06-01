@@ -7,7 +7,7 @@ import net.minecraft.datafixer.Schemas;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.structure.Structure;
+import net.minecraft.structure.StructureTemplate;
 import org.slf4j.Logger;
 
 public class StructureValidatorProvider implements SnbtProvider.Tweaker {
@@ -31,7 +31,7 @@ public class StructureValidatorProvider implements SnbtProvider.Tweaker {
 	}
 
 	private static NbtCompound internalUpdate(String name, NbtCompound nbt) {
-		Structure structure = new Structure();
+		StructureTemplate structureTemplate = new StructureTemplate();
 		int i = nbt.getInt("DataVersion");
 		int j = 3075;
 		if (i < 3075) {
@@ -39,7 +39,7 @@ public class StructureValidatorProvider implements SnbtProvider.Tweaker {
 		}
 
 		NbtCompound nbtCompound = NbtHelper.update(Schemas.getFixer(), DataFixTypes.STRUCTURE, nbt, i);
-		structure.readNbt(nbtCompound);
-		return structure.writeNbt(new NbtCompound());
+		structureTemplate.readNbt(nbtCompound);
+		return structureTemplate.writeNbt(new NbtCompound());
 	}
 }

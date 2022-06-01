@@ -62,6 +62,7 @@ import net.minecraft.client.gl.WindowFramebuffer;
 import net.minecraft.client.gui.WorldGenerationProgressTracker;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.gui.screen.ConfirmChatLinkScreen;
 import net.minecraft.client.gui.screen.ConnectScreen;
 import net.minecraft.client.gui.screen.CreditsScreen;
 import net.minecraft.client.gui.screen.DeathScreen;
@@ -290,7 +291,7 @@ import org.slf4j.Logger;
  */
 @Environment(EnvType.CLIENT)
 public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implements WindowEventHandler {
-	private static MinecraftClient instance;
+	static MinecraftClient instance;
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final boolean IS_SYSTEM_MAC = Util.getOperatingSystem() == Util.OperatingSystem.OSX;
 	private static final int field_32145 = 10;
@@ -966,7 +967,21 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private void openChatScreen(String text) {
 		MinecraftClient.ChatRestriction chatRestriction = this.getChatRestriction();
 		if (!chatRestriction.allowsChat(this.isInSingleplayer())) {
-			this.inGameHud.setOverlayMessage(chatRestriction.getDescription(), false);
+			if (this.inGameHud.method_44353()) {
+				this.inGameHud.method_44354(false);
+				this.setScreen(new ConfirmChatLinkScreen(bl -> {
+					if (bl) {
+						Util.getOperatingSystem().open("https://aka.ms/JavaAccountSettings");
+					}
+
+					this.setScreen(null);
+				}, MinecraftClient.ChatRestriction.field_39456, "https://aka.ms/JavaAccountSettings", true));
+			} else {
+				Text text2 = chatRestriction.getDescription();
+				this.inGameHud.setOverlayMessage(text2, false);
+				NarratorManager.INSTANCE.narrate(text2);
+				this.inGameHud.method_44354(chatRestriction == MinecraftClient.ChatRestriction.DISABLED_BY_PROFILE);
+			}
 		} else {
 			this.setScreen(new ChatScreen(text));
 		}
@@ -2838,13 +2853,17 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				return singlePlayer;
 			}
 		},
-		DISABLED_BY_PROFILE(Text.translatable("chat.disabled.profile").formatted(Formatting.RED)) {
+		DISABLED_BY_PROFILE(
+			Text.translatable("chat.disabled.profile", Text.keybind(MinecraftClient.instance.options.chatKey.getTranslationKey())).formatted(Formatting.RED)
+		) {
 			@Override
 			public boolean allowsChat(boolean singlePlayer) {
 				return singlePlayer;
 			}
 		};
 
+		static final Text field_39456 = Text.translatable("chat.disabled.profile.moreInfo");
+		private static final String field_39457 = "https://aka.ms/JavaAccountSettings";
 		private final Text description;
 
 		ChatRestriction(Text description) {

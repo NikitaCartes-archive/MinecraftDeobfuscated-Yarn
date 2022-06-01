@@ -5,8 +5,8 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import java.util.Collection;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.MessageArgumentType;
-import net.minecraft.network.MessageType;
-import net.minecraft.network.encryption.SignedChatMessage;
+import net.minecraft.network.message.MessageType;
+import net.minecraft.network.message.SignedMessage;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -36,15 +36,15 @@ public class MessageCommand {
 			signedMessage.decorate(source)
 				.thenAcceptAsync(
 					decoratedMessage -> {
-						Text text = ((SignedChatMessage)decoratedMessage.raw()).getContent();
+						Text text = ((SignedMessage)decoratedMessage.raw()).getContent();
 
 						for (ServerPlayerEntity serverPlayerEntity : targets) {
 							source.sendFeedback(
 								Text.translatable("commands.message.display.outgoing", serverPlayerEntity.getDisplayName(), text).formatted(Formatting.GRAY, Formatting.ITALIC), false
 							);
-							SignedChatMessage signedChatMessage = (SignedChatMessage)decoratedMessage.getFilterableFor(source, serverPlayerEntity);
-							if (signedChatMessage != null) {
-								serverPlayerEntity.sendChatMessage(signedChatMessage, source.getChatMessageSender(), MessageType.MSG_COMMAND);
+							SignedMessage signedMessagex = (SignedMessage)decoratedMessage.getFilterableFor(source, serverPlayerEntity);
+							if (signedMessagex != null) {
+								serverPlayerEntity.sendChatMessage(signedMessagex, source.getChatMessageSender(), MessageType.MSG_COMMAND);
 							}
 						}
 					},

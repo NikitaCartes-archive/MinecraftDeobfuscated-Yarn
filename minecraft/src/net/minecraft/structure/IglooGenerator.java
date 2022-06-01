@@ -36,7 +36,7 @@ public class IglooGenerator {
 		TOP_TEMPLATE, BlockPos.ORIGIN, MIDDLE_TEMPLATE, new BlockPos(2, -3, 4), BOTTOM_TEMPLATE, new BlockPos(0, -3, -2)
 	);
 
-	public static void addPieces(StructureManager manager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder holder, Random random) {
+	public static void addPieces(StructureTemplateManager manager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder holder, Random random) {
 		if (random.nextDouble() < 0.5) {
 			int i = random.nextInt(8) + 4;
 			holder.addPiece(new IglooGenerator.Piece(manager, BOTTOM_TEMPLATE, pos, rotation, i * 3));
@@ -50,13 +50,13 @@ public class IglooGenerator {
 	}
 
 	public static class Piece extends SimpleStructurePiece {
-		public Piece(StructureManager manager, Identifier identifier, BlockPos pos, BlockRotation rotation, int yOffset) {
+		public Piece(StructureTemplateManager manager, Identifier identifier, BlockPos pos, BlockRotation rotation, int yOffset) {
 			super(
 				StructurePieceType.IGLOO, 0, manager, identifier, identifier.toString(), createPlacementData(rotation, identifier), getPosOffset(identifier, pos, yOffset)
 			);
 		}
 
-		public Piece(StructureManager manager, NbtCompound nbt) {
+		public Piece(StructureTemplateManager manager, NbtCompound nbt) {
 			super(StructurePieceType.IGLOO, nbt, manager, identifier -> createPlacementData(BlockRotation.valueOf(nbt.getString("Rot")), identifier));
 		}
 
@@ -99,16 +99,16 @@ public class IglooGenerator {
 			ChunkPos chunkPos,
 			BlockPos pivot
 		) {
-			Identifier identifier = new Identifier(this.template);
+			Identifier identifier = new Identifier(this.templateIdString);
 			StructurePlacementData structurePlacementData = createPlacementData(this.placementData.getRotation(), identifier);
 			BlockPos blockPos = (BlockPos)IglooGenerator.OFFSETS_FROM_TOP.get(identifier);
-			BlockPos blockPos2 = this.pos.add(Structure.transform(structurePlacementData, new BlockPos(3 - blockPos.getX(), 0, -blockPos.getZ())));
+			BlockPos blockPos2 = this.pos.add(StructureTemplate.transform(structurePlacementData, new BlockPos(3 - blockPos.getX(), 0, -blockPos.getZ())));
 			int i = world.getTopY(Heightmap.Type.WORLD_SURFACE_WG, blockPos2.getX(), blockPos2.getZ());
 			BlockPos blockPos3 = this.pos;
 			this.pos = this.pos.add(0, i - 90 - 1, 0);
 			super.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pivot);
 			if (identifier.equals(IglooGenerator.TOP_TEMPLATE)) {
-				BlockPos blockPos4 = this.pos.add(Structure.transform(structurePlacementData, new BlockPos(3, 0, 5)));
+				BlockPos blockPos4 = this.pos.add(StructureTemplate.transform(structurePlacementData, new BlockPos(3, 0, 5)));
 				BlockState blockState = world.getBlockState(blockPos4.down());
 				if (!blockState.isAir() && !blockState.isOf(Blocks.LADDER)) {
 					world.setBlockState(blockPos4, Blocks.SNOW_BLOCK.getDefaultState(), Block.NOTIFY_ALL);

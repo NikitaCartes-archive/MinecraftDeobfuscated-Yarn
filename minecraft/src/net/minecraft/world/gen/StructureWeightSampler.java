@@ -38,10 +38,10 @@ public class StructureWeightSampler implements DensityFunctionTypes.class_7050 {
 		int j = chunkPos.getStartZ();
 		ObjectList<StructureWeightSampler.class_7301> objectList = new ObjectArrayList<>(10);
 		ObjectList<JigsawJunction> objectList2 = new ObjectArrayList<>(32);
-		structureAccessor.method_41035(chunkPos, structureType -> structureType.getTerrainAdaptation() != StructureTerrainAdaptation.NONE)
+		structureAccessor.method_41035(chunkPos, structure -> structure.getTerrainAdaptation() != StructureTerrainAdaptation.NONE)
 			.forEach(
 				structureStart -> {
-					StructureTerrainAdaptation structureTerrainAdaptation = structureStart.getFeature().getTerrainAdaptation();
+					StructureTerrainAdaptation structureTerrainAdaptation = structureStart.getStructure().getTerrainAdaptation();
 
 					for (StructurePiece structurePiece : structureStart.getChildren()) {
 						if (structurePiece.intersectsChunk(chunkPos, 12)) {

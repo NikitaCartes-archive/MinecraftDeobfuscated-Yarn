@@ -9,8 +9,8 @@ import net.minecraft.block.JigsawBlock;
 import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.enums.JigsawOrientation;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.structure.Structure;
-import net.minecraft.structure.StructureManager;
+import net.minecraft.structure.StructureTemplate;
+import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
@@ -48,15 +48,17 @@ public class FeaturePoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public Vec3i getStart(StructureManager structureManager, BlockRotation rotation) {
+	public Vec3i getStart(StructureTemplateManager structureTemplateManager, BlockRotation rotation) {
 		return Vec3i.ZERO;
 	}
 
 	@Override
-	public List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager structureManager, BlockPos pos, BlockRotation rotation, Random random) {
-		List<Structure.StructureBlockInfo> list = Lists.<Structure.StructureBlockInfo>newArrayList();
+	public List<StructureTemplate.StructureBlockInfo> getStructureBlockInfos(
+		StructureTemplateManager structureTemplateManager, BlockPos pos, BlockRotation rotation, Random random
+	) {
+		List<StructureTemplate.StructureBlockInfo> list = Lists.<StructureTemplate.StructureBlockInfo>newArrayList();
 		list.add(
-			new Structure.StructureBlockInfo(
+			new StructureTemplate.StructureBlockInfo(
 				pos, Blocks.JIGSAW.getDefaultState().with(JigsawBlock.ORIENTATION, JigsawOrientation.byDirections(Direction.DOWN, Direction.SOUTH)), this.nbt
 			)
 		);
@@ -64,14 +66,14 @@ public class FeaturePoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public BlockBox getBoundingBox(StructureManager structureManager, BlockPos pos, BlockRotation rotation) {
-		Vec3i vec3i = this.getStart(structureManager, rotation);
+	public BlockBox getBoundingBox(StructureTemplateManager structureTemplateManager, BlockPos pos, BlockRotation rotation) {
+		Vec3i vec3i = this.getStart(structureTemplateManager, rotation);
 		return new BlockBox(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + vec3i.getX(), pos.getY() + vec3i.getY(), pos.getZ() + vec3i.getZ());
 	}
 
 	@Override
 	public boolean generate(
-		StructureManager structureManager,
+		StructureTemplateManager structureTemplateManager,
 		StructureWorldAccess world,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,

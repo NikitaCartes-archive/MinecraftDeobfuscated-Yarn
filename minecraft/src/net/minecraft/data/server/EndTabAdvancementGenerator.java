@@ -21,7 +21,7 @@ import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.structure.StructureTypeKeys;
+import net.minecraft.world.gen.structure.StructureKeys;
 
 public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
 	public void accept(Consumer<Advancement> consumer) {
@@ -92,7 +92,7 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 				true,
 				false
 			)
-			.criterion("in_city", TickCriterion.Conditions.createLocation(LocationPredicate.feature(StructureTypeKeys.END_CITY)))
+			.criterion("in_city", TickCriterion.Conditions.createLocation(LocationPredicate.feature(StructureKeys.END_CITY)))
 			.build(consumer, "end/find_end_city");
 		Advancement.Builder.create()
 			.parent(advancement2)

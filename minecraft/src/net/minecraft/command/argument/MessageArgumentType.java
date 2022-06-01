@@ -12,11 +12,10 @@ import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
-import net.minecraft.network.ChatDecorator;
-import net.minecraft.network.MessageSender;
-import net.minecraft.network.encryption.ChatMessageSignature;
-import net.minecraft.network.encryption.CommandArgumentSigner;
-import net.minecraft.network.encryption.SignedChatMessage;
+import net.minecraft.network.MessageDecorator;
+import net.minecraft.network.message.CommandArgumentSigner;
+import net.minecraft.network.message.MessageSender;
+import net.minecraft.network.message.MessageSignature;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -41,12 +40,12 @@ public class MessageArgumentType implements TextConvertibleArgumentType<MessageA
 		MessageArgumentType.MessageFormat messageFormat = context.getArgument(name, MessageArgumentType.MessageFormat.class);
 		Text text = messageFormat.format(context.getSource());
 		CommandArgumentSigner commandArgumentSigner = context.getSource().getSigner();
-		ChatMessageSignature chatMessageSignature = commandArgumentSigner.getArgumentSignature(name);
+		MessageSignature messageSignature = commandArgumentSigner.getArgumentSignature(name);
 		boolean bl = commandArgumentSigner.isPreviewSigned(name);
 		MessageSender messageSender = context.getSource().getChatMessageSender();
-		return chatMessageSignature.canVerifyFrom(messageSender.uuid())
-			? new MessageArgumentType.SignedMessage(messageFormat.contents, text, chatMessageSignature, bl)
-			: new MessageArgumentType.SignedMessage(messageFormat.contents, text, ChatMessageSignature.none(), false);
+		return messageSignature.canVerifyFrom(messageSender.uuid())
+			? new MessageArgumentType.SignedMessage(messageFormat.contents, text, messageSignature, bl)
+			: new MessageArgumentType.SignedMessage(messageFormat.contents, text, MessageSignature.none(), false);
 	}
 
 	public MessageArgumentType.MessageFormat parse(StringReader stringReader) throws CommandSyntaxException {
@@ -97,7 +96,7 @@ public class MessageArgumentType implements TextConvertibleArgumentType<MessageA
 
 		CompletableFuture<Text> decorate(ServerCommandSource source) throws CommandSyntaxException {
 			Text text = this.format(source);
-			CompletableFuture<Text> completableFuture = source.getServer().getChatDecorator().decorate(source.getPlayer(), text);
+			CompletableFuture<Text> completableFuture = source.getServer().getMessageDecorator().decorate(source.getPlayer(), text);
 			MessageArgumentType.handleResolvingFailure(source, completableFuture);
 			return completableFuture;
 		}
@@ -205,19 +204,21 @@ public class MessageArgumentType implements TextConvertibleArgumentType<MessageA
 		}
 	}
 
-	public static record SignedMessage(String plain, Text formatted, ChatMessageSignature signature, boolean signedPreview) {
-		public CompletableFuture<FilteredMessage<SignedChatMessage>> decorate(ServerCommandSource source) {
-			CompletableFuture<FilteredMessage<SignedChatMessage>> completableFuture = this.filter(source, this.formatted).thenComposeAsync(filtered -> {
-				ChatDecorator chatDecorator = source.getServer().getChatDecorator();
-				return chatDecorator.decorateChat(source.getPlayer(), filtered, this.signature, this.signedPreview);
-			}, source.getServer()).thenApply(decorated -> {
-				SignedChatMessage signedChatMessage = this.getVerifiable(decorated);
-				if (signedChatMessage != null) {
-					this.logInvalidSignatureWarning(source, signedChatMessage);
-				}
+	public static record SignedMessage(String plain, Text formatted, MessageSignature signature, boolean signedPreview) {
+		public CompletableFuture<FilteredMessage<net.minecraft.network.message.SignedMessage>> decorate(ServerCommandSource source) {
+			CompletableFuture<FilteredMessage<net.minecraft.network.message.SignedMessage>> completableFuture = this.filter(source, this.formatted)
+				.thenComposeAsync(filtered -> {
+					MessageDecorator messageDecorator = source.getServer().getMessageDecorator();
+					return messageDecorator.decorateChat(source.getPlayer(), filtered, this.signature, this.signedPreview);
+				}, source.getServer())
+				.thenApply(decorated -> {
+					net.minecraft.network.message.SignedMessage signedMessage = this.getVerifiable(decorated);
+					if (signedMessage != null) {
+						this.logInvalidSignatureWarning(source, signedMessage);
+					}
 
-				return decorated;
-			});
+					return decorated;
+				});
 			MessageArgumentType.handleResolvingFailure(source, completableFuture);
 			return completableFuture;
 		}
@@ -226,20 +227,20 @@ public class MessageArgumentType implements TextConvertibleArgumentType<MessageA
 		 * {@return the verifiable part of {@code message}, or {@code null} when there is none}
 		 * 
 		 * @implNote If the preview is signed, the decorated message will be returned, and
-		 * if it's unsigned or unpreviewed but {@linkplain ChatMessageSignature#canVerify
+		 * if it's unsigned or unpreviewed but {@linkplain MessageSignature#canVerify
 		 * verifiable}, the plain, undecorated message will be returned. If neither is true,
 		 * this returns {@code null}, since the message cannot be verified in any way.
 		 */
 		@Nullable
-		private SignedChatMessage getVerifiable(FilteredMessage<SignedChatMessage> decorated) {
+		private net.minecraft.network.message.SignedMessage getVerifiable(FilteredMessage<net.minecraft.network.message.SignedMessage> decorated) {
 			if (this.signature.canVerify()) {
-				return this.signedPreview ? decorated.raw() : SignedChatMessage.of(this.plain, this.signature);
+				return this.signedPreview ? decorated.raw() : net.minecraft.network.message.SignedMessage.of(this.plain, this.signature);
 			} else {
 				return null;
 			}
 		}
 
-		private void logInvalidSignatureWarning(ServerCommandSource source, SignedChatMessage message) {
+		private void logInvalidSignatureWarning(ServerCommandSource source, net.minecraft.network.message.SignedMessage message) {
 			if (!message.verify(source)) {
 				MessageArgumentType.LOGGER.warn("{} sent message with invalid signature: '{}'", source.getDisplayName().getString(), message.signedContent().getString());
 			}

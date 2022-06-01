@@ -47,7 +47,7 @@ import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.event.listener.GameEventDispatcher;
 import net.minecraft.world.gen.chunk.BlendingData;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
-import net.minecraft.world.gen.structure.StructureType;
+import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.tick.BasicTickScheduler;
 import net.minecraft.world.tick.SerializableTickScheduler;
 import org.slf4j.Logger;
@@ -72,8 +72,8 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 	@Nullable
 	protected BlendingData blendingData;
 	protected final Map<Heightmap.Type, Heightmap> heightmaps = Maps.newEnumMap(Heightmap.Type.class);
-	private final Map<StructureType, StructureStart> structureStarts = Maps.<StructureType, StructureStart>newHashMap();
-	private final Map<StructureType, LongSet> structureReferences = Maps.<StructureType, LongSet>newHashMap();
+	private final Map<Structure, StructureStart> structureStarts = Maps.<Structure, StructureStart>newHashMap();
+	private final Map<Structure, LongSet> structureReferences = Maps.<Structure, LongSet>newHashMap();
 	protected final Map<BlockPos, NbtCompound> blockEntityNbts = Maps.<BlockPos, NbtCompound>newHashMap();
 	protected final Map<BlockPos, BlockEntity> blockEntities = Maps.<BlockPos, BlockEntity>newHashMap();
 	protected final HeightLimitView heightLimitView;
@@ -194,44 +194,44 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 
 	@Nullable
 	@Override
-	public StructureStart getStructureStart(StructureType structureType) {
-		return (StructureStart)this.structureStarts.get(structureType);
+	public StructureStart getStructureStart(Structure structure) {
+		return (StructureStart)this.structureStarts.get(structure);
 	}
 
 	@Override
-	public void setStructureStart(StructureType structureType, StructureStart start) {
-		this.structureStarts.put(structureType, start);
+	public void setStructureStart(Structure structure, StructureStart start) {
+		this.structureStarts.put(structure, start);
 		this.needsSaving = true;
 	}
 
-	public Map<StructureType, StructureStart> getStructureStarts() {
+	public Map<Structure, StructureStart> getStructureStarts() {
 		return Collections.unmodifiableMap(this.structureStarts);
 	}
 
-	public void setStructureStarts(Map<StructureType, StructureStart> structureStarts) {
+	public void setStructureStarts(Map<Structure, StructureStart> structureStarts) {
 		this.structureStarts.clear();
 		this.structureStarts.putAll(structureStarts);
 		this.needsSaving = true;
 	}
 
 	@Override
-	public LongSet getStructureReferences(StructureType structureType) {
-		return (LongSet)this.structureReferences.getOrDefault(structureType, EMPTY_STRUCTURE_REFERENCES);
+	public LongSet getStructureReferences(Structure structure) {
+		return (LongSet)this.structureReferences.getOrDefault(structure, EMPTY_STRUCTURE_REFERENCES);
 	}
 
 	@Override
-	public void addStructureReference(StructureType structureType, long reference) {
-		((LongSet)this.structureReferences.computeIfAbsent(structureType, type2 -> new LongOpenHashSet())).add(reference);
+	public void addStructureReference(Structure structure, long reference) {
+		((LongSet)this.structureReferences.computeIfAbsent(structure, type2 -> new LongOpenHashSet())).add(reference);
 		this.needsSaving = true;
 	}
 
 	@Override
-	public Map<StructureType, LongSet> getStructureReferences() {
+	public Map<Structure, LongSet> getStructureReferences() {
 		return Collections.unmodifiableMap(this.structureReferences);
 	}
 
 	@Override
-	public void setStructureReferences(Map<StructureType, LongSet> structureReferences) {
+	public void setStructureReferences(Map<Structure, LongSet> structureReferences) {
 		this.structureReferences.clear();
 		this.structureReferences.putAll(structureReferences);
 		this.needsSaving = true;

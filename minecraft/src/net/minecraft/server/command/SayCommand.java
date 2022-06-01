@@ -2,7 +2,7 @@ package net.minecraft.server.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.command.argument.MessageArgumentType;
-import net.minecraft.network.MessageType;
+import net.minecraft.network.message.MessageType;
 import net.minecraft.server.PlayerManager;
 
 public class SayCommand {

@@ -1,7 +1,8 @@
-package net.minecraft.network;
+package net.minecraft.network.message;
 
 import java.util.UUID;
 import javax.annotation.Nullable;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 

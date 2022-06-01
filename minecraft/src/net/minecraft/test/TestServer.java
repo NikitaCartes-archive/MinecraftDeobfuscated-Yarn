@@ -132,14 +132,14 @@ public class TestServer extends MinecraftServer {
 			LOGGER.info("========= {} GAME TESTS COMPLETE ======================", this.testSet.getTestCount());
 			if (this.testSet.failed()) {
 				LOGGER.info("{} required tests failed :(", this.testSet.getFailedRequiredTestCount());
-				this.testSet.getRequiredTests().forEach(test -> LOGGER.info("   - {}", test.getStructurePath()));
+				this.testSet.getRequiredTests().forEach(test -> LOGGER.info("   - {}", test.getTemplatePath()));
 			} else {
 				LOGGER.info("All {} required tests passed :)", this.testSet.getTestCount());
 			}
 
 			if (this.testSet.hasFailedOptionalTests()) {
 				LOGGER.info("{} optional tests failed", this.testSet.getFailedOptionalTestCount());
-				this.testSet.getOptionalTests().forEach(test -> LOGGER.info("   - {}", test.getStructurePath()));
+				this.testSet.getOptionalTests().forEach(test -> LOGGER.info("   - {}", test.getTemplatePath()));
 			}
 
 			LOGGER.info("====================================================");

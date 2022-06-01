@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import net.minecraft.structure.Structure;
-import net.minecraft.structure.StructureManager;
+import net.minecraft.structure.StructureTemplate;
+import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.structure.processor.StructureProcessorList;
 import net.minecraft.structure.processor.StructureProcessorLists;
 import net.minecraft.util.BlockRotation;
@@ -40,16 +40,16 @@ public abstract class StructurePoolElement {
 		this.projection = projection;
 	}
 
-	public abstract Vec3i getStart(StructureManager structureManager, BlockRotation rotation);
+	public abstract Vec3i getStart(StructureTemplateManager structureTemplateManager, BlockRotation rotation);
 
-	public abstract List<Structure.StructureBlockInfo> getStructureBlockInfos(
-		StructureManager structureManager, BlockPos pos, BlockRotation rotation, Random random
+	public abstract List<StructureTemplate.StructureBlockInfo> getStructureBlockInfos(
+		StructureTemplateManager structureTemplateManager, BlockPos pos, BlockRotation rotation, Random random
 	);
 
-	public abstract BlockBox getBoundingBox(StructureManager structureManager, BlockPos pos, BlockRotation rotation);
+	public abstract BlockBox getBoundingBox(StructureTemplateManager structureTemplateManager, BlockPos pos, BlockRotation rotation);
 
 	public abstract boolean generate(
-		StructureManager structureManager,
+		StructureTemplateManager structureTemplateManager,
 		StructureWorldAccess world,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
@@ -63,7 +63,9 @@ public abstract class StructurePoolElement {
 
 	public abstract StructurePoolElementType<?> getType();
 
-	public void method_16756(WorldAccess world, Structure.StructureBlockInfo structureBlockInfo, BlockPos pos, BlockRotation rotation, Random random, BlockBox box) {
+	public void method_16756(
+		WorldAccess world, StructureTemplate.StructureBlockInfo structureBlockInfo, BlockPos pos, BlockRotation rotation, Random random, BlockBox box
+	) {
 	}
 
 	public StructurePoolElement setProjection(StructurePool.Projection projection) {

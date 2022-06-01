@@ -10,7 +10,7 @@ import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
 
-public class OceanRuinStructure extends StructureType {
+public class OceanRuinStructure extends Structure {
 	public static final Codec<OceanRuinStructure> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					configCodecBuilder(instance),
@@ -24,7 +24,7 @@ public class OceanRuinStructure extends StructureType {
 	public final float largeProbability;
 	public final float clusterProbability;
 
-	public OceanRuinStructure(StructureType.Config config, OceanRuinStructure.BiomeTemperature biomeTemperature, float largeProbability, float clusterProbability) {
+	public OceanRuinStructure(Structure.Config config, OceanRuinStructure.BiomeTemperature biomeTemperature, float largeProbability, float clusterProbability) {
 		super(config);
 		this.biomeTemperature = biomeTemperature;
 		this.largeProbability = largeProbability;
@@ -32,19 +32,19 @@ public class OceanRuinStructure extends StructureType {
 	}
 
 	@Override
-	public Optional<StructureType.StructurePosition> getStructurePosition(StructureType.Context context) {
+	public Optional<Structure.StructurePosition> getStructurePosition(Structure.Context context) {
 		return getStructurePosition(context, Heightmap.Type.OCEAN_FLOOR_WG, collector -> this.addPieces(collector, context));
 	}
 
-	private void addPieces(StructurePiecesCollector collector, StructureType.Context context) {
+	private void addPieces(StructurePiecesCollector collector, Structure.Context context) {
 		BlockPos blockPos = new BlockPos(context.chunkPos().getStartX(), 90, context.chunkPos().getStartZ());
 		BlockRotation blockRotation = BlockRotation.random(context.random());
-		OceanRuinGenerator.addPieces(context.structureManager(), blockPos, blockRotation, collector, context.random(), this);
+		OceanRuinGenerator.addPieces(context.structureTemplateManager(), blockPos, blockRotation, collector, context.random(), this);
 	}
 
 	@Override
-	public net.minecraft.structure.StructureType<?> getType() {
-		return net.minecraft.structure.StructureType.OCEAN_RUIN;
+	public StructureType<?> getType() {
+		return StructureType.OCEAN_RUIN;
 	}
 
 	public static enum BiomeTemperature implements StringIdentifiable {

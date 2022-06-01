@@ -3394,7 +3394,7 @@ public abstract class LivingEntity extends Entity {
 				stack.decrement(1);
 			}
 
-			world.emitGameEvent(this, GameEvent.EAT, this.getEyePos());
+			this.emitGameEvent(GameEvent.EAT);
 		}
 
 		return stack;

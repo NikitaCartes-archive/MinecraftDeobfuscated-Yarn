@@ -61,14 +61,14 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
-import net.minecraft.network.ChatDecorator;
 import net.minecraft.network.ClientConnection;
-import net.minecraft.network.MessageType;
+import net.minecraft.network.MessageDecorator;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.Packet;
-import net.minecraft.network.encryption.ChatMessageSignature;
-import net.minecraft.network.encryption.SignedChatMessage;
 import net.minecraft.network.listener.ServerPlayPacketListener;
+import net.minecraft.network.message.MessageSignature;
+import net.minecraft.network.message.MessageType;
+import net.minecraft.network.message.SignedMessage;
 import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
 import net.minecraft.network.packet.c2s.play.BoatPaddleStateC2SPacket;
 import net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket;
@@ -300,7 +300,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 			this.disconnect(Text.translatable("multiplayer.disconnect.idling"));
 		}
 
-		this.previewTaskRunner.runPending();
+		this.previewTaskRunner.tick();
 	}
 
 	public void syncWithPlayerPosition() {
@@ -629,7 +629,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 			BlockState blockState = this.player.world.getBlockState(blockPos);
 			if (this.player.world.getBlockEntity(blockPos) instanceof StructureBlockBlockEntity structureBlockBlockEntity) {
 				structureBlockBlockEntity.setMode(packet.getMode());
-				structureBlockBlockEntity.setStructureName(packet.getStructureName());
+				structureBlockBlockEntity.setTemplateName(packet.getTemplateName());
 				structureBlockBlockEntity.setOffset(packet.getOffset());
 				structureBlockBlockEntity.setSize(packet.getSize());
 				structureBlockBlockEntity.setMirror(packet.getMirror());
@@ -641,7 +641,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 				structureBlockBlockEntity.setIntegrity(packet.getIntegrity());
 				structureBlockBlockEntity.setSeed(packet.getSeed());
 				if (structureBlockBlockEntity.hasStructureName()) {
-					String string = structureBlockBlockEntity.getStructureName();
+					String string = structureBlockBlockEntity.getTemplateName();
 					if (packet.getAction() == StructureBlockBlockEntity.Action.SAVE_AREA) {
 						if (structureBlockBlockEntity.saveStructure()) {
 							this.player.sendMessage(Text.translatable("structure_block.save_success", string), false);
@@ -664,7 +664,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 						}
 					}
 				} else {
-					this.player.sendMessage(Text.translatable("structure_block.invalid_structure_name", packet.getStructureName()), false);
+					this.player.sendMessage(Text.translatable("structure_block.invalid_structure_name", packet.getTemplateName()), false);
 				}
 
 				structureBlockBlockEntity.markDirty();
@@ -1273,14 +1273,14 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	private void handleMessage(ChatMessageC2SPacket packet, FilteredMessage<String> message) {
 		if (this.checkChatEnabled()) {
-			ChatMessageSignature chatMessageSignature = packet.createSignatureInstance(this.player.getUuid());
+			MessageSignature messageSignature = packet.createSignatureInstance(this.player.getUuid());
 			boolean bl = packet.isPreviewed();
-			ChatDecorator chatDecorator = this.server.getChatDecorator();
-			chatDecorator.decorateChat(this.player, message.map(Text::literal), chatMessageSignature, bl).thenAcceptAsync(this::handleDecoratedMessage, this.server);
+			MessageDecorator messageDecorator = this.server.getMessageDecorator();
+			messageDecorator.decorateChat(this.player, message.map(Text::literal), messageSignature, bl).thenAcceptAsync(this::handleDecoratedMessage, this.server);
 		}
 	}
 
-	private void handleDecoratedMessage(FilteredMessage<SignedChatMessage> message) {
+	private void handleDecoratedMessage(FilteredMessage<SignedMessage> message) {
 		if (!message.raw().verify(this.player)) {
 			LOGGER.warn("{} sent message with invalid signature: '{}'", this.player.getName().getString(), message.raw().signedContent().getString());
 		} else {
@@ -1322,7 +1322,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	private CompletableFuture<Text> decorateChat(String query) {
 		Text text = Text.literal(query);
-		return this.server.getChatDecorator().decorate(this.player, text).thenApply(decorated -> !text.equals(decorated) ? decorated : null);
+		return this.server.getMessageDecorator().decorate(this.player, text).thenApply(decorated -> !text.equals(decorated) ? decorated : null);
 	}
 
 	private CompletableFuture<Text> decorateCommand(String query) {

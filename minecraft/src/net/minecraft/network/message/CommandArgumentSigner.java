@@ -1,15 +1,16 @@
-package net.minecraft.network.encryption;
+package net.minecraft.network.message;
 
 import java.time.Instant;
 import java.util.UUID;
+import net.minecraft.network.encryption.NetworkEncryptionUtils;
 
 /**
  * A signer for command arguments.
  */
 public interface CommandArgumentSigner {
-	CommandArgumentSigner NONE = argumentName -> ChatMessageSignature.none();
+	CommandArgumentSigner NONE = argumentName -> MessageSignature.none();
 
-	ChatMessageSignature getArgumentSignature(String argumentName);
+	MessageSignature getArgumentSignature(String argumentName);
 
 	default boolean isPreviewSigned(String argumentName) {
 		return false;
@@ -22,9 +23,9 @@ public interface CommandArgumentSigner {
 	public static record Signatures(UUID sender, Instant timestamp, ArgumentSignatureDataMap argumentSignatures, boolean signedPreview)
 		implements CommandArgumentSigner {
 		@Override
-		public ChatMessageSignature getArgumentSignature(String string) {
+		public MessageSignature getArgumentSignature(String string) {
 			NetworkEncryptionUtils.SignatureData signatureData = this.argumentSignatures.get(string);
-			return signatureData != null ? new ChatMessageSignature(this.sender, this.timestamp, signatureData) : ChatMessageSignature.none();
+			return signatureData != null ? new MessageSignature(this.sender, this.timestamp, signatureData) : MessageSignature.none();
 		}
 
 		@Override

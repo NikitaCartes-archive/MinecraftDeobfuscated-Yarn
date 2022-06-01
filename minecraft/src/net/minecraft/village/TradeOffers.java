@@ -33,7 +33,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.recipe.BrewingRecipeRegistry;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.ConfiguredStructureFeatureTags;
+import net.minecraft.tag.StructureTags;
 import net.minecraft.tag.TagKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
@@ -42,7 +42,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.gen.structure.StructureType;
+import net.minecraft.world.gen.structure.Structure;
 
 public class TradeOffers {
 	private static final int DEFAULT_MAX_USES = 12;
@@ -326,12 +326,12 @@ public class TradeOffers {
 						2,
 						new TradeOffers.Factory[]{
 							new TradeOffers.BuyForOneEmeraldFactory(Items.GLASS_PANE, 11, 16, 10),
-							new TradeOffers.SellMapFactory(13, ConfiguredStructureFeatureTags.ON_OCEAN_EXPLORER_MAPS, "filled_map.monument", MapIcon.Type.MONUMENT, 12, 5)
+							new TradeOffers.SellMapFactory(13, StructureTags.ON_OCEAN_EXPLORER_MAPS, "filled_map.monument", MapIcon.Type.MONUMENT, 12, 5)
 						},
 						3,
 						new TradeOffers.Factory[]{
 							new TradeOffers.BuyForOneEmeraldFactory(Items.COMPASS, 1, 12, 20),
-							new TradeOffers.SellMapFactory(14, ConfiguredStructureFeatureTags.ON_WOODLAND_EXPLORER_MAPS, "filled_map.mansion", MapIcon.Type.MANSION, 12, 10)
+							new TradeOffers.SellMapFactory(14, StructureTags.ON_WOODLAND_EXPLORER_MAPS, "filled_map.mansion", MapIcon.Type.MANSION, 12, 10)
 						},
 						4,
 						new TradeOffers.Factory[]{
@@ -912,13 +912,13 @@ public class TradeOffers {
 
 	static class SellMapFactory implements TradeOffers.Factory {
 		private final int price;
-		private final TagKey<StructureType> structure;
+		private final TagKey<Structure> structure;
 		private final String nameKey;
 		private final MapIcon.Type iconType;
 		private final int maxUses;
 		private final int experience;
 
-		public SellMapFactory(int price, TagKey<StructureType> structure, String nameKey, MapIcon.Type iconType, int maxUses, int experience) {
+		public SellMapFactory(int price, TagKey<Structure> structure, String nameKey, MapIcon.Type iconType, int maxUses, int experience) {
 			this.price = price;
 			this.structure = structure;
 			this.nameKey = nameKey;

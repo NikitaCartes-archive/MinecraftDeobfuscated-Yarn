@@ -112,14 +112,14 @@ import net.minecraft.item.Items;
 import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.ClientConnection;
-import net.minecraft.network.MessageSender;
-import net.minecraft.network.MessageType;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.encryption.PlayerPublicKey;
-import net.minecraft.network.encryption.SignedChatMessage;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.message.MessageSender;
+import net.minecraft.network.message.MessageType;
+import net.minecraft.network.message.SignedMessage;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
@@ -806,14 +806,14 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 
 		Registry<MessageType> registry = this.registryManager.get(Registry.MESSAGE_TYPE_KEY);
 		MessageType messageType = packet.getMessageType(registry);
-		SignedChatMessage signedChatMessage = packet.getSignedMessage();
-		this.handleMessage(messageType, signedChatMessage, messageSender);
+		SignedMessage signedMessage = packet.getSignedMessage();
+		this.handleMessage(messageType, signedMessage, messageSender);
 	}
 
 	/**
 	 * Handles an incoming chat message.
 	 */
-	private void handleMessage(MessageType type, SignedChatMessage message, MessageSender sender) {
+	private void handleMessage(MessageType type, SignedMessage message, MessageSender sender) {
 		boolean bl = this.client.options.getOnlyShowSecureChat().getValue();
 		PlayerListEntry playerListEntry = this.getPlayerListEntry(message.signature().sender());
 		if (playerListEntry != null && !this.isSignatureValid(message, playerListEntry)) {
@@ -832,7 +832,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	 * 
 	 * <p>This returns {@code false} when the chat sender is unknown.
 	 */
-	private boolean isSignatureValid(SignedChatMessage message, PlayerListEntry playerListEntry) {
+	private boolean isSignatureValid(SignedMessage message, PlayerListEntry playerListEntry) {
 		PlayerPublicKey playerPublicKey = playerListEntry.getPublicKeyData();
 		return playerPublicKey != null && message.verify(playerPublicKey);
 	}

@@ -1,4 +1,4 @@
-package net.minecraft.network;
+package net.minecraft.network.message;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

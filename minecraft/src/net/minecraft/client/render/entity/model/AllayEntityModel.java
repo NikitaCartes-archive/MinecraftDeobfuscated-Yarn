@@ -19,6 +19,7 @@ import net.minecraft.util.math.Vec3f;
 @Environment(EnvType.CLIENT)
 public class AllayEntityModel extends SinglePartEntityModel<AllayEntity> implements ModelWithArms {
 	private final ModelPart root;
+	private final ModelPart field_39459;
 	private final ModelPart body;
 	private final ModelPart rightArm;
 	private final ModelPart leftArm;
@@ -30,6 +31,7 @@ public class AllayEntityModel extends SinglePartEntityModel<AllayEntity> impleme
 
 	public AllayEntityModel(ModelPart root) {
 		this.root = root.getChild(EntityModelPartNames.ROOT);
+		this.field_39459 = this.root.getChild(EntityModelPartNames.HEAD);
 		this.body = this.root.getChild(EntityModelPartNames.BODY);
 		this.rightArm = this.body.getChild(EntityModelPartNames.RIGHT_ARM);
 		this.leftArm = this.body.getChild(EntityModelPartNames.LEFT_ARM);
@@ -85,6 +87,8 @@ public class AllayEntityModel extends SinglePartEntityModel<AllayEntity> impleme
 
 	public void setAngles(AllayEntity allayEntity, float f, float g, float h, float i, float j) {
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
+		this.field_39459.pitch = j * (float) (Math.PI / 180.0);
+		this.field_39459.yaw = i * (float) (Math.PI / 180.0);
 		float k = h * 20.0F * (float) (Math.PI / 180.0) + g;
 		float l = MathHelper.cos(k) * (float) Math.PI * 0.15F;
 		float m = h - (float)allayEntity.age;

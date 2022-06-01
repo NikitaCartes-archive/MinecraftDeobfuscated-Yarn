@@ -5,8 +5,8 @@ import com.mojang.serialization.Codec;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
-import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructurePlacementData;
+import net.minecraft.structure.StructureTemplate;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
@@ -26,12 +26,12 @@ public class RuleStructureProcessor extends StructureProcessor {
 
 	@Nullable
 	@Override
-	public Structure.StructureBlockInfo process(
+	public StructureTemplate.StructureBlockInfo process(
 		WorldView world,
 		BlockPos pos,
 		BlockPos pivot,
-		Structure.StructureBlockInfo originalBlockInfo,
-		Structure.StructureBlockInfo currentBlockInfo,
+		StructureTemplate.StructureBlockInfo originalBlockInfo,
+		StructureTemplate.StructureBlockInfo currentBlockInfo,
 		StructurePlacementData data
 	) {
 		Random random = Random.create(MathHelper.hashCode(currentBlockInfo.pos));
@@ -39,7 +39,7 @@ public class RuleStructureProcessor extends StructureProcessor {
 
 		for (StructureProcessorRule structureProcessorRule : this.rules) {
 			if (structureProcessorRule.test(currentBlockInfo.state, blockState, originalBlockInfo.pos, currentBlockInfo.pos, pivot, random)) {
-				return new Structure.StructureBlockInfo(currentBlockInfo.pos, structureProcessorRule.getOutputState(), structureProcessorRule.getOutputNbt());
+				return new StructureTemplate.StructureBlockInfo(currentBlockInfo.pos, structureProcessorRule.getOutputState(), structureProcessorRule.getOutputNbt());
 			}
 		}
 

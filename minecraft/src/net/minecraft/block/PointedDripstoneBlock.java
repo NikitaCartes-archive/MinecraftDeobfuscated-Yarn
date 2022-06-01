@@ -188,6 +188,9 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 							if (((PointedDripstoneBlock.DrippingFluid)optional.get()).sourceState.isOf(Blocks.MUD) && fluid == Fluids.WATER) {
 								BlockState blockState = Blocks.CLAY.getDefaultState();
 								world.setBlockState(((PointedDripstoneBlock.DrippingFluid)optional.get()).pos, blockState);
+								Block.pushEntitiesUpBeforeBlockChange(
+									((PointedDripstoneBlock.DrippingFluid)optional.get()).sourceState, blockState, world, ((PointedDripstoneBlock.DrippingFluid)optional.get()).pos
+								);
 								world.emitGameEvent(GameEvent.BLOCK_CHANGE, ((PointedDripstoneBlock.DrippingFluid)optional.get()).pos, GameEvent.Emitter.of(blockState));
 								world.syncWorldEvent(WorldEvents.POINTED_DRIPSTONE_DRIPS, blockPos, 0);
 							} else {

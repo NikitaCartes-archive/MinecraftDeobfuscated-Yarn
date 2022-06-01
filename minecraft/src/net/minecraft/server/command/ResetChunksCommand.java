@@ -113,7 +113,7 @@ public class ResetChunksCommand {
 										taskExecutor::send,
 										serverWorld,
 										serverChunkManager.getChunkGenerator(),
-										serverWorld.getStructureManager(),
+										serverWorld.getStructureTemplateManager(),
 										serverChunkManager.getLightingProvider(),
 										chunkx -> {
 											throw new UnsupportedOperationException("Not creating full chunks here");

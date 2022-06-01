@@ -6,12 +6,12 @@ import net.minecraft.structure.JungleTempleGenerator;
 public class JungleTempleStructure extends BasicTempleStructure {
 	public static final Codec<JungleTempleStructure> CODEC = createCodec(JungleTempleStructure::new);
 
-	public JungleTempleStructure(StructureType.Config config) {
+	public JungleTempleStructure(Structure.Config config) {
 		super(JungleTempleGenerator::new, 12, 15, config);
 	}
 
 	@Override
-	public net.minecraft.structure.StructureType<?> getType() {
-		return net.minecraft.structure.StructureType.JUNGLE_TEMPLE;
+	public StructureType<?> getType() {
+		return StructureType.JUNGLE_TEMPLE;
 	}
 }

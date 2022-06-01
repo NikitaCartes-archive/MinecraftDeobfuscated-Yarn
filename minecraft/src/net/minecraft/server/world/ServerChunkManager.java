@@ -20,7 +20,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.server.WorldGenerationProgressListener;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.structure.StructureManager;
+import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.util.Util;
 import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.math.BlockPos;
@@ -71,7 +71,7 @@ public class ServerChunkManager extends ChunkManager {
 		ServerWorld world,
 		LevelStorage.Session session,
 		DataFixer dataFixer,
-		StructureManager structureManager,
+		StructureTemplateManager structureTemplateManager,
 		Executor workerExecutor,
 		ChunkGenerator chunkGenerator,
 		int viewDistance,
@@ -91,7 +91,7 @@ public class ServerChunkManager extends ChunkManager {
 			world,
 			session,
 			dataFixer,
-			structureManager,
+			structureTemplateManager,
 			workerExecutor,
 			this.mainThreadExecutor,
 			this,

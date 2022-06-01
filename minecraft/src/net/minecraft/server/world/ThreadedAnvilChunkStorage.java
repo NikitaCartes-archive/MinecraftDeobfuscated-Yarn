@@ -60,8 +60,8 @@ import net.minecraft.server.WorldGenerationProgressListener;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.network.EntityTrackerEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
+import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.util.CsvWriter;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
@@ -134,7 +134,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	private final ChunkStatusChangeListener chunkStatusChangeListener;
 	private final ThreadedAnvilChunkStorage.TicketManager ticketManager;
 	private final AtomicInteger totalChunksLoadedCount = new AtomicInteger();
-	private final StructureManager structureManager;
+	private final StructureTemplateManager structureTemplateManager;
 	private final String saveDir;
 	private final PlayerChunkWatchingManager playerChunkWatchingManager = new PlayerChunkWatchingManager();
 	private final Int2ObjectMap<ThreadedAnvilChunkStorage.EntityTracker> entityTrackers = new Int2ObjectOpenHashMap<>();
@@ -147,7 +147,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		ServerWorld world,
 		LevelStorage.Session session,
 		DataFixer dataFixer,
-		StructureManager structureManager,
+		StructureTemplateManager structureTemplateManager,
 		Executor executor,
 		ThreadExecutor<Runnable> mainThreadExecutor,
 		ChunkProvider chunkProvider,
@@ -159,7 +159,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		boolean dsync
 	) {
 		super(session.getWorldDirectory(world.getRegistryKey()).resolve("region"), dataFixer, dsync);
-		this.structureManager = structureManager;
+		this.structureTemplateManager = structureTemplateManager;
 		Path path = session.getWorldDirectory(world.getRegistryKey());
 		this.saveDir = path.getFileName().toString();
 		this.world = world;
@@ -553,7 +553,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			Optional<Chunk> optional = ((Either)holder.getChunkAt(requiredStatus.getPrevious(), this).getNow(ChunkHolder.UNLOADED_CHUNK)).left();
 			if (optional.isPresent() && ((Chunk)optional.get()).getStatus().isAtLeast(requiredStatus)) {
 				CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = requiredStatus.runLoadTask(
-					this.world, this.structureManager, this.lightingProvider, chunk -> this.convertToFullChunk(holder), (Chunk)optional.get()
+					this.world, this.structureTemplateManager, this.lightingProvider, chunk -> this.convertToFullChunk(holder), (Chunk)optional.get()
 				);
 				this.worldGenerationProgressListener.setChunkStatus(chunkPos, requiredStatus);
 				return completableFuture;
@@ -628,7 +628,14 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 					chunks -> {
 						try {
 							CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuturex = requiredStatus.runGenerationTask(
-								executor, this.world, this.chunkGenerator, this.structureManager, this.lightingProvider, chunk -> this.convertToFullChunk(holder), chunks, false
+								executor,
+								this.world,
+								this.chunkGenerator,
+								this.structureTemplateManager,
+								this.lightingProvider,
+								chunk -> this.convertToFullChunk(holder),
+								chunks,
+								false
 							);
 							this.worldGenerationProgressListener.setChunkStatus(chunkPos, requiredStatus);
 							return completableFuturex;

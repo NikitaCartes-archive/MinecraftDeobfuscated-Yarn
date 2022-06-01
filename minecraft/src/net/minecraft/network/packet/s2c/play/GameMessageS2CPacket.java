@@ -1,10 +1,10 @@
 package net.minecraft.network.packet.s2c.play;
 
 import java.util.Objects;
-import net.minecraft.network.MessageType;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.message.MessageType;
 import net.minecraft.text.Text;
 import net.minecraft.util.registry.Registry;
 

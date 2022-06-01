@@ -11,8 +11,8 @@ import net.minecraft.block.SlabBlock;
 import net.minecraft.block.StairsBlock;
 import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.block.enums.SlabType;
-import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructurePlacementData;
+import net.minecraft.structure.StructureTemplate;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -53,12 +53,12 @@ public class BlackstoneReplacementStructureProcessor extends StructureProcessor 
 	}
 
 	@Override
-	public Structure.StructureBlockInfo process(
+	public StructureTemplate.StructureBlockInfo process(
 		WorldView world,
 		BlockPos pos,
 		BlockPos pivot,
-		Structure.StructureBlockInfo originalBlockInfo,
-		Structure.StructureBlockInfo currentBlockInfo,
+		StructureTemplate.StructureBlockInfo originalBlockInfo,
+		StructureTemplate.StructureBlockInfo currentBlockInfo,
 		StructurePlacementData data
 	) {
 		Block block = (Block)this.replacementMap.get(currentBlockInfo.state.getBlock());
@@ -79,7 +79,7 @@ public class BlackstoneReplacementStructureProcessor extends StructureProcessor 
 				blockState2 = blockState2.with(SlabBlock.TYPE, (SlabType)blockState.get(SlabBlock.TYPE));
 			}
 
-			return new Structure.StructureBlockInfo(currentBlockInfo.pos, blockState2, currentBlockInfo.nbt);
+			return new StructureTemplate.StructureBlockInfo(currentBlockInfo.pos, blockState2, currentBlockInfo.nbt);
 		}
 	}
 

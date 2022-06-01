@@ -61,7 +61,7 @@ import net.minecraft.loot.provider.number.LootNumberProviderType;
 import net.minecraft.loot.provider.number.LootNumberProviderTypes;
 import net.minecraft.loot.provider.score.LootScoreProviderType;
 import net.minecraft.loot.provider.score.LootScoreProviderTypes;
-import net.minecraft.network.MessageType;
+import net.minecraft.network.message.MessageType;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.Potion;
@@ -121,6 +121,7 @@ import net.minecraft.world.gen.heightprovider.HeightProviderType;
 import net.minecraft.world.gen.placementmodifier.PlacementModifierType;
 import net.minecraft.world.gen.root.RootPlacerType;
 import net.minecraft.world.gen.stateprovider.BlockStateProviderType;
+import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.gen.structure.StructureType;
 import net.minecraft.world.gen.surfacebuilder.MaterialRules;
 import net.minecraft.world.gen.treedecorator.TreeDecoratorType;
@@ -242,7 +243,7 @@ public abstract class Registry<T> implements Keyable, IndexedIterable<T> {
 	public static final RegistryKey<Registry<ConfiguredCarver<?>>> CONFIGURED_CARVER_KEY = createRegistryKey("worldgen/configured_carver");
 	public static final RegistryKey<Registry<ConfiguredFeature<?, ?>>> CONFIGURED_FEATURE_KEY = createRegistryKey("worldgen/configured_feature");
 	public static final RegistryKey<Registry<PlacedFeature>> PLACED_FEATURE_KEY = createRegistryKey("worldgen/placed_feature");
-	public static final RegistryKey<Registry<StructureType>> STRUCTURE_KEY = createRegistryKey("worldgen/structure");
+	public static final RegistryKey<Registry<Structure>> STRUCTURE_KEY = createRegistryKey("worldgen/structure");
 	public static final RegistryKey<Registry<StructureSet>> STRUCTURE_SET_KEY = createRegistryKey("worldgen/structure_set");
 	public static final RegistryKey<Registry<StructureProcessorList>> STRUCTURE_PROCESSOR_LIST_KEY = createRegistryKey("worldgen/processor_list");
 	public static final RegistryKey<Registry<StructurePool>> STRUCTURE_POOL_KEY = createRegistryKey("worldgen/template_pool");
@@ -259,10 +260,8 @@ public abstract class Registry<T> implements Keyable, IndexedIterable<T> {
 	public static final Registry<StructurePlacementType<?>> STRUCTURE_PLACEMENT = create(STRUCTURE_PLACEMENT_KEY, registry -> StructurePlacementType.RANDOM_SPREAD);
 	public static final RegistryKey<Registry<StructurePieceType>> STRUCTURE_PIECE_KEY = createRegistryKey("worldgen/structure_piece");
 	public static final Registry<StructurePieceType> STRUCTURE_PIECE = create(STRUCTURE_PIECE_KEY, registry -> StructurePieceType.MINESHAFT_ROOM);
-	public static final RegistryKey<Registry<net.minecraft.structure.StructureType<?>>> STRUCTURE_TYPE_KEY = createRegistryKey("worldgen/structure_type");
-	public static final Registry<net.minecraft.structure.StructureType<?>> STRUCTURE_TYPE = create(
-		STRUCTURE_TYPE_KEY, registry -> net.minecraft.structure.StructureType.JIGSAW
-	);
+	public static final RegistryKey<Registry<StructureType<?>>> STRUCTURE_TYPE_KEY = createRegistryKey("worldgen/structure_type");
+	public static final Registry<StructureType<?>> STRUCTURE_TYPE = create(STRUCTURE_TYPE_KEY, registry -> StructureType.JIGSAW);
 	public static final RegistryKey<Registry<PlacementModifierType<?>>> PLACEMENT_MODIFIER_TYPE_KEY = createRegistryKey("worldgen/placement_modifier_type");
 	public static final Registry<PlacementModifierType<?>> PLACEMENT_MODIFIER_TYPE = create(PLACEMENT_MODIFIER_TYPE_KEY, registry -> PlacementModifierType.COUNT);
 	public static final RegistryKey<Registry<BlockStateProviderType<?>>> BLOCK_STATE_PROVIDER_TYPE_KEY = createRegistryKey("worldgen/block_state_provider_type");

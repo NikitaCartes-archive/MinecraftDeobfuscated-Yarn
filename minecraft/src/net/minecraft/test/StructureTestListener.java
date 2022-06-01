@@ -12,7 +12,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.structure.Structure;
+import net.minecraft.structure.StructureTemplate;
 import net.minecraft.text.Text;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.Formatting;
@@ -45,7 +45,7 @@ class StructureTestListener implements TestListener {
 	public void onPassed(GameTestState test) {
 		this.successes++;
 		if (!test.isFlaky()) {
-			passTest(test, test.getStructurePath() + " passed! (" + test.getElapsedMilliseconds() + "ms)");
+			passTest(test, test.getTemplatePath() + " passed! (" + test.getElapsedMilliseconds() + "ms)");
 		} else {
 			if (this.successes >= test.getRequiredSuccesses()) {
 				passTest(test, test + " passed " + this.successes + " times of " + this.attempt + " attempts.");
@@ -96,7 +96,7 @@ class StructureTestListener implements TestListener {
 
 	protected static void finishFailedTest(GameTestState test, Throwable output) {
 		String string = output.getMessage() + (output.getCause() == null ? "" : " cause: " + Util.getInnermostMessage(output.getCause()));
-		String string2 = (test.isRequired() ? "" : "(optional) ") + test.getStructurePath() + " failed! " + string;
+		String string2 = (test.isRequired() ? "" : "(optional) ") + test.getTemplatePath() + " failed! " + string;
 		sendMessageToAllPlayers(test.getWorld(), test.isRequired() ? Formatting.RED : Formatting.YELLOW, string2);
 		Throwable throwable = MoreObjects.firstNonNull(ExceptionUtils.getRootCause(output), output);
 		if (throwable instanceof PositionedException positionedException) {
@@ -119,7 +119,7 @@ class StructureTestListener implements TestListener {
 		ServerWorld serverWorld = test.getWorld();
 		BlockPos blockPos = test.getPos();
 		BlockPos blockPos2 = new BlockPos(-1, -1, -1);
-		BlockPos blockPos3 = Structure.transformAround(blockPos.add(blockPos2), BlockMirror.NONE, test.getRotation(), blockPos);
+		BlockPos blockPos3 = StructureTemplate.transformAround(blockPos.add(blockPos2), BlockMirror.NONE, test.getRotation(), blockPos);
 		serverWorld.setBlockState(blockPos3, Blocks.BEACON.getDefaultState().rotate(test.getRotation()));
 		BlockPos blockPos4 = blockPos3.add(0, 1, 0);
 		serverWorld.setBlockState(blockPos4, block.getDefaultState());
@@ -136,10 +136,10 @@ class StructureTestListener implements TestListener {
 		ServerWorld serverWorld = test.getWorld();
 		BlockPos blockPos = test.getPos();
 		BlockPos blockPos2 = new BlockPos(-1, 1, -1);
-		BlockPos blockPos3 = Structure.transformAround(blockPos.add(blockPos2), BlockMirror.NONE, test.getRotation(), blockPos);
+		BlockPos blockPos3 = StructureTemplate.transformAround(blockPos.add(blockPos2), BlockMirror.NONE, test.getRotation(), blockPos);
 		serverWorld.setBlockState(blockPos3, Blocks.LECTERN.getDefaultState().rotate(test.getRotation()));
 		BlockState blockState = serverWorld.getBlockState(blockPos3);
-		ItemStack itemStack = createBookWithText(test.getStructurePath(), test.isRequired(), output);
+		ItemStack itemStack = createBookWithText(test.getTemplatePath(), test.isRequired(), output);
 		LecternBlock.putBookIfAbsent(null, serverWorld, blockPos3, blockState, itemStack);
 	}
 

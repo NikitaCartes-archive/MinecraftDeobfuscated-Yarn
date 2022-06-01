@@ -12,7 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.biome.SpawnSettings;
 
-public class NetherFortressStructure extends StructureType {
+public class NetherFortressStructure extends Structure {
 	public static final Pool<SpawnSettings.SpawnEntry> MONSTER_SPAWNS = Pool.of(
 		new SpawnSettings.SpawnEntry(EntityType.BLAZE, 10, 2, 3),
 		new SpawnSettings.SpawnEntry(EntityType.ZOMBIFIED_PIGLIN, 5, 4, 4),
@@ -22,18 +22,18 @@ public class NetherFortressStructure extends StructureType {
 	);
 	public static final Codec<NetherFortressStructure> CODEC = createCodec(NetherFortressStructure::new);
 
-	public NetherFortressStructure(StructureType.Config config) {
+	public NetherFortressStructure(Structure.Config config) {
 		super(config);
 	}
 
 	@Override
-	public Optional<StructureType.StructurePosition> getStructurePosition(StructureType.Context context) {
+	public Optional<Structure.StructurePosition> getStructurePosition(Structure.Context context) {
 		ChunkPos chunkPos = context.chunkPos();
 		BlockPos blockPos = new BlockPos(chunkPos.getStartX(), 64, chunkPos.getStartZ());
-		return Optional.of(new StructureType.StructurePosition(blockPos, collector -> addPieces(collector, context)));
+		return Optional.of(new Structure.StructurePosition(blockPos, collector -> addPieces(collector, context)));
 	}
 
-	private static void addPieces(StructurePiecesCollector collector, StructureType.Context context) {
+	private static void addPieces(StructurePiecesCollector collector, Structure.Context context) {
 		NetherFortressGenerator.Start start = new NetherFortressGenerator.Start(context.random(), context.chunkPos().getOffsetX(2), context.chunkPos().getOffsetZ(2));
 		collector.addPiece(start);
 		start.fillOpenings(start, collector, context.random());
@@ -49,7 +49,7 @@ public class NetherFortressStructure extends StructureType {
 	}
 
 	@Override
-	public net.minecraft.structure.StructureType<?> getType() {
-		return net.minecraft.structure.StructureType.FORTRESS;
+	public StructureType<?> getType() {
+		return StructureType.FORTRESS;
 	}
 }

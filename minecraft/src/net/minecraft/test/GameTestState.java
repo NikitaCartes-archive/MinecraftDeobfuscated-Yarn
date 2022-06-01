@@ -121,8 +121,8 @@ public class GameTestState {
 		this.ticksByRunnables.put(runnable, tick);
 	}
 
-	public String getStructurePath() {
-		return this.testFunction.getStructurePath();
+	public String getTemplatePath() {
+		return this.testFunction.getTemplatePath();
 	}
 
 	public BlockPos getPos() {
@@ -194,7 +194,7 @@ public class GameTestState {
 	}
 
 	public String toString() {
-		return this.getStructurePath();
+		return this.getTemplatePath();
 	}
 
 	public void addListener(TestListener listener) {
@@ -202,9 +202,9 @@ public class GameTestState {
 	}
 
 	public void init(BlockPos pos, int i) {
-		this.structureBlockEntity = StructureTestUtil.createStructure(this.getStructureName(), pos, this.getRotation(), i, this.world, false);
+		this.structureBlockEntity = StructureTestUtil.createStructureTemplate(this.getTemplateName(), pos, this.getRotation(), i, this.world, false);
 		this.pos = this.structureBlockEntity.getPos();
-		this.structureBlockEntity.setStructureName(this.getStructurePath());
+		this.structureBlockEntity.setTemplateName(this.getTemplatePath());
 		StructureTestUtil.placeStartButton(this.pos, new BlockPos(1, 0, -1), this.getRotation(), this.world);
 		this.listeners.forEach(listener -> listener.onStarted(this));
 	}
@@ -236,8 +236,8 @@ public class GameTestState {
 		return !this.testFunction.isRequired();
 	}
 
-	public String getStructureName() {
-		return this.testFunction.getStructureName();
+	public String getTemplateName() {
+		return this.testFunction.getTemplateName();
 	}
 
 	public BlockRotation getRotation() {

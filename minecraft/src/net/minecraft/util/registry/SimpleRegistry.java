@@ -355,7 +355,7 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 		if (this.valueToEntryFunction == null) {
 			throw new IllegalStateException("This registry can't create intrusive holders");
 		} else if (!this.frozen && this.unfrozenValueToEntry != null) {
-			return (RegistryEntry.Reference<T>)this.unfrozenValueToEntry.computeIfAbsent(value, key -> RegistryEntry.Reference.intrusive(this, (T)key));
+			return (RegistryEntry.Reference<T>)this.unfrozenValueToEntry.computeIfAbsent(value, valuex -> RegistryEntry.Reference.intrusive(this, (T)valuex));
 		} else {
 			throw new IllegalStateException("Registry is already frozen");
 		}

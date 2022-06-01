@@ -20,7 +20,7 @@ import net.minecraft.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.structure.StructureTypeKeys;
+import net.minecraft.world.gen.structure.StructureKeys;
 
 public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
 	public void accept(Consumer<Advancement> consumer) {
@@ -242,7 +242,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 				true,
 				false
 			)
-			.criterion("in_stronghold", TickCriterion.Conditions.createLocation(LocationPredicate.feature(StructureTypeKeys.STRONGHOLD)))
+			.criterion("in_stronghold", TickCriterion.Conditions.createLocation(LocationPredicate.feature(StructureKeys.STRONGHOLD)))
 			.build(consumer, "story/follow_ender_eye");
 		Advancement.Builder.create()
 			.parent(advancement11)

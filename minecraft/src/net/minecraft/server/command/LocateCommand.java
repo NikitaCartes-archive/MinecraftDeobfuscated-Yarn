@@ -18,7 +18,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.structure.StructureType;
+import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
 
@@ -89,19 +89,19 @@ public class LocateCommand {
 		);
 	}
 
-	private static Optional<? extends RegistryEntryList.ListBacked<StructureType>> getStructureListForPredicate(
-		RegistryPredicateArgumentType.RegistryPredicate<StructureType> predicate, Registry<StructureType> structureTypeRegistry
+	private static Optional<? extends RegistryEntryList.ListBacked<Structure>> getStructureListForPredicate(
+		RegistryPredicateArgumentType.RegistryPredicate<Structure> predicate, Registry<Structure> structureRegistry
 	) {
-		return predicate.getKey().map(key -> structureTypeRegistry.getEntry(key).map(entry -> RegistryEntryList.of(entry)), structureTypeRegistry::getEntryList);
+		return predicate.getKey().map(key -> structureRegistry.getEntry(key).map(entry -> RegistryEntryList.of(entry)), structureRegistry::getEntryList);
 	}
 
-	private static int executeLocateStructure(ServerCommandSource source, RegistryPredicateArgumentType.RegistryPredicate<StructureType> predicate) throws CommandSyntaxException {
-		Registry<StructureType> registry = source.getWorld().getRegistryManager().get(Registry.STRUCTURE_KEY);
-		RegistryEntryList<StructureType> registryEntryList = (RegistryEntryList<StructureType>)getStructureListForPredicate(predicate, registry)
+	private static int executeLocateStructure(ServerCommandSource source, RegistryPredicateArgumentType.RegistryPredicate<Structure> predicate) throws CommandSyntaxException {
+		Registry<Structure> registry = source.getWorld().getRegistryManager().get(Registry.STRUCTURE_KEY);
+		RegistryEntryList<Structure> registryEntryList = (RegistryEntryList<Structure>)getStructureListForPredicate(predicate, registry)
 			.orElseThrow(() -> STRUCTURE_INVALID_EXCEPTION.create(predicate.asString()));
 		BlockPos blockPos = new BlockPos(source.getPosition());
 		ServerWorld serverWorld = source.getWorld();
-		Pair<BlockPos, RegistryEntry<StructureType>> pair = serverWorld.getChunkManager()
+		Pair<BlockPos, RegistryEntry<Structure>> pair = serverWorld.getChunkManager()
 			.getChunkGenerator()
 			.locateStructure(serverWorld, registryEntryList, blockPos, 100, false);
 		if (pair == null) {
@@ -135,14 +135,14 @@ public class LocateCommand {
 
 	public static int sendCoordinates(
 		ServerCommandSource source,
-		RegistryPredicateArgumentType.RegistryPredicate<?> structureFeature,
+		RegistryPredicateArgumentType.RegistryPredicate<?> structure,
 		BlockPos currentPos,
 		Pair<BlockPos, ? extends RegistryEntry<?>> structurePosAndEntry,
 		String successMessage,
 		boolean bl
 	) {
 		BlockPos blockPos = structurePosAndEntry.getFirst();
-		String string = structureFeature.getKey()
+		String string = structure.getKey()
 			.map(
 				key -> key.getValue().toString(),
 				key -> "#" + key.id() + " (" + (String)structurePosAndEntry.getSecond().getKey().map(keyx -> keyx.getValue().toString()).orElse("[unregistered]") + ")"

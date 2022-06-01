@@ -7,19 +7,19 @@ import net.minecraft.structure.StrongholdGenerator;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePiecesCollector;
 
-public class StrongholdStructure extends StructureType {
+public class StrongholdStructure extends Structure {
 	public static final Codec<StrongholdStructure> CODEC = createCodec(StrongholdStructure::new);
 
-	public StrongholdStructure(StructureType.Config config) {
+	public StrongholdStructure(Structure.Config config) {
 		super(config);
 	}
 
 	@Override
-	public Optional<StructureType.StructurePosition> getStructurePosition(StructureType.Context context) {
-		return Optional.of(new StructureType.StructurePosition(context.chunkPos().getStartPos(), collector -> addPieces(collector, context)));
+	public Optional<Structure.StructurePosition> getStructurePosition(Structure.Context context) {
+		return Optional.of(new Structure.StructurePosition(context.chunkPos().getStartPos(), collector -> addPieces(collector, context)));
 	}
 
-	private static void addPieces(StructurePiecesCollector collector, StructureType.Context context) {
+	private static void addPieces(StructurePiecesCollector collector, Structure.Context context) {
 		int i = 0;
 
 		StrongholdGenerator.Start start;
@@ -43,7 +43,7 @@ public class StrongholdStructure extends StructureType {
 	}
 
 	@Override
-	public net.minecraft.structure.StructureType<?> getType() {
-		return net.minecraft.structure.StructureType.STRONGHOLD;
+	public StructureType<?> getType() {
+		return StructureType.STRONGHOLD;
 	}
 }

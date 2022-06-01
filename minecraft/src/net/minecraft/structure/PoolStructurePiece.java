@@ -28,13 +28,18 @@ public class PoolStructurePiece extends StructurePiece {
 	private final int groundLevelDelta;
 	protected final BlockRotation rotation;
 	private final List<JigsawJunction> junctions = Lists.<JigsawJunction>newArrayList();
-	private final StructureManager structureManager;
+	private final StructureTemplateManager structureTemplateManager;
 
 	public PoolStructurePiece(
-		StructureManager structureManager, StructurePoolElement poolElement, BlockPos pos, int groundLevelDelta, BlockRotation rotation, BlockBox boundingBox
+		StructureTemplateManager structureTemplateManager,
+		StructurePoolElement poolElement,
+		BlockPos pos,
+		int groundLevelDelta,
+		BlockRotation rotation,
+		BlockBox boundingBox
 	) {
 		super(StructurePieceType.JIGSAW, 0, boundingBox);
-		this.structureManager = structureManager;
+		this.structureTemplateManager = structureTemplateManager;
 		this.poolElement = poolElement;
 		this.pos = pos;
 		this.groundLevelDelta = groundLevelDelta;
@@ -43,7 +48,7 @@ public class PoolStructurePiece extends StructurePiece {
 
 	public PoolStructurePiece(StructureContext context, NbtCompound nbt) {
 		super(StructurePieceType.JIGSAW, nbt);
-		this.structureManager = context.structureTemplateManager();
+		this.structureTemplateManager = context.structureTemplateManager();
 		this.pos = new BlockPos(nbt.getInt("PosX"), nbt.getInt("PosY"), nbt.getInt("PosZ"));
 		this.groundLevelDelta = nbt.getInt("ground_level_delta");
 		DynamicOps<NbtElement> dynamicOps = RegistryOps.of(NbtOps.INSTANCE, context.registryManager());
@@ -52,7 +57,7 @@ public class PoolStructurePiece extends StructurePiece {
 			.resultOrPartial(LOGGER::error)
 			.orElseThrow(() -> new IllegalStateException("Invalid pool element found"));
 		this.rotation = BlockRotation.valueOf(nbt.getString("rotation"));
-		this.boundingBox = this.poolElement.getBoundingBox(this.structureManager, this.pos, this.rotation);
+		this.boundingBox = this.poolElement.getBoundingBox(this.structureTemplateManager, this.pos, this.rotation);
 		NbtList nbtList = nbt.getList("junctions", NbtElement.COMPOUND_TYPE);
 		this.junctions.clear();
 		nbtList.forEach(junctionTag -> this.junctions.add(JigsawJunction.deserialize(new Dynamic<>(dynamicOps, junctionTag))));
@@ -101,7 +106,8 @@ public class PoolStructurePiece extends StructurePiece {
 		BlockPos pivot,
 		boolean keepJigsaws
 	) {
-		this.poolElement.generate(this.structureManager, world, structureAccessor, chunkGenerator, this.pos, pivot, this.rotation, boundingBox, random, keepJigsaws);
+		this.poolElement
+			.generate(this.structureTemplateManager, world, structureAccessor, chunkGenerator, this.pos, pivot, this.rotation, boundingBox, random, keepJigsaws);
 	}
 
 	@Override

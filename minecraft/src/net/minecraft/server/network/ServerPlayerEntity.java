@@ -44,11 +44,11 @@ import net.minecraft.item.WrittenBookItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.network.MessageSender;
-import net.minecraft.network.MessageType;
 import net.minecraft.network.Packet;
 import net.minecraft.network.encryption.PlayerPublicKey;
-import net.minecraft.network.encryption.SignedChatMessage;
+import net.minecraft.network.message.MessageSender;
+import net.minecraft.network.message.MessageType;
+import net.minecraft.network.message.SignedMessage;
 import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
@@ -1295,7 +1295,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	 * Sends a message to the player.
 	 * 
 	 * @see #sendMessage(Text)
-	 * @see #sendChatMessage(SignedChatMessage, ChatMessageSender, RegistryKey)
+	 * @see #sendChatMessage(SignedMessage, ChatMessageSender, RegistryKey)
 	 */
 	public void sendMessage(Text message, RegistryKey<MessageType> typeKey) {
 		if (this.acceptsMessage(typeKey)) {
@@ -1323,17 +1323,17 @@ public class ServerPlayerEntity extends PlayerEntity {
 	 * Sends a chat message to the player.
 	 * 
 	 * <p>Chat messages have signatures. It is possible to use a bogus signature - such as
-	 * {@link net.minecraft.network.encryption.ChatMessageSignature#none} - to send a chat
+	 * {@link net.minecraft.network.message.MessageSignature#none} - to send a chat
 	 * message; however if the signature is invalid (e.g. because the text's content differs
 	 * from the one sent by the client, or because the passed signature is invalid) the client
 	 * will log a warning. See {@link
-	 * net.minecraft.network.encryption.ChatMessageSignature#updateSignature} for how the
+	 * net.minecraft.network.message.MessageSignature#updateSignature} for how the
 	 * message is signed.
 	 * 
 	 * @see #sendMessage(Text)
 	 * @see #sendMessage(Text, RegistryKey)
 	 */
-	public void sendChatMessage(SignedChatMessage message, MessageSender sender, RegistryKey<MessageType> typeKey) {
+	public void sendChatMessage(SignedMessage message, MessageSender sender, RegistryKey<MessageType> typeKey) {
 		if (this.acceptsMessage(typeKey)) {
 			this.networkHandler
 				.sendPacket(

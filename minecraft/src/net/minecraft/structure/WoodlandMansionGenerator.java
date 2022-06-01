@@ -34,7 +34,9 @@ import net.minecraft.world.ServerWorldAccess;
  * the mansion placement}.
  */
 public class WoodlandMansionGenerator {
-	public static void addPieces(StructureManager manager, BlockPos pos, BlockRotation rotation, List<WoodlandMansionGenerator.Piece> pieces, Random random) {
+	public static void addPieces(
+		StructureTemplateManager manager, BlockPos pos, BlockRotation rotation, List<WoodlandMansionGenerator.Piece> pieces, Random random
+	) {
 		WoodlandMansionGenerator.MansionParameters mansionParameters = new WoodlandMansionGenerator.MansionParameters(random);
 		WoodlandMansionGenerator.LayoutGenerator layoutGenerator = new WoodlandMansionGenerator.LayoutGenerator(manager, random);
 		layoutGenerator.generate(pos, rotation, pieces, mansionParameters);
@@ -150,12 +152,12 @@ public class WoodlandMansionGenerator {
 	 * parameters}.
 	 */
 	static class LayoutGenerator {
-		private final StructureManager manager;
+		private final StructureTemplateManager manager;
 		private final Random random;
 		private int entranceI;
 		private int entranceJ;
 
-		public LayoutGenerator(StructureManager manager, Random random) {
+		public LayoutGenerator(StructureTemplateManager manager, Random random) {
 			this.manager = manager;
 			this.random = random;
 		}
@@ -570,7 +572,7 @@ public class WoodlandMansionGenerator {
 				}
 			}
 
-			BlockPos blockPos = Structure.applyTransformedOffset(new BlockPos(1, 0, 0), BlockMirror.NONE, blockRotation, 7, 7);
+			BlockPos blockPos = StructureTemplate.applyTransformedOffset(new BlockPos(1, 0, 0), BlockMirror.NONE, blockRotation, 7, 7);
 			blockRotation = blockRotation.rotate(rotation);
 			blockPos = blockPos.rotate(rotation);
 			BlockPos blockPos2 = pos.add(blockPos.getX(), 0, blockPos.getZ());
@@ -1125,15 +1127,15 @@ public class WoodlandMansionGenerator {
 	}
 
 	public static class Piece extends SimpleStructurePiece {
-		public Piece(StructureManager manager, String template, BlockPos pos, BlockRotation rotation) {
+		public Piece(StructureTemplateManager manager, String template, BlockPos pos, BlockRotation rotation) {
 			this(manager, template, pos, rotation, BlockMirror.NONE);
 		}
 
-		public Piece(StructureManager manager, String template, BlockPos pos, BlockRotation rotation, BlockMirror mirror) {
+		public Piece(StructureTemplateManager manager, String template, BlockPos pos, BlockRotation rotation, BlockMirror mirror) {
 			super(StructurePieceType.WOODLAND_MANSION, 0, manager, getId(template), template, createPlacementData(mirror, rotation), pos);
 		}
 
-		public Piece(StructureManager manager, NbtCompound nbt) {
+		public Piece(StructureTemplateManager manager, NbtCompound nbt) {
 			super(
 				StructurePieceType.WOODLAND_MANSION,
 				nbt,
@@ -1144,7 +1146,7 @@ public class WoodlandMansionGenerator {
 
 		@Override
 		protected Identifier getId() {
-			return getId(this.template);
+			return getId(this.templateIdString);
 		}
 
 		private static Identifier getId(String identifier) {

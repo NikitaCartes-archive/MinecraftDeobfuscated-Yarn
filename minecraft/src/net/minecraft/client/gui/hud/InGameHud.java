@@ -46,8 +46,8 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.MessageSender;
-import net.minecraft.network.MessageType;
+import net.minecraft.network.message.MessageSender;
+import net.minecraft.network.message.MessageType;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
@@ -108,6 +108,7 @@ public class InGameHud extends DrawableHelper {
 	private Text overlayMessage;
 	private int overlayRemaining;
 	private boolean overlayTinted;
+	private boolean field_39458;
 	public float vignetteDarkness = 1.0F;
 	private int heldItemTooltipFade;
 	private ItemStack currentStack = ItemStack.EMPTY;
@@ -1177,9 +1178,18 @@ public class InGameHud extends DrawableHelper {
 	}
 
 	public void setOverlayMessage(Text message, boolean tinted) {
+		this.method_44354(false);
 		this.overlayMessage = message;
 		this.overlayRemaining = 60;
 		this.overlayTinted = tinted;
+	}
+
+	public void method_44354(boolean bl) {
+		this.field_39458 = bl;
+	}
+
+	public boolean method_44353() {
+		return this.field_39458 && this.overlayRemaining > 0;
 	}
 
 	public void setTitleTicks(int fadeInTicks, int stayTicks, int fadeOutTicks) {

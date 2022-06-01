@@ -16,10 +16,10 @@ import net.minecraft.command.argument.BlockRotationArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.command.argument.RegistryKeyArgumentType;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.structure.Structure;
-import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.StructureStart;
+import net.minecraft.structure.StructureTemplate;
+import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolBasedGenerator;
 import net.minecraft.structure.processor.BlockRotStructureProcessor;
@@ -36,7 +36,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.structure.StructureType;
+import net.minecraft.world.gen.structure.Structure;
 
 public class PlaceCommand {
 	private static final SimpleCommandExceptionType FEATURE_FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.place.feature.failed"));
@@ -49,8 +49,8 @@ public class PlaceCommand {
 	);
 	private static final SimpleCommandExceptionType TEMPLATE_FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.place.template.failed"));
 	private static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) -> {
-		StructureManager structureManager = context.getSource().getWorld().getStructureManager();
-		return CommandSource.suggestIdentifiers(structureManager.streamStructures(), builder);
+		StructureTemplateManager structureTemplateManager = context.getSource().getWorld().getStructureTemplateManager();
+		return CommandSource.suggestIdentifiers(structureTemplateManager.streamTemplates(), builder);
 	};
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -115,14 +115,14 @@ public class PlaceCommand {
 							CommandManager.argument("structure", RegistryKeyArgumentType.registryKey(Registry.STRUCTURE_KEY))
 								.executes(
 									context -> executePlaceStructure(
-											context.getSource(), RegistryKeyArgumentType.getStructureTypeEntry(context, "structure"), new BlockPos(context.getSource().getPosition())
+											context.getSource(), RegistryKeyArgumentType.getStructureEntry(context, "structure"), new BlockPos(context.getSource().getPosition())
 										)
 								)
 								.then(
 									CommandManager.argument("pos", BlockPosArgumentType.blockPos())
 										.executes(
 											context -> executePlaceStructure(
-													context.getSource(), RegistryKeyArgumentType.getStructureTypeEntry(context, "structure"), BlockPosArgumentType.getLoadedBlockPos(context, "pos")
+													context.getSource(), RegistryKeyArgumentType.getStructureEntry(context, "structure"), BlockPosArgumentType.getLoadedBlockPos(context, "pos")
 												)
 										)
 								)
@@ -243,16 +243,16 @@ public class PlaceCommand {
 		}
 	}
 
-	public static int executePlaceStructure(ServerCommandSource source, RegistryEntry<StructureType> structureType, BlockPos pos) throws CommandSyntaxException {
+	public static int executePlaceStructure(ServerCommandSource source, RegistryEntry<Structure> structure, BlockPos pos) throws CommandSyntaxException {
 		ServerWorld serverWorld = source.getWorld();
-		StructureType structureType2 = structureType.value();
+		Structure structure2 = structure.value();
 		ChunkGenerator chunkGenerator = serverWorld.getChunkManager().getChunkGenerator();
-		StructureStart structureStart = structureType2.createStructureStart(
+		StructureStart structureStart = structure2.createStructureStart(
 			source.getRegistryManager(),
 			chunkGenerator,
 			chunkGenerator.getBiomeSource(),
 			serverWorld.getChunkManager().getNoiseConfig(),
-			serverWorld.getStructureManager(),
+			serverWorld.getStructureTemplateManager(),
 			serverWorld.getSeed(),
 			new ChunkPos(pos),
 			0,
@@ -277,7 +277,7 @@ public class PlaceCommand {
 							chunkPosx
 						)
 				);
-			String string = (String)structureType.getKey().map(key -> key.getValue().toString()).orElse("[unregistered]");
+			String string = (String)structure.getKey().map(key -> key.getValue().toString()).orElse("[unregistered]");
 			source.sendFeedback(Text.translatable("commands.place.structure.success", string, pos.getX(), pos.getY(), pos.getZ()), true);
 			return 1;
 		}
@@ -287,11 +287,11 @@ public class PlaceCommand {
 		ServerCommandSource source, Identifier id, BlockPos pos, BlockRotation rotation, BlockMirror mirror, float integrity, int seed
 	) throws CommandSyntaxException {
 		ServerWorld serverWorld = source.getWorld();
-		StructureManager structureManager = serverWorld.getStructureManager();
+		StructureTemplateManager structureTemplateManager = serverWorld.getStructureTemplateManager();
 
-		Optional<Structure> optional;
+		Optional<StructureTemplate> optional;
 		try {
-			optional = structureManager.getStructure(id);
+			optional = structureTemplateManager.getTemplate(id);
 		} catch (InvalidIdentifierException var13) {
 			throw TEMPLATE_INVALID_EXCEPTION.create(id);
 		}
@@ -299,8 +299,8 @@ public class PlaceCommand {
 		if (optional.isEmpty()) {
 			throw TEMPLATE_INVALID_EXCEPTION.create(id);
 		} else {
-			Structure structure = (Structure)optional.get();
-			throwOnUnloadedPos(serverWorld, new ChunkPos(pos), new ChunkPos(pos.add(structure.getSize())));
+			StructureTemplate structureTemplate = (StructureTemplate)optional.get();
+			throwOnUnloadedPos(serverWorld, new ChunkPos(pos), new ChunkPos(pos.add(structureTemplate.getSize())));
 			StructurePlacementData structurePlacementData = new StructurePlacementData().setMirror(mirror).setRotation(rotation);
 			if (integrity < 1.0F) {
 				structurePlacementData.clearProcessors()
@@ -308,7 +308,7 @@ public class PlaceCommand {
 					.setRandom(StructureBlockBlockEntity.createRandom((long)seed));
 			}
 
-			boolean bl = structure.place(serverWorld, pos, pos, structurePlacementData, StructureBlockBlockEntity.createRandom((long)seed), 2);
+			boolean bl = structureTemplate.place(serverWorld, pos, pos, structurePlacementData, StructureBlockBlockEntity.createRandom((long)seed), 2);
 			if (!bl) {
 				throw TEMPLATE_FAILED_EXCEPTION.create();
 			} else {

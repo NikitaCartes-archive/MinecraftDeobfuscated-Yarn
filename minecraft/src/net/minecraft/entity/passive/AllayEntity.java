@@ -415,4 +415,9 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 		int n = MathHelper.floor(box.maxY + 0.5);
 		return BlockPos.iterate(i, m, k, j, n, l);
 	}
+
+	@Override
+	public Vec3d getLeashOffset() {
+		return new Vec3d(0.0, (double)this.getStandingEyeHeight() * 0.6, (double)this.getWidth() * 0.1);
+	}
 }

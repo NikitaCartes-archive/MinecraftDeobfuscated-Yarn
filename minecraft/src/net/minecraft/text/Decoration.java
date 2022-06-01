@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
-import net.minecraft.network.MessageSender;
+import net.minecraft.network.message.MessageSender;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.StringIdentifiable;

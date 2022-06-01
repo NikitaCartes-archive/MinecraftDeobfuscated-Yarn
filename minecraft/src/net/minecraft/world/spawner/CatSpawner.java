@@ -7,7 +7,7 @@ import net.minecraft.entity.SpawnRestriction;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.ConfiguredStructureFeatureTags;
+import net.minecraft.tag.StructureTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.random.Random;
@@ -51,7 +51,7 @@ public class CatSpawner implements Spawner {
 								return this.spawnInHouse(world, blockPos);
 							}
 
-							if (world.getStructureAccessor().getStructureContaining(blockPos, ConfiguredStructureFeatureTags.CATS_SPAWN_IN).hasChildren()) {
+							if (world.getStructureAccessor().getStructureContaining(blockPos, StructureTags.CATS_SPAWN_IN).hasChildren()) {
 								return this.spawnInSwampHut(world, blockPos);
 							}
 						}

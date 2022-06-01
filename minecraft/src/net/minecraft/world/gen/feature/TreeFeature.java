@@ -13,7 +13,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
 import net.minecraft.state.property.Properties;
-import net.minecraft.structure.Structure;
+import net.minecraft.structure.StructureTemplate;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
@@ -158,7 +158,7 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 
 			return (Boolean)BlockBox.encompassPositions(Iterables.concat(set, set2, set3, set4)).map(blockBox -> {
 				VoxelSet voxelSet = placeLogsAndLeaves(structureWorldAccess, blockBox, set2, set4, set);
-				Structure.updateCorner(structureWorldAccess, Block.NOTIFY_ALL, voxelSet, blockBox.getMinX(), blockBox.getMinY(), blockBox.getMinZ());
+				StructureTemplate.updateCorner(structureWorldAccess, 3, voxelSet, blockBox.getMinX(), blockBox.getMinY(), blockBox.getMinZ());
 				return true;
 			}).orElse(false);
 		} else {

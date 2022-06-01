@@ -1,4 +1,4 @@
-package net.minecraft.client.util;
+package net.minecraft.util.function;
 
 import java.util.Objects;
 

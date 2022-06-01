@@ -3,8 +3,8 @@ package net.minecraft.structure.pool;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructurePlacementData;
+import net.minecraft.structure.StructureTemplate;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.structure.processor.StructureProcessorList;
 import net.minecraft.util.BlockRotation;
@@ -18,7 +18,7 @@ public class LegacySinglePoolElement extends SinglePoolElement {
 	);
 
 	protected LegacySinglePoolElement(
-		Either<Identifier, Structure> either, RegistryEntry<StructureProcessorList> registryEntry, StructurePool.Projection projection
+		Either<Identifier, StructureTemplate> either, RegistryEntry<StructureProcessorList> registryEntry, StructurePool.Projection projection
 	) {
 		super(either, registryEntry, projection);
 	}

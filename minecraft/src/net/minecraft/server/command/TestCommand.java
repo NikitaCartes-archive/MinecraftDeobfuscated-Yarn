@@ -217,12 +217,12 @@ public class TestCommand {
 		);
 	}
 
-	private static int executeCreate(ServerCommandSource source, String structure, int x, int y, int z) {
+	private static int executeCreate(ServerCommandSource source, String testName, int x, int y, int z) {
 		if (x <= 48 && y <= 48 && z <= 48) {
 			ServerWorld serverWorld = source.getWorld();
 			BlockPos blockPos = new BlockPos(source.getPosition());
 			BlockPos blockPos2 = new BlockPos(blockPos.getX(), source.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY(), blockPos.getZ() + 3);
-			StructureTestUtil.createTestArea(structure.toLowerCase(), blockPos2, new Vec3i(x, y, z), BlockRotation.NONE, serverWorld);
+			StructureTestUtil.createTestArea(testName.toLowerCase(), blockPos2, new Vec3i(x, y, z), BlockRotation.NONE, serverWorld);
 
 			for (int i = 0; i < x; i++) {
 				for (int j = 0; j < z; j++) {
@@ -430,11 +430,11 @@ public class TestCommand {
 		}
 	}
 
-	private static int executeExport(ServerCommandSource source, String structure) {
+	private static int executeExport(ServerCommandSource source, String testName) {
 		Path path = Paths.get(StructureTestUtil.testStructuresDirectoryName);
-		Identifier identifier = new Identifier("minecraft", structure);
-		Path path2 = source.getWorld().getStructureManager().getStructurePath(identifier, ".nbt");
-		Path path3 = NbtProvider.convertNbtToSnbt(DataWriter.UNCACHED, path2, structure, path);
+		Identifier identifier = new Identifier("minecraft", testName);
+		Path path2 = source.getWorld().getStructureTemplateManager().getTemplatePath(identifier, ".nbt");
+		Path path3 = NbtProvider.convertNbtToSnbt(DataWriter.UNCACHED, path2, testName, path);
 		if (path3 == null) {
 			sendMessage(source, "Failed to export " + path2);
 			return 1;
@@ -447,15 +447,15 @@ public class TestCommand {
 				return 1;
 			}
 
-			sendMessage(source, "Exported " + structure + " to " + path3.toAbsolutePath());
+			sendMessage(source, "Exported " + testName + " to " + path3.toAbsolutePath());
 			return 0;
 		}
 	}
 
-	private static int executeImport(ServerCommandSource source, String structure) {
-		Path path = Paths.get(StructureTestUtil.testStructuresDirectoryName, structure + ".snbt");
-		Identifier identifier = new Identifier("minecraft", structure);
-		Path path2 = source.getWorld().getStructureManager().getStructurePath(identifier, ".nbt");
+	private static int executeImport(ServerCommandSource source, String testName) {
+		Path path = Paths.get(StructureTestUtil.testStructuresDirectoryName, testName + ".snbt");
+		Identifier identifier = new Identifier("minecraft", testName);
+		Path path2 = source.getWorld().getStructureTemplateManager().getTemplatePath(identifier, ".nbt");
 
 		try {
 			BufferedReader bufferedReader = Files.newBufferedReader(path);
@@ -484,7 +484,7 @@ public class TestCommand {
 			sendMessage(source, "Imported to " + path2.toAbsolutePath());
 			return 0;
 		} catch (CommandSyntaxException | IOException var12) {
-			System.err.println("Failed to load structure " + structure);
+			System.err.println("Failed to load structure " + testName);
 			var12.printStackTrace();
 			return 1;
 		}

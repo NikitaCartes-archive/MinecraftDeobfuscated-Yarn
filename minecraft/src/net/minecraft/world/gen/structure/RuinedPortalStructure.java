@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import net.minecraft.block.BlockState;
 import net.minecraft.structure.RuinedPortalStructurePiece;
-import net.minecraft.structure.Structure;
+import net.minecraft.structure.StructureTemplate;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
@@ -28,7 +28,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.VerticalBlockSample;
 import net.minecraft.world.gen.noise.NoiseConfig;
 
-public class RuinedPortalStructure extends StructureType {
+public class RuinedPortalStructure extends Structure {
 	private static final String[] COMMON_PORTAL_STRUCTURE_IDS = new String[]{
 		"ruined_portal/portal_1",
 		"ruined_portal/portal_2",
@@ -55,17 +55,17 @@ public class RuinedPortalStructure extends StructureType {
 				.apply(instance, RuinedPortalStructure::new)
 	);
 
-	public RuinedPortalStructure(StructureType.Config config, List<RuinedPortalStructure.Setup> setups) {
+	public RuinedPortalStructure(Structure.Config config, List<RuinedPortalStructure.Setup> setups) {
 		super(config);
 		this.setups = setups;
 	}
 
-	public RuinedPortalStructure(StructureType.Config config, RuinedPortalStructure.Setup setup) {
+	public RuinedPortalStructure(Structure.Config config, RuinedPortalStructure.Setup setup) {
 		this(config, List.of(setup));
 	}
 
 	@Override
-	public Optional<StructureType.StructurePosition> getStructurePosition(StructureType.Context context) {
+	public Optional<Structure.StructurePosition> getStructurePosition(Structure.Context context) {
 		RuinedPortalStructurePiece.Properties properties = new RuinedPortalStructurePiece.Properties();
 		ChunkRandom chunkRandom = context.random();
 		RuinedPortalStructure.Setup setup = null;
@@ -105,15 +105,15 @@ public class RuinedPortalStructure extends StructureType {
 				identifier = new Identifier(COMMON_PORTAL_STRUCTURE_IDS[chunkRandom.nextInt(COMMON_PORTAL_STRUCTURE_IDS.length)]);
 			}
 
-			Structure structure = context.structureManager().getStructureOrBlank(identifier);
+			StructureTemplate structureTemplate = context.structureTemplateManager().getTemplateOrBlank(identifier);
 			BlockRotation blockRotation = Util.getRandom(BlockRotation.values(), chunkRandom);
 			BlockMirror blockMirror = chunkRandom.nextFloat() < 0.5F ? BlockMirror.NONE : BlockMirror.FRONT_BACK;
-			BlockPos blockPos = new BlockPos(structure.getSize().getX() / 2, 0, structure.getSize().getZ() / 2);
+			BlockPos blockPos = new BlockPos(structureTemplate.getSize().getX() / 2, 0, structureTemplate.getSize().getZ() / 2);
 			ChunkGenerator chunkGenerator = context.chunkGenerator();
 			HeightLimitView heightLimitView = context.world();
 			NoiseConfig noiseConfig = context.noiseConfig();
 			BlockPos blockPos2 = context.chunkPos().getStartPos();
-			BlockBox blockBox = structure.calculateBoundingBox(blockPos2, blockRotation, blockPos, blockMirror);
+			BlockBox blockBox = structureTemplate.calculateBoundingBox(blockPos2, blockRotation, blockPos, blockMirror);
 			BlockPos blockPos3 = blockBox.getCenter();
 			int i = chunkGenerator.getHeight(
 					blockPos3.getX(), blockPos3.getZ(), RuinedPortalStructurePiece.getHeightmapType(setup4.placement()), heightLimitView, noiseConfig
@@ -124,7 +124,7 @@ public class RuinedPortalStructure extends StructureType {
 			);
 			BlockPos blockPos4 = new BlockPos(blockPos2.getX(), j, blockPos2.getZ());
 			return Optional.of(
-				new StructureType.StructurePosition(
+				new Structure.StructurePosition(
 					blockPos4,
 					structurePiecesCollector -> {
 						if (setup4.canBeCold()) {
@@ -143,7 +143,7 @@ public class RuinedPortalStructure extends StructureType {
 
 						structurePiecesCollector.addPiece(
 							new RuinedPortalStructurePiece(
-								context.structureManager(), blockPos4, setup4.placement(), properties, identifier, structure, blockRotation, blockMirror, blockPos
+								context.structureTemplateManager(), blockPos4, setup4.placement(), properties, identifier, structureTemplate, blockRotation, blockMirror, blockPos
 							)
 						);
 					}
@@ -232,8 +232,8 @@ public class RuinedPortalStructure extends StructureType {
 	}
 
 	@Override
-	public net.minecraft.structure.StructureType<?> getType() {
-		return net.minecraft.structure.StructureType.RUINED_PORTAL;
+	public StructureType<?> getType() {
+		return StructureType.RUINED_PORTAL;
 	}
 
 	public static record Setup(
