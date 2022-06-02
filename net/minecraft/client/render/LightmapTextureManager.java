@@ -92,7 +92,7 @@ implements AutoCloseable {
     private float getDarknessFactor(float delta) {
         StatusEffectInstance statusEffectInstance;
         if (this.client.player.hasStatusEffect(StatusEffects.DARKNESS) && (statusEffectInstance = this.client.player.getStatusEffect(StatusEffects.DARKNESS)) != null && statusEffectInstance.getFactorCalculationData().isPresent()) {
-            return statusEffectInstance.getFactorCalculationData().get().lerp(delta);
+            return statusEffectInstance.getFactorCalculationData().get().lerp(this.client.player, delta);
         }
         return 0.0f;
     }

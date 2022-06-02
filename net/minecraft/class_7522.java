@@ -18,10 +18,19 @@ public interface class_7522<T> {
 
     public void method_39793(Consumer<T> var1);
 
+    /**
+     * Writes this container to the packet byte buffer.
+     * 
+     * @param buf the packet byte buffer
+     */
     public void writePacket(PacketByteBuf var1);
 
     public int getPacketSize();
 
+    /**
+     * {@return {@code true} if any object in this container's palette matches
+     * this predicate}
+     */
     public boolean hasAny(Predicate<T> var1);
 
     public void count(PalettedContainer.Counter<T> var1);

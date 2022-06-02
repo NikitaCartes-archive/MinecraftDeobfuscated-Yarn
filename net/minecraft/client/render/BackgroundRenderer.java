@@ -327,7 +327,7 @@ public class BackgroundRenderer {
             if (effect.getFactorCalculationData().isEmpty()) {
                 return;
             }
-            float f = MathHelper.lerp(effect.getFactorCalculationData().get().lerp(tickDelta), viewDistance, 15.0f);
+            float f = MathHelper.lerp(effect.getFactorCalculationData().get().lerp(entity, tickDelta), viewDistance, 15.0f);
             fogData.fogStart = fogData.fogType == FogType.FOG_SKY ? 0.0f : f * 0.75f;
             fogData.fogEnd = f;
         }
@@ -337,7 +337,7 @@ public class BackgroundRenderer {
             if (effect.getFactorCalculationData().isEmpty()) {
                 return 0.0f;
             }
-            return 1.0f - effect.getFactorCalculationData().get().lerp(tickDelta);
+            return 1.0f - effect.getFactorCalculationData().get().lerp(entity, tickDelta);
         }
     }
 }
