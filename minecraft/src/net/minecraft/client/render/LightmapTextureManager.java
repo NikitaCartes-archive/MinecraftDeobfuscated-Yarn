@@ -89,7 +89,7 @@ public class LightmapTextureManager implements AutoCloseable {
 		if (this.client.player.hasStatusEffect(StatusEffects.DARKNESS)) {
 			StatusEffectInstance statusEffectInstance = this.client.player.getStatusEffect(StatusEffects.DARKNESS);
 			if (statusEffectInstance != null && statusEffectInstance.getFactorCalculationData().isPresent()) {
-				return ((StatusEffectInstance.FactorCalculationData)statusEffectInstance.getFactorCalculationData().get()).lerp(delta);
+				return ((StatusEffectInstance.FactorCalculationData)statusEffectInstance.getFactorCalculationData().get()).lerp(this.client.player, delta);
 			}
 		}
 

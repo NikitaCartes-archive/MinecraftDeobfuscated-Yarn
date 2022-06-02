@@ -11,14 +11,23 @@ import net.minecraft.util.collection.IndexedIterable;
 import net.minecraft.world.chunk.PalettedContainer;
 
 public interface class_7522<T> {
-	T get(int i, int j, int k);
+	T get(int x, int y, int z);
 
 	void method_39793(Consumer<T> consumer);
 
-	void writePacket(PacketByteBuf packetByteBuf);
+	/**
+	 * Writes this container to the packet byte buffer.
+	 * 
+	 * @param buf the packet byte buffer
+	 */
+	void writePacket(PacketByteBuf buf);
 
 	int getPacketSize();
 
+	/**
+	 * {@return {@code true} if any object in this container's palette matches
+	 * this predicate}
+	 */
 	boolean hasAny(Predicate<T> predicate);
 
 	void count(PalettedContainer.Counter<T> counter);

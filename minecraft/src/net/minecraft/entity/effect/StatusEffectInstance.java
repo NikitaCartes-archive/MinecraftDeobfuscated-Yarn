@@ -380,8 +380,12 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 			this.factorCurrent = MathHelper.lerp(f, this.field_39111, this.factorTarget);
 		}
 
-		public float lerp(float factor) {
-			return MathHelper.lerp(factor, this.factorPreviousFrame, this.factorCurrent);
+		public float lerp(LivingEntity livingEntity, float f) {
+			if (livingEntity.isRemoved()) {
+				this.factorPreviousFrame = this.factorCurrent;
+			}
+
+			return MathHelper.lerp(f, this.factorPreviousFrame, this.factorCurrent);
 		}
 	}
 }

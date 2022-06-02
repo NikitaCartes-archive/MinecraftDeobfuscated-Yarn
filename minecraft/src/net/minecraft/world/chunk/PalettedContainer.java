@@ -178,8 +178,8 @@ public class PalettedContainer<T> implements PaletteResizeListener<T>, class_752
 	}
 
 	@Override
-	public T get(int i, int j, int k) {
-		return this.get(this.paletteProvider.computeIndex(i, j, k));
+	public T get(int x, int y, int z) {
+		return this.get(this.paletteProvider.computeIndex(x, y, z));
 	}
 
 	protected T get(int index) {
@@ -216,11 +216,11 @@ public class PalettedContainer<T> implements PaletteResizeListener<T>, class_752
 	}
 
 	@Override
-	public void writePacket(PacketByteBuf packetByteBuf) {
+	public void writePacket(PacketByteBuf buf) {
 		this.lock();
 
 		try {
-			this.data.writePacket(packetByteBuf);
+			this.data.writePacket(buf);
 		} finally {
 			this.unlock();
 		}
