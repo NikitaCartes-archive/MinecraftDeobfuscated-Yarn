@@ -296,7 +296,9 @@ public class BackgroundRenderer {
 		@Override
 		public void applyStartEndModifier(BackgroundRenderer.FogData fogData, LivingEntity entity, StatusEffectInstance effect, float viewDistance, float tickDelta) {
 			if (!effect.getFactorCalculationData().isEmpty()) {
-				float f = MathHelper.lerp(((StatusEffectInstance.FactorCalculationData)effect.getFactorCalculationData().get()).lerp(tickDelta), viewDistance, 15.0F);
+				float f = MathHelper.lerp(
+					((StatusEffectInstance.FactorCalculationData)effect.getFactorCalculationData().get()).lerp(entity, tickDelta), viewDistance, 15.0F
+				);
 				fogData.fogStart = fogData.fogType == BackgroundRenderer.FogType.FOG_SKY ? 0.0F : f * 0.75F;
 				fogData.fogEnd = f;
 			}
@@ -306,7 +308,7 @@ public class BackgroundRenderer {
 		public float applyColorModifier(LivingEntity entity, StatusEffectInstance effect, float f, float tickDelta) {
 			return effect.getFactorCalculationData().isEmpty()
 				? 0.0F
-				: 1.0F - ((StatusEffectInstance.FactorCalculationData)effect.getFactorCalculationData().get()).lerp(tickDelta);
+				: 1.0F - ((StatusEffectInstance.FactorCalculationData)effect.getFactorCalculationData().get()).lerp(entity, tickDelta);
 		}
 	}
 

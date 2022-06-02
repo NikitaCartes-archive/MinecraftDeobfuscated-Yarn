@@ -1,9 +1,7 @@
-package net.minecraft.network;
+package net.minecraft.network.message;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
-import net.minecraft.network.message.MessageSignature;
-import net.minecraft.network.message.SignedMessage;
 import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
