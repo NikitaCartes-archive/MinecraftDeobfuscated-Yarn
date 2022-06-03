@@ -126,15 +126,27 @@ extends Item {
             return false;
         }
         NbtList nbtList = nbtCompound.getList(PAGES_KEY, NbtElement.STRING_TYPE);
+        NbtList nbtList2 = new NbtList();
         for (int i = 0; i < nbtList.size(); ++i) {
-            nbtList.set(i, NbtString.of(WrittenBookItem.textToJson(commandSource, player, nbtList.getString(i))));
+            String string = WrittenBookItem.textToJson(commandSource, player, nbtList.getString(i));
+            if (string.length() > Short.MAX_VALUE) {
+                return false;
+            }
+            nbtList2.add(i, NbtString.of(string));
         }
         if (nbtCompound.contains(FILTERED_PAGES_KEY, NbtElement.COMPOUND_TYPE)) {
             NbtCompound nbtCompound2 = nbtCompound.getCompound(FILTERED_PAGES_KEY);
-            for (String string : nbtCompound2.getKeys()) {
-                nbtCompound2.putString(string, WrittenBookItem.textToJson(commandSource, player, nbtCompound2.getString(string)));
+            NbtCompound nbtCompound3 = new NbtCompound();
+            for (String string2 : nbtCompound2.getKeys()) {
+                String string3 = WrittenBookItem.textToJson(commandSource, player, nbtCompound2.getString(string2));
+                if (string3.length() > Short.MAX_VALUE) {
+                    return false;
+                }
+                nbtCompound3.putString(string2, string3);
             }
+            nbtCompound.put(FILTERED_PAGES_KEY, nbtCompound3);
         }
+        nbtCompound.put(PAGES_KEY, nbtList2);
         return true;
     }
 
