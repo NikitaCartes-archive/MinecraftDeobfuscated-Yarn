@@ -118,19 +118,34 @@ public class WrittenBookItem extends Item {
 				return false;
 			} else {
 				NbtList nbtList = nbtCompound.getList("pages", NbtElement.STRING_TYPE);
+				NbtList nbtList2 = new NbtList();
 
 				for (int i = 0; i < nbtList.size(); i++) {
-					nbtList.set(i, (NbtElement)NbtString.of(textToJson(commandSource, player, nbtList.getString(i))));
+					String string = textToJson(commandSource, player, nbtList.getString(i));
+					if (string.length() > 32767) {
+						return false;
+					}
+
+					nbtList2.add(i, (NbtElement)NbtString.of(string));
 				}
 
 				if (nbtCompound.contains("filtered_pages", NbtElement.COMPOUND_TYPE)) {
 					NbtCompound nbtCompound2 = nbtCompound.getCompound("filtered_pages");
+					NbtCompound nbtCompound3 = new NbtCompound();
 
-					for (String string : nbtCompound2.getKeys()) {
-						nbtCompound2.putString(string, textToJson(commandSource, player, nbtCompound2.getString(string)));
+					for (String string2 : nbtCompound2.getKeys()) {
+						String string3 = textToJson(commandSource, player, nbtCompound2.getString(string2));
+						if (string3.length() > 32767) {
+							return false;
+						}
+
+						nbtCompound3.putString(string2, string3);
 					}
+
+					nbtCompound.put("filtered_pages", nbtCompound3);
 				}
 
+				nbtCompound.put("pages", nbtList2);
 				return true;
 			}
 		} else {
