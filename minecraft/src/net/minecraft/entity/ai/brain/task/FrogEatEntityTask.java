@@ -134,7 +134,7 @@ public class FrogEatEntityTask extends Task<FrogEntity> {
 
 	private boolean isTargetReachable(FrogEntity entity, LivingEntity target) {
 		Path path = entity.getNavigation().findPathTo(target, 0);
-		return path.getManhattanDistanceFromTarget() < 1.75F;
+		return path != null && path.getManhattanDistanceFromTarget() < 1.75F;
 	}
 
 	private void markTargetAsUnreachable(FrogEntity entity, LivingEntity target) {

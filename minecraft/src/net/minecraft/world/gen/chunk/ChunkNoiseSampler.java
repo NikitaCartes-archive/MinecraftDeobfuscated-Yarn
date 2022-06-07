@@ -319,10 +319,10 @@ public class ChunkNoiseSampler implements DensityFunction.class_6911, DensityFun
 		this.interpolators.forEach(interpolator -> interpolator.sampleNoiseX(d));
 	}
 
-	public void sampleNoise(int i, double d) {
+	public void sampleNoiseZ(int i, double d) {
 		this.field_36576 = i - this.field_36573;
 		this.field_36577++;
-		this.interpolators.forEach(interpolator -> interpolator.sampleNoise(d));
+		this.interpolators.forEach(interpolator -> interpolator.sampleNoiseZ(d));
 	}
 
 	public void method_40537() {
@@ -341,11 +341,11 @@ public class ChunkNoiseSampler implements DensityFunction.class_6911, DensityFun
 		return this.aquiferSampler;
 	}
 
-	protected int method_42361() {
+	protected int getHorizontalBlockSize() {
 		return this.horizontalBlockSize;
 	}
 
-	protected int method_42362() {
+	protected int getVerticalBlockSize() {
 		return this.verticalBlockSize;
 	}
 
@@ -461,7 +461,7 @@ public class ChunkNoiseSampler implements DensityFunction.class_6911, DensityFun
 			this.z1 = MathHelper.lerp(deltaX, this.x0z1, this.x1z1);
 		}
 
-		void sampleNoise(double deltaZ) {
+		void sampleNoiseZ(double deltaZ) {
 			this.result = MathHelper.lerp(deltaZ, this.z0, this.z1);
 		}
 

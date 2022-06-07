@@ -235,8 +235,8 @@ public class DensityFunctions {
 		);
 	}
 
-	public static float method_41546(float f) {
-		return -(Math.abs(Math.abs(f) - 0.6666667F) - 0.33333334F) * 3.0F;
+	public static float getPeaksValleysNoise(float weirdness) {
+		return -(Math.abs(Math.abs(weirdness) - 0.6666667F) - 0.33333334F) * 3.0F;
 	}
 
 	private static DensityFunction createCavesSpaghettiRoughnessOverworldFunction() {

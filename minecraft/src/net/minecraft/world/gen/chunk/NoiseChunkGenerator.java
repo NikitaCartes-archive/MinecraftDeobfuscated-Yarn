@@ -161,7 +161,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 				+ " W: "
 				+ decimalFormat.format(d)
 				+ " PV: "
-				+ decimalFormat.format((double)DensityFunctions.method_41546((float)d))
+				+ decimalFormat.format((double)DensityFunctions.getPeaksValleysNoise((float)d))
 				+ " AS: "
 				+ decimalFormat.format(noiseRouter.initialDensityWithoutJaggedness().sample(unblendedNoisePos))
 				+ " N: "
@@ -224,7 +224,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 					double f = (double)w / (double)k;
 					chunkNoiseSampler.sampleNoiseY(x, f);
 					chunkNoiseSampler.sampleNoiseX(i, d);
-					chunkNoiseSampler.sampleNoise(j, e);
+					chunkNoiseSampler.sampleNoiseZ(j, e);
 					BlockState blockState = chunkNoiseSampler.sampleBlockState();
 					BlockState blockState2 = blockState == null ? this.defaultBlock : blockState;
 					if (blockStates != null) {
@@ -368,8 +368,8 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		AquiferSampler aquiferSampler = chunkNoiseSampler.getAquiferSampler();
 		chunkNoiseSampler.sampleStartNoise();
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
-		int m = chunkNoiseSampler.method_42361();
-		int n = chunkNoiseSampler.method_42362();
+		int m = chunkNoiseSampler.getHorizontalBlockSize();
+		int n = chunkNoiseSampler.getVerticalBlockSize();
 		int o = 16 / m;
 		int p = 16 / m;
 
@@ -403,7 +403,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 								int ab = l + r * m + aa;
 								int ac = ab & 15;
 								double f = (double)aa / (double)m;
-								chunkNoiseSampler.sampleNoise(ab, f);
+								chunkNoiseSampler.sampleNoiseZ(ab, f);
 								BlockState blockState = chunkNoiseSampler.sampleBlockState();
 								if (blockState == null) {
 									blockState = this.defaultBlock;

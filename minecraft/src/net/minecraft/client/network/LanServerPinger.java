@@ -1,4 +1,4 @@
-package net.minecraft.server;
+package net.minecraft.client.network;
 
 import com.mojang.logging.LogUtils;
 import java.io.IOException;

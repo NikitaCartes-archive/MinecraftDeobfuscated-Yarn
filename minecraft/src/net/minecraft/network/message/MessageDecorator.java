@@ -19,9 +19,10 @@ import net.minecraft.text.Text;
  * "Only Show Secure Chat" option}, they will see the undecorated message. Therefore,
  * message decorator is <strong>not recommended for censoring messages</strong>.
  * 
- * <p>It is <strong>very important that the decorator be idempotent; i.e. return the
- * same text when given the same text (and sender)</strong>. If this is not followed
- * correctly, the server will discard the message. For example, a decorator that appends
+ * <p>It is <strong>very important that the decorator be pure; i.e. return the
+ * same text when given the same text (and sender)</strong>. Otherwise, the server
+ * detects a mismatch between the preview and the actual message, and discards the message
+ * as it is now considered improperly signed. For example, a decorator that appends
  * the time the decoration was applied would be likely to fail, since there is usually
  * a delay between the previewing and the submission.
  */

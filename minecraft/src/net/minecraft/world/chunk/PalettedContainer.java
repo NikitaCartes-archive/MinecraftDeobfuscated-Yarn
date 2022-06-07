@@ -317,7 +317,7 @@ public class PalettedContainer<T> implements PaletteResizeListener<T>, class_752
 	}
 
 	public PalettedContainer<T> copy() {
-		return new PalettedContainer<>(this.idList, this.paletteProvider, this.data.method_44338());
+		return new PalettedContainer<>(this.idList, this.paletteProvider, this.data.copy());
 	}
 
 	@Override
@@ -380,7 +380,7 @@ public class PalettedContainer<T> implements PaletteResizeListener<T>, class_752
 			buf.writeLongArray(this.storage.getData());
 		}
 
-		public PalettedContainer.Data<T> method_44338() {
+		public PalettedContainer.Data<T> copy() {
 			return new PalettedContainer.Data<>(this.configuration, this.storage.copy(), this.palette.copy());
 		}
 	}

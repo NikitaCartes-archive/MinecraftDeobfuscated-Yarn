@@ -105,11 +105,11 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 		float h = MultiNoiseUtil.method_38666(noiseValuePoint.temperatureNoise());
 		float l = MultiNoiseUtil.method_38666(noiseValuePoint.humidityNoise());
 		float m = MultiNoiseUtil.method_38666(noiseValuePoint.weirdnessNoise());
-		double d = (double)DensityFunctions.method_41546(m);
+		double d = (double)DensityFunctions.getPeaksValleysNoise(m);
 		VanillaBiomeParameters vanillaBiomeParameters = new VanillaBiomeParameters();
 		info.add(
 			"Biome builder PV: "
-				+ VanillaBiomeParameters.getWeirdnessDescription(d)
+				+ VanillaBiomeParameters.getPeaksValleysDescription(d)
 				+ " C: "
 				+ vanillaBiomeParameters.getContinentalnessDescription((double)f)
 				+ " E: "
