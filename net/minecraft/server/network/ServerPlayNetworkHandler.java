@@ -1137,7 +1137,7 @@ ServerPlayPacketListener {
             this.disconnect(Text.translatable("multiplayer.disconnect.illegal_characters"));
             return;
         }
-        if (this.method_44337(packet.getChatMessage(), packet.getTimestamp())) {
+        if (this.canAcceptMessage(packet.getChatMessage(), packet.getTimestamp())) {
             this.filterText(packet.getChatMessage(), message -> this.handleMessage(packet, (FilteredMessage<String>)message));
         }
     }
@@ -1149,21 +1149,29 @@ ServerPlayPacketListener {
             return;
         }
         NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
-        if (this.method_44337(packet.command(), packet.timestamp())) {
+        if (this.canAcceptMessage(packet.command(), packet.timestamp())) {
             ServerCommandSource serverCommandSource = this.player.getCommandSource().withSigner(packet.createArgumentsSigner(this.player.getUuid()));
             this.server.getCommandManager().execute(serverCommandSource, packet.command());
             this.checkForSpam();
         }
     }
 
-    private boolean method_44337(String string, Instant instant) {
-        if (!this.isDisordered(instant)) {
-            LOGGER.warn("{} sent out-of-order chat: '{}'", (Object)this.player.getName().getString(), (Object)string);
+    /**
+     * {@return whether {@code message}, sent at {@code timestamp}, should be accepted}
+     * 
+     * @implNote This returns {@code false} if the message arrives in {@linkplain
+     * #isInProperOrder improper order} or if {@linkplain #checkChatDisabled chat is disabled}.
+     * This also logs a warning when the message is {@linkplain #isExpired expired}, but
+     * the message is still accepted in this case.
+     */
+    private boolean canAcceptMessage(String message, Instant timestamp) {
+        if (!this.isInProperOrder(timestamp)) {
+            LOGGER.warn("{} sent out-of-order chat: '{}'", (Object)this.player.getName().getString(), (Object)message);
             this.disconnect(Text.translatable("multiplayer.disconnect.out_of_order_chat"));
             return false;
         }
-        if (this.isExpired(instant)) {
-            LOGGER.warn("{} sent expired chat: '{}'. Is the client/server system time unsynchronized?", (Object)this.player.getName().getString(), (Object)string);
+        if (this.isExpired(timestamp)) {
+            LOGGER.warn("{} sent expired chat: '{}'. Is the client/server system time unsynchronized?", (Object)this.player.getName().getString(), (Object)message);
         }
         return this.checkChatEnabled();
     }
@@ -1171,7 +1179,7 @@ ServerPlayPacketListener {
     /**
      * {@return whether the message sent at {@code timestamp} is expired}
      * 
-     * <p>If {@code true}, the message will be discarded.
+     * <p>If {@code true}, the server logs a warning, but the message will still be accepted.
      * 
      * @see ChatMessageC2SPacket#TIME_TO_LIVE
      */
@@ -1181,11 +1189,11 @@ ServerPlayPacketListener {
     }
 
     /**
-     * {@return whether the message sent at {@code timestamp} is received with improper order}
+     * {@return whether the message sent at {@code timestamp} is received in proper order}
      * 
-     * <p>If {@code true}, the message will be discarded.
+     * <p>If {@code false}, the message will be discarded.
      */
-    private boolean isDisordered(Instant timestamp) {
+    private boolean isInProperOrder(Instant timestamp) {
         Instant instant;
         do {
             if (!timestamp.isBefore(instant = this.lastMessageTimestamp.get())) continue;

@@ -133,8 +133,8 @@ public class DensityFunctions {
         return DensityFunctionTypes.mul(DensityFunctionTypes.add(DensityFunctionTypes.add(densityFunction.abs(), DensityFunctionTypes.constant(-0.6666666666666666)).abs(), DensityFunctionTypes.constant(-0.3333333333333333)), DensityFunctionTypes.constant(-3.0));
     }
 
-    public static float method_41546(float f) {
-        return -(Math.abs(Math.abs(f) - 0.6666667f) - 0.33333334f) * 3.0f;
+    public static float getPeaksValleysNoise(float weirdness) {
+        return -(Math.abs(Math.abs(weirdness) - 0.6666667f) - 0.33333334f) * 3.0f;
     }
 
     private static DensityFunction createCavesSpaghettiRoughnessOverworldFunction() {

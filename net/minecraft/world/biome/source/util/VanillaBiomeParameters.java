@@ -373,17 +373,17 @@ public final class VanillaBiomeParameters {
         return d < (double)-0.225f && e > (double)0.9f;
     }
 
-    public static String getWeirdnessDescription(double weirdness) {
-        if (weirdness < (double)DensityFunctions.method_41546(0.05f)) {
+    public static String getPeaksValleysDescription(double weirdness) {
+        if (weirdness < (double)DensityFunctions.getPeaksValleysNoise(0.05f)) {
             return "Valley";
         }
-        if (weirdness < (double)DensityFunctions.method_41546(0.26666668f)) {
+        if (weirdness < (double)DensityFunctions.getPeaksValleysNoise(0.26666668f)) {
             return "Low";
         }
-        if (weirdness < (double)DensityFunctions.method_41546(0.4f)) {
+        if (weirdness < (double)DensityFunctions.getPeaksValleysNoise(0.4f)) {
             return "Mid";
         }
-        if (weirdness < (double)DensityFunctions.method_41546(0.56666666f)) {
+        if (weirdness < (double)DensityFunctions.getPeaksValleysNoise(0.56666666f)) {
             return "High";
         }
         return "Peak";
@@ -455,7 +455,7 @@ public final class VanillaBiomeParameters {
 
     @Debug
     public MultiNoiseUtil.ParameterRange[] getWeirdnessParameters() {
-        return new MultiNoiseUtil.ParameterRange[]{MultiNoiseUtil.ParameterRange.of(-2.0f, DensityFunctions.method_41546(0.05f)), MultiNoiseUtil.ParameterRange.of(DensityFunctions.method_41546(0.05f), DensityFunctions.method_41546(0.26666668f)), MultiNoiseUtil.ParameterRange.of(DensityFunctions.method_41546(0.26666668f), DensityFunctions.method_41546(0.4f)), MultiNoiseUtil.ParameterRange.of(DensityFunctions.method_41546(0.4f), DensityFunctions.method_41546(0.56666666f)), MultiNoiseUtil.ParameterRange.of(DensityFunctions.method_41546(0.56666666f), 2.0f)};
+        return new MultiNoiseUtil.ParameterRange[]{MultiNoiseUtil.ParameterRange.of(-2.0f, DensityFunctions.getPeaksValleysNoise(0.05f)), MultiNoiseUtil.ParameterRange.of(DensityFunctions.getPeaksValleysNoise(0.05f), DensityFunctions.getPeaksValleysNoise(0.26666668f)), MultiNoiseUtil.ParameterRange.of(DensityFunctions.getPeaksValleysNoise(0.26666668f), DensityFunctions.getPeaksValleysNoise(0.4f)), MultiNoiseUtil.ParameterRange.of(DensityFunctions.getPeaksValleysNoise(0.4f), DensityFunctions.getPeaksValleysNoise(0.56666666f)), MultiNoiseUtil.ParameterRange.of(DensityFunctions.getPeaksValleysNoise(0.56666666f), 2.0f)};
     }
 
     @Debug

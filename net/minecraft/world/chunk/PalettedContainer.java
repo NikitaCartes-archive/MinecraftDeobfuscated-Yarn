@@ -305,7 +305,7 @@ class_7522<T> {
     }
 
     public PalettedContainer<T> copy() {
-        return new PalettedContainer<T>(this.idList, this.paletteProvider, this.data.method_44338());
+        return new PalettedContainer<T>(this.idList, this.paletteProvider, this.data.copy());
     }
 
     @Override
@@ -393,7 +393,7 @@ class_7522<T> {
             buf.writeLongArray(this.storage.getData());
         }
 
-        public Data<T> method_44338() {
+        public Data<T> copy() {
             return new Data<T>(this.configuration, this.storage.copy(), this.palette.copy());
         }
     }

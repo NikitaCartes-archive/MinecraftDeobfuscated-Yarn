@@ -89,9 +89,9 @@ extends BiomeSource {
         float h = MultiNoiseUtil.method_38666(noiseValuePoint.temperatureNoise());
         float l = MultiNoiseUtil.method_38666(noiseValuePoint.humidityNoise());
         float m = MultiNoiseUtil.method_38666(noiseValuePoint.weirdnessNoise());
-        double d = DensityFunctions.method_41546(m);
+        double d = DensityFunctions.getPeaksValleysNoise(m);
         VanillaBiomeParameters vanillaBiomeParameters = new VanillaBiomeParameters();
-        info.add("Biome builder PV: " + VanillaBiomeParameters.getWeirdnessDescription(d) + " C: " + vanillaBiomeParameters.getContinentalnessDescription(f) + " E: " + vanillaBiomeParameters.getErosionDescription(g) + " T: " + vanillaBiomeParameters.getTemperatureDescription(h) + " H: " + vanillaBiomeParameters.getHumidityDescription(l));
+        info.add("Biome builder PV: " + VanillaBiomeParameters.getPeaksValleysDescription(d) + " C: " + vanillaBiomeParameters.getContinentalnessDescription(f) + " E: " + vanillaBiomeParameters.getErosionDescription(g) + " T: " + vanillaBiomeParameters.getTemperatureDescription(h) + " H: " + vanillaBiomeParameters.getHumidityDescription(l));
     }
 
     record Instance(Preset preset, Registry<Biome> biomeRegistry) {

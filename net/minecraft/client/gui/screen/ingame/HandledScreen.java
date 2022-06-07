@@ -459,7 +459,7 @@ implements ScreenHandlerProvider<T> {
                         this.touchDropReturningStack = this.touchDragStack;
                         this.touchDropTime = Util.getMeasuringTimeMs();
                     }
-                    this.method_44339();
+                    this.endTouchDrag();
                 }
             } else if (this.cursorDragging && !this.cursorDragSlots.isEmpty()) {
                 this.onMouseClick(null, -999, ScreenHandler.packQuickCraftData(0, this.heldButtonType), SlotActionType.QUICK_CRAFT);
@@ -487,7 +487,7 @@ implements ScreenHandlerProvider<T> {
         return true;
     }
 
-    public void method_44339() {
+    public void endTouchDrag() {
         this.touchDragStack = ItemStack.EMPTY;
         this.touchDragSlotStart = null;
     }

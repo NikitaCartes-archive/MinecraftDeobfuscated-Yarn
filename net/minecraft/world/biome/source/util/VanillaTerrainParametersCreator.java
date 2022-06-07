@@ -46,8 +46,8 @@ public class VanillaTerrainParametersCreator {
     }
 
     private static <C, I extends ToFloatFunction<C>> Spline<C, I> method_42052(I toFloatFunction, I toFloatFunction2, float f, float g, ToFloatFunction<Float> toFloatFunction3) {
-        float h = DensityFunctions.method_41546(0.4f);
-        float i = DensityFunctions.method_41546(0.56666666f);
+        float h = DensityFunctions.getPeaksValleysNoise(0.4f);
+        float i = DensityFunctions.getPeaksValleysNoise(0.56666666f);
         float j = (h + i) / 2.0f;
         Spline.Builder<C, I> builder = Spline.builder(toFloatFunction2, toFloatFunction3);
         builder.method_41294(h, 0.0f);

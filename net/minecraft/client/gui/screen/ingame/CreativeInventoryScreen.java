@@ -410,7 +410,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
         selectedTab = group.getIndex();
         this.cursorDragSlots.clear();
         ((CreativeScreenHandler)this.handler).itemList.clear();
-        this.method_44339();
+        this.endTouchDrag();
         if (group == ItemGroup.HOTBAR) {
             HotbarStorage hotbarStorage = this.client.getCreativeHotbarStorage();
             for (j = 0; j < 9; ++j) {
