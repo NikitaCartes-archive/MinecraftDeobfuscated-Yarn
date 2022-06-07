@@ -21,8 +21,8 @@ import net.minecraft.util.StringHelper;
  * reject the command and disconnect the client.
  * 
  * <p>Commands that took more than {@link ChatMessageC2SPacket#TIME_TO_LIVE} to reach
- * the server are considered expired and will be discarded. Commands can also be discarded
- * if the server receives them with improper order.
+ * the server are considered expired and log warnings on the server. Commands will be
+ * discarded if the server receives them in improper order.
  * 
  * @see net.minecraft.client.network.ClientPlayerEntity#sendCommand
  * @see net.minecraft.server.network.ServerPlayNetworkHandler#onCommandExecution

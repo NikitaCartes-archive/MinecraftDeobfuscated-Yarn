@@ -22,8 +22,8 @@ import net.minecraft.util.StringHelper;
  * reject the message and disconnect the client.
  * 
  * <p>Messages that took more than {@link #TIME_TO_LIVE} to reach the server
- * are considered expired and will be discarded. Messages can also be discarded
- * if the server receives them with improper order.
+ * are considered expired and log warnings on the server. Messages will be
+ * discarded if the server receives them in improper order.
  * 
  * @see net.minecraft.client.network.ClientPlayerEntity#sendChatMessage
  * @see net.minecraft.server.network.ServerPlayNetworkHandler#onChatMessage
