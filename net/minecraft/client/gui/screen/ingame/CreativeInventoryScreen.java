@@ -30,6 +30,7 @@ import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.search.SearchManager;
 import net.minecraft.client.search.SearchProvider;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -47,6 +48,7 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.tag.TagKey;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -690,7 +692,9 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
             }
             Text text = client.options.hotbarKeys[index].getBoundKeyLocalizedText();
             Text text2 = client.options.loadToolbarActivatorKey.getBoundKeyLocalizedText();
-            client.inGameHud.setOverlayMessage(Text.translatable("inventory.hotbarSaved", text2, text), false);
+            MutableText text3 = Text.translatable("inventory.hotbarSaved", text2, text);
+            client.inGameHud.setOverlayMessage(text3, false);
+            NarratorManager.INSTANCE.narrate(text3);
             hotbarStorage.save();
         }
     }

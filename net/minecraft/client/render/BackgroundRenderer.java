@@ -44,6 +44,7 @@ public class BackgroundRenderer {
     private static long lastWaterFogColorUpdateTime;
 
     public static void render(Camera camera, float tickDelta, ClientWorld world, int viewDistance, float skyDarkness) {
+        LivingEntity livingEntity2;
         CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
         Entity entity = camera.getFocusedEntity();
         if (cameraSubmersionType == CameraSubmersionType.WATER) {
@@ -153,7 +154,7 @@ public class BackgroundRenderer {
             green = green * (1.0f - skyDarkness) + green * 0.6f * skyDarkness;
             blue = blue * (1.0f - skyDarkness) + blue * 0.6f * skyDarkness;
         }
-        float s = cameraSubmersionType == CameraSubmersionType.WATER ? (entity instanceof ClientPlayerEntity ? ((ClientPlayerEntity)entity).getUnderwaterVisibility() : 1.0f) : (entity instanceof LivingEntity && ((LivingEntity)entity).hasStatusEffect(StatusEffects.NIGHT_VISION) ? GameRenderer.getNightVisionStrength((LivingEntity)entity, tickDelta) : 0.0f);
+        float s = cameraSubmersionType == CameraSubmersionType.WATER ? (entity instanceof ClientPlayerEntity ? ((ClientPlayerEntity)entity).getUnderwaterVisibility() : 1.0f) : (entity instanceof LivingEntity && (livingEntity2 = (LivingEntity)entity).hasStatusEffect(StatusEffects.NIGHT_VISION) && !livingEntity2.hasStatusEffect(StatusEffects.DARKNESS) ? GameRenderer.getNightVisionStrength(livingEntity2, tickDelta) : 0.0f);
         if (red != 0.0f && green != 0.0f && blue != 0.0f) {
             float t = Math.min(1.0f / red, Math.min(1.0f / green, 1.0f / blue));
             red = red * (1.0f - s) + red * t * s;

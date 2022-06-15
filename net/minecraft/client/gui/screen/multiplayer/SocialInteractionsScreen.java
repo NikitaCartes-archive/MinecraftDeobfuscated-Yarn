@@ -3,7 +3,6 @@
  */
 package net.minecraft.client.gui.screen.multiplayer;
 
-import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Collection;
 import java.util.Locale;
@@ -13,6 +12,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ConfirmChatLinkScreen;
+import net.minecraft.client.gui.screen.NoticeScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.multiplayer.SocialInteractionsPlayerListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -76,19 +76,26 @@ extends Screen {
         this.updateServerLabel(MinecraftClient.getInstance());
     }
 
-    private int method_31359() {
+    public static Screen createAbuseReportNoticeScreen() {
+        MinecraftClient minecraftClient = MinecraftClient.getInstance();
+        MutableText text = Text.translatable("gui.abuseReport.under_construction.title").formatted(Formatting.BOLD);
+        MutableText text2 = Text.translatable("gui.abuseReport.under_construction");
+        return new NoticeScreen(() -> minecraftClient.setScreen(new SocialInteractionsScreen()), text, text2, ScreenTexts.PROCEED, true);
+    }
+
+    private int getScreenHeight() {
         return Math.max(52, this.height - 128 - 16);
     }
 
-    private int method_31360() {
-        return this.method_31359() / 16;
+    private int getRowCount() {
+        return this.getScreenHeight() / 16;
     }
 
-    private int method_31361() {
-        return 80 + this.method_31360() * 16 - 8;
+    private int getPlayerListBottom() {
+        return 80 + this.getRowCount() * 16 - 8;
     }
 
-    private int method_31362() {
+    private int getSearchBoxX() {
         return (this.width - 238) / 2;
     }
 
@@ -110,21 +117,21 @@ extends Screen {
     protected void init() {
         this.client.keyboard.setRepeatEvents(true);
         if (this.initialized) {
-            this.playerList.updateSize(this.width, this.height, 88, this.method_31361());
+            this.playerList.updateSize(this.width, this.height, 88, this.getPlayerListBottom());
         } else {
-            this.playerList = new SocialInteractionsPlayerListWidget(this, this.client, this.width, this.height, 88, this.method_31361(), 36);
+            this.playerList = new SocialInteractionsPlayerListWidget(this, this.client, this.width, this.height, 88, this.getPlayerListBottom(), 36);
         }
         int i = this.playerList.getRowWidth() / 3;
         int j = this.playerList.getRowLeft();
         int k = this.playerList.getRowRight();
         int l = this.textRenderer.getWidth(BLOCKING_TEXT) + 40;
-        int m = 64 + 16 * this.method_31360();
+        int m = 64 + 16 * this.getRowCount();
         int n = (this.width - l) / 2 + 3;
         this.allTabButton = this.addDrawableChild(new ButtonWidget(j, 45, i, 20, ALL_TAB_TITLE, button -> this.setCurrentTab(Tab.ALL)));
         this.hiddenTabButton = this.addDrawableChild(new ButtonWidget((j + k - i) / 2 + 1, 45, i, 20, HIDDEN_TAB_TITLE, button -> this.setCurrentTab(Tab.HIDDEN)));
         this.blockedTabButton = this.addDrawableChild(new ButtonWidget(k - i + 1, 45, i, 20, BLOCKED_TAB_TITLE, button -> this.setCurrentTab(Tab.BLOCKED)));
         String string = this.searchBox != null ? this.searchBox.getText() : "";
-        this.searchBox = new TextFieldWidget(this.textRenderer, this.method_31362() + 28, 78, 196, 16, SEARCH_TEXT){
+        this.searchBox = new TextFieldWidget(this.textRenderer, this.getSearchBoxX() + 28, 78, 196, 16, SEARCH_TEXT){
 
             @Override
             protected MutableText getNarrationMessage() {
@@ -142,8 +149,8 @@ extends Screen {
         this.searchBox.setChangedListener(this::onSearchChange);
         this.addSelectableChild(this.searchBox);
         this.addSelectableChild(this.playerList);
-        this.blockingButton = this.addDrawableChild(new ButtonWidget(n, m, l, 20, BLOCKING_TEXT, button -> this.client.setScreen(new ConfirmChatLinkScreen(bl -> {
-            if (bl) {
+        this.blockingButton = this.addDrawableChild(new ButtonWidget(n, m, l, 20, BLOCKING_TEXT, button -> this.client.setScreen(new ConfirmChatLinkScreen(confirmed -> {
+            if (confirmed) {
                 Util.getOperatingSystem().open(BLOCKING_URL);
             }
             this.client.setScreen(this);
@@ -158,6 +165,7 @@ extends Screen {
         this.hiddenTabButton.setMessage(HIDDEN_TAB_TITLE);
         this.blockedTabButton.setMessage(BLOCKED_TAB_TITLE);
         Collection<UUID> collection = switch (currentTab) {
+            default -> throw new IncompatibleClassChangeError();
             case Tab.ALL -> {
                 this.allTabButton.setMessage(SELECTED_ALL_TAB_TITLE);
                 yield this.client.player.networkHandler.getPlayerUuids();
@@ -171,7 +179,6 @@ extends Screen {
                 SocialInteractionsManager socialInteractionsManager = this.client.getSocialInteractionsManager();
                 yield this.client.player.networkHandler.getPlayerUuids().stream().filter(socialInteractionsManager::isPlayerBlocked).collect(Collectors.toSet());
             }
-            default -> ImmutableList.of();
         };
         this.playerList.update(collection, this.playerList.getScrollAmount());
         if (!this.searchBox.getText().isEmpty() && this.playerList.isEmpty() && !this.searchBox.isFocused()) {
@@ -192,11 +199,11 @@ extends Screen {
 
     @Override
     public void renderBackground(MatrixStack matrices) {
-        int i = this.method_31362() + 3;
+        int i = this.getSearchBoxX() + 3;
         super.renderBackground(matrices);
         RenderSystem.setShaderTexture(0, SOCIAL_INTERACTIONS_TEXTURE);
         this.drawTexture(matrices, i, 64, 1, 1, 236, 8);
-        int j = this.method_31360();
+        int j = this.getRowCount();
         for (int k = 0; k < j; ++k) {
             this.drawTexture(matrices, i, 72 + 16 * k, 1, 10, 236, 16);
         }
@@ -209,16 +216,16 @@ extends Screen {
         this.updateServerLabel(this.client);
         this.renderBackground(matrices);
         if (this.serverLabel != null) {
-            SocialInteractionsScreen.drawTextWithShadow(matrices, this.client.textRenderer, this.serverLabel, this.method_31362() + 8, 35, -1);
+            SocialInteractionsScreen.drawTextWithShadow(matrices, this.client.textRenderer, this.serverLabel, this.getSearchBoxX() + 8, 35, -1);
         }
         if (!this.playerList.isEmpty()) {
             this.playerList.render(matrices, mouseX, mouseY, delta);
         } else if (!this.searchBox.getText().isEmpty()) {
-            SocialInteractionsScreen.drawCenteredText(matrices, this.client.textRenderer, EMPTY_SEARCH_TEXT, this.width / 2, (78 + this.method_31361()) / 2, -1);
+            SocialInteractionsScreen.drawCenteredText(matrices, this.client.textRenderer, EMPTY_SEARCH_TEXT, this.width / 2, (78 + this.getPlayerListBottom()) / 2, -1);
         } else if (this.currentTab == Tab.HIDDEN) {
-            SocialInteractionsScreen.drawCenteredText(matrices, this.client.textRenderer, EMPTY_HIDDEN_TEXT, this.width / 2, (78 + this.method_31361()) / 2, -1);
+            SocialInteractionsScreen.drawCenteredText(matrices, this.client.textRenderer, EMPTY_HIDDEN_TEXT, this.width / 2, (78 + this.getPlayerListBottom()) / 2, -1);
         } else if (this.currentTab == Tab.BLOCKED) {
-            SocialInteractionsScreen.drawCenteredText(matrices, this.client.textRenderer, EMPTY_BLOCKED_TEXT, this.width / 2, (78 + this.method_31361()) / 2, -1);
+            SocialInteractionsScreen.drawCenteredText(matrices, this.client.textRenderer, EMPTY_BLOCKED_TEXT, this.width / 2, (78 + this.getPlayerListBottom()) / 2, -1);
         }
         if (!this.searchBox.isFocused() && this.searchBox.getText().isEmpty()) {
             SocialInteractionsScreen.drawTextWithShadow(matrices, this.client.textRenderer, SEARCH_TEXT, this.searchBox.x, this.searchBox.y, -1);

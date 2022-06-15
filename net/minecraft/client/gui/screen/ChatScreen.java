@@ -305,7 +305,7 @@ extends Screen {
     }
 
     public void renderChatPreview(MatrixStack matrices) {
-        int i = (int)(255.0 * (this.client.options.getChtOpacity().getValue() * (double)0.9f + (double)0.1f));
+        int i = (int)(255.0 * (this.client.options.getChatOpacity().getValue() * (double)0.9f + (double)0.1f));
         int j = (int)(255.0 * this.client.options.getTextBackgroundOpacity().getValue());
         int k = this.getPreviewWidth();
         List<OrderedText> list = this.getPreviewText();

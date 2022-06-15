@@ -50,6 +50,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public record MessageType(Optional<DisplayRule> chat, Optional<DisplayRule> overlay, Optional<NarrationRule> narration) {
     public static final Codec<MessageType> CODEC = RecordCodecBuilder.create(instance -> instance.group(DisplayRule.CODEC.optionalFieldOf("chat").forGetter(MessageType::chat), DisplayRule.CODEC.optionalFieldOf("overlay").forGetter(MessageType::overlay), NarrationRule.CODEC.optionalFieldOf("narration").forGetter(MessageType::narration)).apply((Applicative<MessageType, ?>)instance, MessageType::new));
+    public static final Decoration CHAT_TEXT_DECORATION = Decoration.ofChat("chat.type.text");
     /**
      * The registry key for the message type used by {@link
      * net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket chat messages}.
@@ -114,9 +115,9 @@ public record MessageType(Optional<DisplayRule> chat, Optional<DisplayRule> over
     }
 
     public static RegistryEntry<MessageType> initialize(Registry<MessageType> registry) {
-        BuiltinRegistries.add(registry, CHAT, new MessageType(Optional.of(DisplayRule.of(Decoration.ofChat("chat.type.text"))), Optional.empty(), Optional.of(NarrationRule.of(Decoration.ofChat("chat.type.text.narrate"), NarrationRule.Kind.CHAT))));
+        BuiltinRegistries.add(registry, CHAT, new MessageType(Optional.of(DisplayRule.of(CHAT_TEXT_DECORATION)), Optional.empty(), Optional.of(NarrationRule.of(Decoration.ofChat("chat.type.text.narrate"), NarrationRule.Kind.CHAT))));
         BuiltinRegistries.add(registry, SYSTEM, new MessageType(Optional.of(DisplayRule.of()), Optional.empty(), Optional.of(NarrationRule.of(NarrationRule.Kind.SYSTEM))));
-        BuiltinRegistries.add(registry, GAME_INFO, new MessageType(Optional.empty(), Optional.of(DisplayRule.of()), Optional.empty()));
+        BuiltinRegistries.add(registry, GAME_INFO, new MessageType(Optional.empty(), Optional.of(DisplayRule.of()), Optional.of(NarrationRule.of(NarrationRule.Kind.SYSTEM))));
         BuiltinRegistries.add(registry, SAY_COMMAND, new MessageType(Optional.of(DisplayRule.of(Decoration.ofChat("chat.type.announcement"))), Optional.empty(), Optional.of(NarrationRule.of(Decoration.ofChat("chat.type.text.narrate"), NarrationRule.Kind.CHAT))));
         BuiltinRegistries.add(registry, MSG_COMMAND, new MessageType(Optional.of(DisplayRule.of(Decoration.ofDirectMessage("commands.message.display.incoming"))), Optional.empty(), Optional.of(NarrationRule.of(Decoration.ofChat("chat.type.text.narrate"), NarrationRule.Kind.CHAT))));
         BuiltinRegistries.add(registry, TEAM_MSG_COMMAND, new MessageType(Optional.of(DisplayRule.of(Decoration.ofTeamMessage("chat.type.team.text"))), Optional.empty(), Optional.of(NarrationRule.of(Decoration.ofChat("chat.type.text.narrate"), NarrationRule.Kind.CHAT))));

@@ -294,7 +294,7 @@ public abstract class ChunkGenerator {
 
     @Nullable
     private static Pair<BlockPos, RegistryEntry<Structure>> locateRandomSpreadStructure(Set<RegistryEntry<Structure>> structures, WorldView world, StructureAccessor structureAccessor, int centerChunkX, int centerChunkZ, int radius, boolean skipReferencedStructures, long seed, RandomSpreadStructurePlacement placement) {
-        int i = placement.method_41632();
+        int i = placement.getSpacing();
         for (int j = -radius; j <= radius; ++j) {
             boolean bl = j == -radius || j == radius;
             for (int k = -radius; k <= radius; ++k) {

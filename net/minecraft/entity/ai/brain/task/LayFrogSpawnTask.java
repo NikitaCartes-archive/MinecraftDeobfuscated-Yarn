@@ -5,11 +5,11 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.passive.FrogEntity;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -38,7 +38,7 @@ extends Task<FrogEntity> {
         for (Direction direction : Direction.Type.HORIZONTAL) {
             BlockPos blockPos3;
             BlockPos blockPos2 = blockPos.offset(direction);
-            if (!serverWorld.getBlockState(blockPos2).isOf(Blocks.WATER) || !serverWorld.getBlockState(blockPos3 = blockPos2.up()).isAir()) continue;
+            if (!serverWorld.getBlockState(blockPos2).getCollisionShape(serverWorld, blockPos2).getFace(Direction.UP).isEmpty() || !serverWorld.getFluidState(blockPos2).isOf(Fluids.WATER) || !serverWorld.getBlockState(blockPos3 = blockPos2.up()).isAir()) continue;
             serverWorld.setBlockState(blockPos3, this.frogSpawn.getDefaultState(), Block.NOTIFY_ALL);
             serverWorld.playSoundFromEntity(null, frogEntity, SoundEvents.ENTITY_FROG_LAY_SPAWN, SoundCategory.BLOCKS, 1.0f, 1.0f);
             frogEntity.getBrain().forget(this.triggerMemory);

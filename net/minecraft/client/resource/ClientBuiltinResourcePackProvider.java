@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -123,46 +124,39 @@ implements ResourcePackProvider {
         this.lock.lock();
         try {
             CompletableFuture<String> completableFuture;
-            this.clear();
-            this.deleteOldServerPack();
+            MinecraftClient minecraftClient = MinecraftClient.getInstance();
             File file = new File(this.serverPacksRoot, string);
             if (file.exists()) {
                 completableFuture = CompletableFuture.completedFuture("");
             } else {
                 ProgressScreen progressScreen = new ProgressScreen(closeAfterDownload);
                 Map<String, String> map = ClientBuiltinResourcePackProvider.getDownloadHeaders();
-                MinecraftClient minecraftClient = MinecraftClient.getInstance();
                 minecraftClient.submitAndJoin(() -> minecraftClient.setScreen(progressScreen));
                 completableFuture = NetworkUtils.downloadResourcePack(file, url, map, 0xFA00000, progressScreen, minecraftClient.getNetworkProxy());
             }
-            CompletableFuture<?> completableFuture2 = this.downloadTask = ((CompletableFuture)completableFuture.thenCompose(object -> {
+            CompletableFuture<?> completableFuture2 = this.downloadTask = ((CompletableFuture)((CompletableFuture)completableFuture.thenCompose(object -> {
                 if (!this.verifyFile(string2, file)) {
                     return Util.completeExceptionally(new RuntimeException("Hash check failure for file " + file + ", see log"));
                 }
-                MinecraftClient minecraftClient = MinecraftClient.getInstance();
                 minecraftClient.execute(() -> {
                     if (!closeAfterDownload) {
                         minecraftClient.setScreen(new MessageScreen(APPLYING_PACK_TEXT));
                     }
                 });
                 return this.loadServerPack(file, ResourcePackSource.PACK_SOURCE_SERVER);
-            })).whenComplete((void_, throwable) -> {
-                if (throwable != null) {
-                    LOGGER.warn("Pack application failed: {}, deleting file {}", (Object)throwable.getMessage(), (Object)file);
-                    ClientBuiltinResourcePackProvider.delete(file);
-                    MinecraftClient minecraftClient = MinecraftClient.getInstance();
-                    minecraftClient.execute(() -> minecraftClient.setScreen(new ConfirmScreen(confirmed -> {
-                        if (confirmed) {
-                            minecraftClient.setScreen(null);
-                        } else {
-                            ClientPlayNetworkHandler clientPlayNetworkHandler = minecraftClient.getNetworkHandler();
-                            if (clientPlayNetworkHandler != null) {
-                                clientPlayNetworkHandler.getConnection().disconnect(Text.translatable("connect.aborted"));
-                            }
-                        }
-                    }, Text.translatable("multiplayer.texturePrompt.failure.line1"), Text.translatable("multiplayer.texturePrompt.failure.line2"), ScreenTexts.PROCEED, Text.translatable("menu.disconnect"))));
+            })).exceptionallyCompose(throwable -> ((CompletableFuture)this.clear().thenAcceptAsync(void_ -> {
+                LOGGER.warn("Pack application failed: {}, deleting file {}", (Object)throwable.getMessage(), (Object)file);
+                ClientBuiltinResourcePackProvider.delete(file);
+            }, (Executor)Util.getIoWorkerExecutor())).thenAcceptAsync(void_ -> minecraftClient.setScreen(new ConfirmScreen(confirmed -> {
+                if (confirmed) {
+                    minecraftClient.setScreen(null);
+                } else {
+                    ClientPlayNetworkHandler clientPlayNetworkHandler = minecraftClient.getNetworkHandler();
+                    if (clientPlayNetworkHandler != null) {
+                        clientPlayNetworkHandler.getConnection().disconnect(Text.translatable("connect.aborted"));
+                    }
                 }
-            });
+            }, Text.translatable("multiplayer.texturePrompt.failure.line1"), Text.translatable("multiplayer.texturePrompt.failure.line2"), ScreenTexts.PROCEED, Text.translatable("menu.disconnect"))), (Executor)minecraftClient))).thenAcceptAsync(void_ -> this.deleteOldServerPack(), (Executor)Util.getIoWorkerExecutor());
             return completableFuture2;
         } finally {
             this.lock.unlock();
@@ -177,7 +171,7 @@ implements ResourcePackProvider {
         }
     }
 
-    public CompletableFuture<?> clear() {
+    public CompletableFuture<Void> clear() {
         this.lock.lock();
         try {
             if (this.downloadTask != null) {

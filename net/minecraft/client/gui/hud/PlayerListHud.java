@@ -13,6 +13,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.PlayerListEntry;
@@ -151,8 +152,8 @@ extends DrawableHelper {
         PlayerListHud.fill(matrices, scaledWindowWidth / 2 - r / 2 - 1, q - 1, scaledWindowWidth / 2 + r / 2 + 1, q + m * 9, Integer.MIN_VALUE);
         int n2 = this.client.options.getTextBackgroundColor(0x20FFFFFF);
         for (int u = 0; u < l; ++u) {
-            int ac;
-            int ad;
+            int y;
+            int z;
             s = u / m;
             v = u % m;
             int w = p + s * o + s * 5;
@@ -167,20 +168,14 @@ extends DrawableHelper {
             if (bl) {
                 PlayerEntity playerEntity = this.client.world.getPlayerByUuid(gameProfile.getId());
                 boolean bl22 = playerEntity != null && LivingEntityRenderer.shouldFlipUpsideDown(playerEntity);
+                boolean bl3 = playerEntity != null && playerEntity.isPartVisible(PlayerModelPart.HAT);
                 RenderSystem.setShaderTexture(0, playerListEntry2.getSkinTexture());
-                int y = 8 + (bl22 ? 8 : 0);
-                int z = 8 * (bl22 ? -1 : 1);
-                DrawableHelper.drawTexture(matrices, w, x, 8, 8, 8.0f, y, 8, z, 64, 64);
-                if (playerEntity != null && playerEntity.isPartVisible(PlayerModelPart.HAT)) {
-                    int aa = 8 + (bl22 ? 8 : 0);
-                    int ab = 8 * (bl22 ? -1 : 1);
-                    DrawableHelper.drawTexture(matrices, w, x, 8, 8, 40.0f, aa, 8, ab, 64, 64);
-                }
+                PlayerSkinDrawer.draw(matrices, w, x, 8, bl3, bl22);
                 w += 9;
             }
             this.client.textRenderer.drawWithShadow(matrices, this.getPlayerName(playerListEntry2), (float)w, (float)x, playerListEntry2.getGameMode() == GameMode.SPECTATOR ? -1862270977 : -1);
-            if (objective != null && playerListEntry2.getGameMode() != GameMode.SPECTATOR && (ad = (ac = w + i + 1) + n) - ac > 5) {
-                this.renderScoreboardObjective(objective, x, gameProfile.getName(), ac, ad, playerListEntry2, matrices);
+            if (objective != null && playerListEntry2.getGameMode() != GameMode.SPECTATOR && (z = (y = w + i + 1) + n) - y > 5) {
+                this.renderScoreboardObjective(objective, x, gameProfile.getName(), y, z, playerListEntry2, matrices);
             }
             this.renderLatencyIcon(matrices, o, w - (bl ? 9 : 0), x, playerListEntry2);
         }

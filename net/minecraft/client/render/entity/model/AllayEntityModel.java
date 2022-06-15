@@ -27,7 +27,7 @@ public class AllayEntityModel
 extends SinglePartEntityModel<AllayEntity>
 implements ModelWithArms {
     private final ModelPart root;
-    private final ModelPart field_39459;
+    private final ModelPart head;
     private final ModelPart body;
     private final ModelPart rightArm;
     private final ModelPart leftArm;
@@ -39,7 +39,7 @@ implements ModelWithArms {
 
     public AllayEntityModel(ModelPart root) {
         this.root = root.getChild(EntityModelPartNames.ROOT);
-        this.field_39459 = this.root.getChild(EntityModelPartNames.HEAD);
+        this.head = this.root.getChild(EntityModelPartNames.HEAD);
         this.body = this.root.getChild(EntityModelPartNames.BODY);
         this.rightArm = this.body.getChild(EntityModelPartNames.RIGHT_ARM);
         this.leftArm = this.body.getChild(EntityModelPartNames.LEFT_ARM);
@@ -67,10 +67,11 @@ implements ModelWithArms {
 
     @Override
     public void setAngles(AllayEntity allayEntity, float f, float g, float h, float i, float j) {
+        float u;
+        float t;
+        float s;
         float r;
         this.getPart().traverse().forEach(ModelPart::resetTransform);
-        this.field_39459.pitch = j * ((float)Math.PI / 180);
-        this.field_39459.yaw = i * ((float)Math.PI / 180);
         float k = h * 20.0f * ((float)Math.PI / 180) + g;
         float l = MathHelper.cos(k) * (float)Math.PI * 0.15f;
         float m = h - (float)allayEntity.age;
@@ -78,17 +79,31 @@ implements ModelWithArms {
         float o = Math.min(g / 0.3f, 1.0f);
         float p = 1.0f - o;
         float q = allayEntity.method_43397(m);
+        if (allayEntity.isDancing()) {
+            r = h * 8.0f * ((float)Math.PI / 180) + g;
+            s = MathHelper.cos(r) * 16.0f * ((float)Math.PI / 180);
+            t = allayEntity.method_44368(m);
+            u = MathHelper.cos(r) * 14.0f * ((float)Math.PI / 180);
+            float v = MathHelper.cos(r) * 30.0f * ((float)Math.PI / 180);
+            this.root.yaw = allayEntity.method_44360() ? (float)Math.PI * 4 * t : this.root.yaw;
+            this.root.roll = s * (1.0f - t);
+            this.head.yaw = v * (1.0f - t);
+            this.head.roll = u * (1.0f - t);
+        } else {
+            this.head.pitch = j * ((float)Math.PI / 180);
+            this.head.yaw = i * ((float)Math.PI / 180);
+        }
         this.rightWing.pitch = 0.43633232f;
         this.rightWing.yaw = -0.61086524f + l;
         this.leftWing.pitch = 0.43633232f;
         this.leftWing.yaw = 0.61086524f - l;
         this.body.pitch = r = o * 0.6981317f;
-        float s = MathHelper.lerp(q, r, MathHelper.lerp(o, -1.0471976f, -0.7853982f));
+        s = MathHelper.lerp(q, r, MathHelper.lerp(o, -1.0471976f, -0.7853982f));
         this.root.pivotY += (float)Math.cos(n) * 0.25f * p;
         this.rightArm.pitch = s;
         this.leftArm.pitch = s;
-        float t = p * (1.0f - q);
-        float u = 0.43633232f - MathHelper.cos(n + 4.712389f) * (float)Math.PI * 0.075f * t;
+        t = p * (1.0f - q);
+        u = 0.43633232f - MathHelper.cos(n + 4.712389f) * (float)Math.PI * 0.075f * t;
         this.leftArm.roll = -u;
         this.rightArm.roll = u;
         this.rightArm.yaw = 0.27925268f * q;

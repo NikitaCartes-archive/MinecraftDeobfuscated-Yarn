@@ -64,11 +64,11 @@ public final class VanillaBiomeParameters {
     protected void writeVanillaBiomeParameters(Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> consumer) {
         if (SharedConstants.DEBUG_BIOME_SOURCE) {
             Spline spline2;
-            DensityFunctionTypes.Spline.class_7135 lv = new DensityFunctionTypes.Spline.class_7135(BuiltinRegistries.DENSITY_FUNCTION.entryOf(DensityFunctions.CONTINENTS_OVERWORLD));
-            DensityFunctionTypes.Spline.class_7135 lv2 = new DensityFunctionTypes.Spline.class_7135(BuiltinRegistries.DENSITY_FUNCTION.entryOf(DensityFunctions.EROSION_OVERWORLD));
-            DensityFunctionTypes.Spline.class_7135 lv3 = new DensityFunctionTypes.Spline.class_7135(BuiltinRegistries.DENSITY_FUNCTION.entryOf(DensityFunctions.RIDGES_FOLDED_OVERWORLD));
+            DensityFunctionTypes.Spline.DensityFunctionWrapper densityFunctionWrapper = new DensityFunctionTypes.Spline.DensityFunctionWrapper(BuiltinRegistries.DENSITY_FUNCTION.entryOf(DensityFunctions.CONTINENTS_OVERWORLD));
+            DensityFunctionTypes.Spline.DensityFunctionWrapper densityFunctionWrapper2 = new DensityFunctionTypes.Spline.DensityFunctionWrapper(BuiltinRegistries.DENSITY_FUNCTION.entryOf(DensityFunctions.EROSION_OVERWORLD));
+            DensityFunctionTypes.Spline.DensityFunctionWrapper densityFunctionWrapper3 = new DensityFunctionTypes.Spline.DensityFunctionWrapper(BuiltinRegistries.DENSITY_FUNCTION.entryOf(DensityFunctions.RIDGES_FOLDED_OVERWORLD));
             consumer.accept(Pair.of(MultiNoiseUtil.createNoiseHypercube(this.defaultParameter, this.defaultParameter, this.defaultParameter, this.defaultParameter, MultiNoiseUtil.ParameterRange.of(0.0f), this.defaultParameter, 0.01f), BiomeKeys.PLAINS));
-            Spline spline = VanillaTerrainParametersCreator.method_42051(lv2, lv3, -0.15f, 0.0f, 0.0f, 0.1f, 0.0f, -0.03f, false, false, ToFloatFunction.field_37409);
+            Spline spline = VanillaTerrainParametersCreator.method_42051(densityFunctionWrapper2, densityFunctionWrapper3, -0.15f, 0.0f, 0.0f, 0.1f, 0.0f, -0.03f, false, false, ToFloatFunction.field_37409);
             if (spline instanceof Spline.Implementation) {
                 Spline.Implementation implementation = (Spline.Implementation)spline;
                 RegistryKey<Biome> registryKey = BiomeKeys.DESERT;
@@ -77,7 +77,7 @@ public final class VanillaBiomeParameters {
                     registryKey = registryKey == BiomeKeys.DESERT ? BiomeKeys.BADLANDS : BiomeKeys.DESERT;
                 }
             }
-            if ((spline2 = VanillaTerrainParametersCreator.method_42056(lv, lv2, lv3, false)) instanceof Spline.Implementation) {
+            if ((spline2 = VanillaTerrainParametersCreator.method_42056(densityFunctionWrapper, densityFunctionWrapper2, densityFunctionWrapper3, false)) instanceof Spline.Implementation) {
                 Spline.Implementation implementation2 = (Spline.Implementation)spline2;
                 for (float f : implementation2.locations()) {
                     consumer.accept(Pair.of(MultiNoiseUtil.createNoiseHypercube(this.defaultParameter, this.defaultParameter, MultiNoiseUtil.ParameterRange.of(f), this.defaultParameter, MultiNoiseUtil.ParameterRange.of(0.0f), this.defaultParameter, 0.0f), BiomeKeys.SNOWY_TAIGA));

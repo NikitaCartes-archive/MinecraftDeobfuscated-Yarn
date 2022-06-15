@@ -16,6 +16,9 @@ import net.minecraft.text.Text;
 public class ButtonWidget
 extends PressableWidget {
     public static final TooltipSupplier EMPTY = (button, matrices, mouseX, mouseY) -> {};
+    public static final int field_39499 = 120;
+    public static final int field_39500 = 150;
+    public static final int field_39501 = 20;
     protected final PressAction onPress;
     protected final TooltipSupplier tooltipSupplier;
 

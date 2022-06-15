@@ -25,8 +25,10 @@ import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.dto.RealmsNews;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.dto.RealmsServerPlayerLists;
+import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.gui.FetchTask;
 import net.minecraft.client.realms.util.RealmsPersistence;
+import net.minecraft.client.util.ExponentialBackoff;
 import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
@@ -38,8 +40,8 @@ public class RealmsDataFetcher {
     private volatile boolean stopped = true;
     private final FetchTask serverListUpdateTask = FetchTask.create(this::updateServerList, Duration.ofSeconds(60L), this::isActive);
     private final FetchTask liveStatsTask = FetchTask.create(this::updateLiveStats, Duration.ofSeconds(10L), this::isActive);
-    private final FetchTask pendingInviteUpdateTask = FetchTask.createRateLimited(this::updatePendingInvites, Duration.ofSeconds(10L), this::isActive);
-    private final FetchTask trialAvailabilityTask = FetchTask.createRateLimited(this::updateTrialAvailability, Duration.ofSeconds(60L), this::isActive);
+    private final FetchTask pendingInviteUpdateTask = FetchTask.createRateLimited(new ExponentialBackoff(this::updatePendingInvites, 360), Duration.ofSeconds(10L), this::isActive);
+    private final FetchTask trialAvailabilityTask = FetchTask.createRateLimited(new ExponentialBackoff(this::updateTrialAvailability, 60), Duration.ofSeconds(60L), this::isActive);
     private final FetchTask unreadNewsTask = FetchTask.createRateLimited(this::updateNews, Duration.ofMinutes(5L), this::isActive);
     private final RealmsPersistence persistence;
     private final Set<RealmsServer> removedServers = Sets.newHashSet();
@@ -196,21 +198,23 @@ public class RealmsDataFetcher {
         }
     }
 
-    private void updatePendingInvites() {
+    private void updatePendingInvites() throws RealmsServiceException {
         try {
             this.pendingInvitesCount = this.realms.pendingInvitesCount();
             this.fetchStatus.put(Task.PENDING_INVITE, true);
-        } catch (Exception exception) {
-            LOGGER.error("Couldn't get pending invite count", exception);
+        } catch (RealmsServiceException realmsServiceException) {
+            LOGGER.error("Couldn't get pending invite count", realmsServiceException);
+            throw realmsServiceException;
         }
     }
 
-    private void updateTrialAvailability() {
+    private void updateTrialAvailability() throws RealmsServiceException {
         try {
             this.trialAvailable = this.realms.trialAvailable();
             this.fetchStatus.put(Task.TRIAL_AVAILABLE, true);
-        } catch (Exception exception) {
-            LOGGER.error("Couldn't get trial availability", exception);
+        } catch (RealmsServiceException realmsServiceException) {
+            LOGGER.error("Couldn't get trial availability", realmsServiceException);
+            throw realmsServiceException;
         }
     }
 

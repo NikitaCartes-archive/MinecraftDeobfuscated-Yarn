@@ -14,13 +14,16 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.gui.Selectable;
+import net.minecraft.client.gui.screen.abusereport.ChatReportScreen;
 import net.minecraft.client.gui.screen.multiplayer.SocialInteractionsScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.network.SocialInteractionsManager;
+import net.minecraft.client.network.abusereport.AbuseReporter;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
@@ -47,10 +50,14 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
     private ButtonWidget hideButton;
     @Nullable
     private ButtonWidget showButton;
+    @Nullable
+    private ButtonWidget reportButton;
     final Text hideText;
     final Text showText;
+    final Text reportText;
     final List<OrderedText> hideTooltip;
     final List<OrderedText> showTooltip;
+    final List<OrderedText> reportTooltip;
     float timeCounter;
     private static final Text HIDDEN_TEXT = Text.translatable("gui.socialInteractions.status_hidden").formatted(Formatting.ITALIC);
     private static final Text BLOCKED_TEXT = Text.translatable("gui.socialInteractions.status_blocked").formatted(Formatting.ITALIC);
@@ -69,16 +76,43 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
     public static final int LIGHT_GRAY_COLOR = ColorHelper.Argb.getArgb(140, 255, 255, 255);
 
     public SocialInteractionsPlayerListEntry(final MinecraftClient client, final SocialInteractionsScreen parent, UUID uuid, String name, Supplier<Identifier> skinTexture) {
+        boolean bl2;
         this.client = client;
         this.uuid = uuid;
         this.name = name;
         this.skinTexture = skinTexture;
         this.hideText = Text.translatable("gui.socialInteractions.tooltip.hide", name);
         this.showText = Text.translatable("gui.socialInteractions.tooltip.show", name);
+        this.reportText = Text.translatable("gui.socialInteractions.tooltip.report", name);
         this.hideTooltip = client.textRenderer.wrapLines(this.hideText, 150);
         this.showTooltip = client.textRenderer.wrapLines(this.showText, 150);
+        this.reportTooltip = client.textRenderer.wrapLines(this.reportText, 150);
         SocialInteractionsManager socialInteractionsManager = client.getSocialInteractionsManager();
-        if (!client.player.getGameProfile().getId().equals(uuid) && !socialInteractionsManager.isPlayerBlocked(uuid)) {
+        boolean bl = client.getChatRestriction().allowsChat(client.isInSingleplayer());
+        boolean bl3 = bl2 = !client.player.getUuid().equals(uuid);
+        if (bl2 && bl && !socialInteractionsManager.isPlayerBlocked(uuid)) {
+            AbuseReporter abuseReporter = client.getAbuseReporter();
+            this.reportButton = new TexturedButtonWidget(0, 0, 20, 20, 40, 38, 20, SocialInteractionsScreen.SOCIAL_INTERACTIONS_TEXTURE, 256, 256, button -> client.setScreen(new ChatReportScreen(minecraftClient.currentScreen, abuseReporter, uuid)), new ButtonWidget.TooltipSupplier(){
+
+                @Override
+                public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {
+                    SocialInteractionsPlayerListEntry.this.timeCounter += client.getLastFrameDuration();
+                    if (SocialInteractionsPlayerListEntry.this.timeCounter >= 10.0f) {
+                        parent.setOnRendered(() -> SocialInteractionsPlayerListEntry.renderTooltip(parent, matrixStack, SocialInteractionsPlayerListEntry.this.reportTooltip, i, j));
+                    }
+                }
+
+                @Override
+                public void supply(Consumer<Text> consumer) {
+                    consumer.accept(SocialInteractionsPlayerListEntry.this.reportText);
+                }
+            }, Text.translatable("gui.socialInteractions.report")){
+
+                @Override
+                protected MutableText getNarrationMessage() {
+                    return SocialInteractionsPlayerListEntry.this.getNarrationMessage(super.getNarrationMessage());
+                }
+            };
             this.hideButton = new TexturedButtonWidget(0, 0, 20, 20, 0, 38, 20, SocialInteractionsScreen.SOCIAL_INTERACTIONS_TEXTURE, 256, 256, button -> {
                 socialInteractionsManager.hidePlayer(uuid);
                 this.onButtonClick(true, Text.translatable("gui.socialInteractions.hidden_in_chat", name));
@@ -129,7 +163,8 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
             };
             this.showButton.visible = socialInteractionsManager.isPlayerHidden(uuid);
             this.hideButton.visible = !this.showButton.visible;
-            this.buttons = ImmutableList.of(this.hideButton, this.showButton);
+            this.reportButton.active = abuseReporter.sender().canSendReports();
+            this.buttons = ImmutableList.of(this.hideButton, this.showButton, this.reportButton);
         } else {
             this.buttons = ImmutableList.of();
         }
@@ -151,22 +186,22 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
             this.client.textRenderer.draw(matrices, text, (float)k, (float)(l + 12), LIGHT_GRAY_COLOR);
         }
         RenderSystem.setShaderTexture(0, this.skinTexture.get());
-        DrawableHelper.drawTexture(matrices, i, j, 24, 24, 8.0f, 8.0f, 8, 8, 64, 64);
-        RenderSystem.enableBlend();
-        DrawableHelper.drawTexture(matrices, i, j, 24, 24, 40.0f, 8.0f, 8, 8, 64, 64);
-        RenderSystem.disableBlend();
+        PlayerSkinDrawer.draw(matrices, i, j, 24);
         this.client.textRenderer.draw(matrices, this.name, (float)k, (float)l, WHITE_COLOR);
         if (this.offline) {
             DrawableHelper.fill(matrices, i, j, i + 24, j + 24, BLACK_COLOR);
         }
-        if (this.hideButton != null && this.showButton != null) {
+        if (this.hideButton != null && this.showButton != null && this.reportButton != null) {
             float f = this.timeCounter;
-            this.hideButton.x = x + (entryWidth - this.hideButton.getWidth() - 4);
+            this.hideButton.x = x + (entryWidth - this.hideButton.getWidth() - 4) - 20 - 4;
             this.hideButton.y = y + (entryHeight - this.hideButton.getHeight()) / 2;
             this.hideButton.render(matrices, mouseX, mouseY, tickDelta);
-            this.showButton.x = x + (entryWidth - this.showButton.getWidth() - 4);
+            this.showButton.x = x + (entryWidth - this.showButton.getWidth() - 4) - 20 - 4;
             this.showButton.y = y + (entryHeight - this.showButton.getHeight()) / 2;
             this.showButton.render(matrices, mouseX, mouseY, tickDelta);
+            this.reportButton.x = x + (entryWidth - this.showButton.getWidth() - 4);
+            this.reportButton.y = y + (entryHeight - this.showButton.getHeight()) / 2;
+            this.reportButton.render(matrices, mouseX, mouseY, tickDelta);
             if (f == this.timeCounter) {
                 this.timeCounter = 0.0f;
             }

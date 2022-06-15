@@ -10,6 +10,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.gui.hud.SpectatorHud;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenu;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenuCommand;
@@ -120,8 +121,7 @@ SpectatorMenuCommand {
             }
             RenderSystem.setShaderTexture(0, this.skinId);
             RenderSystem.setShaderColor(brightness, brightness, brightness, (float)alpha / 255.0f);
-            DrawableHelper.drawTexture(matrices, 2, 2, 12, 12, 8.0f, 8.0f, 8, 8, 64, 64);
-            DrawableHelper.drawTexture(matrices, 2, 2, 12, 12, 40.0f, 8.0f, 8, 8, 64, 64);
+            PlayerSkinDrawer.draw(matrices, 2, 2, 12);
         }
 
         @Override

@@ -585,8 +585,13 @@ ServerPlayPacketListener {
     @Override
     public void onRenameItem(RenameItemC2SPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
-        if (this.player.currentScreenHandler instanceof AnvilScreenHandler) {
-            AnvilScreenHandler anvilScreenHandler = (AnvilScreenHandler)this.player.currentScreenHandler;
+        ScreenHandler screenHandler = this.player.currentScreenHandler;
+        if (screenHandler instanceof AnvilScreenHandler) {
+            AnvilScreenHandler anvilScreenHandler = (AnvilScreenHandler)screenHandler;
+            if (!anvilScreenHandler.canUse(this.player)) {
+                LOGGER.debug("Player {} interacted with invalid menu {}", (Object)this.player, (Object)anvilScreenHandler);
+                return;
+            }
             String string = SharedConstants.stripInvalidChars(packet.getName());
             if (string.length() <= 50) {
                 anvilScreenHandler.setNewItemName(string);
@@ -597,8 +602,14 @@ ServerPlayPacketListener {
     @Override
     public void onUpdateBeacon(UpdateBeaconC2SPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
-        if (this.player.currentScreenHandler instanceof BeaconScreenHandler) {
-            ((BeaconScreenHandler)this.player.currentScreenHandler).setEffects(packet.getPrimaryEffectId(), packet.getSecondaryEffectId());
+        ScreenHandler screenHandler = this.player.currentScreenHandler;
+        if (screenHandler instanceof BeaconScreenHandler) {
+            BeaconScreenHandler beaconScreenHandler = (BeaconScreenHandler)screenHandler;
+            if (!this.player.currentScreenHandler.canUse(this.player)) {
+                LOGGER.debug("Player {} interacted with invalid menu {}", (Object)this.player, (Object)this.player.currentScreenHandler);
+                return;
+            }
+            beaconScreenHandler.setEffects(packet.getPrimaryEffectId(), packet.getSecondaryEffectId());
         }
     }
 
@@ -698,6 +709,10 @@ ServerPlayPacketListener {
         ScreenHandler screenHandler = this.player.currentScreenHandler;
         if (screenHandler instanceof MerchantScreenHandler) {
             MerchantScreenHandler merchantScreenHandler = (MerchantScreenHandler)screenHandler;
+            if (!merchantScreenHandler.canUse(this.player)) {
+                LOGGER.debug("Player {} interacted with invalid menu {}", (Object)this.player, (Object)merchantScreenHandler);
+                return;
+            }
             merchantScreenHandler.setRecipeIndex(i);
             merchantScreenHandler.switchTo(i);
         }
@@ -1148,11 +1163,12 @@ ServerPlayPacketListener {
             this.disconnect(Text.translatable("multiplayer.disconnect.illegal_characters"));
             return;
         }
-        NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
         if (this.canAcceptMessage(packet.command(), packet.timestamp())) {
-            ServerCommandSource serverCommandSource = this.player.getCommandSource().withSigner(packet.createArgumentsSigner(this.player.getUuid()));
-            this.server.getCommandManager().execute(serverCommandSource, packet.command());
-            this.checkForSpam();
+            this.server.submit(() -> {
+                ServerCommandSource serverCommandSource = this.player.getCommandSource().withSigner(packet.createArgumentsSigner(this.player.getUuid()));
+                this.server.getCommandManager().execute(serverCommandSource, packet.command());
+                this.checkForSpam();
+            });
         }
     }
 
@@ -1160,9 +1176,9 @@ ServerPlayPacketListener {
      * {@return whether {@code message}, sent at {@code timestamp}, should be accepted}
      * 
      * @implNote This returns {@code false} if the message arrives in {@linkplain
-     * #isInProperOrder improper order} or if {@linkplain #checkChatDisabled chat is disabled}.
-     * This also logs a warning when the message is {@linkplain #isExpired expired}, but
-     * the message is still accepted in this case.
+     * #isInProperOrder improper order} or if chat is disabled. This also logs a warning
+     * when the message is {@linkplain #isExpired expired}, but the message is still
+     * accepted in this case.
      */
     private boolean canAcceptMessage(String message, Instant timestamp) {
         if (!this.isInProperOrder(timestamp)) {
@@ -1173,7 +1189,14 @@ ServerPlayPacketListener {
         if (this.isExpired(timestamp)) {
             LOGGER.warn("{} sent expired chat: '{}'. Is the client/server system time unsynchronized?", (Object)this.player.getName().getString(), (Object)message);
         }
-        return this.checkChatEnabled();
+        if (this.player.getClientChatVisibility() == ChatVisibility.HIDDEN) {
+            Registry<MessageType> registry = this.player.world.getRegistryManager().get(Registry.MESSAGE_TYPE_KEY);
+            int i = registry.getRawId(registry.get(MessageType.SYSTEM));
+            this.sendPacket(new GameMessageS2CPacket(Text.translatable("chat.disabled.options").formatted(Formatting.RED), i));
+            return false;
+        }
+        this.player.updateLastActionTime();
+        return true;
     }
 
     /**
@@ -1215,24 +1238,11 @@ ServerPlayPacketListener {
         return false;
     }
 
-    private boolean checkChatEnabled() {
-        if (this.player.getClientChatVisibility() == ChatVisibility.HIDDEN) {
-            Registry<MessageType> registry = this.player.world.getRegistryManager().get(Registry.MESSAGE_TYPE_KEY);
-            int i = registry.getRawId(registry.get(MessageType.SYSTEM));
-            this.sendPacket(new GameMessageS2CPacket(Text.translatable("chat.disabled.options").formatted(Formatting.RED), i));
-            return false;
-        }
-        this.player.updateLastActionTime();
-        return true;
-    }
-
     private void handleMessage(ChatMessageC2SPacket packet, FilteredMessage<String> message) {
-        if (this.checkChatEnabled()) {
-            MessageSignature messageSignature = packet.createSignatureInstance(this.player.getUuid());
-            boolean bl = packet.isPreviewed();
-            MessageDecorator messageDecorator = this.server.getMessageDecorator();
-            messageDecorator.decorateChat(this.player, message.map(Text::literal), messageSignature, bl).thenAcceptAsync(this::handleDecoratedMessage, (Executor)this.server);
-        }
+        MessageSignature messageSignature = packet.createSignatureInstance(this.player.getUuid());
+        boolean bl = packet.isPreviewed();
+        MessageDecorator messageDecorator = this.server.getMessageDecorator();
+        messageDecorator.decorateChat(this.player, message.map(Text::literal), messageSignature, bl).thenAcceptAsync(this::handleDecoratedMessage, (Executor)this.server);
     }
 
     private void handleDecoratedMessage(FilteredMessage<SignedMessage> message) {
@@ -1470,6 +1480,10 @@ ServerPlayPacketListener {
             this.player.currentScreenHandler.syncState();
             return;
         }
+        if (!this.player.currentScreenHandler.canUse(this.player)) {
+            LOGGER.debug("Player {} interacted with invalid menu {}", (Object)this.player, (Object)this.player.currentScreenHandler);
+            return;
+        }
         int i = packet.getSlot();
         if (!this.player.currentScreenHandler.isValid(i)) {
             LOGGER.debug("Player {} clicked invalid slot index: {}, available slots: {}", this.player.getName(), i, this.player.currentScreenHandler.slots.size());
@@ -1497,15 +1511,26 @@ ServerPlayPacketListener {
         if (this.player.isSpectator() || this.player.currentScreenHandler.syncId != packet.getSyncId() || !(this.player.currentScreenHandler instanceof AbstractRecipeScreenHandler)) {
             return;
         }
+        if (!this.player.currentScreenHandler.canUse(this.player)) {
+            LOGGER.debug("Player {} interacted with invalid menu {}", (Object)this.player, (Object)this.player.currentScreenHandler);
+            return;
+        }
         this.server.getRecipeManager().get(packet.getRecipe()).ifPresent(recipe -> ((AbstractRecipeScreenHandler)this.player.currentScreenHandler).fillInputSlots(packet.shouldCraftAll(), (Recipe<?>)recipe, this.player));
     }
 
     @Override
     public void onButtonClick(ButtonClickC2SPacket packet) {
-        boolean bl;
         NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
         this.player.updateLastActionTime();
-        if (this.player.currentScreenHandler.syncId == packet.getSyncId() && !this.player.isSpectator() && (bl = this.player.currentScreenHandler.onButtonClick(this.player, packet.getButtonId()))) {
+        if (this.player.currentScreenHandler.syncId != packet.getSyncId() || this.player.isSpectator()) {
+            return;
+        }
+        if (!this.player.currentScreenHandler.canUse(this.player)) {
+            LOGGER.debug("Player {} interacted with invalid menu {}", (Object)this.player, (Object)this.player.currentScreenHandler);
+            return;
+        }
+        boolean bl = this.player.currentScreenHandler.onButtonClick(this.player, packet.getButtonId());
+        if (bl) {
             this.player.currentScreenHandler.sendContentUpdates();
         }
     }
@@ -1515,12 +1540,12 @@ ServerPlayPacketListener {
         NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
         if (this.player.interactionManager.isCreative()) {
             boolean bl3;
-            BlockPos blockPos;
             BlockEntity blockEntity;
+            BlockPos blockPos;
             boolean bl = packet.getSlot() < 0;
             ItemStack itemStack = packet.getItemStack();
             NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(itemStack);
-            if (!itemStack.isEmpty() && nbtCompound != null && nbtCompound.contains("x") && nbtCompound.contains("y") && nbtCompound.contains("z") && (blockEntity = this.player.world.getBlockEntity(blockPos = BlockEntity.posFromNbt(nbtCompound))) != null) {
+            if (!itemStack.isEmpty() && nbtCompound != null && nbtCompound.contains("x") && nbtCompound.contains("y") && nbtCompound.contains("z") && this.player.world.canSetBlock(blockPos = BlockEntity.posFromNbt(nbtCompound)) && (blockEntity = this.player.world.getBlockEntity(blockPos)) != null) {
                 blockEntity.setStackNbt(itemStack);
             }
             boolean bl2 = packet.getSlot() >= 1 && packet.getSlot() <= 45;

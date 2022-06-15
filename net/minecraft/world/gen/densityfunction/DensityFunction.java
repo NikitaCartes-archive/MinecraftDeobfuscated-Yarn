@@ -16,17 +16,17 @@ import org.jetbrains.annotations.Nullable;
 public interface DensityFunction {
     public static final Codec<DensityFunction> CODEC = DensityFunctionTypes.CODEC;
     public static final Codec<RegistryEntry<DensityFunction>> REGISTRY_ENTRY_CODEC = RegistryElementCodec.of(Registry.DENSITY_FUNCTION_KEY, CODEC);
-    public static final Codec<DensityFunction> FUNCTION_CODEC = REGISTRY_ENTRY_CODEC.xmap(DensityFunctionTypes.RegistryEntryHolder::new, densityFunction -> {
-        if (densityFunction instanceof DensityFunctionTypes.RegistryEntryHolder) {
-            DensityFunctionTypes.RegistryEntryHolder registryEntryHolder = (DensityFunctionTypes.RegistryEntryHolder)densityFunction;
+    public static final Codec<DensityFunction> FUNCTION_CODEC = REGISTRY_ENTRY_CODEC.xmap(DensityFunctionTypes.RegistryEntryHolder::new, function -> {
+        if (function instanceof DensityFunctionTypes.RegistryEntryHolder) {
+            DensityFunctionTypes.RegistryEntryHolder registryEntryHolder = (DensityFunctionTypes.RegistryEntryHolder)function;
             return registryEntryHolder.function();
         }
-        return new RegistryEntry.Direct<DensityFunction>((DensityFunction)densityFunction);
+        return new RegistryEntry.Direct<DensityFunction>((DensityFunction)function);
     });
 
     public double sample(NoisePos var1);
 
-    public void method_40470(double[] var1, class_6911 var2);
+    public void applyEach(double[] var1, EachApplier var2);
 
     public DensityFunction apply(DensityFunctionVisitor var1);
 
@@ -34,34 +34,34 @@ public interface DensityFunction {
 
     public double maxValue();
 
-    public CodecHolder<? extends DensityFunction> getCodec();
+    public CodecHolder<? extends DensityFunction> getCodecHolder();
 
     default public DensityFunction clamp(double min, double max) {
         return new DensityFunctionTypes.Clamp(this, min, max);
     }
 
     default public DensityFunction abs() {
-        return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.Type.ABS);
+        return DensityFunctionTypes.unary(this, DensityFunctionTypes.UnaryOperation.Type.ABS);
     }
 
     default public DensityFunction square() {
-        return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.Type.SQUARE);
+        return DensityFunctionTypes.unary(this, DensityFunctionTypes.UnaryOperation.Type.SQUARE);
     }
 
     default public DensityFunction cube() {
-        return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.Type.CUBE);
+        return DensityFunctionTypes.unary(this, DensityFunctionTypes.UnaryOperation.Type.CUBE);
     }
 
     default public DensityFunction halfNegative() {
-        return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.Type.HALF_NEGATIVE);
+        return DensityFunctionTypes.unary(this, DensityFunctionTypes.UnaryOperation.Type.HALF_NEGATIVE);
     }
 
     default public DensityFunction quarterNegative() {
-        return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.Type.QUARTER_NEGATIVE);
+        return DensityFunctionTypes.unary(this, DensityFunctionTypes.UnaryOperation.Type.QUARTER_NEGATIVE);
     }
 
     default public DensityFunction squeeze() {
-        return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.Type.SQUEEZE);
+        return DensityFunctionTypes.unary(this, DensityFunctionTypes.UnaryOperation.Type.SQUEEZE);
     }
 
     public record UnblendedNoisePos(int blockX, int blockY, int blockZ) implements NoisePos
@@ -80,11 +80,11 @@ public interface DensityFunction {
         }
     }
 
-    public static interface class_6913
+    public static interface Base
     extends DensityFunction {
         @Override
-        default public void method_40470(double[] ds, class_6911 arg) {
-            arg.method_40478(ds, this);
+        default public void applyEach(double[] densities, EachApplier applier) {
+            applier.applyEach(densities, this);
         }
 
         @Override
@@ -96,23 +96,23 @@ public interface DensityFunction {
     public static interface DensityFunctionVisitor {
         public DensityFunction apply(DensityFunction var1);
 
-        default public class_7270 method_42358(class_7270 arg) {
-            return arg;
+        default public Noise apply(Noise noiseDensityFunction) {
+            return noiseDensityFunction;
         }
     }
 
-    public record class_7270(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseData, @Nullable DoublePerlinNoiseSampler noise) {
-        public static final Codec<class_7270> field_38248 = DoublePerlinNoiseSampler.NoiseParameters.REGISTRY_ENTRY_CODEC.xmap(registryEntry -> new class_7270((RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters>)registryEntry, null), class_7270::noiseData);
+    public record Noise(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseData, @Nullable DoublePerlinNoiseSampler noise) {
+        public static final Codec<Noise> CODEC = DoublePerlinNoiseSampler.NoiseParameters.REGISTRY_ENTRY_CODEC.xmap(noiseData -> new Noise((RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters>)noiseData, null), Noise::noiseData);
 
-        public class_7270(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> registryEntry) {
-            this(registryEntry, null);
+        public Noise(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseData) {
+            this(noiseData, null);
         }
 
-        public double method_42356(double d, double e, double f) {
-            return this.noise == null ? 0.0 : this.noise.sample(d, e, f);
+        public double sample(double x, double y, double z) {
+            return this.noise == null ? 0.0 : this.noise.sample(x, y, z);
         }
 
-        public double method_42355() {
+        public double getMaxValue() {
             return this.noise == null ? 2.0 : this.noise.method_40554();
         }
 
@@ -122,10 +122,10 @@ public interface DensityFunction {
         }
     }
 
-    public static interface class_6911 {
-        public NoisePos method_40477(int var1);
+    public static interface EachApplier {
+        public NoisePos getPosAt(int var1);
 
-        public void method_40478(double[] var1, DensityFunction var2);
+        public void applyEach(double[] var1, DensityFunction var2);
     }
 }
 

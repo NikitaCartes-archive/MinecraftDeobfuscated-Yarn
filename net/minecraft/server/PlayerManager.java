@@ -797,7 +797,7 @@ public abstract class PlayerManager {
      * to indicate the message should not be sent to them
      */
     public void broadcast(SignedMessage message, Function<ServerPlayerEntity, SignedMessage> playerMessageFactory, MessageSender sender, RegistryKey<MessageType> typeKey) {
-        this.server.logChatMessage(sender, message.getContent());
+        this.server.logChatMessage(sender, message.getContent(), typeKey);
         for (ServerPlayerEntity serverPlayerEntity : this.players) {
             SignedMessage signedMessage = playerMessageFactory.apply(serverPlayerEntity);
             if (signedMessage == null) continue;

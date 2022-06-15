@@ -21,7 +21,7 @@ extends SimpleOptionsScreen {
     private static final String GUIDE_URL = "https://aka.ms/MinecraftJavaAccessibility";
 
     private static SimpleOption<?>[] getOptions(GameOptions gameOptions) {
-        return new SimpleOption[]{gameOptions.getNarrator(), gameOptions.getShowSubtitles(), gameOptions.getTextBackgroundOpacity(), gameOptions.getBackgroundForChatOnly(), gameOptions.getChtOpacity(), gameOptions.getChatLineSpacing(), gameOptions.getChatDelay(), gameOptions.getAutoJump(), gameOptions.getSneakToggled(), gameOptions.getSprintToggled(), gameOptions.getDistortionEffectScale(), gameOptions.getFovEffectScale(), gameOptions.getMonochromeLogo(), gameOptions.getHideLightningFlashes(), gameOptions.getDarknessEffectScale()};
+        return new SimpleOption[]{gameOptions.getNarrator(), gameOptions.getShowSubtitles(), gameOptions.getTextBackgroundOpacity(), gameOptions.getBackgroundForChatOnly(), gameOptions.getChatOpacity(), gameOptions.getChatLineSpacing(), gameOptions.getChatDelay(), gameOptions.getAutoJump(), gameOptions.getSneakToggled(), gameOptions.getSprintToggled(), gameOptions.getDistortionEffectScale(), gameOptions.getFovEffectScale(), gameOptions.getMonochromeLogo(), gameOptions.getHideLightningFlashes(), gameOptions.getDarknessEffectScale()};
     }
 
     public AccessibilityOptionsScreen(Screen parent, GameOptions gameOptions) {

@@ -10,7 +10,7 @@ import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenu;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenuCommand;
 import net.minecraft.client.util.DefaultSkinHelper;
@@ -49,8 +49,7 @@ implements SpectatorMenuCommand {
     public void renderIcon(MatrixStack matrices, float brightness, int alpha) {
         RenderSystem.setShaderTexture(0, this.skinId);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, (float)alpha / 255.0f);
-        DrawableHelper.drawTexture(matrices, 2, 2, 12, 12, 8.0f, 8.0f, 8, 8, 64, 64);
-        DrawableHelper.drawTexture(matrices, 2, 2, 12, 12, 40.0f, 8.0f, 8, 8, 64, 64);
+        PlayerSkinDrawer.draw(matrices, 2, 2, 12);
     }
 
     @Override

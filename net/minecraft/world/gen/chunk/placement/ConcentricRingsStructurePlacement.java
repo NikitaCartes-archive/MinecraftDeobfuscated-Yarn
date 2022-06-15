@@ -64,12 +64,12 @@ extends StructurePlacement {
     }
 
     @Override
-    protected boolean isStartChunk(ChunkGenerator chunkGenerator, NoiseConfig noiseConfig, long seed, int x, int z) {
+    protected boolean isStartChunk(ChunkGenerator chunkGenerator, NoiseConfig noiseConfig, long seed, int chunkX, int chunkZ) {
         List<ChunkPos> list = chunkGenerator.getConcentricRingsStartChunks(this, noiseConfig);
         if (list == null) {
             return false;
         }
-        return list.contains(new ChunkPos(x, z));
+        return list.contains(new ChunkPos(chunkX, chunkZ));
     }
 
     @Override

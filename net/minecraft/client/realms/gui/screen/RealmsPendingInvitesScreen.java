@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -256,8 +257,7 @@ extends RealmsScreen {
             RealmsAcceptRejectButton.render(matrices, this.buttons, RealmsPendingInvitesScreen.this.pendingInvitationSelectionList, x, y, mouseX, mouseY);
             RealmsTextureManager.withBoundFace(invite.worldOwnerUuid, () -> {
                 RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-                DrawableHelper.drawTexture(matrices, x, y, 32, 32, 8.0f, 8.0f, 8, 8, 64, 64);
-                DrawableHelper.drawTexture(matrices, x, y, 32, 32, 40.0f, 8.0f, 8, 8, 64, 64);
+                PlayerSkinDrawer.draw(matrices, x, y, 32);
             });
         }
 

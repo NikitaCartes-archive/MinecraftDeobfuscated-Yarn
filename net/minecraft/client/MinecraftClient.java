@@ -98,6 +98,8 @@ import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.network.ServerAddress;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.network.SocialInteractionsManager;
+import net.minecraft.client.network.abusereport.AbuseReporter;
+import net.minecraft.client.network.abusereport.ReporterEnvironment;
 import net.minecraft.client.option.AoMode;
 import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.client.option.CloudRenderMode;
@@ -107,6 +109,7 @@ import net.minecraft.client.option.HotbarStorage;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.option.Perspective;
 import net.minecraft.client.particle.ParticleManager;
+import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.util.Realms32BitWarningChecker;
 import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.BufferBuilder;
@@ -468,6 +471,7 @@ implements WindowEventHandler {
     @Nullable
     private GlTimer.Query currentGlTimerQuery;
     private final Realms32BitWarningChecker realms32BitWarningChecker;
+    private AbuseReporter abuseReporter;
     private String openProfilerSection = "root";
 
     public MinecraftClient(RunArgs args) {
@@ -615,6 +619,7 @@ implements WindowEventHandler {
         this.gameRenderer.preloadShaders(this.getResourcePackProvider().getPack().getFactory());
         this.profileKeys = new ProfileKeys(this.userApiService, this.session.getProfile().getId(), this.runDirectory.toPath());
         this.realms32BitWarningChecker = new Realms32BitWarningChecker(this);
+        this.abuseReporter = AbuseReporter.create(ReporterEnvironment.ofIntegratedServer(), this.userApiService);
         SplashOverlay.init(this);
         List<ResourcePack> list = this.resourcePackManager.createResourcePacks();
         this.resourceReloadLogger.reload(ResourceReloadLogger.ReloadReason.INITIAL, list);
@@ -1696,7 +1701,7 @@ implements WindowEventHandler {
                 this.tutorialManager.remove(this.socialInteractionsToast);
                 this.socialInteractionsToast = null;
             }
-            this.setScreen(new SocialInteractionsScreen());
+            this.setScreen(SocialInteractionsScreen.createAbuseReportNoticeScreen());
         }
         while (this.options.inventoryKey.wasPressed()) {
             if (this.interactionManager.hasRidingInventory()) {
@@ -1782,6 +1787,7 @@ implements WindowEventHandler {
                 return QueueingWorldGenerationProgressListener.create(worldGenerationProgressTracker, this.renderTaskQueue::add);
             }));
             this.integratedServerRunning = true;
+            this.resetAbuseReporterIfNecessary(ReporterEnvironment.ofIntegratedServer());
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Starting integrated server");
             CrashReportSection crashReportSection = crashReport.addElement("Starting integrated server");
@@ -2091,6 +2097,22 @@ implements WindowEventHandler {
 
     public void setCurrentServerEntry(@Nullable ServerInfo serverEntry) {
         this.currentServerEntry = serverEntry;
+        ReporterEnvironment reporterEnvironment = serverEntry != null ? ReporterEnvironment.ofThirdPartyServer(serverEntry.address) : ReporterEnvironment.ofIntegratedServer();
+        this.resetAbuseReporterIfNecessary(reporterEnvironment);
+    }
+
+    public void setCurrentServerEntry(RealmsServer server, String address) {
+        this.currentServerEntry = server.createServerInfo(address);
+        this.resetAbuseReporterIfNecessary(ReporterEnvironment.ofRealm(server));
+    }
+
+    /**
+     * Recreates and resets {@link #abuseReporter} if {@code environment} has changed.
+     */
+    private void resetAbuseReporterIfNecessary(ReporterEnvironment environment) {
+        if (!this.abuseReporter.environmentEquals(environment)) {
+            this.abuseReporter = AbuseReporter.create(environment, this.userApiService);
+        }
     }
 
     @Nullable
@@ -2536,6 +2558,10 @@ implements WindowEventHandler {
 
     public SignatureVerifier getServicesSignatureVerifier() {
         return this.servicesSignatureVerifier;
+    }
+
+    public AbuseReporter getAbuseReporter() {
+        return this.abuseReporter;
     }
 
     static {

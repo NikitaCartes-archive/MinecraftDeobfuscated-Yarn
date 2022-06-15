@@ -9,6 +9,8 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.JukeboxBlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
@@ -55,6 +57,7 @@ extends BlockWithEntity {
         if (state.get(HAS_RECORD).booleanValue()) {
             this.removeRecord(world, pos);
             state = (BlockState)state.with(HAS_RECORD, false);
+            world.emitGameEvent(GameEvent.JUKEBOX_STOP_PLAY, pos, GameEvent.Emitter.of(state));
             world.setBlockState(pos, state, Block.NOTIFY_LISTENERS);
             world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(player, state));
             return ActionResult.success(world.isClient);
@@ -64,12 +67,13 @@ extends BlockWithEntity {
 
     public void setRecord(@Nullable Entity user, WorldAccess world, BlockPos pos, BlockState state, ItemStack stack) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (!(blockEntity instanceof JukeboxBlockEntity)) {
-            return;
+        if (blockEntity instanceof JukeboxBlockEntity) {
+            JukeboxBlockEntity jukeboxBlockEntity = (JukeboxBlockEntity)blockEntity;
+            jukeboxBlockEntity.setRecord(stack.copy());
+            jukeboxBlockEntity.startPlaying();
+            world.setBlockState(pos, (BlockState)state.with(HAS_RECORD, true), Block.NOTIFY_LISTENERS);
+            world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(user, state));
         }
-        ((JukeboxBlockEntity)blockEntity).setRecord(stack.copy());
-        world.setBlockState(pos, (BlockState)state.with(HAS_RECORD, true), Block.NOTIFY_LISTENERS);
-        world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(user, state));
     }
 
     private void removeRecord(World world, BlockPos pos) {
@@ -134,6 +138,15 @@ extends BlockWithEntity {
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(HAS_RECORD);
+    }
+
+    @Override
+    @Nullable
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+        if (state.get(HAS_RECORD).booleanValue()) {
+            return JukeboxBlock.checkType(type, BlockEntityType.JUKEBOX, JukeboxBlockEntity::tick);
+        }
+        return null;
     }
 }
 

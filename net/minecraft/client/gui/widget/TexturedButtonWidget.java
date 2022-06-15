@@ -59,7 +59,9 @@ extends ButtonWidget {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, this.texture);
         int i = this.v;
-        if (this.isHovered()) {
+        if (!this.isNarratable()) {
+            i += this.hoveredVOffset * 2;
+        } else if (this.isHovered()) {
             i += this.hoveredVOffset;
         }
         RenderSystem.enableDepthTest();

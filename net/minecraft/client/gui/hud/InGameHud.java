@@ -12,14 +12,12 @@ import com.mojang.datafixers.util.Pair;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.font.TextVisitFactory;
 import net.minecraft.client.gui.ClientChatListener;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.GameInfoChatListener;
@@ -84,7 +82,6 @@ import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.border.WorldBorder;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -280,7 +277,7 @@ extends DrawableHelper {
                     m = l << 24 & 0xFF000000;
                     n = textRenderer.getWidth(this.overlayMessage);
                     this.drawTextBackground(matrices, textRenderer, -4, n, 0xFFFFFF | m);
-                    textRenderer.draw(matrices, this.overlayMessage, (float)(-n / 2), -4.0f, k | m);
+                    textRenderer.drawWithShadow(matrices, this.overlayMessage, (float)(-n / 2), -4.0f, k | m);
                     RenderSystem.disableBlend();
                     matrices.pop();
                 }
@@ -1081,7 +1078,9 @@ extends DrawableHelper {
     }
 
     public void setRecordPlayingOverlay(Text description) {
-        this.setOverlayMessage(Text.translatable("record.nowPlaying", description), true);
+        MutableText text = Text.translatable("record.nowPlaying", description);
+        this.setOverlayMessage(text, true);
+        NarratorManager.INSTANCE.narrate(text);
     }
 
     public void setOverlayMessage(Text message, boolean tinted) {
@@ -1129,30 +1128,12 @@ extends DrawableHelper {
         this.titleRemainTicks = 0;
     }
 
-    public UUID extractSender(Text message) {
-        String string = TextVisitFactory.removeFormattingCodes(message);
-        String string2 = StringUtils.substringBetween(string, "<", ">");
-        if (string2 == null) {
-            return Util.NIL_UUID;
-        }
-        return this.client.getSocialInteractionsManager().getUuid(string2);
-    }
-
     /**
      * Handles a chat message.
-     * 
-     * @implNote This method discards the message if the sender is blocked.
-     * Otherwise, it calls {@link ClientChatListener#onChatMessage}.
      * 
      * @see net.minecraft.client.network.ClientPlayNetworkHandler#onChatMessage
      */
     public void onChatMessage(MessageType type, Text message, MessageSender sender) {
-        if (this.client.shouldBlockMessages(sender.uuid())) {
-            return;
-        }
-        if (this.client.options.getHideMatchedNames().getValue().booleanValue() && this.client.shouldBlockMessages(this.extractSender(message))) {
-            return;
-        }
         for (ClientChatListener clientChatListener : this.listeners) {
             clientChatListener.onChatMessage(type, message, sender);
         }
@@ -1161,15 +1142,9 @@ extends DrawableHelper {
     /**
      * Handles a game message.
      * 
-     * @implNote This method discards the message if {@linkplain #extractSender the extracted
-     * sender} is blocked. Otherwise, it calls {@link ClientChatListener#onChatMessage}.
-     * 
      * @see net.minecraft.client.network.ClientPlayNetworkHandler#onGameMessage
      */
     public void onGameMessage(MessageType type, Text message) {
-        if (this.client.options.getHideMatchedNames().getValue().booleanValue() && this.client.shouldBlockMessages(this.extractSender(message))) {
-            return;
-        }
         for (ClientChatListener clientChatListener : this.listeners) {
             clientChatListener.onChatMessage(type, message, null);
         }

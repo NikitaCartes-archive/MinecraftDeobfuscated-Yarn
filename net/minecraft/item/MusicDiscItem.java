@@ -30,11 +30,13 @@ extends Item {
     private static final Map<SoundEvent, MusicDiscItem> MUSIC_DISCS = Maps.newHashMap();
     private final int comparatorOutput;
     private final SoundEvent sound;
+    private final int lengthInTicks;
 
-    protected MusicDiscItem(int comparatorOutput, SoundEvent sound, Item.Settings settings) {
+    protected MusicDiscItem(int comparatorOutput, SoundEvent sound, Item.Settings settings, int lengthInSeconds) {
         super(settings);
         this.comparatorOutput = comparatorOutput;
         this.sound = sound;
+        this.lengthInTicks = lengthInSeconds * 20;
         MUSIC_DISCS.put(this.sound, this);
     }
 
@@ -79,6 +81,10 @@ extends Item {
 
     public SoundEvent getSound() {
         return this.sound;
+    }
+
+    public int getSongLengthInTicks() {
+        return this.lengthInTicks;
     }
 }
 

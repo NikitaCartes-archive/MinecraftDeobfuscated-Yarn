@@ -151,7 +151,7 @@ extends ChunkGenerator {
 
     private OptionalInt sampleHeightmap(HeightLimitView heightLimitView, NoiseConfig noiseConfig, int i, int j, @Nullable MutableObject<VerticalBlockSample> mutableObject, @Nullable Predicate<BlockState> predicate) {
         BlockState[] blockStates;
-        GenerationShapeConfig generationShapeConfig = this.settings.value().generationShapeConfig().method_42368(heightLimitView);
+        GenerationShapeConfig generationShapeConfig = this.settings.value().generationShapeConfig().trimHeight(heightLimitView);
         int k = generationShapeConfig.verticalBlockSize();
         int l = generationShapeConfig.minimumY();
         int m = MathHelper.floorDiv(l, k);
@@ -248,7 +248,7 @@ extends ChunkGenerator {
 
     @Override
     public CompletableFuture<Chunk> populateNoise(Executor executor, Blender blender, NoiseConfig noiseConfig, StructureAccessor structureAccessor, Chunk chunk2) {
-        GenerationShapeConfig generationShapeConfig = this.settings.value().generationShapeConfig().method_42368(chunk2.getHeightLimitView());
+        GenerationShapeConfig generationShapeConfig = this.settings.value().generationShapeConfig().trimHeight(chunk2.getHeightLimitView());
         int i = generationShapeConfig.minimumY();
         int j = MathHelper.floorDiv(i, generationShapeConfig.verticalBlockSize());
         int k = MathHelper.floorDiv(generationShapeConfig.height(), generationShapeConfig.verticalBlockSize());

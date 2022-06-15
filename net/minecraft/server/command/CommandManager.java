@@ -28,6 +28,7 @@ import net.minecraft.command.argument.ArgumentHelper;
 import net.minecraft.command.argument.ArgumentTypes;
 import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.network.packet.s2c.play.CommandTreeS2CPacket;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.command.AdvancementCommand;
 import net.minecraft.server.command.AttributeCommand;
 import net.minecraft.server.command.BossBarCommand;
@@ -240,7 +241,7 @@ public class CommandManager {
                 i = Math.min(commandSyntaxException.getInput().length(), commandSyntaxException.getCursor());
                 MutableText mutableText = Text.empty().formatted(Formatting.GRAY).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/" + command)));
                 if (i > 10) {
-                    mutableText.append("...");
+                    mutableText.append(ScreenTexts.ELLIPSIS);
                 }
                 mutableText.append(commandSyntaxException.getInput().substring(Math.max(0, i - 10), i));
                 if (i < commandSyntaxException.getInput().length()) {

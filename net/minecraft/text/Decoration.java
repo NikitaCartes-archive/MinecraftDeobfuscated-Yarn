@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
  * language files in resource packs.
  */
 public record Decoration(String translationKey, List<Parameter> parameters, Style style) {
-    public static final Codec<Decoration> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.STRING.fieldOf("translation_key")).forGetter(Decoration::translationKey), ((MapCodec)Parameter.CODEC.listOf().fieldOf("parameters")).forGetter(Decoration::parameters), ((MapCodec)Style.CODEC.fieldOf("style")).forGetter(Decoration::style)).apply((Applicative<Decoration, ?>)instance, Decoration::new));
+    public static final Codec<Decoration> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.STRING.fieldOf("translation_key")).forGetter(Decoration::translationKey), ((MapCodec)Parameter.CODEC.listOf().fieldOf("parameters")).forGetter(Decoration::parameters), Style.CODEC.optionalFieldOf("style", Style.EMPTY).forGetter(Decoration::style)).apply((Applicative<Decoration, ?>)instance, Decoration::new));
 
     /**
      * {@return the decoration used in chat messages}

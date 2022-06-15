@@ -26,7 +26,7 @@ import net.minecraft.world.gen.noise.NoiseConfig;
 
 public abstract class StructurePlacement {
     public static final Codec<StructurePlacement> TYPE_CODEC = Registry.STRUCTURE_PLACEMENT.getCodec().dispatch(StructurePlacement::getType, StructurePlacementType::codec);
-    private static final int field_37775 = 10387320;
+    private static final int ARBITRARY_SALT = 10387320;
     private final Vec3i locateOffset;
     private final FrequencyReductionMethod frequencyReductionMethod;
     private final float frequency;
@@ -65,14 +65,14 @@ public abstract class StructurePlacement {
         return this.exclusionZone;
     }
 
-    public boolean shouldGenerate(ChunkGenerator chunkGenerator, NoiseConfig noiseConfig, long seed, int x, int z) {
-        if (!this.isStartChunk(chunkGenerator, noiseConfig, seed, x, z)) {
+    public boolean shouldGenerate(ChunkGenerator chunkGenerator, NoiseConfig noiseConfig, long seed, int chunkX, int chunkZ) {
+        if (!this.isStartChunk(chunkGenerator, noiseConfig, seed, chunkX, chunkZ)) {
             return false;
         }
-        if (this.frequency < 1.0f && !this.frequencyReductionMethod.shouldGenerate(seed, this.salt, x, z, this.frequency)) {
+        if (this.frequency < 1.0f && !this.frequencyReductionMethod.shouldGenerate(seed, this.salt, chunkX, chunkZ, this.frequency)) {
             return false;
         }
-        return !this.exclusionZone.isPresent() || !this.exclusionZone.get().shouldExclude(chunkGenerator, noiseConfig, seed, x, z);
+        return !this.exclusionZone.isPresent() || !this.exclusionZone.get().shouldExclude(chunkGenerator, noiseConfig, seed, chunkX, chunkZ);
     }
 
     protected abstract boolean isStartChunk(ChunkGenerator var1, NoiseConfig var2, long var3, int var5, int var6);
@@ -83,29 +83,29 @@ public abstract class StructurePlacement {
 
     public abstract StructurePlacementType<?> getType();
 
-    private static boolean defaultShouldGenerate(long seed, int regionX, int regionZ, int salt, float frequency) {
+    private static boolean defaultShouldGenerate(long seed, int salt, int chunkX, int chunkZ, float frequency) {
         ChunkRandom chunkRandom = new ChunkRandom(new CheckedRandom(0L));
-        chunkRandom.setRegionSeed(seed, regionX, regionZ, salt);
+        chunkRandom.setRegionSeed(seed, salt, chunkX, chunkZ);
         return chunkRandom.nextFloat() < frequency;
     }
 
-    private static boolean legacyType3ShouldGenerate(long seed, int i, int chunkX, int chunkZ, float frequency) {
+    private static boolean legacyType3ShouldGenerate(long seed, int salt, int chunkX, int chunkZ, float frequency) {
         ChunkRandom chunkRandom = new ChunkRandom(new CheckedRandom(0L));
         chunkRandom.setCarverSeed(seed, chunkX, chunkZ);
         return chunkRandom.nextDouble() < (double)frequency;
     }
 
-    private static boolean legacyType2ShouldGenerate(long seed, int i, int regionX, int regionZ, float frequency) {
+    private static boolean legacyType2ShouldGenerate(long seed, int salt, int chunkX, int chunkZ, float frequency) {
         ChunkRandom chunkRandom = new ChunkRandom(new CheckedRandom(0L));
-        chunkRandom.setRegionSeed(seed, regionX, regionZ, 10387320);
+        chunkRandom.setRegionSeed(seed, chunkX, chunkZ, 10387320);
         return chunkRandom.nextFloat() < frequency;
     }
 
-    private static boolean legacyType1ShouldGenerate(long seed, int i, int j, int k, float frequency) {
-        int l = j >> 4;
-        int m = k >> 4;
+    private static boolean legacyType1ShouldGenerate(long seed, int salt, int chunkX, int chunkZ, float frequency) {
+        int i = chunkX >> 4;
+        int j = chunkZ >> 4;
         ChunkRandom chunkRandom = new ChunkRandom(new CheckedRandom(0L));
-        chunkRandom.setSeed((long)(l ^ m << 4) ^ seed);
+        chunkRandom.setSeed((long)(i ^ j << 4) ^ seed);
         chunkRandom.nextInt();
         return chunkRandom.nextInt((int)(1.0f / frequency)) == 0;
     }
@@ -126,8 +126,8 @@ public abstract class StructurePlacement {
             this.generationPredicate = generationPredicate;
         }
 
-        public boolean shouldGenerate(long seed, int i, int j, int k, float chance) {
-            return this.generationPredicate.shouldGenerate(seed, i, j, k, chance);
+        public boolean shouldGenerate(long seed, int salt, int chunkX, int chunkZ, float chance) {
+            return this.generationPredicate.shouldGenerate(seed, salt, chunkX, chunkZ, chance);
         }
 
         @Override

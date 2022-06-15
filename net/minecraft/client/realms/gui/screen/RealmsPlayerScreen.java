@@ -8,6 +8,7 @@ import com.mojang.logging.LogUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.RealmsClient;
@@ -382,8 +383,7 @@ extends RealmsScreen {
             RealmsPlayerScreen.this.drawRemoveIcon(matrices, RealmsPlayerScreen.this.column1_x + RealmsPlayerScreen.this.column_width - 22, y + 2, mouseX, mouseY);
             RealmsTextureManager.withBoundFace(playerInfo.getUuid(), () -> {
                 RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-                DrawableHelper.drawTexture(matrices, RealmsPlayerScreen.this.column1_x + 2 + 2, y + 1, 8, 8, 8.0f, 8.0f, 8, 8, 64, 64);
-                DrawableHelper.drawTexture(matrices, RealmsPlayerScreen.this.column1_x + 2 + 2, y + 1, 8, 8, 40.0f, 8.0f, 8, 8, 64, 64);
+                PlayerSkinDrawer.draw(matrices, RealmsPlayerScreen.this.column1_x + 2 + 2, y + 1, 8);
             });
         }
 

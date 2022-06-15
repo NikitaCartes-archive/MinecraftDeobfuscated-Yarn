@@ -66,7 +66,7 @@ public class RealmsConnection {
                     }
                     String string4 = minecraftClient.getSession().getUsername();
                     RealmsConnection.this.connection.send(new LoginHelloC2SPacket(string4, minecraftClient.getProfileKeys().getPublicKeyData()));
-                    minecraftClient.setCurrentServerEntry(server.createServerInfo(string));
+                    minecraftClient.setCurrentServerEntry(server, string);
                 } catch (Exception exception) {
                     minecraftClient.getResourcePackProvider().clear();
                     if (RealmsConnection.this.aborted) {
