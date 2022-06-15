@@ -2,10 +2,10 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.passive.FrogEntity;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -40,7 +40,8 @@ public class LayFrogSpawnTask extends Task<FrogEntity> {
 
 		for (Direction direction : Direction.Type.HORIZONTAL) {
 			BlockPos blockPos2 = blockPos.offset(direction);
-			if (serverWorld.getBlockState(blockPos2).isOf(Blocks.WATER)) {
+			if (serverWorld.getBlockState(blockPos2).getCollisionShape(serverWorld, blockPos2).getFace(Direction.UP).isEmpty()
+				&& serverWorld.getFluidState(blockPos2).isOf(Fluids.WATER)) {
 				BlockPos blockPos3 = blockPos2.up();
 				if (serverWorld.getBlockState(blockPos3).isAir()) {
 					serverWorld.setBlockState(blockPos3, this.frogSpawn.getDefaultState(), Block.NOTIFY_ALL);

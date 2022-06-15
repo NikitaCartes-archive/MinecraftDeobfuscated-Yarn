@@ -13,13 +13,18 @@ import net.minecraft.text.Text;
 public abstract class WarningScreen extends Screen {
 	private final Text header;
 	private final Text message;
+	@Nullable
 	private final Text checkMessage;
 	private final Text narratedText;
 	@Nullable
 	protected CheckboxWidget checkbox;
 	private MultilineText messageText = MultilineText.EMPTY;
 
-	protected WarningScreen(Text header, Text message, Text checkMessage, Text narratedText) {
+	protected WarningScreen(Text text, Text text2, Text text3) {
+		this(text, text2, null, text3);
+	}
+
+	protected WarningScreen(Text header, Text message, @Nullable Text checkMessage, Text narratedText) {
 		super(NarratorManager.EMPTY);
 		this.header = header;
 		this.message = message;
@@ -34,9 +39,12 @@ public abstract class WarningScreen extends Screen {
 		super.init();
 		this.messageText = MultilineText.create(this.textRenderer, this.message, this.width - 100);
 		int i = (this.messageText.count() + 1) * this.getLineHeight();
-		int j = this.textRenderer.getWidth(this.checkMessage);
-		this.checkbox = new CheckboxWidget(this.width / 2 - j / 2 - 8, 76 + i, j + 24, 20, this.checkMessage, false);
-		this.addDrawableChild(this.checkbox);
+		if (this.checkMessage != null) {
+			int j = this.textRenderer.getWidth(this.checkMessage);
+			this.checkbox = new CheckboxWidget(this.width / 2 - j / 2 - 8, 76 + i, j + 24, 20, this.checkMessage, false);
+			this.addDrawableChild(this.checkbox);
+		}
+
 		this.initButtons(i);
 	}
 

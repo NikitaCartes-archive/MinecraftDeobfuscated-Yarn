@@ -24,7 +24,7 @@ public abstract class StructurePlacement {
 	public static final Codec<StructurePlacement> TYPE_CODEC = Registry.STRUCTURE_PLACEMENT
 		.getCodec()
 		.dispatch(StructurePlacement::getType, StructurePlacementType::codec);
-	private static final int field_37775 = 10387320;
+	private static final int ARBITRARY_SALT = 10387320;
 	private final Vec3i locateOffset;
 	private final StructurePlacement.FrequencyReductionMethod frequencyReductionMethod;
 	private final float frequency;
@@ -79,17 +79,18 @@ public abstract class StructurePlacement {
 		return this.exclusionZone;
 	}
 
-	public boolean shouldGenerate(ChunkGenerator chunkGenerator, NoiseConfig noiseConfig, long seed, int x, int z) {
-		if (!this.isStartChunk(chunkGenerator, noiseConfig, seed, x, z)) {
+	public boolean shouldGenerate(ChunkGenerator chunkGenerator, NoiseConfig noiseConfig, long seed, int chunkX, int chunkZ) {
+		if (!this.isStartChunk(chunkGenerator, noiseConfig, seed, chunkX, chunkZ)) {
 			return false;
 		} else {
-			return this.frequency < 1.0F && !this.frequencyReductionMethod.shouldGenerate(seed, this.salt, x, z, this.frequency)
+			return this.frequency < 1.0F && !this.frequencyReductionMethod.shouldGenerate(seed, this.salt, chunkX, chunkZ, this.frequency)
 				? false
-				: !this.exclusionZone.isPresent() || !((StructurePlacement.ExclusionZone)this.exclusionZone.get()).shouldExclude(chunkGenerator, noiseConfig, seed, x, z);
+				: !this.exclusionZone.isPresent()
+					|| !((StructurePlacement.ExclusionZone)this.exclusionZone.get()).shouldExclude(chunkGenerator, noiseConfig, seed, chunkX, chunkZ);
 		}
 	}
 
-	protected abstract boolean isStartChunk(ChunkGenerator chunkGenerator, NoiseConfig noiseConfig, long seed, int x, int z);
+	protected abstract boolean isStartChunk(ChunkGenerator chunkGenerator, NoiseConfig noiseConfig, long seed, int chunkX, int chunkZ);
 
 	public BlockPos getLocatePos(ChunkPos chunkPos) {
 		return new BlockPos(chunkPos.getStartX(), 0, chunkPos.getStartZ()).add(this.getLocateOffset());
@@ -97,29 +98,29 @@ public abstract class StructurePlacement {
 
 	public abstract StructurePlacementType<?> getType();
 
-	private static boolean defaultShouldGenerate(long seed, int regionX, int regionZ, int salt, float frequency) {
+	private static boolean defaultShouldGenerate(long seed, int salt, int chunkX, int chunkZ, float frequency) {
 		ChunkRandom chunkRandom = new ChunkRandom(new CheckedRandom(0L));
-		chunkRandom.setRegionSeed(seed, regionX, regionZ, salt);
+		chunkRandom.setRegionSeed(seed, salt, chunkX, chunkZ);
 		return chunkRandom.nextFloat() < frequency;
 	}
 
-	private static boolean legacyType3ShouldGenerate(long seed, int i, int chunkX, int chunkZ, float frequency) {
+	private static boolean legacyType3ShouldGenerate(long seed, int salt, int chunkX, int chunkZ, float frequency) {
 		ChunkRandom chunkRandom = new ChunkRandom(new CheckedRandom(0L));
 		chunkRandom.setCarverSeed(seed, chunkX, chunkZ);
 		return chunkRandom.nextDouble() < (double)frequency;
 	}
 
-	private static boolean legacyType2ShouldGenerate(long seed, int i, int regionX, int regionZ, float frequency) {
+	private static boolean legacyType2ShouldGenerate(long seed, int salt, int chunkX, int chunkZ, float frequency) {
 		ChunkRandom chunkRandom = new ChunkRandom(new CheckedRandom(0L));
-		chunkRandom.setRegionSeed(seed, regionX, regionZ, 10387320);
+		chunkRandom.setRegionSeed(seed, chunkX, chunkZ, 10387320);
 		return chunkRandom.nextFloat() < frequency;
 	}
 
-	private static boolean legacyType1ShouldGenerate(long seed, int i, int j, int k, float frequency) {
-		int l = j >> 4;
-		int m = k >> 4;
+	private static boolean legacyType1ShouldGenerate(long seed, int salt, int chunkX, int chunkZ, float frequency) {
+		int i = chunkX >> 4;
+		int j = chunkZ >> 4;
 		ChunkRandom chunkRandom = new ChunkRandom(new CheckedRandom(0L));
-		chunkRandom.setSeed((long)(l ^ m << 4) ^ seed);
+		chunkRandom.setSeed((long)(i ^ j << 4) ^ seed);
 		chunkRandom.nextInt();
 		return chunkRandom.nextInt((int)(1.0F / frequency)) == 0;
 	}
@@ -156,8 +157,8 @@ public abstract class StructurePlacement {
 			this.generationPredicate = generationPredicate;
 		}
 
-		public boolean shouldGenerate(long seed, int i, int j, int k, float chance) {
-			return this.generationPredicate.shouldGenerate(seed, i, j, k, chance);
+		public boolean shouldGenerate(long seed, int salt, int chunkX, int chunkZ, float chance) {
+			return this.generationPredicate.shouldGenerate(seed, salt, chunkX, chunkZ, chance);
 		}
 
 		@Override
@@ -168,6 +169,6 @@ public abstract class StructurePlacement {
 
 	@FunctionalInterface
 	public interface GenerationPredicate {
-		boolean shouldGenerate(long seed, int i, int j, int k, float chance);
+		boolean shouldGenerate(long seed, int salt, int chunkX, int chunkZ, float chance);
 	}
 }

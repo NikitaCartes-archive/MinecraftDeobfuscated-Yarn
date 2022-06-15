@@ -26,6 +26,7 @@ import net.minecraft.command.argument.ArgumentHelper;
 import net.minecraft.command.argument.ArgumentTypes;
 import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.network.packet.s2c.play.CommandTreeS2CPacket;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.dedicated.command.BanCommand;
 import net.minecraft.server.dedicated.command.BanIpCommand;
 import net.minecraft.server.dedicated.command.BanListCommand;
@@ -180,7 +181,7 @@ public class CommandManager {
 					.formatted(Formatting.GRAY)
 					.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/" + command)));
 				if (i > 10) {
-					mutableText.append("...");
+					mutableText.append(ScreenTexts.ELLIPSIS);
 				}
 
 				mutableText.append(var14.getInput().substring(Math.max(0, i - 10), i));

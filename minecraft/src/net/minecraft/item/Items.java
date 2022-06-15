@@ -1485,49 +1485,50 @@ public class Items {
 	public static final Item KNOWLEDGE_BOOK = register("knowledge_book", new KnowledgeBookItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)));
 	public static final Item DEBUG_STICK = register("debug_stick", new DebugStickItem(new Item.Settings().maxCount(1).rarity(Rarity.EPIC)));
 	public static final Item MUSIC_DISC_13 = register(
-		"music_disc_13", new MusicDiscItem(1, SoundEvents.MUSIC_DISC_13, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE))
+		"music_disc_13", new MusicDiscItem(1, SoundEvents.MUSIC_DISC_13, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE), 178)
 	);
 	public static final Item MUSIC_DISC_CAT = register(
-		"music_disc_cat", new MusicDiscItem(2, SoundEvents.MUSIC_DISC_CAT, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE))
+		"music_disc_cat", new MusicDiscItem(2, SoundEvents.MUSIC_DISC_CAT, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE), 185)
 	);
 	public static final Item MUSIC_DISC_BLOCKS = register(
-		"music_disc_blocks", new MusicDiscItem(3, SoundEvents.MUSIC_DISC_BLOCKS, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE))
+		"music_disc_blocks", new MusicDiscItem(3, SoundEvents.MUSIC_DISC_BLOCKS, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE), 345)
 	);
 	public static final Item MUSIC_DISC_CHIRP = register(
-		"music_disc_chirp", new MusicDiscItem(4, SoundEvents.MUSIC_DISC_CHIRP, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE))
+		"music_disc_chirp", new MusicDiscItem(4, SoundEvents.MUSIC_DISC_CHIRP, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE), 185)
 	);
 	public static final Item MUSIC_DISC_FAR = register(
-		"music_disc_far", new MusicDiscItem(5, SoundEvents.MUSIC_DISC_FAR, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE))
+		"music_disc_far", new MusicDiscItem(5, SoundEvents.MUSIC_DISC_FAR, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE), 174)
 	);
 	public static final Item MUSIC_DISC_MALL = register(
-		"music_disc_mall", new MusicDiscItem(6, SoundEvents.MUSIC_DISC_MALL, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE))
+		"music_disc_mall", new MusicDiscItem(6, SoundEvents.MUSIC_DISC_MALL, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE), 197)
 	);
 	public static final Item MUSIC_DISC_MELLOHI = register(
-		"music_disc_mellohi", new MusicDiscItem(7, SoundEvents.MUSIC_DISC_MELLOHI, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE))
+		"music_disc_mellohi", new MusicDiscItem(7, SoundEvents.MUSIC_DISC_MELLOHI, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE), 96)
 	);
 	public static final Item MUSIC_DISC_STAL = register(
-		"music_disc_stal", new MusicDiscItem(8, SoundEvents.MUSIC_DISC_STAL, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE))
+		"music_disc_stal", new MusicDiscItem(8, SoundEvents.MUSIC_DISC_STAL, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE), 150)
 	);
 	public static final Item MUSIC_DISC_STRAD = register(
-		"music_disc_strad", new MusicDiscItem(9, SoundEvents.MUSIC_DISC_STRAD, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE))
+		"music_disc_strad", new MusicDiscItem(9, SoundEvents.MUSIC_DISC_STRAD, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE), 188)
 	);
 	public static final Item MUSIC_DISC_WARD = register(
-		"music_disc_ward", new MusicDiscItem(10, SoundEvents.MUSIC_DISC_WARD, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE))
+		"music_disc_ward", new MusicDiscItem(10, SoundEvents.MUSIC_DISC_WARD, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE), 251)
 	);
 	public static final Item MUSIC_DISC_11 = register(
-		"music_disc_11", new MusicDiscItem(11, SoundEvents.MUSIC_DISC_11, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE))
+		"music_disc_11", new MusicDiscItem(11, SoundEvents.MUSIC_DISC_11, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE), 71)
 	);
 	public static final Item MUSIC_DISC_WAIT = register(
-		"music_disc_wait", new MusicDiscItem(12, SoundEvents.MUSIC_DISC_WAIT, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE))
+		"music_disc_wait", new MusicDiscItem(12, SoundEvents.MUSIC_DISC_WAIT, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE), 238)
 	);
 	public static final Item MUSIC_DISC_OTHERSIDE = register(
-		"music_disc_otherside", new MusicDiscItem(14, SoundEvents.MUSIC_DISC_OTHERSIDE, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE))
+		"music_disc_otherside",
+		new MusicDiscItem(14, SoundEvents.MUSIC_DISC_OTHERSIDE, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE), 195)
 	);
 	public static final Item MUSIC_DISC_5 = register(
-		"music_disc_5", new MusicDiscItem(15, SoundEvents.MUSIC_DISC_5, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE))
+		"music_disc_5", new MusicDiscItem(15, SoundEvents.MUSIC_DISC_5, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE), 178)
 	);
 	public static final Item MUSIC_DISC_PIGSTEP = register(
-		"music_disc_pigstep", new MusicDiscItem(13, SoundEvents.MUSIC_DISC_PIGSTEP, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE))
+		"music_disc_pigstep", new MusicDiscItem(13, SoundEvents.MUSIC_DISC_PIGSTEP, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE), 149)
 	);
 	public static final Item DISC_FRAGMENT_5 = register("disc_fragment_5", new DiscFragmentItem(new Item.Settings().group(ItemGroup.MISC)));
 	public static final Item TRIDENT = register("trident", new TridentItem(new Item.Settings().maxDamage(250).group(ItemGroup.COMBAT)));

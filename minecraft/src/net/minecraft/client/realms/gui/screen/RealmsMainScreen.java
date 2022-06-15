@@ -17,6 +17,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -1393,8 +1394,7 @@ public class RealmsMainScreen extends RealmsScreen {
 				RealmsMainScreen.this.textRenderer.draw(matrices, serverData.getName(), (float)(x + 2), (float)(y + 1), 16777215);
 				RealmsTextureManager.withBoundFace(serverData.ownerUUID, () -> {
 					RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-					DrawableHelper.drawTexture(matrices, x - 36, y, 32, 32, 8.0F, 8.0F, 8, 8, 64, 64);
-					DrawableHelper.drawTexture(matrices, x - 36, y, 32, 32, 40.0F, 8.0F, 8, 8, 64, 64);
+					PlayerSkinDrawer.draw(matrices, x - 36, y, 32);
 				});
 			}
 		}

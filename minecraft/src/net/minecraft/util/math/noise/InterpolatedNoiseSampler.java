@@ -11,7 +11,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.util.math.random.Xoroshiro128PlusPlusRandom;
 import net.minecraft.world.gen.densityfunction.DensityFunction;
 
-public class InterpolatedNoiseSampler implements DensityFunction.class_6913 {
+public class InterpolatedNoiseSampler implements DensityFunction.Base {
 	private static final Codec<Double> SCALE_AND_FACTOR_RANGE = Codec.doubleRange(0.001, 1000.0);
 	private static final MapCodec<InterpolatedNoiseSampler> field_38270 = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
@@ -170,7 +170,7 @@ public class InterpolatedNoiseSampler implements DensityFunction.class_6913 {
 	}
 
 	@Override
-	public CodecHolder<? extends DensityFunction> getCodec() {
+	public CodecHolder<? extends DensityFunction> getCodecHolder() {
 		return CODEC;
 	}
 }

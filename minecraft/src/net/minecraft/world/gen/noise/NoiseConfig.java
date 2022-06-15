@@ -68,35 +68,35 @@ public final class NoiseConfig {
 			}
 
 			@Override
-			public DensityFunction.class_7270 method_42358(DensityFunction.class_7270 arg) {
-				RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> registryEntry = arg.noiseData();
+			public DensityFunction.Noise apply(DensityFunction.Noise noiseDensityFunction) {
+				RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> registryEntry = noiseDensityFunction.noiseData();
 				if (bl) {
 					if (Objects.equals(registryEntry.getKey(), Optional.of(NoiseParametersKeys.TEMPERATURE))) {
 						DoublePerlinNoiseSampler doublePerlinNoiseSampler = DoublePerlinNoiseSampler.createLegacy(
 							this.method_42375(0L), new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 1.0)
 						);
-						return new DensityFunction.class_7270(registryEntry, doublePerlinNoiseSampler);
+						return new DensityFunction.Noise(registryEntry, doublePerlinNoiseSampler);
 					}
 
 					if (Objects.equals(registryEntry.getKey(), Optional.of(NoiseParametersKeys.VEGETATION))) {
 						DoublePerlinNoiseSampler doublePerlinNoiseSampler = DoublePerlinNoiseSampler.createLegacy(
 							this.method_42375(1L), new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 1.0)
 						);
-						return new DensityFunction.class_7270(registryEntry, doublePerlinNoiseSampler);
+						return new DensityFunction.Noise(registryEntry, doublePerlinNoiseSampler);
 					}
 
 					if (Objects.equals(registryEntry.getKey(), Optional.of(NoiseParametersKeys.OFFSET))) {
 						DoublePerlinNoiseSampler doublePerlinNoiseSampler = DoublePerlinNoiseSampler.create(
 							NoiseConfig.this.randomDeriver.split(NoiseParametersKeys.OFFSET.getValue()), new DoublePerlinNoiseSampler.NoiseParameters(0, 0.0)
 						);
-						return new DensityFunction.class_7270(registryEntry, doublePerlinNoiseSampler);
+						return new DensityFunction.Noise(registryEntry, doublePerlinNoiseSampler);
 					}
 				}
 
 				DoublePerlinNoiseSampler doublePerlinNoiseSampler = NoiseConfig.this.getOrCreateSampler(
 					(RegistryKey<DoublePerlinNoiseSampler.NoiseParameters>)registryEntry.getKey().orElseThrow()
 				);
-				return new DensityFunction.class_7270(registryEntry, doublePerlinNoiseSampler);
+				return new DensityFunction.Noise(registryEntry, doublePerlinNoiseSampler);
 			}
 
 			private DensityFunction method_42376(DensityFunction densityFunction) {

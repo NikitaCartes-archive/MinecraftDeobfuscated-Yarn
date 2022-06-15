@@ -168,10 +168,17 @@ public class BackgroundRenderer {
 			} else {
 				sx = 1.0F;
 			}
-		} else if (entity instanceof LivingEntity && ((LivingEntity)entity).hasStatusEffect(StatusEffects.NIGHT_VISION)) {
-			sx = GameRenderer.getNightVisionStrength((LivingEntity)entity, tickDelta);
 		} else {
-			sx = 0.0F;
+			label86: {
+				if (entity instanceof LivingEntity livingEntity2
+					&& livingEntity2.hasStatusEffect(StatusEffects.NIGHT_VISION)
+					&& !livingEntity2.hasStatusEffect(StatusEffects.DARKNESS)) {
+					sx = GameRenderer.getNightVisionStrength(livingEntity2, tickDelta);
+					break label86;
+				}
+
+				sx = 0.0F;
+			}
 		}
 
 		if (red != 0.0F && green != 0.0F && blue != 0.0F) {

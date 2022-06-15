@@ -8,7 +8,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -16,7 +15,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.font.TextVisitFactory;
 import net.minecraft.client.gui.ClientChatListener;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.GameInfoChatListener;
@@ -73,7 +71,6 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * Responsible for rendering the HUD elements while the player is in game.
@@ -277,7 +274,7 @@ public class InGameHud extends DrawableHelper {
 					int m = l << 24 & 0xFF000000;
 					int n = textRenderer.getWidth(this.overlayMessage);
 					this.drawTextBackground(matrices, textRenderer, -4, n, 16777215 | m);
-					textRenderer.draw(matrices, this.overlayMessage, (float)(-n / 2), -4.0F, k | m);
+					textRenderer.drawWithShadow(matrices, this.overlayMessage, (float)(-n / 2), -4.0F, k | m);
 					RenderSystem.disableBlend();
 					matrices.pop();
 				}
@@ -1174,7 +1171,9 @@ public class InGameHud extends DrawableHelper {
 	}
 
 	public void setRecordPlayingOverlay(Text description) {
-		this.setOverlayMessage(Text.translatable("record.nowPlaying", description), true);
+		Text text = Text.translatable("record.nowPlaying", description);
+		this.setOverlayMessage(text, true);
+		NarratorManager.INSTANCE.narrate(text);
 	}
 
 	public void setOverlayMessage(Text message, boolean tinted) {
@@ -1225,43 +1224,25 @@ public class InGameHud extends DrawableHelper {
 		this.titleRemainTicks = 0;
 	}
 
-	public UUID extractSender(Text message) {
-		String string = TextVisitFactory.removeFormattingCodes(message);
-		String string2 = StringUtils.substringBetween(string, "<", ">");
-		return string2 == null ? Util.NIL_UUID : this.client.getSocialInteractionsManager().getUuid(string2);
-	}
-
 	/**
 	 * Handles a chat message.
-	 * 
-	 * @implNote This method discards the message if the sender is blocked.
-	 * Otherwise, it calls {@link ClientChatListener#onChatMessage}.
 	 * 
 	 * @see net.minecraft.client.network.ClientPlayNetworkHandler#onChatMessage
 	 */
 	public void onChatMessage(MessageType type, Text message, MessageSender sender) {
-		if (!this.client.shouldBlockMessages(sender.uuid())) {
-			if (!this.client.options.getHideMatchedNames().getValue() || !this.client.shouldBlockMessages(this.extractSender(message))) {
-				for (ClientChatListener clientChatListener : this.listeners) {
-					clientChatListener.onChatMessage(type, message, sender);
-				}
-			}
+		for (ClientChatListener clientChatListener : this.listeners) {
+			clientChatListener.onChatMessage(type, message, sender);
 		}
 	}
 
 	/**
 	 * Handles a game message.
 	 * 
-	 * @implNote This method discards the message if {@linkplain #extractSender the extracted
-	 * sender} is blocked. Otherwise, it calls {@link ClientChatListener#onChatMessage}.
-	 * 
 	 * @see net.minecraft.client.network.ClientPlayNetworkHandler#onGameMessage
 	 */
 	public void onGameMessage(MessageType type, Text message) {
-		if (!this.client.options.getHideMatchedNames().getValue() || !this.client.shouldBlockMessages(this.extractSender(message))) {
-			for (ClientChatListener clientChatListener : this.listeners) {
-				clientChatListener.onChatMessage(type, message, null);
-			}
+		for (ClientChatListener clientChatListener : this.listeners) {
+			clientChatListener.onChatMessage(type, message, null);
 		}
 	}
 

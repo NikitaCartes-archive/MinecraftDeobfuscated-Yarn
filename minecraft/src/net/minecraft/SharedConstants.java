@@ -11,22 +11,22 @@ import net.minecraft.util.math.ChunkPos;
 
 public class SharedConstants {
 	@Deprecated
-	public static final boolean IS_DEVELOPMENT_VERSION = false;
+	public static final boolean IS_DEVELOPMENT_VERSION = true;
 	@Deprecated
-	public static final int WORLD_VERSION = 3105;
+	public static final int WORLD_VERSION = 3106;
 	@Deprecated
 	public static final String CURRENT_SERIES = "main";
 	@Deprecated
-	public static final String VERSION_NAME = "1.19";
+	public static final String VERSION_NAME = "22w24a";
 	@Deprecated
-	public static final String RELEASE_TARGET = "1.19";
+	public static final String RELEASE_TARGET = "1.19.1";
 	@Deprecated
 	public static final int RELEASE_TARGET_PROTOCOL_VERSION = 759;
 	@Deprecated
-	public static final int field_29736 = 91;
+	public static final int field_29736 = 92;
 	public static final int SNBT_TOO_OLD_THRESHOLD = 3075;
 	private static final int field_29708 = 30;
-	public static final boolean field_36325 = false;
+	public static final boolean field_36325 = true;
 	@Deprecated
 	public static final int RESOURCE_PACK_VERSION = 9;
 	@Deprecated
@@ -78,6 +78,7 @@ public class SharedConstants {
 	public static final boolean field_33554 = false;
 	public static final boolean field_37273 = false;
 	public static final boolean field_39090 = false;
+	public static final boolean field_39460 = false;
 	public static final boolean field_34368 = false;
 	public static final boolean field_29701 = false;
 	public static final boolean field_29710 = false;
@@ -142,11 +143,35 @@ public class SharedConstants {
 		return chr != 167 && chr >= ' ' && chr != 127;
 	}
 
+	/**
+	 * {@return {@code s} with all {@linkplain #isValidChar invalid characters} stripped}
+	 * 
+	 * <p>LF (linebreak; U+000A) is an invalid character and therefore stripped. Use
+	 * {@link #stripInvalidChars(String, boolean)} to keep linebreaks.
+	 * 
+	 * @see #isValidChar
+	 * @see #stripInvalidChars(String, boolean)
+	 */
 	public static String stripInvalidChars(String s) {
+		return stripInvalidChars(s, false);
+	}
+
+	/**
+	 * {@return {@code s} with {@linkplain #isValidChar invalid characters} stripped}
+	 * 
+	 * <p>LF (linebreak; U+000A) may or may not be stripped depending on the passed
+	 * {@code allowLinebreaks} value.
+	 * 
+	 * @see #isValidChar
+	 * @see #stripInvalidChars(String)
+	 */
+	public static String stripInvalidChars(String s, boolean allowLinebreaks) {
 		StringBuilder stringBuilder = new StringBuilder();
 
 		for (char c : s.toCharArray()) {
 			if (isValidChar(c)) {
+				stringBuilder.append(c);
+			} else if (allowLinebreaks && c == '\n') {
 				stringBuilder.append(c);
 			}
 		}
@@ -177,7 +202,7 @@ public class SharedConstants {
 	}
 
 	public static int getProtocolVersion() {
-		return 759;
+		return 1073741916;
 	}
 
 	public static boolean method_37896(ChunkPos chunkPos) {
@@ -186,7 +211,7 @@ public class SharedConstants {
 		return !DEBUG_BIOME_SOURCE ? false : i > 8192 || i < 0 || j > 1024 || j < 0;
 	}
 
-	public static void method_43250() {
+	public static void enableDataFixerOptimization() {
 		dataFixerPhase = switch (dataFixerPhase) {
 			case INITIALIZED_UNOPTIMIZED -> throw new IllegalStateException("Tried to enable datafixer optimization after unoptimized initialization");
 			case INITIALIZED_OPTIMIZED -> DataFixerPhase.INITIALIZED_OPTIMIZED;

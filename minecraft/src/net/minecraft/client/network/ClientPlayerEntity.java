@@ -63,6 +63,7 @@ import net.minecraft.network.encryption.Signer;
 import net.minecraft.network.message.ArgumentSignatureDataMap;
 import net.minecraft.network.message.ChatMessageSigner;
 import net.minecraft.network.message.MessageSignature;
+import net.minecraft.network.message.MessageType;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
@@ -92,6 +93,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.CommandBlockExecutor;
 import org.slf4j.Logger;
@@ -552,11 +555,12 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Override
 	public void sendMessage(Text message, boolean actionBar) {
-		if (actionBar) {
-			this.client.inGameHud.setOverlayMessage(message, false);
-		} else {
-			this.client.inGameHud.getChatHud().addMessage(message);
-		}
+		RegistryKey<MessageType> registryKey = actionBar ? MessageType.GAME_INFO : MessageType.SYSTEM;
+		this.world
+			.getRegistryManager()
+			.getOptional(Registry.MESSAGE_TYPE_KEY)
+			.map(registry -> registry.get(registryKey))
+			.ifPresent(messageType -> this.client.inGameHud.onGameMessage(messageType, message));
 	}
 
 	private void pushOutOfBlocks(double x, double z) {

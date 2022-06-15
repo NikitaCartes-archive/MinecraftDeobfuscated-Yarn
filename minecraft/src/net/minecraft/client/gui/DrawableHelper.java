@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.function.BiConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
@@ -13,6 +14,7 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
@@ -56,6 +58,21 @@ public abstract class DrawableHelper {
 		}
 
 		fill(matrices, x, y1 + 1, x + 1, y2, color);
+	}
+
+	public static void enableScissor(int x1, int y1, int x2, int y2) {
+		Window window = MinecraftClient.getInstance().getWindow();
+		int i = window.getFramebufferHeight();
+		double d = window.getScaleFactor();
+		double e = (double)x1 * d;
+		double f = (double)i - (double)y2 * d;
+		double g = (double)(x2 - x1) * d;
+		double h = (double)(y2 - y1) * d;
+		RenderSystem.enableScissor((int)e, (int)f, Math.max(0, (int)g), Math.max(0, (int)h));
+	}
+
+	public static void disableScissor() {
+		RenderSystem.disableScissor();
 	}
 
 	public static void fill(MatrixStack matrices, int x1, int y1, int x2, int y2, int color) {

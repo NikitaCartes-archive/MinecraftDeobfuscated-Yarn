@@ -128,6 +128,12 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		return this.children.size() - 1;
 	}
 
+	protected void addEntryToTop(E entry) {
+		double d = (double)this.getMaxScroll() - this.getScrollAmount();
+		this.children.add(0, entry);
+		this.setScrollAmount((double)this.getMaxScroll() - d);
+	}
+
 	protected int getEntryCount() {
 		return this.children().size();
 	}
@@ -218,7 +224,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 			this.renderHeader(matrices, k, l, tessellator);
 		}
 
-		this.renderList(matrices, k, l, mouseX, mouseY, delta);
+		this.renderList(matrices, mouseX, mouseY, delta);
 		if (this.renderHorizontalShadows) {
 			RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
 			RenderSystem.setShaderTexture(0, DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
@@ -435,9 +441,11 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	/**
 	 * Moves the selection in the specified direction until the predicate returns true.
 	 * 
+	 * @return whether the selection matching the predicate was found
+	 * 
 	 * @param direction the direction to move the selection
 	 */
-	protected void moveSelectionIf(EntryListWidget.MoveDirection direction, Predicate<E> predicate) {
+	protected boolean moveSelectionIf(EntryListWidget.MoveDirection direction, Predicate<E> predicate) {
 		int i = direction == EntryListWidget.MoveDirection.UP ? -1 : 1;
 		if (!this.children().isEmpty()) {
 			int j = this.children().indexOf(this.getSelectedOrNull());
@@ -452,12 +460,14 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 				if (predicate.test(entry)) {
 					this.setSelected(entry);
 					this.ensureVisible(entry);
-					break;
+					return true;
 				}
 
 				j = k;
 			}
 		}
+
+		return false;
 	}
 
 	@Override
@@ -465,46 +475,36 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		return mouseY >= (double)this.top && mouseY <= (double)this.bottom && mouseX >= (double)this.left && mouseX <= (double)this.right;
 	}
 
-	protected void renderList(MatrixStack matrices, int x, int y, int mouseX, int mouseY, float delta) {
-		int i = this.getEntryCount();
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
+	protected void renderList(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		int i = this.getRowLeft();
+		int j = this.getRowWidth();
+		int k = this.itemHeight - 4;
+		int l = this.getEntryCount();
 
-		for (int j = 0; j < i; j++) {
-			int k = this.getRowTop(j);
-			int l = this.getRowBottom(j);
-			if (l >= this.top && k <= this.bottom) {
-				int m = y + j * this.itemHeight + this.headerHeight;
-				int n = this.itemHeight - 4;
-				E entry = this.getEntry(j);
-				int o = this.getRowWidth();
-				if (this.renderSelection && this.isSelectedEntry(j)) {
-					int p = this.left + this.width / 2 - o / 2;
-					int q = this.left + this.width / 2 + o / 2;
-					RenderSystem.disableTexture();
-					RenderSystem.setShader(GameRenderer::getPositionShader);
-					float f = this.isFocused() ? 1.0F : 0.5F;
-					RenderSystem.setShaderColor(f, f, f, 1.0F);
-					bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
-					bufferBuilder.vertex((double)p, (double)(m + n + 2), 0.0).next();
-					bufferBuilder.vertex((double)q, (double)(m + n + 2), 0.0).next();
-					bufferBuilder.vertex((double)q, (double)(m - 2), 0.0).next();
-					bufferBuilder.vertex((double)p, (double)(m - 2), 0.0).next();
-					tessellator.draw();
-					RenderSystem.setShaderColor(0.0F, 0.0F, 0.0F, 1.0F);
-					bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
-					bufferBuilder.vertex((double)(p + 1), (double)(m + n + 1), 0.0).next();
-					bufferBuilder.vertex((double)(q - 1), (double)(m + n + 1), 0.0).next();
-					bufferBuilder.vertex((double)(q - 1), (double)(m - 1), 0.0).next();
-					bufferBuilder.vertex((double)(p + 1), (double)(m - 1), 0.0).next();
-					tessellator.draw();
-					RenderSystem.enableTexture();
-				}
-
-				int p = this.getRowLeft();
-				entry.render(matrices, j, k, p, o, n, mouseX, mouseY, Objects.equals(this.hoveredEntry, entry), delta);
+		for (int m = 0; m < l; m++) {
+			int n = this.getRowTop(m);
+			int o = this.getRowBottom(m);
+			if (o >= this.top && n <= this.bottom) {
+				this.renderEntry(matrices, mouseX, mouseY, delta, m, i, n, j, k);
 			}
 		}
+	}
+
+	protected void renderEntry(MatrixStack matrices, int mouseX, int mouseY, float delta, int index, int x, int y, int entryWidth, int entryHeight) {
+		E entry = this.getEntry(index);
+		if (this.renderSelection && this.isSelectedEntry(index)) {
+			int i = this.isFocused() ? -1 : -8355712;
+			this.drawSelectionHighlight(matrices, y, entryWidth, entryHeight, i, -16777216);
+		}
+
+		entry.render(matrices, index, y, x, entryWidth, entryHeight, mouseX, mouseY, Objects.equals(this.hoveredEntry, entry), delta);
+	}
+
+	protected void drawSelectionHighlight(MatrixStack matrices, int y, int entryWidth, int entryHeight, int borderColor, int fillColor) {
+		int i = this.left + (this.width - entryWidth) / 2;
+		int j = this.left + (this.width + entryWidth) / 2;
+		fill(matrices, i, y - 2, j, y + entryHeight + 2, borderColor);
+		fill(matrices, i + 1, y - 1, j - 1, y + entryHeight + 1, fillColor);
 	}
 
 	public int getRowLeft() {

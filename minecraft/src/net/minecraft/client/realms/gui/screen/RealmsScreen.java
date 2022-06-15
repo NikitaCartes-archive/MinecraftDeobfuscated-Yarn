@@ -33,16 +33,7 @@ public abstract class RealmsScreen extends Screen {
 	protected static final int field_33042 = 8226750;
 	protected static final int field_33043 = 16777120;
 	protected static final String ADVENTURE_MAPS_IN_1_9_URL = "https://www.minecraft.net/realms/adventure-maps-in-1-9";
-	protected static final int field_33045 = 8;
-	protected static final int field_33046 = 8;
-	protected static final int field_33047 = 8;
-	protected static final int field_33048 = 8;
-	protected static final int field_33049 = 40;
-	protected static final int field_33050 = 8;
-	protected static final int field_33051 = 8;
-	protected static final int field_33052 = 8;
-	protected static final int field_33053 = 64;
-	protected static final int field_33054 = 64;
+	protected static final int field_39676 = 8;
 	private final List<RealmsLabel> labels = Lists.<RealmsLabel>newArrayList();
 
 	public RealmsScreen(Text text) {

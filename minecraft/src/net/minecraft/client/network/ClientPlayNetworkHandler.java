@@ -35,6 +35,7 @@ import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextVisitFactory;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.CreditsScreen;
@@ -55,6 +56,7 @@ import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.input.KeyboardInput;
+import net.minecraft.client.network.chat.ReceivedMessage;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.ServerList;
 import net.minecraft.client.particle.ItemPickupParticle;
@@ -76,6 +78,7 @@ import net.minecraft.client.sound.PassiveBeeSoundInstance;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.toast.RecipeToast;
+import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.telemetry.TelemetrySender;
 import net.minecraft.client.world.ClientChunkManager;
 import net.minecraft.client.world.ClientWorld;
@@ -256,6 +259,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
@@ -285,6 +289,7 @@ import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.PositionSource;
 import net.minecraft.world.event.PositionSourceType;
 import net.minecraft.world.explosion.Explosion;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -791,9 +796,19 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onGameMessage(GameMessageS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		Registry<MessageType> registry = this.registryManager.get(Registry.MESSAGE_TYPE_KEY);
-		MessageType messageType = packet.getMessageType(registry);
-		this.client.inGameHud.onGameMessage(messageType, packet.content());
+		if (!this.client.options.getHideMatchedNames().getValue() || !this.client.shouldBlockMessages(this.extractSender(packet.content()))) {
+			Registry<MessageType> registry = this.registryManager.get(Registry.MESSAGE_TYPE_KEY);
+			MessageType messageType = packet.getMessageType(registry);
+			this.client.inGameHud.onGameMessage(messageType, packet.content());
+			Instant instant = Instant.now();
+			this.client.getAbuseReporter().chatLog().add(ReceivedMessage.of(packet.content(), instant));
+		}
+	}
+
+	private UUID extractSender(Text content) {
+		String string = TextVisitFactory.removeFormattingCodes(content);
+		String string2 = StringUtils.substringBetween(string, "<", ">");
+		return string2 == null ? Util.NIL_UUID : this.client.getSocialInteractionsManager().getUuid(string2);
 	}
 
 	@Override
@@ -814,17 +829,35 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	 * Handles an incoming chat message.
 	 */
 	private void handleMessage(MessageType type, SignedMessage message, MessageSender sender) {
-		boolean bl = this.client.options.getOnlyShowSecureChat().getValue();
-		PlayerListEntry playerListEntry = this.getPlayerListEntry(message.signature().sender());
-		if (playerListEntry != null && !this.isSignatureValid(message, playerListEntry)) {
-			LOGGER.warn("Received chat packet without valid signature from {}", playerListEntry.getProfile().getName());
-			if (bl) {
-				return;
+		if (!this.client.shouldBlockMessages(sender.uuid())) {
+			boolean bl = this.client.options.getOnlyShowSecureChat().getValue();
+			PlayerListEntry playerListEntry = this.getPlayerListEntry(message.signature().sender());
+			if (playerListEntry != null && !this.isSignatureValid(message, playerListEntry)) {
+				LOGGER.warn("Received chat packet without valid signature from {}", playerListEntry.getProfile().getName());
+				if (bl) {
+					return;
+				}
 			}
-		}
 
-		Text text = bl ? message.signedContent() : message.getContent();
-		this.client.inGameHud.onChatMessage(type, text, sender);
+			SignedMessage signedMessage = bl ? message.withoutUnsigned() : message;
+			Text text = signedMessage.getContent();
+			this.client.inGameHud.onChatMessage(type, text, sender);
+			GameProfile gameProfile = this.getProfile(sender);
+			this.client.getAbuseReporter().chatLog().add(ReceivedMessage.of(gameProfile, sender.name(), signedMessage));
+		}
+	}
+
+	/**
+	 * {@return the game profile of {@code sender}}
+	 * 
+	 * <p>If {@code sender} points to a non-player (such as entities sending
+	 * chat messages through {@code /say} command) or a player not in the game,
+	 * this will create a new game profile based on the UUID and the display
+	 * name.
+	 */
+	private GameProfile getProfile(MessageSender sender) {
+		PlayerListEntry playerListEntry = this.getPlayerListEntry(sender.uuid());
+		return playerListEntry == null ? new GameProfile(sender.uuid(), sender.name().getString()) : playerListEntry.getProfile();
 	}
 
 	/**
@@ -898,7 +931,9 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 							this.client.player.setHeadYaw(entity.getYaw());
 						}
 
-						this.client.inGameHud.setOverlayMessage(Text.translatable("mount.onboard", this.client.options.sneakKey.getBoundKeyLocalizedText()), false);
+						Text text = Text.translatable("mount.onboard", this.client.options.sneakKey.getBoundKeyLocalizedText());
+						this.client.inGameHud.setOverlayMessage(text, false);
+						NarratorManager.INSTANCE.narrate(text);
 					}
 				}
 			}

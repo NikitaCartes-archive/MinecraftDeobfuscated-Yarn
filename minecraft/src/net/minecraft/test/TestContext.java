@@ -281,6 +281,19 @@ public class TestContext {
 		}
 	}
 
+	public void expectEntitiesAround(EntityType<?> type, BlockPos pos, int amount, double radius) {
+		BlockPos blockPos = this.getAbsolutePos(pos);
+		List<? extends Entity> list = this.getEntitiesAround((EntityType<? extends Entity>)type, pos, radius);
+		if (list.size() != amount) {
+			throw new PositionedException(
+				"Expected " + amount + " entities of type " + type.getUntranslatedName() + ", actual number of entities found=" + list.size(),
+				blockPos,
+				pos,
+				this.test.getTick()
+			);
+		}
+	}
+
 	public void expectEntityAround(EntityType<?> type, BlockPos pos, double radius) {
 		List<? extends Entity> list = this.getEntitiesAround((EntityType<? extends Entity>)type, pos, radius);
 		if (list.isEmpty()) {

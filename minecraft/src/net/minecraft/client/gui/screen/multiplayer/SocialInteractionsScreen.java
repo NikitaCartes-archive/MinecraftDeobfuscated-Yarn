@@ -1,9 +1,9 @@
 package net.minecraft.client.gui.screen.multiplayer;
 
-import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -11,6 +11,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ConfirmChatLinkScreen;
+import net.minecraft.client.gui.screen.NoticeScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -71,19 +72,26 @@ public class SocialInteractionsScreen extends Screen {
 		this.updateServerLabel(MinecraftClient.getInstance());
 	}
 
-	private int method_31359() {
+	public static Screen createAbuseReportNoticeScreen() {
+		MinecraftClient minecraftClient = MinecraftClient.getInstance();
+		Text text = Text.translatable("gui.abuseReport.under_construction.title").formatted(Formatting.BOLD);
+		Text text2 = Text.translatable("gui.abuseReport.under_construction");
+		return new NoticeScreen(() -> minecraftClient.setScreen(new SocialInteractionsScreen()), text, text2, ScreenTexts.PROCEED, true);
+	}
+
+	private int getScreenHeight() {
 		return Math.max(52, this.height - 128 - 16);
 	}
 
-	private int method_31360() {
-		return this.method_31359() / 16;
+	private int getRowCount() {
+		return this.getScreenHeight() / 16;
 	}
 
-	private int method_31361() {
-		return 80 + this.method_31360() * 16 - 8;
+	private int getPlayerListBottom() {
+		return 80 + this.getRowCount() * 16 - 8;
 	}
 
-	private int method_31362() {
+	private int getSearchBoxX() {
 		return (this.width - 238) / 2;
 	}
 
@@ -102,16 +110,16 @@ public class SocialInteractionsScreen extends Screen {
 	protected void init() {
 		this.client.keyboard.setRepeatEvents(true);
 		if (this.initialized) {
-			this.playerList.updateSize(this.width, this.height, 88, this.method_31361());
+			this.playerList.updateSize(this.width, this.height, 88, this.getPlayerListBottom());
 		} else {
-			this.playerList = new SocialInteractionsPlayerListWidget(this, this.client, this.width, this.height, 88, this.method_31361(), 36);
+			this.playerList = new SocialInteractionsPlayerListWidget(this, this.client, this.width, this.height, 88, this.getPlayerListBottom(), 36);
 		}
 
 		int i = this.playerList.getRowWidth() / 3;
 		int j = this.playerList.getRowLeft();
 		int k = this.playerList.getRowRight();
 		int l = this.textRenderer.getWidth(BLOCKING_TEXT) + 40;
-		int m = 64 + 16 * this.method_31360();
+		int m = 64 + 16 * this.getRowCount();
 		int n = (this.width - l) / 2 + 3;
 		this.allTabButton = this.addDrawableChild(new ButtonWidget(j, 45, i, 20, ALL_TAB_TITLE, button -> this.setCurrentTab(SocialInteractionsScreen.Tab.ALL)));
 		this.hiddenTabButton = this.addDrawableChild(
@@ -121,7 +129,7 @@ public class SocialInteractionsScreen extends Screen {
 			new ButtonWidget(k - i + 1, 45, i, 20, BLOCKED_TAB_TITLE, button -> this.setCurrentTab(SocialInteractionsScreen.Tab.BLOCKED))
 		);
 		String string = this.searchBox != null ? this.searchBox.getText() : "";
-		this.searchBox = new TextFieldWidget(this.textRenderer, this.method_31362() + 28, 78, 196, 16, SEARCH_TEXT) {
+		this.searchBox = new TextFieldWidget(this.textRenderer, this.getSearchBoxX() + 28, 78, 196, 16, SEARCH_TEXT) {
 			@Override
 			protected MutableText getNarrationMessage() {
 				return !SocialInteractionsScreen.this.searchBox.getText().isEmpty() && SocialInteractionsScreen.this.playerList.isEmpty()
@@ -137,13 +145,15 @@ public class SocialInteractionsScreen extends Screen {
 		this.searchBox.setChangedListener(this::onSearchChange);
 		this.addSelectableChild(this.searchBox);
 		this.addSelectableChild(this.playerList);
-		this.blockingButton = this.addDrawableChild(new ButtonWidget(n, m, l, 20, BLOCKING_TEXT, button -> this.client.setScreen(new ConfirmChatLinkScreen(bl -> {
-				if (bl) {
-					Util.getOperatingSystem().open("https://aka.ms/javablocking");
-				}
+		this.blockingButton = this.addDrawableChild(
+			new ButtonWidget(n, m, l, 20, BLOCKING_TEXT, button -> this.client.setScreen(new ConfirmChatLinkScreen(confirmed -> {
+					if (confirmed) {
+						Util.getOperatingSystem().open("https://aka.ms/javablocking");
+					}
 
-				this.client.setScreen(this);
-			}, "https://aka.ms/javablocking", true))));
+					this.client.setScreen(this);
+				}, "https://aka.ms/javablocking", true)))
+		);
 		this.initialized = true;
 		this.setCurrentTab(this.currentTab);
 	}
@@ -154,7 +164,7 @@ public class SocialInteractionsScreen extends Screen {
 		this.hiddenTabButton.setMessage(HIDDEN_TAB_TITLE);
 		this.blockedTabButton.setMessage(BLOCKED_TAB_TITLE);
 
-		Collection collection = switch (currentTab) {
+		Collection<UUID> collection = (Collection<UUID>)(switch (currentTab) {
 			case ALL -> {
 				this.allTabButton.setMessage(SELECTED_ALL_TAB_TITLE);
 				yield this.client.player.networkHandler.getPlayerUuids();
@@ -166,16 +176,9 @@ public class SocialInteractionsScreen extends Screen {
 			case BLOCKED -> {
 				this.blockedTabButton.setMessage(SELECTED_BLOCKED_TAB_TITLE);
 				SocialInteractionsManager socialInteractionsManager = this.client.getSocialInteractionsManager();
-				yield (Collection)this.client
-					.player
-					.networkHandler
-					.getPlayerUuids()
-					.stream()
-					.filter(socialInteractionsManager::isPlayerBlocked)
-					.collect(Collectors.toSet());
+				yield (Set)this.client.player.networkHandler.getPlayerUuids().stream().filter(socialInteractionsManager::isPlayerBlocked).collect(Collectors.toSet());
 			}
-			default -> ImmutableList.of();
-		};
+		});
 		this.playerList.update(collection, this.playerList.getScrollAmount());
 		if (!this.searchBox.getText().isEmpty() && this.playerList.isEmpty() && !this.searchBox.isFocused()) {
 			NarratorManager.INSTANCE.narrate(EMPTY_SEARCH_TEXT);
@@ -195,11 +198,11 @@ public class SocialInteractionsScreen extends Screen {
 
 	@Override
 	public void renderBackground(MatrixStack matrices) {
-		int i = this.method_31362() + 3;
+		int i = this.getSearchBoxX() + 3;
 		super.renderBackground(matrices);
 		RenderSystem.setShaderTexture(0, SOCIAL_INTERACTIONS_TEXTURE);
 		this.drawTexture(matrices, i, 64, 1, 1, 236, 8);
-		int j = this.method_31360();
+		int j = this.getRowCount();
 
 		for (int k = 0; k < j; k++) {
 			this.drawTexture(matrices, i, 72 + 16 * k, 1, 10, 236, 16);
@@ -214,17 +217,17 @@ public class SocialInteractionsScreen extends Screen {
 		this.updateServerLabel(this.client);
 		this.renderBackground(matrices);
 		if (this.serverLabel != null) {
-			drawTextWithShadow(matrices, this.client.textRenderer, this.serverLabel, this.method_31362() + 8, 35, -1);
+			drawTextWithShadow(matrices, this.client.textRenderer, this.serverLabel, this.getSearchBoxX() + 8, 35, -1);
 		}
 
 		if (!this.playerList.isEmpty()) {
 			this.playerList.render(matrices, mouseX, mouseY, delta);
 		} else if (!this.searchBox.getText().isEmpty()) {
-			drawCenteredText(matrices, this.client.textRenderer, EMPTY_SEARCH_TEXT, this.width / 2, (78 + this.method_31361()) / 2, -1);
+			drawCenteredText(matrices, this.client.textRenderer, EMPTY_SEARCH_TEXT, this.width / 2, (78 + this.getPlayerListBottom()) / 2, -1);
 		} else if (this.currentTab == SocialInteractionsScreen.Tab.HIDDEN) {
-			drawCenteredText(matrices, this.client.textRenderer, EMPTY_HIDDEN_TEXT, this.width / 2, (78 + this.method_31361()) / 2, -1);
+			drawCenteredText(matrices, this.client.textRenderer, EMPTY_HIDDEN_TEXT, this.width / 2, (78 + this.getPlayerListBottom()) / 2, -1);
 		} else if (this.currentTab == SocialInteractionsScreen.Tab.BLOCKED) {
-			drawCenteredText(matrices, this.client.textRenderer, EMPTY_BLOCKED_TEXT, this.width / 2, (78 + this.method_31361()) / 2, -1);
+			drawCenteredText(matrices, this.client.textRenderer, EMPTY_BLOCKED_TEXT, this.width / 2, (78 + this.getPlayerListBottom()) / 2, -1);
 		}
 
 		if (!this.searchBox.isFocused() && this.searchBox.getText().isEmpty()) {

@@ -120,8 +120,7 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 
 		CompletableFuture var14;
 		try {
-			this.clear();
-			this.deleteOldServerPack();
+			MinecraftClient minecraftClient = MinecraftClient.getInstance();
 			File file = new File(this.serverPacksRoot, string);
 			CompletableFuture<?> completableFuture;
 			if (file.exists()) {
@@ -129,7 +128,6 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 			} else {
 				ProgressScreen progressScreen = new ProgressScreen(closeAfterDownload);
 				Map<String, String> map = getDownloadHeaders();
-				MinecraftClient minecraftClient = MinecraftClient.getInstance();
 				minecraftClient.submitAndJoin(() -> minecraftClient.setScreen(progressScreen));
 				completableFuture = NetworkUtils.downloadResourcePack(file, url, map, 262144000, progressScreen, minecraftClient.getNetworkProxy());
 			}
@@ -138,29 +136,28 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 					if (!this.verifyFile(string2, file)) {
 						return Util.completeExceptionally(new RuntimeException("Hash check failure for file " + file + ", see log"));
 					} else {
-						MinecraftClient minecraftClientx = MinecraftClient.getInstance();
-						minecraftClientx.execute(() -> {
+						minecraftClient.execute(() -> {
 							if (!closeAfterDownload) {
-								minecraftClientx.setScreen(new MessageScreen(APPLYING_PACK_TEXT));
+								minecraftClient.setScreen(new MessageScreen(APPLYING_PACK_TEXT));
 							}
 						});
 						return this.loadServerPack(file, ResourcePackSource.PACK_SOURCE_SERVER);
 					}
 				})
-				.whenComplete(
-					(void_, throwable) -> {
-						if (throwable != null) {
-							LOGGER.warn("Pack application failed: {}, deleting file {}", throwable.getMessage(), file);
-							delete(file);
-							MinecraftClient minecraftClientx = MinecraftClient.getInstance();
-							minecraftClientx.execute(
-								() -> minecraftClientx.setScreen(
+				.exceptionallyCompose(
+					throwable -> this.clear()
+							.thenAcceptAsync(void_ -> {
+								LOGGER.warn("Pack application failed: {}, deleting file {}", throwable.getMessage(), file);
+								delete(file);
+							}, Util.getIoWorkerExecutor())
+							.thenAcceptAsync(
+								void_ -> minecraftClient.setScreen(
 										new ConfirmScreen(
 											confirmed -> {
 												if (confirmed) {
-													minecraftClientx.setScreen(null);
+													minecraftClient.setScreen(null);
 												} else {
-													ClientPlayNetworkHandler clientPlayNetworkHandler = minecraftClientx.getNetworkHandler();
+													ClientPlayNetworkHandler clientPlayNetworkHandler = minecraftClient.getNetworkHandler();
 													if (clientPlayNetworkHandler != null) {
 														clientPlayNetworkHandler.getConnection().disconnect(Text.translatable("connect.aborted"));
 													}
@@ -171,11 +168,11 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 											ScreenTexts.PROCEED,
 											Text.translatable("menu.disconnect")
 										)
-									)
-							);
-						}
-					}
-				);
+									),
+								minecraftClient
+							)
+				)
+				.thenAcceptAsync(void_ -> this.deleteOldServerPack(), Util.getIoWorkerExecutor());
 			var14 = this.downloadTask;
 		} finally {
 			this.lock.unlock();
@@ -192,7 +189,7 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 		}
 	}
 
-	public CompletableFuture<?> clear() {
+	public CompletableFuture<Void> clear() {
 		this.lock.lock();
 
 		try {

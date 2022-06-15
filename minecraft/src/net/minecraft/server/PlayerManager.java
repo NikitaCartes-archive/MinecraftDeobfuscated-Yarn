@@ -911,7 +911,7 @@ public abstract class PlayerManager {
 	public void broadcast(
 		SignedMessage message, Function<ServerPlayerEntity, SignedMessage> playerMessageFactory, MessageSender sender, RegistryKey<MessageType> typeKey
 	) {
-		this.server.logChatMessage(sender, message.getContent());
+		this.server.logChatMessage(sender, message.getContent(), typeKey);
 
 		for (ServerPlayerEntity serverPlayerEntity : this.players) {
 			SignedMessage signedMessage = (SignedMessage)playerMessageFactory.apply(serverPlayerEntity);

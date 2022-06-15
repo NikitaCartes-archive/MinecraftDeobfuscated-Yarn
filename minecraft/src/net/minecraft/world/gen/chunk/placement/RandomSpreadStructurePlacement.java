@@ -16,69 +16,69 @@ public class RandomSpreadStructurePlacement extends StructurePlacement {
 			instance -> method_41637(instance)
 					.<int, int, SpreadType>and(
 						instance.group(
-							Codec.intRange(0, 4096).fieldOf("spacing").forGetter(RandomSpreadStructurePlacement::method_41632),
-							Codec.intRange(0, 4096).fieldOf("separation").forGetter(RandomSpreadStructurePlacement::method_41633),
-							SpreadType.CODEC.optionalFieldOf("spread_type", SpreadType.LINEAR).forGetter(RandomSpreadStructurePlacement::method_41634)
+							Codec.intRange(0, 4096).fieldOf("spacing").forGetter(RandomSpreadStructurePlacement::getSpacing),
+							Codec.intRange(0, 4096).fieldOf("separation").forGetter(RandomSpreadStructurePlacement::getSeparation),
+							SpreadType.CODEC.optionalFieldOf("spread_type", SpreadType.LINEAR).forGetter(RandomSpreadStructurePlacement::getSpreadType)
 						)
 					)
 					.apply(instance, RandomSpreadStructurePlacement::new)
 		)
 		.<RandomSpreadStructurePlacement>flatXmap(
-			placement -> placement.field_37772 <= placement.field_37773 ? DataResult.error("Spacing has to be larger than separation") : DataResult.success(placement),
+			placement -> placement.spacing <= placement.separation ? DataResult.error("Spacing has to be larger than separation") : DataResult.success(placement),
 			DataResult::success
 		)
 		.codec();
-	private final int field_37772;
-	private final int field_37773;
-	private final SpreadType field_37774;
+	private final int spacing;
+	private final int separation;
+	private final SpreadType spreadType;
 
 	public RandomSpreadStructurePlacement(
-		Vec3i vec3i,
+		Vec3i locateOffset,
 		StructurePlacement.FrequencyReductionMethod frequencyReductionMethod,
-		float f,
-		int i,
-		Optional<StructurePlacement.ExclusionZone> optional,
-		int j,
-		int k,
+		float frequency,
+		int salt,
+		Optional<StructurePlacement.ExclusionZone> exclusionZone,
+		int spacing,
+		int separation,
 		SpreadType spreadType
 	) {
-		super(vec3i, frequencyReductionMethod, f, i, optional);
-		this.field_37772 = j;
-		this.field_37773 = k;
-		this.field_37774 = spreadType;
+		super(locateOffset, frequencyReductionMethod, frequency, salt, exclusionZone);
+		this.spacing = spacing;
+		this.separation = separation;
+		this.spreadType = spreadType;
 	}
 
-	public RandomSpreadStructurePlacement(int spacing, int i, SpreadType spreadType, int j) {
-		this(Vec3i.ZERO, StructurePlacement.FrequencyReductionMethod.DEFAULT, 1.0F, j, Optional.empty(), spacing, i, spreadType);
+	public RandomSpreadStructurePlacement(int spacing, int separation, SpreadType spreadType, int salt) {
+		this(Vec3i.ZERO, StructurePlacement.FrequencyReductionMethod.DEFAULT, 1.0F, salt, Optional.empty(), spacing, separation, spreadType);
 	}
 
-	public int method_41632() {
-		return this.field_37772;
+	public int getSpacing() {
+		return this.spacing;
 	}
 
-	public int method_41633() {
-		return this.field_37773;
+	public int getSeparation() {
+		return this.separation;
 	}
 
-	public SpreadType method_41634() {
-		return this.field_37774;
+	public SpreadType getSpreadType() {
+		return this.spreadType;
 	}
 
-	public ChunkPos getStartChunk(long seed, int x, int z) {
-		int i = Math.floorDiv(x, this.field_37772);
-		int j = Math.floorDiv(z, this.field_37772);
+	public ChunkPos getStartChunk(long seed, int chunkX, int chunkZ) {
+		int i = Math.floorDiv(chunkX, this.spacing);
+		int j = Math.floorDiv(chunkZ, this.spacing);
 		ChunkRandom chunkRandom = new ChunkRandom(new CheckedRandom(0L));
 		chunkRandom.setRegionSeed(seed, i, j, this.getSalt());
-		int k = this.field_37772 - this.field_37773;
-		int l = this.field_37774.get(chunkRandom, k);
-		int m = this.field_37774.get(chunkRandom, k);
-		return new ChunkPos(i * this.field_37772 + l, j * this.field_37772 + m);
+		int k = this.spacing - this.separation;
+		int l = this.spreadType.get(chunkRandom, k);
+		int m = this.spreadType.get(chunkRandom, k);
+		return new ChunkPos(i * this.spacing + l, j * this.spacing + m);
 	}
 
 	@Override
-	protected boolean isStartChunk(ChunkGenerator chunkGenerator, NoiseConfig noiseConfig, long seed, int x, int z) {
-		ChunkPos chunkPos = this.getStartChunk(seed, x, z);
-		return chunkPos.x == x && chunkPos.z == z;
+	protected boolean isStartChunk(ChunkGenerator chunkGenerator, NoiseConfig noiseConfig, long seed, int chunkX, int chunkZ) {
+		ChunkPos chunkPos = this.getStartChunk(seed, chunkX, chunkZ);
+		return chunkPos.x == chunkX && chunkPos.z == chunkZ;
 	}
 
 	@Override

@@ -21,7 +21,7 @@ public class AccessibilityOptionsScreen extends SimpleOptionsScreen {
 			gameOptions.getShowSubtitles(),
 			gameOptions.getTextBackgroundOpacity(),
 			gameOptions.getBackgroundForChatOnly(),
-			gameOptions.getChtOpacity(),
+			gameOptions.getChatOpacity(),
 			gameOptions.getChatLineSpacing(),
 			gameOptions.getChatDelay(),
 			gameOptions.getAutoJump(),

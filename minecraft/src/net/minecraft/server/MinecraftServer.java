@@ -60,6 +60,7 @@ import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.network.message.MessageDecorator;
 import net.minecraft.network.message.MessageSender;
+import net.minecraft.network.message.MessageType;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.obfuscate.DontObfuscate;
@@ -86,6 +87,7 @@ import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.test.TestManager;
+import net.minecraft.text.Decoration;
 import net.minecraft.text.Text;
 import net.minecraft.util.ApiServices;
 import net.minecraft.util.Identifier;
@@ -1898,8 +1900,14 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return 1000000;
 	}
 
-	public void logChatMessage(MessageSender sender, Text message) {
-		LOGGER.info(Text.translatable("chat.type.text", sender.name(), message).getString());
+	public void logChatMessage(MessageSender sender, Text message, RegistryKey<MessageType> typeKey) {
+		Decoration decoration = (Decoration)this.getRegistryManager()
+			.getOptional(Registry.MESSAGE_TYPE_KEY)
+			.map(registry -> registry.get(typeKey))
+			.flatMap(MessageType::chat)
+			.flatMap(MessageType.DisplayRule::decoration)
+			.orElse(MessageType.CHAT_TEXT_DECORATION);
+		LOGGER.info(decoration.apply(message, sender).getString());
 	}
 
 	/**

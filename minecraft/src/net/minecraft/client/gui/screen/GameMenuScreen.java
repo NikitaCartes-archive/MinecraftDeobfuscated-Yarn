@@ -5,6 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.screen.advancement.AdvancementsScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
+import net.minecraft.client.gui.screen.multiplayer.SocialInteractionsScreen;
 import net.minecraft.client.gui.screen.option.OptionsScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
@@ -102,12 +103,25 @@ public class GameMenuScreen extends Screen {
 				button -> this.client.setScreen(new OptionsScreen(this, this.client.options))
 			)
 		);
-		ButtonWidget buttonWidget2 = this.addDrawableChild(
-			new ButtonWidget(
-				this.width / 2 + 4, this.height / 4 + 96 + -16, 98, 20, Text.translatable("menu.shareToLan"), button -> this.client.setScreen(new OpenToLanScreen(this))
-			)
-		);
-		buttonWidget2.active = this.client.isIntegratedServerRunning() && !this.client.getServer().isRemote();
+		if (this.client.isIntegratedServerRunning() && !this.client.getServer().isRemote()) {
+			this.addDrawableChild(
+				new ButtonWidget(
+					this.width / 2 + 4, this.height / 4 + 96 + -16, 98, 20, Text.translatable("menu.shareToLan"), button -> this.client.setScreen(new OpenToLanScreen(this))
+				)
+			);
+		} else {
+			this.addDrawableChild(
+				new ButtonWidget(
+					this.width / 2 + 4,
+					this.height / 4 + 96 + -16,
+					98,
+					20,
+					Text.translatable("menu.playerReporting"),
+					buttonWidgetx -> this.client.setScreen(SocialInteractionsScreen.createAbuseReportNoticeScreen())
+				)
+			);
+		}
+
 		Text text = this.client.isInSingleplayer() ? Text.translatable("menu.returnToMenu") : Text.translatable("menu.disconnect");
 		this.addDrawableChild(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 120 + -16, 204, 20, text, button -> {
 			boolean bl = this.client.isInSingleplayer();

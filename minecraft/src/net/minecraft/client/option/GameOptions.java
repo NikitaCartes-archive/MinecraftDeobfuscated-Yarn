@@ -815,7 +815,7 @@ public class GameOptions {
 		return this.chatVisibility;
 	}
 
-	public SimpleOption<Double> getChtOpacity() {
+	public SimpleOption<Double> getChatOpacity() {
 		return this.chatOpacity;
 	}
 

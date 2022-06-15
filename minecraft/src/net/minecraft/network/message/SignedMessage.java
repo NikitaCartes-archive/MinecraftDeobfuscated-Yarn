@@ -79,6 +79,15 @@ public record SignedMessage(Text signedContent, MessageSignature signature, Opti
 	}
 
 	/**
+	 * {@return the signed chat message with {@link #unsignedContent} removed if it exists}
+	 * 
+	 * @implNote This returns itself if the message does not have an unsigned content.
+	 */
+	public SignedMessage withoutUnsigned() {
+		return this.unsignedContent.isPresent() ? new SignedMessage(this.signedContent, this.signature, Optional.empty()) : this;
+	}
+
+	/**
 	 * {@return whether the message can be verified using the public key}
 	 */
 	public boolean verify(PlayerPublicKey key) {

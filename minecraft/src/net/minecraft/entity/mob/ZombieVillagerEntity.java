@@ -234,6 +234,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 
 		villagerEntity.setExperience(this.xp);
 		villagerEntity.initialize(world, world.getLocalDifficulty(villagerEntity.getBlockPos()), SpawnReason.CONVERSION, null, null);
+		villagerEntity.reinitializeBrain(world);
 		if (this.converter != null) {
 			PlayerEntity playerEntity = world.getPlayerByUuid(this.converter);
 			if (playerEntity instanceof ServerPlayerEntity) {

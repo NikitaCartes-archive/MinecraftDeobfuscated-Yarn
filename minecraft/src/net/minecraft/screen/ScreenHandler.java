@@ -35,7 +35,7 @@ import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
 
 public abstract class ScreenHandler {
-	private static Logger LOGGER = LogUtils.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	/**
 	 * A special slot index value ({@value}) indicating that the player has clicked outside the main panel
 	 * of a screen. Used for dropping the cursor stack.

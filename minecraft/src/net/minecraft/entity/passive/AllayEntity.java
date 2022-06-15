@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
@@ -28,14 +29,20 @@ import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.recipe.Ingredient;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -54,18 +61,25 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import net.minecraft.world.event.EntityPositionSource;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.event.PositionSource;
 import net.minecraft.world.event.listener.EntityGameEventHandler;
 import net.minecraft.world.event.listener.GameEventListener;
 import net.minecraft.world.event.listener.VibrationListener;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-public class AllayEntity extends PathAwareEntity implements InventoryOwner, VibrationListener.Callback {
+public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 	private static final Logger field_39045 = LogUtils.getLogger();
 	private static final int field_38405 = 16;
 	private static final Vec3i ITEM_PICKUP_RANGE_EXPANDER = new Vec3i(1, 1, 1);
-	private static final int field_38934 = 5;
+	private static final int field_39461 = 5;
+	private static final float field_39462 = 55.0F;
+	private static final float field_39463 = 15.0F;
 	private static final float field_39451 = 0.5F;
+	private static final Ingredient DUPLICATION_INGREDIENT = Ingredient.ofItems(Items.AMETHYST_SHARD);
+	private static final int field_39465 = 2400;
+	private static final TrackedData<Boolean> DANCING = DataTracker.registerData(AllayEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private static final TrackedData<Boolean> CAN_DUPLICATE = DataTracker.registerData(AllayEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	protected static final ImmutableList<SensorType<? extends Sensor<? super AllayEntity>>> SENSORS = ImmutableList.of(
 		SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.HURT_BY, SensorType.NEAREST_ITEMS
 	);
@@ -87,17 +101,27 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 		0.5625F, 0.625F, 0.75F, 0.9375F, 1.0F, 1.0F, 1.125F, 1.25F, 1.5F, 1.875F, 2.0F, 2.25F, 2.5F, 3.0F, 3.75F, 4.0F
 	);
 	private final EntityGameEventHandler<VibrationListener> gameEventHandler;
+	private final VibrationListener.Callback listenerCallback;
+	private final EntityGameEventHandler<AllayEntity.JukeboxEventListener> jukeboxEventHandler;
 	private final SimpleInventory inventory = new SimpleInventory(1);
+	@Nullable
+	private BlockPos jukeboxPos;
+	private long duplicationCooldown;
 	private float field_38935;
 	private float field_38936;
+	private float field_39472;
+	private float field_39473;
+	private float field_39474;
+	private int queuedHeartParticles;
 
 	public AllayEntity(EntityType<? extends AllayEntity> entityType, World world) {
 		super(entityType, world);
 		this.moveControl = new FlightMoveControl(this, 20, true);
 		this.setCanPickUpLoot(this.canPickUpLoot());
-		this.gameEventHandler = new EntityGameEventHandler<>(
-			new VibrationListener(new EntityPositionSource(this, this.getStandingEyeHeight()), 16, this, null, 0.0F, 0)
-		);
+		PositionSource positionSource = new EntityPositionSource(this, this.getStandingEyeHeight());
+		this.listenerCallback = new AllayEntity.VibrationListenerCallback();
+		this.gameEventHandler = new EntityGameEventHandler<>(new VibrationListener(positionSource, 16, this.listenerCallback, null, 0.0F, 0));
+		this.jukeboxEventHandler = new EntityGameEventHandler<>(new AllayEntity.JukeboxEventListener(positionSource, GameEvent.JUKEBOX_PLAY.getRange()));
 	}
 
 	@Override
@@ -131,6 +155,13 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 		birdNavigation.setCanSwim(true);
 		birdNavigation.setCanEnterOpenDoors(true);
 		return birdNavigation;
+	}
+
+	@Override
+	protected void initDataTracker() {
+		super.initDataTracker();
+		this.dataTracker.startTracking(DANCING, false);
+		this.dataTracker.startTracking(CAN_DUPLICATE, true);
 	}
 
 	@Override
@@ -221,6 +252,21 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 		if (!this.world.isClient && this.isAlive() && this.age % 10 == 0) {
 			this.heal(1.0F);
 		}
+
+		if (this.isDancing() && this.shouldStopDancing() && this.age % 20 == 0) {
+			this.setDancing(false);
+			this.jukeboxPos = null;
+		}
+
+		if (this.queuedHeartParticles > 0) {
+			this.queuedHeartParticles--;
+			double d = this.random.nextGaussian() * 0.02;
+			double e = this.random.nextGaussian() * 0.02;
+			double f = this.random.nextGaussian() * 0.02;
+			this.world.addParticle(ParticleTypes.HEART, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), d, e, f);
+		}
+
+		this.tickDuplicationCooldown();
 	}
 
 	@Override
@@ -232,6 +278,22 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 				this.field_38935 = MathHelper.clamp(this.field_38935 + 1.0F, 0.0F, 5.0F);
 			} else {
 				this.field_38935 = MathHelper.clamp(this.field_38935 - 1.0F, 0.0F, 5.0F);
+			}
+
+			if (this.isDancing()) {
+				this.field_39472++;
+				this.field_39474 = this.field_39473;
+				if (this.method_44360()) {
+					this.field_39473++;
+				} else {
+					this.field_39473--;
+				}
+
+				this.field_39473 = MathHelper.clamp(this.field_39473, 0.0F, 15.0F);
+			} else {
+				this.field_39472 = 0.0F;
+				this.field_39473 = 0.0F;
+				this.field_39474 = 0.0F;
 			}
 		} else {
 			this.gameEventHandler.getListener().tick(this.world);
@@ -260,14 +322,17 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	protected ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		ItemStack itemStack2 = this.getStackInHand(Hand.MAIN_HAND);
-		if (itemStack2.isEmpty() && !itemStack.isEmpty()) {
+		if (this.isDancing() && this.matchesDuplicationIngredient(itemStack) && this.canDuplicate()) {
+			this.duplicate();
+			this.queuedHeartParticles = 3;
+			this.world.playSoundFromEntity(player, this, SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, SoundCategory.NEUTRAL, 2.0F, 1.0F);
+			this.decrementStackUnlessInCreative(player, itemStack);
+			return ActionResult.SUCCESS;
+		} else if (itemStack2.isEmpty() && !itemStack.isEmpty()) {
 			ItemStack itemStack3 = itemStack.copy();
 			itemStack3.setCount(1);
 			this.setStackInHand(Hand.MAIN_HAND, itemStack3);
-			if (!player.getAbilities().creativeMode) {
-				itemStack.decrement(1);
-			}
-
+			this.decrementStackUnlessInCreative(player, itemStack);
 			this.world.playSoundFromEntity(player, this, SoundEvents.ENTITY_ALLAY_ITEM_GIVEN, SoundCategory.NEUTRAL, 2.0F, 1.0F);
 			this.getBrain().remember(MemoryModuleType.LIKED_PLAYER, player.getUuid());
 			return ActionResult.SUCCESS;
@@ -285,6 +350,18 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 			return ActionResult.SUCCESS;
 		} else {
 			return super.interactMob(player, hand);
+		}
+	}
+
+	public void updateJukeboxPos(BlockPos jukeboxPos, boolean playing) {
+		if (playing) {
+			if (!this.isDancing()) {
+				this.jukeboxPos = jukeboxPos;
+				this.setDancing(true);
+			}
+		} else if (jukeboxPos.equals(this.jukeboxPos) || this.jukeboxPos == null) {
+			this.jukeboxPos = null;
+			this.setDancing(false);
 		}
 	}
 
@@ -324,15 +401,37 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	public void updateEventHandler(BiConsumer<EntityGameEventHandler<?>, ServerWorld> callback) {
 		if (this.world instanceof ServerWorld serverWorld) {
 			callback.accept(this.gameEventHandler, serverWorld);
+			callback.accept(this.jukeboxEventHandler, serverWorld);
 		}
 	}
 
-	public boolean method_43395() {
-		return this.limbDistance > 0.3F;
+	public boolean isDancing() {
+		return this.dataTracker.get(DANCING);
+	}
+
+	public void setDancing(boolean dancing) {
+		if (!this.world.isClient) {
+			this.dataTracker.set(DANCING, dancing);
+		}
+	}
+
+	private boolean shouldStopDancing() {
+		return this.jukeboxPos == null
+			|| !this.jukeboxPos.isWithinDistance(this.getPos(), (double)GameEvent.JUKEBOX_PLAY.getRange())
+			|| !this.world.getBlockState(this.jukeboxPos).isOf(Blocks.JUKEBOX);
 	}
 
 	public float method_43397(float f) {
 		return MathHelper.lerp(f, this.field_38936, this.field_38935) / 5.0F;
+	}
+
+	public boolean method_44360() {
+		float f = this.field_39472 % 55.0F;
+		return f < 15.0F;
+	}
+
+	public float method_44368(float f) {
+		return MathHelper.lerp(f, this.field_39474, this.field_39473) / 15.0F;
 	}
 
 	@Override
@@ -352,39 +451,15 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	}
 
 	@Override
-	public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, GameEvent.Emitter emitter) {
-		if (this.world != world || this.isRemoved() || this.isAiDisabled()) {
-			return false;
-		} else if (!this.brain.hasMemoryModule(MemoryModuleType.LIKED_NOTEBLOCK)) {
-			return true;
-		} else {
-			Optional<GlobalPos> optional = this.brain.getOptionalMemory(MemoryModuleType.LIKED_NOTEBLOCK);
-			return optional.isPresent() && ((GlobalPos)optional.get()).getDimension() == world.getRegistryKey() && ((GlobalPos)optional.get()).getPos().equals(pos);
-		}
-	}
-
-	@Override
-	public void accept(
-		ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity, @Nullable Entity sourceEntity, float distance
-	) {
-		if (event == GameEvent.NOTE_BLOCK_PLAY) {
-			AllayBrain.rememberNoteBlock(this, new BlockPos(pos));
-		}
-	}
-
-	@Override
-	public TagKey<GameEvent> getTag() {
-		return GameEventTags.ALLAY_CAN_LISTEN;
-	}
-
-	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
 		nbt.put("Inventory", this.inventory.toNbtList());
-		VibrationListener.createCodec(this)
+		VibrationListener.createCodec(this.listenerCallback)
 			.encodeStart(NbtOps.INSTANCE, this.gameEventHandler.getListener())
 			.resultOrPartial(field_39045::error)
 			.ifPresent(nbtElement -> nbt.put("listener", nbtElement));
+		nbt.putLong("DuplicationCooldown", this.duplicationCooldown);
+		nbt.putBoolean("CanDuplicate", this.canDuplicate());
 	}
 
 	@Override
@@ -392,11 +467,14 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 		super.readCustomDataFromNbt(nbt);
 		this.inventory.readNbtList(nbt.getList("Inventory", NbtElement.COMPOUND_TYPE));
 		if (nbt.contains("listener", NbtElement.COMPOUND_TYPE)) {
-			VibrationListener.createCodec(this)
+			VibrationListener.createCodec(this.listenerCallback)
 				.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("listener")))
 				.resultOrPartial(field_39045::error)
 				.ifPresent(vibrationListener -> this.gameEventHandler.setListener(vibrationListener, this.world));
 		}
+
+		this.duplicationCooldown = (long)nbt.getInt("DuplicationCooldown");
+		this.dataTracker.set(CAN_DUPLICATE, nbt.getBoolean("CanDuplicate"));
 	}
 
 	@Override
@@ -416,8 +494,111 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 		return BlockPos.iterate(i, m, k, j, n, l);
 	}
 
+	private void tickDuplicationCooldown() {
+		if (this.duplicationCooldown > 0L) {
+			this.duplicationCooldown--;
+			if (this.duplicationCooldown == 0L) {
+				this.dataTracker.set(CAN_DUPLICATE, true);
+			}
+		}
+	}
+
+	private boolean matchesDuplicationIngredient(ItemStack stack) {
+		return DUPLICATION_INGREDIENT.test(stack);
+	}
+
+	private void duplicate() {
+		AllayEntity allayEntity = EntityType.ALLAY.create(this.world);
+		if (allayEntity != null) {
+			allayEntity.refreshPositionAfterTeleport(this.getPos());
+			allayEntity.setPersistent();
+			allayEntity.startDuplicationCooldown();
+			this.startDuplicationCooldown();
+			this.world.spawnEntity(allayEntity);
+		}
+	}
+
+	private void startDuplicationCooldown() {
+		this.duplicationCooldown = 2400L;
+		this.dataTracker.set(CAN_DUPLICATE, false);
+	}
+
+	private boolean canDuplicate() {
+		return this.dataTracker.get(CAN_DUPLICATE);
+	}
+
+	private void decrementStackUnlessInCreative(PlayerEntity player, ItemStack stack) {
+		if (!player.getAbilities().creativeMode) {
+			stack.decrement(1);
+		}
+	}
+
 	@Override
 	public Vec3d getLeashOffset() {
 		return new Vec3d(0.0, (double)this.getStandingEyeHeight() * 0.6, (double)this.getWidth() * 0.1);
+	}
+
+	class JukeboxEventListener implements GameEventListener {
+		private final PositionSource positionSource;
+		private final int range;
+
+		public JukeboxEventListener(PositionSource positionSource, int range) {
+			this.positionSource = positionSource;
+			this.range = range;
+		}
+
+		@Override
+		public PositionSource getPositionSource() {
+			return this.positionSource;
+		}
+
+		@Override
+		public int getRange() {
+			return this.range;
+		}
+
+		@Override
+		public boolean listen(ServerWorld world, GameEvent.Message event) {
+			if (event.getEvent() == GameEvent.JUKEBOX_PLAY) {
+				AllayEntity.this.updateJukeboxPos(new BlockPos(event.getEmitterPos()), true);
+				return true;
+			} else if (event.getEvent() == GameEvent.JUKEBOX_STOP_PLAY) {
+				AllayEntity.this.updateJukeboxPos(new BlockPos(event.getEmitterPos()), false);
+				return true;
+			} else {
+				return false;
+			}
+		}
+	}
+
+	class VibrationListenerCallback implements VibrationListener.Callback {
+		@Override
+		public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, GameEvent.Emitter emitter) {
+			if (AllayEntity.this.getWorld() == world && !AllayEntity.this.isRemoved() && !AllayEntity.this.isAiDisabled()) {
+				Optional<GlobalPos> optional = AllayEntity.this.getBrain().getOptionalMemory(MemoryModuleType.LIKED_NOTEBLOCK);
+				if (optional.isEmpty()) {
+					return true;
+				} else {
+					GlobalPos globalPos = (GlobalPos)optional.get();
+					return globalPos.getDimension().equals(world.getRegistryKey()) && globalPos.getPos().equals(pos);
+				}
+			} else {
+				return false;
+			}
+		}
+
+		@Override
+		public void accept(
+			ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity, @Nullable Entity sourceEntity, float distance
+		) {
+			if (event == GameEvent.NOTE_BLOCK_PLAY) {
+				AllayBrain.rememberNoteBlock(AllayEntity.this, new BlockPos(pos));
+			}
+		}
+
+		@Override
+		public TagKey<GameEvent> getTag() {
+			return GameEventTags.ALLAY_CAN_LISTEN;
+		}
 	}
 }

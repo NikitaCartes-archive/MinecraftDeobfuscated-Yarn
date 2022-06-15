@@ -18,7 +18,7 @@ import net.minecraft.world.gen.densityfunction.DensityFunctionTypes;
 /**
  * Applies weights to noise values if they are near structures, placing terrain under them and hollowing out the space above them.
  */
-public class StructureWeightSampler implements DensityFunctionTypes.class_7050 {
+public class StructureWeightSampler implements DensityFunctionTypes.Beardifying {
 	public static final int field_31461 = 12;
 	private static final int field_31462 = 24;
 	private static final float[] STRUCTURE_WEIGHT_TABLE = Util.make(new float[13824], array -> {

@@ -2,6 +2,8 @@ package net.minecraft.block;
 
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.JukeboxBlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
@@ -46,6 +48,7 @@ public class JukeboxBlock extends BlockWithEntity {
 		if ((Boolean)state.get(HAS_RECORD)) {
 			this.removeRecord(world, pos);
 			state = state.with(HAS_RECORD, Boolean.valueOf(false));
+			world.emitGameEvent(GameEvent.JUKEBOX_STOP_PLAY, pos, GameEvent.Emitter.of(state));
 			world.setBlockState(pos, state, Block.NOTIFY_LISTENERS);
 			world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(player, state));
 			return ActionResult.success(world.isClient);
@@ -55,9 +58,9 @@ public class JukeboxBlock extends BlockWithEntity {
 	}
 
 	public void setRecord(@Nullable Entity user, WorldAccess world, BlockPos pos, BlockState state, ItemStack stack) {
-		BlockEntity blockEntity = world.getBlockEntity(pos);
-		if (blockEntity instanceof JukeboxBlockEntity) {
-			((JukeboxBlockEntity)blockEntity).setRecord(stack.copy());
+		if (world.getBlockEntity(pos) instanceof JukeboxBlockEntity jukeboxBlockEntity) {
+			jukeboxBlockEntity.setRecord(stack.copy());
+			jukeboxBlockEntity.startPlaying();
 			world.setBlockState(pos, state.with(HAS_RECORD, Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
 			world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(user, state));
 		}
@@ -122,5 +125,11 @@ public class JukeboxBlock extends BlockWithEntity {
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
 		builder.add(HAS_RECORD);
+	}
+
+	@Nullable
+	@Override
+	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+		return state.get(HAS_RECORD) ? checkType(type, BlockEntityType.JUKEBOX, JukeboxBlockEntity::tick) : null;
 	}
 }

@@ -692,7 +692,7 @@ public abstract class LivingEntity extends Entity {
 
 	public void onEquipStack(EquipmentSlot slot, ItemStack oldStack, ItemStack newStack) {
 		boolean bl = newStack.isEmpty() && oldStack.isEmpty();
-		if (!bl && !ItemStack.areItemsEqual(oldStack, newStack)) {
+		if (!bl && !ItemStack.areItemsEqual(oldStack, newStack) && !this.firstUpdate) {
 			if (slot.getType() == EquipmentSlot.Type.ARMOR) {
 				this.playEquipSound(newStack);
 			}

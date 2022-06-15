@@ -37,8 +37,8 @@ public record GenerationShapeConfig(int minimumY, int height, int horizontalSize
 
 	public static GenerationShapeConfig create(int minimumY, int height, int horizontalSize, int verticalSize) {
 		GenerationShapeConfig generationShapeConfig = new GenerationShapeConfig(minimumY, height, horizontalSize, verticalSize);
-		checkHeight(generationShapeConfig).error().ifPresent(partialResult -> {
-			throw new IllegalStateException(partialResult.message());
+		checkHeight(generationShapeConfig).error().ifPresent(result -> {
+			throw new IllegalStateException(result.message());
 		});
 		return generationShapeConfig;
 	}
@@ -51,9 +51,9 @@ public record GenerationShapeConfig(int minimumY, int height, int horizontalSize
 		return BiomeCoords.toBlock(this.horizontalSize());
 	}
 
-	public GenerationShapeConfig method_42368(HeightLimitView heightLimitView) {
-		int i = Math.max(this.minimumY, heightLimitView.getBottomY());
-		int j = Math.min(this.minimumY + this.height, heightLimitView.getTopY()) - i;
+	public GenerationShapeConfig trimHeight(HeightLimitView world) {
+		int i = Math.max(this.minimumY, world.getBottomY());
+		int j = Math.min(this.minimumY + this.height, world.getTopY()) - i;
 		return new GenerationShapeConfig(i, j, this.horizontalSize, this.verticalSize);
 	}
 }

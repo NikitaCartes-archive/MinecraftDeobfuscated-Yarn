@@ -47,6 +47,7 @@ public record MessageType(Optional<MessageType.DisplayRule> chat, Optional<Messa
 				)
 				.apply(instance, MessageType::new)
 	);
+	public static final Decoration CHAT_TEXT_DECORATION = Decoration.ofChat("chat.type.text");
 	/**
 	 * The registry key for the message type used by {@link
 	 * net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket chat messages}.
@@ -115,7 +116,7 @@ public record MessageType(Optional<MessageType.DisplayRule> chat, Optional<Messa
 			registry,
 			CHAT,
 			new MessageType(
-				Optional.of(MessageType.DisplayRule.of(Decoration.ofChat("chat.type.text"))),
+				Optional.of(MessageType.DisplayRule.of(CHAT_TEXT_DECORATION)),
 				Optional.empty(),
 				Optional.of(MessageType.NarrationRule.of(Decoration.ofChat("chat.type.text.narrate"), MessageType.NarrationRule.Kind.CHAT))
 			)
@@ -127,7 +128,13 @@ public record MessageType(Optional<MessageType.DisplayRule> chat, Optional<Messa
 				Optional.of(MessageType.DisplayRule.of()), Optional.empty(), Optional.of(MessageType.NarrationRule.of(MessageType.NarrationRule.Kind.SYSTEM))
 			)
 		);
-		BuiltinRegistries.add(registry, GAME_INFO, new MessageType(Optional.empty(), Optional.of(MessageType.DisplayRule.of()), Optional.empty()));
+		BuiltinRegistries.add(
+			registry,
+			GAME_INFO,
+			new MessageType(
+				Optional.empty(), Optional.of(MessageType.DisplayRule.of()), Optional.of(MessageType.NarrationRule.of(MessageType.NarrationRule.Kind.SYSTEM))
+			)
+		);
 		BuiltinRegistries.add(
 			registry,
 			SAY_COMMAND,
