@@ -19,6 +19,7 @@ public class ScreenTexts {
 	public static final Text CONNECT_FAILED = Text.translatable("connect.failed");
 	public static final Text LINE_BREAK = Text.literal("\n");
 	public static final Text SENTENCE_SEPARATOR = Text.literal(". ");
+	public static final Text ELLIPSIS = Text.literal("...");
 
 	public static Text onOrOff(boolean on) {
 		return on ? ON : OFF;

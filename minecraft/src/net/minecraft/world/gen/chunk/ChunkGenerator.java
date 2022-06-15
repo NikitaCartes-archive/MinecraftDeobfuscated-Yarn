@@ -386,7 +386,7 @@ public abstract class ChunkGenerator {
 		long seed,
 		RandomSpreadStructurePlacement placement
 	) {
-		int i = placement.method_41632();
+		int i = placement.getSpacing();
 
 		for(int j = -radius; j <= radius; ++j) {
 			boolean bl = j == -radius || j == radius;

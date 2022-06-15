@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -262,8 +263,7 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 			RealmsAcceptRejectButton.render(matrices, this.buttons, RealmsPendingInvitesScreen.this.pendingInvitationSelectionList, x, y, mouseX, mouseY);
 			RealmsTextureManager.withBoundFace(invite.worldOwnerUuid, () -> {
 				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-				DrawableHelper.drawTexture(matrices, x, y, 32, 32, 8.0F, 8.0F, 8, 8, 64, 64);
-				DrawableHelper.drawTexture(matrices, x, y, 32, 32, 40.0F, 8.0F, 8, 8, 64, 64);
+				PlayerSkinDrawer.draw(matrices, x, y, 32);
 			});
 		}
 

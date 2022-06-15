@@ -185,7 +185,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		@Nullable MutableObject<VerticalBlockSample> mutableObject,
 		@Nullable Predicate<BlockState> predicate
 	) {
-		GenerationShapeConfig generationShapeConfig = ((ChunkGeneratorSettings)this.settings.value()).generationShapeConfig().method_42368(heightLimitView);
+		GenerationShapeConfig generationShapeConfig = ((ChunkGeneratorSettings)this.settings.value()).generationShapeConfig().trimHeight(heightLimitView);
 		int k = generationShapeConfig.verticalBlockSize();
 		int l = generationShapeConfig.minimumY();
 		int m = MathHelper.floorDiv(l, k);
@@ -343,9 +343,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 
 	@Override
 	public CompletableFuture<Chunk> populateNoise(Executor executor, Blender blender, NoiseConfig noiseConfig, StructureAccessor structureAccessor, Chunk chunk) {
-		GenerationShapeConfig generationShapeConfig = ((ChunkGeneratorSettings)this.settings.value())
-			.generationShapeConfig()
-			.method_42368(chunk.getHeightLimitView());
+		GenerationShapeConfig generationShapeConfig = ((ChunkGeneratorSettings)this.settings.value()).generationShapeConfig().trimHeight(chunk.getHeightLimitView());
 		int i = generationShapeConfig.minimumY();
 		int j = MathHelper.floorDiv(i, generationShapeConfig.verticalBlockSize());
 		int k = MathHelper.floorDiv(generationShapeConfig.height(), generationShapeConfig.verticalBlockSize());

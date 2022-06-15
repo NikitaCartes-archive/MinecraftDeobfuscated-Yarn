@@ -608,10 +608,16 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	@Override
 	public void onRenameItem(RenameItemC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
-		if (this.player.currentScreenHandler instanceof AnvilScreenHandler anvilScreenHandler) {
-			String string = SharedConstants.stripInvalidChars(packet.getName());
-			if (string.length() <= 50) {
-				anvilScreenHandler.setNewItemName(string);
+		ScreenHandler string = this.player.currentScreenHandler;
+		if (string instanceof AnvilScreenHandler anvilScreenHandler) {
+			if (!anvilScreenHandler.canUse(this.player)) {
+				LOGGER.debug("Player {} interacted with invalid menu {}", this.player, anvilScreenHandler);
+				return;
+			}
+
+			String stringx = SharedConstants.stripInvalidChars(packet.getName());
+			if (stringx.length() <= 50) {
+				anvilScreenHandler.setNewItemName(stringx);
 			}
 		}
 	}
@@ -619,8 +625,14 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	@Override
 	public void onUpdateBeacon(UpdateBeaconC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
-		if (this.player.currentScreenHandler instanceof BeaconScreenHandler) {
-			((BeaconScreenHandler)this.player.currentScreenHandler).setEffects(packet.getPrimaryEffectId(), packet.getSecondaryEffectId());
+		ScreenHandler var3 = this.player.currentScreenHandler;
+		if (var3 instanceof BeaconScreenHandler beaconScreenHandler) {
+			if (!this.player.currentScreenHandler.canUse(this.player)) {
+				LOGGER.debug("Player {} interacted with invalid menu {}", this.player, this.player.currentScreenHandler);
+				return;
+			}
+
+			beaconScreenHandler.setEffects(packet.getPrimaryEffectId(), packet.getSecondaryEffectId());
 		}
 	}
 
@@ -712,8 +724,13 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	public void onSelectMerchantTrade(SelectMerchantTradeC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		int i = packet.getTradeId();
-		ScreenHandler screenHandler = this.player.currentScreenHandler;
-		if (screenHandler instanceof MerchantScreenHandler merchantScreenHandler) {
+		ScreenHandler var4 = this.player.currentScreenHandler;
+		if (var4 instanceof MerchantScreenHandler merchantScreenHandler) {
+			if (!merchantScreenHandler.canUse(this.player)) {
+				LOGGER.debug("Player {} interacted with invalid menu {}", this.player, merchantScreenHandler);
+				return;
+			}
+
 			merchantScreenHandler.setRecipeIndex(i);
 			merchantScreenHandler.switchTo(i);
 		}
@@ -1199,11 +1216,12 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		if (hasIllegalCharacter(packet.command())) {
 			this.disconnect(Text.translatable("multiplayer.disconnect.illegal_characters"));
 		} else {
-			NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 			if (this.canAcceptMessage(packet.command(), packet.timestamp())) {
-				ServerCommandSource serverCommandSource = this.player.getCommandSource().withSigner(packet.createArgumentsSigner(this.player.getUuid()));
-				this.server.getCommandManager().execute(serverCommandSource, packet.command());
-				this.checkForSpam();
+				this.server.submit(() -> {
+					ServerCommandSource serverCommandSource = this.player.getCommandSource().withSigner(packet.createArgumentsSigner(this.player.getUuid()));
+					this.server.getCommandManager().execute(serverCommandSource, packet.command());
+					this.checkForSpam();
+				});
 			}
 		}
 	}
@@ -1212,9 +1230,9 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	 * {@return whether {@code message}, sent at {@code timestamp}, should be accepted}
 	 * 
 	 * @implNote This returns {@code false} if the message arrives in {@linkplain
-	 * #isInProperOrder improper order} or if {@linkplain #checkChatDisabled chat is disabled}.
-	 * This also logs a warning when the message is {@linkplain #isExpired expired}, but
-	 * the message is still accepted in this case.
+	 * #isInProperOrder improper order} or if chat is disabled. This also logs a warning
+	 * when the message is {@linkplain #isExpired expired}, but the message is still
+	 * accepted in this case.
 	 */
 	private boolean canAcceptMessage(String message, Instant timestamp) {
 		if (!this.isInProperOrder(timestamp)) {
@@ -1226,7 +1244,15 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 				LOGGER.warn("{} sent expired chat: '{}'. Is the client/server system time unsynchronized?", this.player.getName().getString(), message);
 			}
 
-			return this.checkChatEnabled();
+			if (this.player.getClientChatVisibility() == ChatVisibility.HIDDEN) {
+				Registry<MessageType> registry = this.player.world.getRegistryManager().get(Registry.MESSAGE_TYPE_KEY);
+				int i = registry.getRawId((MessageType)registry.get(MessageType.SYSTEM));
+				this.sendPacket(new GameMessageS2CPacket(Text.translatable("chat.disabled.options").formatted(Formatting.RED), i));
+				return false;
+			} else {
+				this.player.updateLastActionTime();
+				return true;
+			}
 		}
 	}
 
@@ -1274,25 +1300,11 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		return false;
 	}
 
-	private boolean checkChatEnabled() {
-		if (this.player.getClientChatVisibility() == ChatVisibility.HIDDEN) {
-			Registry<MessageType> registry = this.player.world.getRegistryManager().get(Registry.MESSAGE_TYPE_KEY);
-			int i = registry.getRawId((MessageType)registry.get(MessageType.SYSTEM));
-			this.sendPacket(new GameMessageS2CPacket(Text.translatable("chat.disabled.options").formatted(Formatting.RED), i));
-			return false;
-		} else {
-			this.player.updateLastActionTime();
-			return true;
-		}
-	}
-
 	private void handleMessage(ChatMessageC2SPacket packet, FilteredMessage<String> message) {
-		if (this.checkChatEnabled()) {
-			MessageSignature messageSignature = packet.createSignatureInstance(this.player.getUuid());
-			boolean bl = packet.isPreviewed();
-			MessageDecorator messageDecorator = this.server.getMessageDecorator();
-			messageDecorator.decorateChat(this.player, message.map(Text::literal), messageSignature, bl).thenAcceptAsync(this::handleDecoratedMessage, this.server);
-		}
+		MessageSignature messageSignature = packet.createSignatureInstance(this.player.getUuid());
+		boolean bl = packet.isPreviewed();
+		MessageDecorator messageDecorator = this.server.getMessageDecorator();
+		messageDecorator.decorateChat(this.player, message.map(Text::literal), messageSignature, bl).thenAcceptAsync(this::handleDecoratedMessage, this.server);
 	}
 
 	private void handleDecoratedMessage(FilteredMessage<SignedMessage> message) {
@@ -1525,6 +1537,8 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		if (this.player.currentScreenHandler.syncId == packet.getSyncId()) {
 			if (this.player.isSpectator()) {
 				this.player.currentScreenHandler.syncState();
+			} else if (!this.player.currentScreenHandler.canUse(this.player)) {
+				LOGGER.debug("Player {} interacted with invalid menu {}", this.player, this.player.currentScreenHandler);
 			} else {
 				int i = packet.getSlot();
 				if (!this.player.currentScreenHandler.isValid(i)) {
@@ -1557,10 +1571,14 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		if (!this.player.isSpectator()
 			&& this.player.currentScreenHandler.syncId == packet.getSyncId()
 			&& this.player.currentScreenHandler instanceof AbstractRecipeScreenHandler) {
-			this.server
-				.getRecipeManager()
-				.get(packet.getRecipe())
-				.ifPresent(recipe -> ((AbstractRecipeScreenHandler)this.player.currentScreenHandler).fillInputSlots(packet.shouldCraftAll(), recipe, this.player));
+			if (!this.player.currentScreenHandler.canUse(this.player)) {
+				LOGGER.debug("Player {} interacted with invalid menu {}", this.player, this.player.currentScreenHandler);
+			} else {
+				this.server
+					.getRecipeManager()
+					.get(packet.getRecipe())
+					.ifPresent(recipe -> ((AbstractRecipeScreenHandler)this.player.currentScreenHandler).fillInputSlots(packet.shouldCraftAll(), recipe, this.player));
+			}
 		}
 	}
 
@@ -1569,9 +1587,13 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		this.player.updateLastActionTime();
 		if (this.player.currentScreenHandler.syncId == packet.getSyncId() && !this.player.isSpectator()) {
-			boolean bl = this.player.currentScreenHandler.onButtonClick(this.player, packet.getButtonId());
-			if (bl) {
-				this.player.currentScreenHandler.sendContentUpdates();
+			if (!this.player.currentScreenHandler.canUse(this.player)) {
+				LOGGER.debug("Player {} interacted with invalid menu {}", this.player, this.player.currentScreenHandler);
+			} else {
+				boolean bl = this.player.currentScreenHandler.onButtonClick(this.player, packet.getButtonId());
+				if (bl) {
+					this.player.currentScreenHandler.sendContentUpdates();
+				}
 			}
 		}
 	}
@@ -1585,9 +1607,11 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 			NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(itemStack);
 			if (!itemStack.isEmpty() && nbtCompound != null && nbtCompound.contains("x") && nbtCompound.contains("y") && nbtCompound.contains("z")) {
 				BlockPos blockPos = BlockEntity.posFromNbt(nbtCompound);
-				BlockEntity blockEntity = this.player.world.getBlockEntity(blockPos);
-				if (blockEntity != null) {
-					blockEntity.setStackNbt(itemStack);
+				if (this.player.world.canSetBlock(blockPos)) {
+					BlockEntity blockEntity = this.player.world.getBlockEntity(blockPos);
+					if (blockEntity != null) {
+						blockEntity.setStackNbt(itemStack);
+					}
 				}
 			}
 

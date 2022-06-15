@@ -19,7 +19,7 @@ public class ChatOptionsScreen extends SimpleOptionsScreen {
 				options.getChatColors(),
 				options.getChatLinks(),
 				options.getChatLinksPrompt(),
-				options.getChtOpacity(),
+				options.getChatOpacity(),
 				options.getTextBackgroundOpacity(),
 				options.getChatScale(),
 				options.getChatLineSpacing(),

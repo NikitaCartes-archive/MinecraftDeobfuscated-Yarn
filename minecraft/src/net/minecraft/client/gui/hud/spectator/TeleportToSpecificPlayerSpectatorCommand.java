@@ -8,7 +8,7 @@ import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.packet.c2s.play.SpectatorTeleportC2SPacket;
@@ -49,8 +49,7 @@ public class TeleportToSpecificPlayerSpectatorCommand implements SpectatorMenuCo
 	public void renderIcon(MatrixStack matrices, float brightness, int alpha) {
 		RenderSystem.setShaderTexture(0, this.skinId);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, (float)alpha / 255.0F);
-		DrawableHelper.drawTexture(matrices, 2, 2, 12, 12, 8.0F, 8.0F, 8, 8, 64, 64);
-		DrawableHelper.drawTexture(matrices, 2, 2, 12, 12, 40.0F, 8.0F, 8, 8, 64, 64);
+		PlayerSkinDrawer.draw(matrices, 2, 2, 12);
 	}
 
 	@Override

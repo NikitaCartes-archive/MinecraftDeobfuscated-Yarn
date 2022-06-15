@@ -7,30 +7,42 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class NoticeScreen extends Screen {
-	private final Runnable actionHandler;
-	protected final Text notice;
+	private static final int NOTICE_TEXT_Y = 90;
+	private final Text notice;
 	private MultilineText noticeLines = MultilineText.EMPTY;
-	protected final Text buttonText;
+	private final Runnable actionHandler;
+	private final Text buttonText;
+	private final boolean shouldCloseOnEsc;
 
 	public NoticeScreen(Runnable actionHandler, Text title, Text notice) {
-		this(actionHandler, title, notice, ScreenTexts.BACK);
+		this(actionHandler, title, notice, ScreenTexts.BACK, true);
 	}
 
-	public NoticeScreen(Runnable actionHandler, Text title, Text notice, Text buttonText) {
+	public NoticeScreen(Runnable actionHandler, Text title, Text notice, Text buttonText, boolean shouldCloseOnEsc) {
 		super(title);
 		this.actionHandler = actionHandler;
 		this.notice = notice;
 		this.buttonText = buttonText;
+		this.shouldCloseOnEsc = shouldCloseOnEsc;
+	}
+
+	@Override
+	public Text getNarratedTitle() {
+		return ScreenTexts.joinSentences(super.getNarratedTitle(), this.notice);
 	}
 
 	@Override
 	protected void init() {
 		super.init();
-		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, this.buttonText, button -> this.actionHandler.run()));
 		this.noticeLines = MultilineText.create(this.textRenderer, this.notice, this.width - 50);
+		int i = this.noticeLines.count() * 9;
+		int j = MathHelper.clamp(90 + i + 12, this.height / 6 + 96, this.height - 24);
+		int k = 150;
+		this.addDrawableChild(new ButtonWidget((this.width - 150) / 2, j, 150, 20, this.buttonText, button -> this.actionHandler.run()));
 	}
 
 	@Override
@@ -39,5 +51,10 @@ public class NoticeScreen extends Screen {
 		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 70, 16777215);
 		this.noticeLines.drawCenterWithShadow(matrices, this.width / 2, 90);
 		super.render(matrices, mouseX, mouseY, delta);
+	}
+
+	@Override
+	public boolean shouldCloseOnEsc() {
+		return this.shouldCloseOnEsc;
 	}
 }

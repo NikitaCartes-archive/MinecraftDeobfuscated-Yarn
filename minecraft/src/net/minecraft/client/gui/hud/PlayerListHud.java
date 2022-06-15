@@ -11,6 +11,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
@@ -179,16 +180,9 @@ public class PlayerListHud extends DrawableHelper {
 				if (bl) {
 					PlayerEntity playerEntity = this.client.world.getPlayerByUuid(gameProfile.getId());
 					boolean bl2 = playerEntity != null && LivingEntityRenderer.shouldFlipUpsideDown(playerEntity);
+					boolean bl3 = playerEntity != null && playerEntity.isPartVisible(PlayerModelPart.HAT);
 					RenderSystem.setShaderTexture(0, playerListEntry2.getSkinTexture());
-					int y = 8 + (bl2 ? 8 : 0);
-					int z = 8 * (bl2 ? -1 : 1);
-					DrawableHelper.drawTexture(matrices, w, x, 8, 8, 8.0F, (float)y, 8, z, 64, 64);
-					if (playerEntity != null && playerEntity.isPartVisible(PlayerModelPart.HAT)) {
-						int aa = 8 + (bl2 ? 8 : 0);
-						int ab = 8 * (bl2 ? -1 : 1);
-						DrawableHelper.drawTexture(matrices, w, x, 8, 8, 40.0F, (float)aa, 8, ab, 64, 64);
-					}
-
+					PlayerSkinDrawer.draw(matrices, w, x, 8, bl3, bl2);
 					w += 9;
 				}
 
@@ -198,10 +192,10 @@ public class PlayerListHud extends DrawableHelper {
 						matrices, this.getPlayerName(playerListEntry2), (float)w, (float)x, playerListEntry2.getGameMode() == GameMode.SPECTATOR ? -1862270977 : -1
 					);
 				if (objective != null && playerListEntry2.getGameMode() != GameMode.SPECTATOR) {
-					int ac = w + i + 1;
-					int ad = ac + n;
-					if (ad - ac > 5) {
-						this.renderScoreboardObjective(objective, x, gameProfile.getName(), ac, ad, playerListEntry2, matrices);
+					int y = w + i + 1;
+					int z = y + n;
+					if (z - y > 5) {
+						this.renderScoreboardObjective(objective, x, gameProfile.getName(), y, z, playerListEntry2, matrices);
 					}
 				}
 

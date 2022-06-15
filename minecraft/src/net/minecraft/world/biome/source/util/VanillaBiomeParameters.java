@@ -136,13 +136,13 @@ public final class VanillaBiomeParameters {
 			this.writeLandBiomes(consumer);
 			this.writeCaveBiomes(consumer);
 		} else {
-			DensityFunctionTypes.Spline.class_7135 lv = new DensityFunctionTypes.Spline.class_7135(
+			DensityFunctionTypes.Spline.DensityFunctionWrapper densityFunctionWrapper = new DensityFunctionTypes.Spline.DensityFunctionWrapper(
 				BuiltinRegistries.DENSITY_FUNCTION.entryOf(DensityFunctions.CONTINENTS_OVERWORLD)
 			);
-			DensityFunctionTypes.Spline.class_7135 lv2 = new DensityFunctionTypes.Spline.class_7135(
+			DensityFunctionTypes.Spline.DensityFunctionWrapper densityFunctionWrapper2 = new DensityFunctionTypes.Spline.DensityFunctionWrapper(
 				BuiltinRegistries.DENSITY_FUNCTION.entryOf(DensityFunctions.EROSION_OVERWORLD)
 			);
-			DensityFunctionTypes.Spline.class_7135 lv3 = new DensityFunctionTypes.Spline.class_7135(
+			DensityFunctionTypes.Spline.DensityFunctionWrapper densityFunctionWrapper3 = new DensityFunctionTypes.Spline.DensityFunctionWrapper(
 				BuiltinRegistries.DENSITY_FUNCTION.entryOf(DensityFunctions.RIDGES_FOLDED_OVERWORLD)
 			);
 			consumer.accept(
@@ -160,7 +160,7 @@ public final class VanillaBiomeParameters {
 				)
 			);
 			Spline<?, ?> spline = VanillaTerrainParametersCreator.method_42051(
-				lv2, lv3, -0.15F, 0.0F, 0.0F, 0.1F, 0.0F, -0.03F, false, false, ToFloatFunction.field_37409
+				densityFunctionWrapper2, densityFunctionWrapper3, -0.15F, 0.0F, 0.0F, 0.1F, 0.0F, -0.03F, false, false, ToFloatFunction.field_37409
 			);
 			if (spline instanceof Spline.Implementation implementation) {
 				RegistryKey<Biome> registryKey = BiomeKeys.DESERT;
@@ -184,7 +184,7 @@ public final class VanillaBiomeParameters {
 				}
 			}
 
-			Spline<?, ?> spline2 = VanillaTerrainParametersCreator.method_42056(lv, lv2, lv3, false);
+			Spline<?, ?> spline2 = VanillaTerrainParametersCreator.method_42056(densityFunctionWrapper, densityFunctionWrapper2, densityFunctionWrapper3, false);
 			if (spline2 instanceof Spline.Implementation implementation2) {
 				for(float f : implementation2.locations()) {
 					consumer.accept(

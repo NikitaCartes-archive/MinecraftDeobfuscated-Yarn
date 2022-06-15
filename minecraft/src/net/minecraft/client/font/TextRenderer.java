@@ -425,8 +425,18 @@ public class TextRenderer {
 	 * 
 	 * @return the height of the wrapped text
 	 * @see TextRenderer#wrapLines(StringVisitable, int)
+	 * @see #getWrappedLinesHeight(StringVisitable, int)
 	 */
 	public int getWrappedLinesHeight(String text, int maxWidth) {
+		return 9 * this.handler.wrapLines(text, maxWidth, Style.EMPTY).size();
+	}
+
+	/**
+	 * {@return the height of the text, after it has been wrapped, in pixels}
+	 * @see TextRenderer#wrapLines(StringVisitable, int)
+	 * @see #getWrappedLinesHeight(String, int)
+	 */
+	public int getWrappedLinesHeight(StringVisitable text, int maxWidth) {
 		return 9 * this.handler.wrapLines(text, maxWidth, Style.EMPTY).size();
 	}
 

@@ -57,7 +57,7 @@ public class ChatHud extends DrawableHelper {
 				matrices.push();
 				matrices.translate(4.0, 8.0, 0.0);
 				matrices.scale(f, f, 1.0F);
-				double d = this.client.options.getChtOpacity().getValue() * 0.9F + 0.1F;
+				double d = this.client.options.getChatOpacity().getValue() * 0.9F + 0.1F;
 				double e = this.client.options.getTextBackgroundOpacity().getValue();
 				double g = this.client.options.getChatLineSpacing().getValue();
 				double h = 9.0 * (g + 1.0);

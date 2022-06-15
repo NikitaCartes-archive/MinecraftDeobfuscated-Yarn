@@ -14,14 +14,14 @@ public interface DensityFunction {
 	Codec<RegistryEntry<DensityFunction>> REGISTRY_ENTRY_CODEC = RegistryElementCodec.of(Registry.DENSITY_FUNCTION_KEY, CODEC);
 	Codec<DensityFunction> FUNCTION_CODEC = REGISTRY_ENTRY_CODEC.xmap(
 		DensityFunctionTypes.RegistryEntryHolder::new,
-		densityFunction -> (RegistryEntry)(densityFunction instanceof DensityFunctionTypes.RegistryEntryHolder registryEntryHolder
+		function -> (RegistryEntry)(function instanceof DensityFunctionTypes.RegistryEntryHolder registryEntryHolder
 				? registryEntryHolder.function()
-				: new RegistryEntry.Direct<>(densityFunction))
+				: new RegistryEntry.Direct<>(function))
 	);
 
 	double sample(DensityFunction.NoisePos pos);
 
-	void method_40470(double[] ds, DensityFunction.class_6911 arg);
+	void applyEach(double[] densities, DensityFunction.EachApplier applier);
 
 	DensityFunction apply(DensityFunction.DensityFunctionVisitor visitor);
 
@@ -29,41 +29,76 @@ public interface DensityFunction {
 
 	double maxValue();
 
-	CodecHolder<? extends DensityFunction> getCodec();
+	CodecHolder<? extends DensityFunction> getCodecHolder();
 
 	default DensityFunction clamp(double min, double max) {
 		return new DensityFunctionTypes.Clamp(this, min, max);
 	}
 
 	default DensityFunction abs() {
-		return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.Type.ABS);
+		return DensityFunctionTypes.unary(this, DensityFunctionTypes.UnaryOperation.Type.ABS);
 	}
 
 	default DensityFunction square() {
-		return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.Type.SQUARE);
+		return DensityFunctionTypes.unary(this, DensityFunctionTypes.UnaryOperation.Type.SQUARE);
 	}
 
 	default DensityFunction cube() {
-		return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.Type.CUBE);
+		return DensityFunctionTypes.unary(this, DensityFunctionTypes.UnaryOperation.Type.CUBE);
 	}
 
 	default DensityFunction halfNegative() {
-		return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.Type.HALF_NEGATIVE);
+		return DensityFunctionTypes.unary(this, DensityFunctionTypes.UnaryOperation.Type.HALF_NEGATIVE);
 	}
 
 	default DensityFunction quarterNegative() {
-		return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.Type.QUARTER_NEGATIVE);
+		return DensityFunctionTypes.unary(this, DensityFunctionTypes.UnaryOperation.Type.QUARTER_NEGATIVE);
 	}
 
 	default DensityFunction squeeze() {
-		return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.Type.SQUEEZE);
+		return DensityFunctionTypes.unary(this, DensityFunctionTypes.UnaryOperation.Type.SQUEEZE);
+	}
+
+	public interface Base extends DensityFunction {
+		@Override
+		default void applyEach(double[] densities, DensityFunction.EachApplier applier) {
+			applier.applyEach(densities, this);
+		}
+
+		@Override
+		default DensityFunction apply(DensityFunction.DensityFunctionVisitor visitor) {
+			return visitor.apply(this);
+		}
 	}
 
 	public interface DensityFunctionVisitor {
 		DensityFunction apply(DensityFunction densityFunction);
 
-		default DensityFunction.class_7270 method_42358(DensityFunction.class_7270 arg) {
-			return arg;
+		default DensityFunction.Noise apply(DensityFunction.Noise noiseDensityFunction) {
+			return noiseDensityFunction;
+		}
+	}
+
+	public interface EachApplier {
+		DensityFunction.NoisePos getPosAt(int index);
+
+		void applyEach(double[] densities, DensityFunction densityFunction);
+	}
+
+	public static record Noise(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseData, @Nullable DoublePerlinNoiseSampler noise) {
+		public static final Codec<DensityFunction.Noise> CODEC = DoublePerlinNoiseSampler.NoiseParameters.REGISTRY_ENTRY_CODEC
+			.xmap(noiseData -> new DensityFunction.Noise(noiseData, null), DensityFunction.Noise::noiseData);
+
+		public Noise(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseData) {
+			this(noiseData, null);
+		}
+
+		public double sample(double x, double y, double z) {
+			return this.noise == null ? 0.0 : this.noise.sample(x, y, z);
+		}
+
+		public double getMaxValue() {
+			return this.noise == null ? 2.0 : this.noise.method_40554();
 		}
 	}
 
@@ -80,40 +115,5 @@ public interface DensityFunction {
 	}
 
 	public static record UnblendedNoisePos(int blockX, int blockY, int blockZ) implements DensityFunction.NoisePos {
-	}
-
-	public interface class_6911 {
-		DensityFunction.NoisePos method_40477(int i);
-
-		void method_40478(double[] ds, DensityFunction densityFunction);
-	}
-
-	public interface class_6913 extends DensityFunction {
-		@Override
-		default void method_40470(double[] ds, DensityFunction.class_6911 arg) {
-			arg.method_40478(ds, this);
-		}
-
-		@Override
-		default DensityFunction apply(DensityFunction.DensityFunctionVisitor visitor) {
-			return visitor.apply(this);
-		}
-	}
-
-	public static record class_7270(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseData, @Nullable DoublePerlinNoiseSampler noise) {
-		public static final Codec<DensityFunction.class_7270> field_38248 = DoublePerlinNoiseSampler.NoiseParameters.REGISTRY_ENTRY_CODEC
-			.xmap(registryEntry -> new DensityFunction.class_7270(registryEntry, null), DensityFunction.class_7270::noiseData);
-
-		public class_7270(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> registryEntry) {
-			this(registryEntry, null);
-		}
-
-		public double method_42356(double d, double e, double f) {
-			return this.noise == null ? 0.0 : this.noise.sample(d, e, f);
-		}
-
-		public double method_42355() {
-			return this.noise == null ? 2.0 : this.noise.method_40554();
-		}
 	}
 }
