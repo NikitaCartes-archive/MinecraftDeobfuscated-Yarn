@@ -55,7 +55,6 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntFunction;
-import java.util.function.LongSupplier;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
@@ -66,6 +65,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_7576;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.crash.CrashException;
@@ -84,7 +84,7 @@ public class Util {
 	private static final ExecutorService BOOTSTRAP_EXECUTOR = createWorker("Bootstrap");
 	private static final ExecutorService MAIN_WORKER_EXECUTOR = createWorker("Main");
 	private static final ExecutorService IO_WORKER_EXECUTOR = createIoWorker();
-	public static LongSupplier nanoTimeSupplier = System::nanoTime;
+	public static class_7576.class_7577 nanoTimeSupplier = System::nanoTime;
 	public static final Ticker TICKER = new Ticker() {
 		@Override
 		public long read() {

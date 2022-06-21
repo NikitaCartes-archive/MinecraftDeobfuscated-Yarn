@@ -10,7 +10,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ConfirmChatLinkScreen;
+import net.minecraft.client.gui.screen.ConfirmLinkScreen;
 import net.minecraft.client.gui.screen.NoticeScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -146,7 +146,7 @@ public class SocialInteractionsScreen extends Screen {
 		this.addSelectableChild(this.searchBox);
 		this.addSelectableChild(this.playerList);
 		this.blockingButton = this.addDrawableChild(
-			new ButtonWidget(n, m, l, 20, BLOCKING_TEXT, button -> this.client.setScreen(new ConfirmChatLinkScreen(confirmed -> {
+			new ButtonWidget(n, m, l, 20, BLOCKING_TEXT, button -> this.client.setScreen(new ConfirmLinkScreen(confirmed -> {
 					if (confirmed) {
 						Util.getOperatingSystem().open("https://aka.ms/javablocking");
 					}

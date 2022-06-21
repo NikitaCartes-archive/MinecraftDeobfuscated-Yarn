@@ -201,7 +201,7 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 					WorldTemplatePaginatedList worldTemplatePaginatedList = templateList;
 	
 					Either<WorldTemplatePaginatedList, String> either;
-					for(RealmsClient realmsClient = RealmsClient.createRealmsClient();
+					for(RealmsClient realmsClient = RealmsClient.method_44616();
 						worldTemplatePaginatedList != null;
 						worldTemplatePaginatedList = (WorldTemplatePaginatedList)RealmsSelectWorldTemplateScreen.this.client
 							.submit(

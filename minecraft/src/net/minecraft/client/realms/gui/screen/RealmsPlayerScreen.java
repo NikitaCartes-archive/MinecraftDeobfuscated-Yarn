@@ -141,7 +141,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 
 	void op(int index) {
 		this.updateButtonStates();
-		RealmsClient realmsClient = RealmsClient.createRealmsClient();
+		RealmsClient realmsClient = RealmsClient.method_44616();
 		String string = ((PlayerInfo)this.serverData.players.get(index)).getUuid();
 
 		try {
@@ -153,7 +153,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 
 	void deop(int index) {
 		this.updateButtonStates();
-		RealmsClient realmsClient = RealmsClient.createRealmsClient();
+		RealmsClient realmsClient = RealmsClient.method_44616();
 		String string = ((PlayerInfo)this.serverData.players.get(index)).getUuid();
 
 		try {
@@ -177,7 +177,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 			this.selectedInvitedIndex = index;
 			RealmsConfirmScreen realmsConfirmScreen = new RealmsConfirmScreen(confirmed -> {
 				if (confirmed) {
-					RealmsClient realmsClient = RealmsClient.createRealmsClient();
+					RealmsClient realmsClient = RealmsClient.method_44616();
 
 					try {
 						realmsClient.uninvite(this.serverData.id, this.selectedInvited);

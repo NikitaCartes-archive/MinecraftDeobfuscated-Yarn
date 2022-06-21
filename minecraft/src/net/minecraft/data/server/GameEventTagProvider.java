@@ -1,12 +1,14 @@
 package net.minecraft.data.server;
 
+import com.google.common.annotations.VisibleForTesting;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.tag.GameEventTags;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.event.GameEvent;
 
 public class GameEventTagProvider extends AbstractTagProvider<GameEvent> {
-	private static final GameEvent[] field_38363 = new GameEvent[]{
+	@VisibleForTesting
+	static final GameEvent[] field_38363 = new GameEvent[]{
 		GameEvent.BLOCK_ATTACH,
 		GameEvent.BLOCK_CHANGE,
 		GameEvent.BLOCK_CLOSE,
@@ -35,8 +37,6 @@ public class GameEventTagProvider extends AbstractTagProvider<GameEvent> {
 		GameEvent.HIT_GROUND,
 		GameEvent.INSTRUMENT_PLAY,
 		GameEvent.ITEM_INTERACT_FINISH,
-		GameEvent.JUKEBOX_PLAY,
-		GameEvent.JUKEBOX_STOP_PLAY,
 		GameEvent.LIGHTNING_STRIKE,
 		GameEvent.NOTE_BLOCK_PLAY,
 		GameEvent.PISTON_CONTRACT,

@@ -3,20 +3,23 @@ package net.minecraft.client.realms.gui.screen;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.text.Text;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.gen.WorldPreset;
+import net.minecraft.world.gen.WorldPresets;
 
 @Environment(EnvType.CLIENT)
 public enum RealmsWorldGeneratorType {
-	DEFAULT(0, Text.translatable("generator.default")),
-	FLAT(1, Text.translatable("generator.flat")),
-	LARGE_BIOMES(2, Text.translatable("generator.large_biomes")),
-	AMPLIFIED(3, Text.translatable("generator.amplified"));
+	DEFAULT(0, WorldPresets.DEFAULT),
+	FLAT(1, WorldPresets.FLAT),
+	LARGE_BIOMES(2, WorldPresets.LARGE_BIOMES),
+	AMPLIFIED(3, WorldPresets.AMPLIFIED);
 
 	private final int id;
 	private final Text text;
 
-	private RealmsWorldGeneratorType(int id, Text text) {
+	private RealmsWorldGeneratorType(int id, RegistryKey<WorldPreset> registryKey) {
 		this.id = id;
-		this.text = text;
+		this.text = Text.translatable(registryKey.getValue().toTranslationKey("generator"));
 	}
 
 	public Text getText() {

@@ -33,6 +33,7 @@ import net.minecraft.util.math.ColorHelper;
 
 @Environment(EnvType.CLIENT)
 public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
+	private static final Identifier REPORT_BUTTON_TEXTURE = new Identifier("textures/gui/report_button.png");
 	private static final int field_32418 = 10;
 	private static final int field_32419 = 150;
 	private final MinecraftClient client;
@@ -59,6 +60,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 	private static final Text OFFLINE_TEXT = Text.translatable("gui.socialInteractions.status_offline").formatted(Formatting.ITALIC);
 	private static final Text HIDDEN_OFFLINE_TEXT = Text.translatable("gui.socialInteractions.status_hidden_offline").formatted(Formatting.ITALIC);
 	private static final Text BLOCKED_OFFLINE_TEXT = Text.translatable("gui.socialInteractions.status_blocked_offline").formatted(Formatting.ITALIC);
+	private static final Text REPORT_DISABLED_TEXT = Text.translatable("gui.socialInteractions.tooltip.report.disabled");
 	private static final int field_32420 = 24;
 	private static final int field_32421 = 4;
 	private static final int field_32422 = 20;
@@ -75,28 +77,34 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 		this.uuid = uuid;
 		this.name = name;
 		this.skinTexture = skinTexture;
+		AbuseReporter abuseReporter = client.getAbuseReporter();
+		boolean bl = abuseReporter.sender().canSendReports();
 		this.hideText = Text.translatable("gui.socialInteractions.tooltip.hide", name);
 		this.showText = Text.translatable("gui.socialInteractions.tooltip.show", name);
-		this.reportText = Text.translatable("gui.socialInteractions.tooltip.report", name);
+		if (bl) {
+			this.reportText = Text.translatable("gui.socialInteractions.tooltip.report", name);
+		} else {
+			this.reportText = REPORT_DISABLED_TEXT;
+		}
+
 		this.hideTooltip = client.textRenderer.wrapLines(this.hideText, 150);
 		this.showTooltip = client.textRenderer.wrapLines(this.showText, 150);
 		this.reportTooltip = client.textRenderer.wrapLines(this.reportText, 150);
 		SocialInteractionsManager socialInteractionsManager = client.getSocialInteractionsManager();
-		boolean bl = client.getChatRestriction().allowsChat(client.isInSingleplayer());
-		boolean bl2 = !client.player.getUuid().equals(uuid);
-		if (bl2 && bl && !socialInteractionsManager.isPlayerBlocked(uuid)) {
-			AbuseReporter abuseReporter = client.getAbuseReporter();
+		boolean bl2 = client.getChatRestriction().allowsChat(client.isInSingleplayer());
+		boolean bl3 = !client.player.getUuid().equals(uuid);
+		if (bl3 && bl2 && !socialInteractionsManager.isPlayerBlocked(uuid)) {
 			this.reportButton = new TexturedButtonWidget(
 				0,
 				0,
 				20,
 				20,
-				40,
-				38,
+				0,
+				0,
 				20,
-				SocialInteractionsScreen.SOCIAL_INTERACTIONS_TEXTURE,
-				256,
-				256,
+				REPORT_BUTTON_TEXTURE,
+				64,
+				64,
 				button -> client.setScreen(new ChatReportScreen(client.currentScreen, abuseReporter, uuid)),
 				new ButtonWidget.TooltipSupplier() {
 					@Override
@@ -199,7 +207,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 			};
 			this.showButton.visible = socialInteractionsManager.isPlayerHidden(uuid);
 			this.hideButton.visible = !this.showButton.visible;
-			this.reportButton.active = abuseReporter.sender().canSendReports();
+			this.reportButton.active = bl;
 			this.buttons = ImmutableList.of(this.hideButton, this.showButton, this.reportButton);
 		} else {
 			this.buttons = ImmutableList.of();

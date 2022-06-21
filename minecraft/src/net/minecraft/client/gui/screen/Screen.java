@@ -328,7 +328,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 
 						if (this.client.options.getChatLinksPrompt().getValue()) {
 							this.clickedLink = uRI;
-							this.client.setScreen(new ConfirmChatLinkScreen(this::confirmLink, clickEvent.getValue(), false));
+							this.client.setScreen(new ConfirmLinkScreen(this::confirmLink, clickEvent.getValue(), false));
 						} else {
 							this.openLink(uRI);
 						}

@@ -35,7 +35,7 @@ public class EditBoxWidget extends ScrollableWidget {
 	private static final int UNFOCUSED_BOX_TEXT_COLOR = -857677600;
 	private final TextRenderer textRenderer;
 	/**
-	 * The placehodler text that gets rendered when the edit box is empty. This does not
+	 * The placeholder text that gets rendered when the edit box is empty. This does not
 	 * get returned from {@link #getText}; an empty string will be returned in such cases.
 	 */
 	private final Text placeholder;
@@ -212,8 +212,8 @@ public class EditBoxWidget extends ScrollableWidget {
 		super.renderOverlay(matrices);
 		if (this.editBox.hasMaxLength()) {
 			int i = this.editBox.getMaxLength();
-			String string = this.editBox.getText().length() + "/" + i;
-			drawStringWithShadow(matrices, this.textRenderer, string, this.x + this.width - this.textRenderer.getWidth(string), this.y + this.height + 4, 10526880);
+			Text text = Text.translatable("gui.multiLineEditBox.character_limit", this.editBox.getText().length(), i);
+			drawTextWithShadow(matrices, this.textRenderer, text, this.x + this.width - this.textRenderer.getWidth(text), this.y + this.height + 4, 10526880);
 		}
 	}
 

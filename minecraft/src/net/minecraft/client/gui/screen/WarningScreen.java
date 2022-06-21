@@ -5,13 +5,11 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.widget.CheckboxWidget;
-import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public abstract class WarningScreen extends Screen {
-	private final Text header;
 	private final Text message;
 	@Nullable
 	private final Text checkMessage;
@@ -20,13 +18,12 @@ public abstract class WarningScreen extends Screen {
 	protected CheckboxWidget checkbox;
 	private MultilineText messageText = MultilineText.EMPTY;
 
-	protected WarningScreen(Text text, Text text2, Text text3) {
-		this(text, text2, null, text3);
+	protected WarningScreen(Text header, Text message, Text narratedText) {
+		this(header, message, null, narratedText);
 	}
 
 	protected WarningScreen(Text header, Text message, @Nullable Text checkMessage, Text narratedText) {
-		super(NarratorManager.EMPTY);
-		this.header = header;
+		super(header);
 		this.message = message;
 		this.checkMessage = checkMessage;
 		this.narratedText = narratedText;
@@ -56,10 +53,14 @@ public abstract class WarningScreen extends Screen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		drawTextWithShadow(matrices, this.textRenderer, this.header, 25, 30, 16777215);
+		this.drawTitle(matrices);
 		int i = this.width / 2 - this.messageText.getMaxWidth() / 2;
 		this.messageText.drawWithShadow(matrices, i, 70, this.getLineHeight(), 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
+	}
+
+	protected void drawTitle(MatrixStack matrices) {
+		drawTextWithShadow(matrices, this.textRenderer, this.title, 25, 30, 16777215);
 	}
 
 	protected int getLineHeight() {

@@ -12,6 +12,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.gui.screen.Screen;
@@ -29,6 +30,7 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
 import net.minecraft.util.dynamic.DynamicSerializableUuid;
@@ -37,10 +39,13 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class ChatSelectionScreen extends Screen {
+	private static final Text TITLE = Text.translatable("gui.chatSelection.title");
+	private static final Text CONTEXT_MESSAGE = Text.translatable("gui.chatSelection.context").formatted(Formatting.GRAY);
 	@Nullable
 	private final Screen parent;
 	private final AbuseReporter reporter;
 	private ButtonWidget doneButton;
+	private MultilineText contextMessage;
 	@Nullable
 	private ChatSelectionScreen.SelectionListWidget selectionList;
 	final ChatAbuseReport report;
@@ -50,7 +55,7 @@ public class ChatSelectionScreen extends Screen {
 	private List<OrderedText> tooltip;
 
 	public ChatSelectionScreen(@Nullable Screen parent, AbuseReporter reporter, ChatAbuseReport report, Consumer<ChatAbuseReport> newReportConsumer) {
-		super(Text.translatable("gui.chatSelection.title"));
+		super(TITLE);
 		this.parent = parent;
 		this.reporter = reporter;
 		this.report = report.copy();
@@ -60,7 +65,8 @@ public class ChatSelectionScreen extends Screen {
 	@Override
 	protected void init() {
 		this.listAdder = new MessagesListAdder(this.reporter.chatLog(), this::isSentByReportedPlayer);
-		this.selectionList = new ChatSelectionScreen.SelectionListWidget(this.client);
+		this.contextMessage = MultilineText.create(this.textRenderer, CONTEXT_MESSAGE, this.width - 16);
+		this.selectionList = new ChatSelectionScreen.SelectionListWidget(this.client, (this.contextMessage.count() + 1) * 9);
 		this.selectionList.setRenderBackground(false);
 		this.addSelectableChild(this.selectionList);
 		this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 32, 150, 20, ScreenTexts.BACK, button -> this.close()));
@@ -100,6 +106,7 @@ public class ChatSelectionScreen extends Screen {
 		int j = abuseReportLimits.maxReportedMessageCount();
 		Text text = Text.translatable("gui.chatSelection.selected", i, j);
 		drawCenteredText(matrices, this.textRenderer, text, this.width / 2, 16 + 9 * 3 / 2, 10526880);
+		this.contextMessage.drawCenterWithShadow(matrices, this.width / 2, this.selectionList.getContextMessageY());
 		super.render(matrices, mouseX, mouseY, delta);
 		if (this.tooltip != null) {
 			this.renderOrderedTooltip(matrices, this.tooltip, mouseX, mouseY);
@@ -110,6 +117,11 @@ public class ChatSelectionScreen extends Screen {
 	@Override
 	public void close() {
 		this.client.setScreen(this.parent);
+	}
+
+	@Override
+	public Text getNarratedTitle() {
+		return ScreenTexts.joinSentences(super.getNarratedTitle(), CONTEXT_MESSAGE);
 	}
 
 	void setTooltip(@Nullable List<OrderedText> tooltip) {
@@ -123,8 +135,8 @@ public class ChatSelectionScreen extends Screen {
 		@Nullable
 		private ChatSelectionScreen.SelectionListWidget.SenderEntryPair lastSenderEntryPair;
 
-		public SelectionListWidget(MinecraftClient client) {
-			super(client, ChatSelectionScreen.this.width, ChatSelectionScreen.this.height, 40, ChatSelectionScreen.this.height - 40, 16);
+		public SelectionListWidget(MinecraftClient client, int contextMessagesHeight) {
+			super(client, ChatSelectionScreen.this.width, ChatSelectionScreen.this.height, 40, ChatSelectionScreen.this.height - 40 - contextMessagesHeight, 16);
 		}
 
 		@Override
@@ -164,7 +176,7 @@ public class ChatSelectionScreen extends Screen {
 				message.getSenderUuid(), entry
 			);
 			if (this.lastSenderEntryPair != null && this.lastSenderEntryPair.senderEquals(senderEntryPair)) {
-				this.removeEntry(this.lastSenderEntryPair.entry());
+				this.removeEntryWithoutScrolling(this.lastSenderEntryPair.entry());
 			}
 
 			this.lastSenderEntryPair = senderEntryPair;
@@ -224,6 +236,10 @@ public class ChatSelectionScreen extends Screen {
 			return entry != null && entry.keyPressed(keyCode, scanCode, modifiers) ? true : super.keyPressed(keyCode, scanCode, modifiers);
 		}
 
+		public int getContextMessageY() {
+			return this.bottom + 9;
+		}
+
 		@Environment(EnvType.CLIENT)
 		public abstract class Entry extends AlwaysSelectedEntryListWidget.Entry<ChatSelectionScreen.SelectionListWidget.Entry> {
 			@Override
@@ -254,7 +270,7 @@ public class ChatSelectionScreen extends Screen {
 			public MessageEntry(int index, Text content, Text narration, boolean fromReportedPlayer, boolean isChatMessage) {
 				this.index = index;
 				StringVisitable stringVisitable = ChatSelectionScreen.this.textRenderer
-					.trimToWidth(content, SelectionListWidget.this.getRowWidth() - ChatSelectionScreen.this.textRenderer.getWidth(ScreenTexts.ELLIPSIS));
+					.trimToWidth(content, this.getTextWidth() - ChatSelectionScreen.this.textRenderer.getWidth(ScreenTexts.ELLIPSIS));
 				if (content != stringVisitable) {
 					this.truncatedContent = StringVisitable.concat(stringVisitable, ScreenTexts.ELLIPSIS);
 					this.fullContent = ChatSelectionScreen.this.textRenderer.wrapLines(content, SelectionListWidget.this.getRowWidth());
@@ -274,7 +290,7 @@ public class ChatSelectionScreen extends Screen {
 					DrawableHelper.fill(matrices, x - 1, y - 1, x + entryWidth - 3, y + entryHeight + 1, -16777216);
 				}
 
-				int i = this.isChatMessage ? x + 8 : x;
+				int i = x + this.getIndent();
 				int j = y + 1 + (entryHeight - 9) / 2;
 				DrawableHelper.drawWithShadow(
 					matrices, ChatSelectionScreen.this.textRenderer, Language.getInstance().reorder(this.truncatedContent), i, j, this.fromReportedPlayer ? -1 : -1593835521
@@ -282,6 +298,14 @@ public class ChatSelectionScreen extends Screen {
 				if (this.fullContent != null && hovered) {
 					ChatSelectionScreen.this.setTooltip(this.fullContent);
 				}
+			}
+
+			private int getTextWidth() {
+				return SelectionListWidget.this.getRowWidth() - this.getIndent();
+			}
+
+			private int getIndent() {
+				return this.isChatMessage ? 8 : 0;
 			}
 
 			@Override
