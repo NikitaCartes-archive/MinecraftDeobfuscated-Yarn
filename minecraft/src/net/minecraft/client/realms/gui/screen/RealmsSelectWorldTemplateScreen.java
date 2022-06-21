@@ -199,7 +199,7 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 		(new Thread("realms-template-fetcher") {
 				public void run() {
 					WorldTemplatePaginatedList worldTemplatePaginatedList = templateList;
-					RealmsClient realmsClient = RealmsClient.createRealmsClient();
+					RealmsClient realmsClient = RealmsClient.method_44616();
 
 					while (worldTemplatePaginatedList != null) {
 						Either<WorldTemplatePaginatedList, String> either = RealmsSelectWorldTemplateScreen.this.fetchWorldTemplates(worldTemplatePaginatedList, realmsClient);

@@ -49,7 +49,7 @@ public class Realms32BitWarningChecker {
 
 	private boolean isSubscribedInternal() {
 		try {
-			return RealmsClient.createRealmsClient()
+			return RealmsClient.createRealmsClient(this.client)
 				.listWorlds()
 				.servers
 				.stream()

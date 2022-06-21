@@ -2,7 +2,7 @@ package net.minecraft.client.gui.screen.option;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screen.ConfirmChatLinkScreen;
+import net.minecraft.client.gui.screen.ConfirmLinkScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.option.GameOptions;
@@ -48,7 +48,7 @@ public class AccessibilityOptionsScreen extends SimpleOptionsScreen {
 				150,
 				20,
 				Text.translatable("options.accessibility.link"),
-				button -> this.client.setScreen(new ConfirmChatLinkScreen(openInBrowser -> {
+				button -> this.client.setScreen(new ConfirmLinkScreen(openInBrowser -> {
 						if (openInBrowser) {
 							Util.getOperatingSystem().open("https://aka.ms/MinecraftJavaAccessibility");
 						}

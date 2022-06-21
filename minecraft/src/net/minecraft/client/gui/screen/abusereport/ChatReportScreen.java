@@ -268,26 +268,20 @@ public class ChatReportScreen extends Screen {
 
 	@Environment(EnvType.CLIENT)
 	class DiscardWarningScreen extends WarningScreen {
+		private static final Text TITLE = Text.translatable("gui.chatReport.discard.title").formatted(Formatting.BOLD);
+		private static final Text MESSAGE = Text.translatable("gui.chatReport.discard.content");
+		private static final Text RETURN_BUTTON_TEXT = Text.translatable("gui.chatReport.discard.return");
+		private static final Text DISCARD_BUTTON_TEXT = Text.translatable("gui.chatReport.discard.discard");
+
 		protected DiscardWarningScreen() {
-			super(
-				Text.translatable("gui.chatReport.discard.title"), Text.translatable("gui.chatReport.discard.content"), Text.translatable("gui.chatReport.discard.content")
-			);
+			super(TITLE, MESSAGE, MESSAGE);
 		}
 
 		@Override
 		protected void initButtons(int yOffset) {
+			this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, 100 + yOffset, 150, 20, RETURN_BUTTON_TEXT, button -> this.close()));
 			this.addDrawableChild(
-				new ButtonWidget(this.width / 2 - 155, 100 + yOffset, 150, 20, Text.translatable("gui.chatReport.discard.return"), button -> this.close())
-			);
-			this.addDrawableChild(
-				new ButtonWidget(
-					this.width / 2 + 5,
-					100 + yOffset,
-					150,
-					20,
-					Text.translatable("gui.chatReport.discard.discard"),
-					button -> this.client.setScreen(ChatReportScreen.this.parent)
-				)
+				new ButtonWidget(this.width / 2 + 5, 100 + yOffset, 150, 20, DISCARD_BUTTON_TEXT, button -> this.client.setScreen(ChatReportScreen.this.parent))
 			);
 		}
 
@@ -299,6 +293,11 @@ public class ChatReportScreen extends Screen {
 		@Override
 		public boolean shouldCloseOnEsc() {
 			return false;
+		}
+
+		@Override
+		protected void drawTitle(MatrixStack matrices) {
+			drawTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2 - 155, 30, 16777215);
 		}
 	}
 

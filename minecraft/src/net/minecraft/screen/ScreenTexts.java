@@ -16,10 +16,23 @@ public class ScreenTexts {
 	public static final Text NO = Text.translatable("gui.no");
 	public static final Text PROCEED = Text.translatable("gui.proceed");
 	public static final Text BACK = Text.translatable("gui.back");
+	public static final Text ACKNOWLEDGE = Text.translatable("gui.acknowledge");
 	public static final Text CONNECT_FAILED = Text.translatable("connect.failed");
 	public static final Text LINE_BREAK = Text.literal("\n");
 	public static final Text SENTENCE_SEPARATOR = Text.literal(". ");
 	public static final Text ELLIPSIS = Text.literal("...");
+
+	public static MutableText days(long days) {
+		return Text.translatable("gui.days", days);
+	}
+
+	public static MutableText hours(long hours) {
+		return Text.translatable("gui.hours", hours);
+	}
+
+	public static MutableText minutes(long minutes) {
+		return Text.translatable("gui.minutes", minutes);
+	}
 
 	public static Text onOrOff(boolean on) {
 		return on ? ON : OFF;

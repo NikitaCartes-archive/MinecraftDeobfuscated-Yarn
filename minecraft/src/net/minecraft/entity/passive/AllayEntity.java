@@ -12,6 +12,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.InventoryOwner;
@@ -77,7 +78,8 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 	private static final float field_39463 = 15.0F;
 	private static final float field_39451 = 0.5F;
 	private static final Ingredient DUPLICATION_INGREDIENT = Ingredient.ofItems(Items.AMETHYST_SHARD);
-	private static final int field_39465 = 2400;
+	private static final int DUPLICATION_COOLDOWN = 6000;
+	private static final int field_39679 = 3;
 	private static final TrackedData<Boolean> DANCING = DataTracker.registerData(AllayEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> CAN_DUPLICATE = DataTracker.registerData(AllayEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	protected static final ImmutableList<SensorType<? extends Sensor<? super AllayEntity>>> SENSORS = ImmutableList.of(
@@ -112,7 +114,6 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 	private float field_39472;
 	private float field_39473;
 	private float field_39474;
-	private int queuedHeartParticles;
 
 	public AllayEntity(EntityType<? extends AllayEntity> entityType, World world) {
 		super(entityType, world);
@@ -258,14 +259,6 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 			this.jukeboxPos = null;
 		}
 
-		if (this.queuedHeartParticles > 0) {
-			this.queuedHeartParticles--;
-			double d = this.random.nextGaussian() * 0.02;
-			double e = this.random.nextGaussian() * 0.02;
-			double f = this.random.nextGaussian() * 0.02;
-			this.world.addParticle(ParticleTypes.HEART, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), d, e, f);
-		}
-
 		this.tickDuplicationCooldown();
 	}
 
@@ -324,7 +317,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 		ItemStack itemStack2 = this.getStackInHand(Hand.MAIN_HAND);
 		if (this.isDancing() && this.matchesDuplicationIngredient(itemStack) && this.canDuplicate()) {
 			this.duplicate();
-			this.queuedHeartParticles = 3;
+			this.world.sendEntityStatus(this, EntityStatuses.ADD_BREEDING_PARTICLES);
 			this.world.playSoundFromEntity(player, this, SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, SoundCategory.NEUTRAL, 2.0F, 1.0F);
 			this.decrementStackUnlessInCreative(player, itemStack);
 			return ActionResult.SUCCESS;
@@ -497,9 +490,10 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 	private void tickDuplicationCooldown() {
 		if (this.duplicationCooldown > 0L) {
 			this.duplicationCooldown--;
-			if (this.duplicationCooldown == 0L) {
-				this.dataTracker.set(CAN_DUPLICATE, true);
-			}
+		}
+
+		if (!this.world.isClient() && this.duplicationCooldown == 0L && !this.canDuplicate()) {
+			this.dataTracker.set(CAN_DUPLICATE, true);
 		}
 	}
 
@@ -519,7 +513,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 	}
 
 	private void startDuplicationCooldown() {
-		this.duplicationCooldown = 2400L;
+		this.duplicationCooldown = 6000L;
 		this.dataTracker.set(CAN_DUPLICATE, false);
 	}
 
@@ -536,6 +530,24 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 	@Override
 	public Vec3d getLeashOffset() {
 		return new Vec3d(0.0, (double)this.getStandingEyeHeight() * 0.6, (double)this.getWidth() * 0.1);
+	}
+
+	@Override
+	public void handleStatus(byte status) {
+		if (status == EntityStatuses.ADD_BREEDING_PARTICLES) {
+			for (int i = 0; i < 3; i++) {
+				this.addHeartParticle();
+			}
+		} else {
+			super.handleStatus(status);
+		}
+	}
+
+	private void addHeartParticle() {
+		double d = this.random.nextGaussian() * 0.02;
+		double e = this.random.nextGaussian() * 0.02;
+		double f = this.random.nextGaussian() * 0.02;
+		this.world.addParticle(ParticleTypes.HEART, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), d, e, f);
 	}
 
 	class JukeboxEventListener implements GameEventListener {

@@ -134,6 +134,13 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		this.setScrollAmount((double)this.getMaxScroll() - d);
 	}
 
+	protected boolean removeEntryWithoutScrolling(E entry) {
+		double d = (double)this.getMaxScroll() - this.getScrollAmount();
+		boolean bl = this.removeEntry(entry);
+		this.setScrollAmount((double)this.getMaxScroll() - d);
+		return bl;
+	}
+
 	protected int getEntryCount() {
 		return this.children().size();
 	}

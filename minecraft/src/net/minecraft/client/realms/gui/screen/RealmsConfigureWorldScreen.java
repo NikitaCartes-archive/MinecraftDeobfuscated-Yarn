@@ -295,7 +295,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 
 	private void fetchServerData(long worldId) {
 		new Thread(() -> {
-			RealmsClient realmsClient = RealmsClient.createRealmsClient();
+			RealmsClient realmsClient = RealmsClient.method_44616();
 
 			try {
 				RealmsServer realmsServer = realmsClient.getOwnWorld(worldId);
@@ -502,7 +502,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 		RealmsWorldOptions realmsWorldOptions = (RealmsWorldOptions)this.server.slots.get(this.server.activeSlot);
 		options.templateId = realmsWorldOptions.templateId;
 		options.templateImage = realmsWorldOptions.templateImage;
-		RealmsClient realmsClient = RealmsClient.createRealmsClient();
+		RealmsClient realmsClient = RealmsClient.method_44616();
 
 		try {
 			realmsClient.updateSlot(this.server.id, this.server.activeSlot, options);
@@ -518,7 +518,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 
 	public void saveSettings(String name, String desc) {
 		String string = desc.trim().isEmpty() ? null : desc;
-		RealmsClient realmsClient = RealmsClient.createRealmsClient();
+		RealmsClient realmsClient = RealmsClient.method_44616();
 
 		try {
 			realmsClient.update(this.server.id, name, string);

@@ -60,7 +60,7 @@ public class RealmsInviteScreen extends RealmsScreen {
 	}
 
 	private void onInvite() {
-		RealmsClient realmsClient = RealmsClient.createRealmsClient();
+		RealmsClient realmsClient = RealmsClient.method_44616();
 		if (this.nameWidget.getText() != null && !this.nameWidget.getText().isEmpty()) {
 			try {
 				RealmsServer realmsServer = realmsClient.invite(this.serverData.id, this.nameWidget.getText().trim());

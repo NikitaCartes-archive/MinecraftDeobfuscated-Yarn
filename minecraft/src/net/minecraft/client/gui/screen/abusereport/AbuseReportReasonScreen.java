@@ -6,20 +6,32 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.screen.ConfirmLinkScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.PressableTextWidget;
 import net.minecraft.client.network.abusereport.AbuseReportReason;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class AbuseReportReasonScreen extends Screen {
+	private static final String COMMUNITY_STANDARDS_URL = "https://aka.ms/mccommunitystandards";
 	private static final Text TITLE_TEXT = Text.translatable("gui.abuseReport.reason.title");
 	private static final Text DESCRIPTION_TEXT = Text.translatable("gui.abuseReport.reason.description");
-	private static final int REASON_LIST_BOTTOM_MARGIN = 80;
+	private static final Text STANDARDS_TEXT = Text.translatable(
+			"gui.chatReport.standards", Text.translatable("gui.chatReport.standards_name").formatted(Formatting.UNDERLINE)
+		)
+		.formatted(Formatting.GRAY);
+	private static final int REASON_LIST_BOTTOM_MARGIN = 85;
+	private static final int DONE_BUTTON_WIDTH = 150;
+	private static final int DONE_BUTTON_HEIGHT = 20;
+	private static final int SCREEN_WIDTH = 320;
+	private static final int TOP_MARGIN = 4;
 	@Nullable
 	private final Screen parent;
 	@Nullable
@@ -37,12 +49,21 @@ public class AbuseReportReasonScreen extends Screen {
 
 	@Override
 	protected void init() {
+		int i = this.textRenderer.getWidth(STANDARDS_TEXT);
+		int j = (this.width - i) / 2;
+		this.addDrawableChild(new PressableTextWidget(j, 16 + 9 * 3 / 2, i, 9, STANDARDS_TEXT, button -> this.client.setScreen(new ConfirmLinkScreen(confirmed -> {
+				if (confirmed) {
+					Util.getOperatingSystem().open("https://aka.ms/mccommunitystandards");
+				}
+
+				this.client.setScreen(this);
+			}, "https://aka.ms/mccommunitystandards", true)), this.textRenderer));
 		this.reasonList = new AbuseReportReasonScreen.ReasonListWidget(this.client);
 		this.reasonList.setRenderBackground(false);
 		this.addSelectableChild(this.reasonList);
 		AbuseReportReasonScreen.ReasonListWidget.ReasonEntry reasonEntry = Util.map(this.reason, this.reasonList::getEntry);
 		this.reasonList.setSelected(reasonEntry);
-		this.addDrawableChild(new ButtonWidget(this.width / 2 - 155 + 160, this.height - 32, 150, 20, ScreenTexts.DONE, buttonWidget -> {
+		this.addDrawableChild(new ButtonWidget(this.getDoneButtonX(), this.getDoneButtonY(), 150, 20, ScreenTexts.DONE, button -> {
 			AbuseReportReasonScreen.ReasonListWidget.ReasonEntry reasonEntryx = this.reasonList.getSelectedOrNull();
 			if (reasonEntryx != null) {
 				this.reasonConsumer.accept(reasonEntryx.getReason());
@@ -59,18 +80,43 @@ public class AbuseReportReasonScreen extends Screen {
 		this.reasonList.render(matrices, mouseX, mouseY, delta);
 		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 16, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
-		int i = this.height - 80;
-		int j = this.height - 35;
-		int k = this.width / 2 - 160;
-		int l = this.width / 2 + 160;
-		fill(matrices, k, i, l, j, 2130706432);
-		drawTextWithShadow(matrices, this.textRenderer, DESCRIPTION_TEXT, k + 2, i + 2, -8421505);
+		fill(matrices, this.getLeft(), this.getTop(), this.getRight(), this.getBottom(), 2130706432);
+		drawTextWithShadow(matrices, this.textRenderer, DESCRIPTION_TEXT, this.getLeft() + 4, this.getTop() + 4, -8421505);
 		AbuseReportReasonScreen.ReasonListWidget.ReasonEntry reasonEntry = this.reasonList.getSelectedOrNull();
 		if (reasonEntry != null) {
-			int m = this.textRenderer.getWrappedLinesHeight(reasonEntry.reason.getDescription(), 280);
-			int n = j - i + 10;
-			this.textRenderer.drawTrimmed(reasonEntry.reason.getDescription(), k + 20, i + (n - m) / 2, l - k - 40, -1);
+			int i = this.getLeft() + 4 + 16;
+			int j = this.getRight() - 4;
+			int k = this.getTop() + 4 + 9 + 2;
+			int l = this.getBottom() - 4;
+			int m = j - i;
+			int n = l - k;
+			int o = this.textRenderer.getWrappedLinesHeight(reasonEntry.reason.getDescription(), m);
+			this.textRenderer.drawTrimmed(reasonEntry.reason.getDescription(), i, k + (n - o) / 2, m, -1);
 		}
+	}
+
+	private int getDoneButtonX() {
+		return this.getRight() - 150;
+	}
+
+	private int getDoneButtonY() {
+		return this.height - 20 - 4;
+	}
+
+	private int getLeft() {
+		return (this.width - 320) / 2;
+	}
+
+	private int getRight() {
+		return (this.width + 320) / 2;
+	}
+
+	private int getTop() {
+		return this.height - 85 + 4;
+	}
+
+	private int getBottom() {
+		return this.getDoneButtonY() - 4;
 	}
 
 	@Override
@@ -81,7 +127,7 @@ public class AbuseReportReasonScreen extends Screen {
 	@Environment(EnvType.CLIENT)
 	public class ReasonListWidget extends AlwaysSelectedEntryListWidget<AbuseReportReasonScreen.ReasonListWidget.ReasonEntry> {
 		public ReasonListWidget(MinecraftClient client) {
-			super(client, AbuseReportReasonScreen.this.width, AbuseReportReasonScreen.this.height, 40, AbuseReportReasonScreen.this.height - 80, 18);
+			super(client, AbuseReportReasonScreen.this.width, AbuseReportReasonScreen.this.height, 40, AbuseReportReasonScreen.this.height - 85, 18);
 
 			for (AbuseReportReason abuseReportReason : AbuseReportReason.values()) {
 				this.addEntry(new AbuseReportReasonScreen.ReasonListWidget.ReasonEntry(abuseReportReason));
@@ -95,7 +141,12 @@ public class AbuseReportReasonScreen extends Screen {
 
 		@Override
 		public int getRowWidth() {
-			return 280;
+			return 320;
+		}
+
+		@Override
+		protected int getScrollbarPositionX() {
+			return this.getRowRight() - 2;
 		}
 
 		@Environment(EnvType.CLIENT)
@@ -108,7 +159,9 @@ public class AbuseReportReasonScreen extends Screen {
 
 			@Override
 			public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-				DrawableHelper.drawTextWithShadow(matrices, AbuseReportReasonScreen.this.textRenderer, this.reason.getText(), x, y + 1, -1);
+				int i = x + 1;
+				int j = y + (entryHeight - 9) / 2 + 1;
+				DrawableHelper.drawTextWithShadow(matrices, AbuseReportReasonScreen.this.textRenderer, this.reason.getText(), i, j, -1);
 			}
 
 			@Override

@@ -11,16 +11,13 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.function.Supplier;
+import java.util.concurrent.CompletionException;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -75,10 +72,11 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 	static final Text SNAPSHOT_SECOND_LINE = Text.translatable("selectWorld.tooltip.snapshot2").formatted(Formatting.GOLD);
 	static final Text LOCKED_TEXT = Text.translatable("selectWorld.locked").formatted(Formatting.RED);
 	static final Text CONVERSION_TOOLTIP = Text.translatable("selectWorld.conversion.tooltip").formatted(Formatting.RED);
-	private static final Duration TIMEOUT = Duration.ofMillis(100L);
 	private final SelectWorldScreen parent;
-	@Nullable
 	private CompletableFuture<List<LevelSummary>> levelsFuture;
+	@Nullable
+	private List<LevelSummary> levels;
+	private String search;
 	private final WorldListWidget.LoadingEntry loadingEntry;
 
 	public WorldListWidget(
@@ -89,42 +87,61 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		int top,
 		int bottom,
 		int itemHeight,
-		Supplier<String> searchFilter,
+		String search,
 		@Nullable WorldListWidget oldWidget
 	) {
 		super(client, width, height, top, bottom, itemHeight);
 		this.parent = parent;
 		this.loadingEntry = new WorldListWidget.LoadingEntry(client);
+		this.search = search;
 		if (oldWidget != null) {
 			this.levelsFuture = oldWidget.levelsFuture;
-			this.filter((String)searchFilter.get());
 		} else {
-			this.loadAndShow(searchFilter);
+			this.levelsFuture = this.loadLevels();
+		}
+
+		this.show(this.tryGet());
+	}
+
+	@Nullable
+	private List<LevelSummary> tryGet() {
+		try {
+			return (List<LevelSummary>)this.levelsFuture.getNow(null);
+		} catch (CancellationException | CompletionException var2) {
+			return null;
 		}
 	}
 
-	public void loadAndShow(Supplier<String> searchFilter) {
+	void load() {
 		this.levelsFuture = this.loadLevels();
-		List<LevelSummary> list = this.tryGet(this.levelsFuture, TIMEOUT);
-		if (list != null) {
-			this.showSummaries((String)searchFilter.get(), list);
-		} else {
-			this.showLoadingScreen();
-			this.levelsFuture.thenAcceptAsync(levels -> this.showSummaries((String)searchFilter.get(), levels), this.client);
-		}
 	}
 
-	public void filter(String name) {
-		if (this.levelsFuture == null) {
-			this.clearEntries();
-		} else {
-			List<LevelSummary> list = this.tryGet(this.levelsFuture, Duration.ZERO);
-			if (list != null) {
-				this.showSummaries(name, list);
-			} else {
-				this.showLoadingScreen();
-			}
+	@Override
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		List<LevelSummary> list = this.tryGet();
+		if (list != this.levels) {
+			this.show(list);
 		}
+
+		super.render(matrices, mouseX, mouseY, delta);
+	}
+
+	private void show(@Nullable List<LevelSummary> levels) {
+		if (levels == null) {
+			this.showLoadingScreen();
+		} else {
+			this.showSummaries(this.search, levels);
+		}
+
+		this.levels = levels;
+	}
+
+	public void setSearch(String search) {
+		if (this.levels != null && !search.equals(this.search)) {
+			this.showSummaries(search, this.levels);
+		}
+
+		this.search = search;
 	}
 
 	private CompletableFuture<List<LevelSummary>> loadLevels() {
@@ -146,18 +163,6 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 				return List.of();
 			});
 		}
-	}
-
-	@Nullable
-	private List<LevelSummary> tryGet(CompletableFuture<List<LevelSummary>> future, Duration timeout) {
-		List<LevelSummary> list = null;
-
-		try {
-			list = (List<LevelSummary>)future.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
-		} catch (ExecutionException | TimeoutException | InterruptedException var5) {
-		}
-
-		return list;
 	}
 
 	private void showSummaries(String search, List<LevelSummary> summaries) {
@@ -499,7 +504,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 				WorldListWidget.LOGGER.error("Failed to delete world {}", string, var8);
 			}
 
-			WorldListWidget.this.loadAndShow(this.screen.getSearchFilter());
+			WorldListWidget.this.load();
 		}
 
 		public void edit() {
@@ -516,7 +521,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 					}
 
 					if (edited) {
-						WorldListWidget.this.loadAndShow(this.screen.getSearchFilter());
+						WorldListWidget.this.load();
 					}
 
 					this.client.setScreen(this.screen);
@@ -524,7 +529,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 			} catch (IOException var3) {
 				SystemToast.addWorldAccessFailureToast(this.client, string);
 				WorldListWidget.LOGGER.error("Failed to access level {}", string, var3);
-				WorldListWidget.this.loadAndShow(this.screen.getSearchFilter());
+				WorldListWidget.this.load();
 			}
 		}
 

@@ -6,6 +6,7 @@ import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.authlib.exceptions.AuthenticationUnavailableException;
 import com.mojang.authlib.exceptions.InsufficientPrivilegesException;
 import com.mojang.authlib.exceptions.InvalidCredentialsException;
+import com.mojang.authlib.exceptions.UserBannedException;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.logging.LogUtils;
 import java.math.BigInteger;
@@ -111,8 +112,10 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 			return Text.translatable("disconnect.loginFailedInfo", Text.translatable("disconnect.loginFailedInfo.invalidSession"));
 		} catch (InsufficientPrivilegesException var5) {
 			return Text.translatable("disconnect.loginFailedInfo", Text.translatable("disconnect.loginFailedInfo.insufficientPrivileges"));
-		} catch (AuthenticationException var6) {
-			return Text.translatable("disconnect.loginFailedInfo", var6.getMessage());
+		} catch (UserBannedException var6) {
+			return Text.translatable("disconnect.loginFailedInfo", Text.translatable("disconnect.loginFailedInfo.userBanned"));
+		} catch (AuthenticationException var7) {
+			return Text.translatable("disconnect.loginFailedInfo", var7.getMessage());
 		}
 	}
 

@@ -1,30 +1,33 @@
 package net.minecraft.client.network.abusereport;
 
 import java.util.Locale;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public enum AbuseReportReason {
-	HATE_SPEECH("hate_speech"),
-	TERRORISM_OR_VIOLENT_EXTREMISM("terrorism_or_violent_extremism"),
-	CHILD_SEXUAL_EXPLOITATION_OR_ABUSE("child_sexual_exploitation_or_abuse"),
-	IMMINENT_HARM("imminent_harm"),
-	NON_CONSENSUAL_INTIMATE_IMAGERY("non_consensual_intimate_imagery"),
-	HARASSMENT_OR_BULLYING("harassment_or_bullying"),
-	PROFANITY("profanity"),
-	DEFAMATION_IMPERSONATION_FALSE_INFORMATION("defamation_impersonation_false_information"),
-	SELF_HARM_OR_SUICIDE("self_harm_or_suicide"),
-	NUDITY_OR_PORNOGRAPHY("nudity_or_pornography"),
-	EXTREME_VIOLENCE_OR_GORE("extreme_violence_or_gore"),
-	ALCOHOL_TOBACCO_DRUGS("alcohol_tobacco_drugs");
+	HATE_SPEECH(5, "hate_speech"),
+	TERRORISM_OR_VIOLENT_EXTREMISM(16, "terrorism_or_violent_extremism"),
+	CHILD_SEXUAL_EXPLOITATION_OR_ABUSE(17, "child_sexual_exploitation_or_abuse"),
+	IMMINENT_HARM(18, "imminent_harm"),
+	NON_CONSENSUAL_INTIMATE_IMAGERY(19, "non_consensual_intimate_imagery"),
+	HARASSMENT_OR_BULLYING(21, "harassment_or_bullying"),
+	PROFANITY(22, "profanity"),
+	DEFAMATION_IMPERSONATION_FALSE_INFORMATION(27, "defamation_impersonation_false_information"),
+	SELF_HARM_OR_SUICIDE(31, "self_harm_or_suicide"),
+	NUDITY_OR_PORNOGRAPHY(32, "nudity_or_pornography"),
+	EXTREME_VIOLENCE_OR_GORE(34, "extreme_violence_or_gore"),
+	ALCOHOL_TOBACCO_DRUGS(39, "alcohol_tobacco_drugs");
 
+	private final int banReasonId;
 	private final String id;
 	private final Text text;
 	private final Text description;
 
-	private AbuseReportReason(String id) {
+	private AbuseReportReason(int banReasonId, String id) {
+		this.banReasonId = banReasonId;
 		this.id = id.toUpperCase(Locale.ROOT);
 		String string2 = "gui.abuseReport.reason." + id;
 		this.text = Text.translatable(string2);
@@ -41,5 +44,16 @@ public enum AbuseReportReason {
 
 	public Text getDescription() {
 		return this.description;
+	}
+
+	@Nullable
+	public static Text getText(int banReasonId) {
+		for (AbuseReportReason abuseReportReason : values()) {
+			if (abuseReportReason.banReasonId == banReasonId) {
+				return abuseReportReason.text;
+			}
+		}
+
+		return null;
 	}
 }

@@ -216,7 +216,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 
 	private void fetchServerData(long worldId) {
 		new Thread(() -> {
-			RealmsClient realmsClient = RealmsClient.createRealmsClient();
+			RealmsClient realmsClient = RealmsClient.method_44616();
 
 			try {
 				this.serverData = realmsClient.getOwnWorld(worldId);
@@ -231,7 +231,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 	public void play() {
 		new Thread(
 				() -> {
-					RealmsClient realmsClient = RealmsClient.createRealmsClient();
+					RealmsClient realmsClient = RealmsClient.method_44616();
 					if (this.serverData.state == RealmsServer.State.CLOSED) {
 						this.client
 							.execute(
@@ -252,7 +252,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 	}
 
 	private void downloadWorld(int slotId) {
-		RealmsClient realmsClient = RealmsClient.createRealmsClient();
+		RealmsClient realmsClient = RealmsClient.method_44616();
 
 		try {
 			WorldDownload worldDownload = realmsClient.download(this.serverData.id, slotId);

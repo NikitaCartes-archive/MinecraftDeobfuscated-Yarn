@@ -31,7 +31,7 @@ public class LifecycledResourceManagerImpl implements LifecycledResourceManager 
 	public LifecycledResourceManagerImpl(ResourceType type, List<ResourcePack> packs) {
 		this.packs = List.copyOf(packs);
 		Map<String, NamespaceResourceManager> map = new HashMap();
-		List<String> list = packs.stream().flatMap(pack -> pack.getNamespaces(type).stream()).toList();
+		List<String> list = packs.stream().flatMap(pack -> pack.getNamespaces(type).stream()).distinct().toList();
 
 		for (ResourcePack resourcePack : packs) {
 			ResourceFilter resourceFilter = this.parseResourceFilter(resourcePack);

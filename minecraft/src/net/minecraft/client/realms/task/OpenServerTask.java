@@ -32,7 +32,7 @@ public class OpenServerTask extends LongRunningTask {
 
 	public void run() {
 		this.setTitle(Text.translatable("mco.configure.world.opening"));
-		RealmsClient realmsClient = RealmsClient.createRealmsClient();
+		RealmsClient realmsClient = RealmsClient.method_44616();
 
 		for (int i = 0; i < 25; i++) {
 			if (this.aborted()) {

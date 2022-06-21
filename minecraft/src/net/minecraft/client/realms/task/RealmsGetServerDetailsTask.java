@@ -85,7 +85,7 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 	}
 
 	private RealmsServerAddress join() throws RealmsServiceException, TimeoutException, CancellationException {
-		RealmsClient realmsClient = RealmsClient.createRealmsClient();
+		RealmsClient realmsClient = RealmsClient.method_44616();
 
 		for (int i = 0; i < 40; i++) {
 			if (this.aborted()) {

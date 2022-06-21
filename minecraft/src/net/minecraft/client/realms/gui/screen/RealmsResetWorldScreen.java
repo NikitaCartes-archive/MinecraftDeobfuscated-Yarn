@@ -83,7 +83,7 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 		this.addDrawableChild(new ButtonWidget(this.width / 2 - 40, row(14) - 10, 80, 20, this.buttonTitle, button -> this.client.setScreen(this.parent)));
 		(new Thread("Realms-reset-world-fetcher") {
 			public void run() {
-				RealmsClient realmsClient = RealmsClient.createRealmsClient();
+				RealmsClient realmsClient = RealmsClient.method_44616();
 
 				try {
 					WorldTemplatePaginatedList worldTemplatePaginatedList = realmsClient.fetchWorldTemplates(1, 10, RealmsServer.WorldType.NORMAL);
