@@ -30,7 +30,7 @@ extends LongRunningTask {
 
     @Override
     public void run() {
-        RealmsClient realmsClient = RealmsClient.createRealmsClient();
+        RealmsClient realmsClient = RealmsClient.method_44616();
         this.setTitle(Text.translatable("mco.minigame.world.starting.screen.title"));
         for (int i = 0; i < 25; ++i) {
             try {

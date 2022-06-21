@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Queues;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.exceptions.AuthenticationException;
+import com.mojang.authlib.minecraft.BanDetails;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.minecraft.UserApiService;
 import com.mojang.authlib.properties.PropertyMap;
@@ -51,6 +52,7 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
+import net.minecraft.class_7578;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Keyboard;
 import net.minecraft.client.MinecraftClientGame;
@@ -70,7 +72,7 @@ import net.minecraft.client.gl.WindowFramebuffer;
 import net.minecraft.client.gui.WorldGenerationProgressTracker;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.gui.screen.ChatScreen;
-import net.minecraft.client.gui.screen.ConfirmChatLinkScreen;
+import net.minecraft.client.gui.screen.ConfirmLinkScreen;
 import net.minecraft.client.gui.screen.ConnectScreen;
 import net.minecraft.client.gui.screen.CreditsScreen;
 import net.minecraft.client.gui.screen.DeathScreen;
@@ -91,6 +93,7 @@ import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.screen.multiplayer.SocialInteractionsScreen;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.network.Bans;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -109,6 +112,7 @@ import net.minecraft.client.option.HotbarStorage;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.option.Perspective;
 import net.minecraft.client.particle.ParticleManager;
+import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.util.Realms32BitWarningChecker;
 import net.minecraft.client.render.BackgroundRenderer;
@@ -387,6 +391,7 @@ implements WindowEventHandler {
     private final BlockEntityRenderDispatcher blockEntityRenderDispatcher;
     private final UUID deviceSessionId = UUID.randomUUID();
     private final ProfileKeys profileKeys;
+    private final class_7578 field_39718;
     @Nullable
     public ClientPlayerInteractionManager interactionManager;
     /**
@@ -600,6 +605,7 @@ implements WindowEventHandler {
         this.resourceManager.registerReloader(this.regionalComplianciesManager);
         this.inGameHud = new InGameHud(this, this.itemRenderer);
         this.debugRenderer = new DebugRenderer(this);
+        this.field_39718 = new class_7578(RealmsClient.createRealmsClient(this));
         RenderSystem.setErrorCallback(this::handleGlErrorByDisableVsync);
         if (this.framebuffer.textureWidth != this.window.getFramebufferWidth() || this.framebuffer.textureHeight != this.window.getFramebufferHeight()) {
             StringBuilder stringBuilder = new StringBuilder("Recovering from unsupported resolution (" + this.window.getFramebufferWidth() + "x" + this.window.getFramebufferHeight() + ").\nPlease make sure you have up-to-date drivers (see aka.ms/mcdriver for instructions).");
@@ -631,6 +637,13 @@ implements WindowEventHandler {
         }), false));
         if (string != null) {
             ConnectScreen.connect(new TitleScreen(), this, new ServerAddress(string, i), null);
+        } else if (this.isMultiplayerBanned()) {
+            this.setScreen(Bans.createBanScreen(confirmed -> {
+                if (confirmed) {
+                    Util.getOperatingSystem().open("https://aka.ms/mcjavamoderation");
+                }
+                this.setScreen(new TitleScreen(true));
+            }, this.getMultiplayerBanDetails()));
         } else {
             this.setScreen(new TitleScreen(true));
         }
@@ -889,7 +902,7 @@ implements WindowEventHandler {
         if (!chatRestriction.allowsChat(this.isInSingleplayer())) {
             if (this.inGameHud.method_44353()) {
                 this.inGameHud.method_44354(false);
-                this.setScreen(new ConfirmChatLinkScreen(bl -> {
+                this.setScreen(new ConfirmLinkScreen(bl -> {
                     if (bl) {
                         Util.getOperatingSystem().open("https://aka.ms/JavaAccountSettings");
                     }
@@ -1901,11 +1914,20 @@ implements WindowEventHandler {
     }
 
     public boolean isMultiplayerEnabled() {
-        return this.multiplayerEnabled && this.userApiService.properties().flag(UserApiService.UserFlag.SERVERS_ALLOWED);
+        return this.multiplayerEnabled && this.userApiService.properties().flag(UserApiService.UserFlag.SERVERS_ALLOWED) && this.getMultiplayerBanDetails() == null;
     }
 
     public boolean isRealmsEnabled() {
-        return this.userApiService.properties().flag(UserApiService.UserFlag.REALMS_ALLOWED);
+        return this.userApiService.properties().flag(UserApiService.UserFlag.REALMS_ALLOWED) && this.getMultiplayerBanDetails() == null;
+    }
+
+    public boolean isMultiplayerBanned() {
+        return this.getMultiplayerBanDetails() != null;
+    }
+
+    @Nullable
+    private BanDetails getMultiplayerBanDetails() {
+        return this.userApiService.properties().bannedScopes().get("MULTIPLAYER");
     }
 
     /**
@@ -2562,6 +2584,10 @@ implements WindowEventHandler {
 
     public AbuseReporter getAbuseReporter() {
         return this.abuseReporter;
+    }
+
+    public class_7578 method_44646() {
+        return this.field_39718;
     }
 
     static {

@@ -127,7 +127,7 @@ extends RealmsScreen {
 
     void op(int index) {
         this.updateButtonStates();
-        RealmsClient realmsClient = RealmsClient.createRealmsClient();
+        RealmsClient realmsClient = RealmsClient.method_44616();
         String string = this.serverData.players.get(index).getUuid();
         try {
             this.updateOps(realmsClient.op(this.serverData.id, string));
@@ -138,7 +138,7 @@ extends RealmsScreen {
 
     void deop(int index) {
         this.updateButtonStates();
-        RealmsClient realmsClient = RealmsClient.createRealmsClient();
+        RealmsClient realmsClient = RealmsClient.method_44616();
         String string = this.serverData.players.get(index).getUuid();
         try {
             this.updateOps(realmsClient.deop(this.serverData.id, string));
@@ -161,7 +161,7 @@ extends RealmsScreen {
             this.selectedInvitedIndex = index;
             RealmsConfirmScreen realmsConfirmScreen = new RealmsConfirmScreen(confirmed -> {
                 if (confirmed) {
-                    RealmsClient realmsClient = RealmsClient.createRealmsClient();
+                    RealmsClient realmsClient = RealmsClient.method_44616();
                     try {
                         realmsClient.uninvite(this.serverData.id, this.selectedInvited);
                     } catch (RealmsServiceException realmsServiceException) {

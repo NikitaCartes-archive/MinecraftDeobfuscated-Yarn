@@ -79,7 +79,7 @@ extends RealmsScreen {
 
             @Override
             public void run() {
-                RealmsClient realmsClient = RealmsClient.createRealmsClient();
+                RealmsClient realmsClient = RealmsClient.method_44616();
                 try {
                     List<Backup> list = realmsClient.backupsFor((long)RealmsBackupScreen.this.serverData.id).backups;
                     RealmsBackupScreen.this.client.execute(() -> {

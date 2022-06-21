@@ -6,7 +6,6 @@ package net.minecraft.client.gui.screen.world;
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.util.List;
-import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
@@ -63,8 +62,8 @@ extends Screen {
     protected void init() {
         this.client.keyboard.setRepeatEvents(true);
         this.searchBox = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 22, 200, 20, this.searchBox, Text.translatable("selectWorld.search"));
-        this.searchBox.setChangedListener(search -> this.levelList.filter((String)search));
-        this.levelList = new WorldListWidget(this, this.client, this.width, this.height, 48, this.height - 64, 36, this.getSearchFilter(), this.levelList);
+        this.searchBox.setChangedListener(search -> this.levelList.setSearch((String)search));
+        this.levelList = new WorldListWidget(this, this.client, this.width, this.height, 48, this.height - 64, 36, this.searchBox.getText(), this.levelList);
         this.addSelectableChild(this.searchBox);
         this.addSelectableChild(this.levelList);
         this.selectButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 154, this.height - 52, 150, 20, Text.translatable("selectWorld.select"), button -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.WorldEntry::play)));
@@ -123,10 +122,6 @@ extends Screen {
         if (this.levelList != null) {
             this.levelList.children().forEach(WorldListWidget.Entry::close);
         }
-    }
-
-    public Supplier<String> getSearchFilter() {
-        return () -> this.searchBox.getText();
     }
 
     private /* synthetic */ void method_35739(ButtonWidget button) {

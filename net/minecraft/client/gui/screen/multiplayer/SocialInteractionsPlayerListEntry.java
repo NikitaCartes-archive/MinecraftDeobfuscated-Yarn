@@ -38,6 +38,7 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class SocialInteractionsPlayerListEntry
 extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
+    private static final Identifier REPORT_BUTTON_TEXTURE = new Identifier("textures/gui/report_button.png");
     private static final int field_32418 = 10;
     private static final int field_32419 = 150;
     private final MinecraftClient client;
@@ -64,6 +65,7 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
     private static final Text OFFLINE_TEXT = Text.translatable("gui.socialInteractions.status_offline").formatted(Formatting.ITALIC);
     private static final Text HIDDEN_OFFLINE_TEXT = Text.translatable("gui.socialInteractions.status_hidden_offline").formatted(Formatting.ITALIC);
     private static final Text BLOCKED_OFFLINE_TEXT = Text.translatable("gui.socialInteractions.status_blocked_offline").formatted(Formatting.ITALIC);
+    private static final Text REPORT_DISABLED_TEXT = Text.translatable("gui.socialInteractions.tooltip.report.disabled");
     private static final int field_32420 = 24;
     private static final int field_32421 = 4;
     private static final int field_32422 = 20;
@@ -76,23 +78,24 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
     public static final int LIGHT_GRAY_COLOR = ColorHelper.Argb.getArgb(140, 255, 255, 255);
 
     public SocialInteractionsPlayerListEntry(final MinecraftClient client, final SocialInteractionsScreen parent, UUID uuid, String name, Supplier<Identifier> skinTexture) {
-        boolean bl2;
+        boolean bl3;
         this.client = client;
         this.uuid = uuid;
         this.name = name;
         this.skinTexture = skinTexture;
+        AbuseReporter abuseReporter = client.getAbuseReporter();
+        boolean bl = abuseReporter.sender().canSendReports();
         this.hideText = Text.translatable("gui.socialInteractions.tooltip.hide", name);
         this.showText = Text.translatable("gui.socialInteractions.tooltip.show", name);
-        this.reportText = Text.translatable("gui.socialInteractions.tooltip.report", name);
+        this.reportText = bl ? Text.translatable("gui.socialInteractions.tooltip.report", name) : REPORT_DISABLED_TEXT;
         this.hideTooltip = client.textRenderer.wrapLines(this.hideText, 150);
         this.showTooltip = client.textRenderer.wrapLines(this.showText, 150);
         this.reportTooltip = client.textRenderer.wrapLines(this.reportText, 150);
         SocialInteractionsManager socialInteractionsManager = client.getSocialInteractionsManager();
-        boolean bl = client.getChatRestriction().allowsChat(client.isInSingleplayer());
-        boolean bl3 = bl2 = !client.player.getUuid().equals(uuid);
-        if (bl2 && bl && !socialInteractionsManager.isPlayerBlocked(uuid)) {
-            AbuseReporter abuseReporter = client.getAbuseReporter();
-            this.reportButton = new TexturedButtonWidget(0, 0, 20, 20, 40, 38, 20, SocialInteractionsScreen.SOCIAL_INTERACTIONS_TEXTURE, 256, 256, button -> client.setScreen(new ChatReportScreen(minecraftClient.currentScreen, abuseReporter, uuid)), new ButtonWidget.TooltipSupplier(){
+        boolean bl2 = client.getChatRestriction().allowsChat(client.isInSingleplayer());
+        boolean bl4 = bl3 = !client.player.getUuid().equals(uuid);
+        if (bl3 && bl2 && !socialInteractionsManager.isPlayerBlocked(uuid)) {
+            this.reportButton = new TexturedButtonWidget(0, 0, 20, 20, 0, 0, 20, REPORT_BUTTON_TEXTURE, 64, 64, button -> client.setScreen(new ChatReportScreen(minecraftClient.currentScreen, abuseReporter, uuid)), new ButtonWidget.TooltipSupplier(){
 
                 @Override
                 public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {
@@ -163,7 +166,7 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
             };
             this.showButton.visible = socialInteractionsManager.isPlayerHidden(uuid);
             this.hideButton.visible = !this.showButton.visible;
-            this.reportButton.active = abuseReporter.sender().canSendReports();
+            this.reportButton.active = bl;
             this.buttons = ImmutableList.of(this.hideButton, this.showButton, this.reportButton);
         } else {
             this.buttons = ImmutableList.of();

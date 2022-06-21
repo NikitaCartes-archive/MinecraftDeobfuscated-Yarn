@@ -22,6 +22,7 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Matrix4f;
 
@@ -40,7 +41,7 @@ extends ScrollableWidget {
     private static final int UNFOCUSED_BOX_TEXT_COLOR = -857677600;
     private final TextRenderer textRenderer;
     /**
-     * The placehodler text that gets rendered when the edit box is empty. This does not
+     * The placeholder text that gets rendered when the edit box is empty. This does not
      * get returned from {@link #getText}; an empty string will be returned in such cases.
      */
     private final Text placeholder;
@@ -198,8 +199,8 @@ extends ScrollableWidget {
         super.renderOverlay(matrices);
         if (this.editBox.hasMaxLength()) {
             int i = this.editBox.getMaxLength();
-            String string = this.editBox.getText().length() + "/" + i;
-            EditBoxWidget.drawStringWithShadow(matrices, this.textRenderer, string, this.x + this.width - this.textRenderer.getWidth(string), this.y + this.height + 4, 0xA0A0A0);
+            MutableText text = Text.translatable("gui.multiLineEditBox.character_limit", this.editBox.getText().length(), i);
+            EditBoxWidget.drawTextWithShadow(matrices, this.textRenderer, text, this.x + this.width - this.textRenderer.getWidth(text), this.y + this.height + 4, 0xA0A0A0);
         }
     }
 

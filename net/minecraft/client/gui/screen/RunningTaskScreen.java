@@ -28,7 +28,7 @@ extends Screen {
     private static final int TITLE_TEXT_Y = 80;
     private static final int DESCRIPTION_TEXT_Y = 120;
     private static final int DESCRIPTION_TEXT_WIDTH = 360;
-    private final Text cancelButtonText;
+    private Text cancelButtonText;
     private Runnable buttonCallback;
     @Nullable
     private MultilineText description;
@@ -44,7 +44,7 @@ extends Screen {
     @Override
     protected void init() {
         super.init();
-        this.replaceButton(this.cancelButtonText);
+        this.replaceButton();
     }
 
     @Override
@@ -67,7 +67,12 @@ extends Screen {
 
     @Override
     public boolean shouldCloseOnEsc() {
-        return false;
+        return this.description != null && this.button.active;
+    }
+
+    @Override
+    public void close() {
+        this.buttonCallback.run();
     }
 
     /**
@@ -84,6 +89,7 @@ extends Screen {
      * 1 second after calling this.
      */
     public void setDisplay(@Nullable Text description, Text buttonText, Runnable buttonCallback) {
+        this.cancelButtonText = buttonText;
         this.buttonCallback = buttonCallback;
         if (description != null) {
             this.description = MultilineText.create(this.textRenderer, (StringVisitable)description, 360);
@@ -91,17 +97,18 @@ extends Screen {
         } else {
             this.description = null;
         }
-        this.replaceButton(buttonText);
+        this.replaceButton();
         this.buttonActivationTime = Util.getMeasuringTimeMs() + TimeUnit.SECONDS.toMillis(1L);
     }
 
-    private void replaceButton(Text buttonText) {
+    private void replaceButton() {
         this.remove(this.button);
         int i = 150;
         int j = 20;
         int k = this.description != null ? this.description.count() : 1;
-        int l = Math.min(120 + (k + 4) * this.textRenderer.fontHeight, this.height - 40);
-        this.button = this.addDrawableChild(new ButtonWidget((this.width - 150) / 2, l, 150, 20, buttonText, button -> this.buttonCallback.run()));
+        int l = Math.max(k, 5) * this.textRenderer.fontHeight;
+        int m = Math.min(120 + l, this.height - 40);
+        this.button = this.addDrawableChild(new ButtonWidget((this.width - 150) / 2, m, 150, 20, this.cancelButtonText, button -> this.close()));
     }
 }
 

@@ -6,17 +6,19 @@ package net.minecraft.client.realms.gui.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.class_7578;
+import net.minecraft.class_7581;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.realms.RealmsClient;
+import net.minecraft.client.realms.dto.RealmsNews;
 import net.minecraft.client.realms.exception.RealmsServiceException;
-import net.minecraft.client.realms.gui.RealmsDataFetcher;
 import net.minecraft.client.realms.gui.screen.RealmsScreen;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class RealmsNotificationsScreen
@@ -24,7 +26,8 @@ extends RealmsScreen {
     private static final Identifier INVITE_ICON = new Identifier("realms", "textures/gui/realms/invite_icon.png");
     private static final Identifier TRIAL_ICON = new Identifier("realms", "textures/gui/realms/trial_icon.png");
     private static final Identifier NEWS_NOTIFICATION = new Identifier("realms", "textures/gui/realms/news_notification_mainscreen.png");
-    private static final RealmsDataFetcher REALMS_DATA_FETCHER = new RealmsDataFetcher(MinecraftClient.getInstance(), RealmsClient.createRealmsClient());
+    @Nullable
+    private class_7581.class_7584 field_39695;
     private volatile int numberOfPendingInvites;
     static boolean checkedMcoAvailability;
     private static boolean trialAvailable;
@@ -39,28 +42,38 @@ extends RealmsScreen {
     public void init() {
         this.checkIfMcoEnabled();
         this.client.keyboard.setRepeatEvents(true);
+        if (this.field_39695 != null) {
+            this.field_39695.method_44634();
+        }
     }
 
     @Override
     public void tick() {
-        if (!(this.shouldShowNotifications() && this.isTitleScreen() && validClient || REALMS_DATA_FETCHER.isStopped())) {
-            REALMS_DATA_FETCHER.stop();
-            return;
+        boolean bl;
+        boolean bl2 = bl = this.shouldShowNotifications() && this.isTitleScreen() && validClient;
+        if (this.field_39695 == null && bl) {
+            this.field_39695 = this.method_44624(this.client.method_44646());
+        } else if (this.field_39695 != null && !bl) {
+            this.field_39695 = null;
         }
-        if (!validClient || !this.shouldShowNotifications()) {
-            return;
+        if (this.field_39695 != null) {
+            this.field_39695.method_44636();
         }
-        REALMS_DATA_FETCHER.initWithSpecificTaskList();
-        if (REALMS_DATA_FETCHER.isFetchedSinceLastTry(RealmsDataFetcher.Task.PENDING_INVITE)) {
-            this.numberOfPendingInvites = REALMS_DATA_FETCHER.getPendingInvitesCount();
-        }
-        if (REALMS_DATA_FETCHER.isFetchedSinceLastTry(RealmsDataFetcher.Task.TRIAL_AVAILABLE)) {
-            trialAvailable = REALMS_DATA_FETCHER.isTrialAvailable();
-        }
-        if (REALMS_DATA_FETCHER.isFetchedSinceLastTry(RealmsDataFetcher.Task.UNREAD_NEWS)) {
-            hasUnreadNews = REALMS_DATA_FETCHER.hasUnreadNews();
-        }
-        REALMS_DATA_FETCHER.markClean();
+    }
+
+    private class_7581.class_7584 method_44624(class_7578 arg) {
+        class_7581.class_7584 lv = arg.field_39682.method_44628();
+        lv.method_44635(arg.field_39685, integer -> {
+            this.numberOfPendingInvites = integer;
+        });
+        lv.method_44635(arg.field_39686, boolean_ -> {
+            trialAvailable = boolean_;
+        });
+        lv.method_44635(arg.field_39687, realmsNews -> {
+            arg.field_39688.method_44619((RealmsNews)realmsNews);
+            hasUnreadNews = arg.field_39688.method_44618();
+        });
+        return lv;
     }
 
     private boolean shouldShowNotifications() {
@@ -78,7 +91,7 @@ extends RealmsScreen {
 
                 @Override
                 public void run() {
-                    RealmsClient realmsClient = RealmsClient.createRealmsClient();
+                    RealmsClient realmsClient = RealmsClient.method_44616();
                     try {
                         RealmsClient.CompatibleVersionResponse compatibleVersionResponse = realmsClient.clientCompatible();
                         if (compatibleVersionResponse != RealmsClient.CompatibleVersionResponse.COMPATIBLE) {
@@ -135,11 +148,6 @@ extends RealmsScreen {
             }
             DrawableHelper.drawTexture(matrices, l + 4 - n, m + 4, 0.0f, o, 8, 8, 8, 16);
         }
-    }
-
-    @Override
-    public void removed() {
-        REALMS_DATA_FETCHER.stop();
     }
 }
 

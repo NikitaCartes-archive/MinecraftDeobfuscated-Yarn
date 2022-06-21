@@ -51,7 +51,7 @@ public class Realms32BitWarningChecker {
 
     private boolean isSubscribedInternal() {
         try {
-            return RealmsClient.createRealmsClient().listWorlds().servers.stream().anyMatch(server -> server.ownerUUID != null && !server.expired && server.ownerUUID.equals(this.client.getSession().getUuid()));
+            return RealmsClient.createRealmsClient((MinecraftClient)this.client).listWorlds().servers.stream().anyMatch(server -> server.ownerUUID != null && !server.expired && server.ownerUUID.equals(this.client.getSession().getUuid()));
         } catch (RealmsServiceException realmsServiceException) {
             return false;
         }

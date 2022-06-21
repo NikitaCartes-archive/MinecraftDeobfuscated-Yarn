@@ -63,7 +63,7 @@ extends RealmsScreen {
     }
 
     private void onInvite() {
-        RealmsClient realmsClient = RealmsClient.createRealmsClient();
+        RealmsClient realmsClient = RealmsClient.method_44616();
         if (this.nameWidget.getText() == null || this.nameWidget.getText().isEmpty()) {
             this.showError(PLAYER_ERROR_TEXT);
             return;

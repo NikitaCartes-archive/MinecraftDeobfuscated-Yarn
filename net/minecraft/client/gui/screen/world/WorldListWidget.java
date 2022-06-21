@@ -15,17 +15,13 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.function.Supplier;
+import java.util.concurrent.CompletionException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
@@ -83,46 +79,58 @@ extends AlwaysSelectedEntryListWidget<Entry> {
     static final Text SNAPSHOT_SECOND_LINE = Text.translatable("selectWorld.tooltip.snapshot2").formatted(Formatting.GOLD);
     static final Text LOCKED_TEXT = Text.translatable("selectWorld.locked").formatted(Formatting.RED);
     static final Text CONVERSION_TOOLTIP = Text.translatable("selectWorld.conversion.tooltip").formatted(Formatting.RED);
-    private static final Duration TIMEOUT = Duration.ofMillis(100L);
     private final SelectWorldScreen parent;
-    @Nullable
     private CompletableFuture<List<LevelSummary>> levelsFuture;
+    @Nullable
+    private List<LevelSummary> levels;
+    private String search;
     private final LoadingEntry loadingEntry;
 
-    public WorldListWidget(SelectWorldScreen parent, MinecraftClient client, int width, int height, int top, int bottom, int itemHeight, Supplier<String> searchFilter, @Nullable WorldListWidget oldWidget) {
+    public WorldListWidget(SelectWorldScreen parent, MinecraftClient client, int width, int height, int top, int bottom, int itemHeight, String search, @Nullable WorldListWidget oldWidget) {
         super(client, width, height, top, bottom, itemHeight);
         this.parent = parent;
         this.loadingEntry = new LoadingEntry(client);
-        if (oldWidget != null) {
-            this.levelsFuture = oldWidget.levelsFuture;
-            this.filter(searchFilter.get());
-        } else {
-            this.loadAndShow(searchFilter);
+        this.search = search;
+        this.levelsFuture = oldWidget != null ? oldWidget.levelsFuture : this.loadLevels();
+        this.show(this.tryGet());
+    }
+
+    @Nullable
+    private List<LevelSummary> tryGet() {
+        try {
+            return this.levelsFuture.getNow(null);
+        } catch (CancellationException | CompletionException runtimeException) {
+            return null;
         }
     }
 
-    public void loadAndShow(Supplier<String> searchFilter) {
+    void load() {
         this.levelsFuture = this.loadLevels();
-        List<LevelSummary> list = this.tryGet(this.levelsFuture, TIMEOUT);
-        if (list != null) {
-            this.showSummaries(searchFilter.get(), list);
-        } else {
-            this.showLoadingScreen();
-            this.levelsFuture.thenAcceptAsync(levels -> this.showSummaries((String)searchFilter.get(), (List<LevelSummary>)levels), (Executor)this.client);
-        }
     }
 
-    public void filter(String name) {
-        if (this.levelsFuture == null) {
-            this.clearEntries();
-            return;
+    @Override
+    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        List<LevelSummary> list = this.tryGet();
+        if (list != this.levels) {
+            this.show(list);
         }
-        List<LevelSummary> list = this.tryGet(this.levelsFuture, Duration.ZERO);
-        if (list != null) {
-            this.showSummaries(name, list);
-        } else {
+        super.render(matrices, mouseX, mouseY, delta);
+    }
+
+    private void show(@Nullable List<LevelSummary> levels) {
+        if (levels == null) {
             this.showLoadingScreen();
+        } else {
+            this.showSummaries(this.search, levels);
         }
+        this.levels = levels;
+    }
+
+    public void setSearch(String search) {
+        if (this.levels != null && !search.equals(this.search)) {
+            this.showSummaries(search, this.levels);
+        }
+        this.search = search;
     }
 
     private CompletableFuture<List<LevelSummary>> loadLevels() {
@@ -142,17 +150,6 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             this.client.setCrashReportSupplierAndAddDetails(CrashReport.create(throwable, "Couldn't load level list"));
             return List.of();
         });
-    }
-
-    @Nullable
-    private List<LevelSummary> tryGet(CompletableFuture<List<LevelSummary>> future, Duration timeout) {
-        List<LevelSummary> list = null;
-        try {
-            list = future.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
-        } catch (InterruptedException | ExecutionException | TimeoutException exception) {
-            // empty catch block
-        }
-        return list;
     }
 
     private void showSummaries(String search, List<LevelSummary> summaries) {
@@ -441,7 +438,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                 SystemToast.addWorldDeleteFailureToast(this.client, string);
                 LOGGER.error("Failed to delete world {}", (Object)string, (Object)iOException);
             }
-            WorldListWidget.this.loadAndShow(this.screen.getSearchFilter());
+            WorldListWidget.this.load();
         }
 
         public void edit() {
@@ -456,14 +453,14 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                         LOGGER.error("Failed to unlock level {}", (Object)string, (Object)iOException);
                     }
                     if (edited) {
-                        WorldListWidget.this.loadAndShow(this.screen.getSearchFilter());
+                        WorldListWidget.this.load();
                     }
                     this.client.setScreen(this.screen);
                 }, session));
             } catch (IOException iOException) {
                 SystemToast.addWorldAccessFailureToast(this.client, string);
                 LOGGER.error("Failed to access level {}", (Object)string, (Object)iOException);
-                WorldListWidget.this.loadAndShow(this.screen.getSearchFilter());
+                WorldListWidget.this.load();
             }
         }
 

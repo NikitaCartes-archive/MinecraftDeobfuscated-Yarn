@@ -316,16 +316,18 @@ public class EditBox {
                 return true;
             }
             case 268: {
-                int i = this.getCurrentLine().beginIndex;
-                if (i != this.cursor) {
-                    this.moveCursor(CursorMovement.ABSOLUTE, i);
+                if (Screen.hasControlDown()) {
+                    this.moveCursor(CursorMovement.ABSOLUTE, 0);
+                } else {
+                    this.moveCursor(CursorMovement.ABSOLUTE, this.getCurrentLine().beginIndex);
                 }
                 return true;
             }
             case 269: {
-                int i = this.getCurrentLine().endIndex;
-                if (i != this.cursor) {
-                    this.moveCursor(CursorMovement.ABSOLUTE, i);
+                if (Screen.hasControlDown()) {
+                    this.moveCursor(CursorMovement.END, 0);
+                } else {
+                    this.moveCursor(CursorMovement.ABSOLUTE, this.getCurrentLine().endIndex);
                 }
                 return true;
             }

@@ -16,10 +16,10 @@ import java.nio.IntBuffer;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 import java.util.function.IntSupplier;
-import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_7576;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.GraphicsMode;
 import net.minecraft.client.option.SimpleOption;
@@ -513,9 +513,9 @@ public class RenderSystem {
         return apiDescription;
     }
 
-    public static LongSupplier initBackendSystem() {
+    public static class_7576.class_7577 initBackendSystem() {
         RenderSystem.assertInInitPhase();
-        return GLX._initGlfw();
+        return GLX._initGlfw()::getAsLong;
     }
 
     public static void initRenderer(int debugVerbosity, boolean debugSync) {

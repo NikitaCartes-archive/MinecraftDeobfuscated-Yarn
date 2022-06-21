@@ -21,11 +21,11 @@ import org.lwjgl.glfw.GLFW;
 @Environment(value=EnvType.CLIENT)
 public class ConfirmScreen
 extends Screen {
-    private static final int MESSAGE_Y = 90;
+    private static final int TITLE_BOTTOM_MARGIN = 20;
     private final Text message;
     private MultilineText messageSplit = MultilineText.EMPTY;
-    protected Text yesTranslated;
-    protected Text noTranslated;
+    protected Text yesText;
+    protected Text noText;
     private int buttonEnableTimer;
     protected final BooleanConsumer callback;
     private final List<ButtonWidget> buttons = Lists.newArrayList();
@@ -34,12 +34,12 @@ extends Screen {
         this(callback, title, message, ScreenTexts.YES, ScreenTexts.NO);
     }
 
-    public ConfirmScreen(BooleanConsumer callback, Text title, Text message, Text yesTranslated, Text noTranslated) {
+    public ConfirmScreen(BooleanConsumer callback, Text title, Text message, Text yesText, Text noText) {
         super(title);
         this.callback = callback;
         this.message = message;
-        this.yesTranslated = yesTranslated;
-        this.noTranslated = noTranslated;
+        this.yesText = yesText;
+        this.noText = noText;
     }
 
     @Override
@@ -51,15 +51,14 @@ extends Screen {
     protected void init() {
         super.init();
         this.messageSplit = MultilineText.create(this.textRenderer, (StringVisitable)this.message, this.width - 50);
-        int i = this.messageSplit.count() * this.textRenderer.fontHeight;
-        int j = MathHelper.clamp(90 + i + 12, this.height / 6 + 96, this.height - 24);
+        int i = MathHelper.clamp(this.getMessageY() + this.getMessagesHeight() + 20, this.height / 6 + 96, this.height - 24);
         this.buttons.clear();
-        this.addButtons(j);
+        this.addButtons(i);
     }
 
     protected void addButtons(int y) {
-        this.addButton(new ButtonWidget(this.width / 2 - 155, y, 150, 20, this.yesTranslated, button -> this.callback.accept(true)));
-        this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, y, 150, 20, this.noTranslated, button -> this.callback.accept(false)));
+        this.addButton(new ButtonWidget(this.width / 2 - 155, y, 150, 20, this.yesText, button -> this.callback.accept(true)));
+        this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, y, 150, 20, this.noText, button -> this.callback.accept(false)));
     }
 
     protected void addButton(ButtonWidget button) {
@@ -69,9 +68,22 @@ extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        ConfirmScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 70, 0xFFFFFF);
-        this.messageSplit.drawCenterWithShadow(matrices, this.width / 2, 90);
+        ConfirmScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, this.getTitleY(), 0xFFFFFF);
+        this.messageSplit.drawCenterWithShadow(matrices, this.width / 2, this.getMessageY());
         super.render(matrices, mouseX, mouseY, delta);
+    }
+
+    private int getTitleY() {
+        int i = (this.height - this.getMessagesHeight()) / 2;
+        return MathHelper.clamp(i - 20 - this.textRenderer.fontHeight, 10, 80);
+    }
+
+    private int getMessageY() {
+        return this.getTitleY() + 20;
+    }
+
+    private int getMessagesHeight() {
+        return this.messageSplit.count() * this.textRenderer.fontHeight;
     }
 
     public void disableButtons(int ticks) {

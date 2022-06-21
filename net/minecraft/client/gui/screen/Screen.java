@@ -27,7 +27,7 @@ import net.minecraft.client.gui.AbstractParentElement;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.gui.screen.ConfirmChatLinkScreen;
+import net.minecraft.client.gui.screen.ConfirmLinkScreen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.screen.narration.ScreenNarrator;
@@ -326,7 +326,7 @@ implements Drawable {
                         }
                         if (this.client.options.getChatLinksPrompt().getValue().booleanValue()) {
                             this.clickedLink = uRI;
-                            this.client.setScreen(new ConfirmChatLinkScreen(this::confirmLink, clickEvent.getValue(), false));
+                            this.client.setScreen(new ConfirmLinkScreen(this::confirmLink, clickEvent.getValue(), false));
                             break block23;
                         }
                         this.openLink(uRI);

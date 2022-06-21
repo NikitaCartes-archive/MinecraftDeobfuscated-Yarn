@@ -32,7 +32,7 @@ extends LongRunningTask {
     @Override
     public void run() {
         this.setTitle(Text.translatable("mco.create.world.wait"));
-        RealmsClient realmsClient = RealmsClient.createRealmsClient();
+        RealmsClient realmsClient = RealmsClient.method_44616();
         try {
             realmsClient.initializeWorld(this.worldId, this.name, this.motd);
             WorldCreationTask.setScreen(this.lastScreen);

@@ -89,8 +89,12 @@ public class RealmsClient {
     private static final String STAGE_AVAILABLE_ENDPOINT = "/stageAvailable";
     private static final CheckedGson JSON;
 
-    public static RealmsClient createRealmsClient() {
+    public static RealmsClient method_44616() {
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
+        return RealmsClient.createRealmsClient(minecraftClient);
+    }
+
+    public static RealmsClient createRealmsClient(MinecraftClient minecraftClient) {
         String string = minecraftClient.getSession().getUsername();
         String string2 = minecraftClient.getSession().getSessionId();
         if (!initialized) {
