@@ -11,7 +11,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.SculkShriekerBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LargeEntitySpawnHelper;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.WardenEntity;
@@ -115,13 +114,6 @@ public class SculkShriekerBlockEntity extends BlockEntity implements VibrationLi
 			if (entity instanceof ProjectileEntity projectileEntity) {
 				Entity var3 = projectileEntity.getOwner();
 				if (var3 instanceof ServerPlayerEntity serverPlayerEntity2) {
-					return serverPlayerEntity2;
-				}
-			}
-
-			if (entity instanceof ItemEntity itemEntity) {
-				Entity var9 = itemEntity.getEventSource();
-				if (var9 instanceof ServerPlayerEntity serverPlayerEntity2) {
 					return serverPlayerEntity2;
 				}
 			}

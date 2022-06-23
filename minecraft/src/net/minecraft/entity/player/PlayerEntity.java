@@ -71,7 +71,6 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.encryption.PlayerPublicKey;
-import net.minecraft.network.message.MessageSourceProfile;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -1388,10 +1387,6 @@ public abstract class PlayerEntity extends LivingEntity {
 	public void onPickupSlotClick(ItemStack cursorStack, ItemStack slotStack, ClickType clickType) {
 	}
 
-	public boolean method_45015() {
-		return this.currentScreenHandler != this.playerScreenHandler;
-	}
-
 	/**
 	 * Tries to start sleeping on a block.
 	 * 
@@ -1489,8 +1484,11 @@ public abstract class PlayerEntity extends LivingEntity {
 	 * @see net.minecraft.client.gui.hud.InGameHud#setOverlayMessage
 	 * 
 	 * @param message the message to add
+	 * @param actionBar {@code true} to show the message as an overlay; {@code false} to add the
+	 * message to {@linkplain net.minecraft.client.gui.hud.ChatHud the chat
+	 * hud}
 	 */
-	public void sendMessage(Text message, boolean overlay) {
+	public void sendMessage(Text message, boolean actionBar) {
 	}
 
 	public void incrementStat(Identifier stat) {
@@ -1663,11 +1661,6 @@ public abstract class PlayerEntity extends LivingEntity {
 
 			return super.handleFallDamage(fallDistance, damageMultiplier, damageSource);
 		}
-	}
-
-	@Override
-	public MessageSourceProfile getMessageSourceProfile() {
-		return new MessageSourceProfile(this.getGameProfile().getId(), this.getPublicKey());
 	}
 
 	public boolean checkFallFlying() {

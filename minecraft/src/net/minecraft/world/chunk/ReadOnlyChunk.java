@@ -245,18 +245,18 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public CarvingMask getCarvingMask(GenerationStep.Carver step) {
+	public CarvingMask getCarvingMask(GenerationStep.Carver carver) {
 		if (this.field_34554) {
-			return super.getCarvingMask(step);
+			return super.getCarvingMask(carver);
 		} else {
 			throw (UnsupportedOperationException)Util.throwOrPause(new UnsupportedOperationException("Meaningless in this context"));
 		}
 	}
 
 	@Override
-	public CarvingMask getOrCreateCarvingMask(GenerationStep.Carver step) {
+	public CarvingMask getOrCreateCarvingMask(GenerationStep.Carver carver) {
 		if (this.field_34554) {
-			return super.getOrCreateCarvingMask(step);
+			return super.getOrCreateCarvingMask(carver);
 		} else {
 			throw (UnsupportedOperationException)Util.throwOrPause(new UnsupportedOperationException("Meaningless in this context"));
 		}

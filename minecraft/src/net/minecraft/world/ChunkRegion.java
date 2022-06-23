@@ -3,7 +3,6 @@ package net.minecraft.world;
 import com.mojang.logging.LogUtils;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -145,14 +144,10 @@ public class ChunkRegion implements StructureWorldAccess {
 			LOGGER.error("Region bounds : {} {} | {} {}", this.lowerCorner.x, this.lowerCorner.z, this.upperCorner.x, this.upperCorner.z);
 			if (chunk != null) {
 				throw (RuntimeException)Util.throwOrPause(
-					new RuntimeException(
-						String.format(Locale.ROOT, "Chunk is not of correct status. Expecting %s, got %s | %s %s", leastStatus, chunk.getStatus(), chunkX, chunkZ)
-					)
+					new RuntimeException(String.format("Chunk is not of correct status. Expecting %s, got %s | %s %s", leastStatus, chunk.getStatus(), chunkX, chunkZ))
 				);
 			} else {
-				throw (RuntimeException)Util.throwOrPause(
-					new RuntimeException(String.format(Locale.ROOT, "We are asking a region for a chunk out of bound | %s %s", chunkX, chunkZ))
-				);
+				throw (RuntimeException)Util.throwOrPause(new RuntimeException(String.format("We are asking a region for a chunk out of bound | %s %s", chunkX, chunkZ)));
 			}
 		}
 	}

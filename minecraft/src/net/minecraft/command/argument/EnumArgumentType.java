@@ -21,7 +21,7 @@ import net.minecraft.util.StringIdentifiable;
 
 public class EnumArgumentType<T extends Enum<T> & StringIdentifiable> implements ArgumentType<T> {
 	private static final DynamicCommandExceptionType INVALID_ENUM_EXCEPTION = new DynamicCommandExceptionType(
-		value -> Text.translatable("argument.enum.invalid", value)
+		object -> Text.translatable("argument.enum.invalid", object)
 	);
 	private final Codec<T> codec;
 	private final Supplier<T[]> valuesSupplier;
@@ -39,7 +39,7 @@ public class EnumArgumentType<T extends Enum<T> & StringIdentifiable> implements
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
 		return CommandSource.suggestMatching(
-			(Iterable<String>)Arrays.stream((Enum[])this.valuesSupplier.get()).map(enum_ -> ((StringIdentifiable)enum_).asString()).collect(Collectors.toList()),
+			(Iterable<String>)Arrays.stream((Enum[])this.valuesSupplier.get()).map(object -> ((StringIdentifiable)object).asString()).collect(Collectors.toList()),
 			builder
 		);
 	}
@@ -47,7 +47,7 @@ public class EnumArgumentType<T extends Enum<T> & StringIdentifiable> implements
 	@Override
 	public Collection<String> getExamples() {
 		return (Collection<String>)Arrays.stream((Enum[])this.valuesSupplier.get())
-			.map(enum_ -> ((StringIdentifiable)enum_).asString())
+			.map(object -> ((StringIdentifiable)object).asString())
 			.limit(2L)
 			.collect(Collectors.toList());
 	}

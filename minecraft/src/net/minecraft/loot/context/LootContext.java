@@ -96,7 +96,6 @@ public class LootContext {
 		return (LootTable)this.tableGetter.apply(id);
 	}
 
-	@Nullable
 	public LootCondition getCondition(Identifier id) {
 		return (LootCondition)this.conditionGetter.apply(id);
 	}

@@ -158,6 +158,7 @@ public interface StringVisitable {
 		 * 
 		 * @return {@code Optional.empty()} to continue, a non-empty result to terminate
 		 * 
+		 * @param style the current style
 		 * @param asString the literal string
 		 */
 		Optional<T> accept(Style style, String asString);

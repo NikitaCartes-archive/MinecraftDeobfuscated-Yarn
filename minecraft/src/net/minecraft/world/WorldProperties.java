@@ -1,6 +1,5 @@
 package net.minecraft.world;
 
-import java.util.Locale;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReportSection;
 
@@ -35,6 +34,6 @@ public interface WorldProperties {
 		reportSection.add(
 			"Level spawn location", (CrashCallable<String>)(() -> CrashReportSection.createPositionString(world, this.getSpawnX(), this.getSpawnY(), this.getSpawnZ()))
 		);
-		reportSection.add("Level time", (CrashCallable<String>)(() -> String.format(Locale.ROOT, "%d game time, %d day time", this.getTime(), this.getTimeOfDay())));
+		reportSection.add("Level time", (CrashCallable<String>)(() -> String.format("%d game time, %d day time", this.getTime(), this.getTimeOfDay())));
 	}
 }

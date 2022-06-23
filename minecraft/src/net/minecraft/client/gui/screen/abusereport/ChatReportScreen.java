@@ -1,4 +1,4 @@
-package net.minecraft.client.gui.screen.report;
+package net.minecraft.client.gui.screen.abusereport;
 
 import com.mojang.authlib.minecraft.report.AbuseReportLimits;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -14,11 +14,13 @@ import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TaskScreen;
 import net.minecraft.client.gui.screen.WarningScreen;
+import net.minecraft.client.gui.screen.report.AbuseReportReasonScreen;
+import net.minecraft.client.gui.screen.report.ChatSelectionScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.EditBoxWidget;
+import net.minecraft.client.network.abusereport.ChatAbuseReport;
 import net.minecraft.client.report.AbuseReportContext;
 import net.minecraft.client.report.AbuseReportReason;
-import net.minecraft.client.report.ChatAbuseReport;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;

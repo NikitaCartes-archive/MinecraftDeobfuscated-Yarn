@@ -6,21 +6,19 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.report.log.ChatLog;
-import net.minecraft.client.report.log.ReceivedMessage;
 
 @Environment(EnvType.CLIENT)
-public class GroupedMessagesCollector<T extends ReceivedMessage> {
-	private final Function<ChatLog.IndexedEntry<T>, GroupedMessagesCollector.ReportType> reportTypeGetter;
-	private final List<ChatLog.IndexedEntry<T>> messages = new ArrayList();
+public class GroupedMessagesCollector {
+	private final Function<ReceivedMessage.IndexedMessage, GroupedMessagesCollector.ReportType> reportTypeGetter;
+	private final List<ReceivedMessage.IndexedMessage> messages = new ArrayList();
 	@Nullable
 	private GroupedMessagesCollector.ReportType reportType;
 
-	public GroupedMessagesCollector(Function<ChatLog.IndexedEntry<T>, GroupedMessagesCollector.ReportType> reportTypeGetter) {
+	public GroupedMessagesCollector(Function<ReceivedMessage.IndexedMessage, GroupedMessagesCollector.ReportType> reportTypeGetter) {
 		this.reportTypeGetter = reportTypeGetter;
 	}
 
-	public boolean add(ChatLog.IndexedEntry<T> message) {
+	public boolean add(ReceivedMessage.IndexedMessage message) {
 		GroupedMessagesCollector.ReportType reportType = (GroupedMessagesCollector.ReportType)this.reportTypeGetter.apply(message);
 		if (this.reportType != null && reportType != this.reportType) {
 			return false;
@@ -32,12 +30,12 @@ public class GroupedMessagesCollector<T extends ReceivedMessage> {
 	}
 
 	@Nullable
-	public GroupedMessagesCollector.GroupedMessages<T> collect() {
-		return !this.messages.isEmpty() && this.reportType != null ? new GroupedMessagesCollector.GroupedMessages<>(this.messages, this.reportType) : null;
+	public GroupedMessagesCollector.GroupedMessages collect() {
+		return !this.messages.isEmpty() && this.reportType != null ? new GroupedMessagesCollector.GroupedMessages(this.messages, this.reportType) : null;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static record GroupedMessages<T extends ReceivedMessage>(List<ChatLog.IndexedEntry<T>> messages, GroupedMessagesCollector.ReportType type) {
+	public static record GroupedMessages(List<ReceivedMessage.IndexedMessage> messages, GroupedMessagesCollector.ReportType type) {
 	}
 
 	@Environment(EnvType.CLIENT)

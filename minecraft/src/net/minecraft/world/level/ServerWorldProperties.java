@@ -1,6 +1,5 @@
 package net.minecraft.world.level;
 
-import java.util.Locale;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.server.MinecraftServer;
@@ -32,18 +31,13 @@ public interface ServerWorldProperties extends MutableWorldProperties {
 		reportSection.add(
 			"Level game mode",
 			(CrashCallable<String>)(() -> String.format(
-					Locale.ROOT,
-					"Game mode: %s (ID %d). Hardcore: %b. Cheats: %b",
-					this.getGameMode().getName(),
-					this.getGameMode().getId(),
-					this.isHardcore(),
-					this.areCommandsAllowed()
+					"Game mode: %s (ID %d). Hardcore: %b. Cheats: %b", this.getGameMode().getName(), this.getGameMode().getId(), this.isHardcore(), this.areCommandsAllowed()
 				))
 		);
 		reportSection.add(
 			"Level weather",
 			(CrashCallable<String>)(() -> String.format(
-					Locale.ROOT, "Rain time: %d (now: %b), thunder time: %d (now: %b)", this.getRainTime(), this.isRaining(), this.getThunderTime(), this.isThundering()
+					"Rain time: %d (now: %b), thunder time: %d (now: %b)", this.getRainTime(), this.isRaining(), this.getThunderTime(), this.isThundering()
 				))
 		);
 	}

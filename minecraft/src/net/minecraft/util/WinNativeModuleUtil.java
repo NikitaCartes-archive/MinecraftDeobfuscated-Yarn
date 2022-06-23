@@ -17,7 +17,6 @@ import com.sun.jna.ptr.PointerByReference;
 import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.stream.Collectors;
@@ -89,7 +88,7 @@ public class WinNativeModuleUtil {
 	}
 
 	private static String getStringFileInfoPath(String key, int languageId, int codePage) {
-		return String.format(Locale.ROOT, "\\StringFileInfo\\%04x%04x\\%s", languageId, codePage, key);
+		return String.format("\\StringFileInfo\\%04x%04x\\%s", languageId, codePage, key);
 	}
 
 	private static OptionalInt getEnglishTranslationIndex(int[] indices) {

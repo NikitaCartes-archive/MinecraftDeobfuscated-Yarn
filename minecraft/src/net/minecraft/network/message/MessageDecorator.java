@@ -41,16 +41,42 @@ public interface MessageDecorator {
 	 */
 	CompletableFuture<Text> decorate(@Nullable ServerPlayerEntity sender, Text message);
 
-	default CompletableFuture<FilteredMessage<Text>> rebuildFiltered(
-		@Nullable ServerPlayerEntity serverPlayerEntity, FilteredMessage<Text> filteredMessage, Text text
-	) {
-		return filteredMessage.method_45001(text, textx -> this.decorate(serverPlayerEntity, textx));
+	/**
+	 * {@return the decorated filtered message from undecorated {@code message}}
+	 * 
+	 * <p>This keeps the filtered status of the original message; i.e. fully censored messages
+	 * will remain fully censored, and unfiltered messages will remain unfiltered. If the message
+	 * is partially filtered, both the raw and the filtered message will be decorated.
+	 */
+	default CompletableFuture<FilteredMessage<Text>> decorateFiltered(@Nullable ServerPlayerEntity sender, FilteredMessage<Text> message) {
+		CompletableFuture<Text> completableFuture = this.decorate(sender, message.raw());
+		if (!message.isFiltered()) {
+			return completableFuture.thenApply(FilteredMessage::permitted);
+		} else if (message.filtered() == null) {
+			return completableFuture.thenApply(FilteredMessage::censored);
+		} else {
+			CompletableFuture<Text> completableFuture2 = this.decorate(sender, message.filtered());
+			return CompletableFuture.allOf(completableFuture, completableFuture2)
+				.thenApply(void_ -> new FilteredMessage<>((Text)completableFuture.join(), (Text)completableFuture2.join()));
+		}
 	}
 
-	static FilteredMessage<SignedMessage> attachUnsignedDecoration(FilteredMessage<SignedMessage> message, FilteredMessage<Text> decorated) {
-		return message.map(
-			rawMessage -> rawMessage.withUnsignedContent(decorated.raw()),
-			filteredMessage -> decorated.filtered() != null ? filteredMessage.withUnsignedContent(decorated.filtered()) : filteredMessage
-		);
+	/**
+	 * {@return the decorated signed chat message from undecorated {@code message}}
+	 * 
+	 * <p>If {@code previewed} is false, the returned message will have the original
+	 * content as signed and the decorated content as unsigned. This means that if the
+	 * received player requires signed chat message, they will see the original content.
+	 * 
+	 * <p>This keeps the filtered status of the original message; i.e. fully censored messages
+	 * will remain fully censored, and unfiltered messages will remain unfiltered. If the message
+	 * is partially filtered, both the raw and the filtered message will be decorated.
+	 * 
+	 * @param previewed whether the decoration was previewed by the sender's client
+	 */
+	default CompletableFuture<FilteredMessage<SignedMessage>> decorateChat(
+		@Nullable ServerPlayerEntity sender, FilteredMessage<Text> message, MessageSignature signature, boolean previewed
+	) {
+		return this.decorateFiltered(sender, message).thenApply(decorated -> SignedMessage.toSignedMessage(message, decorated, signature, previewed));
 	}
 }

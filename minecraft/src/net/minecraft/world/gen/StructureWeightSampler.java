@@ -35,18 +35,18 @@ public class StructureWeightSampler implements DensityFunctionTypes.Beardifying 
 	private final ObjectListIterator<StructureWeightSampler.class_7301> pieceIterator;
 	private final ObjectListIterator<JigsawJunction> junctionIterator;
 
-	public static StructureWeightSampler createStructureWeightSampler(StructureAccessor world, ChunkPos pos) {
-		int i = pos.getStartX();
-		int j = pos.getStartZ();
+	public static StructureWeightSampler method_42695(StructureAccessor structureAccessor, ChunkPos chunkPos) {
+		int i = chunkPos.getStartX();
+		int j = chunkPos.getStartZ();
 		ObjectList<StructureWeightSampler.class_7301> objectList = new ObjectArrayList(10);
 		ObjectList<JigsawJunction> objectList2 = new ObjectArrayList<>(32);
-		world.getStructureStarts(pos, structure -> structure.getTerrainAdaptation() != StructureTerrainAdaptation.NONE)
+		structureAccessor.method_41035(chunkPos, structure -> structure.getTerrainAdaptation() != StructureTerrainAdaptation.NONE)
 			.forEach(
-				start -> {
-					StructureTerrainAdaptation structureTerrainAdaptation = start.getStructure().getTerrainAdaptation();
+				structureStart -> {
+					StructureTerrainAdaptation structureTerrainAdaptation = structureStart.getStructure().getTerrainAdaptation();
 		
-					for(StructurePiece structurePiece : start.getChildren()) {
-						if (structurePiece.intersectsChunk(pos, 12)) {
+					for(StructurePiece structurePiece : structureStart.getChildren()) {
+						if (structurePiece.intersectsChunk(chunkPos, 12)) {
 							if (structurePiece instanceof PoolStructurePiece poolStructurePiece) {
 								StructurePool.Projection projection = poolStructurePiece.getPoolElement().getProjection();
 								if (projection == StructurePool.Projection.RIGID) {
@@ -56,9 +56,9 @@ public class StructureWeightSampler implements DensityFunctionTypes.Beardifying 
 								}
 		
 								for(JigsawJunction jigsawJunction : poolStructurePiece.getJunctions()) {
-									int ixx = jigsawJunction.getSourceX();
-									int jxx = jigsawJunction.getSourceZ();
-									if (ixx > i - 12 && jxx > j - 12 && ixx < i + 15 + 12 && jxx < j + 15 + 12) {
+									int k = jigsawJunction.getSourceX();
+									int l = jigsawJunction.getSourceZ();
+									if (k > i - 12 && l > j - 12 && k < i + 15 + 12 && l < j + 15 + 12) {
 										objectList2.add(jigsawJunction);
 									}
 								}

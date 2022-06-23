@@ -162,7 +162,7 @@ public class MaterialRules {
 
 				@Override
 				protected boolean test() {
-					return this.context.blockY + (AboveYMaterialCondition.this.addStoneDepth ? this.context.stoneDepthAbove : 0)
+					return this.context.y + (AboveYMaterialCondition.this.addStoneDepth ? this.context.stoneDepthAbove : 0)
 						>= AboveYMaterialCondition.this.anchor.getY(this.context.heightContext) + this.context.runDepth * AboveYMaterialCondition.this.surfaceDepthMultiplier;
 				}
 			}
@@ -427,8 +427,8 @@ public class MaterialRules {
 		private long field_36278 = Long.MAX_VALUE;
 		private final int[] field_36279 = new int[4];
 		long uniqueHorizontalPosValue = -9223372036854775807L;
-		int blockX;
-		int blockZ;
+		int x;
+		int z;
 		int runDepth;
 		private long field_35677 = this.uniqueHorizontalPosValue - 1L;
 		private double field_35678;
@@ -437,7 +437,7 @@ public class MaterialRules {
 		long uniquePosValue = -9223372036854775807L;
 		final BlockPos.Mutable pos = new BlockPos.Mutable();
 		Supplier<RegistryEntry<Biome>> biomeSupplier;
-		int blockY;
+		int y;
 		int fluidHeight;
 		int stoneDepthBelow;
 		int stoneDepthAbove;
@@ -459,18 +459,18 @@ public class MaterialRules {
 			this.heightContext = heightContext;
 		}
 
-		protected void initHorizontalContext(int blockX, int blockZ) {
+		protected void initHorizontalContext(int x, int z) {
 			++this.uniqueHorizontalPosValue;
 			++this.uniquePosValue;
-			this.blockX = blockX;
-			this.blockZ = blockZ;
-			this.runDepth = this.surfaceBuilder.method_39552(blockX, blockZ);
+			this.x = x;
+			this.z = z;
+			this.runDepth = this.surfaceBuilder.method_39552(x, z);
 		}
 
-		protected void initVerticalContext(int stoneDepthAbove, int stoneDepthBelow, int fluidHeight, int blockX, int blockY, int blockZ) {
+		protected void initVerticalContext(int stoneDepthAbove, int stoneDepthBelow, int fluidHeight, int x, int y, int z) {
 			++this.uniquePosValue;
-			this.biomeSupplier = Suppliers.memoize(() -> (RegistryEntry<Biome>)this.posToBiome.apply(this.pos.set(blockX, blockY, blockZ)));
-			this.blockY = blockY;
+			this.biomeSupplier = Suppliers.memoize(() -> (RegistryEntry<Biome>)this.posToBiome.apply(this.pos.set(x, y, z)));
+			this.y = y;
 			this.fluidHeight = fluidHeight;
 			this.stoneDepthBelow = stoneDepthBelow;
 			this.stoneDepthAbove = stoneDepthAbove;
@@ -479,7 +479,7 @@ public class MaterialRules {
 		protected double method_39550() {
 			if (this.field_35677 != this.uniqueHorizontalPosValue) {
 				this.field_35677 = this.uniqueHorizontalPosValue;
-				this.field_35678 = this.surfaceBuilder.method_39555(this.blockX, this.blockZ);
+				this.field_35678 = this.surfaceBuilder.method_39555(this.x, this.z);
 			}
 
 			return this.field_35678;
@@ -496,21 +496,21 @@ public class MaterialRules {
 		protected int method_39551() {
 			if (this.field_35679 != this.uniqueHorizontalPosValue) {
 				this.field_35679 = this.uniqueHorizontalPosValue;
-				int i = method_39903(this.blockX);
-				int j = method_39903(this.blockZ);
+				int i = method_39903(this.x);
+				int j = method_39903(this.z);
 				long l = ChunkPos.toLong(i, j);
 				if (this.field_36278 != l) {
 					this.field_36278 = l;
-					this.field_36279[0] = this.chunkNoiseSampler.estimateSurfaceHeight(method_39904(i), method_39904(j));
-					this.field_36279[1] = this.chunkNoiseSampler.estimateSurfaceHeight(method_39904(i + 1), method_39904(j));
-					this.field_36279[2] = this.chunkNoiseSampler.estimateSurfaceHeight(method_39904(i), method_39904(j + 1));
-					this.field_36279[3] = this.chunkNoiseSampler.estimateSurfaceHeight(method_39904(i + 1), method_39904(j + 1));
+					this.field_36279[0] = this.chunkNoiseSampler.method_39900(method_39904(i), method_39904(j));
+					this.field_36279[1] = this.chunkNoiseSampler.method_39900(method_39904(i + 1), method_39904(j));
+					this.field_36279[2] = this.chunkNoiseSampler.method_39900(method_39904(i), method_39904(j + 1));
+					this.field_36279[3] = this.chunkNoiseSampler.method_39900(method_39904(i + 1), method_39904(j + 1));
 				}
 
 				int k = MathHelper.floor(
 					MathHelper.lerp2(
-						(double)((float)(this.blockX & 15) / 16.0F),
-						(double)((float)(this.blockZ & 15) / 16.0F),
+						(double)((float)(this.x & 15) / 16.0F),
+						(double)((float)(this.z & 15) / 16.0F),
 						(double)this.field_36279[0],
 						(double)this.field_36279[1],
 						(double)this.field_36279[2],
@@ -530,8 +530,7 @@ public class MaterialRules {
 
 			@Override
 			protected boolean test() {
-				return ((Biome)((RegistryEntry)this.context.biomeSupplier.get()).value())
-					.isCold(this.context.pos.set(this.context.blockX, this.context.blockY, this.context.blockZ));
+				return ((Biome)((RegistryEntry)this.context.biomeSupplier.get()).value()).isCold(this.context.pos.set(this.context.x, this.context.y, this.context.z));
 			}
 		}
 
@@ -553,8 +552,8 @@ public class MaterialRules {
 
 			@Override
 			protected boolean test() {
-				int i = this.context.blockX & 15;
-				int j = this.context.blockZ & 15;
+				int i = this.context.x & 15;
+				int j = this.context.z & 15;
 				int k = Math.max(j - 1, 0);
 				int l = Math.min(j + 1, 15);
 				Chunk chunk = this.context.chunk;
@@ -575,7 +574,7 @@ public class MaterialRules {
 		final class SurfacePredicate implements MaterialRules.BooleanSupplier {
 			@Override
 			public boolean get() {
-				return MaterialRuleContext.this.blockY >= MaterialRuleContext.this.method_39551();
+				return MaterialRuleContext.this.y >= MaterialRuleContext.this.method_39551();
 			}
 		}
 	}
@@ -610,7 +609,7 @@ public class MaterialRules {
 
 				@Override
 				protected boolean test() {
-					double d = doublePerlinNoiseSampler.sample((double)this.context.blockX, 0.0, (double)this.context.blockZ);
+					double d = doublePerlinNoiseSampler.sample((double)this.context.x, 0.0, (double)this.context.z);
 					return d >= NoiseThresholdMaterialCondition.this.minThreshold && d <= NoiseThresholdMaterialCondition.this.maxThreshold;
 				}
 			}
@@ -828,14 +827,14 @@ public class MaterialRules {
 
 				@Override
 				protected boolean test() {
-					int ix = this.context.blockY;
+					int ix = this.context.y;
 					if (ix <= i) {
 						return true;
 					} else if (ix >= j) {
 						return false;
 					} else {
 						double d = MathHelper.lerpFromProgress((double)ix, (double)i, (double)j, 1.0, 0.0);
-						Random random = randomSplitter.split(this.context.blockX, ix, this.context.blockZ);
+						Random random = randomSplitter.split(this.context.x, ix, this.context.z);
 						return (double)random.nextFloat() < d;
 					}
 				}
@@ -874,7 +873,7 @@ public class MaterialRules {
 				@Override
 				protected boolean test() {
 					return this.context.fluidHeight == Integer.MIN_VALUE
-						|| this.context.blockY + (WaterMaterialCondition.this.addStoneDepth ? this.context.stoneDepthAbove : 0)
+						|| this.context.y + (WaterMaterialCondition.this.addStoneDepth ? this.context.stoneDepthAbove : 0)
 							>= this.context.fluidHeight + WaterMaterialCondition.this.offset + this.context.runDepth * WaterMaterialCondition.this.surfaceDepthMultiplier;
 				}
 			}

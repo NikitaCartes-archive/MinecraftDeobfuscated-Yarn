@@ -248,20 +248,18 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		Writer writer = Files.newBufferedWriter(file);
 
 		try {
-			writer.write(String.format(Locale.ROOT, "sync-chunk-writes=%s%n", serverPropertiesHandler.syncChunkWrites));
-			writer.write(String.format(Locale.ROOT, "gamemode=%s%n", serverPropertiesHandler.gameMode));
-			writer.write(String.format(Locale.ROOT, "spawn-monsters=%s%n", serverPropertiesHandler.spawnMonsters));
-			writer.write(String.format(Locale.ROOT, "entity-broadcast-range-percentage=%d%n", serverPropertiesHandler.entityBroadcastRangePercentage));
-			writer.write(String.format(Locale.ROOT, "max-world-size=%d%n", serverPropertiesHandler.maxWorldSize));
-			writer.write(String.format(Locale.ROOT, "spawn-npcs=%s%n", serverPropertiesHandler.spawnNpcs));
-			writer.write(String.format(Locale.ROOT, "view-distance=%d%n", serverPropertiesHandler.viewDistance));
-			writer.write(String.format(Locale.ROOT, "simulation-distance=%d%n", serverPropertiesHandler.simulationDistance));
-			writer.write(String.format(Locale.ROOT, "spawn-animals=%s%n", serverPropertiesHandler.spawnAnimals));
-			writer.write(
-				String.format(Locale.ROOT, "generate-structures=%s%n", serverPropertiesHandler.getGeneratorOptions(this.getRegistryManager()).shouldGenerateStructures())
-			);
-			writer.write(String.format(Locale.ROOT, "use-native=%s%n", serverPropertiesHandler.useNativeTransport));
-			writer.write(String.format(Locale.ROOT, "rate-limit=%d%n", serverPropertiesHandler.rateLimit));
+			writer.write(String.format("sync-chunk-writes=%s%n", serverPropertiesHandler.syncChunkWrites));
+			writer.write(String.format("gamemode=%s%n", serverPropertiesHandler.gameMode));
+			writer.write(String.format("spawn-monsters=%s%n", serverPropertiesHandler.spawnMonsters));
+			writer.write(String.format("entity-broadcast-range-percentage=%d%n", serverPropertiesHandler.entityBroadcastRangePercentage));
+			writer.write(String.format("max-world-size=%d%n", serverPropertiesHandler.maxWorldSize));
+			writer.write(String.format("spawn-npcs=%s%n", serverPropertiesHandler.spawnNpcs));
+			writer.write(String.format("view-distance=%d%n", serverPropertiesHandler.viewDistance));
+			writer.write(String.format("simulation-distance=%d%n", serverPropertiesHandler.simulationDistance));
+			writer.write(String.format("spawn-animals=%s%n", serverPropertiesHandler.spawnAnimals));
+			writer.write(String.format("generate-structures=%s%n", serverPropertiesHandler.getGeneratorOptions(this.getRegistryManager()).shouldGenerateStructures()));
+			writer.write(String.format("use-native=%s%n", serverPropertiesHandler.useNativeTransport));
+			writer.write(String.format("rate-limit=%d%n", serverPropertiesHandler.rateLimit));
 		} catch (Throwable var7) {
 			if (writer != null) {
 				try {
@@ -452,7 +450,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 
 	@Override
 	public boolean shouldEnforceSecureProfile() {
-		return this.getProperties().enforceSecureProfile && this.getProperties().onlineMode;
+		return this.getProperties().enforceSecureProfile;
 	}
 
 	protected boolean convertData() {
