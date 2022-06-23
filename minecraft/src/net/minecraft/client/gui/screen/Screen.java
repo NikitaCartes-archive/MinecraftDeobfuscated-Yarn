@@ -42,6 +42,7 @@ import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.ClickEvent;
@@ -219,6 +220,10 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 				m = this.height - j - 6;
 			}
 
+			if (y - j - 8 < 0) {
+				m = y + 8;
+			}
+
 			matrices.push();
 			int o = -267386864;
 			int p = 1347420415;
@@ -339,11 +344,9 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 				} else if (clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
 					String string2 = SharedConstants.stripInvalidChars(clickEvent.getValue());
 					if (string2.startsWith("/")) {
-						if (!this.client.player.sendCommand(string2.substring(1))) {
-							LOGGER.error("Not allowed to run command with signed argument from click event: '{}'", string2);
-						}
+						this.client.player.sendCommand(string2.substring(1));
 					} else {
-						LOGGER.error("Failed to run command without '/' prefix from click event: '{}'", string2);
+						LOGGER.warn("Failed to run command without '/' prefix from click event: '{}'", string2);
 					}
 				} else if (clickEvent.getAction() == ClickEvent.Action.COPY_TO_CLIPBOARD) {
 					this.client.keyboard.setClipboard(clickEvent.getValue());
@@ -553,7 +556,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	}
 
 	private boolean isNarratorActive() {
-		return this.client.getNarratorManager().isActive();
+		return NarratorManager.INSTANCE.isActive();
 	}
 
 	public void updateNarrator() {
@@ -576,7 +579,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		this.narrator.buildNarrations(this::addScreenNarrations);
 		String string = this.narrator.buildNarratorText(!useTranslationsCache);
 		if (!string.isEmpty()) {
-			this.client.getNarratorManager().narrate(string);
+			NarratorManager.INSTANCE.narrate(string);
 		}
 	}
 

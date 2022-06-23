@@ -41,7 +41,7 @@ import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
-public class RecipeBookWidget extends DrawableHelper implements RecipeGridAligner<Ingredient>, Drawable, Element, Selectable, RecipeDisplayListener {
+public class RecipeBookWidget extends DrawableHelper implements Drawable, Element, Selectable, RecipeDisplayListener, RecipeGridAligner<Ingredient> {
 	protected static final Identifier TEXTURE = new Identifier("textures/gui/recipe_book.png");
 	private static final Text SEARCH_HINT_TEXT = Text.translatable("gui.recipebook.search_hint").formatted(Formatting.ITALIC).formatted(Formatting.GRAY);
 	public static final int field_32408 = 147;

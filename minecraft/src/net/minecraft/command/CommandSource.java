@@ -26,10 +26,6 @@ import net.minecraft.world.World;
 public interface CommandSource {
 	Collection<String> getPlayerNames();
 
-	default Collection<String> getChatSuggestions() {
-		return this.getPlayerNames();
-	}
-
 	default Collection<String> getEntitySuggestions() {
 		return Collections.emptyList();
 	}

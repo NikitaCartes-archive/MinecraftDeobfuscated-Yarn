@@ -6,6 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.message.MessageType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
@@ -95,7 +96,7 @@ public class DebugStickItem extends Item {
 	}
 
 	private static void sendMessage(PlayerEntity player, Text message) {
-		((ServerPlayerEntity)player).sendMessageToClient(message, true);
+		((ServerPlayerEntity)player).sendMessage(message, MessageType.GAME_INFO);
 	}
 
 	private static <T extends Comparable<T>> String getValueString(BlockState state, Property<T> property) {

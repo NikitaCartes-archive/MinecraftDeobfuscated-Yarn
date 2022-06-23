@@ -161,7 +161,7 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 				PathNode pathNode = path.getNode(ix);
 				if (getManhattanDistance(pathNode.getBlockPos(), cameraX, cameraY, cameraZ) <= 80.0F) {
 					DebugRenderer.drawString(
-						String.valueOf(pathNode.type), (double)pathNode.x + 0.5, (double)pathNode.y + 0.75, (double)pathNode.z + 0.5, -1, 0.02F, true, 0.0F, true
+						String.format("%s", pathNode.type), (double)pathNode.x + 0.5, (double)pathNode.y + 0.75, (double)pathNode.z + 0.5, -1, 0.02F, true, 0.0F, true
 					);
 					DebugRenderer.drawString(
 						String.format(Locale.ROOT, "%.2f", pathNode.penalty),

@@ -11,14 +11,12 @@ import java.io.File;
 import java.net.SocketAddress;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.block.BlockState;
@@ -35,9 +33,8 @@ import net.minecraft.network.ClientConnection;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.encryption.PlayerPublicKey;
-import net.minecraft.network.message.MessageSourceProfile;
+import net.minecraft.network.message.MessageSender;
 import net.minecraft.network.message.MessageType;
-import net.minecraft.network.message.SentMessage;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.network.packet.s2c.play.ChunkLoadDistanceS2CPacket;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
@@ -212,7 +209,7 @@ public abstract class PlayerManager {
 			mutableText = Text.translatable("multiplayer.player.joined.renamed", player.getDisplayName(), string);
 		}
 
-		this.broadcast(mutableText.formatted(Formatting.YELLOW), false);
+		this.broadcast(mutableText.formatted(Formatting.YELLOW), MessageType.SYSTEM);
 		serverPlayNetworkHandler.requestTeleport(player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch());
 		this.players.add(player);
 		this.playerMap.put(player.getUuid(), player);
@@ -572,7 +569,7 @@ public abstract class PlayerManager {
 	public void sendToOtherTeams(PlayerEntity source, Text message) {
 		AbstractTeam abstractTeam = source.getScoreboardTeam();
 		if (abstractTeam == null) {
-			this.broadcast(message, false);
+			this.broadcast(message, MessageType.SYSTEM);
 		} else {
 			for (int i = 0; i < this.players.size(); i++) {
 				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)this.players.get(i);
@@ -777,37 +774,37 @@ public abstract class PlayerManager {
 	 * @apiNote This is used to send general messages such as a death
 	 * message or a join/leave message.
 	 * 
-	 * @see #broadcast(Text, Function, boolean)
-	 * @see #broadcast(FilteredMessage, ServerCommandSource, MessageType.Parameters)
-	 * @see #broadcast(FilteredMessage, ServerPlayerEntity, MessageType.Parameters)
-	 * @see #broadcast(SignedMessage, MessageSourceProfile, MessageType.Parameters)
-	 * @see #broadcast(FilteredMessage, Predicate, MessageSourceProfile, MessageType.Parameters)
+	 * @see #broadcast(Text, Function, RegistryKey)
+	 * @see #broadcast(FilteredMessage, ServerCommandSource, RegistryKey)
+	 * @see #broadcast(FilteredMessage, ServerPlayerEntity, RegistryKey)
+	 * @see #broadcast(SignedMessage, MessageSender, RegistryKey)
+	 * @see #broadcast(SignedMessage, Function, MessageSender, RegistryKey)
 	 */
-	public void broadcast(Text message, boolean overlay) {
-		this.broadcast(message, player -> message, overlay);
+	public void broadcast(Text message, RegistryKey<MessageType> typeKey) {
+		this.broadcast(message, player -> message, typeKey);
 	}
 
 	/**
 	 * Broadcasts a message to all players and the server console. A different
 	 * message can be sent to a different player.
 	 * 
-	 * @see #broadcast(Text, boolean)
-	 * @see #broadcast(FilteredMessage, ServerCommandSource, MessageType.Parameters)
-	 * @see #broadcast(FilteredMessage, ServerPlayerEntity, MessageType.Parameters)
-	 * @see #broadcast(SignedMessage, MessageSourceProfile, MessageType.Parameters)
-	 * @see #broadcast(FilteredMessage, Predicate, MessageSourceProfile, MessageType.Parameters)
+	 * @see #broadcast(Text, RegistryKey)
+	 * @see #broadcast(FilteredMessage, ServerCommandSource, RegistryKey)
+	 * @see #broadcast(FilteredMessage, ServerPlayerEntity, RegistryKey)
+	 * @see #broadcast(SignedMessage, MessageSender, RegistryKey)
+	 * @see #broadcast(SignedMessage, Function, MessageSender, RegistryKey)
 	 * 
 	 * @param playerMessageFactory a function that takes the player to send the message to
 	 * and returns either the text to send to them or {@code null}
 	 * to indicate the message should not be sent to them
 	 */
-	public void broadcast(Text message, Function<ServerPlayerEntity, Text> playerMessageFactory, boolean overlay) {
+	public void broadcast(Text message, Function<ServerPlayerEntity, Text> playerMessageFactory, RegistryKey<MessageType> typeKey) {
 		this.server.sendMessage(message);
 
 		for (ServerPlayerEntity serverPlayerEntity : this.players) {
 			Text text = (Text)playerMessageFactory.apply(serverPlayerEntity);
 			if (text != null) {
-				serverPlayerEntity.sendMessageToClient(text, overlay);
+				serverPlayerEntity.sendMessage(text, typeKey);
 			}
 		}
 	}
@@ -819,18 +816,18 @@ public abstract class PlayerManager {
 	 * {@link net.minecraft.server.command.MeCommand} or
 	 * {@link net.minecraft.server.command.SayCommand} .
 	 * 
-	 * @see #broadcast(Text, boolean)
-	 * @see #broadcast(Text, Function, boolean)
-	 * @see #broadcast(FilteredMessage, ServerPlayerEntity, MessageType.Parameters)
-	 * @see #broadcast(SignedMessage, MessageSourceProfile, MessageType.Parameters)
-	 * @see #broadcast(FilteredMessage, Predicate, MessageSourceProfile, MessageType.Parameters)
+	 * @see #broadcast(Text, RegistryKey)
+	 * @see #broadcast(Text, Function, RegistryKey)
+	 * @see #broadcast(FilteredMessage, ServerPlayerEntity, RegistryKey)
+	 * @see #broadcast(SignedMessage, MessageSender, RegistryKey)
+	 * @see #broadcast(SignedMessage, Function, MessageSender, RegistryKey)
 	 */
-	public void broadcast(FilteredMessage<SignedMessage> message, ServerCommandSource source, MessageType.Parameters params) {
+	public void broadcast(FilteredMessage<SignedMessage> message, ServerCommandSource source, RegistryKey<MessageType> typeKey) {
 		ServerPlayerEntity serverPlayerEntity = source.getPlayer();
 		if (serverPlayerEntity != null) {
-			this.broadcast(message, serverPlayerEntity, params);
+			this.broadcast(message, serverPlayerEntity, typeKey);
 		} else {
-			this.broadcast(message.raw(), source.getMessageSourceProfile(), params);
+			this.broadcast(message.raw(), source.getChatMessageSender(), typeKey);
 		}
 	}
 
@@ -838,107 +835,90 @@ public abstract class PlayerManager {
 	 * Broadcasts a chat message to all players and the server console.
 	 * 
 	 * <p>Chat messages have signatures. It is possible to use a bogus signature - such as
-	 * {@link net.minecraft.network.message.SignedMessage#ofUnsigned} - to send a chat
+	 * {@link net.minecraft.network.message.MessageSignature#none} - to send a chat
 	 * message; however if the signature is invalid (e.g. because the text's content differs
 	 * from the one sent by the client, or because the passed signature is invalid) the client
-	 * will show a warning and can discard it depending on the client's options.
+	 * will log a warning. See {@link
+	 * net.minecraft.network.message.MessageSignature#updateSignature} for how the
+	 * message is signed.
 	 * 
 	 * @apiNote This method is used to broadcast a message sent by a player
 	 * through {@linkplain net.minecraft.client.gui.screen.ChatScreen the chat screen}
 	 * as well as through commands like {@link net.minecraft.server.command.MeCommand} or
 	 * {@link net.minecraft.server.command.SayCommand} .
 	 * 
-	 * @see #broadcast(Text, boolean)
-	 * @see #broadcast(Text, Function, boolean)
-	 * @see #broadcast(FilteredMessage, ServerCommandSource, MessageType.Parameters)
-	 * @see #broadcast(SignedMessage, MessageSourceProfile, MessageType.Parameters)
-	 * @see #broadcast(FilteredMessage, Predicate, MessageSourceProfile, MessageType.Parameters)
+	 * @see #broadcast(Text, RegistryKey)
+	 * @see #broadcast(Text, Function, RegistryKey)
+	 * @see #broadcast(FilteredMessage, ServerCommandSource, RegistryKey)
+	 * @see #broadcast(SignedMessage, MessageSender, RegistryKey)
+	 * @see #broadcast(SignedMessage, Function, MessageSender, RegistryKey)
 	 */
-	public void broadcast(FilteredMessage<SignedMessage> message, ServerPlayerEntity sender, MessageType.Parameters params) {
-		this.broadcast(message, sender::shouldFilterMessagesSentTo, sender.getMessageSourceProfile(), params);
+	public void broadcast(FilteredMessage<SignedMessage> message, ServerPlayerEntity sender, RegistryKey<MessageType> typeKey) {
+		this.broadcast(message.raw(), player -> message.getFilterableFor(sender, player), sender.asMessageSender(), typeKey);
 	}
 
 	/**
 	 * Broadcasts a chat message to all players and the server console.
 	 * 
 	 * <p>Chat messages have signatures. It is possible to use a bogus signature - such as
-	 * {@link net.minecraft.network.message.SignedMessage#ofUnsigned} - to send a chat
+	 * {@link net.minecraft.network.message.MessageSignature#none} - to send a chat
 	 * message; however if the signature is invalid (e.g. because the text's content differs
 	 * from the one sent by the client, or because the passed signature is invalid) the client
-	 * will show a warning and can discard it depending on the client's options.
+	 * will log a warning. See {@link
+	 * net.minecraft.network.message.MessageSignature#updateSignature} for how the
+	 * message is signed.
 	 * 
 	 * @apiNote This method is used to broadcast messages from commands like {@link
 	 * net.minecraft.server.command.MeCommand} or {@link net.minecraft.server.command.SayCommand}.
 	 * 
-	 * @see #broadcast(Text, boolean)
-	 * @see #broadcast(Text, Function, boolean)
-	 * @see #broadcast(FilteredMessage, ServerCommandSource, MessageType.Parameters)
-	 * @see #broadcast(FilteredMessage, ServerPlayerEntity, MessageType.Parameters)
-	 * @see #broadcast(FilteredMessage, Predicate, MessageSourceProfile, MessageType.Parameters)
+	 * @see #broadcast(Text, RegistryKey)
+	 * @see #broadcast(Text, Function, RegistryKey)
+	 * @see #broadcast(FilteredMessage, ServerCommandSource, RegistryKey)
+	 * @see #broadcast(FilteredMessage, ServerPlayerEntity, RegistryKey)
+	 * @see #broadcast(SignedMessage, Function, MessageSender, RegistryKey)
 	 */
-	public void broadcast(SignedMessage message, MessageSourceProfile profile, MessageType.Parameters params) {
-		this.broadcast(FilteredMessage.permitted(message), player -> false, profile, params);
+	public void broadcast(SignedMessage message, MessageSender sender, RegistryKey<MessageType> typeKey) {
+		this.broadcast(message, player -> message, sender, typeKey);
 	}
 
 	/**
-	 * Broadcasts a chat message to all players and the server console.
+	 * Broadcasts a chat message to all players and the server console. A different
+	 * message can be sent to a different player.
 	 * 
 	 * <p>Chat messages have signatures. It is possible to use a bogus signature - such as
-	 * {@link net.minecraft.network.message.SignedMessage#ofUnsigned} - to send a chat
+	 * {@link net.minecraft.network.message.MessageSignature#none} - to send a chat
 	 * message; however if the signature is invalid (e.g. because the text's content differs
 	 * from the one sent by the client, or because the passed signature is invalid) the client
-	 * will show a warning and can discard it depending on the client's options.
+	 * will log a warning. See {@link
+	 * net.minecraft.network.message.MessageSignature#updateSignature} for how the
+	 * message is signed.
 	 * 
-	 * @see #broadcast(Text, boolean)
-	 * @see #broadcast(Text, Function, boolean)
-	 * @see #broadcast(FilteredMessage, ServerCommandSource, MessageType.Parameters)
-	 * @see #broadcast(FilteredMessage, ServerPlayerEntity, MessageType.Parameters)
-	 * @see #broadcast(SignedMessage, MessageSourceProfile, MessageType.Parameters)
+	 * @apiNote This method is used to broadcast a message sent by a player
+	 * through {@linkplain net.minecraft.client.gui.screen.ChatScreen the chat screen}
+	 * as well as through commands like {@link net.minecraft.server.command.MeCommand} or
+	 * {@link net.minecraft.server.command.SayCommand} .
 	 * 
-	 * @param shouldSendFiltered predicate that determines whether to send the filtered message for the given player
+	 * @see #broadcast(Text, RegistryKey)
+	 * @see #broadcast(Text, Function, RegistryKey)
+	 * @see #broadcast(FilteredMessage, ServerCommandSource, RegistryKey)
+	 * @see #broadcast(FilteredMessage, ServerPlayerEntity, RegistryKey)
+	 * @see #broadcast(SignedMessage, MessageSender, RegistryKey)
+	 * 
+	 * @param playerMessageFactory a function that takes the player to send the message to
+	 * and returns either the message to send to them or {@code null}
+	 * to indicate the message should not be sent to them
 	 */
-	private void broadcast(
-		FilteredMessage<SignedMessage> message, Predicate<ServerPlayerEntity> shouldSendFiltered, MessageSourceProfile profile, MessageType.Parameters params
+	public void broadcast(
+		SignedMessage message, Function<ServerPlayerEntity, SignedMessage> playerMessageFactory, MessageSender sender, RegistryKey<MessageType> typeKey
 	) {
-		boolean bl = this.verify(message.raw(), profile);
-		this.server.logChatMessage(message.raw().getContent(), params, bl ? null : "Not Secure");
-		FilteredMessage<SentMessage> filteredMessage = SentMessage.of(message);
+		this.server.logChatMessage(sender, message.getContent(), typeKey);
 
 		for (ServerPlayerEntity serverPlayerEntity : this.players) {
-			SentMessage sentMessage = filteredMessage.get(shouldSendFiltered.test(serverPlayerEntity));
-			if (sentMessage != null) {
-				serverPlayerEntity.sendChatMessage(sentMessage, params);
+			SignedMessage signedMessage = (SignedMessage)playerMessageFactory.apply(serverPlayerEntity);
+			if (signedMessage != null) {
+				serverPlayerEntity.sendChatMessage(signedMessage, sender, typeKey);
 			}
 		}
-
-		filteredMessage.raw().afterPacketsSent(this);
-	}
-
-	/**
-	 * Sends {@code message}'s headers (only) to all players except {@code except}.
-	 * 
-	 * <p>This is used to keep the integrity of the "message chain" when a message is censored
-	 * or when the message is originally sent without metadata due to it being originated from
-	 * entities.
-	 */
-	public void sendMessageHeader(SignedMessage message, Set<ServerPlayerEntity> except) {
-		byte[] bs = message.signedBody().digest().asBytes();
-
-		for (ServerPlayerEntity serverPlayerEntity : this.players) {
-			if (!except.contains(serverPlayerEntity)) {
-				serverPlayerEntity.sendMessageHeader(message.signedHeader(), message.headerSignature(), bs);
-			}
-		}
-	}
-
-	/**
-	 * {@return whether {@code message} is not expired and is verified}
-	 * 
-	 * @implNote This only affects the server log. Unverified messages are still broadcast
-	 * to other clients.
-	 */
-	private boolean verify(SignedMessage message, MessageSourceProfile profile) {
-		return !message.isExpiredOnServer(Instant.now()) && message.verify(profile);
 	}
 
 	public ServerStatHandler createStatHandler(PlayerEntity player) {

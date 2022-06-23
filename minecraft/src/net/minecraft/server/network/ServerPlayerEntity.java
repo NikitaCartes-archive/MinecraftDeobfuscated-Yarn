@@ -46,10 +46,9 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.Packet;
 import net.minecraft.network.encryption.PlayerPublicKey;
-import net.minecraft.network.message.MessageHeader;
-import net.minecraft.network.message.MessageSignatureData;
+import net.minecraft.network.message.MessageSender;
 import net.minecraft.network.message.MessageType;
-import net.minecraft.network.message.SentMessage;
+import net.minecraft.network.message.SignedMessage;
 import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
@@ -68,7 +67,6 @@ import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.HealthUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.network.packet.s2c.play.LookAtS2CPacket;
-import net.minecraft.network.packet.s2c.play.MessageHeaderS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenHorseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenWrittenBookS2CPacket;
@@ -131,6 +129,7 @@ import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.world.BlockLocating;
@@ -591,7 +590,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 				);
 			AbstractTeam abstractTeam = this.getScoreboardTeam();
 			if (abstractTeam == null || abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.ALWAYS) {
-				this.server.getPlayerManager().broadcast(text, false);
+				this.server.getPlayerManager().broadcast(text, MessageType.SYSTEM);
 			} else if (abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.HIDE_FOR_OTHER_TEAMS) {
 				this.server.getPlayerManager().sendToTeam(this, text);
 			} else if (abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.HIDE_FOR_OWN_TEAM) {
@@ -1138,8 +1137,8 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
-	public void sendMessage(Text message, boolean overlay) {
-		this.sendMessageToClient(message, overlay);
+	public void sendMessage(Text message, boolean actionBar) {
+		this.sendMessage(message, actionBar ? MessageType.GAME_INFO : MessageType.SYSTEM);
 	}
 
 	@Override
@@ -1289,25 +1288,34 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	@Override
 	public void sendMessage(Text message) {
-		this.sendMessageToClient(message, false);
+		this.sendMessage(message, MessageType.SYSTEM);
 	}
 
-	public void sendMessageToClient(Text message, boolean overlay) {
-		if (this.acceptsMessage(overlay)) {
-			this.networkHandler.sendPacket(new GameMessageS2CPacket(message, overlay), future -> {
+	/**
+	 * Sends a message to the player.
+	 * 
+	 * @see #sendMessage(Text)
+	 * @see #sendChatMessage(SignedMessage, ChatMessageSender, RegistryKey)
+	 */
+	public void sendMessage(Text message, RegistryKey<MessageType> typeKey) {
+		if (this.acceptsMessage(typeKey)) {
+			this.networkHandler.sendPacket(new GameMessageS2CPacket(message, this.getMessageTypeId(typeKey)), future -> {
 				if (!future.isSuccess()) {
-					this.sendMessageDeliverError(message);
+					this.sendMessageDeliverError(message, typeKey);
 				}
 			});
 		}
 	}
 
-	private void sendMessageDeliverError(Text message) {
-		if (this.acceptsMessage(false)) {
+	private void sendMessageDeliverError(Text message, RegistryKey<MessageType> typeKey) {
+		if ((typeKey == MessageType.GAME_INFO || typeKey == MessageType.SYSTEM) && this.acceptsMessage(MessageType.SYSTEM)) {
 			int i = 256;
 			String string = message.asTruncatedString(256);
 			Text text = Text.literal(string).formatted(Formatting.YELLOW);
-			this.networkHandler.sendPacket(new GameMessageS2CPacket(Text.translatable("multiplayer.message_not_delivered", text).formatted(Formatting.RED), false));
+			this.networkHandler
+				.sendPacket(
+					new GameMessageS2CPacket(Text.translatable("multiplayer.message_not_delivered", text).formatted(Formatting.RED), this.getMessageTypeId(MessageType.SYSTEM))
+				);
 		}
 	}
 
@@ -1315,33 +1323,35 @@ public class ServerPlayerEntity extends PlayerEntity {
 	 * Sends a chat message to the player.
 	 * 
 	 * <p>Chat messages have signatures. It is possible to use a bogus signature - such as
-	 * {@link net.minecraft.network.message.SignedMessage#ofUnsigned} - to send a chat
+	 * {@link net.minecraft.network.message.MessageSignature#none} - to send a chat
 	 * message; however if the signature is invalid (e.g. because the text's content differs
 	 * from the one sent by the client, or because the passed signature is invalid) the client
-	 * will show a warning and can discard it depending on the client's options.
+	 * will log a warning. See {@link
+	 * net.minecraft.network.message.MessageSignature#updateSignature} for how the
+	 * message is signed.
 	 * 
 	 * @see #sendMessage(Text)
-	 * @see #sendMessage(Text, boolean)
+	 * @see #sendMessage(Text, RegistryKey)
 	 */
-	public void sendChatMessage(SentMessage message, MessageType.Parameters params) {
-		if (this.acceptsChatMessage()) {
-			ChatMessageS2CPacket chatMessageS2CPacket = message.toPacket(this, params);
-			this.networkHandler.addPendingAcknowledgment(chatMessageS2CPacket.message());
-			this.networkHandler.sendPacket(chatMessageS2CPacket);
+	public void sendChatMessage(SignedMessage message, MessageSender sender, RegistryKey<MessageType> typeKey) {
+		if (this.acceptsMessage(typeKey)) {
+			this.networkHandler
+				.sendPacket(
+					new ChatMessageS2CPacket(
+						message.signedContent(),
+						message.unsignedContent(),
+						this.getMessageTypeId(typeKey),
+						sender,
+						message.signature().timestamp(),
+						message.signature().saltSignature()
+					)
+				);
 		}
 	}
 
-	/**
-	 * Sends a message's header and other data required for verification to this player.
-	 * 
-	 * <p>This is used to keep the integrity of the "message chain" when a message is censored
-	 * or when the message is originally sent without metadata due to it being originated from
-	 * entities.
-	 */
-	public void sendMessageHeader(MessageHeader header, MessageSignatureData headerSignature, byte[] bodyDigest) {
-		if (this.acceptsChatMessage()) {
-			this.networkHandler.sendPacket(new MessageHeaderS2CPacket(header, headerSignature, bodyDigest));
-		}
+	private int getMessageTypeId(RegistryKey<MessageType> typeKey) {
+		Registry<MessageType> registry = this.world.getRegistryManager().get(Registry.MESSAGE_TYPE_KEY);
+		return registry.getRawId(registry.get(typeKey));
 	}
 
 	public String getIp() {
@@ -1367,12 +1377,16 @@ public class ServerPlayerEntity extends PlayerEntity {
 		return this.clientChatVisibility;
 	}
 
-	private boolean acceptsMessage(boolean overlay) {
-		return this.clientChatVisibility == ChatVisibility.HIDDEN ? overlay : true;
-	}
-
-	private boolean acceptsChatMessage() {
-		return this.clientChatVisibility == ChatVisibility.FULL;
+	private boolean acceptsMessage(RegistryKey<MessageType> typeKey) {
+		switch (this.clientChatVisibility) {
+			case HIDDEN:
+				return typeKey == MessageType.GAME_INFO;
+			case SYSTEM:
+				return typeKey == MessageType.SYSTEM || typeKey == MessageType.GAME_INFO;
+			case FULL:
+			default:
+				return true;
+		}
 	}
 
 	public void sendResourcePackUrl(String url, String hash, boolean required, @Nullable Text resourcePackPrompt) {

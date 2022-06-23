@@ -67,7 +67,7 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen implements Erra
 	@Override
 	public void tick() {
 		super.tick();
-		NARRATOR.narrate(this.client.getNarratorManager(), this.title);
+		NARRATOR.narrate(this.title);
 		this.animTicks++;
 		this.task.tick();
 	}
@@ -113,7 +113,7 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen implements Erra
 	@Override
 	public void error(Text errorMessage) {
 		this.errorMessage = errorMessage;
-		this.client.getNarratorManager().narrate(errorMessage);
+		NarratorManager.INSTANCE.narrate(errorMessage);
 		this.client
 			.execute(
 				() -> {

@@ -1,13 +1,10 @@
 package net.minecraft.client.font;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.common.collect.ImmutableList.Builder;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Optional;
 import java.util.function.BiConsumer;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -187,12 +184,6 @@ public class TextHandler {
 				}
 			}
 		}, style).orElse(text);
-	}
-
-	public List<TextHandler.MatchResult> getStyleMatchResults(OrderedText text, Predicate<Style> stylePredicate) {
-		TextHandler.StylePredicateVisitor stylePredicateVisitor = new TextHandler.StylePredicateVisitor(stylePredicate);
-		text.accept(stylePredicateVisitor);
-		return stylePredicateVisitor.getResults();
 	}
 
 	public int getEndingIndex(String text, int maxWidth, Style style) {
@@ -472,57 +463,6 @@ public class TextHandler {
 		 * @param end the end index of this segment in the original string, exclusive
 		 */
 		void accept(Style style, int start, int end);
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static record MatchResult(float left, float right) {
-	}
-
-	@Environment(EnvType.CLIENT)
-	class StylePredicateVisitor implements CharacterVisitor {
-		private final Predicate<Style> stylePredicate;
-		private float totalWidth;
-		private final Builder<TextHandler.MatchResult> results = ImmutableList.builder();
-		private float styleStartWidth;
-		private boolean lastTestResult;
-
-		StylePredicateVisitor(Predicate<Style> stylePredicate) {
-			this.stylePredicate = stylePredicate;
-		}
-
-		@Override
-		public boolean accept(int i, Style style, int j) {
-			boolean bl = this.stylePredicate.test(style);
-			if (this.lastTestResult != bl) {
-				if (bl) {
-					this.onStyleMatchStart();
-				} else {
-					this.onStyleMatchEnd();
-				}
-			}
-
-			this.totalWidth = this.totalWidth + TextHandler.this.widthRetriever.getWidth(j, style);
-			return true;
-		}
-
-		private void onStyleMatchStart() {
-			this.lastTestResult = true;
-			this.styleStartWidth = this.totalWidth;
-		}
-
-		private void onStyleMatchEnd() {
-			float f = this.totalWidth;
-			this.results.add(new TextHandler.MatchResult(this.styleStartWidth, f));
-			this.lastTestResult = false;
-		}
-
-		public List<TextHandler.MatchResult> getResults() {
-			if (this.lastTestResult) {
-				this.onStyleMatchEnd();
-			}
-
-			return this.results.build();
-		}
 	}
 
 	@Environment(EnvType.CLIENT)

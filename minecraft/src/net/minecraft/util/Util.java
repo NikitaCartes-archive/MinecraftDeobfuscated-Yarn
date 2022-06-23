@@ -31,8 +31,6 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -74,6 +72,7 @@ import net.minecraft.util.function.CharPredicate;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
 public class Util {
@@ -84,7 +83,6 @@ public class Util {
 	private static final ExecutorService BOOTSTRAP_EXECUTOR = createWorker("Bootstrap");
 	private static final ExecutorService MAIN_WORKER_EXECUTOR = createWorker("Main");
 	private static final ExecutorService IO_WORKER_EXECUTOR = createIoWorker();
-	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH.mm.ss", Locale.ROOT);
 	public static TimeSupplier.Nanoseconds nanoTimeSupplier = System::nanoTime;
 	public static final Ticker TICKER = new Ticker() {
 		@Override
@@ -123,10 +121,6 @@ public class Util {
 
 	public static long getEpochTimeMs() {
 		return Instant.now().toEpochMilli();
-	}
-
-	public static String getFormattedCurrentTime() {
-		return DATE_TIME_FORMATTER.format(ZonedDateTime.now());
 	}
 
 	private static ExecutorService createWorker(String name) {
@@ -235,7 +229,7 @@ public class Util {
 			System.exit(-1);
 		}
 
-		LOGGER.error(String.format(Locale.ROOT, "Caught exception in thread %s", thread), t);
+		LOGGER.error(String.format("Caught exception in thread %s", thread), t);
 	}
 
 	@Nullable
@@ -930,11 +924,16 @@ public class Util {
 		public void open(URL url) {
 			try {
 				Process process = (Process)AccessController.doPrivileged(() -> Runtime.getRuntime().exec(this.getURLOpenCommand(url)));
+
+				for (String string : IOUtils.readLines(process.getErrorStream())) {
+					Util.LOGGER.error(string);
+				}
+
 				process.getInputStream().close();
 				process.getErrorStream().close();
 				process.getOutputStream().close();
-			} catch (IOException | PrivilegedActionException var3) {
-				Util.LOGGER.error("Couldn't open url '{}'", url, var3);
+			} catch (IOException | PrivilegedActionException var5) {
+				Util.LOGGER.error("Couldn't open url '{}'", url, var5);
 			}
 		}
 

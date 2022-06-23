@@ -7,6 +7,8 @@ import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 import java.util.function.Consumer;
 import net.minecraft.SharedConstants;
@@ -17,7 +19,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.SystemDetails;
 import net.minecraft.util.TimeHelper;
-import net.minecraft.util.Util;
 import net.minecraft.util.ZipCompressor;
 import net.minecraft.util.profiler.EmptyProfileResult;
 import net.minecraft.util.profiler.ProfileResult;
@@ -64,7 +65,10 @@ public class PerfCommand {
 
 	private static void saveReport(ServerCommandSource source, Path tempProfilingDirectory, MinecraftServer server) {
 		String string = String.format(
-			Locale.ROOT, "%s-%s-%s", Util.getFormattedCurrentTime(), server.getSaveProperties().getLevelName(), SharedConstants.getGameVersion().getId()
+			"%s-%s-%s",
+			new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()),
+			server.getSaveProperties().getLevelName(),
+			SharedConstants.getGameVersion().getId()
 		);
 
 		String string2;

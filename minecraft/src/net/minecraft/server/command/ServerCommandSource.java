@@ -17,10 +17,8 @@ import javax.annotation.Nullable;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
-import net.minecraft.network.message.MessageSourceProfile;
-import net.minecraft.network.message.MessageType;
-import net.minecraft.network.message.SentMessage;
-import net.minecraft.network.message.SignedCommandArguments;
+import net.minecraft.network.message.CommandArgumentSigner;
+import net.minecraft.network.message.MessageSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -33,7 +31,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.thread.FutureQueue;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
@@ -61,14 +58,13 @@ public class ServerCommandSource implements CommandSource {
 	private final ResultConsumer<ServerCommandSource> resultConsumer;
 	private final EntityAnchorArgumentType.EntityAnchor entityAnchor;
 	private final Vec2f rotation;
-	private final SignedCommandArguments signedArguments;
-	private final FutureQueue messageChainTaskQueue;
+	private final CommandArgumentSigner signer;
 
 	public ServerCommandSource(
 		CommandOutput output, Vec3d pos, Vec2f rot, ServerWorld world, int level, String name, Text displayName, MinecraftServer server, @Nullable Entity entity
 	) {
 		this(output, pos, rot, world, level, name, displayName, server, entity, false, (context, success, result) -> {
-		}, EntityAnchorArgumentType.EntityAnchor.FEET, SignedCommandArguments.field_39901, FutureQueue.NOOP);
+		}, EntityAnchorArgumentType.EntityAnchor.FEET, CommandArgumentSigner.NONE);
 	}
 
 	protected ServerCommandSource(
@@ -84,8 +80,7 @@ public class ServerCommandSource implements CommandSource {
 		boolean silent,
 		@Nullable ResultConsumer<ServerCommandSource> consumer,
 		EntityAnchorArgumentType.EntityAnchor entityAnchor,
-		SignedCommandArguments signedArguments,
-		FutureQueue messageChainTaskQueue
+		CommandArgumentSigner signer
 	) {
 		this.output = output;
 		this.position = pos;
@@ -99,8 +94,7 @@ public class ServerCommandSource implements CommandSource {
 		this.resultConsumer = consumer;
 		this.entityAnchor = entityAnchor;
 		this.rotation = rot;
-		this.signedArguments = signedArguments;
-		this.messageChainTaskQueue = messageChainTaskQueue;
+		this.signer = signer;
 	}
 
 	public ServerCommandSource withOutput(CommandOutput output) {
@@ -119,8 +113,7 @@ public class ServerCommandSource implements CommandSource {
 				this.silent,
 				this.resultConsumer,
 				this.entityAnchor,
-				this.signedArguments,
-				this.messageChainTaskQueue
+				this.signer
 			);
 	}
 
@@ -140,8 +133,7 @@ public class ServerCommandSource implements CommandSource {
 				this.silent,
 				this.resultConsumer,
 				this.entityAnchor,
-				this.signedArguments,
-				this.messageChainTaskQueue
+				this.signer
 			);
 	}
 
@@ -161,8 +153,7 @@ public class ServerCommandSource implements CommandSource {
 				this.silent,
 				this.resultConsumer,
 				this.entityAnchor,
-				this.signedArguments,
-				this.messageChainTaskQueue
+				this.signer
 			);
 	}
 
@@ -182,8 +173,7 @@ public class ServerCommandSource implements CommandSource {
 				this.silent,
 				this.resultConsumer,
 				this.entityAnchor,
-				this.signedArguments,
-				this.messageChainTaskQueue
+				this.signer
 			);
 	}
 
@@ -203,8 +193,7 @@ public class ServerCommandSource implements CommandSource {
 				this.silent,
 				consumer,
 				this.entityAnchor,
-				this.signedArguments,
-				this.messageChainTaskQueue
+				this.signer
 			);
 	}
 
@@ -228,8 +217,7 @@ public class ServerCommandSource implements CommandSource {
 				true,
 				this.resultConsumer,
 				this.entityAnchor,
-				this.signedArguments,
-				this.messageChainTaskQueue
+				this.signer
 			)
 			: this;
 	}
@@ -250,8 +238,7 @@ public class ServerCommandSource implements CommandSource {
 				this.silent,
 				this.resultConsumer,
 				this.entityAnchor,
-				this.signedArguments,
-				this.messageChainTaskQueue
+				this.signer
 			);
 	}
 
@@ -271,8 +258,7 @@ public class ServerCommandSource implements CommandSource {
 				this.silent,
 				this.resultConsumer,
 				this.entityAnchor,
-				this.signedArguments,
-				this.messageChainTaskQueue
+				this.signer
 			);
 	}
 
@@ -292,8 +278,7 @@ public class ServerCommandSource implements CommandSource {
 				this.silent,
 				this.resultConsumer,
 				anchor,
-				this.signedArguments,
-				this.messageChainTaskQueue
+				this.signer
 			);
 	}
 
@@ -316,8 +301,7 @@ public class ServerCommandSource implements CommandSource {
 				this.silent,
 				this.resultConsumer,
 				this.entityAnchor,
-				this.signedArguments,
-				this.messageChainTaskQueue
+				this.signer
 			);
 		}
 	}
@@ -337,8 +321,8 @@ public class ServerCommandSource implements CommandSource {
 		return this.withRotation(new Vec2f(h, i));
 	}
 
-	public ServerCommandSource withSignedArguments(SignedCommandArguments signedArguments) {
-		return signedArguments == this.signedArguments
+	public ServerCommandSource withSigner(CommandArgumentSigner signer) {
+		return signer == this.signer
 			? this
 			: new ServerCommandSource(
 				this.output,
@@ -353,29 +337,7 @@ public class ServerCommandSource implements CommandSource {
 				this.silent,
 				this.resultConsumer,
 				this.entityAnchor,
-				signedArguments,
-				this.messageChainTaskQueue
-			);
-	}
-
-	public ServerCommandSource withMessageChainTaskQueue(FutureQueue messageChainTaskQueue) {
-		return messageChainTaskQueue == this.messageChainTaskQueue
-			? this
-			: new ServerCommandSource(
-				this.output,
-				this.position,
-				this.rotation,
-				this.world,
-				this.level,
-				this.name,
-				this.displayName,
-				this.server,
-				this.entity,
-				this.silent,
-				this.resultConsumer,
-				this.entityAnchor,
-				this.signedArguments,
-				messageChainTaskQueue
+				signer
 			);
 	}
 
@@ -387,8 +349,8 @@ public class ServerCommandSource implements CommandSource {
 		return this.name;
 	}
 
-	public MessageSourceProfile getMessageSourceProfile() {
-		return this.entity != null ? this.entity.getMessageSourceProfile() : MessageSourceProfile.NONE;
+	public MessageSender getChatMessageSender() {
+		return this.entity != null ? this.entity.asMessageSender() : MessageSender.of(this.getDisplayName());
 	}
 
 	@Override
@@ -461,27 +423,8 @@ public class ServerCommandSource implements CommandSource {
 		return this.entityAnchor;
 	}
 
-	public SignedCommandArguments getSignedArguments() {
-		return this.signedArguments;
-	}
-
-	public FutureQueue getMessageChainTaskQueue() {
-		return this.messageChainTaskQueue;
-	}
-
-	/**
-	 * Sends {@code message} as the feedback to the command's executor, or to the server's log
-	 * if the command is not executed by a player.
-	 */
-	public void sendChatMessage(SentMessage message, MessageType.Parameters params) {
-		if (!this.silent) {
-			ServerPlayerEntity serverPlayerEntity = this.getPlayer();
-			if (serverPlayerEntity != null) {
-				serverPlayerEntity.sendChatMessage(message, params);
-			} else {
-				this.output.sendMessage(params.applyChatDecoration(message.method_45039()));
-			}
-		}
+	public CommandArgumentSigner getSigner() {
+		return this.signer;
 	}
 
 	public void sendFeedback(Text message, boolean broadcastToOps) {

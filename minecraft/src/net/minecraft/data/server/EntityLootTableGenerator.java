@@ -3,7 +3,6 @@ package net.minecraft.data.server;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -1135,15 +1134,13 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 			if (!ENTITY_TYPES_IN_MISC_GROUP_TO_CHECK.contains(entityType) && entityType.getSpawnGroup() == SpawnGroup.MISC) {
 				if (identifier != LootTables.EMPTY && this.lootTables.remove(identifier) != null) {
 					throw new IllegalStateException(
-						String.format(
-							Locale.ROOT, "Weird loottable '%s' for '%s', not a LivingEntity so should not have loot", identifier, Registry.ENTITY_TYPE.getId(entityType)
-						)
+						String.format("Weird loottable '%s' for '%s', not a LivingEntity so should not have loot", identifier, Registry.ENTITY_TYPE.getId(entityType))
 					);
 				}
 			} else if (identifier != LootTables.EMPTY && set.add(identifier)) {
 				LootTable.Builder builder = (LootTable.Builder)this.lootTables.remove(identifier);
 				if (builder == null) {
-					throw new IllegalStateException(String.format(Locale.ROOT, "Missing loottable '%s' for '%s'", identifier, Registry.ENTITY_TYPE.getId(entityType)));
+					throw new IllegalStateException(String.format("Missing loottable '%s' for '%s'", identifier, Registry.ENTITY_TYPE.getId(entityType)));
 				}
 
 				biConsumer.accept(identifier, builder);

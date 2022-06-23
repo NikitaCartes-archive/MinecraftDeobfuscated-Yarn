@@ -109,7 +109,7 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 		this.animTick++;
 		if (this.status != null && this.narrationRateLimiter.tryAcquire(1)) {
 			Text text = this.getNarration();
-			this.client.getNarratorManager().narrate(text);
+			NarratorManager.INSTANCE.narrate(text);
 		}
 	}
 

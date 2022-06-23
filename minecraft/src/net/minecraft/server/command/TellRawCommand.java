@@ -3,6 +3,7 @@ package net.minecraft.server.command;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.TextArgumentType;
+import net.minecraft.network.message.MessageType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Texts;
 
@@ -20,8 +21,8 @@ public class TellRawCommand {
 										int i = 0;
 
 										for (ServerPlayerEntity serverPlayerEntity : EntityArgumentType.getPlayers(context, "targets")) {
-											serverPlayerEntity.sendMessageToClient(
-												Texts.parse(context.getSource(), TextArgumentType.getTextArgument(context, "message"), serverPlayerEntity, 0), false
+											serverPlayerEntity.sendMessage(
+												Texts.parse(context.getSource(), TextArgumentType.getTextArgument(context, "message"), serverPlayerEntity, 0), MessageType.TELLRAW_COMMAND
 											);
 											i++;
 										}

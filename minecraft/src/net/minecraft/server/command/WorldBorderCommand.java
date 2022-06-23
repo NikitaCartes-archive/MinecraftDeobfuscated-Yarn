@@ -183,9 +183,7 @@ public class WorldBorderCommand {
 			throw CENTER_FAILED_EXCEPTION.create();
 		} else if (!((double)Math.abs(pos.x) > 2.9999984E7) && !((double)Math.abs(pos.y) > 2.9999984E7)) {
 			worldBorder.setCenter((double)pos.x, (double)pos.y);
-			source.sendFeedback(
-				Text.translatable("commands.worldborder.center.success", String.format(Locale.ROOT, "%.2f", pos.x), String.format(Locale.ROOT, "%.2f", pos.y)), true
-			);
+			source.sendFeedback(Text.translatable("commands.worldborder.center.success", String.format(Locale.ROOT, "%.2f", pos.x), String.format("%.2f", pos.y)), true);
 			return 0;
 		} else {
 			throw SET_FAILED_FAR_EXCEPTION.create();

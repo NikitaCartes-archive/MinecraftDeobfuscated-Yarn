@@ -355,18 +355,18 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 		return this.heightLimitView.getHeight();
 	}
 
-	public ChunkNoiseSampler getOrCreateChunkNoiseSampler(Function<Chunk, ChunkNoiseSampler> chunkNoiseSamplerCreator) {
+	public ChunkNoiseSampler getOrCreateChunkNoiseSampler(Function<Chunk, ChunkNoiseSampler> chunkNoiseSamplerGetter) {
 		if (this.chunkNoiseSampler == null) {
-			this.chunkNoiseSampler = (ChunkNoiseSampler)chunkNoiseSamplerCreator.apply(this);
+			this.chunkNoiseSampler = (ChunkNoiseSampler)chunkNoiseSamplerGetter.apply(this);
 		}
 
 		return this.chunkNoiseSampler;
 	}
 
 	@Deprecated
-	public GenerationSettings getOrCreateGenerationSettings(Supplier<GenerationSettings> generationSettingsCreator) {
+	public GenerationSettings getOrCreateGenerationSettings(Supplier<GenerationSettings> generationSettingsSupplier) {
 		if (this.generationSettings == null) {
-			this.generationSettings = (GenerationSettings)generationSettingsCreator.get();
+			this.generationSettings = (GenerationSettings)generationSettingsSupplier.get();
 		}
 
 		return this.generationSettings;

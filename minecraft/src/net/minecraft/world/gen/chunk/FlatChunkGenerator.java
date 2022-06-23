@@ -113,7 +113,7 @@ public class FlatChunkGenerator extends ChunkGenerator {
 		ChunkRegion chunkRegion,
 		long seed,
 		NoiseConfig noiseConfig,
-		BiomeAccess biomeAccess,
+		BiomeAccess world,
 		StructureAccessor structureAccessor,
 		Chunk chunk,
 		GenerationStep.Carver carverStep

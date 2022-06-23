@@ -21,7 +21,6 @@ import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.network.listener.ServerLoginPacketListener;
-import net.minecraft.network.listener.TickablePacketListener;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginKeyC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginQueryResponseC2SPacket;
@@ -54,7 +53,7 @@ import org.slf4j.Logger;
  * packet and then transitions the connection's packet listener to a {@link
  * ServerPlayNetworkHandler}.
  */
-public class ServerLoginNetworkHandler implements TickablePacketListener, ServerLoginPacketListener {
+public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 	private static final AtomicInteger NEXT_AUTHENTICATOR_THREAD_ID = new AtomicInteger(0);
 	static final Logger LOGGER = LogUtils.getLogger();
 	private static final int TIMEOUT_TICKS = 600;
@@ -88,7 +87,15 @@ public class ServerLoginNetworkHandler implements TickablePacketListener, Server
 		this.nonce = Ints.toByteArray(RANDOM.nextInt());
 	}
 
-	@Override
+	/**
+	 * Ticks this login network handler.
+	 * 
+	 * <p>This accepts the player to the server if ready. If the state is delay
+	 * accept, it checks if the old player with the same UUID is gone and
+	 * admits the player.
+	 * 
+	 * @apiNote This should only be called on the server thread.
+	 */
 	public void tick() {
 		if (this.state == ServerLoginNetworkHandler.State.READY_TO_ACCEPT) {
 			this.acceptPlayer();
@@ -130,19 +137,21 @@ public class ServerLoginNetworkHandler implements TickablePacketListener, Server
 	 * @apiNote This method should only be called on the server thread.
 	 */
 	public void acceptPlayer() {
-		PlayerPublicKey playerPublicKey = null;
 		if (!this.profile.isComplete()) {
 			this.profile = this.toOfflineProfile(this.profile);
-		} else {
-			try {
-				SignatureVerifier signatureVerifier = this.server.getServicesSignatureVerifier();
-				playerPublicKey = getVerifiedPublicKey(this.publicKeyData, this.profile.getId(), signatureVerifier, this.server.shouldEnforceSecureProfile());
-			} catch (ServerLoginNetworkHandler.LoginException var7) {
-				LOGGER.error(var7.getMessage(), var7.getCause());
-				if (!this.connection.isLocal()) {
-					this.disconnect(var7.getMessageText());
-					return;
-				}
+		}
+
+		UUID uUID = this.profile.getId();
+		PlayerPublicKey playerPublicKey = null;
+
+		try {
+			SignatureVerifier signatureVerifier = this.server.getServicesSignatureVerifier();
+			playerPublicKey = getVerifiedPublicKey(this.publicKeyData, uUID, signatureVerifier, this.server.shouldEnforceSecureProfile());
+		} catch (ServerLoginNetworkHandler.LoginException var8) {
+			LOGGER.error(var8.getMessage(), var8.getCause());
+			if (!this.connection.isLocal()) {
+				this.disconnect(var8.getMessageText());
+				return;
 			}
 		}
 
@@ -160,7 +169,7 @@ public class ServerLoginNetworkHandler implements TickablePacketListener, Server
 			}
 
 			this.connection.send(new LoginSuccessS2CPacket(this.profile));
-			ServerPlayerEntity serverPlayerEntity = this.server.getPlayerManager().getPlayer(this.profile.getId());
+			ServerPlayerEntity serverPlayerEntity = this.server.getPlayerManager().getPlayer(uUID);
 
 			try {
 				ServerPlayerEntity serverPlayerEntity2 = this.server.getPlayerManager().createPlayer(this.profile, playerPublicKey);
@@ -170,8 +179,8 @@ public class ServerLoginNetworkHandler implements TickablePacketListener, Server
 				} else {
 					this.addToServer(serverPlayerEntity2);
 				}
-			} catch (Exception var6) {
-				LOGGER.error("Couldn't place player in world", (Throwable)var6);
+			} catch (Exception var7) {
+				LOGGER.error("Couldn't place player in world", (Throwable)var7);
 				Text text2 = Text.translatable("multiplayer.disconnect.invalid_player_data");
 				this.connection.send(new DisconnectS2CPacket(text2));
 				this.connection.disconnect(text2);
@@ -283,7 +292,7 @@ public class ServerLoginNetworkHandler implements TickablePacketListener, Server
 						ServerLoginNetworkHandler.this.state = ServerLoginNetworkHandler.State.READY_TO_ACCEPT;
 					} else if (ServerLoginNetworkHandler.this.server.isSingleplayer()) {
 						ServerLoginNetworkHandler.LOGGER.warn("Failed to verify username but will let them in anyway!");
-						ServerLoginNetworkHandler.this.profile = gameProfile;
+						ServerLoginNetworkHandler.this.profile = ServerLoginNetworkHandler.this.toOfflineProfile(gameProfile);
 						ServerLoginNetworkHandler.this.state = ServerLoginNetworkHandler.State.READY_TO_ACCEPT;
 					} else {
 						ServerLoginNetworkHandler.this.disconnect(Text.translatable("multiplayer.disconnect.unverified_username"));
@@ -292,7 +301,7 @@ public class ServerLoginNetworkHandler implements TickablePacketListener, Server
 				} catch (AuthenticationUnavailableException var3) {
 					if (ServerLoginNetworkHandler.this.server.isSingleplayer()) {
 						ServerLoginNetworkHandler.LOGGER.warn("Authentication servers are down but will let them in anyway!");
-						ServerLoginNetworkHandler.this.profile = gameProfile;
+						ServerLoginNetworkHandler.this.profile = ServerLoginNetworkHandler.this.toOfflineProfile(gameProfile);
 						ServerLoginNetworkHandler.this.state = ServerLoginNetworkHandler.State.READY_TO_ACCEPT;
 					} else {
 						ServerLoginNetworkHandler.this.disconnect(Text.translatable("multiplayer.disconnect.authservers_down"));

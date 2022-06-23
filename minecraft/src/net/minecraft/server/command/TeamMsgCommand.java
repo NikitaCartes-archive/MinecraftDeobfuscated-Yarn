@@ -7,11 +7,10 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import java.util.List;
 import net.minecraft.command.argument.MessageArgumentType;
 import net.minecraft.entity.Entity;
-import net.minecraft.network.message.MessageSourceProfile;
+import net.minecraft.network.message.MessageSender;
 import net.minecraft.network.message.MessageType;
-import net.minecraft.network.message.SentMessage;
+import net.minecraft.network.message.SignedMessage;
 import net.minecraft.scoreboard.Team;
-import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
@@ -26,16 +25,11 @@ public class TeamMsgCommand {
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		LiteralCommandNode<ServerCommandSource> literalCommandNode = dispatcher.register(
-			CommandManager.literal("teammsg").then(CommandManager.argument("message", MessageArgumentType.message()).executes(context -> {
-				MessageArgumentType.SignedMessage signedMessage = MessageArgumentType.getSignedMessage(context, "message");
-
-				try {
-					return execute(context.getSource(), signedMessage);
-				} catch (Exception var3) {
-					signedMessage.sendHeader(context.getSource());
-					throw var3;
-				}
-			}))
+			CommandManager.literal("teammsg")
+				.then(
+					CommandManager.argument("message", MessageArgumentType.message())
+						.executes(context -> execute(context.getSource(), MessageArgumentType.getSignedMessage(context, "message")))
+				)
 		);
 		dispatcher.register(CommandManager.literal("tm").redirect(literalCommandNode));
 	}
@@ -47,32 +41,36 @@ public class TeamMsgCommand {
 			throw NO_TEAM_EXCEPTION.create();
 		} else {
 			Text text = team.getFormattedName().fillStyle(STYLE);
-			MessageSourceProfile messageSourceProfile = source.getMessageSourceProfile();
-			MessageType.Parameters parameters = MessageType.params(MessageType.TEAM_MSG_COMMAND_INCOMING, source).withTargetName(text);
-			MessageType.Parameters parameters2 = MessageType.params(MessageType.TEAM_MSG_COMMAND_OUTGOING, source).withTargetName(text);
+			MessageSender messageSender = source.getChatMessageSender().withTeamName(text);
 			List<ServerPlayerEntity> list = source.getServer()
 				.getPlayerManager()
 				.getPlayerList()
 				.stream()
-				.filter(player -> player == entity || player.getScoreboardTeam() == team)
+				.filter(serverPlayerEntity -> serverPlayerEntity == entity || serverPlayerEntity.getScoreboardTeam() == team)
 				.toList();
-			signedMessage.decorate(source, filteredMessage -> {
-				FilteredMessage<SentMessage> filteredMessage2 = SentMessage.of(filteredMessage);
-
-				for (ServerPlayerEntity serverPlayerEntity : list) {
-					if (serverPlayerEntity == entity) {
-						serverPlayerEntity.sendChatMessage(filteredMessage2.raw(), parameters2);
-					} else {
-						SentMessage sentMessage = filteredMessage2.getFilterableFor(source, serverPlayerEntity);
-						if (sentMessage != null) {
-							serverPlayerEntity.sendChatMessage(sentMessage, parameters);
-						}
-					}
-				}
-
-				filteredMessage2.raw().afterPacketsSent(source.getServer().getPlayerManager());
-			});
-			return list.size();
+			if (list.isEmpty()) {
+				return 0;
+			} else {
+				signedMessage.decorate(source)
+					.thenAcceptAsync(
+						decoratedMessage -> {
+							for (ServerPlayerEntity serverPlayerEntity : list) {
+								if (serverPlayerEntity == entity) {
+									serverPlayerEntity.sendMessage(
+										Text.translatable("chat.type.team.sent", text, source.getDisplayName(), ((SignedMessage)decoratedMessage.raw()).getContent())
+									);
+								} else {
+									SignedMessage signedMessagex = (SignedMessage)decoratedMessage.getFilterableFor(source, serverPlayerEntity);
+									if (signedMessagex != null) {
+										serverPlayerEntity.sendChatMessage(signedMessagex, messageSender, MessageType.TEAM_MSG_COMMAND);
+									}
+								}
+							}
+						},
+						source.getServer()
+					);
+				return list.size();
+			}
 		}
 	}
 }

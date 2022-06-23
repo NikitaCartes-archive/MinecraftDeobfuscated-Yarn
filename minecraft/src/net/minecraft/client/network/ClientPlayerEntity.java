@@ -1,17 +1,19 @@
 package net.minecraft.client.network;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableMap.Builder;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.logging.LogUtils;
 import java.time.Instant;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_7644;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
@@ -60,10 +62,9 @@ import net.minecraft.item.Items;
 import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.encryption.Signer;
 import net.minecraft.network.message.ArgumentSignatureDataMap;
-import net.minecraft.network.message.DecoratedContents;
-import net.minecraft.network.message.LastSeenMessageList;
-import net.minecraft.network.message.MessageMetadata;
-import net.minecraft.network.message.MessageSignatureData;
+import net.minecraft.network.message.ChatMessageSigner;
+import net.minecraft.network.message.MessageSignature;
+import net.minecraft.network.message.MessageType;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
@@ -87,13 +88,14 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Arm;
 import net.minecraft.util.ClickType;
 import net.minecraft.util.Hand;
-import net.minecraft.util.StringHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.CommandBlockExecutor;
 import org.slf4j.Logger;
@@ -309,6 +311,26 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	/**
+	 * Sends a chat message to the server.
+	 * 
+	 * <p>The message will be truncated to at most 256 characters before
+	 * sending to the server.
+	 * 
+	 * <p>If the message contains an invalid character (see {@link
+	 * net.minecraft.SharedConstants#isValidChar isValidChar}), the server will
+	 * reject the message and disconnect the client.
+	 * 
+	 * @apiNote This method is used to send a message typed in {@linkplain
+	 * net.minecraft.client.gui.screen the chat screen}. This includes a
+	 * command message (a message that starts with {@code /}).
+	 * 
+	 * @param message the message to send
+	 */
+	public void sendChatMessage(String message) {
+		this.sendChatMessage(message, null);
+	}
+
+	/**
 	 * Sends a chat message with the preview to the server. If the server could not
 	 * reproduce the preview based on {@code message}, the server rejects the message.
 	 * 
@@ -316,127 +338,103 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	 * sending to the server.
 	 * 
 	 * <p>If the message contains an invalid character (see {@link
-	 * net.minecraft.SharedConstants#isValidChar}), the server will
+	 * net.minecraft.SharedConstants#isValidChar isValidChar}), the server will
 	 * reject the message and disconnect the client.
 	 * 
 	 * @apiNote This method is used to send a message typed in {@linkplain
 	 * net.minecraft.client.gui.screen the chat screen} that has a preview.
 	 */
 	public void sendChatMessage(String message, @Nullable Text preview) {
-		this.sendChatMessagePacket(message, preview);
-	}
-
-	/**
-	 * {@return whether to preview {@code command}}
-	 * 
-	 * @see ArgumentSignatureDataMap#shouldPreview
-	 * 
-	 * @param command the command (without the leading slash)
-	 */
-	public boolean shouldPreview(String command) {
-		ParseResults<CommandSource> parseResults = this.networkHandler.getCommandDispatcher().parse(command, this.networkHandler.getCommandSource());
-		return ArgumentSignatureDataMap.shouldPreview(class_7644.method_45043(parseResults));
+		ChatMessageSigner chatMessageSigner = ChatMessageSigner.create(this.getUuid());
+		this.sendChatMessagePacket(chatMessageSigner, message, preview);
 	}
 
 	/**
 	 * Sends an unsigned command to the server.
 	 * 
-	 * @param command the command (without the leading slash)
+	 * @param command the command (can have the leading slash)
 	 */
-	public boolean sendCommand(String command) {
-		if (!this.shouldPreview(command)) {
-			LastSeenMessageList.Acknowledgment acknowledgment = this.networkHandler.consumeAcknowledgment();
-			this.networkHandler.sendPacket(new CommandExecutionC2SPacket(command, Instant.now(), 0L, ArgumentSignatureDataMap.EMPTY, false, acknowledgment));
-			return true;
-		} else {
-			return false;
-		}
+	public void sendCommand(String command) {
+		this.networkHandler.sendPacket(new CommandExecutionC2SPacket(command, Instant.now(), ArgumentSignatureDataMap.empty(), false));
 	}
 
 	/**
-	 * Signs and sends {@code command} to the server.
+	 * Sends a command to the server.
 	 * 
-	 * @param command the command (without the leading slash)
+	 * @param command the command (can have the leading slash)
 	 */
 	public void sendCommand(String command, @Nullable Text preview) {
-		this.sendCommandInternal(command, preview);
+		ChatMessageSigner chatMessageSigner = ChatMessageSigner.create(this.getUuid());
+		this.sendCommand(chatMessageSigner, command, preview);
 	}
 
-	private void sendChatMessagePacket(String content, @Nullable Text preview) {
-		String string = StringHelper.truncateChat(content);
-		MessageMetadata messageMetadata = this.createMessageMetadata();
-		LastSeenMessageList.Acknowledgment acknowledgment = this.networkHandler.consumeAcknowledgment();
+	private void sendChatMessagePacket(ChatMessageSigner signer, String message, @Nullable Text preview) {
 		if (preview != null) {
-			DecoratedContents decoratedContents = new DecoratedContents(string, preview);
-			MessageSignatureData messageSignatureData = this.signChatMessage(messageMetadata, decoratedContents, acknowledgment.lastSeen());
-			this.networkHandler
-				.sendPacket(new ChatMessageC2SPacket(string, messageMetadata.timestamp(), messageMetadata.salt(), messageSignatureData, true, acknowledgment));
+			MessageSignature messageSignature = this.signChatMessage(signer, preview);
+			this.networkHandler.sendPacket(new ChatMessageC2SPacket(message, messageSignature, true));
 		} else {
-			DecoratedContents decoratedContents = new DecoratedContents(string);
-			MessageSignatureData messageSignatureData = this.signChatMessage(messageMetadata, decoratedContents, acknowledgment.lastSeen());
-			this.networkHandler
-				.sendPacket(new ChatMessageC2SPacket(string, messageMetadata.timestamp(), messageMetadata.salt(), messageSignatureData, false, acknowledgment));
+			MessageSignature messageSignature = this.signChatMessage(signer, Text.literal(message));
+			this.networkHandler.sendPacket(new ChatMessageC2SPacket(message, messageSignature, false));
 		}
 	}
 
 	/**
 	 * Signs the chat message. If the chat message cannot be signed, this will return
-	 * {@link MessageSignatureData#EMPTY}.
+	 * {@link MessageSignature#none()}.
 	 */
-	private MessageSignatureData signChatMessage(MessageMetadata metadata, DecoratedContents content, LastSeenMessageList lastSeenMessages) {
+	private MessageSignature signChatMessage(ChatMessageSigner signer, Text message) {
 		try {
-			Signer signer = this.client.getProfileKeys().getSigner();
-			if (signer != null) {
-				return this.networkHandler.getMessagePacker().pack(signer, metadata, content, lastSeenMessages).signature();
+			Signer signer2 = this.client.getProfileKeys().getSigner();
+			if (signer2 != null) {
+				return signer.sign(signer2, message);
 			}
-		} catch (Exception var5) {
-			field_39078.error("Failed to sign chat message: '{}'", content.plain(), var5);
+		} catch (Exception var4) {
+			field_39078.error("Failed to sign chat message: '{}'", message.getString(), var4);
 		}
 
-		return MessageSignatureData.EMPTY;
+		return MessageSignature.none();
 	}
 
 	/**
 	 * Signs and sends {@code command} to the server.
+	 * 
+	 * @param command the command (can have the leading slash)
 	 */
-	private void sendCommandInternal(String command, @Nullable Text preview) {
+	private void sendCommand(ChatMessageSigner signer, String command, @Nullable Text preview) {
 		ParseResults<CommandSource> parseResults = this.networkHandler.getCommandDispatcher().parse(command, this.networkHandler.getCommandSource());
-		MessageMetadata messageMetadata = this.createMessageMetadata();
-		LastSeenMessageList.Acknowledgment acknowledgment = this.networkHandler.consumeAcknowledgment();
-		ArgumentSignatureDataMap argumentSignatureDataMap = this.signArguments(messageMetadata, parseResults, preview, acknowledgment.lastSeen());
-		this.networkHandler
-			.sendPacket(
-				new CommandExecutionC2SPacket(command, messageMetadata.timestamp(), messageMetadata.salt(), argumentSignatureDataMap, preview != null, acknowledgment)
-			);
+		ArgumentSignatureDataMap argumentSignatureDataMap = this.signArguments(signer, parseResults, preview);
+		this.networkHandler.sendPacket(new CommandExecutionC2SPacket(command, signer.timeStamp(), argumentSignatureDataMap, preview != null));
 	}
 
 	/**
 	 * Signs the command arguments. If the arguments cannot be signed or if there is no
-	 * arguments to sign, this will return {@link ArgumentSignatureDataMap#EMPTY}.
+	 * arguments to sign, this will return {@link ArgumentSignatureDataMap#empty()}.
 	 * 
 	 * @param preview the previewed argument value; if supplied, will be used for all signed arguments
 	 */
-	private ArgumentSignatureDataMap signArguments(
-		MessageMetadata signer, ParseResults<CommandSource> parseResults, @Nullable Text preview, LastSeenMessageList lastSeenMessages
-	) {
-		Signer signer2 = this.client.getProfileKeys().getSigner();
-		if (signer2 == null) {
-			return ArgumentSignatureDataMap.EMPTY;
+	private ArgumentSignatureDataMap signArguments(ChatMessageSigner signer, ParseResults<CommandSource> parseResults, @Nullable Text preview) {
+		Map<String, Text> map = ArgumentSignatureDataMap.collectArguments(parseResults.getContext());
+		if (map.isEmpty()) {
+			return ArgumentSignatureDataMap.empty();
 		} else {
-			try {
-				return ArgumentSignatureDataMap.sign(class_7644.method_45043(parseResults), (argumentName, value) -> {
-					DecoratedContents decoratedContents = preview != null ? new DecoratedContents(value, preview) : new DecoratedContents(value);
-					return this.networkHandler.getMessagePacker().pack(signer2, signer, decoratedContents, lastSeenMessages).signature();
-				});
-			} catch (Exception var7) {
-				field_39078.error("Failed to sign command arguments", (Throwable)var7);
-				return ArgumentSignatureDataMap.EMPTY;
+			Signer signer2 = this.client.getProfileKeys().getSigner();
+			if (signer2 == null) {
+				return ArgumentSignatureDataMap.empty();
+			} else {
+				try {
+					Builder<String, byte[]> builder = ImmutableMap.builder();
+					map.forEach((argumentName, value) -> {
+						Text text2 = preview != null ? preview : value;
+						MessageSignature messageSignature = signer.sign(signer2, text2);
+						builder.put(argumentName, messageSignature.saltSignature().signature());
+					});
+					return new ArgumentSignatureDataMap(signer.salt(), builder.build());
+				} catch (Exception var7) {
+					field_39078.error("Failed to sign command arguments", (Throwable)var7);
+					return ArgumentSignatureDataMap.empty();
+				}
 			}
 		}
-	}
-
-	private MessageMetadata createMessageMetadata() {
-		return MessageMetadata.of(this.getUuid());
 	}
 
 	@Override
@@ -557,8 +555,13 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void sendMessage(Text message, boolean overlay) {
-		this.client.getMessageHandler().onGameMessage(message, overlay);
+	public void sendMessage(Text message, boolean actionBar) {
+		RegistryKey<MessageType> registryKey = actionBar ? MessageType.GAME_INFO : MessageType.SYSTEM;
+		this.world
+			.getRegistryManager()
+			.getOptional(Registry.MESSAGE_TYPE_KEY)
+			.map(registry -> registry.get(registryKey))
+			.ifPresent(messageType -> this.client.inGameHud.onGameMessage(messageType, message));
 	}
 
 	private void pushOutOfBlocks(double x, double z) {

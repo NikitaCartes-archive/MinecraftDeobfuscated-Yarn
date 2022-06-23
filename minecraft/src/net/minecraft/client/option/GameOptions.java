@@ -30,7 +30,6 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -51,6 +50,7 @@ import net.minecraft.client.sound.SoundManager;
 import net.minecraft.client.sound.SoundSystem;
 import net.minecraft.client.tutorial.TutorialStep;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.VideoMode;
 import net.minecraft.client.util.Window;
 import net.minecraft.datafixer.DataFixTypes;
@@ -324,13 +324,12 @@ public class GameOptions {
 	private final SimpleOption<Double> chatDelay = new SimpleOption<>(
 		"options.chat.delay_instant",
 		SimpleOption.emptyTooltip(),
-		(optionText, value) -> value <= 0.0
-				? Text.translatable("options.chat.delay_none")
-				: Text.translatable("options.chat.delay", String.format(Locale.ROOT, "%.1f", value)),
+		(optionText, value) -> value <= 0.0 ? Text.translatable("options.chat.delay_none") : Text.translatable("options.chat.delay", String.format("%.1f", value)),
 		new SimpleOption.ValidatingIntSliderCallbacks(0, 60).withModifier(value -> (double)value / 10.0, value -> (int)(value * 10.0)),
 		Codec.doubleRange(0.0, 6.0),
 		0.0,
-		value -> MinecraftClient.getInstance().getMessageHandler().setChatDelay(value)
+		value -> {
+		}
 	);
 	private final SimpleOption<Integer> mipmapLevels = new SimpleOption<>(
 		"options.mipmapLevels",
@@ -362,7 +361,7 @@ public class GameOptions {
 	private final SimpleOption<Double> mouseWheelSensitivity = new SimpleOption<>(
 		"options.mouseWheelSensitivity",
 		SimpleOption.emptyTooltip(),
-		(optionText, value) -> getGenericValueText(optionText, Text.literal(String.format(Locale.ROOT, "%.2f", value))),
+		(optionText, value) -> getGenericValueText(optionText, Text.literal(String.format("%.2f", value))),
 		new SimpleOption.ValidatingIntSliderCallbacks(-200, 100)
 			.withModifier(GameOptions::toMouseWheelSensitivityValue, GameOptions::toMouseWheelSensitivitySliderProgressValue),
 		Codec.doubleRange(toMouseWheelSensitivityValue(-200), toMouseWheelSensitivityValue(100)),
@@ -452,24 +451,8 @@ public class GameOptions {
 		"options.hideMatchedNames", SimpleOption.constantTooltip(HIDE_MATCHED_NAMES_TOOLTIP), true
 	);
 	private final SimpleOption<Boolean> showAutosaveIndicator = SimpleOption.ofBoolean("options.autosaveIndicator", true);
-	private static final Text OFF_CHAT_PREVIEW_TOOLTIP = Text.translatable("options.chatPreview.tooltip.off");
-	private static final Text LIVE_CHAT_PREVIEW_TOOLTIP = Text.translatable("options.chatPreview.tooltip.live");
-	private static final Text CONFIRM_CHAT_PREVIEW_TOOLTIP = Text.translatable("options.chatPreview.tooltip.confirm");
-	private final SimpleOption<ChatPreviewMode> chatPreview = new SimpleOption<>(
-		"options.chatPreview",
-		clientx -> value -> {
-				return switch (value) {
-					case OFF -> SimpleOption.wrapLines(clientx, OFF_CHAT_PREVIEW_TOOLTIP);
-					case LIVE -> SimpleOption.wrapLines(clientx, LIVE_CHAT_PREVIEW_TOOLTIP);
-					case CONFIRM -> SimpleOption.wrapLines(clientx, CONFIRM_CHAT_PREVIEW_TOOLTIP);
-				};
-			},
-		SimpleOption.enumValueText(),
-		new SimpleOption.PotentialValuesBasedCallbacks<>(Arrays.asList(ChatPreviewMode.values()), Codec.INT.xmap(ChatPreviewMode::byId, ChatPreviewMode::getId)),
-		ChatPreviewMode.LIVE,
-		value -> {
-		}
-	);
+	private static final Text CHAT_PREVIEW_TOOLTIP = Text.translatable("options.chatPreview.tooltip");
+	private final SimpleOption<Boolean> chatPreview = SimpleOption.ofBoolean("options.chatPreview", SimpleOption.constantTooltip(CHAT_PREVIEW_TOOLTIP), true);
 	private static final Text ONLY_SHOW_SECURE_CHAT_TOOLTIP = Text.translatable("options.onlyShowSecureChat.tooltip");
 	private final SimpleOption<Boolean> onlyShowSecureChat = SimpleOption.ofBoolean(
 		"options.onlyShowSecureChat", SimpleOption.constantTooltip(ONLY_SHOW_SECURE_CHAT_TOOLTIP), false
@@ -752,10 +735,10 @@ public class GameOptions {
 	private final SimpleOption<NarratorMode> narrator = new SimpleOption<>(
 		"options.narrator",
 		SimpleOption.emptyTooltip(),
-		(optionText, value) -> (Text)(this.client.getNarratorManager().isActive() ? value.getName() : Text.translatable("options.narrator.notavailable")),
+		(optionText, value) -> (Text)(NarratorManager.INSTANCE.isActive() ? value.getName() : Text.translatable("options.narrator.notavailable")),
 		new SimpleOption.PotentialValuesBasedCallbacks<>(Arrays.asList(NarratorMode.values()), Codec.INT.xmap(NarratorMode::byId, NarratorMode::getId)),
 		NarratorMode.OFF,
-		value -> this.client.getNarratorManager().addToast(value)
+		value -> NarratorManager.INSTANCE.addToast(value)
 	);
 	public String language = "en_us";
 	private final SimpleOption<String> soundDevice = new SimpleOption<>(
@@ -988,7 +971,7 @@ public class GameOptions {
 		return this.showAutosaveIndicator;
 	}
 
-	public SimpleOption<ChatPreviewMode> getChatPreview() {
+	public SimpleOption<Boolean> getChatPreview() {
 		return this.chatPreview;
 	}
 

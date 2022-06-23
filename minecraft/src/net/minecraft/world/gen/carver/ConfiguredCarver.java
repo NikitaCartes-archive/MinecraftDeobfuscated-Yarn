@@ -33,8 +33,6 @@ public record ConfiguredCarver<WC extends CarverConfig>(Carver<WC> carver, WC co
 		ChunkPos pos,
 		CarvingMask mask
 	) {
-		return SharedConstants.isOutsideGenerationArea(chunk.getPos())
-			? false
-			: this.carver.carve(context, this.config, chunk, posToBiome, random, aquiferSampler, pos, mask);
+		return SharedConstants.method_37896(chunk.getPos()) ? false : this.carver.carve(context, this.config, chunk, posToBiome, random, aquiferSampler, pos, mask);
 	}
 }

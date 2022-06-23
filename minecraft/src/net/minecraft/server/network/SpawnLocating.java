@@ -46,7 +46,7 @@ public class SpawnLocating {
 
 	@Nullable
 	public static BlockPos findServerSpawnPoint(ServerWorld world, ChunkPos chunkPos) {
-		if (SharedConstants.isOutsideGenerationArea(chunkPos)) {
+		if (SharedConstants.method_37896(chunkPos)) {
 			return null;
 		} else {
 			for (int i = chunkPos.getStartX(); i <= chunkPos.getEndX(); i++) {

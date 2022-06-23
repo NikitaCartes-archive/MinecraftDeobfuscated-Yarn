@@ -149,10 +149,6 @@ public class LoomScreenHandler extends ScreenHandler {
 		}
 	}
 
-	private boolean method_45016(int i) {
-		return i >= 0 && i < this.bannerPatterns.size();
-	}
-
 	@Override
 	public void onContentChanged(Inventory inventory) {
 		ItemStack itemStack = this.bannerSlot.getStack();
@@ -160,14 +156,13 @@ public class LoomScreenHandler extends ScreenHandler {
 		ItemStack itemStack3 = this.patternSlot.getStack();
 		if (!itemStack.isEmpty() && !itemStack2.isEmpty()) {
 			int i = this.selectedPattern.get();
-			boolean bl = this.method_45016(i);
 			List<RegistryEntry<BannerPattern>> list = this.bannerPatterns;
 			this.bannerPatterns = this.getPatternsFor(itemStack3);
 			RegistryEntry<BannerPattern> registryEntry;
 			if (this.bannerPatterns.size() == 1) {
 				this.selectedPattern.set(0);
 				registryEntry = (RegistryEntry<BannerPattern>)this.bannerPatterns.get(0);
-			} else if (!bl) {
+			} else if (i == -1) {
 				this.selectedPattern.set(-1);
 				registryEntry = null;
 			} else {
@@ -184,11 +179,11 @@ public class LoomScreenHandler extends ScreenHandler {
 
 			if (registryEntry != null) {
 				NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(itemStack);
-				boolean bl2 = nbtCompound != null
+				boolean bl = nbtCompound != null
 					&& nbtCompound.contains("Patterns", NbtElement.LIST_TYPE)
 					&& !itemStack.isEmpty()
 					&& nbtCompound.getList("Patterns", NbtElement.COMPOUND_TYPE).size() >= 6;
-				if (bl2) {
+				if (bl) {
 					this.selectedPattern.set(-1);
 					this.outputSlot.setStack(ItemStack.EMPTY);
 				} else {

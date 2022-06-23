@@ -5,7 +5,6 @@ import com.mojang.serialization.MapCodec;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
@@ -972,9 +971,7 @@ public abstract class AbstractBlock {
 				this.collisionShape = block.getCollisionShape(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, ShapeContext.absent());
 				if (!this.collisionShape.isEmpty() && state.getOffsetType() != AbstractBlock.OffsetType.NONE) {
 					throw new IllegalStateException(
-						String.format(
-							Locale.ROOT, "%s has a collision shape and an offset type, but is not marked as dynamicShape in its properties.", Registry.BLOCK.getId(block)
-						)
+						String.format("%s has a collision shape and an offset type, but is not marked as dynamicShape in its properties.", Registry.BLOCK.getId(block))
 					);
 				} else {
 					this.exceedsCube = Arrays.stream(Direction.Axis.values())

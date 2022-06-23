@@ -24,14 +24,15 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.KeyPair;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -58,6 +59,7 @@ import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.network.message.MessageDecorator;
+import net.minecraft.network.message.MessageSender;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
@@ -85,6 +87,7 @@ import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.test.TestManager;
+import net.minecraft.text.Decoration;
 import net.minecraft.text.Text;
 import net.minecraft.util.ApiServices;
 import net.minecraft.util.Identifier;
@@ -705,7 +708,9 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			LOGGER.error("Encountered an unexpected exception", var44);
 			CrashReport crashReport = createCrashReport(var44);
 			this.addSystemDetails(crashReport.getSystemDetailsSection());
-			File file = new File(new File(this.getRunDirectory(), "crash-reports"), "crash-" + Util.getFormattedCurrentTime() + "-server.txt");
+			File file = new File(
+				new File(this.getRunDirectory(), "crash-reports"), "crash-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + "-server.txt"
+			);
 			if (crashReport.writeToFile(file)) {
 				LOGGER.error("This crash report has been saved to: {}", file.getAbsolutePath());
 			} else {
@@ -1616,10 +1621,10 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		Writer writer = Files.newBufferedWriter(path);
 
 		try {
-			writer.write(String.format(Locale.ROOT, "pending_tasks: %d\n", this.getTaskCount()));
-			writer.write(String.format(Locale.ROOT, "average_tick_time: %f\n", this.getTickTime()));
-			writer.write(String.format(Locale.ROOT, "tick_times: %s\n", Arrays.toString(this.lastTickLengths)));
-			writer.write(String.format(Locale.ROOT, "queue: %s\n", Util.getMainWorkerExecutor()));
+			writer.write(String.format("pending_tasks: %d\n", this.getTaskCount()));
+			writer.write(String.format("average_tick_time: %f\n", this.getTickTime()));
+			writer.write(String.format("tick_times: %s\n", Arrays.toString(this.lastTickLengths)));
+			writer.write(String.format("queue: %s\n", Util.getMainWorkerExecutor()));
 		} catch (Throwable var6) {
 			if (writer != null) {
 				try {
@@ -1646,7 +1651,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			GameRules.accept(new GameRules.Visitor() {
 				@Override
 				public <T extends GameRules.Rule<T>> void visit(GameRules.Key<T> key, GameRules.Type<T> type) {
-					list.add(String.format(Locale.ROOT, "%s=%s\n", key.getName(), gameRules.get(key)));
+					list.add(String.format("%s=%s\n", key.getName(), gameRules.get(key)));
 				}
 			});
 
@@ -1895,13 +1900,14 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return 1000000;
 	}
 
-	public void logChatMessage(Text text, MessageType.Parameters parameters, @Nullable String string) {
-		String string2 = parameters.applyChatDecoration(text).getString();
-		if (string != null) {
-			LOGGER.info("[{}] {}", string, string2);
-		} else {
-			LOGGER.info("{}", string2);
-		}
+	public void logChatMessage(MessageSender sender, Text message, RegistryKey<MessageType> typeKey) {
+		Decoration decoration = (Decoration)this.getRegistryManager()
+			.getOptional(Registry.MESSAGE_TYPE_KEY)
+			.map(registry -> registry.get(typeKey))
+			.flatMap(MessageType::chat)
+			.flatMap(MessageType.DisplayRule::decoration)
+			.orElse(MessageType.CHAT_TEXT_DECORATION);
+		LOGGER.info(decoration.apply(message, sender).getString());
 	}
 
 	/**

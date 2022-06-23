@@ -158,13 +158,13 @@ public class SocialInteractionsScreen extends Screen {
 			case ALL:
 				this.allTabButton.setMessage(SELECTED_ALL_TAB_TITLE);
 				Collection<UUID> collection = this.client.player.networkHandler.getPlayerUuids();
-				this.playerList.update(collection, this.playerList.getScrollAmount(), true);
+				this.playerList.refresh(collection, this.playerList.getScrollAmount());
 				break;
 			case HIDDEN:
 				this.hiddenTabButton.setMessage(SELECTED_HIDDEN_TAB_TITLE);
 				Set<UUID> set = this.client.getSocialInteractionsManager().getHiddenPlayers();
 				bl = set.isEmpty();
-				this.playerList.update(set, this.playerList.getScrollAmount(), false);
+				this.playerList.update(set, this.playerList.getScrollAmount());
 				break;
 			case BLOCKED:
 				this.blockedTabButton.setMessage(SELECTED_BLOCKED_TAB_TITLE);
@@ -177,17 +177,16 @@ public class SocialInteractionsScreen extends Screen {
 					.filter(socialInteractionsManager::isPlayerBlocked)
 					.collect(Collectors.toSet());
 				bl = set2.isEmpty();
-				this.playerList.update(set2, this.playerList.getScrollAmount(), false);
+				this.playerList.update(set2, this.playerList.getScrollAmount());
 		}
 
-		NarratorManager narratorManager = this.client.getNarratorManager();
 		if (!this.searchBox.getText().isEmpty() && this.playerList.isEmpty() && !this.searchBox.isFocused()) {
-			narratorManager.narrate(EMPTY_SEARCH_TEXT);
+			NarratorManager.INSTANCE.narrate(EMPTY_SEARCH_TEXT);
 		} else if (bl) {
 			if (currentTab == SocialInteractionsScreen.Tab.HIDDEN) {
-				narratorManager.narrate(EMPTY_HIDDEN_TEXT);
+				NarratorManager.INSTANCE.narrate(EMPTY_HIDDEN_TEXT);
 			} else if (currentTab == SocialInteractionsScreen.Tab.BLOCKED) {
-				narratorManager.narrate(EMPTY_BLOCKED_TEXT);
+				NarratorManager.INSTANCE.narrate(EMPTY_BLOCKED_TEXT);
 			}
 		}
 	}

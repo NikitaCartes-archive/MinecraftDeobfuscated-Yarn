@@ -6,7 +6,6 @@ import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -36,7 +35,7 @@ public class TranslationStorage extends Language {
 		for (LanguageDefinition languageDefinition : definitions) {
 			bl |= languageDefinition.isRightToLeft();
 			String string = languageDefinition.getCode();
-			String string2 = String.format(Locale.ROOT, "lang/%s.json", string);
+			String string2 = String.format("lang/%s.json", string);
 
 			for (String string3 : resourceManager.getAllNamespaces()) {
 				try {

@@ -229,7 +229,7 @@ public class FeatureUpdater {
 			List<String> list = ImmutableList.of("EndCity");
 			return new FeatureUpdater(persistentStateManager, list, list);
 		} else {
-			throw new RuntimeException(String.format(Locale.ROOT, "Unknown dimension type : %s", world));
+			throw new RuntimeException(String.format("Unknown dimension type : %s", world));
 		}
 	}
 }

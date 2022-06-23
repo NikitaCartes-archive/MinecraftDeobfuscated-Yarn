@@ -46,14 +46,14 @@ public class StructureAccessor {
 		}
 	}
 
-	public List<StructureStart> getStructureStarts(ChunkPos pos, Predicate<Structure> predicate) {
-		Map<Structure, LongSet> map = this.world.getChunk(pos.x, pos.z, ChunkStatus.STRUCTURE_REFERENCES).getStructureReferences();
+	public List<StructureStart> method_41035(ChunkPos chunkPos, Predicate<Structure> predicate) {
+		Map<Structure, LongSet> map = this.world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_REFERENCES).getStructureReferences();
 		Builder<StructureStart> builder = ImmutableList.builder();
 
 		for (Entry<Structure, LongSet> entry : map.entrySet()) {
 			Structure structure = (Structure)entry.getKey();
 			if (predicate.test(structure)) {
-				this.acceptStructureStarts(structure, (LongSet)entry.getValue(), builder::add);
+				this.method_41032(structure, (LongSet)entry.getValue(), builder::add);
 			}
 		}
 
@@ -67,12 +67,12 @@ public class StructureAccessor {
 	public List<StructureStart> getStructureStarts(ChunkSectionPos sectionPos, Structure structure) {
 		LongSet longSet = this.world.getChunk(sectionPos.getSectionX(), sectionPos.getSectionZ(), ChunkStatus.STRUCTURE_REFERENCES).getStructureReferences(structure);
 		Builder<StructureStart> builder = ImmutableList.builder();
-		this.acceptStructureStarts(structure, longSet, builder::add);
+		this.method_41032(structure, longSet, builder::add);
 		return builder.build();
 	}
 
-	public void acceptStructureStarts(Structure structure, LongSet structureStartPositions, Consumer<StructureStart> consumer) {
-		LongIterator var4 = structureStartPositions.iterator();
+	public void method_41032(Structure structure, LongSet longSet, Consumer<StructureStart> consumer) {
+		LongIterator var4 = longSet.iterator();
 
 		while (var4.hasNext()) {
 			long l = (Long)var4.next();
@@ -121,7 +121,7 @@ public class StructureAccessor {
 	public StructureStart getStructureContaining(BlockPos pos, TagKey<Structure> structureTag) {
 		Registry<Structure> registry = this.getRegistryManager().get(Registry.STRUCTURE_KEY);
 
-		for (StructureStart structureStart : this.getStructureStarts(
+		for (StructureStart structureStart : this.method_41035(
 			new ChunkPos(pos),
 			structure -> (Boolean)registry.getEntry(registry.getRawId(structure)).map(registryEntry -> registryEntry.isIn(structureTag)).orElse(false)
 		)) {

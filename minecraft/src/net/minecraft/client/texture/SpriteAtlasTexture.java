@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
@@ -141,7 +140,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 				"Sprites",
 				var16.getSprites()
 					.stream()
-					.map(sprite -> String.format(Locale.ROOT, "%s[%dx%d]", sprite.getId(), sprite.getWidth(), sprite.getHeight()))
+					.map(sprite -> String.format("%s[%dx%d]", sprite.getId(), sprite.getWidth(), sprite.getHeight()))
 					.collect(Collectors.joining(","))
 			);
 			crashReportSection.add("Max Texture Size", i);
@@ -279,7 +278,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 	}
 
 	private Identifier getTexturePath(Identifier id) {
-		return new Identifier(id.getNamespace(), String.format(Locale.ROOT, "textures/%s%s", id.getPath(), ".png"));
+		return new Identifier(id.getNamespace(), String.format("textures/%s%s", id.getPath(), ".png"));
 	}
 
 	public void tickAnimatedSprites() {

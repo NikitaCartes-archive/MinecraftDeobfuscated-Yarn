@@ -177,7 +177,7 @@ public class ChaseClient {
 							serverPlayerEntity, Vec3d.of(serverWorld.getSpawnPos()), Vec2f.ZERO, serverWorld, 4, "", ScreenTexts.EMPTY, this.minecraftServer, serverPlayerEntity
 						);
 						CommandManager commandManager = this.minecraftServer.getCommandManager();
-						commandManager.executeWithPrefix(serverCommandSource, command);
+						commandManager.execute(serverCommandSource, command);
 					}
 				}
 			);

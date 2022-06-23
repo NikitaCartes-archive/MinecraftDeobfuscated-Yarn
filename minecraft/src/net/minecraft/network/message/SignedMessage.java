@@ -1,15 +1,12 @@
 package net.minecraft.network.message;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.Optional;
-import javax.annotation.Nullable;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.encryption.PlayerPublicKey;
-import net.minecraft.network.encryption.SignatureVerifier;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Util;
 
 /**
  * A signed message, consisting of the signature, the signed content,
@@ -18,40 +15,67 @@ import net.minecraft.text.Text;
  * 
  * <p>Note that the signature itself might not be valid.
  */
-public record SignedMessage(MessageHeader signedHeader, MessageSignatureData headerSignature, MessageBody signedBody, Optional<Text> unsignedContent) {
-	public static final Duration SERVERBOUND_TIME_TO_LIVE = Duration.ofMinutes(5L);
-	public static final Duration CLIENTBOUND_TIME_TO_LIVE = SERVERBOUND_TIME_TO_LIVE.plus(Duration.ofMinutes(2L));
-
-	public SignedMessage(PacketByteBuf buf) {
-		this(new MessageHeader(buf), new MessageSignatureData(buf), new MessageBody(buf), buf.readOptional(PacketByteBuf::readText));
+public record SignedMessage(Text signedContent, MessageSignature signature, Optional<Text> unsignedContent) {
+	/**
+	 * {@return a new signed chat message with {@code signedContent} and {@code signature}}
+	 */
+	public static SignedMessage of(Text signedContent, MessageSignature signature) {
+		return new SignedMessage(signedContent, signature, Optional.empty());
 	}
 
-	public static SignedMessage method_45041(DecoratedContents decoratedContents) {
-		MessageMetadata messageMetadata = MessageMetadata.of();
-		MessageBody messageBody = new MessageBody(decoratedContents, messageMetadata.timestamp(), messageMetadata.salt(), LastSeenMessageList.EMPTY);
-		MessageHeader messageHeader = new MessageHeader(null, messageMetadata.sender());
-		return new SignedMessage(messageHeader, MessageSignatureData.EMPTY, messageBody, Optional.empty());
+	/**
+	 * {@return a new signed chat message with {@code signedContent} and {@code signature}}
+	 */
+	public static SignedMessage of(String signedContent, MessageSignature signature) {
+		return of(Text.literal(signedContent), signature);
 	}
 
-	public void write(PacketByteBuf buf) {
-		this.signedHeader.write(buf);
-		this.headerSignature.write(buf);
-		this.signedBody.write(buf);
-		buf.writeOptional(this.unsignedContent, PacketByteBuf::writeText);
+	/**
+	 * {@return a new signed chat message from the content supplied by the chat decorator}
+	 * 
+	 * @implNote If the decorated content is different from the original and is not
+	 * previewed, this will create a signed chat message with the signed original content
+	 * and the unsigned decorated content. Otherwise, this will create a signed chat message
+	 * with the signed decorated content.
+	 */
+	public static SignedMessage of(Text originalContent, Text decoratedContent, MessageSignature signature, boolean previewed) {
+		if (originalContent.equals(decoratedContent)) {
+			return of(originalContent, signature);
+		} else {
+			return !previewed ? of(originalContent, signature).withUnsigned(decoratedContent) : of(decoratedContent, signature);
+		}
 	}
 
-	public FilteredMessage<SignedMessage> withFilteredContent(FilteredMessage<DecoratedContents> filteredMessage) {
-		return filteredMessage.method_45000(
-			this,
-			decoratedContents -> this.getSignedContent().equals(decoratedContents)
-					? this
-					: new SignedMessage(this.signedHeader, this.headerSignature, this.signedBody.method_45047(decoratedContents), this.unsignedContent)
-		);
+	public static FilteredMessage<SignedMessage> toSignedMessage(
+		FilteredMessage<Text> original, FilteredMessage<Text> decorated, MessageSignature signature, boolean preview
+	) {
+		Text text = original.raw();
+		Text text2 = decorated.raw();
+		SignedMessage signedMessage = of(text, text2, signature, preview);
+		if (decorated.isFiltered()) {
+			SignedMessage signedMessage2 = Util.map(decorated.filtered(), SignedMessage::of);
+			return new FilteredMessage<>(signedMessage, signedMessage2);
+		} else {
+			return FilteredMessage.permitted(signedMessage);
+		}
 	}
 
-	public SignedMessage withUnsignedContent(Text unsignedContent) {
-		Optional<Text> optional = !this.getSignedContent().decorated().equals(unsignedContent) ? Optional.of(unsignedContent) : Optional.empty();
-		return new SignedMessage(this.signedHeader, this.headerSignature, this.signedBody, optional);
+	/**
+	 * {@return a new signed chat message with {@code signedContent} and "none" signature}
+	 */
+	public static SignedMessage of(Text content) {
+		return new SignedMessage(content, MessageSignature.none(), Optional.empty());
+	}
+
+	/**
+	 * {@return the new signed chat message with {@code unsignedContent} added}
+	 * 
+	 * @apiNote This is used in vanilla when chat decorator decorates the message without
+	 * the client previewing it. In this case, the undecorated content is signed but the
+	 * decorated content is unsigned.
+	 */
+	public SignedMessage withUnsigned(Text unsignedContent) {
+		return new SignedMessage(this.signedContent, this.signature, Optional.of(unsignedContent));
 	}
 
 	/**
@@ -60,32 +84,32 @@ public record SignedMessage(MessageHeader signedHeader, MessageSignatureData hea
 	 * @implNote This returns itself if the message does not have an unsigned content.
 	 */
 	public SignedMessage withoutUnsigned() {
-		return this.unsignedContent.isPresent() ? new SignedMessage(this.signedHeader, this.headerSignature, this.signedBody, Optional.empty()) : this;
-	}
-
-	public boolean verify(SignatureVerifier verifier) {
-		return this.headerSignature.verify(verifier, this.signedHeader, this.signedBody);
+		return this.unsignedContent.isPresent() ? new SignedMessage(this.signedContent, this.signature, Optional.empty()) : this;
 	}
 
 	/**
 	 * {@return whether the message can be verified using the public key}
 	 */
 	public boolean verify(PlayerPublicKey key) {
-		SignatureVerifier signatureVerifier = key.createSignatureInstance();
-		return this.verify(signatureVerifier);
+		return this.signature.verify(key.createSignatureInstance(), this.signedContent);
 	}
 
 	/**
 	 * {@return whether the message can be verified using the public key <strong>or if the
 	 * player does not have the key</strong>}
 	 */
-	public boolean verify(MessageSourceProfile profile) {
-		PlayerPublicKey playerPublicKey = profile.playerPublicKey();
-		return playerPublicKey != null && this.verify(playerPublicKey);
+	public boolean verify(ServerPlayerEntity player) {
+		PlayerPublicKey playerPublicKey = player.getPublicKey();
+		return playerPublicKey == null || this.verify(playerPublicKey);
 	}
 
-	public DecoratedContents getSignedContent() {
-		return this.signedBody.content();
+	/**
+	 * {@return whether the message can be verified using the public key of the source
+	 * <strong>or if the source does not have the key</strong>}
+	 */
+	public boolean verify(ServerCommandSource source) {
+		ServerPlayerEntity serverPlayerEntity = source.getPlayer();
+		return serverPlayerEntity == null || this.verify(serverPlayerEntity);
 	}
 
 	/**
@@ -94,38 +118,6 @@ public record SignedMessage(MessageHeader signedHeader, MessageSignatureData hea
 	 * <p>This returns the unsigned content if present, and fallbacks to the signed content.
 	 */
 	public Text getContent() {
-		return (Text)this.unsignedContent().orElse(this.getSignedContent().decorated());
-	}
-
-	public Instant getTimestamp() {
-		return this.signedBody.timestamp();
-	}
-
-	public long getSalt() {
-		return this.signedBody.salt();
-	}
-
-	public boolean isExpiredOnServer(Instant currentTime) {
-		return currentTime.isAfter(this.getTimestamp().plus(SERVERBOUND_TIME_TO_LIVE));
-	}
-
-	public boolean isExpiredOnClient(Instant currentTime) {
-		return currentTime.isAfter(this.getTimestamp().plus(CLIENTBOUND_TIME_TO_LIVE));
-	}
-
-	public MessageMetadata createMetadata() {
-		return new MessageMetadata(this.signedHeader.sender(), this.getTimestamp(), this.getSalt());
-	}
-
-	@Nullable
-	public LastSeenMessageList.Entry toLastSeenMessageEntry() {
-		MessageMetadata messageMetadata = this.createMetadata();
-		return !this.headerSignature.isEmpty() && !messageMetadata.lacksSender()
-			? new LastSeenMessageList.Entry(messageMetadata.sender(), this.headerSignature)
-			: null;
-	}
-
-	public boolean method_45040(ServerPlayerEntity serverPlayerEntity) {
-		return !this.headerSignature.isEmpty() && this.signedHeader.sender().equals(serverPlayerEntity.getUuid());
+		return (Text)this.unsignedContent.orElse(this.signedContent);
 	}
 }

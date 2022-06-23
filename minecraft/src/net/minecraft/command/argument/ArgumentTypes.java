@@ -8,7 +8,6 @@ import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.LongArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import java.util.Locale;
 import java.util.Map;
 import net.minecraft.SharedConstants;
 import net.minecraft.command.argument.serialize.ArgumentSerializer;
@@ -102,7 +101,7 @@ public class ArgumentTypes {
 	public static <A extends ArgumentType<?>> ArgumentSerializer<A, ?> get(A argumentType) {
 		ArgumentSerializer<?, ?> argumentSerializer = (ArgumentSerializer<?, ?>)CLASS_MAP.get(argumentType.getClass());
 		if (argumentSerializer == null) {
-			throw new IllegalArgumentException(String.format(Locale.ROOT, "Unrecognized argument type %s (%s)", argumentType, argumentType.getClass()));
+			throw new IllegalArgumentException("Unrecognized argument type %s (%s)".formatted(argumentType, argumentType.getClass()));
 		} else {
 			return (ArgumentSerializer<A, ?>)argumentSerializer;
 		}

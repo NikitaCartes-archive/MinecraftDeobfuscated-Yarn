@@ -16,10 +16,10 @@ public class MeCommand {
 								MessageArgumentType.SignedMessage signedMessage = MessageArgumentType.getSignedMessage(context, "action");
 								ServerCommandSource serverCommandSource = context.getSource();
 								PlayerManager playerManager = serverCommandSource.getServer().getPlayerManager();
-								signedMessage.decorate(
-									serverCommandSource,
-									decoratedMessage -> playerManager.broadcast(decoratedMessage, serverCommandSource, MessageType.params(MessageType.EMOTE_COMMAND, serverCommandSource))
-								);
+								signedMessage.decorate(serverCommandSource)
+									.thenAcceptAsync(
+										decoratedMessage -> playerManager.broadcast(decoratedMessage, serverCommandSource, MessageType.EMOTE_COMMAND), serverCommandSource.getServer()
+									);
 								return 1;
 							}
 						)

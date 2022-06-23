@@ -146,7 +146,7 @@ public interface Spline<C, I extends ToFloatFunction<C>> extends ToFloatFunction
 
 		@Override
 		public String getDebugString() {
-			return String.format(Locale.ROOT, "k=%.3f", this.value);
+			return String.format("k=%.3f", this.value);
 		}
 
 		@Override

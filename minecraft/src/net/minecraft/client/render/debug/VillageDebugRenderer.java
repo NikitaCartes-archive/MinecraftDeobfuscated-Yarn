@@ -8,7 +8,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -209,9 +208,7 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 
 		if (bl) {
 			int j = brain.health < brain.maxHealth ? -23296 : -1;
-			drawString(
-				brain.pos, i, "health: " + String.format(Locale.ROOT, "%.1f", brain.health) + " / " + String.format(Locale.ROOT, "%.1f", brain.maxHealth), j, 0.02F
-			);
+			drawString(brain.pos, i, "health: " + String.format("%.1f", brain.health) + " / " + String.format("%.1f", brain.maxHealth), j, 0.02F);
 			i++;
 		}
 

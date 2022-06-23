@@ -31,6 +31,7 @@ public class ChatPreviewer {
 	 * @see #tryConsumeResponse
 	 */
 	private static final long CONSUME_COOLDOWN = 200L;
+	private boolean shouldRenderPreview;
 	@Nullable
 	private String lastPreviewedMessage;
 	/**
@@ -65,6 +66,7 @@ public class ChatPreviewer {
 	 * can be requested by calling {@link #tryRequestPending()}.
 	 */
 	public void tryRequest(String message) {
+		this.shouldRenderPreview = true;
 		message = normalize(message);
 		if (!message.isEmpty()) {
 			if (!message.equals(this.lastPreviewedMessage)) {
@@ -85,9 +87,10 @@ public class ChatPreviewer {
 	}
 
 	/**
-	 * Clears this previewer.
+	 * Sets {@link #shouldRenderPreview} to {@code false} and clears this previewer.
 	 */
 	public void disablePreview() {
+		this.shouldRenderPreview = false;
 		this.clear();
 	}
 
@@ -107,26 +110,12 @@ public class ChatPreviewer {
 	 * @implNote This sets the last response if the requester {@linkplain
 	 * ChatPreviewRequester#handleResponse successfully handled} the response.
 	 */
-	public void onResponse(int id, @Nullable Text previewText) {
+	public void onResponse(int id, @Nullable Text response) {
 		String string = this.requester.handleResponse(id);
 		if (string != null) {
-			this.lastResponse = new ChatPreviewer.Response(Util.getMeasuringTimeMs(), string, previewText);
+			Text text = (Text)(response != null ? response : Text.literal(string));
+			this.lastResponse = new ChatPreviewer.Response(Util.getMeasuringTimeMs(), string, text);
 		}
-	}
-
-	/**
-	 * {@return whether the previewer cannot consume the preview (because the preview
-	 * response hasn't arrived or because of the cooldown)}
-	 */
-	public boolean cannotConsumePreview() {
-		return this.pendingRequestMessage != null || this.lastResponse != null && !this.lastResponse.hasCooldownPassed();
-	}
-
-	/**
-	 * {@return whether normalized {@code text} equals the last previewed text}
-	 */
-	public boolean equalsLastPreviewed(String text) {
-		return normalize(text).equals(this.lastPreviewedMessage);
 	}
 
 	/**
@@ -136,8 +125,8 @@ public class ChatPreviewer {
 	 * <p>This does not consume the response.
 	 */
 	@Nullable
-	public ChatPreviewer.Response getPreviewText() {
-		return this.lastResponse;
+	public Text getPreviewText() {
+		return Util.map(this.lastResponse, ChatPreviewer.Response::previewText);
 	}
 
 	/**
@@ -152,14 +141,24 @@ public class ChatPreviewer {
 	 * {@link #getPreviewText}.
 	 */
 	@Nullable
-	public ChatPreviewer.Response tryConsumeResponse(String message) {
+	public Text tryConsumeResponse(String message) {
 		if (this.lastResponse != null && this.lastResponse.canConsume(message)) {
-			ChatPreviewer.Response response = this.lastResponse;
+			Text text = this.lastResponse.previewText();
 			this.lastResponse = null;
-			return response;
+			return text;
 		} else {
 			return null;
 		}
+	}
+
+	/**
+	 * {@return whether the preview should be rendered}
+	 * 
+	 * @implNote A preview should be rendered if there is a response, a pending query, or
+	 * a query waiting for the response.
+	 */
+	public boolean shouldRenderPreview() {
+		return this.shouldRenderPreview;
 	}
 
 	/**
@@ -173,19 +172,12 @@ public class ChatPreviewer {
 	 * A response to the preview query.
 	 */
 	@Environment(EnvType.CLIENT)
-	public static record Response(long receptionTimestamp, String query, @Nullable Text previewText) {
-		public Response(long receptionTimestamp, String query, @Nullable Text previewText) {
+	static record Response(long receivedTimeStamp, String query, @Nullable Text previewText) {
+		public Response(long receivedTimeStamp, String query, @Nullable Text previewText) {
 			query = ChatPreviewer.normalize(query);
-			this.receptionTimestamp = receptionTimestamp;
+			this.receivedTimeStamp = receivedTimeStamp;
 			this.query = query;
 			this.previewText = previewText;
-		}
-
-		/**
-		 * {@return whether normalized {@code query} equals the response query}
-		 */
-		private boolean queryEquals(String query) {
-			return this.query.equals(ChatPreviewer.normalize(query));
 		}
 
 		/**
@@ -194,19 +186,13 @@ public class ChatPreviewer {
 		 * <p>This returns {@code true} if the {@code message} equals the queried message and
 		 * the cooldown has passed.
 		 */
-		boolean canConsume(String message) {
-			return this.queryEquals(message) ? this.hasCooldownPassed() : false;
-		}
-
-		/**
-		 * {@return the cooldown for consuming the preview has passed}
-		 * 
-		 * @see #canConsume
-		 * @see ChatPreviewer#tryConsumeResponse
-		 */
-		boolean hasCooldownPassed() {
-			long l = this.receptionTimestamp + 200L;
-			return Util.getMeasuringTimeMs() >= l;
+		public boolean canConsume(String message) {
+			if (this.query.equals(ChatPreviewer.normalize(message))) {
+				long l = this.receivedTimeStamp + 200L;
+				return Util.getMeasuringTimeMs() >= l;
+			} else {
+				return false;
+			}
 		}
 	}
 }

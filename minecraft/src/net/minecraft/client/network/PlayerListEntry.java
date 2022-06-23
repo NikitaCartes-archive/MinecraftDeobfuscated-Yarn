@@ -15,7 +15,6 @@ import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.encryption.SignatureVerifier;
-import net.minecraft.network.message.MessageVerifier;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.Text;
@@ -42,7 +41,6 @@ public class PlayerListEntry {
 	private long showTime;
 	@Nullable
 	private final PlayerPublicKey publicKeyData;
-	private final MessageVerifier messageVerifier;
 
 	public PlayerListEntry(PlayerListS2CPacket.Entry playerListPacketEntry, SignatureVerifier servicesSignatureVerifier) {
 		this.profile = playerListPacketEntry.getProfile();
@@ -61,7 +59,6 @@ public class PlayerListEntry {
 		}
 
 		this.publicKeyData = playerPublicKey;
-		this.messageVerifier = MessageVerifier.create(playerPublicKey);
 	}
 
 	public GameProfile getProfile() {
@@ -71,10 +68,6 @@ public class PlayerListEntry {
 	@Nullable
 	public PlayerPublicKey getPublicKeyData() {
 		return this.publicKeyData;
-	}
-
-	public MessageVerifier getMessageVerifier() {
-		return this.messageVerifier;
 	}
 
 	@Nullable

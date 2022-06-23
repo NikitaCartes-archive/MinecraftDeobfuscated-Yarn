@@ -130,11 +130,11 @@ public final class VanillaBiomeParameters {
 		);
 	}
 
-	public void writeVanillaBiomeParameters(Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> parameters) {
+	public void writeVanillaBiomeParameters(Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> consumer) {
 		if (!SharedConstants.DEBUG_BIOME_SOURCE) {
-			this.writeOceanBiomes(parameters);
-			this.writeLandBiomes(parameters);
-			this.writeCaveBiomes(parameters);
+			this.writeOceanBiomes(consumer);
+			this.writeLandBiomes(consumer);
+			this.writeCaveBiomes(consumer);
 		} else {
 			DensityFunctionTypes.Spline.DensityFunctionWrapper densityFunctionWrapper = new DensityFunctionTypes.Spline.DensityFunctionWrapper(
 				BuiltinRegistries.DENSITY_FUNCTION.entryOf(DensityFunctions.CONTINENTS_OVERWORLD)
@@ -145,7 +145,7 @@ public final class VanillaBiomeParameters {
 			DensityFunctionTypes.Spline.DensityFunctionWrapper densityFunctionWrapper3 = new DensityFunctionTypes.Spline.DensityFunctionWrapper(
 				BuiltinRegistries.DENSITY_FUNCTION.entryOf(DensityFunctions.RIDGES_FOLDED_OVERWORLD)
 			);
-			parameters.accept(
+			consumer.accept(
 				Pair.of(
 					MultiNoiseUtil.createNoiseHypercube(
 						this.defaultParameter,
@@ -165,7 +165,7 @@ public final class VanillaBiomeParameters {
 				RegistryKey<Biome> registryKey = BiomeKeys.DESERT;
 
 				for (float f : implementation.locations()) {
-					parameters.accept(
+					consumer.accept(
 						Pair.of(
 							MultiNoiseUtil.createNoiseHypercube(
 								this.defaultParameter,
@@ -187,7 +187,7 @@ public final class VanillaBiomeParameters {
 				)
 			 {
 				for (float f : implementation2.locations()) {
-					parameters.accept(
+					consumer.accept(
 						Pair.of(
 							MultiNoiseUtil.createNoiseHypercube(
 								this.defaultParameter,

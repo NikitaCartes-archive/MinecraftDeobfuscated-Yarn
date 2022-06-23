@@ -1,6 +1,5 @@
 package net.minecraft.world.block;
 
-import java.util.Locale;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -45,18 +44,13 @@ public interface NeighborUpdater {
 		} catch (Throwable var9) {
 			CrashReport crashReport = CrashReport.create(var9, "Exception while updating neighbours");
 			CrashReportSection crashReportSection = crashReport.addElement("Block being updated");
-			crashReportSection.add(
-				"Source block type",
-				(CrashCallable<String>)(() -> {
-					try {
-						return String.format(
-							Locale.ROOT, "ID #%s (%s // %s)", Registry.BLOCK.getId(sourceBlock), sourceBlock.getTranslationKey(), sourceBlock.getClass().getCanonicalName()
-						);
-					} catch (Throwable var2) {
-						return "ID #" + Registry.BLOCK.getId(sourceBlock);
-					}
-				})
-			);
+			crashReportSection.add("Source block type", (CrashCallable<String>)(() -> {
+				try {
+					return String.format("ID #%s (%s // %s)", Registry.BLOCK.getId(sourceBlock), sourceBlock.getTranslationKey(), sourceBlock.getClass().getCanonicalName());
+				} catch (Throwable var2) {
+					return "ID #" + Registry.BLOCK.getId(sourceBlock);
+				}
+			}));
 			CrashReportSection.addBlockInfo(crashReportSection, world, pos, state);
 			throw new CrashException(crashReport);
 		}

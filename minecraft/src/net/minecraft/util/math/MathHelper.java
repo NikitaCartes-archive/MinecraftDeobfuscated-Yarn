@@ -1,6 +1,5 @@
 package net.minecraft.util.math;
 
-import java.util.Locale;
 import java.util.UUID;
 import java.util.function.IntPredicate;
 import java.util.stream.IntStream;
@@ -972,9 +971,9 @@ public class MathHelper {
 
 	public static IntStream stream(int seed, int lowerBound, int upperBound, int steps) {
 		if (lowerBound > upperBound) {
-			throw new IllegalArgumentException(String.format(Locale.ROOT, "upperbound %d expected to be > lowerBound %d", upperBound, lowerBound));
+			throw new IllegalArgumentException("upperbound %d expected to be > lowerBound %d".formatted(upperBound, lowerBound));
 		} else if (steps < 1) {
-			throw new IllegalArgumentException(String.format(Locale.ROOT, "steps expected to be >= 1, was %d", steps));
+			throw new IllegalArgumentException("steps expected to be >= 1, was %d".formatted(steps));
 		} else {
 			return seed >= lowerBound && seed <= upperBound ? IntStream.iterate(seed, i -> {
 				int m = Math.abs(seed - i);
