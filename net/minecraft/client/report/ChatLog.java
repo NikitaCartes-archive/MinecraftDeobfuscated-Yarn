@@ -1,9 +1,11 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.client.network.chat;
+package net.minecraft.client.report;
 
+import com.mojang.authlib.GameProfile;
 import it.unimi.dsi.fastutil.ints.IntList;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.PrimitiveIterator;
 import java.util.Spliterators;
@@ -13,7 +15,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.chat.ReceivedMessage;
+import net.minecraft.client.report.ReceivedMessage;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -113,6 +115,14 @@ public interface ChatLog {
     }
 
     /**
+     * {@return the streams starting from {@linkplain #getMaxIndex the biggest index
+     * in the log} with entires ordered antichronologically (in descending order)}
+     */
+    default public Streams streamBackward() {
+        return this.streamBackward(this.getMaxIndex());
+    }
+
+    /**
      * {@return the streams starting from {@code startIndex} with entires ordered
      * chronologically (in ascending order)}
      * 
@@ -207,6 +217,16 @@ public interface ChatLog {
 
         public Stream<ReceivedMessage> streamMessages() {
             return this.streamIndices().mapToObj(this.log::get).filter(Objects::nonNull);
+        }
+
+        public Collection<GameProfile> collectSenderProfiles() {
+            return this.streamMessages().map(message -> {
+                if (message instanceof ReceivedMessage.ChatMessage) {
+                    ReceivedMessage.ChatMessage chatMessage = (ReceivedMessage.ChatMessage)message;
+                    return chatMessage.profile();
+                }
+                return null;
+            }).filter(Objects::nonNull).distinct().toList();
         }
 
         public Stream<ReceivedMessage.IndexedMessage> streamIndexedMessages() {

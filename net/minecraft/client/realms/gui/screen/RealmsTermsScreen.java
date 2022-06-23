@@ -67,7 +67,7 @@ extends RealmsScreen {
     }
 
     private void agreedToTos() {
-        RealmsClient realmsClient = RealmsClient.method_44616();
+        RealmsClient realmsClient = RealmsClient.create();
         try {
             realmsClient.agreeToTos();
             this.client.setScreen(new RealmsLongRunningMcoTaskScreen(this.parent, new RealmsGetServerDetailsTask(this.mainScreen, this.parent, this.realmsServer, new ReentrantLock())));

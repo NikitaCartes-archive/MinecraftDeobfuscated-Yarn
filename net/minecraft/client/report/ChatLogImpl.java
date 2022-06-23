@@ -1,12 +1,12 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.client.network.chat;
+package net.minecraft.client.report;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.chat.ChatLog;
-import net.minecraft.client.network.chat.ReceivedMessage;
+import net.minecraft.client.report.ChatLog;
+import net.minecraft.client.report.ReceivedMessage;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 

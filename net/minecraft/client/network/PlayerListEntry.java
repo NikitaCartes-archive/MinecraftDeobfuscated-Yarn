@@ -54,7 +54,7 @@ public class PlayerListEntry {
         try {
             PlayerPublicKey.PublicKeyData publicKeyData = playerListPacketEntry.getPublicKeyData();
             if (publicKeyData != null) {
-                playerPublicKey = PlayerPublicKey.verifyAndDecode(servicesSignatureVerifier, publicKeyData);
+                playerPublicKey = PlayerPublicKey.verifyAndDecode(servicesSignatureVerifier, this.profile.getId(), publicKeyData);
             }
         } catch (InsecurePublicKeyException | NetworkEncryptionException exception) {
             LOGGER.error("Failed to retrieve publicKey property for profile {}", (Object)this.profile.getId(), (Object)exception);

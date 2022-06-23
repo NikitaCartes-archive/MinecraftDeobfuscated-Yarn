@@ -66,7 +66,6 @@ import net.minecraft.client.network.DataQueryHandler;
 import net.minecraft.client.network.OtherClientPlayerEntity;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.network.ServerInfo;
-import net.minecraft.client.network.chat.ReceivedMessage;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.ServerList;
 import net.minecraft.client.particle.ItemPickupParticle;
@@ -79,6 +78,7 @@ import net.minecraft.client.render.debug.GoalSelectorDebugRenderer;
 import net.minecraft.client.render.debug.NeighborUpdateDebugRenderer;
 import net.minecraft.client.render.debug.VillageDebugRenderer;
 import net.minecraft.client.render.debug.WorldGenAttemptDebugRenderer;
+import net.minecraft.client.report.ReceivedMessage;
 import net.minecraft.client.search.SearchManager;
 import net.minecraft.client.sound.AbstractBeeSoundInstance;
 import net.minecraft.client.sound.AggressiveBeeSoundInstance;
@@ -760,7 +760,7 @@ implements ClientPlayPacketListener {
         MessageType messageType = packet.getMessageType(registry);
         this.client.inGameHud.onGameMessage(messageType, packet.content());
         Instant instant = Instant.now();
-        this.client.getAbuseReporter().chatLog().add(ReceivedMessage.of(packet.content(), instant));
+        this.client.getAbuseReportContext().chatLog().add(ReceivedMessage.of(packet.content(), instant));
     }
 
     private UUID extractSender(Text content) {
@@ -804,7 +804,7 @@ implements ClientPlayPacketListener {
         Text text = signedMessage.getContent();
         this.client.inGameHud.onChatMessage(type, text, sender);
         GameProfile gameProfile = this.getProfile(sender);
-        this.client.getAbuseReporter().chatLog().add(ReceivedMessage.of(gameProfile, sender.name(), signedMessage));
+        this.client.getAbuseReportContext().chatLog().add(ReceivedMessage.of(gameProfile, sender.name(), signedMessage));
     }
 
     /**

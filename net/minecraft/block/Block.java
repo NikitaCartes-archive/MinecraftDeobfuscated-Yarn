@@ -193,12 +193,12 @@ implements ItemConvertible {
         return Blocks.AIR;
     }
 
-    public static BlockState pushEntitiesUpBeforeBlockChange(BlockState from, BlockState to, WorldAccess worldAccess, BlockPos pos) {
-        VoxelShape voxelShape = VoxelShapes.combine(from.getCollisionShape(worldAccess, pos), to.getCollisionShape(worldAccess, pos), BooleanBiFunction.ONLY_SECOND).offset(pos.getX(), pos.getY(), pos.getZ());
+    public static BlockState pushEntitiesUpBeforeBlockChange(BlockState from, BlockState to, WorldAccess world, BlockPos pos) {
+        VoxelShape voxelShape = VoxelShapes.combine(from.getCollisionShape(world, pos), to.getCollisionShape(world, pos), BooleanBiFunction.ONLY_SECOND).offset(pos.getX(), pos.getY(), pos.getZ());
         if (voxelShape.isEmpty()) {
             return to;
         }
-        List<Entity> list = worldAccess.getOtherEntities(null, voxelShape.getBoundingBox());
+        List<Entity> list = world.getOtherEntities(null, voxelShape.getBoundingBox());
         for (Entity entity : list) {
             double d = VoxelShapes.calculateMaxOffset(Direction.Axis.Y, entity.getBoundingBox().offset(0.0, 1.0, 0.0), List.of(voxelShape), -1.0);
             entity.requestTeleport(entity.getX(), entity.getY() + 1.0 + d, entity.getZ());

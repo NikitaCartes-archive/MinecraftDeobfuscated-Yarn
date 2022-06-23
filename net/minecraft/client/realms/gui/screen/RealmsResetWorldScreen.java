@@ -93,7 +93,7 @@ extends RealmsScreen {
 
             @Override
             public void run() {
-                RealmsClient realmsClient = RealmsClient.method_44616();
+                RealmsClient realmsClient = RealmsClient.create();
                 try {
                     WorldTemplatePaginatedList worldTemplatePaginatedList = realmsClient.fetchWorldTemplates(1, 10, RealmsServer.WorldType.NORMAL);
                     WorldTemplatePaginatedList worldTemplatePaginatedList2 = realmsClient.fetchWorldTemplates(1, 10, RealmsServer.WorldType.ADVENTUREMAP);

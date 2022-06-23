@@ -13,7 +13,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.security.PrivateKey;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.crypto.Cipher;
@@ -86,7 +85,7 @@ implements ServerLoginPacketListener {
     @Nullable
     private ServerPlayerEntity delayedPlayer;
     @Nullable
-    private PlayerPublicKey publicKey;
+    private PlayerPublicKey.PublicKeyData publicKeyData;
 
     public ServerLoginNetworkHandler(MinecraftServer server, ClientConnection connection) {
         this.server = server;
@@ -141,11 +140,26 @@ implements ServerLoginPacketListener {
      * @apiNote This method should only be called on the server thread.
      */
     public void acceptPlayer() {
-        Text text;
-        if (!this.profile.isComplete()) {
-            this.profile = this.toOfflineProfile(this.profile);
+        PlayerPublicKey playerPublicKey;
+        UUID uUID;
+        block10: {
+            if (!this.profile.isComplete()) {
+                this.profile = this.toOfflineProfile(this.profile);
+            }
+            uUID = this.profile.getId();
+            playerPublicKey = null;
+            try {
+                SignatureVerifier signatureVerifier = this.server.getServicesSignatureVerifier();
+                playerPublicKey = ServerLoginNetworkHandler.getVerifiedPublicKey(this.publicKeyData, uUID, signatureVerifier, this.server.shouldEnforceSecureProfile());
+            } catch (LoginException loginException) {
+                LOGGER.error(loginException.getMessage(), loginException.getCause());
+                if (this.connection.isLocal()) break block10;
+                this.disconnect(loginException.getMessageText());
+                return;
+            }
         }
-        if ((text = this.server.getPlayerManager().checkCanJoin(this.connection.getAddress(), this.profile)) != null) {
+        Text text = this.server.getPlayerManager().checkCanJoin(this.connection.getAddress(), this.profile);
+        if (text != null) {
             this.disconnect(text);
         } else {
             this.state = State.ACCEPTED;
@@ -153,9 +167,9 @@ implements ServerLoginPacketListener {
                 this.connection.send(new LoginCompressionS2CPacket(this.server.getNetworkCompressionThreshold()), channelFuture -> this.connection.setCompressionThreshold(this.server.getNetworkCompressionThreshold(), true));
             }
             this.connection.send(new LoginSuccessS2CPacket(this.profile));
-            ServerPlayerEntity serverPlayerEntity = this.server.getPlayerManager().getPlayer(this.profile.getId());
+            ServerPlayerEntity serverPlayerEntity = this.server.getPlayerManager().getPlayer(uUID);
             try {
-                ServerPlayerEntity serverPlayerEntity2 = this.server.getPlayerManager().createPlayer(this.profile, this.publicKey);
+                ServerPlayerEntity serverPlayerEntity2 = this.server.getPlayerManager().createPlayer(this.profile, playerPublicKey);
                 if (serverPlayerEntity != null) {
                     this.state = State.DELAY_ACCEPT;
                     this.delayedPlayer = serverPlayerEntity2;
@@ -188,16 +202,15 @@ implements ServerLoginPacketListener {
     }
 
     @Nullable
-    private static PlayerPublicKey getVerifiedPublicKey(LoginHelloC2SPacket packet, SignatureVerifier servicesSignatureVerifier, boolean shouldThrowOnMissingKey) throws LoginException {
+    private static PlayerPublicKey getVerifiedPublicKey(@Nullable PlayerPublicKey.PublicKeyData publicKeyData, UUID playerUuid, SignatureVerifier servicesSignatureVerifier, boolean shouldThrowOnMissingKey) throws LoginException {
         try {
-            Optional<PlayerPublicKey.PublicKeyData> optional = packet.publicKey();
-            if (optional.isEmpty()) {
+            if (publicKeyData == null) {
                 if (shouldThrowOnMissingKey) {
                     throw new LoginException(MISSING_PUBLIC_KEY_TEXT);
                 }
                 return null;
             }
-            return PlayerPublicKey.verifyAndDecode(servicesSignatureVerifier, optional.get());
+            return PlayerPublicKey.verifyAndDecode(servicesSignatureVerifier, playerUuid, publicKeyData);
         } catch (InsecurePublicKeyException.MissingException missingException) {
             if (shouldThrowOnMissingKey) {
                 throw new LoginException(INVALID_PUBLIC_KEY_SIGNATURE_TEXT, (Throwable)missingException);
@@ -212,18 +225,9 @@ implements ServerLoginPacketListener {
 
     @Override
     public void onHello(LoginHelloC2SPacket packet) {
-        block5: {
-            Validate.validState(this.state == State.HELLO, "Unexpected hello packet", new Object[0]);
-            Validate.validState(ServerLoginNetworkHandler.isValidName(packet.name()), "Invalid characters in username", new Object[0]);
-            try {
-                this.publicKey = ServerLoginNetworkHandler.getVerifiedPublicKey(packet, this.server.getServicesSignatureVerifier(), this.server.shouldEnforceSecureProfile());
-            } catch (LoginException loginException) {
-                LOGGER.error(loginException.getMessage(), loginException.getCause());
-                if (this.connection.isLocal()) break block5;
-                this.disconnect(loginException.getMessageText());
-                return;
-            }
-        }
+        Validate.validState(this.state == State.HELLO, "Unexpected hello packet", new Object[0]);
+        Validate.validState(ServerLoginNetworkHandler.isValidName(packet.name()), "Invalid characters in username", new Object[0]);
+        this.publicKeyData = packet.publicKey().orElse(null);
         GameProfile gameProfile = this.server.getHostProfile();
         if (gameProfile != null && packet.name().equalsIgnoreCase(gameProfile.getName())) {
             this.profile = gameProfile;
@@ -248,8 +252,9 @@ implements ServerLoginPacketListener {
         String string;
         Validate.validState(this.state == State.KEY, "Unexpected key packet", new Object[0]);
         try {
+            PlayerPublicKey playerPublicKey;
             PrivateKey privateKey = this.server.getKeyPair().getPrivate();
-            if (this.publicKey != null ? !packet.verifySignedNonce(this.nonce, this.publicKey) : !packet.verifyEncryptedNonce(this.nonce, privateKey)) {
+            if (this.publicKeyData != null ? !packet.verifySignedNonce(this.nonce, playerPublicKey = PlayerPublicKey.fromKeyData(this.publicKeyData)) : !packet.verifyEncryptedNonce(this.nonce, privateKey)) {
                 throw new IllegalStateException("Protocol error");
             }
             SecretKey secretKey = packet.decryptSecretKey(privateKey);

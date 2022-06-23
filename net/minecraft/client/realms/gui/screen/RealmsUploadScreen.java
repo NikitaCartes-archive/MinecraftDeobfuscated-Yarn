@@ -243,7 +243,7 @@ extends RealmsScreen {
         this.uploadStarted = true;
         new Thread(() -> {
             File file = null;
-            RealmsClient realmsClient = RealmsClient.method_44616();
+            RealmsClient realmsClient = RealmsClient.create();
             long l = this.worldId;
             try {
                 if (!UPLOAD_LOCK.tryLock(1L, TimeUnit.SECONDS)) {

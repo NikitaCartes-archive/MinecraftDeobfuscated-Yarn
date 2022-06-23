@@ -9,6 +9,7 @@ import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
 import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.OptionalDynamic;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -29,23 +30,25 @@ extends DataFix {
     @Override
     protected TypeRewriteRule makeRule() {
         Type<?> type = this.getOutputSchema().getType(TypeReferences.CHUNK);
-        return this.fixTypeEverywhereTyped(this.name, type, typed -> typed.update(DSL.remainderFinder(), BlendingDataFix::update));
+        return this.fixTypeEverywhereTyped(this.name, type, typed -> typed.update(DSL.remainderFinder(), chunk -> BlendingDataFix.update(chunk, chunk.get("__context"))));
     }
 
-    private static Dynamic<?> update(Dynamic<?> dynamic) {
-        Optional<Dynamic<?>> optional = (dynamic = dynamic.remove("blending_data")).get("Status").result();
-        if (optional.isPresent()) {
-            Dynamic<?> dynamic2;
+    private static Dynamic<?> update(Dynamic<?> chunk, OptionalDynamic<?> context) {
+        chunk = chunk.remove("blending_data");
+        boolean bl = "minecraft:overworld".equals(context.get("dimension").asString().result().orElse(""));
+        Optional<Dynamic<?>> optional = chunk.get("Status").result();
+        if (bl && optional.isPresent()) {
+            Dynamic<?> dynamic;
             String string2;
             String string = IdentifierNormalizingSchema.normalize(optional.get().asString("empty"));
-            Optional<Dynamic<?>> optional2 = dynamic.get("below_zero_retrogen").result();
+            Optional<Dynamic<?>> optional2 = chunk.get("below_zero_retrogen").result();
             if (!SKIP_BLENDING_STATUSES.contains(string)) {
-                dynamic = BlendingDataFix.setSections(dynamic, 384, -64);
-            } else if (optional2.isPresent() && !SKIP_BLENDING_STATUSES.contains(string2 = IdentifierNormalizingSchema.normalize((dynamic2 = optional2.get()).get("target_status").asString("empty")))) {
-                dynamic = BlendingDataFix.setSections(dynamic, 256, 0);
+                chunk = BlendingDataFix.setSections(chunk, 384, -64);
+            } else if (optional2.isPresent() && !SKIP_BLENDING_STATUSES.contains(string2 = IdentifierNormalizingSchema.normalize((dynamic = optional2.get()).get("target_status").asString("empty")))) {
+                chunk = BlendingDataFix.setSections(chunk, 256, 0);
             }
         }
-        return dynamic;
+        return chunk;
     }
 
     private static Dynamic<?> setSections(Dynamic<?> dynamic, int height, int minY) {

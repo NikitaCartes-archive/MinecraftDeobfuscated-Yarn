@@ -23,7 +23,7 @@ import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.network.SocialInteractionsManager;
-import net.minecraft.client.network.abusereport.AbuseReporter;
+import net.minecraft.client.report.AbuseReportContext;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
@@ -83,8 +83,8 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
         this.uuid = uuid;
         this.name = name;
         this.skinTexture = skinTexture;
-        AbuseReporter abuseReporter = client.getAbuseReporter();
-        boolean bl = abuseReporter.sender().canSendReports();
+        AbuseReportContext abuseReportContext = client.getAbuseReportContext();
+        boolean bl = abuseReportContext.sender().canSendReports();
         this.hideText = Text.translatable("gui.socialInteractions.tooltip.hide", name);
         this.showText = Text.translatable("gui.socialInteractions.tooltip.show", name);
         this.reportText = bl ? Text.translatable("gui.socialInteractions.tooltip.report", name) : REPORT_DISABLED_TEXT;
@@ -95,7 +95,7 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
         boolean bl2 = client.getChatRestriction().allowsChat(client.isInSingleplayer());
         boolean bl4 = bl3 = !client.player.getUuid().equals(uuid);
         if (bl3 && bl2 && !socialInteractionsManager.isPlayerBlocked(uuid)) {
-            this.reportButton = new TexturedButtonWidget(0, 0, 20, 20, 0, 0, 20, REPORT_BUTTON_TEXTURE, 64, 64, button -> client.setScreen(new ChatReportScreen(minecraftClient.currentScreen, abuseReporter, uuid)), new ButtonWidget.TooltipSupplier(){
+            this.reportButton = new TexturedButtonWidget(0, 0, 20, 20, 0, 0, 20, REPORT_BUTTON_TEXTURE, 64, 64, button -> client.setScreen(new ChatReportScreen(minecraftClient.currentScreen, abuseReportContext, uuid)), new ButtonWidget.TooltipSupplier(){
 
                 @Override
                 public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {

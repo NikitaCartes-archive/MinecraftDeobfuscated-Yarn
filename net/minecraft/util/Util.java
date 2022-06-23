@@ -69,10 +69,10 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_7576;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.TimeSupplier;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.function.CharPredicate;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
@@ -90,7 +90,7 @@ public class Util {
     private static final ExecutorService BOOTSTRAP_EXECUTOR = Util.createWorker("Bootstrap");
     private static final ExecutorService MAIN_WORKER_EXECUTOR = Util.createWorker("Main");
     private static final ExecutorService IO_WORKER_EXECUTOR = Util.createIoWorker();
-    public static class_7576.class_7577 nanoTimeSupplier = System::nanoTime;
+    public static TimeSupplier.Nanoseconds nanoTimeSupplier = System::nanoTime;
     public static final Ticker TICKER = new Ticker(){
 
         @Override

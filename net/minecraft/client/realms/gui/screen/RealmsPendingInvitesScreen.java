@@ -66,7 +66,7 @@ extends RealmsScreen {
              */
             @Override
             public void run() {
-                RealmsClient realmsClient = RealmsClient.method_44616();
+                RealmsClient realmsClient = RealmsClient.create();
                 try {
                     List<PendingInvite> list = realmsClient.pendingInvites().pendingInvites;
                     List list2 = list.stream().map(invite -> new PendingInvitationSelectionListEntry((PendingInvite)invite)).collect(Collectors.toList());
@@ -113,7 +113,7 @@ extends RealmsScreen {
                 @Override
                 public void run() {
                     try {
-                        RealmsClient realmsClient = RealmsClient.method_44616();
+                        RealmsClient realmsClient = RealmsClient.create();
                         realmsClient.rejectInvitation(((PendingInvitationSelectionListEntry)RealmsPendingInvitesScreen.this.pendingInvitationSelectionList.children().get((int)slot)).mPendingInvite.invitationId);
                         RealmsPendingInvitesScreen.this.client.execute(() -> RealmsPendingInvitesScreen.this.updateList(slot));
                     } catch (RealmsServiceException realmsServiceException) {
@@ -131,7 +131,7 @@ extends RealmsScreen {
                 @Override
                 public void run() {
                     try {
-                        RealmsClient realmsClient = RealmsClient.method_44616();
+                        RealmsClient realmsClient = RealmsClient.create();
                         realmsClient.acceptInvitation(((PendingInvitationSelectionListEntry)RealmsPendingInvitesScreen.this.pendingInvitationSelectionList.children().get((int)slot)).mPendingInvite.invitationId);
                         RealmsPendingInvitesScreen.this.client.execute(() -> RealmsPendingInvitesScreen.this.updateList(slot));
                     } catch (RealmsServiceException realmsServiceException) {

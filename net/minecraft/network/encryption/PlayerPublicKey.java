@@ -9,9 +9,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.nio.charset.StandardCharsets;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.security.PublicKey;
 import java.time.Instant;
+import java.util.UUID;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
@@ -47,14 +49,14 @@ public record PlayerPublicKey(PublicKeyData data) {
      * and not expired.
      * 
      * @throws InsecurePublicKeyException.MissingException when the key is missing or empty
-     * @throws InsecurePublicKeyException.InvalidException when the key is unsigned or expired
+     * @throws InsecurePublicKeyException.InvalidException when the key does not belong to the profile, is unsigned, or expired
      * @throws NetworkEncryptionException when the key is malformed
      */
-    public static PlayerPublicKey verifyAndDecode(SignatureVerifier servicesSignatureVerifier, PublicKeyData publicKeyData) throws InsecurePublicKeyException, NetworkEncryptionException {
+    public static PlayerPublicKey verifyAndDecode(SignatureVerifier servicesSignatureVerifier, UUID playerUuid, PublicKeyData publicKeyData) throws InsecurePublicKeyException, NetworkEncryptionException {
         if (publicKeyData.isExpired()) {
             throw new InsecurePublicKeyException.InvalidException("Expired profile public key");
         }
-        if (!publicKeyData.verifyKey(servicesSignatureVerifier)) {
+        if (!publicKeyData.verifyKey(servicesSignatureVerifier, playerUuid)) {
             throw new InsecurePublicKeyException.InvalidException("Invalid profile public key signature");
         }
         return PlayerPublicKey.fromKeyData(publicKeyData);
@@ -66,7 +68,7 @@ public record PlayerPublicKey(PublicKeyData data) {
 
     public record PublicKeyData(Instant expiresAt, PublicKey key, byte[] keySignature) {
         private static final int KEY_SIGNATURE_MAX_SIZE = 4096;
-        public static final Codec<PublicKeyData> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codecs.INSTANT.fieldOf("expires_at")).forGetter(PublicKeyData::expiresAt), ((MapCodec)NetworkEncryptionUtils.RSA_PUBLIC_KEY_CODEC.fieldOf("key")).forGetter(PublicKeyData::key), ((MapCodec)Codecs.BASE_64.fieldOf("signature")).forGetter(PublicKeyData::keySignature)).apply((Applicative<PublicKeyData, ?>)instance, PublicKeyData::new));
+        public static final Codec<PublicKeyData> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codecs.INSTANT.fieldOf("expires_at")).forGetter(PublicKeyData::expiresAt), ((MapCodec)NetworkEncryptionUtils.RSA_PUBLIC_KEY_CODEC.fieldOf("key")).forGetter(PublicKeyData::key), ((MapCodec)Codecs.BASE_64.fieldOf("signature_v2")).forGetter(PublicKeyData::keySignature)).apply((Applicative<PublicKeyData, ?>)instance, PublicKeyData::new));
 
         public PublicKeyData(PacketByteBuf buf) {
             this(buf.readInstant(), buf.readPublicKey(), buf.readByteArray(4096));
@@ -78,13 +80,16 @@ public record PlayerPublicKey(PublicKeyData data) {
             buf.writeByteArray(this.keySignature);
         }
 
-        boolean verifyKey(SignatureVerifier servicesSignatureVerifier) {
-            return servicesSignatureVerifier.validate(this.toSerializedString().getBytes(StandardCharsets.US_ASCII), this.keySignature);
+        boolean verifyKey(SignatureVerifier servicesSignatureVerifier, UUID playerUuid) {
+            return servicesSignatureVerifier.validate(this.toSerializedString(playerUuid), this.keySignature);
         }
 
-        private String toSerializedString() {
-            String string = NetworkEncryptionUtils.encodeRsaPublicKey(this.key);
-            return this.expiresAt.toEpochMilli() + string;
+        private byte[] toSerializedString(UUID playerUuid) {
+            byte[] bs = this.key.getEncoded();
+            byte[] cs = new byte[24 + bs.length];
+            ByteBuffer byteBuffer = ByteBuffer.wrap(cs).order(ByteOrder.BIG_ENDIAN);
+            byteBuffer.putLong(playerUuid.getMostSignificantBits()).putLong(playerUuid.getLeastSignificantBits()).putLong(this.expiresAt.toEpochMilli()).put(bs);
+            return cs;
         }
 
         public boolean isExpired() {

@@ -31,6 +31,7 @@ import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -59,8 +60,8 @@ public class PlayerSkinProvider {
             }
 
             @Override
-            public /* synthetic */ Object load(Object object) throws Exception {
-                return this.load((String)object);
+            public /* synthetic */ Object load(Object value) throws Exception {
+                return this.load((String)value);
             }
         });
     }
@@ -125,6 +126,20 @@ public class PlayerSkinProvider {
             return ImmutableMap.of();
         }
         return this.skinCache.getUnchecked(property.getValue());
+    }
+
+    /**
+     * {@return the ID of {@code profile}'s skin, or the default skin for the profile's
+     * UUID if the skin is missing}
+     * 
+     * @see DefaultSkinHelper#getTexture(java.util.UUID)
+     */
+    public Identifier loadSkin(GameProfile profile) {
+        MinecraftProfileTexture minecraftProfileTexture = this.getTextures(profile).get((Object)MinecraftProfileTexture.Type.SKIN);
+        if (minecraftProfileTexture != null) {
+            return this.loadSkin(minecraftProfileTexture, MinecraftProfileTexture.Type.SKIN);
+        }
+        return DefaultSkinHelper.getTexture(DynamicSerializableUuid.getUuidFromProfile(profile));
     }
 
     @Environment(value=EnvType.CLIENT)

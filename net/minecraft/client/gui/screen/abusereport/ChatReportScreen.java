@@ -15,16 +15,16 @@ import java.util.concurrent.Executor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.MultilineText;
-import net.minecraft.client.gui.screen.RunningTaskScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.TaskScreen;
 import net.minecraft.client.gui.screen.WarningScreen;
-import net.minecraft.client.gui.screen.abusereport.AbuseReportReasonScreen;
-import net.minecraft.client.gui.screen.abusereport.ChatSelectionScreen;
+import net.minecraft.client.gui.screen.report.AbuseReportReasonScreen;
+import net.minecraft.client.gui.screen.report.ChatSelectionScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.EditBoxWidget;
-import net.minecraft.client.network.abusereport.AbuseReportReason;
-import net.minecraft.client.network.abusereport.AbuseReporter;
 import net.minecraft.client.network.abusereport.ChatAbuseReport;
+import net.minecraft.client.report.AbuseReportContext;
+import net.minecraft.client.report.AbuseReportReason;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
@@ -52,12 +52,14 @@ extends Screen {
     private static final Text DESCRIBE_TEXT = Text.translatable("gui.chatReport.describe");
     private static final Text REPORT_SENT_MESSAGE_TEXT = Text.translatable("gui.chatReport.report_sent_msg");
     private static final Text SELECT_CHAT_TEXT = Text.translatable("gui.chatReport.select_chat");
-    private static final Text SENDING_TEXT = Text.translatable("gui.abuseReport.sending.title");
+    private static final Text SENDING_TEXT = Text.translatable("gui.abuseReport.sending.title").formatted(Formatting.BOLD);
+    private static final Text REPORT_SENT_TITLE = Text.translatable("gui.abuseReport.sent.title").formatted(Formatting.BOLD);
+    private static final Text REPORT_ERROR_TITLE = Text.translatable("gui.abuseReport.error.title").formatted(Formatting.BOLD);
     private static final Text GENERIC_ERROR_TEXT = Text.translatable("gui.abuseReport.send.generic_error");
     private static final Logger field_39577 = LogUtils.getLogger();
     @Nullable
     final Screen parent;
-    private final AbuseReporter reporter;
+    private final AbuseReportContext reporter;
     @Nullable
     private MultilineText reasonDescription;
     @Nullable
@@ -67,7 +69,7 @@ extends Screen {
     @Nullable
     ChatAbuseReport.ValidationError validationError;
 
-    public ChatReportScreen(Screen parent, AbuseReporter reporter, UUID reportedPlayerUuid) {
+    public ChatReportScreen(Screen parent, AbuseReportContext reporter, UUID reportedPlayerUuid) {
         super(Text.translatable("gui.chatReport.title"));
         this.parent = parent;
         this.reporter = reporter;
@@ -112,30 +114,29 @@ extends Screen {
     private void send() {
         this.report.finalizeReport(this.reporter).left().ifPresent(report -> {
             CompletableFuture<Unit> completableFuture = this.reporter.sender().send(report.id(), report.report());
-            RunningTaskScreen runningTaskScreen = new RunningTaskScreen(SENDING_TEXT, ScreenTexts.CANCEL, () -> {
+            this.client.setScreen(TaskScreen.createRunningScreen(SENDING_TEXT, ScreenTexts.CANCEL, () -> {
                 this.client.setScreen(this);
                 completableFuture.cancel(true);
-            });
-            this.client.setScreen(runningTaskScreen);
+            }));
             completableFuture.handleAsync((unit, throwable) -> {
                 if (throwable == null) {
-                    this.onSubmissionFinished(runningTaskScreen);
+                    this.onSubmissionFinished();
                 } else {
                     if (throwable instanceof CancellationException) {
                         return null;
                     }
-                    this.onSubmissionError(runningTaskScreen, (Throwable)throwable);
+                    this.onSubmissionError((Throwable)throwable);
                 }
                 return null;
             }, (Executor)this.client);
         });
     }
 
-    private void onSubmissionFinished(RunningTaskScreen sendingScreen) {
-        sendingScreen.setDisplay(REPORT_SENT_MESSAGE_TEXT, ScreenTexts.DONE, () -> this.client.setScreen(null));
+    private void onSubmissionFinished() {
+        this.client.setScreen(TaskScreen.createResultScreen(REPORT_SENT_TITLE, REPORT_SENT_MESSAGE_TEXT, ScreenTexts.DONE, () -> this.client.setScreen(null)));
     }
 
-    private void onSubmissionError(RunningTaskScreen sendingScreen, Throwable throwable) {
+    private void onSubmissionError(Throwable throwable) {
         Text text;
         field_39577.error("Encountered error while sending abuse report", throwable);
         Throwable throwable2 = throwable.getCause();
@@ -146,7 +147,7 @@ extends Screen {
             text = GENERIC_ERROR_TEXT;
         }
         MutableText text2 = text.copy().formatted(Formatting.RED);
-        sendingScreen.setDisplay(text2, ScreenTexts.BACK, () -> this.client.setScreen(this));
+        this.client.setScreen(TaskScreen.createResultScreen(REPORT_ERROR_TITLE, text2, ScreenTexts.BACK, () -> this.client.setScreen(this)));
     }
 
     @Override

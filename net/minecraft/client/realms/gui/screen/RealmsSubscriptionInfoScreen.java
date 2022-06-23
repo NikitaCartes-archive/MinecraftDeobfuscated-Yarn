@@ -90,7 +90,7 @@ extends RealmsScreen {
                 @Override
                 public void run() {
                     try {
-                        RealmsClient realmsClient = RealmsClient.method_44616();
+                        RealmsClient realmsClient = RealmsClient.create();
                         realmsClient.deleteWorld(RealmsSubscriptionInfoScreen.this.serverData.id);
                     } catch (RealmsServiceException realmsServiceException) {
                         LOGGER.error("Couldn't delete world", realmsServiceException);
@@ -103,7 +103,7 @@ extends RealmsScreen {
     }
 
     private void getSubscription(long worldId) {
-        RealmsClient realmsClient = RealmsClient.method_44616();
+        RealmsClient realmsClient = RealmsClient.create();
         try {
             Subscription subscription = realmsClient.subscriptionFor(worldId);
             this.daysLeft = this.daysLeftPresentation(subscription.daysLeft);

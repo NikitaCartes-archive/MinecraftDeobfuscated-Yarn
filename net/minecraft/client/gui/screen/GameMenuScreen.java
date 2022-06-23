@@ -70,7 +70,7 @@ extends Screen {
         if (this.client.isIntegratedServerRunning() && !this.client.getServer().isRemote()) {
             this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height / 4 + 96 + -16, 98, 20, Text.translatable("menu.shareToLan"), button -> this.client.setScreen(new OpenToLanScreen(this))));
         } else {
-            this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height / 4 + 96 + -16, 98, 20, Text.translatable("menu.playerReporting"), buttonWidget -> this.client.setScreen(SocialInteractionsScreen.createAbuseReportNoticeScreen())));
+            this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height / 4 + 96 + -16, 98, 20, Text.translatable("menu.playerReporting"), buttonWidget -> this.client.setScreen(new SocialInteractionsScreen())));
         }
         MutableText text = this.client.isInSingleplayer() ? Text.translatable("menu.returnToMenu") : Text.translatable("menu.disconnect");
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 120 + -16, 204, 20, text, button -> {

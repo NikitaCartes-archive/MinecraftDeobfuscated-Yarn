@@ -20,10 +20,10 @@ import java.util.UUID;
 import java.util.stream.IntStream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.abusereport.AbuseReportReason;
-import net.minecraft.client.network.abusereport.AbuseReporter;
-import net.minecraft.client.network.chat.ChatLog;
-import net.minecraft.client.network.chat.ReceivedMessage;
+import net.minecraft.client.report.AbuseReportContext;
+import net.minecraft.client.report.AbuseReportReason;
+import net.minecraft.client.report.ChatLog;
+import net.minecraft.client.report.ReceivedMessage;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.text.Text;
@@ -32,8 +32,6 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class ChatAbuseReport {
     private static final String CHAT = "CHAT";
-    private static final int EVIDENTIAL_SUCCEEDING_MESSAGES = 2;
-    private static final int EVIDENTIAL_PRECEDING_MESSAGES = 4;
     private final UUID id;
     private final Instant timestamp;
     private final UUID reportedPlayerUuid;
@@ -108,7 +106,7 @@ public class ChatAbuseReport {
         return null;
     }
 
-    public Either<ReportWithId, ValidationError> finalizeReport(AbuseReporter reporter) {
+    public Either<ReportWithId, ValidationError> finalizeReport(AbuseReportContext reporter) {
         ValidationError validationError = this.validate();
         if (validationError != null) {
             return Either.right(validationError);
@@ -160,8 +158,8 @@ public class ChatAbuseReport {
     }
 
     private IntStream streamNeighboringIndices(ChatLog log, int index) {
-        int i = log.clampWithOffset(index, -4);
-        int j = log.clampWithOffset(index, 2);
+        int i = log.clampWithOffset(index, -this.limits.leadingContextMessageCount());
+        int j = log.clampWithOffset(index, this.limits.trailingContextMessageCount());
         return log.streamForward(i, j).streamIndices();
     }
 

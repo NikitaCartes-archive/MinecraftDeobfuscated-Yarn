@@ -20,7 +20,7 @@ import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.gen.GeneratorOptions;
 
 public class WorldPreset {
-    public static final Codec<WorldPreset> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.unboundedMap(RegistryKey.createCodec(Registry.DIMENSION_KEY), DimensionOptions.CODEC).fieldOf("dimensions")).forGetter(preset -> preset.dimensions)).apply((Applicative<WorldPreset, ?>)instance, WorldPreset::new)).flatXmap(WorldPreset::method_44351, WorldPreset::method_44351);
+    public static final Codec<WorldPreset> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.unboundedMap(RegistryKey.createCodec(Registry.DIMENSION_KEY), DimensionOptions.CODEC).fieldOf("dimensions")).forGetter(preset -> preset.dimensions)).apply((Applicative<WorldPreset, ?>)instance, WorldPreset::new)).flatXmap(WorldPreset::validate, WorldPreset::validate);
     public static final Codec<RegistryEntry<WorldPreset>> ENTRY_CODEC = RegistryElementCodec.of(Registry.WORLD_PRESET_KEY, CODEC);
     private final Map<RegistryKey<DimensionOptions>, DimensionOptions> dimensions;
 
@@ -55,11 +55,11 @@ public class WorldPreset {
         return this.getOverworld().orElseThrow(() -> new IllegalStateException("Can't find overworld in this preset"));
     }
 
-    private static DataResult<WorldPreset> method_44351(WorldPreset worldPreset) {
-        if (worldPreset.getOverworld().isEmpty()) {
+    private static DataResult<WorldPreset> validate(WorldPreset preset) {
+        if (preset.getOverworld().isEmpty()) {
             return DataResult.error("Missing overworld dimension");
         }
-        return DataResult.success(worldPreset, Lifecycle.stable());
+        return DataResult.success(preset, Lifecycle.stable());
     }
 }
 

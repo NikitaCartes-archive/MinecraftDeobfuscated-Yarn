@@ -242,8 +242,8 @@ extends DrawableHelper {
                 LocalDifficulty localDifficulty = new LocalDifficulty(world.getDifficulty(), world.getTimeOfDay(), l, h);
                 list.add(String.format(Locale.ROOT, "Local Difficulty: %.2f // %.2f (Day %d)", Float.valueOf(localDifficulty.getLocalDifficulty()), Float.valueOf(localDifficulty.getClampedLocalDifficulty()), this.client.world.getTimeOfDay() / 24000L));
             }
-            if (worldChunk2 != null) {
-                list.add(String.format("Blending: %s", worldChunk2.usesOldNoise() ? "Old" : "New"));
+            if (worldChunk2 != null && worldChunk2.usesOldNoise()) {
+                list.add("Blending: Old");
             }
         }
         ServerWorld serverWorld = this.getServerWorld();

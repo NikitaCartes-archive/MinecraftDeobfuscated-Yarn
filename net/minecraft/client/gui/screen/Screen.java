@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.AbstractParentElement;
@@ -337,13 +338,13 @@ implements Drawable {
                     URI uRI = new File(clickEvent.getValue()).toURI();
                     this.openLink(uRI);
                 } else if (clickEvent.getAction() == ClickEvent.Action.SUGGEST_COMMAND) {
-                    this.insertText(clickEvent.getValue(), true);
+                    this.insertText(SharedConstants.stripInvalidChars(clickEvent.getValue()), true);
                 } else if (clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
-                    String string2 = clickEvent.getValue();
+                    String string2 = SharedConstants.stripInvalidChars(clickEvent.getValue());
                     if (string2.startsWith("/")) {
                         this.client.player.sendCommand(string2.substring(1));
                     } else {
-                        this.client.player.sendChatMessage(string2);
+                        LOGGER.warn("Failed to run command without '/' prefix from click event: '{}'", (Object)string2);
                     }
                 } else if (clickEvent.getAction() == ClickEvent.Action.COPY_TO_CLIPBOARD) {
                     this.client.keyboard.setClipboard(clickEvent.getValue());

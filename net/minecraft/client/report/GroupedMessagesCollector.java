@@ -1,14 +1,14 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.client.network.abusereport;
+package net.minecraft.client.report;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.chat.ReceivedMessage;
+import net.minecraft.client.report.ReceivedMessage;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)

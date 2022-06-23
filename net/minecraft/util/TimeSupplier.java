@@ -1,17 +1,17 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.util;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.LongSupplier;
 
 @FunctionalInterface
-public interface class_7576 {
+public interface TimeSupplier {
     public long get(TimeUnit var1);
 
-    public static interface class_7577
-    extends class_7576,
+    public static interface Nanoseconds
+    extends TimeSupplier,
     LongSupplier {
         @Override
         default public long get(TimeUnit timeUnit) {

@@ -4,7 +4,9 @@
 package net.minecraft.client.gui.screen.multiplayer;
 
 import com.google.common.base.Strings;
+import com.google.common.base.Suppliers;
 import com.google.common.collect.Lists;
+import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Collection;
 import java.util.List;
@@ -44,14 +46,38 @@ extends ElementListWidget<SocialInteractionsPlayerListEntry> {
     }
 
     public void update(Collection<UUID> uuids, double scrollAmount) {
+        this.setPlayers(uuids);
+        this.refresh(scrollAmount);
+    }
+
+    public void refresh(Collection<UUID> playerUuids, double scrollAmount) {
+        this.setPlayers(playerUuids);
+        this.addOfflinePlayers(playerUuids);
+        this.refresh(scrollAmount);
+    }
+
+    private void setPlayers(Collection<UUID> playerUuids) {
         this.players.clear();
-        for (UUID uUID : uuids) {
+        for (UUID uUID : playerUuids) {
             PlayerListEntry playerListEntry = this.client.player.networkHandler.getPlayerListEntry(uUID);
             if (playerListEntry == null) continue;
             this.players.add(new SocialInteractionsPlayerListEntry(this.client, this.parent, playerListEntry.getProfile().getId(), playerListEntry.getProfile().getName(), playerListEntry::getSkinTexture));
         }
+        this.players.sort((a, b) -> a.getName().compareToIgnoreCase(b.getName()));
+    }
+
+    private void addOfflinePlayers(Collection<UUID> playerUuids) {
+        Collection<GameProfile> collection = this.client.getAbuseReportContext().chatLog().streamBackward().collectSenderProfiles();
+        for (GameProfile gameProfile : collection) {
+            if (playerUuids.contains(gameProfile.getId())) continue;
+            SocialInteractionsPlayerListEntry socialInteractionsPlayerListEntry = new SocialInteractionsPlayerListEntry(this.client, this.parent, gameProfile.getId(), gameProfile.getName(), Suppliers.memoize(() -> this.client.getSkinProvider().loadSkin(gameProfile)));
+            socialInteractionsPlayerListEntry.setOffline(true);
+            this.players.add(socialInteractionsPlayerListEntry);
+        }
+    }
+
+    private void refresh(double scrollAmount) {
         this.filterPlayers();
-        this.players.sort((player1, player2) -> player1.getName().compareToIgnoreCase(player2.getName()));
         this.replaceEntries(this.players);
         this.setScrollAmount(scrollAmount);
     }

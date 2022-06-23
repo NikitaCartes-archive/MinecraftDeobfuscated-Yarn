@@ -7,7 +7,6 @@ import java.util.function.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_7522;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.registry.Registry;
@@ -18,6 +17,7 @@ import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.BiomeSupplier;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.chunk.PalettedContainer;
+import net.minecraft.world.chunk.ReadableContainer;
 
 public class ChunkSection {
     public static final int field_31406 = 16;
@@ -29,12 +29,12 @@ public class ChunkSection {
     private short randomTickableBlockCount;
     private short nonEmptyFluidCount;
     private final PalettedContainer<BlockState> blockStateContainer;
-    private class_7522<RegistryEntry<Biome>> biomeContainer;
+    private ReadableContainer<RegistryEntry<Biome>> biomeContainer;
 
-    public ChunkSection(int chunkPos, PalettedContainer<BlockState> blockStateContainer, class_7522<RegistryEntry<Biome>> arg) {
+    public ChunkSection(int chunkPos, PalettedContainer<BlockState> blockStateContainer, ReadableContainer<RegistryEntry<Biome>> readableContainer) {
         this.yOffset = ChunkSection.blockCoordFromChunkCoord(chunkPos);
         this.blockStateContainer = blockStateContainer;
-        this.biomeContainer = arg;
+        this.biomeContainer = readableContainer;
         this.calculateCounts();
     }
 
@@ -156,14 +156,14 @@ public class ChunkSection {
         return this.blockStateContainer;
     }
 
-    public class_7522<RegistryEntry<Biome>> getBiomeContainer() {
+    public ReadableContainer<RegistryEntry<Biome>> getBiomeContainer() {
         return this.biomeContainer;
     }
 
     public void fromPacket(PacketByteBuf buf) {
         this.nonEmptyBlockCount = buf.readShort();
         this.blockStateContainer.readPacket(buf);
-        PalettedContainer<RegistryEntry<Biome>> palettedContainer = this.biomeContainer.method_44350();
+        PalettedContainer<RegistryEntry<Biome>> palettedContainer = this.biomeContainer.slice();
         palettedContainer.readPacket(buf);
         this.biomeContainer = palettedContainer;
     }
@@ -187,7 +187,7 @@ public class ChunkSection {
     }
 
     public void populateBiomes(BiomeSupplier biomeSupplier, MultiNoiseUtil.MultiNoiseSampler sampler, int x, int z) {
-        PalettedContainer<RegistryEntry<Biome>> palettedContainer = this.biomeContainer.method_44350();
+        PalettedContainer<RegistryEntry<Biome>> palettedContainer = this.biomeContainer.slice();
         int i = BiomeCoords.fromBlock(this.getYOffset());
         int j = 4;
         for (int k = 0; k < 4; ++k) {

@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.client.network.abusereport;
+package net.minecraft.client.report;
 
 import com.mojang.authlib.yggdrasil.request.AbuseReportRequest;
 import net.fabricmc.api.EnvType;
@@ -54,7 +54,7 @@ public record ReporterEnvironment(String clientVersion, @Nullable Server server)
 
     private static String getVersion() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("1.19.1-pre1");
+        stringBuilder.append("1.19.1-rc1");
         if (MinecraftClient.getModStatus().isModded()) {
             stringBuilder.append(" (modded)");
         }

@@ -1,10 +1,9 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.client.gui.screen.abusereport;
+package net.minecraft.client.gui.screen.report;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.minecraft.report.AbuseReportLimits;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
@@ -20,12 +19,10 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.EntryListWidget;
-import net.minecraft.client.network.abusereport.AbuseReporter;
 import net.minecraft.client.network.abusereport.ChatAbuseReport;
 import net.minecraft.client.network.abusereport.MessagesListAdder;
-import net.minecraft.client.network.chat.ReceivedMessage;
-import net.minecraft.client.texture.PlayerSkinProvider;
-import net.minecraft.client.util.DefaultSkinHelper;
+import net.minecraft.client.report.AbuseReportContext;
+import net.minecraft.client.report.ReceivedMessage;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
@@ -35,7 +32,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
-import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
@@ -47,7 +43,7 @@ extends Screen {
     private static final Text CONTEXT_MESSAGE = Text.translatable("gui.chatSelection.context").formatted(Formatting.GRAY);
     @Nullable
     private final Screen parent;
-    private final AbuseReporter reporter;
+    private final AbuseReportContext reporter;
     private ButtonWidget doneButton;
     private MultilineText contextMessage;
     @Nullable
@@ -58,7 +54,7 @@ extends Screen {
     @Nullable
     private List<OrderedText> tooltip;
 
-    public ChatSelectionScreen(@Nullable Screen parent, AbuseReporter reporter, ChatAbuseReport report, Consumer<ChatAbuseReport> newReportConsumer) {
+    public ChatSelectionScreen(@Nullable Screen parent, AbuseReportContext reporter, ChatAbuseReport report, Consumer<ChatAbuseReport> newReportConsumer) {
         super(TITLE);
         this.parent = parent;
         this.reporter = reporter;
@@ -161,9 +157,6 @@ extends Screen {
                 ReceivedMessage.ChatMessage chatMessage = (ReceivedMessage.ChatMessage)message;
                 MessageEntry entry = new MessageEntry(index, text, text2, bl, true);
                 this.addEntryToTop(entry);
-                if (ChatSelectionScreen.this.report.hasSelectedMessage(index)) {
-                    this.setSelected(entry);
-                }
                 this.addSenderEntry(chatMessage, bl);
             } else {
                 this.addEntryToTop(new MessageEntry(index, text, text2, bl, false));
@@ -206,14 +199,22 @@ extends Screen {
         @Override
         protected void renderEntry(MatrixStack matrices, int mouseX, int mouseY, float delta, int index, int x, int y, int entryWidth, int entryHeight) {
             Entry entry = (Entry)this.getEntry(index);
-            if (entry.isSelected()) {
-                int i = this.isFocused() ? -1 : -8355712;
+            if (this.shouldHighlight(entry)) {
+                boolean bl = this.getSelectedOrNull() == entry;
+                int i = this.isFocused() && bl ? -1 : -8355712;
                 this.drawSelectionHighlight(matrices, y, entryWidth, entryHeight, i, -16777216);
-            } else if (entry == this.getSelectedOrNull()) {
-                this.drawSelectionHighlight(matrices, y, entryWidth, entryHeight, -16777216, -16777216);
             }
-            boolean bl = entry == this.getHoveredEntry();
-            entry.render(matrices, index, y, x, entryWidth, entryHeight, mouseX, mouseY, bl, delta);
+            entry.render(matrices, index, y, x, entryWidth, entryHeight, mouseX, mouseY, this.getHoveredEntry() == entry, delta);
+        }
+
+        private boolean shouldHighlight(Entry entry) {
+            if (entry.canSelect()) {
+                boolean bl = this.getSelectedOrNull() == entry;
+                boolean bl2 = this.getSelectedOrNull() == null;
+                boolean bl3 = this.getHoveredEntry() == entry;
+                return bl || bl2 && bl3 && entry.isHighlightedOnHover();
+            }
+            return false;
         }
 
         @Override
@@ -234,6 +235,7 @@ extends Screen {
             if (entry != null && entry.keyPressed(keyCode, scanCode, modifiers)) {
                 return true;
             }
+            this.setFocused(null);
             return super.keyPressed(keyCode, scanCode, modifiers);
         }
 
@@ -241,10 +243,18 @@ extends Screen {
             return this.bottom + ((ChatSelectionScreen)ChatSelectionScreen.this).textRenderer.fontHeight;
         }
 
+        @Override
+        protected boolean isFocused() {
+            return ChatSelectionScreen.this.getFocused() == this;
+        }
+
         @Environment(value=EnvType.CLIENT)
         public class MessageEntry
         extends Entry {
-            private static final int CHAT_MESSAGE_LEFT_MARGIN = 8;
+            private static final Identifier CHECKMARK = new Identifier("realms", "textures/gui/realms/checkmark.png");
+            private static final int CHECKMARK_WIDTH = 9;
+            private static final int CHECKMARK_HEIGHT = 8;
+            private static final int CHAT_MESSAGE_LEFT_MARGIN = 11;
             private final int index;
             private final StringVisitable truncatedContent;
             private final Text narration;
@@ -270,8 +280,8 @@ extends Screen {
 
             @Override
             public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-                if (hovered && this.fromReportedPlayer) {
-                    DrawableHelper.fill(matrices, x - 1, y - 1, x + entryWidth - 3, y + entryHeight + 1, -16777216);
+                if (this.isSelected() && this.fromReportedPlayer) {
+                    this.drawCheckmark(matrices, y, x, entryHeight);
                 }
                 int i = x + this.getIndent();
                 int j = y + 1 + (entryHeight - ((ChatSelectionScreen)ChatSelectionScreen.this).textRenderer.fontHeight) / 2;
@@ -281,12 +291,21 @@ extends Screen {
                 }
             }
 
+            private void drawCheckmark(MatrixStack matrices, int y, int x, int entryHeight) {
+                int i = x;
+                int j = y + (entryHeight - 8) / 2;
+                RenderSystem.setShaderTexture(0, CHECKMARK);
+                RenderSystem.enableBlend();
+                DrawableHelper.drawTexture(matrices, i, j, 0.0f, 0.0f, 9, 8, 9, 8);
+                RenderSystem.disableBlend();
+            }
+
             private int getTextWidth() {
                 return SelectionListWidget.this.getRowWidth() - this.getIndent();
             }
 
             private int getIndent() {
-                return this.isChatMessage ? 8 : 0;
+                return this.isChatMessage ? 11 : 0;
             }
 
             @Override
@@ -297,6 +316,7 @@ extends Screen {
             @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
                 if (button == 0) {
+                    SelectionListWidget.this.setSelected(null);
                     return this.toggle();
                 }
                 return false;
@@ -318,6 +338,11 @@ extends Screen {
             @Override
             public boolean canSelect() {
                 return true;
+            }
+
+            @Override
+            public boolean isHighlightedOnHover() {
+                return this.fromReportedPlayer;
             }
 
             private boolean toggle() {
@@ -348,7 +373,7 @@ extends Screen {
             public SenderEntry(GameProfile gameProfile, Text headingText, boolean fromReportedPlayer) {
                 this.headingText = headingText;
                 this.fromReportedPlayer = fromReportedPlayer;
-                this.skinTextureId = this.getSkinTextureId(gameProfile);
+                this.skinTextureId = SelectionListWidget.this.client.getSkinProvider().loadSkin(gameProfile);
             }
 
             @Override
@@ -363,15 +388,6 @@ extends Screen {
             private void drawSkin(MatrixStack matrices, int x, int y, Identifier skinTextureId) {
                 RenderSystem.setShaderTexture(0, skinTextureId);
                 PlayerSkinDrawer.draw(matrices, x, y, 12);
-            }
-
-            private Identifier getSkinTextureId(GameProfile gameProfile) {
-                PlayerSkinProvider playerSkinProvider = SelectionListWidget.this.client.getSkinProvider();
-                MinecraftProfileTexture minecraftProfileTexture = playerSkinProvider.getTextures(gameProfile).get((Object)MinecraftProfileTexture.Type.SKIN);
-                if (minecraftProfileTexture != null) {
-                    return playerSkinProvider.loadSkin(minecraftProfileTexture, MinecraftProfileTexture.Type.SKIN);
-                }
-                return DefaultSkinHelper.getTexture(DynamicSerializableUuid.getUuidFromProfile(gameProfile));
             }
         }
 
@@ -389,6 +405,10 @@ extends Screen {
 
             public boolean canSelect() {
                 return false;
+            }
+
+            public boolean isHighlightedOnHover() {
+                return this.canSelect();
             }
         }
 

@@ -8,9 +8,9 @@ import java.util.OptionalInt;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.abusereport.GroupedMessagesCollector;
-import net.minecraft.client.network.chat.ChatLog;
-import net.minecraft.client.network.chat.ReceivedMessage;
+import net.minecraft.client.report.ChatLog;
+import net.minecraft.client.report.GroupedMessagesCollector;
+import net.minecraft.client.report.ReceivedMessage;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 

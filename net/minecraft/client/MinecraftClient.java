@@ -52,7 +52,6 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
-import net.minecraft.class_7578;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Keyboard;
 import net.minecraft.client.MinecraftClientGame;
@@ -101,8 +100,6 @@ import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.network.ServerAddress;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.network.SocialInteractionsManager;
-import net.minecraft.client.network.abusereport.AbuseReporter;
-import net.minecraft.client.network.abusereport.ReporterEnvironment;
 import net.minecraft.client.option.AoMode;
 import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.client.option.CloudRenderMode;
@@ -113,6 +110,7 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.option.Perspective;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.realms.RealmsClient;
+import net.minecraft.client.realms.RealmsPeriodicCheckers;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.util.Realms32BitWarningChecker;
 import net.minecraft.client.render.BackgroundRenderer;
@@ -136,6 +134,8 @@ import net.minecraft.client.render.item.BuiltinModelItemRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedModelManager;
+import net.minecraft.client.report.AbuseReportContext;
+import net.minecraft.client.report.ReporterEnvironment;
 import net.minecraft.client.resource.ClientBuiltinResourcePackProvider;
 import net.minecraft.client.resource.FoliageColormapResourceSupplier;
 import net.minecraft.client.resource.Format3ResourcePack;
@@ -391,7 +391,7 @@ implements WindowEventHandler {
     private final BlockEntityRenderDispatcher blockEntityRenderDispatcher;
     private final UUID deviceSessionId = UUID.randomUUID();
     private final ProfileKeys profileKeys;
-    private final class_7578 field_39718;
+    private final RealmsPeriodicCheckers realmsPeriodicCheckers;
     @Nullable
     public ClientPlayerInteractionManager interactionManager;
     /**
@@ -476,7 +476,7 @@ implements WindowEventHandler {
     @Nullable
     private GlTimer.Query currentGlTimerQuery;
     private final Realms32BitWarningChecker realms32BitWarningChecker;
-    private AbuseReporter abuseReporter;
+    private AbuseReportContext abuseReportContext;
     private String openProfilerSection = "root";
 
     public MinecraftClient(RunArgs args) {
@@ -605,7 +605,7 @@ implements WindowEventHandler {
         this.resourceManager.registerReloader(this.regionalComplianciesManager);
         this.inGameHud = new InGameHud(this, this.itemRenderer);
         this.debugRenderer = new DebugRenderer(this);
-        this.field_39718 = new class_7578(RealmsClient.createRealmsClient(this));
+        this.realmsPeriodicCheckers = new RealmsPeriodicCheckers(RealmsClient.createRealmsClient(this));
         RenderSystem.setErrorCallback(this::handleGlErrorByDisableVsync);
         if (this.framebuffer.textureWidth != this.window.getFramebufferWidth() || this.framebuffer.textureHeight != this.window.getFramebufferHeight()) {
             StringBuilder stringBuilder = new StringBuilder("Recovering from unsupported resolution (" + this.window.getFramebufferWidth() + "x" + this.window.getFramebufferHeight() + ").\nPlease make sure you have up-to-date drivers (see aka.ms/mcdriver for instructions).");
@@ -625,7 +625,7 @@ implements WindowEventHandler {
         this.gameRenderer.preloadShaders(this.getResourcePackProvider().getPack().getFactory());
         this.profileKeys = new ProfileKeys(this.userApiService, this.session.getProfile().getId(), this.runDirectory.toPath());
         this.realms32BitWarningChecker = new Realms32BitWarningChecker(this);
-        this.abuseReporter = AbuseReporter.create(ReporterEnvironment.ofIntegratedServer(), this.userApiService);
+        this.abuseReportContext = AbuseReportContext.create(ReporterEnvironment.ofIntegratedServer(), this.userApiService);
         SplashOverlay.init(this);
         List<ResourcePack> list = this.resourcePackManager.createResourcePacks();
         this.resourceReloadLogger.reload(ResourceReloadLogger.ReloadReason.INITIAL, list);
@@ -900,19 +900,19 @@ implements WindowEventHandler {
     private void openChatScreen(String text) {
         ChatRestriction chatRestriction = this.getChatRestriction();
         if (!chatRestriction.allowsChat(this.isInSingleplayer())) {
-            if (this.inGameHud.method_44353()) {
-                this.inGameHud.method_44354(false);
-                this.setScreen(new ConfirmLinkScreen(bl -> {
-                    if (bl) {
+            if (this.inGameHud.shouldShowChatDisabledScreen()) {
+                this.inGameHud.setCanShowChatDisabledScreen(false);
+                this.setScreen(new ConfirmLinkScreen(confirmed -> {
+                    if (confirmed) {
                         Util.getOperatingSystem().open("https://aka.ms/JavaAccountSettings");
                     }
                     this.setScreen(null);
-                }, ChatRestriction.field_39456, "https://aka.ms/JavaAccountSettings", true));
+                }, ChatRestriction.MORE_INFO_TEXT, "https://aka.ms/JavaAccountSettings", true));
             } else {
                 Text text2 = chatRestriction.getDescription();
                 this.inGameHud.setOverlayMessage(text2, false);
                 NarratorManager.INSTANCE.narrate(text2);
-                this.inGameHud.method_44354(chatRestriction == ChatRestriction.DISABLED_BY_PROFILE);
+                this.inGameHud.setCanShowChatDisabledScreen(chatRestriction == ChatRestriction.DISABLED_BY_PROFILE);
             }
         } else {
             this.setScreen(new ChatScreen(text));
@@ -1714,7 +1714,7 @@ implements WindowEventHandler {
                 this.tutorialManager.remove(this.socialInteractionsToast);
                 this.socialInteractionsToast = null;
             }
-            this.setScreen(SocialInteractionsScreen.createAbuseReportNoticeScreen());
+            this.setScreen(new SocialInteractionsScreen());
         }
         while (this.options.inventoryKey.wasPressed()) {
             if (this.interactionManager.hasRidingInventory()) {
@@ -1800,7 +1800,7 @@ implements WindowEventHandler {
                 return QueueingWorldGenerationProgressListener.create(worldGenerationProgressTracker, this.renderTaskQueue::add);
             }));
             this.integratedServerRunning = true;
-            this.resetAbuseReporterIfNecessary(ReporterEnvironment.ofIntegratedServer());
+            this.ensureAbuseReportContext(ReporterEnvironment.ofIntegratedServer());
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Starting integrated server");
             CrashReportSection crashReportSection = crashReport.addElement("Starting integrated server");
@@ -1926,7 +1926,7 @@ implements WindowEventHandler {
     }
 
     @Nullable
-    private BanDetails getMultiplayerBanDetails() {
+    public BanDetails getMultiplayerBanDetails() {
         return this.userApiService.properties().bannedScopes().get("MULTIPLAYER");
     }
 
@@ -2120,20 +2120,21 @@ implements WindowEventHandler {
     public void setCurrentServerEntry(@Nullable ServerInfo serverEntry) {
         this.currentServerEntry = serverEntry;
         ReporterEnvironment reporterEnvironment = serverEntry != null ? ReporterEnvironment.ofThirdPartyServer(serverEntry.address) : ReporterEnvironment.ofIntegratedServer();
-        this.resetAbuseReporterIfNecessary(reporterEnvironment);
+        this.ensureAbuseReportContext(reporterEnvironment);
     }
 
     public void setCurrentServerEntry(RealmsServer server, String address) {
         this.currentServerEntry = server.createServerInfo(address);
-        this.resetAbuseReporterIfNecessary(ReporterEnvironment.ofRealm(server));
+        this.ensureAbuseReportContext(ReporterEnvironment.ofRealm(server));
     }
 
     /**
-     * Recreates and resets {@link #abuseReporter} if {@code environment} has changed.
+     * Recreates and resets {@link #abuseReportContext} if {@code environment} has
+     * changed.
      */
-    private void resetAbuseReporterIfNecessary(ReporterEnvironment environment) {
-        if (!this.abuseReporter.environmentEquals(environment)) {
-            this.abuseReporter = AbuseReporter.create(environment, this.userApiService);
+    private void ensureAbuseReportContext(ReporterEnvironment environment) {
+        if (!this.abuseReportContext.environmentEquals(environment)) {
+            this.abuseReportContext = AbuseReportContext.create(environment, this.userApiService);
         }
     }
 
@@ -2582,12 +2583,12 @@ implements WindowEventHandler {
         return this.servicesSignatureVerifier;
     }
 
-    public AbuseReporter getAbuseReporter() {
-        return this.abuseReporter;
+    public AbuseReportContext getAbuseReportContext() {
+        return this.abuseReportContext;
     }
 
-    public class_7578 method_44646() {
-        return this.field_39718;
+    public RealmsPeriodicCheckers getRealmsPeriodicCheckers() {
+        return this.realmsPeriodicCheckers;
     }
 
     static {
@@ -2638,8 +2639,8 @@ implements WindowEventHandler {
             }
         };
 
-        static final Text field_39456;
-        private static final String field_39457 = "https://aka.ms/JavaAccountSettings";
+        static final Text MORE_INFO_TEXT;
+        private static final String JAVA_ACCOUNT_SETTINGS_URL = "https://aka.ms/JavaAccountSettings";
         private final Text description;
 
         ChatRestriction(Text description) {
@@ -2653,7 +2654,7 @@ implements WindowEventHandler {
         public abstract boolean allowsChat(boolean var1);
 
         static {
-            field_39456 = Text.translatable("chat.disabled.profile.moreInfo");
+            MORE_INFO_TEXT = Text.translatable("chat.disabled.profile.moreInfo");
         }
     }
 }

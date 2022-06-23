@@ -17,7 +17,6 @@ import java.util.function.Consumer;
 import java.util.function.IntUnaryOperator;
 import java.util.function.Predicate;
 import java.util.stream.LongStream;
-import net.minecraft.class_7522;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.collection.EmptyPaletteStorage;
 import net.minecraft.util.collection.IndexedIterable;
@@ -31,6 +30,7 @@ import net.minecraft.world.chunk.BiMapPalette;
 import net.minecraft.world.chunk.IdListPalette;
 import net.minecraft.world.chunk.Palette;
 import net.minecraft.world.chunk.PaletteResizeListener;
+import net.minecraft.world.chunk.ReadableContainer;
 import net.minecraft.world.chunk.SingularPalette;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,7 +42,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class PalettedContainer<T>
 implements PaletteResizeListener<T>,
-class_7522<T> {
+ReadableContainer<T> {
     private static final int field_34557 = 0;
     private final PaletteResizeListener<T> dummyListener = (newSize, added) -> 0;
     private final IndexedIterable<T> idList;
@@ -65,14 +65,14 @@ class_7522<T> {
         this.lockHelper.unlock();
     }
 
-    public static <T> Codec<PalettedContainer<T>> method_44343(IndexedIterable<T> indexedIterable, Codec<T> codec, PaletteProvider paletteProvider, T object) {
-        class_7522.class_7523 lv = PalettedContainer::method_44346;
-        return PalettedContainer.createCodec(indexedIterable, codec, paletteProvider, object, lv);
+    public static <T> Codec<PalettedContainer<T>> createPalettedContainerCodec(IndexedIterable<T> idList, Codec<T> entryCodec, PaletteProvider paletteProvider, T defaultValue) {
+        ReadableContainer.Reader reader = PalettedContainer::read;
+        return PalettedContainer.createCodec(idList, entryCodec, paletteProvider, defaultValue, reader);
     }
 
-    public static <T> Codec<class_7522<T>> method_44347(IndexedIterable<T> indexedIterable2, Codec<T> codec, PaletteProvider paletteProvider2, T object) {
-        class_7522.class_7523 lv = (indexedIterable, paletteProvider, serialized) -> PalettedContainer.method_44346(indexedIterable, paletteProvider, serialized).map(palettedContainer -> palettedContainer);
-        return PalettedContainer.createCodec(indexedIterable2, codec, paletteProvider2, object, lv);
+    public static <T> Codec<ReadableContainer<T>> createReadableContainerCodec(IndexedIterable<T> idList, Codec<T> entryCodec, PaletteProvider paletteProvider, T defaultValue) {
+        ReadableContainer.Reader reader = (idListx, paletteProviderx, serialized) -> PalettedContainer.read(idListx, paletteProviderx, serialized).map(result -> result);
+        return PalettedContainer.createCodec(idList, entryCodec, paletteProvider, defaultValue, reader);
     }
 
     /**
@@ -84,8 +84,8 @@ class_7522<T> {
      * @param provider the palette provider that controls how the data are serialized and what
      * types of palette are used for what entry bit sizes
      */
-    private static <T, C extends class_7522<T>> Codec<C> createCodec(IndexedIterable<T> indexedIterable, Codec<T> entryCodec, PaletteProvider provider, T object, class_7522.class_7523<T, C> arg2) {
-        return RecordCodecBuilder.create(instance -> instance.group(((MapCodec)entryCodec.mapResult(Codecs.orElsePartial(object)).listOf().fieldOf("palette")).forGetter(class_7522.Serialized::paletteEntries), Codec.LONG_STREAM.optionalFieldOf("data").forGetter(class_7522.Serialized::storage)).apply((Applicative<class_7522.Serialized, ?>)instance, class_7522.Serialized::new)).comapFlatMap(serialized -> arg2.read(indexedIterable, provider, (class_7522.Serialized)serialized), arg -> arg.method_44345(indexedIterable, provider));
+    private static <T, C extends ReadableContainer<T>> Codec<C> createCodec(IndexedIterable<T> idList, Codec<T> entryCodec, PaletteProvider provider, T defaultValue, ReadableContainer.Reader<T, C> reader) {
+        return RecordCodecBuilder.create(instance -> instance.group(((MapCodec)entryCodec.mapResult(Codecs.orElsePartial(defaultValue)).listOf().fieldOf("palette")).forGetter(ReadableContainer.Serialized::paletteEntries), Codec.LONG_STREAM.optionalFieldOf("data").forGetter(ReadableContainer.Serialized::storage)).apply((Applicative<ReadableContainer.Serialized, ?>)instance, ReadableContainer.Serialized::new)).comapFlatMap(serialized -> reader.read(idList, provider, (ReadableContainer.Serialized)serialized), container -> container.serialize(idList, provider));
     }
 
     public PalettedContainer(IndexedIterable<T> idList, PaletteProvider paletteProvider, DataProvider<T> dataProvider, PaletteStorage storage, List<T> paletteEntries) {
@@ -183,11 +183,11 @@ class_7522<T> {
     }
 
     @Override
-    public void method_39793(Consumer<T> consumer) {
+    public void forEachValue(Consumer<T> action) {
         Palette palette = this.data.palette();
         IntArraySet intSet = new IntArraySet();
         this.data.storage.forEach(intSet::add);
-        intSet.forEach(id -> consumer.accept(palette.get(id)));
+        intSet.forEach(id -> action.accept(palette.get(id)));
     }
 
     /*
@@ -222,14 +222,14 @@ class_7522<T> {
         }
     }
 
-    private static <T> DataResult<PalettedContainer<T>> method_44346(IndexedIterable<T> indexedIterable, PaletteProvider paletteProvider, class_7522.Serialized<T> serialized) {
+    private static <T> DataResult<PalettedContainer<T>> read(IndexedIterable<T> idList, PaletteProvider paletteProvider, ReadableContainer.Serialized<T> serialized) {
         PaletteStorage paletteStorage;
         List<T> list = serialized.paletteEntries();
-        int i2 = paletteProvider.getContainerSize();
-        int j = paletteProvider.getBits(indexedIterable, list.size());
-        DataProvider<T> dataProvider = paletteProvider.createDataProvider(indexedIterable, j);
+        int i = paletteProvider.getContainerSize();
+        int j = paletteProvider.getBits(idList, list.size());
+        DataProvider<T> dataProvider = paletteProvider.createDataProvider(idList, j);
         if (j == 0) {
-            paletteStorage = new EmptyPaletteStorage(i2);
+            paletteStorage = new EmptyPaletteStorage(i);
         } else {
             Optional<LongStream> optional = serialized.storage();
             if (optional.isEmpty()) {
@@ -238,57 +238,64 @@ class_7522<T> {
             long[] ls = optional.get().toArray();
             try {
                 if (dataProvider.factory() == PaletteProvider.ID_LIST) {
-                    BiMapPalette<Object> palette = new BiMapPalette<Object>(indexedIterable, j, (i, object) -> 0, list);
-                    PackedIntegerArray packedIntegerArray = new PackedIntegerArray(j, i2, ls);
-                    int[] is = new int[i2];
+                    BiMapPalette<Object> palette = new BiMapPalette<Object>(idList, j, (id, value) -> 0, list);
+                    PackedIntegerArray packedIntegerArray = new PackedIntegerArray(j, i, ls);
+                    int[] is = new int[i];
                     packedIntegerArray.method_39892(is);
-                    PalettedContainer.method_39894(is, i -> indexedIterable.getRawId(palette.get(i)));
-                    paletteStorage = new PackedIntegerArray(dataProvider.bits(), i2, is);
+                    PalettedContainer.applyEach(is, id -> idList.getRawId(palette.get(id)));
+                    paletteStorage = new PackedIntegerArray(dataProvider.bits(), i, is);
                 } else {
-                    paletteStorage = new PackedIntegerArray(dataProvider.bits(), i2, ls);
+                    paletteStorage = new PackedIntegerArray(dataProvider.bits(), i, ls);
                 }
             } catch (PackedIntegerArray.InvalidLengthException invalidLengthException) {
                 return DataResult.error("Failed to read PalettedContainer: " + invalidLengthException.getMessage());
             }
         }
-        return DataResult.success(new PalettedContainer<T>(indexedIterable, paletteProvider, dataProvider, paletteStorage, list));
+        return DataResult.success(new PalettedContainer<T>(idList, paletteProvider, dataProvider, paletteStorage, list));
     }
 
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
     @Override
-    public class_7522.Serialized<T> method_44345(IndexedIterable<T> indexedIterable, PaletteProvider paletteProvider) {
+    public ReadableContainer.Serialized<T> serialize(IndexedIterable<T> idList, PaletteProvider paletteProvider) {
         this.lock();
         try {
             Optional<LongStream> optional;
-            BiMapPalette<T> biMapPalette = new BiMapPalette<T>(indexedIterable, this.data.storage.getElementBits(), this.dummyListener);
-            int i2 = paletteProvider.getContainerSize();
-            int[] is = new int[i2];
+            BiMapPalette<T> biMapPalette = new BiMapPalette<T>(idList, this.data.storage.getElementBits(), this.dummyListener);
+            int i = paletteProvider.getContainerSize();
+            int[] is = new int[i];
             this.data.storage.method_39892(is);
-            PalettedContainer.method_39894(is, i -> biMapPalette.index(this.data.palette.get(i)));
-            int j = paletteProvider.getBits(indexedIterable, biMapPalette.getSize());
+            PalettedContainer.applyEach(is, id -> biMapPalette.index(this.data.palette.get(id)));
+            int j = paletteProvider.getBits(idList, biMapPalette.getSize());
             if (j != 0) {
-                PackedIntegerArray packedIntegerArray = new PackedIntegerArray(j, i2, is);
+                PackedIntegerArray packedIntegerArray = new PackedIntegerArray(j, i, is);
                 optional = Optional.of(Arrays.stream(packedIntegerArray.getData()));
             } else {
                 optional = Optional.empty();
             }
-            class_7522.Serialized<T> serialized = new class_7522.Serialized<T>(biMapPalette.getElements(), optional);
+            ReadableContainer.Serialized<T> serialized = new ReadableContainer.Serialized<T>(biMapPalette.getElements(), optional);
             return serialized;
         } finally {
             this.unlock();
         }
     }
 
-    private static <T> void method_39894(int[] is, IntUnaryOperator intUnaryOperator) {
+    /**
+     * Applies {@code applier} to each value of {@code is}, modifying the array.
+     * 
+     * @implNote This caches the last value to be applied and its result, so {@code applier}
+     * might not be called for all values. Note that this also causes the applier to
+     * not be applied for initial {@code -1}s.
+     */
+    private static <T> void applyEach(int[] is, IntUnaryOperator applier) {
         int i = -1;
         int j = -1;
         for (int k = 0; k < is.length; ++k) {
             int l = is[k];
             if (l != i) {
                 i = l;
-                j = intUnaryOperator.applyAsInt(l);
+                j = applier.applyAsInt(l);
             }
             is[k] = j;
         }
@@ -309,7 +316,7 @@ class_7522<T> {
     }
 
     @Override
-    public PalettedContainer<T> method_44350() {
+    public PalettedContainer<T> slice() {
         return new PalettedContainer<T>(this.idList, this.data.palette.get(0), this.paletteProvider);
     }
 

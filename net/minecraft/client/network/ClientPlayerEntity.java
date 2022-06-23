@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.logging.LogUtils;
+import java.time.Instant;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -340,12 +341,12 @@ extends AbstractClientPlayerEntity {
     }
 
     /**
-     * Sends a command to the server.
+     * Sends an unsigned command to the server.
      * 
      * @param command the command (can have the leading slash)
      */
     public void sendCommand(String command) {
-        this.sendCommand(command, null);
+        this.networkHandler.sendPacket(new CommandExecutionC2SPacket(command, Instant.now(), ArgumentSignatureDataMap.empty(), false));
     }
 
     /**

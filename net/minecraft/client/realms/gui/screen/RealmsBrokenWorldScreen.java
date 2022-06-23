@@ -176,7 +176,7 @@ extends RealmsScreen {
 
     private void fetchServerData(long worldId) {
         new Thread(() -> {
-            RealmsClient realmsClient = RealmsClient.method_44616();
+            RealmsClient realmsClient = RealmsClient.create();
             try {
                 this.serverData = realmsClient.getOwnWorld(worldId);
                 this.addButtons();
@@ -189,7 +189,7 @@ extends RealmsScreen {
 
     public void play() {
         new Thread(() -> {
-            RealmsClient realmsClient = RealmsClient.method_44616();
+            RealmsClient realmsClient = RealmsClient.create();
             if (this.serverData.state == RealmsServer.State.CLOSED) {
                 this.client.execute(() -> this.client.setScreen(new RealmsLongRunningMcoTaskScreen(this, new OpenServerTask(this.serverData, this, this.mainScreen, true, this.client))));
             } else {
@@ -205,7 +205,7 @@ extends RealmsScreen {
     }
 
     private void downloadWorld(int slotId) {
-        RealmsClient realmsClient = RealmsClient.method_44616();
+        RealmsClient realmsClient = RealmsClient.create();
         try {
             WorldDownload worldDownload = realmsClient.download(this.serverData.id, slotId);
             RealmsDownloadLatestWorldScreen realmsDownloadLatestWorldScreen = new RealmsDownloadLatestWorldScreen(this, worldDownload, this.serverData.getWorldName(slotId), successful -> {

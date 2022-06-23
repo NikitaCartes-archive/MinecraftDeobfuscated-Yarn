@@ -237,11 +237,11 @@ public abstract class ChunkGenerator {
         for (Map.Entry entry : map.entrySet()) {
             StructurePlacement structurePlacement2 = (StructurePlacement)entry.getKey();
             if (structurePlacement2 instanceof ConcentricRingsStructurePlacement) {
+                BlockPos blockPos;
+                double e;
                 ConcentricRingsStructurePlacement concentricRingsStructurePlacement = (ConcentricRingsStructurePlacement)structurePlacement2;
                 Pair<BlockPos, RegistryEntry<Structure>> pair2 = this.locateConcentricRingsStructure((Set)entry.getValue(), world, structureAccessor, center, skipReferencedStructures, concentricRingsStructurePlacement);
-                BlockPos blockPos = pair2.getFirst();
-                double e = center.getSquaredDistance(blockPos);
-                if (!(e < d)) continue;
+                if (pair2 == null || !((e = center.getSquaredDistance(blockPos = pair2.getFirst())) < d)) continue;
                 d = e;
                 pair = pair2;
                 continue;
@@ -351,7 +351,7 @@ public abstract class ChunkGenerator {
         ChunkPos.stream(chunkSectionPos.toChunkPos(), 1).forEach(chunkPos -> {
             Chunk chunk = world.getChunk(chunkPos.x, chunkPos.z);
             for (ChunkSection chunkSection : chunk.getSectionArray()) {
-                chunkSection.getBiomeContainer().method_39793(set::add);
+                chunkSection.getBiomeContainer().forEachValue(set::add);
             }
         });
         set.retainAll(this.biomeSource.getBiomes());

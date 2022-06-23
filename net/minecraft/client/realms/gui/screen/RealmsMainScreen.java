@@ -17,10 +17,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_7578;
-import net.minecraft.class_7579;
-import net.minecraft.class_7580;
-import net.minecraft.class_7581;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.DrawableHelper;
@@ -31,7 +27,9 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.KeyCombo;
 import net.minecraft.client.realms.Ping;
 import net.minecraft.client.realms.RealmsClient;
+import net.minecraft.client.realms.RealmsNewsUpdater;
 import net.minecraft.client.realms.RealmsObjectSelectionList;
+import net.minecraft.client.realms.RealmsPeriodicCheckers;
 import net.minecraft.client.realms.dto.PingResult;
 import net.minecraft.client.realms.dto.RealmsNews;
 import net.minecraft.client.realms.dto.RealmsServer;
@@ -48,7 +46,9 @@ import net.minecraft.client.realms.gui.screen.RealmsParentalConsentScreen;
 import net.minecraft.client.realms.gui.screen.RealmsPendingInvitesScreen;
 import net.minecraft.client.realms.gui.screen.RealmsScreen;
 import net.minecraft.client.realms.task.RealmsGetServerDetailsTask;
+import net.minecraft.client.realms.util.PeriodicRunnerFactory;
 import net.minecraft.client.realms.util.RealmsPersistence;
+import net.minecraft.client.realms.util.RealmsServerFilterer;
 import net.minecraft.client.realms.util.RealmsTextureManager;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.NarratorManager;
@@ -109,8 +109,8 @@ extends RealmsScreen {
     static final Text TRIAL_NARRATION = ScreenTexts.joinLines(TRIAL_MESSAGE_LINES);
     private static List<Identifier> IMAGES = ImmutableList.of();
     @Nullable
-    private class_7581.class_7584 field_39680;
-    private class_7580 field_39681;
+    private PeriodicRunnerFactory.RunnersManager periodicRunnersManager;
+    private RealmsServerFilterer serverFilterer;
     static boolean overrideConfigure;
     private static int lastScrollYPosition;
     static volatile boolean hasParentalConsent;
@@ -132,12 +132,12 @@ extends RealmsScreen {
     @Nullable
     private List<Text> tooltip;
     private List<RealmsServer> realmsServers = ImmutableList.of();
-    volatile int numberOfPendingInvites;
+    volatile int pendingInvitesCount;
     int animTick;
     private boolean hasFetchedServers;
     boolean popupOpenedByUser;
     private boolean justClosedPopup;
-    private volatile boolean trialsAvailable;
+    private volatile boolean trialAvailable;
     private volatile boolean createdTrial;
     private volatile boolean showingPopup;
     volatile boolean hasUnreadNews;
@@ -168,7 +168,7 @@ extends RealmsScreen {
         if (!RealmsMainScreen.hasParentalConsent() || !this.hasFetchedServers) {
             return false;
         }
-        if (this.trialsAvailable && !this.createdTrial) {
+        if (this.trialAvailable && !this.createdTrial) {
             return true;
         }
         for (RealmsServer realmsServer : this.realmsServers) {
@@ -228,14 +228,14 @@ extends RealmsScreen {
         this.hasSelectionList = true;
         this.focusOn(this.realmSelectionList);
         this.popupText = MultilineText.create(this.textRenderer, (StringVisitable)POPUP_TEXT, 100);
-        class_7579 lv = this.client.method_44646().field_39688;
-        this.hasUnreadNews = lv.method_44618();
-        this.newsLink = lv.method_44620();
-        if (this.field_39681 == null) {
-            this.field_39681 = new class_7580(this.client);
+        RealmsNewsUpdater realmsNewsUpdater = this.client.getRealmsPeriodicCheckers().newsUpdater;
+        this.hasUnreadNews = realmsNewsUpdater.hasUnreadNews();
+        this.newsLink = realmsNewsUpdater.getNewsLink();
+        if (this.serverFilterer == null) {
+            this.serverFilterer = new RealmsServerFilterer(this.client);
         }
-        if (this.field_39680 != null) {
-            this.field_39680.method_44634();
+        if (this.periodicRunnersManager != null) {
+            this.periodicRunnersManager.forceRunListeners();
         }
     }
 
@@ -254,13 +254,13 @@ extends RealmsScreen {
         }));
         this.renewButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 100, this.height - 32, 90, 20, Text.translatable("mco.selectServer.expiredRenew"), button -> this.onRenew(this.findServer())));
         this.newsButton = this.addDrawableChild(new NewsButton());
-        this.showPopupButton = this.addDrawableChild(new ButtonWidget(this.width - 90, 6, 80, 20, Text.translatable("mco.selectServer.purchase"), buttonWidget -> {
+        this.showPopupButton = this.addDrawableChild(new ButtonWidget(this.width - 90, 6, 80, 20, Text.translatable("mco.selectServer.purchase"), button -> {
             this.popupOpenedByUser = !this.popupOpenedByUser;
         }));
         this.pendingInvitesButton = this.addDrawableChild(new PendingInvitesButton());
         this.closeButton = this.addDrawableChild(new CloseButton());
         this.createTrialButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 52, this.popupY0() + 137 - 20, 98, 20, Text.translatable("mco.selectServer.trial"), button -> {
-            if (!this.trialsAvailable || this.createdTrial) {
+            if (!this.trialAvailable || this.createdTrial) {
                 return;
             }
             Util.getOperatingSystem().open("https://aka.ms/startjavarealmstrial");
@@ -282,7 +282,7 @@ extends RealmsScreen {
         this.renewButton.visible = this.shouldRenewButtonBeActive(server);
         this.configureButton.visible = this.shouldConfigureButtonBeVisible(server);
         this.leaveButton.visible = this.shouldLeaveButtonBeVisible(server);
-        this.createTrialButton.visible = bl = this.shouldShowPopup() && this.trialsAvailable && !this.createdTrial;
+        this.createTrialButton.visible = bl = this.shouldShowPopup() && this.trialAvailable && !this.createdTrial;
         this.createTrialButton.active = bl;
         this.buyARealmButton.visible = this.shouldShowPopup();
         this.closeButton.visible = this.shouldShowPopup() && this.popupOpenedByUser;
@@ -325,13 +325,13 @@ extends RealmsScreen {
         this.justClosedPopup = false;
         ++this.animTick;
         boolean bl = RealmsMainScreen.hasParentalConsent();
-        if (this.field_39680 == null && bl) {
-            this.field_39680 = this.method_44611(this.client.method_44646());
-        } else if (this.field_39680 != null && !bl) {
-            this.field_39680 = null;
+        if (this.periodicRunnersManager == null && bl) {
+            this.periodicRunnersManager = this.createPeriodicRunnersManager(this.client.getRealmsPeriodicCheckers());
+        } else if (this.periodicRunnersManager != null && !bl) {
+            this.periodicRunnersManager = null;
         }
-        if (this.field_39680 != null) {
-            this.field_39680.method_44636();
+        if (this.periodicRunnersManager != null) {
+            this.periodicRunnersManager.runAll();
         }
         if (this.shouldShowPopup()) {
             ++this.carouselTick;
@@ -341,11 +341,11 @@ extends RealmsScreen {
         }
     }
 
-    private class_7581.class_7584 method_44611(class_7578 arg) {
-        class_7581.class_7584 lv = arg.field_39682.method_44628();
-        lv.method_44635(arg.field_39683, list -> {
+    private PeriodicRunnerFactory.RunnersManager createPeriodicRunnersManager(RealmsPeriodicCheckers periodicCheckers) {
+        PeriodicRunnerFactory.RunnersManager runnersManager = periodicCheckers.runnerFactory.create();
+        runnersManager.add(periodicCheckers.serverList, servers -> {
             boolean bl;
-            List<RealmsServer> list2 = this.field_39681.method_44623((List<RealmsServer>)list);
+            List<RealmsServer> list = this.serverFilterer.filterAndSort((List<RealmsServer>)servers);
             RealmsServer realmsServer = this.findServer();
             RealmSelectionListEntry entry = null;
             this.realmSelectionList.clear();
@@ -354,11 +354,11 @@ extends RealmsScreen {
                 this.hasFetchedServers = true;
             }
             boolean bl22 = false;
-            for (RealmsServer realmsServer2 : list2) {
+            for (RealmsServer realmsServer2 : list) {
                 if (!this.isOwnedNotExpired(realmsServer2)) continue;
                 bl22 = true;
             }
-            this.realmsServers = list2;
+            this.realmsServers = list;
             if (this.shouldShowMessageInList()) {
                 this.realmSelectionList.addEntry(new RealmSelectionListTrialEntry());
             }
@@ -378,25 +378,25 @@ extends RealmsScreen {
                 this.realmSelectionList.setSelected(entry);
             }
         });
-        lv.method_44635(arg.field_39685, integer -> {
-            this.numberOfPendingInvites = integer;
-            if (this.numberOfPendingInvites > 0 && this.rateLimiter.tryAcquire(1)) {
-                NarratorManager.INSTANCE.narrate(Text.translatable("mco.configure.world.invite.narration", this.numberOfPendingInvites));
+        runnersManager.add(periodicCheckers.pendingInvitesCount, pendingInvitesCount -> {
+            this.pendingInvitesCount = pendingInvitesCount;
+            if (this.pendingInvitesCount > 0 && this.rateLimiter.tryAcquire(1)) {
+                NarratorManager.INSTANCE.narrate(Text.translatable("mco.configure.world.invite.narration", this.pendingInvitesCount));
             }
         });
-        lv.method_44635(arg.field_39686, boolean_ -> {
+        runnersManager.add(periodicCheckers.trialAvailability, trialAvailable -> {
             if (this.createdTrial) {
                 return;
             }
-            if (boolean_ != this.trialsAvailable && this.shouldShowPopup()) {
-                this.trialsAvailable = boolean_;
+            if (trialAvailable != this.trialAvailable && this.shouldShowPopup()) {
+                this.trialAvailable = trialAvailable;
                 this.showingPopup = false;
             } else {
-                this.trialsAvailable = boolean_;
+                this.trialAvailable = trialAvailable;
             }
         });
-        lv.method_44635(arg.field_39684, realmsServerPlayerLists -> {
-            block0: for (RealmsServerPlayerList realmsServerPlayerList : realmsServerPlayerLists.servers) {
+        runnersManager.add(periodicCheckers.liveStats, liveStats -> {
+            block0: for (RealmsServerPlayerList realmsServerPlayerList : liveStats.servers) {
                 for (RealmsServer realmsServer : this.realmsServers) {
                     if (realmsServer.id != realmsServerPlayerList.serverId) continue;
                     realmsServer.updateServerPing(realmsServerPlayerList);
@@ -404,25 +404,25 @@ extends RealmsScreen {
                 }
             }
         });
-        lv.method_44635(arg.field_39687, realmsNews -> {
-            arg.field_39688.method_44619((RealmsNews)realmsNews);
-            this.hasUnreadNews = arg.field_39688.method_44618();
-            this.newsLink = arg.field_39688.method_44620();
+        runnersManager.add(periodicCheckers.news, news -> {
+            realmsPeriodicCheckers.newsUpdater.updateNews((RealmsNews)news);
+            this.hasUnreadNews = realmsPeriodicCheckers.newsUpdater.hasUnreadNews();
+            this.newsLink = realmsPeriodicCheckers.newsUpdater.getNewsLink();
             this.updateButtonStates(null);
         });
-        return lv;
+        return runnersManager;
     }
 
-    void method_44609() {
-        if (this.field_39680 != null) {
-            this.field_39680.method_44637();
+    void resetPeriodicRunnersManager() {
+        if (this.periodicRunnersManager != null) {
+            this.periodicRunnersManager.resetAll();
         }
     }
 
     private void pingRegions() {
         new Thread(() -> {
             List<RegionPingResult> list = Ping.pingAllRegions();
-            RealmsClient realmsClient = RealmsClient.method_44616();
+            RealmsClient realmsClient = RealmsClient.create();
             PingResult pingResult = new PingResult();
             pingResult.pingResults = list;
             pingResult.worldIds = this.getOwnedNonExpiredWorldIds();
@@ -467,7 +467,7 @@ extends RealmsScreen {
 
                 @Override
                 public void run() {
-                    RealmsClient realmsClient = RealmsClient.method_44616();
+                    RealmsClient realmsClient = RealmsClient.create();
                     try {
                         RealmsClient.CompatibleVersionResponse compatibleVersionResponse = realmsClient.clientCompatible();
                         if (compatibleVersionResponse != RealmsClient.CompatibleVersionResponse.COMPATIBLE) {
@@ -495,7 +495,7 @@ extends RealmsScreen {
 
             @Override
             public void run() {
-                RealmsClient realmsClient = RealmsClient.method_44616();
+                RealmsClient realmsClient = RealmsClient.create();
                 try {
                     Boolean boolean_ = realmsClient.mcoEnabled();
                     if (boolean_.booleanValue()) {
@@ -521,13 +521,13 @@ extends RealmsScreen {
 
                 @Override
                 public void run() {
-                    RealmsClient realmsClient = RealmsClient.method_44616();
+                    RealmsClient realmsClient = RealmsClient.create();
                     try {
                         Boolean boolean_ = realmsClient.stageAvailable();
                         if (boolean_.booleanValue()) {
                             RealmsClient.switchToStage();
                             LOGGER.info("Switched to stage");
-                            RealmsMainScreen.this.method_44609();
+                            RealmsMainScreen.this.resetPeriodicRunnersManager();
                         }
                     } catch (RealmsServiceException realmsServiceException) {
                         LOGGER.error("Couldn't connect to Realms: {}", (Object)realmsServiceException.toString());
@@ -543,13 +543,13 @@ extends RealmsScreen {
 
                 @Override
                 public void run() {
-                    RealmsClient realmsClient = RealmsClient.method_44616();
+                    RealmsClient realmsClient = RealmsClient.create();
                     try {
                         Boolean boolean_ = realmsClient.stageAvailable();
                         if (boolean_.booleanValue()) {
                             RealmsClient.switchToLocal();
                             LOGGER.info("Switched to local");
-                            RealmsMainScreen.this.method_44609();
+                            RealmsMainScreen.this.resetPeriodicRunnersManager();
                         }
                     } catch (RealmsServiceException realmsServiceException) {
                         LOGGER.error("Couldn't connect to Realms: {}", (Object)realmsServiceException.toString());
@@ -561,7 +561,7 @@ extends RealmsScreen {
 
     private void switchToProd() {
         RealmsClient.switchToProd();
-        this.method_44609();
+        this.resetPeriodicRunnersManager();
     }
 
     void configureClicked(@Nullable RealmsServer serverData) {
@@ -600,7 +600,7 @@ extends RealmsScreen {
                 @Override
                 public void run() {
                     try {
-                        RealmsClient realmsClient = RealmsClient.method_44616();
+                        RealmsClient realmsClient = RealmsClient.create();
                         realmsClient.uninviteMyselfFrom(realmsServer.id);
                         RealmsMainScreen.this.client.execute(() -> RealmsMainScreen.this.removeServer(realmsServer));
                     } catch (RealmsServiceException realmsServiceException) {
@@ -614,7 +614,7 @@ extends RealmsScreen {
     }
 
     void removeServer(RealmsServer serverData) {
-        this.realmsServers = this.field_39681.method_44622(serverData);
+        this.realmsServers = this.serverFilterer.remove(serverData);
         this.realmSelectionList.children().removeIf(child -> {
             RealmsServer realmsServer2 = child.getRealmsServer();
             return realmsServer2 != null && realmsServer2.id == realmsServer.id;
@@ -684,7 +684,7 @@ extends RealmsScreen {
         if (this.tooltip != null) {
             this.renderMousehoverTooltip(matrices, this.tooltip, mouseX, mouseY);
         }
-        if (this.trialsAvailable && !this.createdTrial && this.shouldShowPopup()) {
+        if (this.trialAvailable && !this.createdTrial && this.shouldShowPopup()) {
             RenderSystem.setShaderTexture(0, TRIAL_ICON);
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             int i = 8;
@@ -780,7 +780,7 @@ extends RealmsScreen {
         int k;
         boolean bl4;
         boolean bl2;
-        int i = this.numberOfPendingInvites;
+        int i = this.pendingInvitesCount;
         boolean bl = this.inPendingInvitationArea(mouseX, mouseY);
         boolean bl3 = bl2 = active && hovered;
         if (bl2) {
@@ -823,7 +823,7 @@ extends RealmsScreen {
         int j = this.width / 2 + 66;
         int k = 11;
         int l = 23;
-        if (this.numberOfPendingInvites != 0) {
+        if (this.pendingInvitesCount != 0) {
             i -= 3;
             j += 3;
             k -= 5;
@@ -1149,7 +1149,7 @@ extends RealmsScreen {
         }
 
         public void updatePendingText() {
-            this.setMessage(RealmsMainScreen.this.numberOfPendingInvites == 0 ? NO_PENDING_TEXT : PENDING_TEXT);
+            this.setMessage(RealmsMainScreen.this.pendingInvitesCount == 0 ? NO_PENDING_TEXT : PENDING_TEXT);
         }
 
         @Override

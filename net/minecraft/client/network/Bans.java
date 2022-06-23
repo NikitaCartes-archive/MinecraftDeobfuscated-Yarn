@@ -10,7 +10,7 @@ import java.time.Instant;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ConfirmLinkScreen;
-import net.minecraft.client.network.abusereport.AbuseReportReason;
+import net.minecraft.client.report.AbuseReportReason;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -33,17 +33,17 @@ public class Bans {
     }
 
     private static Text getDescriptionText(BanDetails banDetails) {
-        return Text.translatable("gui.banned.description", Bans.getReasonText(banDetails), Bans.getDurationText(banDetails), ConfirmLinkScreen.getConfirmText(true, JAVA_MODERATION_URL));
+        return Text.translatable("gui.banned.description", Bans.getReasonText(banDetails), Bans.getDurationText(banDetails), Text.literal(JAVA_MODERATION_URL));
     }
 
     private static Text getReasonText(BanDetails banDetails) {
-        Text text = null;
         String string = banDetails.reason();
+        String string2 = banDetails.reasonMessage();
         if (StringUtils.isNumeric(string)) {
-            text = AbuseReportReason.getText(Integer.parseInt(string));
-        }
-        if (text != null) {
-            return Text.translatable("gui.banned.description.reason", Texts.setStyleIfAbsent(text.copy(), Style.EMPTY.withBold(true)));
+            int i = Integer.parseInt(string);
+            Text text = AbuseReportReason.getText(i);
+            text = text != null ? Texts.setStyleIfAbsent(text.copy(), Style.EMPTY.withBold(true)) : (string2 != null ? Text.translatable("gui.banned.description.reason_id_message", i, string2).formatted(Formatting.BOLD) : Text.translatable("gui.banned.description.reason_id", i).formatted(Formatting.BOLD));
+            return Text.translatable("gui.banned.description.reason", text);
         }
         return Text.translatable("gui.banned.description.unknownreason");
     }

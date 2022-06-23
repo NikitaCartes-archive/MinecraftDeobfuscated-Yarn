@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.client.gui.screen.abusereport;
+package net.minecraft.client.gui.screen.report;
 
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
@@ -12,22 +12,20 @@ import net.minecraft.client.gui.screen.ConfirmLinkScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.PressableTextWidget;
-import net.minecraft.client.network.abusereport.AbuseReportReason;
+import net.minecraft.client.report.AbuseReportReason;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class AbuseReportReasonScreen
 extends Screen {
-    private static final String COMMUNITY_STANDARDS_URL = "https://aka.ms/mccommunitystandards";
+    private static final String ABOUT_JAVA_REPORTING_URL = "https://aka.ms/aboutjavareporting";
     private static final Text TITLE_TEXT = Text.translatable("gui.abuseReport.reason.title");
     private static final Text DESCRIPTION_TEXT = Text.translatable("gui.abuseReport.reason.description");
-    private static final Text STANDARDS_TEXT = Text.translatable("gui.chatReport.standards", Text.translatable("gui.chatReport.standards_name").formatted(Formatting.UNDERLINE)).formatted(Formatting.GRAY);
+    private static final Text READ_INFO_TEXT = Text.translatable("gui.chatReport.read_info");
     private static final int REASON_LIST_BOTTOM_MARGIN = 85;
     private static final int DONE_BUTTON_WIDTH = 150;
     private static final int DONE_BUTTON_HEIGHT = 20;
@@ -50,20 +48,20 @@ extends Screen {
 
     @Override
     protected void init() {
-        int i = this.textRenderer.getWidth(STANDARDS_TEXT);
-        int j = (this.width - i) / 2;
-        this.addDrawableChild(new PressableTextWidget(j, 16 + this.textRenderer.fontHeight * 3 / 2, i, this.textRenderer.fontHeight, STANDARDS_TEXT, button -> this.client.setScreen(new ConfirmLinkScreen(confirmed -> {
-            if (confirmed) {
-                Util.getOperatingSystem().open(COMMUNITY_STANDARDS_URL);
-            }
-            this.client.setScreen(this);
-        }, COMMUNITY_STANDARDS_URL, true)), this.textRenderer));
         this.reasonList = new ReasonListWidget(this.client);
         this.reasonList.setRenderBackground(false);
         this.addSelectableChild(this.reasonList);
         ReasonListWidget.ReasonEntry reasonEntry = Util.map(this.reason, this.reasonList::getEntry);
         this.reasonList.setSelected(reasonEntry);
-        this.addDrawableChild(new ButtonWidget(this.getDoneButtonX(), this.getDoneButtonY(), 150, 20, ScreenTexts.DONE, button -> {
+        int i = this.width / 2 - 150 - 5;
+        this.addDrawableChild(new ButtonWidget(i, this.getDoneButtonY(), 150, 20, READ_INFO_TEXT, button -> this.client.setScreen(new ConfirmLinkScreen(confirmed -> {
+            if (confirmed) {
+                Util.getOperatingSystem().open(ABOUT_JAVA_REPORTING_URL);
+            }
+            this.client.setScreen(this);
+        }, ABOUT_JAVA_REPORTING_URL, true))));
+        int j = this.width / 2 + 5;
+        this.addDrawableChild(new ButtonWidget(j, this.getDoneButtonY(), 150, 20, ScreenTexts.DONE, button -> {
             ReasonListWidget.ReasonEntry reasonEntry = (ReasonListWidget.ReasonEntry)this.reasonList.getSelectedOrNull();
             if (reasonEntry != null) {
                 this.reasonConsumer.accept(reasonEntry.getReason());
@@ -92,10 +90,6 @@ extends Screen {
             int o = this.textRenderer.getWrappedLinesHeight(reasonEntry.reason.getDescription(), m);
             this.textRenderer.drawTrimmed(reasonEntry.reason.getDescription(), i, k + (n - o) / 2, m, -1);
         }
-    }
-
-    private int getDoneButtonX() {
-        return this.getRight() - 150;
     }
 
     private int getDoneButtonY() {

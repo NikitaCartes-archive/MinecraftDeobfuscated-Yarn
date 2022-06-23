@@ -6,14 +6,14 @@ package net.minecraft.client.realms.gui.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_7578;
-import net.minecraft.class_7581;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.realms.RealmsClient;
+import net.minecraft.client.realms.RealmsPeriodicCheckers;
 import net.minecraft.client.realms.dto.RealmsNews;
 import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.gui.screen.RealmsScreen;
+import net.minecraft.client.realms.util.PeriodicRunnerFactory;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
@@ -27,8 +27,8 @@ extends RealmsScreen {
     private static final Identifier TRIAL_ICON = new Identifier("realms", "textures/gui/realms/trial_icon.png");
     private static final Identifier NEWS_NOTIFICATION = new Identifier("realms", "textures/gui/realms/news_notification_mainscreen.png");
     @Nullable
-    private class_7581.class_7584 field_39695;
-    private volatile int numberOfPendingInvites;
+    private PeriodicRunnerFactory.RunnersManager periodicRunnersManager;
+    private volatile int pendingInvitesCount;
     static boolean checkedMcoAvailability;
     private static boolean trialAvailable;
     static boolean validClient;
@@ -42,8 +42,8 @@ extends RealmsScreen {
     public void init() {
         this.checkIfMcoEnabled();
         this.client.keyboard.setRepeatEvents(true);
-        if (this.field_39695 != null) {
-            this.field_39695.method_44634();
+        if (this.periodicRunnersManager != null) {
+            this.periodicRunnersManager.forceRunListeners();
         }
     }
 
@@ -51,29 +51,29 @@ extends RealmsScreen {
     public void tick() {
         boolean bl;
         boolean bl2 = bl = this.shouldShowNotifications() && this.isTitleScreen() && validClient;
-        if (this.field_39695 == null && bl) {
-            this.field_39695 = this.method_44624(this.client.method_44646());
-        } else if (this.field_39695 != null && !bl) {
-            this.field_39695 = null;
+        if (this.periodicRunnersManager == null && bl) {
+            this.periodicRunnersManager = this.createPeriodicRunnersManager(this.client.getRealmsPeriodicCheckers());
+        } else if (this.periodicRunnersManager != null && !bl) {
+            this.periodicRunnersManager = null;
         }
-        if (this.field_39695 != null) {
-            this.field_39695.method_44636();
+        if (this.periodicRunnersManager != null) {
+            this.periodicRunnersManager.runAll();
         }
     }
 
-    private class_7581.class_7584 method_44624(class_7578 arg) {
-        class_7581.class_7584 lv = arg.field_39682.method_44628();
-        lv.method_44635(arg.field_39685, integer -> {
-            this.numberOfPendingInvites = integer;
+    private PeriodicRunnerFactory.RunnersManager createPeriodicRunnersManager(RealmsPeriodicCheckers periodicCheckers) {
+        PeriodicRunnerFactory.RunnersManager runnersManager = periodicCheckers.runnerFactory.create();
+        runnersManager.add(periodicCheckers.pendingInvitesCount, pendingInvitesCount -> {
+            this.pendingInvitesCount = pendingInvitesCount;
         });
-        lv.method_44635(arg.field_39686, boolean_ -> {
-            trialAvailable = boolean_;
+        runnersManager.add(periodicCheckers.trialAvailability, trialAvailable -> {
+            RealmsNotificationsScreen.trialAvailable = trialAvailable;
         });
-        lv.method_44635(arg.field_39687, realmsNews -> {
-            arg.field_39688.method_44619((RealmsNews)realmsNews);
-            hasUnreadNews = arg.field_39688.method_44618();
+        runnersManager.add(periodicCheckers.news, news -> {
+            realmsPeriodicCheckers.newsUpdater.updateNews((RealmsNews)news);
+            hasUnreadNews = realmsPeriodicCheckers.newsUpdater.hasUnreadNews();
         });
-        return lv;
+        return runnersManager;
     }
 
     private boolean shouldShowNotifications() {
@@ -91,7 +91,7 @@ extends RealmsScreen {
 
                 @Override
                 public void run() {
-                    RealmsClient realmsClient = RealmsClient.method_44616();
+                    RealmsClient realmsClient = RealmsClient.create();
                     try {
                         RealmsClient.CompatibleVersionResponse compatibleVersionResponse = realmsClient.clientCompatible();
                         if (compatibleVersionResponse != RealmsClient.CompatibleVersionResponse.COMPATIBLE) {
@@ -118,7 +118,7 @@ extends RealmsScreen {
     }
 
     private void drawIcons(MatrixStack matrices, int mouseX, int mouseY) {
-        int i = this.numberOfPendingInvites;
+        int i = this.pendingInvitesCount;
         int j = 24;
         int k = this.height / 4 + 48;
         int l = this.width / 2 + 80;
