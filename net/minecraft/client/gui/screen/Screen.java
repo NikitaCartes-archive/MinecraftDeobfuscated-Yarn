@@ -45,7 +45,6 @@ import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.ClickEvent;
@@ -545,7 +544,7 @@ implements Drawable {
     }
 
     private boolean isNarratorActive() {
-        return NarratorManager.INSTANCE.isActive();
+        return this.client.getNarratorManager().isActive();
     }
 
     public void updateNarrator() {
@@ -566,7 +565,7 @@ implements Drawable {
         this.narrator.buildNarrations(this::addScreenNarrations);
         String string = this.narrator.buildNarratorText(!useTranslationsCache);
         if (!string.isEmpty()) {
-            NarratorManager.INSTANCE.narrate(string);
+            this.client.getNarratorManager().narrate(string);
         }
     }
 

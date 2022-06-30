@@ -9,11 +9,9 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.TextArgumentType;
 import net.minecraft.entity.Entity;
-import net.minecraft.network.message.MessageType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 
 public class TellRawCommand {
@@ -21,7 +19,7 @@ public class TellRawCommand {
         dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("tellraw").requires(source -> source.hasPermissionLevel(2))).then(CommandManager.argument("targets", EntityArgumentType.players()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("message", TextArgumentType.text()).executes(context -> {
             int i = 0;
             for (ServerPlayerEntity serverPlayerEntity : EntityArgumentType.getPlayers(context, "targets")) {
-                serverPlayerEntity.sendMessage((Text)Texts.parse((ServerCommandSource)context.getSource(), TextArgumentType.getTextArgument(context, "message"), (Entity)serverPlayerEntity, 0), MessageType.TELLRAW_COMMAND);
+                serverPlayerEntity.sendMessageToClient(Texts.parse((ServerCommandSource)context.getSource(), TextArgumentType.getTextArgument(context, "message"), (Entity)serverPlayerEntity, 0), false);
                 ++i;
             }
             return i;

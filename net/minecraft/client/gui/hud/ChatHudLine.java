@@ -5,29 +5,24 @@ package net.minecraft.client.gui.hud;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.hud.MessageIndicator;
+import net.minecraft.text.OrderedText;
+import net.minecraft.text.Text;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
-public class ChatHudLine<T> {
-    private final int creationTick;
-    private final T text;
-    private final int id;
-
-    public ChatHudLine(int creationTick, T text, int id) {
-        this.text = text;
-        this.creationTick = creationTick;
-        this.id = id;
+public record ChatHudLine(int creationTick, Text content, @Nullable MessageIndicator indicator) {
+    @Nullable
+    public MessageIndicator indicator() {
+        return this.indicator;
     }
 
-    public T getText() {
-        return this.text;
-    }
-
-    public int getCreationTick() {
-        return this.creationTick;
-    }
-
-    public int getId() {
-        return this.id;
+    @Environment(value=EnvType.CLIENT)
+    public record Visible(int addedTime, OrderedText content, @Nullable MessageIndicator indicator, boolean endOfEntry) {
+        @Nullable
+        public MessageIndicator indicator() {
+            return this.indicator;
+        }
     }
 }
 

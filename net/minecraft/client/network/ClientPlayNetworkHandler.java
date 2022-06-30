@@ -13,7 +13,6 @@ import io.netty.buffer.Unpooled;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
@@ -37,7 +36,6 @@ import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextVisitFactory;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.CreditsScreen;
@@ -78,7 +76,6 @@ import net.minecraft.client.render.debug.GoalSelectorDebugRenderer;
 import net.minecraft.client.render.debug.NeighborUpdateDebugRenderer;
 import net.minecraft.client.render.debug.VillageDebugRenderer;
 import net.minecraft.client.render.debug.WorldGenAttemptDebugRenderer;
-import net.minecraft.client.report.ReceivedMessage;
 import net.minecraft.client.search.SearchManager;
 import net.minecraft.client.sound.AbstractBeeSoundInstance;
 import net.minecraft.client.sound.AggressiveBeeSoundInstance;
@@ -88,7 +85,6 @@ import net.minecraft.client.sound.PassiveBeeSoundInstance;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.toast.RecipeToast;
-import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.telemetry.TelemetrySender;
 import net.minecraft.client.world.ClientChunkManager;
 import net.minecraft.client.world.ClientWorld;
@@ -128,7 +124,6 @@ import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.message.MessageSender;
 import net.minecraft.network.message.MessageType;
@@ -271,7 +266,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
@@ -299,7 +293,6 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.PositionSource;
 import net.minecraft.world.explosion.Explosion;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -753,84 +746,17 @@ implements ClientPlayPacketListener {
     @Override
     public void onGameMessage(GameMessageS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
-        if (this.client.options.getHideMatchedNames().getValue().booleanValue() && this.client.shouldBlockMessages(this.extractSender(packet.content()))) {
-            return;
-        }
-        Registry<MessageType> registry = this.registryManager.get(Registry.MESSAGE_TYPE_KEY);
-        MessageType messageType = packet.getMessageType(registry);
-        this.client.inGameHud.onGameMessage(messageType, packet.content());
-        Instant instant = Instant.now();
-        this.client.getAbuseReportContext().chatLog().add(ReceivedMessage.of(packet.content(), instant));
-    }
-
-    private UUID extractSender(Text content) {
-        String string = TextVisitFactory.removeFormattingCodes(content);
-        String string2 = StringUtils.substringBetween(string, "<", ">");
-        if (string2 == null) {
-            return Util.NIL_UUID;
-        }
-        return this.client.getSocialInteractionsManager().getUuid(string2);
+        this.client.getMessageHandler().onGameMessage(packet.content(), packet.overlay());
     }
 
     @Override
     public void onChatMessage(ChatMessageS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
-        MessageSender messageSender = packet.sender();
-        if (packet.isExpired(Instant.now())) {
-            LOGGER.warn("Received expired chat packet from {}", (Object)messageSender.name().getString());
-        }
         Registry<MessageType> registry = this.registryManager.get(Registry.MESSAGE_TYPE_KEY);
         MessageType messageType = packet.getMessageType(registry);
+        MessageSender messageSender = packet.sender();
         SignedMessage signedMessage = packet.getSignedMessage();
-        this.handleMessage(messageType, signedMessage, messageSender);
-    }
-
-    /**
-     * Handles an incoming chat message.
-     */
-    private void handleMessage(MessageType type, SignedMessage message, MessageSender sender) {
-        if (this.client.shouldBlockMessages(sender.uuid())) {
-            return;
-        }
-        boolean bl = this.client.options.getOnlyShowSecureChat().getValue();
-        PlayerListEntry playerListEntry = this.getPlayerListEntry(message.signature().sender());
-        if (playerListEntry != null && !this.isSignatureValid(message, playerListEntry)) {
-            LOGGER.warn("Received chat packet without valid signature from {}", (Object)playerListEntry.getProfile().getName());
-            if (bl) {
-                return;
-            }
-        }
-        SignedMessage signedMessage = bl ? message.withoutUnsigned() : message;
-        Text text = signedMessage.getContent();
-        this.client.inGameHud.onChatMessage(type, text, sender);
-        GameProfile gameProfile = this.getProfile(sender);
-        this.client.getAbuseReportContext().chatLog().add(ReceivedMessage.of(gameProfile, sender.name(), signedMessage));
-    }
-
-    /**
-     * {@return the game profile of {@code sender}}
-     * 
-     * <p>If {@code sender} points to a non-player (such as entities sending
-     * chat messages through {@code /say} command) or a player not in the game,
-     * this will create a new game profile based on the UUID and the display
-     * name.
-     */
-    private GameProfile getProfile(MessageSender sender) {
-        PlayerListEntry playerListEntry = this.getPlayerListEntry(sender.uuid());
-        if (playerListEntry == null) {
-            return new GameProfile(sender.uuid(), sender.name().getString());
-        }
-        return playerListEntry.getProfile();
-    }
-
-    /**
-     * {@return whether the chat message has a valid signature}
-     * 
-     * <p>This returns {@code false} when the chat sender is unknown.
-     */
-    private boolean isSignatureValid(SignedMessage message, PlayerListEntry playerListEntry) {
-        PlayerPublicKey playerPublicKey = playerListEntry.getPublicKeyData();
-        return playerPublicKey != null && message.verify(playerPublicKey);
+        this.client.getMessageHandler().onChatMessage(messageType, signedMessage, messageSender);
     }
 
     @Override
@@ -898,7 +824,7 @@ implements ClientPlayPacketListener {
             }
             MutableText text = Text.translatable("mount.onboard", this.client.options.sneakKey.getBoundKeyLocalizedText());
             this.client.inGameHud.setOverlayMessage(text, false);
-            NarratorManager.INSTANCE.narrate(text);
+            this.client.getNarratorManager().narrate(text);
         }
     }
 

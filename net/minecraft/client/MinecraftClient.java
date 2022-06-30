@@ -35,6 +35,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -100,6 +101,7 @@ import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.network.ServerAddress;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.network.SocialInteractionsManager;
+import net.minecraft.client.network.message.MessageHandler;
 import net.minecraft.client.option.AoMode;
 import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.client.option.CloudRenderMode;
@@ -476,6 +478,8 @@ implements WindowEventHandler {
     @Nullable
     private GlTimer.Query currentGlTimerQuery;
     private final Realms32BitWarningChecker realms32BitWarningChecker;
+    private final NarratorManager narratorManager;
+    private final MessageHandler messageHandler;
     private AbuseReportContext abuseReportContext;
     private String openProfilerSection = "root";
 
@@ -625,6 +629,8 @@ implements WindowEventHandler {
         this.gameRenderer.preloadShaders(this.getResourcePackProvider().getPack().getFactory());
         this.profileKeys = new ProfileKeys(this.userApiService, this.session.getProfile().getId(), this.runDirectory.toPath());
         this.realms32BitWarningChecker = new Realms32BitWarningChecker(this);
+        this.narratorManager = new NarratorManager(this);
+        this.messageHandler = new MessageHandler(this);
         this.abuseReportContext = AbuseReportContext.create(ReporterEnvironment.ofIntegratedServer(), this.userApiService);
         SplashOverlay.init(this);
         List<ResourcePack> list = this.resourcePackManager.createResourcePacks();
@@ -911,7 +917,7 @@ implements WindowEventHandler {
             } else {
                 Text text2 = chatRestriction.getDescription();
                 this.inGameHud.setOverlayMessage(text2, false);
-                NarratorManager.INSTANCE.narrate(text2);
+                this.narratorManager.narrate(text2);
                 this.inGameHud.setCanShowChatDisabledScreen(chatRestriction == ChatRestriction.DISABLED_BY_PROFILE);
             }
         } else {
@@ -971,7 +977,7 @@ implements WindowEventHandler {
         try {
             LOGGER.info("Stopping!");
             try {
-                NarratorManager.INSTANCE.destroy();
+                this.narratorManager.destroy();
             } catch (Throwable throwable) {
                 // empty catch block
             }
@@ -1707,7 +1713,7 @@ implements WindowEventHandler {
         while (this.options.socialInteractionsKey.wasPressed()) {
             if (!this.isConnectedToServer()) {
                 this.player.sendMessage(SOCIAL_INTERACTIONS_NOT_AVAILABLE, true);
-                NarratorManager.INSTANCE.narrate(SOCIAL_INTERACTIONS_NOT_AVAILABLE);
+                this.narratorManager.narrate(SOCIAL_INTERACTIONS_NOT_AVAILABLE);
                 continue;
             }
             if (this.socialInteractionsToast != null) {
@@ -1831,7 +1837,7 @@ implements WindowEventHandler {
         ClientConnection clientConnection = ClientConnection.connectLocal(socketAddress);
         clientConnection.setPacketListener(new ClientLoginNetworkHandler(clientConnection, this, null, status -> {}));
         clientConnection.send(new HandshakeC2SPacket(socketAddress.toString(), 0, NetworkState.LOGIN));
-        clientConnection.send(new LoginHelloC2SPacket(this.getSession().getUsername(), this.profileKeys.getPublicKeyData()));
+        clientConnection.send(new LoginHelloC2SPacket(this.getSession().getUsername(), this.profileKeys.getPublicKeyData(), Optional.ofNullable(this.getSession().getUuidOrNull())));
         this.integratedServerConnection = clientConnection;
     }
 
@@ -1867,7 +1873,7 @@ implements WindowEventHandler {
         this.server = null;
         this.gameRenderer.reset();
         this.interactionManager = null;
-        NarratorManager.INSTANCE.clear();
+        this.narratorManager.clear();
         this.reset(screen);
         if (this.world != null) {
             if (integratedServer != null) {
@@ -2581,6 +2587,14 @@ implements WindowEventHandler {
 
     public SignatureVerifier getServicesSignatureVerifier() {
         return this.servicesSignatureVerifier;
+    }
+
+    public NarratorManager getNarratorManager() {
+        return this.narratorManager;
+    }
+
+    public MessageHandler getMessageHandler() {
+        return this.messageHandler;
     }
 
     public AbuseReportContext getAbuseReportContext() {

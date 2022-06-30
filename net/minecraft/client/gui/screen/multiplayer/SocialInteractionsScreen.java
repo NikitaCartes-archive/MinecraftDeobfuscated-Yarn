@@ -180,13 +180,14 @@ extends Screen {
                 this.playerList.update(set2, this.playerList.getScrollAmount());
             }
         }
+        NarratorManager narratorManager = this.client.getNarratorManager();
         if (!this.searchBox.getText().isEmpty() && this.playerList.isEmpty() && !this.searchBox.isFocused()) {
-            NarratorManager.INSTANCE.narrate(EMPTY_SEARCH_TEXT);
+            narratorManager.narrate(EMPTY_SEARCH_TEXT);
         } else if (bl) {
             if (currentTab == Tab.HIDDEN) {
-                NarratorManager.INSTANCE.narrate(EMPTY_HIDDEN_TEXT);
+                narratorManager.narrate(EMPTY_HIDDEN_TEXT);
             } else if (currentTab == Tab.BLOCKED) {
-                NarratorManager.INSTANCE.narrate(EMPTY_BLOCKED_TEXT);
+                narratorManager.narrate(EMPTY_BLOCKED_TEXT);
             }
         }
     }

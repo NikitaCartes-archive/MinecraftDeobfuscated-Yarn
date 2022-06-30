@@ -20,7 +20,7 @@ public class RepeatedNarrator {
         this.permitsPerSecond = 1000.0f / (float)duration.toMillis();
     }
 
-    public void narrate(Text text) {
+    public void narrate(NarratorManager narratorManager, Text text) {
         Parameters parameters2 = this.params.updateAndGet(parameters -> {
             if (parameters == null || !text.equals(parameters.message)) {
                 return new Parameters(text, RateLimiter.create(this.permitsPerSecond));
@@ -28,7 +28,7 @@ public class RepeatedNarrator {
             return parameters;
         });
         if (parameters2.rateLimiter.tryAcquire(1)) {
-            NarratorManager.INSTANCE.narrate(text);
+            narratorManager.narrate(text);
         }
     }
 

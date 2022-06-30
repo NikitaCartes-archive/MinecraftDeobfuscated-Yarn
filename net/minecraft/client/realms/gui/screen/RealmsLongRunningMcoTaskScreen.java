@@ -52,7 +52,7 @@ implements Errable {
     @Override
     public void tick() {
         super.tick();
-        NARRATOR.narrate(this.title);
+        NARRATOR.narrate(this.client.getNarratorManager(), this.title);
         ++this.animTicks;
         this.task.tick();
     }
@@ -94,7 +94,7 @@ implements Errable {
     @Override
     public void error(Text errorMessage) {
         this.errorMessage = errorMessage;
-        NarratorManager.INSTANCE.narrate(errorMessage);
+        this.client.getNarratorManager().narrate(errorMessage);
         this.client.execute(() -> {
             this.remove(this.cancelButton);
             this.cancelButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 106, this.height / 4 + 120 + 12, 200, 20, ScreenTexts.BACK, button -> this.cancelOrBackButtonClicked()));

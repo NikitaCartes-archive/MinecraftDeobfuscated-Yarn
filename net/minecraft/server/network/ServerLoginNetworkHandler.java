@@ -141,21 +141,20 @@ implements ServerLoginPacketListener {
      */
     public void acceptPlayer() {
         PlayerPublicKey playerPublicKey;
-        UUID uUID;
-        block10: {
+        block11: {
+            playerPublicKey = null;
             if (!this.profile.isComplete()) {
                 this.profile = this.toOfflineProfile(this.profile);
-            }
-            uUID = this.profile.getId();
-            playerPublicKey = null;
-            try {
-                SignatureVerifier signatureVerifier = this.server.getServicesSignatureVerifier();
-                playerPublicKey = ServerLoginNetworkHandler.getVerifiedPublicKey(this.publicKeyData, uUID, signatureVerifier, this.server.shouldEnforceSecureProfile());
-            } catch (LoginException loginException) {
-                LOGGER.error(loginException.getMessage(), loginException.getCause());
-                if (this.connection.isLocal()) break block10;
-                this.disconnect(loginException.getMessageText());
-                return;
+            } else {
+                try {
+                    SignatureVerifier signatureVerifier = this.server.getServicesSignatureVerifier();
+                    playerPublicKey = ServerLoginNetworkHandler.getVerifiedPublicKey(this.publicKeyData, this.profile.getId(), signatureVerifier, this.server.shouldEnforceSecureProfile());
+                } catch (LoginException loginException) {
+                    LOGGER.error(loginException.getMessage(), loginException.getCause());
+                    if (this.connection.isLocal()) break block11;
+                    this.disconnect(loginException.getMessageText());
+                    return;
+                }
             }
         }
         Text text = this.server.getPlayerManager().checkCanJoin(this.connection.getAddress(), this.profile);
@@ -167,7 +166,7 @@ implements ServerLoginPacketListener {
                 this.connection.send(new LoginCompressionS2CPacket(this.server.getNetworkCompressionThreshold()), channelFuture -> this.connection.setCompressionThreshold(this.server.getNetworkCompressionThreshold(), true));
             }
             this.connection.send(new LoginSuccessS2CPacket(this.profile));
-            ServerPlayerEntity serverPlayerEntity = this.server.getPlayerManager().getPlayer(uUID);
+            ServerPlayerEntity serverPlayerEntity = this.server.getPlayerManager().getPlayer(this.profile.getId());
             try {
                 ServerPlayerEntity serverPlayerEntity2 = this.server.getPlayerManager().createPlayer(this.profile, playerPublicKey);
                 if (serverPlayerEntity != null) {
@@ -278,7 +277,7 @@ implements ServerLoginPacketListener {
                         ServerLoginNetworkHandler.this.state = State.READY_TO_ACCEPT;
                     } else if (ServerLoginNetworkHandler.this.server.isSingleplayer()) {
                         LOGGER.warn("Failed to verify username but will let them in anyway!");
-                        ServerLoginNetworkHandler.this.profile = ServerLoginNetworkHandler.this.toOfflineProfile(gameProfile);
+                        ServerLoginNetworkHandler.this.profile = gameProfile;
                         ServerLoginNetworkHandler.this.state = State.READY_TO_ACCEPT;
                     } else {
                         ServerLoginNetworkHandler.this.disconnect(Text.translatable("multiplayer.disconnect.unverified_username"));
@@ -287,7 +286,7 @@ implements ServerLoginPacketListener {
                 } catch (AuthenticationUnavailableException authenticationUnavailableException) {
                     if (ServerLoginNetworkHandler.this.server.isSingleplayer()) {
                         LOGGER.warn("Authentication servers are down but will let them in anyway!");
-                        ServerLoginNetworkHandler.this.profile = ServerLoginNetworkHandler.this.toOfflineProfile(gameProfile);
+                        ServerLoginNetworkHandler.this.profile = gameProfile;
                         ServerLoginNetworkHandler.this.state = State.READY_TO_ACCEPT;
                     }
                     ServerLoginNetworkHandler.this.disconnect(Text.translatable("multiplayer.disconnect.authservers_down"));

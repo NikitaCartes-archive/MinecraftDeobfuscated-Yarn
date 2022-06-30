@@ -44,7 +44,6 @@ import net.minecraft.advancement.criterion.Criterion;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.CriterionProgress;
 import net.minecraft.datafixer.DataFixTypes;
-import net.minecraft.network.message.MessageType;
 import net.minecraft.network.packet.s2c.play.AdvancementUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.SelectAdvancementTabS2CPacket;
 import net.minecraft.server.PlayerManager;
@@ -193,7 +192,7 @@ public class PlayerAdvancementTracker {
             if (!bl2 && advancementProgress.isDone()) {
                 advancement.getRewards().apply(this.owner);
                 if (advancement.getDisplay() != null && advancement.getDisplay().shouldAnnounceToChat() && this.owner.world.getGameRules().getBoolean(GameRules.ANNOUNCE_ADVANCEMENTS)) {
-                    this.playerManager.broadcast(Text.translatable("chat.type.advancement." + advancement.getDisplay().getFrame().getId(), this.owner.getDisplayName(), advancement.toHoverableText()), MessageType.SYSTEM);
+                    this.playerManager.broadcast(Text.translatable("chat.type.advancement." + advancement.getDisplay().getFrame().getId(), this.owner.getDisplayName(), advancement.toHoverableText()), false);
                 }
             }
         }

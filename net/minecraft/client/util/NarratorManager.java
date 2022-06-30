@@ -5,47 +5,35 @@ package net.minecraft.client.util;
 
 import com.mojang.logging.LogUtils;
 import com.mojang.text2speech.Narrator;
+import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.ClientChatListener;
 import net.minecraft.client.option.NarratorMode;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.toast.ToastManager;
-import net.minecraft.network.message.MessageSender;
-import net.minecraft.network.message.MessageType;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
-public class NarratorManager
-implements ClientChatListener {
+public class NarratorManager {
     public static final Text EMPTY = ScreenTexts.EMPTY;
     private static final Logger LOGGER = LogUtils.getLogger();
-    public static final NarratorManager INSTANCE = new NarratorManager();
+    private final MinecraftClient client;
     private final Narrator narrator = Narrator.getNarrator();
 
-    @Override
-    public void onChatMessage(MessageType type, Text message, @Nullable MessageSender sender) {
-        NarratorMode narratorMode = NarratorManager.getNarratorOption();
-        if (narratorMode == NarratorMode.OFF) {
-            return;
+    public NarratorManager(MinecraftClient client) {
+        this.client = client;
+    }
+
+    public void narrateChatMessage(Supplier<Text> messageSupplier) {
+        if (this.getNarratorOption().shouldNarrateChat()) {
+            String string = messageSupplier.get().getString();
+            this.debugPrintMessage(string);
+            this.narrator.say(string, false);
         }
-        if (!this.narrator.active()) {
-            this.debugPrintMessage(message.getString());
-            return;
-        }
-        type.narration().ifPresent(narrationRule -> {
-            if (narratorMode.shouldNarrate(narrationRule.kind())) {
-                Text text2 = narrationRule.apply(message, sender);
-                String string = text2.getString();
-                this.debugPrintMessage(string);
-                this.narrator.say(string, narrationRule.kind().shouldInterrupt());
-            }
-        });
     }
 
     public void narrate(Text text) {
@@ -53,8 +41,7 @@ implements ClientChatListener {
     }
 
     public void narrate(String text) {
-        NarratorMode narratorMode = NarratorManager.getNarratorOption();
-        if (narratorMode != NarratorMode.OFF && narratorMode != NarratorMode.CHAT && !text.isEmpty()) {
+        if (this.getNarratorOption().shouldNarrateSystem() && !text.isEmpty()) {
             this.debugPrintMessage(text);
             if (this.narrator.active()) {
                 this.narrator.clear();
@@ -63,8 +50,8 @@ implements ClientChatListener {
         }
     }
 
-    private static NarratorMode getNarratorOption() {
-        return MinecraftClient.getInstance().options.getNarrator().getValue();
+    private NarratorMode getNarratorOption() {
+        return this.client.options.getNarrator().getValue();
     }
 
     private void debugPrintMessage(String message) {
@@ -93,7 +80,7 @@ implements ClientChatListener {
     }
 
     public void clear() {
-        if (NarratorManager.getNarratorOption() == NarratorMode.OFF || !this.narrator.active()) {
+        if (this.getNarratorOption() == NarratorMode.OFF || !this.narrator.active()) {
             return;
         }
         this.narrator.clear();

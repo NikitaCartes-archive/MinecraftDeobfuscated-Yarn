@@ -7,7 +7,7 @@ import com.mojang.authlib.minecraft.UserApiService;
 import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.abusereport.AbuseReportSender;
+import net.minecraft.client.report.AbuseReportSender;
 import net.minecraft.client.report.ChatLog;
 import net.minecraft.client.report.ChatLogImpl;
 import net.minecraft.client.report.ReporterEnvironment;

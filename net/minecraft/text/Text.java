@@ -22,6 +22,7 @@ import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -148,6 +149,10 @@ StringVisitable {
         return Optional.empty();
     }
 
+    default public List<Text> withoutStyle() {
+        return this.getWithStyle(Style.EMPTY);
+    }
+
     default public List<Text> getWithStyle(Style style) {
         ArrayList<Text> list = Lists.newArrayList();
         this.visit((styleOverride, text) -> {
@@ -157,6 +162,18 @@ StringVisitable {
             return Optional.empty();
         }, style);
         return list;
+    }
+
+    /**
+     * {@return whether the text contains {@code text}, without considering styles}
+     */
+    default public boolean contains(Text text) {
+        List<Text> list2;
+        if (this.equals(text)) {
+            return true;
+        }
+        List<Text> list = this.withoutStyle();
+        return Collections.indexOfSubList(list, list2 = text.withoutStyle()) != -1;
     }
 
     /**

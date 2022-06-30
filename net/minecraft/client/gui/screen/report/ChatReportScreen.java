@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.client.gui.screen.abusereport;
+package net.minecraft.client.gui.screen.report;
 
 import com.mojang.authlib.minecraft.report.AbuseReportLimits;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -22,9 +22,9 @@ import net.minecraft.client.gui.screen.report.AbuseReportReasonScreen;
 import net.minecraft.client.gui.screen.report.ChatSelectionScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.EditBoxWidget;
-import net.minecraft.client.network.abusereport.ChatAbuseReport;
 import net.minecraft.client.report.AbuseReportContext;
 import net.minecraft.client.report.AbuseReportReason;
+import net.minecraft.client.report.ChatAbuseReport;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;

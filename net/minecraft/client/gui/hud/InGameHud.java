@@ -18,12 +18,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.ClientChatListener;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.GameInfoChatListener;
 import net.minecraft.client.gui.hud.BossBarHud;
 import net.minecraft.client.gui.hud.ChatHud;
-import net.minecraft.client.gui.hud.ChatHudListener;
 import net.minecraft.client.gui.hud.DebugHud;
 import net.minecraft.client.gui.hud.PlayerListHud;
 import net.minecraft.client.gui.hud.SpectatorHud;
@@ -44,7 +41,6 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.StatusEffectSpriteManager;
-import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -56,8 +52,6 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.message.MessageSender;
-import net.minecraft.network.message.MessageType;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
@@ -104,7 +98,7 @@ extends DrawableHelper {
     private static final float field_32168 = 5.0f;
     private static final int field_32169 = 10;
     private static final int field_32170 = 10;
-    private static final String field_32171 = ": ";
+    private static final String SCOREBOARD_JOINER = ": ";
     private static final float field_32172 = 0.2f;
     private static final int field_33942 = 9;
     private static final int field_33943 = 8;
@@ -143,7 +137,6 @@ extends DrawableHelper {
     private int scaledHeight;
     private float autosaveIndicatorAlpha;
     private float lastAutosaveIndicatorAlpha;
-    private final List<ClientChatListener> listeners;
     private float spyglassScale;
 
     public InGameHud(MinecraftClient client, ItemRenderer itemRenderer) {
@@ -155,7 +148,6 @@ extends DrawableHelper {
         this.playerListHud = new PlayerListHud(client, this);
         this.bossBarHud = new BossBarHud(client);
         this.subtitlesHud = new SubtitlesHud(client);
-        this.listeners = List.of(new ChatHudListener(client), NarratorManager.INSTANCE, new GameInfoChatListener(client));
         this.setDefaultTitleFade();
     }
 
@@ -618,7 +610,7 @@ extends DrawableHelper {
         ArrayList<Pair<ScoreboardPlayerScore, MutableText>> list2 = Lists.newArrayListWithCapacity(collection.size());
         Text text = objective.getDisplayName();
         int j = i = this.getTextRenderer().getWidth(text);
-        int k = this.getTextRenderer().getWidth(field_32171);
+        int k = this.getTextRenderer().getWidth(SCOREBOARD_JOINER);
         for (ScoreboardPlayerScore scoreboardPlayerScore : collection) {
             Team team = scoreboard.getPlayerTeam(scoreboardPlayerScore.getPlayerName());
             MutableText text2 = Team.decorateName(team, Text.literal(scoreboardPlayerScore.getPlayerName()));
@@ -1080,7 +1072,7 @@ extends DrawableHelper {
     public void setRecordPlayingOverlay(Text description) {
         MutableText text = Text.translatable("record.nowPlaying", description);
         this.setOverlayMessage(text, true);
-        NarratorManager.INSTANCE.narrate(text);
+        this.client.getNarratorManager().narrate(text);
     }
 
     public void setOverlayMessage(Text message, boolean tinted) {
@@ -1126,28 +1118,6 @@ extends DrawableHelper {
         this.title = null;
         this.subtitle = null;
         this.titleRemainTicks = 0;
-    }
-
-    /**
-     * Handles a chat message.
-     * 
-     * @see net.minecraft.client.network.ClientPlayNetworkHandler#onChatMessage
-     */
-    public void onChatMessage(MessageType type, Text message, MessageSender sender) {
-        for (ClientChatListener clientChatListener : this.listeners) {
-            clientChatListener.onChatMessage(type, message, sender);
-        }
-    }
-
-    /**
-     * Handles a game message.
-     * 
-     * @see net.minecraft.client.network.ClientPlayNetworkHandler#onGameMessage
-     */
-    public void onGameMessage(MessageType type, Text message) {
-        for (ClientChatListener clientChatListener : this.listeners) {
-            clientChatListener.onChatMessage(type, message, null);
-        }
     }
 
     public ChatHud getChatHud() {

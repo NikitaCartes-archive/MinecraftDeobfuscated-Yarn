@@ -16,15 +16,14 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.gui.screen.abusereport.ChatReportScreen;
 import net.minecraft.client.gui.screen.multiplayer.SocialInteractionsScreen;
+import net.minecraft.client.gui.screen.report.ChatReportScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.network.SocialInteractionsManager;
 import net.minecraft.client.report.AbuseReportContext;
-import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
@@ -237,7 +236,7 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
         this.showButton.visible = showButtonVisible;
         this.hideButton.visible = !showButtonVisible;
         this.client.inGameHud.getChatHud().addMessage(chatMessage);
-        NarratorManager.INSTANCE.narrate(chatMessage);
+        this.client.getNarratorManager().narrate(chatMessage);
     }
 
     MutableText getNarrationMessage(MutableText text) {

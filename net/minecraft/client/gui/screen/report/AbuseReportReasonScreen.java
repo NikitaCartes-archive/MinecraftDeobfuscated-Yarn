@@ -26,7 +26,7 @@ extends Screen {
     private static final Text TITLE_TEXT = Text.translatable("gui.abuseReport.reason.title");
     private static final Text DESCRIPTION_TEXT = Text.translatable("gui.abuseReport.reason.description");
     private static final Text READ_INFO_TEXT = Text.translatable("gui.chatReport.read_info");
-    private static final int REASON_LIST_BOTTOM_MARGIN = 85;
+    private static final int REASON_LIST_BOTTOM_MARGIN = 95;
     private static final int DONE_BUTTON_WIDTH = 150;
     private static final int DONE_BUTTON_HEIGHT = 20;
     private static final int SCREEN_WIDTH = 320;
@@ -36,7 +36,7 @@ extends Screen {
     @Nullable
     private ReasonListWidget reasonList;
     @Nullable
-    private final AbuseReportReason reason;
+    AbuseReportReason reason;
     private final Consumer<AbuseReportReason> reasonConsumer;
 
     public AbuseReportReasonScreen(@Nullable Screen parent, @Nullable AbuseReportReason reason, Consumer<AbuseReportReason> reasonConsumer) {
@@ -105,7 +105,7 @@ extends Screen {
     }
 
     private int getTop() {
-        return this.height - 85 + 4;
+        return this.height - 95 + 4;
     }
 
     private int getBottom() {
@@ -121,7 +121,7 @@ extends Screen {
     public class ReasonListWidget
     extends AlwaysSelectedEntryListWidget<ReasonEntry> {
         public ReasonListWidget(MinecraftClient client) {
-            super(client, AbuseReportReasonScreen.this.width, AbuseReportReasonScreen.this.height, 40, AbuseReportReasonScreen.this.height - 85, 18);
+            super(client, AbuseReportReasonScreen.this.width, AbuseReportReasonScreen.this.height, 40, AbuseReportReasonScreen.this.height - 95, 18);
             for (AbuseReportReason abuseReportReason : AbuseReportReason.values()) {
                 this.addEntry(new ReasonEntry(abuseReportReason));
             }
@@ -140,6 +140,17 @@ extends Screen {
         @Override
         protected int getScrollbarPositionX() {
             return this.getRowRight() - 2;
+        }
+
+        @Override
+        protected boolean isFocused() {
+            return AbuseReportReasonScreen.this.getFocused() == this;
+        }
+
+        @Override
+        public void setSelected(@Nullable ReasonEntry reasonEntry) {
+            super.setSelected(reasonEntry);
+            AbuseReportReasonScreen.this.reason = reasonEntry != null ? reasonEntry.getReason() : null;
         }
 
         @Environment(value=EnvType.CLIENT)

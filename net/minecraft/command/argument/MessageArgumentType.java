@@ -8,6 +8,7 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.logging.LogUtils;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -50,7 +51,7 @@ implements TextConvertibleArgumentType<MessageFormat> {
         MessageSignature messageSignature = commandArgumentSigner.getArgumentSignature(name);
         boolean bl = commandArgumentSigner.isPreviewSigned(name);
         MessageSender messageSender = context.getSource().getChatMessageSender();
-        if (messageSignature.canVerifyFrom(messageSender.uuid())) {
+        if (messageSignature.canVerifyFrom(messageSender.profileId())) {
             return new SignedMessage(messageFormat.contents, text, messageSignature, bl);
         }
         return new SignedMessage(messageFormat.contents, text, MessageSignature.none(), false);
@@ -201,6 +202,9 @@ implements TextConvertibleArgumentType<MessageFormat> {
         private void logInvalidSignatureWarning(ServerCommandSource source, net.minecraft.network.message.SignedMessage message) {
             if (!message.verify(source)) {
                 LOGGER.warn("{} sent message with invalid signature: '{}'", (Object)source.getDisplayName().getString(), (Object)message.signedContent().getString());
+            }
+            if (message.isExpiredOnServer(Instant.now())) {
+                LOGGER.warn("{} sent expired chat: '{}'. Is the client/server system time unsynchronized?", (Object)source.getDisplayName().getString(), (Object)message.signedContent().getString());
             }
         }
 

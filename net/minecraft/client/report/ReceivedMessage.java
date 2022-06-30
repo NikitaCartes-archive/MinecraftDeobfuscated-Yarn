@@ -12,6 +12,7 @@ import java.time.format.FormatStyle;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.network.message.MessageTrustStatus;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -29,11 +30,11 @@ public interface ReceivedMessage {
      * {@return the received message constructed from a chat message's elements}
      * 
      * @param gameProfile the game profile of the message's sender
-     * @param message the message content
      * @param displayName the displayed name of the sender
+     * @param message the message content
      */
-    public static ReceivedMessage of(GameProfile gameProfile, Text displayName, SignedMessage message) {
-        return new ChatMessage(gameProfile, displayName, message);
+    public static ReceivedMessage of(GameProfile gameProfile, Text displayName, SignedMessage message, MessageTrustStatus trustStatus) {
+        return new ChatMessage(gameProfile, displayName, message, trustStatus);
     }
 
     /**
@@ -68,7 +69,7 @@ public interface ReceivedMessage {
     public boolean isSentFrom(UUID var1);
 
     @Environment(value=EnvType.CLIENT)
-    public record ChatMessage(GameProfile profile, Text displayName, SignedMessage message) implements ReceivedMessage
+    public record ChatMessage(GameProfile profile, Text displayName, SignedMessage message, MessageTrustStatus trustStatus) implements ReceivedMessage
     {
         private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
 

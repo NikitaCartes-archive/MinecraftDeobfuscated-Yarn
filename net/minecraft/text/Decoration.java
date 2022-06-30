@@ -62,7 +62,7 @@ public record Decoration(String translationKey, List<Parameter> parameters, Styl
      * @param sender the sender passed to parameters, or {@code null} if inapplicable
      * @param content the value of the content parameter
      */
-    public Text apply(Text content, @Nullable MessageSender sender) {
+    public Text apply(Text content, MessageSender sender) {
         Object[] objects = this.collectArguments(content, sender);
         return Text.translatable(this.translationKey, objects).fillStyle(this.style);
     }
@@ -73,7 +73,7 @@ public record Decoration(String translationKey, List<Parameter> parameters, Styl
      * <p>This is collected by supplying {@code content} and {@code sender} to the
      * parameters' {@link Decoration.Parameter#apply} method.
      */
-    private Text[] collectArguments(Text content, @Nullable MessageSender sender) {
+    private Text[] collectArguments(Text content, MessageSender sender) {
         Text[] texts = new Text[this.parameters.size()];
         for (int i = 0; i < texts.length; ++i) {
             Parameter parameter = this.parameters.get(i);
@@ -84,8 +84,8 @@ public record Decoration(String translationKey, List<Parameter> parameters, Styl
 
     public static enum Parameter implements StringIdentifiable
     {
-        SENDER("sender", (content, sender) -> sender != null ? sender.name() : null),
-        TEAM_NAME("team_name", (content, sender) -> sender != null ? sender.teamName() : null),
+        SENDER("sender", (content, sender) -> sender.name()),
+        TEAM_NAME("team_name", (content, sender) -> sender.teamName()),
         CONTENT("content", (content, sender) -> content);
 
         public static final Codec<Parameter> CODEC;
@@ -97,7 +97,7 @@ public record Decoration(String translationKey, List<Parameter> parameters, Styl
             this.selector = selector;
         }
 
-        public Text apply(Text content, @Nullable MessageSender sender) {
+        public Text apply(Text content, MessageSender sender) {
             Text text = this.selector.select(content, sender);
             return Objects.requireNonNullElse(text, ScreenTexts.EMPTY);
         }
@@ -113,7 +113,7 @@ public record Decoration(String translationKey, List<Parameter> parameters, Styl
 
         public static interface Selector {
             @Nullable
-            public Text select(Text var1, @Nullable MessageSender var2);
+            public Text select(Text var1, MessageSender var2);
         }
     }
 }

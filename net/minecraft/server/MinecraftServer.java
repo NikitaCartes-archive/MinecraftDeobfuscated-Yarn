@@ -1689,7 +1689,7 @@ AutoCloseable {
     }
 
     public void logChatMessage(MessageSender sender, Text message, RegistryKey<MessageType> typeKey) {
-        Decoration decoration = this.getRegistryManager().getOptional(Registry.MESSAGE_TYPE_KEY).map(registry -> (MessageType)registry.get(typeKey)).flatMap(MessageType::chat).flatMap(MessageType.DisplayRule::decoration).orElse(MessageType.CHAT_TEXT_DECORATION);
+        Decoration decoration = this.getRegistryManager().getOptional(Registry.MESSAGE_TYPE_KEY).map(registry -> (MessageType)registry.get(typeKey)).map(MessageType::chat).orElse(MessageType.CHAT_TEXT_DECORATION);
         LOGGER.info(decoration.apply(message, sender).getString());
     }
 

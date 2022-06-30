@@ -92,7 +92,7 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
     public final boolean previewsChat = this.parseBoolean("previews-chat", false);
     public final AbstractPropertiesHandler.PropertyAccessor<Integer> playerIdleTimeout = this.intAccessor("player-idle-timeout", 0);
     public final AbstractPropertiesHandler.PropertyAccessor<Boolean> whiteList = this.booleanAccessor("white-list", false);
-    public final boolean enforceSecureProfile = this.parseBoolean("enforce-secure-profile", false);
+    public final boolean enforceSecureProfile = this.parseBoolean("enforce-secure-profile", true);
     private final WorldGenProperties worldGenProperties = new WorldGenProperties(this.getString("level-seed", ""), this.get("generator-settings", generatorSettings -> JsonHelper.deserialize(!generatorSettings.isEmpty() ? generatorSettings : "{}"), new JsonObject()), this.parseBoolean("generate-structures", true), this.get("level-type", type -> type.toLowerCase(Locale.ROOT), WorldPresets.DEFAULT.getValue().toString()));
     @Nullable
     private GeneratorOptions generatorOptions;

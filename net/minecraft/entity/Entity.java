@@ -1152,7 +1152,7 @@ CommandOutput {
     }
 
     public MessageSender asMessageSender() {
-        return new MessageSender(this.getUuid(), this.getDisplayName());
+        return MessageSender.of(this.getDisplayName());
     }
 
     public void updateSwimming() {

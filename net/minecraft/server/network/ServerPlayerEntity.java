@@ -562,7 +562,7 @@ extends PlayerEntity {
             });
             AbstractTeam abstractTeam = this.getScoreboardTeam();
             if (abstractTeam == null || abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.ALWAYS) {
-                this.server.getPlayerManager().broadcast(text, MessageType.SYSTEM);
+                this.server.getPlayerManager().broadcast(text, false);
             } else if (abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.HIDE_FOR_OTHER_TEAMS) {
                 this.server.getPlayerManager().sendToTeam(this, text);
             } else if (abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.HIDE_FOR_OWN_TEAM) {
@@ -818,7 +818,7 @@ extends PlayerEntity {
             Criteria.SLEPT_IN_BED.trigger(this);
         });
         if (!this.getWorld().isSleepingEnabled()) {
-            this.sendMessage((Text)Text.translatable("sleep.not_possible"), true);
+            this.sendMessage(Text.translatable("sleep.not_possible"), true);
         }
         ((ServerWorld)this.world).updateSleepingPlayers();
         return either;
@@ -933,7 +933,7 @@ extends PlayerEntity {
         ScreenHandler screenHandler = factory.createMenu(this.screenHandlerSyncId, this.getInventory(), this);
         if (screenHandler == null) {
             if (this.isSpectator()) {
-                this.sendMessage((Text)Text.translatable("container.spectatorCantOpen").formatted(Formatting.RED), true);
+                this.sendMessage(Text.translatable("container.spectatorCantOpen").formatted(Formatting.RED), true);
             }
             return OptionalInt.empty();
         }
@@ -1057,8 +1057,8 @@ extends PlayerEntity {
     }
 
     @Override
-    public void sendMessage(Text message, boolean actionBar) {
-        this.sendMessage(message, actionBar ? MessageType.GAME_INFO : MessageType.SYSTEM);
+    public void sendMessage(Text message, boolean overlay) {
+        this.sendMessageToClient(message, overlay);
     }
 
     @Override
@@ -1205,32 +1205,26 @@ extends PlayerEntity {
 
     @Override
     public void sendMessage(Text message) {
-        this.sendMessage(message, MessageType.SYSTEM);
+        this.sendMessageToClient(message, false);
     }
 
-    /**
-     * Sends a message to the player.
-     * 
-     * @see #sendMessage(Text)
-     * @see #sendChatMessage(SignedMessage, ChatMessageSender, RegistryKey)
-     */
-    public void sendMessage(Text message, RegistryKey<MessageType> typeKey) {
-        if (!this.acceptsMessage(typeKey)) {
+    public void sendMessageToClient(Text message, boolean overlay) {
+        if (!this.acceptsMessage(overlay)) {
             return;
         }
-        this.networkHandler.sendPacket(new GameMessageS2CPacket(message, this.getMessageTypeId(typeKey)), future -> {
+        this.networkHandler.sendPacket(new GameMessageS2CPacket(message, overlay), future -> {
             if (!future.isSuccess()) {
-                this.sendMessageDeliverError(message, typeKey);
+                this.sendMessageDeliverError(message);
             }
         });
     }
 
-    private void sendMessageDeliverError(Text message, RegistryKey<MessageType> typeKey) {
-        if ((typeKey == MessageType.GAME_INFO || typeKey == MessageType.SYSTEM) && this.acceptsMessage(MessageType.SYSTEM)) {
+    private void sendMessageDeliverError(Text message) {
+        if (this.acceptsMessage(false)) {
             int i = 256;
             String string = message.asTruncatedString(256);
             MutableText text = Text.literal(string).formatted(Formatting.YELLOW);
-            this.networkHandler.sendPacket(new GameMessageS2CPacket(Text.translatable("multiplayer.message_not_delivered", text).formatted(Formatting.RED), this.getMessageTypeId(MessageType.SYSTEM)));
+            this.networkHandler.sendPacket(new GameMessageS2CPacket(Text.translatable("multiplayer.message_not_delivered", text).formatted(Formatting.RED), false));
         }
     }
 
@@ -1241,15 +1235,15 @@ extends PlayerEntity {
      * {@link net.minecraft.network.message.MessageSignature#none} - to send a chat
      * message; however if the signature is invalid (e.g. because the text's content differs
      * from the one sent by the client, or because the passed signature is invalid) the client
-     * will log a warning. See {@link
+     * will show a warning and can discard it depending on the client's options. See {@link
      * net.minecraft.network.message.MessageSignature#updateSignature} for how the
      * message is signed.
      * 
      * @see #sendMessage(Text)
-     * @see #sendMessage(Text, RegistryKey)
+     * @see #sendMessage(Text, boolean)
      */
     public void sendChatMessage(SignedMessage message, MessageSender sender, RegistryKey<MessageType> typeKey) {
-        if (this.acceptsMessage(typeKey)) {
+        if (this.acceptsChatMessage()) {
             this.networkHandler.sendPacket(new ChatMessageS2CPacket(message.signedContent(), message.unsignedContent(), this.getMessageTypeId(typeKey), sender, message.signature().timestamp(), message.signature().saltSignature()));
         }
     }
@@ -1283,16 +1277,15 @@ extends PlayerEntity {
         return this.clientChatVisibility;
     }
 
-    private boolean acceptsMessage(RegistryKey<MessageType> typeKey) {
-        switch (this.clientChatVisibility) {
-            case HIDDEN: {
-                return typeKey == MessageType.GAME_INFO;
-            }
-            case SYSTEM: {
-                return typeKey == MessageType.SYSTEM || typeKey == MessageType.GAME_INFO;
-            }
+    private boolean acceptsMessage(boolean overlay) {
+        if (this.clientChatVisibility == ChatVisibility.HIDDEN) {
+            return overlay;
         }
         return true;
+    }
+
+    private boolean acceptsChatMessage() {
+        return this.clientChatVisibility == ChatVisibility.FULL;
     }
 
     public void sendResourcePackUrl(String url, String hash, boolean required, @Nullable Text resourcePackPrompt) {

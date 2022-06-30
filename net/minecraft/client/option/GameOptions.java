@@ -65,7 +65,6 @@ import net.minecraft.client.sound.SoundManager;
 import net.minecraft.client.sound.SoundSystem;
 import net.minecraft.client.tutorial.TutorialStep;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.Window;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
@@ -506,11 +505,11 @@ public class GameOptions {
     }), 0, value -> {});
     private final SimpleOption<ParticlesMode> particles = new SimpleOption<ParticlesMode>("options.particles", SimpleOption.emptyTooltip(), SimpleOption.enumValueText(), new SimpleOption.PotentialValuesBasedCallbacks<ParticlesMode>(Arrays.asList(ParticlesMode.values()), Codec.INT.xmap(ParticlesMode::byId, ParticlesMode::getId)), ParticlesMode.ALL, value -> {});
     private final SimpleOption<NarratorMode> narrator = new SimpleOption<NarratorMode>("options.narrator", SimpleOption.emptyTooltip(), (optionText, value) -> {
-        if (NarratorManager.INSTANCE.isActive()) {
+        if (this.client.getNarratorManager().isActive()) {
             return value.getName();
         }
         return Text.translatable("options.narrator.notavailable");
-    }, new SimpleOption.PotentialValuesBasedCallbacks<NarratorMode>(Arrays.asList(NarratorMode.values()), Codec.INT.xmap(NarratorMode::byId, NarratorMode::getId)), NarratorMode.OFF, value -> NarratorManager.INSTANCE.addToast((NarratorMode)((Object)value)));
+    }, new SimpleOption.PotentialValuesBasedCallbacks<NarratorMode>(Arrays.asList(NarratorMode.values()), Codec.INT.xmap(NarratorMode::byId, NarratorMode::getId)), NarratorMode.OFF, value -> this.client.getNarratorManager().addToast((NarratorMode)((Object)value)));
     public String language = "en_us";
     private final SimpleOption<String> soundDevice = new SimpleOption<String>("options.audioDevice", SimpleOption.emptyTooltip(), (optionText, value) -> {
         if (EMPTY_STRING.equals(value)) {
