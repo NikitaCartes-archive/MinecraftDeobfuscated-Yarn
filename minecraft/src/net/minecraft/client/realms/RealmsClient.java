@@ -82,14 +82,14 @@ public class RealmsClient {
 	private static final String STAGE_AVAILABLE_ENDPOINT = "/stageAvailable";
 	private static final CheckedGson JSON = new CheckedGson();
 
-	public static RealmsClient method_44616() {
+	public static RealmsClient create() {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		return createRealmsClient(minecraftClient);
 	}
 
-	public static RealmsClient createRealmsClient(MinecraftClient minecraftClient) {
-		String string = minecraftClient.getSession().getUsername();
-		String string2 = minecraftClient.getSession().getSessionId();
+	public static RealmsClient createRealmsClient(MinecraftClient client) {
+		String string = client.getSession().getUsername();
+		String string2 = client.getSession().getSessionId();
 		if (!initialized) {
 			initialized = true;
 			String string3 = System.getenv("realms.environment");
@@ -106,7 +106,7 @@ public class RealmsClient {
 			}
 		}
 
-		return new RealmsClient(string2, string, minecraftClient);
+		return new RealmsClient(string2, string, client);
 	}
 
 	public static void switchToStage() {

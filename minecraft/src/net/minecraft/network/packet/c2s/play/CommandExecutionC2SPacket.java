@@ -17,12 +17,16 @@ import net.minecraft.util.StringHelper;
  * it will reject the message and disconnect the client.
  * 
  * <p>If the command contains an invalid character (see {@link
- * net.minecraft.SharedConstants#isValidChar isValidChar}), the server will
- * reject the command and disconnect the client.
+ * net.minecraft.SharedConstants#isValidChar isValidChar}) or if the server receives
+ * the commands in improper order, the server will reject the command and disconnect
+ * the client.
  * 
- * <p>Commands that took more than {@link ChatMessageC2SPacket#TIME_TO_LIVE} to reach
- * the server are considered expired and log warnings on the server. Commands will be
- * discarded if the server receives them in improper order.
+ * <p>Commands that took more than {@link SignedMessage#SERVERBOUND_TIME_TO_LIVE}
+ * to reach the server are considered expired and log warnings on the server
+ * if it contains signed message arguments. If the message takes more than
+ * {@link SignedMessage#CLIENTBOUND_TIME_TO_LIVE} to reach the clients (including
+ * the time it took to reach the server), the message is not considered secure
+ * anymore by the clients, and may be discarded depending on the clients' options.
  * 
  * @see net.minecraft.client.network.ClientPlayerEntity#sendCommand
  * @see net.minecraft.server.network.ServerPlayNetworkHandler#onCommandExecution

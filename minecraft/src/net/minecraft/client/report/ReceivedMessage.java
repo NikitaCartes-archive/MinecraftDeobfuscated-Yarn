@@ -1,4 +1,4 @@
-package net.minecraft.client.network.chat;
+package net.minecraft.client.report;
 
 import com.mojang.authlib.GameProfile;
 import java.time.Instant;
@@ -9,6 +9,7 @@ import java.time.format.FormatStyle;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.network.message.MessageTrustStatus;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -29,8 +30,8 @@ public interface ReceivedMessage {
 	 * @param displayName the displayed name of the sender
 	 * @param message the message content
 	 */
-	static ReceivedMessage of(GameProfile gameProfile, Text displayName, SignedMessage message) {
-		return new ReceivedMessage.ChatMessage(gameProfile, displayName, message);
+	static ReceivedMessage of(GameProfile gameProfile, Text displayName, SignedMessage message, MessageTrustStatus trustStatus) {
+		return new ReceivedMessage.ChatMessage(gameProfile, displayName, message, trustStatus);
 	}
 
 	/**
@@ -68,7 +69,7 @@ public interface ReceivedMessage {
 	 * A chat message received by the client.
 	 */
 	@Environment(EnvType.CLIENT)
-	public static record ChatMessage(GameProfile profile, Text displayName, SignedMessage message) implements ReceivedMessage {
+	public static record ChatMessage(GameProfile profile, Text displayName, SignedMessage message, MessageTrustStatus trustStatus) implements ReceivedMessage {
 		private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
 
 		@Override

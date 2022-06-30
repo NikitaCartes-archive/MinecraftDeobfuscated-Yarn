@@ -117,7 +117,7 @@ public class GameMenuScreen extends Screen {
 					98,
 					20,
 					Text.translatable("menu.playerReporting"),
-					buttonWidgetx -> this.client.setScreen(SocialInteractionsScreen.createAbuseReportNoticeScreen())
+					buttonWidgetx -> this.client.setScreen(new SocialInteractionsScreen())
 				)
 			);
 		}

@@ -8,6 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
+import net.minecraft.client.gui.hud.MessageIndicator;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -45,6 +46,7 @@ public class ChatScreen extends Screen {
 	private static final Text CHAT_PREVIEW_WARNING_TOAST_TITLE = Text.translatable("chatPreview.warning.toast.title");
 	private static final Text CHAT_PREVIEW_WARNING_TOAST_TEXT = Text.translatable("chatPreview.warning.toast");
 	private static final Text CHAT_PREVIEW_PLACEHOLDER_TEXT = Text.translatable("chat.preview").formatted(Formatting.DARK_GRAY);
+	private static final int MAX_INDICATOR_TOOLTIP_WIDTH = 260;
 	private String chatLastMessage = "";
 	private int messageHistorySize = -1;
 	protected TextFieldWidget chatField;
@@ -277,6 +279,11 @@ public class ChatScreen extends Screen {
 		Style style = this.getTextStyleAt((double)mouseX, (double)mouseY);
 		if (style != null && style.getHoverEvent() != null) {
 			this.renderTextHoverEffect(matrices, style, mouseX, mouseY);
+		} else {
+			MessageIndicator messageIndicator = this.client.inGameHud.getChatHud().getIndicatorAt((double)mouseX, (double)mouseY);
+			if (messageIndicator != null && messageIndicator.text() != null) {
+				this.renderOrderedTooltip(matrices, this.textRenderer.wrapLines(messageIndicator.text(), 260), mouseX, mouseY);
+			}
 		}
 
 		super.render(matrices, mouseX, mouseY, delta);

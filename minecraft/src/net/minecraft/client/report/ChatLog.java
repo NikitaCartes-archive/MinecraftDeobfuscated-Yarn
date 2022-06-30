@@ -1,6 +1,8 @@
-package net.minecraft.client.network.chat;
+package net.minecraft.client.report;
 
+import com.mojang.authlib.GameProfile;
 import it.unimi.dsi.fastutil.ints.IntList;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Spliterators;
 import java.util.PrimitiveIterator.OfInt;
@@ -109,6 +111,14 @@ public interface ChatLog {
 	}
 
 	/**
+	 * {@return the streams starting from {@linkplain #getMaxIndex the biggest index
+	 * in the log} with entires ordered antichronologically (in descending order)}
+	 */
+	default ChatLog.Streams streamBackward() {
+		return this.streamBackward(this.getMaxIndex());
+	}
+
+	/**
 	 * {@return the streams starting from {@code startIndex} with entires ordered
 	 * chronologically (in ascending order)}
 	 * 
@@ -201,6 +211,19 @@ public interface ChatLog {
 		 */
 		public Stream<ReceivedMessage> streamMessages() {
 			return this.streamIndices().mapToObj(this.log::get).filter(Objects::nonNull);
+		}
+
+		/**
+		 * {@return the collection of profiles of message senders}
+		 * 
+		 * <p>This ignores game messages, and the returned collection has no duplicates.
+		 */
+		public Collection<GameProfile> collectSenderProfiles() {
+			return this.streamMessages()
+				.map(message -> message instanceof ReceivedMessage.ChatMessage chatMessage ? chatMessage.profile() : null)
+				.filter(Objects::nonNull)
+				.distinct()
+				.toList();
 		}
 
 		/**

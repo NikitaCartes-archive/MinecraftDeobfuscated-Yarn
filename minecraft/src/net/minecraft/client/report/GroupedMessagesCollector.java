@@ -1,4 +1,4 @@
-package net.minecraft.client.network.abusereport;
+package net.minecraft.client.report;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +6,6 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.chat.ReceivedMessage;
 
 @Environment(EnvType.CLIENT)
 public class GroupedMessagesCollector {

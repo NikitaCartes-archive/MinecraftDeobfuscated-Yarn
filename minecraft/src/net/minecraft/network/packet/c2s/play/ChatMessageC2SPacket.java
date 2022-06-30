@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.c2s.play;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 import net.minecraft.network.Packet;
@@ -18,18 +17,21 @@ import net.minecraft.util.StringHelper;
  * 256 characters, it will reject the message and disconnect the client.
  * 
  * <p>If the message contains an invalid character (see {@link
- * net.minecraft.SharedConstants#isValidChar isValidChar}), the server will
+ * net.minecraft.SharedConstants#isValidChar isValidChar}) or if the server
+ * receives the messages in improper order. the server will
  * reject the message and disconnect the client.
  * 
- * <p>Messages that took more than {@link #TIME_TO_LIVE} to reach the server
- * are considered expired and log warnings on the server. Messages will be
- * discarded if the server receives them in improper order.
+ * <p>Messages that took more than {@link SignedMessage#SERVERBOUND_TIME_TO_LIVE}
+ * to reach the server are considered expired and log warnings on the server.
+ * If the message takes more than {@link SignedMessage#CLIENTBOUND_TIME_TO_LIVE}
+ * to reach the clients (including the time it took to reach the server), the
+ * message is not considered secure anymore by the clients, and may be discarded
+ * depending on the clients' options.
  * 
  * @see net.minecraft.client.network.ClientPlayerEntity#sendChatMessage
  * @see net.minecraft.server.network.ServerPlayNetworkHandler#onChatMessage
  */
 public class ChatMessageC2SPacket implements Packet<ServerPlayPacketListener> {
-	public static final Duration TIME_TO_LIVE = Duration.ofMinutes(5L);
 	private final String chatMessage;
 	private final Instant timestamp;
 	private final NetworkEncryptionUtils.SignatureData signature;

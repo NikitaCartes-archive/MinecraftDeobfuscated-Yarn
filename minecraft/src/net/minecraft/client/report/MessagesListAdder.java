@@ -1,12 +1,10 @@
-package net.minecraft.client.network.abusereport;
+package net.minecraft.client.report;
 
 import java.util.List;
 import java.util.OptionalInt;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.chat.ChatLog;
-import net.minecraft.client.network.chat.ReceivedMessage;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 

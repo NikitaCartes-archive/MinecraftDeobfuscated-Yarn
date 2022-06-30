@@ -1,7 +1,6 @@
 package net.minecraft.world.chunk;
 
 import java.util.function.Predicate;
-import net.minecraft.class_7522;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -25,12 +24,12 @@ public class ChunkSection {
 	private short randomTickableBlockCount;
 	private short nonEmptyFluidCount;
 	private final PalettedContainer<BlockState> blockStateContainer;
-	private class_7522<RegistryEntry<Biome>> biomeContainer;
+	private ReadableContainer<RegistryEntry<Biome>> biomeContainer;
 
-	public ChunkSection(int chunkPos, PalettedContainer<BlockState> blockStateContainer, class_7522<RegistryEntry<Biome>> arg) {
+	public ChunkSection(int chunkPos, PalettedContainer<BlockState> blockStateContainer, ReadableContainer<RegistryEntry<Biome>> readableContainer) {
 		this.yOffset = blockCoordFromChunkCoord(chunkPos);
 		this.blockStateContainer = blockStateContainer;
-		this.biomeContainer = arg;
+		this.biomeContainer = readableContainer;
 		this.calculateCounts();
 	}
 
@@ -156,14 +155,14 @@ public class ChunkSection {
 		return this.blockStateContainer;
 	}
 
-	public class_7522<RegistryEntry<Biome>> getBiomeContainer() {
+	public ReadableContainer<RegistryEntry<Biome>> getBiomeContainer() {
 		return this.biomeContainer;
 	}
 
 	public void fromPacket(PacketByteBuf buf) {
 		this.nonEmptyBlockCount = buf.readShort();
 		this.blockStateContainer.readPacket(buf);
-		PalettedContainer<RegistryEntry<Biome>> palettedContainer = this.biomeContainer.method_44350();
+		PalettedContainer<RegistryEntry<Biome>> palettedContainer = this.biomeContainer.slice();
 		palettedContainer.readPacket(buf);
 		this.biomeContainer = palettedContainer;
 	}
@@ -187,7 +186,7 @@ public class ChunkSection {
 	}
 
 	public void populateBiomes(BiomeSupplier biomeSupplier, MultiNoiseUtil.MultiNoiseSampler sampler, int x, int z) {
-		PalettedContainer<RegistryEntry<Biome>> palettedContainer = this.biomeContainer.method_44350();
+		PalettedContainer<RegistryEntry<Biome>> palettedContainer = this.biomeContainer.slice();
 		int i = BiomeCoords.fromBlock(this.getYOffset());
 		int j = 4;
 

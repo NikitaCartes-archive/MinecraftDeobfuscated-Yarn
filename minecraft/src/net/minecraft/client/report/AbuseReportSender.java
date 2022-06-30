@@ -1,4 +1,4 @@
-package net.minecraft.client.network.abusereport;
+package net.minecraft.client.report;
 
 import com.mojang.authlib.exceptions.MinecraftClientException;
 import com.mojang.authlib.exceptions.MinecraftClientHttpException;

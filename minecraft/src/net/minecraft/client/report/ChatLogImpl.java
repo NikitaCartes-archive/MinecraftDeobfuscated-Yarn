@@ -1,4 +1,4 @@
-package net.minecraft.client.network.chat;
+package net.minecraft.client.report;
 
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
