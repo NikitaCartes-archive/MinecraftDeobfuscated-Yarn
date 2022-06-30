@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
@@ -12,7 +11,6 @@ import net.minecraft.network.message.MessageSender;
 import net.minecraft.network.message.MessageSignature;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SignedMessage;
-import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.text.Text;
 import net.minecraft.util.registry.Registry;
 
@@ -23,19 +21,18 @@ import net.minecraft.util.registry.Registry;
  * raw message content is sent to the clients, and they will wrap it. To register
  * custom wrapping behaviors, check {@link MessageType#register}.
  * 
- * <p>Messages that took more than {@link #TIME_TO_LIVE} to reach the clients are
- * considered expired. This is measured from the time the client sent the chat message
- * to the server. Note that unlike {@link
- * net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket} expired messages are not
- * discarded by the clients; they instead log a warning.
- * 
  * <p>Chat messages have signatures. It is possible to use a bogus signature - such as
  * {@link net.minecraft.network.message.MessageSignature#none} - to send a chat
  * message; however if the signature is invalid (e.g. because the text's content differs
  * from the one sent by the client, or because the passed signature is invalid) the client
- * will log a warning. See {@link
+ * will show a warning and can discard it depending on the options. See {@link
  * net.minecraft.network.message.MessageSignature#updateSignature} for how the
  * message is signed.
+ * 
+ * <p>If the message takes more than {@link SignedMessage#CLIENTBOUND_TIME_TO_LIVE}
+ * to reach the clients (including the time it originally took to reach the server),
+ * the message is not considered secure anymore by the clients, and may be discarded
+ * depending on the clients' options.
  * 
  * @see net.minecraft.server.network.ServerPlayerEntity#sendChatMessage
  * @see net.minecraft.client.network.ClientPlayNetworkHandler#onChatMessage
@@ -43,8 +40,6 @@ import net.minecraft.util.registry.Registry;
 public record ChatMessageS2CPacket(
 	Text signedContent, Optional<Text> unsignedContent, int typeId, MessageSender sender, Instant timestamp, NetworkEncryptionUtils.SignatureData saltSignature
 ) implements Packet<ClientPlayPacketListener> {
-	private static final Duration TIME_TO_LIVE = ChatMessageC2SPacket.TIME_TO_LIVE.plus(Duration.ofMinutes(2L));
-
 	public ChatMessageS2CPacket(PacketByteBuf buf) {
 		this(
 			buf.readText(),
@@ -76,22 +71,8 @@ public record ChatMessageS2CPacket(
 	}
 
 	public SignedMessage getSignedMessage() {
-		MessageSignature messageSignature = new MessageSignature(this.sender.uuid(), this.timestamp, this.saltSignature);
+		MessageSignature messageSignature = new MessageSignature(this.sender.profileId(), this.timestamp, this.saltSignature);
 		return new SignedMessage(this.signedContent, messageSignature, this.unsignedContent);
-	}
-
-	/**
-	 * {@return when the message is considered expired}
-	 */
-	private Instant getExpiryTime() {
-		return this.timestamp.plus(TIME_TO_LIVE);
-	}
-
-	/**
-	 * {@return whether the message is considered expired}
-	 */
-	public boolean isExpired(Instant currentTime) {
-		return currentTime.isAfter(this.getExpiryTime());
 	}
 
 	/**

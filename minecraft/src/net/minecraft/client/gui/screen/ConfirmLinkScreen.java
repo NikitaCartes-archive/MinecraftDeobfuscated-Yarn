@@ -36,7 +36,7 @@ public class ConfirmLinkScreen extends ConfirmScreen {
 		this.link = link;
 	}
 
-	public static MutableText getConfirmText(boolean linkTrusted, String link) {
+	protected static MutableText getConfirmText(boolean linkTrusted, String link) {
 		return getConfirmText(linkTrusted).append(" ").append(Text.literal(link));
 	}
 

@@ -7,8 +7,9 @@ import java.time.Instant;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ConfirmLinkScreen;
-import net.minecraft.client.network.abusereport.AbuseReportReason;
+import net.minecraft.client.report.AbuseReportReason;
 import net.minecraft.screen.ScreenTexts;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
@@ -30,21 +31,28 @@ public class Bans {
 	}
 
 	private static Text getDescriptionText(BanDetails banDetails) {
-		return Text.translatable(
-			"gui.banned.description", getReasonText(banDetails), getDurationText(banDetails), ConfirmLinkScreen.getConfirmText(true, "https://aka.ms/mcjavamoderation")
-		);
+		return Text.translatable("gui.banned.description", getReasonText(banDetails), getDurationText(banDetails), Text.literal("https://aka.ms/mcjavamoderation"));
 	}
 
 	private static Text getReasonText(BanDetails banDetails) {
-		Text text = null;
 		String string = banDetails.reason();
+		String string2 = banDetails.reasonMessage();
 		if (StringUtils.isNumeric(string)) {
-			text = AbuseReportReason.getText(Integer.parseInt(string));
-		}
+			int i = Integer.parseInt(string);
+			Text text = AbuseReportReason.getText(i);
+			MutableText var5;
+			if (text != null) {
+				var5 = Texts.setStyleIfAbsent(text.copy(), Style.EMPTY.withBold(true));
+			} else if (string2 != null) {
+				var5 = Text.translatable("gui.banned.description.reason_id_message", i, string2).formatted(Formatting.BOLD);
+			} else {
+				var5 = Text.translatable("gui.banned.description.reason_id", i).formatted(Formatting.BOLD);
+			}
 
-		return text != null
-			? Text.translatable("gui.banned.description.reason", Texts.setStyleIfAbsent(text.copy(), Style.EMPTY.withBold(true)))
-			: Text.translatable("gui.banned.description.unknownreason");
+			return Text.translatable("gui.banned.description.reason", var5);
+		} else {
+			return Text.translatable("gui.banned.description.unknownreason");
+		}
 	}
 
 	private static Text getDurationText(BanDetails banDetails) {

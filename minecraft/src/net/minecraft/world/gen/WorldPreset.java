@@ -21,7 +21,7 @@ public class WorldPreset {
 					)
 					.apply(instance, WorldPreset::new)
 		)
-		.flatXmap(WorldPreset::method_44351, WorldPreset::method_44351);
+		.flatXmap(WorldPreset::validate, WorldPreset::validate);
 	public static final Codec<RegistryEntry<WorldPreset>> ENTRY_CODEC = RegistryElementCodec.of(Registry.WORLD_PRESET_KEY, CODEC);
 	private final Map<RegistryKey<DimensionOptions>, DimensionOptions> dimensions;
 
@@ -56,7 +56,7 @@ public class WorldPreset {
 		return (DimensionOptions)this.getOverworld().orElseThrow(() -> new IllegalStateException("Can't find overworld in this preset"));
 	}
 
-	private static DataResult<WorldPreset> method_44351(WorldPreset worldPreset) {
-		return worldPreset.getOverworld().isEmpty() ? DataResult.error("Missing overworld dimension") : DataResult.success(worldPreset, Lifecycle.stable());
+	private static DataResult<WorldPreset> validate(WorldPreset preset) {
+		return preset.getOverworld().isEmpty() ? DataResult.error("Missing overworld dimension") : DataResult.success(preset, Lifecycle.stable());
 	}
 }

@@ -11,7 +11,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ConfirmLinkScreen;
-import net.minecraft.client.gui.screen.NoticeScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -70,13 +69,6 @@ public class SocialInteractionsScreen extends Screen {
 	public SocialInteractionsScreen() {
 		super(Text.translatable("gui.socialInteractions.title"));
 		this.updateServerLabel(MinecraftClient.getInstance());
-	}
-
-	public static Screen createAbuseReportNoticeScreen() {
-		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		Text text = Text.translatable("gui.abuseReport.under_construction.title").formatted(Formatting.BOLD);
-		Text text2 = Text.translatable("gui.abuseReport.under_construction");
-		return new NoticeScreen(() -> minecraftClient.setScreen(new SocialInteractionsScreen()), text, text2, ScreenTexts.PROCEED, true);
 	}
 
 	private int getScreenHeight() {
@@ -161,30 +153,41 @@ public class SocialInteractionsScreen extends Screen {
 		this.allTabButton.setMessage(ALL_TAB_TITLE);
 		this.hiddenTabButton.setMessage(HIDDEN_TAB_TITLE);
 		this.blockedTabButton.setMessage(BLOCKED_TAB_TITLE);
-
-		Collection<UUID> collection = (Collection<UUID>)(switch (currentTab) {
-			case ALL -> {
+		boolean bl = false;
+		switch (currentTab) {
+			case ALL:
 				this.allTabButton.setMessage(SELECTED_ALL_TAB_TITLE);
-				yield this.client.player.networkHandler.getPlayerUuids();
-			}
-			case HIDDEN -> {
+				Collection<UUID> collection = this.client.player.networkHandler.getPlayerUuids();
+				this.playerList.refresh(collection, this.playerList.getScrollAmount());
+				break;
+			case HIDDEN:
 				this.hiddenTabButton.setMessage(SELECTED_HIDDEN_TAB_TITLE);
-				yield this.client.getSocialInteractionsManager().getHiddenPlayers();
-			}
-			case BLOCKED -> {
+				Set<UUID> set = this.client.getSocialInteractionsManager().getHiddenPlayers();
+				bl = set.isEmpty();
+				this.playerList.update(set, this.playerList.getScrollAmount());
+				break;
+			case BLOCKED:
 				this.blockedTabButton.setMessage(SELECTED_BLOCKED_TAB_TITLE);
 				SocialInteractionsManager socialInteractionsManager = this.client.getSocialInteractionsManager();
-				yield (Set)this.client.player.networkHandler.getPlayerUuids().stream().filter(socialInteractionsManager::isPlayerBlocked).collect(Collectors.toSet());
-			}
-		});
-		this.playerList.update(collection, this.playerList.getScrollAmount());
+				Set<UUID> set2 = (Set<UUID>)this.client
+					.player
+					.networkHandler
+					.getPlayerUuids()
+					.stream()
+					.filter(socialInteractionsManager::isPlayerBlocked)
+					.collect(Collectors.toSet());
+				bl = set2.isEmpty();
+				this.playerList.update(set2, this.playerList.getScrollAmount());
+		}
+
+		NarratorManager narratorManager = this.client.getNarratorManager();
 		if (!this.searchBox.getText().isEmpty() && this.playerList.isEmpty() && !this.searchBox.isFocused()) {
-			NarratorManager.INSTANCE.narrate(EMPTY_SEARCH_TEXT);
-		} else if (collection.isEmpty()) {
+			narratorManager.narrate(EMPTY_SEARCH_TEXT);
+		} else if (bl) {
 			if (currentTab == SocialInteractionsScreen.Tab.HIDDEN) {
-				NarratorManager.INSTANCE.narrate(EMPTY_HIDDEN_TEXT);
+				narratorManager.narrate(EMPTY_HIDDEN_TEXT);
 			} else if (currentTab == SocialInteractionsScreen.Tab.BLOCKED) {
-				NarratorManager.INSTANCE.narrate(EMPTY_BLOCKED_TEXT);
+				narratorManager.narrate(EMPTY_BLOCKED_TEXT);
 			}
 		}
 	}

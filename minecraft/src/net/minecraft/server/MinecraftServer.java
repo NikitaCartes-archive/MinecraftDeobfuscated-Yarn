@@ -1904,8 +1904,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		Decoration decoration = (Decoration)this.getRegistryManager()
 			.getOptional(Registry.MESSAGE_TYPE_KEY)
 			.map(registry -> registry.get(typeKey))
-			.flatMap(MessageType::chat)
-			.flatMap(MessageType.DisplayRule::decoration)
+			.map(MessageType::chat)
 			.orElse(MessageType.CHAT_TEXT_DECORATION);
 		LOGGER.info(decoration.apply(message, sender).getString());
 	}

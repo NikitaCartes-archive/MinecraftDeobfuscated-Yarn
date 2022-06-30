@@ -50,7 +50,6 @@ import net.minecraft.client.sound.SoundManager;
 import net.minecraft.client.sound.SoundSystem;
 import net.minecraft.client.tutorial.TutorialStep;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.VideoMode;
 import net.minecraft.client.util.Window;
 import net.minecraft.datafixer.DataFixTypes;
@@ -735,10 +734,10 @@ public class GameOptions {
 	private final SimpleOption<NarratorMode> narrator = new SimpleOption<>(
 		"options.narrator",
 		SimpleOption.emptyTooltip(),
-		(optionText, value) -> (Text)(NarratorManager.INSTANCE.isActive() ? value.getName() : Text.translatable("options.narrator.notavailable")),
+		(optionText, value) -> (Text)(this.client.getNarratorManager().isActive() ? value.getName() : Text.translatable("options.narrator.notavailable")),
 		new SimpleOption.PotentialValuesBasedCallbacks<>(Arrays.asList(NarratorMode.values()), Codec.INT.xmap(NarratorMode::byId, NarratorMode::getId)),
 		NarratorMode.OFF,
-		value -> NarratorManager.INSTANCE.addToast(value)
+		value -> this.client.getNarratorManager().addToast(value)
 	);
 	public String language = "en_us";
 	private final SimpleOption<String> soundDevice = new SimpleOption<>(

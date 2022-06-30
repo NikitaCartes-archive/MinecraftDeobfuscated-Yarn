@@ -1,7 +1,9 @@
 package net.minecraft.client.gui.screen.multiplayer;
 
 import com.google.common.base.Strings;
+import com.google.common.base.Suppliers;
 import com.google.common.collect.Lists;
+import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Collection;
 import java.util.List;
@@ -43,9 +45,20 @@ public class SocialInteractionsPlayerListWidget extends ElementListWidget<Social
 	}
 
 	public void update(Collection<UUID> uuids, double scrollAmount) {
+		this.setPlayers(uuids);
+		this.refresh(scrollAmount);
+	}
+
+	public void refresh(Collection<UUID> playerUuids, double scrollAmount) {
+		this.setPlayers(playerUuids);
+		this.addOfflinePlayers(playerUuids);
+		this.refresh(scrollAmount);
+	}
+
+	private void setPlayers(Collection<UUID> playerUuids) {
 		this.players.clear();
 
-		for (UUID uUID : uuids) {
+		for (UUID uUID : playerUuids) {
 			PlayerListEntry playerListEntry = this.client.player.networkHandler.getPlayerListEntry(uUID);
 			if (playerListEntry != null) {
 				this.players
@@ -57,8 +70,23 @@ public class SocialInteractionsPlayerListWidget extends ElementListWidget<Social
 			}
 		}
 
+		this.players.sort((a, b) -> a.getName().compareToIgnoreCase(b.getName()));
+	}
+
+	private void addOfflinePlayers(Collection<UUID> playerUuids) {
+		for (GameProfile gameProfile : this.client.getAbuseReportContext().chatLog().streamBackward().collectSenderProfiles()) {
+			if (!playerUuids.contains(gameProfile.getId())) {
+				SocialInteractionsPlayerListEntry socialInteractionsPlayerListEntry = new SocialInteractionsPlayerListEntry(
+					this.client, this.parent, gameProfile.getId(), gameProfile.getName(), Suppliers.memoize(() -> this.client.getSkinProvider().loadSkin(gameProfile))
+				);
+				socialInteractionsPlayerListEntry.setOffline(true);
+				this.players.add(socialInteractionsPlayerListEntry);
+			}
+		}
+	}
+
+	private void refresh(double scrollAmount) {
 		this.filterPlayers();
-		this.players.sort((player1, player2) -> player1.getName().compareToIgnoreCase(player2.getName()));
 		this.replaceEntries(this.players);
 		this.setScrollAmount(scrollAmount);
 	}

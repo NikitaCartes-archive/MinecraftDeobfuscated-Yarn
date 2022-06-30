@@ -62,7 +62,7 @@ public record Decoration(String translationKey, List<Decoration.Parameter> param
 	 * @param content the value of the content parameter
 	 * @param sender the sender passed to parameters, or {@code null} if inapplicable
 	 */
-	public Text apply(Text content, @Nullable MessageSender sender) {
+	public Text apply(Text content, MessageSender sender) {
 		Object[] objects = this.collectArguments(content, sender);
 		return Text.translatable(this.translationKey, objects).fillStyle(this.style);
 	}
@@ -73,7 +73,7 @@ public record Decoration(String translationKey, List<Decoration.Parameter> param
 	 * <p>This is collected by supplying {@code content} and {@code sender} to the
 	 * parameters' {@link Decoration.Parameter#apply} method.
 	 */
-	private Text[] collectArguments(Text content, @Nullable MessageSender sender) {
+	private Text[] collectArguments(Text content, MessageSender sender) {
 		Text[] texts = new Text[this.parameters.size()];
 
 		for (int i = 0; i < texts.length; i++) {
@@ -88,8 +88,8 @@ public record Decoration(String translationKey, List<Decoration.Parameter> param
 	 * Represents a parameter that the decoration uses.
 	 */
 	public static enum Parameter implements StringIdentifiable {
-		SENDER("sender", (content, sender) -> sender != null ? sender.name() : null),
-		TEAM_NAME("team_name", (content, sender) -> sender != null ? sender.teamName() : null),
+		SENDER("sender", (content, sender) -> sender.name()),
+		TEAM_NAME("team_name", (content, sender) -> sender.teamName()),
 		CONTENT("content", (content, sender) -> content);
 
 		public static final com.mojang.serialization.Codec<Decoration.Parameter> CODEC = StringIdentifiable.createCodec(Decoration.Parameter::values);
@@ -104,7 +104,7 @@ public record Decoration(String translationKey, List<Decoration.Parameter> param
 		/**
 		 * {@return the text obtained by applying the passed values to the parameter}
 		 */
-		public Text apply(Text content, @Nullable MessageSender sender) {
+		public Text apply(Text content, MessageSender sender) {
 			Text text = this.selector.select(content, sender);
 			return (Text)Objects.requireNonNullElse(text, ScreenTexts.EMPTY);
 		}
@@ -119,7 +119,7 @@ public record Decoration(String translationKey, List<Decoration.Parameter> param
 		 */
 		public interface Selector {
 			@Nullable
-			Text select(Text content, @Nullable MessageSender sender);
+			Text select(Text content, MessageSender sender);
 		}
 	}
 }

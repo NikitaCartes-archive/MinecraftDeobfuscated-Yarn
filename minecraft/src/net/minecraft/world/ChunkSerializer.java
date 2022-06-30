@@ -14,7 +14,6 @@ import java.util.Objects;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_7522;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -48,6 +47,7 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.PalettedContainer;
 import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.chunk.ReadOnlyChunk;
+import net.minecraft.world.chunk.ReadableContainer;
 import net.minecraft.world.chunk.UpgradeData;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
@@ -61,7 +61,7 @@ import net.minecraft.world.tick.SimpleTickScheduler;
 import org.slf4j.Logger;
 
 public class ChunkSerializer {
-	private static final Codec<PalettedContainer<BlockState>> CODEC = PalettedContainer.method_44343(
+	private static final Codec<PalettedContainer<BlockState>> CODEC = PalettedContainer.createPalettedContainerCodec(
 		Block.STATE_IDS, BlockState.CODEC, PalettedContainer.PaletteProvider.BLOCK_STATE, Blocks.AIR.getDefaultState()
 	);
 	private static final Logger LOGGER = LogUtils.getLogger();
@@ -93,7 +93,7 @@ public class ChunkSerializer {
 		ChunkManager chunkManager = world.getChunkManager();
 		LightingProvider lightingProvider = chunkManager.getLightingProvider();
 		Registry<Biome> registry = world.getRegistryManager().get(Registry.BIOME_KEY);
-		Codec<class_7522<RegistryEntry<Biome>>> codec = createCodec(registry);
+		Codec<ReadableContainer<RegistryEntry<Biome>>> codec = createCodec(registry);
 		boolean bl3 = false;
 
 		for (int j = 0; j < nbtList.size(); j++) {
@@ -110,16 +110,16 @@ public class ChunkSerializer {
 					palettedContainer = new PalettedContainer<>(Block.STATE_IDS, Blocks.AIR.getDefaultState(), PalettedContainer.PaletteProvider.BLOCK_STATE);
 				}
 
-				class_7522<RegistryEntry<Biome>> lv;
+				ReadableContainer<RegistryEntry<Biome>> readableContainer;
 				if (nbtCompound.contains("biomes", NbtElement.COMPOUND_TYPE)) {
-					lv = codec.parse(NbtOps.INSTANCE, nbtCompound.getCompound("biomes"))
+					readableContainer = codec.parse(NbtOps.INSTANCE, nbtCompound.getCompound("biomes"))
 						.promotePartial(errorMessage -> logRecoverableError(chunkPos, k, errorMessage))
 						.getOrThrow(false, LOGGER::error);
 				} else {
-					lv = new PalettedContainer<>(registry.getIndexedEntries(), registry.entryOf(BiomeKeys.PLAINS), PalettedContainer.PaletteProvider.BIOME);
+					readableContainer = new PalettedContainer<>(registry.getIndexedEntries(), registry.entryOf(BiomeKeys.PLAINS), PalettedContainer.PaletteProvider.BIOME);
 				}
 
-				ChunkSection chunkSection = new ChunkSection(k, palettedContainer, lv);
+				ChunkSection chunkSection = new ChunkSection(k, palettedContainer, readableContainer);
 				chunkSections[l] = chunkSection;
 				poiStorage.initForPalette(chunkPos, chunkSection);
 			}
@@ -274,8 +274,8 @@ public class ChunkSerializer {
 		LOGGER.error("Recoverable errors when loading section [" + chunkPos.x + ", " + y + ", " + chunkPos.z + "]: " + message);
 	}
 
-	private static Codec<class_7522<RegistryEntry<Biome>>> createCodec(Registry<Biome> biomeRegistry) {
-		return PalettedContainer.method_44347(
+	private static Codec<ReadableContainer<RegistryEntry<Biome>>> createCodec(Registry<Biome> biomeRegistry) {
+		return PalettedContainer.createReadableContainerCodec(
 			biomeRegistry.getIndexedEntries(), biomeRegistry.createEntryCodec(), PalettedContainer.PaletteProvider.BIOME, biomeRegistry.entryOf(BiomeKeys.PLAINS)
 		);
 	}
@@ -315,7 +315,7 @@ public class ChunkSerializer {
 		NbtList nbtList = new NbtList();
 		LightingProvider lightingProvider = world.getChunkManager().getLightingProvider();
 		Registry<Biome> registry = world.getRegistryManager().get(Registry.BIOME_KEY);
-		Codec<class_7522<RegistryEntry<Biome>>> codec = createCodec(registry);
+		Codec<ReadableContainer<RegistryEntry<Biome>>> codec = createCodec(registry);
 		boolean bl = chunk.isLightOn();
 
 		for (int i = lightingProvider.getBottomY(); i < lightingProvider.getTopY(); i++) {

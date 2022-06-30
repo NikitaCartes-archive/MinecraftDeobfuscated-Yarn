@@ -1066,14 +1066,14 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 						ActionResult actionResult = this.player.interactionManager.interactBlock(this.player, serverWorld, itemStack, hand, blockHitResult);
 						if (direction == Direction.UP && !actionResult.isAccepted() && blockPos.getY() >= i - 1 && canPlace(this.player, itemStack)) {
 							Text text = Text.translatable("build.tooHigh", i - 1).formatted(Formatting.RED);
-							this.player.sendMessage(text, MessageType.GAME_INFO);
+							this.player.sendMessageToClient(text, true);
 						} else if (actionResult.shouldSwingHand()) {
 							this.player.swingHand(hand, true);
 						}
 					}
 				} else {
 					Text text2 = Text.translatable("build.tooHigh", i - 1).formatted(Formatting.RED);
-					this.player.sendMessage(text2, MessageType.GAME_INFO);
+					this.player.sendMessageToClient(text2, true);
 				}
 
 				this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(serverWorld, blockPos));
@@ -1140,9 +1140,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	public void onDisconnected(Text reason) {
 		LOGGER.info("{} lost connection: {}", this.player.getName().getString(), reason.getString());
 		this.server.forcePlayerSampleUpdate();
-		this.server
-			.getPlayerManager()
-			.broadcast(Text.translatable("multiplayer.player.left", this.player.getDisplayName()).formatted(Formatting.YELLOW), MessageType.SYSTEM);
+		this.server.getPlayerManager().broadcast(Text.translatable("multiplayer.player.left", this.player.getDisplayName()).formatted(Formatting.YELLOW), false);
 		this.player.onDisconnect();
 		this.server.getPlayerManager().remove(this.player);
 		this.player.getTextStream().onDisconnect();
@@ -1230,33 +1228,13 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 			LOGGER.warn("{} sent out-of-order chat: '{}'", this.player.getName().getString(), message);
 			this.disconnect(Text.translatable("multiplayer.disconnect.out_of_order_chat"));
 			return false;
+		} else if (this.player.getClientChatVisibility() == ChatVisibility.HIDDEN) {
+			this.sendPacket(new GameMessageS2CPacket(Text.translatable("chat.disabled.options").formatted(Formatting.RED), false));
+			return false;
 		} else {
-			if (this.isExpired(timestamp)) {
-				LOGGER.warn("{} sent expired chat: '{}'. Is the client/server system time unsynchronized?", this.player.getName().getString(), message);
-			}
-
-			if (this.player.getClientChatVisibility() == ChatVisibility.HIDDEN) {
-				Registry<MessageType> registry = this.player.world.getRegistryManager().get(Registry.MESSAGE_TYPE_KEY);
-				int i = registry.getRawId(registry.get(MessageType.SYSTEM));
-				this.sendPacket(new GameMessageS2CPacket(Text.translatable("chat.disabled.options").formatted(Formatting.RED), i));
-				return false;
-			} else {
-				this.player.updateLastActionTime();
-				return true;
-			}
+			this.player.updateLastActionTime();
+			return true;
 		}
-	}
-
-	/**
-	 * {@return whether the message sent at {@code timestamp} is expired}
-	 * 
-	 * <p>If {@code true}, the server logs a warning, but the message will still be accepted.
-	 * 
-	 * @see ChatMessageC2SPacket#TIME_TO_LIVE
-	 */
-	private boolean isExpired(Instant timestamp) {
-		Instant instant = timestamp.plus(ChatMessageC2SPacket.TIME_TO_LIVE);
-		return Instant.now().isAfter(instant);
 	}
 
 	/**
@@ -1299,12 +1277,25 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	}
 
 	private void handleDecoratedMessage(FilteredMessage<SignedMessage> message) {
-		if (!message.raw().verify(this.player)) {
-			LOGGER.warn("{} sent message with invalid signature: '{}'", this.player.getName().getString(), message.raw().signedContent().getString());
-		} else {
-			this.server.getPlayerManager().broadcast(message, this.player, MessageType.CHAT);
-			this.checkForSpam();
+		SignedMessage signedMessage = message.raw();
+		if (!signedMessage.verify(this.player)) {
+			LOGGER.warn("{} sent message with invalid signature: '{}'", this.player.getName().getString(), signedMessage.signedContent().getString());
+			if (this.server.shouldEnforceSecureProfile()) {
+				this.disconnect(Text.translatable("multiplayer.disconnect.unsigned_chat"));
+				return;
+			}
 		}
+
+		if (signedMessage.isExpiredOnServer(Instant.now())) {
+			LOGGER.warn(
+				"{} sent expired chat: '{}'. Is the client/server system time unsynchronized?",
+				this.player.getName().getString(),
+				signedMessage.signedContent().getString()
+			);
+		}
+
+		this.server.getPlayerManager().broadcast(message, this.player, MessageType.CHAT);
+		this.checkForSpam();
 	}
 
 	private void checkForSpam() {

@@ -27,6 +27,7 @@ import net.minecraft.datafixer.fix.BiomeRenameFix;
 import net.minecraft.datafixer.fix.BiomesFix;
 import net.minecraft.datafixer.fix.BitStorageAlignFix;
 import net.minecraft.datafixer.fix.BlendingDataFix;
+import net.minecraft.datafixer.fix.BlendingDataRemoveFromNetherEndFix;
 import net.minecraft.datafixer.fix.BlockEntityBannerColorFix;
 import net.minecraft.datafixer.fix.BlockEntityBlockStateFix;
 import net.minecraft.datafixer.fix.BlockEntityCustomNameToTextFix;
@@ -975,6 +976,8 @@ public class Schemas {
 		builder.addFixer(
 			new PointOfInterestRemoveFix(schema169, "Remove unpopulated villager PoI types", Set.of("minecraft:unemployed", "minecraft:nitwit")::contains)
 		);
+		Schema schema170 = builder.addSchema(3108, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new BlendingDataRemoveFromNetherEndFix(schema170));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

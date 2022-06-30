@@ -25,6 +25,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.dynamic.DynamicSerializableUuid;
 
 @Environment(EnvType.CLIENT)
 public class PlayerSkinProvider {
@@ -112,6 +113,19 @@ public class PlayerSkinProvider {
 	public Map<Type, MinecraftProfileTexture> getTextures(GameProfile profile) {
 		Property property = Iterables.getFirst(profile.getProperties().get("textures"), null);
 		return (Map<Type, MinecraftProfileTexture>)(property == null ? ImmutableMap.of() : this.skinCache.getUnchecked(property.getValue()));
+	}
+
+	/**
+	 * {@return the ID of {@code profile}'s skin, or the default skin for the profile's
+	 * UUID if the skin is missing}
+	 * 
+	 * @see DefaultSkinHelper#getTexture(java.util.UUID)
+	 */
+	public Identifier loadSkin(GameProfile profile) {
+		MinecraftProfileTexture minecraftProfileTexture = (MinecraftProfileTexture)this.getTextures(profile).get(Type.SKIN);
+		return minecraftProfileTexture != null
+			? this.loadSkin(minecraftProfileTexture, Type.SKIN)
+			: DefaultSkinHelper.getTexture(DynamicSerializableUuid.getUuidFromProfile(profile));
 	}
 
 	@Environment(EnvType.CLIENT)

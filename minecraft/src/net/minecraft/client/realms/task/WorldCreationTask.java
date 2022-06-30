@@ -26,7 +26,7 @@ public class WorldCreationTask extends LongRunningTask {
 
 	public void run() {
 		this.setTitle(Text.translatable("mco.create.world.wait"));
-		RealmsClient realmsClient = RealmsClient.method_44616();
+		RealmsClient realmsClient = RealmsClient.create();
 
 		try {
 			realmsClient.initializeWorld(this.worldId, this.name, this.motd);

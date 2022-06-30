@@ -59,6 +59,7 @@ import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.event.EntityPositionSource;
 import net.minecraft.world.event.GameEvent;
@@ -371,7 +372,10 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 	@Override
 	public boolean canGather(ItemStack stack) {
 		ItemStack itemStack = this.getStackInHand(Hand.MAIN_HAND);
-		return !itemStack.isEmpty() && itemStack.isItemEqual(stack) && this.inventory.canInsert(stack);
+		return !itemStack.isEmpty()
+			&& itemStack.isItemEqual(stack)
+			&& this.inventory.canInsert(stack)
+			&& this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
 	}
 
 	@Override

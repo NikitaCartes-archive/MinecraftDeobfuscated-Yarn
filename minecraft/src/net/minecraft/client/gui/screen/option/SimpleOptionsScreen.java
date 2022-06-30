@@ -11,7 +11,6 @@ import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.SimpleOption;
-import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.OrderedText;
@@ -37,7 +36,7 @@ public abstract class SimpleOptionsScreen extends GameOptionsScreen {
 		this.initFooter();
 		this.narratorButton = this.buttonList.getButtonFor(this.gameOptions.getNarrator());
 		if (this.narratorButton != null) {
-			this.narratorButton.active = NarratorManager.INSTANCE.isActive();
+			this.narratorButton.active = this.client.getNarratorManager().isActive();
 		}
 	}
 

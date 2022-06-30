@@ -34,7 +34,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Rect2i;
 import net.minecraft.command.CommandSource;
@@ -587,7 +586,7 @@ public class CommandSuggestor {
 			CommandSuggestor.this.textField
 				.setSuggestion(CommandSuggestor.getSuggestionSuffix(CommandSuggestor.this.textField.getText(), suggestion.apply(this.typedText)));
 			if (this.lastNarrationIndex != this.selection) {
-				NarratorManager.INSTANCE.narrate(this.getNarration());
+				CommandSuggestor.this.client.getNarratorManager().narrate(this.getNarration());
 			}
 		}
 

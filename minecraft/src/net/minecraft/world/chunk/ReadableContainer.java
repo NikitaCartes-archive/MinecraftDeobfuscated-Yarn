@@ -1,4 +1,4 @@
-package net.minecraft;
+package net.minecraft.world.chunk;
 
 import com.mojang.serialization.DataResult;
 import java.util.List;
@@ -8,12 +8,11 @@ import java.util.function.Predicate;
 import java.util.stream.LongStream;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.collection.IndexedIterable;
-import net.minecraft.world.chunk.PalettedContainer;
 
-public interface class_7522<T> {
+public interface ReadableContainer<T> {
 	T get(int x, int y, int z);
 
-	void method_39793(Consumer<T> consumer);
+	void forEachValue(Consumer<T> action);
 
 	/**
 	 * Writes this container to the packet byte buffer.
@@ -32,9 +31,13 @@ public interface class_7522<T> {
 
 	void count(PalettedContainer.Counter<T> counter);
 
-	PalettedContainer<T> method_44350();
+	PalettedContainer<T> slice();
 
-	class_7522.Serialized<T> method_44345(IndexedIterable<T> indexedIterable, PalettedContainer.PaletteProvider paletteProvider);
+	ReadableContainer.Serialized<T> serialize(IndexedIterable<T> idList, PalettedContainer.PaletteProvider paletteProvider);
+
+	public interface Reader<T, C extends ReadableContainer<T>> {
+		DataResult<C> read(IndexedIterable<T> idList, PalettedContainer.PaletteProvider paletteProvider, ReadableContainer.Serialized<T> serialize);
+	}
 
 	/**
 	 * The storage form of the paletted container in the {@linkplain
@@ -45,9 +48,5 @@ public interface class_7522<T> {
 	 * @see PalettedContainer#createCodec
 	 */
 	public static record Serialized<T>(List<T> paletteEntries, Optional<LongStream> storage) {
-	}
-
-	public interface class_7523<T, C extends class_7522<T>> {
-		DataResult<C> read(IndexedIterable<T> indexedIterable, PalettedContainer.PaletteProvider paletteProvider, class_7522.Serialized<T> serialized);
 	}
 }

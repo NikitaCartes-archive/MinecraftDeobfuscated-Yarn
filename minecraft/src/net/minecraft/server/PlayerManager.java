@@ -209,7 +209,7 @@ public abstract class PlayerManager {
 			mutableText = Text.translatable("multiplayer.player.joined.renamed", player.getDisplayName(), string);
 		}
 
-		this.broadcast(mutableText.formatted(Formatting.YELLOW), MessageType.SYSTEM);
+		this.broadcast(mutableText.formatted(Formatting.YELLOW), false);
 		serverPlayNetworkHandler.requestTeleport(player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch());
 		this.players.add(player);
 		this.playerMap.put(player.getUuid(), player);
@@ -569,7 +569,7 @@ public abstract class PlayerManager {
 	public void sendToOtherTeams(PlayerEntity source, Text message) {
 		AbstractTeam abstractTeam = source.getScoreboardTeam();
 		if (abstractTeam == null) {
-			this.broadcast(message, MessageType.SYSTEM);
+			this.broadcast(message, false);
 		} else {
 			for (int i = 0; i < this.players.size(); i++) {
 				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)this.players.get(i);
@@ -774,21 +774,21 @@ public abstract class PlayerManager {
 	 * @apiNote This is used to send general messages such as a death
 	 * message or a join/leave message.
 	 * 
-	 * @see #broadcast(Text, Function, RegistryKey)
+	 * @see #broadcast(Text, Function, boolean)
 	 * @see #broadcast(FilteredMessage, ServerCommandSource, RegistryKey)
 	 * @see #broadcast(FilteredMessage, ServerPlayerEntity, RegistryKey)
 	 * @see #broadcast(SignedMessage, MessageSender, RegistryKey)
 	 * @see #broadcast(SignedMessage, Function, MessageSender, RegistryKey)
 	 */
-	public void broadcast(Text message, RegistryKey<MessageType> typeKey) {
-		this.broadcast(message, player -> message, typeKey);
+	public void broadcast(Text message, boolean overlay) {
+		this.broadcast(message, player -> message, overlay);
 	}
 
 	/**
 	 * Broadcasts a message to all players and the server console. A different
 	 * message can be sent to a different player.
 	 * 
-	 * @see #broadcast(Text, RegistryKey)
+	 * @see #broadcast(Text, boolean)
 	 * @see #broadcast(FilteredMessage, ServerCommandSource, RegistryKey)
 	 * @see #broadcast(FilteredMessage, ServerPlayerEntity, RegistryKey)
 	 * @see #broadcast(SignedMessage, MessageSender, RegistryKey)
@@ -798,13 +798,13 @@ public abstract class PlayerManager {
 	 * and returns either the text to send to them or {@code null}
 	 * to indicate the message should not be sent to them
 	 */
-	public void broadcast(Text message, Function<ServerPlayerEntity, Text> playerMessageFactory, RegistryKey<MessageType> typeKey) {
+	public void broadcast(Text message, Function<ServerPlayerEntity, Text> playerMessageFactory, boolean overlay) {
 		this.server.sendMessage(message);
 
 		for (ServerPlayerEntity serverPlayerEntity : this.players) {
 			Text text = (Text)playerMessageFactory.apply(serverPlayerEntity);
 			if (text != null) {
-				serverPlayerEntity.sendMessage(text, typeKey);
+				serverPlayerEntity.sendMessageToClient(text, overlay);
 			}
 		}
 	}
@@ -816,8 +816,8 @@ public abstract class PlayerManager {
 	 * {@link net.minecraft.server.command.MeCommand} or
 	 * {@link net.minecraft.server.command.SayCommand} .
 	 * 
-	 * @see #broadcast(Text, RegistryKey)
-	 * @see #broadcast(Text, Function, RegistryKey)
+	 * @see #broadcast(Text, boolean)
+	 * @see #broadcast(Text, Function, boolean)
 	 * @see #broadcast(FilteredMessage, ServerPlayerEntity, RegistryKey)
 	 * @see #broadcast(SignedMessage, MessageSender, RegistryKey)
 	 * @see #broadcast(SignedMessage, Function, MessageSender, RegistryKey)
@@ -838,7 +838,7 @@ public abstract class PlayerManager {
 	 * {@link net.minecraft.network.message.MessageSignature#none} - to send a chat
 	 * message; however if the signature is invalid (e.g. because the text's content differs
 	 * from the one sent by the client, or because the passed signature is invalid) the client
-	 * will log a warning. See {@link
+	 * will show a warning and can discard it depending on the client's options.  See {@link
 	 * net.minecraft.network.message.MessageSignature#updateSignature} for how the
 	 * message is signed.
 	 * 
@@ -847,8 +847,8 @@ public abstract class PlayerManager {
 	 * as well as through commands like {@link net.minecraft.server.command.MeCommand} or
 	 * {@link net.minecraft.server.command.SayCommand} .
 	 * 
-	 * @see #broadcast(Text, RegistryKey)
-	 * @see #broadcast(Text, Function, RegistryKey)
+	 * @see #broadcast(Text, boolean)
+	 * @see #broadcast(Text, Function, boolean)
 	 * @see #broadcast(FilteredMessage, ServerCommandSource, RegistryKey)
 	 * @see #broadcast(SignedMessage, MessageSender, RegistryKey)
 	 * @see #broadcast(SignedMessage, Function, MessageSender, RegistryKey)
@@ -864,15 +864,15 @@ public abstract class PlayerManager {
 	 * {@link net.minecraft.network.message.MessageSignature#none} - to send a chat
 	 * message; however if the signature is invalid (e.g. because the text's content differs
 	 * from the one sent by the client, or because the passed signature is invalid) the client
-	 * will log a warning. See {@link
+	 * will show a warning and can discard it depending on the client's options. See {@link
 	 * net.minecraft.network.message.MessageSignature#updateSignature} for how the
 	 * message is signed.
 	 * 
 	 * @apiNote This method is used to broadcast messages from commands like {@link
 	 * net.minecraft.server.command.MeCommand} or {@link net.minecraft.server.command.SayCommand}.
 	 * 
-	 * @see #broadcast(Text, RegistryKey)
-	 * @see #broadcast(Text, Function, RegistryKey)
+	 * @see #broadcast(Text, boolean)
+	 * @see #broadcast(Text, Function, boolean)
 	 * @see #broadcast(FilteredMessage, ServerCommandSource, RegistryKey)
 	 * @see #broadcast(FilteredMessage, ServerPlayerEntity, RegistryKey)
 	 * @see #broadcast(SignedMessage, Function, MessageSender, RegistryKey)
@@ -889,7 +889,7 @@ public abstract class PlayerManager {
 	 * {@link net.minecraft.network.message.MessageSignature#none} - to send a chat
 	 * message; however if the signature is invalid (e.g. because the text's content differs
 	 * from the one sent by the client, or because the passed signature is invalid) the client
-	 * will log a warning. See {@link
+	 * will show a warning and can discard it depending on the client's options. See {@link
 	 * net.minecraft.network.message.MessageSignature#updateSignature} for how the
 	 * message is signed.
 	 * 
@@ -898,8 +898,8 @@ public abstract class PlayerManager {
 	 * as well as through commands like {@link net.minecraft.server.command.MeCommand} or
 	 * {@link net.minecraft.server.command.SayCommand} .
 	 * 
-	 * @see #broadcast(Text, RegistryKey)
-	 * @see #broadcast(Text, Function, RegistryKey)
+	 * @see #broadcast(Text, boolean)
+	 * @see #broadcast(Text, Function, boolean)
 	 * @see #broadcast(FilteredMessage, ServerCommandSource, RegistryKey)
 	 * @see #broadcast(FilteredMessage, ServerPlayerEntity, RegistryKey)
 	 * @see #broadcast(SignedMessage, MessageSender, RegistryKey)

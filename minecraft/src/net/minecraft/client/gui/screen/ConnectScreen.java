@@ -89,7 +89,12 @@ public class ConnectScreen extends Screen {
 					ConnectScreen.this.connection
 						.setPacketListener(new ClientLoginNetworkHandler(ConnectScreen.this.connection, client, ConnectScreen.this.parent, ConnectScreen.this::setStatus));
 					ConnectScreen.this.connection.send(new HandshakeC2SPacket(inetSocketAddress.getHostName(), inetSocketAddress.getPort(), NetworkState.LOGIN));
-					ConnectScreen.this.connection.send(new LoginHelloC2SPacket(client.getSession().getUsername(), client.getProfileKeys().getPublicKeyData()));
+					ConnectScreen.this.connection
+						.send(
+							new LoginHelloC2SPacket(
+								client.getSession().getUsername(), client.getProfileKeys().getPublicKeyData(), Optional.ofNullable(client.getSession().getUuidOrNull())
+							)
+						);
 				} catch (Exception var6) {
 					if (ConnectScreen.this.connectingCancelled) {
 						return;
@@ -158,7 +163,7 @@ public class ConnectScreen extends Screen {
 		long l = Util.getMeasuringTimeMs();
 		if (l - this.lastNarrationTime > 2000L) {
 			this.lastNarrationTime = l;
-			NarratorManager.INSTANCE.narrate(Text.translatable("narrator.joining"));
+			this.client.getNarratorManager().narrate(Text.translatable("narrator.joining"));
 		}
 
 		drawCenteredText(matrices, this.textRenderer, this.status, this.width / 2, this.height / 2 - 50, 16777215);

@@ -1,6 +1,7 @@
 package net.minecraft.client.gui.screen;
 
 import com.google.common.util.concurrent.Runnables;
+import com.mojang.authlib.minecraft.BanDetails;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
@@ -191,24 +192,21 @@ public class TitleScreen extends Screen {
 		this.addDrawableChild(
 			new ButtonWidget(this.width / 2 - 100, y, 200, 20, Text.translatable("menu.singleplayer"), button -> this.client.setScreen(new SelectWorldScreen(this)))
 		);
-		boolean bl = this.client.isMultiplayerEnabled();
-		ButtonWidget.TooltipSupplier tooltipSupplier = bl
+		final Text text = this.getMultiplayerDisabledText();
+		boolean bl = text == null;
+		ButtonWidget.TooltipSupplier tooltipSupplier = text == null
 			? ButtonWidget.EMPTY
 			: new ButtonWidget.TooltipSupplier() {
-				private final Text MULTIPLAYER_DISABLED_TEXT = Text.translatable("title.multiplayer.disabled");
-
 				@Override
 				public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {
-					if (!buttonWidget.active) {
-						TitleScreen.this.renderOrderedTooltip(
-							matrixStack, TitleScreen.this.client.textRenderer.wrapLines(this.MULTIPLAYER_DISABLED_TEXT, Math.max(TitleScreen.this.width / 2 - 43, 170)), i, j
-						);
-					}
+					TitleScreen.this.renderOrderedTooltip(
+						matrixStack, TitleScreen.this.client.textRenderer.wrapLines(text, Math.max(TitleScreen.this.width / 2 - 43, 170)), i, j
+					);
 				}
 
 				@Override
 				public void supply(Consumer<Text> consumer) {
-					consumer.accept(this.MULTIPLAYER_DISABLED_TEXT);
+					consumer.accept(text);
 				}
 			};
 		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, y + spacingY * 1, 200, 20, Text.translatable("menu.multiplayer"), button -> {
@@ -219,6 +217,22 @@ public class TitleScreen extends Screen {
 				new ButtonWidget(this.width / 2 - 100, y + spacingY * 2, 200, 20, Text.translatable("menu.online"), button -> this.switchToRealms(), tooltipSupplier)
 			)
 			.active = bl;
+	}
+
+	@Nullable
+	private Text getMultiplayerDisabledText() {
+		if (this.client.isMultiplayerEnabled()) {
+			return null;
+		} else {
+			BanDetails banDetails = this.client.getMultiplayerBanDetails();
+			if (banDetails != null) {
+				return banDetails.expires() != null
+					? Text.translatable("title.multiplayer.disabled.banned.temporary")
+					: Text.translatable("title.multiplayer.disabled.banned.permanent");
+			} else {
+				return Text.translatable("title.multiplayer.disabled");
+			}
+		}
 	}
 
 	private void initWidgetsDemo(int y, int spacingY) {

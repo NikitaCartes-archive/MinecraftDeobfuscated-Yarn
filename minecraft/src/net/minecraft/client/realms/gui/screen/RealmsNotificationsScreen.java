@@ -4,12 +4,12 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_7578;
-import net.minecraft.class_7581;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.realms.RealmsClient;
+import net.minecraft.client.realms.RealmsPeriodicCheckers;
 import net.minecraft.client.realms.exception.RealmsServiceException;
+import net.minecraft.client.realms.util.PeriodicRunnerFactory;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
@@ -21,8 +21,8 @@ public class RealmsNotificationsScreen extends RealmsScreen {
 	private static final Identifier TRIAL_ICON = new Identifier("realms", "textures/gui/realms/trial_icon.png");
 	private static final Identifier NEWS_NOTIFICATION = new Identifier("realms", "textures/gui/realms/news_notification_mainscreen.png");
 	@Nullable
-	private class_7581.class_7584 field_39695;
-	private volatile int numberOfPendingInvites;
+	private PeriodicRunnerFactory.RunnersManager periodicRunnersManager;
+	private volatile int pendingInvitesCount;
 	static boolean checkedMcoAvailability;
 	private static boolean trialAvailable;
 	static boolean validClient;
@@ -36,34 +36,34 @@ public class RealmsNotificationsScreen extends RealmsScreen {
 	public void init() {
 		this.checkIfMcoEnabled();
 		this.client.keyboard.setRepeatEvents(true);
-		if (this.field_39695 != null) {
-			this.field_39695.method_44634();
+		if (this.periodicRunnersManager != null) {
+			this.periodicRunnersManager.forceRunListeners();
 		}
 	}
 
 	@Override
 	public void tick() {
 		boolean bl = this.shouldShowNotifications() && this.isTitleScreen() && validClient;
-		if (this.field_39695 == null && bl) {
-			this.field_39695 = this.method_44624(this.client.method_44646());
-		} else if (this.field_39695 != null && !bl) {
-			this.field_39695 = null;
+		if (this.periodicRunnersManager == null && bl) {
+			this.periodicRunnersManager = this.createPeriodicRunnersManager(this.client.getRealmsPeriodicCheckers());
+		} else if (this.periodicRunnersManager != null && !bl) {
+			this.periodicRunnersManager = null;
 		}
 
-		if (this.field_39695 != null) {
-			this.field_39695.method_44636();
+		if (this.periodicRunnersManager != null) {
+			this.periodicRunnersManager.runAll();
 		}
 	}
 
-	private class_7581.class_7584 method_44624(class_7578 arg) {
-		class_7581.class_7584 lv = arg.field_39682.method_44628();
-		lv.method_44635(arg.field_39685, integer -> this.numberOfPendingInvites = integer);
-		lv.method_44635(arg.field_39686, boolean_ -> trialAvailable = boolean_);
-		lv.method_44635(arg.field_39687, realmsNews -> {
-			arg.field_39688.method_44619(realmsNews);
-			hasUnreadNews = arg.field_39688.method_44618();
+	private PeriodicRunnerFactory.RunnersManager createPeriodicRunnersManager(RealmsPeriodicCheckers periodicCheckers) {
+		PeriodicRunnerFactory.RunnersManager runnersManager = periodicCheckers.runnerFactory.create();
+		runnersManager.add(periodicCheckers.pendingInvitesCount, pendingInvitesCount -> this.pendingInvitesCount = pendingInvitesCount);
+		runnersManager.add(periodicCheckers.trialAvailability, trialAvailable -> RealmsNotificationsScreen.trialAvailable = trialAvailable);
+		runnersManager.add(periodicCheckers.news, news -> {
+			periodicCheckers.newsUpdater.updateNews(news);
+			hasUnreadNews = periodicCheckers.newsUpdater.hasUnreadNews();
 		});
-		return lv;
+		return runnersManager;
 	}
 
 	private boolean shouldShowNotifications() {
@@ -79,7 +79,7 @@ public class RealmsNotificationsScreen extends RealmsScreen {
 			checkedMcoAvailability = true;
 			(new Thread("Realms Notification Availability checker #1") {
 				public void run() {
-					RealmsClient realmsClient = RealmsClient.method_44616();
+					RealmsClient realmsClient = RealmsClient.create();
 
 					try {
 						RealmsClient.CompatibleVersionResponse compatibleVersionResponse = realmsClient.clientCompatible();
@@ -110,7 +110,7 @@ public class RealmsNotificationsScreen extends RealmsScreen {
 	}
 
 	private void drawIcons(MatrixStack matrices, int mouseX, int mouseY) {
-		int i = this.numberOfPendingInvites;
+		int i = this.pendingInvitesCount;
 		int j = 24;
 		int k = this.height / 4 + 48;
 		int l = this.width / 2 + 80;

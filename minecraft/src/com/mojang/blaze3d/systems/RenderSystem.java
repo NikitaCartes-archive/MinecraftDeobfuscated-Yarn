@@ -16,7 +16,6 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_7576;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.GraphicsMode;
 import net.minecraft.client.option.SimpleOption;
@@ -28,6 +27,7 @@ import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.TimeSupplier;
 import net.minecraft.util.annotation.DeobfuscateClass;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix3f;
@@ -526,7 +526,7 @@ public class RenderSystem {
 		return apiDescription;
 	}
 
-	public static class_7576.class_7577 initBackendSystem() {
+	public static TimeSupplier.Nanoseconds initBackendSystem() {
 		assertInInitPhase();
 		return GLX._initGlfw()::getAsLong;
 	}

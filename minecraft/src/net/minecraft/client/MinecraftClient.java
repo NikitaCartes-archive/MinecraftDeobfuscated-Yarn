@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -46,7 +47,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_7578;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -92,8 +92,7 @@ import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.network.ServerAddress;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.network.SocialInteractionsManager;
-import net.minecraft.client.network.abusereport.AbuseReporter;
-import net.minecraft.client.network.abusereport.ReporterEnvironment;
+import net.minecraft.client.network.message.MessageHandler;
 import net.minecraft.client.option.AoMode;
 import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.client.option.CloudRenderMode;
@@ -104,6 +103,7 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.option.Perspective;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.realms.RealmsClient;
+import net.minecraft.client.realms.RealmsPeriodicCheckers;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.util.Realms32BitWarningChecker;
 import net.minecraft.client.render.BackgroundRenderer;
@@ -127,6 +127,8 @@ import net.minecraft.client.render.item.BuiltinModelItemRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedModelManager;
+import net.minecraft.client.report.AbuseReportContext;
+import net.minecraft.client.report.ReporterEnvironment;
 import net.minecraft.client.resource.ClientBuiltinResourcePackProvider;
 import net.minecraft.client.resource.FoliageColormapResourceSupplier;
 import net.minecraft.client.resource.Format3ResourcePack;
@@ -382,7 +384,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final BlockEntityRenderDispatcher blockEntityRenderDispatcher;
 	private final UUID deviceSessionId = UUID.randomUUID();
 	private final ProfileKeys profileKeys;
-	private final class_7578 field_39718;
+	private final RealmsPeriodicCheckers realmsPeriodicCheckers;
 	@Nullable
 	public ClientPlayerInteractionManager interactionManager;
 	/**
@@ -467,7 +469,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	@Nullable
 	private GlTimer.Query currentGlTimerQuery;
 	private final Realms32BitWarningChecker realms32BitWarningChecker;
-	private AbuseReporter abuseReporter;
+	private final NarratorManager narratorManager;
+	private final MessageHandler messageHandler;
+	private AbuseReportContext abuseReportContext;
 	private String openProfilerSection = "root";
 
 	public MinecraftClient(RunArgs args) {
@@ -619,7 +623,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.resourceManager.registerReloader(this.regionalComplianciesManager);
 		this.inGameHud = new InGameHud(this, this.itemRenderer);
 		this.debugRenderer = new DebugRenderer(this);
-		this.field_39718 = new class_7578(RealmsClient.createRealmsClient(this));
+		this.realmsPeriodicCheckers = new RealmsPeriodicCheckers(RealmsClient.createRealmsClient(this));
 		RenderSystem.setErrorCallback(this::handleGlErrorByDisableVsync);
 		if (this.framebuffer.textureWidth != this.window.getFramebufferWidth() || this.framebuffer.textureHeight != this.window.getFramebufferHeight()) {
 			StringBuilder stringBuilder = new StringBuilder(
@@ -647,7 +651,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.gameRenderer.preloadShaders(this.getResourcePackProvider().getPack().getFactory());
 		this.profileKeys = new ProfileKeys(this.userApiService, this.session.getProfile().getId(), this.runDirectory.toPath());
 		this.realms32BitWarningChecker = new Realms32BitWarningChecker(this);
-		this.abuseReporter = AbuseReporter.create(ReporterEnvironment.ofIntegratedServer(), this.userApiService);
+		this.narratorManager = new NarratorManager(this);
+		this.messageHandler = new MessageHandler(this);
+		this.abuseReportContext = AbuseReportContext.create(ReporterEnvironment.ofIntegratedServer(), this.userApiService);
 		SplashOverlay.init(this);
 		List<ResourcePack> list = this.resourcePackManager.createResourcePacks();
 		this.resourceReloadLogger.reload(ResourceReloadLogger.ReloadReason.INITIAL, list);
@@ -986,20 +992,20 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private void openChatScreen(String text) {
 		MinecraftClient.ChatRestriction chatRestriction = this.getChatRestriction();
 		if (!chatRestriction.allowsChat(this.isInSingleplayer())) {
-			if (this.inGameHud.method_44353()) {
-				this.inGameHud.method_44354(false);
-				this.setScreen(new ConfirmLinkScreen(bl -> {
-					if (bl) {
+			if (this.inGameHud.shouldShowChatDisabledScreen()) {
+				this.inGameHud.setCanShowChatDisabledScreen(false);
+				this.setScreen(new ConfirmLinkScreen(confirmed -> {
+					if (confirmed) {
 						Util.getOperatingSystem().open("https://aka.ms/JavaAccountSettings");
 					}
 
 					this.setScreen(null);
-				}, MinecraftClient.ChatRestriction.field_39456, "https://aka.ms/JavaAccountSettings", true));
+				}, MinecraftClient.ChatRestriction.MORE_INFO_TEXT, "https://aka.ms/JavaAccountSettings", true));
 			} else {
 				Text text2 = chatRestriction.getDescription();
 				this.inGameHud.setOverlayMessage(text2, false);
-				NarratorManager.INSTANCE.narrate(text2);
-				this.inGameHud.method_44354(chatRestriction == MinecraftClient.ChatRestriction.DISABLED_BY_PROFILE);
+				this.narratorManager.narrate(text2);
+				this.inGameHud.setCanShowChatDisabledScreen(chatRestriction == MinecraftClient.ChatRestriction.DISABLED_BY_PROFILE);
 			}
 		} else {
 			this.setScreen(new ChatScreen(text));
@@ -1063,7 +1069,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			LOGGER.info("Stopping!");
 
 			try {
-				NarratorManager.INSTANCE.destroy();
+				this.narratorManager.destroy();
 			} catch (Throwable var7) {
 			}
 
@@ -1922,14 +1928,14 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		while (this.options.socialInteractionsKey.wasPressed()) {
 			if (!this.isConnectedToServer()) {
 				this.player.sendMessage(SOCIAL_INTERACTIONS_NOT_AVAILABLE, true);
-				NarratorManager.INSTANCE.narrate(SOCIAL_INTERACTIONS_NOT_AVAILABLE);
+				this.narratorManager.narrate(SOCIAL_INTERACTIONS_NOT_AVAILABLE);
 			} else {
 				if (this.socialInteractionsToast != null) {
 					this.tutorialManager.remove(this.socialInteractionsToast);
 					this.socialInteractionsToast = null;
 				}
 
-				this.setScreen(SocialInteractionsScreen.createAbuseReportNoticeScreen());
+				this.setScreen(new SocialInteractionsScreen());
 			}
 		}
 
@@ -2035,7 +2041,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 					})
 			);
 			this.integratedServerRunning = true;
-			this.resetAbuseReporterIfNecessary(ReporterEnvironment.ofIntegratedServer());
+			this.ensureAbuseReportContext(ReporterEnvironment.ofIntegratedServer());
 		} catch (Throwable var9) {
 			CrashReport crashReport = CrashReport.create(var9, "Starting integrated server");
 			CrashReportSection crashReportSection = crashReport.addElement("Starting integrated server");
@@ -2073,7 +2079,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		clientConnection.setPacketListener(new ClientLoginNetworkHandler(clientConnection, this, null, status -> {
 		}));
 		clientConnection.send(new HandshakeC2SPacket(socketAddress.toString(), 0, NetworkState.LOGIN));
-		clientConnection.send(new LoginHelloC2SPacket(this.getSession().getUsername(), this.profileKeys.getPublicKeyData()));
+		clientConnection.send(
+			new LoginHelloC2SPacket(this.getSession().getUsername(), this.profileKeys.getPublicKeyData(), Optional.ofNullable(this.getSession().getUuidOrNull()))
+		);
 		this.integratedServerConnection = clientConnection;
 	}
 
@@ -2111,7 +2119,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.server = null;
 		this.gameRenderer.reset();
 		this.interactionManager = null;
-		NarratorManager.INSTANCE.clear();
+		this.narratorManager.clear();
 		this.reset(screen);
 		if (this.world != null) {
 			if (integratedServer != null) {
@@ -2174,7 +2182,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	@Nullable
-	private BanDetails getMultiplayerBanDetails() {
+	public BanDetails getMultiplayerBanDetails() {
 		return (BanDetails)this.userApiService.properties().bannedScopes().get("MULTIPLAYER");
 	}
 
@@ -2395,20 +2403,21 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		ReporterEnvironment reporterEnvironment = serverEntry != null
 			? ReporterEnvironment.ofThirdPartyServer(serverEntry.address)
 			: ReporterEnvironment.ofIntegratedServer();
-		this.resetAbuseReporterIfNecessary(reporterEnvironment);
+		this.ensureAbuseReportContext(reporterEnvironment);
 	}
 
 	public void setCurrentServerEntry(RealmsServer server, String address) {
 		this.currentServerEntry = server.createServerInfo(address);
-		this.resetAbuseReporterIfNecessary(ReporterEnvironment.ofRealm(server));
+		this.ensureAbuseReportContext(ReporterEnvironment.ofRealm(server));
 	}
 
 	/**
-	 * Recreates and resets {@link #abuseReporter} if {@code environment} has changed.
+	 * Recreates and resets {@link #abuseReportContext} if {@code environment} has
+	 * changed.
 	 */
-	private void resetAbuseReporterIfNecessary(ReporterEnvironment environment) {
-		if (!this.abuseReporter.environmentEquals(environment)) {
-			this.abuseReporter = AbuseReporter.create(environment, this.userApiService);
+	private void ensureAbuseReportContext(ReporterEnvironment environment) {
+		if (!this.abuseReportContext.environmentEquals(environment)) {
+			this.abuseReportContext = AbuseReportContext.create(environment, this.userApiService);
 		}
 	}
 
@@ -2875,12 +2884,20 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.servicesSignatureVerifier;
 	}
 
-	public AbuseReporter getAbuseReporter() {
-		return this.abuseReporter;
+	public NarratorManager getNarratorManager() {
+		return this.narratorManager;
 	}
 
-	public class_7578 method_44646() {
-		return this.field_39718;
+	public MessageHandler getMessageHandler() {
+		return this.messageHandler;
+	}
+
+	public AbuseReportContext getAbuseReportContext() {
+		return this.abuseReportContext;
+	}
+
+	public RealmsPeriodicCheckers getRealmsPeriodicCheckers() {
+		return this.realmsPeriodicCheckers;
 	}
 
 	/**
@@ -2917,8 +2934,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			}
 		};
 
-		static final Text field_39456 = Text.translatable("chat.disabled.profile.moreInfo");
-		private static final String field_39457 = "https://aka.ms/JavaAccountSettings";
+		static final Text MORE_INFO_TEXT = Text.translatable("chat.disabled.profile.moreInfo");
+		private static final String JAVA_ACCOUNT_SETTINGS_URL = "https://aka.ms/JavaAccountSettings";
 		private final Text description;
 
 		ChatRestriction(Text description) {

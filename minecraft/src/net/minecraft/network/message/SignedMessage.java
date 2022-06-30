@@ -1,5 +1,7 @@
 package net.minecraft.network.message;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Optional;
 import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.server.command.ServerCommandSource;
@@ -16,6 +18,9 @@ import net.minecraft.util.Util;
  * <p>Note that the signature itself might not be valid.
  */
 public record SignedMessage(Text signedContent, MessageSignature signature, Optional<Text> unsignedContent) {
+	public static final Duration SERVERBOUND_TIME_TO_LIVE = Duration.ofMinutes(5L);
+	public static final Duration CLIENTBOUND_TIME_TO_LIVE = SERVERBOUND_TIME_TO_LIVE.plus(Duration.ofMinutes(2L));
+
 	/**
 	 * {@return a new signed chat message with {@code signedContent} and {@code signature}}
 	 */
@@ -119,5 +124,13 @@ public record SignedMessage(Text signedContent, MessageSignature signature, Opti
 	 */
 	public Text getContent() {
 		return (Text)this.unsignedContent.orElse(this.signedContent);
+	}
+
+	public boolean isExpiredOnServer(Instant currentTime) {
+		return currentTime.isAfter(this.signature.timestamp().plus(SERVERBOUND_TIME_TO_LIVE));
+	}
+
+	public boolean isExpiredOnClient(Instant currentTime) {
+		return currentTime.isAfter(this.signature.timestamp().plus(CLIENTBOUND_TIME_TO_LIVE));
 	}
 }

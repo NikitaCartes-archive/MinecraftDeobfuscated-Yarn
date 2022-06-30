@@ -5,6 +5,7 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.logging.LogUtils;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -43,7 +44,7 @@ public class MessageArgumentType implements TextConvertibleArgumentType<MessageA
 		MessageSignature messageSignature = commandArgumentSigner.getArgumentSignature(name);
 		boolean bl = commandArgumentSigner.isPreviewSigned(name);
 		MessageSender messageSender = context.getSource().getChatMessageSender();
-		return messageSignature.canVerifyFrom(messageSender.uuid())
+		return messageSignature.canVerifyFrom(messageSender.profileId())
 			? new MessageArgumentType.SignedMessage(messageFormat.contents, text, messageSignature, bl)
 			: new MessageArgumentType.SignedMessage(messageFormat.contents, text, MessageSignature.none(), false);
 	}
@@ -243,6 +244,13 @@ public class MessageArgumentType implements TextConvertibleArgumentType<MessageA
 		private void logInvalidSignatureWarning(ServerCommandSource source, net.minecraft.network.message.SignedMessage message) {
 			if (!message.verify(source)) {
 				MessageArgumentType.LOGGER.warn("{} sent message with invalid signature: '{}'", source.getDisplayName().getString(), message.signedContent().getString());
+			}
+
+			if (message.isExpiredOnServer(Instant.now())) {
+				MessageArgumentType.LOGGER
+					.warn(
+						"{} sent expired chat: '{}'. Is the client/server system time unsynchronized?", source.getDisplayName().getString(), message.signedContent().getString()
+					);
 			}
 		}
 

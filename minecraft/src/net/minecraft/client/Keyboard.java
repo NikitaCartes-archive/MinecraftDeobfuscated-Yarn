@@ -21,7 +21,6 @@ import net.minecraft.client.option.NarratorMode;
 import net.minecraft.client.util.Clipboard;
 import net.minecraft.client.util.GlfwUtil;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.ScreenshotRecorder;
 import net.minecraft.command.argument.BlockArgumentParser;
 import net.minecraft.entity.Entity;
@@ -338,7 +337,7 @@ public class Keyboard {
 				}
 			}
 
-			if (NarratorManager.INSTANCE.isActive()) {
+			if (this.client.getNarratorManager().isActive()) {
 				boolean bl = screen == null || !(screen.getFocused() instanceof TextFieldWidget) || !((TextFieldWidget)screen.getFocused()).isActive();
 				if (action != 0 && key == GLFW.GLFW_KEY_B && Screen.hasControlDown() && bl) {
 					boolean bl2 = this.client.options.getNarrator().getValue() == NarratorMode.OFF;

@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.logging.LogUtils;
+import java.time.Instant;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +64,6 @@ import net.minecraft.network.encryption.Signer;
 import net.minecraft.network.message.ArgumentSignatureDataMap;
 import net.minecraft.network.message.ChatMessageSigner;
 import net.minecraft.network.message.MessageSignature;
-import net.minecraft.network.message.MessageType;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
@@ -93,8 +93,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.CommandBlockExecutor;
 import org.slf4j.Logger;
@@ -349,12 +347,12 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	/**
-	 * Sends a command to the server.
+	 * Sends an unsigned command to the server.
 	 * 
 	 * @param command the command (can have the leading slash)
 	 */
 	public void sendCommand(String command) {
-		this.sendCommand(command, null);
+		this.networkHandler.sendPacket(new CommandExecutionC2SPacket(command, Instant.now(), ArgumentSignatureDataMap.empty(), false));
 	}
 
 	/**
@@ -554,13 +552,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void sendMessage(Text message, boolean actionBar) {
-		RegistryKey<MessageType> registryKey = actionBar ? MessageType.GAME_INFO : MessageType.SYSTEM;
-		this.world
-			.getRegistryManager()
-			.getOptional(Registry.MESSAGE_TYPE_KEY)
-			.map(registry -> registry.get(registryKey))
-			.ifPresent(messageType -> this.client.inGameHud.onGameMessage(messageType, message));
+	public void sendMessage(Text message, boolean overlay) {
+		this.client.getMessageHandler().onGameMessage(message, overlay);
 	}
 
 	private void pushOutOfBlocks(double x, double z) {

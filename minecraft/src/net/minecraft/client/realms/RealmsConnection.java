@@ -2,6 +2,8 @@ package net.minecraft.client.realms;
 
 import com.mojang.logging.LogUtils;
 import java.net.InetSocketAddress;
+import java.util.Optional;
+import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -11,7 +13,6 @@ import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.client.network.ServerAddress;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.gui.screen.DisconnectedRealmsScreen;
-import net.minecraft.client.util.NarratorManager;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
@@ -36,7 +37,7 @@ public class RealmsConnection {
 		final MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		minecraftClient.setConnectedToRealms(true);
 		minecraftClient.loadBlockList();
-		NarratorManager.INSTANCE.narrate(Text.translatable("mco.connect.success"));
+		minecraftClient.getNarratorManager().narrate(Text.translatable("mco.connect.success"));
 		final String string = address.getAddress();
 		final int i = address.getPort();
 		(new Thread("Realms-connect-task") {
@@ -67,7 +68,8 @@ public class RealmsConnection {
 						}
 
 						String string = minecraftClient.getSession().getUsername();
-						RealmsConnection.this.connection.send(new LoginHelloC2SPacket(string, minecraftClient.getProfileKeys().getPublicKeyData()));
+						UUID uUID = minecraftClient.getSession().getUuidOrNull();
+						RealmsConnection.this.connection.send(new LoginHelloC2SPacket(string, minecraftClient.getProfileKeys().getPublicKeyData(), Optional.ofNullable(uUID)));
 						minecraftClient.setCurrentServerEntry(server, string);
 					} catch (Exception var5) {
 						minecraftClient.getResourcePackProvider().clear();

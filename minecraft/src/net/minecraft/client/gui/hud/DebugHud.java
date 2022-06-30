@@ -325,8 +325,8 @@ public class DebugHud extends DrawableHelper {
 					);
 				}
 
-				if (worldChunk2 != null) {
-					list.add(String.format("Blending: %s", worldChunk2.usesOldNoise() ? "Old" : "New"));
+				if (worldChunk2 != null && worldChunk2.usesOldNoise()) {
+					list.add("Blending: Old");
 				}
 			}
 

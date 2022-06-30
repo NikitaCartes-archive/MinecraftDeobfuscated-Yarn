@@ -14,14 +14,13 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.gui.screen.abusereport.ChatReportScreen;
+import net.minecraft.client.gui.screen.report.ChatReportScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.network.SocialInteractionsManager;
-import net.minecraft.client.network.abusereport.AbuseReporter;
-import net.minecraft.client.util.NarratorManager;
+import net.minecraft.client.report.AbuseReportContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
@@ -77,8 +76,8 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 		this.uuid = uuid;
 		this.name = name;
 		this.skinTexture = skinTexture;
-		AbuseReporter abuseReporter = client.getAbuseReporter();
-		boolean bl = abuseReporter.sender().canSendReports();
+		AbuseReportContext abuseReportContext = client.getAbuseReportContext();
+		boolean bl = abuseReportContext.sender().canSendReports();
 		this.hideText = Text.translatable("gui.socialInteractions.tooltip.hide", name);
 		this.showText = Text.translatable("gui.socialInteractions.tooltip.show", name);
 		if (bl) {
@@ -105,7 +104,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 				REPORT_BUTTON_TEXTURE,
 				64,
 				64,
-				button -> client.setScreen(new ChatReportScreen(client.currentScreen, abuseReporter, uuid)),
+				button -> client.setScreen(new ChatReportScreen(client.currentScreen, abuseReportContext, uuid)),
 				new ButtonWidget.TooltipSupplier() {
 					@Override
 					public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {
@@ -280,7 +279,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 		this.showButton.visible = showButtonVisible;
 		this.hideButton.visible = !showButtonVisible;
 		this.client.inGameHud.getChatHud().addMessage(chatMessage);
-		NarratorManager.INSTANCE.narrate(chatMessage);
+		this.client.getNarratorManager().narrate(chatMessage);
 	}
 
 	MutableText getNarrationMessage(MutableText text) {

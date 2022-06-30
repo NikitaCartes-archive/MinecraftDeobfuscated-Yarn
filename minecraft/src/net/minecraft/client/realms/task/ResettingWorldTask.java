@@ -25,7 +25,7 @@ public abstract class ResettingWorldTask extends LongRunningTask {
 	protected abstract void resetWorld(RealmsClient client, long worldId) throws RealmsServiceException;
 
 	public void run() {
-		RealmsClient realmsClient = RealmsClient.method_44616();
+		RealmsClient realmsClient = RealmsClient.create();
 		this.setTitle(this.title);
 		int i = 0;
 

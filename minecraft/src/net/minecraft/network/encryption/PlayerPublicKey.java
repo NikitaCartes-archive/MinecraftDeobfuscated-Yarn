@@ -5,9 +5,11 @@ import com.mojang.authlib.minecraft.InsecurePublicKeyException.InvalidException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.nio.charset.StandardCharsets;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.security.PublicKey;
 import java.time.Instant;
+import java.util.UUID;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.dynamic.Codecs;
 
@@ -40,13 +42,13 @@ public record PlayerPublicKey(PlayerPublicKey.PublicKeyData data) {
 	 * and not expired.
 	 * 
 	 * @throws InsecurePublicKeyException.MissingException when the key is missing or empty
-	 * @throws InsecurePublicKeyException.InvalidException when the key is unsigned or expired
+	 * @throws InsecurePublicKeyException.InvalidException when the key does not belong to the profile, is unsigned, or expired
 	 * @throws NetworkEncryptionException when the key is malformed
 	 */
-	public static PlayerPublicKey verifyAndDecode(SignatureVerifier servicesSignatureVerifier, PlayerPublicKey.PublicKeyData publicKeyData) throws InsecurePublicKeyException, NetworkEncryptionException {
+	public static PlayerPublicKey verifyAndDecode(SignatureVerifier servicesSignatureVerifier, UUID playerUuid, PlayerPublicKey.PublicKeyData publicKeyData) throws InsecurePublicKeyException, NetworkEncryptionException {
 		if (publicKeyData.isExpired()) {
 			throw new InvalidException("Expired profile public key");
-		} else if (!publicKeyData.verifyKey(servicesSignatureVerifier)) {
+		} else if (!publicKeyData.verifyKey(servicesSignatureVerifier, playerUuid)) {
 			throw new InvalidException("Invalid profile public key signature");
 		} else {
 			return fromKeyData(publicKeyData);
@@ -63,7 +65,7 @@ public record PlayerPublicKey(PlayerPublicKey.PublicKeyData data) {
 			instance -> instance.group(
 						Codecs.INSTANT.fieldOf("expires_at").forGetter(PlayerPublicKey.PublicKeyData::expiresAt),
 						NetworkEncryptionUtils.RSA_PUBLIC_KEY_CODEC.fieldOf("key").forGetter(PlayerPublicKey.PublicKeyData::key),
-						Codecs.BASE_64.fieldOf("signature").forGetter(PlayerPublicKey.PublicKeyData::keySignature)
+						Codecs.BASE_64.fieldOf("signature_v2").forGetter(PlayerPublicKey.PublicKeyData::keySignature)
 					)
 					.apply(instance, PlayerPublicKey.PublicKeyData::new)
 		);
@@ -78,13 +80,16 @@ public record PlayerPublicKey(PlayerPublicKey.PublicKeyData data) {
 			buf.writeByteArray(this.keySignature);
 		}
 
-		boolean verifyKey(SignatureVerifier servicesSignatureVerifier) {
-			return servicesSignatureVerifier.validate(this.toSerializedString().getBytes(StandardCharsets.US_ASCII), this.keySignature);
+		boolean verifyKey(SignatureVerifier servicesSignatureVerifier, UUID playerUuid) {
+			return servicesSignatureVerifier.validate(this.toSerializedString(playerUuid), this.keySignature);
 		}
 
-		private String toSerializedString() {
-			String string = NetworkEncryptionUtils.encodeRsaPublicKey(this.key);
-			return this.expiresAt.toEpochMilli() + string;
+		private byte[] toSerializedString(UUID playerUuid) {
+			byte[] bs = this.key.getEncoded();
+			byte[] cs = new byte[24 + bs.length];
+			ByteBuffer byteBuffer = ByteBuffer.wrap(cs).order(ByteOrder.BIG_ENDIAN);
+			byteBuffer.putLong(playerUuid.getMostSignificantBits()).putLong(playerUuid.getLeastSignificantBits()).putLong(this.expiresAt.toEpochMilli()).put(bs);
+			return cs;
 		}
 
 		public boolean isExpired() {

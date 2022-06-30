@@ -30,7 +30,7 @@ public class DownloadTask extends LongRunningTask {
 
 	public void run() {
 		this.setTitle(Text.translatable("mco.download.preparing"));
-		RealmsClient realmsClient = RealmsClient.method_44616();
+		RealmsClient realmsClient = RealmsClient.create();
 		int i = 0;
 
 		while (i < 25) {

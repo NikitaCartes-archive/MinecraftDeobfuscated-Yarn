@@ -54,7 +54,7 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 		this.pendingInvitationSelectionList = new RealmsPendingInvitesScreen.PendingInvitationSelectionList();
 		(new Thread("Realms-pending-invitations-fetcher") {
 				public void run() {
-					RealmsClient realmsClient = RealmsClient.method_44616();
+					RealmsClient realmsClient = RealmsClient.create();
 
 					try {
 						List<PendingInvite> list = realmsClient.pendingInvites().pendingInvites;
@@ -110,7 +110,7 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 			(new Thread("Realms-reject-invitation") {
 					public void run() {
 						try {
-							RealmsClient realmsClient = RealmsClient.method_44616();
+							RealmsClient realmsClient = RealmsClient.create();
 							realmsClient.rejectInvitation(
 								((RealmsPendingInvitesScreen.PendingInvitationSelectionListEntry)RealmsPendingInvitesScreen.this.pendingInvitationSelectionList.children().get(slot))
 									.mPendingInvite
@@ -131,7 +131,7 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 			(new Thread("Realms-accept-invitation") {
 					public void run() {
 						try {
-							RealmsClient realmsClient = RealmsClient.method_44616();
+							RealmsClient realmsClient = RealmsClient.create();
 							realmsClient.acceptInvitation(
 								((RealmsPendingInvitesScreen.PendingInvitationSelectionListEntry)RealmsPendingInvitesScreen.this.pendingInvitationSelectionList.children().get(slot))
 									.mPendingInvite

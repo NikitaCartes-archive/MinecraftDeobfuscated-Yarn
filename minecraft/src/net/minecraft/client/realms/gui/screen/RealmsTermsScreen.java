@@ -63,7 +63,7 @@ public class RealmsTermsScreen extends RealmsScreen {
 	}
 
 	private void agreedToTos() {
-		RealmsClient realmsClient = RealmsClient.method_44616();
+		RealmsClient realmsClient = RealmsClient.create();
 
 		try {
 			realmsClient.agreeToTos();

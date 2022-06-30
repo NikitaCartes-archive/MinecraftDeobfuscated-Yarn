@@ -11,9 +11,9 @@ import net.minecraft.util.Util;
  * 
  * <p>An instance can be obtained via {@link net.minecraft.entity.Entity#asMessageSender}.
  */
-public record MessageSender(UUID uuid, Text name, @Nullable Text teamName) {
-	public MessageSender(UUID uuid, Text name) {
-		this(uuid, name, null);
+public record MessageSender(UUID profileId, Text name, @Nullable Text teamName) {
+	public MessageSender(UUID profileId, Text name) {
+		this(profileId, name, null);
 	}
 
 	public MessageSender(PacketByteBuf buf) {
@@ -25,12 +25,16 @@ public record MessageSender(UUID uuid, Text name, @Nullable Text teamName) {
 	}
 
 	public void write(PacketByteBuf buf) {
-		buf.writeUuid(this.uuid);
+		buf.writeUuid(this.profileId);
 		buf.writeText(this.name);
 		buf.writeNullable(this.teamName, PacketByteBuf::writeText);
 	}
 
 	public MessageSender withTeamName(Text teamName) {
-		return new MessageSender(this.uuid, this.name, teamName);
+		return new MessageSender(this.profileId, this.name, teamName);
+	}
+
+	public boolean hasProfileId() {
+		return !this.profileId.equals(Util.NIL_UUID);
 	}
 }

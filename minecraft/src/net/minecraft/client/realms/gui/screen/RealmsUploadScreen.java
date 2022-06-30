@@ -224,7 +224,7 @@ public class RealmsUploadScreen extends RealmsScreen {
 		this.animTick++;
 		if (this.status != null && this.narrationRateLimiter.tryAcquire(1)) {
 			Text text = this.getNarration();
-			NarratorManager.INSTANCE.narrate(text);
+			this.client.getNarratorManager().narrate(text);
 		}
 	}
 
@@ -247,7 +247,7 @@ public class RealmsUploadScreen extends RealmsScreen {
 		new Thread(
 				() -> {
 					File file = null;
-					RealmsClient realmsClient = RealmsClient.method_44616();
+					RealmsClient realmsClient = RealmsClient.create();
 					long l = this.worldId;
 
 					try {
