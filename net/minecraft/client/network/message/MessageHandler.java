@@ -3,8 +3,11 @@
  */
 package net.minecraft.client.network.message;
 
+import com.google.common.collect.Queues;
 import com.mojang.authlib.GameProfile;
 import java.time.Instant;
+import java.util.Collection;
+import java.util.Deque;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -27,41 +30,100 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class MessageHandler {
     private final MinecraftClient client;
+    private final Deque<class_7596> field_39796 = Queues.newArrayDeque();
+    private long field_39797;
+    private long field_39798;
 
-    public MessageHandler(MinecraftClient client) {
-        this.client = client;
+    public MessageHandler(MinecraftClient minecraftClient) {
+        this.client = minecraftClient;
     }
 
-    public void onChatMessage(MessageType type, SignedMessage message, MessageSender sender) {
-        PlayerListEntry playerListEntry;
-        Text text;
-        if (this.client.shouldBlockMessages(sender.profileId())) {
+    public void method_44765() {
+        if (this.field_39797 == 0L) {
             return;
         }
+        if (Util.getMeasuringTimeMs() >= this.field_39798 + this.field_39797) {
+            class_7596 lv = this.field_39796.poll();
+            while (lv != null && !lv.accept()) {
+                lv = this.field_39796.poll();
+            }
+        }
+    }
+
+    public void method_44766(double d) {
+        long l = (long)(d * 1000.0);
+        if (l == 0L && this.field_39797 > 0L) {
+            this.field_39796.forEach(class_7596::accept);
+            this.field_39796.clear();
+        }
+        this.field_39797 = l;
+    }
+
+    public void method_44769() {
+        this.field_39796.remove().accept();
+    }
+
+    public Collection<?> method_44773() {
+        return this.field_39796;
+    }
+
+    private boolean method_44775() {
+        return this.field_39797 > 0L && Util.getMeasuringTimeMs() < this.field_39798 + this.field_39797;
+    }
+
+    public void onChatMessage(MessageType messageType, SignedMessage signedMessage, MessageSender messageSender) {
         boolean bl = this.client.options.getOnlyShowSecureChat().getValue();
-        SignedMessage signedMessage = bl ? message.withoutUnsigned() : message;
-        MessageTrustStatus messageTrustStatus = this.getStatus(sender, signedMessage, text = type.chat().apply(signedMessage.getContent(), sender), playerListEntry = this.getPlayerListEntry(sender));
-        if (messageTrustStatus.isInsecure() && bl) {
-            return;
+        SignedMessage signedMessage2 = bl ? signedMessage.withoutUnsigned() : signedMessage;
+        Text text = messageType.chat().apply(signedMessage2.getContent(), messageSender);
+        if (messageSender.hasProfileId()) {
+            PlayerListEntry playerListEntry = this.getPlayerListEntry(messageSender);
+            MessageTrustStatus messageTrustStatus = this.getStatus(messageSender, signedMessage, text, playerListEntry);
+            if (bl && messageTrustStatus.isInsecure()) {
+                return;
+            }
+            if (this.method_44775()) {
+                this.field_39796.add(() -> this.method_44768(messageType, messageSender, signedMessage, text, playerListEntry, messageTrustStatus));
+                return;
+            }
+            this.method_44768(messageType, messageSender, signedMessage, text, playerListEntry, messageTrustStatus);
+        } else {
+            if (this.method_44775()) {
+                this.field_39796.add(() -> this.method_44767(messageType, messageSender, signedMessage2, text));
+                return;
+            }
+            this.method_44767(messageType, messageSender, signedMessage2, text);
+        }
+    }
+
+    private boolean method_44768(MessageType messageType, MessageSender messageSender, SignedMessage signedMessage, Text text, @Nullable PlayerListEntry playerListEntry, MessageTrustStatus messageTrustStatus) {
+        if (this.client.shouldBlockMessages(messageSender.profileId())) {
+            return false;
         }
         MessageIndicator messageIndicator = messageTrustStatus.createIndicator(signedMessage);
-        this.client.inGameHud.getChatHud().queueMessage(text, messageIndicator);
-        this.client.getNarratorManager().narrateChatMessage(() -> type.narration().apply(signedMessage.getContent(), sender));
-        if (sender.hasProfileId()) {
-            this.addToChatLog(message, sender, playerListEntry, messageTrustStatus);
-        } else {
-            this.addToChatLog(text, message.signature().timestamp());
-        }
+        this.client.inGameHud.getChatHud().addMessage(text, messageIndicator);
+        this.method_44772(messageType, signedMessage, messageSender);
+        this.addToChatLog(signedMessage, messageSender, playerListEntry, messageTrustStatus);
+        this.field_39798 = Util.getMeasuringTimeMs();
+        return true;
     }
 
-    private MessageTrustStatus getStatus(MessageSender sender, SignedMessage message, Text decorated, @Nullable PlayerListEntry senderEntry) {
-        if (sender.hasProfileId()) {
-            if (this.isAlwaysTrusted(sender)) {
-                return MessageTrustStatus.SECURE;
-            }
-            return MessageTrustStatus.getStatus(message, decorated, senderEntry);
+    private boolean method_44767(MessageType messageType, MessageSender messageSender, SignedMessage signedMessage, Text text) {
+        this.client.inGameHud.getChatHud().addMessage(text, MessageIndicator.method_44751());
+        this.method_44772(messageType, signedMessage, messageSender);
+        this.addToChatLog(text, signedMessage.signature().timestamp());
+        this.field_39798 = Util.getMeasuringTimeMs();
+        return true;
+    }
+
+    private void method_44772(MessageType messageType, SignedMessage signedMessage, MessageSender messageSender) {
+        this.client.getNarratorManager().narrateChatMessage(() -> messageType.narration().apply(signedMessage.getContent(), messageSender));
+    }
+
+    private MessageTrustStatus getStatus(MessageSender messageSender, SignedMessage message, Text decorated, @Nullable PlayerListEntry senderEntry) {
+        if (this.isAlwaysTrusted(messageSender)) {
+            return MessageTrustStatus.SECURE;
         }
-        return MessageTrustStatus.UNKNOWN;
+        return MessageTrustStatus.getStatus(message, decorated, senderEntry);
     }
 
     private void addToChatLog(SignedMessage message, MessageSender sender, @Nullable PlayerListEntry senderEntry, MessageTrustStatus trustStatus) {
@@ -83,7 +145,7 @@ public class MessageHandler {
         if (overlay) {
             this.client.inGameHud.setOverlayMessage(message, false);
         } else {
-            this.client.inGameHud.getChatHud().addMessage(message);
+            this.client.inGameHud.getChatHud().addMessage(message, MessageIndicator.method_44751());
             this.addToChatLog(message, Instant.now());
         }
         this.client.getNarratorManager().narrate(message);
@@ -109,6 +171,12 @@ public class MessageHandler {
             return uUID.equals(sender.profileId());
         }
         return false;
+    }
+
+    @FunctionalInterface
+    @Environment(value=EnvType.CLIENT)
+    static interface class_7596 {
+        public boolean accept();
     }
 }
 

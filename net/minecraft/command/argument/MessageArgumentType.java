@@ -20,7 +20,6 @@ import net.minecraft.command.EntitySelectorReader;
 import net.minecraft.command.argument.TextConvertibleArgumentType;
 import net.minecraft.network.message.CommandArgumentSigner;
 import net.minecraft.network.message.MessageDecorator;
-import net.minecraft.network.message.MessageSender;
 import net.minecraft.network.message.MessageSignature;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.filter.FilteredMessage;
@@ -50,11 +49,7 @@ implements TextConvertibleArgumentType<MessageFormat> {
         CommandArgumentSigner commandArgumentSigner = context.getSource().getSigner();
         MessageSignature messageSignature = commandArgumentSigner.getArgumentSignature(name);
         boolean bl = commandArgumentSigner.isPreviewSigned(name);
-        MessageSender messageSender = context.getSource().getChatMessageSender();
-        if (messageSignature.canVerifyFrom(messageSender.profileId())) {
-            return new SignedMessage(messageFormat.contents, text, messageSignature, bl);
-        }
-        return new SignedMessage(messageFormat.contents, text, MessageSignature.none(), false);
+        return new SignedMessage(messageFormat.contents, text, messageSignature, bl);
     }
 
     @Override

@@ -10,6 +10,8 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -22,6 +24,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.command.CommandSource;
 import net.minecraft.network.packet.c2s.play.RequestCommandCompletionsC2SPacket;
+import net.minecraft.network.packet.s2c.play.ChatSuggestionsS2CPacket;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -42,6 +45,7 @@ implements CommandSource {
     private int completionId = -1;
     @Nullable
     private CompletableFuture<Suggestions> pendingCompletion;
+    private final Set<String> chatSuggestions = new HashSet<String>();
 
     public ClientCommandSource(ClientPlayNetworkHandler networkHandler, MinecraftClient client) {
         this.networkHandler = networkHandler;
@@ -55,6 +59,16 @@ implements CommandSource {
             list.add(playerListEntry.getProfile().getName());
         }
         return list;
+    }
+
+    @Override
+    public Collection<String> getChatSuggestions() {
+        if (this.chatSuggestions.isEmpty()) {
+            return this.getPlayerNames();
+        }
+        HashSet<String> set = new HashSet<String>(this.getPlayerNames());
+        set.addAll(this.chatSuggestions);
+        return set;
     }
 
     @Override
@@ -148,6 +162,23 @@ implements CommandSource {
             this.pendingCompletion.complete(suggestions);
             this.pendingCompletion = null;
             this.completionId = -1;
+        }
+    }
+
+    public void changeChatSuggestions(ChatSuggestionsS2CPacket.Action action, List<String> entries) {
+        switch (action) {
+            case ADD: {
+                this.chatSuggestions.addAll(entries);
+                break;
+            }
+            case REMOVE: {
+                entries.forEach(this.chatSuggestions::remove);
+                break;
+            }
+            case SET: {
+                this.chatSuggestions.clear();
+                this.chatSuggestions.addAll(entries);
+            }
         }
     }
 }

@@ -162,14 +162,14 @@ extends Screen {
             case ALL: {
                 this.allTabButton.setMessage(SELECTED_ALL_TAB_TITLE);
                 Collection<UUID> collection = this.client.player.networkHandler.getPlayerUuids();
-                this.playerList.refresh(collection, this.playerList.getScrollAmount());
+                this.playerList.update(collection, this.playerList.getScrollAmount(), true);
                 break;
             }
             case HIDDEN: {
                 this.hiddenTabButton.setMessage(SELECTED_HIDDEN_TAB_TITLE);
                 Set<UUID> set = this.client.getSocialInteractionsManager().getHiddenPlayers();
                 bl = set.isEmpty();
-                this.playerList.update(set, this.playerList.getScrollAmount());
+                this.playerList.update(set, this.playerList.getScrollAmount(), false);
                 break;
             }
             case BLOCKED: {
@@ -177,7 +177,7 @@ extends Screen {
                 SocialInteractionsManager socialInteractionsManager = this.client.getSocialInteractionsManager();
                 Set<UUID> set2 = this.client.player.networkHandler.getPlayerUuids().stream().filter(socialInteractionsManager::isPlayerBlocked).collect(Collectors.toSet());
                 bl = set2.isEmpty();
-                this.playerList.update(set2, this.playerList.getScrollAmount());
+                this.playerList.update(set2, this.playerList.getScrollAmount(), false);
             }
         }
         NarratorManager narratorManager = this.client.getNarratorManager();

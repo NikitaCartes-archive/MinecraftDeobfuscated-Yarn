@@ -379,7 +379,7 @@ extends AbstractClientPlayerEntity {
         } catch (Exception exception) {
             field_39078.error("Failed to sign chat message: '{}'", (Object)message.getString(), (Object)exception);
         }
-        return MessageSignature.none();
+        return MessageSignature.none(this.getUuid());
     }
 
     /**

@@ -215,7 +215,7 @@ public class GameOptions {
             return Text.translatable("options.chat.delay_none");
         }
         return Text.translatable("options.chat.delay", String.format("%.1f", value));
-    }, new SimpleOption.ValidatingIntSliderCallbacks(0, 60).withModifier(value -> (double)value / 10.0, value -> (int)(value * 10.0)), Codec.doubleRange(0.0, 6.0), 0.0, value -> {});
+    }, new SimpleOption.ValidatingIntSliderCallbacks(0, 60).withModifier(value -> (double)value / 10.0, value -> (int)(value * 10.0)), Codec.doubleRange(0.0, 6.0), 0.0, value -> MinecraftClient.getInstance().getMessageHandler().method_44766((double)value));
     private final SimpleOption<Integer> mipmapLevels = new SimpleOption<Integer>("options.mipmapLevels", SimpleOption.emptyTooltip(), (optionText, value) -> {
         if (value == 0) {
             return ScreenTexts.composeToggleText(optionText, false);

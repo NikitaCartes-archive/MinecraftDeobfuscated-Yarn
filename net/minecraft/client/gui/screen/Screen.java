@@ -224,9 +224,6 @@ implements Drawable {
         if (m + n + 6 > this.height) {
             m = this.height - n - 6;
         }
-        if (y - n - 8 < 0) {
-            m = y + 8;
-        }
         matrices.push();
         int o = -267386864;
         int p = 0x505000FF;

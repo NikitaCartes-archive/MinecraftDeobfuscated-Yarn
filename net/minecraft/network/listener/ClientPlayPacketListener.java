@@ -13,6 +13,7 @@ import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatPreviewS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatPreviewStateChangeS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChatSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDeltaUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkLoadDistanceS2CPacket;
@@ -321,5 +322,7 @@ extends PacketListener {
     public void onTitleClear(ClearTitleS2CPacket var1);
 
     public void onServerMetadata(ServerMetadataS2CPacket var1);
+
+    public void onChatSuggestions(ChatSuggestionsS2CPacket var1);
 }
 

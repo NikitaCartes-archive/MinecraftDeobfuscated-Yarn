@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
  * 
  * <p>An instance can be obtained via {@link net.minecraft.entity.Entity#asMessageSender}.
  */
-public record MessageSender(UUID profileId, Text name, @Nullable Text teamName) {
+public record MessageSender(UUID profileId, Text name, @Nullable Text targetName) {
     public MessageSender(UUID profileId, Text name) {
         this(profileId, name, null);
     }
@@ -30,11 +30,15 @@ public record MessageSender(UUID profileId, Text name, @Nullable Text teamName) 
     public void write(PacketByteBuf buf) {
         buf.writeUuid(this.profileId);
         buf.writeText(this.name);
-        buf.writeNullable(this.teamName, PacketByteBuf::writeText);
+        buf.writeNullable(this.targetName, PacketByteBuf::writeText);
     }
 
-    public MessageSender withTeamName(Text teamName) {
-        return new MessageSender(this.profileId, this.name, teamName);
+    public MessageSender withTargetName(Text targetName) {
+        return new MessageSender(this.profileId, this.name, targetName);
+    }
+
+    public MessageSender withoutProfileId() {
+        return new MessageSender(Util.NIL_UUID, this.name, this.targetName);
     }
 
     public boolean hasProfileId() {
@@ -42,8 +46,8 @@ public record MessageSender(UUID profileId, Text name, @Nullable Text teamName) 
     }
 
     @Nullable
-    public Text teamName() {
-        return this.teamName;
+    public Text targetName() {
+        return this.targetName;
     }
 }
 

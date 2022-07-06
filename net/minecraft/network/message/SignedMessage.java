@@ -6,7 +6,9 @@ package net.minecraft.network.message;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
+import java.util.UUID;
 import net.minecraft.network.encryption.PlayerPublicKey;
+import net.minecraft.network.message.MessageSender;
 import net.minecraft.network.message.MessageSignature;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.filter.FilteredMessage;
@@ -58,11 +60,12 @@ public record SignedMessage(Text signedContent, MessageSignature signature, Opti
     }
 
     public static FilteredMessage<SignedMessage> toSignedMessage(FilteredMessage<Text> original, FilteredMessage<Text> decorated, MessageSignature signature, boolean preview) {
-        Text text = original.raw();
-        Text text2 = decorated.raw();
-        SignedMessage signedMessage = SignedMessage.of(text, text2, signature, preview);
+        Text text2 = original.raw();
+        Text text22 = decorated.raw();
+        SignedMessage signedMessage = SignedMessage.of(text2, text22, signature, preview);
         if (decorated.isFiltered()) {
-            SignedMessage signedMessage2 = Util.map(decorated.filtered(), SignedMessage::of);
+            UUID uUID = signature.sender();
+            SignedMessage signedMessage2 = Util.map(decorated.filtered(), text -> SignedMessage.of(uUID, text));
             return new FilteredMessage<SignedMessage>(signedMessage, signedMessage2);
         }
         return FilteredMessage.permitted(signedMessage);
@@ -71,8 +74,8 @@ public record SignedMessage(Text signedContent, MessageSignature signature, Opti
     /**
      * {@return a new signed chat message with {@code signedContent} and "none" signature}
      */
-    public static SignedMessage of(Text content) {
-        return new SignedMessage(content, MessageSignature.none(), Optional.empty());
+    public static SignedMessage of(UUID uUID, Text text) {
+        return new SignedMessage(text, MessageSignature.none(uUID), Optional.empty());
     }
 
     /**
@@ -138,6 +141,10 @@ public record SignedMessage(Text signedContent, MessageSignature signature, Opti
 
     public boolean isExpiredOnClient(Instant currentTime) {
         return currentTime.isAfter(this.signature.timestamp().plus(CLIENTBOUND_TIME_TO_LIVE));
+    }
+
+    public boolean method_44781(MessageSender sender) {
+        return sender.hasProfileId() && this.signature.sender().equals(sender.profileId());
     }
 }
 

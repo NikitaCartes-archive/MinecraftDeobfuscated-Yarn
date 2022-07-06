@@ -173,7 +173,7 @@ StringVisitable {
             return true;
         }
         List<Text> list = this.withoutStyle();
-        return Collections.indexOfSubList(list, list2 = text.withoutStyle()) != -1;
+        return Collections.indexOfSubList(list, list2 = text.getWithStyle(this.getStyle())) != -1;
     }
 
     /**

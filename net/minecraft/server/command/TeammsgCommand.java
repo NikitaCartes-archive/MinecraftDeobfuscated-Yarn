@@ -42,7 +42,7 @@ public class TeamMsgCommand {
             throw NO_TEAM_EXCEPTION.create();
         }
         MutableText text = team.getFormattedName().fillStyle(STYLE);
-        MessageSender messageSender = source.getChatMessageSender().withTeamName(text);
+        MessageSender messageSender = source.getChatMessageSender().withTargetName(text);
         List<ServerPlayerEntity> list = source.getServer().getPlayerManager().getPlayerList().stream().filter(serverPlayerEntity -> serverPlayerEntity == entity || serverPlayerEntity.getScoreboardTeam() == team).toList();
         if (list.isEmpty()) {
             return 0;

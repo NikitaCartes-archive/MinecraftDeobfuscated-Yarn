@@ -8,12 +8,13 @@ import java.util.UUID;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.message.ArgumentSignatureDataMap;
 import net.minecraft.network.message.MessageSignature;
+import net.minecraft.util.Util;
 
 /**
  * A signer for command arguments.
  */
 public interface CommandArgumentSigner {
-    public static final CommandArgumentSigner NONE = argumentName -> MessageSignature.none();
+    public static final CommandArgumentSigner NONE = argumentName -> MessageSignature.none(Util.NIL_UUID);
 
     public MessageSignature getArgumentSignature(String var1);
 
@@ -29,7 +30,7 @@ public interface CommandArgumentSigner {
             if (signatureData != null) {
                 return new MessageSignature(this.sender, this.timestamp, signatureData);
             }
-            return MessageSignature.none();
+            return MessageSignature.none(this.sender);
         }
 
         @Override

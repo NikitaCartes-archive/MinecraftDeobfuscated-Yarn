@@ -46,6 +46,10 @@ public record ChatMessageS2CPacket(Text signedContent, Optional<Text> unsignedCo
         this(buf.readText(), buf.readOptional(PacketByteBuf::readText), buf.readVarInt(), new MessageSender(buf), buf.readInstant(), new NetworkEncryptionUtils.SignatureData(buf));
     }
 
+    public static ChatMessageS2CPacket ofUnsigned(Text text, int typeId, MessageSender sender, Instant timestamp) {
+        return new ChatMessageS2CPacket(text, Optional.empty(), typeId, sender, timestamp, NetworkEncryptionUtils.SignatureData.NONE);
+    }
+
     @Override
     public void write(PacketByteBuf buf) {
         buf.writeText(this.signedContent);

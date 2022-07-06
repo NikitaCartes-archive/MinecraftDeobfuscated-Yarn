@@ -18,8 +18,7 @@ import org.jetbrains.annotations.Nullable;
 public enum MessageTrustStatus {
     SECURE,
     MODIFIED,
-    NOT_SECURE,
-    UNKNOWN;
+    NOT_SECURE;
 
 
     public static MessageTrustStatus getStatus(SignedMessage message, Text decorated, @Nullable PlayerListEntry sender) {
