@@ -160,7 +160,7 @@ public interface Text extends Message, StringVisitable {
 			return true;
 		} else {
 			List<Text> list = this.withoutStyle();
-			List<Text> list2 = text.withoutStyle();
+			List<Text> list2 = text.getWithStyle(this.getStyle());
 			return Collections.indexOfSubList(list, list2) != -1;
 		}
 	}

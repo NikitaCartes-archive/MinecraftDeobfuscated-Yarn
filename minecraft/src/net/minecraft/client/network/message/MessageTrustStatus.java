@@ -15,8 +15,7 @@ import net.minecraft.util.Util;
 public enum MessageTrustStatus {
 	SECURE,
 	MODIFIED,
-	NOT_SECURE,
-	UNKNOWN;
+	NOT_SECURE;
 
 	public static MessageTrustStatus getStatus(SignedMessage message, Text decorated, @Nullable PlayerListEntry sender) {
 		if (message.isExpiredOnClient(Instant.now())) {

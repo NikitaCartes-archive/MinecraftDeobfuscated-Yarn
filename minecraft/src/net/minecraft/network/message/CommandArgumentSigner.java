@@ -3,12 +3,13 @@ package net.minecraft.network.message;
 import java.time.Instant;
 import java.util.UUID;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
+import net.minecraft.util.Util;
 
 /**
  * A signer for command arguments.
  */
 public interface CommandArgumentSigner {
-	CommandArgumentSigner NONE = argumentName -> MessageSignature.none();
+	CommandArgumentSigner NONE = argumentName -> MessageSignature.none(Util.NIL_UUID);
 
 	MessageSignature getArgumentSignature(String argumentName);
 
@@ -25,7 +26,7 @@ public interface CommandArgumentSigner {
 		@Override
 		public MessageSignature getArgumentSignature(String string) {
 			NetworkEncryptionUtils.SignatureData signatureData = this.argumentSignatures.get(string);
-			return signatureData != null ? new MessageSignature(this.sender, this.timestamp, signatureData) : MessageSignature.none();
+			return signatureData != null ? new MessageSignature(this.sender, this.timestamp, signatureData) : MessageSignature.none(this.sender);
 		}
 
 		@Override

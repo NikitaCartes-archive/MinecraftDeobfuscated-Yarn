@@ -205,7 +205,7 @@ public class CommandSuggestor {
 		} else {
 			String string2 = string.substring(0, i);
 			int j = getStartOfCurrentWord(string2);
-			Collection<String> collection = this.client.player.networkHandler.getCommandSource().getPlayerNames();
+			Collection<String> collection = this.client.player.networkHandler.getCommandSource().getChatSuggestions();
 			this.pendingSuggestions = CommandSource.suggestMatching(collection, new SuggestionsBuilder(string2, j));
 		}
 	}

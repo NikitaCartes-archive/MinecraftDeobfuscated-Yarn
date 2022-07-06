@@ -17,8 +17,8 @@ import net.minecraft.util.Util;
  * of the sender, the timestamp, and the signature data.
  */
 public record MessageSignature(UUID sender, Instant timestamp, NetworkEncryptionUtils.SignatureData saltSignature) {
-	public static MessageSignature none() {
-		return new MessageSignature(Util.NIL_UUID, Instant.now(), NetworkEncryptionUtils.SignatureData.NONE);
+	public static MessageSignature none(UUID uUID) {
+		return new MessageSignature(uUID, Instant.now(), NetworkEncryptionUtils.SignatureData.NONE);
 	}
 
 	/**
@@ -76,16 +76,5 @@ public record MessageSignature(UUID sender, Instant timestamp, NetworkEncryption
 	 */
 	public boolean canVerify() {
 		return this.sender != Util.NIL_UUID && this.saltSignature.isSignaturePresent();
-	}
-
-	/**
-	 * {@return whether the message is from {@code expectedSender} and the signature
-	 * can be verified}
-	 * 
-	 * <p>Verifiable signature is not the same as verified signature. A signatures is verifiable
-	 * if it has proper sender UUID and signature data. However, it can still fail to verify.
-	 */
-	public boolean canVerifyFrom(UUID expectedSender) {
-		return this.canVerify() && expectedSender.equals(this.sender);
 	}
 }
