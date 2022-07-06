@@ -219,10 +219,6 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 				m = this.height - j - 6;
 			}
 
-			if (y - j - 8 < 0) {
-				m = y + 8;
-			}
-
 			matrices.push();
 			int o = -267386864;
 			int p = 1347420415;

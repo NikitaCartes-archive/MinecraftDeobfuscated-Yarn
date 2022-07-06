@@ -41,7 +41,7 @@ public class TeamMsgCommand {
 			throw NO_TEAM_EXCEPTION.create();
 		} else {
 			Text text = team.getFormattedName().fillStyle(STYLE);
-			MessageSender messageSender = source.getChatMessageSender().withTeamName(text);
+			MessageSender messageSender = source.getChatMessageSender().withTargetName(text);
 			List<ServerPlayerEntity> list = source.getServer()
 				.getPlayerManager()
 				.getPlayerList()

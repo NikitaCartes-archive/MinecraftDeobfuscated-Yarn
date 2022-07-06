@@ -19,6 +19,8 @@ import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.message.CommandArgumentSigner;
 import net.minecraft.network.message.MessageSender;
+import net.minecraft.network.message.MessageType;
+import net.minecraft.network.message.SignedMessage;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -425,6 +427,17 @@ public class ServerCommandSource implements CommandSource {
 
 	public CommandArgumentSigner getSigner() {
 		return this.signer;
+	}
+
+	public void sendChatMessage(MessageSender sender, SignedMessage message, RegistryKey<MessageType> typeKey) {
+		if (!this.silent) {
+			ServerPlayerEntity serverPlayerEntity = this.getPlayer();
+			if (serverPlayerEntity != null) {
+				serverPlayerEntity.sendChatMessage(message, sender, typeKey);
+			} else {
+				this.output.sendMessage(this.server.applyDecoration(sender, message.getContent(), typeKey));
+			}
+		}
 	}
 
 	public void sendFeedback(Text message, boolean broadcastToOps) {

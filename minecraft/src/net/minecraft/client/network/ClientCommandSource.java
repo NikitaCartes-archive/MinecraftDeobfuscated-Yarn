@@ -6,6 +6,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -17,6 +18,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.command.CommandSource;
 import net.minecraft.network.packet.c2s.play.RequestCommandCompletionsC2SPacket;
+import net.minecraft.network.packet.s2c.play.ChatSuggestionsS2CPacket;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -35,6 +37,7 @@ public class ClientCommandSource implements CommandSource {
 	private int completionId = -1;
 	@Nullable
 	private CompletableFuture<Suggestions> pendingCompletion;
+	private final Set<String> chatSuggestions = new HashSet();
 
 	public ClientCommandSource(ClientPlayNetworkHandler networkHandler, MinecraftClient client) {
 		this.networkHandler = networkHandler;
@@ -50,6 +53,17 @@ public class ClientCommandSource implements CommandSource {
 		}
 
 		return list;
+	}
+
+	@Override
+	public Collection<String> getChatSuggestions() {
+		if (this.chatSuggestions.isEmpty()) {
+			return this.getPlayerNames();
+		} else {
+			Set<String> set = new HashSet(this.getPlayerNames());
+			set.addAll(this.chatSuggestions);
+			return set;
+		}
 	}
 
 	@Override
@@ -147,6 +161,20 @@ public class ClientCommandSource implements CommandSource {
 			this.pendingCompletion.complete(suggestions);
 			this.pendingCompletion = null;
 			this.completionId = -1;
+		}
+	}
+
+	public void changeChatSuggestions(ChatSuggestionsS2CPacket.Action action, List<String> entries) {
+		switch (action) {
+			case ADD:
+				this.chatSuggestions.addAll(entries);
+				break;
+			case REMOVE:
+				entries.forEach(this.chatSuggestions::remove);
+				break;
+			case SET:
+				this.chatSuggestions.clear();
+				this.chatSuggestions.addAll(entries);
 		}
 	}
 }

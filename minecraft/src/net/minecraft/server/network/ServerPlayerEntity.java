@@ -1326,17 +1326,17 @@ public class ServerPlayerEntity extends PlayerEntity {
 	 */
 	public void sendChatMessage(SignedMessage message, MessageSender sender, RegistryKey<MessageType> typeKey) {
 		if (this.acceptsChatMessage()) {
-			this.networkHandler
-				.sendPacket(
-					new ChatMessageS2CPacket(
-						message.signedContent(),
-						message.unsignedContent(),
-						this.getMessageTypeId(typeKey),
-						sender,
-						message.signature().timestamp(),
-						message.signature().saltSignature()
-					)
-				);
+			int i = this.getMessageTypeId(typeKey);
+			if (message.method_44781(sender)) {
+				this.networkHandler
+					.sendPacket(
+						new ChatMessageS2CPacket(
+							message.signedContent(), message.unsignedContent(), i, sender, message.signature().timestamp(), message.signature().saltSignature()
+						)
+					);
+			} else {
+				this.networkHandler.sendPacket(ChatMessageS2CPacket.ofUnsigned(message.getContent(), i, sender.withoutProfileId(), message.signature().timestamp()));
+			}
 		}
 	}
 

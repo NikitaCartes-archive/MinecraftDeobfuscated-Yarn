@@ -1901,12 +1901,16 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	public void logChatMessage(MessageSender sender, Text message, RegistryKey<MessageType> typeKey) {
+		LOGGER.info(this.applyDecoration(sender, message, typeKey).getString());
+	}
+
+	public Text applyDecoration(MessageSender sender, Text text, RegistryKey<MessageType> typeKey) {
 		Decoration decoration = (Decoration)this.getRegistryManager()
 			.getOptional(Registry.MESSAGE_TYPE_KEY)
 			.map(registry -> registry.get(typeKey))
 			.map(MessageType::chat)
 			.orElse(MessageType.CHAT_TEXT_DECORATION);
-		LOGGER.info(decoration.apply(message, sender).getString());
+		return decoration.apply(text, sender);
 	}
 
 	/**

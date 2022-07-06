@@ -29,19 +29,18 @@ public record Decoration(String translationKey, List<Decoration.Parameter> param
 	/**
 	 * {@return the decoration used in chat messages}
 	 * 
-	 * @implNote This decoration allows use of the sender and the content parameters. It has no style.
+	 * @implNote This decoration allows using the sender and the content parameters. It has no style.
 	 */
 	public static Decoration ofChat(String translationKey) {
 		return new Decoration(translationKey, List.of(Decoration.Parameter.SENDER, Decoration.Parameter.CONTENT), Style.EMPTY);
 	}
 
 	/**
-	 * {@return the decoration used in {@link net.minecraft.server.command.MessageCommand}}
+	 * {@return the decoration used in chat messages}
 	 * 
-	 * @implNote This decoration allows use of the sender and the content parameters.
-	 * The text is colored gray and is displayed in italic.
+	 * @implNote This decoration allows using the sender and the content parameters. It is gray and italic.
 	 */
-	public static Decoration ofDirectMessage(String translationKey) {
+	public static Decoration ofIncomingMessage(String translationKey) {
 		Style style = Style.EMPTY.withColor(Formatting.GRAY).withItalic(true);
 		return new Decoration(translationKey, List.of(Decoration.Parameter.SENDER, Decoration.Parameter.CONTENT), style);
 	}
@@ -49,11 +48,21 @@ public record Decoration(String translationKey, List<Decoration.Parameter> param
 	/**
 	 * {@return the decoration used in chat messages}
 	 * 
-	 * @implNote This decoration allows use of the team name, the sender, and the
+	 * @implNote This decoration allows using the target and the content parameters. It is gray and italic.
+	 */
+	public static Decoration ofOutgoingMessage(String translationKey) {
+		Style style = Style.EMPTY.withColor(Formatting.GRAY).withItalic(true);
+		return new Decoration(translationKey, List.of(Decoration.Parameter.TARGET, Decoration.Parameter.CONTENT), style);
+	}
+
+	/**
+	 * {@return the decoration used in chat messages}
+	 * 
+	 * @implNote This decoration allows using the target (team name), the sender, and the
 	 * content parameters. It has no style.
 	 */
 	public static Decoration ofTeamMessage(String translationKey) {
-		return new Decoration(translationKey, List.of(Decoration.Parameter.TEAM_NAME, Decoration.Parameter.SENDER, Decoration.Parameter.CONTENT), Style.EMPTY);
+		return new Decoration(translationKey, List.of(Decoration.Parameter.TARGET, Decoration.Parameter.SENDER, Decoration.Parameter.CONTENT), Style.EMPTY);
 	}
 
 	/**
@@ -89,7 +98,7 @@ public record Decoration(String translationKey, List<Decoration.Parameter> param
 	 */
 	public static enum Parameter implements StringIdentifiable {
 		SENDER("sender", (content, sender) -> sender.name()),
-		TEAM_NAME("team_name", (content, sender) -> sender.teamName()),
+		TARGET("target", (content, sender) -> sender.targetName()),
 		CONTENT("content", (content, sender) -> content);
 
 		public static final com.mojang.serialization.Codec<Decoration.Parameter> CODEC = StringIdentifiable.createCodec(Decoration.Parameter::values);

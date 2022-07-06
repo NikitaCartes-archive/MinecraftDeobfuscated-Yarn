@@ -3,6 +3,7 @@ package net.minecraft.network.message;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
+import java.util.UUID;
 import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.filter.FilteredMessage;
@@ -58,7 +59,8 @@ public record SignedMessage(Text signedContent, MessageSignature signature, Opti
 		Text text2 = decorated.raw();
 		SignedMessage signedMessage = of(text, text2, signature, preview);
 		if (decorated.isFiltered()) {
-			SignedMessage signedMessage2 = Util.map(decorated.filtered(), SignedMessage::of);
+			UUID uUID = signature.sender();
+			SignedMessage signedMessage2 = Util.map(decorated.filtered(), textx -> of(uUID, textx));
 			return new FilteredMessage<>(signedMessage, signedMessage2);
 		} else {
 			return FilteredMessage.permitted(signedMessage);
@@ -68,8 +70,8 @@ public record SignedMessage(Text signedContent, MessageSignature signature, Opti
 	/**
 	 * {@return a new signed chat message with {@code signedContent} and "none" signature}
 	 */
-	public static SignedMessage of(Text content) {
-		return new SignedMessage(content, MessageSignature.none(), Optional.empty());
+	public static SignedMessage of(UUID uUID, Text text) {
+		return new SignedMessage(text, MessageSignature.none(uUID), Optional.empty());
 	}
 
 	/**
@@ -132,5 +134,9 @@ public record SignedMessage(Text signedContent, MessageSignature signature, Opti
 
 	public boolean isExpiredOnClient(Instant currentTime) {
 		return currentTime.isAfter(this.signature.timestamp().plus(CLIENTBOUND_TIME_TO_LIVE));
+	}
+
+	public boolean method_44781(MessageSender sender) {
+		return sender.hasProfileId() && this.signature.sender().equals(sender.profileId());
 	}
 }

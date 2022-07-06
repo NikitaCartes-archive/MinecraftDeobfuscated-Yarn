@@ -51,13 +51,19 @@ public record MessageType(Decoration chat, Decoration narration) {
 	 */
 	public static final RegistryKey<MessageType> SAY_COMMAND = register("say_command");
 	/**
-	 * The registry key for the message command message type, used by {@linkplain
-	 * net.minecraft.server.command.MessageCommand /msg}. The message content is
-	 * {@linkplain Decoration#ofDirectMessage decorated} using the
-	 * {@code commands.message.display.incoming} text, and the text is italicized and colored
-	 * gray.
+	 * The registry key for the msg command message type, used by {@linkplain
+	 * net.minecraft.server.command.MessageCommand /msg} for incoming messages.
+	 * The message content is {@linkplain Decoration#ofIncomingMessage decorated} using
+	 * the {@code commands.message.display.incoming} text.
 	 */
-	public static final RegistryKey<MessageType> MSG_COMMAND = register("msg_command");
+	public static final RegistryKey<MessageType> MSG_COMMAND_INCOMING = register("msg_command_incoming");
+	/**
+	 * The registry key for the msg command message type, used by {@linkplain
+	 * net.minecraft.server.command.MessageCommand /msg} for outgoing messages.
+	 * The message content is {@linkplain Decoration#ofOutgoingMessage decorated} using
+	 * the {@code commands.message.display.outgoing} text.
+	 */
+	public static final RegistryKey<MessageType> MSG_COMMAND_OUTGOING = register("msg_command_outgoing");
 	/**
 	 * The registry key for the team message command message type, used by {@linkplain
 	 * net.minecraft.server.command.TeamMsgCommand /teammsg}. The message content is
@@ -80,7 +86,14 @@ public record MessageType(Decoration chat, Decoration narration) {
 		BuiltinRegistries.add(registry, CHAT, new MessageType(CHAT_TEXT_DECORATION, Decoration.ofChat("chat.type.text.narrate")));
 		BuiltinRegistries.add(registry, SAY_COMMAND, new MessageType(Decoration.ofChat("chat.type.announcement"), Decoration.ofChat("chat.type.text.narrate")));
 		BuiltinRegistries.add(
-			registry, MSG_COMMAND, new MessageType(Decoration.ofDirectMessage("commands.message.display.incoming"), Decoration.ofChat("chat.type.text.narrate"))
+			registry,
+			MSG_COMMAND_INCOMING,
+			new MessageType(Decoration.ofIncomingMessage("commands.message.display.incoming"), Decoration.ofChat("chat.type.text.narrate"))
+		);
+		BuiltinRegistries.add(
+			registry,
+			MSG_COMMAND_OUTGOING,
+			new MessageType(Decoration.ofOutgoingMessage("commands.message.display.outgoing"), Decoration.ofChat("chat.type.text.narrate"))
 		);
 		BuiltinRegistries.add(
 			registry, TEAM_MSG_COMMAND, new MessageType(Decoration.ofTeamMessage("chat.type.team.text"), Decoration.ofChat("chat.type.text.narrate"))

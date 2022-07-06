@@ -81,6 +81,7 @@ import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatPreviewS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatPreviewStateChangeS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChatSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDeltaUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkLoadDistanceS2CPacket;
@@ -213,6 +214,7 @@ public enum NetworkState {
 					.register(ScreenHandlerPropertyUpdateS2CPacket.class, ScreenHandlerPropertyUpdateS2CPacket::new)
 					.register(ScreenHandlerSlotUpdateS2CPacket.class, ScreenHandlerSlotUpdateS2CPacket::new)
 					.register(CooldownUpdateS2CPacket.class, CooldownUpdateS2CPacket::new)
+					.register(ChatSuggestionsS2CPacket.class, ChatSuggestionsS2CPacket::new)
 					.register(CustomPayloadS2CPacket.class, CustomPayloadS2CPacket::new)
 					.register(PlaySoundIdS2CPacket.class, PlaySoundIdS2CPacket::new)
 					.register(DisconnectS2CPacket.class, DisconnectS2CPacket::new)

@@ -327,8 +327,7 @@ public class GameOptions {
 		new SimpleOption.ValidatingIntSliderCallbacks(0, 60).withModifier(value -> (double)value / 10.0, value -> (int)(value * 10.0)),
 		Codec.doubleRange(0.0, 6.0),
 		0.0,
-		value -> {
-		}
+		value -> MinecraftClient.getInstance().getMessageHandler().method_44766(value)
 	);
 	private final SimpleOption<Integer> mipmapLevels = new SimpleOption<>(
 		"options.mipmapLevels",

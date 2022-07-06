@@ -15,7 +15,6 @@ import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
 import net.minecraft.network.message.CommandArgumentSigner;
 import net.minecraft.network.message.MessageDecorator;
-import net.minecraft.network.message.MessageSender;
 import net.minecraft.network.message.MessageSignature;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.filter.FilteredMessage;
@@ -43,10 +42,7 @@ public class MessageArgumentType implements TextConvertibleArgumentType<MessageA
 		CommandArgumentSigner commandArgumentSigner = context.getSource().getSigner();
 		MessageSignature messageSignature = commandArgumentSigner.getArgumentSignature(name);
 		boolean bl = commandArgumentSigner.isPreviewSigned(name);
-		MessageSender messageSender = context.getSource().getChatMessageSender();
-		return messageSignature.canVerifyFrom(messageSender.profileId())
-			? new MessageArgumentType.SignedMessage(messageFormat.contents, text, messageSignature, bl)
-			: new MessageArgumentType.SignedMessage(messageFormat.contents, text, MessageSignature.none(), false);
+		return new MessageArgumentType.SignedMessage(messageFormat.contents, text, messageSignature, bl);
 	}
 
 	public MessageArgumentType.MessageFormat parse(StringReader stringReader) throws CommandSyntaxException {

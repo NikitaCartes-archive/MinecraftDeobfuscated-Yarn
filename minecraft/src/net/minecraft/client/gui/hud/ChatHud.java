@@ -1,10 +1,9 @@
 package net.minecraft.client.gui.hud;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Queues;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
-import java.util.Deque;
+import java.util.Collection;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -13,6 +12,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.network.message.MessageHandler;
 import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.client.util.ChatMessages;
 import net.minecraft.client.util.math.MatrixStack;
@@ -40,10 +40,8 @@ public class ChatHud extends DrawableHelper {
 	private final List<String> messageHistory = Lists.<String>newArrayList();
 	private final List<ChatHudLine> messages = Lists.<ChatHudLine>newArrayList();
 	private final List<ChatHudLine.Visible> visibleMessages = Lists.<ChatHudLine.Visible>newArrayList();
-	private final Deque<ChatHud.MessageWithIndicator> messageQueue = Queues.<ChatHud.MessageWithIndicator>newArrayDeque();
 	private int scrolledLines;
 	private boolean hasUnreadNewMessages;
-	private long lastMessageAddedTime;
 
 	public ChatHud(MinecraftClient client) {
 		this.client = client;
@@ -51,7 +49,6 @@ public class ChatHud extends DrawableHelper {
 
 	public void render(MatrixStack matrices, int tickDelta) {
 		if (!this.isChatHidden()) {
-			this.processMessageQueue();
 			int i = this.getVisibleLineCount();
 			int j = this.visibleMessages.size();
 			if (j > 0) {
@@ -64,8 +61,8 @@ public class ChatHud extends DrawableHelper {
 				double d = this.client.options.getChatOpacity().getValue() * 0.9F + 0.1F;
 				double e = this.client.options.getTextBackgroundOpacity().getValue();
 				double g = this.client.options.getChatLineSpacing().getValue();
-				double h = 9.0 * (g + 1.0);
-				double l = -8.0 * (g + 1.0) + 4.0 * g;
+				int l = this.method_44752();
+				double h = -8.0 * (g + 1.0) + 4.0 * g;
 				int m = 0;
 
 				for (int n = 0; n + this.scrolledLines < this.visibleMessages.size() && n < i; n++) {
@@ -79,15 +76,15 @@ public class ChatHud extends DrawableHelper {
 							m++;
 							if (q > 3) {
 								int s = 0;
-								double t = (double)(-n) * h;
-								int u = (int)(t + l);
+								int t = -n * l;
+								int u = (int)((double)t + h);
 								matrices.push();
 								matrices.translate(0.0, 0.0, 50.0);
-								fill(matrices, -4, (int)(t - h), 0 + k + 4, (int)t, r << 24);
+								fill(matrices, -4, t - l, 0 + k + 4 + 4, t, r << 24);
 								MessageIndicator messageIndicator = visible.indicator();
 								if (messageIndicator != null) {
 									int v = messageIndicator.indicatorColor() | q << 24;
-									fill(matrices, -4, (int)(t - h), -2, (int)t, v);
+									fill(matrices, -4, t - l, -2, t, v);
 									if (bl && visible.endOfEntry() && messageIndicator.icon() != null) {
 										int w = this.getIndicatorX(visible);
 										int x = u + 9;
@@ -105,31 +102,32 @@ public class ChatHud extends DrawableHelper {
 					}
 				}
 
-				if (!this.messageQueue.isEmpty()) {
-					int nx = (int)(128.0 * d);
-					int y = (int)(255.0 * e);
+				Collection<?> collection = this.client.getMessageHandler().method_44773();
+				if (!collection.isEmpty()) {
+					int y = (int)(128.0 * d);
+					int o = (int)(255.0 * e);
 					matrices.push();
 					matrices.translate(0.0, 0.0, 50.0);
-					fill(matrices, -2, 0, k + 4, 9, y << 24);
+					fill(matrices, -2, 0, k + 4, 9, o << 24);
 					RenderSystem.enableBlend();
 					matrices.translate(0.0, 0.0, 50.0);
-					this.client.textRenderer.drawWithShadow(matrices, Text.translatable("chat.queue", this.messageQueue.size()), 0.0F, 1.0F, 16777215 + (nx << 24));
+					this.client.textRenderer.drawWithShadow(matrices, Text.translatable("chat.queue", collection.size()), 0.0F, 1.0F, 16777215 + (y << 24));
 					matrices.pop();
 					RenderSystem.disableBlend();
 				}
 
 				if (bl) {
-					int nx = 9;
-					int y = j * nx;
-					int o = m * nx;
-					int z = this.scrolledLines * o / j;
-					int aa = o * o / y;
-					if (y != o) {
-						int q = z > 0 ? 170 : 96;
-						int r = this.hasUnreadNewMessages ? 13382451 : 3355562;
-						matrices.translate(-4.0, 0.0, 0.0);
-						fill(matrices, 0, -z, 2, -z - aa, r + (q << 24));
-						fill(matrices, 2, -z, 1, -z - aa, 13421772 + (q << 24));
+					int y = this.method_44752();
+					int o = j * y;
+					int z = m * y;
+					int aa = this.scrolledLines * z / j;
+					int q = z * z / o;
+					if (o != z) {
+						int r = aa > 0 ? 170 : 96;
+						int s = this.hasUnreadNewMessages ? 13382451 : 3355562;
+						int t = k + 4;
+						fill(matrices, t, -aa, t + 2, -aa - q, s + (r << 24));
+						fill(matrices, t + 2, -aa, t + 1, -aa - q, 13421772 + (r << 24));
 					}
 				}
 
@@ -160,7 +158,7 @@ public class ChatHud extends DrawableHelper {
 	}
 
 	public void clear(boolean clearHistory) {
-		this.messageQueue.clear();
+		this.client.getMessageHandler().method_44773().clear();
 		this.visibleMessages.clear();
 		this.messages.clear();
 		if (clearHistory) {
@@ -255,16 +253,19 @@ public class ChatHud extends DrawableHelper {
 	}
 
 	public boolean mouseClicked(double mouseX, double mouseY) {
-		if (this.isChatFocused() && !this.client.options.hudHidden && !this.isChatHidden() && !this.messageQueue.isEmpty()) {
-			double d = mouseX - 2.0;
-			double e = (double)this.client.getWindow().getScaledHeight() - mouseY - 40.0;
-			if (d <= (double)MathHelper.floor((double)this.getWidth() / this.getChatScale()) && e < 0.0 && e > (double)MathHelper.floor(-9.0 * this.getChatScale())) {
-				ChatHud.MessageWithIndicator messageWithIndicator = (ChatHud.MessageWithIndicator)this.messageQueue.remove();
-				this.addMessage(messageWithIndicator.message(), messageWithIndicator.indicator());
-				this.lastMessageAddedTime = System.currentTimeMillis();
-				return true;
-			} else {
+		if (this.isChatFocused() && !this.client.options.hudHidden && !this.isChatHidden()) {
+			MessageHandler messageHandler = this.client.getMessageHandler();
+			if (messageHandler.method_44773().isEmpty()) {
 				return false;
+			} else {
+				double d = mouseX - 2.0;
+				double e = (double)this.client.getWindow().getScaledHeight() - mouseY - 40.0;
+				if (d <= (double)MathHelper.floor((double)this.getWidth() / this.getChatScale()) && e < 0.0 && e > (double)MathHelper.floor(-9.0 * this.getChatScale())) {
+					messageHandler.method_44769();
+					return true;
+				} else {
+					return false;
+				}
 			}
 		} else {
 			return false;
@@ -359,10 +360,7 @@ public class ChatHud extends DrawableHelper {
 	}
 
 	public int getHeight() {
-		return getHeight(
-			this.isChatFocused() ? this.client.options.getChatHeightFocused().getValue() : this.client.options.getChatHeightUnfocused().getValue()
-				/ (this.client.options.getChatLineSpacing().getValue() + 1.0)
-		);
+		return getHeight(this.isChatFocused() ? this.client.options.getChatHeightFocused().getValue() : this.client.options.getChatHeightUnfocused().getValue());
 	}
 
 	public double getChatScale() {
@@ -388,43 +386,10 @@ public class ChatHud extends DrawableHelper {
 	}
 
 	public int getVisibleLineCount() {
-		return this.getHeight() / 9;
+		return this.getHeight() / this.method_44752();
 	}
 
-	private long getChatDelayMillis() {
-		return (long)(this.client.options.getChatDelay().getValue() * 1000.0);
-	}
-
-	private void processMessageQueue() {
-		if (!this.messageQueue.isEmpty()) {
-			long l = System.currentTimeMillis();
-			if (l - this.lastMessageAddedTime >= this.getChatDelayMillis()) {
-				ChatHud.MessageWithIndicator messageWithIndicator = (ChatHud.MessageWithIndicator)this.messageQueue.remove();
-				this.addMessage(messageWithIndicator.message(), messageWithIndicator.indicator());
-				this.lastMessageAddedTime = l;
-			}
-		}
-	}
-
-	public void queueMessage(Text message) {
-		this.queueMessage(message, null);
-	}
-
-	public void queueMessage(Text message, @Nullable MessageIndicator indicator) {
-		if (this.client.options.getChatDelay().getValue() <= 0.0) {
-			this.addMessage(message, indicator);
-		} else {
-			long l = System.currentTimeMillis();
-			if (l - this.lastMessageAddedTime >= this.getChatDelayMillis()) {
-				this.addMessage(message);
-				this.lastMessageAddedTime = l;
-			} else {
-				this.messageQueue.add(new ChatHud.MessageWithIndicator(message, indicator));
-			}
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	static record MessageWithIndicator(Text message, @Nullable MessageIndicator indicator) {
+	private int method_44752() {
+		return (int)(9.0 * (this.client.options.getChatLineSpacing().getValue() + 1.0));
 	}
 }

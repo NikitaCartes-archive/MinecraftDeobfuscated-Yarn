@@ -41,18 +41,17 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 	private final String name;
 	private final Supplier<Identifier> skinTexture;
 	private boolean offline;
+	private boolean field_39790;
+	private final boolean field_39791;
 	@Nullable
 	private ButtonWidget hideButton;
 	@Nullable
 	private ButtonWidget showButton;
 	@Nullable
 	private ButtonWidget reportButton;
-	final Text hideText;
-	final Text showText;
-	final Text reportText;
 	final List<OrderedText> hideTooltip;
 	final List<OrderedText> showTooltip;
-	final List<OrderedText> reportTooltip;
+	List<OrderedText> reportTooltip;
 	float timeCounter;
 	private static final Text HIDDEN_TEXT = Text.translatable("gui.socialInteractions.status_hidden").formatted(Formatting.ITALIC);
 	private static final Text BLOCKED_TEXT = Text.translatable("gui.socialInteractions.status_blocked").formatted(Formatting.ITALIC);
@@ -60,6 +59,9 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 	private static final Text HIDDEN_OFFLINE_TEXT = Text.translatable("gui.socialInteractions.status_hidden_offline").formatted(Formatting.ITALIC);
 	private static final Text BLOCKED_OFFLINE_TEXT = Text.translatable("gui.socialInteractions.status_blocked_offline").formatted(Formatting.ITALIC);
 	private static final Text REPORT_DISABLED_TEXT = Text.translatable("gui.socialInteractions.tooltip.report.disabled");
+	private static final Text hideText = Text.translatable("gui.socialInteractions.tooltip.hide");
+	private static final Text showText = Text.translatable("gui.socialInteractions.tooltip.show");
+	private static final Text reportText = Text.translatable("gui.socialInteractions.tooltip.report");
 	private static final int field_32420 = 24;
 	private static final int field_32421 = 4;
 	private static final int field_32422 = 20;
@@ -77,22 +79,16 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 		this.name = name;
 		this.skinTexture = skinTexture;
 		AbuseReportContext abuseReportContext = client.getAbuseReportContext();
-		boolean bl = abuseReportContext.sender().canSendReports();
-		this.hideText = Text.translatable("gui.socialInteractions.tooltip.hide", name);
-		this.showText = Text.translatable("gui.socialInteractions.tooltip.show", name);
-		if (bl) {
-			this.reportText = Text.translatable("gui.socialInteractions.tooltip.report", name);
-		} else {
-			this.reportText = REPORT_DISABLED_TEXT;
-		}
-
-		this.hideTooltip = client.textRenderer.wrapLines(this.hideText, 150);
-		this.showTooltip = client.textRenderer.wrapLines(this.showText, 150);
-		this.reportTooltip = client.textRenderer.wrapLines(this.reportText, 150);
+		this.field_39791 = abuseReportContext.sender().canSendReports();
+		final Text text = Text.translatable("gui.socialInteractions.narration.hide", name);
+		final Text text2 = Text.translatable("gui.socialInteractions.narration.show", name);
+		this.hideTooltip = client.textRenderer.wrapLines(hideText, 150);
+		this.showTooltip = client.textRenderer.wrapLines(showText, 150);
+		this.reportTooltip = client.textRenderer.wrapLines(this.method_44755(false), 150);
 		SocialInteractionsManager socialInteractionsManager = client.getSocialInteractionsManager();
-		boolean bl2 = client.getChatRestriction().allowsChat(client.isInSingleplayer());
-		boolean bl3 = !client.player.getUuid().equals(uuid);
-		if (bl3 && bl2 && !socialInteractionsManager.isPlayerBlocked(uuid)) {
+		boolean bl = client.getChatRestriction().allowsChat(client.isInSingleplayer());
+		boolean bl2 = !client.player.getUuid().equals(uuid);
+		if (bl2 && bl && !socialInteractionsManager.isPlayerBlocked(uuid)) {
 			this.reportButton = new TexturedButtonWidget(
 				0,
 				0,
@@ -118,7 +114,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 
 					@Override
 					public void supply(Consumer<Text> consumer) {
-						consumer.accept(SocialInteractionsPlayerListEntry.this.reportText);
+						consumer.accept(SocialInteractionsPlayerListEntry.this.method_44755(true));
 					}
 				},
 				Text.translatable("gui.socialInteractions.report")
@@ -156,7 +152,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 
 					@Override
 					public void supply(Consumer<Text> consumer) {
-						consumer.accept(SocialInteractionsPlayerListEntry.this.hideText);
+						consumer.accept(text);
 					}
 				},
 				Text.translatable("gui.socialInteractions.hide")
@@ -194,7 +190,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 
 					@Override
 					public void supply(Consumer<Text> consumer) {
-						consumer.accept(SocialInteractionsPlayerListEntry.this.showText);
+						consumer.accept(text2);
 					}
 				},
 				Text.translatable("gui.socialInteractions.show")
@@ -206,10 +202,20 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 			};
 			this.showButton.visible = socialInteractionsManager.isPlayerHidden(uuid);
 			this.hideButton.visible = !this.showButton.visible;
-			this.reportButton.active = bl;
+			this.reportButton.active = false;
 			this.buttons = ImmutableList.of(this.hideButton, this.showButton, this.reportButton);
 		} else {
 			this.buttons = ImmutableList.of();
+		}
+	}
+
+	Text method_44755(boolean bl) {
+		if (!this.field_39791) {
+			return REPORT_DISABLED_TEXT;
+		} else if (!this.field_39790) {
+			return Text.translatable("gui.socialInteractions.tooltip.report.no_messages", this.name);
+		} else {
+			return (Text)(bl ? Text.translatable("gui.socialInteractions.narration.report", this.name) : reportText);
 		}
 	}
 
@@ -273,6 +279,23 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 
 	public void setOffline(boolean offline) {
 		this.offline = offline;
+	}
+
+	public boolean method_44754() {
+		return this.offline;
+	}
+
+	public void method_44753(boolean bl) {
+		this.field_39790 = bl;
+		if (this.reportButton != null) {
+			this.reportButton.active = this.field_39791 && bl;
+		}
+
+		this.reportTooltip = this.client.textRenderer.wrapLines(this.method_44755(false), 150);
+	}
+
+	public boolean method_44756() {
+		return this.field_39790;
 	}
 
 	private void onButtonClick(boolean showButtonVisible, Text chatMessage) {
