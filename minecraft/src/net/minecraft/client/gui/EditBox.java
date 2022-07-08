@@ -128,7 +128,7 @@ public class EditBox {
 	/**
 	 * Replaces the current selection with {@code string}. If there is no
 	 * selection, this inserts the string at the cursor position. This removes
-	 * {@linkplain SharedConstants#isValidChar invalid characters} and truncates
+	 * {@linkplain net.minecraft.SharedConstants#isValidChar invalid characters} and truncates
 	 * the passed string if necessary.
 	 */
 	public void replaceSelection(String string) {

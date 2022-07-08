@@ -51,7 +51,7 @@ public class ChatScreen extends Screen {
 	private int messageHistorySize = -1;
 	protected TextFieldWidget chatField;
 	private String originalChatText;
-	CommandSuggestor commandSuggestor;
+	ChatInputSuggestor commandSuggestor;
 	private ChatPreviewer chatPreviewer;
 
 	public ChatScreen(String originalChatText) {
@@ -74,7 +74,7 @@ public class ChatScreen extends Screen {
 		this.chatField.setText(this.originalChatText);
 		this.chatField.setChangedListener(this::onChatFieldUpdate);
 		this.addSelectableChild(this.chatField);
-		this.commandSuggestor = new CommandSuggestor(this.client, this, this.chatField, this.textRenderer, false, false, 1, 10, true, -805306368);
+		this.commandSuggestor = new ChatInputSuggestor(this.client, this, this.chatField, this.textRenderer, false, false, 1, 10, true, -805306368);
 		this.commandSuggestor.refresh();
 		this.setInitialFocus(this.chatField);
 		this.chatPreviewer = new ChatPreviewer(this.client);

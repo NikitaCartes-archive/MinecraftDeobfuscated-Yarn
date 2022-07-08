@@ -118,8 +118,6 @@ public class PlayerSkinProvider {
 	/**
 	 * {@return the ID of {@code profile}'s skin, or the default skin for the profile's
 	 * UUID if the skin is missing}
-	 * 
-	 * @see DefaultSkinHelper#getTexture(java.util.UUID)
 	 */
 	public Identifier loadSkin(GameProfile profile) {
 		MinecraftProfileTexture minecraftProfileTexture = (MinecraftProfileTexture)this.getTextures(profile).get(Type.SKIN);
