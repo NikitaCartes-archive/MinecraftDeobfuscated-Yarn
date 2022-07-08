@@ -5,9 +5,10 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import java.util.Collection;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.MessageArgumentType;
-import net.minecraft.network.message.MessageSender;
+import net.minecraft.network.message.MessageSourceProfile;
 import net.minecraft.network.message.MessageType;
-import net.minecraft.network.message.SignedMessage;
+import net.minecraft.network.message.SentMessage;
+import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public class MessageCommand {
@@ -16,12 +17,16 @@ public class MessageCommand {
 			CommandManager.literal("msg")
 				.then(
 					CommandManager.argument("targets", EntityArgumentType.players())
-						.then(
-							CommandManager.argument("message", MessageArgumentType.message())
-								.executes(
-									context -> execute(context.getSource(), EntityArgumentType.getPlayers(context, "targets"), MessageArgumentType.getSignedMessage(context, "message"))
-								)
-						)
+						.then(CommandManager.argument("message", MessageArgumentType.message()).executes(context -> {
+							MessageArgumentType.SignedMessage signedMessage = MessageArgumentType.getSignedMessage(context, "message");
+
+							try {
+								return execute(context.getSource(), EntityArgumentType.getPlayers(context, "targets"), signedMessage);
+							} catch (Exception var3) {
+								signedMessage.sendHeader(context.getSource());
+								throw var3;
+							}
+						}))
 				)
 		);
 		dispatcher.register(CommandManager.literal("tell").redirect(literalCommandNode));
@@ -29,21 +34,22 @@ public class MessageCommand {
 	}
 
 	private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, MessageArgumentType.SignedMessage signedMessage) {
-		if (targets.isEmpty()) {
-			return 0;
-		} else {
-			MessageSender messageSender = source.getChatMessageSender();
-			signedMessage.decorate(source).thenAcceptAsync(decoratedMessage -> {
-				for (ServerPlayerEntity serverPlayerEntity : targets) {
-					MessageSender messageSender2 = messageSender.withTargetName(serverPlayerEntity.getDisplayName());
-					source.sendChatMessage(messageSender2, (SignedMessage)decoratedMessage.raw(), MessageType.MSG_COMMAND_OUTGOING);
-					SignedMessage signedMessagex = (SignedMessage)decoratedMessage.getFilterableFor(source, serverPlayerEntity);
-					if (signedMessagex != null) {
-						serverPlayerEntity.sendChatMessage(signedMessagex, messageSender, MessageType.MSG_COMMAND_INCOMING);
-					}
+		MessageSourceProfile messageSourceProfile = source.getMessageSourceProfile();
+		MessageType.Parameters parameters = MessageType.params(MessageType.MSG_COMMAND_INCOMING, source);
+		signedMessage.decorate(source).thenAcceptAsync(decoratedMessage -> {
+			FilteredMessage<SentMessage> filteredMessage = SentMessage.of(decoratedMessage, messageSourceProfile);
+
+			for (ServerPlayerEntity serverPlayerEntity : targets) {
+				MessageType.Parameters parameters2 = MessageType.params(MessageType.MSG_COMMAND_OUTGOING, source).withTargetName(serverPlayerEntity.getDisplayName());
+				source.sendChatMessage(filteredMessage.raw(), parameters2);
+				SentMessage sentMessage = filteredMessage.getFilterableFor(source, serverPlayerEntity);
+				if (sentMessage != null) {
+					serverPlayerEntity.sendChatMessage(sentMessage, parameters);
 				}
-			}, source.getServer());
-			return targets.size();
-		}
+			}
+
+			filteredMessage.raw().afterPacketsSent(source.getServer().getPlayerManager());
+		}, source.getServer());
+		return targets.size();
 	}
 }

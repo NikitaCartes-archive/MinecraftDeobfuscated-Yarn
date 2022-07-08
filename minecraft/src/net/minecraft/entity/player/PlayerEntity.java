@@ -71,7 +71,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.encryption.PlayerPublicKey;
-import net.minecraft.network.message.MessageSender;
+import net.minecraft.network.message.MessageSourceProfile;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -1661,8 +1661,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public MessageSender asMessageSender() {
-		return new MessageSender(this.getGameProfile().getId(), this.getDisplayName());
+	public MessageSourceProfile getMessageSourceProfile() {
+		return new MessageSourceProfile(this.getGameProfile().getId(), this.getPublicKey());
 	}
 
 	public boolean checkFallFlying() {

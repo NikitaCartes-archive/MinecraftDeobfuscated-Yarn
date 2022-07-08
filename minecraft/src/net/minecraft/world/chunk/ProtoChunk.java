@@ -302,16 +302,16 @@ public class ProtoChunk extends Chunk {
 	}
 
 	@Nullable
-	public CarvingMask getCarvingMask(GenerationStep.Carver carver) {
-		return (CarvingMask)this.carvingMasks.get(carver);
+	public CarvingMask getCarvingMask(GenerationStep.Carver step) {
+		return (CarvingMask)this.carvingMasks.get(step);
 	}
 
-	public CarvingMask getOrCreateCarvingMask(GenerationStep.Carver carver) {
-		return (CarvingMask)this.carvingMasks.computeIfAbsent(carver, carverx -> new CarvingMask(this.getHeight(), this.getBottomY()));
+	public CarvingMask getOrCreateCarvingMask(GenerationStep.Carver step) {
+		return (CarvingMask)this.carvingMasks.computeIfAbsent(step, carver -> new CarvingMask(this.getHeight(), this.getBottomY()));
 	}
 
-	public void setCarvingMask(GenerationStep.Carver carver, CarvingMask carvingMask) {
-		this.carvingMasks.put(carver, carvingMask);
+	public void setCarvingMask(GenerationStep.Carver step, CarvingMask carvingMask) {
+		this.carvingMasks.put(step, carvingMask);
 	}
 
 	public void setLightingProvider(LightingProvider lightingProvider) {

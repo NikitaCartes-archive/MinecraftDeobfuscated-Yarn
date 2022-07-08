@@ -9,13 +9,17 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
-import net.minecraft.network.message.CommandArgumentSigner;
+import net.minecraft.network.message.MessageChain;
 import net.minecraft.network.message.MessageDecorator;
-import net.minecraft.network.message.MessageSignature;
+import net.minecraft.network.message.MessageMetadata;
+import net.minecraft.network.message.MessageSignatureData;
+import net.minecraft.network.message.SignedCommandArguments;
+import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -39,10 +43,10 @@ public class MessageArgumentType implements TextConvertibleArgumentType<MessageA
 	public static MessageArgumentType.SignedMessage getSignedMessage(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
 		MessageArgumentType.MessageFormat messageFormat = context.getArgument(name, MessageArgumentType.MessageFormat.class);
 		Text text = messageFormat.format(context.getSource());
-		CommandArgumentSigner commandArgumentSigner = context.getSource().getSigner();
-		MessageSignature messageSignature = commandArgumentSigner.getArgumentSignature(name);
-		boolean bl = commandArgumentSigner.isPreviewSigned(name);
-		return new MessageArgumentType.SignedMessage(messageFormat.contents, text, messageSignature, bl);
+		SignedCommandArguments signedCommandArguments = context.getSource().getSignedArguments();
+		MessageSignatureData messageSignatureData = signedCommandArguments.getArgumentSignature(name);
+		boolean bl = signedCommandArguments.isPreviewSigned(name);
+		return new MessageArgumentType.SignedMessage(messageFormat.contents, text, messageSignatureData, bl);
 	}
 
 	public MessageArgumentType.MessageFormat parse(StringReader stringReader) throws CommandSyntaxException {
@@ -201,60 +205,92 @@ public class MessageArgumentType implements TextConvertibleArgumentType<MessageA
 		}
 	}
 
-	public static record SignedMessage(String plain, Text formatted, MessageSignature signature, boolean signedPreview) {
+	public static record SignedMessage(String plain, Text formatted, MessageSignatureData signature, boolean signedPreview) {
 		public CompletableFuture<FilteredMessage<net.minecraft.network.message.SignedMessage>> decorate(ServerCommandSource source) {
-			CompletableFuture<FilteredMessage<net.minecraft.network.message.SignedMessage>> completableFuture = this.filter(source, this.formatted)
+			CompletableFuture<FilteredMessage<net.minecraft.network.message.SignedMessage>> completableFuture = this.filterText(source, this.plain)
 				.thenComposeAsync(filtered -> {
-					MessageDecorator messageDecorator = source.getServer().getMessageDecorator();
-					return messageDecorator.decorateChat(source.getPlayer(), filtered, this.signature, this.signedPreview);
-				}, source.getServer())
-				.thenApply(decorated -> {
-					net.minecraft.network.message.SignedMessage signedMessage = this.getVerifiable(decorated);
-					if (signedMessage != null) {
-						this.logInvalidSignatureWarning(source, signedMessage);
+					FilteredMessage<Text> filteredMessage = this.format(source, filtered);
+					return this.decorate(source, filtered, filteredMessage);
+				}, source.getServer());
+			completableFuture.thenAccept(
+				message -> {
+					net.minecraft.network.message.SignedMessage signedMessage = (net.minecraft.network.message.SignedMessage)message.raw();
+					if (signedMessage.isExpiredOnServer(Instant.now())) {
+						MessageArgumentType.LOGGER
+							.warn(
+								"{} sent expired chat: '{}'. Is the client/server system time unsynchronized?",
+								source.getDisplayName().getString(),
+								signedMessage.getSignedContent().getString()
+							);
 					}
-
-					return decorated;
-				});
+				}
+			);
 			MessageArgumentType.handleResolvingFailure(source, completableFuture);
 			return completableFuture;
 		}
 
 		/**
-		 * {@return the verifiable part of {@code message}, or {@code null} when there is none}
+		 * {@return the formatted {@code message}}
 		 * 
-		 * @implNote If the preview is signed, the decorated message will be returned, and
-		 * if it's unsigned or unpreviewed but {@linkplain MessageSignature#canVerify
-		 * verifiable}, the plain, undecorated message will be returned. If neither is true,
-		 * this returns {@code null}, since the message cannot be verified in any way.
+		 * <p>If the message contains a filtered part, that part is formatted by {@link
+		 * #format(ServerCommandSource, String)}.
+		 */
+		private FilteredMessage<Text> format(ServerCommandSource source, FilteredMessage<String> message) {
+			String string = message.filtered();
+			return string != null ? new FilteredMessage<>(this.formatted, this.format(source, string)) : FilteredMessage.permitted(this.formatted);
+		}
+
+		/**
+		 * {@return the parsed and formatted {@code filteredText}, or {@code null} if it fails}
 		 */
 		@Nullable
-		private net.minecraft.network.message.SignedMessage getVerifiable(FilteredMessage<net.minecraft.network.message.SignedMessage> decorated) {
-			if (this.signature.canVerify()) {
-				return this.signedPreview ? decorated.raw() : net.minecraft.network.message.SignedMessage.of(this.plain, this.signature);
-			} else {
+		private Text format(ServerCommandSource source, String filteredText) {
+			try {
+				MessageArgumentType.MessageFormat messageFormat = MessageArgumentType.MessageFormat.parse(new StringReader(filteredText), true);
+				return messageFormat.format(source);
+			} catch (CommandSyntaxException var4) {
 				return null;
 			}
 		}
 
-		private void logInvalidSignatureWarning(ServerCommandSource source, net.minecraft.network.message.SignedMessage message) {
-			if (!message.verify(source)) {
-				MessageArgumentType.LOGGER.warn("{} sent message with invalid signature: '{}'", source.getDisplayName().getString(), message.signedContent().getString());
-			}
-
-			if (message.isExpiredOnServer(Instant.now())) {
-				MessageArgumentType.LOGGER
-					.warn(
-						"{} sent expired chat: '{}'. Is the client/server system time unsynchronized?", source.getDisplayName().getString(), message.signedContent().getString()
-					);
+		private CompletableFuture<FilteredMessage<net.minecraft.network.message.SignedMessage>> decorate(
+			ServerCommandSource source, FilteredMessage<String> filtered, FilteredMessage<Text> formatted
+		) {
+			MessageDecorator messageDecorator = source.getServer().getMessageDecorator();
+			ServerPlayerEntity serverPlayerEntity = source.getPlayer();
+			SignedCommandArguments signedCommandArguments = source.getSignedArguments();
+			MessageChain.Unpacker unpacker = signedCommandArguments.decoder();
+			MessageMetadata messageMetadata = signedCommandArguments.metadata();
+			MessageChain.Signature signature = new MessageChain.Signature(this.signature);
+			if (this.signedPreview) {
+				return messageDecorator.decorateFiltered(serverPlayerEntity, formatted)
+					.thenApply(decoratedMessage -> unpacker.unpack(signature, messageMetadata, decoratedMessage));
+			} else {
+				FilteredMessage<Text> filteredMessage = filtered.map(Text::literal);
+				FilteredMessage<net.minecraft.network.message.SignedMessage> filteredMessage2 = unpacker.unpack(signature, messageMetadata, filteredMessage);
+				return messageDecorator.decorateFiltered(serverPlayerEntity, formatted)
+					.thenApply(decoratedMessage -> MessageDecorator.attachDecoration(filteredMessage2, decoratedMessage));
 			}
 		}
 
-		private CompletableFuture<FilteredMessage<Text>> filter(ServerCommandSource source, Text message) {
+		private CompletableFuture<FilteredMessage<String>> filterText(ServerCommandSource source, String text) {
 			ServerPlayerEntity serverPlayerEntity = source.getPlayer();
-			return serverPlayerEntity != null
-				? serverPlayerEntity.getTextStream().filterText(message)
-				: CompletableFuture.completedFuture(FilteredMessage.permitted(message));
+			return serverPlayerEntity != null ? serverPlayerEntity.getTextStream().filterText(text) : CompletableFuture.completedFuture(FilteredMessage.permitted(text));
+		}
+
+		/**
+		 * Sends the message's header to all players.
+		 * 
+		 * <p>This should be called if the message could not be sent due to an exception.
+		 * See {@link net.minecraft.server.command.MessageCommand} for an example.
+		 */
+		public void sendHeader(ServerCommandSource source) {
+			if (!source.getSignedArguments().metadata().lacksSender()) {
+				this.decorate(source).thenAcceptAsync(decoratedMessage -> {
+					PlayerManager playerManager = source.getServer().getPlayerManager();
+					playerManager.sendMessageHeader((net.minecraft.network.message.SignedMessage)decoratedMessage.raw(), Set.of());
+				}, source.getServer());
+			}
 		}
 	}
 }

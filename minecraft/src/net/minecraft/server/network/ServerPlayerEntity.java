@@ -46,9 +46,10 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.Packet;
 import net.minecraft.network.encryption.PlayerPublicKey;
-import net.minecraft.network.message.MessageSender;
+import net.minecraft.network.message.MessageHeader;
+import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.network.message.MessageType;
-import net.minecraft.network.message.SignedMessage;
+import net.minecraft.network.message.SentMessage;
 import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
@@ -67,6 +68,7 @@ import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.HealthUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.network.packet.s2c.play.LookAtS2CPacket;
+import net.minecraft.network.packet.s2c.play.MessageHeaderS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenHorseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenWrittenBookS2CPacket;
@@ -129,7 +131,6 @@ import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.world.BlockLocating;
@@ -1314,35 +1315,32 @@ public class ServerPlayerEntity extends PlayerEntity {
 	 * Sends a chat message to the player.
 	 * 
 	 * <p>Chat messages have signatures. It is possible to use a bogus signature - such as
-	 * {@link net.minecraft.network.message.MessageSignature#none} - to send a chat
+	 * {@link net.minecraft.network.message.SignedMessage#ofUnsigned} - to send a chat
 	 * message; however if the signature is invalid (e.g. because the text's content differs
 	 * from the one sent by the client, or because the passed signature is invalid) the client
-	 * will show a warning and can discard it depending on the client's options. See {@link
-	 * net.minecraft.network.message.MessageSignature#updateSignature} for how the
-	 * message is signed.
+	 * will show a warning and can discard it depending on the client's options.
 	 * 
 	 * @see #sendMessage(Text)
 	 * @see #sendMessage(Text, boolean)
 	 */
-	public void sendChatMessage(SignedMessage message, MessageSender sender, RegistryKey<MessageType> typeKey) {
+	public void sendChatMessage(SentMessage message, MessageType.Parameters params) {
 		if (this.acceptsChatMessage()) {
-			int i = this.getMessageTypeId(typeKey);
-			if (message.method_44781(sender)) {
-				this.networkHandler
-					.sendPacket(
-						new ChatMessageS2CPacket(
-							message.signedContent(), message.unsignedContent(), i, sender, message.signature().timestamp(), message.signature().saltSignature()
-						)
-					);
-			} else {
-				this.networkHandler.sendPacket(ChatMessageS2CPacket.ofUnsigned(message.getContent(), i, sender.withoutProfileId(), message.signature().timestamp()));
-			}
+			ChatMessageS2CPacket chatMessageS2CPacket = message.toPacket(this, params);
+			this.networkHandler.sendPacket(chatMessageS2CPacket);
 		}
 	}
 
-	private int getMessageTypeId(RegistryKey<MessageType> typeKey) {
-		Registry<MessageType> registry = this.world.getRegistryManager().get(Registry.MESSAGE_TYPE_KEY);
-		return registry.getRawId(registry.get(typeKey));
+	/**
+	 * Sends a message's header and other data required for verification to this player.
+	 * 
+	 * <p>This is used to keep the integrity of the "message chain" when a message is censored
+	 * or when the message is originally sent without metadata due to it being originated from
+	 * entities.
+	 */
+	public void sendMessageHeader(MessageHeader header, MessageSignatureData headerSignature, byte[] bodyDigest) {
+		if (this.acceptsChatMessage()) {
+			this.networkHandler.sendPacket(new MessageHeaderS2CPacket(header, headerSignature, bodyDigest));
+		}
 	}
 
 	public String getIp() {

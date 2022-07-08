@@ -125,7 +125,7 @@ public class DebugChunkGenerator extends ChunkGenerator {
 		ChunkRegion chunkRegion,
 		long seed,
 		NoiseConfig noiseConfig,
-		BiomeAccess world,
+		BiomeAccess biomeAccess,
 		StructureAccessor structureAccessor,
 		Chunk chunk,
 		GenerationStep.Carver carverStep

@@ -479,7 +479,7 @@ public final class DensityFunctionTypes {
 
 		@Override
 		public double apply(DensityFunction.NoisePos pos, double density) {
-			return pos.getBlender().method_39338(pos, density);
+			return pos.getBlender().applyBlendDensity(pos, density);
 		}
 
 		@Override

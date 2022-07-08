@@ -48,10 +48,10 @@ public class SocialInteractionsPlayerListWidget extends ElementListWidget<Social
 		RenderSystem.disableScissor();
 	}
 
-	public void update(Collection<UUID> uuids, double scrollAmount, boolean bl) {
+	public void update(Collection<UUID> uuids, double scrollAmount, boolean includeOffline) {
 		Map<UUID, SocialInteractionsPlayerListEntry> map = new HashMap();
 		this.setPlayers(uuids, map);
-		this.method_44759(map, bl);
+		this.markOfflineMembers(map, includeOffline);
 		this.refresh(map.values(), scrollAmount);
 	}
 
@@ -69,13 +69,13 @@ public class SocialInteractionsPlayerListWidget extends ElementListWidget<Social
 		}
 	}
 
-	private void method_44759(Map<UUID, SocialInteractionsPlayerListEntry> map, boolean bl) {
+	private void markOfflineMembers(Map<UUID, SocialInteractionsPlayerListEntry> entries, boolean includeOffline) {
 		for (GameProfile gameProfile : this.client.getAbuseReportContext().chatLog().streamBackward().collectSenderProfiles()) {
 			SocialInteractionsPlayerListEntry socialInteractionsPlayerListEntry;
-			if (bl) {
-				socialInteractionsPlayerListEntry = (SocialInteractionsPlayerListEntry)map.computeIfAbsent(
+			if (includeOffline) {
+				socialInteractionsPlayerListEntry = (SocialInteractionsPlayerListEntry)entries.computeIfAbsent(
 					gameProfile.getId(),
-					uUID -> {
+					uuid -> {
 						SocialInteractionsPlayerListEntry socialInteractionsPlayerListEntryx = new SocialInteractionsPlayerListEntry(
 							this.client, this.parent, gameProfile.getId(), gameProfile.getName(), Suppliers.memoize(() -> this.client.getSkinProvider().loadSkin(gameProfile))
 						);
@@ -84,38 +84,38 @@ public class SocialInteractionsPlayerListWidget extends ElementListWidget<Social
 					}
 				);
 			} else {
-				socialInteractionsPlayerListEntry = (SocialInteractionsPlayerListEntry)map.get(gameProfile.getId());
+				socialInteractionsPlayerListEntry = (SocialInteractionsPlayerListEntry)entries.get(gameProfile.getId());
 				if (socialInteractionsPlayerListEntry == null) {
 					continue;
 				}
 			}
 
-			socialInteractionsPlayerListEntry.method_44753(true);
+			socialInteractionsPlayerListEntry.setSentMessage(true);
 		}
 	}
 
-	private void method_44762() {
-		this.players.sort(Comparator.comparing(socialInteractionsPlayerListEntry -> {
-			if (socialInteractionsPlayerListEntry.getUuid().equals(this.client.getSession().getUuidOrNull())) {
+	private void sortPlayers() {
+		this.players.sort(Comparator.comparing(player -> {
+			if (player.getUuid().equals(this.client.getSession().getUuidOrNull())) {
 				return 0;
-			} else if (socialInteractionsPlayerListEntry.getUuid().version() == 2) {
+			} else if (player.getUuid().version() == 2) {
 				return 3;
 			} else {
-				return socialInteractionsPlayerListEntry.method_44756() ? 1 : 2;
+				return player.hasSentMessage() ? 1 : 2;
 			}
-		}).thenComparing(socialInteractionsPlayerListEntry -> {
-			int i = socialInteractionsPlayerListEntry.getName().codePointAt(0);
+		}).thenComparing(player -> {
+			int i = player.getName().codePointAt(0);
 			return i != 95 && (i < 97 || i > 122) && (i < 65 || i > 90) && (i < 48 || i > 57) ? 1 : 0;
 		}).thenComparing(SocialInteractionsPlayerListEntry::getName, String::compareToIgnoreCase));
 	}
 
-	private void refresh(Collection<SocialInteractionsPlayerListEntry> collection, double d) {
+	private void refresh(Collection<SocialInteractionsPlayerListEntry> players, double scrollAmount) {
 		this.players.clear();
-		this.players.addAll(collection);
-		this.method_44762();
+		this.players.addAll(players);
+		this.sortPlayers();
 		this.filterPlayers();
 		this.replaceEntries(this.players);
-		this.setScrollAmount(d);
+		this.setScrollAmount(scrollAmount);
 	}
 
 	private void filterPlayers() {

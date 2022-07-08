@@ -27,7 +27,11 @@ public record FilteredMessage<T>(T raw, @Nullable T filtered) {
 	}
 
 	public <U> FilteredMessage<U> map(Function<T, U> mapper) {
-		return (FilteredMessage<U>)(new FilteredMessage<>(mapper.apply(this.raw), Util.map(this.filtered, mapper)));
+		return this.map(mapper, mapper);
+	}
+
+	public <U> FilteredMessage<U> map(Function<T, U> rawMapper, Function<T, U> filteredMapper) {
+		return (FilteredMessage<U>)(new FilteredMessage<>(rawMapper.apply(this.raw), Util.map(this.filtered, filteredMapper)));
 	}
 
 	/**
@@ -57,5 +61,14 @@ public record FilteredMessage<T>(T raw, @Nullable T filtered) {
 	public T getFilterableFor(ServerCommandSource source, ServerPlayerEntity receiver) {
 		ServerPlayerEntity serverPlayerEntity = source.getPlayer();
 		return serverPlayerEntity != null ? this.getFilterableFor(serverPlayerEntity, receiver) : this.raw;
+	}
+
+	/**
+	 * {@return {@link #filtered} if {@code filtered} is {@code true}, otherwise
+	 * {@link #raw}}
+	 */
+	@Nullable
+	public T get(boolean filtered) {
+		return filtered ? this.filtered : this.raw;
 	}
 }

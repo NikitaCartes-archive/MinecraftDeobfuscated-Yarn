@@ -1,12 +1,12 @@
 package net.minecraft.network.packet.c2s.play;
 
 import java.time.Instant;
-import java.util.UUID;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.listener.ServerPlayPacketListener;
-import net.minecraft.network.message.MessageSignature;
+import net.minecraft.network.message.MessageMetadata;
+import net.minecraft.network.message.MessageSignatureData;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.StringHelper;
 
 /**
@@ -17,13 +17,15 @@ import net.minecraft.util.StringHelper;
  * 256 characters, it will reject the message and disconnect the client.
  * 
  * <p>If the message contains an invalid character (see {@link
- * net.minecraft.SharedConstants#isValidChar isValidChar}) or if the server
+ * net.minecraft.SharedConstants#isValidChar}) or if the server
  * receives the messages in improper order. the server will
  * reject the message and disconnect the client.
  * 
- * <p>Messages that took more than {@link SignedMessage#SERVERBOUND_TIME_TO_LIVE}
+ * <p>Messages that took more than {@link
+ * net.minecraft.network.message.SignedMessage#SERVERBOUND_TIME_TO_LIVE}
  * to reach the server are considered expired and log warnings on the server.
- * If the message takes more than {@link SignedMessage#CLIENTBOUND_TIME_TO_LIVE}
+ * If the message takes more than {@link
+ * net.minecraft.network.message.SignedMessage#CLIENTBOUND_TIME_TO_LIVE}
  * to reach the clients (including the time it took to reach the server), the
  * message is not considered secure anymore by the clients, and may be discarded
  * depending on the clients' options.
@@ -31,56 +33,35 @@ import net.minecraft.util.StringHelper;
  * @see net.minecraft.client.network.ClientPlayerEntity#sendChatMessage
  * @see net.minecraft.server.network.ServerPlayNetworkHandler#onChatMessage
  */
-public class ChatMessageC2SPacket implements Packet<ServerPlayPacketListener> {
-	private final String chatMessage;
-	private final Instant timestamp;
-	private final NetworkEncryptionUtils.SignatureData signature;
-	private final boolean previewed;
-
-	public ChatMessageC2SPacket(String chatMessage, MessageSignature signature, boolean previewed) {
-		this.chatMessage = StringHelper.truncateChat(chatMessage);
-		this.timestamp = signature.timestamp();
-		this.signature = signature.saltSignature();
-		this.previewed = previewed;
+public record ChatMessageC2SPacket(String chatMessage, Instant timestamp, long salt, MessageSignatureData signature, boolean signedPreview)
+	implements Packet<ServerPlayPacketListener> {
+	public ChatMessageC2SPacket(String chatMessage, Instant timestamp, long salt, MessageSignatureData signature, boolean signedPreview) {
+		chatMessage = StringHelper.truncateChat(chatMessage);
+		this.chatMessage = chatMessage;
+		this.timestamp = timestamp;
+		this.salt = salt;
+		this.signature = signature;
+		this.signedPreview = signedPreview;
 	}
 
 	public ChatMessageC2SPacket(PacketByteBuf buf) {
-		this.chatMessage = buf.readString(256);
-		this.timestamp = buf.readInstant();
-		this.signature = new NetworkEncryptionUtils.SignatureData(buf);
-		this.previewed = buf.readBoolean();
+		this(buf.readString(256), buf.readInstant(), buf.readLong(), new MessageSignatureData(buf), buf.readBoolean());
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) {
 		buf.writeString(this.chatMessage, 256);
 		buf.writeInstant(this.timestamp);
-		NetworkEncryptionUtils.SignatureData.write(buf, this.signature);
-		buf.writeBoolean(this.previewed);
+		buf.writeLong(this.salt);
+		this.signature.write(buf);
+		buf.writeBoolean(this.signedPreview);
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onChatMessage(this);
 	}
 
-	public String getChatMessage() {
-		return this.chatMessage;
-	}
-
-	public MessageSignature createSignatureInstance(UUID sender) {
-		return new MessageSignature(sender, this.timestamp, this.signature);
-	}
-
-	public Instant getTimestamp() {
-		return this.timestamp;
-	}
-
-	/**
-	 * {@return whether the chat message was previewed before sending}
-	 * 
-	 * @apiNote Chat decorators can produce signed decorated content only if it was previewed.
-	 */
-	public boolean isPreviewed() {
-		return this.previewed;
+	public MessageMetadata getMetadata(ServerPlayerEntity sender) {
+		return new MessageMetadata(sender.getUuid(), this.timestamp, this.salt);
 	}
 }

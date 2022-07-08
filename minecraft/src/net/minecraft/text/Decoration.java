@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
-import net.minecraft.network.message.MessageSender;
+import net.minecraft.network.message.MessageType;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.StringIdentifiable;
@@ -36,9 +36,11 @@ public record Decoration(String translationKey, List<Decoration.Parameter> param
 	}
 
 	/**
-	 * {@return the decoration used in chat messages}
+	 * {@return the decoration used in incoming messages sent with {@link
+	 * net.minecraft.server.command.MessageCommand}}
 	 * 
-	 * @implNote This decoration allows using the sender and the content parameters. It is gray and italic.
+	 * @implNote This decoration allows using the sender and the content parameters. It is
+	 * italicized and colored gray.
 	 */
 	public static Decoration ofIncomingMessage(String translationKey) {
 		Style style = Style.EMPTY.withColor(Formatting.GRAY).withItalic(true);
@@ -46,9 +48,11 @@ public record Decoration(String translationKey, List<Decoration.Parameter> param
 	}
 
 	/**
-	 * {@return the decoration used in chat messages}
+	 * {@return the decoration used in outgoing messages sent with {@link
+	 * net.minecraft.server.command.MessageCommand}}
 	 * 
-	 * @implNote This decoration allows using the target and the content parameters. It is gray and italic.
+	 * @implNote This decoration allows using the target (recipient) and the content parameters.
+	 * It is italicized and colored gray.
 	 */
 	public static Decoration ofOutgoingMessage(String translationKey) {
 		Style style = Style.EMPTY.withColor(Formatting.GRAY).withItalic(true);
@@ -69,10 +73,9 @@ public record Decoration(String translationKey, List<Decoration.Parameter> param
 	 * {@return the text obtained by applying the passed values to the decoration}
 	 * 
 	 * @param content the value of the content parameter
-	 * @param sender the sender passed to parameters, or {@code null} if inapplicable
 	 */
-	public Text apply(Text content, MessageSender sender) {
-		Object[] objects = this.collectArguments(content, sender);
+	public Text apply(Text content, MessageType.Parameters params) {
+		Object[] objects = this.collectArguments(content, params);
 		return Text.translatable(this.translationKey, objects).fillStyle(this.style);
 	}
 
@@ -82,12 +85,12 @@ public record Decoration(String translationKey, List<Decoration.Parameter> param
 	 * <p>This is collected by supplying {@code content} and {@code sender} to the
 	 * parameters' {@link Decoration.Parameter#apply} method.
 	 */
-	private Text[] collectArguments(Text content, MessageSender sender) {
+	private Text[] collectArguments(Text content, MessageType.Parameters params) {
 		Text[] texts = new Text[this.parameters.size()];
 
 		for (int i = 0; i < texts.length; i++) {
 			Decoration.Parameter parameter = (Decoration.Parameter)this.parameters.get(i);
-			texts[i] = parameter.apply(content, sender);
+			texts[i] = parameter.apply(content, params);
 		}
 
 		return texts;
@@ -97,9 +100,9 @@ public record Decoration(String translationKey, List<Decoration.Parameter> param
 	 * Represents a parameter that the decoration uses.
 	 */
 	public static enum Parameter implements StringIdentifiable {
-		SENDER("sender", (content, sender) -> sender.name()),
-		TARGET("target", (content, sender) -> sender.targetName()),
-		CONTENT("content", (content, sender) -> content);
+		SENDER("sender", (content, params) -> params.name()),
+		TARGET("target", (content, params) -> params.targetName()),
+		CONTENT("content", (content, params) -> content);
 
 		public static final com.mojang.serialization.Codec<Decoration.Parameter> CODEC = StringIdentifiable.createCodec(Decoration.Parameter::values);
 		private final String name;
@@ -113,8 +116,8 @@ public record Decoration(String translationKey, List<Decoration.Parameter> param
 		/**
 		 * {@return the text obtained by applying the passed values to the parameter}
 		 */
-		public Text apply(Text content, MessageSender sender) {
-			Text text = this.selector.select(content, sender);
+		public Text apply(Text content, MessageType.Parameters params) {
+			Text text = this.selector.select(content, params);
 			return (Text)Objects.requireNonNullElse(text, ScreenTexts.EMPTY);
 		}
 
@@ -124,11 +127,11 @@ public record Decoration(String translationKey, List<Decoration.Parameter> param
 		}
 
 		/**
-		 * A functional interface that selects the text from the passed values.
+		 * A functional interface that selects the text from the passed parameters.
 		 */
 		public interface Selector {
 			@Nullable
-			Text select(Text content, MessageSender sender);
+			Text select(Text content, MessageType.Parameters params);
 		}
 	}
 }

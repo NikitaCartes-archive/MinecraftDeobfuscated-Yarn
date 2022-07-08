@@ -36,7 +36,7 @@ public class ClientCommandSource implements CommandSource {
 	private final MinecraftClient client;
 	private int completionId = -1;
 	@Nullable
-	private CompletableFuture<Suggestions> pendingCompletion;
+	private CompletableFuture<Suggestions> pendingCommandCompletion;
 	private final Set<String> chatSuggestions = new HashSet();
 
 	public ClientCommandSource(ClientPlayNetworkHandler networkHandler, MinecraftClient client) {
@@ -106,14 +106,14 @@ public class ClientCommandSource implements CommandSource {
 
 	@Override
 	public CompletableFuture<Suggestions> getCompletions(CommandContext<?> context) {
-		if (this.pendingCompletion != null) {
-			this.pendingCompletion.cancel(false);
+		if (this.pendingCommandCompletion != null) {
+			this.pendingCommandCompletion.cancel(false);
 		}
 
-		this.pendingCompletion = new CompletableFuture();
+		this.pendingCommandCompletion = new CompletableFuture();
 		int i = ++this.completionId;
 		this.networkHandler.sendPacket(new RequestCommandCompletionsC2SPacket(i, context.getInput()));
-		return this.pendingCompletion;
+		return this.pendingCommandCompletion;
 	}
 
 	private static String format(double d) {
@@ -158,23 +158,23 @@ public class ClientCommandSource implements CommandSource {
 
 	public void onCommandSuggestions(int completionId, Suggestions suggestions) {
 		if (completionId == this.completionId) {
-			this.pendingCompletion.complete(suggestions);
-			this.pendingCompletion = null;
+			this.pendingCommandCompletion.complete(suggestions);
+			this.pendingCommandCompletion = null;
 			this.completionId = -1;
 		}
 	}
 
-	public void changeChatSuggestions(ChatSuggestionsS2CPacket.Action action, List<String> entries) {
+	public void onChatSuggestions(ChatSuggestionsS2CPacket.Action action, List<String> suggestions) {
 		switch (action) {
 			case ADD:
-				this.chatSuggestions.addAll(entries);
+				this.chatSuggestions.addAll(suggestions);
 				break;
 			case REMOVE:
-				entries.forEach(this.chatSuggestions::remove);
+				suggestions.forEach(this.chatSuggestions::remove);
 				break;
 			case SET:
 				this.chatSuggestions.clear();
-				this.chatSuggestions.addAll(entries);
+				this.chatSuggestions.addAll(suggestions);
 		}
 	}
 }

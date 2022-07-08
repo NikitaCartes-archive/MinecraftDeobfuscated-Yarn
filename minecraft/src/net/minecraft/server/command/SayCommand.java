@@ -19,7 +19,8 @@ public class SayCommand {
 								PlayerManager playerManager = serverCommandSource.getServer().getPlayerManager();
 								signedMessage.decorate(serverCommandSource)
 									.thenAcceptAsync(
-										decoratedMessage -> playerManager.broadcast(decoratedMessage, serverCommandSource, MessageType.SAY_COMMAND), serverCommandSource.getServer()
+										decoratedMessage -> playerManager.broadcast(decoratedMessage, serverCommandSource, MessageType.params(MessageType.SAY_COMMAND, serverCommandSource)),
+										serverCommandSource.getServer()
 									);
 								return 1;
 							}

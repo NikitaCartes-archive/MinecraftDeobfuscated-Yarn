@@ -119,12 +119,14 @@ import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.HealthUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.HideMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.network.packet.s2c.play.ItemPickupAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.KeepAliveS2CPacket;
 import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.LookAtS2CPacket;
 import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.MessageHeaderS2CPacket;
 import net.minecraft.network.packet.s2c.play.NbtQueryResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenHorseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
@@ -217,6 +219,7 @@ public enum NetworkState {
 					.register(ChatSuggestionsS2CPacket.class, ChatSuggestionsS2CPacket::new)
 					.register(CustomPayloadS2CPacket.class, CustomPayloadS2CPacket::new)
 					.register(PlaySoundIdS2CPacket.class, PlaySoundIdS2CPacket::new)
+					.register(HideMessageS2CPacket.class, HideMessageS2CPacket::new)
 					.register(DisconnectS2CPacket.class, DisconnectS2CPacket::new)
 					.register(EntityStatusS2CPacket.class, EntityStatusS2CPacket::new)
 					.register(ExplosionS2CPacket.class, ExplosionS2CPacket::new)
@@ -243,6 +246,7 @@ public enum NetworkState {
 					.register(CraftFailedResponseS2CPacket.class, CraftFailedResponseS2CPacket::new)
 					.register(PlayerAbilitiesS2CPacket.class, PlayerAbilitiesS2CPacket::new)
 					.register(ChatMessageS2CPacket.class, ChatMessageS2CPacket::new)
+					.register(MessageHeaderS2CPacket.class, MessageHeaderS2CPacket::new)
 					.register(EndCombatS2CPacket.class, EndCombatS2CPacket::new)
 					.register(EnterCombatS2CPacket.class, EnterCombatS2CPacket::new)
 					.register(DeathMessageS2CPacket.class, DeathMessageS2CPacket::new)

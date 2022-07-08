@@ -17,10 +17,10 @@ import javax.annotation.Nullable;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
-import net.minecraft.network.message.CommandArgumentSigner;
-import net.minecraft.network.message.MessageSender;
+import net.minecraft.network.message.MessageSourceProfile;
 import net.minecraft.network.message.MessageType;
-import net.minecraft.network.message.SignedMessage;
+import net.minecraft.network.message.SentMessage;
+import net.minecraft.network.message.SignedCommandArguments;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -60,13 +60,13 @@ public class ServerCommandSource implements CommandSource {
 	private final ResultConsumer<ServerCommandSource> resultConsumer;
 	private final EntityAnchorArgumentType.EntityAnchor entityAnchor;
 	private final Vec2f rotation;
-	private final CommandArgumentSigner signer;
+	private final SignedCommandArguments signedArguments;
 
 	public ServerCommandSource(
 		CommandOutput output, Vec3d pos, Vec2f rot, ServerWorld world, int level, String name, Text displayName, MinecraftServer server, @Nullable Entity entity
 	) {
 		this(output, pos, rot, world, level, name, displayName, server, entity, false, (context, success, result) -> {
-		}, EntityAnchorArgumentType.EntityAnchor.FEET, CommandArgumentSigner.NONE);
+		}, EntityAnchorArgumentType.EntityAnchor.FEET, SignedCommandArguments.none());
 	}
 
 	protected ServerCommandSource(
@@ -82,7 +82,7 @@ public class ServerCommandSource implements CommandSource {
 		boolean silent,
 		@Nullable ResultConsumer<ServerCommandSource> consumer,
 		EntityAnchorArgumentType.EntityAnchor entityAnchor,
-		CommandArgumentSigner signer
+		SignedCommandArguments signedArguments
 	) {
 		this.output = output;
 		this.position = pos;
@@ -96,7 +96,7 @@ public class ServerCommandSource implements CommandSource {
 		this.resultConsumer = consumer;
 		this.entityAnchor = entityAnchor;
 		this.rotation = rot;
-		this.signer = signer;
+		this.signedArguments = signedArguments;
 	}
 
 	public ServerCommandSource withOutput(CommandOutput output) {
@@ -115,7 +115,7 @@ public class ServerCommandSource implements CommandSource {
 				this.silent,
 				this.resultConsumer,
 				this.entityAnchor,
-				this.signer
+				this.signedArguments
 			);
 	}
 
@@ -135,7 +135,7 @@ public class ServerCommandSource implements CommandSource {
 				this.silent,
 				this.resultConsumer,
 				this.entityAnchor,
-				this.signer
+				this.signedArguments
 			);
 	}
 
@@ -155,7 +155,7 @@ public class ServerCommandSource implements CommandSource {
 				this.silent,
 				this.resultConsumer,
 				this.entityAnchor,
-				this.signer
+				this.signedArguments
 			);
 	}
 
@@ -175,7 +175,7 @@ public class ServerCommandSource implements CommandSource {
 				this.silent,
 				this.resultConsumer,
 				this.entityAnchor,
-				this.signer
+				this.signedArguments
 			);
 	}
 
@@ -195,7 +195,7 @@ public class ServerCommandSource implements CommandSource {
 				this.silent,
 				consumer,
 				this.entityAnchor,
-				this.signer
+				this.signedArguments
 			);
 	}
 
@@ -219,7 +219,7 @@ public class ServerCommandSource implements CommandSource {
 				true,
 				this.resultConsumer,
 				this.entityAnchor,
-				this.signer
+				this.signedArguments
 			)
 			: this;
 	}
@@ -240,7 +240,7 @@ public class ServerCommandSource implements CommandSource {
 				this.silent,
 				this.resultConsumer,
 				this.entityAnchor,
-				this.signer
+				this.signedArguments
 			);
 	}
 
@@ -260,7 +260,7 @@ public class ServerCommandSource implements CommandSource {
 				this.silent,
 				this.resultConsumer,
 				this.entityAnchor,
-				this.signer
+				this.signedArguments
 			);
 	}
 
@@ -280,7 +280,7 @@ public class ServerCommandSource implements CommandSource {
 				this.silent,
 				this.resultConsumer,
 				anchor,
-				this.signer
+				this.signedArguments
 			);
 	}
 
@@ -303,7 +303,7 @@ public class ServerCommandSource implements CommandSource {
 				this.silent,
 				this.resultConsumer,
 				this.entityAnchor,
-				this.signer
+				this.signedArguments
 			);
 		}
 	}
@@ -323,8 +323,8 @@ public class ServerCommandSource implements CommandSource {
 		return this.withRotation(new Vec2f(h, i));
 	}
 
-	public ServerCommandSource withSigner(CommandArgumentSigner signer) {
-		return signer == this.signer
+	public ServerCommandSource withSignedArguments(SignedCommandArguments signedArguments) {
+		return signedArguments == this.signedArguments
 			? this
 			: new ServerCommandSource(
 				this.output,
@@ -339,7 +339,7 @@ public class ServerCommandSource implements CommandSource {
 				this.silent,
 				this.resultConsumer,
 				this.entityAnchor,
-				signer
+				signedArguments
 			);
 	}
 
@@ -351,8 +351,8 @@ public class ServerCommandSource implements CommandSource {
 		return this.name;
 	}
 
-	public MessageSender getChatMessageSender() {
-		return this.entity != null ? this.entity.asMessageSender() : MessageSender.of(this.getDisplayName());
+	public MessageSourceProfile getMessageSourceProfile() {
+		return this.entity != null ? this.entity.getMessageSourceProfile() : MessageSourceProfile.NONE;
 	}
 
 	@Override
@@ -425,17 +425,21 @@ public class ServerCommandSource implements CommandSource {
 		return this.entityAnchor;
 	}
 
-	public CommandArgumentSigner getSigner() {
-		return this.signer;
+	public SignedCommandArguments getSignedArguments() {
+		return this.signedArguments;
 	}
 
-	public void sendChatMessage(MessageSender sender, SignedMessage message, RegistryKey<MessageType> typeKey) {
+	/**
+	 * Sends {@code message} as the feedback to the command's executor, or to the server's log
+	 * if the command is not executed by a player.
+	 */
+	public void sendChatMessage(SentMessage message, MessageType.Parameters params) {
 		if (!this.silent) {
 			ServerPlayerEntity serverPlayerEntity = this.getPlayer();
 			if (serverPlayerEntity != null) {
-				serverPlayerEntity.sendChatMessage(message, sender, typeKey);
+				serverPlayerEntity.sendChatMessage(message, params);
 			} else {
-				this.output.sendMessage(this.server.applyDecoration(sender, message.getContent(), typeKey));
+				this.output.sendMessage(params.applyChatDecoration(message.getWrappedMessage().getContent()));
 			}
 		}
 	}

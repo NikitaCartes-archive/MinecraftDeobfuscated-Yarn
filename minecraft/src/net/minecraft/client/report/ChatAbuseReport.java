@@ -11,7 +11,6 @@ import it.unimi.dsi.fastutil.ints.IntRBTreeSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import java.time.Instant;
-import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -19,7 +18,6 @@ import java.util.stream.IntStream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.text.Text;
 
@@ -128,21 +126,16 @@ public class ChatAbuseReport {
 
 	private ReportChatMessage toReportChatMessage(int index, ReceivedMessage.ChatMessage message) {
 		SignedMessage signedMessage = message.message();
-		Instant instant = signedMessage.signature().timestamp();
-		NetworkEncryptionUtils.SignatureData signatureData = signedMessage.signature().saltSignature();
-		long l = signatureData.salt();
-		String string = signatureData.isSignaturePresent() ? base64Encode(signatureData.signature()) : null;
-		String string2 = serializeContent(signedMessage.signedContent());
+		Instant instant = signedMessage.getTimestamp();
+		long l = signedMessage.getSalt();
+		String string = signedMessage.headerSignature().toStringOrNull();
+		String string2 = serializeContent(signedMessage.getSignedContent());
 		String string3 = (String)signedMessage.unsignedContent().map(ChatAbuseReport::serializeContent).orElse(null);
 		return new ReportChatMessage(message.getSenderUuid(), instant, l, string, string2, string3, this.hasSelectedMessage(index));
 	}
 
 	private static String serializeContent(Text content) {
 		return Text.Serializer.toSortedJsonString(content);
-	}
-
-	private static String base64Encode(byte[] bs) {
-		return Base64.getEncoder().encodeToString(bs);
 	}
 
 	private IntStream streamNeighboringIndices(ChatLog log, int index) {

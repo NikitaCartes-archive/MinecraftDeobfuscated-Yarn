@@ -7,10 +7,12 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import java.util.List;
 import net.minecraft.command.argument.MessageArgumentType;
 import net.minecraft.entity.Entity;
-import net.minecraft.network.message.MessageSender;
+import net.minecraft.network.message.MessageSourceProfile;
 import net.minecraft.network.message.MessageType;
+import net.minecraft.network.message.SentMessage;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
@@ -25,11 +27,16 @@ public class TeamMsgCommand {
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		LiteralCommandNode<ServerCommandSource> literalCommandNode = dispatcher.register(
-			CommandManager.literal("teammsg")
-				.then(
-					CommandManager.argument("message", MessageArgumentType.message())
-						.executes(context -> execute(context.getSource(), MessageArgumentType.getSignedMessage(context, "message")))
-				)
+			CommandManager.literal("teammsg").then(CommandManager.argument("message", MessageArgumentType.message()).executes(context -> {
+				MessageArgumentType.SignedMessage signedMessage = MessageArgumentType.getSignedMessage(context, "message");
+
+				try {
+					return execute(context.getSource(), signedMessage);
+				} catch (Exception var3) {
+					signedMessage.sendHeader(context.getSource());
+					throw var3;
+				}
+			}))
 		);
 		dispatcher.register(CommandManager.literal("tm").redirect(literalCommandNode));
 	}
@@ -41,36 +48,37 @@ public class TeamMsgCommand {
 			throw NO_TEAM_EXCEPTION.create();
 		} else {
 			Text text = team.getFormattedName().fillStyle(STYLE);
-			MessageSender messageSender = source.getChatMessageSender().withTargetName(text);
+			MessageSourceProfile messageSourceProfile = source.getMessageSourceProfile();
+			MessageType.Parameters parameters = MessageType.params(MessageType.TEAM_MSG_COMMAND, source).withTargetName(text);
 			List<ServerPlayerEntity> list = source.getServer()
 				.getPlayerManager()
 				.getPlayerList()
 				.stream()
-				.filter(serverPlayerEntity -> serverPlayerEntity == entity || serverPlayerEntity.getScoreboardTeam() == team)
+				.filter(player -> player == entity || player.getScoreboardTeam() == team)
 				.toList();
-			if (list.isEmpty()) {
-				return 0;
-			} else {
-				signedMessage.decorate(source)
-					.thenAcceptAsync(
-						decoratedMessage -> {
-							for (ServerPlayerEntity serverPlayerEntity : list) {
-								if (serverPlayerEntity == entity) {
-									serverPlayerEntity.sendMessage(
-										Text.translatable("chat.type.team.sent", text, source.getDisplayName(), ((SignedMessage)decoratedMessage.raw()).getContent())
-									);
-								} else {
-									SignedMessage signedMessagex = (SignedMessage)decoratedMessage.getFilterableFor(source, serverPlayerEntity);
-									if (signedMessagex != null) {
-										serverPlayerEntity.sendChatMessage(signedMessagex, messageSender, MessageType.TEAM_MSG_COMMAND);
-									}
+			signedMessage.decorate(source)
+				.thenAcceptAsync(
+					decoratedMessage -> {
+						FilteredMessage<SentMessage> filteredMessage = SentMessage.of(decoratedMessage, messageSourceProfile);
+
+						for (ServerPlayerEntity serverPlayerEntity : list) {
+							if (serverPlayerEntity == entity) {
+								serverPlayerEntity.sendMessage(
+									Text.translatable("chat.type.team.sent", text, source.getDisplayName(), ((SignedMessage)decoratedMessage.raw()).getContent())
+								);
+							} else {
+								SentMessage sentMessage = filteredMessage.getFilterableFor(source, serverPlayerEntity);
+								if (sentMessage != null) {
+									serverPlayerEntity.sendChatMessage(sentMessage, parameters);
 								}
 							}
-						},
-						source.getServer()
-					);
-				return list.size();
-			}
+						}
+
+						filteredMessage.raw().afterPacketsSent(source.getServer().getPlayerManager());
+					},
+					source.getServer()
+				);
+			return list.size();
 		}
 	}
 }

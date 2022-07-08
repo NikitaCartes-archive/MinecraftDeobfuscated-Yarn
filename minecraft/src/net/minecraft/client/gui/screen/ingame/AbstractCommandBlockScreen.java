@@ -3,7 +3,7 @@ package net.minecraft.client.gui.screen.ingame;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.CommandSuggestor;
+import net.minecraft.client.gui.screen.ChatInputSuggestor;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
@@ -26,7 +26,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	protected ButtonWidget doneButton;
 	protected ButtonWidget cancelButton;
 	protected CyclingButtonWidget<Boolean> toggleTrackingOutputButton;
-	CommandSuggestor commandSuggestor;
+	ChatInputSuggestor commandSuggestor;
 
 	public AbstractCommandBlockScreen() {
 		super(NarratorManager.EMPTY);
@@ -79,7 +79,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		this.addSelectableChild(this.previousOutputTextField);
 		this.setInitialFocus(this.consoleCommandTextField);
 		this.consoleCommandTextField.setTextFieldFocused(true);
-		this.commandSuggestor = new CommandSuggestor(this.client, this, this.consoleCommandTextField, this.textRenderer, true, true, 0, 7, false, Integer.MIN_VALUE);
+		this.commandSuggestor = new ChatInputSuggestor(this.client, this, this.consoleCommandTextField, this.textRenderer, true, true, 0, 7, false, Integer.MIN_VALUE);
 		this.commandSuggestor.setWindowActive(true);
 		this.commandSuggestor.refresh();
 		this.setPreviousOutputText(bl);
