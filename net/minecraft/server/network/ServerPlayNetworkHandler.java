@@ -70,8 +70,8 @@ import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ServerPlayPacketListener;
-import net.minecraft.network.message.MessageDecorator;
-import net.minecraft.network.message.MessageSignature;
+import net.minecraft.network.message.MessageChain;
+import net.minecraft.network.message.MessageMetadata;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
@@ -222,6 +222,7 @@ ServerPlayPacketListener {
     private int lastTickMovePacketsCount;
     private final PendingTaskRunner previewTaskRunner = new PendingTaskRunner();
     private final AtomicReference<Instant> lastMessageTimestamp = new AtomicReference<Instant>(Instant.EPOCH);
+    private final MessageChain.Unpacker messageUnpacker = new MessageChain().getUnpacker();
 
     public ServerPlayNetworkHandler(MinecraftServer server, ClientConnection connection, ServerPlayerEntity player) {
         this.server = server;
@@ -1148,12 +1149,12 @@ ServerPlayPacketListener {
 
     @Override
     public void onChatMessage(ChatMessageC2SPacket packet) {
-        if (ServerPlayNetworkHandler.hasIllegalCharacter(packet.getChatMessage())) {
+        if (ServerPlayNetworkHandler.hasIllegalCharacter(packet.chatMessage())) {
             this.disconnect(Text.translatable("multiplayer.disconnect.illegal_characters"));
             return;
         }
-        if (this.canAcceptMessage(packet.getChatMessage(), packet.getTimestamp())) {
-            this.filterText(packet.getChatMessage(), message -> this.handleMessage(packet, (FilteredMessage<String>)message));
+        if (this.canAcceptMessage(packet.chatMessage(), packet.timestamp())) {
+            this.filterText(packet.chatMessage(), message -> this.handleMessage(packet, (FilteredMessage<String>)message));
         }
     }
 
@@ -1165,7 +1166,7 @@ ServerPlayPacketListener {
         }
         if (this.canAcceptMessage(packet.command(), packet.timestamp())) {
             this.server.submit(() -> {
-                ServerCommandSource serverCommandSource = this.player.getCommandSource().withSigner(packet.createArgumentsSigner(this.player.getUuid()));
+                ServerCommandSource serverCommandSource = this.player.getCommandSource().withSignedArguments(packet.createSignedArguments(this.player));
                 this.server.getCommandManager().execute(serverCommandSource, packet.command());
                 this.checkForSpam();
             });
@@ -1176,9 +1177,7 @@ ServerPlayPacketListener {
      * {@return whether {@code message}, sent at {@code timestamp}, should be accepted}
      * 
      * @implNote This returns {@code false} if the message arrives in {@linkplain
-     * #isInProperOrder improper order} or if chat is disabled. This also logs a warning
-     * when the message is {@linkplain #isExpired expired}, but the message is still
-     * accepted in this case.
+     * #isInProperOrder improper order} or if chat is disabled.
      */
     private boolean canAcceptMessage(String message, Instant timestamp) {
         if (!this.isInProperOrder(timestamp)) {
@@ -1222,25 +1221,27 @@ ServerPlayPacketListener {
     }
 
     private void handleMessage(ChatMessageC2SPacket packet, FilteredMessage<String> message) {
-        MessageSignature messageSignature = packet.createSignatureInstance(this.player.getUuid());
-        boolean bl = packet.isPreviewed();
-        MessageDecorator messageDecorator = this.server.getMessageDecorator();
-        messageDecorator.decorateChat(this.player, message.map(Text::literal), messageSignature, bl).thenAcceptAsync(this::handleDecoratedMessage, (Executor)this.server);
+        MessageMetadata messageMetadata = packet.getMetadata(this.player);
+        MessageChain.Signature signature = new MessageChain.Signature(packet.signature());
+        FilteredMessage<Text> filteredMessage = message.map(Text::literal);
+        if (packet.signedPreview()) {
+            ((CompletableFuture)this.server.getMessageDecorator().decorateFiltered(this.player, filteredMessage).thenApply(decoratedMessage -> this.messageUnpacker.unpack(signature, messageMetadata, (FilteredMessage<Text>)decoratedMessage))).thenAcceptAsync(this::handleDecoratedMessage, (Executor)this.server);
+        } else {
+            FilteredMessage<SignedMessage> filteredMessage2 = this.messageUnpacker.unpack(signature, messageMetadata, filteredMessage);
+            this.server.getMessageDecorator().decorateSignedChat(this.player, filteredMessage2).thenAcceptAsync(this::handleDecoratedMessage, (Executor)this.server);
+        }
     }
 
     private void handleDecoratedMessage(FilteredMessage<SignedMessage> message) {
         SignedMessage signedMessage = message.raw();
-        if (!signedMessage.verify(this.player)) {
-            LOGGER.warn("{} sent message with invalid signature: '{}'", (Object)this.player.getName().getString(), (Object)signedMessage.signedContent().getString());
-            if (this.server.shouldEnforceSecureProfile()) {
-                this.disconnect(Text.translatable("multiplayer.disconnect.unsigned_chat"));
-                return;
-            }
+        if (this.server.shouldEnforceSecureProfile() && !signedMessage.verify(this.player.getMessageSourceProfile())) {
+            this.disconnect(Text.translatable("multiplayer.disconnect.unsigned_chat"));
+            return;
         }
         if (signedMessage.isExpiredOnServer(Instant.now())) {
-            LOGGER.warn("{} sent expired chat: '{}'. Is the client/server system time unsynchronized?", (Object)this.player.getName().getString(), (Object)signedMessage.signedContent().getString());
+            LOGGER.warn("{} sent expired chat: '{}'. Is the client/server system time unsynchronized?", (Object)this.player.getName().getString(), (Object)signedMessage.getSignedContent().getString());
         }
-        this.server.getPlayerManager().broadcast(message, this.player, MessageType.CHAT);
+        this.server.getPlayerManager().broadcast(message, this.player, MessageType.params(MessageType.CHAT, this.player));
         this.checkForSpam();
     }
 
@@ -1374,6 +1375,10 @@ ServerPlayPacketListener {
                 throw new IllegalArgumentException("Invalid client command!");
             }
         }
+    }
+
+    public MessageChain.Unpacker getMessageUnpacker() {
+        return this.messageUnpacker;
     }
 
     @Override

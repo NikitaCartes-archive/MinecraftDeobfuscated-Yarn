@@ -46,8 +46,8 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
     private final String name;
     private final Supplier<Identifier> skinTexture;
     private boolean offline;
-    private boolean field_39790;
-    private final boolean field_39791;
+    private boolean sentMessage;
+    private final boolean canSendReports;
     @Nullable
     private ButtonWidget hideButton;
     @Nullable
@@ -85,12 +85,12 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
         this.name = name;
         this.skinTexture = skinTexture;
         AbuseReportContext abuseReportContext = client.getAbuseReportContext();
-        this.field_39791 = abuseReportContext.sender().canSendReports();
+        this.canSendReports = abuseReportContext.sender().canSendReports();
         final MutableText text = Text.translatable("gui.socialInteractions.narration.hide", name);
         final MutableText text2 = Text.translatable("gui.socialInteractions.narration.show", name);
         this.hideTooltip = client.textRenderer.wrapLines(hideText, 150);
         this.showTooltip = client.textRenderer.wrapLines(showText, 150);
-        this.reportTooltip = client.textRenderer.wrapLines(this.method_44755(false), 150);
+        this.reportTooltip = client.textRenderer.wrapLines(this.getReportText(false), 150);
         SocialInteractionsManager socialInteractionsManager = client.getSocialInteractionsManager();
         boolean bl = client.getChatRestriction().allowsChat(client.isInSingleplayer());
         boolean bl3 = bl2 = !client.player.getUuid().equals(uuid);
@@ -107,7 +107,7 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
 
                 @Override
                 public void supply(Consumer<Text> consumer) {
-                    consumer.accept(SocialInteractionsPlayerListEntry.this.method_44755(true));
+                    consumer.accept(SocialInteractionsPlayerListEntry.this.getReportText(true));
                 }
             }, Text.translatable("gui.socialInteractions.report")){
 
@@ -173,14 +173,14 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
         }
     }
 
-    Text method_44755(boolean bl) {
-        if (!this.field_39791) {
+    Text getReportText(boolean narrated) {
+        if (!this.canSendReports) {
             return REPORT_DISABLED_TEXT;
         }
-        if (!this.field_39790) {
+        if (!this.sentMessage) {
             return Text.translatable("gui.socialInteractions.tooltip.report.no_messages", this.name);
         }
-        return bl ? Text.translatable("gui.socialInteractions.narration.report", this.name) : reportText;
+        return narrated ? Text.translatable("gui.socialInteractions.narration.report", this.name) : reportText;
     }
 
     @Override
@@ -243,20 +243,20 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
         this.offline = offline;
     }
 
-    public boolean method_44754() {
+    public boolean isOffline() {
         return this.offline;
     }
 
-    public void method_44753(boolean bl) {
-        this.field_39790 = bl;
+    public void setSentMessage(boolean sentMessage) {
+        this.sentMessage = sentMessage;
         if (this.reportButton != null) {
-            this.reportButton.active = this.field_39791 && bl;
+            this.reportButton.active = this.canSendReports && sentMessage;
         }
-        this.reportTooltip = this.client.textRenderer.wrapLines(this.method_44755(false), 150);
+        this.reportTooltip = this.client.textRenderer.wrapLines(this.getReportText(false), 150);
     }
 
-    public boolean method_44756() {
-        return this.field_39790;
+    public boolean hasSentMessage() {
+        return this.sentMessage;
     }
 
     private void onButtonClick(boolean showButtonVisible, Text chatMessage) {

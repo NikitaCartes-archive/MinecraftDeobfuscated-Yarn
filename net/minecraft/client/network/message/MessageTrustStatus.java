@@ -8,10 +8,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.hud.MessageIndicator;
 import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.text.Text;
-import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -25,14 +23,13 @@ public enum MessageTrustStatus {
         if (message.isExpiredOnClient(Instant.now())) {
             return NOT_SECURE;
         }
-        PlayerPublicKey playerPublicKey = Util.map(sender, PlayerListEntry::getPublicKeyData);
-        if (playerPublicKey == null || !message.verify(playerPublicKey)) {
+        if (sender == null || !sender.getMessageVerifier().verify(message)) {
             return NOT_SECURE;
         }
         if (message.unsignedContent().isPresent()) {
             return MODIFIED;
         }
-        if (!decorated.contains(message.signedContent())) {
+        if (!decorated.contains(message.getSignedContent())) {
             return MODIFIED;
         }
         return SECURE;
@@ -45,7 +42,7 @@ public enum MessageTrustStatus {
     @Nullable
     public MessageIndicator createIndicator(SignedMessage message) {
         return switch (this) {
-            case MODIFIED -> MessageIndicator.modified(message.signedContent());
+            case MODIFIED -> MessageIndicator.modified(message.getSignedContent());
             case NOT_SECURE -> MessageIndicator.notSecure();
             default -> null;
         };

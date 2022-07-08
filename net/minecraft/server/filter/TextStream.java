@@ -7,8 +7,6 @@ import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.server.filter.FilteredMessage;
-import net.minecraft.text.Text;
-import net.minecraft.util.Util;
 
 public interface TextStream {
     public static final TextStream UNFILTERED = new TextStream(){
@@ -39,12 +37,5 @@ public interface TextStream {
     public CompletableFuture<FilteredMessage<String>> filterText(String var1);
 
     public CompletableFuture<List<FilteredMessage<String>>> filterTexts(List<String> var1);
-
-    default public CompletableFuture<FilteredMessage<Text>> filterText(Text text) {
-        return this.filterText(text.getString()).thenApply(filteredMessage -> {
-            Text text2 = Util.map((String)filteredMessage.filtered(), Text::literal);
-            return new FilteredMessage<Text>(text, text2);
-        });
-    }
 }
 

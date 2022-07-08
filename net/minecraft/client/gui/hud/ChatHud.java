@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -20,6 +21,7 @@ import net.minecraft.client.network.message.MessageHandler;
 import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.client.util.ChatMessages;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -76,7 +78,7 @@ extends DrawableHelper {
         double d = this.client.options.getChatOpacity().getValue() * (double)0.9f + (double)0.1f;
         double e = this.client.options.getTextBackgroundOpacity().getValue();
         double g = this.client.options.getChatLineSpacing().getValue();
-        int l = this.method_44752();
+        int l = this.getLineHeight();
         double h = -8.0 * (g + 1.0) + 4.0 * g;
         int m = 0;
         for (int n = 0; n + this.scrolledLines < this.visibleMessages.size() && n < i; ++n) {
@@ -109,7 +111,7 @@ extends DrawableHelper {
             RenderSystem.disableBlend();
             matrices.pop();
         }
-        Collection<?> collection = this.client.getMessageHandler().method_44773();
+        Collection<?> collection = this.client.getMessageHandler().getDelayedMessages();
         if (!collection.isEmpty()) {
             int y = (int)(128.0 * d);
             o = (int)(255.0 * e);
@@ -123,7 +125,7 @@ extends DrawableHelper {
             RenderSystem.disableBlend();
         }
         if (bl) {
-            int y = this.method_44752();
+            int y = this.getLineHeight();
             o = j * y;
             int z = m * y;
             int aa = this.scrolledLines * z / j;
@@ -162,7 +164,7 @@ extends DrawableHelper {
     }
 
     public void clear(boolean clearHistory) {
-        this.client.getMessageHandler().method_44773().clear();
+        this.client.getMessageHandler().getDelayedMessages().clear();
         this.visibleMessages.clear();
         this.messages.clear();
         if (clearHistory) {
@@ -175,7 +177,7 @@ extends DrawableHelper {
     }
 
     public void addMessage(Text message, @Nullable MessageIndicator indicator) {
-        this.addMessage(message, this.client.inGameHud.getTicks(), indicator, false);
+        this.addMessage(message, null, indicator);
         String string = message.getString().replaceAll("\r", "\\\\r").replaceAll("\n", "\\\\n");
         String string2 = Util.map(indicator, MessageIndicator::loggedName);
         if (string2 != null) {
@@ -185,7 +187,11 @@ extends DrawableHelper {
         }
     }
 
-    private void addMessage(Text message, int messageId, @Nullable MessageIndicator indicator, boolean refresh) {
+    public void addMessage(Text message, @Nullable MessageSignatureData signature, @Nullable MessageIndicator indicator) {
+        this.addMessage(message, signature, this.client.inGameHud.getTicks(), indicator, false);
+    }
+
+    private void addMessage(Text message, @Nullable MessageSignatureData signature, int ticks, @Nullable MessageIndicator indicator, boolean refresh) {
         int i = MathHelper.floor((double)this.getWidth() / this.getChatScale());
         if (indicator != null && indicator.icon() != null) {
             i -= indicator.icon().width + 4 + 2;
@@ -199,25 +205,40 @@ extends DrawableHelper {
                 this.scroll(1);
             }
             boolean bl2 = j == list.size() - 1;
-            this.visibleMessages.add(0, new ChatHudLine.Visible(messageId, orderedText, indicator, bl2));
+            this.visibleMessages.add(0, new ChatHudLine.Visible(ticks, orderedText, indicator, bl2));
         }
         while (this.visibleMessages.size() > 100) {
             this.visibleMessages.remove(this.visibleMessages.size() - 1);
         }
         if (!refresh) {
-            this.messages.add(0, new ChatHudLine(messageId, message, indicator));
+            this.messages.add(0, new ChatHudLine(ticks, message, signature, indicator));
             while (this.messages.size() > 100) {
                 this.messages.remove(this.messages.size() - 1);
             }
         }
     }
 
+    public void hideMessage(MessageSignatureData signature) {
+        Iterator<ChatHudLine> iterator = this.messages.iterator();
+        while (iterator.hasNext()) {
+            MessageSignatureData messageSignatureData = iterator.next().headerSignature();
+            if (messageSignatureData == null || !messageSignatureData.equals(signature)) continue;
+            iterator.remove();
+            break;
+        }
+        this.refresh();
+    }
+
     public void reset() {
-        this.visibleMessages.clear();
         this.resetScroll();
+        this.refresh();
+    }
+
+    private void refresh() {
+        this.visibleMessages.clear();
         for (int i = this.messages.size() - 1; i >= 0; --i) {
             ChatHudLine chatHudLine = this.messages.get(i);
-            this.addMessage(chatHudLine.content(), chatHudLine.creationTick(), chatHudLine.indicator(), true);
+            this.addMessage(chatHudLine.content(), chatHudLine.headerSignature(), chatHudLine.creationTick(), chatHudLine.indicator(), true);
         }
     }
 
@@ -253,13 +274,13 @@ extends DrawableHelper {
             return false;
         }
         MessageHandler messageHandler = this.client.getMessageHandler();
-        if (messageHandler.method_44773().isEmpty()) {
+        if (messageHandler.getDelayedMessages().isEmpty()) {
             return false;
         }
         double d = mouseX - 2.0;
         double e = (double)this.client.getWindow().getScaledHeight() - mouseY - 40.0;
         if (d <= (double)MathHelper.floor((double)this.getWidth() / this.getChatScale()) && e < 0.0 && e > (double)MathHelper.floor(-9.0 * this.getChatScale())) {
-            messageHandler.method_44769();
+            messageHandler.process();
             return true;
         }
         return false;
@@ -372,10 +393,10 @@ extends DrawableHelper {
     }
 
     public int getVisibleLineCount() {
-        return this.getHeight() / this.method_44752();
+        return this.getHeight() / this.getLineHeight();
     }
 
-    private int method_44752() {
+    private int getLineHeight() {
         return (int)((double)this.client.textRenderer.fontHeight * (this.client.options.getChatLineSpacing().getValue() + 1.0));
     }
 }

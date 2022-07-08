@@ -125,9 +125,9 @@ import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.message.MessageSender;
+import net.minecraft.network.message.MessageChain;
+import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.network.message.MessageType;
-import net.minecraft.network.message.SignedMessage;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
@@ -184,6 +184,7 @@ import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.HealthUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.HideMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.network.packet.s2c.play.ItemPickupAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.KeepAliveS2CPacket;
@@ -191,6 +192,7 @@ import net.minecraft.network.packet.s2c.play.LightData;
 import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.LookAtS2CPacket;
 import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.MessageHeaderS2CPacket;
 import net.minecraft.network.packet.s2c.play.NbtQueryResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenHorseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
@@ -321,6 +323,7 @@ implements ClientPlayPacketListener {
     private Set<RegistryKey<World>> worldKeys;
     private DynamicRegistryManager.Immutable registryManager = DynamicRegistryManager.BUILTIN.get();
     private final TelemetrySender telemetrySender;
+    private final MessageChain.Packer messagePacker = new MessageChain().getPacker();
 
     public ClientPlayNetworkHandler(MinecraftClient client, Screen screen, ClientConnection connection, GameProfile profile, TelemetrySender telemetrySender) {
         this.client = client;
@@ -753,11 +756,23 @@ implements ClientPlayPacketListener {
     @Override
     public void onChatMessage(ChatMessageS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
-        Registry<MessageType> registry = this.registryManager.get(Registry.MESSAGE_TYPE_KEY);
-        MessageType messageType = packet.getMessageType(registry);
-        MessageSender messageSender = packet.sender();
-        SignedMessage signedMessage = packet.getSignedMessage();
-        this.client.getMessageHandler().onChatMessage(messageType, signedMessage, messageSender);
+        MessageType.Parameters parameters = packet.getParameters(this.registryManager);
+        this.client.getMessageHandler().onChatMessage(packet.message(), parameters);
+    }
+
+    @Override
+    public void onMessageHeader(MessageHeaderS2CPacket packet) {
+        NetworkThreadUtils.forceMainThread(packet, this, this.client);
+        this.client.getMessageHandler().onMessageHeader(packet.header(), packet.headerSignature(), packet.bodyDigest());
+    }
+
+    @Override
+    public void onHideMessage(HideMessageS2CPacket packet) {
+        NetworkThreadUtils.forceMainThread(packet, this, this.client);
+        MessageSignatureData messageSignatureData = packet.messageSignature();
+        if (!this.client.getMessageHandler().removeDelayedMessage(messageSignatureData)) {
+            this.client.inGameHud.getChatHud().hideMessage(messageSignatureData);
+        }
     }
 
     @Override
@@ -1419,7 +1434,7 @@ implements ClientPlayPacketListener {
     @Override
     public void onChatSuggestions(ChatSuggestionsS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
-        this.commandSource.changeChatSuggestions(packet.action(), packet.entries());
+        this.commandSource.onChatSuggestions(packet.action(), packet.entries());
     }
 
     @Override
@@ -2138,6 +2153,10 @@ implements ClientPlayPacketListener {
 
     public DynamicRegistryManager getRegistryManager() {
         return this.registryManager;
+    }
+
+    public MessageChain.Packer getMessagePacker() {
+        return this.messagePacker;
     }
 }
 

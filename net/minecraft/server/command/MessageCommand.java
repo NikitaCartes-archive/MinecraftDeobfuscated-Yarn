@@ -11,33 +11,42 @@ import java.util.Collection;
 import java.util.concurrent.Executor;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.MessageArgumentType;
-import net.minecraft.network.message.MessageSender;
+import net.minecraft.network.message.MessageSourceProfile;
 import net.minecraft.network.message.MessageType;
-import net.minecraft.network.message.SignedMessage;
+import net.minecraft.network.message.SentMessage;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public class MessageCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralCommandNode<ServerCommandSource> literalCommandNode = dispatcher.register((LiteralArgumentBuilder)CommandManager.literal("msg").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("targets", EntityArgumentType.players()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("message", MessageArgumentType.message()).executes(context -> MessageCommand.execute((ServerCommandSource)context.getSource(), EntityArgumentType.getPlayers(context, "targets"), MessageArgumentType.getSignedMessage(context, "message"))))));
+        LiteralCommandNode<ServerCommandSource> literalCommandNode = dispatcher.register((LiteralArgumentBuilder)CommandManager.literal("msg").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("targets", EntityArgumentType.players()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("message", MessageArgumentType.message()).executes(context -> {
+            MessageArgumentType.SignedMessage signedMessage = MessageArgumentType.getSignedMessage(context, "message");
+            try {
+                return MessageCommand.execute((ServerCommandSource)context.getSource(), EntityArgumentType.getPlayers(context, "targets"), signedMessage);
+            } catch (Exception exception) {
+                signedMessage.sendHeader((ServerCommandSource)context.getSource());
+                throw exception;
+            }
+        }))));
         dispatcher.register((LiteralArgumentBuilder)CommandManager.literal("tell").redirect(literalCommandNode));
         dispatcher.register((LiteralArgumentBuilder)CommandManager.literal("w").redirect(literalCommandNode));
     }
 
     private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, MessageArgumentType.SignedMessage signedMessage) {
-        if (targets.isEmpty()) {
-            return 0;
-        }
-        MessageSender messageSender = source.getChatMessageSender();
+        MessageSourceProfile messageSourceProfile = source.getMessageSourceProfile();
+        MessageType.Parameters parameters = MessageType.params(MessageType.MSG_COMMAND_INCOMING, source);
         signedMessage.decorate(source).thenAcceptAsync(decoratedMessage -> {
+            FilteredMessage<SentMessage> filteredMessage = SentMessage.of(decoratedMessage, messageSourceProfile);
             for (ServerPlayerEntity serverPlayerEntity : targets) {
-                MessageSender messageSender2 = messageSender.withTargetName(serverPlayerEntity.getDisplayName());
-                source.sendChatMessage(messageSender2, (SignedMessage)decoratedMessage.raw(), MessageType.MSG_COMMAND_OUTGOING);
-                SignedMessage signedMessage = (SignedMessage)decoratedMessage.getFilterableFor(source, serverPlayerEntity);
-                if (signedMessage == null) continue;
-                serverPlayerEntity.sendChatMessage(signedMessage, messageSender, MessageType.MSG_COMMAND_INCOMING);
+                MessageType.Parameters parameters2 = MessageType.params(MessageType.MSG_COMMAND_OUTGOING, source).withTargetName(serverPlayerEntity.getDisplayName());
+                source.sendChatMessage(filteredMessage.raw(), parameters2);
+                SentMessage sentMessage = filteredMessage.getFilterableFor(source, serverPlayerEntity);
+                if (sentMessage == null) continue;
+                serverPlayerEntity.sendChatMessage(sentMessage, parameters);
             }
+            filteredMessage.raw().afterPacketsSent(source.getServer().getPlayerManager());
         }, (Executor)source.getServer());
         return targets.size();
     }

@@ -8,59 +8,62 @@ import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.brigadier.context.ParsedCommandNode;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
-import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
-import java.util.HashMap;
-import java.util.Map;
+import com.mojang.datafixers.util.Pair;
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.command.argument.TextConvertibleArgumentType;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.encryption.NetworkEncryptionUtils;
+import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.text.Text;
-import org.jetbrains.annotations.Nullable;
 
 /**
- * A record holding the salt and signatures for all signable arguments of an executed command.
+ * A record holding the signatures for all signable arguments of an executed command.
+ * 
+ * @see SignedCommandArguments
  */
-public record ArgumentSignatureDataMap(long salt, Map<String, byte[]> signatures) {
+public record ArgumentSignatureDataMap(List<Entry> entries) {
+    public static final ArgumentSignatureDataMap EMPTY = new ArgumentSignatureDataMap(List.of());
     private static final int MAX_ARGUMENTS = 8;
     private static final int MAX_ARGUMENT_NAME_LENGTH = 16;
 
     public ArgumentSignatureDataMap(PacketByteBuf buf) {
-        this(buf.readLong(), buf.readMap(PacketByteBuf.getMaxValidator(HashMap::new, 8), buf2 -> buf2.readString(16), PacketByteBuf::readByteArray));
-    }
-
-    /**
-     * {@return an empty signature data map that has no signed arguments}
-     * 
-     * @apiNote This is used when there is no argument to sign, or when the signing fails.
-     */
-    public static ArgumentSignatureDataMap empty() {
-        return new ArgumentSignatureDataMap(0L, Map.of());
+        this(buf.readCollection(PacketByteBuf.getMaxValidator(ArrayList::new, 8), Entry::new));
     }
 
     /**
      * {@return the signature data for {@code argumentName}, or {@code null} if the
      * argument name is not present in this signatures}
      */
-    @Nullable
-    public NetworkEncryptionUtils.SignatureData get(String argumentName) {
-        byte[] bs = this.signatures.get(argumentName);
-        if (bs != null) {
-            return new NetworkEncryptionUtils.SignatureData(this.salt, bs);
+    public MessageSignatureData get(String argumentName) {
+        for (Entry entry : this.entries) {
+            if (!entry.name.equals(argumentName)) continue;
+            return entry.signature;
         }
-        return null;
+        return MessageSignatureData.EMPTY;
     }
 
-    public void write(PacketByteBuf buf2) {
-        buf2.writeLong(this.salt);
-        buf2.writeMap(this.signatures, (buf, argumentName) -> buf.writeString((String)argumentName, 16), PacketByteBuf::writeByteArray);
+    public void write(PacketByteBuf buf) {
+        buf.writeCollection(this.entries, (buf2, entry) -> entry.write((PacketByteBuf)buf2));
+    }
+
+    /**
+     * {@return the signature map with arguments from {@code builder} signed with
+     * {@code signer}}
+     */
+    public static ArgumentSignatureDataMap sign(CommandContextBuilder<?> builder, ArgumentSigner signer) {
+        List<Entry> list = ArgumentSignatureDataMap.collectArguments(builder).stream().map(entry -> {
+            MessageSignatureData messageSignatureData = signer.sign((String)entry.getFirst(), (Text)entry.getSecond());
+            return new Entry((String)entry.getFirst(), messageSignatureData);
+        }).toList();
+        return new ArgumentSignatureDataMap(list);
     }
 
     /**
      * {@return the signable argument names and their values from {@code builder}}
      */
-    public static Map<String, Text> collectArguments(CommandContextBuilder<?> builder) {
+    private static List<Pair<String, Text>> collectArguments(CommandContextBuilder<?> builder) {
         CommandContextBuilder<?> commandContextBuilder = builder.getLastChild();
-        Object2ObjectArrayMap<String, Text> map = new Object2ObjectArrayMap<String, Text>();
+        ArrayList<Pair<String, Text>> list = new ArrayList<Pair<String, Text>>();
         for (ParsedCommandNode<?> parsedCommandNode : commandContextBuilder.getNodes()) {
             ArgumentCommandNode argumentCommandNode;
             CommandNode<?> commandNode = parsedCommandNode.getNode();
@@ -68,13 +71,30 @@ public record ArgumentSignatureDataMap(long salt, Map<String, byte[]> signatures
             TextConvertibleArgumentType textConvertibleArgumentType = (TextConvertibleArgumentType)((Object)commandNode);
             ParsedArgument<?, ?> parsedArgument = commandContextBuilder.getArguments().get(argumentCommandNode.getName());
             if (parsedArgument == null) continue;
-            map.put(argumentCommandNode.getName(), ArgumentSignatureDataMap.resultToText(textConvertibleArgumentType, parsedArgument));
+            Text text = ArgumentSignatureDataMap.resultToText(textConvertibleArgumentType, parsedArgument);
+            list.add(Pair.of(argumentCommandNode.getName(), text));
         }
-        return map;
+        return list;
     }
 
     private static <T> Text resultToText(TextConvertibleArgumentType<T> type, ParsedArgument<?, ?> argument) {
         return type.toText(argument.getResult());
+    }
+
+    public record Entry(String name, MessageSignatureData signature) {
+        public Entry(PacketByteBuf buf) {
+            this(buf.readString(16), new MessageSignatureData(buf));
+        }
+
+        public void write(PacketByteBuf buf) {
+            buf.writeString(this.name, 16);
+            this.signature.write(buf);
+        }
+    }
+
+    @FunctionalInterface
+    public static interface ArgumentSigner {
+        public MessageSignatureData sign(String var1, Text var2);
     }
 }
 

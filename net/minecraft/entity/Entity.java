@@ -63,7 +63,7 @@ import net.minecraft.nbt.NbtFloat;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.network.Packet;
-import net.minecraft.network.message.MessageSender;
+import net.minecraft.network.message.MessageSourceProfile;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -1151,8 +1151,8 @@ CommandOutput {
         return this.submergedInWater && this.isTouchingWater();
     }
 
-    public MessageSender asMessageSender() {
-        return MessageSender.of(this.getDisplayName());
+    public MessageSourceProfile getMessageSourceProfile() {
+        return MessageSourceProfile.NONE;
     }
 
     public void updateSwimming() {

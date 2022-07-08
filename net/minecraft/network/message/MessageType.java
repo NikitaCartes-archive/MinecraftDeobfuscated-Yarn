@@ -7,12 +7,19 @@ import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Objects;
+import net.minecraft.entity.Entity;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Decoration;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.BuiltinRegistries;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A message type (also known as "chat type") controls how to display or narrate
@@ -33,8 +40,8 @@ import net.minecraft.util.registry.RegistryKey;
  * {@linkplain Decoration#apply applied} to the message to produce the displayed or
  * narrated text.
  * 
- *  * @param chat the display rule for the content displayed in the chat hud, or\u000a{@link Optional#empty()} if it should not be displayed in the chat hud
- * @param narration the narration rule for the content, or {@link Optional#empty()}\u000aif it should not be narrated
+ *  * @param chat the display rule for the content displayed in the chat hud
+ * @param narration the narration rule for the content
  */
 public record MessageType(Decoration chat, Decoration narration) {
     public static final Codec<MessageType> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Decoration.CODEC.fieldOf("chat")).forGetter(MessageType::chat), ((MapCodec)Decoration.CODEC.fieldOf("narration")).forGetter(MessageType::narration)).apply((Applicative<MessageType, ?>)instance, MessageType::new));
@@ -54,17 +61,21 @@ public record MessageType(Decoration chat, Decoration narration) {
      */
     public static final RegistryKey<MessageType> SAY_COMMAND = MessageType.register("say_command");
     /**
-     * The registry key for the msg command message type, used by {@linkplain
-     * net.minecraft.server.command.MessageCommand /msg} for incoming messages.
-     * The message content is {@linkplain Decoration#ofIncomingMessage decorated} using
-     * the {@code commands.message.display.incoming} text.
+     * The registry key for the incoming message command message type, used by {@linkplain
+     * net.minecraft.server.command.MessageCommand /msg}. The message content is
+     * {@linkplain Decoration#ofIncomingMessage decorated} using the {@code
+     * commands.message.display.incoming} text.
+     * 
+     * <p>An incoming message is a private message received from the sender.
      */
     public static final RegistryKey<MessageType> MSG_COMMAND_INCOMING = MessageType.register("msg_command_incoming");
     /**
-     * The registry key for the msg command message type, used by {@linkplain
-     * net.minecraft.server.command.MessageCommand /msg} for outgoing messages.
-     * The message content is {@linkplain Decoration#ofOutgoingMessage decorated} using
-     * the {@code commands.message.display.outgoing} text.
+     * The registry key for the outgoing message command message type, used by {@linkplain
+     * net.minecraft.server.command.MessageCommand /msg}. The message content is
+     * {@linkplain Decoration#ofOutgoingMessage decorated} using the {@code
+     * commands.message.display.outgoing} text.
+     * 
+     * <p>An outgoing message is a message that the private message's sender sees in the chat.
      */
     public static final RegistryKey<MessageType> MSG_COMMAND_OUTGOING = MessageType.register("msg_command_outgoing");
     /**
@@ -92,6 +103,73 @@ public record MessageType(Decoration chat, Decoration narration) {
         BuiltinRegistries.add(registry, MSG_COMMAND_OUTGOING, new MessageType(Decoration.ofOutgoingMessage("commands.message.display.outgoing"), Decoration.ofChat("chat.type.text.narrate")));
         BuiltinRegistries.add(registry, TEAM_MSG_COMMAND, new MessageType(Decoration.ofTeamMessage("chat.type.team.text"), Decoration.ofChat("chat.type.text.narrate")));
         return BuiltinRegistries.add(registry, EMOTE_COMMAND, new MessageType(Decoration.ofChat("chat.type.emote"), Decoration.ofChat("chat.type.emote")));
+    }
+
+    public static Parameters params(RegistryKey<MessageType> typeKey, Entity entity) {
+        return MessageType.params(typeKey, entity.world.getRegistryManager(), entity.getDisplayName());
+    }
+
+    public static Parameters params(RegistryKey<MessageType> typeKey, ServerCommandSource source) {
+        return MessageType.params(typeKey, source.getRegistryManager(), source.getDisplayName());
+    }
+
+    public static Parameters params(RegistryKey<MessageType> typeKey, DynamicRegistryManager registryManager, Text name) {
+        Registry<MessageType> registry = registryManager.get(Registry.MESSAGE_TYPE_KEY);
+        return registry.getOrThrow(typeKey).params(name);
+    }
+
+    public Parameters params(Text name) {
+        return new Parameters(this, name);
+    }
+
+    public record Parameters(MessageType type, Text name, @Nullable Text targetName) {
+        Parameters(MessageType type, Text name) {
+            this(type, name, null);
+        }
+
+        public Text applyChatDecoration(Text content) {
+            return this.type.chat().apply(content, this);
+        }
+
+        public Text applyNarrationDecoration(Text content) {
+            return this.type.narration().apply(content, this);
+        }
+
+        public Parameters withTargetName(Text targetName) {
+            return new Parameters(this.type, this.name, targetName);
+        }
+
+        public Serialized toSerialized(DynamicRegistryManager registryManager) {
+            Registry<MessageType> registry = registryManager.get(Registry.MESSAGE_TYPE_KEY);
+            return new Serialized(registry.getRawId(this.type), this.name, this.targetName);
+        }
+
+        @Nullable
+        public Text targetName() {
+            return this.targetName;
+        }
+    }
+
+    public record Serialized(int typeId, Text name, @Nullable Text targetName) {
+        public Serialized(PacketByteBuf buf) {
+            this(buf.readVarInt(), buf.readText(), (Text)buf.readNullable(PacketByteBuf::readText));
+        }
+
+        public void write(PacketByteBuf buf) {
+            buf.writeVarInt(this.typeId);
+            buf.writeText(this.name);
+            buf.writeNullable(this.targetName, PacketByteBuf::writeText);
+        }
+
+        public Parameters toParameters(DynamicRegistryManager registryManager) {
+            Registry<MessageType> registry = registryManager.get(Registry.MESSAGE_TYPE_KEY);
+            return new Parameters(Objects.requireNonNull((MessageType)registry.get(this.typeId), "Invalid chat type"), this.name, this.targetName);
+        }
+
+        @Nullable
+        public Text targetName() {
+            return this.targetName;
+        }
     }
 }
 

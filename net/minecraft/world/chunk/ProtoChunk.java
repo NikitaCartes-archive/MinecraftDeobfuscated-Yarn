@@ -287,16 +287,16 @@ extends Chunk {
     }
 
     @Nullable
-    public CarvingMask getCarvingMask(GenerationStep.Carver carver) {
-        return this.carvingMasks.get(carver);
+    public CarvingMask getCarvingMask(GenerationStep.Carver step) {
+        return this.carvingMasks.get(step);
     }
 
-    public CarvingMask getOrCreateCarvingMask(GenerationStep.Carver carver2) {
-        return this.carvingMasks.computeIfAbsent(carver2, carver -> new CarvingMask(this.getHeight(), this.getBottomY()));
+    public CarvingMask getOrCreateCarvingMask(GenerationStep.Carver step) {
+        return this.carvingMasks.computeIfAbsent(step, carver -> new CarvingMask(this.getHeight(), this.getBottomY()));
     }
 
-    public void setCarvingMask(GenerationStep.Carver carver, CarvingMask carvingMask) {
-        this.carvingMasks.put(carver, carvingMask);
+    public void setCarvingMask(GenerationStep.Carver step, CarvingMask carvingMask) {
+        this.carvingMasks.put(step, carvingMask);
     }
 
     public void setLightingProvider(LightingProvider lightingProvider) {

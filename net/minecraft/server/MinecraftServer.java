@@ -65,7 +65,6 @@ import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.network.message.MessageDecorator;
-import net.minecraft.network.message.MessageSender;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
@@ -105,7 +104,6 @@ import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.test.TestManager;
-import net.minecraft.text.Decoration;
 import net.minecraft.text.Text;
 import net.minecraft.util.ApiServices;
 import net.minecraft.util.Identifier;
@@ -1688,13 +1686,13 @@ AutoCloseable {
         return 1000000;
     }
 
-    public void logChatMessage(MessageSender sender, Text message, RegistryKey<MessageType> typeKey) {
-        LOGGER.info(this.applyDecoration(sender, message, typeKey).getString());
-    }
-
-    public Text applyDecoration(MessageSender sender, Text text, RegistryKey<MessageType> typeKey) {
-        Decoration decoration = this.getRegistryManager().getOptional(Registry.MESSAGE_TYPE_KEY).map(registry -> (MessageType)registry.get(typeKey)).map(MessageType::chat).orElse(MessageType.CHAT_TEXT_DECORATION);
-        return decoration.apply(text, sender);
+    public void logChatMessage(Text text, MessageType.Parameters parameters, @Nullable String string) {
+        String string2 = parameters.applyChatDecoration(text).getString();
+        if (string != null) {
+            LOGGER.info("[{}] {}", (Object)string, (Object)string2);
+        } else {
+            LOGGER.info("{}", (Object)string2);
+        }
     }
 
     /**

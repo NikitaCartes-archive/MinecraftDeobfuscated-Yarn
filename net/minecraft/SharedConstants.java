@@ -17,17 +17,17 @@ public class SharedConstants {
     @Deprecated
     public static final boolean IS_DEVELOPMENT_VERSION = true;
     @Deprecated
-    public static final int WORLD_VERSION = 3111;
+    public static final int WORLD_VERSION = 3112;
     @Deprecated
     public static final String CURRENT_SERIES = "main";
     @Deprecated
-    public static final String VERSION_NAME = "1.19.1-pre3";
+    public static final String VERSION_NAME = "1.19.1-pre4";
     @Deprecated
     public static final String RELEASE_TARGET = "1.19.1";
     @Deprecated
     public static final int RELEASE_TARGET_PROTOCOL_VERSION = 760;
     @Deprecated
-    public static final int field_29736 = 96;
+    public static final int field_29736 = 97;
     public static final int SNBT_TOO_OLD_THRESHOLD = 3075;
     private static final int field_29708 = 30;
     public static final boolean field_36325 = true;
@@ -204,12 +204,12 @@ public class SharedConstants {
     }
 
     public static int getProtocolVersion() {
-        return 0x40000060;
+        return 1073741921;
     }
 
-    public static boolean method_37896(ChunkPos chunkPos) {
-        int i = chunkPos.getStartX();
-        int j = chunkPos.getStartZ();
+    public static boolean isOutsideGenerationArea(ChunkPos pos) {
+        int i = pos.getStartX();
+        int j = pos.getStartZ();
         if (DEBUG_BIOME_SOURCE) {
             return i > 8192 || i < 0 || j > 1024 || j < 0;
         }

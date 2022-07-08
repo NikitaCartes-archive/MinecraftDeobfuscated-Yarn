@@ -20,7 +20,7 @@ public class SayCommand {
             MessageArgumentType.SignedMessage signedMessage = MessageArgumentType.getSignedMessage(context, "message");
             ServerCommandSource serverCommandSource = (ServerCommandSource)context.getSource();
             PlayerManager playerManager = serverCommandSource.getServer().getPlayerManager();
-            signedMessage.decorate(serverCommandSource).thenAcceptAsync(decoratedMessage -> playerManager.broadcast((FilteredMessage<SignedMessage>)decoratedMessage, serverCommandSource, MessageType.SAY_COMMAND), (Executor)serverCommandSource.getServer());
+            signedMessage.decorate(serverCommandSource).thenAcceptAsync(decoratedMessage -> playerManager.broadcast((FilteredMessage<SignedMessage>)decoratedMessage, serverCommandSource, MessageType.params(MessageType.SAY_COMMAND, serverCommandSource)), (Executor)serverCommandSource.getServer());
             return 1;
         })));
     }

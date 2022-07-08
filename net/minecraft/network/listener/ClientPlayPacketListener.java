@@ -51,12 +51,14 @@ import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.HealthUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.HideMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.network.packet.s2c.play.ItemPickupAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.KeepAliveS2CPacket;
 import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.LookAtS2CPacket;
 import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.MessageHeaderS2CPacket;
 import net.minecraft.network.packet.s2c.play.NbtQueryResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenHorseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
@@ -145,9 +147,13 @@ extends PacketListener {
 
     public void onChatMessage(ChatMessageS2CPacket var1);
 
+    public void onMessageHeader(MessageHeaderS2CPacket var1);
+
     public void onChatPreview(ChatPreviewS2CPacket var1);
 
     public void onChatPreviewStateChange(ChatPreviewStateChangeS2CPacket var1);
+
+    public void onHideMessage(HideMessageS2CPacket var1);
 
     public void onChunkDeltaUpdate(ChunkDeltaUpdateS2CPacket var1);
 

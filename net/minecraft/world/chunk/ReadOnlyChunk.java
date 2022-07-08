@@ -263,17 +263,17 @@ extends ProtoChunk {
     }
 
     @Override
-    public CarvingMask getCarvingMask(GenerationStep.Carver carver) {
+    public CarvingMask getCarvingMask(GenerationStep.Carver step) {
         if (this.field_34554) {
-            return super.getCarvingMask(carver);
+            return super.getCarvingMask(step);
         }
         throw Util.throwOrPause(new UnsupportedOperationException("Meaningless in this context"));
     }
 
     @Override
-    public CarvingMask getOrCreateCarvingMask(GenerationStep.Carver carver) {
+    public CarvingMask getOrCreateCarvingMask(GenerationStep.Carver step) {
         if (this.field_34554) {
-            return super.getOrCreateCarvingMask(carver);
+            return super.getOrCreateCarvingMask(step);
         }
         throw Util.throwOrPause(new UnsupportedOperationException("Meaningless in this context"));
     }

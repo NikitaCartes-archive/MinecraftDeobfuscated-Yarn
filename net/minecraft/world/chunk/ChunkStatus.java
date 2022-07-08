@@ -117,7 +117,7 @@ public class ChunkStatus {
         ChunkRegion chunkRegion = new ChunkRegion(world, chunks, targetStatus, 0);
         if (chunk instanceof ProtoChunk) {
             ProtoChunk protoChunk = (ProtoChunk)chunk;
-            Blender.method_39809(chunkRegion, protoChunk);
+            Blender.createCarvingMasks(chunkRegion, protoChunk);
         }
         generator.carve(chunkRegion, world.getSeed(), world.getChunkManager().getNoiseConfig(), world.getBiomeAccess(), world.getStructureAccessor().forRegion(chunkRegion), chunk, GenerationStep.Carver.AIR);
     });

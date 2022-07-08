@@ -32,7 +32,7 @@ public record ConfiguredCarver<WC extends CarverConfig>(Carver<WC> carver, WC co
     }
 
     public boolean carve(CarverContext context, Chunk chunk, Function<BlockPos, RegistryEntry<Biome>> posToBiome, Random random, AquiferSampler aquiferSampler, ChunkPos pos, CarvingMask mask) {
-        if (SharedConstants.method_37896(chunk.getPos())) {
+        if (SharedConstants.isOutsideGenerationArea(chunk.getPos())) {
             return false;
         }
         return this.carver.carve(context, this.config, chunk, posToBiome, random, aquiferSampler, pos, mask);

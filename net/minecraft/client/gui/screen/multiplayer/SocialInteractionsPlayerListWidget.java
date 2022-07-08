@@ -49,10 +49,10 @@ extends ElementListWidget<SocialInteractionsPlayerListEntry> {
         RenderSystem.disableScissor();
     }
 
-    public void update(Collection<UUID> uuids, double scrollAmount, boolean bl) {
+    public void update(Collection<UUID> uuids, double scrollAmount, boolean includeOffline) {
         HashMap<UUID, SocialInteractionsPlayerListEntry> map = new HashMap<UUID, SocialInteractionsPlayerListEntry>();
         this.setPlayers(uuids, map);
-        this.method_44759(map, bl);
+        this.markOfflineMembers(map, includeOffline);
         this.refresh(map.values(), scrollAmount);
     }
 
@@ -66,38 +66,38 @@ extends ElementListWidget<SocialInteractionsPlayerListEntry> {
         }
     }
 
-    private void method_44759(Map<UUID, SocialInteractionsPlayerListEntry> map, boolean bl) {
+    private void markOfflineMembers(Map<UUID, SocialInteractionsPlayerListEntry> entries, boolean includeOffline) {
         Collection<GameProfile> collection = this.client.getAbuseReportContext().chatLog().streamBackward().collectSenderProfiles();
         for (GameProfile gameProfile : collection) {
             SocialInteractionsPlayerListEntry socialInteractionsPlayerListEntry;
-            if (bl) {
-                socialInteractionsPlayerListEntry = map.computeIfAbsent(gameProfile.getId(), uUID -> {
+            if (includeOffline) {
+                socialInteractionsPlayerListEntry = entries.computeIfAbsent(gameProfile.getId(), uuid -> {
                     SocialInteractionsPlayerListEntry socialInteractionsPlayerListEntry = new SocialInteractionsPlayerListEntry(this.client, this.parent, gameProfile.getId(), gameProfile.getName(), Suppliers.memoize(() -> this.client.getSkinProvider().loadSkin(gameProfile)));
                     socialInteractionsPlayerListEntry.setOffline(true);
                     return socialInteractionsPlayerListEntry;
                 });
             } else {
-                socialInteractionsPlayerListEntry = map.get(gameProfile.getId());
+                socialInteractionsPlayerListEntry = entries.get(gameProfile.getId());
                 if (socialInteractionsPlayerListEntry == null) continue;
             }
-            socialInteractionsPlayerListEntry.method_44753(true);
+            socialInteractionsPlayerListEntry.setSentMessage(true);
         }
     }
 
-    private void method_44762() {
-        this.players.sort(Comparator.comparing(socialInteractionsPlayerListEntry -> {
-            if (socialInteractionsPlayerListEntry.getUuid().equals(this.client.getSession().getUuidOrNull())) {
+    private void sortPlayers() {
+        this.players.sort(Comparator.comparing(player -> {
+            if (player.getUuid().equals(this.client.getSession().getUuidOrNull())) {
                 return 0;
             }
-            if (socialInteractionsPlayerListEntry.getUuid().version() == 2) {
+            if (player.getUuid().version() == 2) {
                 return 3;
             }
-            if (socialInteractionsPlayerListEntry.method_44756()) {
+            if (player.hasSentMessage()) {
                 return 1;
             }
             return 2;
-        }).thenComparing(socialInteractionsPlayerListEntry -> {
-            int i = socialInteractionsPlayerListEntry.getName().codePointAt(0);
+        }).thenComparing(player -> {
+            int i = player.getName().codePointAt(0);
             if (i == 95 || i >= 97 && i <= 122 || i >= 65 && i <= 90 || i >= 48 && i <= 57) {
                 return 0;
             }
@@ -105,13 +105,13 @@ extends ElementListWidget<SocialInteractionsPlayerListEntry> {
         }).thenComparing(SocialInteractionsPlayerListEntry::getName, String::compareToIgnoreCase));
     }
 
-    private void refresh(Collection<SocialInteractionsPlayerListEntry> collection, double d) {
+    private void refresh(Collection<SocialInteractionsPlayerListEntry> players, double scrollAmount) {
         this.players.clear();
-        this.players.addAll(collection);
-        this.method_44762();
+        this.players.addAll(players);
+        this.sortPlayers();
         this.filterPlayers();
         this.replaceEntries(this.players);
-        this.setScrollAmount(d);
+        this.setScrollAmount(scrollAmount);
     }
 
     private void filterPlayers() {

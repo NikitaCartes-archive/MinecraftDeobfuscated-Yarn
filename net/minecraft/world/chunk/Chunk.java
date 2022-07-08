@@ -345,17 +345,17 @@ StructureHolder {
         return this.heightLimitView.getHeight();
     }
 
-    public ChunkNoiseSampler getOrCreateChunkNoiseSampler(Function<Chunk, ChunkNoiseSampler> chunkNoiseSamplerGetter) {
+    public ChunkNoiseSampler getOrCreateChunkNoiseSampler(Function<Chunk, ChunkNoiseSampler> chunkNoiseSamplerCreator) {
         if (this.chunkNoiseSampler == null) {
-            this.chunkNoiseSampler = chunkNoiseSamplerGetter.apply(this);
+            this.chunkNoiseSampler = chunkNoiseSamplerCreator.apply(this);
         }
         return this.chunkNoiseSampler;
     }
 
     @Deprecated
-    public GenerationSettings getOrCreateGenerationSettings(Supplier<GenerationSettings> generationSettingsSupplier) {
+    public GenerationSettings getOrCreateGenerationSettings(Supplier<GenerationSettings> generationSettingsCreator) {
         if (this.generationSettings == null) {
-            this.generationSettings = generationSettingsSupplier.get();
+            this.generationSettings = generationSettingsCreator.get();
         }
         return this.generationSettings;
     }

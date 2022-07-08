@@ -13,7 +13,6 @@ import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntRBTreeSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import java.time.Instant;
-import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -24,7 +23,6 @@ import net.minecraft.client.report.AbuseReportContext;
 import net.minecraft.client.report.AbuseReportReason;
 import net.minecraft.client.report.ChatLog;
 import net.minecraft.client.report.ReceivedMessage;
-import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
@@ -140,21 +138,16 @@ public class ChatAbuseReport {
 
     private ReportChatMessage toReportChatMessage(int index, ReceivedMessage.ChatMessage message) {
         SignedMessage signedMessage = message.message();
-        Instant instant = signedMessage.signature().timestamp();
-        NetworkEncryptionUtils.SignatureData signatureData = signedMessage.signature().saltSignature();
-        long l = signatureData.salt();
-        String string = signatureData.isSignaturePresent() ? ChatAbuseReport.base64Encode(signatureData.signature()) : null;
-        String string2 = ChatAbuseReport.serializeContent(signedMessage.signedContent());
+        Instant instant = signedMessage.getTimestamp();
+        long l = signedMessage.getSalt();
+        String string = signedMessage.headerSignature().toStringOrNull();
+        String string2 = ChatAbuseReport.serializeContent(signedMessage.getSignedContent());
         String string3 = signedMessage.unsignedContent().map(ChatAbuseReport::serializeContent).orElse(null);
         return new ReportChatMessage(message.getSenderUuid(), instant, l, string, string2, string3, this.hasSelectedMessage(index));
     }
 
     private static String serializeContent(Text content) {
         return Text.Serializer.toSortedJsonString(content);
-    }
-
-    private static String base64Encode(byte[] bs) {
-        return Base64.getEncoder().encodeToString(bs);
     }
 
     private IntStream streamNeighboringIndices(ChatLog log, int index) {

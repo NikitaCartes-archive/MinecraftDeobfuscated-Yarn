@@ -631,7 +631,7 @@ implements WindowEventHandler {
         this.realms32BitWarningChecker = new Realms32BitWarningChecker(this);
         this.narratorManager = new NarratorManager(this);
         this.messageHandler = new MessageHandler(this);
-        this.messageHandler.method_44766(this.options.getChatDelay().getValue());
+        this.messageHandler.setChatDelay(this.options.getChatDelay().getValue());
         this.abuseReportContext = AbuseReportContext.create(ReporterEnvironment.ofIntegratedServer(), this.userApiService);
         SplashOverlay.init(this);
         List<ResourcePack> list = this.resourcePackManager.createResourcePacks();
@@ -1574,7 +1574,7 @@ implements WindowEventHandler {
             --this.itemUseCooldown;
         }
         this.profiler.push("gui");
-        this.messageHandler.method_44765();
+        this.messageHandler.processDelayedMessages();
         this.inGameHud.tick(this.paused);
         this.profiler.pop();
         this.gameRenderer.updateTargetedEntity(1.0f);

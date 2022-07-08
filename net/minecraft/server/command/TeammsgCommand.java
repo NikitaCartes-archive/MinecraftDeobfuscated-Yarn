@@ -13,12 +13,14 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import net.minecraft.command.argument.MessageArgumentType;
 import net.minecraft.entity.Entity;
-import net.minecraft.network.message.MessageSender;
+import net.minecraft.network.message.MessageSourceProfile;
 import net.minecraft.network.message.MessageType;
+import net.minecraft.network.message.SentMessage;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
@@ -31,7 +33,15 @@ public class TeamMsgCommand {
     private static final SimpleCommandExceptionType NO_TEAM_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.teammsg.failed.noteam"));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralCommandNode<ServerCommandSource> literalCommandNode = dispatcher.register((LiteralArgumentBuilder)CommandManager.literal("teammsg").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("message", MessageArgumentType.message()).executes(context -> TeamMsgCommand.execute((ServerCommandSource)context.getSource(), MessageArgumentType.getSignedMessage(context, "message")))));
+        LiteralCommandNode<ServerCommandSource> literalCommandNode = dispatcher.register((LiteralArgumentBuilder)CommandManager.literal("teammsg").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("message", MessageArgumentType.message()).executes(context -> {
+            MessageArgumentType.SignedMessage signedMessage = MessageArgumentType.getSignedMessage(context, "message");
+            try {
+                return TeamMsgCommand.execute((ServerCommandSource)context.getSource(), signedMessage);
+            } catch (Exception exception) {
+                signedMessage.sendHeader((ServerCommandSource)context.getSource());
+                throw exception;
+            }
+        })));
         dispatcher.register((LiteralArgumentBuilder)CommandManager.literal("tm").redirect(literalCommandNode));
     }
 
@@ -42,21 +52,21 @@ public class TeamMsgCommand {
             throw NO_TEAM_EXCEPTION.create();
         }
         MutableText text = team.getFormattedName().fillStyle(STYLE);
-        MessageSender messageSender = source.getChatMessageSender().withTargetName(text);
-        List<ServerPlayerEntity> list = source.getServer().getPlayerManager().getPlayerList().stream().filter(serverPlayerEntity -> serverPlayerEntity == entity || serverPlayerEntity.getScoreboardTeam() == team).toList();
-        if (list.isEmpty()) {
-            return 0;
-        }
+        MessageSourceProfile messageSourceProfile = source.getMessageSourceProfile();
+        MessageType.Parameters parameters = MessageType.params(MessageType.TEAM_MSG_COMMAND, source).withTargetName(text);
+        List<ServerPlayerEntity> list = source.getServer().getPlayerManager().getPlayerList().stream().filter(player -> player == entity || player.getScoreboardTeam() == team).toList();
         signedMessage.decorate(source).thenAcceptAsync(decoratedMessage -> {
+            FilteredMessage<SentMessage> filteredMessage = SentMessage.of(decoratedMessage, messageSourceProfile);
             for (ServerPlayerEntity serverPlayerEntity : list) {
                 if (serverPlayerEntity == entity) {
                     serverPlayerEntity.sendMessage(Text.translatable("chat.type.team.sent", text, source.getDisplayName(), ((SignedMessage)decoratedMessage.raw()).getContent()));
                     continue;
                 }
-                SignedMessage signedMessage = (SignedMessage)decoratedMessage.getFilterableFor(source, serverPlayerEntity);
-                if (signedMessage == null) continue;
-                serverPlayerEntity.sendChatMessage(signedMessage, messageSender, MessageType.TEAM_MSG_COMMAND);
+                SentMessage sentMessage = filteredMessage.getFilterableFor(source, serverPlayerEntity);
+                if (sentMessage == null) continue;
+                serverPlayerEntity.sendChatMessage(sentMessage, parameters);
             }
+            filteredMessage.raw().afterPacketsSent(source.getServer().getPlayerManager());
         }, (Executor)source.getServer());
         return list.size();
     }

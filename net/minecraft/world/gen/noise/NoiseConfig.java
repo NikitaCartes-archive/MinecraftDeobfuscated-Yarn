@@ -35,7 +35,7 @@ public final class NoiseConfig {
     private final SurfaceBuilder surfaceBuilder;
     private final RandomSplitter aquiferRandomDeriver;
     private final RandomSplitter oreRandomDeriver;
-    private final Map<RegistryKey<DoublePerlinNoiseSampler.NoiseParameters>, DoublePerlinNoiseSampler> field_38262;
+    private final Map<RegistryKey<DoublePerlinNoiseSampler.NoiseParameters>, DoublePerlinNoiseSampler> noises;
     private final Map<Identifier, RandomSplitter> randomDerivers;
 
     public static NoiseConfig create(DynamicRegistryManager dynamicRegistryManager, RegistryKey<ChunkGeneratorSettings> chunkGeneratorSettingsKey, long legacyWorldSeed) {
@@ -52,19 +52,19 @@ public final class NoiseConfig {
         this.noiseParametersRegistry = noiseRegistry;
         this.aquiferRandomDeriver = this.randomDeriver.split(new Identifier("aquifer")).nextSplitter();
         this.oreRandomDeriver = this.randomDeriver.split(new Identifier("ore")).nextSplitter();
-        this.field_38262 = new ConcurrentHashMap<RegistryKey<DoublePerlinNoiseSampler.NoiseParameters>, DoublePerlinNoiseSampler>();
+        this.noises = new ConcurrentHashMap<RegistryKey<DoublePerlinNoiseSampler.NoiseParameters>, DoublePerlinNoiseSampler>();
         this.randomDerivers = new ConcurrentHashMap<Identifier, RandomSplitter>();
         this.surfaceBuilder = new SurfaceBuilder(this, chunkGeneratorSettings.defaultBlock(), chunkGeneratorSettings.seaLevel(), this.randomDeriver);
         final boolean bl = chunkGeneratorSettings.usesLegacyRandom();
-        class class_7271
+        class LegacyNoiseDensityFunctionVisitor
         implements DensityFunction.DensityFunctionVisitor {
-            private final Map<DensityFunction, DensityFunction> field_38267 = new HashMap<DensityFunction, DensityFunction>();
+            private final Map<DensityFunction, DensityFunction> cache = new HashMap<DensityFunction, DensityFunction>();
 
-            class_7271() {
+            LegacyNoiseDensityFunctionVisitor() {
             }
 
-            private Random method_42375(long l) {
-                return new CheckedRandom(seed + l);
+            private Random createRandom(long seed2) {
+                return new CheckedRandom(seed + seed2);
             }
 
             @Override
@@ -72,11 +72,11 @@ public final class NoiseConfig {
                 RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> registryEntry = noiseDensityFunction.noiseData();
                 if (bl) {
                     if (Objects.equals(registryEntry.getKey(), Optional.of(NoiseParametersKeys.TEMPERATURE))) {
-                        DoublePerlinNoiseSampler doublePerlinNoiseSampler = DoublePerlinNoiseSampler.createLegacy(this.method_42375(0L), new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 1.0));
+                        DoublePerlinNoiseSampler doublePerlinNoiseSampler = DoublePerlinNoiseSampler.createLegacy(this.createRandom(0L), new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 1.0));
                         return new DensityFunction.Noise(registryEntry, doublePerlinNoiseSampler);
                     }
                     if (Objects.equals(registryEntry.getKey(), Optional.of(NoiseParametersKeys.VEGETATION))) {
-                        DoublePerlinNoiseSampler doublePerlinNoiseSampler = DoublePerlinNoiseSampler.createLegacy(this.method_42375(1L), new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 1.0));
+                        DoublePerlinNoiseSampler doublePerlinNoiseSampler = DoublePerlinNoiseSampler.createLegacy(this.createRandom(1L), new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 1.0));
                         return new DensityFunction.Noise(registryEntry, doublePerlinNoiseSampler);
                     }
                     if (Objects.equals(registryEntry.getKey(), Optional.of(NoiseParametersKeys.OFFSET))) {
@@ -88,10 +88,10 @@ public final class NoiseConfig {
                 return new DensityFunction.Noise(registryEntry, doublePerlinNoiseSampler);
             }
 
-            private DensityFunction method_42376(DensityFunction densityFunction) {
+            private DensityFunction applyNotCached(DensityFunction densityFunction) {
                 if (densityFunction instanceof InterpolatedNoiseSampler) {
                     InterpolatedNoiseSampler interpolatedNoiseSampler = (InterpolatedNoiseSampler)densityFunction;
-                    Random random = bl ? this.method_42375(0L) : NoiseConfig.this.randomDeriver.split(new Identifier("terrain"));
+                    Random random = bl ? this.createRandom(0L) : NoiseConfig.this.randomDeriver.split(new Identifier("terrain"));
                     return interpolatedNoiseSampler.copyWithRandom(random);
                 }
                 if (densityFunction instanceof DensityFunctionTypes.EndIslands) {
@@ -102,15 +102,15 @@ public final class NoiseConfig {
 
             @Override
             public DensityFunction apply(DensityFunction densityFunction) {
-                return this.field_38267.computeIfAbsent(densityFunction, this::method_42376);
+                return this.cache.computeIfAbsent(densityFunction, this::applyNotCached);
             }
         }
-        this.noiseRouter = chunkGeneratorSettings.noiseRouter().method_41544(new class_7271());
+        this.noiseRouter = chunkGeneratorSettings.noiseRouter().apply(new LegacyNoiseDensityFunctionVisitor());
         this.multiNoiseSampler = new MultiNoiseUtil.MultiNoiseSampler(this.noiseRouter.temperature(), this.noiseRouter.vegetation(), this.noiseRouter.continents(), this.noiseRouter.erosion(), this.noiseRouter.depth(), this.noiseRouter.ridges(), chunkGeneratorSettings.spawnTarget());
     }
 
     public DoublePerlinNoiseSampler getOrCreateSampler(RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> noiseParametersKey) {
-        return this.field_38262.computeIfAbsent(noiseParametersKey, key -> NoiseParametersKeys.createNoiseSampler(this.noiseParametersRegistry, this.randomDeriver, noiseParametersKey));
+        return this.noises.computeIfAbsent(noiseParametersKey, key -> NoiseParametersKeys.createNoiseSampler(this.noiseParametersRegistry, this.randomDeriver, noiseParametersKey));
     }
 
     public RandomSplitter getOrCreateRandomDeriver(Identifier id) {

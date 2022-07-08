@@ -91,7 +91,7 @@ public interface ReceivedMessage {
         }
 
         private Text getFormattedTimestamp() {
-            LocalDateTime localDateTime = LocalDateTime.ofInstant(this.message.signature().timestamp(), ZoneOffset.systemDefault());
+            LocalDateTime localDateTime = LocalDateTime.ofInstant(this.message.getTimestamp(), ZoneOffset.systemDefault());
             return Text.literal(localDateTime.format(DATE_TIME_FORMATTER)).formatted(Formatting.ITALIC, Formatting.GRAY);
         }
 

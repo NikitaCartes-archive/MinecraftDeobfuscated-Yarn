@@ -337,7 +337,7 @@ public abstract class ChunkGenerator {
 
     public void generateFeatures(StructureWorldAccess world, Chunk chunk, StructureAccessor structureAccessor) {
         ChunkPos chunkPos2 = chunk.getPos();
-        if (SharedConstants.method_37896(chunkPos2)) {
+        if (SharedConstants.isOutsideGenerationArea(chunkPos2)) {
             return;
         }
         ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(chunkPos2, world.getBottomSectionCoord());
@@ -464,7 +464,7 @@ public abstract class ChunkGenerator {
             if (structureSpawns == null) continue;
             MutableBoolean mutableBoolean = new MutableBoolean(false);
             Predicate<StructureStart> predicate = structureSpawns.boundingBox() == StructureSpawns.BoundingBox.PIECE ? start -> accessor.structureContains(pos, (StructureStart)start) : start -> start.getBoundingBox().contains(pos);
-            accessor.method_41032(structure, entry.getValue(), start -> {
+            accessor.acceptStructureStarts(structure, entry.getValue(), start -> {
                 if (mutableBoolean.isFalse() && predicate.test((StructureStart)start)) {
                     mutableBoolean.setTrue();
                 }

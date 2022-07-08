@@ -38,15 +38,15 @@ implements DensityFunctionTypes.Beardifying {
     private final ObjectListIterator<class_7301> pieceIterator;
     private final ObjectListIterator<JigsawJunction> junctionIterator;
 
-    public static StructureWeightSampler method_42695(StructureAccessor structureAccessor, ChunkPos chunkPos) {
-        int i = chunkPos.getStartX();
-        int j = chunkPos.getStartZ();
+    public static StructureWeightSampler createStructureWeightSampler(StructureAccessor world, ChunkPos pos) {
+        int i = pos.getStartX();
+        int j = pos.getStartZ();
         ObjectArrayList objectList = new ObjectArrayList(10);
         ObjectArrayList objectList2 = new ObjectArrayList(32);
-        structureAccessor.method_41035(chunkPos, structure -> structure.getTerrainAdaptation() != StructureTerrainAdaptation.NONE).forEach(structureStart -> {
-            StructureTerrainAdaptation structureTerrainAdaptation = structureStart.getStructure().getTerrainAdaptation();
-            for (StructurePiece structurePiece : structureStart.getChildren()) {
-                if (!structurePiece.intersectsChunk(chunkPos, 12)) continue;
+        world.getStructureStarts(pos, structure -> structure.getTerrainAdaptation() != StructureTerrainAdaptation.NONE).forEach(start -> {
+            StructureTerrainAdaptation structureTerrainAdaptation = start.getStructure().getTerrainAdaptation();
+            for (StructurePiece structurePiece : start.getChildren()) {
+                if (!structurePiece.intersectsChunk(pos, 12)) continue;
                 if (structurePiece instanceof PoolStructurePiece) {
                     PoolStructurePiece poolStructurePiece = (PoolStructurePiece)structurePiece;
                     StructurePool.Projection projection = poolStructurePiece.getPoolElement().getProjection();
@@ -54,9 +54,9 @@ implements DensityFunctionTypes.Beardifying {
                         objectList.add(new class_7301(poolStructurePiece.getBoundingBox(), structureTerrainAdaptation, poolStructurePiece.getGroundLevelDelta()));
                     }
                     for (JigsawJunction jigsawJunction : poolStructurePiece.getJunctions()) {
-                        int k = jigsawJunction.getSourceX();
-                        int l = jigsawJunction.getSourceZ();
-                        if (k <= i - 12 || l <= j - 12 || k >= i + 15 + 12 || l >= j + 15 + 12) continue;
+                        int i = jigsawJunction.getSourceX();
+                        int j = jigsawJunction.getSourceZ();
+                        if (i <= i - 12 || j <= j - 12 || i >= i + 15 + 12 || j >= j + 15 + 12) continue;
                         objectList2.add(jigsawJunction);
                     }
                     continue;

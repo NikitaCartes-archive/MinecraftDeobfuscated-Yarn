@@ -11,7 +11,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.hud.MessageIndicator;
-import net.minecraft.client.gui.screen.CommandSuggestor;
+import net.minecraft.client.gui.screen.ChatInputSuggestor;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
@@ -57,7 +57,7 @@ extends Screen {
     private int messageHistorySize = -1;
     protected TextFieldWidget chatField;
     private String originalChatText;
-    CommandSuggestor commandSuggestor;
+    ChatInputSuggestor commandSuggestor;
     private ChatPreviewer chatPreviewer;
 
     public ChatScreen(String originalChatText) {
@@ -82,7 +82,7 @@ extends Screen {
         this.chatField.setText(this.originalChatText);
         this.chatField.setChangedListener(this::onChatFieldUpdate);
         this.addSelectableChild(this.chatField);
-        this.commandSuggestor = new CommandSuggestor(this.client, this, this.chatField, this.textRenderer, false, false, 1, 10, true, -805306368);
+        this.commandSuggestor = new ChatInputSuggestor(this.client, this, this.chatField, this.textRenderer, false, false, 1, 10, true, -805306368);
         this.commandSuggestor.refresh();
         this.setInitialFocus(this.chatField);
         this.chatPreviewer = new ChatPreviewer(this.client);
