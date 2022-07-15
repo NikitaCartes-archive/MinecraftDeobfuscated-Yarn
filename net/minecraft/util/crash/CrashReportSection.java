@@ -44,7 +44,7 @@ public class CrashReportSection {
         int j;
         StringBuilder stringBuilder = new StringBuilder();
         try {
-            stringBuilder.append(String.format("World: (%d,%d,%d)", x, y, z));
+            stringBuilder.append(String.format(Locale.ROOT, "World: (%d,%d,%d)", x, y, z));
         } catch (Throwable throwable) {
             stringBuilder.append("(Error finding world loc)");
         }
@@ -62,7 +62,7 @@ public class CrashReportSection {
             r = ChunkSectionPos.getBlockCoord(i + 1) - 1;
             s = world.getTopY() - 1;
             t = ChunkSectionPos.getBlockCoord(k + 1) - 1;
-            stringBuilder.append(String.format("Section: (at %d,%d,%d in %d,%d,%d; chunk contains blocks %d,%d,%d to %d,%d,%d)", l, m, n, i, j, k, o, p, q, r, s, t));
+            stringBuilder.append(String.format(Locale.ROOT, "Section: (at %d,%d,%d in %d,%d,%d; chunk contains blocks %d,%d,%d to %d,%d,%d)", l, m, n, i, j, k, o, p, q, r, s, t));
         } catch (Throwable throwable) {
             stringBuilder.append("(Error finding chunk loc)");
         }
@@ -80,7 +80,7 @@ public class CrashReportSection {
             r = (i + 1 << 9) - 1;
             s = world.getTopY() - 1;
             t = (j + 1 << 9) - 1;
-            stringBuilder.append(String.format("Region: (%d,%d; contains chunks %d,%d to %d,%d, blocks %d,%d,%d to %d,%d,%d)", i, j, k, l, m, n, o, p, q, r, s, t));
+            stringBuilder.append(String.format(Locale.ROOT, "Region: (%d,%d; contains chunks %d,%d to %d,%d, blocks %d,%d,%d to %d,%d,%d)", i, j, k, l, m, n, o, p, q, r, s, t));
         } catch (Throwable throwable) {
             stringBuilder.append("(Error finding world loc)");
         }

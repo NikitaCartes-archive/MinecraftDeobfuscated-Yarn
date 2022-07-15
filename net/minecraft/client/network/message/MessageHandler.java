@@ -6,11 +6,8 @@ package net.minecraft.client.network.message;
 import com.google.common.collect.Queues;
 import com.mojang.authlib.GameProfile;
 import java.time.Instant;
-import java.util.Collection;
 import java.util.Deque;
-import java.util.Iterator;
 import java.util.UUID;
-import java.util.function.BooleanSupplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -19,8 +16,9 @@ import net.minecraft.client.gui.hud.MessageIndicator;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.network.message.MessageTrustStatus;
-import net.minecraft.client.report.ChatLog;
-import net.minecraft.client.report.ReceivedMessage;
+import net.minecraft.client.report.log.ChatLog;
+import net.minecraft.client.report.log.HeaderEntry;
+import net.minecraft.client.report.log.ReceivedMessage;
 import net.minecraft.network.message.MessageHeader;
 import net.minecraft.network.message.MessageMetadata;
 import net.minecraft.network.message.MessageSignatureData;
@@ -37,7 +35,7 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class MessageHandler {
     private final MinecraftClient client;
-    private final Deque<MessageProcessor> delayedMessages = Queues.newArrayDeque();
+    private final Deque<ProcessableMessage> delayedMessages = Queues.newArrayDeque();
     private long chatDelay;
     private long lastProcessTime;
 
@@ -54,9 +52,9 @@ public class MessageHandler {
             return;
         }
         if (Util.getMeasuringTimeMs() >= this.lastProcessTime + this.chatDelay) {
-            MessageProcessor messageProcessor = this.delayedMessages.poll();
-            while (messageProcessor != null && !messageProcessor.process()) {
-                messageProcessor = this.delayedMessages.poll();
+            ProcessableMessage processableMessage = this.delayedMessages.poll();
+            while (processableMessage != null && !processableMessage.accept()) {
+                processableMessage = this.delayedMessages.poll();
             }
         }
     }
@@ -68,7 +66,7 @@ public class MessageHandler {
     public void setChatDelay(double chatDelay) {
         long l = (long)(chatDelay * 1000.0);
         if (l == 0L && this.chatDelay > 0L) {
-            this.delayedMessages.forEach(MessageProcessor::process);
+            this.delayedMessages.forEach(ProcessableMessage::accept);
             this.delayedMessages.clear();
         }
         this.chatDelay = l;
@@ -78,18 +76,37 @@ public class MessageHandler {
      * Processes one delayed message from the queue's beginning.
      */
     public void process() {
-        this.delayedMessages.remove().process();
+        this.delayedMessages.remove().accept();
     }
 
-    public Collection<?> getDelayedMessages() {
-        return this.delayedMessages;
+    /**
+     * {@return the number of delayed messages that are not processed yet}
+     */
+    public long getUnprocessedMessageCount() {
+        return this.delayedMessages.stream().filter(ProcessableMessage::isUnprocessed).count();
     }
 
+    /**
+     * Processes all delayed messages from the queue.
+     */
+    public void processAll() {
+        this.delayedMessages.forEach(message -> {
+            message.markProcessed();
+            message.accept();
+        });
+        this.delayedMessages.clear();
+    }
+
+    /**
+     * Removes a delayed message whose signature matches {@code signature}.
+     * If this returns {@code false}, either the message is not received or it it
+     * already on the hud.
+     * 
+     * @return whether the message was removed
+     */
     public boolean removeDelayedMessage(MessageSignatureData signature) {
-        Iterator<MessageProcessor> iterator = this.delayedMessages.iterator();
-        while (iterator.hasNext()) {
-            if (!iterator.next().getHeaderSignature().equals(signature)) continue;
-            iterator.remove();
+        for (ProcessableMessage processableMessage : this.delayedMessages) {
+            if (!processableMessage.removeMatching(signature)) continue;
             return true;
         }
         return false;
@@ -106,48 +123,150 @@ public class MessageHandler {
      * Queues {@code processor} during {@linkplain #shouldDelay the chat delay},
      * otherwise runs the processor.
      */
-    private void process(MessageProcessor processor) {
+    private void process(ProcessableMessage message) {
         if (this.shouldDelay()) {
-            this.delayedMessages.add(processor);
+            this.delayedMessages.add(message);
         } else {
-            processor.process();
+            message.accept();
         }
     }
 
-    public void onChatMessage(SignedMessage message, MessageType.Parameters params) {
-        boolean bl = this.client.options.getOnlyShowSecureChat().getValue();
-        SignedMessage signedMessage = bl ? message.withoutUnsigned() : message;
-        Text text = params.applyChatDecoration(signedMessage.getContent());
+    /**
+     * Called when a chat message is received.
+     * 
+     * <p>This enqueues the message to be processed after the chat delay set in
+     * options, if any.
+     * 
+     * @see #processChatMessage
+     */
+    public void onChatMessage(final SignedMessage message, final MessageType.Parameters params) {
+        final boolean bl = this.client.options.getOnlyShowSecureChat().getValue();
+        final SignedMessage signedMessage = bl ? message.withoutUnsigned() : message;
+        final Text text = params.applyChatDecoration(signedMessage.getContent());
         MessageMetadata messageMetadata = message.createMetadata();
         if (!messageMetadata.lacksSender()) {
-            PlayerListEntry playerListEntry = this.getPlayerListEntry(messageMetadata.sender());
-            MessageTrustStatus messageTrustStatus = this.getStatus(message, text, playerListEntry);
-            if (bl && messageTrustStatus.isInsecure()) {
-                return;
-            }
-            this.process(new MessageProcessor(message.headerSignature(), () -> this.processChatMessage(params, message, text, playerListEntry, messageTrustStatus)));
+            final PlayerListEntry playerListEntry = this.getPlayerListEntry(messageMetadata.sender());
+            final Instant instant = Instant.now();
+            this.process(new ProcessableMessage(){
+                private boolean processed;
+
+                @Override
+                public boolean accept() {
+                    if (this.processed) {
+                        byte[] bs = message.signedBody().digest().asBytes();
+                        MessageHandler.this.processHeader(message.signedHeader(), message.headerSignature(), bs);
+                        return false;
+                    }
+                    return MessageHandler.this.processChatMessage(params, message, text, playerListEntry, bl, instant);
+                }
+
+                @Override
+                public boolean removeMatching(MessageSignatureData signature) {
+                    if (message.headerSignature().equals(signature)) {
+                        this.processed = true;
+                        return true;
+                    }
+                    return false;
+                }
+
+                @Override
+                public void markProcessed() {
+                    this.processed = true;
+                }
+
+                @Override
+                public boolean isUnprocessed() {
+                    return !this.processed;
+                }
+            });
         } else {
-            this.process(new MessageProcessor(message.headerSignature(), () -> this.processProfilelessMessage(params, signedMessage, text)));
+            this.process(new ProcessableMessage(){
+
+                @Override
+                public boolean accept() {
+                    return MessageHandler.this.processProfilelessMessage(params, signedMessage, text);
+                }
+
+                @Override
+                public boolean isUnprocessed() {
+                    return true;
+                }
+            });
         }
     }
 
+    /**
+     * Called when a message header is received.
+     * 
+     * <p>Message header is received instead of the full message when a message is censored
+     * or when the message is originally sent without metadata due to it being originated from
+     * entities. This is to keep the integrity of the "message chain".
+     */
     public void onMessageHeader(MessageHeader header, MessageSignatureData signature, byte[] bodyDigest) {
-        this.process(new MessageProcessor(signature, () -> this.processHeader(header, signature, bodyDigest)));
+        this.process(() -> this.processHeader(header, signature, bodyDigest));
     }
 
-    private boolean processChatMessage(MessageType.Parameters params, SignedMessage message, Text decorated, @Nullable PlayerListEntry senderEntry, MessageTrustStatus trustStatus) {
+    /**
+     * Processes a chat message and sends acknowledgment to the server.
+     * 
+     * <p>The message can still end up not being displayed if the verification
+     * fails and {@code onlyShowSecureChat} is {@code true} or if the sender is
+     * blocked via the social interactions screen.
+     * 
+     * @return whether the message was actually displayed
+     * @see #processChatMessageInternal
+     * 
+     * @param receptionTimestamp the timestamp when the message was received by this client
+     */
+    boolean processChatMessage(MessageType.Parameters params, SignedMessage message, Text decorated, @Nullable PlayerListEntry senderEntry, boolean onlyShowSecureChat, Instant receptionTimestamp) {
+        boolean bl = this.processChatMessageInternal(params, message, decorated, senderEntry, onlyShowSecureChat, receptionTimestamp);
+        ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
+        if (clientPlayNetworkHandler != null) {
+            clientPlayNetworkHandler.acknowledge(message, bl);
+        }
+        return bl;
+    }
+
+    /**
+     * Processes a chat message.
+     * 
+     * <p>The message can still end up not being displayed if the verification
+     * fails and {@code onlyShowSecureChat} is {@code true} or if the sender is
+     * blocked via the social interactions screen.
+     * 
+     * <p>This adds the message to the hud, narrates it, and appends it to the
+     * chat log.
+     * 
+     * @return whether the message was actually displayed
+     * 
+     * @param receptionTimestamp the timestamp when the message was received by this client
+     */
+    private boolean processChatMessageInternal(MessageType.Parameters params, SignedMessage message, Text decorated, @Nullable PlayerListEntry senderEntry, boolean onlyShowSecureChat, Instant receptionTimestamp) {
+        MessageTrustStatus messageTrustStatus = this.getStatus(message, decorated, senderEntry, receptionTimestamp);
+        if (onlyShowSecureChat && messageTrustStatus.isInsecure()) {
+            return false;
+        }
         if (this.client.shouldBlockMessages(message.createMetadata().sender())) {
             return false;
         }
-        MessageIndicator messageIndicator = trustStatus.createIndicator(message);
+        MessageIndicator messageIndicator = messageTrustStatus.createIndicator(message);
         this.client.inGameHud.getChatHud().addMessage(decorated, message.headerSignature(), messageIndicator);
         this.narrate(params, message);
-        this.addToChatLog(message, params, senderEntry, trustStatus);
+        this.addToChatLog(message, params, senderEntry, messageTrustStatus);
         this.lastProcessTime = Util.getMeasuringTimeMs();
         return true;
     }
 
-    private boolean processProfilelessMessage(MessageType.Parameters params, SignedMessage message, Text decorated) {
+    /**
+     * Processes a message that is sent as chat message but lacks the sender.
+     * 
+     * <p>This is usually a message sent via commands executed from {@code /execute}
+     * command.
+     * 
+     * <p>This adds the message to the hud, narrates it, and appends it to the
+     * chat log. The message is not verified.
+     */
+    boolean processProfilelessMessage(MessageType.Parameters params, SignedMessage message, Text decorated) {
         this.client.inGameHud.getChatHud().addMessage(decorated, MessageIndicator.system());
         this.narrate(params, message);
         this.addToChatLog(decorated, message.getTimestamp());
@@ -155,24 +274,49 @@ public class MessageHandler {
         return true;
     }
 
-    private boolean processHeader(MessageHeader header, MessageSignatureData signature, byte[] bodyDigest) {
+    /**
+     * Processes a received message header.
+     * 
+     * <p>Message header is received instead of the full message when a message is censored
+     * or when the message is originally sent without metadata due to it being originated from
+     * entities. This is to keep the integrity of the "message chain".
+     * 
+     * <p>This stores the header verification result and adds it to the chat log.
+     * 
+     * @see net.minecraft.network.message.MessageVerifier#storeHeaderVerification
+     */
+    boolean processHeader(MessageHeader header, MessageSignatureData signature, byte[] bodyDigest) {
         PlayerListEntry playerListEntry = this.getPlayerListEntry(header.sender());
         if (playerListEntry != null) {
             playerListEntry.getMessageVerifier().storeHeaderVerification(header, signature, bodyDigest);
         }
-        this.headerProcessed(header, signature, bodyDigest);
+        this.addToChatLog(header, signature, bodyDigest);
         return false;
     }
 
+    /**
+     * Narrates {@code message}.
+     * 
+     * @see net.minecraft.client.util.NarratorManager#narrateChatMessage
+     */
     private void narrate(MessageType.Parameters params, SignedMessage message) {
         this.client.getNarratorManager().narrateChatMessage(() -> params.applyNarrationDecoration(message.getContent()));
     }
 
-    private MessageTrustStatus getStatus(SignedMessage message, Text decorated, @Nullable PlayerListEntry senderEntry) {
+    /**
+     * {@return the trust status of {@code message}}
+     * 
+     * <p>This returns {@link MessageTrustStatus#SECURE} for messages that are
+     * considered to be {@linkplain #isAlwaysTrusted always trusted}.
+     * 
+     * @see #isAlwaysTrusted
+     * @see MessageTrustStatus#getStatus
+     */
+    private MessageTrustStatus getStatus(SignedMessage message, Text decorated, @Nullable PlayerListEntry senderEntry, Instant receptionTimestamp) {
         if (this.isAlwaysTrusted(message.createMetadata().sender())) {
             return MessageTrustStatus.SECURE;
         }
-        return MessageTrustStatus.getStatus(message, decorated, senderEntry);
+        return MessageTrustStatus.getStatus(message, decorated, senderEntry, receptionTimestamp);
     }
 
     private void addToChatLog(SignedMessage message, MessageType.Parameters params, @Nullable PlayerListEntry senderEntry, MessageTrustStatus trustStatus) {
@@ -181,15 +325,31 @@ public class MessageHandler {
         chatLog.add(ReceivedMessage.of(gameProfile, params.name(), message, trustStatus));
     }
 
-    private void headerProcessed(MessageHeader header, MessageSignatureData signatures, byte[] bodyDigest) {
+    private void addToChatLog(Text message, Instant timestamp) {
+        ChatLog chatLog = this.client.getAbuseReportContext().chatLog();
+        chatLog.add(ReceivedMessage.of(message, timestamp));
     }
 
+    private void addToChatLog(MessageHeader header, MessageSignatureData signatures, byte[] bodyDigest) {
+        ChatLog chatLog = this.client.getAbuseReportContext().chatLog();
+        chatLog.add(HeaderEntry.of(header, signatures, bodyDigest));
+    }
+
+    /**
+     * {@return the player list entry for {@code sender}, or {@code null} if the sender's
+     * UUID did not correspond to any known players}
+     */
     @Nullable
     private PlayerListEntry getPlayerListEntry(UUID sender) {
         ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
         return clientPlayNetworkHandler != null ? clientPlayNetworkHandler.getPlayerListEntry(sender) : null;
     }
 
+    /**
+     * Called when a game message is received.
+     * 
+     * <p>Game messages ignore chat delay.
+     */
     public void onGameMessage(Text message, boolean overlay) {
         if (this.client.options.getHideMatchedNames().getValue().booleanValue() && this.client.shouldBlockMessages(this.extractSender(message))) {
             return;
@@ -212,11 +372,11 @@ public class MessageHandler {
         return this.client.getSocialInteractionsManager().getUuid(string2);
     }
 
-    private void addToChatLog(Text message, Instant timestamp) {
-        ChatLog chatLog = this.client.getAbuseReportContext().chatLog();
-        chatLog.add(ReceivedMessage.of(message, timestamp));
-    }
-
+    /**
+     * {@return whether messages from {@code sender} are always trusted}
+     * 
+     * <p>Messages from this client's player in a singleplayer world are always trusted.
+     */
     private boolean isAlwaysTrusted(UUID sender) {
         if (this.client.isInSingleplayer() && this.client.player != null) {
             UUID uUID = this.client.player.getGameProfile().getId();
@@ -226,13 +386,18 @@ public class MessageHandler {
     }
 
     @Environment(value=EnvType.CLIENT)
-    record MessageProcessor(MessageSignatureData headerSignature, BooleanSupplier processor) {
-        MessageSignatureData getHeaderSignature() {
-            return this.headerSignature;
+    static interface ProcessableMessage {
+        default public boolean removeMatching(MessageSignatureData signature) {
+            return false;
         }
 
-        public boolean process() {
-            return this.processor.getAsBoolean();
+        default public void markProcessed() {
+        }
+
+        public boolean accept();
+
+        default public boolean isUnprocessed() {
+            return false;
         }
     }
 }

@@ -10,13 +10,11 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import java.util.List;
-import java.util.concurrent.Executor;
 import net.minecraft.command.argument.MessageArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.message.MessageSourceProfile;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SentMessage;
-import net.minecraft.network.message.SignedMessage;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -53,13 +51,14 @@ public class TeamMsgCommand {
         }
         MutableText text = team.getFormattedName().fillStyle(STYLE);
         MessageSourceProfile messageSourceProfile = source.getMessageSourceProfile();
-        MessageType.Parameters parameters = MessageType.params(MessageType.TEAM_MSG_COMMAND, source).withTargetName(text);
+        MessageType.Parameters parameters = MessageType.params(MessageType.TEAM_MSG_COMMAND_INCOMING, source).withTargetName(text);
+        MessageType.Parameters parameters2 = MessageType.params(MessageType.TEAM_MSG_COMMAND_OUTGOING, source).withTargetName(text);
         List<ServerPlayerEntity> list = source.getServer().getPlayerManager().getPlayerList().stream().filter(player -> player == entity || player.getScoreboardTeam() == team).toList();
-        signedMessage.decorate(source).thenAcceptAsync(decoratedMessage -> {
+        signedMessage.decorate(source, decoratedMessage -> {
             FilteredMessage<SentMessage> filteredMessage = SentMessage.of(decoratedMessage, messageSourceProfile);
             for (ServerPlayerEntity serverPlayerEntity : list) {
                 if (serverPlayerEntity == entity) {
-                    serverPlayerEntity.sendMessage(Text.translatable("chat.type.team.sent", text, source.getDisplayName(), ((SignedMessage)decoratedMessage.raw()).getContent()));
+                    serverPlayerEntity.sendChatMessage(filteredMessage.raw(), parameters2);
                     continue;
                 }
                 SentMessage sentMessage = filteredMessage.getFilterableFor(source, serverPlayerEntity);
@@ -67,7 +66,7 @@ public class TeamMsgCommand {
                 serverPlayerEntity.sendChatMessage(sentMessage, parameters);
             }
             filteredMessage.raw().afterPacketsSent(source.getServer().getPlayerManager());
-        }, (Executor)source.getServer());
+        });
         return list.size();
     }
 }

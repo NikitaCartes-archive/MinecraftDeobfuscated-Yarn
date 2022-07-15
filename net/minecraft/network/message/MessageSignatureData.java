@@ -4,6 +4,7 @@
 package net.minecraft.network.message;
 
 import it.unimi.dsi.fastutil.bytes.ByteArrays;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Base64;
 import net.minecraft.network.PacketByteBuf;
@@ -57,12 +58,13 @@ public record MessageSignatureData(byte[] data) {
     }
 
     /**
-     * {@return the base64-encoded data, or {@code null} if the data is empty}
+     * {@return the byte buffer containing the signature data, or {@code null} if this
+     * signature data is empty}
      */
     @Nullable
-    public String toStringOrNull() {
+    public ByteBuffer toByteBuffer() {
         if (!this.isEmpty()) {
-            return Base64.getEncoder().encodeToString(this.data);
+            return ByteBuffer.wrap(this.data);
         }
         return null;
     }

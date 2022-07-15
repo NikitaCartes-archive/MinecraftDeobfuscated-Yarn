@@ -4,6 +4,7 @@
 package net.minecraft.network.message;
 
 import net.minecraft.network.message.ArgumentSignatureDataMap;
+import net.minecraft.network.message.LastSeenMessageList;
 import net.minecraft.network.message.MessageChain;
 import net.minecraft.network.message.MessageMetadata;
 import net.minecraft.network.message.MessageSignatureData;
@@ -17,18 +18,13 @@ public interface SignedCommandArguments {
         return new SignedCommandArguments(){
 
             @Override
-            public MessageSignatureData getArgumentSignature(String argumentName) {
-                return MessageSignatureData.EMPTY;
+            public ArgumentSignature createSignature(String argumentName) {
+                return ArgumentSignature.EMPTY;
             }
 
             @Override
             public MessageMetadata metadata() {
                 return messageMetadata;
-            }
-
-            @Override
-            public boolean isPreviewSigned(String argumentName) {
-                return false;
             }
 
             @Override
@@ -38,25 +34,22 @@ public interface SignedCommandArguments {
         };
     }
 
-    public MessageSignatureData getArgumentSignature(String var1);
+    public ArgumentSignature createSignature(String var1);
 
     public MessageMetadata metadata();
 
     public MessageChain.Unpacker decoder();
 
-    public boolean isPreviewSigned(String var1);
-
-    public record Impl(MessageChain.Unpacker decoder, MessageMetadata metadata, ArgumentSignatureDataMap argumentSignatures, boolean signedPreview) implements SignedCommandArguments
+    public record Impl(MessageChain.Unpacker decoder, MessageMetadata metadata, ArgumentSignatureDataMap argumentSignatures, boolean signedPreview, LastSeenMessageList lastSeenMessages) implements SignedCommandArguments
     {
         @Override
-        public MessageSignatureData getArgumentSignature(String argumentName) {
-            return this.argumentSignatures.get(argumentName);
+        public ArgumentSignature createSignature(String argumentName) {
+            return new ArgumentSignature(this.argumentSignatures.get(argumentName), this.signedPreview, this.lastSeenMessages);
         }
+    }
 
-        @Override
-        public boolean isPreviewSigned(String argumentName) {
-            return this.signedPreview;
-        }
+    public record ArgumentSignature(MessageSignatureData signature, boolean signedPreview, LastSeenMessageList lastSeenMessages) {
+        public static final ArgumentSignature EMPTY = new ArgumentSignature(MessageSignatureData.EMPTY, false, LastSeenMessageList.EMPTY);
     }
 }
 

@@ -12,6 +12,7 @@ import com.mojang.logging.LogUtils;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -210,7 +211,7 @@ implements DebugRenderer.Renderer {
         }
         if (bl) {
             int j = brain.health < brain.maxHealth ? -23296 : -1;
-            VillageDebugRenderer.drawString(brain.pos, i, "health: " + String.format("%.1f", Float.valueOf(brain.health)) + " / " + String.format("%.1f", Float.valueOf(brain.maxHealth)), j, 0.02f);
+            VillageDebugRenderer.drawString(brain.pos, i, "health: " + String.format(Locale.ROOT, "%.1f", Float.valueOf(brain.health)) + " / " + String.format(Locale.ROOT, "%.1f", Float.valueOf(brain.maxHealth)), j, 0.02f);
             ++i;
         }
         if (bl && !brain.inventory.equals("")) {

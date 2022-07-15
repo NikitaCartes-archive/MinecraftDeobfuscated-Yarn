@@ -8,7 +8,6 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import java.util.Collection;
-import java.util.concurrent.Executor;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.MessageArgumentType;
 import net.minecraft.network.message.MessageSourceProfile;
@@ -37,7 +36,7 @@ public class MessageCommand {
     private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, MessageArgumentType.SignedMessage signedMessage) {
         MessageSourceProfile messageSourceProfile = source.getMessageSourceProfile();
         MessageType.Parameters parameters = MessageType.params(MessageType.MSG_COMMAND_INCOMING, source);
-        signedMessage.decorate(source).thenAcceptAsync(decoratedMessage -> {
+        signedMessage.decorate(source, decoratedMessage -> {
             FilteredMessage<SentMessage> filteredMessage = SentMessage.of(decoratedMessage, messageSourceProfile);
             for (ServerPlayerEntity serverPlayerEntity : targets) {
                 MessageType.Parameters parameters2 = MessageType.params(MessageType.MSG_COMMAND_OUTGOING, source).withTargetName(serverPlayerEntity.getDisplayName());
@@ -47,7 +46,7 @@ public class MessageCommand {
                 serverPlayerEntity.sendChatMessage(sentMessage, parameters);
             }
             filteredMessage.raw().afterPacketsSent(source.getServer().getPlayerManager());
-        }, (Executor)source.getServer());
+        });
         return targets.size();
     }
 }

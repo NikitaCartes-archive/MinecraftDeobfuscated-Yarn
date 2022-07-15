@@ -64,13 +64,8 @@ public interface MessageDecorator {
         return CompletableFuture.allOf(completableFuture, completableFuture2).thenApply(void_ -> new FilteredMessage<Text>((Text)completableFuture.join(), (Text)completableFuture2.join()));
     }
 
-    default public CompletableFuture<FilteredMessage<SignedMessage>> decorateSignedChat(@Nullable ServerPlayerEntity sender, FilteredMessage<SignedMessage> message) {
-        FilteredMessage<Text> filteredMessage = message.map(SignedMessage::getSignedContent);
-        return this.decorateFiltered(sender, filteredMessage).thenApply(decoratedMessage -> MessageDecorator.attachDecoration(message, decoratedMessage));
-    }
-
-    public static FilteredMessage<SignedMessage> attachDecoration(FilteredMessage<SignedMessage> message, FilteredMessage<Text> decoratedMessage) {
-        return message.map(rawMessage -> rawMessage.withUnsignedContent((Text)decoratedMessage.raw()), filteredMessage -> decoratedMessage.filtered() != null ? filteredMessage.withUnsignedContent((Text)decoratedMessage.filtered()) : filteredMessage);
+    public static FilteredMessage<SignedMessage> attachUnsignedDecoration(FilteredMessage<SignedMessage> message, FilteredMessage<Text> decorated) {
+        return message.map(rawMessage -> rawMessage.withUnsignedContent((Text)decorated.raw()), filteredMessage -> decorated.filtered() != null ? filteredMessage.withUnsignedContent((Text)decorated.filtered()) : filteredMessage);
     }
 }
 

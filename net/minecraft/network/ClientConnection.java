@@ -50,10 +50,9 @@ import net.minecraft.network.encryption.PacketDecryptor;
 import net.minecraft.network.encryption.PacketEncryptor;
 import net.minecraft.network.listener.ClientLoginPacketListener;
 import net.minecraft.network.listener.PacketListener;
+import net.minecraft.network.listener.TickablePacketListener;
 import net.minecraft.network.packet.s2c.login.LoginDisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
-import net.minecraft.server.network.ServerLoginNetworkHandler;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Lazy;
@@ -263,11 +262,10 @@ extends SimpleChannelInboundHandler<Packet<?>> {
 
     public void tick() {
         this.sendQueuedPackets();
-        if (this.packetListener instanceof ServerLoginNetworkHandler) {
-            ((ServerLoginNetworkHandler)this.packetListener).tick();
-        }
-        if (this.packetListener instanceof ServerPlayNetworkHandler) {
-            ((ServerPlayNetworkHandler)this.packetListener).tick();
+        PacketListener packetListener = this.packetListener;
+        if (packetListener instanceof TickablePacketListener) {
+            TickablePacketListener tickablePacketListener = (TickablePacketListener)packetListener;
+            tickablePacketListener.tick();
         }
         if (!this.isOpen() && !this.disconnected) {
             this.handleDisconnection();

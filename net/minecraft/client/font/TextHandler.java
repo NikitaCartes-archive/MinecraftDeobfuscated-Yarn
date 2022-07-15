@@ -3,12 +3,14 @@
  */
 package net.minecraft.client.font;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -182,6 +184,12 @@ public class TextHandler {
         }, style).orElse(text);
     }
 
+    public List<MatchResult> getStyleMatchResults(OrderedText text, Predicate<Style> stylePredicate) {
+        StylePredicateVisitor stylePredicateVisitor = new StylePredicateVisitor(stylePredicate);
+        text.accept(stylePredicateVisitor);
+        return stylePredicateVisitor.getResults();
+    }
+
     public int getEndingIndex(String text, int maxWidth, Style style) {
         LineBreakingVisitor lineBreakingVisitor = new LineBreakingVisitor(maxWidth);
         TextVisitFactory.visitFormatted(text, style, (CharacterVisitor)lineBreakingVisitor);
@@ -328,6 +336,52 @@ public class TextHandler {
 
         public void resetLength() {
             this.length = 0;
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    class StylePredicateVisitor
+    implements CharacterVisitor {
+        private final Predicate<Style> stylePredicate;
+        private float totalWidth;
+        private final ImmutableList.Builder<MatchResult> results = ImmutableList.builder();
+        private float styleStartWidth;
+        private boolean lastTestResult;
+
+        StylePredicateVisitor(Predicate<Style> stylePredicate) {
+            this.stylePredicate = stylePredicate;
+        }
+
+        @Override
+        public boolean accept(int i, Style style, int j) {
+            boolean bl = this.stylePredicate.test(style);
+            if (this.lastTestResult != bl) {
+                if (bl) {
+                    this.onStyleMatchStart();
+                } else {
+                    this.onStyleMatchEnd();
+                }
+            }
+            this.totalWidth += TextHandler.this.widthRetriever.getWidth(j, style);
+            return true;
+        }
+
+        private void onStyleMatchStart() {
+            this.lastTestResult = true;
+            this.styleStartWidth = this.totalWidth;
+        }
+
+        private void onStyleMatchEnd() {
+            float f = this.totalWidth;
+            this.results.add((Object)new MatchResult(this.styleStartWidth, f));
+            this.lastTestResult = false;
+        }
+
+        public List<MatchResult> getResults() {
+            if (this.lastTestResult) {
+                this.onStyleMatchEnd();
+            }
+            return this.results.build();
         }
     }
 
@@ -487,6 +541,10 @@ public class TextHandler {
         public <T> Optional<T> visit(StringVisitable.StyledVisitor<T> styledVisitor, Style style) {
             return styledVisitor.accept(this.style.withParent(style), this.literal);
         }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public record MatchResult(float left, float right) {
     }
 }
 

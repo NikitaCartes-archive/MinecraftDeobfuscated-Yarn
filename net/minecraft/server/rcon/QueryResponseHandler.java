@@ -15,6 +15,7 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.rcon.BufferHelper;
@@ -288,7 +289,7 @@ extends RconBase {
             this.messageBytes[3] = bs[6];
             this.message = new String(this.messageBytes, StandardCharsets.UTF_8);
             this.id = Random.create().nextInt(0x1000000);
-            this.replyBuf = String.format("\t%s%d\u0000", this.message, this.id).getBytes(StandardCharsets.UTF_8);
+            this.replyBuf = String.format(Locale.ROOT, "\t%s%d\u0000", this.message, this.id).getBytes(StandardCharsets.UTF_8);
         }
 
         public Boolean startedBefore(long lastQueryTime) {

@@ -41,6 +41,20 @@ public record FilteredMessage<T>(T raw, @Nullable T filtered) {
     }
 
     /**
+     * {@return the result of applying mappers to both raw and filtered parts}
+     * 
+     * <p>Unlike {@link #map(Function, Function)}, if those two parts are equal,
+     * then this reuses the mapped raw part instead of applying {@code filteredMapper}.
+     */
+    public <U> FilteredMessage<U> mapParts(Function<T, U> rawMapper, Function<T, U> filteredMapper) {
+        U object = rawMapper.apply(this.raw);
+        if (this.raw.equals(this.filtered)) {
+            return FilteredMessage.permitted(object);
+        }
+        return new FilteredMessage<U>(object, Util.map(this.filtered, filteredMapper));
+    }
+
+    /**
      * {@return if some of the messages are filtered}
      */
     public boolean isFiltered() {

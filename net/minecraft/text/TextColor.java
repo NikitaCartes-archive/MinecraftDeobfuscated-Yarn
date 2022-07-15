@@ -6,6 +6,7 @@ package net.minecraft.text;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
@@ -63,7 +64,7 @@ public final class TextColor {
     }
 
     private String getHexCode() {
-        return String.format("#%06X", this.rgb);
+        return String.format(Locale.ROOT, "#%06X", this.rgb);
     }
 
     public boolean equals(Object o) {

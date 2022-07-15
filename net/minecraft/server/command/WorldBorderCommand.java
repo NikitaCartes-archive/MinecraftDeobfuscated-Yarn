@@ -91,7 +91,7 @@ public class WorldBorderCommand {
             throw SET_FAILED_FAR_EXCEPTION.create();
         }
         worldBorder.setCenter(pos.x, pos.y);
-        source.sendFeedback(Text.translatable("commands.worldborder.center.success", String.format(Locale.ROOT, "%.2f", Float.valueOf(pos.x)), String.format("%.2f", Float.valueOf(pos.y))), true);
+        source.sendFeedback(Text.translatable("commands.worldborder.center.success", String.format(Locale.ROOT, "%.2f", Float.valueOf(pos.x)), String.format(Locale.ROOT, "%.2f", Float.valueOf(pos.y))), true);
         return 0;
     }
 

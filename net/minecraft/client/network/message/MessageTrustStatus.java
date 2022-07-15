@@ -19,8 +19,8 @@ public enum MessageTrustStatus {
     NOT_SECURE;
 
 
-    public static MessageTrustStatus getStatus(SignedMessage message, Text decorated, @Nullable PlayerListEntry sender) {
-        if (message.isExpiredOnClient(Instant.now())) {
+    public static MessageTrustStatus getStatus(SignedMessage message, Text decorated, @Nullable PlayerListEntry sender, Instant receptionTimestamp) {
+        if (message.isExpiredOnClient(receptionTimestamp)) {
             return NOT_SECURE;
         }
         if (sender == null || !sender.getMessageVerifier().verify(message)) {
@@ -29,7 +29,7 @@ public enum MessageTrustStatus {
         if (message.unsignedContent().isPresent()) {
             return MODIFIED;
         }
-        if (!decorated.contains(message.getSignedContent())) {
+        if (!decorated.contains(message.getSignedContent().decorated())) {
             return MODIFIED;
         }
         return SECURE;
@@ -42,7 +42,7 @@ public enum MessageTrustStatus {
     @Nullable
     public MessageIndicator createIndicator(SignedMessage message) {
         return switch (this) {
-            case MODIFIED -> MessageIndicator.modified(message.getSignedContent());
+            case MODIFIED -> MessageIndicator.modified(message.getSignedContent().plain());
             case NOT_SECURE -> MessageIndicator.notSecure();
             default -> null;
         };

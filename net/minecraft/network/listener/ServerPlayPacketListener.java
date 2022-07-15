@@ -21,6 +21,7 @@ import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.network.packet.c2s.play.JigsawGeneratingC2SPacket;
 import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
+import net.minecraft.network.packet.c2s.play.MessageAcknowledgmentC2SPacket;
 import net.minecraft.network.packet.c2s.play.PickFromInventoryC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayPongC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
@@ -64,6 +65,8 @@ extends ServerPacketListener {
     public void onCommandExecution(CommandExecutionC2SPacket var1);
 
     public void onRequestChatPreview(RequestChatPreviewC2SPacket var1);
+
+    public void onMessageAcknowledgment(MessageAcknowledgmentC2SPacket var1);
 
     public void onClientStatus(ClientStatusC2SPacket var1);
 

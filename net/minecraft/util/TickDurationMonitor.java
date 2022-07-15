@@ -5,9 +5,8 @@ package net.minecraft.util;
 
 import com.mojang.logging.LogUtils;
 import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.function.LongSupplier;
+import net.minecraft.util.Util;
 import net.minecraft.util.profiler.DummyProfiler;
 import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.Profiler;
@@ -43,7 +42,7 @@ public class TickDurationMonitor {
         ProfileResult profileResult = this.profiler.getResult();
         this.profiler = DummyProfiler.INSTANCE;
         if (profileResult.getTimeSpan() >= this.overtime) {
-            File file = new File(this.tickResultsDirectory, "tick-results-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + ".txt");
+            File file = new File(this.tickResultsDirectory, "tick-results-" + Util.getFormattedCurrentTime() + ".txt");
             profileResult.save(file.toPath());
             LOGGER.info("Recorded long tick -- wrote info to: {}", (Object)file.getAbsolutePath());
         }

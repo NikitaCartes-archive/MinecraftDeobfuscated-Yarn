@@ -35,6 +35,7 @@ import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -48,6 +49,7 @@ import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.option.AoMode;
 import net.minecraft.client.option.AttackIndicator;
+import net.minecraft.client.option.ChatPreviewMode;
 import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.client.option.CloudRenderMode;
 import net.minecraft.client.option.GraphicsMode;
@@ -214,7 +216,7 @@ public class GameOptions {
         if (value <= 0.0) {
             return Text.translatable("options.chat.delay_none");
         }
-        return Text.translatable("options.chat.delay", String.format("%.1f", value));
+        return Text.translatable("options.chat.delay", String.format(Locale.ROOT, "%.1f", value));
     }, new SimpleOption.ValidatingIntSliderCallbacks(0, 60).withModifier(value -> (double)value / 10.0, value -> (int)(value * 10.0)), Codec.doubleRange(0.0, 6.0), 0.0, value -> MinecraftClient.getInstance().getMessageHandler().setChatDelay((double)value));
     private final SimpleOption<Integer> mipmapLevels = new SimpleOption<Integer>("options.mipmapLevels", SimpleOption.emptyTooltip(), (optionText, value) -> {
         if (value == 0) {
@@ -232,7 +234,7 @@ public class GameOptions {
         int i = value * 2 + 1;
         return GameOptions.getGenericValueText(optionText, Text.translatable("options.biomeBlendRadius." + i));
     }, new SimpleOption.ValidatingIntSliderCallbacks(0, 7), 2, value -> MinecraftClient.getInstance().worldRenderer.reload());
-    private final SimpleOption<Double> mouseWheelSensitivity = new SimpleOption<Double>("options.mouseWheelSensitivity", SimpleOption.emptyTooltip(), (optionText, value) -> GameOptions.getGenericValueText(optionText, Text.literal(String.format("%.2f", value))), new SimpleOption.ValidatingIntSliderCallbacks(-200, 100).withModifier(GameOptions::toMouseWheelSensitivityValue, GameOptions::toMouseWheelSensitivitySliderProgressValue), Codec.doubleRange(GameOptions.toMouseWheelSensitivityValue(-200), GameOptions.toMouseWheelSensitivityValue(100)), GameOptions.toMouseWheelSensitivityValue(0), value -> {});
+    private final SimpleOption<Double> mouseWheelSensitivity = new SimpleOption<Double>("options.mouseWheelSensitivity", SimpleOption.emptyTooltip(), (optionText, value) -> GameOptions.getGenericValueText(optionText, Text.literal(String.format(Locale.ROOT, "%.2f", value))), new SimpleOption.ValidatingIntSliderCallbacks(-200, 100).withModifier(GameOptions::toMouseWheelSensitivityValue, GameOptions::toMouseWheelSensitivitySliderProgressValue), Codec.doubleRange(GameOptions.toMouseWheelSensitivityValue(-200), GameOptions.toMouseWheelSensitivityValue(100)), GameOptions.toMouseWheelSensitivityValue(0), value -> {});
     private final SimpleOption<Boolean> rawMouseInput = SimpleOption.ofBoolean("options.rawMouseInput", true, value -> {
         Window window = MinecraftClient.getInstance().getWindow();
         if (window != null) {
@@ -295,8 +297,15 @@ public class GameOptions {
     private static final Text HIDE_MATCHED_NAMES_TOOLTIP = Text.translatable("options.hideMatchedNames.tooltip");
     private final SimpleOption<Boolean> hideMatchedNames = SimpleOption.ofBoolean("options.hideMatchedNames", SimpleOption.constantTooltip(HIDE_MATCHED_NAMES_TOOLTIP), true);
     private final SimpleOption<Boolean> showAutosaveIndicator = SimpleOption.ofBoolean("options.autosaveIndicator", true);
-    private static final Text CHAT_PREVIEW_TOOLTIP = Text.translatable("options.chatPreview.tooltip");
-    private final SimpleOption<Boolean> chatPreview = SimpleOption.ofBoolean("options.chatPreview", SimpleOption.constantTooltip(CHAT_PREVIEW_TOOLTIP), true);
+    private static final Text OFF_CHAT_PREVIEW_TOOLTIP = Text.translatable("options.chatPreview.tooltip.off");
+    private static final Text LIVE_CHAT_PREVIEW_TOOLTIP = Text.translatable("options.chatPreview.tooltip.live");
+    private static final Text CONFIRM_CHAT_PREVIEW_TOOLTIP = Text.translatable("options.chatPreview.tooltip.confirm");
+    private final SimpleOption<ChatPreviewMode> chatPreview = new SimpleOption<ChatPreviewMode>("options.chatPreview", client -> value -> switch (value) {
+        default -> throw new IncompatibleClassChangeError();
+        case ChatPreviewMode.OFF -> SimpleOption.wrapLines(client, OFF_CHAT_PREVIEW_TOOLTIP);
+        case ChatPreviewMode.LIVE -> SimpleOption.wrapLines(client, LIVE_CHAT_PREVIEW_TOOLTIP);
+        case ChatPreviewMode.CONFIRM -> SimpleOption.wrapLines(client, CONFIRM_CHAT_PREVIEW_TOOLTIP);
+    }, SimpleOption.enumValueText(), new SimpleOption.PotentialValuesBasedCallbacks<ChatPreviewMode>(Arrays.asList(ChatPreviewMode.values()), Codec.INT.xmap(ChatPreviewMode::byId, ChatPreviewMode::getId)), ChatPreviewMode.LIVE, value -> {});
     private static final Text ONLY_SHOW_SECURE_CHAT_TOOLTIP = Text.translatable("options.onlyShowSecureChat.tooltip");
     private final SimpleOption<Boolean> onlyShowSecureChat = SimpleOption.ofBoolean("options.onlyShowSecureChat", SimpleOption.constantTooltip(ONLY_SHOW_SECURE_CHAT_TOOLTIP), false);
     /**
@@ -735,7 +744,7 @@ public class GameOptions {
         return this.showAutosaveIndicator;
     }
 
-    public SimpleOption<Boolean> getChatPreview() {
+    public SimpleOption<ChatPreviewMode> getChatPreview() {
         return this.chatPreview;
     }
 

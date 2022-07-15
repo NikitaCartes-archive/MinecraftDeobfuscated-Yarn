@@ -4,10 +4,9 @@
 package net.minecraft.command.argument;
 
 import net.minecraft.command.argument.DecoratableArgumentType;
-import net.minecraft.text.Text;
 
-public interface TextConvertibleArgumentType<T>
+public interface SignedArgumentType<T>
 extends DecoratableArgumentType<T> {
-    public Text toText(T var1);
+    public String toSignedString(T var1);
 }
 

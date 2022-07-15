@@ -101,7 +101,7 @@ implements DebugRenderer.Renderer {
             for (i = 0; i < path.getLength(); ++i) {
                 PathNode pathNode = path.getNode(i);
                 if (!(PathfindingDebugRenderer.getManhattanDistance(pathNode.getBlockPos(), cameraX, cameraY, cameraZ) <= 80.0f)) continue;
-                DebugRenderer.drawString(String.format("%s", new Object[]{pathNode.type}), (double)pathNode.x + 0.5, (double)pathNode.y + 0.75, (double)pathNode.z + 0.5, -1, 0.02f, true, 0.0f, true);
+                DebugRenderer.drawString(String.valueOf((Object)pathNode.type), (double)pathNode.x + 0.5, (double)pathNode.y + 0.75, (double)pathNode.z + 0.5, -1, 0.02f, true, 0.0f, true);
                 DebugRenderer.drawString(String.format(Locale.ROOT, "%.2f", Float.valueOf(pathNode.penalty)), (double)pathNode.x + 0.5, (double)pathNode.y + 0.25, (double)pathNode.z + 0.5, -1, 0.02f, true, 0.0f, true);
             }
         }

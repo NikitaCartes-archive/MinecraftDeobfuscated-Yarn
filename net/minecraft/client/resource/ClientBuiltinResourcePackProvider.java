@@ -238,7 +238,7 @@ implements ResourcePackProvider {
         try (ZipResourcePack zipResourcePack = new ZipResourcePack(packZip);){
             packResourceMetadata = zipResourcePack.parseMetadata(PackResourceMetadata.READER);
         } catch (IOException iOException) {
-            return Util.completeExceptionally(new IOException(String.format("Invalid resourcepack at %s", packZip), iOException));
+            return Util.completeExceptionally(new IOException(String.format(Locale.ROOT, "Invalid resourcepack at %s", packZip), iOException));
         }
         LOGGER.info("Applying server pack {}", (Object)packZip);
         this.serverContainer = new ResourcePackProfile(SERVER, true, () -> new ZipResourcePack(packZip), Text.translatable("resourcePack.server.name"), packResourceMetadata.getDescription(), ResourcePackCompatibility.from(packResourceMetadata, ResourceType.CLIENT_RESOURCES), ResourcePackProfile.InsertionPosition.TOP, true, packSource);

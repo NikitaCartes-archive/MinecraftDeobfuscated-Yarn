@@ -31,16 +31,15 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileAttribute;
 import java.security.KeyPair;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -657,7 +656,7 @@ AutoCloseable {
                 LOGGER.error("Encountered an unexpected exception", throwable);
                 CrashReport crashReport = MinecraftServer.createCrashReport(throwable);
                 this.addSystemDetails(crashReport.getSystemDetailsSection());
-                File file = new File(new File(this.getRunDirectory(), "crash-reports"), "crash-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + "-server.txt");
+                File file = new File(new File(this.getRunDirectory(), "crash-reports"), "crash-" + Util.getFormattedCurrentTime() + "-server.txt");
                 if (crashReport.writeToFile(file)) {
                     LOGGER.error("This crash report has been saved to: {}", (Object)file.getAbsolutePath());
                 } else {
@@ -1500,10 +1499,10 @@ AutoCloseable {
 
     private void dumpStats(Path path) throws IOException {
         try (BufferedWriter writer = Files.newBufferedWriter(path, new OpenOption[0]);){
-            writer.write(String.format("pending_tasks: %d\n", this.getTaskCount()));
-            writer.write(String.format("average_tick_time: %f\n", Float.valueOf(this.getTickTime())));
-            writer.write(String.format("tick_times: %s\n", Arrays.toString(this.lastTickLengths)));
-            writer.write(String.format("queue: %s\n", Util.getMainWorkerExecutor()));
+            writer.write(String.format(Locale.ROOT, "pending_tasks: %d\n", this.getTaskCount()));
+            writer.write(String.format(Locale.ROOT, "average_tick_time: %f\n", Float.valueOf(this.getTickTime())));
+            writer.write(String.format(Locale.ROOT, "tick_times: %s\n", Arrays.toString(this.lastTickLengths)));
+            writer.write(String.format(Locale.ROOT, "queue: %s\n", Util.getMainWorkerExecutor()));
         }
     }
 
@@ -1515,7 +1514,7 @@ AutoCloseable {
 
                 @Override
                 public <T extends GameRules.Rule<T>> void visit(GameRules.Key<T> key, GameRules.Type<T> type) {
-                    list.add(String.format("%s=%s\n", key.getName(), gameRules.get(key)));
+                    list.add(String.format(Locale.ROOT, "%s=%s\n", key.getName(), gameRules.get(key)));
                 }
             });
             for (String string : list) {

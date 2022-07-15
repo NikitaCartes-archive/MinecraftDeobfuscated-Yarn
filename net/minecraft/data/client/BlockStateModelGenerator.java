@@ -11,6 +11,7 @@ import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -1743,7 +1744,7 @@ public class BlockStateModelGenerator {
         this.excludeFromSimpleItemModelGeneration(Blocks.LIGHT);
         BlockStateVariantMap.SingleProperty<Integer> singleProperty = BlockStateVariantMap.create(Properties.LEVEL_15);
         for (int i = 0; i < 16; ++i) {
-            String string = String.format("_%02d", i);
+            String string = String.format(Locale.ROOT, "_%02d", i);
             Identifier identifier = TextureMap.getSubId(Items.LIGHT, string);
             singleProperty.register((Integer)i, BlockStateVariant.create().put(VariantSettings.MODEL, Models.PARTICLE.upload(Blocks.LIGHT, string, TextureMap.particle(identifier), this.modelCollector)));
             Models.GENERATED.upload(ModelIds.getItemSubModelId(Items.LIGHT, string), TextureMap.layer0(identifier), this.modelCollector);

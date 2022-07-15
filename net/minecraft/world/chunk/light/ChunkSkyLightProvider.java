@@ -3,6 +3,7 @@
  */
 package net.minecraft.world.chunk.light;
 
+import java.util.Locale;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -51,7 +52,7 @@ extends ChunkLightProvider<SkyLightStorage.Data, SkyLightStorage> {
         int o = Integer.signum(l - i);
         Direction direction = Direction.fromVector(o, p = Integer.signum(m - j), q = Integer.signum(n - k));
         if (direction == null) {
-            throw new IllegalStateException(String.format("Light was spread in illegal direction %d, %d, %d", o, p, q));
+            throw new IllegalStateException(String.format(Locale.ROOT, "Light was spread in illegal direction %d, %d, %d", o, p, q));
         }
         BlockState blockState2 = this.getStateForLighting(sourceId, null);
         VoxelShape voxelShape = this.getOpaqueShape(blockState2, sourceId, direction);

@@ -36,6 +36,8 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -90,6 +92,7 @@ public class Util {
     private static final ExecutorService BOOTSTRAP_EXECUTOR = Util.createWorker("Bootstrap");
     private static final ExecutorService MAIN_WORKER_EXECUTOR = Util.createWorker("Main");
     private static final ExecutorService IO_WORKER_EXECUTOR = Util.createIoWorker();
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH.mm.ss", Locale.ROOT);
     public static TimeSupplier.Nanoseconds nanoTimeSupplier = System::nanoTime;
     public static final Ticker TICKER = new Ticker(){
 
@@ -127,6 +130,10 @@ public class Util {
 
     public static long getEpochTimeMs() {
         return Instant.now().toEpochMilli();
+    }
+
+    public static String getFormattedCurrentTime() {
+        return DATE_TIME_FORMATTER.format(ZonedDateTime.now());
     }
 
     private static ExecutorService createWorker(String name) {
@@ -224,7 +231,7 @@ public class Util {
             Bootstrap.println(((CrashException)t).getReport().asString());
             System.exit(-1);
         }
-        LOGGER.error(String.format("Caught exception in thread %s", thread), t);
+        LOGGER.error(String.format(Locale.ROOT, "Caught exception in thread %s", thread), t);
     }
 
     @Nullable

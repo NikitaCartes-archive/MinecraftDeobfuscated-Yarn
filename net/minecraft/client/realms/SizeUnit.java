@@ -50,7 +50,7 @@ public enum SizeUnit {
     }
 
     public static String humanReadableSize(long bytes, SizeUnit unit) {
-        return String.format("%." + (unit == GB ? "1" : "0") + "f %s", SizeUnit.convertToUnit(bytes, unit), unit.name());
+        return String.format(Locale.ROOT, "%." + (unit == GB ? "1" : "0") + "f %s", SizeUnit.convertToUnit(bytes, unit), unit.name());
     }
 }
 

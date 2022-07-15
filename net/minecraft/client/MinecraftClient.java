@@ -29,9 +29,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.text.SimpleDateFormat;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -818,7 +816,7 @@ implements WindowEventHandler {
 
     public static void printCrashReport(CrashReport report) {
         File file = new File(MinecraftClient.getInstance().runDirectory, "crash-reports");
-        File file2 = new File(file, "crash-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + "-client.txt");
+        File file2 = new File(file, "crash-" + Util.getFormattedCurrentTime() + "-client.txt");
         Bootstrap.println(report.asString());
         if (report.getFile() != null) {
             Bootstrap.println("#@!@# Game crashed! Crash report saved to: #@!@# " + report.getFile());
@@ -1142,7 +1140,7 @@ implements WindowEventHandler {
         while (Util.getMeasuringTimeMs() >= this.nextDebugInfoUpdateTime + 1000L) {
             Object string = this.gpuUtilizationPercentage > 0.0 ? " GPU: " + (this.gpuUtilizationPercentage > 100.0 ? Formatting.RED + "100%" : Math.round(this.gpuUtilizationPercentage) + "%") : "";
             currentFps = this.fpsCounter;
-            this.fpsDebugString = String.format("%d fps T: %s%s%s%s B: %d%s", currentFps, k == 260 ? "inf" : Integer.valueOf(k), this.options.getEnableVsync().getValue() != false ? " vsync" : "", this.options.getGraphicsMode().getValue(), this.options.getCloudRenderMod().getValue() == CloudRenderMode.OFF ? "" : (this.options.getCloudRenderMod().getValue() == CloudRenderMode.FAST ? " fast-clouds" : " fancy-clouds"), this.options.getBiomeBlendRadius().getValue(), string);
+            this.fpsDebugString = String.format(Locale.ROOT, "%d fps T: %s%s%s%s B: %d%s", currentFps, k == 260 ? "inf" : Integer.valueOf(k), this.options.getEnableVsync().getValue() != false ? " vsync" : "", this.options.getGraphicsMode().getValue(), this.options.getCloudRenderMod().getValue() == CloudRenderMode.OFF ? "" : (this.options.getCloudRenderMod().getValue() == CloudRenderMode.FAST ? " fast-clouds" : " fancy-clouds"), this.options.getBiomeBlendRadius().getValue(), string);
             this.nextDebugInfoUpdateTime += 1000L;
             this.fpsCounter = 0;
         }
@@ -1290,7 +1288,7 @@ implements WindowEventHandler {
         Path path;
         String string = this.isInSingleplayer() ? this.getServer().getSaveProperties().getLevelName() : this.getCurrentServerEntry().name;
         try {
-            String string2 = String.format("%s-%s-%s", new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()), string, SharedConstants.getGameVersion().getId());
+            String string2 = String.format(Locale.ROOT, "%s-%s-%s", Util.getFormattedCurrentTime(), string, SharedConstants.getGameVersion().getId());
             String string3 = FileNameUtil.getNextUniqueName(RecordDumper.DEBUG_PROFILING_DIRECTORY, string2, ".zip");
             path = RecordDumper.DEBUG_PROFILING_DIRECTORY.resolve(string3);
         } catch (IOException iOException) {

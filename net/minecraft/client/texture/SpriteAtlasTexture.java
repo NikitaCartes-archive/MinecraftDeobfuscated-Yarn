@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -132,7 +133,7 @@ implements TextureTickListener {
         } catch (TextureStitcherCannotFitException textureStitcherCannotFitException) {
             CrashReport crashReport = CrashReport.create(textureStitcherCannotFitException, "Stitching");
             CrashReportSection crashReportSection = crashReport.addElement("Stitcher");
-            crashReportSection.add("Sprites", textureStitcherCannotFitException.getSprites().stream().map(sprite -> String.format("%s[%dx%d]", sprite.getId(), sprite.getWidth(), sprite.getHeight())).collect(Collectors.joining(",")));
+            crashReportSection.add("Sprites", textureStitcherCannotFitException.getSprites().stream().map(sprite -> String.format(Locale.ROOT, "%s[%dx%d]", sprite.getId(), sprite.getWidth(), sprite.getHeight())).collect(Collectors.joining(",")));
             crashReportSection.add("Max Texture Size", i);
             throw new CrashException(crashReport);
         }
@@ -232,7 +233,7 @@ implements TextureTickListener {
     }
 
     private Identifier getTexturePath(Identifier id) {
-        return new Identifier(id.getNamespace(), String.format("textures/%s%s", id.getPath(), PNG_EXTENSION));
+        return new Identifier(id.getNamespace(), String.format(Locale.ROOT, "textures/%s%s", id.getPath(), PNG_EXTENSION));
     }
 
     public void tickAnimatedSprites() {

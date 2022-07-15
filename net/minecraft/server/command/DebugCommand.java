@@ -17,9 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileAttribute;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Locale;
 import net.minecraft.command.argument.CommandFunctionArgumentType;
 import net.minecraft.server.MinecraftServer;
@@ -32,6 +30,7 @@ import net.minecraft.server.function.CommandFunctionManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TimeHelper;
+import net.minecraft.util.Util;
 import net.minecraft.util.profiler.ProfileResult;
 import org.slf4j.Logger;
 
@@ -62,14 +61,14 @@ public class DebugCommand {
         ProfileResult profileResult = minecraftServer.stopDebug();
         double d = (double)profileResult.getTimeSpan() / (double)TimeHelper.SECOND_IN_NANOS;
         double e = (double)profileResult.getTickSpan() / d;
-        source.sendFeedback(Text.translatable("commands.debug.stopped", String.format(Locale.ROOT, "%.2f", d), profileResult.getTickSpan(), String.format("%.2f", e)), true);
+        source.sendFeedback(Text.translatable("commands.debug.stopped", String.format(Locale.ROOT, "%.2f", d), profileResult.getTickSpan(), String.format(Locale.ROOT, "%.2f", e)), true);
         return (int)e;
     }
 
     private static int executeFunction(ServerCommandSource source, Collection<CommandFunction> functions) {
         int i = 0;
         MinecraftServer minecraftServer = source.getServer();
-        String string = "debug-trace-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + ".txt";
+        String string = "debug-trace-" + Util.getFormattedCurrentTime() + ".txt";
         try {
             Path path = minecraftServer.getFile("debug").toPath();
             Files.createDirectories(path, new FileAttribute[0]);

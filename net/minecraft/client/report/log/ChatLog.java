@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.client.report;
+package net.minecraft.client.report.log;
 
 import com.mojang.authlib.GameProfile;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -15,64 +15,61 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.report.ReceivedMessage;
+import net.minecraft.client.report.log.ChatLogEntry;
+import net.minecraft.client.report.log.ReceivedMessage;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * A chat log holds received chat and game messages with sequential indices, where
- * newer messages receive bigger indices. An implementation using fixed-size array
+ * A chat log holds received message entries with sequential indices, where
+ * newer entries receive bigger indices. An implementation using fixed-size array
  * is available at {@link ChatLogImpl}.
+ * 
+ * <p>There are two types of entries. {@link HeaderEntry} is an entry containing only
+ * the message's header, and is used for censored messages. {@link ReceivedMessage}
+ * is an entry for full chat or game messages.
  */
 @Environment(value=EnvType.CLIENT)
 public interface ChatLog {
     public static final int MISSING_NEXT_INDEX = -1;
 
     /**
-     * Adds {@code message} to the log.
+     * Adds {@code entry} to the log.
      */
-    public void add(ReceivedMessage var1);
+    public void add(ChatLogEntry var1);
 
     /**
-     * {@return the message with index {@code index}, or {@code null} if there is no
-     * such message in the log}
+     * {@return the entry with index {@code index}, or {@code null} if there is no
+     * such entry in the log}
      */
     @Nullable
-    public ReceivedMessage get(int var1);
+    public ChatLogEntry get(int var1);
 
     /**
-     * {@return the indexed message with index {@code index}, or {@code null} if there is no
-     * such message in the log}
+     * {@return the indexed entry with index {@code index}, or {@code null} if there is no
+     * such entry in the log}
      */
-    default public ReceivedMessage.IndexedMessage getIndexed(int index) {
-        ReceivedMessage receivedMessage = this.get(index);
-        return receivedMessage != null ? new ReceivedMessage.IndexedMessage(index, receivedMessage) : null;
+    @Nullable
+    default public IndexedEntry<ChatLogEntry> getIndexed(int index) {
+        ChatLogEntry chatLogEntry = this.get(index);
+        return chatLogEntry != null ? new IndexedEntry<ChatLogEntry>(index, chatLogEntry) : null;
     }
 
     /**
-     * {@return whether the log contains a message with index {@code index}}
+     * {@return whether the log contains an entry with index {@code index}}
      */
     default public boolean contains(int index) {
         return this.get(index) != null;
     }
 
     /**
-     * {@return the index offset by {@code offset} if there is a message with that index, or
-     * {@value #MISSING_NEXT_INDEX} if there is no message with the offset index}
+     * {@return the index offset by {@code offset} if there is an entry with that index, or
+     * {@value #MISSING_NEXT_INDEX} if there is no entry with the offset index}
      */
     public int getOffsetIndex(int var1, int var2);
 
     /**
-     * {@return the index offset by {@code offset} and clamped between the minimum
-     * and the maximum indices}
-     * 
-     * @see #getMaxIndex
-     * @see #getMinIndex
-     */
-    public int clampWithOffset(int var1, int var2);
-
-    /**
-     * {@return the index offset by {@code -1} if there is a message with that index, or
-     * {@value #MISSING_NEXT_INDEX} if there is no message with the offset index}
+     * {@return the index offset by {@code -1} if there is an entry with that index, or
+     * {@value #MISSING_NEXT_INDEX} if there is no entry with the offset index}
      * 
      * @see #getOffsetIndex
      */
@@ -81,8 +78,8 @@ public interface ChatLog {
     }
 
     /**
-     * {@return the index offset by {@code 1} if there is a message with that index, or
-     * {@value #MISSING_NEXT_INDEX} if there is no message with the offset index}
+     * {@return the index offset by {@code 1} if there is an entry with that index, or
+     * {@value #MISSING_NEXT_INDEX} if there is no entry with the offset index}
      * 
      * @see #getOffsetIndex
      */
@@ -93,7 +90,7 @@ public interface ChatLog {
     /**
      * {@return the maximum index currently used within the log}
      * 
-     * <p>This value changes every time a new message gets added. The message
+     * <p>This value changes every time a new entry gets added. The entry
      * associated with this index is the newest one in the log.
      */
     public int getMaxIndex();
@@ -101,7 +98,7 @@ public interface ChatLog {
     /**
      * {@return the minimum index currently used within the log}
      * 
-     * <p>This value can change every time a new message gets added. The message
+     * <p>This value can change every time a new entry gets added. The entry
      * associated with this index is the oldest one in the log.
      */
     public int getMinIndex();
@@ -201,6 +198,17 @@ public interface ChatLog {
     }
 
     @Environment(value=EnvType.CLIENT)
+    public record IndexedEntry<T extends ChatLogEntry>(int index, T entry) {
+        @Nullable
+        public <U extends ChatLogEntry> IndexedEntry<U> cast(Class<U> clazz) {
+            if (clazz.isInstance(this.entry)) {
+                return new IndexedEntry<ChatLogEntry>(this.index, (ChatLogEntry)clazz.cast(this.entry));
+            }
+            return null;
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
     public static class Streams {
         private static final int CHARACTERISTICS = 1041;
         private final ChatLog log;
@@ -215,12 +223,12 @@ public interface ChatLog {
             return StreamSupport.intStream(Spliterators.spliteratorUnknownSize(this.indicesIterator, 1041), false);
         }
 
-        public Stream<ReceivedMessage> streamMessages() {
+        public Stream<ChatLogEntry> streamLogEntries() {
             return this.streamIndices().mapToObj(this.log::get).filter(Objects::nonNull);
         }
 
         public Collection<GameProfile> collectSenderProfiles() {
-            return this.streamMessages().map(message -> {
+            return this.streamLogEntries().map(message -> {
                 if (message instanceof ReceivedMessage.ChatMessage) {
                     ReceivedMessage.ChatMessage chatMessage = (ReceivedMessage.ChatMessage)message;
                     return chatMessage.profile();
@@ -229,7 +237,7 @@ public interface ChatLog {
             }).filter(Objects::nonNull).distinct().toList();
         }
 
-        public Stream<ReceivedMessage.IndexedMessage> streamIndexedMessages() {
+        public Stream<IndexedEntry<ChatLogEntry>> streamIndexedEntries() {
             return this.streamIndices().mapToObj(this.log::getIndexed).filter(Objects::nonNull);
         }
     }

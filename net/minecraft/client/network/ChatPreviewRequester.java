@@ -70,7 +70,7 @@ public class ChatPreviewRequester {
         if (this.pendingResponseQuery != null && this.pendingResponseQuery.messageEquals(message)) {
             return true;
         }
-        if (this.shouldRequest(currentTime)) {
+        if (this.client.isInSingleplayer() || this.shouldRequest(currentTime)) {
             Query query;
             this.pendingResponseQuery = query = new Query(this.idIncrementor.next(), message);
             this.queryTime = currentTime;

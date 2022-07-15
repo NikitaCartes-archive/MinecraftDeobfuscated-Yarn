@@ -4,6 +4,7 @@
 package net.minecraft.data.client;
 
 import com.google.gson.JsonElement;
+import java.util.Locale;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import net.minecraft.data.client.Model;
@@ -36,13 +37,13 @@ public class ItemModelGenerator {
     private void registerCompass(Item compass) {
         for (int i = 0; i < 32; ++i) {
             if (i == 16) continue;
-            this.register(compass, String.format("_%02d", i), Models.GENERATED);
+            this.register(compass, String.format(Locale.ROOT, "_%02d", i), Models.GENERATED);
         }
     }
 
     private void registerClock(Item clock) {
         for (int i = 1; i < 64; ++i) {
-            this.register(clock, String.format("_%02d", i), Models.GENERATED);
+            this.register(clock, String.format(Locale.ROOT, "_%02d", i), Models.GENERATED);
         }
     }
 

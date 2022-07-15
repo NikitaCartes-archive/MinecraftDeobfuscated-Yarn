@@ -7,6 +7,7 @@ import java.time.Instant;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
+import net.minecraft.network.message.LastSeenMessageList;
 import net.minecraft.network.message.MessageMetadata;
 import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -36,18 +37,19 @@ import net.minecraft.util.StringHelper;
  * @see net.minecraft.client.network.ClientPlayerEntity#sendChatMessage
  * @see net.minecraft.server.network.ServerPlayNetworkHandler#onChatMessage
  */
-public record ChatMessageC2SPacket(String chatMessage, Instant timestamp, long salt, MessageSignatureData signature, boolean signedPreview) implements Packet<ServerPlayPacketListener>
+public record ChatMessageC2SPacket(String chatMessage, Instant timestamp, long salt, MessageSignatureData signature, boolean signedPreview, LastSeenMessageList.Acknowledgment acknowledgment) implements Packet<ServerPlayPacketListener>
 {
-    public ChatMessageC2SPacket(String chatMessage, Instant timestamp, long salt, MessageSignatureData signature, boolean signedPreview) {
+    public ChatMessageC2SPacket(String chatMessage, Instant timestamp, long salt, MessageSignatureData signature, boolean signedPreview, LastSeenMessageList.Acknowledgment acknowledgment) {
         this.chatMessage = chatMessage = StringHelper.truncateChat(chatMessage);
         this.timestamp = timestamp;
         this.salt = salt;
         this.signature = signature;
         this.signedPreview = signedPreview;
+        this.acknowledgment = acknowledgment;
     }
 
     public ChatMessageC2SPacket(PacketByteBuf buf) {
-        this(buf.readString(256), buf.readInstant(), buf.readLong(), new MessageSignatureData(buf), buf.readBoolean());
+        this(buf.readString(256), buf.readInstant(), buf.readLong(), new MessageSignatureData(buf), buf.readBoolean(), new LastSeenMessageList.Acknowledgment(buf));
     }
 
     @Override
@@ -57,6 +59,7 @@ public record ChatMessageC2SPacket(String chatMessage, Instant timestamp, long s
         buf.writeLong(this.salt);
         this.signature.write(buf);
         buf.writeBoolean(this.signedPreview);
+        this.acknowledgment.write(buf);
     }
 
     @Override

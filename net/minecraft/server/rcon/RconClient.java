@@ -10,6 +10,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.rcon.BufferHelper;
 import net.minecraft.server.rcon.RconBase;
@@ -88,7 +89,7 @@ extends RconBase {
                         break;
                     }
                     default: {
-                        this.respond(l, String.format("Unknown request %s", Integer.toHexString(m)));
+                        this.respond(l, String.format(Locale.ROOT, "Unknown request %s", Integer.toHexString(m)));
                     }
                 }
             }

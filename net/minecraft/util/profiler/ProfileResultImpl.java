@@ -215,7 +215,7 @@ implements ProfileResult {
     }
 
     private static StringBuilder indent(StringBuilder sb, int size) {
-        sb.append(String.format("[%02d] ", size));
+        sb.append(String.format(Locale.ROOT, "[%02d] ", size));
         for (int i = 0; i < size; ++i) {
             sb.append("|   ");
         }

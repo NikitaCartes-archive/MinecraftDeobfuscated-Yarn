@@ -24,6 +24,7 @@ import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -331,7 +332,7 @@ public class ModelLoader {
                                 }
                                 throw throwable;
                             } catch (Exception exception) {
-                                throw new ModelLoaderException(String.format("Exception loading blockstate definition: '%s' in resourcepack: '%s': %s", identifier2, resource.getResourcePackName(), exception.getMessage()));
+                                throw new ModelLoaderException(String.format(Locale.ROOT, "Exception loading blockstate definition: '%s' in resourcepack: '%s': %s", identifier2, resource.getResourcePackName(), exception.getMessage()));
                             }
                         }
                         ((Reader)reader).close();
@@ -366,7 +367,7 @@ public class ModelLoader {
             } catch (ModelLoaderException modelLoaderException) {
                 throw modelLoaderException;
             } catch (Exception exception) {
-                throw new ModelLoaderException(String.format("Exception loading blockstate definition: '%s': %s", identifier2, exception));
+                throw new ModelLoaderException(String.format(Locale.ROOT, "Exception loading blockstate definition: '%s': %s", identifier2, exception));
             } finally {
                 HashMap<ModelDefinition, Set> map5 = Maps.newHashMap();
                 map.forEach((id, state) -> {

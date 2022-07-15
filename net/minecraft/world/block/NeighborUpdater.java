@@ -3,6 +3,7 @@
  */
 package net.minecraft.world.block;
 
+import java.util.Locale;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.crash.CrashException;
@@ -45,7 +46,7 @@ public interface NeighborUpdater {
             CrashReportSection crashReportSection = crashReport.addElement("Block being updated");
             crashReportSection.add("Source block type", () -> {
                 try {
-                    return String.format("ID #%s (%s // %s)", Registry.BLOCK.getId(sourceBlock), sourceBlock.getTranslationKey(), sourceBlock.getClass().getCanonicalName());
+                    return String.format(Locale.ROOT, "ID #%s (%s // %s)", Registry.BLOCK.getId(sourceBlock), sourceBlock.getTranslationKey(), sourceBlock.getClass().getCanonicalName());
                 } catch (Throwable throwable) {
                     return "ID #" + Registry.BLOCK.getId(sourceBlock);
                 }

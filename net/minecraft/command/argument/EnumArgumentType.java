@@ -24,7 +24,7 @@ import net.minecraft.util.StringIdentifiable;
 
 public class EnumArgumentType<T extends Enum<T>>
 implements ArgumentType<T> {
-    private static final DynamicCommandExceptionType INVALID_ENUM_EXCEPTION = new DynamicCommandExceptionType(object -> Text.translatable("argument.enum.invalid", object));
+    private static final DynamicCommandExceptionType INVALID_ENUM_EXCEPTION = new DynamicCommandExceptionType(value -> Text.translatable("argument.enum.invalid", value));
     private final Codec<T> codec;
     private final Supplier<T[]> valuesSupplier;
 
@@ -41,17 +41,17 @@ implements ArgumentType<T> {
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        return CommandSource.suggestMatching(Arrays.stream((Enum[])this.valuesSupplier.get()).map(object -> ((StringIdentifiable)object).asString()).collect(Collectors.toList()), builder);
+        return CommandSource.suggestMatching(Arrays.stream((Enum[])this.valuesSupplier.get()).map(enum_ -> ((StringIdentifiable)enum_).asString()).collect(Collectors.toList()), builder);
     }
 
     @Override
     public Collection<String> getExamples() {
-        return Arrays.stream((Enum[])this.valuesSupplier.get()).map(object -> ((StringIdentifiable)object).asString()).limit(2L).collect(Collectors.toList());
+        return Arrays.stream((Enum[])this.valuesSupplier.get()).map(enum_ -> ((StringIdentifiable)enum_).asString()).limit(2L).collect(Collectors.toList());
     }
 
     @Override
-    public /* synthetic */ Object parse(StringReader stringReader) throws CommandSyntaxException {
-        return this.parse(stringReader);
+    public /* synthetic */ Object parse(StringReader reader) throws CommandSyntaxException {
+        return this.parse(reader);
     }
 }
 

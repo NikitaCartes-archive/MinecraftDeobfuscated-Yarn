@@ -125,12 +125,16 @@ import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.message.LastSeenMessageList;
+import net.minecraft.network.message.LastSeenMessagesCollector;
 import net.minecraft.network.message.MessageChain;
 import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.network.message.MessageType;
+import net.minecraft.network.message.SignedMessage;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
+import net.minecraft.network.packet.c2s.play.MessageAcknowledgmentC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayPongC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.network.packet.c2s.play.ResourcePackStatusC2SPacket;
@@ -304,6 +308,7 @@ public class ClientPlayNetworkHandler
 implements ClientPlayPacketListener {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final Text DISCONNECT_LOST_TEXT = Text.translatable("disconnect.lost");
+    private static final int MAX_PENDING_ACKNOWLEDGMENTS = 64;
     private final ClientConnection connection;
     private final GameProfile profile;
     private final Screen loginScreen;
@@ -324,6 +329,14 @@ implements ClientPlayPacketListener {
     private DynamicRegistryManager.Immutable registryManager = DynamicRegistryManager.BUILTIN.get();
     private final TelemetrySender telemetrySender;
     private final MessageChain.Packer messagePacker = new MessageChain().getPacker();
+    private final LastSeenMessagesCollector lastSeenMessagesCollector = new LastSeenMessagesCollector(5);
+    private Optional<LastSeenMessageList.Entry> lastReceivedMessage = Optional.empty();
+    /**
+     * The number of messages whose acknowledgments aren't sent to the server yet.
+     * They are sent when the count reaches {@value #MAX_PENDING_ACKNOWLEDGMENTS}
+     * or when the client sends a message, and this count is reset to zero in those cases.
+     */
+    private int pendingAcknowledgments;
 
     public ClientPlayNetworkHandler(MinecraftClient client, Screen screen, ClientConnection connection, GameProfile profile, TelemetrySender telemetrySender) {
         this.client = client;
@@ -1408,7 +1421,6 @@ implements ClientPlayPacketListener {
 
     @Override
     public void onServerMetadata(ServerMetadataS2CPacket packet) {
-        ServerInfo.ChatPreview chatPreview;
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         ServerInfo serverInfo = this.client.getCurrentServerEntry();
         if (serverInfo == null) {
@@ -1426,7 +1438,8 @@ implements ClientPlayPacketListener {
         });
         serverInfo.setPreviewsChat(packet.shouldPreviewChat());
         ServerList.updateServerListEntry(serverInfo);
-        if (this.client.options.getChatPreview().getValue().booleanValue() && (chatPreview = serverInfo.getChatPreview()) != null && !chatPreview.isAcknowledged()) {
+        ServerInfo.ChatPreview chatPreview = serverInfo.getChatPreview();
+        if (chatPreview != null && !chatPreview.isAcknowledged()) {
             this.client.execute(() -> this.client.setScreen(new ChatPreviewWarningScreen(this.client.currentScreen, serverInfo)));
         }
     }
@@ -2157,6 +2170,33 @@ implements ClientPlayPacketListener {
 
     public MessageChain.Packer getMessagePacker() {
         return this.messagePacker;
+    }
+
+    /**
+     * {@return the consumed acknowledgment}
+     * 
+     * <p>This resets {@link #pendingAcknowledgments} to {@code 0}.
+     * 
+     * @see #pendingAcknowledgments
+     */
+    public LastSeenMessageList.Acknowledgment consumeAcknowledgment() {
+        this.pendingAcknowledgments = 0;
+        return new LastSeenMessageList.Acknowledgment(this.lastSeenMessagesCollector.getLastSeenMessages(), this.lastReceivedMessage);
+    }
+
+    public void acknowledge(SignedMessage message, boolean displayed) {
+        if (!message.createMetadata().lacksSender()) {
+            LastSeenMessageList.Entry entry = message.toLastSeenMessageEntry();
+            if (displayed) {
+                this.lastSeenMessagesCollector.add(entry);
+                this.lastReceivedMessage = Optional.empty();
+            } else {
+                this.lastReceivedMessage = Optional.of(entry);
+            }
+            if (this.pendingAcknowledgments++ > 64) {
+                this.sendPacket(new MessageAcknowledgmentC2SPacket(this.consumeAcknowledgment()));
+            }
+        }
     }
 }
 

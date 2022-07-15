@@ -794,7 +794,7 @@ public final class ItemStack {
                 NbtCompound nbtCompound = this.nbt.getCompound(DISPLAY_KEY);
                 if (ItemStack.isSectionVisible(i, TooltipSection.DYE) && nbtCompound.contains(COLOR_KEY, NbtElement.NUMBER_TYPE)) {
                     if (context.isAdvanced()) {
-                        list.add(Text.translatable("item.color", String.format("#%06X", nbtCompound.getInt(COLOR_KEY))).formatted(Formatting.GRAY));
+                        list.add(Text.translatable("item.color", String.format(Locale.ROOT, "#%06X", nbtCompound.getInt(COLOR_KEY))).formatted(Formatting.GRAY));
                     } else {
                         list.add(Text.translatable("item.dyed").formatted(Formatting.GRAY, Formatting.ITALIC));
                     }

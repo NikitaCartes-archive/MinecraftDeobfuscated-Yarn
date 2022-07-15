@@ -10,9 +10,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -33,7 +30,6 @@ import org.slf4j.Logger;
 @Environment(value=EnvType.CLIENT)
 public class ScreenshotRecorder {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
     private int unitHeight;
     private final DataOutputStream stream;
     private final byte[] buffer;
@@ -83,7 +79,7 @@ public class ScreenshotRecorder {
     }
 
     private static File getScreenshotFilename(File directory) {
-        String string = DATE_FORMAT.format(new Date());
+        String string = Util.getFormattedCurrentTime();
         int i = 1;
         File file;
         while ((file = new File(directory, string + (String)(i == 1 ? "" : "_" + i) + ".png")).exists()) {
@@ -103,7 +99,7 @@ public class ScreenshotRecorder {
         this.unitHeight = unitHeight;
         File file = new File(gameDirectory, "screenshots");
         file.mkdir();
-        String string = "huge_" + DATE_FORMAT.format(new Date());
+        String string = "huge_" + Util.getFormattedCurrentTime();
         int i = 1;
         while ((this.file = new File(file, string + (String)(i == 1 ? "" : "_" + i) + ".tga")).exists()) {
             ++i;

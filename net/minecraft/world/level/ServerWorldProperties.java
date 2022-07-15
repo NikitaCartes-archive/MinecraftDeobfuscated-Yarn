@@ -3,6 +3,7 @@
  */
 package net.minecraft.world.level;
 
+import java.util.Locale;
 import java.util.UUID;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.crash.CrashReportSection;
@@ -31,8 +32,8 @@ extends MutableWorldProperties {
     default public void populateCrashReport(CrashReportSection reportSection, HeightLimitView world) {
         MutableWorldProperties.super.populateCrashReport(reportSection, world);
         reportSection.add("Level name", this::getLevelName);
-        reportSection.add("Level game mode", () -> String.format("Game mode: %s (ID %d). Hardcore: %b. Cheats: %b", this.getGameMode().getName(), this.getGameMode().getId(), this.isHardcore(), this.areCommandsAllowed()));
-        reportSection.add("Level weather", () -> String.format("Rain time: %d (now: %b), thunder time: %d (now: %b)", this.getRainTime(), this.isRaining(), this.getThunderTime(), this.isThundering()));
+        reportSection.add("Level game mode", () -> String.format(Locale.ROOT, "Game mode: %s (ID %d). Hardcore: %b. Cheats: %b", this.getGameMode().getName(), this.getGameMode().getId(), this.isHardcore(), this.areCommandsAllowed()));
+        reportSection.add("Level weather", () -> String.format(Locale.ROOT, "Rain time: %d (now: %b), thunder time: %d (now: %b)", this.getRainTime(), this.isRaining(), this.getThunderTime(), this.isThundering()));
     }
 
     public int getClearWeatherTime();

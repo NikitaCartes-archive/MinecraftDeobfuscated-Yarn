@@ -188,7 +188,7 @@ public class FeatureUpdater {
             ImmutableList<String> list = ImmutableList.of("EndCity");
             return new FeatureUpdater(persistentStateManager, list, list);
         }
-        throw new RuntimeException(String.format("Unknown dimension type : %s", world));
+        throw new RuntimeException(String.format(Locale.ROOT, "Unknown dimension type : %s", world));
     }
 }
 

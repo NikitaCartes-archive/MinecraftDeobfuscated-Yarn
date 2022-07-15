@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -400,7 +401,7 @@ public final class NbtHelper {
                         } else if (j != 0) {
                             stringBuilder.append(' ');
                         }
-                        stringBuilder.append(String.format("0x%02X", bs[j] & 0xFF));
+                        stringBuilder.append(String.format(Locale.ROOT, "0x%02X", bs[j] & 0xFF));
                     }
                 } else {
                     NbtHelper.appendIndent(depth + 1, stringBuilder).append(" // Skipped, supply withBinaryBlobs true");
@@ -439,7 +440,7 @@ public final class NbtHelper {
                 int l = string.length;
                 for (int j = 0; j < l; ++j) {
                     int m = string[j];
-                    i = Math.max(i, String.format("%X", m).length());
+                    i = Math.max(i, String.format(Locale.ROOT, "%X", m).length());
                 }
                 int j = is.length;
                 NbtHelper.appendIndent(depth, stringBuilder).append("int[").append(j).append("] {\n");
@@ -457,7 +458,7 @@ public final class NbtHelper {
                         } else if (l != 0) {
                             stringBuilder.append(' ');
                         }
-                        stringBuilder.append(String.format("0x%0" + i + "X", is[l]));
+                        stringBuilder.append(String.format(Locale.ROOT, "0x%0" + i + "X", is[l]));
                     }
                 } else {
                     NbtHelper.appendIndent(depth + 1, stringBuilder).append(" // Skipped, supply withBinaryBlobs true");
@@ -500,7 +501,7 @@ public final class NbtHelper {
                 int n2 = l.length;
                 for (m = 0; m < n2; ++m) {
                     long o = l[m];
-                    n = Math.max(n, (long)String.format("%X", o).length());
+                    n = Math.max(n, (long)String.format(Locale.ROOT, "%X", o).length());
                 }
                 long p = ls.length;
                 NbtHelper.appendIndent(depth, stringBuilder).append("long[").append(p).append("] {\n");
@@ -518,7 +519,7 @@ public final class NbtHelper {
                         } else if (m != 0) {
                             stringBuilder.append(' ');
                         }
-                        stringBuilder.append(String.format("0x%0" + n + "X", ls[m]));
+                        stringBuilder.append(String.format(Locale.ROOT, "0x%0" + n + "X", ls[m]));
                     }
                 } else {
                     NbtHelper.appendIndent(depth + 1, stringBuilder).append(" // Skipped, supply withBinaryBlobs true");

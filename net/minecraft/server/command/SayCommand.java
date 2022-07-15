@@ -5,7 +5,6 @@ package net.minecraft.server.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import java.util.concurrent.Executor;
 import net.minecraft.command.argument.MessageArgumentType;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SignedMessage;
@@ -20,7 +19,7 @@ public class SayCommand {
             MessageArgumentType.SignedMessage signedMessage = MessageArgumentType.getSignedMessage(context, "message");
             ServerCommandSource serverCommandSource = (ServerCommandSource)context.getSource();
             PlayerManager playerManager = serverCommandSource.getServer().getPlayerManager();
-            signedMessage.decorate(serverCommandSource).thenAcceptAsync(decoratedMessage -> playerManager.broadcast((FilteredMessage<SignedMessage>)decoratedMessage, serverCommandSource, MessageType.params(MessageType.SAY_COMMAND, serverCommandSource)), (Executor)serverCommandSource.getServer());
+            signedMessage.decorate(serverCommandSource, decoratedMessage -> playerManager.broadcast((FilteredMessage<SignedMessage>)decoratedMessage, serverCommandSource, MessageType.params(MessageType.SAY_COMMAND, serverCommandSource)));
             return 1;
         })));
     }

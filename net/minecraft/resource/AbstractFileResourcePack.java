@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
@@ -29,7 +30,7 @@ implements ResourcePack {
     }
 
     private static String getFilename(ResourceType type, Identifier id) {
-        return String.format("%s/%s/%s", type.getDirectory(), id.getNamespace(), id.getPath());
+        return String.format(Locale.ROOT, "%s/%s/%s", type.getDirectory(), id.getNamespace(), id.getPath());
     }
 
     protected static String relativize(File base, File target) {

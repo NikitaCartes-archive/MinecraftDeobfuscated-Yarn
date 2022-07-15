@@ -6,7 +6,6 @@ package net.minecraft.client.gui.hud;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import net.fabricmc.api.EnvType;
@@ -56,6 +55,7 @@ extends DrawableHelper {
     }
 
     public void render(MatrixStack matrices, int tickDelta) {
+        int u;
         int t;
         int s;
         int r;
@@ -91,7 +91,7 @@ extends DrawableHelper {
             if (q <= 3) continue;
             s = 0;
             t = -n * l;
-            int u = (int)((double)t + h);
+            u = (int)((double)t + h);
             matrices.push();
             matrices.translate(0.0, 0.0, 50.0);
             ChatHud.fill(matrices, -4, t - l, 0 + k + 4 + 4, t, r << 24);
@@ -111,31 +111,31 @@ extends DrawableHelper {
             RenderSystem.disableBlend();
             matrices.pop();
         }
-        Collection<?> collection = this.client.getMessageHandler().getDelayedMessages();
-        if (!collection.isEmpty()) {
-            int y = (int)(128.0 * d);
-            o = (int)(255.0 * e);
+        long y = this.client.getMessageHandler().getUnprocessedMessageCount();
+        if (y > 0L) {
+            o = (int)(128.0 * d);
+            int z = (int)(255.0 * e);
             matrices.push();
             matrices.translate(0.0, 0.0, 50.0);
-            ChatHud.fill(matrices, -2, 0, k + 4, 9, o << 24);
+            ChatHud.fill(matrices, -2, 0, k + 4, 9, z << 24);
             RenderSystem.enableBlend();
             matrices.translate(0.0, 0.0, 50.0);
-            this.client.textRenderer.drawWithShadow(matrices, Text.translatable("chat.queue", collection.size()), 0.0f, 1.0f, 0xFFFFFF + (y << 24));
+            this.client.textRenderer.drawWithShadow(matrices, Text.translatable("chat.queue", y), 0.0f, 1.0f, 0xFFFFFF + (o << 24));
             matrices.pop();
             RenderSystem.disableBlend();
         }
         if (bl) {
-            int y = this.getLineHeight();
-            o = j * y;
-            int z = m * y;
-            int aa = this.scrolledLines * z / j;
-            q = z * z / o;
-            if (o != z) {
-                r = aa > 0 ? 170 : 96;
-                s = this.hasUnreadNewMessages ? 0xCC3333 : 0x3333AA;
-                t = k + 4;
-                ChatHud.fill(matrices, t, -aa, t + 2, -aa - q, s + (r << 24));
-                ChatHud.fill(matrices, t + 2, -aa, t + 1, -aa - q, 0xCCCCCC + (r << 24));
+            o = this.getLineHeight();
+            int z = j * o;
+            int aa = m * o;
+            q = this.scrolledLines * aa / j;
+            r = aa * aa / z;
+            if (z != aa) {
+                s = q > 0 ? 170 : 96;
+                t = this.hasUnreadNewMessages ? 0xCC3333 : 0x3333AA;
+                u = k + 4;
+                ChatHud.fill(matrices, u, -q, u + 2, -q - r, t + (s << 24));
+                ChatHud.fill(matrices, u + 2, -q, u + 1, -q - r, 0xCCCCCC + (s << 24));
             }
         }
         matrices.pop();
@@ -164,7 +164,7 @@ extends DrawableHelper {
     }
 
     public void clear(boolean clearHistory) {
-        this.client.getMessageHandler().getDelayedMessages().clear();
+        this.client.getMessageHandler().processAll();
         this.visibleMessages.clear();
         this.messages.clear();
         if (clearHistory) {
@@ -274,7 +274,7 @@ extends DrawableHelper {
             return false;
         }
         MessageHandler messageHandler = this.client.getMessageHandler();
-        if (messageHandler.getDelayedMessages().isEmpty()) {
+        if (messageHandler.getUnprocessedMessageCount() == 0L) {
             return false;
         }
         double d = mouseX - 2.0;

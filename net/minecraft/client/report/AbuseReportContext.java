@@ -8,9 +8,9 @@ import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.report.AbuseReportSender;
-import net.minecraft.client.report.ChatLog;
-import net.minecraft.client.report.ChatLogImpl;
 import net.minecraft.client.report.ReporterEnvironment;
+import net.minecraft.client.report.log.ChatLog;
+import net.minecraft.client.report.log.ChatLogImpl;
 
 @Environment(value=EnvType.CLIENT)
 public record AbuseReportContext(AbuseReportSender sender, ReporterEnvironment environment, ChatLog chatLog) {
