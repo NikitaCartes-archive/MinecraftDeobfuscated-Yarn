@@ -78,7 +78,7 @@ public abstract class GLImportProcessor {
 
 						list.addAll(list2);
 					} else {
-						String string6 = bl ? String.format("/*#moj_import \"%s\"*/", string2) : String.format("/*#moj_import <%s>*/", string2);
+						String string6 = bl ? String.format(Locale.ROOT, "/*#moj_import \"%s\"*/", string2) : String.format(Locale.ROOT, "/*#moj_import <%s>*/", string2);
 						list.add(string + string3 + string6);
 					}
 

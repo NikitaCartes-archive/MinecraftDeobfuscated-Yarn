@@ -50,7 +50,7 @@ public interface SentMessage {
 	 * {@return the wrapped {@code message}}
 	 */
 	static FilteredMessage<SentMessage> of(FilteredMessage<SignedMessage> message, MessageSourceProfile profile) {
-		return message.map(rawMessage -> of((SignedMessage)message.raw(), profile), SentMessage.Profileless::new);
+		return message.mapParts(rawMessage -> of((SignedMessage)message.raw(), profile), SentMessage.Profileless::new);
 	}
 
 	/**

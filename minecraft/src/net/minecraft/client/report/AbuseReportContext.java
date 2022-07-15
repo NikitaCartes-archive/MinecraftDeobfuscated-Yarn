@@ -4,6 +4,8 @@ import com.mojang.authlib.minecraft.UserApiService;
 import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.report.log.ChatLog;
+import net.minecraft.client.report.log.ChatLogImpl;
 
 @Environment(EnvType.CLIENT)
 public record AbuseReportContext(AbuseReportSender sender, ReporterEnvironment environment, ChatLog chatLog) {

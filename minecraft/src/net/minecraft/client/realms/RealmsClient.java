@@ -3,6 +3,7 @@ package net.minecraft.client.realms;
 import com.mojang.logging.LogUtils;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Locale;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -236,7 +237,9 @@ public class RealmsClient {
 	}
 
 	public WorldTemplatePaginatedList fetchWorldTemplates(int page, int pageSize, RealmsServer.WorldType type) throws RealmsServiceException {
-		String string = this.url("worlds" + "/templates/$WORLD_TYPE".replace("$WORLD_TYPE", type.toString()), String.format("page=%d&pageSize=%d", page, pageSize));
+		String string = this.url(
+			"worlds" + "/templates/$WORLD_TYPE".replace("$WORLD_TYPE", type.toString()), String.format(Locale.ROOT, "page=%d&pageSize=%d", page, pageSize)
+		);
 		String string2 = this.execute(Request.get(string));
 		return WorldTemplatePaginatedList.parse(string2);
 	}

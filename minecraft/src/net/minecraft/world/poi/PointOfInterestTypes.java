@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -93,7 +94,7 @@ public class PointOfInterestTypes {
 		((PointOfInterestType)poiType.value()).blockStates().forEach(state -> {
 			RegistryEntry<PointOfInterestType> registryEntry2 = (RegistryEntry)POI_STATES_TO_TYPE.put(state, poiType);
 			if (registryEntry2 != null) {
-				throw (IllegalStateException)Util.throwOrPause(new IllegalStateException(String.format("%s is defined in more than one PoI type", state)));
+				throw (IllegalStateException)Util.throwOrPause(new IllegalStateException(String.format(Locale.ROOT, "%s is defined in more than one PoI type", state)));
 			}
 		});
 	}

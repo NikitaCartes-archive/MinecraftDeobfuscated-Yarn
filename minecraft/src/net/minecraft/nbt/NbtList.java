@@ -6,6 +6,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import net.minecraft.nbt.scanner.NbtScanner;
 import net.minecraft.nbt.visitor.NbtElementVisitor;
@@ -331,7 +332,7 @@ public class NbtList extends AbstractNbtList<NbtElement> {
 	public NbtElement set(int i, NbtElement nbtElement) {
 		NbtElement nbtElement2 = this.get(i);
 		if (!this.setElement(i, nbtElement)) {
-			throw new UnsupportedOperationException(String.format("Trying to add tag of type %d to list of %d", nbtElement.getType(), this.type));
+			throw new UnsupportedOperationException(String.format(Locale.ROOT, "Trying to add tag of type %d to list of %d", nbtElement.getType(), this.type));
 		} else {
 			return nbtElement2;
 		}
@@ -340,7 +341,7 @@ public class NbtList extends AbstractNbtList<NbtElement> {
 	@Override
 	public void add(int i, NbtElement nbtElement) {
 		if (!this.addElement(i, nbtElement)) {
-			throw new UnsupportedOperationException(String.format("Trying to add tag of type %d to list of %d", nbtElement.getType(), this.type));
+			throw new UnsupportedOperationException(String.format(Locale.ROOT, "Trying to add tag of type %d to list of %d", nbtElement.getType(), this.type));
 		}
 	}
 

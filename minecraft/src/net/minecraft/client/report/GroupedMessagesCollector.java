@@ -6,19 +6,21 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.report.log.ChatLog;
+import net.minecraft.client.report.log.ReceivedMessage;
 
 @Environment(EnvType.CLIENT)
 public class GroupedMessagesCollector {
-	private final Function<ReceivedMessage.IndexedMessage, GroupedMessagesCollector.ReportType> reportTypeGetter;
-	private final List<ReceivedMessage.IndexedMessage> messages = new ArrayList();
+	private final Function<ChatLog.IndexedEntry<ReceivedMessage>, GroupedMessagesCollector.ReportType> reportTypeGetter;
+	private final List<ChatLog.IndexedEntry<ReceivedMessage>> messages = new ArrayList();
 	@Nullable
 	private GroupedMessagesCollector.ReportType reportType;
 
-	public GroupedMessagesCollector(Function<ReceivedMessage.IndexedMessage, GroupedMessagesCollector.ReportType> reportTypeGetter) {
+	public GroupedMessagesCollector(Function<ChatLog.IndexedEntry<ReceivedMessage>, GroupedMessagesCollector.ReportType> reportTypeGetter) {
 		this.reportTypeGetter = reportTypeGetter;
 	}
 
-	public boolean add(ReceivedMessage.IndexedMessage message) {
+	public boolean add(ChatLog.IndexedEntry<ReceivedMessage> message) {
 		GroupedMessagesCollector.ReportType reportType = (GroupedMessagesCollector.ReportType)this.reportTypeGetter.apply(message);
 		if (this.reportType != null && reportType != this.reportType) {
 			return false;
@@ -35,7 +37,7 @@ public class GroupedMessagesCollector {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static record GroupedMessages(List<ReceivedMessage.IndexedMessage> messages, GroupedMessagesCollector.ReportType type) {
+	public static record GroupedMessages(List<ChatLog.IndexedEntry<ReceivedMessage>> messages, GroupedMessagesCollector.ReportType type) {
 	}
 
 	@Environment(EnvType.CLIENT)

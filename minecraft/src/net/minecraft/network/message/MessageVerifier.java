@@ -11,19 +11,19 @@ import net.minecraft.network.encryption.SignatureVerifier;
  * as it affects the verification result.
  */
 public interface MessageVerifier {
-	MessageVerifier NOOP = new MessageVerifier() {
+	MessageVerifier UNVERIFIABLE = new MessageVerifier() {
 		@Override
 		public void storeHeaderVerification(MessageHeader header, MessageSignatureData signature, byte[] bodyDigest) {
 		}
 
 		@Override
 		public boolean verify(SignedMessage message) {
-			return true;
+			return false;
 		}
 	};
 
 	static MessageVerifier create(@Nullable PlayerPublicKey publicKey) {
-		return (MessageVerifier)(publicKey != null ? new MessageVerifier.Impl(publicKey.createSignatureInstance()) : NOOP);
+		return (MessageVerifier)(publicKey != null ? new MessageVerifier.Impl(publicKey.createSignatureInstance()) : UNVERIFIABLE);
 	}
 
 	/**
@@ -47,27 +47,30 @@ public interface MessageVerifier {
 			this.signatureVerifier = signatureVerifier;
 		}
 
-		private boolean verifyChain(MessageHeader header, MessageSignatureData signature) {
-			boolean bl = this.precedingSignature == null || this.precedingSignature.equals(header.precedingSignature()) || this.precedingSignature.equals(signature);
-			this.precedingSignature = signature;
-			return bl;
+		private boolean verifyPrecedingSignature(MessageHeader header, MessageSignatureData signature) {
+			return this.precedingSignature == null || this.precedingSignature.equals(header.precedingSignature()) || this.precedingSignature.equals(signature);
+		}
+
+		private boolean verify(MessageHeader header, MessageSignatureData signature, byte[] bodyDigest) {
+			return this.verifyPrecedingSignature(header, signature) && signature.verify(this.signatureVerifier, header, bodyDigest);
 		}
 
 		@Override
 		public void storeHeaderVerification(MessageHeader header, MessageSignatureData signature, byte[] bodyDigest) {
-			boolean bl = signature.verify(this.signatureVerifier, header, bodyDigest);
-			boolean bl2 = this.verifyChain(header, signature);
-			this.lastMessageVerified = this.lastMessageVerified && bl && bl2;
+			this.lastMessageVerified = this.lastMessageVerified && this.verify(header, signature, bodyDigest);
+			this.precedingSignature = signature;
 		}
 
 		@Override
 		public boolean verify(SignedMessage message) {
-			byte[] bs = message.signedBody().digest().asBytes();
-			boolean bl = message.headerSignature().verify(this.signatureVerifier, message.signedHeader(), bs);
-			boolean bl2 = this.verifyChain(message.signedHeader(), message.headerSignature());
-			boolean bl3 = this.lastMessageVerified && bl && bl2;
-			this.lastMessageVerified = bl;
-			return bl3;
+			if (this.lastMessageVerified && this.verify(message.signedHeader(), message.headerSignature(), message.signedBody().digest().asBytes())) {
+				this.precedingSignature = message.headerSignature();
+				return true;
+			} else {
+				this.lastMessageVerified = true;
+				this.precedingSignature = null;
+				return false;
+			}
 		}
 	}
 }

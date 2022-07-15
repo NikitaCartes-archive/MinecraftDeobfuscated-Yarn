@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -387,7 +388,11 @@ public class ModelLoader {
 								} catch (Exception var8xx) {
 									throw new ModelLoader.ModelLoaderException(
 										String.format(
-											"Exception loading blockstate definition: '%s' in resourcepack: '%s': %s", identifier2, resource.getResourcePackName(), var8xx.getMessage()
+											Locale.ROOT,
+											"Exception loading blockstate definition: '%s' in resourcepack: '%s': %s",
+											identifier2,
+											resource.getResourcePackName(),
+											var8xx.getMessage()
 										)
 									);
 								}
@@ -450,7 +455,7 @@ public class ModelLoader {
 				} catch (ModelLoader.ModelLoaderException var24) {
 					throw var24;
 				} catch (Exception var25) {
-					throw new ModelLoader.ModelLoaderException(String.format("Exception loading blockstate definition: '%s': %s", identifier2, var25));
+					throw new ModelLoader.ModelLoaderException(String.format(Locale.ROOT, "Exception loading blockstate definition: '%s': %s", identifier2, var25));
 				} finally {
 					Map<ModelLoader.ModelDefinition, Set<BlockState>> map5 = Maps.newHashMap();
 					map.forEach((idx, state) -> {

@@ -349,7 +349,7 @@ public class ChunkNoiseSampler implements DensityFunction.EachApplier, DensityFu
 		return this.verticalBlockSize;
 	}
 
-	Blender.BlendResult caclculateBlendResult(int blockX, int blockZ) {
+	Blender.BlendResult calculateBlendResult(int blockX, int blockZ) {
 		long l = ChunkPos.toLong(blockX, blockZ);
 		if (this.lastBlendingColumnPos == l) {
 			return this.lastBlendingResult;
@@ -406,7 +406,7 @@ public class ChunkNoiseSampler implements DensityFunction.EachApplier, DensityFu
 
 		@Override
 		public double sample(DensityFunction.NoisePos pos) {
-			return ChunkNoiseSampler.this.caclculateBlendResult(pos.blockX(), pos.blockZ()).alpha();
+			return ChunkNoiseSampler.this.calculateBlendResult(pos.blockX(), pos.blockZ()).alpha();
 		}
 
 		@Override
@@ -443,7 +443,7 @@ public class ChunkNoiseSampler implements DensityFunction.EachApplier, DensityFu
 
 		@Override
 		public double sample(DensityFunction.NoisePos pos) {
-			return ChunkNoiseSampler.this.caclculateBlendResult(pos.blockX(), pos.blockZ()).blendingOffset();
+			return ChunkNoiseSampler.this.calculateBlendResult(pos.blockX(), pos.blockZ()).blendingOffset();
 		}
 
 		@Override

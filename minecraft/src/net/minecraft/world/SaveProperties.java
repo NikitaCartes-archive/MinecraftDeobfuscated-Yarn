@@ -1,6 +1,7 @@
 package net.minecraft.world;
 
 import com.mojang.serialization.Lifecycle;
+import java.util.Locale;
 import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NbtCompound;
@@ -31,7 +32,7 @@ public interface SaveProperties {
 		section.add("Level was modded", (CrashCallable<String>)(() -> Boolean.toString(this.isModded())));
 		section.add("Level storage version", (CrashCallable<String>)(() -> {
 			int i = this.getVersion();
-			return String.format("0x%05X - %s", i, this.getFormatName(i));
+			return String.format(Locale.ROOT, "0x%05X - %s", i, this.getFormatName(i));
 		}));
 	}
 
