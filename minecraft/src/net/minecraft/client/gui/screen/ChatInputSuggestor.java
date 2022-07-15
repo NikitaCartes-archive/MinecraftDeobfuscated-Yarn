@@ -74,7 +74,7 @@ public class ChatInputSuggestor {
 	@Nullable
 	private CompletableFuture<Suggestions> pendingSuggestions;
 	@Nullable
-	ChatInputSuggestor.SuggestionWindow window;
+	private ChatInputSuggestor.SuggestionWindow window;
 	private boolean windowActive;
 	boolean completingSuggestions;
 
@@ -146,6 +146,10 @@ public class ChatInputSuggestor {
 				this.window = new ChatInputSuggestor.SuggestionWindow(j, k, i, this.sortSuggestions(suggestions), narrateFirstSuggestion);
 			}
 		}
+	}
+
+	public void clearWindow() {
+		this.window = null;
 	}
 
 	private List<Suggestion> sortSuggestions(Suggestions suggestions) {
@@ -339,17 +343,28 @@ public class ChatInputSuggestor {
 	}
 
 	public void render(MatrixStack matrices, int mouseX, int mouseY) {
+		if (!this.tryRenderWindow(matrices, mouseX, mouseY)) {
+			this.renderMessages(matrices);
+		}
+	}
+
+	public boolean tryRenderWindow(MatrixStack matrices, int mouseX, int mouseY) {
 		if (this.window != null) {
 			this.window.render(matrices, mouseX, mouseY);
+			return true;
 		} else {
-			int i = 0;
+			return false;
+		}
+	}
 
-			for (OrderedText orderedText : this.messages) {
-				int j = this.chatScreenSized ? this.owner.height - 14 - 13 - 12 * i : 72 + 12 * i;
-				DrawableHelper.fill(matrices, this.x - 1, j, this.x + this.width + 1, j + 12, this.color);
-				this.textRenderer.drawWithShadow(matrices, orderedText, (float)this.x, (float)(j + 2), -1);
-				i++;
-			}
+	public void renderMessages(MatrixStack matrices) {
+		int i = 0;
+
+		for (OrderedText orderedText : this.messages) {
+			int j = this.chatScreenSized ? this.owner.height - 14 - 13 - 12 * i : 72 + 12 * i;
+			DrawableHelper.fill(matrices, this.x - 1, j, this.x + this.width + 1, j + 12, this.color);
+			this.textRenderer.drawWithShadow(matrices, orderedText, (float)this.x, (float)(j + 2), -1);
+			i++;
 		}
 	}
 
@@ -550,7 +565,7 @@ public class ChatInputSuggestor {
 				this.complete();
 				return true;
 			} else if (keyCode == 256) {
-				this.discard();
+				ChatInputSuggestor.this.clearWindow();
 				return true;
 			} else {
 				return false;
@@ -609,10 +624,6 @@ public class ChatInputSuggestor {
 			return message != null
 				? Text.translatable("narration.suggestion.tooltip", this.selection + 1, this.suggestions.size(), suggestion.getText(), message)
 				: Text.translatable("narration.suggestion", this.selection + 1, this.suggestions.size(), suggestion.getText());
-		}
-
-		public void discard() {
-			ChatInputSuggestor.this.window = null;
 		}
 	}
 }

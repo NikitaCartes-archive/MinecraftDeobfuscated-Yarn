@@ -22,7 +22,7 @@ import net.minecraft.client.network.message.MessageTrustStatus;
 import net.minecraft.client.report.AbuseReportContext;
 import net.minecraft.client.report.ChatAbuseReport;
 import net.minecraft.client.report.MessagesListAdder;
-import net.minecraft.client.report.ReceivedMessage;
+import net.minecraft.client.report.log.ReceivedMessage;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.OrderedText;

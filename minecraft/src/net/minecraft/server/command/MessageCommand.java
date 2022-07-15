@@ -36,7 +36,7 @@ public class MessageCommand {
 	private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, MessageArgumentType.SignedMessage signedMessage) {
 		MessageSourceProfile messageSourceProfile = source.getMessageSourceProfile();
 		MessageType.Parameters parameters = MessageType.params(MessageType.MSG_COMMAND_INCOMING, source);
-		signedMessage.decorate(source).thenAcceptAsync(decoratedMessage -> {
+		signedMessage.decorate(source, decoratedMessage -> {
 			FilteredMessage<SentMessage> filteredMessage = SentMessage.of(decoratedMessage, messageSourceProfile);
 
 			for (ServerPlayerEntity serverPlayerEntity : targets) {
@@ -49,7 +49,7 @@ public class MessageCommand {
 			}
 
 			filteredMessage.raw().afterPacketsSent(source.getServer().getPlayerManager());
-		}, source.getServer());
+		});
 		return targets.size();
 	}
 }

@@ -1,4 +1,4 @@
-package net.minecraft.client.report;
+package net.minecraft.client.report.log;
 
 import com.mojang.authlib.GameProfile;
 import java.time.Instant;
@@ -10,6 +10,8 @@ import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.message.MessageTrustStatus;
+import net.minecraft.network.message.MessageHeader;
+import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -22,7 +24,7 @@ import net.minecraft.util.Formatting;
  * game messages}.
  */
 @Environment(EnvType.CLIENT)
-public interface ReceivedMessage {
+public interface ReceivedMessage extends ChatLogEntry {
 	/**
 	 * {@return the received message constructed from a chat message's elements}
 	 * 
@@ -30,7 +32,7 @@ public interface ReceivedMessage {
 	 * @param displayName the displayed name of the sender
 	 * @param message the message content
 	 */
-	static ReceivedMessage of(GameProfile gameProfile, Text displayName, SignedMessage message, MessageTrustStatus trustStatus) {
+	static ReceivedMessage.ChatMessage of(GameProfile gameProfile, Text displayName, SignedMessage message, MessageTrustStatus trustStatus) {
 		return new ReceivedMessage.ChatMessage(gameProfile, displayName, message, trustStatus);
 	}
 
@@ -40,7 +42,7 @@ public interface ReceivedMessage {
 	 * @param message the message content
 	 * @param timestamp the timestamp of the message
 	 */
-	static ReceivedMessage of(Text message, Instant timestamp) {
+	static ReceivedMessage.GameMessage of(Text message, Instant timestamp) {
 		return new ReceivedMessage.GameMessage(message, timestamp);
 	}
 
@@ -69,7 +71,9 @@ public interface ReceivedMessage {
 	 * A chat message received by the client.
 	 */
 	@Environment(EnvType.CLIENT)
-	public static record ChatMessage(GameProfile profile, Text displayName, SignedMessage message, MessageTrustStatus trustStatus) implements ReceivedMessage {
+	public static record ChatMessage(GameProfile profile, Text displayName, SignedMessage message, MessageTrustStatus trustStatus)
+		implements ReceivedMessage,
+		HeaderEntry {
 		private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
 
 		@Override
@@ -107,6 +111,21 @@ public interface ReceivedMessage {
 			return this.getSenderUuid().equals(uuid);
 		}
 
+		@Override
+		public MessageHeader header() {
+			return this.message.signedHeader();
+		}
+
+		@Override
+		public byte[] bodyDigest() {
+			return this.message.signedBody().digest().asBytes();
+		}
+
+		@Override
+		public MessageSignatureData headerSignature() {
+			return this.message.headerSignature();
+		}
+
 		/**
 		 * {@return the UUID of the sender}
 		 */
@@ -129,14 +148,5 @@ public interface ReceivedMessage {
 		public boolean isSentFrom(UUID uuid) {
 			return false;
 		}
-	}
-
-	/**
-	 * A pair of the message's index and the message itself.
-	 * 
-	 * @see ChatLog
-	 */
-	@Environment(EnvType.CLIENT)
-	public static record IndexedMessage(int index, ReceivedMessage message) {
 	}
 }

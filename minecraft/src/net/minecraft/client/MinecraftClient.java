@@ -27,9 +27,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.text.SimpleDateFormat;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -881,7 +879,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public static void printCrashReport(CrashReport report) {
 		File file = new File(getInstance().runDirectory, "crash-reports");
-		File file2 = new File(file, "crash-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + "-client.txt");
+		File file2 = new File(file, "crash-" + Util.getFormattedCurrentTime() + "-client.txt");
 		Bootstrap.println(report.asString());
 		if (report.getFile() != null) {
 			Bootstrap.println("#@!@# Game crashed! Crash report saved to: #@!@# " + report.getFile());
@@ -1258,6 +1256,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 			currentFps = this.fpsCounter;
 			this.fpsDebugString = String.format(
+				Locale.ROOT,
 				"%d fps T: %s%s%s%s B: %d%s",
 				currentFps,
 				k == 260 ? "inf" : k,
@@ -1445,7 +1444,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 		Path path;
 		try {
-			String string2 = String.format("%s-%s-%s", new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()), string, SharedConstants.getGameVersion().getId());
+			String string2 = String.format(Locale.ROOT, "%s-%s-%s", Util.getFormattedCurrentTime(), string, SharedConstants.getGameVersion().getId());
 			String string3 = FileNameUtil.getNextUniqueName(RecordDumper.DEBUG_PROFILING_DIRECTORY, string2, ".zip");
 			path = RecordDumper.DEBUG_PROFILING_DIRECTORY.resolve(string3);
 		} catch (IOException var21) {

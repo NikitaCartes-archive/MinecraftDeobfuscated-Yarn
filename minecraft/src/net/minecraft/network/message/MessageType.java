@@ -76,12 +76,23 @@ public record MessageType(Decoration chat, Decoration narration) {
 	 */
 	public static final RegistryKey<MessageType> MSG_COMMAND_OUTGOING = register("msg_command_outgoing");
 	/**
-	 * The registry key for the team message command message type, used by {@linkplain
-	 * net.minecraft.server.command.TeamMsgCommand /teammsg}. The message content is
-	 * {@linkplain Decoration#ofTeamMessage decorated} using the
-	 * {@code chat.type.team.text} text.
+	 * The registry key for the incoming team message command message type, used by
+	 * {@linkplain net.minecraft.server.command.TeamMsgCommand /teammsg}. The message
+	 * content is {@linkplain Decoration#ofTeamMessage decorated} using the {@code
+	 * chat.type.team.text} text.
+	 * 
+	 * <p>An incoming message is a team message received from the sender.
 	 */
-	public static final RegistryKey<MessageType> TEAM_MSG_COMMAND = register("team_msg_command");
+	public static final RegistryKey<MessageType> TEAM_MSG_COMMAND_INCOMING = register("team_msg_command_incoming");
+	/**
+	 * The registry key for the outgoing team message command message type, used by
+	 * {@linkplain net.minecraft.server.command.TeamMsgCommand /teammsg}. The message
+	 * content is {@linkplain Decoration#ofTeamMessage decorated} using the {@code
+	 * chat.type.team.sent} text.
+	 * 
+	 * <p>An outgoing message is a message that the team message's sender sees in the chat.
+	 */
+	public static final RegistryKey<MessageType> TEAM_MSG_COMMAND_OUTGOING = register("team_msg_command_outgoing");
 	/**
 	 * The registry key for the emote command message type, used by {@linkplain
 	 * net.minecraft.server.command.MeCommand /me}. The message content is
@@ -107,7 +118,10 @@ public record MessageType(Decoration chat, Decoration narration) {
 			new MessageType(Decoration.ofOutgoingMessage("commands.message.display.outgoing"), Decoration.ofChat("chat.type.text.narrate"))
 		);
 		BuiltinRegistries.add(
-			registry, TEAM_MSG_COMMAND, new MessageType(Decoration.ofTeamMessage("chat.type.team.text"), Decoration.ofChat("chat.type.text.narrate"))
+			registry, TEAM_MSG_COMMAND_INCOMING, new MessageType(Decoration.ofTeamMessage("chat.type.team.text"), Decoration.ofChat("chat.type.text.narrate"))
+		);
+		BuiltinRegistries.add(
+			registry, TEAM_MSG_COMMAND_OUTGOING, new MessageType(Decoration.ofTeamMessage("chat.type.team.sent"), Decoration.ofChat("chat.type.text.narrate"))
 		);
 		return BuiltinRegistries.add(registry, EMOTE_COMMAND, new MessageType(Decoration.ofChat("chat.type.emote"), Decoration.ofChat("chat.type.emote")));
 	}

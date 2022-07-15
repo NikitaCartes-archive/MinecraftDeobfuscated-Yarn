@@ -8,6 +8,7 @@ import com.mojang.logging.LogUtils;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.Locale;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
@@ -519,7 +520,7 @@ public class RenderSystem {
 
 	public static String getBackendDescription() {
 		assertInInitPhase();
-		return String.format("LWJGL version %s", GLX._getLWJGLVersion());
+		return String.format(Locale.ROOT, "LWJGL version %s", GLX._getLWJGLVersion());
 	}
 
 	public static String getApiDescription() {

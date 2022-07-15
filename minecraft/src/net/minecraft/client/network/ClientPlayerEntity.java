@@ -59,6 +59,8 @@ import net.minecraft.item.Items;
 import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.encryption.Signer;
 import net.minecraft.network.message.ArgumentSignatureDataMap;
+import net.minecraft.network.message.DecoratedContents;
+import net.minecraft.network.message.LastSeenMessageList;
 import net.minecraft.network.message.MessageMetadata;
 import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
@@ -323,12 +325,25 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	/**
+	 * {@return whether to preview {@code command}}
+	 * 
+	 * @see ArgumentSignatureDataMap#shouldPreview
+	 * 
+	 * @param command the command (without the leading slash)
+	 */
+	public boolean shouldPreview(String command) {
+		ParseResults<CommandSource> parseResults = this.networkHandler.getCommandDispatcher().parse(command, this.networkHandler.getCommandSource());
+		return ArgumentSignatureDataMap.shouldPreview(parseResults);
+	}
+
+	/**
 	 * Sends an unsigned command to the server.
 	 * 
 	 * @param command the command (without the leading slash)
 	 */
 	public void sendCommand(String command) {
-		this.networkHandler.sendPacket(new CommandExecutionC2SPacket(command, Instant.now(), 0L, ArgumentSignatureDataMap.EMPTY, false));
+		LastSeenMessageList.Acknowledgment acknowledgment = this.networkHandler.consumeAcknowledgment();
+		this.networkHandler.sendPacket(new CommandExecutionC2SPacket(command, Instant.now(), 0L, ArgumentSignatureDataMap.EMPTY, false, acknowledgment));
 	}
 
 	/**
@@ -342,12 +357,17 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	private void sendChatMessagePacket(String content, @Nullable Text preview) {
 		MessageMetadata messageMetadata = this.createMessageMetadata();
+		LastSeenMessageList.Acknowledgment acknowledgment = this.networkHandler.consumeAcknowledgment();
 		if (preview != null) {
-			MessageSignatureData messageSignatureData = this.signChatMessage(messageMetadata, preview);
-			this.networkHandler.sendPacket(new ChatMessageC2SPacket(content, messageMetadata.timestamp(), messageMetadata.salt(), messageSignatureData, true));
+			DecoratedContents decoratedContents = new DecoratedContents(content, preview);
+			MessageSignatureData messageSignatureData = this.signChatMessage(messageMetadata, decoratedContents, acknowledgment.lastSeen());
+			this.networkHandler
+				.sendPacket(new ChatMessageC2SPacket(content, messageMetadata.timestamp(), messageMetadata.salt(), messageSignatureData, true, acknowledgment));
 		} else {
-			MessageSignatureData messageSignatureData = this.signChatMessage(messageMetadata, Text.literal(content));
-			this.networkHandler.sendPacket(new ChatMessageC2SPacket(content, messageMetadata.timestamp(), messageMetadata.salt(), messageSignatureData, false));
+			DecoratedContents decoratedContents = new DecoratedContents(content);
+			MessageSignatureData messageSignatureData = this.signChatMessage(messageMetadata, decoratedContents, acknowledgment.lastSeen());
+			this.networkHandler
+				.sendPacket(new ChatMessageC2SPacket(content, messageMetadata.timestamp(), messageMetadata.salt(), messageSignatureData, false, acknowledgment));
 		}
 	}
 
@@ -355,14 +375,14 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	 * Signs the chat message. If the chat message cannot be signed, this will return
 	 * {@link MessageSignatureData#EMPTY}.
 	 */
-	private MessageSignatureData signChatMessage(MessageMetadata metadata, Text preview) {
+	private MessageSignatureData signChatMessage(MessageMetadata metadata, DecoratedContents content, LastSeenMessageList lastSeenMessages) {
 		try {
 			Signer signer = this.client.getProfileKeys().getSigner();
 			if (signer != null) {
-				return this.networkHandler.getMessagePacker().pack(signer, metadata, preview).signature();
+				return this.networkHandler.getMessagePacker().pack(signer, metadata, content, lastSeenMessages).signature();
 			}
-		} catch (Exception var4) {
-			field_39078.error("Failed to sign chat message: '{}'", preview.getString(), var4);
+		} catch (Exception var5) {
+			field_39078.error("Failed to sign chat message: '{}'", content.plain().getString(), var5);
 		}
 
 		return MessageSignatureData.EMPTY;
@@ -374,9 +394,12 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	private void sendCommandInternal(String command, @Nullable Text preview) {
 		ParseResults<CommandSource> parseResults = this.networkHandler.getCommandDispatcher().parse(command, this.networkHandler.getCommandSource());
 		MessageMetadata messageMetadata = this.createMessageMetadata();
-		ArgumentSignatureDataMap argumentSignatureDataMap = this.signArguments(messageMetadata, parseResults, preview);
+		LastSeenMessageList.Acknowledgment acknowledgment = this.networkHandler.consumeAcknowledgment();
+		ArgumentSignatureDataMap argumentSignatureDataMap = this.signArguments(messageMetadata, parseResults, preview, acknowledgment.lastSeen());
 		this.networkHandler
-			.sendPacket(new CommandExecutionC2SPacket(command, messageMetadata.timestamp(), messageMetadata.salt(), argumentSignatureDataMap, preview != null));
+			.sendPacket(
+				new CommandExecutionC2SPacket(command, messageMetadata.timestamp(), messageMetadata.salt(), argumentSignatureDataMap, preview != null, acknowledgment)
+			);
 	}
 
 	/**
@@ -385,18 +408,20 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	 * 
 	 * @param preview the previewed argument value; if supplied, will be used for all signed arguments
 	 */
-	private ArgumentSignatureDataMap signArguments(MessageMetadata signer, ParseResults<CommandSource> parseResults, @Nullable Text preview) {
+	private ArgumentSignatureDataMap signArguments(
+		MessageMetadata signer, ParseResults<CommandSource> parseResults, @Nullable Text preview, LastSeenMessageList lastSeenMessages
+	) {
 		Signer signer2 = this.client.getProfileKeys().getSigner();
 		if (signer2 == null) {
 			return ArgumentSignatureDataMap.EMPTY;
 		} else {
 			try {
 				return ArgumentSignatureDataMap.sign(parseResults.getContext(), (argumentName, value) -> {
-					Text text2 = preview != null ? preview : value;
-					return this.networkHandler.getMessagePacker().pack(signer2, signer, text2).signature();
+					DecoratedContents decoratedContents = preview != null ? new DecoratedContents(value, preview) : new DecoratedContents(value);
+					return this.networkHandler.getMessagePacker().pack(signer2, signer, decoratedContents, lastSeenMessages).signature();
 				});
-			} catch (Exception var6) {
-				field_39078.error("Failed to sign command arguments", (Throwable)var6);
+			} catch (Exception var7) {
+				field_39078.error("Failed to sign command arguments", (Throwable)var7);
 				return ArgumentSignatureDataMap.EMPTY;
 			}
 		}

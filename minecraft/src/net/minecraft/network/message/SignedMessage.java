@@ -2,7 +2,6 @@ package net.minecraft.network.message;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.network.PacketByteBuf;
@@ -30,7 +29,7 @@ public record SignedMessage(MessageHeader signedHeader, MessageSignatureData hea
 	 * {@return a new signed message without valid signatures}
 	 */
 	public static SignedMessage ofUnsigned(MessageMetadata metadata, Text content) {
-		MessageBody messageBody = new MessageBody(content, metadata.timestamp(), metadata.salt(), List.of());
+		MessageBody messageBody = new MessageBody(new DecoratedContents(content), metadata.timestamp(), metadata.salt(), LastSeenMessageList.EMPTY);
 		MessageHeader messageHeader = new MessageHeader(null, metadata.sender());
 		return new SignedMessage(messageHeader, MessageSignatureData.EMPTY, messageBody, Optional.empty());
 	}
@@ -46,14 +45,14 @@ public record SignedMessage(MessageHeader signedHeader, MessageSignatureData hea
 		if (filteredContent == null) {
 			return FilteredMessage.censored(this);
 		} else {
-			return this.getSignedContent().equals(filteredContent)
+			return this.getSignedContent().decorated().equals(filteredContent)
 				? FilteredMessage.permitted(this)
 				: new FilteredMessage<>(this, ofUnsigned(this.createMetadata(), filteredContent));
 		}
 	}
 
 	public SignedMessage withUnsignedContent(Text unsignedContent) {
-		Optional<Text> optional = !this.getSignedContent().equals(unsignedContent) ? Optional.of(unsignedContent) : Optional.empty();
+		Optional<Text> optional = !this.getSignedContent().decorated().equals(unsignedContent) ? Optional.of(unsignedContent) : Optional.empty();
 		return new SignedMessage(this.signedHeader, this.headerSignature, this.signedBody, optional);
 	}
 
@@ -87,7 +86,7 @@ public record SignedMessage(MessageHeader signedHeader, MessageSignatureData hea
 		return playerPublicKey != null && this.verify(playerPublicKey);
 	}
 
-	public Text getSignedContent() {
+	public DecoratedContents getSignedContent() {
 		return this.signedBody.content();
 	}
 
@@ -97,7 +96,7 @@ public record SignedMessage(MessageHeader signedHeader, MessageSignatureData hea
 	 * <p>This returns the unsigned content if present, and fallbacks to the signed content.
 	 */
 	public Text getContent() {
-		return (Text)this.unsignedContent().orElse(this.getSignedContent());
+		return (Text)this.unsignedContent().orElse(this.getSignedContent().decorated());
 	}
 
 	public Instant getTimestamp() {
@@ -118,5 +117,9 @@ public record SignedMessage(MessageHeader signedHeader, MessageSignatureData hea
 
 	public MessageMetadata createMetadata() {
 		return new MessageMetadata(this.signedHeader.sender(), this.getTimestamp(), this.getSalt());
+	}
+
+	public LastSeenMessageList.Entry toLastSeenMessageEntry() {
+		return new LastSeenMessageList.Entry(this.createMetadata().sender(), this.headerSignature);
 	}
 }

@@ -35,6 +35,7 @@ import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.network.packet.c2s.play.JigsawGeneratingC2SPacket;
 import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
+import net.minecraft.network.packet.c2s.play.MessageAcknowledgmentC2SPacket;
 import net.minecraft.network.packet.c2s.play.PickFromInventoryC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayPongC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
@@ -245,8 +246,8 @@ public enum NetworkState {
 					.register(PlayPingS2CPacket.class, PlayPingS2CPacket::new)
 					.register(CraftFailedResponseS2CPacket.class, CraftFailedResponseS2CPacket::new)
 					.register(PlayerAbilitiesS2CPacket.class, PlayerAbilitiesS2CPacket::new)
-					.register(ChatMessageS2CPacket.class, ChatMessageS2CPacket::new)
 					.register(MessageHeaderS2CPacket.class, MessageHeaderS2CPacket::new)
+					.register(ChatMessageS2CPacket.class, ChatMessageS2CPacket::new)
 					.register(EndCombatS2CPacket.class, EndCombatS2CPacket::new)
 					.register(EnterCombatS2CPacket.class, EnterCombatS2CPacket::new)
 					.register(DeathMessageS2CPacket.class, DeathMessageS2CPacket::new)
@@ -310,6 +311,7 @@ public enum NetworkState {
 					.register(TeleportConfirmC2SPacket.class, TeleportConfirmC2SPacket::new)
 					.register(QueryBlockNbtC2SPacket.class, QueryBlockNbtC2SPacket::new)
 					.register(UpdateDifficultyC2SPacket.class, UpdateDifficultyC2SPacket::new)
+					.register(MessageAcknowledgmentC2SPacket.class, MessageAcknowledgmentC2SPacket::new)
 					.register(CommandExecutionC2SPacket.class, CommandExecutionC2SPacket::new)
 					.register(ChatMessageC2SPacket.class, ChatMessageC2SPacket::new)
 					.register(RequestChatPreviewC2SPacket.class, RequestChatPreviewC2SPacket::new)

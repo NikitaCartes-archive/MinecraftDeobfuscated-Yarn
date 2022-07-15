@@ -8,18 +8,13 @@ public interface SignedCommandArguments {
 		final MessageMetadata messageMetadata = MessageMetadata.of();
 		return new SignedCommandArguments() {
 			@Override
-			public MessageSignatureData getArgumentSignature(String argumentName) {
-				return MessageSignatureData.EMPTY;
+			public SignedCommandArguments.ArgumentSignature createSignature(String argumentName) {
+				return SignedCommandArguments.ArgumentSignature.EMPTY;
 			}
 
 			@Override
 			public MessageMetadata metadata() {
 				return messageMetadata;
-			}
-
-			@Override
-			public boolean isPreviewSigned(String argumentName) {
-				return false;
 			}
 
 			@Override
@@ -29,28 +24,35 @@ public interface SignedCommandArguments {
 		};
 	}
 
-	MessageSignatureData getArgumentSignature(String argumentName);
+	SignedCommandArguments.ArgumentSignature createSignature(String argumentName);
 
 	MessageMetadata metadata();
 
 	MessageChain.Unpacker decoder();
 
-	boolean isPreviewSigned(String argumentName);
+	/**
+	 * A record holding the signature for a specific argument.
+	 */
+	public static record ArgumentSignature(MessageSignatureData signature, boolean signedPreview, LastSeenMessageList lastSeenMessages) {
+		public static final SignedCommandArguments.ArgumentSignature EMPTY = new SignedCommandArguments.ArgumentSignature(
+			MessageSignatureData.EMPTY, false, LastSeenMessageList.EMPTY
+		);
+	}
 
 	/**
 	 * A signature for command arguments, consisting of the sender, the timestamp,
 	 * and the signature datas for the arguments.
 	 */
-	public static record Impl(MessageChain.Unpacker decoder, MessageMetadata metadata, ArgumentSignatureDataMap argumentSignatures, boolean signedPreview)
-		implements SignedCommandArguments {
+	public static record Impl(
+		MessageChain.Unpacker decoder,
+		MessageMetadata metadata,
+		ArgumentSignatureDataMap argumentSignatures,
+		boolean signedPreview,
+		LastSeenMessageList lastSeenMessages
+	) implements SignedCommandArguments {
 		@Override
-		public MessageSignatureData getArgumentSignature(String argumentName) {
-			return this.argumentSignatures.get(argumentName);
-		}
-
-		@Override
-		public boolean isPreviewSigned(String argumentName) {
-			return this.signedPreview;
+		public SignedCommandArguments.ArgumentSignature createSignature(String argumentName) {
+			return new SignedCommandArguments.ArgumentSignature(this.argumentSignatures.get(argumentName), this.signedPreview, this.lastSeenMessages);
 		}
 	}
 }

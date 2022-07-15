@@ -1,11 +1,10 @@
 package net.minecraft.network.message;
 
-import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.network.encryption.Signer;
 import net.minecraft.server.filter.FilteredMessage;
-import net.minecraft.text.Text;
+import net.minecraft.util.Util;
 
 /**
  * A class for handling the "message chain".
@@ -24,30 +23,36 @@ public class MessageChain {
 	@Nullable
 	private MessageSignatureData precedingSignature;
 
-	private MessageChain.Signature pack(Signer signer, MessageMetadata metadata, Text content) {
-		MessageSignatureData messageSignatureData = sign(signer, metadata, this.precedingSignature, content);
+	private MessageChain.Signature pack(Signer signer, MessageMetadata metadata, DecoratedContents contents, LastSeenMessageList lastSeenMessages) {
+		MessageSignatureData messageSignatureData = sign(signer, metadata, this.precedingSignature, contents, lastSeenMessages);
 		this.precedingSignature = messageSignatureData;
 		return new MessageChain.Signature(messageSignatureData);
 	}
 
-	private static MessageSignatureData sign(Signer signer, MessageMetadata metadata, @Nullable MessageSignatureData precedingSignature, Text content) {
+	private static MessageSignatureData sign(
+		Signer signer, MessageMetadata metadata, @Nullable MessageSignatureData precedingSignature, DecoratedContents contents, LastSeenMessageList lastSeenMessages
+	) {
 		MessageHeader messageHeader = new MessageHeader(precedingSignature, metadata.sender());
-		MessageBody messageBody = new MessageBody(content, metadata.timestamp(), metadata.salt(), List.of());
+		MessageBody messageBody = new MessageBody(contents, metadata.timestamp(), metadata.salt(), lastSeenMessages);
 		byte[] bs = messageBody.digest().asBytes();
 		return new MessageSignatureData(signer.sign(updatable -> messageHeader.update(updatable, bs)));
 	}
 
-	private SignedMessage unpack(MessageChain.Signature signature, MessageMetadata metadata, Text content) {
-		SignedMessage signedMessage = createMessage(signature, this.precedingSignature, metadata, content);
+	private SignedMessage unpack(MessageChain.Signature signature, MessageMetadata metadata, DecoratedContents contents, LastSeenMessageList lastSeenMessages) {
+		SignedMessage signedMessage = createMessage(signature, this.precedingSignature, metadata, contents, lastSeenMessages);
 		this.precedingSignature = signature.signature;
 		return signedMessage;
 	}
 
 	private static SignedMessage createMessage(
-		MessageChain.Signature signature, @Nullable MessageSignatureData precedingSignature, MessageMetadata metadata, Text content
+		MessageChain.Signature signature,
+		@Nullable MessageSignatureData precedingSignature,
+		MessageMetadata metadata,
+		DecoratedContents contents,
+		LastSeenMessageList lastSeenMessage
 	) {
 		MessageHeader messageHeader = new MessageHeader(precedingSignature, metadata.sender());
-		MessageBody messageBody = new MessageBody(content, metadata.timestamp(), metadata.salt(), List.of());
+		MessageBody messageBody = new MessageBody(contents, metadata.timestamp(), metadata.salt(), lastSeenMessage);
 		return new SignedMessage(messageHeader, signature.signature, messageBody, Optional.empty());
 	}
 
@@ -66,7 +71,7 @@ public class MessageChain {
 	 */
 	@FunctionalInterface
 	public interface Packer {
-		MessageChain.Signature pack(Signer signer, MessageMetadata metadata, Text content);
+		MessageChain.Signature pack(Signer signer, MessageMetadata metadata, DecoratedContents contents, LastSeenMessageList lastSeenMessages);
 	}
 
 	public static record Signature(MessageSignatureData signature) {
@@ -84,12 +89,14 @@ public class MessageChain {
 	 */
 	@FunctionalInterface
 	public interface Unpacker {
-		MessageChain.Unpacker UNSIGNED = (signature, metadata, content) -> SignedMessage.ofUnsigned(metadata, content);
+		MessageChain.Unpacker UNSIGNED = (signature, metadata, contents, lastSeenMessages) -> SignedMessage.ofUnsigned(metadata, contents.decorated());
 
-		SignedMessage unpack(MessageChain.Signature signature, MessageMetadata metadata, Text content);
+		SignedMessage unpack(MessageChain.Signature signature, MessageMetadata metadata, DecoratedContents contents, LastSeenMessageList lastSeenMessages);
 
-		default FilteredMessage<SignedMessage> unpack(MessageChain.Signature signature, MessageMetadata metadata, FilteredMessage<Text> content) {
-			return this.unpack(signature, metadata, content.raw()).withFilteredContent(content.filtered());
+		default FilteredMessage<SignedMessage> unpack(
+			MessageChain.Signature signature, MessageMetadata metadata, FilteredMessage<DecoratedContents> contents, LastSeenMessageList lastSeenMessages
+		) {
+			return this.unpack(signature, metadata, contents.raw(), lastSeenMessages).withFilteredContent(Util.map(contents.filtered(), DecoratedContents::decorated));
 		}
 	}
 }

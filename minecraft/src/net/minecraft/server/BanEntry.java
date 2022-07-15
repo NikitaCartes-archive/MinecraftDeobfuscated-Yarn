@@ -4,11 +4,12 @@ import com.google.gson.JsonObject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import javax.annotation.Nullable;
 import net.minecraft.text.Text;
 
 public abstract class BanEntry<T> extends ServerConfigEntry<T> {
-	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z", Locale.ROOT);
 	public static final String FOREVER = "forever";
 	protected final Date creationDate;
 	protected final String source;

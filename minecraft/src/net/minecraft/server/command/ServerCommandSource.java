@@ -33,6 +33,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.thread.FutureQueue;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
@@ -61,12 +62,13 @@ public class ServerCommandSource implements CommandSource {
 	private final EntityAnchorArgumentType.EntityAnchor entityAnchor;
 	private final Vec2f rotation;
 	private final SignedCommandArguments signedArguments;
+	private final FutureQueue messageChainTaskQueue;
 
 	public ServerCommandSource(
 		CommandOutput output, Vec3d pos, Vec2f rot, ServerWorld world, int level, String name, Text displayName, MinecraftServer server, @Nullable Entity entity
 	) {
 		this(output, pos, rot, world, level, name, displayName, server, entity, false, (context, success, result) -> {
-		}, EntityAnchorArgumentType.EntityAnchor.FEET, SignedCommandArguments.none());
+		}, EntityAnchorArgumentType.EntityAnchor.FEET, SignedCommandArguments.none(), FutureQueue.NOOP);
 	}
 
 	protected ServerCommandSource(
@@ -82,7 +84,8 @@ public class ServerCommandSource implements CommandSource {
 		boolean silent,
 		@Nullable ResultConsumer<ServerCommandSource> consumer,
 		EntityAnchorArgumentType.EntityAnchor entityAnchor,
-		SignedCommandArguments signedArguments
+		SignedCommandArguments signedArguments,
+		FutureQueue messageChainTaskQueue
 	) {
 		this.output = output;
 		this.position = pos;
@@ -97,6 +100,7 @@ public class ServerCommandSource implements CommandSource {
 		this.entityAnchor = entityAnchor;
 		this.rotation = rot;
 		this.signedArguments = signedArguments;
+		this.messageChainTaskQueue = messageChainTaskQueue;
 	}
 
 	public ServerCommandSource withOutput(CommandOutput output) {
@@ -115,7 +119,8 @@ public class ServerCommandSource implements CommandSource {
 				this.silent,
 				this.resultConsumer,
 				this.entityAnchor,
-				this.signedArguments
+				this.signedArguments,
+				this.messageChainTaskQueue
 			);
 	}
 
@@ -135,7 +140,8 @@ public class ServerCommandSource implements CommandSource {
 				this.silent,
 				this.resultConsumer,
 				this.entityAnchor,
-				this.signedArguments
+				this.signedArguments,
+				this.messageChainTaskQueue
 			);
 	}
 
@@ -155,7 +161,8 @@ public class ServerCommandSource implements CommandSource {
 				this.silent,
 				this.resultConsumer,
 				this.entityAnchor,
-				this.signedArguments
+				this.signedArguments,
+				this.messageChainTaskQueue
 			);
 	}
 
@@ -175,7 +182,8 @@ public class ServerCommandSource implements CommandSource {
 				this.silent,
 				this.resultConsumer,
 				this.entityAnchor,
-				this.signedArguments
+				this.signedArguments,
+				this.messageChainTaskQueue
 			);
 	}
 
@@ -195,7 +203,8 @@ public class ServerCommandSource implements CommandSource {
 				this.silent,
 				consumer,
 				this.entityAnchor,
-				this.signedArguments
+				this.signedArguments,
+				this.messageChainTaskQueue
 			);
 	}
 
@@ -219,7 +228,8 @@ public class ServerCommandSource implements CommandSource {
 				true,
 				this.resultConsumer,
 				this.entityAnchor,
-				this.signedArguments
+				this.signedArguments,
+				this.messageChainTaskQueue
 			)
 			: this;
 	}
@@ -240,7 +250,8 @@ public class ServerCommandSource implements CommandSource {
 				this.silent,
 				this.resultConsumer,
 				this.entityAnchor,
-				this.signedArguments
+				this.signedArguments,
+				this.messageChainTaskQueue
 			);
 	}
 
@@ -260,7 +271,8 @@ public class ServerCommandSource implements CommandSource {
 				this.silent,
 				this.resultConsumer,
 				this.entityAnchor,
-				this.signedArguments
+				this.signedArguments,
+				this.messageChainTaskQueue
 			);
 	}
 
@@ -280,7 +292,8 @@ public class ServerCommandSource implements CommandSource {
 				this.silent,
 				this.resultConsumer,
 				anchor,
-				this.signedArguments
+				this.signedArguments,
+				this.messageChainTaskQueue
 			);
 	}
 
@@ -303,7 +316,8 @@ public class ServerCommandSource implements CommandSource {
 				this.silent,
 				this.resultConsumer,
 				this.entityAnchor,
-				this.signedArguments
+				this.signedArguments,
+				this.messageChainTaskQueue
 			);
 		}
 	}
@@ -339,7 +353,29 @@ public class ServerCommandSource implements CommandSource {
 				this.silent,
 				this.resultConsumer,
 				this.entityAnchor,
-				signedArguments
+				signedArguments,
+				this.messageChainTaskQueue
+			);
+	}
+
+	public ServerCommandSource withMessageChainTaskQueue(FutureQueue messageChainTaskQueue) {
+		return messageChainTaskQueue == this.messageChainTaskQueue
+			? this
+			: new ServerCommandSource(
+				this.output,
+				this.position,
+				this.rotation,
+				this.world,
+				this.level,
+				this.name,
+				this.displayName,
+				this.server,
+				this.entity,
+				this.silent,
+				this.resultConsumer,
+				this.entityAnchor,
+				this.signedArguments,
+				messageChainTaskQueue
 			);
 	}
 
@@ -427,6 +463,10 @@ public class ServerCommandSource implements CommandSource {
 
 	public SignedCommandArguments getSignedArguments() {
 		return this.signedArguments;
+	}
+
+	public FutureQueue getMessageChainTaskQueue() {
+		return this.messageChainTaskQueue;
 	}
 
 	/**

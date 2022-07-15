@@ -29,6 +29,7 @@ import java.io.Writer;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Queue;
@@ -643,7 +644,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 							var9.getStackTrace();
 							CrashReport crashReport = CrashReport.create(var9, "Exception generating new chunk");
 							CrashReportSection crashReportSection = crashReport.addElement("Chunk to be generated");
-							crashReportSection.add("Location", String.format("%d,%d", chunkPos.x, chunkPos.z));
+							crashReportSection.add("Location", String.format(Locale.ROOT, "%d,%d", chunkPos.x, chunkPos.z));
 							crashReportSection.add("Position hash", ChunkPos.toLong(chunkPos.x, chunkPos.z));
 							crashReportSection.add("Generator", this.chunkGenerator);
 							this.mainThreadExecutor.execute(() -> {

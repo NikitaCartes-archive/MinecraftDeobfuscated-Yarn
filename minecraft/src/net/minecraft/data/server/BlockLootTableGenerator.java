@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -1764,7 +1765,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			if (identifier != LootTables.EMPTY && set.add(identifier)) {
 				LootTable.Builder builder6 = (LootTable.Builder)this.lootTables.remove(identifier);
 				if (builder6 == null) {
-					throw new IllegalStateException(String.format("Missing loottable '%s' for '%s'", identifier, Registry.BLOCK.getId(block)));
+					throw new IllegalStateException(String.format(Locale.ROOT, "Missing loottable '%s' for '%s'", identifier, Registry.BLOCK.getId(block)));
 				}
 
 				biConsumer.accept(identifier, builder6);

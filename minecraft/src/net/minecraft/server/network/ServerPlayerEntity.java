@@ -1326,6 +1326,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	public void sendChatMessage(SentMessage message, MessageType.Parameters params) {
 		if (this.acceptsChatMessage()) {
 			ChatMessageS2CPacket chatMessageS2CPacket = message.toPacket(this, params);
+			this.networkHandler.addPendingAcknowledgment(chatMessageS2CPacket.message());
 			this.networkHandler.sendPacket(chatMessageS2CPacket);
 		}
 	}

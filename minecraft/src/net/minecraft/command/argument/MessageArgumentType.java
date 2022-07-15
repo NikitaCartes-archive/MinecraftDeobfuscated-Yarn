@@ -11,13 +11,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
+import net.minecraft.network.message.DecoratedContents;
 import net.minecraft.network.message.MessageChain;
 import net.minecraft.network.message.MessageDecorator;
 import net.minecraft.network.message.MessageMetadata;
-import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.network.message.SignedCommandArguments;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -27,7 +28,7 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.slf4j.Logger;
 
-public class MessageArgumentType implements TextConvertibleArgumentType<MessageArgumentType.MessageFormat> {
+public class MessageArgumentType implements SignedArgumentType<MessageArgumentType.MessageFormat> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("Hello world!", "foo", "@e", "Hello @p :)");
 	static final Logger LOGGER = LogUtils.getLogger();
 
@@ -44,9 +45,8 @@ public class MessageArgumentType implements TextConvertibleArgumentType<MessageA
 		MessageArgumentType.MessageFormat messageFormat = context.getArgument(name, MessageArgumentType.MessageFormat.class);
 		Text text = messageFormat.format(context.getSource());
 		SignedCommandArguments signedCommandArguments = context.getSource().getSignedArguments();
-		MessageSignatureData messageSignatureData = signedCommandArguments.getArgumentSignature(name);
-		boolean bl = signedCommandArguments.isPreviewSigned(name);
-		return new MessageArgumentType.SignedMessage(messageFormat.contents, text, messageSignatureData, bl);
+		SignedCommandArguments.ArgumentSignature argumentSignature = signedCommandArguments.createSignature(name);
+		return new MessageArgumentType.SignedMessage(messageFormat.contents, text, argumentSignature);
 	}
 
 	public MessageArgumentType.MessageFormat parse(StringReader stringReader) throws CommandSyntaxException {
@@ -58,8 +58,8 @@ public class MessageArgumentType implements TextConvertibleArgumentType<MessageA
 		return EXAMPLES;
 	}
 
-	public Text toText(MessageArgumentType.MessageFormat messageFormat) {
-		return Text.literal(messageFormat.getContents());
+	public String toSignedString(MessageArgumentType.MessageFormat messageFormat) {
+		return messageFormat.getContents();
 	}
 
 	public CompletableFuture<Text> decorate(ServerCommandSource serverCommandSource, MessageArgumentType.MessageFormat messageFormat) throws CommandSyntaxException {
@@ -205,28 +205,32 @@ public class MessageArgumentType implements TextConvertibleArgumentType<MessageA
 		}
 	}
 
-	public static record SignedMessage(String plain, Text formatted, MessageSignatureData signature, boolean signedPreview) {
-		public CompletableFuture<FilteredMessage<net.minecraft.network.message.SignedMessage>> decorate(ServerCommandSource source) {
-			CompletableFuture<FilteredMessage<net.minecraft.network.message.SignedMessage>> completableFuture = this.filterText(source, this.plain)
-				.thenComposeAsync(filtered -> {
-					FilteredMessage<Text> filteredMessage = this.format(source, filtered);
-					return this.decorate(source, filtered, filteredMessage);
-				}, source.getServer());
-			completableFuture.thenAccept(
-				message -> {
-					net.minecraft.network.message.SignedMessage signedMessage = (net.minecraft.network.message.SignedMessage)message.raw();
-					if (signedMessage.isExpiredOnServer(Instant.now())) {
-						MessageArgumentType.LOGGER
-							.warn(
-								"{} sent expired chat: '{}'. Is the client/server system time unsynchronized?",
-								source.getDisplayName().getString(),
-								signedMessage.getSignedContent().getString()
-							);
-					}
-				}
-			);
-			MessageArgumentType.handleResolvingFailure(source, completableFuture);
-			return completableFuture;
+	public static record SignedMessage(String plain, Text formatted, SignedCommandArguments.ArgumentSignature signedArgument) {
+		public void decorate(ServerCommandSource source, Consumer<FilteredMessage<net.minecraft.network.message.SignedMessage>> callback) {
+			source.getMessageChainTaskQueue()
+				.append(
+					() -> this.filterText(source, this.plain)
+							.thenComposeAsync(filtered -> {
+								FilteredMessage<Text> filteredMessage = this.format(source, filtered);
+								return this.decorate(source, filtered, filteredMessage);
+							}, source.getServer())
+							.thenApply(
+								message -> {
+									net.minecraft.network.message.SignedMessage signedMessage = (net.minecraft.network.message.SignedMessage)message.raw();
+									if (signedMessage.isExpiredOnServer(Instant.now())) {
+										MessageArgumentType.LOGGER
+											.warn(
+												"{} sent expired chat: '{}'. Is the client/server system time unsynchronized?",
+												source.getDisplayName().getString(),
+												signedMessage.getSignedContent().plain().getString()
+											);
+									}
+
+									return message;
+								}
+							)
+							.thenAcceptAsync(callback, source.getServer())
+				);
 		}
 
 		/**
@@ -236,8 +240,7 @@ public class MessageArgumentType implements TextConvertibleArgumentType<MessageA
 		 * #format(ServerCommandSource, String)}.
 		 */
 		private FilteredMessage<Text> format(ServerCommandSource source, FilteredMessage<String> message) {
-			String string = message.filtered();
-			return string != null ? new FilteredMessage<>(this.formatted, this.format(source, string)) : FilteredMessage.permitted(this.formatted);
+			return message.mapParts(rawContent -> this.formatted, filteredContent -> this.format(source, filteredContent));
 		}
 
 		/**
@@ -261,15 +264,18 @@ public class MessageArgumentType implements TextConvertibleArgumentType<MessageA
 			SignedCommandArguments signedCommandArguments = source.getSignedArguments();
 			MessageChain.Unpacker unpacker = signedCommandArguments.decoder();
 			MessageMetadata messageMetadata = signedCommandArguments.metadata();
-			MessageChain.Signature signature = new MessageChain.Signature(this.signature);
-			if (this.signedPreview) {
+			MessageChain.Signature signature = new MessageChain.Signature(this.signedArgument.signature());
+			if (this.signedArgument.signedPreview()) {
 				return messageDecorator.decorateFiltered(serverPlayerEntity, formatted)
-					.thenApply(decoratedMessage -> unpacker.unpack(signature, messageMetadata, decoratedMessage));
+					.thenApply(
+						decoratedMessage -> unpacker.unpack(signature, messageMetadata, DecoratedContents.of(filtered, decoratedMessage), this.signedArgument.lastSeenMessages())
+					);
 			} else {
-				FilteredMessage<Text> filteredMessage = filtered.map(Text::literal);
-				FilteredMessage<net.minecraft.network.message.SignedMessage> filteredMessage2 = unpacker.unpack(signature, messageMetadata, filteredMessage);
+				FilteredMessage<net.minecraft.network.message.SignedMessage> filteredMessage = unpacker.unpack(
+					signature, messageMetadata, DecoratedContents.of(filtered), this.signedArgument.lastSeenMessages()
+				);
 				return messageDecorator.decorateFiltered(serverPlayerEntity, formatted)
-					.thenApply(decoratedMessage -> MessageDecorator.attachDecoration(filteredMessage2, decoratedMessage));
+					.thenApply(decoratedMessage -> MessageDecorator.attachUnsignedDecoration(filteredMessage, decoratedMessage));
 			}
 		}
 
@@ -286,10 +292,10 @@ public class MessageArgumentType implements TextConvertibleArgumentType<MessageA
 		 */
 		public void sendHeader(ServerCommandSource source) {
 			if (!source.getSignedArguments().metadata().lacksSender()) {
-				this.decorate(source).thenAcceptAsync(decoratedMessage -> {
+				this.decorate(source, decoratedMessage -> {
 					PlayerManager playerManager = source.getServer().getPlayerManager();
 					playerManager.sendMessageHeader((net.minecraft.network.message.SignedMessage)decoratedMessage.raw(), Set.of());
-				}, source.getServer());
+				});
 			}
 		}
 	}

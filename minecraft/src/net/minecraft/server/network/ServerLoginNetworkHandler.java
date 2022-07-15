@@ -21,6 +21,7 @@ import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.network.listener.ServerLoginPacketListener;
+import net.minecraft.network.listener.TickablePacketListener;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginKeyC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginQueryResponseC2SPacket;
@@ -53,7 +54,7 @@ import org.slf4j.Logger;
  * packet and then transitions the connection's packet listener to a {@link
  * ServerPlayNetworkHandler}.
  */
-public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
+public class ServerLoginNetworkHandler implements TickablePacketListener, ServerLoginPacketListener {
 	private static final AtomicInteger NEXT_AUTHENTICATOR_THREAD_ID = new AtomicInteger(0);
 	static final Logger LOGGER = LogUtils.getLogger();
 	private static final int TIMEOUT_TICKS = 600;
@@ -87,15 +88,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 		this.nonce = Ints.toByteArray(RANDOM.nextInt());
 	}
 
-	/**
-	 * Ticks this login network handler.
-	 * 
-	 * <p>This accepts the player to the server if ready. If the state is delay
-	 * accept, it checks if the old player with the same UUID is gone and
-	 * admits the player.
-	 * 
-	 * @apiNote This should only be called on the server thread.
-	 */
+	@Override
 	public void tick() {
 		if (this.state == ServerLoginNetworkHandler.State.READY_TO_ACCEPT) {
 			this.acceptPlayer();

@@ -10,7 +10,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.network.message.MessageSourceProfile;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SentMessage;
-import net.minecraft.network.message.SignedMessage;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -49,35 +48,30 @@ public class TeamMsgCommand {
 		} else {
 			Text text = team.getFormattedName().fillStyle(STYLE);
 			MessageSourceProfile messageSourceProfile = source.getMessageSourceProfile();
-			MessageType.Parameters parameters = MessageType.params(MessageType.TEAM_MSG_COMMAND, source).withTargetName(text);
+			MessageType.Parameters parameters = MessageType.params(MessageType.TEAM_MSG_COMMAND_INCOMING, source).withTargetName(text);
+			MessageType.Parameters parameters2 = MessageType.params(MessageType.TEAM_MSG_COMMAND_OUTGOING, source).withTargetName(text);
 			List<ServerPlayerEntity> list = source.getServer()
 				.getPlayerManager()
 				.getPlayerList()
 				.stream()
 				.filter(player -> player == entity || player.getScoreboardTeam() == team)
 				.toList();
-			signedMessage.decorate(source)
-				.thenAcceptAsync(
-					decoratedMessage -> {
-						FilteredMessage<SentMessage> filteredMessage = SentMessage.of(decoratedMessage, messageSourceProfile);
+			signedMessage.decorate(source, decoratedMessage -> {
+				FilteredMessage<SentMessage> filteredMessage = SentMessage.of(decoratedMessage, messageSourceProfile);
 
-						for (ServerPlayerEntity serverPlayerEntity : list) {
-							if (serverPlayerEntity == entity) {
-								serverPlayerEntity.sendMessage(
-									Text.translatable("chat.type.team.sent", text, source.getDisplayName(), ((SignedMessage)decoratedMessage.raw()).getContent())
-								);
-							} else {
-								SentMessage sentMessage = filteredMessage.getFilterableFor(source, serverPlayerEntity);
-								if (sentMessage != null) {
-									serverPlayerEntity.sendChatMessage(sentMessage, parameters);
-								}
-							}
+				for (ServerPlayerEntity serverPlayerEntity : list) {
+					if (serverPlayerEntity == entity) {
+						serverPlayerEntity.sendChatMessage(filteredMessage.raw(), parameters2);
+					} else {
+						SentMessage sentMessage = filteredMessage.getFilterableFor(source, serverPlayerEntity);
+						if (sentMessage != null) {
+							serverPlayerEntity.sendChatMessage(sentMessage, parameters);
 						}
+					}
+				}
 
-						filteredMessage.raw().afterPacketsSent(source.getServer().getPlayerManager());
-					},
-					source.getServer()
-				);
+				filteredMessage.raw().afterPacketsSent(source.getServer().getPlayerManager());
+			});
 			return list.size();
 		}
 	}

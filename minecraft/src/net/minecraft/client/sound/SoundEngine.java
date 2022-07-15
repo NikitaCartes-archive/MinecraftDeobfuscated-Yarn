@@ -5,6 +5,7 @@ import com.mojang.logging.LogUtils;
 import java.nio.IntBuffer;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.OptionalLong;
 import java.util.Set;
@@ -78,10 +79,7 @@ public class SoundEngine {
 		} else if (!aLCCapabilities.OpenALC11) {
 			throw new IllegalStateException("OpenAL 1.1 not supported");
 		} else {
-			if (aLCCapabilities.ALC_SOFT_HRTF && directionalAudio) {
-				this.tryEnableDirectionalAudio();
-			}
-
+			this.setDirectionalAudio(aLCCapabilities.ALC_SOFT_HRTF && directionalAudio);
 			this.contextPointer = ALC10.alcCreateContext(this.devicePointer, (IntBuffer)null);
 			ALC10.alcMakeContextCurrent(this.contextPointer);
 			int i = this.getMonoSourceCount();
@@ -105,11 +103,11 @@ public class SoundEngine {
 		}
 	}
 
-	private void tryEnableDirectionalAudio() {
+	private void setDirectionalAudio(boolean enabled) {
 		int i = ALC10.alcGetInteger(this.devicePointer, 6548);
 		if (i > 0) {
 			try (MemoryStack memoryStack = MemoryStack.stackPush()) {
-				IntBuffer intBuffer = memoryStack.callocInt(10).put(6546).put(1).put(6550).put(0).put(0).flip();
+				IntBuffer intBuffer = memoryStack.callocInt(10).put(6546).put(enabled ? 1 : 0).put(6550).put(0).put(0).flip();
 				if (!SOFTHRTF.alcResetDeviceSOFT(this.devicePointer, intBuffer)) {
 					LOGGER.warn("Failed to reset device: {}", ALC10.alcGetString(this.devicePointer, ALC10.alcGetError(this.devicePointer)));
 				}
@@ -233,6 +231,7 @@ public class SoundEngine {
 
 	public String getDebugString() {
 		return String.format(
+			Locale.ROOT,
 			"Sounds: %d/%d + %d/%d",
 			this.streamingSources.getSourceCount(),
 			this.streamingSources.getMaxSourceCount(),

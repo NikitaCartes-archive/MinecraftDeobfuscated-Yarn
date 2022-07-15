@@ -7,6 +7,7 @@ import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMaps;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import net.minecraft.server.world.ServerWorld;
@@ -67,8 +68,8 @@ public class FeatureDebugLogger {
 							(featureData, count) -> LOGGER.debug(
 									string2
 										+ " "
-										+ String.format("%10d ", count)
-										+ String.format("%10f ", (double)count.intValue() / (double)integer.intValue())
+										+ String.format(Locale.ROOT, "%10d ", count)
+										+ String.format(Locale.ROOT, "%10f ", (double)count.intValue() / (double)integer.intValue())
 										+ featureData.topFeature().flatMap(registry::getKey).map(RegistryKey::getValue)
 										+ " "
 										+ featureData.feature().feature()

@@ -1,10 +1,13 @@
 package net.minecraft.client.report;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.OptionalInt;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.report.log.ChatLog;
+import net.minecraft.client.report.log.ReceivedMessage;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,7 +42,7 @@ public class MessagesListAdder {
 		}
 	}
 
-	private static int addContextMessages(List<ReceivedMessage.IndexedMessage> messages, MessagesListAdder.MessagesList messagesList) {
+	private static int addContextMessages(List<ChatLog.IndexedEntry<ReceivedMessage>> messages, MessagesListAdder.MessagesList messagesList) {
 		int i = 8;
 		if (messages.size() > 8) {
 			int j = messages.size() - 8;
@@ -55,12 +58,14 @@ public class MessagesListAdder {
 
 	@Nullable
 	private GroupedMessagesCollector.GroupedMessages collectGroupedMessages() {
-		GroupedMessagesCollector groupedMessagesCollector = new GroupedMessagesCollector(message -> this.getReportType(message.message()));
+		GroupedMessagesCollector groupedMessagesCollector = new GroupedMessagesCollector(message -> this.getReportType((ReceivedMessage)message.entry()));
 		OptionalInt optionalInt = this.log
 			.streamBackward(this.logMaxIndex)
-			.streamIndexedMessages()
+			.streamIndexedEntries()
+			.map(indexedEntry -> indexedEntry.cast(ReceivedMessage.class))
+			.filter(Objects::nonNull)
 			.takeWhile(groupedMessagesCollector::add)
-			.mapToInt(ReceivedMessage.IndexedMessage::index)
+			.mapToInt(ChatLog.IndexedEntry::index)
 			.reduce((acc, cur) -> cur);
 		if (optionalInt.isPresent()) {
 			this.logMaxIndex = this.log.getPreviousIndex(optionalInt.getAsInt());
@@ -75,9 +80,9 @@ public class MessagesListAdder {
 
 	@Environment(EnvType.CLIENT)
 	public interface MessagesList {
-		default void addMessages(Iterable<ReceivedMessage.IndexedMessage> messages) {
-			for (ReceivedMessage.IndexedMessage indexedMessage : messages) {
-				this.addMessage(indexedMessage.index(), indexedMessage.message());
+		default void addMessages(Iterable<ChatLog.IndexedEntry<ReceivedMessage>> messages) {
+			for (ChatLog.IndexedEntry<ReceivedMessage> indexedEntry : messages) {
+				this.addMessage(indexedEntry.index(), indexedEntry.entry());
 			}
 		}
 

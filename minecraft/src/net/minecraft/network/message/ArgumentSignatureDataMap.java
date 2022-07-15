@@ -1,5 +1,6 @@
 package net.minecraft.network.message;
 
+import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.ParsedArgument;
@@ -9,9 +10,8 @@ import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.datafixers.util.Pair;
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.command.argument.TextConvertibleArgumentType;
+import net.minecraft.command.argument.SignedArgumentType;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.text.Text;
 
 /**
  * A record holding the signatures for all signable arguments of an executed command.
@@ -46,12 +46,37 @@ public record ArgumentSignatureDataMap(List<ArgumentSignatureDataMap.Entry> entr
 	}
 
 	/**
+	 * {@return whether to preview {@code parseResults}}
+	 * 
+	 * <p>This returns {@code true} if the parsed arguments include {@link
+	 * SignedArgumentType}.
+	 */
+	public static boolean shouldPreview(ParseResults<?> parseResults) {
+		CommandContextBuilder<?> commandContextBuilder = parseResults.getContext().getLastChild();
+
+		for (ParsedCommandNode<?> parsedCommandNode : commandContextBuilder.getNodes()) {
+			CommandNode parsedArgument = parsedCommandNode.getNode();
+			if (parsedArgument instanceof ArgumentCommandNode) {
+				ArgumentCommandNode<?, ?> argumentCommandNode = (ArgumentCommandNode<?, ?>)parsedArgument;
+				if (argumentCommandNode.getType() instanceof SignedArgumentType) {
+					ParsedArgument<?, ?> parsedArgumentx = (ParsedArgument<?, ?>)commandContextBuilder.getArguments().get(argumentCommandNode.getName());
+					if (parsedArgumentx != null) {
+						return true;
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * {@return the signature map with arguments from {@code builder} signed with
 	 * {@code signer}}
 	 */
 	public static ArgumentSignatureDataMap sign(CommandContextBuilder<?> builder, ArgumentSignatureDataMap.ArgumentSigner signer) {
 		List<ArgumentSignatureDataMap.Entry> list = collectArguments(builder).stream().map(entry -> {
-			MessageSignatureData messageSignatureData = signer.sign((String)entry.getFirst(), (Text)entry.getSecond());
+			MessageSignatureData messageSignatureData = signer.sign((String)entry.getFirst(), (String)entry.getSecond());
 			return new ArgumentSignatureDataMap.Entry((String)entry.getFirst(), messageSignatureData);
 		}).toList();
 		return new ArgumentSignatureDataMap(list);
@@ -60,21 +85,21 @@ public record ArgumentSignatureDataMap(List<ArgumentSignatureDataMap.Entry> entr
 	/**
 	 * {@return the signable argument names and their values from {@code builder}}
 	 */
-	private static List<Pair<String, Text>> collectArguments(CommandContextBuilder<?> builder) {
+	private static List<Pair<String, String>> collectArguments(CommandContextBuilder<?> builder) {
 		CommandContextBuilder<?> commandContextBuilder = builder.getLastChild();
-		List<Pair<String, Text>> list = new ArrayList();
+		List<Pair<String, String>> list = new ArrayList();
 
 		for (ParsedCommandNode<?> parsedCommandNode : commandContextBuilder.getNodes()) {
 			CommandNode parsedArgument = parsedCommandNode.getNode();
 			if (parsedArgument instanceof ArgumentCommandNode) {
 				ArgumentCommandNode<?, ?> argumentCommandNode = (ArgumentCommandNode<?, ?>)parsedArgument;
 				ArgumentType var9 = argumentCommandNode.getType();
-				if (var9 instanceof TextConvertibleArgumentType) {
-					TextConvertibleArgumentType<?> textConvertibleArgumentType = (TextConvertibleArgumentType<?>)var9;
+				if (var9 instanceof SignedArgumentType) {
+					SignedArgumentType<?> signedArgumentType = (SignedArgumentType<?>)var9;
 					ParsedArgument<?, ?> parsedArgumentx = (ParsedArgument<?, ?>)commandContextBuilder.getArguments().get(argumentCommandNode.getName());
 					if (parsedArgumentx != null) {
-						Text text = resultToText(textConvertibleArgumentType, parsedArgumentx);
-						list.add(Pair.of(argumentCommandNode.getName(), text));
+						String string = resultToString(signedArgumentType, parsedArgumentx);
+						list.add(Pair.of(argumentCommandNode.getName(), string));
 					}
 				}
 			}
@@ -83,8 +108,8 @@ public record ArgumentSignatureDataMap(List<ArgumentSignatureDataMap.Entry> entr
 		return list;
 	}
 
-	private static <T> Text resultToText(TextConvertibleArgumentType<T> type, ParsedArgument<?, ?> argument) {
-		return type.toText((T)argument.getResult());
+	private static <T> String resultToString(SignedArgumentType<T> type, ParsedArgument<?, ?> argument) {
+		return type.toSignedString((T)argument.getResult());
 	}
 
 	/**
@@ -92,7 +117,7 @@ public record ArgumentSignatureDataMap(List<ArgumentSignatureDataMap.Entry> entr
 	 */
 	@FunctionalInterface
 	public interface ArgumentSigner {
-		MessageSignatureData sign(String argumentName, Text value);
+		MessageSignatureData sign(String argumentName, String value);
 	}
 
 	/**

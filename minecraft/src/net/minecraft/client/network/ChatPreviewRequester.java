@@ -64,14 +64,14 @@ public class ChatPreviewRequester {
 			return true;
 		} else if (this.pendingResponseQuery != null && this.pendingResponseQuery.messageEquals(message)) {
 			return true;
-		} else if (this.shouldRequest(currentTime)) {
+		} else if (!this.client.isInSingleplayer() && !this.shouldRequest(currentTime)) {
+			return false;
+		} else {
 			ChatPreviewRequester.Query query = new ChatPreviewRequester.Query(this.idIncrementor.next(), message);
 			this.pendingResponseQuery = query;
 			this.queryTime = currentTime;
 			clientPlayNetworkHandler.sendPacket(new RequestChatPreviewC2SPacket(query.id(), query.message()));
 			return true;
-		} else {
-			return false;
 		}
 	}
 
