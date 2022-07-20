@@ -452,7 +452,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 
 	@Override
 	public boolean shouldEnforceSecureProfile() {
-		return this.getProperties().enforceSecureProfile;
+		return this.getProperties().enforceSecureProfile && this.getProperties().onlineMode;
 	}
 
 	protected boolean convertData() {

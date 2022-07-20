@@ -8,7 +8,6 @@ import net.minecraft.network.message.LastSeenMessageList;
 import net.minecraft.network.message.MessageMetadata;
 import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.StringHelper;
 
 /**
  * A packet used to send a chat message to the server.
@@ -37,18 +36,6 @@ import net.minecraft.util.StringHelper;
 public record ChatMessageC2SPacket(
 	String chatMessage, Instant timestamp, long salt, MessageSignatureData signature, boolean signedPreview, LastSeenMessageList.Acknowledgment acknowledgment
 ) implements Packet<ServerPlayPacketListener> {
-	public ChatMessageC2SPacket(
-		String chatMessage, Instant timestamp, long salt, MessageSignatureData signature, boolean signedPreview, LastSeenMessageList.Acknowledgment acknowledgment
-	) {
-		chatMessage = StringHelper.truncateChat(chatMessage);
-		this.chatMessage = chatMessage;
-		this.timestamp = timestamp;
-		this.salt = salt;
-		this.signature = signature;
-		this.signedPreview = signedPreview;
-		this.acknowledgment = acknowledgment;
-	}
-
 	public ChatMessageC2SPacket(PacketByteBuf buf) {
 		this(buf.readString(256), buf.readInstant(), buf.readLong(), new MessageSignatureData(buf), buf.readBoolean(), new LastSeenMessageList.Acknowledgment(buf));
 	}

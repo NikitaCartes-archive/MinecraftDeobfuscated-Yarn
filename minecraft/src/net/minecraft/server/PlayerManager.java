@@ -904,7 +904,7 @@ public abstract class PlayerManager {
 	) {
 		boolean bl = this.verify((SignedMessage)message.raw(), profile);
 		this.server.logChatMessage(((SignedMessage)message.raw()).getContent(), params, bl ? null : "Not Secure");
-		FilteredMessage<SentMessage> filteredMessage = SentMessage.of(message, profile);
+		FilteredMessage<SentMessage> filteredMessage = SentMessage.of(message);
 
 		for(ServerPlayerEntity serverPlayerEntity : this.players) {
 			SentMessage sentMessage = filteredMessage.get(shouldSendFiltered.test(serverPlayerEntity));

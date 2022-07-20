@@ -6,9 +6,6 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.message.ArgumentSignatureDataMap;
 import net.minecraft.network.message.LastSeenMessageList;
-import net.minecraft.network.message.MessageMetadata;
-import net.minecraft.network.message.SignedCommandArguments;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.StringHelper;
 
 /**
@@ -78,12 +75,5 @@ public record CommandExecutionC2SPacket(
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onCommandExecution(this);
-	}
-
-	public SignedCommandArguments createSignedArguments(ServerPlayerEntity player) {
-		MessageMetadata messageMetadata = new MessageMetadata(player.getUuid(), this.timestamp, this.salt);
-		return new SignedCommandArguments.Impl(
-			player.networkHandler.getMessageUnpacker(), messageMetadata, this.argumentSignatures, this.signedPreview, this.acknowledgment.lastSeen()
-		);
 	}
 }

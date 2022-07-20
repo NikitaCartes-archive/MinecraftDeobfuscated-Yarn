@@ -381,6 +381,11 @@ public class ChatInputSuggestor {
 	}
 
 	@Nullable
+	public ParseResults<CommandSource> method_45028() {
+		return this.parse;
+	}
+
+	@Nullable
 	private static <S> CommandNode<S> getNodeAt(int cursor, CommandContextBuilder<S> builder) {
 		StringRange stringRange = builder.getRange();
 		if (cursor < stringRange.getStart()) {

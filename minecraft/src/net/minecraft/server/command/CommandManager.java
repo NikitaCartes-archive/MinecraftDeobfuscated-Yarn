@@ -9,6 +9,7 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
@@ -18,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
@@ -153,12 +155,19 @@ public class CommandManager {
 		this.dispatcher.setConsumer((context, success, result) -> context.getSource().onCommandComplete(context, success, result));
 	}
 
+	public static <S> ParseResults<S> method_45018(ParseResults<S> parseResults, UnaryOperator<S> unaryOperator) {
+		CommandContextBuilder<S> commandContextBuilder = parseResults.getContext();
+		CommandContextBuilder<S> commandContextBuilder2 = commandContextBuilder.withSource((S)unaryOperator.apply(commandContextBuilder.getSource()));
+		return new ParseResults<>(commandContextBuilder2, parseResults.getReader(), parseResults.getExceptions());
+	}
+
 	/**
 	 * Executes {@code command}. Unlike {@link #execute} the command can be prefixed
 	 * with a slash.
 	 */
 	public int executeWithPrefix(ServerCommandSource source, String command) {
-		return this.execute(source, command.startsWith("/") ? command.substring(1) : command);
+		command = command.startsWith("/") ? command.substring(1) : command;
+		return this.execute(this.dispatcher.parse(command, source), command);
 	}
 
 	/**
@@ -166,19 +175,19 @@ public class CommandManager {
 	 * 
 	 * @see #executeWithPrefix(ServerCommandSource, String)
 	 */
-	public int execute(ServerCommandSource commandSource, String command) {
-		StringReader stringReader = new StringReader(command);
-		commandSource.getServer().getProfiler().push((Supplier<String>)(() -> "/" + command));
+	public int execute(ParseResults<ServerCommandSource> parseResults, String command) {
+		ServerCommandSource serverCommandSource = parseResults.getContext().getSource();
+		serverCommandSource.getServer().getProfiler().push((Supplier<String>)(() -> "/" + command));
 
 		int i;
 		try {
 			try {
-				return this.dispatcher.execute(stringReader, commandSource);
+				return this.dispatcher.execute(parseResults);
 			} catch (CommandException var13) {
-				commandSource.sendError(var13.getTextMessage());
+				serverCommandSource.sendError(var13.getTextMessage());
 				return 0;
 			} catch (CommandSyntaxException var14) {
-				commandSource.sendError(Texts.toText(var14.getRawMessage()));
+				serverCommandSource.sendError(Texts.toText(var14.getRawMessage()));
 				if (var14.getInput() != null && var14.getCursor() >= 0) {
 					i = Math.min(var14.getInput().length(), var14.getCursor());
 					MutableText mutableText = Text.empty()
@@ -195,7 +204,7 @@ public class CommandManager {
 					}
 
 					mutableText.append(Text.translatable("command.context.here").formatted(Formatting.RED, Formatting.ITALIC));
-					commandSource.sendError(mutableText);
+					serverCommandSource.sendError(mutableText);
 				}
 			} catch (Exception var15) {
 				MutableText mutableText2 = Text.literal(var15.getMessage() == null ? var15.getClass().getName() : var15.getMessage());
@@ -213,11 +222,11 @@ public class CommandManager {
 					}
 				}
 
-				commandSource.sendError(
+				serverCommandSource.sendError(
 					Text.translatable("command.failed").styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, mutableText2)))
 				);
 				if (SharedConstants.isDevelopment) {
-					commandSource.sendError(Text.literal(Util.getInnermostMessage(var15)));
+					serverCommandSource.sendError(Text.literal(Util.getInnermostMessage(var15)));
 					LOGGER.error("'/{}' threw an exception", command, var15);
 				}
 
@@ -226,7 +235,7 @@ public class CommandManager {
 
 			i = 0;
 		} finally {
-			commandSource.getServer().getProfiler().pop();
+			serverCommandSource.getServer().getProfiler().pop();
 		}
 
 		return i;

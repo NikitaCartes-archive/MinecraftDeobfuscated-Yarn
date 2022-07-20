@@ -18,6 +18,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nullable;
@@ -148,9 +149,9 @@ public class JfrProfiler implements FlightProfiler {
 					EVENTS.forEach(recording::enable);
 					recording.setDumpOnExit(true);
 					recording.setToDisk(true);
-					recording.setName("%s-%s-%s".formatted(instanceType.getName(), SharedConstants.getGameVersion().getName(), string));
+					recording.setName(String.format(Locale.ROOT, "%s-%s-%s", instanceType.getName(), SharedConstants.getGameVersion().getName(), string));
 				});
-				Path path = Paths.get("debug/%s-%s.jfr".formatted(instanceType.getName(), string));
+				Path path = Paths.get(String.format(Locale.ROOT, "debug/%s-%s.jfr", instanceType.getName(), string));
 				if (!Files.exists(path.getParent(), new LinkOption[0])) {
 					Files.createDirectories(path.getParent());
 				}
