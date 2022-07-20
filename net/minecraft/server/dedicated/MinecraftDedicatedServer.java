@@ -423,7 +423,7 @@ implements DedicatedServer {
 
     @Override
     public boolean shouldEnforceSecureProfile() {
-        return this.getProperties().enforceSecureProfile;
+        return this.getProperties().enforceSecureProfile && this.getProperties().onlineMode;
     }
 
     protected boolean convertData() {

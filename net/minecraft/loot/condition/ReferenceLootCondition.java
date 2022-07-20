@@ -52,6 +52,10 @@ implements LootCondition {
     @Override
     public boolean test(LootContext lootContext) {
         LootCondition lootCondition = lootContext.getCondition(this.id);
+        if (lootCondition == null) {
+            LOGGER.warn("Tried using unknown condition table called {}", (Object)this.id);
+            return false;
+        }
         if (lootContext.addCondition(lootCondition)) {
             try {
                 boolean bl = lootCondition.test(lootContext);

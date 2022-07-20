@@ -16,6 +16,7 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.SculkShriekerWarningManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LargeEntitySpawnHelper;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.WardenEntity;
@@ -105,6 +106,8 @@ implements VibrationListener.Callback {
 
     @Nullable
     public static ServerPlayerEntity findResponsiblePlayerFromEntity(@Nullable Entity entity) {
+        ItemEntity itemEntity;
+        ServerPlayerEntity serverPlayerEntity2;
         ProjectileEntity projectileEntity;
         Entity entity2;
         Entity entity3;
@@ -117,7 +120,11 @@ implements VibrationListener.Callback {
             return serverPlayerEntity;
         }
         if (entity instanceof ProjectileEntity && (entity2 = (projectileEntity = (ProjectileEntity)entity).getOwner()) instanceof ServerPlayerEntity) {
-            ServerPlayerEntity serverPlayerEntity2 = (ServerPlayerEntity)entity2;
+            serverPlayerEntity2 = (ServerPlayerEntity)entity2;
+            return serverPlayerEntity2;
+        }
+        if (entity instanceof ItemEntity && (entity2 = (itemEntity = (ItemEntity)entity).getEventSource()) instanceof ServerPlayerEntity) {
+            serverPlayerEntity2 = (ServerPlayerEntity)entity2;
             return serverPlayerEntity2;
         }
         return null;

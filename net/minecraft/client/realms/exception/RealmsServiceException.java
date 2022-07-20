@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.realms.exception;
 
+import java.util.Locale;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.realms.RealmsError;
@@ -36,9 +37,9 @@ extends Exception {
         if (this.error != null) {
             String string = "mco.errorMessage." + this.error.getErrorCode();
             String string2 = I18n.hasTranslation(string) ? I18n.translate(string, new Object[0]) : this.error.getErrorMessage();
-            return "Realms service error (%d/%d) %s".formatted(this.httpResultCode, this.error.getErrorCode(), string2);
+            return String.format(Locale.ROOT, "Realms service error (%d/%d) %s", this.httpResultCode, this.error.getErrorCode(), string2);
         }
-        return "Realms service error (%d) %s".formatted(this.httpResultCode, this.httpResponseText);
+        return String.format(Locale.ROOT, "Realms service error (%d) %s", this.httpResultCode, this.httpResponseText);
     }
 
     public int getErrorCode(int fallback) {

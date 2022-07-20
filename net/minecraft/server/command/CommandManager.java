@@ -11,6 +11,7 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
@@ -19,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import net.minecraft.SharedConstants;
 import net.minecraft.command.CommandException;
@@ -208,12 +210,19 @@ public class CommandManager {
         this.dispatcher.setConsumer((context, success, result) -> ((ServerCommandSource)context.getSource()).onCommandComplete(context, success, result));
     }
 
+    public static <S> ParseResults<S> method_45018(ParseResults<S> parseResults, UnaryOperator<S> unaryOperator) {
+        CommandContextBuilder commandContextBuilder = parseResults.getContext();
+        CommandContextBuilder<S> commandContextBuilder2 = commandContextBuilder.withSource(unaryOperator.apply(commandContextBuilder.getSource()));
+        return new ParseResults<S>(commandContextBuilder2, parseResults.getReader(), parseResults.getExceptions());
+    }
+
     /**
      * Executes {@code command}. Unlike {@link #execute} the command can be prefixed
      * with a slash.
      */
     public int executeWithPrefix(ServerCommandSource source, String command) {
-        return this.execute(source, command.startsWith("/") ? command.substring(1) : command);
+        command = command.startsWith("/") ? command.substring(1) : command;
+        return this.execute(this.dispatcher.parse(command, source), command);
     }
 
     /*
@@ -224,19 +233,19 @@ public class CommandManager {
      * 
      * @see #executeWithPrefix(ServerCommandSource, String)
      */
-    public int execute(ServerCommandSource commandSource, String command) {
-        StringReader stringReader = new StringReader(command);
-        commandSource.getServer().getProfiler().push(() -> "/" + command);
+    public int execute(ParseResults<ServerCommandSource> parseResults, String command) {
+        ServerCommandSource serverCommandSource = parseResults.getContext().getSource();
+        serverCommandSource.getServer().getProfiler().push(() -> "/" + command);
         try {
-            int n = this.dispatcher.execute(stringReader, commandSource);
+            int n = this.dispatcher.execute(parseResults);
             return n;
         } catch (CommandException commandException) {
-            commandSource.sendError(commandException.getTextMessage());
+            serverCommandSource.sendError(commandException.getTextMessage());
             int n = 0;
             return n;
         } catch (CommandSyntaxException commandSyntaxException) {
             int i;
-            commandSource.sendError(Texts.toText(commandSyntaxException.getRawMessage()));
+            serverCommandSource.sendError(Texts.toText(commandSyntaxException.getRawMessage()));
             if (commandSyntaxException.getInput() != null && commandSyntaxException.getCursor() >= 0) {
                 i = Math.min(commandSyntaxException.getInput().length(), commandSyntaxException.getCursor());
                 MutableText mutableText = Text.empty().formatted(Formatting.GRAY).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/" + command)));
@@ -249,7 +258,7 @@ public class CommandManager {
                     mutableText.append(text);
                 }
                 mutableText.append(Text.translatable("command.context.here").formatted(Formatting.RED, Formatting.ITALIC));
-                commandSource.sendError(mutableText);
+                serverCommandSource.sendError(mutableText);
             }
             i = 0;
             return i;
@@ -262,15 +271,15 @@ public class CommandManager {
                     mutableText2.append("\n\n").append(stackTraceElements[j].getMethodName()).append("\n ").append(stackTraceElements[j].getFileName()).append(":").append(String.valueOf(stackTraceElements[j].getLineNumber()));
                 }
             }
-            commandSource.sendError(Text.translatable("command.failed").styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, mutableText2))));
+            serverCommandSource.sendError(Text.translatable("command.failed").styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, mutableText2))));
             if (SharedConstants.isDevelopment) {
-                commandSource.sendError(Text.literal(Util.getInnermostMessage(exception)));
+                serverCommandSource.sendError(Text.literal(Util.getInnermostMessage(exception)));
                 LOGGER.error("'/{}' threw an exception", (Object)command, (Object)exception);
             }
             int n = 0;
             return n;
         } finally {
-            commandSource.getServer().getProfiler().pop();
+            serverCommandSource.getServer().getProfiler().pop();
         }
     }
 

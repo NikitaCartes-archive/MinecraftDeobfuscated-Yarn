@@ -32,7 +32,7 @@ public class SculkCatalystBlock
 extends BlockWithEntity {
     public static final int BLOOM_DURATION = 8;
     public static final BooleanProperty BLOOM = Properties.BLOOM;
-    private final IntProvider experience = ConstantIntProvider.create(20);
+    private final IntProvider experience = ConstantIntProvider.create(5);
 
     public SculkCatalystBlock(AbstractBlock.Settings settings) {
         super(settings);

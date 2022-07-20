@@ -19,6 +19,7 @@ import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
+import net.minecraft.class_7644;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.DeathScreen;
 import net.minecraft.client.gui.screen.DownloadingTerrainScreen;
@@ -89,6 +90,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Arm;
 import net.minecraft.util.ClickType;
 import net.minecraft.util.Hand;
+import net.minecraft.util.StringHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -325,7 +327,7 @@ extends AbstractClientPlayerEntity {
      */
     public boolean shouldPreview(String command) {
         ParseResults<CommandSource> parseResults = this.networkHandler.getCommandDispatcher().parse(command, (CommandSource)this.networkHandler.getCommandSource());
-        return ArgumentSignatureDataMap.shouldPreview(parseResults);
+        return ArgumentSignatureDataMap.shouldPreview(class_7644.method_45043(parseResults));
     }
 
     /**
@@ -333,9 +335,13 @@ extends AbstractClientPlayerEntity {
      * 
      * @param command the command (without the leading slash)
      */
-    public void sendCommand(String command) {
-        LastSeenMessageList.Acknowledgment acknowledgment = this.networkHandler.consumeAcknowledgment();
-        this.networkHandler.sendPacket(new CommandExecutionC2SPacket(command, Instant.now(), 0L, ArgumentSignatureDataMap.EMPTY, false, acknowledgment));
+    public boolean sendCommand(String command) {
+        if (!this.shouldPreview(command)) {
+            LastSeenMessageList.Acknowledgment acknowledgment = this.networkHandler.consumeAcknowledgment();
+            this.networkHandler.sendPacket(new CommandExecutionC2SPacket(command, Instant.now(), 0L, ArgumentSignatureDataMap.EMPTY, false, acknowledgment));
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -348,16 +354,17 @@ extends AbstractClientPlayerEntity {
     }
 
     private void sendChatMessagePacket(String content, @Nullable Text preview) {
+        String string = StringHelper.truncateChat(content);
         MessageMetadata messageMetadata = this.createMessageMetadata();
         LastSeenMessageList.Acknowledgment acknowledgment = this.networkHandler.consumeAcknowledgment();
         if (preview != null) {
-            DecoratedContents decoratedContents = new DecoratedContents(content, preview);
+            DecoratedContents decoratedContents = new DecoratedContents(string, preview);
             MessageSignatureData messageSignatureData = this.signChatMessage(messageMetadata, decoratedContents, acknowledgment.lastSeen());
-            this.networkHandler.sendPacket(new ChatMessageC2SPacket(content, messageMetadata.timestamp(), messageMetadata.salt(), messageSignatureData, true, acknowledgment));
+            this.networkHandler.sendPacket(new ChatMessageC2SPacket(string, messageMetadata.timestamp(), messageMetadata.salt(), messageSignatureData, true, acknowledgment));
         } else {
-            DecoratedContents decoratedContents = new DecoratedContents(content);
+            DecoratedContents decoratedContents = new DecoratedContents(string);
             MessageSignatureData messageSignatureData = this.signChatMessage(messageMetadata, decoratedContents, acknowledgment.lastSeen());
-            this.networkHandler.sendPacket(new ChatMessageC2SPacket(content, messageMetadata.timestamp(), messageMetadata.salt(), messageSignatureData, false, acknowledgment));
+            this.networkHandler.sendPacket(new ChatMessageC2SPacket(string, messageMetadata.timestamp(), messageMetadata.salt(), messageSignatureData, false, acknowledgment));
         }
     }
 
@@ -372,7 +379,7 @@ extends AbstractClientPlayerEntity {
                 return this.networkHandler.getMessagePacker().pack(signer, metadata, content, lastSeenMessages).signature();
             }
         } catch (Exception exception) {
-            field_39078.error("Failed to sign chat message: '{}'", (Object)content.plain().getString(), (Object)exception);
+            field_39078.error("Failed to sign chat message: '{}'", (Object)content.plain(), (Object)exception);
         }
         return MessageSignatureData.EMPTY;
     }
@@ -400,7 +407,7 @@ extends AbstractClientPlayerEntity {
             return ArgumentSignatureDataMap.EMPTY;
         }
         try {
-            return ArgumentSignatureDataMap.sign(parseResults.getContext(), (argumentName, value) -> {
+            return ArgumentSignatureDataMap.sign(class_7644.method_45043(parseResults), (argumentName, value) -> {
                 DecoratedContents decoratedContents = preview != null ? new DecoratedContents(value, preview) : new DecoratedContents(value);
                 return this.networkHandler.getMessagePacker().pack(signer2, signer, decoratedContents, lastSeenMessages).signature();
             });

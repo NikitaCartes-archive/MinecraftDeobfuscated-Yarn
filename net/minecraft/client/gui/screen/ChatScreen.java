@@ -4,12 +4,14 @@
 package net.minecraft.client.gui.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.tree.CommandNode;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_7644;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextHandler;
 import net.minecraft.client.gui.hud.ChatHud;
@@ -27,7 +29,6 @@ import net.minecraft.client.option.ServerList;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.command.CommandSource;
-import net.minecraft.command.argument.DecoratableArgumentType;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
@@ -50,8 +51,9 @@ import org.lwjgl.glfw.GLFW;
 @Environment(value=EnvType.CLIENT)
 public class ChatScreen
 extends Screen {
-    private static final int PREVIEW_PENDING_COLOR = 0xFF7F00;
-    private static final int PREVIEW_CONSUMABLE_COLOR = 65280;
+    private static final int PREVIEW_PENDING_COLOR = 15118153;
+    private static final int PREVIEW_CONSUMABLE_COLOR = 7844841;
+    private static final int EVENT_HIGHLIGHT_COLOR = 10533887;
     public static final double SHIFT_SCROLL_AMOUNT = 7.0;
     private static final Text USAGE_TEXT = Text.translatable("chat_screen.usage");
     private static final int PREVIEW_LEFT_MARGIN = 2;
@@ -61,7 +63,6 @@ extends Screen {
     private static final Text CHAT_PREVIEW_WARNING_TOAST_TEXT = Text.translatable("chatPreview.warning.toast");
     private static final Text CHAT_PREVIEW_INPUT_TEXT = Text.translatable("chat.previewInput", Text.translatable("key.keyboard.enter")).formatted(Formatting.DARK_GRAY);
     private static final int MAX_INDICATOR_TOOLTIP_WIDTH = 260;
-    private static final int EVENT_HIGHLIGHT_COLOR = 10533887;
     private String chatLastMessage = "";
     private int messageHistorySize = -1;
     protected TextFieldWidget chatField;
@@ -166,8 +167,9 @@ extends Screen {
     }
 
     private void tryRequestCommandPreview(String chatText) {
+        ParseResults<CommandSource> parseResults = this.chatInputSuggestor.method_45028();
         CommandNode<CommandSource> commandNode = this.chatInputSuggestor.getNodeAt(this.chatField.getCursor());
-        if (commandNode != null && DecoratableArgumentType.isDecoratableArgumentNode(commandNode)) {
+        if (parseResults != null && commandNode != null && class_7644.method_45043(parseResults).method_45045(commandNode)) {
             this.chatPreviewer.tryRequest(chatText);
         } else {
             this.chatPreviewer.disablePreview();
@@ -297,31 +299,21 @@ extends Screen {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        float f;
-        Text text;
-        boolean bl;
         this.setFocused(this.chatField);
         this.chatField.setTextFieldFocused(true);
         ChatScreen.fill(matrices, 2, this.height - 14, this.width - 2, this.height - 2, this.client.options.getTextBackgroundColor(Integer.MIN_VALUE));
         this.chatField.render(matrices, mouseX, mouseY, delta);
-        boolean bl2 = bl = this.client.getProfileKeys().getSigner() != null;
-        if (this.chatPreviewMode == ChatPreviewMode.CONFIRM && !this.missingPreview) {
-            String string = this.chatField.getText();
-            text = Objects.requireNonNullElse(this.getPreviewText(), this.chatPreviewer.equalsLastPreviewed(string) && !string.startsWith("/") ? Text.literal(string) : CHAT_PREVIEW_INPUT_TEXT);
-            f = 1.0f;
-        } else {
-            ChatPreviewBackground.RenderData renderData = this.chatPreviewBackground.computeRenderData(Util.getMeasuringTimeMs(), this.getPreviewText());
-            text = renderData.preview();
-            f = renderData.alpha();
-        }
-        if (text != null) {
-            this.renderChatPreview(matrices, text, f, bl);
+        super.render(matrices, mouseX, mouseY, delta);
+        boolean bl = this.client.getProfileKeys().getSigner() != null;
+        ChatPreviewBackground.RenderData renderData = this.chatPreviewBackground.computeRenderData(Util.getMeasuringTimeMs(), this.method_45029());
+        if (renderData.preview() != null) {
+            this.renderChatPreview(matrices, renderData.preview(), renderData.alpha(), bl);
             this.chatInputSuggestor.tryRenderWindow(matrices, mouseX, mouseY);
         } else {
             this.chatInputSuggestor.render(matrices, mouseX, mouseY);
             if (bl) {
                 matrices.push();
-                ChatScreen.fill(matrices, 0, this.height - 14, 2, this.height - 2, -16711936);
+                ChatScreen.fill(matrices, 0, this.height - 14, 2, this.height - 2, -8932375);
                 matrices.pop();
             }
         }
@@ -334,7 +326,19 @@ extends Screen {
                 this.renderOrderedTooltip(matrices, this.textRenderer.wrapLines(messageIndicator.text(), 260), mouseX, mouseY);
             }
         }
-        super.render(matrices, mouseX, mouseY, delta);
+    }
+
+    @Nullable
+    protected Text method_45029() {
+        String string = this.chatField.getText();
+        if (string.isBlank()) {
+            return null;
+        }
+        Text text = this.getPreviewText();
+        if (this.chatPreviewMode == ChatPreviewMode.CONFIRM && !this.missingPreview) {
+            return Objects.requireNonNullElse(text, this.chatPreviewer.equalsLastPreviewed(string) && !string.startsWith("/") ? Text.literal(string) : CHAT_PREVIEW_INPUT_TEXT);
+        }
+        return text;
     }
 
     @Override
@@ -380,7 +384,7 @@ extends Screen {
         matrices.pop();
         RenderSystem.disableBlend();
         if (signable && this.chatPreviewer.getPreviewText() != null) {
-            n = this.chatPreviewer.cannotConsumePreview() ? 0xFF7F00 : 65280;
+            n = this.chatPreviewer.cannotConsumePreview() ? 15118153 : 7844841;
             int p = (int)(255.0f * alpha);
             matrices.push();
             ChatScreen.fill(matrices, 0, m, 2, this.getPreviewBottom(), p << 24 | n);

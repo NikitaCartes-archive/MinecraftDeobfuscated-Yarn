@@ -5,14 +5,13 @@ package net.minecraft.network.message;
 
 import com.google.common.collect.Sets;
 import java.util.Set;
-import net.minecraft.network.message.MessageMetadata;
-import net.minecraft.network.message.MessageSourceProfile;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.registry.DynamicRegistryManager;
 
 /**
@@ -20,10 +19,7 @@ import net.minecraft.util.registry.DynamicRegistryManager;
  * sending messages.
  */
 public interface SentMessage {
-    /**
-     * {@return the wrapped message}
-     */
-    public SignedMessage getWrappedMessage();
+    public Text method_45039();
 
     /**
      * {@return the chat message packet to be sent}
@@ -42,15 +38,10 @@ public interface SentMessage {
 
     /**
      * {@return the wrapped {@code message}}
-     * 
-     * @param profile the original source of the message
      */
-    public static SentMessage of(SignedMessage message, MessageSourceProfile profile) {
+    public static SentMessage of(SignedMessage message) {
         if (message.createMetadata().lacksSender()) {
             return new Profileless(message);
-        }
-        if (!message.createMetadata().sender().equals(profile.profileId())) {
-            return new Entity(message);
         }
         return new Chat(message);
     }
@@ -58,8 +49,9 @@ public interface SentMessage {
     /**
      * {@return the wrapped {@code message}}
      */
-    public static FilteredMessage<SentMessage> of(FilteredMessage<SignedMessage> message, MessageSourceProfile profile) {
-        return message.mapParts(rawMessage -> SentMessage.of((SignedMessage)message.raw(), profile), Profileless::new);
+    public static FilteredMessage<SentMessage> of(FilteredMessage<SignedMessage> message) {
+        SentMessage sentMessage = SentMessage.of(message.raw());
+        return message.method_45000(sentMessage, Profileless::new);
     }
 
     public static class Profileless
@@ -71,8 +63,8 @@ public interface SentMessage {
         }
 
         @Override
-        public SignedMessage getWrappedMessage() {
-            return this.message;
+        public Text method_45039() {
+            return this.message.getContent();
         }
 
         @Override
@@ -87,34 +79,6 @@ public interface SentMessage {
         }
     }
 
-    public static class Entity
-    implements SentMessage {
-        private final SignedMessage originalMessage;
-        private final SignedMessage messageWithoutMetadata;
-
-        public Entity(SignedMessage originalMessage) {
-            this.originalMessage = originalMessage;
-            this.messageWithoutMetadata = SignedMessage.ofUnsigned(MessageMetadata.of(), originalMessage.getContent());
-        }
-
-        @Override
-        public SignedMessage getWrappedMessage() {
-            return this.originalMessage;
-        }
-
-        @Override
-        public ChatMessageS2CPacket toPacket(ServerPlayerEntity player, MessageType.Parameters params) {
-            DynamicRegistryManager dynamicRegistryManager = player.world.getRegistryManager();
-            MessageType.Serialized serialized = params.toSerialized(dynamicRegistryManager);
-            return new ChatMessageS2CPacket(this.messageWithoutMetadata, serialized);
-        }
-
-        @Override
-        public void afterPacketsSent(PlayerManager playerManager) {
-            playerManager.sendMessageHeader(this.originalMessage, Set.of());
-        }
-    }
-
     public static class Chat
     implements SentMessage {
         private final SignedMessage message;
@@ -125,8 +89,8 @@ public interface SentMessage {
         }
 
         @Override
-        public SignedMessage getWrappedMessage() {
-            return this.message;
+        public Text method_45039() {
+            return this.message.getContent();
         }
 
         @Override

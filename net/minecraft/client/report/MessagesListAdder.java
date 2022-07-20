@@ -16,24 +16,26 @@ import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
-public class MessagesListAdder {
+public class MessagesListAdder<T extends ReceivedMessage> {
     private static final int MAX_CONTIGUOUS_CONTEXT_MESSAGES = 4;
     private final ChatLog log;
-    private final Predicate<ReceivedMessage> reportablePredicate;
+    private final Predicate<T> reportablePredicate;
     private int logMaxIndex;
+    final Class<T> field_39903;
 
-    public MessagesListAdder(ChatLog log, Predicate<ReceivedMessage> reportablePredicate) {
+    public MessagesListAdder(ChatLog log, Predicate<T> reportablePredicate, Class<T> class_) {
         this.log = log;
         this.reportablePredicate = reportablePredicate;
         this.logMaxIndex = log.getMaxIndex();
+        this.field_39903 = class_;
     }
 
-    public void add(int minAmount, MessagesList messagesList) {
-        GroupedMessagesCollector.GroupedMessages groupedMessages;
+    public void add(int minAmount, MessagesList<T> messagesList) {
+        GroupedMessagesCollector.GroupedMessages<T> groupedMessages;
         int i = 0;
         while (i < minAmount && (groupedMessages = this.collectGroupedMessages()) != null) {
             if (groupedMessages.type().isContext()) {
-                i += MessagesListAdder.addContextMessages(groupedMessages.messages(), messagesList);
+                i += this.addContextMessages(groupedMessages.messages(), messagesList);
                 continue;
             }
             messagesList.addMessages(groupedMessages.messages());
@@ -41,42 +43,42 @@ public class MessagesListAdder {
         }
     }
 
-    private static int addContextMessages(List<ChatLog.IndexedEntry<ReceivedMessage>> messages, MessagesList messagesList) {
+    private int addContextMessages(List<ChatLog.IndexedEntry<T>> list, MessagesList<T> messagesList) {
         int i = 8;
-        if (messages.size() > 8) {
-            int j = messages.size() - 8;
-            messagesList.addMessages(messages.subList(0, 4));
+        if (list.size() > 8) {
+            int j = list.size() - 8;
+            messagesList.addMessages(list.subList(0, 4));
             messagesList.addText(Text.translatable("gui.chatSelection.fold", j));
-            messagesList.addMessages(messages.subList(messages.size() - 4, messages.size()));
+            messagesList.addMessages(list.subList(list.size() - 4, list.size()));
             return 9;
         }
-        messagesList.addMessages(messages);
-        return messages.size();
+        messagesList.addMessages(list);
+        return list.size();
     }
 
     @Nullable
-    private GroupedMessagesCollector.GroupedMessages collectGroupedMessages() {
+    private GroupedMessagesCollector.GroupedMessages<T> collectGroupedMessages() {
         GroupedMessagesCollector groupedMessagesCollector = new GroupedMessagesCollector(message -> this.getReportType((ReceivedMessage)message.entry()));
-        OptionalInt optionalInt = this.log.streamBackward(this.logMaxIndex).streamIndexedEntries().map(indexedEntry -> indexedEntry.cast(ReceivedMessage.class)).filter(Objects::nonNull).takeWhile(groupedMessagesCollector::add).mapToInt(ChatLog.IndexedEntry::index).reduce((acc, cur) -> cur);
+        OptionalInt optionalInt = this.log.streamBackward(this.logMaxIndex).streamIndexedEntries().map(indexedEntry -> indexedEntry.cast(this.field_39903)).filter(Objects::nonNull).takeWhile(groupedMessagesCollector::add).mapToInt(ChatLog.IndexedEntry::index).reduce((acc, cur) -> cur);
         if (optionalInt.isPresent()) {
             this.logMaxIndex = this.log.getPreviousIndex(optionalInt.getAsInt());
         }
         return groupedMessagesCollector.collect();
     }
 
-    private GroupedMessagesCollector.ReportType getReportType(ReceivedMessage message) {
+    private GroupedMessagesCollector.ReportType getReportType(T message) {
         return this.reportablePredicate.test(message) ? GroupedMessagesCollector.ReportType.REPORTABLE : GroupedMessagesCollector.ReportType.CONTEXT;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static interface MessagesList {
-        default public void addMessages(Iterable<ChatLog.IndexedEntry<ReceivedMessage>> messages) {
-            for (ChatLog.IndexedEntry<ReceivedMessage> indexedEntry : messages) {
-                this.addMessage(indexedEntry.index(), indexedEntry.entry());
+    public static interface MessagesList<T extends ReceivedMessage> {
+        default public void addMessages(Iterable<ChatLog.IndexedEntry<T>> messages) {
+            for (ChatLog.IndexedEntry<T> indexedEntry : messages) {
+                this.addMessage(indexedEntry.index(), (ReceivedMessage)indexedEntry.entry());
             }
         }
 
-        public void addMessage(int var1, ReceivedMessage var2);
+        public void addMessage(int var1, T var2);
 
         public void addText(Text var1);
     }

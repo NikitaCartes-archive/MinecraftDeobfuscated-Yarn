@@ -7,7 +7,7 @@ import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Objects;
+import java.util.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.command.ServerCommandSource;
@@ -173,9 +173,10 @@ public record MessageType(Decoration chat, Decoration narration) {
             buf.writeNullable(this.targetName, PacketByteBuf::writeText);
         }
 
-        public Parameters toParameters(DynamicRegistryManager registryManager) {
+        public Optional<Parameters> toParameters(DynamicRegistryManager registryManager) {
             Registry<MessageType> registry = registryManager.get(Registry.MESSAGE_TYPE_KEY);
-            return new Parameters(Objects.requireNonNull((MessageType)registry.get(this.typeId), "Invalid chat type"), this.name, this.targetName);
+            MessageType messageType2 = (MessageType)registry.get(this.typeId);
+            return Optional.ofNullable(messageType2).map(messageType -> new Parameters((MessageType)messageType, this.name, this.targetName));
         }
 
         @Nullable

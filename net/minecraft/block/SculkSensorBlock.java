@@ -148,7 +148,7 @@ implements Waterloggable {
                 SculkSensorBlockEntity sculkSensorBlockEntity = (SculkSensorBlockEntity)blockEntity;
                 sculkSensorBlockEntity.setLastVibrationFrequency(FREQUENCIES.get(GameEvent.STEP));
             }
-            SculkSensorBlock.setActive(entity.getEventSource(), world, pos, state, 15);
+            SculkSensorBlock.setActive(entity, world, pos, state, 15);
         }
         super.onSteppedOn(world, pos, state, entity);
     }

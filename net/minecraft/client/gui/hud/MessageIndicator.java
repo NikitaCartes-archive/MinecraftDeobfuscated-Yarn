@@ -34,8 +34,8 @@ public record MessageIndicator(int indicatorColor, @Nullable Icon icon, @Nullabl
         return NOT_SECURE;
     }
 
-    public static MessageIndicator modified(Text originalText) {
-        MutableText text = Text.translatable("chat.tag.modified.original", originalText);
+    public static MessageIndicator modified(String string) {
+        MutableText text = Text.translatable("chat.tag.modified.original", string);
         MutableText text2 = Text.empty().append(MODIFIED_TEXT).append(ScreenTexts.LINE_BREAK).append(text);
         return new MessageIndicator(15386724, Icon.CHAT_MODIFIED, text2, "Modified");
     }

@@ -3,53 +3,33 @@
  */
 package net.minecraft.network.message;
 
-import net.minecraft.network.message.ArgumentSignatureDataMap;
-import net.minecraft.network.message.LastSeenMessageList;
-import net.minecraft.network.message.MessageChain;
-import net.minecraft.network.message.MessageMetadata;
-import net.minecraft.network.message.MessageSignatureData;
+import java.util.Map;
+import net.minecraft.network.message.SignedMessage;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * An interface wrapping {@link ArgumentSignatureDataMap} with metadata attached.
  */
 public interface SignedCommandArguments {
-    public static SignedCommandArguments none() {
-        final MessageMetadata messageMetadata = MessageMetadata.of();
-        return new SignedCommandArguments(){
+    public static final SignedCommandArguments field_39901 = new SignedCommandArguments(){
 
-            @Override
-            public ArgumentSignature createSignature(String argumentName) {
-                return ArgumentSignature.EMPTY;
-            }
+        @Override
+        @Nullable
+        public SignedMessage createSignature(String argumentName) {
+            return null;
+        }
+    };
 
-            @Override
-            public MessageMetadata metadata() {
-                return messageMetadata;
-            }
+    @Nullable
+    public SignedMessage createSignature(String var1);
 
-            @Override
-            public MessageChain.Unpacker decoder() {
-                return MessageChain.Unpacker.UNSIGNED;
-            }
-        };
-    }
-
-    public ArgumentSignature createSignature(String var1);
-
-    public MessageMetadata metadata();
-
-    public MessageChain.Unpacker decoder();
-
-    public record Impl(MessageChain.Unpacker decoder, MessageMetadata metadata, ArgumentSignatureDataMap argumentSignatures, boolean signedPreview, LastSeenMessageList lastSeenMessages) implements SignedCommandArguments
+    public record Impl(Map<String, SignedMessage> arguments) implements SignedCommandArguments
     {
         @Override
-        public ArgumentSignature createSignature(String argumentName) {
-            return new ArgumentSignature(this.argumentSignatures.get(argumentName), this.signedPreview, this.lastSeenMessages);
+        @Nullable
+        public SignedMessage createSignature(String argumentName) {
+            return this.arguments.get(argumentName);
         }
-    }
-
-    public record ArgumentSignature(MessageSignatureData signature, boolean signedPreview, LastSeenMessageList lastSeenMessages) {
-        public static final ArgumentSignature EMPTY = new ArgumentSignature(MessageSignatureData.EMPTY, false, LastSeenMessageList.EMPTY);
     }
 }
 

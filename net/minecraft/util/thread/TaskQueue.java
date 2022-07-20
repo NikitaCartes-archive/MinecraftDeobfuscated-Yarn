@@ -4,6 +4,7 @@
 package net.minecraft.util.thread;
 
 import com.google.common.collect.Queues;
+import java.util.Locale;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.jetbrains.annotations.Nullable;
@@ -46,7 +47,7 @@ public interface TaskQueue<T, F> {
         public boolean add(PrioritizedTask prioritizedTask) {
             int i = prioritizedTask.priority;
             if (i >= this.queue.length || i < 0) {
-                throw new IndexOutOfBoundsException("Priority %d not supported. Expected range [0-%d]".formatted(i, this.queue.length - 1));
+                throw new IndexOutOfBoundsException(String.format(Locale.ROOT, "Priority %d not supported. Expected range [0-%d]", i, this.queue.length - 1));
             }
             this.queue[i].add(prioritizedTask);
             this.queueSize.incrementAndGet();

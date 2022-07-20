@@ -3,6 +3,7 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
+import java.util.Optional;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -53,7 +54,7 @@ public record ChatMessageS2CPacket(SignedMessage message, MessageType.Serialized
         return true;
     }
 
-    public MessageType.Parameters getParameters(DynamicRegistryManager dynamicRegistryManager) {
+    public Optional<MessageType.Parameters> getParameters(DynamicRegistryManager dynamicRegistryManager) {
         return this.serializedParameters.toParameters(dynamicRegistryManager);
     }
 }

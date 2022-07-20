@@ -20,12 +20,13 @@ public interface MessageVerifier {
     public static final MessageVerifier UNVERIFIABLE = new MessageVerifier(){
 
         @Override
-        public void storeHeaderVerification(MessageHeader header, MessageSignatureData signature, byte[] bodyDigest) {
+        public class_7646 storeHeaderVerification(MessageHeader header, MessageSignatureData signature, byte[] bodyDigest) {
+            return class_7646.NOT_SECURE;
         }
 
         @Override
-        public boolean verify(SignedMessage message) {
-            return false;
+        public class_7646 verify(SignedMessage message) {
+            return class_7646.NOT_SECURE;
         }
     };
 
@@ -40,45 +41,62 @@ public interface MessageVerifier {
      * allows the chain to reference such messages. Since no actual content is received,
      * this does not return the verification status.
      */
-    public void storeHeaderVerification(MessageHeader var1, MessageSignatureData var2, byte[] var3);
+    public class_7646 storeHeaderVerification(MessageHeader var1, MessageSignatureData var2, byte[] var3);
 
-    public boolean verify(SignedMessage var1);
+    public class_7646 verify(SignedMessage var1);
 
     public static class Impl
     implements MessageVerifier {
         private final SignatureVerifier signatureVerifier;
         @Nullable
         private MessageSignatureData precedingSignature;
-        boolean lastMessageVerified = true;
+        private boolean lastMessageVerified = true;
 
         public Impl(SignatureVerifier signatureVerifier) {
             this.signatureVerifier = signatureVerifier;
         }
 
         private boolean verifyPrecedingSignature(MessageHeader header, MessageSignatureData signature) {
+            if (signature.isEmpty()) {
+                return false;
+            }
             return this.precedingSignature == null || this.precedingSignature.equals(header.precedingSignature()) || this.precedingSignature.equals(signature);
         }
 
-        private boolean verify(MessageHeader header, MessageSignatureData signature, byte[] bodyDigest) {
-            return this.verifyPrecedingSignature(header, signature) && signature.verify(this.signatureVerifier, header, bodyDigest);
+        private boolean verify(MessageHeader messageHeader, MessageSignatureData signature, byte[] bodyDigest) {
+            return signature.verify(this.signatureVerifier, messageHeader, bodyDigest);
         }
 
-        @Override
-        public void storeHeaderVerification(MessageHeader header, MessageSignatureData signature, byte[] bodyDigest) {
-            this.lastMessageVerified = this.lastMessageVerified && this.verify(header, signature, bodyDigest);
-            this.precedingSignature = signature;
-        }
-
-        @Override
-        public boolean verify(SignedMessage message) {
-            if (this.lastMessageVerified && this.verify(message.signedHeader(), message.headerSignature(), message.signedBody().digest().asBytes())) {
-                this.precedingSignature = message.headerSignature();
-                return true;
+        private class_7646 method_45048(MessageHeader messageHeader, MessageSignatureData messageSignatureData, byte[] bs) {
+            boolean bl = this.lastMessageVerified = this.lastMessageVerified && this.verifyPrecedingSignature(messageHeader, messageSignatureData);
+            if (!this.lastMessageVerified) {
+                return class_7646.BROKEN_CHAIN;
             }
-            this.lastMessageVerified = true;
-            this.precedingSignature = null;
-            return false;
+            if (!this.verify(messageHeader, messageSignatureData, bs)) {
+                this.precedingSignature = null;
+                return class_7646.NOT_SECURE;
+            }
+            this.precedingSignature = messageSignatureData;
+            return class_7646.SECURE;
         }
+
+        @Override
+        public class_7646 storeHeaderVerification(MessageHeader header, MessageSignatureData signature, byte[] bodyDigest) {
+            return this.method_45048(header, signature, bodyDigest);
+        }
+
+        @Override
+        public class_7646 verify(SignedMessage message) {
+            byte[] bs = message.signedBody().digest().asBytes();
+            return this.method_45048(message.signedHeader(), message.headerSignature(), bs);
+        }
+    }
+
+    public static enum class_7646 {
+        SECURE,
+        NOT_SECURE,
+        BROKEN_CHAIN;
+
     }
 }
 

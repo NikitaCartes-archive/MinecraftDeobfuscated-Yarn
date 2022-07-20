@@ -179,10 +179,11 @@ public class ChatAbuseReport {
     }
 
     private static Int2ObjectMap<ReceivedMessage.ChatMessage> collectEvidences(ChatLog log, int selectedIndex, AbuseReportLimits abuseReportLimits) {
+        int i = abuseReportLimits.leadingContextMessageCount() + 1;
         Int2ObjectOpenHashMap<ReceivedMessage.ChatMessage> int2ObjectMap = new Int2ObjectOpenHashMap<ReceivedMessage.ChatMessage>();
-        ChatAbuseReport.collectPrecedingMessages(log, selectedIndex, (i, chatMessage) -> {
-            int2ObjectMap.put(i, chatMessage);
-            return int2ObjectMap.size() < abuseReportLimits.leadingContextMessageCount();
+        ChatAbuseReport.collectPrecedingMessages(log, selectedIndex, (j, chatMessage) -> {
+            int2ObjectMap.put(j, chatMessage);
+            return int2ObjectMap.size() < i;
         });
         ChatAbuseReport.streamSucceedingMessages(log, selectedIndex, abuseReportLimits.trailingContextMessageCount()).forEach(indexedEntry -> int2ObjectMap.put(indexedEntry.index(), (ReceivedMessage.ChatMessage)indexedEntry.entry()));
         return int2ObjectMap;
@@ -203,7 +204,7 @@ public class ChatAbuseReport {
             if (!(object instanceof ReceivedMessage.ChatMessage)) continue;
             ReceivedMessage.ChatMessage chatMessage = (ReceivedMessage.ChatMessage)object;
             if (!consumer.accept(i, chatMessage)) break;
-            object = ChatAbuseReport.collectIndicesUntilLastSeen(log, i, chatMessage).iterator();
+            object = ChatAbuseReport.collectIndicesUntilLastSeen(log, i, chatMessage.message()).iterator();
             while (object.hasNext()) {
                 int j = (Integer)object.next();
                 if (!intSet.add(j)) continue;
@@ -212,8 +213,12 @@ public class ChatAbuseReport {
         }
     }
 
-    private static IntCollection collectIndicesUntilLastSeen(ChatLog log, int selectedIndex, ReceivedMessage.ChatMessage message) {
-        Set set = message.message().signedBody().lastSeenMessages().entries().stream().map(LastSeenMessageList.Entry::lastSignature).collect(Collectors.toSet());
+    private static IntCollection collectIndicesUntilLastSeen(ChatLog log, int selectedIndex, SignedMessage signedMessage) {
+        Set set = signedMessage.signedBody().lastSeenMessages().entries().stream().map(LastSeenMessageList.Entry::lastSignature).collect(Collectors.toCollection(ObjectOpenHashSet::new));
+        MessageSignatureData messageSignatureData = signedMessage.signedHeader().precedingSignature();
+        if (messageSignatureData != null) {
+            set.add(messageSignatureData);
+        }
         IntArrayList intList = new IntArrayList();
         Iterator iterator = log.streamBackward(selectedIndex).streamIndexedEntries().iterator();
         while (iterator.hasNext() && !set.isEmpty()) {
@@ -234,7 +239,7 @@ public class ChatAbuseReport {
         ByteBuffer byteBuffer = signedMessage.headerSignature().toByteBuffer();
         ByteBuffer byteBuffer2 = Util.map(signedMessage.signedHeader().precedingSignature(), MessageSignatureData::toByteBuffer);
         ByteBuffer byteBuffer3 = ByteBuffer.wrap(messageBody.digest().asBytes());
-        ReportChatMessageContent reportChatMessageContent = new ReportChatMessageContent(ChatAbuseReport.serializeContent(signedMessage.getSignedContent().plain()), signedMessage.getSignedContent().isDecorated() ? ChatAbuseReport.serializeContent(signedMessage.getSignedContent().decorated()) : null);
+        ReportChatMessageContent reportChatMessageContent = new ReportChatMessageContent(signedMessage.getSignedContent().plain(), signedMessage.getSignedContent().isDecorated() ? ChatAbuseReport.serializeContent(signedMessage.getSignedContent().decorated()) : null);
         String string = signedMessage.unsignedContent().map(ChatAbuseReport::serializeContent).orElse(null);
         List<ReportChatMessageBody.LastSeenSignature> list = messageBody.lastSeenMessages().entries().stream().map(entry -> new ReportChatMessageBody.LastSeenSignature(entry.profileId(), entry.lastSignature().toByteBuffer())).toList();
         return new ReportChatMessage(new ReportChatMessageHeader(byteBuffer2, message.getSenderUuid(), byteBuffer3, byteBuffer), new ReportChatMessageBody(instant, l, list, reportChatMessageContent), string, this.hasSelectedMessage(index));

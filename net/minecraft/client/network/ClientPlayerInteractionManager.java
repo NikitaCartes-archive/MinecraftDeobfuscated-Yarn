@@ -379,6 +379,10 @@ public class ClientPlayerInteractionManager {
      */
     public void clickSlot(int syncId, int slotId, int button, SlotActionType actionType, PlayerEntity player) {
         ScreenHandler screenHandler = player.currentScreenHandler;
+        if (syncId != screenHandler.syncId) {
+            LOGGER.warn("Ignoring click in mismatching container. Click in {}, player has {}.", (Object)syncId, (Object)screenHandler.syncId);
+            return;
+        }
         DefaultedList<Slot> defaultedList = screenHandler.slots;
         int i = defaultedList.size();
         ArrayList<ItemStack> list = Lists.newArrayListWithCapacity(i);

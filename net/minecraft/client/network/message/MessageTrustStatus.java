@@ -8,6 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.hud.MessageIndicator;
 import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.network.message.MessageVerifier;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
@@ -16,14 +17,19 @@ import org.jetbrains.annotations.Nullable;
 public enum MessageTrustStatus {
     SECURE,
     MODIFIED,
-    NOT_SECURE;
+    NOT_SECURE,
+    BROKEN_CHAIN;
 
 
     public static MessageTrustStatus getStatus(SignedMessage message, Text decorated, @Nullable PlayerListEntry sender, Instant receptionTimestamp) {
-        if (message.isExpiredOnClient(receptionTimestamp)) {
+        if (sender == null || message.isExpiredOnClient(receptionTimestamp)) {
             return NOT_SECURE;
         }
-        if (sender == null || !sender.getMessageVerifier().verify(message)) {
+        MessageVerifier.class_7646 lv = sender.getMessageVerifier().verify(message);
+        if (lv == MessageVerifier.class_7646.BROKEN_CHAIN) {
+            return BROKEN_CHAIN;
+        }
+        if (lv == MessageVerifier.class_7646.NOT_SECURE) {
             return NOT_SECURE;
         }
         if (message.unsignedContent().isPresent()) {
@@ -36,7 +42,7 @@ public enum MessageTrustStatus {
     }
 
     public boolean isInsecure() {
-        return this == NOT_SECURE;
+        return this == NOT_SECURE || this == BROKEN_CHAIN;
     }
 
     @Nullable

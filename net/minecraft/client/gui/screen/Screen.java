@@ -307,7 +307,7 @@ implements Drawable {
                 this.insertText(style.getInsertion(), false);
             }
         } else if (clickEvent != null) {
-            block23: {
+            block24: {
                 if (clickEvent.getAction() == ClickEvent.Action.OPEN_URL) {
                     if (!this.client.options.getChatLinks().getValue().booleanValue()) {
                         return false;
@@ -324,7 +324,7 @@ implements Drawable {
                         if (this.client.options.getChatLinksPrompt().getValue().booleanValue()) {
                             this.clickedLink = uRI;
                             this.client.setScreen(new ConfirmLinkScreen(this::confirmLink, clickEvent.getValue(), false));
-                            break block23;
+                            break block24;
                         }
                         this.openLink(uRI);
                     } catch (URISyntaxException uRISyntaxException) {
@@ -338,9 +338,11 @@ implements Drawable {
                 } else if (clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
                     String string2 = SharedConstants.stripInvalidChars(clickEvent.getValue());
                     if (string2.startsWith("/")) {
-                        this.client.player.sendCommand(string2.substring(1));
+                        if (!this.client.player.sendCommand(string2.substring(1))) {
+                            LOGGER.error("Not allowed to run command with signed argument from click event: '{}'", (Object)string2);
+                        }
                     } else {
-                        LOGGER.warn("Failed to run command without '/' prefix from click event: '{}'", (Object)string2);
+                        LOGGER.error("Failed to run command without '/' prefix from click event: '{}'", (Object)string2);
                     }
                 } else if (clickEvent.getAction() == ClickEvent.Action.COPY_TO_CLIPBOARD) {
                     this.client.keyboard.setClipboard(clickEvent.getValue());

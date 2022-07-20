@@ -98,7 +98,7 @@ public class CommandFunction {
         }
 
         private int execute(CommandFunctionManager manager, ServerCommandSource source) throws CommandSyntaxException {
-            return manager.getDispatcher().execute(new ParseResults<ServerCommandSource>(this.parsed.getContext().withSource(source), this.parsed.getReader(), this.parsed.getExceptions()));
+            return manager.getDispatcher().execute(CommandManager.method_45018(this.parsed, serverCommandSource2 -> source));
         }
 
         public String toString() {

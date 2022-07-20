@@ -12,8 +12,6 @@ import net.minecraft.network.message.MessageHeader;
 import net.minecraft.network.message.MessageMetadata;
 import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.network.message.SignedMessage;
-import net.minecraft.server.filter.FilteredMessage;
-import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -71,13 +69,7 @@ public class MessageChain {
 
     @FunctionalInterface
     public static interface Unpacker {
-        public static final Unpacker UNSIGNED = (signature, metadata, contents, lastSeenMessages) -> SignedMessage.ofUnsigned(metadata, contents.decorated());
-
         public SignedMessage unpack(Signature var1, MessageMetadata var2, DecoratedContents var3, LastSeenMessageList var4);
-
-        default public FilteredMessage<SignedMessage> unpack(Signature signature, MessageMetadata metadata, FilteredMessage<DecoratedContents> contents, LastSeenMessageList lastSeenMessages) {
-            return this.unpack(signature, metadata, contents.raw(), lastSeenMessages).withFilteredContent(Util.map(contents.filtered(), DecoratedContents::decorated));
-        }
     }
 
     @FunctionalInterface

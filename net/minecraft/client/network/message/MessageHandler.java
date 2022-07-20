@@ -23,6 +23,7 @@ import net.minecraft.network.message.MessageHeader;
 import net.minecraft.network.message.MessageMetadata;
 import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.network.message.MessageType;
+import net.minecraft.network.message.MessageVerifier;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
@@ -34,6 +35,7 @@ import org.jetbrains.annotations.Nullable;
  */
 @Environment(value=EnvType.CLIENT)
 public class MessageHandler {
+    private static final Text field_39904 = Text.translatable("multiplayer.disconnect.chat_validation_failed");
     private final MinecraftClient client;
     private final Deque<ProcessableMessage> delayedMessages = Queues.newArrayDeque();
     private long chatDelay;
@@ -243,6 +245,10 @@ public class MessageHandler {
      */
     private boolean processChatMessageInternal(MessageType.Parameters params, SignedMessage message, Text decorated, @Nullable PlayerListEntry senderEntry, boolean onlyShowSecureChat, Instant receptionTimestamp) {
         MessageTrustStatus messageTrustStatus = this.getStatus(message, decorated, senderEntry, receptionTimestamp);
+        if (messageTrustStatus == MessageTrustStatus.BROKEN_CHAIN) {
+            this.method_45031();
+            return true;
+        }
         if (onlyShowSecureChat && messageTrustStatus.isInsecure()) {
             return false;
         }
@@ -285,13 +291,22 @@ public class MessageHandler {
      * 
      * @see net.minecraft.network.message.MessageVerifier#storeHeaderVerification
      */
-    boolean processHeader(MessageHeader header, MessageSignatureData signature, byte[] bodyDigest) {
-        PlayerListEntry playerListEntry = this.getPlayerListEntry(header.sender());
-        if (playerListEntry != null) {
-            playerListEntry.getMessageVerifier().storeHeaderVerification(header, signature, bodyDigest);
+    boolean processHeader(MessageHeader messageHeader, MessageSignatureData messageSignatureData, byte[] bodyDigest) {
+        MessageVerifier.class_7646 lv;
+        PlayerListEntry playerListEntry = this.getPlayerListEntry(messageHeader.sender());
+        if (playerListEntry != null && (lv = playerListEntry.getMessageVerifier().storeHeaderVerification(messageHeader, messageSignatureData, bodyDigest)) == MessageVerifier.class_7646.BROKEN_CHAIN) {
+            this.method_45031();
+            return true;
         }
-        this.addToChatLog(header, signature, bodyDigest);
+        this.addToChatLog(messageHeader, messageSignatureData, bodyDigest);
         return false;
+    }
+
+    private void method_45031() {
+        ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
+        if (clientPlayNetworkHandler != null) {
+            clientPlayNetworkHandler.getConnection().disconnect(field_39904);
+        }
     }
 
     /**

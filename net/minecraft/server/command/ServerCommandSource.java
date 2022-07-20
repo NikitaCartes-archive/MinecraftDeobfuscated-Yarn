@@ -71,7 +71,7 @@ implements CommandSource {
     private final FutureQueue messageChainTaskQueue;
 
     public ServerCommandSource(CommandOutput output, Vec3d pos, Vec2f rot, ServerWorld world, int level, String name, Text displayName, MinecraftServer server, @Nullable Entity entity) {
-        this(output, pos, rot, world, level, name, displayName, server, entity, false, (context, success, result) -> {}, EntityAnchorArgumentType.EntityAnchor.FEET, SignedCommandArguments.none(), FutureQueue.NOOP);
+        this(output, pos, rot, world, level, name, displayName, server, entity, false, (context, success, result) -> {}, EntityAnchorArgumentType.EntityAnchor.FEET, SignedCommandArguments.field_39901, FutureQueue.NOOP);
     }
 
     protected ServerCommandSource(CommandOutput output, Vec3d pos, Vec2f rot, ServerWorld world, int level, String name, Text displayName, MinecraftServer server, @Nullable Entity entity, boolean silent, @Nullable ResultConsumer<ServerCommandSource> consumer, EntityAnchorArgumentType.EntityAnchor entityAnchor, SignedCommandArguments signedArguments, FutureQueue messageChainTaskQueue) {
@@ -303,7 +303,7 @@ implements CommandSource {
         if (serverPlayerEntity != null) {
             serverPlayerEntity.sendChatMessage(message, params);
         } else {
-            this.output.sendMessage(params.applyChatDecoration(message.getWrappedMessage().getContent()));
+            this.output.sendMessage(params.applyChatDecoration(message.method_45039()));
         }
     }
 

@@ -85,8 +85,6 @@ extends Entity {
         return this.getStack().isIn(ItemTags.DAMPENS_VIBRATIONS);
     }
 
-    @Override
-    @Nullable
     public Entity getEventSource() {
         return Util.map(this.getThrower(), this.world::getPlayerByUuid);
     }

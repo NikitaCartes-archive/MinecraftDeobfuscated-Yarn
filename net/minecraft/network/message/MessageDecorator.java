@@ -45,23 +45,8 @@ public interface MessageDecorator {
      */
     public CompletableFuture<Text> decorate(@Nullable ServerPlayerEntity var1, Text var2);
 
-    /**
-     * {@return the decorated filtered message from undecorated {@code message}}
-     * 
-     * <p>This keeps the filtered status of the original message; i.e. fully censored messages
-     * will remain fully censored, and unfiltered messages will remain unfiltered. If the message
-     * is partially filtered, both the raw and the filtered message will be decorated.
-     */
-    default public CompletableFuture<FilteredMessage<Text>> decorateFiltered(@Nullable ServerPlayerEntity sender, FilteredMessage<Text> message) {
-        CompletableFuture<Text> completableFuture = this.decorate(sender, message.raw());
-        if (message.filtered() == null) {
-            return completableFuture.thenApply(FilteredMessage::censored);
-        }
-        if (!message.isFiltered()) {
-            return completableFuture.thenApply(FilteredMessage::permitted);
-        }
-        CompletableFuture<Text> completableFuture2 = this.decorate(sender, message.filtered());
-        return CompletableFuture.allOf(completableFuture, completableFuture2).thenApply(void_ -> new FilteredMessage<Text>((Text)completableFuture.join(), (Text)completableFuture2.join()));
+    default public CompletableFuture<FilteredMessage<Text>> rebuildFiltered(@Nullable ServerPlayerEntity serverPlayerEntity, FilteredMessage<Text> filteredMessage, Text text2) {
+        return filteredMessage.method_45001(text2, text -> this.decorate(serverPlayerEntity, (Text)text));
     }
 
     public static FilteredMessage<SignedMessage> attachUnsignedDecoration(FilteredMessage<SignedMessage> message, FilteredMessage<Text> decorated) {

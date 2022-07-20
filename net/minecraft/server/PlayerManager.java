@@ -789,7 +789,7 @@ public abstract class PlayerManager {
     private void broadcast(FilteredMessage<SignedMessage> message, Predicate<ServerPlayerEntity> shouldSendFiltered, MessageSourceProfile profile, MessageType.Parameters params) {
         boolean bl = this.verify(message.raw(), profile);
         this.server.logChatMessage(message.raw().getContent(), params, bl ? null : "Not Secure");
-        FilteredMessage<SentMessage> filteredMessage = SentMessage.of(message, profile);
+        FilteredMessage<SentMessage> filteredMessage = SentMessage.of(message);
         for (ServerPlayerEntity serverPlayerEntity : this.players) {
             SentMessage sentMessage = filteredMessage.get(shouldSendFiltered.test(serverPlayerEntity));
             if (sentMessage == null) continue;

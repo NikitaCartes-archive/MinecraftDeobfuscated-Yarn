@@ -27,6 +27,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.SharedConstants;
 import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.encryption.PlayerKeyPair;
@@ -62,7 +63,11 @@ public class ProfileKeys {
         return CompletableFuture.supplyAsync(() -> {
             Optional<PlayerKeyPair> optional = this.loadKeyPairFromFile().filter(keyPair -> !keyPair.publicKey().data().isExpired());
             if (optional.isPresent() && !optional.get().isExpired()) {
-                return optional;
+                if (!SharedConstants.isDevelopment) {
+                    this.saveKeyPairToFile(null);
+                } else {
+                    return optional;
+                }
             }
             try {
                 PlayerKeyPair playerKeyPair = this.fetchKeyPair(userApiService);
@@ -123,6 +128,9 @@ public class ProfileKeys {
             LOGGER.error("Failed to delete profile key pair file {}", (Object)this.jsonPath, (Object)iOException);
         }
         if (keyPair == null) {
+            return;
+        }
+        if (!SharedConstants.isDevelopment) {
             return;
         }
         PlayerKeyPair.CODEC.encodeStart(JsonOps.INSTANCE, keyPair).result().ifPresent(json -> {

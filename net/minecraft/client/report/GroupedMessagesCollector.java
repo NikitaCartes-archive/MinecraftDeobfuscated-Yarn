@@ -13,17 +13,17 @@ import net.minecraft.client.report.log.ReceivedMessage;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
-public class GroupedMessagesCollector {
-    private final Function<ChatLog.IndexedEntry<ReceivedMessage>, ReportType> reportTypeGetter;
-    private final List<ChatLog.IndexedEntry<ReceivedMessage>> messages = new ArrayList<ChatLog.IndexedEntry<ReceivedMessage>>();
+public class GroupedMessagesCollector<T extends ReceivedMessage> {
+    private final Function<ChatLog.IndexedEntry<T>, ReportType> reportTypeGetter;
+    private final List<ChatLog.IndexedEntry<T>> messages = new ArrayList<ChatLog.IndexedEntry<T>>();
     @Nullable
     private ReportType reportType;
 
-    public GroupedMessagesCollector(Function<ChatLog.IndexedEntry<ReceivedMessage>, ReportType> reportTypeGetter) {
+    public GroupedMessagesCollector(Function<ChatLog.IndexedEntry<T>, ReportType> reportTypeGetter) {
         this.reportTypeGetter = reportTypeGetter;
     }
 
-    public boolean add(ChatLog.IndexedEntry<ReceivedMessage> message) {
+    public boolean add(ChatLog.IndexedEntry<T> message) {
         ReportType reportType = this.reportTypeGetter.apply(message);
         if (this.reportType == null || reportType == this.reportType) {
             this.reportType = reportType;
@@ -34,9 +34,9 @@ public class GroupedMessagesCollector {
     }
 
     @Nullable
-    public GroupedMessages collect() {
+    public GroupedMessages<T> collect() {
         if (!this.messages.isEmpty() && this.reportType != null) {
-            return new GroupedMessages(this.messages, this.reportType);
+            return new GroupedMessages<T>(this.messages, this.reportType);
         }
         return null;
     }
@@ -53,7 +53,7 @@ public class GroupedMessagesCollector {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public record GroupedMessages(List<ChatLog.IndexedEntry<ReceivedMessage>> messages, ReportType type) {
+    public record GroupedMessages<T extends ReceivedMessage>(List<ChatLog.IndexedEntry<T>> messages, ReportType type) {
     }
 }
 

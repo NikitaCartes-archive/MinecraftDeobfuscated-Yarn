@@ -80,7 +80,6 @@ import net.minecraft.util.function.CharPredicate;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
-import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -929,9 +928,6 @@ public class Util {
         public void open(URL url) {
             try {
                 Process process = AccessController.doPrivileged(() -> Runtime.getRuntime().exec(this.getURLOpenCommand(url)));
-                for (String string : IOUtils.readLines(process.getErrorStream())) {
-                    LOGGER.error(string);
-                }
                 process.getInputStream().close();
                 process.getErrorStream().close();
                 process.getOutputStream().close();

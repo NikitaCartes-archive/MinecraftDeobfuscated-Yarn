@@ -769,8 +769,12 @@ implements ClientPlayPacketListener {
     @Override
     public void onChatMessage(ChatMessageS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
-        MessageType.Parameters parameters = packet.getParameters(this.registryManager);
-        this.client.getMessageHandler().onChatMessage(packet.message(), parameters);
+        Optional<MessageType.Parameters> optional = packet.getParameters(this.registryManager);
+        if (!optional.isPresent()) {
+            this.connection.disconnect(Text.translatable("multiplayer.disconnect.invalid_packet"));
+            return;
+        }
+        this.client.getMessageHandler().onChatMessage(packet.message(), optional.get());
     }
 
     @Override
@@ -931,6 +935,9 @@ implements ClientPlayPacketListener {
         }
         String string = clientPlayerEntity.getServerBrand();
         this.client.cameraEntity = null;
+        if (clientPlayerEntity.method_45015()) {
+            clientPlayerEntity.closeHandledScreen();
+        }
         ClientPlayerEntity clientPlayerEntity2 = this.client.interactionManager.createPlayer(this.world, clientPlayerEntity.getStatHandler(), clientPlayerEntity.getRecipeBook(), clientPlayerEntity.isSneaking(), clientPlayerEntity.isSprinting());
         clientPlayerEntity2.setId(i);
         this.client.player = clientPlayerEntity2;
@@ -2185,17 +2192,18 @@ implements ClientPlayPacketListener {
     }
 
     public void acknowledge(SignedMessage message, boolean displayed) {
-        if (!message.createMetadata().lacksSender()) {
-            LastSeenMessageList.Entry entry = message.toLastSeenMessageEntry();
-            if (displayed) {
-                this.lastSeenMessagesCollector.add(entry);
-                this.lastReceivedMessage = Optional.empty();
-            } else {
-                this.lastReceivedMessage = Optional.of(entry);
-            }
-            if (this.pendingAcknowledgments++ > 64) {
-                this.sendPacket(new MessageAcknowledgmentC2SPacket(this.consumeAcknowledgment()));
-            }
+        LastSeenMessageList.Entry entry = message.toLastSeenMessageEntry();
+        if (entry == null) {
+            return;
+        }
+        if (displayed) {
+            this.lastSeenMessagesCollector.add(entry);
+            this.lastReceivedMessage = Optional.empty();
+        } else {
+            this.lastReceivedMessage = Optional.of(entry);
+        }
+        if (this.pendingAcknowledgments++ > 64) {
+            this.sendPacket(new MessageAcknowledgmentC2SPacket(this.consumeAcknowledgment()));
         }
     }
 }

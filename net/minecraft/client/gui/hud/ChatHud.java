@@ -178,8 +178,15 @@ extends DrawableHelper {
 
     public void addMessage(Text message, @Nullable MessageIndicator indicator) {
         this.addMessage(message, null, indicator);
-        String string = message.getString().replaceAll("\r", "\\\\r").replaceAll("\n", "\\\\n");
-        String string2 = Util.map(indicator, MessageIndicator::loggedName);
+    }
+
+    public void addMessage(Text message, @Nullable MessageSignatureData signature, @Nullable MessageIndicator indicator) {
+        this.addMessage(message, signature, this.client.inGameHud.getTicks(), indicator, false);
+    }
+
+    private void method_45027(Text text, @Nullable MessageIndicator messageIndicator) {
+        String string = text.getString().replaceAll("\r", "\\\\r").replaceAll("\n", "\\\\n");
+        String string2 = Util.map(messageIndicator, MessageIndicator::loggedName);
         if (string2 != null) {
             LOGGER.info("[{}] [CHAT] {}", (Object)string2, (Object)string);
         } else {
@@ -187,11 +194,8 @@ extends DrawableHelper {
         }
     }
 
-    public void addMessage(Text message, @Nullable MessageSignatureData signature, @Nullable MessageIndicator indicator) {
-        this.addMessage(message, signature, this.client.inGameHud.getTicks(), indicator, false);
-    }
-
     private void addMessage(Text message, @Nullable MessageSignatureData signature, int ticks, @Nullable MessageIndicator indicator, boolean refresh) {
+        this.method_45027(message, indicator);
         int i = MathHelper.floor((double)this.getWidth() / this.getChatScale());
         if (indicator != null && indicator.icon() != null) {
             i -= indicator.icon().width + 4 + 2;

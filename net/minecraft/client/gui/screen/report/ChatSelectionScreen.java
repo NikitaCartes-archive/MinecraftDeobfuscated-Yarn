@@ -53,7 +53,7 @@ extends Screen {
     private SelectionListWidget selectionList;
     final ChatAbuseReport report;
     private final Consumer<ChatAbuseReport> newReportConsumer;
-    private MessagesListAdder listAdder;
+    private MessagesListAdder<ReceivedMessage.ChatMessage> listAdder;
     @Nullable
     private List<OrderedText> tooltip;
 
@@ -67,7 +67,7 @@ extends Screen {
 
     @Override
     protected void init() {
-        this.listAdder = new MessagesListAdder(this.reporter.chatLog(), this::isSentByReportedPlayer);
+        this.listAdder = new MessagesListAdder<ReceivedMessage.ChatMessage>(this.reporter.chatLog(), this::isSentByReportedPlayer, ReceivedMessage.ChatMessage.class);
         this.contextMessage = MultilineText.create(this.textRenderer, (StringVisitable)CONTEXT_MESSAGE, this.width - 16);
         this.selectionList = new SelectionListWidget(this.client, (this.contextMessage.count() + 1) * this.textRenderer.fontHeight);
         this.selectionList.setRenderBackground(false);
@@ -134,7 +134,7 @@ extends Screen {
     @Environment(value=EnvType.CLIENT)
     public class SelectionListWidget
     extends AlwaysSelectedEntryListWidget<Entry>
-    implements MessagesListAdder.MessagesList {
+    implements MessagesListAdder.MessagesList<ReceivedMessage.ChatMessage> {
         @Nullable
         private SenderEntryPair lastSenderEntryPair;
 
@@ -152,21 +152,13 @@ extends Screen {
         }
 
         @Override
-        public void addMessage(int index, ReceivedMessage message) {
-            Text text = message.getContent();
-            Text text2 = message.getNarration();
-            boolean bl = message.isSentFrom(ChatSelectionScreen.this.report.getReportedPlayerUuid());
-            if (message instanceof ReceivedMessage.ChatMessage) {
-                ReceivedMessage.ChatMessage chatMessage = (ReceivedMessage.ChatMessage)message;
-                MessageTrustStatus messageTrustStatus = chatMessage.trustStatus();
-                MessageIndicator messageIndicator = messageTrustStatus.createIndicator(chatMessage.message());
-                MessageEntry entry = new MessageEntry(index, text, text2, messageIndicator, bl, true);
-                this.addEntryToTop(entry);
-                this.addSenderEntry(chatMessage, bl);
-            } else {
-                this.addEntryToTop(new MessageEntry(index, text, text2, null, bl, false));
-                this.lastSenderEntryPair = null;
-            }
+        public void addMessage(int i, ReceivedMessage.ChatMessage chatMessage) {
+            boolean bl = chatMessage.isSentFrom(ChatSelectionScreen.this.report.getReportedPlayerUuid());
+            MessageTrustStatus messageTrustStatus = chatMessage.trustStatus();
+            MessageIndicator messageIndicator = messageTrustStatus.createIndicator(chatMessage.message());
+            MessageEntry entry = new MessageEntry(i, chatMessage.getContent(), chatMessage.getNarration(), messageIndicator, bl, true);
+            this.addEntryToTop(entry);
+            this.addSenderEntry(chatMessage, bl);
         }
 
         private void addSenderEntry(ReceivedMessage.ChatMessage message, boolean fromReportedPlayer) {
@@ -381,13 +373,6 @@ extends Screen {
         }
 
         @Environment(value=EnvType.CLIENT)
-        record SenderEntryPair(UUID sender, Entry entry) {
-            public boolean senderEquals(SenderEntryPair pair) {
-                return pair.sender.equals(this.sender);
-            }
-        }
-
-        @Environment(value=EnvType.CLIENT)
         public class SenderEntry
         extends Entry {
             private static final int PLAYER_SKIN_SIZE = 12;
@@ -413,6 +398,13 @@ extends Screen {
             private void drawSkin(MatrixStack matrices, int x, int y, Identifier skinTextureId) {
                 RenderSystem.setShaderTexture(0, skinTextureId);
                 PlayerSkinDrawer.draw(matrices, x, y, 12);
+            }
+        }
+
+        @Environment(value=EnvType.CLIENT)
+        record SenderEntryPair(UUID sender, Entry entry) {
+            public boolean senderEquals(SenderEntryPair pair) {
+                return pair.sender.equals(this.sender);
             }
         }
 
