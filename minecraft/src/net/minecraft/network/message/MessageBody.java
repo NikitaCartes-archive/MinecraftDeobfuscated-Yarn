@@ -46,7 +46,7 @@ public record MessageBody(DecoratedContents content, Instant timestamp, long sal
 			dataOutputStream.writeLong(this.salt);
 			dataOutputStream.writeLong(this.timestamp.getEpochSecond());
 			OutputStreamWriter outputStreamWriter = new OutputStreamWriter(dataOutputStream, StandardCharsets.UTF_8);
-			outputStreamWriter.write(Text.Serializer.toSortedJsonString(this.content.plain()));
+			outputStreamWriter.write(this.content.plain());
 			outputStreamWriter.flush();
 			dataOutputStream.write(70);
 			if (this.content.isDecorated()) {
@@ -59,5 +59,9 @@ public record MessageBody(DecoratedContents content, Instant timestamp, long sal
 		}
 
 		return hashingOutputStream.hash();
+	}
+
+	public MessageBody method_45047(DecoratedContents decoratedContents) {
+		return new MessageBody(decoratedContents, this.timestamp, this.salt, this.lastSeenMessages);
 	}
 }

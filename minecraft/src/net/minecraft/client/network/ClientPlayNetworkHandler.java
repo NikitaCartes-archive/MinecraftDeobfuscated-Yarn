@@ -812,8 +812,12 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onChatMessage(ChatMessageS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		MessageType.Parameters parameters = packet.getParameters(this.registryManager);
-		this.client.getMessageHandler().onChatMessage(packet.message(), parameters);
+		Optional<MessageType.Parameters> optional = packet.getParameters(this.registryManager);
+		if (!optional.isPresent()) {
+			this.connection.disconnect(Text.translatable("multiplayer.disconnect.invalid_packet"));
+		} else {
+			this.client.getMessageHandler().onChatMessage(packet.message(), (MessageType.Parameters)optional.get());
+		}
 	}
 
 	@Override
@@ -989,6 +993,10 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 
 		String string = clientPlayerEntity.getServerBrand();
 		this.client.cameraEntity = null;
+		if (clientPlayerEntity.method_45015()) {
+			clientPlayerEntity.closeHandledScreen();
+		}
+
 		ClientPlayerEntity clientPlayerEntity2 = this.client
 			.interactionManager
 			.createPlayer(
@@ -2383,8 +2391,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	public void acknowledge(SignedMessage message, boolean displayed) {
-		if (!message.createMetadata().lacksSender()) {
-			LastSeenMessageList.Entry entry = message.toLastSeenMessageEntry();
+		LastSeenMessageList.Entry entry = message.toLastSeenMessageEntry();
+		if (entry != null) {
 			if (displayed) {
 				this.lastSeenMessagesCollector.add(entry);
 				this.lastReceivedMessage = Optional.empty();

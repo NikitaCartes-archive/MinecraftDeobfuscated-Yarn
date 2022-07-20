@@ -5,7 +5,6 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import java.util.Collection;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.MessageArgumentType;
-import net.minecraft.network.message.MessageSourceProfile;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SentMessage;
 import net.minecraft.server.filter.FilteredMessage;
@@ -34,21 +33,20 @@ public class MessageCommand {
 	}
 
 	private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, MessageArgumentType.SignedMessage signedMessage) {
-		MessageSourceProfile messageSourceProfile = source.getMessageSourceProfile();
 		MessageType.Parameters parameters = MessageType.params(MessageType.MSG_COMMAND_INCOMING, source);
-		signedMessage.decorate(source, decoratedMessage -> {
-			FilteredMessage<SentMessage> filteredMessage = SentMessage.of(decoratedMessage, messageSourceProfile);
+		signedMessage.decorate(source, filteredMessage -> {
+			FilteredMessage<SentMessage> filteredMessage2 = SentMessage.of(filteredMessage);
 
 			for (ServerPlayerEntity serverPlayerEntity : targets) {
 				MessageType.Parameters parameters2 = MessageType.params(MessageType.MSG_COMMAND_OUTGOING, source).withTargetName(serverPlayerEntity.getDisplayName());
-				source.sendChatMessage(filteredMessage.raw(), parameters2);
-				SentMessage sentMessage = filteredMessage.getFilterableFor(source, serverPlayerEntity);
+				source.sendChatMessage(filteredMessage2.raw(), parameters2);
+				SentMessage sentMessage = filteredMessage2.getFilterableFor(source, serverPlayerEntity);
 				if (sentMessage != null) {
 					serverPlayerEntity.sendChatMessage(sentMessage, parameters);
 				}
 			}
 
-			filteredMessage.raw().afterPacketsSent(source.getServer().getPlayerManager());
+			filteredMessage2.raw().afterPacketsSent(source.getServer().getPlayerManager());
 		});
 		return targets.size();
 	}

@@ -6,6 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.hud.MessageIndicator;
 import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.network.message.MessageVerifier;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.text.Text;
 
@@ -13,22 +14,28 @@ import net.minecraft.text.Text;
 public enum MessageTrustStatus {
 	SECURE,
 	MODIFIED,
-	NOT_SECURE;
+	NOT_SECURE,
+	BROKEN_CHAIN;
 
 	public static MessageTrustStatus getStatus(SignedMessage message, Text decorated, @Nullable PlayerListEntry sender, Instant receptionTimestamp) {
-		if (message.isExpiredOnClient(receptionTimestamp)) {
-			return NOT_SECURE;
-		} else if (sender == null || !sender.getMessageVerifier().verify(message)) {
-			return NOT_SECURE;
-		} else if (message.unsignedContent().isPresent()) {
-			return MODIFIED;
+		if (sender != null && !message.isExpiredOnClient(receptionTimestamp)) {
+			MessageVerifier.class_7646 lv = sender.getMessageVerifier().verify(message);
+			if (lv == MessageVerifier.class_7646.BROKEN_CHAIN) {
+				return BROKEN_CHAIN;
+			} else if (lv == MessageVerifier.class_7646.NOT_SECURE) {
+				return NOT_SECURE;
+			} else if (message.unsignedContent().isPresent()) {
+				return MODIFIED;
+			} else {
+				return !decorated.contains(message.getSignedContent().decorated()) ? MODIFIED : SECURE;
+			}
 		} else {
-			return !decorated.contains(message.getSignedContent().decorated()) ? MODIFIED : SECURE;
+			return NOT_SECURE;
 		}
 	}
 
 	public boolean isInsecure() {
-		return this == NOT_SECURE;
+		return this == NOT_SECURE || this == BROKEN_CHAIN;
 	}
 
 	@Nullable

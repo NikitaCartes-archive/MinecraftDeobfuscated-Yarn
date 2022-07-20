@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.UnaryOperator;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_7641;
 import net.minecraft.datafixer.fix.AddFlagIfNotPresentFix;
 import net.minecraft.datafixer.fix.AddTrappedChestFix;
 import net.minecraft.datafixer.fix.AdvancementCriteriaRenameFix;
@@ -366,6 +367,37 @@ public class Schemas {
 		builder.addFixer(new BlockNameFlatteningFix(schema42, true));
 		builder.addFixer(new ItemInstanceTheFlatteningFix(schema42, false));
 		Schema schema43 = builder.addSchema(1451, 5, Schema1451v5::new);
+		builder.addFixer(
+			new class_7641(
+				schema43,
+				false,
+				Set.of(
+					"minecraft:note_block",
+					"minecraft:flower_pot",
+					"minecraft:dandelion",
+					"minecraft:poppy",
+					"minecraft:blue_orchid",
+					"minecraft:allium",
+					"minecraft:azure_bluet",
+					"minecraft:red_tulip",
+					"minecraft:orange_tulip",
+					"minecraft:white_tulip",
+					"minecraft:pink_tulip",
+					"minecraft:oxeye_daisy",
+					"minecraft:cactus",
+					"minecraft:brown_mushroom",
+					"minecraft:red_mushroom",
+					"minecraft:oak_sapling",
+					"minecraft:spruce_sapling",
+					"minecraft:birch_sapling",
+					"minecraft:jungle_sapling",
+					"minecraft:acacia_sapling",
+					"minecraft:dark_oak_sapling",
+					"minecraft:dead_bush",
+					"minecraft:fern"
+				)
+			)
+		);
 		builder.addFixer(new ChoiceTypesFix(schema43, "RemoveNoteBlockFlowerPotFix", TypeReferences.BLOCK_ENTITY));
 		builder.addFixer(new ItemInstanceSpawnEggFix(schema43, false));
 		builder.addFixer(new EntityWolfColorFix(schema43, false));

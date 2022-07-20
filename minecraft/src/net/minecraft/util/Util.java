@@ -74,7 +74,6 @@ import net.minecraft.util.function.CharPredicate;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
 public class Util {
@@ -931,16 +930,11 @@ public class Util {
 		public void open(URL url) {
 			try {
 				Process process = (Process)AccessController.doPrivileged(() -> Runtime.getRuntime().exec(this.getURLOpenCommand(url)));
-
-				for (String string : IOUtils.readLines(process.getErrorStream())) {
-					Util.LOGGER.error(string);
-				}
-
 				process.getInputStream().close();
 				process.getErrorStream().close();
 				process.getOutputStream().close();
-			} catch (IOException | PrivilegedActionException var5) {
-				Util.LOGGER.error("Couldn't open url '{}'", url, var5);
+			} catch (IOException | PrivilegedActionException var3) {
+				Util.LOGGER.error("Couldn't open url '{}'", url, var3);
 			}
 		}
 

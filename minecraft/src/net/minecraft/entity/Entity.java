@@ -724,7 +724,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 							}
 
 							if (moveEffect.emitsGameEvents() && (this.onGround || movement.y == 0.0 || this.inPowderSnow || bl3)) {
-								this.world.emitGameEvent(GameEvent.STEP, this.pos, GameEvent.Emitter.of(this.getEventSource(), this.getSteppingBlockState()));
+								this.world.emitGameEvent(GameEvent.STEP, this.pos, GameEvent.Emitter.of(this, this.getSteppingBlockState()));
 							}
 						}
 					} else if (blockState.isAir()) {
@@ -1113,18 +1113,13 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		if (onGround) {
 			if (this.fallDistance > 0.0F) {
 				state.getBlock().onLandedUpon(this.world, state, landedPosition, this, this.fallDistance);
-				this.world.emitGameEvent(GameEvent.HIT_GROUND, this.pos, GameEvent.Emitter.of(this.getEventSource(), this.getSteppingBlockState()));
+				this.world.emitGameEvent(GameEvent.HIT_GROUND, this.pos, GameEvent.Emitter.of(this, this.getSteppingBlockState()));
 			}
 
 			this.onLanding();
 		} else if (heightDifference < 0.0) {
 			this.fallDistance -= (float)heightDifference;
 		}
-	}
-
-	@Nullable
-	public Entity getEventSource() {
-		return this;
 	}
 
 	public boolean isFireImmune() {
@@ -1684,7 +1679,12 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			double e = nbtList2.getDouble(1);
 			double f = nbtList2.getDouble(2);
 			this.setVelocity(Math.abs(d) > 10.0 ? 0.0 : d, Math.abs(e) > 10.0 ? 0.0 : e, Math.abs(f) > 10.0 ? 0.0 : f);
-			this.setPos(nbtList.getDouble(0), MathHelper.clamp(nbtList.getDouble(1), -2.0E7, 2.0E7), nbtList.getDouble(2));
+			double g = 3.0000512E7;
+			this.setPos(
+				MathHelper.clamp(nbtList.getDouble(0), -3.0000512E7, 3.0000512E7),
+				MathHelper.clamp(nbtList.getDouble(1), -2.0E7, 2.0E7),
+				MathHelper.clamp(nbtList.getDouble(2), -3.0000512E7, 3.0000512E7)
+			);
 			this.setYaw(nbtList3.getFloat(0));
 			this.setPitch(nbtList3.getFloat(1));
 			this.resetPosition();
@@ -1714,8 +1714,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 					try {
 						this.setCustomName(Text.Serializer.fromJson(string));
-					} catch (Exception var14) {
-						LOGGER.warn("Failed to parse entity custom name {}", string, var14);
+					} catch (Exception var16) {
+						LOGGER.warn("Failed to parse entity custom name {}", string, var16);
 					}
 				}
 
@@ -1742,8 +1742,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			} else {
 				throw new IllegalStateException("Entity has invalid rotation");
 			}
-		} catch (Throwable var15) {
-			CrashReport crashReport = CrashReport.create(var15, "Loading entity NBT");
+		} catch (Throwable var17) {
+			CrashReport crashReport = CrashReport.create(var17, "Loading entity NBT");
 			CrashReportSection crashReportSection = crashReport.addElement("Entity being loaded");
 			this.populateCrashReport(crashReportSection);
 			throw new CrashException(crashReport);

@@ -2,21 +2,21 @@ package net.minecraft.server.network;
 
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Floats;
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.context.CommandContextBuilder;
-import com.mojang.brigadier.context.ParsedCommandNode;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.tree.ArgumentCommandNode;
-import com.mojang.brigadier.tree.CommandNode;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
@@ -30,6 +30,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_7642;
+import net.minecraft.class_7644;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractBlock;
@@ -43,7 +45,6 @@ import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.client.option.ChatVisibility;
-import net.minecraft.command.argument.DecoratableArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
@@ -69,13 +70,17 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.listener.TickablePacketListener;
 import net.minecraft.network.message.AcknowledgmentValidator;
+import net.minecraft.network.message.ArgumentSignatureDataMap;
 import net.minecraft.network.message.DecoratedContents;
 import net.minecraft.network.message.LastSeenMessageList;
 import net.minecraft.network.message.MessageChain;
 import net.minecraft.network.message.MessageChainTaskQueue;
 import net.minecraft.network.message.MessageDecorator;
 import net.minecraft.network.message.MessageMetadata;
+import net.minecraft.network.message.MessageSignatureData;
+import net.minecraft.network.message.MessageSourceProfile;
 import net.minecraft.network.message.MessageType;
+import net.minecraft.network.message.SignedCommandArguments;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
 import net.minecraft.network.packet.c2s.play.BoatPaddleStateC2SPacket;
@@ -143,6 +148,7 @@ import net.minecraft.screen.BeaconScreenHandler;
 import net.minecraft.screen.MerchantScreenHandler;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.filter.TextStream;
@@ -220,6 +226,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 	private int vehicleFloatingTicks;
 	private int movePacketsCount;
 	private int lastTickMovePacketsCount;
+	private final class_7642 field_39899 = new class_7642();
 	private final PendingTaskRunner previewTaskRunner = new PendingTaskRunner();
 	private final AtomicReference<Instant> lastMessageTimestamp = new AtomicReference(Instant.EPOCH);
 	private final MessageChain.Unpacker messageUnpacker = new MessageChain().getUnpacker();
@@ -1212,7 +1219,15 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 			this.disconnect(Text.translatable("multiplayer.disconnect.illegal_characters"));
 		} else {
 			if (this.canAcceptMessage(packet.chatMessage(), packet.timestamp(), packet.acknowledgment())) {
-				this.messageChainTaskQueue.append(() -> this.filterText(packet.chatMessage(), message -> this.handleMessage(packet, message)));
+				this.server.submit(() -> {
+					SignedMessage signedMessage = this.method_45011(packet);
+					if (this.method_45009(signedMessage)) {
+						this.messageChainTaskQueue.append(() -> {
+							String string = signedMessage.getSignedContent().plain();
+							return this.filterText(string, message -> this.handleMessage(signedMessage, message));
+						});
+					}
+				});
 			}
 		}
 	}
@@ -1223,19 +1238,57 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 			this.disconnect(Text.translatable("multiplayer.disconnect.illegal_characters"));
 		} else {
 			if (this.canAcceptMessage(packet.command(), packet.timestamp(), packet.acknowledgment())) {
-				this.server
-					.submit(
-						() -> {
-							ServerCommandSource serverCommandSource = this.player
-								.getCommandSource()
-								.withSignedArguments(packet.createSignedArguments(this.player))
-								.withMessageChainTaskQueue(this.messageChainTaskQueue);
-							this.server.getCommandManager().execute(serverCommandSource, packet.command());
-							this.checkForSpam();
-						}
-					);
+				this.server.submit(() -> {
+					this.method_45010(packet);
+					this.checkForSpam();
+				});
 			}
 		}
+	}
+
+	private void method_45010(CommandExecutionC2SPacket commandExecutionC2SPacket) {
+		ParseResults<ServerCommandSource> parseResults = this.method_45003(commandExecutionC2SPacket.command());
+		Map<String, SignedMessage> map = this.method_45006(commandExecutionC2SPacket, class_7644.method_45043(parseResults));
+
+		for (SignedMessage signedMessage : map.values()) {
+			if (!this.method_45009(signedMessage)) {
+				return;
+			}
+		}
+
+		SignedCommandArguments signedCommandArguments = new SignedCommandArguments.Impl(map);
+		parseResults = CommandManager.method_45018(parseResults, serverCommandSource -> serverCommandSource.withSignedArguments(signedCommandArguments));
+		this.server.getCommandManager().execute(parseResults, commandExecutionC2SPacket.command());
+	}
+
+	private Map<String, SignedMessage> method_45006(CommandExecutionC2SPacket commandExecutionC2SPacket, class_7644<?> arg) {
+		Text text = this.field_39899.method_45035(commandExecutionC2SPacket.command());
+		MessageMetadata messageMetadata = new MessageMetadata(this.player.getUuid(), commandExecutionC2SPacket.timestamp(), commandExecutionC2SPacket.salt());
+		LastSeenMessageList lastSeenMessageList = commandExecutionC2SPacket.acknowledgment().lastSeen();
+		Map<String, SignedMessage> map = new Object2ObjectOpenHashMap<>();
+		MessageChain.Unpacker unpacker = this.player.networkHandler.getMessageUnpacker();
+
+		for (Pair<String, String> pair : ArgumentSignatureDataMap.method_45020(arg)) {
+			String string = pair.getFirst();
+			String string2 = pair.getSecond();
+			MessageSignatureData messageSignatureData = commandExecutionC2SPacket.argumentSignatures().get(string);
+			DecoratedContents decoratedContents;
+			if (commandExecutionC2SPacket.signedPreview() && text != null) {
+				decoratedContents = new DecoratedContents(string2, text);
+			} else {
+				decoratedContents = new DecoratedContents(string2);
+			}
+
+			MessageChain.Signature signature = new MessageChain.Signature(messageSignatureData);
+			map.put(string, unpacker.unpack(signature, messageMetadata, decoratedContents, lastSeenMessageList));
+		}
+
+		return map;
+	}
+
+	private ParseResults<ServerCommandSource> method_45003(String string) {
+		CommandDispatcher<ServerCommandSource> commandDispatcher = this.server.getCommandManager().getDispatcher();
+		return commandDispatcher.parse(string, this.player.getCommandSource());
 	}
 
 	/**
@@ -1300,37 +1353,59 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 		return false;
 	}
 
-	private CompletableFuture<Void> handleMessage(ChatMessageC2SPacket packet, FilteredMessage<String> message) {
-		MessageMetadata messageMetadata = packet.getMetadata(this.player);
-		LastSeenMessageList lastSeenMessageList = packet.acknowledgment().lastSeen();
-		MessageChain.Signature signature = new MessageChain.Signature(packet.signature());
-		return this.server.getMessageDecorator().decorateFiltered(this.player, message.map(Text::literal)).thenAcceptAsync(decorated -> {
-			if (packet.signedPreview()) {
-				FilteredMessage<DecoratedContents> filteredMessage2 = DecoratedContents.of(message, decorated);
-				this.handleDecoratedMessage(this.messageUnpacker.unpack(signature, messageMetadata, filteredMessage2, lastSeenMessageList));
-			} else {
-				FilteredMessage<DecoratedContents> filteredMessage2 = DecoratedContents.of(message);
-				FilteredMessage<SignedMessage> filteredMessage3 = this.messageUnpacker.unpack(signature, messageMetadata, filteredMessage2, lastSeenMessageList);
-				this.handleDecoratedMessage(MessageDecorator.attachUnsignedDecoration(filteredMessage3, decorated));
-			}
-		}, this.server);
+	private CompletableFuture<Void> handleMessage(SignedMessage signedMessage, FilteredMessage<String> filteredMessage) {
+		MessageDecorator messageDecorator = this.server.getMessageDecorator();
+		FilteredMessage<Text> filteredMessage2 = filteredMessage.map(Text::literal);
+		DecoratedContents decoratedContents = signedMessage.getSignedContent();
+		return decoratedContents.isDecorated()
+			? messageDecorator.rebuildFiltered(this.player, filteredMessage2, decoratedContents.decorated()).thenAcceptAsync(filteredMessage2x -> {
+				FilteredMessage<DecoratedContents> filteredMessage3 = DecoratedContents.of(filteredMessage, filteredMessage2x);
+				this.handleDecoratedMessage(signedMessage.withFilteredContent(filteredMessage3));
+			}, this.server)
+			: messageDecorator.decorate(this.player, Text.literal(filteredMessage.raw()))
+				.thenComposeAsync(text -> messageDecorator.rebuildFiltered(this.player, filteredMessage2, text), this.server)
+				.thenAcceptAsync(filteredMessage2x -> {
+					FilteredMessage<DecoratedContents> filteredMessage3 = DecoratedContents.of(filteredMessage);
+					FilteredMessage<SignedMessage> filteredMessage4 = signedMessage.withFilteredContent(filteredMessage3);
+					this.handleDecoratedMessage(MessageDecorator.attachUnsignedDecoration(filteredMessage4, filteredMessage2x));
+				}, this.server);
 	}
 
-	private void handleDecoratedMessage(FilteredMessage<SignedMessage> message) {
-		SignedMessage signedMessage = message.raw();
-		if (this.server.shouldEnforceSecureProfile() && !signedMessage.verify(this.player.getMessageSourceProfile())) {
+	private SignedMessage method_45011(ChatMessageC2SPacket chatMessageC2SPacket) {
+		MessageMetadata messageMetadata = chatMessageC2SPacket.getMetadata(this.player);
+		MessageChain.Signature signature = new MessageChain.Signature(chatMessageC2SPacket.signature());
+		LastSeenMessageList lastSeenMessageList = chatMessageC2SPacket.acknowledgment().lastSeen();
+		DecoratedContents decoratedContents = this.method_45013(chatMessageC2SPacket);
+		return this.messageUnpacker.unpack(signature, messageMetadata, decoratedContents, lastSeenMessageList);
+	}
+
+	private DecoratedContents method_45013(ChatMessageC2SPacket chatMessageC2SPacket) {
+		Text text = this.field_39899.method_45035(chatMessageC2SPacket.chatMessage());
+		return chatMessageC2SPacket.signedPreview() && text != null
+			? new DecoratedContents(chatMessageC2SPacket.chatMessage(), text)
+			: new DecoratedContents(chatMessageC2SPacket.chatMessage());
+	}
+
+	private void handleDecoratedMessage(FilteredMessage<SignedMessage> filteredMessage) {
+		this.server.getPlayerManager().broadcast(filteredMessage, this.player, MessageType.params(MessageType.CHAT, this.player));
+		this.checkForSpam();
+	}
+
+	private boolean method_45009(SignedMessage signedMessage) {
+		MessageSourceProfile messageSourceProfile = this.player.getMessageSourceProfile();
+		if (messageSourceProfile.playerPublicKey() != null && !signedMessage.verify(messageSourceProfile)) {
 			this.disconnect(Text.translatable("multiplayer.disconnect.unsigned_chat"));
+			return false;
 		} else {
 			if (signedMessage.isExpiredOnServer(Instant.now())) {
 				LOGGER.warn(
 					"{} sent expired chat: '{}'. Is the client/server system time unsynchronized?",
 					this.player.getName().getString(),
-					signedMessage.getSignedContent().plain().getString()
+					signedMessage.getSignedContent().plain()
 				);
 			}
 
-			this.server.getPlayerManager().broadcast(message, this.player, MessageType.params(MessageType.CHAT, this.player));
-			this.checkForSpam();
+			return true;
 		}
 	}
 
@@ -1379,35 +1454,37 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 	private CompletableFuture<Text> decorateChat(String query) {
 		Text text = Text.literal(query);
-		return this.server.getMessageDecorator().decorate(this.player, text).thenApply(decorated -> !text.equals(decorated) ? decorated : null);
+		CompletableFuture<Text> completableFuture = this.server
+			.getMessageDecorator()
+			.decorate(this.player, text)
+			.thenApply(decorated -> !text.equals(decorated) ? decorated : null);
+		completableFuture.thenAcceptAsync(textx -> this.field_39899.method_45036(query, textx), this.server);
+		return completableFuture;
 	}
 
 	private CompletableFuture<Text> decorateCommand(String query) {
 		ServerCommandSource serverCommandSource = this.player.getCommandSource();
 		ParseResults<ServerCommandSource> parseResults = this.server.getCommandManager().getDispatcher().parse(query, serverCommandSource);
-		return this.decorateCommand(parseResults.getContext());
+		CompletableFuture<Text> completableFuture = this.decorateCommand(serverCommandSource, class_7644.method_45043(parseResults));
+		completableFuture.thenAcceptAsync(text -> this.field_39899.method_45036(query, text), this.server);
+		return completableFuture;
 	}
 
-	private CompletableFuture<Text> decorateCommand(CommandContextBuilder<ServerCommandSource> builder) {
-		CommandContextBuilder<ServerCommandSource> commandContextBuilder = builder.getLastChild();
-		if (commandContextBuilder.getArguments().isEmpty()) {
+	private CompletableFuture<Text> decorateCommand(ServerCommandSource serverCommandSource, class_7644<ServerCommandSource> arg) {
+		List<class_7644.class_7645<ServerCommandSource>> list = arg.arguments();
+		if (list.isEmpty()) {
 			return CompletableFuture.completedFuture(null);
 		} else {
-			List<? extends ParsedCommandNode<?>> list = commandContextBuilder.getNodes();
-
 			for (int i = list.size() - 1; i >= 0; i--) {
-				CommandNode<?> commandNode = ((ParsedCommandNode)list.get(i)).getNode();
-				if (commandNode instanceof ArgumentCommandNode) {
-					ArgumentCommandNode<?, ?> argumentCommandNode = (ArgumentCommandNode<?, ?>)commandNode;
+				class_7644.class_7645<ServerCommandSource> lv = (class_7644.class_7645<ServerCommandSource>)list.get(i);
 
-					try {
-						CompletableFuture<Text> completableFuture = DecoratableArgumentType.decorate(argumentCommandNode, commandContextBuilder);
-						if (completableFuture != null) {
-							return completableFuture;
-						}
-					} catch (CommandSyntaxException var8) {
-						return CompletableFuture.completedFuture(null);
+				try {
+					CompletableFuture<Text> completableFuture = lv.previewType().decorate(serverCommandSource, lv.parsedValue());
+					if (completableFuture != null) {
+						return completableFuture;
 					}
+				} catch (CommandSyntaxException var7) {
+					return CompletableFuture.completedFuture(null);
 				}
 			}
 
@@ -1501,10 +1578,11 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 	}
 
 	public void addPendingAcknowledgment(SignedMessage message) {
-		if (!message.createMetadata().lacksSender()) {
+		LastSeenMessageList.Entry entry = message.toLastSeenMessageEntry();
+		if (entry != null) {
 			int i;
 			synchronized (this.acknowledgmentValidator) {
-				this.acknowledgmentValidator.addPending(message.toLastSeenMessageEntry());
+				this.acknowledgmentValidator.addPending(entry);
 				i = this.acknowledgmentValidator.getPendingCount();
 			}
 

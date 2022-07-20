@@ -339,9 +339,11 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 				} else if (clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
 					String string2 = SharedConstants.stripInvalidChars(clickEvent.getValue());
 					if (string2.startsWith("/")) {
-						this.client.player.sendCommand(string2.substring(1));
+						if (!this.client.player.sendCommand(string2.substring(1))) {
+							LOGGER.error("Not allowed to run command with signed argument from click event: '{}'", string2);
+						}
 					} else {
-						LOGGER.warn("Failed to run command without '/' prefix from click event: '{}'", string2);
+						LOGGER.error("Failed to run command without '/' prefix from click event: '{}'", string2);
 					}
 				} else if (clickEvent.getAction() == ClickEvent.Action.COPY_TO_CLIPBOARD) {
 					this.client.keyboard.setClipboard(clickEvent.getValue());

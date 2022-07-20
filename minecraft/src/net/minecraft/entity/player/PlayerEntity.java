@@ -1385,6 +1385,10 @@ public abstract class PlayerEntity extends LivingEntity {
 	public void onPickupSlotClick(ItemStack cursorStack, ItemStack slotStack, ClickType clickType) {
 	}
 
+	public boolean method_45015() {
+		return this.currentScreenHandler != this.playerScreenHandler;
+	}
+
 	/**
 	 * Tries to start sleeping on a block.
 	 * 

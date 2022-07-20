@@ -23,6 +23,7 @@ import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.SharedConstants;
 import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.encryption.PlayerKeyPair;
@@ -57,17 +58,21 @@ public class ProfileKeys {
 		return CompletableFuture.supplyAsync(() -> {
 			Optional<PlayerKeyPair> optional = this.loadKeyPairFromFile().filter(keyPair -> !keyPair.publicKey().data().isExpired());
 			if (optional.isPresent() && !((PlayerKeyPair)optional.get()).isExpired()) {
-				return optional;
-			} else {
-				try {
-					PlayerKeyPair playerKeyPair = this.fetchKeyPair(userApiService);
-					this.saveKeyPairToFile(playerKeyPair);
-					return Optional.of(playerKeyPair);
-				} catch (NetworkEncryptionException | MinecraftClientException | IOException var4) {
-					LOGGER.error("Failed to retrieve profile key pair", (Throwable)var4);
-					this.saveKeyPairToFile(null);
+				if (SharedConstants.isDevelopment) {
 					return optional;
 				}
+
+				this.saveKeyPairToFile(null);
+			}
+
+			try {
+				PlayerKeyPair playerKeyPair = this.fetchKeyPair(userApiService);
+				this.saveKeyPairToFile(playerKeyPair);
+				return Optional.of(playerKeyPair);
+			} catch (NetworkEncryptionException | MinecraftClientException | IOException var4) {
+				LOGGER.error("Failed to retrieve profile key pair", (Throwable)var4);
+				this.saveKeyPairToFile(null);
+				return optional;
 			}
 		}, Util.getMainWorkerExecutor());
 	}
@@ -124,14 +129,16 @@ public class ProfileKeys {
 		}
 
 		if (keyPair != null) {
-			PlayerKeyPair.CODEC.encodeStart(JsonOps.INSTANCE, keyPair).result().ifPresent(json -> {
-				try {
-					Files.createDirectories(this.jsonPath.getParent());
-					Files.writeString(this.jsonPath, json.toString());
-				} catch (Exception var3x) {
-					LOGGER.error("Failed to write profile key pair file {}", this.jsonPath, var3x);
-				}
-			});
+			if (SharedConstants.isDevelopment) {
+				PlayerKeyPair.CODEC.encodeStart(JsonOps.INSTANCE, keyPair).result().ifPresent(json -> {
+					try {
+						Files.createDirectories(this.jsonPath.getParent());
+						Files.writeString(this.jsonPath, json.toString());
+					} catch (Exception var3x) {
+						LOGGER.error("Failed to write profile key pair file {}", this.jsonPath, var3x);
+					}
+				});
+			}
 		}
 	}
 

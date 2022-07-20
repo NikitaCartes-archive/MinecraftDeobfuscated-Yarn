@@ -1,5 +1,6 @@
 package net.minecraft.server.filter;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.server.command.ServerCommandSource;
@@ -34,15 +35,18 @@ public record FilteredMessage<T>(T raw, @Nullable T filtered) {
 		return (FilteredMessage<U>)(new FilteredMessage<>(rawMapper.apply(this.raw), Util.map(this.filtered, filteredMapper)));
 	}
 
-	/**
-	 * {@return the result of applying mappers to both raw and filtered parts}
-	 * 
-	 * <p>Unlike {@link #map(Function, Function)}, if those two parts are equal,
-	 * then this reuses the mapped raw part instead of applying {@code filteredMapper}.
-	 */
-	public <U> FilteredMessage<U> mapParts(Function<T, U> rawMapper, Function<T, U> filteredMapper) {
-		U object = (U)rawMapper.apply(this.raw);
-		return this.raw.equals(this.filtered) ? permitted(object) : new FilteredMessage<>(object, Util.map(this.filtered, filteredMapper));
+	public <U> FilteredMessage<U> method_45000(U object, Function<T, U> function) {
+		return !this.isFiltered() ? permitted(object) : new FilteredMessage<>(object, Util.map(this.filtered, function));
+	}
+
+	public <U> CompletableFuture<FilteredMessage<U>> method_45001(U object, Function<T, CompletableFuture<U>> function) {
+		if (this.filtered() == null) {
+			return CompletableFuture.completedFuture(censored(object));
+		} else {
+			return !this.isFiltered()
+				? CompletableFuture.completedFuture(permitted(object))
+				: ((CompletableFuture)function.apply(this.filtered())).thenApply(object2 -> new FilteredMessage<>(object, (U)object2));
+		}
 	}
 
 	/**

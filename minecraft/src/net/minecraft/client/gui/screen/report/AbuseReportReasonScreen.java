@@ -123,7 +123,9 @@ public class AbuseReportReasonScreen extends Screen {
 			super(client, AbuseReportReasonScreen.this.width, AbuseReportReasonScreen.this.height, 40, AbuseReportReasonScreen.this.height - 95, 18);
 
 			for (AbuseReportReason abuseReportReason : AbuseReportReason.values()) {
-				this.addEntry(new AbuseReportReasonScreen.ReasonListWidget.ReasonEntry(abuseReportReason));
+				if (abuseReportReason.method_45032()) {
+					this.addEntry(new AbuseReportReasonScreen.ReasonListWidget.ReasonEntry(abuseReportReason));
+				}
 			}
 		}
 

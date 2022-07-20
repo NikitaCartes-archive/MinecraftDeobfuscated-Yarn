@@ -3,8 +3,6 @@ package net.minecraft.network.message;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.network.encryption.Signer;
-import net.minecraft.server.filter.FilteredMessage;
-import net.minecraft.util.Util;
 
 /**
  * A class for handling the "message chain".
@@ -89,14 +87,6 @@ public class MessageChain {
 	 */
 	@FunctionalInterface
 	public interface Unpacker {
-		MessageChain.Unpacker UNSIGNED = (signature, metadata, contents, lastSeenMessages) -> SignedMessage.ofUnsigned(metadata, contents.decorated());
-
-		SignedMessage unpack(MessageChain.Signature signature, MessageMetadata metadata, DecoratedContents contents, LastSeenMessageList lastSeenMessages);
-
-		default FilteredMessage<SignedMessage> unpack(
-			MessageChain.Signature signature, MessageMetadata metadata, FilteredMessage<DecoratedContents> contents, LastSeenMessageList lastSeenMessages
-		) {
-			return this.unpack(signature, metadata, contents.raw(), lastSeenMessages).withFilteredContent(Util.map(contents.filtered(), DecoratedContents::decorated));
-		}
+		SignedMessage unpack(MessageChain.Signature signature, MessageMetadata metadata, DecoratedContents decoratedContents, LastSeenMessageList lastSeenMessages);
 	}
 }

@@ -187,10 +187,11 @@ public class ChatAbuseReport {
 	}
 
 	private static Int2ObjectMap<ReceivedMessage.ChatMessage> collectEvidences(ChatLog log, int selectedIndex, AbuseReportLimits abuseReportLimits) {
+		int i = abuseReportLimits.leadingContextMessageCount() + 1;
 		Int2ObjectMap<ReceivedMessage.ChatMessage> int2ObjectMap = new Int2ObjectOpenHashMap<>();
-		collectPrecedingMessages(log, selectedIndex, (i, chatMessage) -> {
-			int2ObjectMap.put(i, chatMessage);
-			return int2ObjectMap.size() < abuseReportLimits.leadingContextMessageCount();
+		collectPrecedingMessages(log, selectedIndex, (j, chatMessage) -> {
+			int2ObjectMap.put(j, chatMessage);
+			return int2ObjectMap.size() < i;
 		});
 		streamSucceedingMessages(log, selectedIndex, abuseReportLimits.trailingContextMessageCount())
 			.forEach(indexedEntry -> int2ObjectMap.put(indexedEntry.index(), (ReceivedMessage.ChatMessage)indexedEntry.entry()));
@@ -218,7 +219,7 @@ public class ChatAbuseReport {
 					break;
 				}
 
-				IntIterator var9 = collectIndicesUntilLastSeen(log, i, chatMessage).iterator();
+				IntIterator var9 = collectIndicesUntilLastSeen(log, i, chatMessage.message()).iterator();
 
 				while (var9.hasNext()) {
 					int j = (Integer)var9.next();
@@ -230,22 +231,26 @@ public class ChatAbuseReport {
 		}
 	}
 
-	private static IntCollection collectIndicesUntilLastSeen(ChatLog log, int selectedIndex, ReceivedMessage.ChatMessage message) {
-		Set<MessageSignatureData> set = (Set<MessageSignatureData>)message.message()
-			.signedBody()
+	private static IntCollection collectIndicesUntilLastSeen(ChatLog log, int selectedIndex, SignedMessage signedMessage) {
+		Set<MessageSignatureData> set = (Set<MessageSignatureData>)signedMessage.signedBody()
 			.lastSeenMessages()
 			.entries()
 			.stream()
 			.map(LastSeenMessageList.Entry::lastSignature)
-			.collect(Collectors.toSet());
+			.collect(Collectors.toCollection(ObjectOpenHashSet::new));
+		MessageSignatureData messageSignatureData = signedMessage.signedHeader().precedingSignature();
+		if (messageSignatureData != null) {
+			set.add(messageSignatureData);
+		}
+
 		IntList intList = new IntArrayList();
 		Iterator<ChatLog.IndexedEntry<ChatLogEntry>> iterator = log.streamBackward(selectedIndex).streamIndexedEntries().iterator();
 
 		while (iterator.hasNext() && !set.isEmpty()) {
 			ChatLog.IndexedEntry<ChatLogEntry> indexedEntry = (ChatLog.IndexedEntry<ChatLogEntry>)iterator.next();
-			ChatLogEntry var8 = indexedEntry.entry();
-			if (var8 instanceof ReceivedMessage.ChatMessage) {
-				ReceivedMessage.ChatMessage chatMessage = (ReceivedMessage.ChatMessage)var8;
+			ChatLogEntry var9 = indexedEntry.entry();
+			if (var9 instanceof ReceivedMessage.ChatMessage) {
+				ReceivedMessage.ChatMessage chatMessage = (ReceivedMessage.ChatMessage)var9;
 				if (set.remove(chatMessage.headerSignature())) {
 					intList.add(indexedEntry.index());
 				}
@@ -264,7 +269,7 @@ public class ChatAbuseReport {
 		ByteBuffer byteBuffer2 = Util.map(signedMessage.signedHeader().precedingSignature(), MessageSignatureData::toByteBuffer);
 		ByteBuffer byteBuffer3 = ByteBuffer.wrap(messageBody.digest().asBytes());
 		ReportChatMessageContent reportChatMessageContent = new ReportChatMessageContent(
-			serializeContent(signedMessage.getSignedContent().plain()),
+			signedMessage.getSignedContent().plain(),
 			signedMessage.getSignedContent().isDecorated() ? serializeContent(signedMessage.getSignedContent().decorated()) : null
 		);
 		String string = (String)signedMessage.unsignedContent().map(ChatAbuseReport::serializeContent).orElse(null);

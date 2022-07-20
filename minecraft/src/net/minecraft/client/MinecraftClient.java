@@ -191,6 +191,7 @@ import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ResourcePackSource;
+import net.minecraft.resource.ResourceReload;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.metadata.PackResourceMetadata;
 import net.minecraft.screen.ScreenTexts;
@@ -546,8 +547,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				InputStream inputStream2 = this.getResourcePackProvider().getPack().open(ResourceType.CLIENT_RESOURCES, new Identifier("icons/icon_32x32.png"));
 				this.window.setIcon(inputStream, inputStream2);
 			}
-		} catch (IOException var8) {
-			LOGGER.error("Couldn't set icon", (Throwable)var8);
+		} catch (IOException var9) {
+			LOGGER.error("Couldn't set icon", (Throwable)var9);
 		}
 
 		this.window.setFramerateLimit(this.options.getMaxFps().getValue());
@@ -656,22 +657,16 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		SplashOverlay.init(this);
 		List<ResourcePack> list = this.resourcePackManager.createResourcePacks();
 		this.resourceReloadLogger.reload(ResourceReloadLogger.ReloadReason.INITIAL, list);
-		this.setOverlay(
-			new SplashOverlay(
-				this,
-				this.resourceManager.reload(Util.getMainWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list),
-				throwable -> Util.ifPresentOrElse(throwable, this::handleResourceReloadException, () -> {
-						if (SharedConstants.isDevelopment) {
-							this.checkGameData();
-						}
+		ResourceReload resourceReload = this.resourceManager.reload(Util.getMainWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list);
+		this.setOverlay(new SplashOverlay(this, resourceReload, throwable -> Util.ifPresentOrElse(throwable, this::handleResourceReloadException, () -> {
+				if (SharedConstants.isDevelopment) {
+					this.checkGameData();
+				}
 
-						this.resourceReloadLogger.finish();
-					}),
-				false
-			)
-		);
+				this.resourceReloadLogger.finish();
+			}), false));
 		if (string != null) {
-			ConnectScreen.connect(new TitleScreen(), this, new ServerAddress(string, i), null);
+			resourceReload.whenComplete().thenRunAsync(() -> ConnectScreen.connect(new TitleScreen(), this, new ServerAddress(string, i), null), this);
 		} else if (this.isMultiplayerBanned()) {
 			this.setScreen(Bans.createBanScreen(confirmed -> {
 				if (confirmed) {

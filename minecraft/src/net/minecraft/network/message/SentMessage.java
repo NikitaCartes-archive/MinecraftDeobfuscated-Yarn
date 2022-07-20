@@ -6,6 +6,7 @@ import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.registry.DynamicRegistryManager;
 
 /**
@@ -13,10 +14,7 @@ import net.minecraft.util.registry.DynamicRegistryManager;
  * sending messages.
  */
 public interface SentMessage {
-	/**
-	 * {@return the wrapped message}
-	 */
-	SignedMessage getWrappedMessage();
+	Text method_45039();
 
 	/**
 	 * {@return the chat message packet to be sent}
@@ -35,22 +33,17 @@ public interface SentMessage {
 
 	/**
 	 * {@return the wrapped {@code message}}
-	 * 
-	 * @param profile the original source of the message
 	 */
-	static SentMessage of(SignedMessage message, MessageSourceProfile profile) {
-		if (message.createMetadata().lacksSender()) {
-			return new SentMessage.Profileless(message);
-		} else {
-			return (SentMessage)(!message.createMetadata().sender().equals(profile.profileId()) ? new SentMessage.Entity(message) : new SentMessage.Chat(message));
-		}
+	static SentMessage of(SignedMessage message) {
+		return (SentMessage)(message.createMetadata().lacksSender() ? new SentMessage.Profileless(message) : new SentMessage.Chat(message));
 	}
 
 	/**
 	 * {@return the wrapped {@code message}}
 	 */
-	static FilteredMessage<SentMessage> of(FilteredMessage<SignedMessage> message, MessageSourceProfile profile) {
-		return message.mapParts(rawMessage -> of(message.raw(), profile), SentMessage.Profileless::new);
+	static FilteredMessage<SentMessage> of(FilteredMessage<SignedMessage> message) {
+		SentMessage sentMessage = of(message.raw());
+		return message.method_45000(sentMessage, SentMessage.Profileless::new);
 	}
 
 	/**
@@ -68,8 +61,8 @@ public interface SentMessage {
 		}
 
 		@Override
-		public SignedMessage getWrappedMessage() {
-			return this.message;
+		public Text method_45039() {
+			return this.message.getContent();
 		}
 
 		@Override
@@ -87,39 +80,6 @@ public interface SentMessage {
 	}
 
 	/**
-	 * The wrapper used for messages sent from entities via {@code /execute} command.
-	 * 
-	 * <p>The client receives the message without the metadata first; the header is sent
-	 * separately.
-	 */
-	public static class Entity implements SentMessage {
-		private final SignedMessage originalMessage;
-		private final SignedMessage messageWithoutMetadata;
-
-		public Entity(SignedMessage originalMessage) {
-			this.originalMessage = originalMessage;
-			this.messageWithoutMetadata = SignedMessage.ofUnsigned(MessageMetadata.of(), originalMessage.getContent());
-		}
-
-		@Override
-		public SignedMessage getWrappedMessage() {
-			return this.originalMessage;
-		}
-
-		@Override
-		public ChatMessageS2CPacket toPacket(ServerPlayerEntity player, MessageType.Parameters params) {
-			DynamicRegistryManager dynamicRegistryManager = player.world.getRegistryManager();
-			MessageType.Serialized serialized = params.toSerialized(dynamicRegistryManager);
-			return new ChatMessageS2CPacket(this.messageWithoutMetadata, serialized);
-		}
-
-		@Override
-		public void afterPacketsSent(PlayerManager playerManager) {
-			playerManager.sendMessageHeader(this.originalMessage, Set.of());
-		}
-	}
-
-	/**
 	 * The wrapper used for messages without associated source profile.
 	 */
 	public static class Profileless implements SentMessage {
@@ -130,8 +90,8 @@ public interface SentMessage {
 		}
 
 		@Override
-		public SignedMessage getWrappedMessage() {
-			return this.message;
+		public Text method_45039() {
+			return this.message.getContent();
 		}
 
 		@Override

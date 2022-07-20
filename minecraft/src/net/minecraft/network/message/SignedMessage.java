@@ -8,6 +8,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.server.filter.FilteredMessage;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
 /**
@@ -25,12 +26,10 @@ public record SignedMessage(MessageHeader signedHeader, MessageSignatureData hea
 		this(new MessageHeader(buf), new MessageSignatureData(buf), new MessageBody(buf), buf.readOptional(PacketByteBuf::readText));
 	}
 
-	/**
-	 * {@return a new signed message without valid signatures}
-	 */
-	public static SignedMessage ofUnsigned(MessageMetadata metadata, Text content) {
-		MessageBody messageBody = new MessageBody(new DecoratedContents(content), metadata.timestamp(), metadata.salt(), LastSeenMessageList.EMPTY);
-		MessageHeader messageHeader = new MessageHeader(null, metadata.sender());
+	public static SignedMessage method_45041(DecoratedContents decoratedContents) {
+		MessageMetadata messageMetadata = MessageMetadata.of();
+		MessageBody messageBody = new MessageBody(decoratedContents, messageMetadata.timestamp(), messageMetadata.salt(), LastSeenMessageList.EMPTY);
+		MessageHeader messageHeader = new MessageHeader(null, messageMetadata.sender());
 		return new SignedMessage(messageHeader, MessageSignatureData.EMPTY, messageBody, Optional.empty());
 	}
 
@@ -41,14 +40,13 @@ public record SignedMessage(MessageHeader signedHeader, MessageSignatureData hea
 		buf.writeOptional(this.unsignedContent, PacketByteBuf::writeText);
 	}
 
-	public FilteredMessage<SignedMessage> withFilteredContent(@Nullable Text filteredContent) {
-		if (filteredContent == null) {
-			return FilteredMessage.censored(this);
-		} else {
-			return this.getSignedContent().decorated().equals(filteredContent)
-				? FilteredMessage.permitted(this)
-				: new FilteredMessage<>(this, ofUnsigned(this.createMetadata(), filteredContent));
-		}
+	public FilteredMessage<SignedMessage> withFilteredContent(FilteredMessage<DecoratedContents> filteredMessage) {
+		return filteredMessage.method_45000(
+			this,
+			decoratedContents -> this.getSignedContent().equals(decoratedContents)
+					? this
+					: new SignedMessage(this.signedHeader, this.headerSignature, this.signedBody.method_45047(decoratedContents), this.unsignedContent)
+		);
 	}
 
 	public SignedMessage withUnsignedContent(Text unsignedContent) {
@@ -119,7 +117,15 @@ public record SignedMessage(MessageHeader signedHeader, MessageSignatureData hea
 		return new MessageMetadata(this.signedHeader.sender(), this.getTimestamp(), this.getSalt());
 	}
 
+	@Nullable
 	public LastSeenMessageList.Entry toLastSeenMessageEntry() {
-		return new LastSeenMessageList.Entry(this.createMetadata().sender(), this.headerSignature);
+		MessageMetadata messageMetadata = this.createMetadata();
+		return !this.headerSignature.isEmpty() && !messageMetadata.lacksSender()
+			? new LastSeenMessageList.Entry(messageMetadata.sender(), this.headerSignature)
+			: null;
+	}
+
+	public boolean method_45040(ServerPlayerEntity serverPlayerEntity) {
+		return !this.headerSignature.isEmpty() && this.signedHeader.sender().equals(serverPlayerEntity.getUuid());
 	}
 }

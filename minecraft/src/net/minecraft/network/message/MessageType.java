@@ -2,7 +2,7 @@ package net.minecraft.network.message;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Objects;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketByteBuf;
@@ -196,9 +196,10 @@ public record MessageType(Decoration chat, Decoration narration) {
 		/**
 		 * {@return a deserialized version of this instance}
 		 */
-		public MessageType.Parameters toParameters(DynamicRegistryManager registryManager) {
+		public Optional<MessageType.Parameters> toParameters(DynamicRegistryManager registryManager) {
 			Registry<MessageType> registry = registryManager.get(Registry.MESSAGE_TYPE_KEY);
-			return new MessageType.Parameters((MessageType)Objects.requireNonNull(registry.get(this.typeId), "Invalid chat type"), this.name, this.targetName);
+			MessageType messageType = registry.get(this.typeId);
+			return Optional.ofNullable(messageType).map(messageTypex -> new MessageType.Parameters(messageTypex, this.name, this.targetName));
 		}
 	}
 }

@@ -56,21 +56,21 @@ public class TeamMsgCommand {
 				.stream()
 				.filter(player -> player == entity || player.getScoreboardTeam() == team)
 				.toList();
-			signedMessage.decorate(source, decoratedMessage -> {
-				FilteredMessage<SentMessage> filteredMessage = SentMessage.of(decoratedMessage, messageSourceProfile);
+			signedMessage.decorate(source, filteredMessage -> {
+				FilteredMessage<SentMessage> filteredMessage2 = SentMessage.of(filteredMessage);
 
 				for (ServerPlayerEntity serverPlayerEntity : list) {
 					if (serverPlayerEntity == entity) {
-						serverPlayerEntity.sendChatMessage(filteredMessage.raw(), parameters2);
+						serverPlayerEntity.sendChatMessage(filteredMessage2.raw(), parameters2);
 					} else {
-						SentMessage sentMessage = filteredMessage.getFilterableFor(source, serverPlayerEntity);
+						SentMessage sentMessage = filteredMessage2.getFilterableFor(source, serverPlayerEntity);
 						if (sentMessage != null) {
 							serverPlayerEntity.sendChatMessage(sentMessage, parameters);
 						}
 					}
 				}
 
-				filteredMessage.raw().afterPacketsSent(source.getServer().getPlayerManager());
+				filteredMessage2.raw().afterPacketsSent(source.getServer().getPlayerManager());
 			});
 			return list.size();
 		}
