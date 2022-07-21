@@ -56,6 +56,23 @@ import net.minecraft.world.BlockView;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
+/**
+ * Represents a type of {@linkplain BlockEntity block entities}.
+ * There is one instance of block entity for each placed block entity; this class
+ * represents the type of the placed block entities, like chests or furnaces.
+ * 
+ * <p>Block entity types are pre-defined and registered in {@link
+ * Registry#BLOCK_ENTITY_TYPE}. To create a block entity type, the {@linkplain
+ * BlockEntityType.Builder#create builder} should be used.
+ * 
+ * <p>Blocks that have corresponding block entities must implement {@link
+ * net.minecraft.block.BlockEntityProvider} and list it in the builder of the block
+ * entity type. Multiple blocks or block states can be associated with a single block
+ * entity type.
+ * 
+ * @see BlockEntity
+ * @see net.minecraft.block.BlockEntityProvider
+ */
 public class BlockEntityType<T extends BlockEntity> {
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final BlockEntityType<FurnaceBlockEntity> FURNACE = BlockEntityType.create("furnace", Builder.create(FurnaceBlockEntity::new, Blocks.FURNACE));
@@ -98,6 +115,11 @@ public class BlockEntityType<T extends BlockEntity> {
     private final Set<Block> blocks;
     private final Type<?> type;
 
+    /**
+     * {@return the block entity type's ID, or {@code null} if it is unregistered}
+     * 
+     * <p>This should never return {@code null} under normal circumstances.
+     */
     @Nullable
     public static Identifier getId(BlockEntityType<?> type) {
         return Registry.BLOCK_ENTITY_TYPE.getId(type);
@@ -117,15 +139,32 @@ public class BlockEntityType<T extends BlockEntity> {
         this.type = type;
     }
 
+    /**
+     * {@return a new instance of the block entity}
+     * 
+     * @see BlockEntityType.BlockEntityFactory
+     */
     @Nullable
     public T instantiate(BlockPos pos, BlockState state) {
         return this.factory.create(pos, state);
     }
 
+    /**
+     * {@return whether the block entity type supports {@code state}}
+     * 
+     * <p>The block, not the block state, determines the corresponding block entity type;
+     * therefore, for states of the same block, the return value is the same.
+     */
     public boolean supports(BlockState state) {
         return this.blocks.contains(state.getBlock());
     }
 
+    /**
+     * {@return the block entity instance of this type at {@code pos}, or {@code null} if
+     * no such block entity exists}
+     * 
+     * @see BlockView#getBlockEntity
+     */
     @Nullable
     public T get(BlockView world, BlockPos pos) {
         BlockEntity blockEntity = world.getBlockEntity(pos);

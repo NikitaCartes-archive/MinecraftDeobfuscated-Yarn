@@ -72,7 +72,7 @@ public class PlayerSkinProvider {
 
     private Identifier loadSkin(MinecraftProfileTexture profileTexture, MinecraftProfileTexture.Type type, @Nullable SkinTextureAvailableCallback callback) {
         String string = Hashing.sha1().hashUnencodedChars(profileTexture.getHash()).toString();
-        Identifier identifier = PlayerSkinProvider.method_45033(type, string);
+        Identifier identifier = PlayerSkinProvider.getSkinId(type, string);
         AbstractTexture abstractTexture = this.textureManager.getOrDefault(identifier, MissingSprite.getMissingSpriteTexture());
         if (abstractTexture == MissingSprite.getMissingSpriteTexture()) {
             File file = new File(this.skinCacheDir, string.length() > 2 ? string.substring(0, 2) : "xx");
@@ -89,14 +89,14 @@ public class PlayerSkinProvider {
         return identifier;
     }
 
-    private static Identifier method_45033(MinecraftProfileTexture.Type type, String string) {
-        String string2 = switch (type) {
+    private static Identifier getSkinId(MinecraftProfileTexture.Type skinType, String hash) {
+        String string = switch (skinType) {
             default -> throw new IncompatibleClassChangeError();
             case MinecraftProfileTexture.Type.SKIN -> "skins";
             case MinecraftProfileTexture.Type.CAPE -> "capes";
             case MinecraftProfileTexture.Type.ELYTRA -> "elytra";
         };
-        return new Identifier(string2 + "/" + string);
+        return new Identifier(string + "/" + hash);
     }
 
     public void loadSkin(GameProfile profile, SkinTextureAvailableCallback callback, boolean requireSecure) {

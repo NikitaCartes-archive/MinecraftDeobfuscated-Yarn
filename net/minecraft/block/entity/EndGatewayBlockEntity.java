@@ -107,7 +107,7 @@ extends EndPortalBlockEntity {
     }
 
     public static boolean canTeleport(Entity entity) {
-        return EntityPredicates.EXCEPT_SPECTATOR.test(entity) && !entity.getRootVehicle().hasNetherPortalCooldown();
+        return EntityPredicates.EXCEPT_SPECTATOR.test(entity) && !entity.getRootVehicle().hasPortalCooldown();
     }
 
     public boolean isRecentlyGenerated() {
@@ -183,7 +183,7 @@ extends EndPortalBlockEntity {
             } else {
                 entity3 = entity.getRootVehicle();
             }
-            entity3.resetNetherPortalCooldown();
+            entity3.resetPortalCooldown();
             entity3.teleport((double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5);
         }
         EndGatewayBlockEntity.startTeleportCooldown(world, pos, state, blockEntity);

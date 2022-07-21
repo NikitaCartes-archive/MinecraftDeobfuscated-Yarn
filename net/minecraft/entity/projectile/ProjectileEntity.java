@@ -104,7 +104,7 @@ extends Entity {
     private boolean shouldLeaveOwner() {
         Entity entity2 = this.getOwner();
         if (entity2 != null) {
-            for (Entity entity22 : this.world.getOtherEntities(this, this.getBoundingBox().stretch(this.getVelocity()).expand(1.0), entity -> !entity.isSpectator() && entity.collides())) {
+            for (Entity entity22 : this.world.getOtherEntities(this, this.getBoundingBox().stretch(this.getVelocity()).expand(1.0), entity -> !entity.isSpectator() && entity.canHit())) {
                 if (entity22.getRootVehicle() != entity2.getRootVehicle()) continue;
                 return false;
             }
@@ -196,7 +196,7 @@ extends Entity {
     }
 
     protected boolean canHit(Entity entity) {
-        if (entity.isSpectator() || !entity.isAlive() || !entity.collides()) {
+        if (entity.isSpectator() || !entity.isAlive() || !entity.canHit()) {
             return false;
         }
         Entity entity2 = this.getOwner();

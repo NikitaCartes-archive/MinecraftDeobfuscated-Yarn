@@ -273,7 +273,7 @@ public class MessageHandler {
      * chat log. The message is not verified.
      */
     boolean processProfilelessMessage(MessageType.Parameters params, SignedMessage message, Text decorated) {
-        this.client.inGameHud.getChatHud().addMessage(decorated, MessageIndicator.system());
+        this.client.inGameHud.getChatHud().addMessage(decorated);
         this.narrate(params, message);
         this.addToChatLog(decorated, message.getTimestamp());
         this.lastProcessTime = Util.getMeasuringTimeMs();
@@ -372,7 +372,7 @@ public class MessageHandler {
         if (overlay) {
             this.client.inGameHud.setOverlayMessage(message, false);
         } else {
-            this.client.inGameHud.getChatHud().addMessage(message, MessageIndicator.system());
+            this.client.inGameHud.getChatHud().addMessage(message);
             this.addToChatLog(message, Instant.now());
         }
         this.client.getNarratorManager().narrate(message);

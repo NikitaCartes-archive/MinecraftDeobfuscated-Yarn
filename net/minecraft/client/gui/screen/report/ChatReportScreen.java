@@ -112,7 +112,7 @@ extends Screen {
     }
 
     private void send() {
-        this.report.finalizeReport(this.reporter).left().ifPresent(report -> {
+        this.report.finalizeReport(this.reporter).ifLeft(report -> {
             CompletableFuture<Unit> completableFuture = this.reporter.sender().send(report.id(), report.report());
             this.client.setScreen(TaskScreen.createRunningScreen(SENDING_TEXT, ScreenTexts.CANCEL, () -> {
                 this.client.setScreen(this);
@@ -129,7 +129,7 @@ extends Screen {
                 }
                 return null;
             }, (Executor)this.client);
-        });
+        }).ifRight(validationError -> this.method_45054(validationError.message()));
     }
 
     private void onSubmissionFinished() {
@@ -146,6 +146,10 @@ extends Screen {
         } else {
             text = GENERIC_ERROR_TEXT;
         }
+        this.method_45054(text);
+    }
+
+    private void method_45054(Text text) {
         MutableText text2 = text.copy().formatted(Formatting.RED);
         this.client.setScreen(TaskScreen.createResultScreen(REPORT_ERROR_TITLE, text2, ScreenTexts.BACK, () -> this.client.setScreen(this)));
     }

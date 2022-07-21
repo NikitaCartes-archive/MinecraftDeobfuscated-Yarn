@@ -85,6 +85,7 @@ import net.minecraft.client.sound.PassiveBeeSoundInstance;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.toast.RecipeToast;
+import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.telemetry.TelemetrySender;
 import net.minecraft.client.world.ClientChunkManager;
 import net.minecraft.client.world.ClientWorld;
@@ -273,6 +274,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
@@ -308,6 +310,8 @@ public class ClientPlayNetworkHandler
 implements ClientPlayPacketListener {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final Text DISCONNECT_LOST_TEXT = Text.translatable("disconnect.lost");
+    private static final Text field_39916 = Text.translatable("multiplayer.unsecureserver.toast.title");
+    private static final Text field_39917 = Text.translatable("multiplayer.unsecureserver.toast");
     private static final int MAX_PENDING_ACKNOWLEDGMENTS = 64;
     private final ClientConnection connection;
     private final GameProfile profile;
@@ -935,7 +939,7 @@ implements ClientPlayPacketListener {
         }
         String string = clientPlayerEntity.getServerBrand();
         this.client.cameraEntity = null;
-        if (clientPlayerEntity.method_45015()) {
+        if (clientPlayerEntity.shouldCloseHandledScreenOnRespawn()) {
             clientPlayerEntity.closeHandledScreen();
         }
         ClientPlayerEntity clientPlayerEntity2 = this.client.interactionManager.createPlayer(this.world, clientPlayerEntity.getStatHandler(), clientPlayerEntity.getRecipeBook(), clientPlayerEntity.isSneaking(), clientPlayerEntity.isSprinting());
@@ -1428,6 +1432,7 @@ implements ClientPlayPacketListener {
 
     @Override
     public void onServerMetadata(ServerMetadataS2CPacket packet) {
+        ServerInfo.ChatPreview chatPreview;
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         ServerInfo serverInfo = this.client.getCurrentServerEntry();
         if (serverInfo == null) {
@@ -1444,9 +1449,13 @@ implements ClientPlayPacketListener {
             }
         });
         serverInfo.setPreviewsChat(packet.shouldPreviewChat());
+        serverInfo.method_45055(packet.method_45058());
         ServerList.updateServerListEntry(serverInfo);
-        ServerInfo.ChatPreview chatPreview = serverInfo.getChatPreview();
-        if (chatPreview != null && !chatPreview.isAcknowledged()) {
+        if (!packet.method_45058()) {
+            SystemToast systemToast = SystemToast.create(this.client, SystemToast.Type.UNSECURE_SERVER_WARNING, field_39916, field_39917);
+            this.client.getToastManager().add(systemToast);
+        }
+        if ((chatPreview = serverInfo.getChatPreview()) != null && !chatPreview.isAcknowledged()) {
             this.client.execute(() -> this.client.setScreen(new ChatPreviewWarningScreen(this.client.currentScreen, serverInfo)));
         }
     }
@@ -1508,7 +1517,8 @@ implements ClientPlayPacketListener {
             }
             PlayerListEntry playerListEntry = this.playerListEntries.get(entry.getProfile().getId());
             if (packet.getAction() == PlayerListS2CPacket.Action.ADD_PLAYER) {
-                playerListEntry = new PlayerListEntry(entry, this.client.getServicesSignatureVerifier());
+                boolean bl = Util.mapOrElse(this.client.getCurrentServerEntry(), ServerInfo::method_45056, false);
+                playerListEntry = new PlayerListEntry(entry, this.client.getServicesSignatureVerifier(), bl);
                 this.playerListEntries.put(playerListEntry.getProfile().getId(), playerListEntry);
                 this.client.getSocialInteractionsManager().setPlayerOnline(playerListEntry);
             }

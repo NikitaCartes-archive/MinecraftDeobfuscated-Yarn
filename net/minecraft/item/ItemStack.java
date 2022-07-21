@@ -84,7 +84,21 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 /**
- * Represents a stack of items.
+ * Represents a stack of items. This is a data container that holds the item count
+ * and the stack's NBT. Logics for items (such as the action for using it) are delegated
+ * to the stack's logic container, {@link Item}. Instances can be created using one of
+ * the constructors and are usually stored in an {@link net.minecraft.inventory.Inventory}.
+ * 
+ * <p>Item stacks should never be compared using {@code ==} operator or {@code equals}
+ * method. This also means they cannot be used as a map key. To check if an item stack
+ * is of a certain item, use {@link #isOf(Item)}. To compare two item stacks, use {@link
+ * #areItemsEqual} to check the item only, or {@link #areEqual} to also check the item
+ * count and the NBT. Use {@link #isEmpty} to check if an item stack is empty instead of
+ * doing {@code stack == ItemStack.EMPTY}.
+ * 
+ * <p>When storing an item stack in an inventory or other places, make sure that an instance
+ * is never stored in multiple places. When two inventories hold the same instance, it
+ * will duplicate the item stack (and become two instances) when one is saved and reloaded.
  * 
  * <h2 id="nbt-operations">NBT operations</h2>
  * 
@@ -132,7 +146,7 @@ import org.slf4j.Logger;
  *   <td>Custom NBT</td><td>{@link #getNbt()}</td><td>Returns the custom NBT of the item stack.</td>
  * </tr>
  * <tr>
- *   <td>Custom NBT</td><td>{@link #getOrCreateNbt()}</td><td>Returns the custom NBT of the item stack, or creates one if absent.</td>
+ *   <td>Custom NBT</td><td>{@link #getOrCreateNbt()}</td><td>Returns the custom NBT of the item stack, or creates one if absent, mutating the stack.</td>
  * </tr>
  * <tr>
  *   <td>Custom NBT</td><td>{@link #setNbt(NbtCompound)}</td><td>Sets the custom NBT of the item stack.</td>
@@ -141,7 +155,7 @@ import org.slf4j.Logger;
  *   <td>Sub Custom NBT</td><td>{@link #getSubNbt(String)}</td><td>Returns the sub NBT compound at the specified key.</td>
  * </tr>
  * <tr>
- *   <td>Sub Custom NBT</td><td>{@link #getOrCreateSubNbt(String)}</td><td>Returns the sub NBT compound at the specified key, or create one if absent.</td>
+ *   <td>Sub Custom NBT</td><td>{@link #getOrCreateSubNbt(String)}</td><td>Returns the sub NBT compound at the specified key, or create one if absent, mutating the stack.</td>
  * </tr>
  * <tr>
  *   <td>Sub Custom NBT</td><td>{@link #removeSubNbt(String)}</td><td>Removes the sub NBT element at the specified key.</td>
@@ -155,6 +169,13 @@ import org.slf4j.Logger;
 public final class ItemStack {
     public static final Codec<ItemStack> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Registry.ITEM.getCodec().fieldOf("id")).forGetter(stack -> stack.item), ((MapCodec)Codec.INT.fieldOf("Count")).forGetter(stack -> stack.count), NbtCompound.CODEC.optionalFieldOf("tag").forGetter(stack -> Optional.ofNullable(stack.nbt))).apply((Applicative<ItemStack, ?>)instance, ItemStack::new));
     private static final Logger LOGGER = LogUtils.getLogger();
+    /**
+     * The empty item stack that holds no item.
+     * 
+     * <p>This should never be mutated.
+     * 
+     * @see ItemStack#isEmpty
+     */
     public static final ItemStack EMPTY = new ItemStack((ItemConvertible)null);
     public static final DecimalFormat MODIFIER_FORMAT = Util.make(new DecimalFormat("#.##"), decimalFormat -> decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT)));
     /**
@@ -264,7 +285,8 @@ public final class ItemStack {
     }
 
     /**
-     * Deserializes an item stack from NBT.
+     * {@return the item stack deserialized from the NBT, or {@link #EMPTY} if
+     * it fails to deserialize}
      * 
      * @see <a href="#nbt-operations">Item Stack NBT Operations</a>
      */
@@ -290,6 +312,25 @@ public final class ItemStack {
         return this.count <= 0;
     }
 
+    /**
+     * {@return the copy of the stack "split" from the current stack with item count
+     * being at most {@code amount}}
+     * 
+     * <p>Splitting an item stack mutates this stack so that the sum of the stacks' item
+     * counts does not change. See the example below:
+     * 
+     * <pre>{@code
+     * ItemStack stack = new ItemStack(Items.APPLE, 64);
+     * ItemStack newStack = stack.split(10);
+     * // stack has 54 apples
+     * // newStack has 10 apples
+     * 
+     * ItemStack smallStack = new ItemStack(Items.APPLE, 4);
+     * ItemStack newSmallStack = smallStack.split(10);
+     * // smallStack is now empty
+     * // newSmallStack has 4 apples
+     * }</pre>
+     */
     public ItemStack split(int amount) {
         int i = Math.min(amount, this.count);
         ItemStack itemStack = this.copy();
@@ -298,6 +339,11 @@ public final class ItemStack {
         return itemStack;
     }
 
+    /**
+     * {@return the item of this stack}
+     * 
+     * @see #isOf(Item)
+     */
     public Item getItem() {
         return this.empty ? Items.AIR : this.item;
     }
@@ -306,22 +352,45 @@ public final class ItemStack {
         return this.getItem().getRegistryEntry();
     }
 
+    /**
+     * {@return whether the item is in {@code tag}}
+     */
     public boolean isIn(TagKey<Item> tag) {
         return this.getItem().getRegistryEntry().isIn(tag);
     }
 
+    /**
+     * {@return whether the item is {@code item}}
+     */
     public boolean isOf(Item item) {
         return this.getItem() == item;
     }
 
+    /**
+     * {@return whether the item's registry entry passes the {@code predicate}}
+     * 
+     * @see #itemMatches(RegistryEntry)
+     * @see #isOf(Item)
+     */
     public boolean itemMatches(Predicate<RegistryEntry<Item>> predicate) {
         return predicate.test(this.getItem().getRegistryEntry());
     }
 
+    /**
+     * {@return whether the item's registry entry matches {@code itemEntry}}
+     * 
+     * @see #itemMatches(Predicate)
+     * @see #isOf(Item)
+     */
     public boolean itemMatches(RegistryEntry<Item> itemEntry) {
         return this.getItem().getRegistryEntry() == itemEntry;
     }
 
+    /**
+     * {@return a stream of all tags the item is in}
+     * 
+     * @see #isIn(TagKey)
+     */
     public Stream<TagKey<Item>> streamTags() {
         return this.getItem().getRegistryEntry().streamTags();
     }
@@ -375,10 +444,26 @@ public final class ItemStack {
         return this.getItem().getMaxCount();
     }
 
+    /**
+     * {@return whether the item stack can have item count above {@code 1}}
+     * 
+     * <p>Stackable items must have {@linkplain Item#getMaxCount the maximum count} that is more
+     * than {@code 1} and cannot be damaged.
+     */
     public boolean isStackable() {
         return this.getMaxCount() > 1 && (!this.isDamageable() || !this.isDamaged());
     }
 
+    /**
+     * {@return whether the item can be damaged (lose durability)}
+     * 
+     * <p>Items with {@linkplain Item#getMaxDamage 0 max damage} or item stacks with {@value
+     * #UNBREAKABLE_KEY} NBT set to {@code 1b} cannot be damaged.
+     * 
+     * @see Item#getMaxDamage
+     * @see #isDamaged
+     * @see #getDamage
+     */
     public boolean isDamageable() {
         if (this.empty || this.getItem().getMaxDamage() <= 0) {
             return false;
@@ -387,14 +472,41 @@ public final class ItemStack {
         return nbtCompound == null || !nbtCompound.getBoolean(UNBREAKABLE_KEY);
     }
 
+    /**
+     * {@return whether the item stack is {@linkplain #isDamageable damageable} and has damage}
+     * 
+     * @see #isDamageable
+     * @see #getDamage
+     */
     public boolean isDamaged() {
         return this.isDamageable() && this.getDamage() > 0;
     }
 
+    /**
+     * {@return the damage (lost durability) of the item stack}
+     * 
+     * <p>The damage is stored in NBT under {@value #DAMAGE_KEY} key. Note that this method
+     * does not check if the item is {@linkplain #isDamageable damageable}, unlike {@link
+     * #isDamaged}.
+     * 
+     * @see #isDamageable
+     * @see #isDamaged
+     * @see #setDamage
+     */
     public int getDamage() {
         return this.nbt == null ? 0 : this.nbt.getInt(DAMAGE_KEY);
     }
 
+    /**
+     * Sets the stack's damage to {@code damage}.
+     * 
+     * <p>This does not break the item if the damage reaches {@linkplain Item#getMaxDamage
+     * the maximum}, unlike {@link #damage(int, LivingEntity, Consumer)}.
+     * 
+     * @see #getDamage
+     * @see #damage(int, Random, ServerPlayerEntity)
+     * @see #damage(int, LivingEntity, Consumer)
+     */
     public void setDamage(int damage) {
         this.getOrCreateNbt().putInt(DAMAGE_KEY, Math.max(0, damage));
     }
@@ -403,6 +515,23 @@ public final class ItemStack {
         return this.getItem().getMaxDamage();
     }
 
+    /**
+     * Damages this item stack. This method should be used when a non-entity, such as a
+     * dispenser, damages the stack. This does not damage {@linkplain #isDamageable non-damageable}
+     * stacks, and the {@linkplain UnbreakingEnchantment unbreaking enchantment} is applied to
+     * {@code amount} before damaging.
+     * 
+     * <p>If {@code player} is not {@code null}, this triggers {@link
+     * Criteria#ITEM_DURABILITY_CHANGED}.
+     * 
+     * <p>This method does not decrement the item count when the item "breaks". Callers should
+     * check the returned value and decrement themselves.
+     * 
+     * @return whether the stack's damage is equal to or above {@linkplain Item#getMaxDamage
+     * the maximum damage} (i.e. whether the item is "broken")
+     * 
+     * @param player the player that holds the stack to be damaged, or {@code null} if inapplicable
+     */
     public boolean damage(int amount, Random random, @Nullable ServerPlayerEntity player) {
         int i;
         if (!this.isDamageable()) {
@@ -427,6 +556,26 @@ public final class ItemStack {
         return i >= this.getMaxDamage();
     }
 
+    /**
+     * Damages this item stack. This method should be used when an entity, including a player,
+     * damages the stack. This does not damage {@linkplain #isDamageable non-damageable}
+     * stacks, and the {@linkplain UnbreakingEnchantment unbreaking enchantment} is applied to
+     * {@code amount} before damaging. Additionally, if {@code entity} is a player in creative
+     * mode, the stack will not be damaged.
+     * 
+     * <p>If {@code entity} is a player, this triggers {@link
+     * Criteria#ITEM_DURABILITY_CHANGED}.
+     * 
+     * <p>If the stack's damage is equal to or above {@linkplain Item#getMaxDamage the maximum
+     * damage} (i.e. the item is "broken"), this will call {@code breakCallback}, decrement the
+     * stack, and increment {@link Stats#BROKEN} if the stack is held by a player. The callback
+     * should call {@link LivingEntity#sendEquipmentBreakStatus} or {@link
+     * LivingEntity#sendToolBreakStatus}.
+     * 
+     * @param breakCallback the callback that takes the entity holding the stack and is executed
+     * when the item breaks
+     * @param entity the entity that holds the stack to be damaged
+     */
     public <T extends LivingEntity> void damage(int amount, T entity, Consumer<T> breakCallback) {
         if (entity.world.isClient || entity instanceof PlayerEntity && ((PlayerEntity)entity).getAbilities().creativeMode) {
             return;
@@ -503,7 +652,8 @@ public final class ItemStack {
     }
 
     /**
-     * Creates and returns a copy of this item stack.
+     * {@return a copy of this item stack, including the item count, NBT, and
+     * {@linkplain #getBobbingAnimationTime bobbing animation time}}
      */
     public ItemStack copy() {
         if (this.isEmpty()) {
@@ -518,7 +668,7 @@ public final class ItemStack {
     }
 
     /**
-     * {@return whether the given item stacks have equivalent custom NBT}
+     * {@return whether the given item stacks have equivalent NBT data}
      */
     public static boolean areNbtEqual(ItemStack left, ItemStack right) {
         if (left.isEmpty() && right.isEmpty()) {
@@ -533,6 +683,12 @@ public final class ItemStack {
         return left.nbt == null || left.nbt.equals(right.nbt);
     }
 
+    /**
+     * {@return whether the given item stacks are equal, including the item count and NBT}
+     * 
+     * @see #areItemsEqual
+     * @see #canCombine
+     */
     public static boolean areEqual(ItemStack left, ItemStack right) {
         if (left.isEmpty() && right.isEmpty()) {
             return true;
@@ -543,6 +699,9 @@ public final class ItemStack {
         return left.isEqual(right);
     }
 
+    /**
+     * {@return whether this stack and {@code stack} are equal, including the item count and NBT}
+     */
     private boolean isEqual(ItemStack stack) {
         if (this.count != stack.count) {
             return false;
@@ -566,6 +725,12 @@ public final class ItemStack {
         return false;
     }
 
+    /**
+     * {@return whether the given item stacks' items are equal}
+     * 
+     * @see #areEqual
+     * @see #canCombine
+     */
     public static boolean areItemsEqual(ItemStack left, ItemStack right) {
         if (left == right) {
             return true;
@@ -580,6 +745,9 @@ public final class ItemStack {
         return !stack.isEmpty() && this.isOf(stack.getItem());
     }
 
+    /**
+     * {@return whether this stack and {@code stack} hold the same item}
+     */
     public boolean isItemEqual(ItemStack stack) {
         if (this.isDamageable()) {
             return !stack.isEmpty() && this.isOf(stack.getItem());
@@ -587,6 +755,16 @@ public final class ItemStack {
         return this.isItemEqualIgnoreDamage(stack);
     }
 
+    /**
+     * {@return whether the given item stacks' items and NBT are equal}
+     * 
+     * <p>If this returns {@code true}, the two item stacks can be combined into one,
+     * as long as the resulting item count does not exceed {@linkplain Item#getMaxCount
+     * the maximum item count}
+     * 
+     * @see #areEqual
+     * @see #areItemsEqual
+     */
     public static boolean canCombine(ItemStack stack, ItemStack otherStack) {
         return stack.isOf(otherStack.getItem()) && ItemStack.areNbtEqual(stack, otherStack);
     }
@@ -649,7 +827,11 @@ public final class ItemStack {
     }
 
     /**
-     * Returns the custom NBT of this item stack, or creates the custom NBT if the item stack did not have a custom NBT previously.
+     * Returns the custom NBT of this item stack, or creates the custom NBT if the
+     * item stack did not have a custom NBT previously, mutating the stack.
+     * 
+     * <p>This should not be used when reading the NBT, as this can modify the item stack.
+     * Use {@link #getNbt} with a check for {@code null} instead.
      * 
      * @return the custom NBT of this item stack
      * 
@@ -663,7 +845,11 @@ public final class ItemStack {
     }
 
     /**
-     * {@return the compound NBT at the specified key in this item stack's NBT, or a new compound if absent}
+     * {@return the compound NBT at the specified key in this item stack's NBT, or a
+     * new compound added to the stack if absent}
+     * 
+     * <p>This should not be used when reading the NBT, as this can modify the item stack.
+     * Use {@link #getSubNbt} with a check for {@code null} instead.
      * 
      * @see <a href="#nbt-operations">Item Stack NBT Operations</a>
      */
@@ -703,6 +889,16 @@ public final class ItemStack {
         }
     }
 
+    /**
+     * {@return an NBT list of enchantments}
+     * 
+     * <p>This will return an empty list for enchanted books, as the book itself is not
+     * enchanted and therefore does not store enchantments under {@value #ENCHANTMENTS_KEY} key.
+     * 
+     * @see net.minecraft.enchantment.EnchantmentHelper#getLevel
+     * @see #addEnchantment
+     * @see #hasEnchantments
+     */
     public NbtList getEnchantments() {
         if (this.nbt != null) {
             return this.nbt.getList(ENCHANTMENTS_KEY, NbtElement.COMPOUND_TYPE);
@@ -727,6 +923,9 @@ public final class ItemStack {
         }
     }
 
+    /**
+     * {@return the custom name of the stack if it exists, or the item's name}
+     */
     public Text getName() {
         NbtCompound nbtCompound = this.getSubNbt(DISPLAY_KEY);
         if (nbtCompound != null && nbtCompound.contains(NAME_KEY, NbtElement.STRING_TYPE)) {
@@ -743,6 +942,16 @@ public final class ItemStack {
         return this.getItem().getName(this);
     }
 
+    /**
+     * Sets the custom name of this item stack to {@code name}. If {@code null} is
+     * passed, this will remove the custom name (but does not remove other NBT compounds
+     * even if they are empty).
+     * 
+     * @return this item stack
+     * 
+     * @see #removeCustomName
+     * @see #hasCustomName
+     */
     public ItemStack setCustomName(@Nullable Text name) {
         NbtCompound nbtCompound = this.getOrCreateSubNbt(DISPLAY_KEY);
         if (name != null) {
@@ -753,6 +962,13 @@ public final class ItemStack {
         return this;
     }
 
+    /**
+     * Removes the custom name and other NBT compounds that are now empty after the
+     * removal of the custom name from this item stack.
+     * 
+     * @see #setCustomName
+     * @see #hasCustomName
+     */
     public void removeCustomName() {
         NbtCompound nbtCompound = this.getSubNbt(DISPLAY_KEY);
         if (nbtCompound != null) {
@@ -766,6 +982,12 @@ public final class ItemStack {
         }
     }
 
+    /**
+     * {@return whether this item stack has a custom name}
+     * 
+     * @see #setCustomName
+     * @see #removeCustomName
+     */
     public boolean hasCustomName() {
         NbtCompound nbtCompound = this.getSubNbt(DISPLAY_KEY);
         return nbtCompound != null && nbtCompound.contains(NAME_KEY, NbtElement.STRING_TYPE);
@@ -923,6 +1145,11 @@ public final class ItemStack {
         return this.getItem().getRarity(this);
     }
 
+    /**
+     * {@return whether this item stack can be enchanted with an enchanting table}
+     * 
+     * <p>This is not used for other methods of enchanting like anvils.
+     */
     public boolean isEnchantable() {
         if (!this.getItem().isEnchantable(this)) {
             return false;
@@ -930,6 +1157,14 @@ public final class ItemStack {
         return !this.hasEnchantments();
     }
 
+    /**
+     * Enchants this item with the given enchantment and level.
+     * 
+     * <p>This should not be used with enchanted books, as the book itself is not
+     * enchanted and therefore does not store enchantments under {@value #ENCHANTMENTS_KEY} key.
+     * 
+     * @see net.minecraft.enchantment.EnchantmentHelper
+     */
     public void addEnchantment(Enchantment enchantment, int level) {
         this.getOrCreateNbt();
         if (!this.nbt.contains(ENCHANTMENTS_KEY, NbtElement.LIST_TYPE)) {
@@ -939,6 +1174,14 @@ public final class ItemStack {
         nbtList.add(EnchantmentHelper.createNbt(EnchantmentHelper.getEnchantmentId(enchantment), (byte)level));
     }
 
+    /**
+     * {@return whether the item stack has any enchantments}
+     * 
+     * <p>This will return {@code false} for enchanted books, as the book itself is not
+     * enchanted and therefore does not store enchantments under {@value #ENCHANTMENTS_KEY} key.
+     * 
+     * @see #getEnchantments
+     */
     public boolean hasEnchantments() {
         if (this.nbt != null && this.nbt.contains(ENCHANTMENTS_KEY, NbtElement.LIST_TYPE)) {
             return !this.nbt.getList(ENCHANTMENTS_KEY, NbtElement.COMPOUND_TYPE).isEmpty();
@@ -958,24 +1201,60 @@ public final class ItemStack {
         this.getOrCreateNbt().put(key, element);
     }
 
+    /**
+     * {@return whether the item stack is in an item frame}
+     * 
+     * @see #setHolder
+     * @see #getFrame
+     * @see #getHolder
+     */
     public boolean isInFrame() {
         return this.holder instanceof ItemFrameEntity;
     }
 
+    /**
+     * Sets the stack's holder to {@code holder}.
+     * 
+     * <p>This is used by item frames and item entities, and does not need to be called
+     * for other entities.
+     * 
+     * @see #isInFrame
+     * @see #getFrame
+     * @see #getHolder
+     */
     public void setHolder(@Nullable Entity holder) {
         this.holder = holder;
     }
 
+    /**
+     * {@return the item frame that holds the stack, or {@code null} if inapplicable}
+     * 
+     * @see #isInFrame
+     * @see #setHolder
+     * @see #getHolder
+     */
     @Nullable
     public ItemFrameEntity getFrame() {
         return this.holder instanceof ItemFrameEntity ? (ItemFrameEntity)this.getHolder() : null;
     }
 
+    /**
+     * {@return the entity that holds the stack, or {@code null} if inapplicable}
+     * 
+     * @see #isInFrame
+     * @see #getFrame
+     * @see #setHolder
+     */
     @Nullable
     public Entity getHolder() {
         return !this.empty ? this.holder : null;
     }
 
+    /**
+     * {@return the stack's repair cost used in anvils}
+     * 
+     * <p>This is the the value of the {@value #REPAIR_COST_KEY} key in NBT.
+     */
     public int getRepairCost() {
         if (this.hasNbt() && this.nbt.contains(REPAIR_COST_KEY, NbtElement.INT_TYPE)) {
             return this.nbt.getInt(REPAIR_COST_KEY);
@@ -983,10 +1262,25 @@ public final class ItemStack {
         return 0;
     }
 
+    /**
+     * Sets the stack's repair cost used in anvils to {@code repairCost}.
+     * 
+     * <p>This is the the value of the {@value #REPAIR_COST_KEY} key in NBT.
+     */
     public void setRepairCost(int repairCost) {
         this.getOrCreateNbt().putInt(REPAIR_COST_KEY, repairCost);
     }
 
+    /**
+     * {@return a multimap of attribute modifiers for {@code slot}}
+     * 
+     * <p>If a custom attribute modifier exists under the {@code AttributeModifiers} key,
+     * this returns those modifiers only; otherwise, this returns the item's default
+     * attribute modifier.
+     * 
+     * @see Item#getAttributeModifiers
+     * @see #addAttributeModifier
+     */
     public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
         Multimap<EntityAttribute, EntityAttributeModifier> multimap;
         if (this.hasNbt() && this.nbt.contains("AttributeModifiers", NbtElement.LIST_TYPE)) {
@@ -1005,6 +1299,11 @@ public final class ItemStack {
         return multimap;
     }
 
+    /**
+     * Adds an attribute modifier to this stack.
+     * 
+     * @see #getAttributeModifiers
+     */
     public void addAttributeModifier(EntityAttribute attribute, EntityAttributeModifier modifier, @Nullable EquipmentSlot slot) {
         this.getOrCreateNbt();
         if (!this.nbt.contains("AttributeModifiers", NbtElement.LIST_TYPE)) {
@@ -1019,6 +1318,10 @@ public final class ItemStack {
         nbtList.add(nbtCompound);
     }
 
+    /**
+     * {@return a text consisting of the bracketed {@linkplain #getName stack name} that
+     * can be hovered to show the item stack's tooltip}
+     */
     public Text toHoverableText() {
         MutableText mutableText = Text.empty().append(this.getName());
         if (this.hasCustomName()) {

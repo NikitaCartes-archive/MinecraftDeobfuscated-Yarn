@@ -248,7 +248,7 @@ extends Entity {
     }
 
     @Override
-    public boolean collides() {
+    public boolean canHit() {
         return !this.isRemoved();
     }
 
@@ -350,7 +350,7 @@ extends Entity {
                         this.setVelocity(vec3d.add(0.0, -0.7, 0.0));
                         this.removeAllPassengers();
                     } else {
-                        this.setVelocity(vec3d.x, this.hasPassengerType(entity -> entity instanceof PlayerEntity) ? 2.7 : 0.6, vec3d.z);
+                        this.setVelocity(vec3d.x, this.hasPassenger((Entity entity) -> entity instanceof PlayerEntity) ? 2.7 : 0.6, vec3d.z);
                     }
                 }
                 this.onBubbleColumnSurface = false;

@@ -79,7 +79,7 @@ public interface AquiferSampler {
         private final int startZ;
         private final int sizeX;
         private final int sizeZ;
-        private static final int[][] field_34581 = new int[][]{{-2, -1}, {-1, -1}, {0, -1}, {1, -1}, {-3, 0}, {-2, 0}, {-1, 0}, {0, 0}, {1, 0}, {-2, 1}, {-1, 1}, {0, 1}, {1, 1}};
+        private static final int[][] CHUNK_POS_OFFSETS = new int[][]{{-2, -1}, {-1, -1}, {0, -1}, {1, -1}, {-3, 0}, {-2, 0}, {-1, 0}, {0, 0}, {1, 0}, {-2, 1}, {-1, 1}, {0, 1}, {1, 1}};
 
         Impl(ChunkNoiseSampler chunkNoiseSampler, ChunkPos chunkPos, NoiseRouter noiseRouter, RandomSplitter randomSplitter, int minimumY, int height, FluidLevelSampler fluidLevelSampler) {
             this.chunkNoiseSampler = chunkNoiseSampler;
@@ -289,17 +289,17 @@ public interface AquiferSampler {
             if (fluidLevel != null) {
                 return fluidLevel;
             }
-            this.waterLevels[o] = fluidLevel2 = this.method_40463(i, j, k);
+            this.waterLevels[o] = fluidLevel2 = this.getFluidLevel(i, j, k);
             return fluidLevel2;
         }
 
-        private FluidLevel method_40463(int blockX, int blockY, int blockZ) {
+        private FluidLevel getFluidLevel(int blockX, int blockY, int blockZ) {
             FluidLevel fluidLevel = this.fluidLevelSampler.getFluidLevel(blockX, blockY, blockZ);
             int i = Integer.MAX_VALUE;
             int j = blockY + 12;
             int k = blockY - 12;
             boolean bl = false;
-            for (int[] is : field_34581) {
+            for (int[] is : CHUNK_POS_OFFSETS) {
                 FluidLevel fluidLevel2;
                 boolean bl3;
                 boolean bl2;
@@ -322,11 +322,11 @@ public interface AquiferSampler {
                 }
                 i = Math.min(i, n);
             }
-            int p = this.method_42354(blockX, blockY, blockZ, fluidLevel, i, bl);
-            return new FluidLevel(p, this.method_42353(blockX, blockY, blockZ, fluidLevel, p));
+            int p = this.getFluidBlockY(blockX, blockY, blockZ, fluidLevel, i, bl);
+            return new FluidLevel(p, this.getFluidBlockState(blockX, blockY, blockZ, fluidLevel, p));
         }
 
-        private int method_42354(int blockX, int blockY, int blockZ, FluidLevel fluidLevel, int surfaceHeightEstimate, boolean bl) {
+        private int getFluidBlockY(int blockX, int blockY, int blockZ, FluidLevel defaultFluidLevel, int surfaceHeightEstimate, boolean bl) {
             int i;
             double e;
             double d;
@@ -344,33 +344,33 @@ public interface AquiferSampler {
                 d = g - k;
                 e = g - h;
             }
-            i = e > 0.0 ? fluidLevel.y : (d > 0.0 ? this.method_42352(blockX, blockY, blockZ, surfaceHeightEstimate) : DimensionType.field_35479);
+            i = e > 0.0 ? defaultFluidLevel.y : (d > 0.0 ? this.getNoiseBasedFluidLevel(blockX, blockY, blockZ, surfaceHeightEstimate) : DimensionType.field_35479);
             return i;
         }
 
-        private int method_42352(int i, int j, int k, int l) {
-            int m = 16;
-            int n = 40;
-            int o = Math.floorDiv(i, 16);
-            int p = Math.floorDiv(j, 40);
-            int q = Math.floorDiv(k, 16);
-            int r = p * 40 + 20;
-            int s = 10;
-            double d = this.fluidLevelSpreadNoise.sample(new DensityFunction.UnblendedNoisePos(o, p, q)) * 10.0;
-            int t = MathHelper.roundDownToMultiple(d, 3);
-            int u = r + t;
-            return Math.min(l, u);
+        private int getNoiseBasedFluidLevel(int blockX, int blockY, int blockZ, int surfaceHeightEstimate) {
+            int i = 16;
+            int j = 40;
+            int k = Math.floorDiv(blockX, 16);
+            int l = Math.floorDiv(blockY, 40);
+            int m = Math.floorDiv(blockZ, 16);
+            int n = l * 40 + 20;
+            int o = 10;
+            double d = this.fluidLevelSpreadNoise.sample(new DensityFunction.UnblendedNoisePos(k, l, m)) * 10.0;
+            int p = MathHelper.roundDownToMultiple(d, 3);
+            int q = n + p;
+            return Math.min(surfaceHeightEstimate, q);
         }
 
-        private BlockState method_42353(int i, int j, int k, FluidLevel fluidLevel, int l) {
-            BlockState blockState = fluidLevel.state;
-            if (l <= -10 && l != DimensionType.field_35479 && fluidLevel.state != Blocks.LAVA.getDefaultState()) {
-                int q;
-                int p;
-                int m = 64;
-                int n = 40;
-                int o = Math.floorDiv(i, 64);
-                double d = this.fluidTypeNoise.sample(new DensityFunction.UnblendedNoisePos(o, p = Math.floorDiv(j, 40), q = Math.floorDiv(k, 64)));
+        private BlockState getFluidBlockState(int blockX, int blockY, int blockZ, FluidLevel defaultFluidLevel, int fluidLevel) {
+            BlockState blockState = defaultFluidLevel.state;
+            if (fluidLevel <= -10 && fluidLevel != DimensionType.field_35479 && defaultFluidLevel.state != Blocks.LAVA.getDefaultState()) {
+                int m;
+                int l;
+                int i = 64;
+                int j = 40;
+                int k = Math.floorDiv(blockX, 64);
+                double d = this.fluidTypeNoise.sample(new DensityFunction.UnblendedNoisePos(k, l = Math.floorDiv(blockY, 40), m = Math.floorDiv(blockZ, 64)));
                 if (Math.abs(d) > 0.3) {
                     blockState = Blocks.LAVA.getDefaultState();
                 }

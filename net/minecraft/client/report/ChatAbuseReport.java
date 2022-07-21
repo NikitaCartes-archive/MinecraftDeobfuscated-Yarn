@@ -131,9 +131,6 @@ public class ChatAbuseReport {
         }
         String string = Objects.requireNonNull(this.reason).getId();
         ReportEvidence reportEvidence = this.collectEvidence(reporter.chatLog());
-        if (reportEvidence.messages.size() > this.limits.maxEvidenceMessageCount()) {
-            return Either.right(ValidationError.TOO_MANY_MESSAGES);
-        }
         ReportedEntity reportedEntity = new ReportedEntity(this.reportedPlayerUuid);
         AbuseReport abuseReport = new AbuseReport(this.opinionComments, string, reportEvidence, reportedEntity, this.timestamp);
         return Either.left(new ReportWithId(this.id, abuseReport));

@@ -61,7 +61,7 @@ extends Block {
                 pos = pos.down();
             }
             if (world.getBlockState(pos).allowsSpawning(world, pos, EntityType.ZOMBIFIED_PIGLIN) && (entity = EntityType.ZOMBIFIED_PIGLIN.spawn(world, null, null, null, pos.up(), SpawnReason.STRUCTURE, false, false)) != null) {
-                entity.resetNetherPortalCooldown();
+                entity.resetPortalCooldown();
             }
         }
     }

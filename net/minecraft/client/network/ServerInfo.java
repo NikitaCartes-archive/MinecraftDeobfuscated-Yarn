@@ -50,6 +50,7 @@ public class ServerInfo {
     @Nullable
     private ChatPreview chatPreview;
     private boolean temporaryChatPreviewState = true;
+    private boolean field_39918;
 
     public ServerInfo(String name, String address, boolean local) {
         this.name = name;
@@ -163,6 +164,14 @@ public class ServerInfo {
         return this.temporaryChatPreviewState && this.chatPreview != null;
     }
 
+    public void method_45055(boolean bl) {
+        this.field_39918 = bl;
+    }
+
+    public boolean method_45056() {
+        return this.field_39918;
+    }
+
     public void copyFrom(ServerInfo serverInfo) {
         this.address = serverInfo.address;
         this.name = serverInfo.name;
@@ -174,6 +183,7 @@ public class ServerInfo {
         this.setResourcePackPolicy(serverInfo.getResourcePackPolicy());
         this.local = serverInfo.local;
         this.chatPreview = Util.map(serverInfo.chatPreview, ChatPreview::copy);
+        this.field_39918 = serverInfo.field_39918;
     }
 
     @Environment(value=EnvType.CLIENT)

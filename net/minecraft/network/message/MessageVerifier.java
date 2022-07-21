@@ -17,21 +17,26 @@ import org.jetbrains.annotations.Nullable;
  * as it affects the verification result.
  */
 public interface MessageVerifier {
-    public static final MessageVerifier UNVERIFIABLE = new MessageVerifier(){
+    public static MessageVerifier method_45057(final class_7646 arg) {
+        return new MessageVerifier(){
 
-        @Override
-        public class_7646 storeHeaderVerification(MessageHeader header, MessageSignatureData signature, byte[] bodyDigest) {
-            return class_7646.NOT_SECURE;
+            @Override
+            public class_7646 storeHeaderVerification(MessageHeader header, MessageSignatureData signature, byte[] bodyDigest) {
+                return arg;
+            }
+
+            @Override
+            public class_7646 verify(SignedMessage message) {
+                return arg;
+            }
+        };
+    }
+
+    public static MessageVerifier create(@Nullable PlayerPublicKey publicKey, boolean bl) {
+        if (publicKey == null) {
+            return MessageVerifier.method_45057(bl ? class_7646.BROKEN_CHAIN : class_7646.NOT_SECURE);
         }
-
-        @Override
-        public class_7646 verify(SignedMessage message) {
-            return class_7646.NOT_SECURE;
-        }
-    };
-
-    public static MessageVerifier create(@Nullable PlayerPublicKey publicKey) {
-        return publicKey != null ? new Impl(publicKey.createSignatureInstance()) : UNVERIFIABLE;
+        return new Impl(publicKey.createSignatureInstance());
     }
 
     /**
@@ -44,6 +49,13 @@ public interface MessageVerifier {
     public class_7646 storeHeaderVerification(MessageHeader var1, MessageSignatureData var2, byte[] var3);
 
     public class_7646 verify(SignedMessage var1);
+
+    public static enum class_7646 {
+        SECURE,
+        NOT_SECURE,
+        BROKEN_CHAIN;
+
+    }
 
     public static class Impl
     implements MessageVerifier {
@@ -90,13 +102,6 @@ public interface MessageVerifier {
             byte[] bs = message.signedBody().digest().asBytes();
             return this.method_45048(message.signedHeader(), message.headerSignature(), bs);
         }
-    }
-
-    public static enum class_7646 {
-        SECURE,
-        NOT_SECURE,
-        BROKEN_CHAIN;
-
     }
 }
 

@@ -1091,7 +1091,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         if (cachedDataPacket.getValue() == null) {
             cachedDataPacket.setValue(new ChunkDataS2CPacket(chunk, this.lightingProvider, null, null, true));
         }
-        player.sendInitialChunkPackets(chunk.getPos(), cachedDataPacket.getValue());
+        player.sendChunkPacket(chunk.getPos(), cachedDataPacket.getValue());
         DebugInfoSender.sendChunkWatchingChange(this.world, chunk.getPos());
         ArrayList<Entity> list = Lists.newArrayList();
         ArrayList<Entity> list2 = Lists.newArrayList();

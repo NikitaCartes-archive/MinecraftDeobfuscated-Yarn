@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.datafixer.fix;
 
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
@@ -17,13 +17,13 @@ import java.util.Set;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 
-public class class_7641
+public class ItemRemoveBlockEntityTagFix
 extends DataFix {
-    private final Set<String> field_39900;
+    private final Set<String> itemIds;
 
-    public class_7641(Schema schema, boolean bl, Set<String> set) {
-        super(schema, bl);
-        this.field_39900 = set;
+    public ItemRemoveBlockEntityTagFix(Schema schema, boolean changesType, Set<String> itemIds) {
+        super(schema, changesType);
+        this.itemIds = itemIds;
     }
 
     @Override
@@ -37,7 +37,7 @@ extends DataFix {
             Optional optional3;
             Optional optional2;
             Optional optional = typed.getOptional(opticFinder);
-            if (optional.isPresent() && this.field_39900.contains(((Pair)optional.get()).getSecond()) && (optional2 = typed.getOptionalTyped(opticFinder2)).isPresent() && (optional3 = (typed2 = optional2.get()).getOptionalTyped(opticFinder3)).isPresent()) {
+            if (optional.isPresent() && this.itemIds.contains(((Pair)optional.get()).getSecond()) && (optional2 = typed.getOptionalTyped(opticFinder2)).isPresent() && (optional3 = (typed2 = optional2.get()).getOptionalTyped(opticFinder3)).isPresent()) {
                 Optional<Dynamic<?>> optional4 = typed2.write().result();
                 Dynamic<?> dynamic = optional4.isPresent() ? optional4.get() : typed2.get(DSL.remainderFinder());
                 Dynamic<?> dynamic2 = dynamic.remove("BlockEntityTag");

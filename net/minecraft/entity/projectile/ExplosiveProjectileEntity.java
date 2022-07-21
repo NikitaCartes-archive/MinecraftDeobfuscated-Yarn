@@ -130,7 +130,7 @@ extends ProjectileEntity {
     }
 
     @Override
-    public boolean collides() {
+    public boolean canHit() {
         return true;
     }
 

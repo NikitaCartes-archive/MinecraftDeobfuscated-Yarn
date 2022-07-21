@@ -55,7 +55,7 @@ extends Entity {
     }
 
     @Override
-    public boolean collides() {
+    public boolean canHit() {
         return !this.isRemoved();
     }
 

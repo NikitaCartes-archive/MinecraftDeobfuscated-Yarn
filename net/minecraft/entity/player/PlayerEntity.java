@@ -374,7 +374,7 @@ extends LivingEntity {
     }
 
     @Override
-    public int getDefaultNetherPortalCooldown() {
+    public int getDefaultPortalCooldown() {
         return 10;
     }
 
@@ -1220,7 +1220,7 @@ extends LivingEntity {
     public void onPickupSlotClick(ItemStack cursorStack, ItemStack slotStack, ClickType clickType) {
     }
 
-    public boolean method_45015() {
+    public boolean shouldCloseHandledScreenOnRespawn() {
         return this.currentScreenHandler != this.playerScreenHandler;
     }
 
@@ -1716,7 +1716,7 @@ extends LivingEntity {
     }
 
     @Override
-    public Iterable<ItemStack> getItemsHand() {
+    public Iterable<ItemStack> getHandItems() {
         return Lists.newArrayList(this.getMainHandStack(), this.getOffHandStack());
     }
 

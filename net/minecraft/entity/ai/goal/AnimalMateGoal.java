@@ -21,17 +21,17 @@ extends Goal {
     @Nullable
     protected AnimalEntity mate;
     private int timer;
-    private final double chance;
+    private final double speed;
 
-    public AnimalMateGoal(AnimalEntity animal, double chance) {
-        this(animal, chance, animal.getClass());
+    public AnimalMateGoal(AnimalEntity animal, double speed) {
+        this(animal, speed, animal.getClass());
     }
 
-    public AnimalMateGoal(AnimalEntity animal, double chance, Class<? extends AnimalEntity> entityClass) {
+    public AnimalMateGoal(AnimalEntity animal, double speed, Class<? extends AnimalEntity> entityClass) {
         this.animal = animal;
         this.world = animal.world;
         this.entityClass = entityClass;
-        this.chance = chance;
+        this.speed = speed;
         this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
     }
 
@@ -58,7 +58,7 @@ extends Goal {
     @Override
     public void tick() {
         this.animal.getLookControl().lookAt(this.mate, 10.0f, this.animal.getMaxLookPitchChange());
-        this.animal.getNavigation().startMovingTo(this.mate, this.chance);
+        this.animal.getNavigation().startMovingTo(this.mate, this.speed);
         ++this.timer;
         if (this.timer >= this.getTickCount(60) && this.animal.squaredDistanceTo(this.mate) < 9.0) {
             this.breed();

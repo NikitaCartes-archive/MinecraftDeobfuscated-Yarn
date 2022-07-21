@@ -75,7 +75,7 @@ extends BiomeSource {
 
     @Debug
     public RegistryEntry<Biome> getBiomeAtPoint(MultiNoiseUtil.NoiseValuePoint point) {
-        return this.biomeEntries.method_39529(point);
+        return this.biomeEntries.get(point);
     }
 
     @Override
@@ -84,11 +84,11 @@ extends BiomeSource {
         int j = BiomeCoords.fromBlock(pos.getY());
         int k = BiomeCoords.fromBlock(pos.getZ());
         MultiNoiseUtil.NoiseValuePoint noiseValuePoint = noiseSampler.sample(i, j, k);
-        float f = MultiNoiseUtil.method_38666(noiseValuePoint.continentalnessNoise());
-        float g = MultiNoiseUtil.method_38666(noiseValuePoint.erosionNoise());
-        float h = MultiNoiseUtil.method_38666(noiseValuePoint.temperatureNoise());
-        float l = MultiNoiseUtil.method_38666(noiseValuePoint.humidityNoise());
-        float m = MultiNoiseUtil.method_38666(noiseValuePoint.weirdnessNoise());
+        float f = MultiNoiseUtil.toFloat(noiseValuePoint.continentalnessNoise());
+        float g = MultiNoiseUtil.toFloat(noiseValuePoint.erosionNoise());
+        float h = MultiNoiseUtil.toFloat(noiseValuePoint.temperatureNoise());
+        float l = MultiNoiseUtil.toFloat(noiseValuePoint.humidityNoise());
+        float m = MultiNoiseUtil.toFloat(noiseValuePoint.weirdnessNoise());
         double d = DensityFunctions.getPeaksValleysNoise(m);
         VanillaBiomeParameters vanillaBiomeParameters = new VanillaBiomeParameters();
         info.add("Biome builder PV: " + VanillaBiomeParameters.getPeaksValleysDescription(d) + " C: " + vanillaBiomeParameters.getContinentalnessDescription(f) + " E: " + vanillaBiomeParameters.getErosionDescription(g) + " T: " + vanillaBiomeParameters.getTemperatureDescription(h) + " H: " + vanillaBiomeParameters.getHumidityDescription(l));
@@ -107,7 +107,7 @@ extends BiomeSource {
         public static final Preset NETHER = new Preset(new Identifier("nether"), biomeRegistry -> new MultiNoiseUtil.Entries(ImmutableList.of(Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), biomeRegistry.getOrCreateEntry(BiomeKeys.NETHER_WASTES)), Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), biomeRegistry.getOrCreateEntry(BiomeKeys.SOUL_SAND_VALLEY)), Pair.of(MultiNoiseUtil.createNoiseHypercube(0.4f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), biomeRegistry.getOrCreateEntry(BiomeKeys.CRIMSON_FOREST)), Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.375f), biomeRegistry.getOrCreateEntry(BiomeKeys.WARPED_FOREST)), Pair.of(MultiNoiseUtil.createNoiseHypercube(-0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.175f), biomeRegistry.getOrCreateEntry(BiomeKeys.BASALT_DELTAS)))));
         public static final Preset OVERWORLD = new Preset(new Identifier("overworld"), biomeRegistry -> {
             ImmutableList.Builder builder = ImmutableList.builder();
-            new VanillaBiomeParameters().writeVanillaBiomeParameters(pair -> builder.add(pair.mapSecond(biomeRegistry::getOrCreateEntry)));
+            new VanillaBiomeParameters().writeOverworldBiomeParameters(pair -> builder.add(pair.mapSecond(biomeRegistry::getOrCreateEntry)));
             return new MultiNoiseUtil.Entries(builder.build());
         });
         final Identifier id;

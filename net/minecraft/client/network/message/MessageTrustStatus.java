@@ -22,7 +22,7 @@ public enum MessageTrustStatus {
 
 
     public static MessageTrustStatus getStatus(SignedMessage message, Text decorated, @Nullable PlayerListEntry sender, Instant receptionTimestamp) {
-        if (sender == null || message.isExpiredOnClient(receptionTimestamp)) {
+        if (sender == null) {
             return NOT_SECURE;
         }
         MessageVerifier.class_7646 lv = sender.getMessageVerifier().verify(message);
@@ -30,6 +30,9 @@ public enum MessageTrustStatus {
             return BROKEN_CHAIN;
         }
         if (lv == MessageVerifier.class_7646.NOT_SECURE) {
+            return NOT_SECURE;
+        }
+        if (message.isExpiredOnClient(receptionTimestamp)) {
             return NOT_SECURE;
         }
         if (message.unsignedContent().isPresent()) {

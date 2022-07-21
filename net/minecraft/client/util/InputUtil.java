@@ -173,7 +173,11 @@ public class InputUtil {
         for (Type type : Type.values()) {
             if (!translationKey.startsWith(type.name)) continue;
             String string = translationKey.substring(type.name.length() + 1);
-            return type.createFromCode(Integer.parseInt(string));
+            int i = Integer.parseInt(string);
+            if (type == Type.MOUSE) {
+                --i;
+            }
+            return type.createFromCode(i);
         }
         throw new IllegalArgumentException("Unknown key name: " + translationKey);
     }

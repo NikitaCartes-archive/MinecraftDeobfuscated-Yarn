@@ -732,7 +732,7 @@ extends AbstractClientPlayerEntity {
     }
 
     public boolean shouldSlowDown() {
-        return this.isInSneakingPose() || this.shouldLeaveSwimmingPose();
+        return this.isInSneakingPose() || this.isCrawling();
     }
 
     @Override
@@ -940,7 +940,7 @@ extends AbstractClientPlayerEntity {
                 this.nextNauseaStrength = 0.0f;
             }
         }
-        this.tickNetherPortalCooldown();
+        this.tickPortalCooldown();
     }
 
     @Override

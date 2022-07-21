@@ -2177,7 +2177,9 @@ extends Entity {
                 this.wakeUp();
             }
         }
-        this.tickMovement();
+        if (!this.isRemoved()) {
+            this.tickMovement();
+        }
         double d = this.getX() - this.prevX;
         double e = this.getZ() - this.prevZ;
         float f = (float)(d * d + e * e);
@@ -2638,7 +2640,7 @@ extends Entity {
     }
 
     @Override
-    public boolean collides() {
+    public boolean canHit() {
         return !this.isRemoved();
     }
 

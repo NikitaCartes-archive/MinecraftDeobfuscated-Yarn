@@ -7,7 +7,7 @@ import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import java.util.function.Function;
 
 public interface ToFloatFunction<C> {
-    public static final ToFloatFunction<Float> field_37409 = ToFloatFunction.method_41308(f -> f);
+    public static final ToFloatFunction<Float> IDENTITY = ToFloatFunction.fromFloat(value -> value);
 
     public float apply(C var1);
 
@@ -15,12 +15,12 @@ public interface ToFloatFunction<C> {
 
     public float max();
 
-    public static ToFloatFunction<Float> method_41308(final Float2FloatFunction float2FloatFunction) {
+    public static ToFloatFunction<Float> fromFloat(final Float2FloatFunction delegate) {
         return new ToFloatFunction<Float>(){
 
             @Override
             public float apply(Float float_) {
-                return ((Float)float2FloatFunction.apply(float_)).floatValue();
+                return ((Float)delegate.apply(float_)).floatValue();
             }
 
             @Override
@@ -35,13 +35,19 @@ public interface ToFloatFunction<C> {
         };
     }
 
-    default public <C2> ToFloatFunction<C2> method_41309(final Function<C2, C> function) {
+    /**
+     * {@return a composed function that first applies the before function to its input,
+     * and then applies this function} to the result.
+     * 
+     * @param before the function to apply before this function is applied
+     */
+    default public <C2> ToFloatFunction<C2> compose(final Function<C2, C> before) {
         final ToFloatFunction toFloatFunction = this;
         return new ToFloatFunction<C2>(){
 
             @Override
             public float apply(C2 x) {
-                return toFloatFunction.apply(function.apply(x));
+                return toFloatFunction.apply(before.apply(x));
             }
 
             @Override

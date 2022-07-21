@@ -623,6 +623,7 @@ AutoCloseable {
                     this.metadata.setDescription(Text.literal(this.motd));
                     this.metadata.setVersion(new ServerMetadata.Version(SharedConstants.getGameVersion().getName(), SharedConstants.getGameVersion().getProtocolVersion()));
                     this.metadata.setPreviewsChat(this.shouldPreviewChat());
+                    this.metadata.method_45050(this.shouldEnforceSecureProfile());
                     this.setFavicon(this.metadata);
                     while (this.running) {
                         long l = Util.getMeasuringTimeMs() - this.timeReference;

@@ -173,11 +173,7 @@ extends DrawableHelper {
     }
 
     public void addMessage(Text message) {
-        this.addMessage(message, null);
-    }
-
-    public void addMessage(Text message, @Nullable MessageIndicator indicator) {
-        this.addMessage(message, null, indicator);
+        this.addMessage(message, null, MessageIndicator.system());
     }
 
     public void addMessage(Text message, @Nullable MessageSignatureData signature, @Nullable MessageIndicator indicator) {

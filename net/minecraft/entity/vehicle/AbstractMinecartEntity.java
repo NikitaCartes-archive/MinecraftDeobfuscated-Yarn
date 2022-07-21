@@ -266,7 +266,7 @@ extends Entity {
     }
 
     @Override
-    public boolean collides() {
+    public boolean canHit() {
         return !this.isRemoved();
     }
 
@@ -294,7 +294,7 @@ extends Entity {
             this.setDamageWobbleStrength(this.getDamageWobbleStrength() - 1.0f);
         }
         this.attemptTickInVoid();
-        this.tickNetherPortal();
+        this.tickPortal();
         if (this.world.isClient) {
             if (this.clientInterpolationSteps > 0) {
                 double d = this.getX() + (this.clientX - this.getX()) / (double)this.clientInterpolationSteps;

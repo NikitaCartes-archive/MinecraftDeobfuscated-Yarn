@@ -153,8 +153,7 @@ CommandOutput {
      */
     public static final int MAX_RIDING_COOLDOWN = 60;
     /**
-     * @see Entity#getDefaultNetherPortalCooldown
-     * @see Entity#getMaxAir
+     * @see Entity#getDefaultPortalCooldown
      */
     public static final int DEFAULT_PORTAL_COOLDOWN = 300;
     /**
@@ -278,7 +277,7 @@ CommandOutput {
     private final TrackedPosition trackedPosition = new TrackedPosition();
     public boolean ignoreCameraFrustum;
     public boolean velocityDirty;
-    private int netherPortalCooldown;
+    private int portalCooldown;
     protected boolean inNetherPortal;
     protected int netherPortalTime;
     protected BlockPos lastNetherPortalPosition;
@@ -508,7 +507,7 @@ CommandOutput {
         this.prevHorizontalSpeed = this.horizontalSpeed;
         this.prevPitch = this.getPitch();
         this.prevYaw = this.getYaw();
-        this.tickNetherPortal();
+        this.tickPortal();
         if (this.shouldSpawnSprintingParticles()) {
             this.spawnSprintingParticles();
         }
@@ -561,17 +560,17 @@ CommandOutput {
         }
     }
 
-    public void resetNetherPortalCooldown() {
-        this.netherPortalCooldown = this.getDefaultNetherPortalCooldown();
+    public void resetPortalCooldown() {
+        this.portalCooldown = this.getDefaultPortalCooldown();
     }
 
-    public boolean hasNetherPortalCooldown() {
-        return this.netherPortalCooldown > 0;
+    public boolean hasPortalCooldown() {
+        return this.portalCooldown > 0;
     }
 
-    protected void tickNetherPortalCooldown() {
-        if (this.hasNetherPortalCooldown()) {
-            --this.netherPortalCooldown;
+    protected void tickPortalCooldown() {
+        if (this.hasPortalCooldown()) {
+            --this.portalCooldown;
         }
     }
 
@@ -1495,7 +1494,7 @@ CommandOutput {
         return this.world.raycast(new RaycastContext(vec3d, vec3d3, RaycastContext.ShapeType.OUTLINE, includeFluids ? RaycastContext.FluidHandling.ANY : RaycastContext.FluidHandling.NONE, this));
     }
 
-    public boolean collides() {
+    public boolean canHit() {
         return false;
     }
 
@@ -1562,7 +1561,7 @@ CommandOutput {
             nbt.putShort("Air", (short)this.getAir());
             nbt.putBoolean("OnGround", this.onGround);
             nbt.putBoolean("Invulnerable", this.invulnerable);
-            nbt.putInt("PortalCooldown", this.netherPortalCooldown);
+            nbt.putInt("PortalCooldown", this.portalCooldown);
             nbt.putUuid(UUID_KEY, this.getUuid());
             Text text = this.getCustomName();
             if (text != null) {
@@ -1637,7 +1636,7 @@ CommandOutput {
             }
             this.onGround = nbt.getBoolean("OnGround");
             this.invulnerable = nbt.getBoolean("Invulnerable");
-            this.netherPortalCooldown = nbt.getInt("PortalCooldown");
+            this.portalCooldown = nbt.getInt("PortalCooldown");
             if (nbt.containsUuid(UUID_KEY)) {
                 this.uuid = nbt.getUuid(UUID_KEY);
                 this.uuidString = this.uuid.toString();
@@ -1941,8 +1940,8 @@ CommandOutput {
     }
 
     public void setInNetherPortal(BlockPos pos) {
-        if (this.hasNetherPortalCooldown()) {
-            this.resetNetherPortalCooldown();
+        if (this.hasPortalCooldown()) {
+            this.resetPortalCooldown();
             return;
         }
         if (!this.world.isClient && !pos.equals(this.lastNetherPortalPosition)) {
@@ -1951,7 +1950,7 @@ CommandOutput {
         this.inNetherPortal = true;
     }
 
-    protected void tickNetherPortal() {
+    protected void tickPortal() {
         if (!(this.world instanceof ServerWorld)) {
             return;
         }
@@ -1964,7 +1963,7 @@ CommandOutput {
             if (serverWorld2 != null && minecraftServer.isNetherAllowed() && !this.hasVehicle() && this.netherPortalTime++ >= i) {
                 this.world.getProfiler().push("portal");
                 this.netherPortalTime = i;
-                this.resetNetherPortalCooldown();
+                this.resetPortalCooldown();
                 this.moveToWorld(serverWorld2);
                 this.world.getProfiler().pop();
             }
@@ -1977,10 +1976,10 @@ CommandOutput {
                 this.netherPortalTime = 0;
             }
         }
-        this.tickNetherPortalCooldown();
+        this.tickPortalCooldown();
     }
 
-    public int getDefaultNetherPortalCooldown() {
+    public int getDefaultPortalCooldown() {
         return 300;
     }
 
@@ -1999,7 +1998,7 @@ CommandOutput {
     public void animateDamage() {
     }
 
-    public Iterable<ItemStack> getItemsHand() {
+    public Iterable<ItemStack> getHandItems() {
         return EMPTY_STACK_LIST;
     }
 
@@ -2008,7 +2007,7 @@ CommandOutput {
     }
 
     public Iterable<ItemStack> getItemsEquipped() {
-        return Iterables.concat(this.getItemsHand(), this.getArmorItems());
+        return Iterables.concat(this.getHandItems(), this.getArmorItems());
     }
 
     public void equipStack(EquipmentSlot slot, ItemStack stack) {
@@ -2085,7 +2084,7 @@ CommandOutput {
         return this.isInPose(EntityPose.SWIMMING);
     }
 
-    public boolean shouldLeaveSwimmingPose() {
+    public boolean isCrawling() {
         return this.isInSwimmingPose() && !this.isTouchingWater();
     }
 
@@ -2327,7 +2326,7 @@ CommandOutput {
         NbtCompound nbtCompound = original.writeNbt(new NbtCompound());
         nbtCompound.remove("Dimension");
         this.readNbt(nbtCompound);
-        this.netherPortalCooldown = original.netherPortalCooldown;
+        this.portalCooldown = original.portalCooldown;
         this.lastNetherPortalPosition = original.lastNetherPortalPosition;
     }
 
@@ -2736,7 +2735,7 @@ CommandOutput {
         return this.passengerList.contains(passenger);
     }
 
-    public boolean hasPassengerType(Predicate<Entity> predicate) {
+    public boolean hasPassenger(Predicate<Entity> predicate) {
         for (Entity entity : this.passengerList) {
             if (!predicate.test(entity)) continue;
             return true;

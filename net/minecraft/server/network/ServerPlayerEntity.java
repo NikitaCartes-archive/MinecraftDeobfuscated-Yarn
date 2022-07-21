@@ -1302,7 +1302,7 @@ extends PlayerEntity {
     }
 
     public void sendServerMetadata(ServerMetadata metadata) {
-        this.networkHandler.sendPacket(new ServerMetadataS2CPacket(metadata.getDescription(), metadata.getFavicon(), metadata.shouldPreviewChat()));
+        this.networkHandler.sendPacket(new ServerMetadataS2CPacket(metadata.getDescription(), metadata.getFavicon(), metadata.shouldPreviewChat(), metadata.method_45051()));
     }
 
     @Override
@@ -1346,9 +1346,9 @@ extends PlayerEntity {
     }
 
     @Override
-    protected void tickNetherPortalCooldown() {
+    protected void tickPortalCooldown() {
         if (!this.inTeleportationState) {
-            super.tickNetherPortalCooldown();
+            super.tickPortalCooldown();
         }
     }
 
@@ -1455,7 +1455,7 @@ extends PlayerEntity {
         }
     }
 
-    public void sendInitialChunkPackets(ChunkPos chunkPos, Packet<?> chunkDataPacket) {
+    public void sendChunkPacket(ChunkPos chunkPos, Packet<?> chunkDataPacket) {
         this.networkHandler.sendPacket(chunkDataPacket);
     }
 

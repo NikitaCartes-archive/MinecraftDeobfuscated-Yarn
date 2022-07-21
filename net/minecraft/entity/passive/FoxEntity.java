@@ -172,7 +172,7 @@ extends AnimalEntity {
         this.goalSelector.add(7, new DelayedCalmDownGoal());
         this.goalSelector.add(8, new FollowParentGoal(this, 1.25));
         this.goalSelector.add(9, new GoToVillageGoal(32, 200));
-        this.goalSelector.add(10, new EatSweetBerriesGoal((double)1.2f, 12, 1));
+        this.goalSelector.add(10, new EatBerriesGoal((double)1.2f, 12, 1));
         this.goalSelector.add(10, new PounceAtTargetGoal(this, 0.4f));
         this.goalSelector.add(11, new WanderAroundFarGoal(this, 1.0));
         this.goalSelector.add(11, new PickupItemGoal());
@@ -1106,12 +1106,12 @@ extends AnimalEntity {
         }
     }
 
-    public class EatSweetBerriesGoal
+    public class EatBerriesGoal
     extends MoveToTargetPosGoal {
         private static final int EATING_TIME = 40;
         protected int timer;
 
-        public EatSweetBerriesGoal(double speed, int range, int maxYDifference) {
+        public EatBerriesGoal(double speed, int range, int maxYDifference) {
             super(FoxEntity.this, speed, range, maxYDifference);
         }
 
@@ -1135,7 +1135,7 @@ extends AnimalEntity {
         public void tick() {
             if (this.hasReached()) {
                 if (this.timer >= 40) {
-                    this.eatSweetBerry();
+                    this.eatBerries();
                 } else {
                     ++this.timer;
                 }
@@ -1145,7 +1145,7 @@ extends AnimalEntity {
             super.tick();
         }
 
-        protected void eatSweetBerry() {
+        protected void eatBerries() {
             if (!FoxEntity.this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
                 return;
             }

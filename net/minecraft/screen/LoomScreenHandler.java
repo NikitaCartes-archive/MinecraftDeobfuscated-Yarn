@@ -159,8 +159,8 @@ extends ScreenHandler {
         return List.of();
     }
 
-    private boolean method_45016(int i) {
-        return i >= 0 && i < this.bannerPatterns.size();
+    private boolean isPatternIndexValid(int index) {
+        return index >= 0 && index < this.bannerPatterns.size();
     }
 
     @Override
@@ -176,7 +176,7 @@ extends ScreenHandler {
             return;
         }
         int i = this.selectedPattern.get();
-        boolean bl = this.method_45016(i);
+        boolean bl = this.isPatternIndexValid(i);
         List<RegistryEntry<BannerPattern>> list = this.bannerPatterns;
         this.bannerPatterns = this.getPatternsFor(itemStack3);
         if (this.bannerPatterns.size() == 1) {

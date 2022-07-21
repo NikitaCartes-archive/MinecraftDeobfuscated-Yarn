@@ -848,7 +848,7 @@ extends LivingEntity {
     }
 
     @Override
-    public Iterable<ItemStack> getItemsHand() {
+    public Iterable<ItemStack> getHandItems() {
         return this.handItems;
     }
 

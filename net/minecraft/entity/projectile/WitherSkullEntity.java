@@ -101,7 +101,7 @@ extends ExplosiveProjectileEntity {
     }
 
     @Override
-    public boolean collides() {
+    public boolean canHit() {
         return false;
     }
 
