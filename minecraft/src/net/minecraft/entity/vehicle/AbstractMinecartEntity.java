@@ -259,7 +259,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 	}
 
 	@Override
-	public boolean collides() {
+	public boolean canHit() {
 		return !this.isRemoved();
 	}
 
@@ -283,7 +283,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 		}
 
 		this.attemptTickInVoid();
-		this.tickNetherPortal();
+		this.tickPortal();
 		if (this.world.isClient) {
 			if (this.clientInterpolationSteps > 0) {
 				double d = this.getX() + (this.clientX - this.getX()) / (double)this.clientInterpolationSteps;

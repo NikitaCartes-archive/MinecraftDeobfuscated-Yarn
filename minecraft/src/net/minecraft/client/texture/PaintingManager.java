@@ -20,8 +20,8 @@ public class PaintingManager extends SpriteAtlasHolder {
 		return Stream.concat(Registry.PAINTING_VARIANT.getIds().stream(), Stream.of(PAINTING_BACK_ID));
 	}
 
-	public Sprite getPaintingSprite(PaintingVariant motive) {
-		return this.getSprite(Registry.PAINTING_VARIANT.getId(motive));
+	public Sprite getPaintingSprite(PaintingVariant variant) {
+		return this.getSprite(Registry.PAINTING_VARIANT.getId(variant));
 	}
 
 	public Sprite getBackSprite() {

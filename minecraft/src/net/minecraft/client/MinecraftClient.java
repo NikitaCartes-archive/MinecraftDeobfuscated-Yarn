@@ -27,9 +27,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.text.SimpleDateFormat;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -93,6 +91,7 @@ import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.network.ServerAddress;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.network.SocialInteractionsManager;
+import net.minecraft.client.network.message.MessageHandler;
 import net.minecraft.client.option.AoMode;
 import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.client.option.CloudRenderMode;
@@ -194,6 +193,7 @@ import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ResourcePackSource;
+import net.minecraft.resource.ResourceReload;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.metadata.PackResourceMetadata;
 import net.minecraft.screen.ScreenTexts;
@@ -471,6 +471,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	@Nullable
 	private GlTimer.Query currentGlTimerQuery;
 	private final Realms32BitWarningChecker realms32BitWarningChecker;
+	private final NarratorManager narratorManager;
+	private final MessageHandler messageHandler;
 	private AbuseReportContext abuseReportContext;
 	private String openProfilerSection = "root";
 
@@ -548,8 +550,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				InputStream inputStream2 = this.getResourcePackProvider().getPack().open(ResourceType.CLIENT_RESOURCES, new Identifier("icons/icon_32x32.png"));
 				this.window.setIcon(inputStream, inputStream2);
 			}
-		} catch (IOException var8) {
-			LOGGER.error("Couldn't set icon", var8);
+		} catch (IOException var9) {
+			LOGGER.error("Couldn't set icon", var9);
 		}
 
 		this.window.setFramerateLimit(this.options.getMaxFps().getValue());
@@ -651,26 +653,23 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.gameRenderer.preloadShaders(this.getResourcePackProvider().getPack().getFactory());
 		this.profileKeys = new ProfileKeys(this.userApiService, this.session.getProfile().getId(), this.runDirectory.toPath());
 		this.realms32BitWarningChecker = new Realms32BitWarningChecker(this);
+		this.narratorManager = new NarratorManager(this);
+		this.messageHandler = new MessageHandler(this);
+		this.messageHandler.setChatDelay(this.options.getChatDelay().getValue());
 		this.abuseReportContext = AbuseReportContext.create(ReporterEnvironment.ofIntegratedServer(), this.userApiService);
 		SplashOverlay.init(this);
 		List<ResourcePack> list = this.resourcePackManager.createResourcePacks();
 		this.resourceReloadLogger.reload(ResourceReloadLogger.ReloadReason.INITIAL, list);
-		this.setOverlay(
-			new SplashOverlay(
-				this,
-				this.resourceManager.reload(Util.getMainWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list),
-				throwable -> Util.ifPresentOrElse(throwable, this::handleResourceReloadException, () -> {
-						if (SharedConstants.isDevelopment) {
-							this.checkGameData();
-						}
-		
-						this.resourceReloadLogger.finish();
-					}),
-				false
-			)
-		);
+		ResourceReload resourceReload = this.resourceManager.reload(Util.getMainWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list);
+		this.setOverlay(new SplashOverlay(this, resourceReload, throwable -> Util.ifPresentOrElse(throwable, this::handleResourceReloadException, () -> {
+				if (SharedConstants.isDevelopment) {
+					this.checkGameData();
+				}
+
+				this.resourceReloadLogger.finish();
+			}), false));
 		if (string != null) {
-			ConnectScreen.connect(new TitleScreen(), this, new ServerAddress(string, i), null);
+			resourceReload.whenComplete().thenRunAsync(() -> ConnectScreen.connect(new TitleScreen(), this, new ServerAddress(string, i), null), this);
 		} else if (this.isMultiplayerBanned()) {
 			this.setScreen(Bans.createBanScreen(confirmed -> {
 				if (confirmed) {
@@ -878,7 +877,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public static void printCrashReport(CrashReport report) {
 		File file = new File(getInstance().runDirectory, "crash-reports");
-		File file2 = new File(file, "crash-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + "-client.txt");
+		File file2 = new File(file, "crash-" + Util.getFormattedCurrentTime() + "-client.txt");
 		Bootstrap.println(report.asString());
 		if (report.getFile() != null) {
 			Bootstrap.println("#@!@# Game crashed! Crash report saved to: #@!@# " + report.getFile());
@@ -1002,7 +1001,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			} else {
 				Text text2 = chatRestriction.getDescription();
 				this.inGameHud.setOverlayMessage(text2, false);
-				NarratorManager.INSTANCE.narrate(text2);
+				this.narratorManager.narrate(text2);
 				this.inGameHud.setCanShowChatDisabledScreen(chatRestriction == MinecraftClient.ChatRestriction.DISABLED_BY_PROFILE);
 			}
 		} else {
@@ -1067,7 +1066,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			LOGGER.info("Stopping!");
 
 			try {
-				NarratorManager.INSTANCE.destroy();
+				this.narratorManager.destroy();
 			} catch (Throwable var7) {
 			}
 
@@ -1255,6 +1254,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 			currentFps = this.fpsCounter;
 			this.fpsDebugString = String.format(
+				Locale.ROOT,
 				"%d fps T: %s%s%s%s B: %d%s",
 				currentFps,
 				k == 260 ? "inf" : k,
@@ -1444,7 +1444,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 		Path path;
 		try {
-			String string2 = String.format("%s-%s-%s", new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()), string, SharedConstants.getGameVersion().getId());
+			String string2 = String.format(Locale.ROOT, "%s-%s-%s", Util.getFormattedCurrentTime(), string, SharedConstants.getGameVersion().getId());
 			String string3 = FileNameUtil.getNextUniqueName(RecordDumper.DEBUG_PROFILING_DIRECTORY, string2, ".zip");
 			path = RecordDumper.DEBUG_PROFILING_DIRECTORY.resolve(string3);
 		} catch (IOException var21) {
@@ -1773,6 +1773,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 
 		this.profiler.push("gui");
+		this.messageHandler.processDelayedMessages();
 		this.inGameHud.tick(this.paused);
 		this.profiler.pop();
 		this.gameRenderer.updateTargetedEntity(1.0F);
@@ -1927,7 +1928,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		while(this.options.socialInteractionsKey.wasPressed()) {
 			if (!this.isConnectedToServer()) {
 				this.player.sendMessage(SOCIAL_INTERACTIONS_NOT_AVAILABLE, true);
-				NarratorManager.INSTANCE.narrate(SOCIAL_INTERACTIONS_NOT_AVAILABLE);
+				this.narratorManager.narrate(SOCIAL_INTERACTIONS_NOT_AVAILABLE);
 			} else {
 				if (this.socialInteractionsToast != null) {
 					this.tutorialManager.remove(this.socialInteractionsToast);
@@ -2078,7 +2079,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		clientConnection.setPacketListener(new ClientLoginNetworkHandler(clientConnection, this, null, status -> {
 		}));
 		clientConnection.send(new HandshakeC2SPacket(socketAddress.toString(), 0, NetworkState.LOGIN));
-		clientConnection.send(new LoginHelloC2SPacket(this.getSession().getUsername(), this.profileKeys.getPublicKeyData()));
+		clientConnection.send(
+			new LoginHelloC2SPacket(this.getSession().getUsername(), this.profileKeys.getPublicKeyData(), Optional.ofNullable(this.getSession().getUuidOrNull()))
+		);
 		this.integratedServerConnection = clientConnection;
 	}
 
@@ -2116,7 +2119,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.server = null;
 		this.gameRenderer.reset();
 		this.interactionManager = null;
-		NarratorManager.INSTANCE.clear();
+		this.narratorManager.clear();
 		this.reset(screen);
 		if (this.world != null) {
 			if (integratedServer != null) {
@@ -2883,6 +2886,14 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public SignatureVerifier getServicesSignatureVerifier() {
 		return this.servicesSignatureVerifier;
+	}
+
+	public NarratorManager getNarratorManager() {
+		return this.narratorManager;
+	}
+
+	public MessageHandler getMessageHandler() {
+		return this.messageHandler;
 	}
 
 	public AbuseReportContext getAbuseReportContext() {

@@ -81,7 +81,7 @@ public class RealmsInviteScreen extends RealmsScreen {
 
 	private void showError(Text errorMessage) {
 		this.errorMessage = errorMessage;
-		NarratorManager.INSTANCE.narrate(errorMessage);
+		this.client.getNarratorManager().narrate(errorMessage);
 	}
 
 	@Override

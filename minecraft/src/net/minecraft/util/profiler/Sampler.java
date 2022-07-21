@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import it.unimi.dsi.fastutil.ints.Int2DoubleMap;
 import it.unimi.dsi.fastutil.ints.Int2DoubleOpenHashMap;
+import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
 import java.util.function.ToDoubleFunction;
@@ -71,7 +72,7 @@ public class Sampler {
 
 	private void ensureActive() {
 		if (!this.active) {
-			throw new IllegalStateException(String.format("Sampler for metric %s not started!", this.name));
+			throw new IllegalStateException(String.format(Locale.ROOT, "Sampler for metric %s not started!", this.name));
 		}
 	}
 

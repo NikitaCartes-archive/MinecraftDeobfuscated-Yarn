@@ -22,7 +22,7 @@ public class EmptyEntry extends LeafEntry {
 	public void generateLoot(Consumer<ItemStack> lootConsumer, LootContext context) {
 	}
 
-	public static LeafEntry.Builder<?> Serializer() {
+	public static LeafEntry.Builder<?> builder() {
 		return builder(EmptyEntry::new);
 	}
 

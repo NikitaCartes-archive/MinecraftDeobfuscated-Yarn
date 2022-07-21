@@ -18,7 +18,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 public class BoatItem extends Item {
-	private static final Predicate<Entity> RIDERS = EntityPredicates.EXCEPT_SPECTATOR.and(Entity::collides);
+	private static final Predicate<Entity> RIDERS = EntityPredicates.EXCEPT_SPECTATOR.and(Entity::canHit);
 	private final BoatEntity.Type type;
 	private final boolean chest;
 

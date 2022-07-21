@@ -33,7 +33,7 @@ public class EnderDragonPart extends Entity {
 	}
 
 	@Override
-	public boolean collides() {
+	public boolean canHit() {
 		return true;
 	}
 

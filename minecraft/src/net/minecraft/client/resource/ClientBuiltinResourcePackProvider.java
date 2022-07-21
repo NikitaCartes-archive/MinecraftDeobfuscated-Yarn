@@ -261,7 +261,7 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 		try (ZipResourcePack zipResourcePack = new ZipResourcePack(packZip)) {
 			packResourceMetadata = zipResourcePack.parseMetadata(PackResourceMetadata.READER);
 		} catch (IOException var9) {
-			return Util.completeExceptionally(new IOException(String.format("Invalid resourcepack at %s", packZip), var9));
+			return Util.completeExceptionally(new IOException(String.format(Locale.ROOT, "Invalid resourcepack at %s", packZip), var9));
 		}
 
 		LOGGER.info("Applying server pack {}", packZip);

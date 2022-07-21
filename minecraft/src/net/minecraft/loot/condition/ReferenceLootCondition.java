@@ -41,7 +41,10 @@ public class ReferenceLootCondition implements LootCondition {
 
 	public boolean test(LootContext lootContext) {
 		LootCondition lootCondition = lootContext.getCondition(this.id);
-		if (lootContext.addCondition(lootCondition)) {
+		if (lootCondition == null) {
+			LOGGER.warn("Tried using unknown condition table called {}", this.id);
+			return false;
+		} else if (lootContext.addCondition(lootCondition)) {
 			boolean var3;
 			try {
 				var3 = lootCondition.test(lootContext);

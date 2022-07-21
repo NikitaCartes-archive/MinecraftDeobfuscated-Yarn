@@ -3,11 +3,13 @@ package net.minecraft.client.gui.screen.multiplayer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.screen.WarningScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ServerInfo;
+import net.minecraft.client.option.ChatPreviewMode;
 import net.minecraft.client.option.ServerList;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
@@ -16,15 +18,18 @@ import net.minecraft.util.Formatting;
 @Environment(EnvType.CLIENT)
 public class ChatPreviewWarningScreen extends WarningScreen {
 	private static final Text TITLE = Text.translatable("chatPreview.warning.title").formatted(Formatting.BOLD);
-	private static final Text CONTENT = Text.translatable("chatPreview.warning.content");
 	private static final Text CHECK_MESSAGE = Text.translatable("chatPreview.warning.check");
-	private static final Text NARRATED_TEXT = TITLE.copy().append("\n").append(CONTENT);
 	private final ServerInfo serverInfo;
 	@Nullable
 	private final Screen parent;
 
+	private static Text getWarningContent() {
+		ChatPreviewMode chatPreviewMode = MinecraftClient.getInstance().options.getChatPreview().getValue();
+		return Text.translatable("chatPreview.warning.content", chatPreviewMode.getText());
+	}
+
 	public ChatPreviewWarningScreen(@Nullable Screen parent, ServerInfo serverInfo) {
-		super(TITLE, CONTENT, CHECK_MESSAGE, NARRATED_TEXT);
+		super(TITLE, getWarningContent(), CHECK_MESSAGE, ScreenTexts.joinSentences(TITLE, getWarningContent()));
 		this.serverInfo = serverInfo;
 		this.parent = parent;
 	}

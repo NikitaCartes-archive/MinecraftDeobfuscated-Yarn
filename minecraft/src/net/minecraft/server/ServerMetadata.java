@@ -30,6 +30,7 @@ public class ServerMetadata {
 	@Nullable
 	private String favicon;
 	private boolean previewsChat;
+	private boolean field_39914;
 
 	@Nullable
 	public Text getDescription() {
@@ -75,6 +76,14 @@ public class ServerMetadata {
 		return this.previewsChat;
 	}
 
+	public void method_45050(boolean bl) {
+		this.field_39914 = bl;
+	}
+
+	public boolean method_45051() {
+		return this.field_39914;
+	}
+
 	public static class Deserializer implements JsonDeserializer<ServerMetadata>, JsonSerializer<ServerMetadata> {
 		public ServerMetadata deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "status");
@@ -99,12 +108,17 @@ public class ServerMetadata {
 				serverMetadata.setPreviewsChat(JsonHelper.getBoolean(jsonObject, "previewsChat"));
 			}
 
+			if (jsonObject.has("enforcesSecureChat")) {
+				serverMetadata.method_45050(JsonHelper.getBoolean(jsonObject, "enforcesSecureChat"));
+			}
+
 			return serverMetadata;
 		}
 
 		public JsonElement serialize(ServerMetadata serverMetadata, Type type, JsonSerializationContext jsonSerializationContext) {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.addProperty("previewsChat", serverMetadata.shouldPreviewChat());
+			jsonObject.addProperty("enforcesSecureChat", serverMetadata.method_45051());
 			if (serverMetadata.getDescription() != null) {
 				jsonObject.add("description", jsonSerializationContext.serialize(serverMetadata.getDescription()));
 			}

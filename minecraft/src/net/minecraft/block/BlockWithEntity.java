@@ -8,6 +8,20 @@ import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+/**
+ * A convenience class for a block with a {@link net.minecraft.block.entity.BlockEntity}.
+ * While blocks with block entity only have to implement {@link BlockEntityProvider}
+ * and do not have to subclass this, it overrides several methods to delegate its logic
+ * to the block entity. However, <strong>it is generally easier to just implement
+ * {@link BlockEntityProvider}</strong>.
+ * 
+ * <p><strong>Subclasses must override {@link #getRenderType}</strong> to render the
+ * block entity. By default, all block entities are rendered invisible, which is not
+ * intended in most, if not all, cases.
+ * 
+ * @see net.minecraft.block.entity.BlockEntity
+ * @see BlockEntityProvider
+ */
 public abstract class BlockWithEntity extends Block implements BlockEntityProvider {
 	protected BlockWithEntity(AbstractBlock.Settings settings) {
 		super(settings);

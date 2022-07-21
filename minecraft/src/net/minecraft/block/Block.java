@@ -67,6 +67,8 @@ import org.slf4j.Logger;
 /**
  * A block is a voxel in a {@linkplain World world}. {@link AbstractBlock},
  * this class, and its subclasses define all logic for those voxels.
+ * See the documentation on {@link AbstractBlock} for instructions on overriding
+ * methods.
  * 
  * <p>There is exactly one instance for every type of block. Every stone
  * block for example in a world shares the same block instance. Each block
@@ -175,6 +177,13 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		return item instanceof BlockItem ? ((BlockItem)item).getBlock() : Blocks.AIR;
 	}
 
+	/**
+	 * Pushes entities standing on a block up before changing the block to taller ones.
+	 * Without calling this, entities can fall through the block. This only needs to be called
+	 * if the original block's height is smaller than 1 block.
+	 * 
+	 * @return the passed new block state
+	 */
 	public static BlockState pushEntitiesUpBeforeBlockChange(BlockState from, BlockState to, WorldAccess world, BlockPos pos) {
 		VoxelShape voxelShape = VoxelShapes.combine(from.getCollisionShape(world, pos), to.getCollisionShape(world, pos), BooleanBiFunction.ONLY_SECOND)
 			.offset((double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
@@ -331,9 +340,29 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		return !isShapeFullCube(state.getOutlineShape(world, pos)) && state.getFluidState().isEmpty();
 	}
 
+	/**
+	 * Called randomly on the client. Blocks may override this to spawn particles.
+	 * Unlike {@link AbstractBlock#randomTick} this is not affected by a game rule.
+	 */
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 	}
 
+	/**
+	 * Called after a player breaks a block and the block is removed from the world.
+	 * Explosions do not trigger this.
+	 * 
+	 * <p>In most cases, {@link AbstractBlock#onStateReplaced} or {@link
+	 * AbstractBlock#onStacksDropped} should be used instead. Note that they are called
+	 * when blocks are broken by explosions as well as players breaking them.
+	 * 
+	 * <p>This method is called on both the logical client and logical server, so take caution
+	 * when overriding this method. The logical side can be checked using {@link
+	 * World#isClient}.
+	 * 
+	 * @see AbstractBlock#onStateReplaced
+	 * @see AbstractBlock#onStacksDropped
+	 * @see #onBreak
+	 */
 	public void onBroken(WorldAccess world, BlockPos pos, BlockState state) {
 	}
 
@@ -417,6 +446,16 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		}
 	}
 
+	/**
+	 * Drops experience orbs. This should be called inside {@link AbstractBlock#onStacksDropped}
+	 * after {@code dropExperience} check. This does not drop experience orbs if {@link
+	 * net.minecraft.world.GameRules#DO_TILE_DROPS doTileDrops} is turned off. For blocks that do
+	 * not drop experience when mined with Silk Touch, consider calling {@link
+	 * #dropExperienceWhenMined} instead.
+	 * 
+	 * @see AbstractBlock#onStacksDropped
+	 * @see #dropExperienceWhenMined
+	 */
 	protected void dropExperience(ServerWorld world, BlockPos pos, int size) {
 		if (world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
 			ExperienceOrbEntity.spawn(world, Vec3d.ofCenter(pos), size);
@@ -429,12 +468,20 @@ public class Block extends AbstractBlock implements ItemConvertible {
 
 	/**
 	 * Called when this block is destroyed by an explosion.
+	 * 
+	 * <p>This method is called on both the logical client and logical server, so take caution
+	 * when overriding this method. The logical side can be checked using {@link
+	 * World#isClient}.
 	 */
 	public void onDestroyedByExplosion(World world, BlockPos pos, Explosion explosion) {
 	}
 
 	/**
 	 * Called when an entity steps on this block.
+	 * 
+	 * <p>This method is called on both the logical client and logical server, so take caution
+	 * when overriding this method. The logical side can be checked using {@link
+	 * World#isClient}.
 	 */
 	public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
 	}
@@ -444,12 +491,41 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		return this.getDefaultState();
 	}
 
+	/**
+	 * Called server-side when the block is broken by the player using correct tool.
+	 * This is called after {@link #onBroken} but has the tool requirement.
+	 * By default, this increments {@link net.minecraft.stat.Stats#MINED}, adds exhaustion
+	 * to the player, and drops the block's item stacks.
+	 * 
+	 * <p>Subclasses should override this if breaking the block causes another block to
+	 * be placed (like {@link IceBlock}) or if the block can break multiple times
+	 * (like {@link TurtleEggBlock}). {@link BeehiveBlock} uses this to anger the bees if
+	 * the hive is mined without silk touch.
+	 * 
+	 * @see #onBreak
+	 * @see #onBroken
+	 * @see AbstractBlock#onStacksDropped
+	 * @see AbstractBlock#onStateReplaced
+	 */
 	public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack stack) {
 		player.incrementStat(Stats.MINED.getOrCreateStat(this));
 		player.addExhaustion(0.005F);
 		dropStacks(state, world, pos, blockEntity, player, stack);
 	}
 
+	/**
+	 * Called when the player placed the block.
+	 * 
+	 * <p>Tall or wide blocks (such as doors or beds) should override this to place
+	 * the other half of the block. Blocks with block entities can use this to copy the
+	 * data from the item stack, such as the custom name.
+	 * 
+	 * <p>This method is called on both the logical client and logical server, so take caution
+	 * when overriding this method. The logical side can be checked using {@link
+	 * World#isClient}.
+	 * 
+	 * @see AbstractBlock#onBlockAdded
+	 */
 	public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
 	}
 
@@ -477,14 +553,42 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		return this.translationKey;
 	}
 
+	/**
+	 * Called when the entity lands on the block.
+	 * 
+	 * <p>Default implementation deals fall damage to the entity. Blocks that increase or
+	 * reduce fall damage (like {@link HayBlock}) should override this. {@link FarmlandBlock}
+	 * overrides this method to convert the block to dirt.
+	 * 
+	 * <p>This method is called on both the logical client and logical server, so take caution
+	 * when overriding this method. The logical side can be checked using {@link
+	 * World#isClient}.
+	 */
 	public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity, float fallDistance) {
 		entity.handleFallDamage(fallDistance, 1.0F, DamageSource.FALL);
 	}
 
+	/**
+	 * Called after the entity lands on the block.
+	 * 
+	 * <p>Default implementation resets the entity's vertical velocity. Blocks that cause
+	 * entities to jump (such as {@link SlimeBlock}) should override this.
+	 * 
+	 * <p>This method is called on both the logical client and logical server, so take caution
+	 * when overriding this method. The logical side can be checked using {@link
+	 * World#isClient}.
+	 */
 	public void onEntityLand(BlockView world, Entity entity) {
 		entity.setVelocity(entity.getVelocity().multiply(1.0, 0.0, 1.0));
 	}
 
+	/**
+	 * {@return the new item stack when using pick block functionality}
+	 * 
+	 * <p>Pick block is available via middle-clicking by default. Blocks without the
+	 * corresponding {@link net.minecraft.item.BlockItem}, such as crops, should
+	 * override this method to return the correct item stack.
+	 */
 	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
 		return new ItemStack(this);
 	}
@@ -514,6 +618,26 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		world.syncWorldEvent(player, WorldEvents.BLOCK_BROKEN, pos, getRawIdFromState(state));
 	}
 
+	/**
+	 * Called when a player breaks a block before the block is removed from the world.
+	 * Explosions do not trigger this.
+	 * 
+	 * <p>Default implementation spawns block breaking particles, angers piglins, and
+	 * emits game events. Tall or wide blocks such as doors or beds should override this
+	 * to break the other part (along with {@link AbstractBlock#getStateForNeighborUpdate}.)
+	 * 
+	 * <p>In most cases, {@link AbstractBlock#onStateReplaced} or {@link
+	 * AbstractBlock#onStacksDropped} should be used instead. Note that they are called
+	 * when blocks are broken by explosions as well as players breaking them.
+	 * 
+	 * <p>This method is called on both the logical client and logical server, so take caution
+	 * when overriding this method. The logical side can be checked using {@link
+	 * World#isClient}.
+	 * 
+	 * @see AbstractBlock#onStateReplaced
+	 * @see AbstractBlock#onStacksDropped
+	 * @see #onBroken
+	 */
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		this.spawnBreakParticles(world, player, pos, state);
 		if (state.isIn(BlockTags.GUARDED_BY_PIGLINS)) {
@@ -523,13 +647,40 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		world.emitGameEvent(GameEvent.BLOCK_DESTROY, pos, GameEvent.Emitter.of(player, state));
 	}
 
+	/**
+	 * Called randomly server-side on blocks with unobstructed sky access when it is
+	 * raining or snowing. Like random ticks, only blocks within 128-block cylinder
+	 * (i.e. ignoring Y coordinates) around players receive precipitation ticks. However,
+	 * precipitation ticks are unaffected by the {@link
+	 * net.minecraft.world.GameRules#RANDOM_TICK_SPEED randomTickSpeed} game rule, and {@link
+	 * AbstractBlock.Settings#ticksRandomly} block setting is not required.
+	 * 
+	 * <p>{@link LeveledCauldronBlock} uses this to fill the cauldron.
+	 * 
+	 * @param precipitation the precipitation (snow or rain), including snow
+	 * observable on high altitude
+	 */
 	public void precipitationTick(BlockState state, World world, BlockPos pos, Biome.Precipitation precipitation) {
 	}
 
+	/**
+	 * {@return whether an explosion can drop the block as an item}
+	 * 
+	 * <p>This should be overridden if an explosion affects the block in other ways,
+	 * like {@link TntBlock} that triggers the chain reaction. This should not consider
+	 * the randomness, since it is defined in the loot table.
+	 * 
+	 * @see net.minecraft.loot.condition.SurvivesExplosionLootCondition
+	 */
 	public boolean shouldDropItemsOnExplosion(Explosion explosion) {
 		return true;
 	}
 
+	/**
+	 * Appends block state properties to this block. To use this, override and call {@link
+	 * StateManager.Builder#add} inside the method. See {@link
+	 * net.minecraft.state.property.Properties} for the list of pre-defined properties.
+	 */
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
 	}
 
@@ -537,6 +688,11 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		return this.stateManager;
 	}
 
+	/**
+	 * Sets the default state of the block. This should be called inside
+	 * the block's constructor to override the default state chosen by the
+	 * state manager.
+	 */
 	protected final void setDefaultState(BlockState state) {
 		this.defaultState = state;
 	}
@@ -585,6 +741,12 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		return "Block{" + Registry.BLOCK.getId(this) + "}";
 	}
 
+	/**
+	 * Appends tooltips to a stack of this block's corresponding {@linkplain
+	 * net.minecraft.item.BlockItem block item}. Used by shulker boxes.
+	 * 
+	 * @see Item#appendTooltip
+	 */
 	public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
 	}
 
@@ -602,6 +764,17 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		return this.registryEntry;
 	}
 
+	/**
+	 * Drops experience orbs. This should be called inside {@link AbstractBlock#onStacksDropped}
+	 * after {@code dropExperience} check. This does not drop experience orbs if {@code tool}
+	 * is enchanted with silk touch or if {@link net.minecraft.world.GameRules#DO_TILE_DROPS doTileDrops}
+	 * is turned off.
+	 * 
+	 * @see AbstractBlock#onStacksDropped
+	 * @see #dropExperience
+	 * 
+	 * @param tool the tool used to break the block, or {@link ItemStack#EMPTY} for explosions
+	 */
 	protected void dropExperienceWhenMined(ServerWorld world, BlockPos pos, ItemStack tool, IntProvider experience) {
 		if (EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, tool) == 0) {
 			int i = experience.get(world.random);

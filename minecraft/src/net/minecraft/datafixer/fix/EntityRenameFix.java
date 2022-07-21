@@ -8,6 +8,7 @@ import com.mojang.datafixers.types.Type;
 import com.mojang.datafixers.types.templates.TaggedChoice.TaggedChoiceType;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DynamicOps;
+import java.util.Locale;
 import java.util.Objects;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
@@ -33,7 +34,7 @@ public abstract class EntityRenameFix extends DataFix {
 						Type<?> typexx = (Type)taggedChoiceType.types().get(string);
 						Type<?> type2 = (Type)taggedChoiceType2.types().get(string2);
 						if (!type2.equals(typexx, true, true)) {
-							throw new IllegalStateException(String.format("Dynamic type check failed: %s not equal to %s", type2, typexx));
+							throw new IllegalStateException(String.format(Locale.ROOT, "Dynamic type check failed: %s not equal to %s", type2, typexx));
 						} else {
 							return string2;
 						}
