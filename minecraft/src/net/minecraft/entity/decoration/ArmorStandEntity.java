@@ -127,7 +127,7 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public Iterable<ItemStack> getItemsHand() {
+	public Iterable<ItemStack> getHandItems() {
 		return this.heldItems;
 	}
 
@@ -720,8 +720,8 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public boolean collides() {
-		return super.collides() && !this.isMarker();
+	public boolean canHit() {
+		return super.canHit() && !this.isMarker();
 	}
 
 	@Override

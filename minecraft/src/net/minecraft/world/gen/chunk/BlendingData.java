@@ -40,13 +40,13 @@ public class BlendingData {
 	private static final double field_37704 = 1.0;
 	private static final double field_37705 = -1.0;
 	private static final int field_35516 = 2;
-	private static final int field_35683 = BiomeCoords.fromBlock(16);
-	private static final int field_35684 = field_35683 - 1;
-	private static final int field_35685 = field_35683;
-	private static final int field_35686 = 2 * field_35684 + 1;
-	private static final int field_35687 = 2 * field_35685 + 1;
-	private static final int field_35518 = field_35686 + field_35687;
-	private final HeightLimitView OLD_HEIGHT_LIMIT;
+	private static final int BIOMES_PER_CHUNK = BiomeCoords.fromBlock(16);
+	private static final int LAST_CHUNK_BIOME_INDEX = BIOMES_PER_CHUNK - 1;
+	private static final int CHUNK_BIOME_END_INDEX = BIOMES_PER_CHUNK;
+	private static final int NORTH_WEST_END_INDEX = 2 * LAST_CHUNK_BIOME_INDEX + 1;
+	private static final int SOUTH_EAST_END_INDEX_PART = 2 * CHUNK_BIOME_END_INDEX + 1;
+	private static final int HORIZONTAL_BIOME_COUNT = NORTH_WEST_END_INDEX + SOUTH_EAST_END_INDEX_PART;
+	private final HeightLimitView oldHeightLimit;
 	private static final List<Block> SURFACE_BLOCKS = List.of(
 		Blocks.PODZOL,
 		Blocks.GRAVEL,
@@ -61,37 +61,41 @@ public class BlendingData {
 		Blocks.DIRT
 	);
 	protected static final double field_35513 = Double.MAX_VALUE;
-	private boolean field_35690;
-	private final double[] heights;
-	private final List<List<RegistryEntry<Biome>>> field_36345;
-	private final transient double[][] field_35693;
-	private static final Codec<double[]> field_35695 = Codec.DOUBLE.listOf().xmap(Doubles::toArray, Doubles::asList);
+	private boolean initializedBlendingData;
+	private final double[] surfaceHeights;
+	private final List<List<RegistryEntry<Biome>>> biomes;
+	private final transient double[][] collidableBlockDensities;
+	private static final Codec<double[]> DOUBLE_ARRAY_CODEC = Codec.DOUBLE.listOf().xmap(Doubles::toArray, Doubles::asList);
 	public static final Codec<BlendingData> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codec.INT.fieldOf("min_section").forGetter(blendingData -> blendingData.OLD_HEIGHT_LIMIT.getBottomSectionCoord()),
-						Codec.INT.fieldOf("max_section").forGetter(blendingData -> blendingData.OLD_HEIGHT_LIMIT.getTopSectionCoord()),
-						field_35695.optionalFieldOf("heights")
+						Codec.INT.fieldOf("min_section").forGetter(blendingData -> blendingData.oldHeightLimit.getBottomSectionCoord()),
+						Codec.INT.fieldOf("max_section").forGetter(blendingData -> blendingData.oldHeightLimit.getTopSectionCoord()),
+						DOUBLE_ARRAY_CODEC.optionalFieldOf("heights")
 							.forGetter(
-								blendingData -> DoubleStream.of(blendingData.heights).anyMatch(d -> d != Double.MAX_VALUE) ? Optional.of(blendingData.heights) : Optional.empty()
+								blendingData -> DoubleStream.of(blendingData.surfaceHeights).anyMatch(d -> d != Double.MAX_VALUE)
+										? Optional.of(blendingData.surfaceHeights)
+										: Optional.empty()
 							)
 					)
 					.apply(instance, BlendingData::new)
 		)
-		.comapFlatMap(BlendingData::method_39573, Function.identity());
+		.comapFlatMap(BlendingData::validate, Function.identity());
 
-	private static DataResult<BlendingData> method_39573(BlendingData blendingData) {
-		return blendingData.heights.length != field_35518 ? DataResult.error("heights has to be of length " + field_35518) : DataResult.success(blendingData);
+	private static DataResult<BlendingData> validate(BlendingData data) {
+		return data.surfaceHeights.length != HORIZONTAL_BIOME_COUNT
+			? DataResult.error("heights has to be of length " + HORIZONTAL_BIOME_COUNT)
+			: DataResult.success(data);
 	}
 
-	private BlendingData(int i, int j, Optional<double[]> optional) {
-		this.heights = (double[])optional.orElse(Util.make(new double[field_35518], ds -> Arrays.fill(ds, Double.MAX_VALUE)));
-		this.field_35693 = new double[field_35518][];
-		ObjectArrayList<List<RegistryEntry<Biome>>> objectArrayList = new ObjectArrayList<>(field_35518);
-		objectArrayList.size(field_35518);
-		this.field_36345 = objectArrayList;
-		int k = ChunkSectionPos.getBlockCoord(i);
-		int l = ChunkSectionPos.getBlockCoord(j) - k;
-		this.OLD_HEIGHT_LIMIT = HeightLimitView.create(k, l);
+	private BlendingData(int oldBottomSectionY, int oldTopSectionY, Optional<double[]> heights) {
+		this.surfaceHeights = (double[])heights.orElse(Util.make(new double[HORIZONTAL_BIOME_COUNT], ds -> Arrays.fill(ds, Double.MAX_VALUE)));
+		this.collidableBlockDensities = new double[HORIZONTAL_BIOME_COUNT][];
+		ObjectArrayList<List<RegistryEntry<Biome>>> objectArrayList = new ObjectArrayList<>(HORIZONTAL_BIOME_COUNT);
+		objectArrayList.size(HORIZONTAL_BIOME_COUNT);
+		this.biomes = objectArrayList;
+		int i = ChunkSectionPos.getBlockCoord(oldBottomSectionY);
+		int j = ChunkSectionPos.getBlockCoord(oldTopSectionY) - i;
+		this.oldHeightLimit = HeightLimitView.create(i, j);
 	}
 
 	@Nullable
@@ -101,18 +105,18 @@ public class BlendingData {
 		if (blendingData == null) {
 			return null;
 		} else {
-			blendingData.method_39572(chunk, getAdjacentChunksWithNoise(chunkRegion, chunkX, chunkZ, false));
+			blendingData.initChunkBlendingData(chunk, getAdjacentChunksWithNoise(chunkRegion, chunkX, chunkZ, false));
 			return blendingData;
 		}
 	}
 
-	public static Set<EightWayDirection> getAdjacentChunksWithNoise(StructureWorldAccess access, int chunkX, int chunkZ, boolean newNoise) {
+	public static Set<EightWayDirection> getAdjacentChunksWithNoise(StructureWorldAccess access, int chunkX, int chunkZ, boolean oldNoise) {
 		Set<EightWayDirection> set = EnumSet.noneOf(EightWayDirection.class);
 
 		for (EightWayDirection eightWayDirection : EightWayDirection.values()) {
-			int i = chunkX + eightWayDirection.method_42015();
-			int j = chunkZ + eightWayDirection.method_42016();
-			if (access.getChunk(i, j).usesOldNoise() == newNoise) {
+			int i = chunkX + eightWayDirection.getOffsetX();
+			int j = chunkZ + eightWayDirection.getOffsetZ();
+			if (access.getChunk(i, j).usesOldNoise() == oldNoise) {
 				set.add(eightWayDirection);
 			}
 		}
@@ -120,124 +124,138 @@ public class BlendingData {
 		return set;
 	}
 
-	private void method_39572(Chunk chunk, Set<EightWayDirection> set) {
-		if (!this.field_35690) {
-			if (set.contains(EightWayDirection.NORTH) || set.contains(EightWayDirection.WEST) || set.contains(EightWayDirection.NORTH_WEST)) {
-				this.method_39347(method_39578(0, 0), chunk, 0, 0);
+	private void initChunkBlendingData(Chunk chunk, Set<EightWayDirection> newNoiseChunkDirections) {
+		if (!this.initializedBlendingData) {
+			if (newNoiseChunkDirections.contains(EightWayDirection.NORTH)
+				|| newNoiseChunkDirections.contains(EightWayDirection.WEST)
+				|| newNoiseChunkDirections.contains(EightWayDirection.NORTH_WEST)) {
+				this.initBlockColumn(getNorthWestIndex(0, 0), chunk, 0, 0);
 			}
 
-			if (set.contains(EightWayDirection.NORTH)) {
-				for (int i = 1; i < field_35683; i++) {
-					this.method_39347(method_39578(i, 0), chunk, 4 * i, 0);
+			if (newNoiseChunkDirections.contains(EightWayDirection.NORTH)) {
+				for (int i = 1; i < BIOMES_PER_CHUNK; i++) {
+					this.initBlockColumn(getNorthWestIndex(i, 0), chunk, 4 * i, 0);
 				}
 			}
 
-			if (set.contains(EightWayDirection.WEST)) {
-				for (int i = 1; i < field_35683; i++) {
-					this.method_39347(method_39578(0, i), chunk, 0, 4 * i);
+			if (newNoiseChunkDirections.contains(EightWayDirection.WEST)) {
+				for (int i = 1; i < BIOMES_PER_CHUNK; i++) {
+					this.initBlockColumn(getNorthWestIndex(0, i), chunk, 0, 4 * i);
 				}
 			}
 
-			if (set.contains(EightWayDirection.EAST)) {
-				for (int i = 1; i < field_35683; i++) {
-					this.method_39347(method_39582(field_35685, i), chunk, 15, 4 * i);
+			if (newNoiseChunkDirections.contains(EightWayDirection.EAST)) {
+				for (int i = 1; i < BIOMES_PER_CHUNK; i++) {
+					this.initBlockColumn(getSouthEastIndex(CHUNK_BIOME_END_INDEX, i), chunk, 15, 4 * i);
 				}
 			}
 
-			if (set.contains(EightWayDirection.SOUTH)) {
-				for (int i = 0; i < field_35683; i++) {
-					this.method_39347(method_39582(i, field_35685), chunk, 4 * i, 15);
+			if (newNoiseChunkDirections.contains(EightWayDirection.SOUTH)) {
+				for (int i = 0; i < BIOMES_PER_CHUNK; i++) {
+					this.initBlockColumn(getSouthEastIndex(i, CHUNK_BIOME_END_INDEX), chunk, 4 * i, 15);
 				}
 			}
 
-			if (set.contains(EightWayDirection.EAST) && set.contains(EightWayDirection.NORTH_EAST)) {
-				this.method_39347(method_39582(field_35685, 0), chunk, 15, 0);
+			if (newNoiseChunkDirections.contains(EightWayDirection.EAST) && newNoiseChunkDirections.contains(EightWayDirection.NORTH_EAST)) {
+				this.initBlockColumn(getSouthEastIndex(CHUNK_BIOME_END_INDEX, 0), chunk, 15, 0);
 			}
 
-			if (set.contains(EightWayDirection.EAST) && set.contains(EightWayDirection.SOUTH) && set.contains(EightWayDirection.SOUTH_EAST)) {
-				this.method_39347(method_39582(field_35685, field_35685), chunk, 15, 15);
+			if (newNoiseChunkDirections.contains(EightWayDirection.EAST)
+				&& newNoiseChunkDirections.contains(EightWayDirection.SOUTH)
+				&& newNoiseChunkDirections.contains(EightWayDirection.SOUTH_EAST)) {
+				this.initBlockColumn(getSouthEastIndex(CHUNK_BIOME_END_INDEX, CHUNK_BIOME_END_INDEX), chunk, 15, 15);
 			}
 
-			this.field_35690 = true;
+			this.initializedBlendingData = true;
 		}
 	}
 
-	private void method_39347(int index, Chunk chunk, int x, int z) {
-		if (this.heights[index] == Double.MAX_VALUE) {
-			this.heights[index] = (double)this.getSurfaceHeight(chunk, x, z);
+	private void initBlockColumn(int index, Chunk chunk, int chunkBlockX, int chunkBlockZ) {
+		if (this.surfaceHeights[index] == Double.MAX_VALUE) {
+			this.surfaceHeights[index] = (double)this.getSurfaceBlockY(chunk, chunkBlockX, chunkBlockZ);
 		}
 
-		this.field_35693[index] = this.method_39354(chunk, x, z, MathHelper.floor(this.heights[index]));
-		this.field_36345.set(index, this.method_41566(chunk, x, z));
+		this.collidableBlockDensities[index] = this.calculateCollidableBlockDensityColumn(
+			chunk, chunkBlockX, chunkBlockZ, MathHelper.floor(this.surfaceHeights[index])
+		);
+		this.biomes.set(index, this.getVerticalBiomeSections(chunk, chunkBlockX, chunkBlockZ));
 	}
 
-	private int getSurfaceHeight(Chunk chunk, int i, int j) {
-		int k;
+	private int getSurfaceBlockY(Chunk chunk, int blockX, int blockZ) {
+		int i;
 		if (chunk.hasHeightmap(Heightmap.Type.WORLD_SURFACE_WG)) {
-			k = Math.min(chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, i, j) + 1, this.OLD_HEIGHT_LIMIT.getTopY());
+			i = Math.min(chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, blockX, blockZ) + 1, this.oldHeightLimit.getTopY());
 		} else {
-			k = this.OLD_HEIGHT_LIMIT.getTopY();
+			i = this.oldHeightLimit.getTopY();
 		}
 
-		int l = this.OLD_HEIGHT_LIMIT.getBottomY();
-		BlockPos.Mutable mutable = new BlockPos.Mutable(i, k, j);
+		int j = this.oldHeightLimit.getBottomY();
+		BlockPos.Mutable mutable = new BlockPos.Mutable(blockX, i, blockZ);
 
-		while (mutable.getY() > l) {
+		while (mutable.getY() > j) {
 			mutable.move(Direction.DOWN);
 			if (SURFACE_BLOCKS.contains(chunk.getBlockState(mutable).getBlock())) {
 				return mutable.getY();
 			}
 		}
 
-		return l;
+		return j;
 	}
 
-	private static double method_39905(Chunk chunk, BlockPos.Mutable mutable) {
-		return isCollidableAndNotTreeAt(chunk, mutable.move(Direction.DOWN)) ? 1.0 : -1.0;
+	/**
+	 * {@return {@code 1.0} if there is a collidable block below, otherwise {@code -1}.}
+	 * 
+	 * @param mutablePos will be moved down by one block by this method
+	 */
+	private static double getAboveCollidableBlockValue(Chunk chunk, BlockPos.Mutable mutablePos) {
+		return isCollidableAndNotTreeAt(chunk, mutablePos.move(Direction.DOWN)) ? 1.0 : -1.0;
 	}
 
-	private static double method_39906(Chunk chunk, BlockPos.Mutable mutable) {
+	/**
+	 * @param mutablePos will be moved down by seven blocks by this method
+	 */
+	private static double getCollidableBlockDensityBelow(Chunk chunk, BlockPos.Mutable mutablePos) {
 		double d = 0.0;
 
 		for (int i = 0; i < 7; i++) {
-			d += method_39905(chunk, mutable);
+			d += getAboveCollidableBlockValue(chunk, mutablePos);
 		}
 
 		return d;
 	}
 
-	private double[] method_39354(Chunk chunk, int i, int j, int k) {
-		double[] ds = new double[this.method_39576()];
+	private double[] calculateCollidableBlockDensityColumn(Chunk chunk, int chunkBlockX, int chunkBlockZ, int surfaceHeight) {
+		double[] ds = new double[this.getVerticalHalfSectionCount()];
 		Arrays.fill(ds, -1.0);
-		BlockPos.Mutable mutable = new BlockPos.Mutable(i, this.OLD_HEIGHT_LIMIT.getTopY(), j);
-		double d = method_39906(chunk, mutable);
+		BlockPos.Mutable mutable = new BlockPos.Mutable(chunkBlockX, this.oldHeightLimit.getTopY(), chunkBlockZ);
+		double d = getCollidableBlockDensityBelow(chunk, mutable);
 
-		for (int l = ds.length - 2; l >= 0; l--) {
-			double e = method_39905(chunk, mutable);
-			double f = method_39906(chunk, mutable);
-			ds[l] = (d + e + f) / 15.0;
+		for (int i = ds.length - 2; i >= 0; i--) {
+			double e = getAboveCollidableBlockValue(chunk, mutable);
+			double f = getCollidableBlockDensityBelow(chunk, mutable);
+			ds[i] = (d + e + f) / 15.0;
 			d = f;
 		}
 
-		int l = this.method_41565(MathHelper.floorDiv(k, 8));
-		if (l >= 0 && l < ds.length - 1) {
-			double e = ((double)k + 0.5) % 8.0 / 8.0;
+		int i = this.getHalfSectionHeight(MathHelper.floorDiv(surfaceHeight, 8));
+		if (i >= 0 && i < ds.length - 1) {
+			double e = ((double)surfaceHeight + 0.5) % 8.0 / 8.0;
 			double f = (1.0 - e) / e;
 			double g = Math.max(f, 1.0) * 0.25;
-			ds[l + 1] = -f / g;
-			ds[l] = 1.0 / g;
+			ds[i + 1] = -f / g;
+			ds[i] = 1.0 / g;
 		}
 
 		return ds;
 	}
 
-	private List<RegistryEntry<Biome>> method_41566(Chunk chunk, int i, int j) {
-		ObjectArrayList<RegistryEntry<Biome>> objectArrayList = new ObjectArrayList<>(this.method_41567());
-		objectArrayList.size(this.method_41567());
+	private List<RegistryEntry<Biome>> getVerticalBiomeSections(Chunk chunk, int chunkBlockX, int chunkBlockZ) {
+		ObjectArrayList<RegistryEntry<Biome>> objectArrayList = new ObjectArrayList<>(this.getVerticalBiomeCount());
+		objectArrayList.size(this.getVerticalBiomeCount());
 
-		for (int k = 0; k < objectArrayList.size(); k++) {
-			int l = k + BiomeCoords.fromBlock(this.OLD_HEIGHT_LIMIT.getBottomY());
-			objectArrayList.set(k, chunk.getBiomeForNoiseGen(BiomeCoords.fromBlock(i), l, BiomeCoords.fromBlock(j)));
+		for (int i = 0; i < objectArrayList.size(); i++) {
+			int j = i + BiomeCoords.fromBlock(this.oldHeightLimit.getBottomY());
+			objectArrayList.set(i, chunk.getBiomeForNoiseGen(BiomeCoords.fromBlock(chunkBlockX), j, BiomeCoords.fromBlock(chunkBlockZ)));
 		}
 
 		return objectArrayList;
@@ -258,118 +276,141 @@ public class BlendingData {
 		}
 	}
 
-	protected double method_39344(int i, int j, int k) {
-		if (i == field_35685 || k == field_35685) {
-			return this.heights[method_39582(i, k)];
+	protected double getHeight(int biomeX, int biomeY, int biomeZ) {
+		if (biomeX == CHUNK_BIOME_END_INDEX || biomeZ == CHUNK_BIOME_END_INDEX) {
+			return this.surfaceHeights[getSouthEastIndex(biomeX, biomeZ)];
 		} else {
-			return i != 0 && k != 0 ? Double.MAX_VALUE : this.heights[method_39578(i, k)];
+			return biomeX != 0 && biomeZ != 0 ? Double.MAX_VALUE : this.surfaceHeights[getNorthWestIndex(biomeX, biomeZ)];
 		}
 	}
 
-	private double method_39575(@Nullable double[] ds, int i) {
-		if (ds == null) {
+	private double getCollidableBlockDensity(@Nullable double[] collidableBlockDensityColumn, int halfSectionY) {
+		if (collidableBlockDensityColumn == null) {
 			return Double.MAX_VALUE;
 		} else {
-			int j = this.method_41565(i);
-			return j >= 0 && j < ds.length ? ds[j] * 0.1 : Double.MAX_VALUE;
+			int i = this.getHalfSectionHeight(halfSectionY);
+			return i >= 0 && i < collidableBlockDensityColumn.length ? collidableBlockDensityColumn[i] * 0.1 : Double.MAX_VALUE;
 		}
 	}
 
-	protected double method_39345(int i, int j, int k) {
-		if (j == this.method_39583()) {
+	protected double getCollidableBlockDensity(int chunkBiomeX, int halfSectionY, int chunkBiomeZ) {
+		if (halfSectionY == this.getBottomHalfSectionY()) {
 			return 0.1;
-		} else if (i == field_35685 || k == field_35685) {
-			return this.method_39575(this.field_35693[method_39582(i, k)], j);
+		} else if (chunkBiomeX == CHUNK_BIOME_END_INDEX || chunkBiomeZ == CHUNK_BIOME_END_INDEX) {
+			return this.getCollidableBlockDensity(this.collidableBlockDensities[getSouthEastIndex(chunkBiomeX, chunkBiomeZ)], halfSectionY);
 		} else {
-			return i != 0 && k != 0 ? Double.MAX_VALUE : this.method_39575(this.field_35693[method_39578(i, k)], j);
+			return chunkBiomeX != 0 && chunkBiomeZ != 0
+				? Double.MAX_VALUE
+				: this.getCollidableBlockDensity(this.collidableBlockDensities[getNorthWestIndex(chunkBiomeX, chunkBiomeZ)], halfSectionY);
 		}
 	}
 
-	protected void method_40028(int i, int j, int k, BlendingData.class_6853 arg) {
-		if (j >= BiomeCoords.fromBlock(this.OLD_HEIGHT_LIMIT.getBottomY()) && j < BiomeCoords.fromBlock(this.OLD_HEIGHT_LIMIT.getTopY())) {
-			int l = j - BiomeCoords.fromBlock(this.OLD_HEIGHT_LIMIT.getBottomY());
+	protected void acceptBiomes(int biomeX, int biomeY, int biomeZ, BlendingData.BiomeConsumer consumer) {
+		if (biomeY >= BiomeCoords.fromBlock(this.oldHeightLimit.getBottomY()) && biomeY < BiomeCoords.fromBlock(this.oldHeightLimit.getTopY())) {
+			int i = biomeY - BiomeCoords.fromBlock(this.oldHeightLimit.getBottomY());
 
-			for (int m = 0; m < this.field_36345.size(); m++) {
-				if (this.field_36345.get(m) != null) {
-					RegistryEntry<Biome> registryEntry = (RegistryEntry<Biome>)((List)this.field_36345.get(m)).get(l);
+			for (int j = 0; j < this.biomes.size(); j++) {
+				if (this.biomes.get(j) != null) {
+					RegistryEntry<Biome> registryEntry = (RegistryEntry<Biome>)((List)this.biomes.get(j)).get(i);
 					if (registryEntry != null) {
-						arg.consume(i + method_39343(m), k + method_39352(m), registryEntry);
+						consumer.consume(biomeX + getX(j), biomeZ + getZ(j), registryEntry);
 					}
 				}
 			}
 		}
 	}
 
-	protected void method_39351(int i, int j, BlendingData.class_6751 arg) {
-		for (int k = 0; k < this.heights.length; k++) {
-			double d = this.heights[k];
+	protected void acceptHeights(int biomeX, int biomeZ, BlendingData.HeightConsumer consumer) {
+		for (int i = 0; i < this.surfaceHeights.length; i++) {
+			double d = this.surfaceHeights[i];
 			if (d != Double.MAX_VALUE) {
-				arg.consume(i + method_39343(k), j + method_39352(k), d);
+				consumer.consume(biomeX + getX(i), biomeZ + getZ(i), d);
 			}
 		}
 	}
 
-	protected void method_39346(int i, int j, int k, int l, BlendingData.class_6750 arg) {
-		int m = this.method_39581();
-		int n = Math.max(0, k - m);
-		int o = Math.min(this.method_39576(), l - m);
+	protected void acceptCollidableBlockDensities(
+		int biomeX, int biomeZ, int minHalfSectionY, int maxHalfSectionY, BlendingData.CollidableBlockDensityConsumer consumer
+	) {
+		int i = this.getOneAboveBottomHalfSectionY();
+		int j = Math.max(0, minHalfSectionY - i);
+		int k = Math.min(this.getVerticalHalfSectionCount(), maxHalfSectionY - i);
 
-		for (int p = 0; p < this.field_35693.length; p++) {
-			double[] ds = this.field_35693[p];
+		for (int l = 0; l < this.collidableBlockDensities.length; l++) {
+			double[] ds = this.collidableBlockDensities[l];
 			if (ds != null) {
-				int q = i + method_39343(p);
-				int r = j + method_39352(p);
+				int m = biomeX + getX(l);
+				int n = biomeZ + getZ(l);
 
-				for (int s = n; s < o; s++) {
-					arg.consume(q, s + m, r, ds[s] * 0.1);
+				for (int o = j; o < k; o++) {
+					consumer.consume(m, o + i, n, ds[o] * 0.1);
 				}
 			}
 		}
 	}
 
-	private int method_39576() {
-		return this.OLD_HEIGHT_LIMIT.countVerticalSections() * 2;
+	private int getVerticalHalfSectionCount() {
+		return this.oldHeightLimit.countVerticalSections() * 2;
 	}
 
-	private int method_41567() {
-		return BiomeCoords.fromChunk(this.OLD_HEIGHT_LIMIT.countVerticalSections());
+	private int getVerticalBiomeCount() {
+		return BiomeCoords.fromChunk(this.oldHeightLimit.countVerticalSections());
 	}
 
-	private int method_39581() {
-		return this.method_39583() + 1;
+	private int getOneAboveBottomHalfSectionY() {
+		return this.getBottomHalfSectionY() + 1;
 	}
 
-	private int method_39583() {
-		return this.OLD_HEIGHT_LIMIT.getBottomSectionCoord() * 2;
+	private int getBottomHalfSectionY() {
+		return this.oldHeightLimit.getBottomSectionCoord() * 2;
 	}
 
-	private int method_41565(int i) {
-		return i - this.method_39581();
+	private int getHalfSectionHeight(int halfSectionY) {
+		return halfSectionY - this.getOneAboveBottomHalfSectionY();
 	}
 
-	private static int method_39578(int i, int j) {
-		return field_35684 - i + j;
+	/**
+	 * Gets the north east index for the given chunk-local biome coordinates.
+	 * At least one of these coordinates must be {@code 0} for this method to work properly.
+	 * 
+	 * @return the north west index
+	 * 
+	 * @param chunkBiomeX the chunk-local biome X coordinate
+	 * @param chunkBiomeZ the chunk-local biome Z coordinate
+	 */
+	private static int getNorthWestIndex(int chunkBiomeX, int chunkBiomeZ) {
+		return LAST_CHUNK_BIOME_INDEX - chunkBiomeX + chunkBiomeZ;
 	}
 
-	private static int method_39582(int i, int j) {
-		return field_35686 + i + field_35685 - j;
+	/**
+	 * Gets the south east index for the given chunk-local biome coordinates.
+	 * At least one of these coordinates must be {@code CHUNK_BIOME_END_INDEX} ({@code 4})
+	 * for this method to work properly.
+	 * 
+	 * @return the south east index
+	 * 
+	 * @param chunkBiomeX the chunk-local biome X coordinate
+	 * @param chunkBiomeZ the chunk-local biome Z coordinate
+	 */
+	private static int getSouthEastIndex(int chunkBiomeX, int chunkBiomeZ) {
+		return NORTH_WEST_END_INDEX + chunkBiomeX + CHUNK_BIOME_END_INDEX - chunkBiomeZ;
 	}
 
-	private static int method_39343(int i) {
-		if (i < field_35686) {
-			return method_39355(field_35684 - i);
+	private static int getX(int index) {
+		if (index < NORTH_WEST_END_INDEX) {
+			return method_39355(LAST_CHUNK_BIOME_INDEX - index);
 		} else {
-			int j = i - field_35686;
-			return field_35685 - method_39355(field_35685 - j);
+			int i = index - NORTH_WEST_END_INDEX;
+			return CHUNK_BIOME_END_INDEX - method_39355(CHUNK_BIOME_END_INDEX - i);
 		}
 	}
 
-	private static int method_39352(int i) {
-		if (i < field_35686) {
-			return method_39355(i - field_35684);
+	private static int getZ(int index) {
+		if (index < NORTH_WEST_END_INDEX) {
+			return method_39355(index - LAST_CHUNK_BIOME_INDEX);
 		} else {
-			int j = i - field_35686;
-			return field_35685 - method_39355(j - field_35685);
+			int i = index - NORTH_WEST_END_INDEX;
+			return CHUNK_BIOME_END_INDEX - method_39355(i - CHUNK_BIOME_END_INDEX);
 		}
 	}
 
@@ -377,19 +418,19 @@ public class BlendingData {
 		return i & ~(i >> 31);
 	}
 
-	public HeightLimitView method_41564() {
-		return this.OLD_HEIGHT_LIMIT;
+	public HeightLimitView getOldHeightLimit() {
+		return this.oldHeightLimit;
 	}
 
-	protected interface class_6750 {
-		void consume(int i, int j, int k, double d);
+	protected interface BiomeConsumer {
+		void consume(int biomeX, int biomeZ, RegistryEntry<Biome> biome);
 	}
 
-	protected interface class_6751 {
-		void consume(int i, int j, double d);
+	protected interface CollidableBlockDensityConsumer {
+		void consume(int biomeX, int halfSectionY, int biomeZ, double collidableBlockDensity);
 	}
 
-	protected interface class_6853 {
-		void consume(int i, int j, RegistryEntry<Biome> registryEntry);
+	protected interface HeightConsumer {
+		void consume(int biomeX, int biomeZ, double height);
 	}
 }

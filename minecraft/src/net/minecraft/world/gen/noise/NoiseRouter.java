@@ -24,46 +24,46 @@ public record NoiseRouter(
 ) {
 	public static final Codec<NoiseRouter> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					method_41545("barrier", NoiseRouter::barrierNoise),
-					method_41545("fluid_level_floodedness", NoiseRouter::fluidLevelFloodednessNoise),
-					method_41545("fluid_level_spread", NoiseRouter::fluidLevelSpreadNoise),
-					method_41545("lava", NoiseRouter::lavaNoise),
-					method_41545("temperature", NoiseRouter::temperature),
-					method_41545("vegetation", NoiseRouter::vegetation),
-					method_41545("continents", NoiseRouter::continents),
-					method_41545("erosion", NoiseRouter::erosion),
-					method_41545("depth", NoiseRouter::depth),
-					method_41545("ridges", NoiseRouter::ridges),
-					method_41545("initial_density_without_jaggedness", NoiseRouter::initialDensityWithoutJaggedness),
-					method_41545("final_density", NoiseRouter::finalDensity),
-					method_41545("vein_toggle", NoiseRouter::veinToggle),
-					method_41545("vein_ridged", NoiseRouter::veinRidged),
-					method_41545("vein_gap", NoiseRouter::veinGap)
+					field("barrier", NoiseRouter::barrierNoise),
+					field("fluid_level_floodedness", NoiseRouter::fluidLevelFloodednessNoise),
+					field("fluid_level_spread", NoiseRouter::fluidLevelSpreadNoise),
+					field("lava", NoiseRouter::lavaNoise),
+					field("temperature", NoiseRouter::temperature),
+					field("vegetation", NoiseRouter::vegetation),
+					field("continents", NoiseRouter::continents),
+					field("erosion", NoiseRouter::erosion),
+					field("depth", NoiseRouter::depth),
+					field("ridges", NoiseRouter::ridges),
+					field("initial_density_without_jaggedness", NoiseRouter::initialDensityWithoutJaggedness),
+					field("final_density", NoiseRouter::finalDensity),
+					field("vein_toggle", NoiseRouter::veinToggle),
+					field("vein_ridged", NoiseRouter::veinRidged),
+					field("vein_gap", NoiseRouter::veinGap)
 				)
 				.apply(instance, NoiseRouter::new)
 	);
 
-	private static RecordCodecBuilder<NoiseRouter, DensityFunction> method_41545(String string, Function<NoiseRouter, DensityFunction> function) {
-		return DensityFunction.FUNCTION_CODEC.fieldOf(string).forGetter(function);
+	private static RecordCodecBuilder<NoiseRouter, DensityFunction> field(String name, Function<NoiseRouter, DensityFunction> getter) {
+		return DensityFunction.FUNCTION_CODEC.fieldOf(name).forGetter(getter);
 	}
 
-	public NoiseRouter method_41544(DensityFunction.DensityFunctionVisitor densityFunctionVisitor) {
+	public NoiseRouter apply(DensityFunction.DensityFunctionVisitor visitor) {
 		return new NoiseRouter(
-			this.barrierNoise.apply(densityFunctionVisitor),
-			this.fluidLevelFloodednessNoise.apply(densityFunctionVisitor),
-			this.fluidLevelSpreadNoise.apply(densityFunctionVisitor),
-			this.lavaNoise.apply(densityFunctionVisitor),
-			this.temperature.apply(densityFunctionVisitor),
-			this.vegetation.apply(densityFunctionVisitor),
-			this.continents.apply(densityFunctionVisitor),
-			this.erosion.apply(densityFunctionVisitor),
-			this.depth.apply(densityFunctionVisitor),
-			this.ridges.apply(densityFunctionVisitor),
-			this.initialDensityWithoutJaggedness.apply(densityFunctionVisitor),
-			this.finalDensity.apply(densityFunctionVisitor),
-			this.veinToggle.apply(densityFunctionVisitor),
-			this.veinRidged.apply(densityFunctionVisitor),
-			this.veinGap.apply(densityFunctionVisitor)
+			this.barrierNoise.apply(visitor),
+			this.fluidLevelFloodednessNoise.apply(visitor),
+			this.fluidLevelSpreadNoise.apply(visitor),
+			this.lavaNoise.apply(visitor),
+			this.temperature.apply(visitor),
+			this.vegetation.apply(visitor),
+			this.continents.apply(visitor),
+			this.erosion.apply(visitor),
+			this.depth.apply(visitor),
+			this.ridges.apply(visitor),
+			this.initialDensityWithoutJaggedness.apply(visitor),
+			this.finalDensity.apply(visitor),
+			this.veinToggle.apply(visitor),
+			this.veinRidged.apply(visitor),
+			this.veinGap.apply(visitor)
 		);
 	}
 }

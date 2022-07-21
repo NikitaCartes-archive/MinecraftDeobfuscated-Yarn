@@ -17,10 +17,10 @@ public class SayCommand {
 								MessageArgumentType.SignedMessage signedMessage = MessageArgumentType.getSignedMessage(context, "message");
 								ServerCommandSource serverCommandSource = context.getSource();
 								PlayerManager playerManager = serverCommandSource.getServer().getPlayerManager();
-								signedMessage.decorate(serverCommandSource)
-									.thenAcceptAsync(
-										decoratedMessage -> playerManager.broadcast(decoratedMessage, serverCommandSource, MessageType.SAY_COMMAND), serverCommandSource.getServer()
-									);
+								signedMessage.decorate(
+									serverCommandSource,
+									decoratedMessage -> playerManager.broadcast(decoratedMessage, serverCommandSource, MessageType.params(MessageType.SAY_COMMAND, serverCommandSource))
+								);
 								return 1;
 							}
 						)

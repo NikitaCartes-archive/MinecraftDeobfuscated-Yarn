@@ -10,7 +10,6 @@ import io.netty.buffer.Unpooled;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
-import java.time.Instant;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,7 +34,6 @@ import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextVisitFactory;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.CreditsScreen;
@@ -68,7 +66,6 @@ import net.minecraft.client.render.debug.GoalSelectorDebugRenderer;
 import net.minecraft.client.render.debug.NeighborUpdateDebugRenderer;
 import net.minecraft.client.render.debug.VillageDebugRenderer;
 import net.minecraft.client.render.debug.WorldGenAttemptDebugRenderer;
-import net.minecraft.client.report.ReceivedMessage;
 import net.minecraft.client.search.SearchManager;
 import net.minecraft.client.sound.AbstractBeeSoundInstance;
 import net.minecraft.client.sound.AggressiveBeeSoundInstance;
@@ -78,7 +75,7 @@ import net.minecraft.client.sound.PassiveBeeSoundInstance;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.toast.RecipeToast;
-import net.minecraft.client.util.NarratorManager;
+import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.telemetry.TelemetrySender;
 import net.minecraft.client.world.ClientChunkManager;
 import net.minecraft.client.world.ClientWorld;
@@ -118,14 +115,17 @@ import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.message.MessageSender;
+import net.minecraft.network.message.LastSeenMessageList;
+import net.minecraft.network.message.LastSeenMessagesCollector;
+import net.minecraft.network.message.MessageChain;
+import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
+import net.minecraft.network.packet.c2s.play.MessageAcknowledgmentC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayPongC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.network.packet.c2s.play.ResourcePackStatusC2SPacket;
@@ -140,6 +140,7 @@ import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatPreviewS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatPreviewStateChangeS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChatSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkData;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDeltaUpdateS2CPacket;
@@ -178,6 +179,7 @@ import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.HealthUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.HideMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.network.packet.s2c.play.ItemPickupAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.KeepAliveS2CPacket;
@@ -185,6 +187,7 @@ import net.minecraft.network.packet.s2c.play.LightData;
 import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.LookAtS2CPacket;
 import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.MessageHeaderS2CPacket;
 import net.minecraft.network.packet.s2c.play.NbtQueryResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenHorseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
@@ -289,13 +292,15 @@ import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.PositionSource;
 import net.minecraft.world.event.PositionSourceType;
 import net.minecraft.world.explosion.Explosion;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Text DISCONNECT_LOST_TEXT = Text.translatable("disconnect.lost");
+	private static final Text field_39916 = Text.translatable("multiplayer.unsecureserver.toast.title");
+	private static final Text field_39917 = Text.translatable("multiplayer.unsecureserver.toast");
+	private static final int MAX_PENDING_ACKNOWLEDGMENTS = 64;
 	private final ClientConnection connection;
 	private final GameProfile profile;
 	private final Screen loginScreen;
@@ -315,6 +320,15 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	private Set<RegistryKey<World>> worldKeys;
 	private DynamicRegistryManager.Immutable registryManager = (DynamicRegistryManager.Immutable)DynamicRegistryManager.BUILTIN.get();
 	private final TelemetrySender telemetrySender;
+	private final MessageChain.Packer messagePacker = new MessageChain().getPacker();
+	private final LastSeenMessagesCollector lastSeenMessagesCollector = new LastSeenMessagesCollector(5);
+	private Optional<LastSeenMessageList.Entry> lastReceivedMessage = Optional.empty();
+	/**
+	 * The number of messages whose acknowledgments aren't sent to the server yet.
+	 * They are sent when the count reaches {@value #MAX_PENDING_ACKNOWLEDGMENTS}
+	 * or when the client sends a message, and this count is reset to zero in those cases.
+	 */
+	private int pendingAcknowledgments;
 
 	public ClientPlayNetworkHandler(MinecraftClient client, Screen screen, ClientConnection connection, GameProfile profile, TelemetrySender telemetrySender) {
 		this.client = client;
@@ -796,78 +810,33 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onGameMessage(GameMessageS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		if (!this.client.options.getHideMatchedNames().getValue() || !this.client.shouldBlockMessages(this.extractSender(packet.content()))) {
-			Registry<MessageType> registry = this.registryManager.get(Registry.MESSAGE_TYPE_KEY);
-			MessageType messageType = packet.getMessageType(registry);
-			this.client.inGameHud.onGameMessage(messageType, packet.content());
-			Instant instant = Instant.now();
-			this.client.getAbuseReportContext().chatLog().add(ReceivedMessage.of(packet.content(), instant));
-		}
-	}
-
-	private UUID extractSender(Text content) {
-		String string = TextVisitFactory.removeFormattingCodes(content);
-		String string2 = StringUtils.substringBetween(string, "<", ">");
-		return string2 == null ? Util.NIL_UUID : this.client.getSocialInteractionsManager().getUuid(string2);
+		this.client.getMessageHandler().onGameMessage(packet.content(), packet.overlay());
 	}
 
 	@Override
 	public void onChatMessage(ChatMessageS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		MessageSender messageSender = packet.sender();
-		if (packet.isExpired(Instant.now())) {
-			LOGGER.warn("Received expired chat packet from {}", messageSender.name().getString());
-		}
-
-		Registry<MessageType> registry = this.registryManager.get(Registry.MESSAGE_TYPE_KEY);
-		MessageType messageType = packet.getMessageType(registry);
-		SignedMessage signedMessage = packet.getSignedMessage();
-		this.handleMessage(messageType, signedMessage, messageSender);
-	}
-
-	/**
-	 * Handles an incoming chat message.
-	 */
-	private void handleMessage(MessageType type, SignedMessage message, MessageSender sender) {
-		if (!this.client.shouldBlockMessages(sender.uuid())) {
-			boolean bl = this.client.options.getOnlyShowSecureChat().getValue();
-			PlayerListEntry playerListEntry = this.getPlayerListEntry(message.signature().sender());
-			if (playerListEntry != null && !this.isSignatureValid(message, playerListEntry)) {
-				LOGGER.warn("Received chat packet without valid signature from {}", playerListEntry.getProfile().getName());
-				if (bl) {
-					return;
-				}
-			}
-
-			SignedMessage signedMessage = bl ? message.withoutUnsigned() : message;
-			Text text = signedMessage.getContent();
-			this.client.inGameHud.onChatMessage(type, text, sender);
-			GameProfile gameProfile = this.getProfile(sender);
-			this.client.getAbuseReportContext().chatLog().add(ReceivedMessage.of(gameProfile, sender.name(), signedMessage));
+		Optional<MessageType.Parameters> optional = packet.getParameters(this.registryManager);
+		if (!optional.isPresent()) {
+			this.connection.disconnect(Text.translatable("multiplayer.disconnect.invalid_packet"));
+		} else {
+			this.client.getMessageHandler().onChatMessage(packet.message(), (MessageType.Parameters)optional.get());
 		}
 	}
 
-	/**
-	 * {@return the game profile of {@code sender}}
-	 * 
-	 * <p>If {@code sender} points to a non-player (such as entities sending
-	 * chat messages through {@code /say} command) or a player not in the game,
-	 * this will create a new game profile based on the UUID and the display
-	 * name.
-	 */
-	private GameProfile getProfile(MessageSender sender) {
-		PlayerListEntry playerListEntry = this.getPlayerListEntry(sender.uuid());
-		return playerListEntry == null ? new GameProfile(sender.uuid(), sender.name().getString()) : playerListEntry.getProfile();
+	@Override
+	public void onMessageHeader(MessageHeaderS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		this.client.getMessageHandler().onMessageHeader(packet.header(), packet.headerSignature(), packet.bodyDigest());
 	}
 
-	/**
-	 * {@return whether the chat message has a valid signature}
-	 * 
-	 * <p>This returns {@code false} when the chat sender is unknown.
-	 */
-	private boolean isSignatureValid(SignedMessage message, PlayerListEntry playerListEntry) {
-		PlayerPublicKey playerPublicKey = playerListEntry.getPublicKeyData();
-		return playerPublicKey != null && message.verify(playerPublicKey);
+	@Override
+	public void onHideMessage(HideMessageS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		MessageSignatureData messageSignatureData = packet.messageSignature();
+		if (!this.client.getMessageHandler().removeDelayedMessage(messageSignatureData)) {
+			this.client.inGameHud.getChatHud().hideMessage(messageSignatureData);
+		}
 	}
 
 	@Override
@@ -933,7 +902,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 
 						Text text = Text.translatable("mount.onboard", this.client.options.sneakKey.getBoundKeyLocalizedText());
 						this.client.inGameHud.setOverlayMessage(text, false);
-						NarratorManager.INSTANCE.narrate(text);
+						this.client.getNarratorManager().narrate(text);
 					}
 				}
 			}
@@ -1028,6 +997,10 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 
 		String string = clientPlayerEntity.getServerBrand();
 		this.client.cameraEntity = null;
+		if (clientPlayerEntity.shouldCloseHandledScreenOnRespawn()) {
+			clientPlayerEntity.closeHandledScreen();
+		}
+
 		ClientPlayerEntity clientPlayerEntity2 = this.client
 			.interactionManager
 			.createPlayer(
@@ -1581,14 +1554,24 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				}
 			});
 			serverInfo.setPreviewsChat(packet.shouldPreviewChat());
+			serverInfo.method_45055(packet.method_45058());
 			ServerList.updateServerListEntry(serverInfo);
-			if (this.client.options.getChatPreview().getValue()) {
-				ServerInfo.ChatPreview chatPreview = serverInfo.getChatPreview();
-				if (chatPreview != null && !chatPreview.isAcknowledged()) {
-					this.client.execute(() -> this.client.setScreen(new ChatPreviewWarningScreen(this.client.currentScreen, serverInfo)));
-				}
+			if (!packet.method_45058()) {
+				SystemToast systemToast = SystemToast.create(this.client, SystemToast.Type.UNSECURE_SERVER_WARNING, field_39916, field_39917);
+				this.client.getToastManager().add(systemToast);
+			}
+
+			ServerInfo.ChatPreview chatPreview = serverInfo.getChatPreview();
+			if (chatPreview != null && !chatPreview.isAcknowledged()) {
+				this.client.execute(() -> this.client.setScreen(new ChatPreviewWarningScreen(this.client.currentScreen, serverInfo)));
 			}
 		}
+	}
+
+	@Override
+	public void onChatSuggestions(ChatSuggestionsS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		this.commandSource.onChatSuggestions(packet.action(), packet.entries());
 	}
 
 	@Override
@@ -1642,7 +1625,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			} else {
 				PlayerListEntry playerListEntry = (PlayerListEntry)this.playerListEntries.get(entry.getProfile().getId());
 				if (packet.getAction() == PlayerListS2CPacket.Action.ADD_PLAYER) {
-					playerListEntry = new PlayerListEntry(entry, this.client.getServicesSignatureVerifier());
+					boolean bl = Util.mapOrElse(this.client.getCurrentServerEntry(), ServerInfo::method_45056, false);
+					playerListEntry = new PlayerListEntry(entry, this.client.getServicesSignatureVerifier(), bl);
 					this.playerListEntries.put(playerListEntry.getProfile().getId(), playerListEntry);
 					this.client.getSocialInteractionsManager().setPlayerOnline(playerListEntry);
 				}
@@ -2399,5 +2383,37 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 
 	public DynamicRegistryManager getRegistryManager() {
 		return this.registryManager;
+	}
+
+	public MessageChain.Packer getMessagePacker() {
+		return this.messagePacker;
+	}
+
+	/**
+	 * {@return the consumed acknowledgment}
+	 * 
+	 * <p>This resets {@link #pendingAcknowledgments} to {@code 0}.
+	 * 
+	 * @see #pendingAcknowledgments
+	 */
+	public LastSeenMessageList.Acknowledgment consumeAcknowledgment() {
+		this.pendingAcknowledgments = 0;
+		return new LastSeenMessageList.Acknowledgment(this.lastSeenMessagesCollector.getLastSeenMessages(), this.lastReceivedMessage);
+	}
+
+	public void acknowledge(SignedMessage message, boolean displayed) {
+		LastSeenMessageList.Entry entry = message.toLastSeenMessageEntry();
+		if (entry != null) {
+			if (displayed) {
+				this.lastSeenMessagesCollector.add(entry);
+				this.lastReceivedMessage = Optional.empty();
+			} else {
+				this.lastReceivedMessage = Optional.of(entry);
+			}
+
+			if (this.pendingAcknowledgments++ > 64) {
+				this.sendPacket(new MessageAcknowledgmentC2SPacket(this.consumeAcknowledgment()));
+			}
+		}
 	}
 }

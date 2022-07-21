@@ -1,4 +1,4 @@
-package net.minecraft.client.network.abusereport;
+package net.minecraft.client.report;
 
 import com.mojang.authlib.exceptions.MinecraftClientException;
 import com.mojang.authlib.exceptions.MinecraftClientHttpException;
@@ -12,7 +12,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.report.ReporterEnvironment;
 import net.minecraft.text.Text;
 import net.minecraft.util.TextifiedException;
 import net.minecraft.util.Util;

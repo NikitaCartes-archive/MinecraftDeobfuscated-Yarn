@@ -6,14 +6,18 @@ import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ElementListWidget;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.util.math.MatrixStack;
 
@@ -44,48 +48,71 @@ public class SocialInteractionsPlayerListWidget extends ElementListWidget<Social
 		RenderSystem.disableScissor();
 	}
 
-	public void update(Collection<UUID> uuids, double scrollAmount) {
-		this.setPlayers(uuids);
-		this.refresh(scrollAmount);
+	public void update(Collection<UUID> uuids, double scrollAmount, boolean includeOffline) {
+		Map<UUID, SocialInteractionsPlayerListEntry> map = new HashMap();
+		this.setPlayers(uuids, map);
+		this.markOfflineMembers(map, includeOffline);
+		this.refresh(map.values(), scrollAmount);
 	}
 
-	public void refresh(Collection<UUID> playerUuids, double scrollAmount) {
-		this.setPlayers(playerUuids);
-		this.addOfflinePlayers(playerUuids);
-		this.refresh(scrollAmount);
-	}
-
-	private void setPlayers(Collection<UUID> playerUuids) {
-		this.players.clear();
+	private void setPlayers(Collection<UUID> playerUuids, Map<UUID, SocialInteractionsPlayerListEntry> map) {
+		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.player.networkHandler;
 
 		for (UUID uUID : playerUuids) {
-			PlayerListEntry playerListEntry = this.client.player.networkHandler.getPlayerListEntry(uUID);
+			PlayerListEntry playerListEntry = clientPlayNetworkHandler.getPlayerListEntry(uUID);
 			if (playerListEntry != null) {
-				this.players
-					.add(
-						new SocialInteractionsPlayerListEntry(
-							this.client, this.parent, playerListEntry.getProfile().getId(), playerListEntry.getProfile().getName(), playerListEntry::getSkinTexture
-						)
-					);
-			}
-		}
-
-		this.players.sort((a, b) -> a.getName().compareToIgnoreCase(b.getName()));
-	}
-
-	private void addOfflinePlayers(Collection<UUID> playerUuids) {
-		for (GameProfile gameProfile : this.client.getAbuseReportContext().chatLog().streamBackward().collectSenderProfiles()) {
-			if (!playerUuids.contains(gameProfile.getId())) {
-				SocialInteractionsPlayerListEntry socialInteractionsPlayerListEntry = new SocialInteractionsPlayerListEntry(
-					this.client, this.parent, gameProfile.getId(), gameProfile.getName(), Suppliers.memoize(() -> this.client.getSkinProvider().loadSkin(gameProfile))
+				UUID uUID2 = playerListEntry.getProfile().getId();
+				map.put(
+					uUID2, new SocialInteractionsPlayerListEntry(this.client, this.parent, uUID2, playerListEntry.getProfile().getName(), playerListEntry::getSkinTexture)
 				);
-				socialInteractionsPlayerListEntry.setOffline(true);
-				this.players.add(socialInteractionsPlayerListEntry);
 			}
 		}
 	}
 
-	private void refresh(double scrollAmount) {
+	private void markOfflineMembers(Map<UUID, SocialInteractionsPlayerListEntry> entries, boolean includeOffline) {
+		for (GameProfile gameProfile : this.client.getAbuseReportContext().chatLog().streamBackward().collectSenderProfiles()) {
+			SocialInteractionsPlayerListEntry socialInteractionsPlayerListEntry;
+			if (includeOffline) {
+				socialInteractionsPlayerListEntry = (SocialInteractionsPlayerListEntry)entries.computeIfAbsent(
+					gameProfile.getId(),
+					uuid -> {
+						SocialInteractionsPlayerListEntry socialInteractionsPlayerListEntryx = new SocialInteractionsPlayerListEntry(
+							this.client, this.parent, gameProfile.getId(), gameProfile.getName(), Suppliers.memoize(() -> this.client.getSkinProvider().loadSkin(gameProfile))
+						);
+						socialInteractionsPlayerListEntryx.setOffline(true);
+						return socialInteractionsPlayerListEntryx;
+					}
+				);
+			} else {
+				socialInteractionsPlayerListEntry = (SocialInteractionsPlayerListEntry)entries.get(gameProfile.getId());
+				if (socialInteractionsPlayerListEntry == null) {
+					continue;
+				}
+			}
+
+			socialInteractionsPlayerListEntry.setSentMessage(true);
+		}
+	}
+
+	private void sortPlayers() {
+		this.players.sort(Comparator.comparing(player -> {
+			if (player.getUuid().equals(this.client.getSession().getUuidOrNull())) {
+				return 0;
+			} else if (player.getUuid().version() == 2) {
+				return 3;
+			} else {
+				return player.hasSentMessage() ? 1 : 2;
+			}
+		}).thenComparing(player -> {
+			int i = player.getName().codePointAt(0);
+			return i != 95 && (i < 97 || i > 122) && (i < 65 || i > 90) && (i < 48 || i > 57) ? 1 : 0;
+		}).thenComparing(SocialInteractionsPlayerListEntry::getName, String::compareToIgnoreCase));
+	}
+
+	private void refresh(Collection<SocialInteractionsPlayerListEntry> players, double scrollAmount) {
+		this.players.clear();
+		this.players.addAll(players);
+		this.sortPlayers();
 		this.filterPlayers();
 		this.replaceEntries(this.players);
 		this.setScrollAmount(scrollAmount);

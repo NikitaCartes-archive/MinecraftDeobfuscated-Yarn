@@ -420,7 +420,7 @@ public class RealmsMainScreen extends RealmsScreen {
 		runnersManager.add(periodicCheckers.pendingInvitesCount, pendingInvitesCount -> {
 			this.pendingInvitesCount = pendingInvitesCount;
 			if (this.pendingInvitesCount > 0 && this.rateLimiter.tryAcquire(1)) {
-				NarratorManager.INSTANCE.narrate(Text.translatable("mco.configure.world.invite.narration", this.pendingInvitesCount));
+				this.client.getNarratorManager().narrate(Text.translatable("mco.configure.world.invite.narration", this.pendingInvitesCount));
 			}
 		});
 		runnersManager.add(periodicCheckers.trialAvailability, trialAvailable -> {
@@ -809,7 +809,7 @@ public class RealmsMainScreen extends RealmsScreen {
 				this.hasSelectionList = false;
 			}
 
-			NarratorManager.INSTANCE.narrate(POPUP_TEXT);
+			this.client.getNarratorManager().narrate(POPUP_TEXT);
 		}
 
 		if (this.hasFetchedServers) {

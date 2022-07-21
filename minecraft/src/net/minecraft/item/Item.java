@@ -46,6 +46,32 @@ import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import org.slf4j.Logger;
 
+/**
+ * An item usable by players and other entities.
+ * 
+ * <p>Like {@link Block}, this class handles logics for a type of item, and does not
+ * hold any data. Any data about a particular stack of item in a world, such as item count,
+ * is held by an {@link ItemStack} which represents a stack of specific item. Therefore,
+ * there is one - and only one - instance of Item for one item (like apples, oak planks, etc),
+ * while there can be infinite amounts of {@link ItemStack} instances. This also means that
+ * items themselves cannot hold NBT data. To append item stacks with NBT data to the
+ * creative inventory, override {@link #appendStacks}.
+ * 
+ * <p>Items with no custom behavior, like diamonds, can call the constructor of Item
+ * directly. If a custom behavior is needed, this should be subclassed. Items also have
+ * to be registered in the {@link net.minecraft.util.registry.Registry#ITEM} registry.
+ * 
+ * <p>Many methods of this class are called on both the logical client and logical server,
+ * so take caution when using those methods. The logical side can be checked using
+ * {@link World#isClient}. See also <a href="https://fabricmc.net/wiki/tutorial:side">
+ * the Fabric Wiki article</a>. It is also important that methods that take {@link LivingEntity}
+ * as an argument can be called by non-players (such as foxes eating food), which causes
+ * a crash if the code performs unchecked casting.
+ * 
+ * @see BlockItem
+ * @see ItemStack
+ * @see net.minecraft.inventory.Inventory
+ */
 public class Item implements ItemConvertible {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final Map<Block, Item> BLOCK_ITEMS = Maps.<Block, Item>newHashMap();
@@ -68,10 +94,16 @@ public class Item implements ItemConvertible {
 	@Nullable
 	private final FoodComponent foodComponent;
 
+	/**
+	 * {@return the raw ID of {@code item}, or 0 if passed {@code null}}
+	 */
 	public static int getRawId(Item item) {
 		return item == null ? 0 : Registry.ITEM.getRawId(item);
 	}
 
+	/**
+	 * {@return the item from its raw ID}
+	 */
 	public static Item byRawId(int id) {
 		return Registry.ITEM.get(id);
 	}
@@ -105,17 +137,45 @@ public class Item implements ItemConvertible {
 		return this.registryEntry;
 	}
 
+	/**
+	 * Called on both the server and the client every tick while an entity uses
+	 * the item. Currently used by {@link CrossbowItem} to charge the crossbow.
+	 * If this is overridden, {@link #getMaxUseTime} should also be overridden to
+	 * return a positive value.
+	 * 
+	 * @see #finishUsing
+	 * @see #use
+	 * 
+	 * @param remainingUseTicks how long it's left until the entity finishes using the item, in ticks
+	 */
 	public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
 	}
 
+	/**
+	 * Called on the server when an {@link ItemEntity} holding this item gets destroyed.
+	 * This can happen due to fire, lava, cactus, explosion, etc. Items that can hold
+	 * other items should override this to drop its contents.
+	 * 
+	 * @see ItemUsage#spawnItemContents
+	 */
 	public void onItemEntityDestroyed(ItemEntity entity) {
 	}
 
+	/**
+	 * Processes the NBT applied to an item stack of this item.
+	 * 
+	 * <p>This is only used in vanilla to process player head NBT data.
+	 */
 	public void postProcessNbt(NbtCompound nbt) {
 	}
 
 	/**
-	 * Checks if a player can break a block while holding the item.
+	 * {@return whether a player can break a block while holding the item}
+	 * 
+	 * <p>This is to check whether the player can start breaking the block in the
+	 * first place; this does not check if the item is a correct tool to mine the block.
+	 * Melee weapons should override this to return {@code false}, unless it is also
+	 * intended to be used as a tool.
 	 */
 	public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
 		return true;
@@ -140,13 +200,30 @@ public class Item implements ItemConvertible {
 		return ActionResult.PASS;
 	}
 
+	/**
+	 * {@return the multiplier applied to the mining speed of {@code stack} when mining
+	 * {@code state}}
+	 * 
+	 * <p>The default value is {@code 1.0f}. Returning larger integer will cause the block
+	 * to be mined faster. Enchantments, status effects, and other effects that affect
+	 * mining speed are instead handled in {@link PlayerEntity#getBlockBreakingSpeed}.
+	 * 
+	 * @see MiningToolItem
+	 */
 	public float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
 		return 1.0F;
 	}
 
 	/**
-	 * Called when an item is used by a player.
+	 * Called when the player uses (or starts using) the item.
 	 * The use action, by default, is bound to the right mouse button.
+	 * This method checks the player's hunger when the item is a food, and will
+	 * {@linkplain TypedActionResult#pass pass} in all other cases by default.
+	 * 
+	 * <p>If the item {@linkplain #getMaxUseTime can be used for multiple ticks}, then
+	 * this will only be called when the player starts using it. After that,
+	 * {@link #usageTick} is called every tick until the player {@linkplain #finishUsing
+	 * finishes using the item}.
 	 * 
 	 * <p>This method is called on both the logical client and logical server, so take caution when overriding this method.
 	 * The logical side can be checked using {@link net.minecraft.world.World#isClient() world.isClient()}.
@@ -172,6 +249,19 @@ public class Item implements ItemConvertible {
 		}
 	}
 
+	/**
+	 * Called when an entity finishes using the item, such as eating food or drinking a potion.
+	 * This method handles eating food by default.
+	 * 
+	 * <p>This method is called on both the logical client and logical server, so take caution
+	 * when overriding this method. The logical side can be checked using {@link
+	 * World#isClient}.
+	 * 
+	 * <p>{@code user} might not be a player in some cases. For example, this occurs when a fox
+	 * eats food or when a wandering trader drinks milk.
+	 * 
+	 * @return the new item stack after using the item
+	 */
 	public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
 		return this.isFood() ? user.eatFood(world, stack) : stack;
 	}
@@ -197,31 +287,105 @@ public class Item implements ItemConvertible {
 		return this.maxDamage > 0;
 	}
 
+	/**
+	 * {@return whether to show the item bar for {@code stack}}
+	 * 
+	 * <p>Item bar is usually used to display durability of the stack.
+	 * 
+	 * <p>When overriding this, {@link #getItemBarStep} and {@link #getItemBarColor} should
+	 * also be overridden.
+	 */
 	public boolean isItemBarVisible(ItemStack stack) {
 		return stack.isDamaged();
 	}
 
+	/**
+	 * {@return the step, or the length of the colored area of the item bar, for
+	 * {@code stack}}
+	 * 
+	 * <p>This is between {@code 0.0f} and {code 13.0f}. By default, this is
+	 * {@code durability * 13.0f / maxDurability}.
+	 * 
+	 * <p>When overriding this, {@link #isItemBarVisible} and {@link #getItemBarColor} should
+	 * also be overridden.
+	 */
 	public int getItemBarStep(ItemStack stack) {
 		return Math.round(13.0F - (float)stack.getDamage() * 13.0F / (float)this.maxDamage);
 	}
 
+	/**
+	 * {@return the RGB color of the item bar, usually used for durability display}
+	 * 
+	 * <p>When overriding this, {@link #isItemBarVisible} and {@link #getItemBarStep} should
+	 * also be overridden.
+	 */
 	public int getItemBarColor(ItemStack stack) {
 		float f = Math.max(0.0F, ((float)this.maxDamage - (float)stack.getDamage()) / (float)this.maxDamage);
 		return MathHelper.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
 	}
 
+	/**
+	 * Called when the item at the cursor is clicked at {@code slot}.
+	 * 
+	 * <p>While this method is usually called on the logical server, it can also be called on
+	 * the logical client, so take caution when overriding this method. The logical side can be
+	 * checked using {@link World#isClient}.
+	 * 
+	 * <p>For example, this is called on {@link BundleItem} when the cursor holds
+	 * a bundle and the player clicks on the slot.
+	 * 
+	 * @return whether the action was successful
+	 * 
+	 * @param stack the stack the cursor holds
+	 * @param slot the clicked slot
+	 */
 	public boolean onStackClicked(ItemStack stack, Slot slot, ClickType clickType, PlayerEntity player) {
 		return false;
 	}
 
+	/**
+	 * Called when the item at {@code slot} gets clicked by the cursor
+	 * holding {@code otherStack}.
+	 * 
+	 * <p>While this method is usually called on the logical server, it can also be called on
+	 * the logical client, so take caution when overriding this method. The logical side can be
+	 * checked using {@link World#isClient}.
+	 * 
+	 * <p>For example, this is called on {@link BundleItem} when the cursor holds
+	 * an item and the player clicks on the slot that has a bundle.
+	 * 
+	 * @return whether the action was successful
+	 * 
+	 * @param stack the slot's stack
+	 * @param otherStack the stack the cursor holds
+	 * @param slot the clicked slot
+	 */
 	public boolean onClicked(ItemStack stack, ItemStack otherStack, Slot slot, ClickType clickType, PlayerEntity player, StackReference cursorStackReference) {
 		return false;
 	}
 
+	/**
+	 * Called on the server when the item is used to hit an entity.
+	 * 
+	 * <p>Tools and melee weapons should override this to damage the stack.
+	 * 
+	 * @return whether the item's use stat should be incremented
+	 * @see ItemStack#damage(int, LivingEntity, java.util.function.Consumer)
+	 */
 	public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 		return false;
 	}
 
+	/**
+	 * Called on the server when the item is used to break a block.
+	 * 
+	 * <p>Tools and melee weapons should override this to damage the stack, after
+	 * checking if the block's hardness is larger than {@code 0.0f}.
+	 * 
+	 * @return whether the item's use stat should be incremented
+	 * @see net.minecraft.block.AbstractBlock.AbstractBlockState#getHardness
+	 * @see ItemStack#damage(int, LivingEntity, java.util.function.Consumer)
+	 */
 	public boolean postMine(ItemStack stack, World world, BlockState state, BlockPos pos, LivingEntity miner) {
 		return false;
 	}
@@ -239,6 +403,18 @@ public class Item implements ItemConvertible {
 		return false;
 	}
 
+	/**
+	 * Called on both the client and the server when a player uses the item on an entity.
+	 * 
+	 * <p>This method is called on both the logical client and logical server, so take caution
+	 * when overriding this method. The logical side can be checked using {@link
+	 * World#isClient}.
+	 * 
+	 * <p>This should be used if the item can be used on multiple types of entities,
+	 * such as name tags or saddles.
+	 * 
+	 * @return the action result
+	 */
 	public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
 		return ActionResult.PASS;
 	}
@@ -297,6 +473,16 @@ public class Item implements ItemConvertible {
 		return this.recipeRemainder != null;
 	}
 
+	/**
+	 * Called on both the client and the server every tick if the item is in the player's inventory.
+	 * 
+	 * <p>This method is called on both the logical client and logical server, so take caution
+	 * when overriding this method. The logical side can be checked using {@link
+	 * World#isClient}.
+	 * 
+	 * @param entity the entity holding the item; usually a player
+	 * @param selected whether the item is in the selected hotbar slot
+	 */
 	public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
 	}
 
@@ -306,10 +492,23 @@ public class Item implements ItemConvertible {
 	public void onCraft(ItemStack stack, World world, PlayerEntity player) {
 	}
 
+	/**
+	 * {@return whether the item needs to sync additional data to clients}
+	 * 
+	 * <p>Items should ideally store all necessary information on the stack's NBT.
+	 * However, this is not always possible for things like maps. In those cases,
+	 * items can send a packet to the player holding it that syncs additional data.
+	 * Such items must subclass {@link NetworkSyncedItem}.
+	 * 
+	 * @see NetworkSyncedItem
+	 */
 	public boolean isNetworkSynced() {
 		return false;
 	}
 
+	/**
+	 * {@return the use action the item should perform}
+	 */
 	public UseAction getUseAction(ItemStack stack) {
 		return stack.getItem().isFood() ? UseAction.EAT : UseAction.NONE;
 	}
@@ -326,9 +525,27 @@ public class Item implements ItemConvertible {
 		}
 	}
 
+	/**
+	 * Called on both the client and the server when an entity stops using an item
+	 * before reaching the {@linkplain #getMaxUseTime maximum use time}. If the time was
+	 * reached, {@link #finishUsing} is called instead.
+	 * 
+	 * <p>This method is called on both the logical client and logical server, so take caution
+	 * when overriding this method. The logical side can be checked using {@link
+	 * World#isClient}.
+	 * 
+	 * <p>{@code user} might not be a player in some cases. For example, this occurs when
+	 * an entity uses a crossbow.
+	 */
 	public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
 	}
 
+	/**
+	 * Called by the client to append tooltips to an item. Subclasses can override
+	 * this and add custom tooltips to {@code tooltip} list.
+	 * 
+	 * @param tooltip the list of tooltips to show
+	 */
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
 	}
 
@@ -413,6 +630,9 @@ public class Item implements ItemConvertible {
 	/**
 	 * Appends the stacks of this item shown in the item group to the list.
 	 * 
+	 * <p>This can be overridden to append item stacks with custom NBT data to the
+	 * creative inventory.
+	 * 
 	 * @see #isIn(ItemGroup)
 	 */
 	public void appendStacks(ItemGroup group, DefaultedList<ItemStack> stacks) {
@@ -436,10 +656,21 @@ public class Item implements ItemConvertible {
 		return this.group;
 	}
 
+	/**
+	 * {@return whether {@code stack} can be repaired using {@code ingredient}}
+	 * 
+	 * <p>This only handles repairing using the ingredient such as diamonds, and does
+	 * not handle combining tools or armor.
+	 */
 	public boolean canRepair(ItemStack stack, ItemStack ingredient) {
 		return false;
 	}
 
+	/**
+	 * {@return the attribute modifiers the item provides}
+	 * 
+	 * <p>Tools and armor should override this to specify the attack damage or armor points.
+	 */
 	public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
 		return ImmutableMultimap.of();
 	}
@@ -448,6 +679,12 @@ public class Item implements ItemConvertible {
 		return false;
 	}
 
+	/**
+	 * {@return the default stack for this item}
+	 * 
+	 * <p>Items that expect certain NBT data in the item stack should override
+	 * this method to return the stack with the NBT data.
+	 */
 	public ItemStack getDefaultStack() {
 		return new ItemStack(this);
 	}
@@ -467,10 +704,16 @@ public class Item implements ItemConvertible {
 		return this.foodComponent;
 	}
 
+	/**
+	 * {@return the sound for drinking the item}
+	 */
 	public SoundEvent getDrinkSound() {
 		return SoundEvents.ENTITY_GENERIC_DRINK;
 	}
 
+	/**
+	 * {@return the sound for eating the item}
+	 */
 	public SoundEvent getEatSound() {
 		return SoundEvents.ENTITY_GENERIC_EAT;
 	}
@@ -489,6 +732,9 @@ public class Item implements ItemConvertible {
 		return !this.fireproof || !source.isFire();
 	}
 
+	/**
+	 * {@return the sound for equipping the item, or {@code null} if no sound is played}
+	 */
 	@Nullable
 	public SoundEvent getEquipSound() {
 		return null;
@@ -501,6 +747,11 @@ public class Item implements ItemConvertible {
 		return true;
 	}
 
+	/**
+	 * Item settings configure behaviors common to all items, such as the stack's max
+	 * count and the item group. An instance of this must be passed to the constructor
+	 * of {@link Item} (or most of its subclasses).
+	 */
 	public static class Settings {
 		int maxCount = 64;
 		int maxDamage;

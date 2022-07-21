@@ -10,6 +10,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -4163,7 +4164,7 @@ public class BlockStateModelGenerator {
 		BlockStateVariantMap.SingleProperty<Integer> singleProperty = BlockStateVariantMap.create(Properties.LEVEL_15);
 
 		for (int i = 0; i < 16; i++) {
-			String string = String.format("_%02d", i);
+			String string = String.format(Locale.ROOT, "_%02d", i);
 			Identifier identifier = TextureMap.getSubId(Items.LIGHT, string);
 			singleProperty.register(
 				i,

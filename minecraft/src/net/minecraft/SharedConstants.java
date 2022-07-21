@@ -13,17 +13,17 @@ public class SharedConstants {
 	@Deprecated
 	public static final boolean IS_DEVELOPMENT_VERSION = true;
 	@Deprecated
-	public static final int WORLD_VERSION = 3109;
+	public static final int WORLD_VERSION = 3115;
 	@Deprecated
 	public static final String CURRENT_SERIES = "main";
 	@Deprecated
-	public static final String VERSION_NAME = "1.19.1-rc1";
+	public static final String VERSION_NAME = "1.19.1-rc2";
 	@Deprecated
 	public static final String RELEASE_TARGET = "1.19.1";
 	@Deprecated
 	public static final int RELEASE_TARGET_PROTOCOL_VERSION = 760;
 	@Deprecated
-	public static final int field_29736 = 94;
+	public static final int field_29736 = 100;
 	public static final int SNBT_TOO_OLD_THRESHOLD = 3075;
 	private static final int field_29708 = 30;
 	public static final boolean field_36325 = false;
@@ -118,6 +118,7 @@ public class SharedConstants {
 	public static final int DEFAULT_WORLD_HEIGHT = 256;
 	public static final int COMMAND_MAX_LENGTH = 32500;
 	public static final int field_38052 = 1000000;
+	public static final int field_39898 = 32;
 	public static final char[] INVALID_CHARS_LEVEL_NAME = new char[]{'/', '\n', '\r', '\t', '\u0000', '\f', '`', '?', '*', '\\', '<', '>', '|', '"', ':'};
 	public static final int TICKS_PER_SECOND = 20;
 	public static final int TICKS_PER_MINUTE = 1200;
@@ -202,12 +203,12 @@ public class SharedConstants {
 	}
 
 	public static int getProtocolVersion() {
-		return 1073741918;
+		return 1073741924;
 	}
 
-	public static boolean method_37896(ChunkPos chunkPos) {
-		int i = chunkPos.getStartX();
-		int j = chunkPos.getStartZ();
+	public static boolean isOutsideGenerationArea(ChunkPos pos) {
+		int i = pos.getStartX();
+		int j = pos.getStartZ();
 		return !DEBUG_BIOME_SOURCE ? false : i > 8192 || i < 0 || j > 1024 || j < 0;
 	}
 

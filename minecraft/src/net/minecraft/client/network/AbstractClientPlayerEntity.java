@@ -2,6 +2,7 @@ package net.minecraft.client.network;
 
 import com.google.common.hash.Hashing;
 import com.mojang.authlib.GameProfile;
+import java.util.Locale;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -95,7 +96,7 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 		if (abstractTexture == MissingSprite.getMissingSpriteTexture()) {
 			AbstractTexture var4 = new PlayerSkinTexture(
 				null,
-				String.format("http://skins.minecraft.net/MinecraftSkins/%s.png", StringHelper.stripTextFormat(playerName)),
+				String.format(Locale.ROOT, "http://skins.minecraft.net/MinecraftSkins/%s.png", StringHelper.stripTextFormat(playerName)),
 				DefaultSkinHelper.getTexture(DynamicSerializableUuid.getOfflinePlayerUuid(playerName)),
 				true,
 				null

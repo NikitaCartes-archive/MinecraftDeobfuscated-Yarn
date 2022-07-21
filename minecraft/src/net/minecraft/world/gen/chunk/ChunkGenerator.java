@@ -241,7 +241,7 @@ public abstract class ChunkGenerator {
 		ChunkRegion chunkRegion,
 		long seed,
 		NoiseConfig noiseConfig,
-		BiomeAccess world,
+		BiomeAccess biomeAccess,
 		StructureAccessor structureAccessor,
 		Chunk chunk,
 		GenerationStep.Carver carverStep
@@ -446,7 +446,7 @@ public abstract class ChunkGenerator {
 
 	public void generateFeatures(StructureWorldAccess world, Chunk chunk, StructureAccessor structureAccessor) {
 		ChunkPos chunkPos = chunk.getPos();
-		if (!SharedConstants.method_37896(chunkPos)) {
+		if (!SharedConstants.isOutsideGenerationArea(chunkPos)) {
 			ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(chunkPos, world.getBottomSectionCoord());
 			BlockPos blockPos = chunkSectionPos.getMinPos();
 			Registry<Structure> registry = world.getRegistryManager().get(Registry.STRUCTURE_KEY);
@@ -594,7 +594,7 @@ public abstract class ChunkGenerator {
 				Predicate<StructureStart> predicate = structureSpawns.boundingBox() == StructureSpawns.BoundingBox.PIECE
 					? start -> accessor.structureContains(pos, start)
 					: start -> start.getBoundingBox().contains(pos);
-				accessor.method_41032(structure, (LongSet)entry.getValue(), start -> {
+				accessor.acceptStructureStarts(structure, (LongSet)entry.getValue(), start -> {
 					if (mutableBoolean.isFalse() && predicate.test(start)) {
 						mutableBoolean.setTrue();
 					}

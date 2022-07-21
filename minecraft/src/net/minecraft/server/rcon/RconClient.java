@@ -7,6 +7,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import net.minecraft.server.dedicated.DedicatedServer;
 import org.slf4j.Logger;
 
@@ -86,7 +87,7 @@ public class RconClient extends RconBase {
 							this.fail();
 							break;
 						default:
-							this.respond(l, String.format("Unknown request %s", Integer.toHexString(m)));
+							this.respond(l, String.format(Locale.ROOT, "Unknown request %s", Integer.toHexString(m)));
 					}
 				}
 

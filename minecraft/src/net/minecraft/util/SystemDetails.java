@@ -3,6 +3,7 @@ package net.minecraft.util;
 import com.google.common.collect.Maps;
 import com.mojang.logging.LogUtils;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -54,7 +55,7 @@ public class SystemDetails {
 		this.tryAddGroup("hardware", () -> this.addHardwareGroup(new SystemInfo()));
 		this.addSection("JVM Flags", (Supplier<String>)(() -> {
 			List<String> list = (List<String>)Util.getJVMFlags().collect(Collectors.toList());
-			return String.format("%d total; %s", list.size(), String.join(" ", list));
+			return String.format(Locale.ROOT, "%d total; %s", list.size(), String.join(" ", list));
 		}));
 	}
 
@@ -90,18 +91,18 @@ public class SystemDetails {
 		int i = 0;
 
 		for (PhysicalMemory physicalMemory : memories) {
-			String string = String.format("Memory slot #%d ", i++);
-			this.addSection(string + "capacity (MB)", (Supplier<String>)(() -> String.format("%.2f", (float)physicalMemory.getCapacity() / 1048576.0F)));
-			this.addSection(string + "clockSpeed (GHz)", (Supplier<String>)(() -> String.format("%.2f", (float)physicalMemory.getClockSpeed() / 1.0E9F)));
+			String string = String.format(Locale.ROOT, "Memory slot #%d ", i++);
+			this.addSection(string + "capacity (MB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", (float)physicalMemory.getCapacity() / 1048576.0F)));
+			this.addSection(string + "clockSpeed (GHz)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", (float)physicalMemory.getClockSpeed() / 1.0E9F)));
 			this.addSection(string + "type", physicalMemory::getMemoryType);
 		}
 	}
 
 	private void addVirtualMemoryGroup(VirtualMemory virtualMemory) {
-		this.addSection("Virtual memory max (MB)", (Supplier<String>)(() -> String.format("%.2f", (float)virtualMemory.getVirtualMax() / 1048576.0F)));
-		this.addSection("Virtual memory used (MB)", (Supplier<String>)(() -> String.format("%.2f", (float)virtualMemory.getVirtualInUse() / 1048576.0F)));
-		this.addSection("Swap memory total (MB)", (Supplier<String>)(() -> String.format("%.2f", (float)virtualMemory.getSwapTotal() / 1048576.0F)));
-		this.addSection("Swap memory used (MB)", (Supplier<String>)(() -> String.format("%.2f", (float)virtualMemory.getSwapUsed() / 1048576.0F)));
+		this.addSection("Virtual memory max (MB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", (float)virtualMemory.getVirtualMax() / 1048576.0F)));
+		this.addSection("Virtual memory used (MB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", (float)virtualMemory.getVirtualInUse() / 1048576.0F)));
+		this.addSection("Swap memory total (MB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", (float)virtualMemory.getSwapTotal() / 1048576.0F)));
+		this.addSection("Swap memory used (MB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", (float)virtualMemory.getSwapUsed() / 1048576.0F)));
 	}
 
 	private void addGlobalMemoryGroup(GlobalMemory globalMemory) {
@@ -113,10 +114,10 @@ public class SystemDetails {
 		int i = 0;
 
 		for (GraphicsCard graphicsCard : graphicsCards) {
-			String string = String.format("Graphics card #%d ", i++);
+			String string = String.format(Locale.ROOT, "Graphics card #%d ", i++);
 			this.addSection(string + "name", graphicsCard::getName);
 			this.addSection(string + "vendor", graphicsCard::getVendor);
-			this.addSection(string + "VRAM (MB)", (Supplier<String>)(() -> String.format("%.2f", (float)graphicsCard.getVRam() / 1048576.0F)));
+			this.addSection(string + "VRAM (MB)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", (float)graphicsCard.getVRam() / 1048576.0F)));
 			this.addSection(string + "deviceId", graphicsCard::getDeviceId);
 			this.addSection(string + "versionInfo", graphicsCard::getVersionInfo);
 		}
@@ -128,7 +129,7 @@ public class SystemDetails {
 		this.addSection("Processor Name", processorIdentifier::getName);
 		this.addSection("Identifier", processorIdentifier::getIdentifier);
 		this.addSection("Microarchitecture", processorIdentifier::getMicroarchitecture);
-		this.addSection("Frequency (GHz)", (Supplier<String>)(() -> String.format("%.2f", (float)processorIdentifier.getVendorFreq() / 1.0E9F)));
+		this.addSection("Frequency (GHz)", (Supplier<String>)(() -> String.format(Locale.ROOT, "%.2f", (float)processorIdentifier.getVendorFreq() / 1.0E9F)));
 		this.addSection("Number of physical packages", (Supplier<String>)(() -> String.valueOf(centralProcessor.getPhysicalPackageCount())));
 		this.addSection("Number of physical CPUs", (Supplier<String>)(() -> String.valueOf(centralProcessor.getPhysicalProcessorCount())));
 		this.addSection("Number of logical CPUs", (Supplier<String>)(() -> String.valueOf(centralProcessor.getLogicalProcessorCount())));

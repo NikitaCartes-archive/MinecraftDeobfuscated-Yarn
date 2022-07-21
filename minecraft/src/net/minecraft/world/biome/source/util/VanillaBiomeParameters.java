@@ -18,10 +18,10 @@ public final class VanillaBiomeParameters {
 	private static final float MAX_VALLEY_WEIRDNESS = 0.05F;
 	private static final float MAX_LOW_WEIRDNESS = 0.26666668F;
 	public static final float MAX_MID_WEIRDNESS = 0.4F;
-	private static final float field_35048 = 0.93333334F;
+	private static final float MAX_SECOND_HIGH_WEIRDNESS = 0.93333334F;
 	private static final float field_34501 = 0.1F;
 	public static final float MAX_HIGH_WEIRDNESS = 0.56666666F;
-	private static final float field_34503 = 0.7666667F;
+	private static final float MAX_PEAK_WEIRDNESS = 0.7666667F;
 	public static final float field_35042 = -0.11F;
 	public static final float field_35043 = 0.03F;
 	public static final float field_35044 = 0.3F;
@@ -130,11 +130,14 @@ public final class VanillaBiomeParameters {
 		);
 	}
 
-	public void writeVanillaBiomeParameters(Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> consumer) {
+	/**
+	 * Writes all biome parameters for the overworld to the passed parameter consumer.
+	 */
+	public void writeOverworldBiomeParameters(Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> parameters) {
 		if (!SharedConstants.DEBUG_BIOME_SOURCE) {
-			this.writeOceanBiomes(consumer);
-			this.writeLandBiomes(consumer);
-			this.writeCaveBiomes(consumer);
+			this.writeOceanBiomes(parameters);
+			this.writeLandBiomes(parameters);
+			this.writeCaveBiomes(parameters);
 		} else {
 			DensityFunctionTypes.Spline.DensityFunctionWrapper densityFunctionWrapper = new DensityFunctionTypes.Spline.DensityFunctionWrapper(
 				BuiltinRegistries.DENSITY_FUNCTION.entryOf(DensityFunctions.CONTINENTS_OVERWORLD)
@@ -145,7 +148,7 @@ public final class VanillaBiomeParameters {
 			DensityFunctionTypes.Spline.DensityFunctionWrapper densityFunctionWrapper3 = new DensityFunctionTypes.Spline.DensityFunctionWrapper(
 				BuiltinRegistries.DENSITY_FUNCTION.entryOf(DensityFunctions.RIDGES_FOLDED_OVERWORLD)
 			);
-			consumer.accept(
+			parameters.accept(
 				Pair.of(
 					MultiNoiseUtil.createNoiseHypercube(
 						this.defaultParameter,
@@ -159,13 +162,13 @@ public final class VanillaBiomeParameters {
 					BiomeKeys.PLAINS
 				)
 			);
-			if (VanillaTerrainParametersCreator.method_42051(
-				densityFunctionWrapper2, densityFunctionWrapper3, -0.15F, 0.0F, 0.0F, 0.1F, 0.0F, -0.03F, false, false, ToFloatFunction.field_37409
+			if (VanillaTerrainParametersCreator.createContinentalOffsetSpline(
+				densityFunctionWrapper2, densityFunctionWrapper3, -0.15F, 0.0F, 0.0F, 0.1F, 0.0F, -0.03F, false, false, ToFloatFunction.IDENTITY
 			) instanceof Spline.Implementation<?, ?> implementation) {
 				RegistryKey<Biome> registryKey = BiomeKeys.DESERT;
 
 				for (float f : implementation.locations()) {
-					consumer.accept(
+					parameters.accept(
 						Pair.of(
 							MultiNoiseUtil.createNoiseHypercube(
 								this.defaultParameter,
@@ -183,11 +186,11 @@ public final class VanillaBiomeParameters {
 				}
 			}
 
-			if (VanillaTerrainParametersCreator.method_42056(densityFunctionWrapper, densityFunctionWrapper2, densityFunctionWrapper3, false) instanceof Spline.Implementation<?, ?> implementation2
+			if (VanillaTerrainParametersCreator.createOffsetSpline(densityFunctionWrapper, densityFunctionWrapper2, densityFunctionWrapper3, false) instanceof Spline.Implementation<?, ?> implementation2
 				)
 			 {
 				for (float f : implementation2.locations()) {
-					consumer.accept(
+					parameters.accept(
 						Pair.of(
 							MultiNoiseUtil.createNoiseHypercube(
 								this.defaultParameter,
@@ -206,6 +209,10 @@ public final class VanillaBiomeParameters {
 		}
 	}
 
+	/**
+	 * Writes all parameters for ocean biomes.
+	 * This includes oceans, deep oceans and mushroom fields.
+	 */
 	private void writeOceanBiomes(Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> parameters) {
 		this.writeBiomeParameters(
 			parameters,
@@ -236,23 +243,34 @@ public final class VanillaBiomeParameters {
 		}
 	}
 
+	/**
+	 * Writes all parameters for land biomes.
+	 * This means that {@code continentalness} is greater than about {@code -0.16} for them.
+	 */
 	private void writeLandBiomes(Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> parameters) {
-		this.writeMixedBiomes(parameters, MultiNoiseUtil.ParameterRange.of(-1.0F, -0.93333334F));
-		this.writePlainBiomes(parameters, MultiNoiseUtil.ParameterRange.of(-0.93333334F, -0.7666667F));
-		this.writeMountainousBiomes(parameters, MultiNoiseUtil.ParameterRange.of(-0.7666667F, -0.56666666F));
-		this.writePlainBiomes(parameters, MultiNoiseUtil.ParameterRange.of(-0.56666666F, -0.4F));
-		this.writeMixedBiomes(parameters, MultiNoiseUtil.ParameterRange.of(-0.4F, -0.26666668F));
-		this.writeBiomesNearRivers(parameters, MultiNoiseUtil.ParameterRange.of(-0.26666668F, -0.05F));
-		this.writeRiverBiomes(parameters, MultiNoiseUtil.ParameterRange.of(-0.05F, 0.05F));
-		this.writeBiomesNearRivers(parameters, MultiNoiseUtil.ParameterRange.of(0.05F, 0.26666668F));
-		this.writeMixedBiomes(parameters, MultiNoiseUtil.ParameterRange.of(0.26666668F, 0.4F));
-		this.writePlainBiomes(parameters, MultiNoiseUtil.ParameterRange.of(0.4F, 0.56666666F));
-		this.writeMountainousBiomes(parameters, MultiNoiseUtil.ParameterRange.of(0.56666666F, 0.7666667F));
-		this.writePlainBiomes(parameters, MultiNoiseUtil.ParameterRange.of(0.7666667F, 0.93333334F));
-		this.writeMixedBiomes(parameters, MultiNoiseUtil.ParameterRange.of(0.93333334F, 1.0F));
+		this.writeMidBiomes(parameters, MultiNoiseUtil.ParameterRange.of(-1.0F, -0.93333334F));
+		this.writeHighBiomes(parameters, MultiNoiseUtil.ParameterRange.of(-0.93333334F, -0.7666667F));
+		this.writePeakBiomes(parameters, MultiNoiseUtil.ParameterRange.of(-0.7666667F, -0.56666666F));
+		this.writeHighBiomes(parameters, MultiNoiseUtil.ParameterRange.of(-0.56666666F, -0.4F));
+		this.writeMidBiomes(parameters, MultiNoiseUtil.ParameterRange.of(-0.4F, -0.26666668F));
+		this.writeLowBiomes(parameters, MultiNoiseUtil.ParameterRange.of(-0.26666668F, -0.05F));
+		this.writeValleyBiomes(parameters, MultiNoiseUtil.ParameterRange.of(-0.05F, 0.05F));
+		this.writeLowBiomes(parameters, MultiNoiseUtil.ParameterRange.of(0.05F, 0.26666668F));
+		this.writeMidBiomes(parameters, MultiNoiseUtil.ParameterRange.of(0.26666668F, 0.4F));
+		this.writeHighBiomes(parameters, MultiNoiseUtil.ParameterRange.of(0.4F, 0.56666666F));
+		this.writePeakBiomes(parameters, MultiNoiseUtil.ParameterRange.of(0.56666666F, 0.7666667F));
+		this.writeHighBiomes(parameters, MultiNoiseUtil.ParameterRange.of(0.7666667F, 0.93333334F));
+		this.writeMidBiomes(parameters, MultiNoiseUtil.ParameterRange.of(0.93333334F, 1.0F));
 	}
 
-	private void writeMountainousBiomes(Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> parameters, MultiNoiseUtil.ParameterRange weirdness) {
+	/**
+	 * Writes biome parameters for the "peak" weirdness range.
+	 * 
+	 * These can be regular biomes for higher erosion values or near the coast,
+	 * biomes that are usually near mountains (like plateaus or mountain slopes), or,
+	 * for lower erosion values, peak biomes like jagged, frozen or stony peaks.
+	 */
+	private void writePeakBiomes(Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> parameters, MultiNoiseUtil.ParameterRange weirdness) {
 		for (int i = 0; i < this.temperatureParameters.length; i++) {
 			MultiNoiseUtil.ParameterRange parameterRange = this.temperatureParameters[i];
 
@@ -262,7 +280,7 @@ public final class VanillaBiomeParameters {
 				RegistryKey<Biome> registryKey2 = this.getBadlandsOrRegularBiome(i, j, weirdness);
 				RegistryKey<Biome> registryKey3 = this.getMountainStartBiome(i, j, weirdness);
 				RegistryKey<Biome> registryKey4 = this.getNearMountainBiome(i, j, weirdness);
-				RegistryKey<Biome> registryKey5 = this.getBiomeOrWindsweptSavanna(i, j, weirdness);
+				RegistryKey<Biome> registryKey5 = this.getWindsweptOrRegularBiome(i, j, weirdness);
 				RegistryKey<Biome> registryKey6 = this.getBiomeOrWindsweptSavanna(i, j, weirdness, registryKey5);
 				RegistryKey<Biome> registryKey7 = this.getPeakBiome(i, j, weirdness);
 				this.writeBiomeParameters(
@@ -365,7 +383,14 @@ public final class VanillaBiomeParameters {
 		}
 	}
 
-	private void writePlainBiomes(Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> parameters, MultiNoiseUtil.ParameterRange weirdness) {
+	/**
+	 * Writes biome parameters for the "high" weirdness range.
+	 * 
+	 * These can be regular biomes for higher erosion values or near the coast,
+	 * biomes that usually appear near mountains, like meadows or slopes,
+	 * or, rarely (for very low erosion and high continentalness values), peak biomes.
+	 */
+	private void writeHighBiomes(Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> parameters, MultiNoiseUtil.ParameterRange weirdness) {
 		for (int i = 0; i < this.temperatureParameters.length; i++) {
 			MultiNoiseUtil.ParameterRange parameterRange = this.temperatureParameters[i];
 
@@ -375,7 +400,7 @@ public final class VanillaBiomeParameters {
 				RegistryKey<Biome> registryKey2 = this.getBadlandsOrRegularBiome(i, j, weirdness);
 				RegistryKey<Biome> registryKey3 = this.getMountainStartBiome(i, j, weirdness);
 				RegistryKey<Biome> registryKey4 = this.getNearMountainBiome(i, j, weirdness);
-				RegistryKey<Biome> registryKey5 = this.getBiomeOrWindsweptSavanna(i, j, weirdness);
+				RegistryKey<Biome> registryKey5 = this.getWindsweptOrRegularBiome(i, j, weirdness);
 				RegistryKey<Biome> registryKey6 = this.getBiomeOrWindsweptSavanna(i, j, weirdness, registryKey);
 				RegistryKey<Biome> registryKey7 = this.getMountainSlopeBiome(i, j, weirdness);
 				RegistryKey<Biome> registryKey8 = this.getPeakBiome(i, j, weirdness);
@@ -485,7 +510,13 @@ public final class VanillaBiomeParameters {
 		}
 	}
 
-	private void writeMixedBiomes(Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> parameters, MultiNoiseUtil.ParameterRange weirdness) {
+	/**
+	 * Writes biome parameters for the "mid" weirdness range.
+	 * 
+	 * These will be regular biomes in most cases, but can also be shore biomes near the coast,
+	 * or the start of a mountain biome for very low erosion.
+	 */
+	private void writeMidBiomes(Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> parameters, MultiNoiseUtil.ParameterRange weirdness) {
 		this.writeBiomeParameters(
 			parameters,
 			this.defaultParameter,
@@ -525,11 +556,11 @@ public final class VanillaBiomeParameters {
 				RegistryKey<Biome> registryKey = this.getRegularBiome(i, j, weirdness);
 				RegistryKey<Biome> registryKey2 = this.getBadlandsOrRegularBiome(i, j, weirdness);
 				RegistryKey<Biome> registryKey3 = this.getMountainStartBiome(i, j, weirdness);
-				RegistryKey<Biome> registryKey4 = this.getBiomeOrWindsweptSavanna(i, j, weirdness);
+				RegistryKey<Biome> registryKey4 = this.getWindsweptOrRegularBiome(i, j, weirdness);
 				RegistryKey<Biome> registryKey5 = this.getNearMountainBiome(i, j, weirdness);
 				RegistryKey<Biome> registryKey6 = this.getShoreBiome(i, j);
 				RegistryKey<Biome> registryKey7 = this.getBiomeOrWindsweptSavanna(i, j, weirdness, registryKey);
-				RegistryKey<Biome> registryKey8 = this.getFlatShoreBiome(i, j, weirdness);
+				RegistryKey<Biome> registryKey8 = this.getErodedShoreBiome(i, j, weirdness);
 				RegistryKey<Biome> registryKey9 = this.getMountainSlopeBiome(i, j, weirdness);
 				this.writeBiomeParameters(
 					parameters,
@@ -651,7 +682,14 @@ public final class VanillaBiomeParameters {
 		}
 	}
 
-	private void writeBiomesNearRivers(Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> parameters, MultiNoiseUtil.ParameterRange weirdness) {
+	/**
+	 * Writes biome parameters for the "low" weirdness range.
+	 * 
+	 * These will be regular biomes in most cases,
+	 * but can also be shore biomes near the coast,
+	 * or swamps for very high erosion.
+	 */
+	private void writeLowBiomes(Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> parameters, MultiNoiseUtil.ParameterRange weirdness) {
 		this.writeBiomeParameters(
 			parameters,
 			this.defaultParameter,
@@ -693,7 +731,7 @@ public final class VanillaBiomeParameters {
 				RegistryKey<Biome> registryKey3 = this.getMountainStartBiome(i, j, weirdness);
 				RegistryKey<Biome> registryKey4 = this.getShoreBiome(i, j);
 				RegistryKey<Biome> registryKey5 = this.getBiomeOrWindsweptSavanna(i, j, weirdness, registryKey);
-				RegistryKey<Biome> registryKey6 = this.getFlatShoreBiome(i, j, weirdness);
+				RegistryKey<Biome> registryKey6 = this.getErodedShoreBiome(i, j, weirdness);
 				this.writeBiomeParameters(
 					parameters,
 					parameterRange,
@@ -785,7 +823,16 @@ public final class VanillaBiomeParameters {
 		}
 	}
 
-	private void writeRiverBiomes(Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> parameters, MultiNoiseUtil.ParameterRange weirdness) {
+	/**
+	 * Writes biome parameters for the "valley" weirdness range.
+	 * 
+	 * In most cases, a valley will be a river. In low temperatures, a river can also be frozen.
+	 * Valleys that go through a swamp will remain a swamp biome.
+	 * 
+	 * Mountain ranges can also sometimes have valleys that are not a river,
+	 * in which case this method will pick a regular or badlands biome.
+	 */
+	private void writeValleyBiomes(Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> parameters, MultiNoiseUtil.ParameterRange weirdness) {
 		this.writeBiomeParameters(
 			parameters,
 			this.frozenTemperature,
@@ -910,6 +957,16 @@ public final class VanillaBiomeParameters {
 		}
 	}
 
+	/**
+	 * Writes biome parameters for all cave biomes.
+	 * Currently, this only consists of dripstone caves, lush caves, and the deep dark.
+	 * 
+	 * Dripstone caves can generate anywhere where there are high high continentalness values.
+	 * Lush caves can generate anywhere at high humidity values.
+	 * 
+	 * The deep dark can generate anywhere at low erosion values, which usually means
+	 * it will be near mountains.
+	 */
 	private void writeCaveBiomes(Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> parameters) {
 		this.writeCaveBiomeParameters(
 			parameters,
@@ -943,6 +1000,13 @@ public final class VanillaBiomeParameters {
 		);
 	}
 
+	/**
+	 * {@return a regular biome.} This can be a {@linkplain #commonBiomes common} or {@linkplain #uncommonBiomes uncommon} biome, depending on
+	 * temperature and humidity.
+	 * 
+	 * Note that for negative weirdness values, only common biomes can get picked by this
+	 * method.
+	 */
 	private RegistryKey<Biome> getRegularBiome(int temperature, int humidity, MultiNoiseUtil.ParameterRange weirdness) {
 		if (weirdness.max() < 0L) {
 			return this.commonBiomes[temperature][humidity];
@@ -952,23 +1016,54 @@ public final class VanillaBiomeParameters {
 		}
 	}
 
+	/**
+	 * {@return badlands if {@code temperature} is {@code 4}, otherwise a regular biome}.
+	 * 
+	 * @see #getRegularBiome()
+	 */
 	private RegistryKey<Biome> getBadlandsOrRegularBiome(int temperature, int humidity, MultiNoiseUtil.ParameterRange weirdness) {
 		return temperature == 4 ? this.getBadlandsBiome(humidity, weirdness) : this.getRegularBiome(temperature, humidity, weirdness);
 	}
 
+	/**
+	 * {@return a slope biome if {@code temperature} is {@code 0}, otherwise a regular biome}.
+	 * 
+	 * @see #getMountainSlopeBiome()
+	 * @see getBadlandsOrRegularBiome()
+	 */
 	private RegistryKey<Biome> getMountainStartBiome(int temperature, int humidity, MultiNoiseUtil.ParameterRange weirdness) {
 		return temperature == 0 ? this.getMountainSlopeBiome(temperature, humidity, weirdness) : this.getBadlandsOrRegularBiome(temperature, humidity, weirdness);
 	}
 
+	/**
+	 * {@return a windswept savanna for specific conditions, otherwise the given biome}.
+	 * 
+	 * For a windswept savanna being returned by this method, {@code temperature} must be
+	 * greater than {@code 1}, {@code humidity} must be less than {@code 4} and
+	 * {@code weirdness} must be positive.
+	 */
 	private RegistryKey<Biome> getBiomeOrWindsweptSavanna(int temperature, int humidity, MultiNoiseUtil.ParameterRange weirdness, RegistryKey<Biome> biomeKey) {
 		return temperature > 1 && humidity < 4 && weirdness.max() >= 0L ? BiomeKeys.WINDSWEPT_SAVANNA : biomeKey;
 	}
 
-	private RegistryKey<Biome> getFlatShoreBiome(int temperature, int humidity, MultiNoiseUtil.ParameterRange weirdness) {
+	/**
+	 * {@return a shore biome for high erosion values}.
+	 * 
+	 * If {@code weirdness} is positive, this will be a regular biome.
+	 * For some specific conditions, this can also be a windswept savanna.
+	 * 
+	 * @see #getShoreBiome()
+	 * @see #getRegularBiome()
+	 * @see #getBiomeOrWindsweptSavanna()
+	 */
+	private RegistryKey<Biome> getErodedShoreBiome(int temperature, int humidity, MultiNoiseUtil.ParameterRange weirdness) {
 		RegistryKey<Biome> registryKey = weirdness.max() >= 0L ? this.getRegularBiome(temperature, humidity, weirdness) : this.getShoreBiome(temperature, humidity);
 		return this.getBiomeOrWindsweptSavanna(temperature, humidity, weirdness, registryKey);
 	}
 
+	/**
+	 * {@return an appropriate shore biome for the given temperature and humidity}.
+	 */
 	private RegistryKey<Biome> getShoreBiome(int temperature, int humidity) {
 		if (temperature == 0) {
 			return BiomeKeys.SNOWY_BEACH;
@@ -977,6 +1072,9 @@ public final class VanillaBiomeParameters {
 		}
 	}
 
+	/**
+	 * {@return a badlands for the given humidity and weirdness}.
+	 */
 	private RegistryKey<Biome> getBadlandsBiome(int humidity, MultiNoiseUtil.ParameterRange weirdness) {
 		if (humidity < 2) {
 			return weirdness.max() < 0L ? BiomeKeys.BADLANDS : BiomeKeys.ERODED_BADLANDS;
@@ -985,6 +1083,14 @@ public final class VanillaBiomeParameters {
 		}
 	}
 
+	/**
+	 * {@return a biome to generate near mountains.}
+	 * This can be a {@linkplain #nearMountainBiomes normal} or
+	 * {@linkplain #specialNearMountainBiomes special} biome, depending on
+	 * temperature and humidity.
+	 * 
+	 * Note that for negative weirdness values, no special biomes can get picked by this method.
+	 */
 	private RegistryKey<Biome> getNearMountainBiome(int temperature, int humidity, MultiNoiseUtil.ParameterRange weirdness) {
 		if (weirdness.max() < 0L) {
 			return this.nearMountainBiomes[temperature][humidity];
@@ -994,6 +1100,9 @@ public final class VanillaBiomeParameters {
 		}
 	}
 
+	/**
+	 * {@return a peak biome for the given temperature, humidity and weirdness}.
+	 */
 	private RegistryKey<Biome> getPeakBiome(int temperature, int humidity, MultiNoiseUtil.ParameterRange weirdness) {
 		if (temperature <= 2) {
 			return weirdness.max() < 0L ? BiomeKeys.JAGGED_PEAKS : BiomeKeys.FROZEN_PEAKS;
@@ -1002,6 +1111,11 @@ public final class VanillaBiomeParameters {
 		}
 	}
 
+	/**
+	 * {@return a mountain slope biome for the given temperature, humidity and weirdness.
+	 * 
+	 * @see #getNearMountainBiome()
+	 */
 	private RegistryKey<Biome> getMountainSlopeBiome(int temperature, int humidity, MultiNoiseUtil.ParameterRange weirdness) {
 		if (temperature >= 3) {
 			return this.getNearMountainBiome(temperature, humidity, weirdness);
@@ -1010,7 +1124,12 @@ public final class VanillaBiomeParameters {
 		}
 	}
 
-	private RegistryKey<Biome> getBiomeOrWindsweptSavanna(int temperature, int humidity, MultiNoiseUtil.ParameterRange weirdness) {
+	/**
+	 * {@return a windswept or regular biome, depending on temperature and humidity}.
+	 * 
+	 * @see #getRegularBiome()
+	 */
+	private RegistryKey<Biome> getWindsweptOrRegularBiome(int temperature, int humidity, MultiNoiseUtil.ParameterRange weirdness) {
 		RegistryKey<Biome> registryKey = this.windsweptBiomes[temperature][humidity];
 		return registryKey == null ? this.getRegularBiome(temperature, humidity, weirdness) : registryKey;
 	}
@@ -1072,8 +1191,8 @@ public final class VanillaBiomeParameters {
 		);
 	}
 
-	public static boolean method_43718(double d, double e) {
-		return d < -0.225F && e > 0.9F;
+	public static boolean method_43718(double erosion, double depth) {
+		return erosion < -0.225F && depth > 0.9F;
 	}
 
 	public static String getPeaksValleysDescription(double weirdness) {
@@ -1089,7 +1208,7 @@ public final class VanillaBiomeParameters {
 	}
 
 	public String getContinentalnessDescription(double continentalness) {
-		double d = (double)MultiNoiseUtil.method_38665((float)continentalness);
+		double d = (double)MultiNoiseUtil.toLong((float)continentalness);
 		if (d < (double)this.mushroomFieldsContinentalness.max()) {
 			return "Mushroom fields";
 		} else if (d < (double)this.deepOceanContinentalness.max()) {
@@ -1118,7 +1237,7 @@ public final class VanillaBiomeParameters {
 	}
 
 	private static String getNoiseRangeIndex(double noisePoint, MultiNoiseUtil.ParameterRange[] noiseRanges) {
-		double d = (double)MultiNoiseUtil.method_38665((float)noisePoint);
+		double d = (double)MultiNoiseUtil.toLong((float)noisePoint);
 
 		for (int i = 0; i < noiseRanges.length; i++) {
 			if (d < (double)noiseRanges[i].max()) {

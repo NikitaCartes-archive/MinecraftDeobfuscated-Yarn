@@ -30,7 +30,7 @@ public final class NoiseConfig {
 	private final SurfaceBuilder surfaceBuilder;
 	private final RandomSplitter aquiferRandomDeriver;
 	private final RandomSplitter oreRandomDeriver;
-	private final Map<RegistryKey<DoublePerlinNoiseSampler.NoiseParameters>, DoublePerlinNoiseSampler> field_38262;
+	private final Map<RegistryKey<DoublePerlinNoiseSampler.NoiseParameters>, DoublePerlinNoiseSampler> noises;
 	private final Map<Identifier, RandomSplitter> randomDerivers;
 
 	public static NoiseConfig create(
@@ -55,16 +55,16 @@ public final class NoiseConfig {
 		this.noiseParametersRegistry = noiseRegistry;
 		this.aquiferRandomDeriver = this.randomDeriver.split(new Identifier("aquifer")).nextSplitter();
 		this.oreRandomDeriver = this.randomDeriver.split(new Identifier("ore")).nextSplitter();
-		this.field_38262 = new ConcurrentHashMap();
+		this.noises = new ConcurrentHashMap();
 		this.randomDerivers = new ConcurrentHashMap();
 		this.surfaceBuilder = new SurfaceBuilder(this, chunkGeneratorSettings.defaultBlock(), chunkGeneratorSettings.seaLevel(), this.randomDeriver);
 		final boolean bl = chunkGeneratorSettings.usesLegacyRandom();
 
-		class class_7271 implements DensityFunction.DensityFunctionVisitor {
-			private final Map<DensityFunction, DensityFunction> field_38267 = new HashMap();
+		class LegacyNoiseDensityFunctionVisitor implements DensityFunction.DensityFunctionVisitor {
+			private final Map<DensityFunction, DensityFunction> cache = new HashMap();
 
-			private Random method_42375(long l) {
-				return new CheckedRandom(seed + l);
+			private Random createRandom(long seed) {
+				return new CheckedRandom(seed + seed);
 			}
 
 			@Override
@@ -73,14 +73,14 @@ public final class NoiseConfig {
 				if (bl) {
 					if (Objects.equals(registryEntry.getKey(), Optional.of(NoiseParametersKeys.TEMPERATURE))) {
 						DoublePerlinNoiseSampler doublePerlinNoiseSampler = DoublePerlinNoiseSampler.createLegacy(
-							this.method_42375(0L), new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 1.0)
+							this.createRandom(0L), new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 1.0)
 						);
 						return new DensityFunction.Noise(registryEntry, doublePerlinNoiseSampler);
 					}
 
 					if (Objects.equals(registryEntry.getKey(), Optional.of(NoiseParametersKeys.VEGETATION))) {
 						DoublePerlinNoiseSampler doublePerlinNoiseSampler = DoublePerlinNoiseSampler.createLegacy(
-							this.method_42375(1L), new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 1.0)
+							this.createRandom(1L), new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 1.0)
 						);
 						return new DensityFunction.Noise(registryEntry, doublePerlinNoiseSampler);
 					}
@@ -99,9 +99,9 @@ public final class NoiseConfig {
 				return new DensityFunction.Noise(registryEntry, doublePerlinNoiseSampler);
 			}
 
-			private DensityFunction method_42376(DensityFunction densityFunction) {
+			private DensityFunction applyNotCached(DensityFunction densityFunction) {
 				if (densityFunction instanceof InterpolatedNoiseSampler interpolatedNoiseSampler) {
-					Random random = bl ? this.method_42375(0L) : NoiseConfig.this.randomDeriver.split(new Identifier("terrain"));
+					Random random = bl ? this.createRandom(0L) : NoiseConfig.this.randomDeriver.split(new Identifier("terrain"));
 					return interpolatedNoiseSampler.copyWithRandom(random);
 				} else {
 					return (DensityFunction)(densityFunction instanceof DensityFunctionTypes.EndIslands ? new DensityFunctionTypes.EndIslands(seed) : densityFunction);
@@ -110,11 +110,11 @@ public final class NoiseConfig {
 
 			@Override
 			public DensityFunction apply(DensityFunction densityFunction) {
-				return (DensityFunction)this.field_38267.computeIfAbsent(densityFunction, this::method_42376);
+				return (DensityFunction)this.cache.computeIfAbsent(densityFunction, this::applyNotCached);
 			}
 		}
 
-		this.noiseRouter = chunkGeneratorSettings.noiseRouter().method_41544(new class_7271());
+		this.noiseRouter = chunkGeneratorSettings.noiseRouter().apply(new LegacyNoiseDensityFunctionVisitor());
 		this.multiNoiseSampler = new MultiNoiseUtil.MultiNoiseSampler(
 			this.noiseRouter.temperature(),
 			this.noiseRouter.vegetation(),
@@ -127,7 +127,7 @@ public final class NoiseConfig {
 	}
 
 	public DoublePerlinNoiseSampler getOrCreateSampler(RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> noiseParametersKey) {
-		return (DoublePerlinNoiseSampler)this.field_38262
+		return (DoublePerlinNoiseSampler)this.noises
 			.computeIfAbsent(noiseParametersKey, key -> NoiseParametersKeys.createNoiseSampler(this.noiseParametersRegistry, this.randomDeriver, noiseParametersKey));
 	}
 

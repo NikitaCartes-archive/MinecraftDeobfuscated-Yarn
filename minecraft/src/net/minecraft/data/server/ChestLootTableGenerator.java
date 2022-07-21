@@ -42,7 +42,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						.with(ItemEntry.builder(Items.NAME_TAG).weight(30))
 						.with(ItemEntry.builder(Items.BOOK).weight(10).apply(EnchantRandomlyLootFunction.builder()))
 						.with(ItemEntry.builder(Items.IRON_PICKAXE).weight(5))
-						.with(EmptyEntry.Serializer().weight(5))
+						.with(EmptyEntry.builder().weight(5))
 				)
 				.pool(
 					LootPool.builder()
@@ -449,7 +449,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						.with(ItemEntry.builder(Items.BOOK).weight(20).apply(EnchantRandomlyLootFunction.builder()))
 						.with(ItemEntry.builder(Items.GOLDEN_APPLE).weight(20))
 						.with(ItemEntry.builder(Items.ENCHANTED_GOLDEN_APPLE).weight(2))
-						.with(EmptyEntry.Serializer().weight(15))
+						.with(EmptyEntry.builder().weight(15))
 				)
 				.pool(
 					LootPool.builder()

@@ -1,4 +1,4 @@
-package net.minecraft.client.gui.screen.abusereport;
+package net.minecraft.client.gui.screen.report;
 
 import com.mojang.authlib.minecraft.report.AbuseReportLimits;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -14,13 +14,11 @@ import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TaskScreen;
 import net.minecraft.client.gui.screen.WarningScreen;
-import net.minecraft.client.gui.screen.report.AbuseReportReasonScreen;
-import net.minecraft.client.gui.screen.report.ChatSelectionScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.EditBoxWidget;
-import net.minecraft.client.network.abusereport.ChatAbuseReport;
 import net.minecraft.client.report.AbuseReportContext;
 import net.minecraft.client.report.AbuseReportReason;
+import net.minecraft.client.report.ChatAbuseReport;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
@@ -153,7 +151,7 @@ public class ChatReportScreen extends Screen {
 	}
 
 	private void send() {
-		this.report.finalizeReport(this.reporter).left().ifPresent(report -> {
+		this.report.finalizeReport(this.reporter).ifLeft(report -> {
 			CompletableFuture<?> completableFuture = this.reporter.sender().send(report.id(), report.report());
 			this.client.setScreen(TaskScreen.createRunningScreen(SENDING_TEXT, ScreenTexts.CANCEL, () -> {
 				this.client.setScreen(this);
@@ -172,7 +170,7 @@ public class ChatReportScreen extends Screen {
 
 				return null;
 			}, this.client);
-		});
+		}).ifRight(validationError -> this.method_45054(validationError.message()));
 	}
 
 	private void onSubmissionFinished() {
@@ -188,6 +186,10 @@ public class ChatReportScreen extends Screen {
 			text = GENERIC_ERROR_TEXT;
 		}
 
+		this.method_45054(text);
+	}
+
+	private void method_45054(Text text) {
 		Text text2 = text.copy().formatted(Formatting.RED);
 		this.client.setScreen(TaskScreen.createResultScreen(REPORT_ERROR_TITLE, text2, ScreenTexts.BACK, () -> this.client.setScreen(this)));
 	}

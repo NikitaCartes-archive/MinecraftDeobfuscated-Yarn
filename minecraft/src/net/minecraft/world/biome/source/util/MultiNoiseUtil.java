@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.util.dynamic.Codecs;
@@ -23,7 +24,7 @@ import net.minecraft.world.gen.densityfunction.DensityFunctionTypes;
 
 public class MultiNoiseUtil {
 	private static final boolean field_34477 = false;
-	private static final float field_35359 = 10000.0F;
+	private static final float TO_LONG_FACTOR = 10000.0F;
 	@VisibleForTesting
 	protected static final int HYPERCUBE_DIMENSION = 7;
 
@@ -31,12 +32,7 @@ public class MultiNoiseUtil {
 		float temperatureNoise, float humidityNoise, float continentalnessNoise, float erosionNoise, float depth, float weirdnessNoise
 	) {
 		return new MultiNoiseUtil.NoiseValuePoint(
-			method_38665(temperatureNoise),
-			method_38665(humidityNoise),
-			method_38665(continentalnessNoise),
-			method_38665(erosionNoise),
-			method_38665(depth),
-			method_38665(weirdnessNoise)
+			toLong(temperatureNoise), toLong(humidityNoise), toLong(continentalnessNoise), toLong(erosionNoise), toLong(depth), toLong(weirdnessNoise)
 		);
 	}
 
@@ -50,7 +46,7 @@ public class MultiNoiseUtil {
 			MultiNoiseUtil.ParameterRange.of(erosion),
 			MultiNoiseUtil.ParameterRange.of(depth),
 			MultiNoiseUtil.ParameterRange.of(weirdness),
-			method_38665(offset)
+			toLong(offset)
 		);
 	}
 
@@ -63,18 +59,18 @@ public class MultiNoiseUtil {
 		MultiNoiseUtil.ParameterRange weirdness,
 		float offset
 	) {
-		return new MultiNoiseUtil.NoiseHypercube(temperature, humidity, continentalness, erosion, depth, weirdness, method_38665(offset));
+		return new MultiNoiseUtil.NoiseHypercube(temperature, humidity, continentalness, erosion, depth, weirdness, toLong(offset));
 	}
 
-	public static long method_38665(float f) {
-		return (long)(f * 10000.0F);
+	public static long toLong(float value) {
+		return (long)(value * 10000.0F);
 	}
 
-	public static float method_38666(long l) {
-		return (float)l / 10000.0F;
+	public static float toFloat(long value) {
+		return (float)value / 10000.0F;
 	}
 
-	public static MultiNoiseUtil.MultiNoiseSampler method_40443() {
+	public static MultiNoiseUtil.MultiNoiseSampler createEmptyMultiNoiseSampler() {
 		DensityFunction densityFunction = DensityFunctionTypes.zero();
 		return new MultiNoiseUtil.MultiNoiseSampler(densityFunction, densityFunction, densityFunction, densityFunction, densityFunction, densityFunction, List.of());
 	}
@@ -96,20 +92,31 @@ public class MultiNoiseUtil {
 			return this.entries;
 		}
 
-		public T method_39529(MultiNoiseUtil.NoiseValuePoint noiseValuePoint) {
-			return this.method_39527(noiseValuePoint);
+		/**
+		 * {@return the closest entry at the given point}.
+		 * 
+		 * @param point the point of all relevant noises
+		 */
+		public T get(MultiNoiseUtil.NoiseValuePoint point) {
+			return this.getValue(point);
 		}
 
+		/**
+		 * {@return the closest entry at the given point}.
+		 * 
+		 * Note that this method only exists for testing, and is usually a lot slower
+		 * than {@link getValue()}.
+		 */
 		@VisibleForTesting
-		public T method_39530(MultiNoiseUtil.NoiseValuePoint noiseValuePoint) {
+		public T getValueSimple(MultiNoiseUtil.NoiseValuePoint point) {
 			Iterator<Pair<MultiNoiseUtil.NoiseHypercube, T>> iterator = this.getEntries().iterator();
 			Pair<MultiNoiseUtil.NoiseHypercube, T> pair = (Pair<MultiNoiseUtil.NoiseHypercube, T>)iterator.next();
-			long l = pair.getFirst().getSquaredDistance(noiseValuePoint);
+			long l = pair.getFirst().getSquaredDistance(point);
 			T object = pair.getSecond();
 
 			while (iterator.hasNext()) {
 				Pair<MultiNoiseUtil.NoiseHypercube, T> pair2 = (Pair<MultiNoiseUtil.NoiseHypercube, T>)iterator.next();
-				long m = pair2.getFirst().getSquaredDistance(noiseValuePoint);
+				long m = pair2.getFirst().getSquaredDistance(point);
 				if (m < l) {
 					l = m;
 					object = pair2.getSecond();
@@ -119,12 +126,17 @@ public class MultiNoiseUtil {
 			return object;
 		}
 
-		public T method_39527(MultiNoiseUtil.NoiseValuePoint noiseValuePoint) {
-			return this.method_39528(noiseValuePoint, MultiNoiseUtil.SearchTree.TreeNode::getSquaredDistance);
+		/**
+		 * {@return the closest entry at the given point}.
+		 * 
+		 * @param point the point of all relevant noises
+		 */
+		public T getValue(MultiNoiseUtil.NoiseValuePoint point) {
+			return this.getValue(point, MultiNoiseUtil.SearchTree.TreeNode::getSquaredDistance);
 		}
 
-		protected T method_39528(MultiNoiseUtil.NoiseValuePoint noiseValuePoint, MultiNoiseUtil.NodeDistanceFunction<T> nodeDistanceFunction) {
-			return this.tree.get(noiseValuePoint, nodeDistanceFunction);
+		protected T getValue(MultiNoiseUtil.NoiseValuePoint point, MultiNoiseUtil.NodeDistanceFunction<T> distanceFunction) {
+			return this.tree.get(point, distanceFunction);
 		}
 	}
 
@@ -216,7 +228,7 @@ public class MultiNoiseUtil {
 	}
 
 	interface NodeDistanceFunction<T> {
-		long getDistance(MultiNoiseUtil.SearchTree.TreeNode<T> node, long[] ls);
+		long getDistance(MultiNoiseUtil.SearchTree.TreeNode<T> node, long[] otherParameters);
 	}
 
 	/**
@@ -241,10 +253,7 @@ public class MultiNoiseUtil {
 						MultiNoiseUtil.ParameterRange.CODEC.fieldOf("erosion").forGetter(noiseHypercube -> noiseHypercube.erosion),
 						MultiNoiseUtil.ParameterRange.CODEC.fieldOf("depth").forGetter(noiseHypercube -> noiseHypercube.depth),
 						MultiNoiseUtil.ParameterRange.CODEC.fieldOf("weirdness").forGetter(noiseHypercube -> noiseHypercube.weirdness),
-						Codec.floatRange(0.0F, 1.0F)
-							.fieldOf("offset")
-							.xmap(MultiNoiseUtil::method_38665, MultiNoiseUtil::method_38666)
-							.forGetter(noiseHypercube -> noiseHypercube.offset)
+						Codec.floatRange(0.0F, 1.0F).fieldOf("offset").xmap(MultiNoiseUtil::toLong, MultiNoiseUtil::toFloat).forGetter(noiseHypercube -> noiseHypercube.offset)
 					)
 					.apply(instance, MultiNoiseUtil.NoiseHypercube::new)
 		);
@@ -301,9 +310,9 @@ public class MultiNoiseUtil {
 			"max",
 			(min, max) -> min.compareTo(max) > 0
 					? DataResult.error("Cannon construct interval, min > max (" + min + " > " + max + ")")
-					: DataResult.success(new MultiNoiseUtil.ParameterRange(MultiNoiseUtil.method_38665(min), MultiNoiseUtil.method_38665(max))),
-			parameterRange -> MultiNoiseUtil.method_38666(parameterRange.min()),
-			parameterRange -> MultiNoiseUtil.method_38666(parameterRange.max())
+					: DataResult.success(new MultiNoiseUtil.ParameterRange(MultiNoiseUtil.toLong(min), MultiNoiseUtil.toLong(max))),
+			parameterRange -> MultiNoiseUtil.toFloat(parameterRange.min()),
+			parameterRange -> MultiNoiseUtil.toFloat(parameterRange.max())
 		);
 
 		public static MultiNoiseUtil.ParameterRange of(float point) {
@@ -314,7 +323,7 @@ public class MultiNoiseUtil {
 			if (min > max) {
 				throw new IllegalArgumentException("min > max: " + min + " " + max);
 			} else {
-				return new MultiNoiseUtil.ParameterRange(MultiNoiseUtil.method_38665(min), MultiNoiseUtil.method_38665(max));
+				return new MultiNoiseUtil.ParameterRange(MultiNoiseUtil.toLong(min), MultiNoiseUtil.toLong(max));
 			}
 		}
 
@@ -335,7 +344,7 @@ public class MultiNoiseUtil {
 		}
 
 		public String toString() {
-			return this.min == this.max ? String.format("%d", this.min) : String.format("[%d-%d]", this.min, this.max);
+			return this.min == this.max ? String.format(Locale.ROOT, "%d", this.min) : String.format(Locale.ROOT, "[%d-%d]", this.min, this.max);
 		}
 
 		public long getDistance(long noise) {

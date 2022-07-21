@@ -61,7 +61,7 @@ public class DragonFireballEntity extends ExplosiveProjectileEntity {
 	}
 
 	@Override
-	public boolean collides() {
+	public boolean canHit() {
 		return false;
 	}
 

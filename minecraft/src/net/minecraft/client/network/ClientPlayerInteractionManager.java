@@ -397,27 +397,31 @@ public class ClientPlayerInteractionManager {
 	 */
 	public void clickSlot(int syncId, int slotId, int button, SlotActionType actionType, PlayerEntity player) {
 		ScreenHandler screenHandler = player.currentScreenHandler;
-		DefaultedList<Slot> defaultedList = screenHandler.slots;
-		int i = defaultedList.size();
-		List<ItemStack> list = Lists.<ItemStack>newArrayListWithCapacity(i);
+		if (syncId != screenHandler.syncId) {
+			LOGGER.warn("Ignoring click in mismatching container. Click in {}, player has {}.", syncId, screenHandler.syncId);
+		} else {
+			DefaultedList<Slot> defaultedList = screenHandler.slots;
+			int i = defaultedList.size();
+			List<ItemStack> list = Lists.<ItemStack>newArrayListWithCapacity(i);
 
-		for (Slot slot : defaultedList) {
-			list.add(slot.getStack().copy());
-		}
-
-		screenHandler.onSlotClick(slotId, button, actionType, player);
-		Int2ObjectMap<ItemStack> int2ObjectMap = new Int2ObjectOpenHashMap<>();
-
-		for (int j = 0; j < i; j++) {
-			ItemStack itemStack = (ItemStack)list.get(j);
-			ItemStack itemStack2 = defaultedList.get(j).getStack();
-			if (!ItemStack.areEqual(itemStack, itemStack2)) {
-				int2ObjectMap.put(j, itemStack2.copy());
+			for (Slot slot : defaultedList) {
+				list.add(slot.getStack().copy());
 			}
-		}
 
-		this.networkHandler
-			.sendPacket(new ClickSlotC2SPacket(syncId, screenHandler.getRevision(), slotId, button, actionType, screenHandler.getCursorStack().copy(), int2ObjectMap));
+			screenHandler.onSlotClick(slotId, button, actionType, player);
+			Int2ObjectMap<ItemStack> int2ObjectMap = new Int2ObjectOpenHashMap<>();
+
+			for (int j = 0; j < i; j++) {
+				ItemStack itemStack = (ItemStack)list.get(j);
+				ItemStack itemStack2 = defaultedList.get(j).getStack();
+				if (!ItemStack.areEqual(itemStack, itemStack2)) {
+					int2ObjectMap.put(j, itemStack2.copy());
+				}
+			}
+
+			this.networkHandler
+				.sendPacket(new ClickSlotC2SPacket(syncId, screenHandler.getRevision(), slotId, button, actionType, screenHandler.getCursorStack().copy(), int2ObjectMap));
+		}
 	}
 
 	public void clickRecipe(int syncId, Recipe<?> recipe, boolean craftAll) {

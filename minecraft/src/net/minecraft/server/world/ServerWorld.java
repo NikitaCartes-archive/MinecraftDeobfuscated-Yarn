@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -1489,20 +1490,20 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		Writer writer = Files.newBufferedWriter(path.resolve("stats.txt"));
 
 		try {
-			writer.write(String.format("spawning_chunks: %d\n", threadedAnvilChunkStorage.getTicketManager().getTickedChunkCount()));
+			writer.write(String.format(Locale.ROOT, "spawning_chunks: %d\n", threadedAnvilChunkStorage.getTicketManager().getTickedChunkCount()));
 			SpawnHelper.Info info = this.getChunkManager().getSpawnInfo();
 			if (info != null) {
 				for (Entry<SpawnGroup> entry : info.getGroupToCount().object2IntEntrySet()) {
-					writer.write(String.format("spawn_count.%s: %d\n", ((SpawnGroup)entry.getKey()).getName(), entry.getIntValue()));
+					writer.write(String.format(Locale.ROOT, "spawn_count.%s: %d\n", ((SpawnGroup)entry.getKey()).getName(), entry.getIntValue()));
 				}
 			}
 
-			writer.write(String.format("entities: %s\n", this.entityManager.getDebugString()));
-			writer.write(String.format("block_entity_tickers: %d\n", this.blockEntityTickers.size()));
-			writer.write(String.format("block_ticks: %d\n", this.getBlockTickScheduler().getTickCount()));
-			writer.write(String.format("fluid_ticks: %d\n", this.getFluidTickScheduler().getTickCount()));
+			writer.write(String.format(Locale.ROOT, "entities: %s\n", this.entityManager.getDebugString()));
+			writer.write(String.format(Locale.ROOT, "block_entity_tickers: %d\n", this.blockEntityTickers.size()));
+			writer.write(String.format(Locale.ROOT, "block_ticks: %d\n", this.getBlockTickScheduler().getTickCount()));
+			writer.write(String.format(Locale.ROOT, "fluid_ticks: %d\n", this.getFluidTickScheduler().getTickCount()));
 			writer.write("distance_manager: " + threadedAnvilChunkStorage.getTicketManager().toDumpString() + "\n");
-			writer.write(String.format("pending_tasks: %d\n", this.getChunkManager().getPendingTasks()));
+			writer.write(String.format(Locale.ROOT, "pending_tasks: %d\n", this.getChunkManager().getPendingTasks()));
 		} catch (Throwable var22) {
 			if (writer != null) {
 				try {
@@ -1710,6 +1711,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	@VisibleForTesting
 	public String getDebugString() {
 		return String.format(
+			Locale.ROOT,
 			"players: %s, entities: %s [%s], block_entities: %d [%s], block_ticks: %d, fluid_ticks: %d, chunk_source: %s",
 			this.players.size(),
 			this.entityManager.getDebugString(),

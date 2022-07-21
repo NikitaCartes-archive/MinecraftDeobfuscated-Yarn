@@ -169,7 +169,12 @@ public class InputUtil {
 			for (InputUtil.Type type : InputUtil.Type.values()) {
 				if (translationKey.startsWith(type.name)) {
 					String string = translationKey.substring(type.name.length() + 1);
-					return type.createFromCode(Integer.parseInt(string));
+					int i = Integer.parseInt(string);
+					if (type == InputUtil.Type.MOUSE) {
+						i--;
+					}
+
+					return type.createFromCode(i);
 				}
 			}
 

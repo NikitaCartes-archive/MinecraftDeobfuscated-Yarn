@@ -112,7 +112,7 @@ public class DebugRenderer {
 			Vec3d vec3d3 = vec3d.add(vec3d2);
 			Box box = entity.getBoundingBox().stretch(vec3d2).expand(1.0);
 			int i = maxDistance * maxDistance;
-			Predicate<Entity> predicate = entityx -> !entityx.isSpectator() && entityx.collides();
+			Predicate<Entity> predicate = entityx -> !entityx.isSpectator() && entityx.canHit();
 			EntityHitResult entityHitResult = ProjectileUtil.raycast(entity, vec3d, vec3d3, box, predicate, (double)i);
 			if (entityHitResult == null) {
 				return Optional.empty();

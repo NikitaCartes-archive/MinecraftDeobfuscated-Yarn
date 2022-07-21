@@ -181,9 +181,9 @@ public class DebugHud extends DrawableHelper {
 		float g = clientConnection.getAveragePacketsReceived();
 		String string;
 		if (integratedServer != null) {
-			string = String.format("Integrated server @ %.0f ms ticks, %.0f tx, %.0f rx", integratedServer.getTickTime(), f, g);
+			string = String.format(Locale.ROOT, "Integrated server @ %.0f ms ticks, %.0f tx, %.0f rx", integratedServer.getTickTime(), f, g);
 		} else {
-			string = String.format("\"%s\" server, %.0f tx, %.0f rx", this.client.player.getServerBrand(), f, g);
+			string = String.format(Locale.ROOT, "\"%s\" server, %.0f tx, %.0f rx", this.client.player.getServerBrand(), f, g);
 		}
 
 		BlockPos blockPos = this.client.getCameraEntity().getBlockPos();
@@ -197,7 +197,7 @@ public class DebugHud extends DrawableHelper {
 				"P: " + this.client.particleManager.getDebugString() + ". T: " + this.client.world.getRegularEntityCount(),
 				this.client.world.asString(),
 				"",
-				String.format("Chunk-relative: %d %d %d", blockPos.getX() & 15, blockPos.getY() & 15, blockPos.getZ() & 15)
+				String.format(Locale.ROOT, "Chunk-relative: %d %d %d", blockPos.getX() & 15, blockPos.getY() & 15, blockPos.getZ() & 15)
 			);
 		} else {
 			Entity entity = this.client.getCameraEntity();
@@ -248,11 +248,19 @@ public class DebugHud extends DrawableHelper {
 			);
 			list.add(
 				String.format(
-					"Block: %d %d %d [%d %d %d]", blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX() & 15, blockPos.getY() & 15, blockPos.getZ() & 15
+					Locale.ROOT,
+					"Block: %d %d %d [%d %d %d]",
+					blockPos.getX(),
+					blockPos.getY(),
+					blockPos.getZ(),
+					blockPos.getX() & 15,
+					blockPos.getY() & 15,
+					blockPos.getZ() & 15
 				)
 			);
 			list.add(
 				String.format(
+					Locale.ROOT,
 					"Chunk: %d %d %d [%d %d in r.%d.%d.mca]",
 					chunkPos.x,
 					ChunkSectionPos.getSectionCoord(blockPos.getY()),
@@ -361,7 +369,9 @@ public class DebugHud extends DrawableHelper {
 				list.add("Shader: " + shaderEffect.getName());
 			}
 
-			list.add(this.client.getSoundManager().getDebugString() + String.format(" (Mood %d%%)", Math.round(this.client.player.getMoodPercentage() * 100.0F)));
+			list.add(
+				this.client.getSoundManager().getDebugString() + String.format(Locale.ROOT, " (Mood %d%%)", Math.round(this.client.player.getMoodPercentage() * 100.0F))
+			);
 			return list;
 		}
 	}
@@ -420,14 +430,15 @@ public class DebugHud extends DrawableHelper {
 		long n = Runtime.getRuntime().freeMemory();
 		long o = m - n;
 		List<String> list = Lists.<String>newArrayList(
-			String.format("Java: %s %dbit", System.getProperty("java.version"), this.client.is64Bit() ? 64 : 32),
-			String.format("Mem: % 2d%% %03d/%03dMB", o * 100L / l, toMiB(o), toMiB(l)),
-			String.format("Allocation rate: %03dMB /s", toMiB(this.allocationRateCalculator.get(o))),
-			String.format("Allocated: % 2d%% %03dMB", m * 100L / l, toMiB(m)),
+			String.format(Locale.ROOT, "Java: %s %dbit", System.getProperty("java.version"), this.client.is64Bit() ? 64 : 32),
+			String.format(Locale.ROOT, "Mem: % 2d%% %03d/%03dMB", o * 100L / l, toMiB(o), toMiB(l)),
+			String.format(Locale.ROOT, "Allocation rate: %03dMB /s", toMiB(this.allocationRateCalculator.get(o))),
+			String.format(Locale.ROOT, "Allocated: % 2d%% %03dMB", m * 100L / l, toMiB(m)),
 			"",
-			String.format("CPU: %s", GlDebugInfo.getCpuInfo()),
+			String.format(Locale.ROOT, "CPU: %s", GlDebugInfo.getCpuInfo()),
 			"",
 			String.format(
+				Locale.ROOT,
 				"Display: %dx%d (%s)",
 				MinecraftClient.getInstance().getWindow().getFramebufferWidth(),
 				MinecraftClient.getInstance().getWindow().getFramebufferHeight(),

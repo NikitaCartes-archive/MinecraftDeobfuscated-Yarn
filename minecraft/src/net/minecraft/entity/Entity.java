@@ -52,7 +52,7 @@ import net.minecraft.nbt.NbtFloat;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.network.Packet;
-import net.minecraft.network.message.MessageSender;
+import net.minecraft.network.message.MessageSourceProfile;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -137,8 +137,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 */
 	public static final int MAX_RIDING_COOLDOWN = 60;
 	/**
-	 * @see Entity#getDefaultNetherPortalCooldown
-	 * @see Entity#getMaxAir
+	 * @see Entity#getDefaultPortalCooldown
 	 */
 	public static final int DEFAULT_PORTAL_COOLDOWN = 300;
 	/**
@@ -262,7 +261,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	private final TrackedPosition trackedPosition = new TrackedPosition();
 	public boolean ignoreCameraFrustum;
 	public boolean velocityDirty;
-	private int netherPortalCooldown;
+	private int portalCooldown;
 	protected boolean inNetherPortal;
 	protected int netherPortalTime;
 	protected BlockPos lastNetherPortalPosition;
@@ -486,7 +485,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.prevHorizontalSpeed = this.horizontalSpeed;
 		this.prevPitch = this.getPitch();
 		this.prevYaw = this.getYaw();
-		this.tickNetherPortal();
+		this.tickPortal();
 		if (this.shouldSpawnSprintingParticles()) {
 			this.spawnSprintingParticles();
 		}
@@ -545,17 +544,17 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
-	public void resetNetherPortalCooldown() {
-		this.netherPortalCooldown = this.getDefaultNetherPortalCooldown();
+	public void resetPortalCooldown() {
+		this.portalCooldown = this.getDefaultPortalCooldown();
 	}
 
-	public boolean hasNetherPortalCooldown() {
-		return this.netherPortalCooldown > 0;
+	public boolean hasPortalCooldown() {
+		return this.portalCooldown > 0;
 	}
 
-	protected void tickNetherPortalCooldown() {
-		if (this.hasNetherPortalCooldown()) {
-			this.netherPortalCooldown--;
+	protected void tickPortalCooldown() {
+		if (this.hasPortalCooldown()) {
+			this.portalCooldown--;
 		}
 	}
 
@@ -724,7 +723,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 							}
 
 							if (moveEffect.emitsGameEvents() && (this.onGround || movement.y == 0.0 || this.inPowderSnow || bl3)) {
-								this.world.emitGameEvent(GameEvent.STEP, this.pos, GameEvent.Emitter.of(this.getEventSource(), this.getSteppingBlockState()));
+								this.world.emitGameEvent(GameEvent.STEP, this.pos, GameEvent.Emitter.of(this, this.getSteppingBlockState()));
 							}
 						}
 					} else if (blockState.isAir()) {
@@ -1113,18 +1112,13 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		if (onGround) {
 			if (this.fallDistance > 0.0F) {
 				state.getBlock().onLandedUpon(this.world, state, landedPosition, this, this.fallDistance);
-				this.world.emitGameEvent(GameEvent.HIT_GROUND, this.pos, GameEvent.Emitter.of(this.getEventSource(), this.getSteppingBlockState()));
+				this.world.emitGameEvent(GameEvent.HIT_GROUND, this.pos, GameEvent.Emitter.of(this, this.getSteppingBlockState()));
 			}
 
 			this.onLanding();
 		} else if (heightDifference < 0.0) {
 			this.fallDistance -= (float)heightDifference;
 		}
-	}
-
-	@Nullable
-	public Entity getEventSource() {
-		return this;
 	}
 
 	public boolean isFireImmune() {
@@ -1183,8 +1177,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this.submergedInWater && this.isTouchingWater();
 	}
 
-	public MessageSender asMessageSender() {
-		return new MessageSender(this.getUuid(), this.getDisplayName());
+	public MessageSourceProfile getMessageSourceProfile() {
+		return MessageSourceProfile.NONE;
 	}
 
 	public void updateSwimming() {
@@ -1541,7 +1535,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			);
 	}
 
-	public boolean collides() {
+	public boolean canHit() {
 		return false;
 	}
 
@@ -1608,7 +1602,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			nbt.putShort("Air", (short)this.getAir());
 			nbt.putBoolean("OnGround", this.onGround);
 			nbt.putBoolean("Invulnerable", this.invulnerable);
-			nbt.putInt("PortalCooldown", this.netherPortalCooldown);
+			nbt.putInt("PortalCooldown", this.portalCooldown);
 			nbt.putUuid("UUID", this.getUuid());
 			Text text = this.getCustomName();
 			if (text != null) {
@@ -1684,7 +1678,12 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			double e = nbtList2.getDouble(1);
 			double f = nbtList2.getDouble(2);
 			this.setVelocity(Math.abs(d) > 10.0 ? 0.0 : d, Math.abs(e) > 10.0 ? 0.0 : e, Math.abs(f) > 10.0 ? 0.0 : f);
-			this.setPos(nbtList.getDouble(0), MathHelper.clamp(nbtList.getDouble(1), -2.0E7, 2.0E7), nbtList.getDouble(2));
+			double g = 3.0000512E7;
+			this.setPos(
+				MathHelper.clamp(nbtList.getDouble(0), -3.0000512E7, 3.0000512E7),
+				MathHelper.clamp(nbtList.getDouble(1), -2.0E7, 2.0E7),
+				MathHelper.clamp(nbtList.getDouble(2), -3.0000512E7, 3.0000512E7)
+			);
 			this.setYaw(nbtList3.getFloat(0));
 			this.setPitch(nbtList3.getFloat(1));
 			this.resetPosition();
@@ -1698,7 +1697,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 			this.onGround = nbt.getBoolean("OnGround");
 			this.invulnerable = nbt.getBoolean("Invulnerable");
-			this.netherPortalCooldown = nbt.getInt("PortalCooldown");
+			this.portalCooldown = nbt.getInt("PortalCooldown");
 			if (nbt.containsUuid("UUID")) {
 				this.uuid = nbt.getUuid("UUID");
 				this.uuidString = this.uuid.toString();
@@ -1714,8 +1713,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 					try {
 						this.setCustomName(Text.Serializer.fromJson(string));
-					} catch (Exception var14) {
-						LOGGER.warn("Failed to parse entity custom name {}", string, var14);
+					} catch (Exception var16) {
+						LOGGER.warn("Failed to parse entity custom name {}", string, var16);
 					}
 				}
 
@@ -1742,8 +1741,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			} else {
 				throw new IllegalStateException("Entity has invalid rotation");
 			}
-		} catch (Throwable var15) {
-			CrashReport crashReport = CrashReport.create(var15, "Loading entity NBT");
+		} catch (Throwable var17) {
+			CrashReport crashReport = CrashReport.create(var17, "Loading entity NBT");
 			CrashReportSection crashReportSection = crashReport.addElement("Entity being loaded");
 			this.populateCrashReport(crashReportSection);
 			throw new CrashException(crashReport);
@@ -2030,8 +2029,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public void setInNetherPortal(BlockPos pos) {
-		if (this.hasNetherPortalCooldown()) {
-			this.resetNetherPortalCooldown();
+		if (this.hasPortalCooldown()) {
+			this.resetPortalCooldown();
 		} else {
 			if (!this.world.isClient && !pos.equals(this.lastNetherPortalPosition)) {
 				this.lastNetherPortalPosition = pos.toImmutable();
@@ -2041,7 +2040,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
-	protected void tickNetherPortal() {
+	protected void tickPortal() {
 		if (this.world instanceof ServerWorld) {
 			int i = this.getMaxNetherPortalTime();
 			ServerWorld serverWorld = (ServerWorld)this.world;
@@ -2052,7 +2051,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				if (serverWorld2 != null && minecraftServer.isNetherAllowed() && !this.hasVehicle() && this.netherPortalTime++ >= i) {
 					this.world.getProfiler().push("portal");
 					this.netherPortalTime = i;
-					this.resetNetherPortalCooldown();
+					this.resetPortalCooldown();
 					this.moveToWorld(serverWorld2);
 					this.world.getProfiler().pop();
 				}
@@ -2068,11 +2067,11 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				}
 			}
 
-			this.tickNetherPortalCooldown();
+			this.tickPortalCooldown();
 		}
 	}
 
-	public int getDefaultNetherPortalCooldown() {
+	public int getDefaultPortalCooldown() {
 		return 300;
 	}
 
@@ -2090,7 +2089,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	public void animateDamage() {
 	}
 
-	public Iterable<ItemStack> getItemsHand() {
+	public Iterable<ItemStack> getHandItems() {
 		return EMPTY_STACK_LIST;
 	}
 
@@ -2099,7 +2098,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public Iterable<ItemStack> getItemsEquipped() {
-		return Iterables.concat(this.getItemsHand(), this.getArmorItems());
+		return Iterables.concat(this.getHandItems(), this.getArmorItems());
 	}
 
 	public void equipStack(EquipmentSlot slot, ItemStack stack) {
@@ -2176,7 +2175,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this.isInPose(EntityPose.SWIMMING);
 	}
 
-	public boolean shouldLeaveSwimmingPose() {
+	public boolean isCrawling() {
 		return this.isInSwimmingPose() && !this.isTouchingWater();
 	}
 
@@ -2448,7 +2447,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		NbtCompound nbtCompound = original.writeNbt(new NbtCompound());
 		nbtCompound.remove("Dimension");
 		this.readNbt(nbtCompound);
-		this.netherPortalCooldown = original.netherPortalCooldown;
+		this.portalCooldown = original.portalCooldown;
 		this.lastNetherPortalPosition = original.lastNetherPortalPosition;
 	}
 
@@ -2883,7 +2882,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this.passengerList.contains(passenger);
 	}
 
-	public boolean hasPassengerType(Predicate<Entity> predicate) {
+	public boolean hasPassenger(Predicate<Entity> predicate) {
 		for (Entity entity : this.passengerList) {
 			if (predicate.test(entity)) {
 				return true;

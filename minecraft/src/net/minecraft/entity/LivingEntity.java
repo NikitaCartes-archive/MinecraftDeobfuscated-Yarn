@@ -2412,7 +2412,10 @@ public abstract class LivingEntity extends Entity {
 			}
 		}
 
-		this.tickMovement();
+		if (!this.isRemoved()) {
+			this.tickMovement();
+		}
+
 		double d = this.getX() - this.prevX;
 		double e = this.getZ() - this.prevZ;
 		float f = (float)(d * d + e * e);
@@ -2930,7 +2933,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	@Override
-	public boolean collides() {
+	public boolean canHit() {
 		return !this.isRemoved();
 	}
 

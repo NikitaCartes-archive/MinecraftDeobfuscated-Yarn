@@ -65,7 +65,7 @@ public class SmallFireballEntity extends AbstractFireballEntity {
 	}
 
 	@Override
-	public boolean collides() {
+	public boolean canHit() {
 		return false;
 	}
 

@@ -54,7 +54,7 @@ public class NetherPortalBlock extends Block {
 			if (world.getBlockState(pos).allowsSpawning(world, pos, EntityType.ZOMBIFIED_PIGLIN)) {
 				Entity entity = EntityType.ZOMBIFIED_PIGLIN.spawn(world, null, null, null, pos.up(), SpawnReason.STRUCTURE, false, false);
 				if (entity != null) {
-					entity.resetNetherPortalCooldown();
+					entity.resetPortalCooldown();
 				}
 			}
 		}

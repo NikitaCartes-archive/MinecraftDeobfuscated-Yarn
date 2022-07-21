@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
@@ -64,10 +65,12 @@ public class GLX {
 	public static LongSupplier _initGlfw() {
 		RenderSystem.assertInInitPhase();
 		Window.acceptError((code, message) -> {
-			throw new IllegalStateException(String.format("GLFW error before init: [0x%X]%s", code, message));
+			throw new IllegalStateException(String.format(Locale.ROOT, "GLFW error before init: [0x%X]%s", code, message));
 		});
 		List<String> list = Lists.<String>newArrayList();
-		GLFWErrorCallback gLFWErrorCallback = GLFW.glfwSetErrorCallback((code, pointer) -> list.add(String.format("GLFW error during init: [0x%X]%s", code, pointer)));
+		GLFWErrorCallback gLFWErrorCallback = GLFW.glfwSetErrorCallback(
+			(code, pointer) -> list.add(String.format(Locale.ROOT, "GLFW error during init: [0x%X]%s", code, pointer))
+		);
 		if (!GLFW.glfwInit()) {
 			throw new IllegalStateException("Failed to initialize GLFW, errors: " + Joiner.on(",").join(list));
 		} else {
@@ -99,7 +102,8 @@ public class GLX {
 
 		try {
 			CentralProcessor centralProcessor = new SystemInfo().getHardware().getProcessor();
-			cpuInfo = String.format("%dx %s", centralProcessor.getLogicalProcessorCount(), centralProcessor.getProcessorIdentifier().getName()).replaceAll("\\s+", " ");
+			cpuInfo = String.format(Locale.ROOT, "%dx %s", centralProcessor.getLogicalProcessorCount(), centralProcessor.getProcessorIdentifier().getName())
+				.replaceAll("\\s+", " ");
 		} catch (Throwable var3) {
 		}
 

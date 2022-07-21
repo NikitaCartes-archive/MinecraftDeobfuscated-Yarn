@@ -9,6 +9,7 @@ import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatPreviewS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatPreviewStateChangeS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChatSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDeltaUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkLoadDistanceS2CPacket;
@@ -46,12 +47,14 @@ import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.HealthUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.HideMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.network.packet.s2c.play.ItemPickupAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.KeepAliveS2CPacket;
 import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.LookAtS2CPacket;
 import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.MessageHeaderS2CPacket;
 import net.minecraft.network.packet.s2c.play.NbtQueryResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenHorseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
@@ -139,9 +142,13 @@ public interface ClientPlayPacketListener extends PacketListener {
 
 	void onChatMessage(ChatMessageS2CPacket packet);
 
+	void onMessageHeader(MessageHeaderS2CPacket packet);
+
 	void onChatPreview(ChatPreviewS2CPacket packet);
 
 	void onChatPreviewStateChange(ChatPreviewStateChangeS2CPacket packet);
+
+	void onHideMessage(HideMessageS2CPacket packet);
 
 	void onChunkDeltaUpdate(ChunkDeltaUpdateS2CPacket packet);
 
@@ -316,4 +323,6 @@ public interface ClientPlayPacketListener extends PacketListener {
 	void onTitleClear(ClearTitleS2CPacket packet);
 
 	void onServerMetadata(ServerMetadataS2CPacket packet);
+
+	void onChatSuggestions(ChatSuggestionsS2CPacket packet);
 }

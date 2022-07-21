@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.IllegalFormatException;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Function;
 import javax.annotation.Nullable;
@@ -100,7 +101,7 @@ public class UnicodeTextureFont implements Font {
 	}
 
 	private Identifier getImageId(int codePoint) {
-		Identifier identifier = new Identifier(String.format(this.template, String.format("%02x", codePoint / 256)));
+		Identifier identifier = new Identifier(String.format(Locale.ROOT, this.template, String.format(Locale.ROOT, "%02x", codePoint / 256)));
 		return new Identifier(identifier.getNamespace(), "textures/" + identifier.getPath());
 	}
 
@@ -193,7 +194,7 @@ public class UnicodeTextureFont implements Font {
 			String string = JsonHelper.getString(json, "template");
 
 			try {
-				String.format(string, "");
+				String.format(Locale.ROOT, string, "");
 				return string;
 			} catch (IllegalFormatException var3) {
 				throw new JsonParseException("Invalid legacy unicode template supplied, expected single '%s': " + string);

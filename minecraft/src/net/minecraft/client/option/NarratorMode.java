@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.network.message.MessageType;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
@@ -38,16 +37,11 @@ public enum NarratorMode {
 		return VALUES[MathHelper.floorMod(id, VALUES.length)];
 	}
 
-	/**
-	 * {@return whether a message from the server should be narrated,
-	 * given the message type's narration kind}
-	 */
-	public boolean shouldNarrate(MessageType.NarrationRule.Kind kind) {
-		return switch (this) {
-			case OFF -> false;
-			case ALL -> true;
-			case CHAT -> kind == MessageType.NarrationRule.Kind.CHAT;
-			case SYSTEM -> kind == MessageType.NarrationRule.Kind.SYSTEM;
-		};
+	public boolean shouldNarrateChat() {
+		return this == ALL || this == CHAT;
+	}
+
+	public boolean shouldNarrateSystem() {
+		return this == ALL || this == SYSTEM;
 	}
 }

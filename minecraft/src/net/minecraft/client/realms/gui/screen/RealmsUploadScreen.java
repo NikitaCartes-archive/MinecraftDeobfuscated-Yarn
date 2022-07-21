@@ -224,7 +224,7 @@ public class RealmsUploadScreen extends RealmsScreen {
 		this.animTick++;
 		if (this.status != null && this.narrationRateLimiter.tryAcquire(1)) {
 			Text text = this.getNarration();
-			NarratorManager.INSTANCE.narrate(text);
+			this.client.getNarratorManager().narrate(text);
 		}
 	}
 

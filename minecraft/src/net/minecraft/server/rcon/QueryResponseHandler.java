@@ -12,6 +12,7 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.server.dedicated.DedicatedServer;
@@ -279,7 +280,7 @@ public class QueryResponseHandler extends RconBase {
 			this.messageBytes[3] = bs[6];
 			this.message = new String(this.messageBytes, StandardCharsets.UTF_8);
 			this.id = Random.create().nextInt(16777216);
-			this.replyBuf = String.format("\t%s%d\u0000", this.message, this.id).getBytes(StandardCharsets.UTF_8);
+			this.replyBuf = String.format(Locale.ROOT, "\t%s%d\u0000", this.message, this.id).getBytes(StandardCharsets.UTF_8);
 		}
 
 		public Boolean startedBefore(long lastQueryTime) {

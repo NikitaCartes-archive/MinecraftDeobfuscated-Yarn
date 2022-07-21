@@ -9,6 +9,13 @@ import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.registry.Registry;
 
+/**
+ * A group of items that the items belong to. This is used by the creative inventory.
+ * Use {@link Item.Settings#group(ItemGroup)} to assign an item group to an item.
+ * 
+ * @see Item#appendStacks
+ * @see Item#isIn(ItemGroup)
+ */
 public abstract class ItemGroup {
 	public static final ItemGroup[] GROUPS = new ItemGroup[12];
 	public static final ItemGroup BUILDING_BLOCKS = (new ItemGroup(0, "buildingBlocks") {

@@ -161,7 +161,7 @@ public class FoxEntity extends AnimalEntity {
 		this.goalSelector.add(7, new FoxEntity.DelayedCalmDownGoal());
 		this.goalSelector.add(8, new FoxEntity.FollowParentGoal(this, 1.25));
 		this.goalSelector.add(9, new FoxEntity.GoToVillageGoal(32, 200));
-		this.goalSelector.add(10, new FoxEntity.EatSweetBerriesGoal(1.2F, 12, 1));
+		this.goalSelector.add(10, new FoxEntity.EatBerriesGoal(1.2F, 12, 1));
 		this.goalSelector.add(10, new PounceAtTargetGoal(this, 0.4F));
 		this.goalSelector.add(11, new WanderAroundFarGoal(this, 1.0));
 		this.goalSelector.add(11, new FoxEntity.PickupItemGoal());
@@ -878,11 +878,11 @@ public class FoxEntity extends AnimalEntity {
 		}
 	}
 
-	public class EatSweetBerriesGoal extends MoveToTargetPosGoal {
+	public class EatBerriesGoal extends MoveToTargetPosGoal {
 		private static final int EATING_TIME = 40;
 		protected int timer;
 
-		public EatSweetBerriesGoal(double speed, int range, int maxYDifference) {
+		public EatBerriesGoal(double speed, int range, int maxYDifference) {
 			super(FoxEntity.this, speed, range, maxYDifference);
 		}
 
@@ -906,7 +906,7 @@ public class FoxEntity extends AnimalEntity {
 		public void tick() {
 			if (this.hasReached()) {
 				if (this.timer >= 40) {
-					this.eatSweetBerry();
+					this.eatBerries();
 				} else {
 					this.timer++;
 				}
@@ -917,7 +917,7 @@ public class FoxEntity extends AnimalEntity {
 			super.tick();
 		}
 
-		protected void eatSweetBerry() {
+		protected void eatBerries() {
 			if (FoxEntity.this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 				BlockState blockState = FoxEntity.this.world.getBlockState(this.targetPos);
 				if (blockState.isOf(Blocks.SWEET_BERRY_BUSH)) {

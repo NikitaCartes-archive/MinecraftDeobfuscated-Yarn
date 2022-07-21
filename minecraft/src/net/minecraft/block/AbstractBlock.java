@@ -5,6 +5,7 @@ import com.mojang.serialization.MapCodec;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
@@ -63,15 +64,230 @@ import net.minecraft.world.WorldView;
 
 /**
  * An abstract class that defines some logic for {@link Block blocks}.
+ * <strong>This class should not be extended directly. Extend {@link Block} instead.</strong>
+ * Custom block behaviors are specified either through {@linkplain AbstractBlock.Settings
+ * block settings} or by overriding methods in this class.
+ * 
+ * <p>Methods in this class may be executed during world generation if they take
+ * {@link WorldAccess} as a parameter. In this case, a {@link net.minecraft.world.ChunkRegion}
+ * is passed to the parameter, which is not a subclass of {@link World}.
  * 
  * <p id="deprecated-methods">Deprecated methods in this class mean they
  * should only be called from the corresponding method in {@link
- * AbstractBlockState} or subclasses of this class. In vanilla subclasses,
- * these methods are called either to do the default behavior (e.g.
- * {@code super.onUse(...)}) or to delegate logic to other blocks (e.g.
- * {@link net.minecraft.block.StairsBlock#randomTick
+ * AbstractBlockState} or subclasses of this class. <strong>Overriding the
+ * methods is an expected usage and is not deprecated in any way.</strong>
+ * 
+ * @apiNote In vanilla subclasses, these methods are called either to do the
+ * default behavior (e.g. {@code super.onUse(...)}) or to delegate logic to
+ * other blocks (e.g. {@link net.minecraft.block.StairsBlock#randomTick
  * StairsBlock#randomTick} calls {@code randomTick} of its base block).
- * It's fine to override them, as they are overridden by vanilla blocks.
+ * 
+ * <p>Many methods of this class are called on both the logical client and logical server,
+ * so take caution when using those methods. The logical side can be checked using
+ * {@link World#isClient}.
+ * 
+ * <h2 id=quick-view>Quick view</h2>
+ * <p><strong>Notes</strong>: "Tall or wide block" refers to a block that
+ * has multiple parts, such as doors, sunflowers, or beds. "Neighboring
+ * block" refers to blocks adjacent to a block on all 6 sides (but not
+ * diagonally.)
+ * 
+ * <h3 id=placement>Placement related methods</h3>
+ * <table>
+ * <caption>Block placement related methods (sorted by execution order)</caption>
+ * <thead>
+ *     <tr>
+ *         <th>Method</th>
+ *         <th>Purpose</th>
+ *         <th>Player/dispenser</th>
+ *         <th>Falling block</th>
+ *         <th>{@link World#setBlockState(BlockPos, BlockState) setBlockState} call</th>
+ *     </tr>
+ * </thead>
+ * <tbody>
+ *     <tr>
+ *         <td>oldState.{@link #canReplace canReplace}</td>
+ *         <td>Checking if the current block can be replaced</td>
+ *         <td>Yes</td>
+ *         <td>Yes</td>
+ *         <td>No</td>
+ *     </tr>
+ *     <tr>
+ *         <td>newBlock.{@link Block#getPlacementState getPlacementState}</td>
+ *         <td>Getting the placed state</td>
+ *         <td>Yes</td>
+ *         <td>Yes</td>
+ *         <td>No</td>
+ *     </tr>
+ *     <tr>
+ *         <td>newState.{@link #canPlaceAt canPlaceAt}</td>
+ *         <td>Checking the block's placement restriction</td>
+ *         <td>Yes</td>
+ *         <td>Yes</td>
+ *         <td>No</td>
+ *     </tr>
+ *     <tr>
+ *         <td>oldState.{@link #onStateReplaced onStateReplaced}</td>
+ *         <td>Dropping inventory, updating redstone circuit, etc</td>
+ *         <td>Yes</td>
+ *         <td>Yes</td>
+ *         <td>Yes</td>
+ *     </tr>
+ *     <tr>
+ *         <td>newState.{@link #onBlockAdded onBlockAdded}</td>
+ *         <td>Activating redstone component, etc</td>
+ *         <td>Yes</td>
+ *         <td>Yes</td>
+ *         <td>Yes</td>
+ *     </tr>
+ *     <tr>
+ *         <td>neighborState.{@link #neighborUpdate neighborUpdate}</td>
+ *         <td>Activating neighboring redstone component, etc</td>
+ *         <td>Yes</td>
+ *         <td>Yes</td>
+ *         <td>Yes</td>
+ *     </tr>
+ *     <tr>
+ *         <td>oldState.{@link #prepare prepare}</td>
+ *         <td>Updating redstone wire connection</td>
+ *         <td>Yes</td>
+ *         <td>Yes</td>
+ *         <td>Yes</td>
+ *     </tr>
+ *     <tr>
+ *         <td>neighborState.{@link #getStateForNeighborUpdate getStateForNeighborUpdate}</td>
+ *         <td>Checking the neighboring block's placement restriction, updating connection, etc</td>
+ *         <td>Yes</td>
+ *         <td>Yes</td>
+ *         <td>Yes</td>
+ *     </tr>
+ *     <tr>
+ *         <td>newState.{@link #prepare prepare}</td>
+ *         <td>Updating redstone wire connection</td>
+ *         <td>Yes</td>
+ *         <td>Yes</td>
+ *         <td>Yes</td>
+ *     </tr>
+ *     <tr>
+ *         <td>newBlock.{@link Block#onPlaced onPlaced}</td>
+ *         <td>Placing the other half of tall or wide block, setting block entity's custom name, etc</td>
+ *         <td>Yes</td>
+ *         <td>No</td>
+ *         <td>No</td>
+ *     </tr>
+ * </tbody>
+ * </table>
+ * 
+ * <h3 id=breaking>Breaking related methods</h3>
+ * <table>
+ * <caption>Block breaking related methods (sorted by execution order)</caption>
+ * <thead>
+ *     <tr>
+ *         <th>Method</th>
+ *         <th>Purpose</th>
+ *         <th>Player mining</th>
+ *         <th>Explosion</th>
+ *         <th>{@link World#setBlockState(BlockPos, BlockState) setBlockState} / {@link net.minecraft.world.ModifiableWorld#removeBlock(BlockPos, boolean) removeBlock} call</th>
+ *         <th>{@link net.minecraft.world.ModifiableWorld#breakBlock(BlockPos, boolean) breakBlock} call</th>
+ *     </tr>
+ * </thead>
+ * <tbody>
+ *     <tr>
+ *         <td>state.{@link #onBlockBreakStart onBlockBreakStart}</td>
+ *         <td>Doing something when player starts breaking a block</td>
+ *         <td>Yes</td>
+ *         <td>No</td>
+ *         <td>No</td>
+ *         <td>No</td>
+ *     </tr>
+ *     <tr>
+ *         <td>state.{@link #calcBlockBreakingDelta calcBlockBreakingDelta}</td>
+ *         <td>Calculating the player's mining speed</td>
+ *         <td>Yes</td>
+ *         <td>No</td>
+ *         <td>No</td>
+ *         <td>No</td>
+ *     </tr>
+ *     <tr>
+ *         <td>block.{@link Block#onBreak onBreak}</td>
+ *         <td>Spawning particles, breaking the other half of tall or wide block, etc</td>
+ *         <td>Yes</td>
+ *         <td>No</td>
+ *         <td>No</td>
+ *         <td>No</td>
+ *     </tr>
+ *     <tr>
+ *         <td>state.{@link #onStateReplaced onStateReplaced}</td>
+ *         <td>Dropping inventory, updating redstone circuit, etc</td>
+ *         <td>Yes</td>
+ *         <td>Yes</td>
+ *         <td>Yes</td>
+ *         <td>Yes</td>
+ *     </tr>
+ *     <tr>
+ *         <td>neighborState.{@link #neighborUpdate neighborUpdate}</td>
+ *         <td>Activating neighboring redstone component, etc</td>
+ *         <td>Yes</td>
+ *         <td>Yes</td>
+ *         <td>Yes</td>
+ *         <td>Yes</td>
+ *     </tr>
+ *     <tr>
+ *         <td>state.{@link #prepare prepare}</td>
+ *         <td>Updating redstone wire connection</td>
+ *         <td>Yes</td>
+ *         <td>Yes</td>
+ *         <td>Yes</td>
+ *         <td>Yes</td>
+ *     </tr>
+ *     <tr>
+ *         <td>neighborState.{@link #getStateForNeighborUpdate getStateForNeighborUpdate}</td>
+ *         <td>Checking the neighboring block's placement restriction, updating connection, etc</td>
+ *         <td>Yes</td>
+ *         <td>Yes</td>
+ *         <td>Yes</td>
+ *         <td>Yes</td>
+ *     </tr>
+ *     <tr>
+ *         <td>block.{@link Block#onBroken onBroken}</td>
+ *         <td>Unused in most cases</td>
+ *         <td>Yes</td>
+ *         <td>No</td>
+ *         <td>No</td>
+ *         <td>No</td>
+ *     </tr>
+ *     <tr>
+ *         <td>block.{@link Block#afterBreak afterBreak}</td>
+ *         <td>Dropping stacks, replacing the broken block with another block, etc</td>
+ *         <td>Yes</td>
+ *         <td>No</td>
+ *         <td>No</td>
+ *         <td>No</td>
+ *     </tr>
+ *     <tr>
+ *         <td>state.{@link #getDroppedStacks getDroppedStacks}</td>
+ *         <td>Supplying information to loot context builder</td>
+ *         <td>Yes</td>
+ *         <td>Yes</td>
+ *         <td>Yes</td>
+ *         <td>Yes<sup>1</sup></td>
+ *     </tr>
+ *     <tr>
+ *         <td>state.{@link #onStacksDropped onStacksDropped}</td>
+ *         <td>Dropping experience orbs</td>
+ *         <td>Yes</td>
+ *         <td>Yes<sup>2</sup></td>
+ *         <td>Yes</td>
+ *         <td>Yes<sup>1</sup></td>
+ *     </tr>
+ * </tbody>
+ * </table>
+ * 
+ * <p>Notes:
+ * <ol>
+ * <li>Called before {@link #onStateReplaced onStateReplaced} in this case.</li>
+ * <li>Called before {@link #getDroppedStacks getDroppedStacks} in this case.</li>
+ * </ol>
  */
 public abstract class AbstractBlock {
 	protected static final Direction[] DIRECTIONS = new Direction[]{
@@ -105,14 +321,32 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#prepare(WorldAccess, BlockPos, int, int)} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * Called when the block state changes, before the {#linkplain #getStateForNeighborUpdate
+	 * neighbor-triggered state update} on the original block, and after the
+	 * neighbor-triggered state update on the replaced block.
+	 * 
+	 * <p>This method is called on both the logical client and logical server, so take caution
+	 * when overriding this method. The logical side can be checked using {@link
+	 * World#isClient}.
+	 * 
+	 * @apiNote This is used by {@link RedstoneWireBlock} to update connected redstone wire.
+	 * 
+	 * @deprecated Consider calling {@link AbstractBlockState#prepare(WorldAccess, BlockPos, int, int)} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * 
+	 * @see #getStateForNeighborUpdate
+	 * @see #neighborUpdate
 	 */
 	@Deprecated
 	public void prepare(BlockState state, WorldAccess world, BlockPos pos, int flags, int maxUpdateDepth) {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#canPathfindThrough} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * {@return if an entity using navigation type {@code type} can navigate through this block}
+	 * 
+	 * @apiNote Subclasses may override this to prevent or restrict pathfinding through the
+	 * block. For example, {@link DoorBlock} restricts it to open doors only.
+	 * 
+	 * @deprecated Consider calling {@link AbstractBlockState#canPathfindThrough} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
 	 */
 	@Deprecated
 	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
@@ -129,11 +363,41 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * Gets the possibly updated block state of this block when a neighboring block is updated.
+	 * {@return the state of the block after a neighboring block's state change}
 	 * 
-	 * @return the new state of this block
+	 * <p>Returning {@link Blocks#AIR} breaks the block. This is useful to implement supporting
+	 * block requirement for blocks (if used along with {@link #canPlaceAt}).
 	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#getStateForNeighborUpdate} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * <p>Side effects like activating a redstone component (but not scheduling a tick)
+	 * should be performed in {@link #neighborUpdate} instead. If the block supports
+	 * waterlogging and currently has water, this method should be overridden to tick the
+	 * fluid at the block's position.
+	 * 
+	 * <p>This method is called on both the logical client and logical server, so take caution
+	 * when overriding this method. The logical side can be checked using {@link
+	 * World#isClient}. This is not called if {@link Block#FORCE_STATE} flag is set in the {@code
+	 * setBlockState} call.
+	 * 
+	 * <p>This method can be used for multiple purposes. Here are some examples:
+	 * <ul>
+	 * <li>{@link FenceBlock} uses it to update the fence's connection when a horizontally
+	 * neighboring block's state is changed.</li>
+	 * <li>{@link PlantBlock} uses it to break the plant if the state change causes it to
+	 * lose its supporting block.</li>
+	 * <li>{@link DoorBlock} uses it to copy the state of the other half of the door.</li>
+	 * <li>{@link SlabBlock} uses it to schedule the fluid to tick if waterlogged.</li>
+	 * <li>{@link SoulSandBlock} uses it to schedule the water block above to tick
+	 * so that it becomes a bubble column.</li>
+	 * <li>{@link FallingBlock} uses it to schedule the block to tick so that it can
+	 * fall if needed.</li>
+	 * </ul>
+	 * 
+	 * @deprecated Consider calling {@link AbstractBlockState#getStateForNeighborUpdate} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * 
+	 * @see #neighborUpdate
+	 * @see #prepare
+	 * @see #canPlaceAt
+	 * @see Block#FORCE_STATE
 	 * 
 	 * @param state the state of this block
 	 * @param direction the direction from this block to the neighbor
@@ -150,7 +414,7 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#isSideInvisible} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * @deprecated Consider calling {@link AbstractBlockState#isSideInvisible} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
 	 */
 	@Deprecated
 	public boolean isSideInvisible(BlockState state, BlockState stateFrom, Direction direction) {
@@ -158,7 +422,22 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#neighborUpdate} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * Called when a neighboring block is updated. This method should be overridden
+	 * to perform an action with a side effect, most notably an activation of a redstone
+	 * component. This can also be used to perform an action changing block states of
+	 * other blocks, such as {@link SpongeBlock} which absorbs water.
+	 * 
+	 * <p>To replace the state of the block itself, override {@link #getStateForNeighborUpdate}
+	 * instead.
+	 * 
+	 * <p>This method is called on both the logical client and logical server, so take caution
+	 * when overriding this method. The logical side can be checked using {@link
+	 * World#isClient}.
+	 * 
+	 * @deprecated Consider calling {@link AbstractBlockState#neighborUpdate} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * 
+	 * @see #getStateForNeighborUpdate
+	 * @see World#isReceivingRedstonePower
 	 */
 	@Deprecated
 	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
@@ -166,16 +445,36 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#onBlockAdded} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * Called server-side on the new block when the block state is changed. This includes block
+	 * placement. When overriding this method, {@link #getStateForNeighborUpdate} or {@link
+	 * #neighborUpdate} should also be overridden. The method is used in the following cases:
+	 * 
+	 * <ul>
+	 * <li>When activating a redstone component on placement (used along with {@link
+	 * #neighborUpdate}</li>
+	 * <li>When resetting a position-dependent state (see {@link TargetBlock})</li>
+	 * <li>When converting a block on placement (see {@link WetSpongeBlock})</li>
+	 * <li>When {@linkplain AbstractFireBlock fire} lights a portal</li>
+	 * </ul>
+	 * 
+	 * @deprecated Consider calling {@link AbstractBlockState#onBlockAdded} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * 
+	 * @see #onStateReplaced
 	 */
 	@Deprecated
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 	}
 
 	/**
-	 * Called in {@link net.minecraft.world.chunk.WorldChunk#setBlockState(BlockPos, BlockState, boolean)} if {@code newState} is different from {@code state}. Vanilla blocks perform removal cleanups here.
+	 * Called server-side on the old block when the block state is changed. This includes block
+	 * removal. This is used to update neighboring blocks when an active redstone power source
+	 * is removed, or to drop the contents of an inventory. The check {@code
+	 * state.isOf(newState.getBlock())} can be used to see if the block was removed or not.
 	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#onStateReplaced} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * @deprecated Consider calling {@link AbstractBlockState#onStateReplaced} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * 
+	 * @see net.minecraft.util.ItemScatterer#spawn(World, BlockPos, net.minecraft.inventory.Inventory)
+	 * @see #onBlockAdded
 	 */
 	@Deprecated
 	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
@@ -195,7 +494,7 @@ public abstract class AbstractBlock {
 	 * 
 	 * @return an action result that specifies if using the block was successful.
 	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#onUse} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * @deprecated Consider calling {@link AbstractBlockState#onUse} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
 	 */
 	@Deprecated
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
@@ -203,7 +502,13 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#onSyncedBlockEvent} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * Handles the block event, which is an event specific to a block with an integer ID and data.
+	 * 
+	 * @return whether the event was handled successfully
+	 * 
+	 * @deprecated Consider calling {@link AbstractBlockState#onSyncedBlockEvent} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * 
+	 * @see World#addSyncedBlockEvent
 	 */
 	@Deprecated
 	public boolean onSyncedBlockEvent(BlockState state, World world, BlockPos pos, int type, int data) {
@@ -211,7 +516,12 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#getRenderType} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * {@return the block's render type (invisible, animated, model)}
+	 * 
+	 * @apiNote {@link BlockWithEntity} overrides this to return {@link BlockRenderType#INVISIBLE};
+	 * therefore, custom blocks extending that class must override it again to render the block.
+	 * 
+	 * @deprecated Consider calling {@link AbstractBlockState#getRenderType} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
 	 */
 	@Deprecated
 	public BlockRenderType getRenderType(BlockState state) {
@@ -219,7 +529,9 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#hasSidedTransparency} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * {@return whether the block's transparency depends on the side of the block, like slabs}
+	 * 
+	 * @deprecated Consider calling {@link AbstractBlockState#hasSidedTransparency} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
 	 */
 	@Deprecated
 	public boolean hasSidedTransparency(BlockState state) {
@@ -227,7 +539,14 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#emitsRedstonePower} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * {@return whether the block is capable of emitting redstone power}
+	 * 
+	 * <p>This does not return whether the block is currently emitting redstone power.
+	 * Use {@link World#isEmittingRedstonePower} in that case.
+	 * 
+	 * @deprecated Consider calling {@link AbstractBlockState#emitsRedstonePower} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * 
+	 * @see World#isEmittingRedstonePower
 	 */
 	@Deprecated
 	public boolean emitsRedstonePower(BlockState state) {
@@ -235,7 +554,22 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#getPistonBehavior} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * {@return how the piston should handle the block}
+	 * 
+	 * <p>Notes on piston behavior:
+	 * <ul>
+	 * <li>{@link PistonBehavior#IGNORE} is ignored for blocks.</li>
+	 * <li>{@link PistonBehavior#DESTROY} and {@link PistonBehavior#PUSH_ONLY} causes pistons to
+	 * ignore the block entity restriction.</li>
+	 * <li>If the {@linkplain #getHardness hardness} equals {@code -1.0f} like bedrock, it blocks
+	 * the piston regardless of the return value.</li>
+	 * <li>Behavior of several unpushable blocks are hardcoded at {@link PistonBlock#isMovable}
+	 * instead.</li>
+	 * </ul>
+	 * 
+	 * @deprecated Consider calling {@link AbstractBlockState#getPistonBehavior} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * 
+	 * @see PistonBlock#isMovable
 	 */
 	@Deprecated
 	public PistonBehavior getPistonBehavior(BlockState state) {
@@ -243,7 +577,14 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#getFluidState} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * {@return the state's associated fluid state}
+	 * 
+	 * <p>{@linkplain Waterloggable Waterloggable blocks} must override this to return {@code Fluids.WATER.getStill(false)}
+	 * when waterlogged.
+	 * 
+	 * @deprecated Consider calling {@link AbstractBlockState#getFluidState} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * 
+	 * @see net.minecraft.fluid.Fluids#WATER
 	 */
 	@Deprecated
 	public FluidState getFluidState(BlockState state) {
@@ -251,7 +592,14 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#hasComparatorOutput} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * {@return whether the block can have a comparator output}
+	 * 
+	 * <p>This does not check the current comparator output of the block.
+	 * Use {@link #getComparatorOutput} in that case.
+	 * 
+	 * @deprecated Consider calling {@link AbstractBlockState#hasComparatorOutput} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * 
+	 * @see #getComparatorOutput
 	 */
 	@Deprecated
 	public boolean hasComparatorOutput(BlockState state) {
@@ -267,13 +615,11 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * Applies a block rotation to a block state.
+	 * {@return {@code state} rotated by {@code rotation}}
 	 * 
 	 * <p>By default, this returns the provided block state.
 	 * 
-	 * @return the rotated block state
-	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#rotate} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * @deprecated Consider calling {@link AbstractBlockState#rotate} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
 	 */
 	@Deprecated
 	public BlockState rotate(BlockState state, BlockRotation rotation) {
@@ -281,7 +627,11 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#mirror} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * {@return {@code state} mirrored by {@code mirror}}
+	 * 
+	 * <p>By default, this returns the provided block state.
+	 * 
+	 * @deprecated Consider calling {@link AbstractBlockState#mirror} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
 	 */
 	@Deprecated
 	public BlockState mirror(BlockState state, BlockMirror mirror) {
@@ -289,7 +639,20 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#canReplace} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * {@return whether the item can replace the block}
+	 * 
+	 * <p>By default, this checks if the block's material allows replacing and whether the
+	 * item differs from the block's item. Items composed of multiple blocks, such as candles,
+	 * vines, or snow layers, should override this to implement additional checks.
+	 * 
+	 * <p>This method is called on both the logical client and logical server, so take caution
+	 * when overriding this method. The logical side can be checked using {@link
+	 * World#isClient}.
+	 * 
+	 * @deprecated Consider calling {@link AbstractBlockState#canReplace} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * 
+	 * @see #canBucketPlace
+	 * @see Material#isReplaceable
 	 */
 	@Deprecated
 	public boolean canReplace(BlockState state, ItemPlacementContext context) {
@@ -297,7 +660,19 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#canBucketPlace} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * {@return whether a bucket can replace the block with the fluid}
+	 * 
+	 * <p>By default, this checks if the block's material allows replacing or is not solid.
+	 * Blocks intended to be unbreakable should override this to implement additional checks.
+	 * 
+	 * <p>This method is called on both the logical client and logical server, so take caution
+	 * when overriding this method. The logical side can be checked using {@link
+	 * World#isClient}.
+	 * 
+	 * @deprecated Consider calling {@link AbstractBlockState#canBucketPlace} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * 
+	 * @see #canReplace
+	 * @see Material#isReplaceable
 	 */
 	@Deprecated
 	public boolean canBucketPlace(BlockState state, Fluid fluid) {
@@ -305,7 +680,25 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#getDroppedStacks} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * {@return the block's dropped item stacks}
+	 * 
+	 * <p>The default implementation uses loot tables. Blocks with custom drops <strong>should
+	 * not hardcode the drops</strong>; instead, make a new loot table. If the loot table
+	 * needs an additional context, override this method and modify {@code builder} before
+	 * calling {@code super.getDroppedStacks}. An example of this is {@link ShulkerBoxBlock}.
+	 * Note that to prevent item duplication, when appending item stacks to the builder,
+	 * {@link ItemStack#split} should be called.
+	 * 
+	 * <p>This method should not be used for dropping inventory contents ({@link
+	 * #onStateReplaced} should be used instead) or to drop experience orbs ({@link
+	 * #onStacksDropped} should be used instead).
+	 * 
+	 * @deprecated Consider calling {@link AbstractBlockState#getDroppedStacks} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * 
+	 * @see #onStateReplaced
+	 * @see #onStacksDropped
+	 * @see ItemStack#split
+	 * @see net.minecraft.loot.context.LootContextParameters
 	 */
 	@Deprecated
 	public List<ItemStack> getDroppedStacks(BlockState state, LootContext.Builder builder) {
@@ -321,7 +714,12 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#getRenderingSeed} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * {@return the seed value for rendering}
+	 * 
+	 * <p>This is usually the hash code of {@code pos}. Tall or wide blocks (such as doors or
+	 * beds) should override this to make sure both parts of the block have the same seed.
+	 * 
+	 * @deprecated Consider calling {@link AbstractBlockState#getRenderingSeed} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
 	 */
 	@Deprecated
 	public long getRenderingSeed(BlockState state, BlockPos pos) {
@@ -329,7 +727,7 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#getCullingShape} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * @deprecated Consider calling {@link AbstractBlockState#getCullingShape} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
 	 */
 	@Deprecated
 	public VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
@@ -337,7 +735,7 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#getSidesShape} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * @deprecated Consider calling {@link AbstractBlockState#getSidesShape} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
 	 */
 	@Deprecated
 	public VoxelShape getSidesShape(BlockState state, BlockView world, BlockPos pos) {
@@ -345,7 +743,7 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#getRaycastShape} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * @deprecated Consider calling {@link AbstractBlockState#getRaycastShape} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
 	 */
 	@Deprecated
 	public VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
@@ -353,7 +751,7 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#getOpacity} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * @deprecated Consider calling {@link AbstractBlockState#getOpacity} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
 	 */
 	@Deprecated
 	public int getOpacity(BlockState state, BlockView world, BlockPos pos) {
@@ -365,7 +763,25 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#createScreenHandlerFactory} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * {@return the screen handler factory or {@code null} if screen handler cannot be created}
+	 * 
+	 * <p>This method should be overridden for blocks with screen handlers, such as anvils.
+	 * The created screen handler is usually passed to {@link PlayerEntity#openHandledScreen}.
+	 * See {@link AnvilBlock#createScreenHandlerFactory} for basic usage. {@link BlockWithEntity}
+	 * delegates this logic to the block entity implementing {@link
+	 * net.minecraft.screen.NamedScreenHandlerFactory}. For example, any {@link BlockWithEntity} whose block entity
+	 * extends {@link net.minecraft.block.entity.LockableContainerBlockEntity} needs to override
+	 * {@link net.minecraft.block.entity.LockableContainerBlockEntity#createScreenHandler}
+	 * instead of this method.
+	 * 
+	 * <p>This method is called on both the logical client and logical server, so take caution
+	 * when overriding this method. The logical side can be checked using {@link
+	 * World#isClient}.
+	 * 
+	 * @deprecated Consider calling {@link AbstractBlockState#createScreenHandlerFactory} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * 
+	 * @see net.minecraft.screen.SimpleNamedScreenHandlerFactory
+	 * @see net.minecraft.block.entity.LockableContainerBlockEntity
 	 */
 	@Nullable
 	@Deprecated
@@ -374,7 +790,24 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#canPlaceAt} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * {@return whether the block can be placed at {@code pos}}
+	 * 
+	 * <p>Blocks with supporting block requirements should override this method. Note that
+	 * this should also be checked manually during {@link #getStateForNeighborUpdate}
+	 * in order to break the block that lost its supporting block.
+	 * 
+	 * <p>This is only checked during {@linkplain net.minecraft.item.BlockItem#canPlace the
+	 * use of block items} or by endermen, falling blocks, etc that can place blocks. This
+	 * does not affect block state changes performed through {@link
+	 * World#setBlockState(BlockPos, BlockState)} call.
+	 * 
+	 * <p>This method is called on both the logical client and logical server, so take caution
+	 * when overriding this method. The logical side can be checked using {@link
+	 * World#isClient}.
+	 * 
+	 * @deprecated Consider calling {@link AbstractBlockState#canPlaceAt} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * 
+	 * @see #getStateForNeighborUpdate
 	 */
 	@Deprecated
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
@@ -382,7 +815,7 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#getAmbientOcclusionLightLevel} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * @deprecated Consider calling {@link AbstractBlockState#getAmbientOcclusionLightLevel} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
 	 */
 	@Deprecated
 	public float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
@@ -390,7 +823,13 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#getComparatorOutput} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * {@return the comparator output of the block, from {@code 0} to {@code 15}}
+	 * 
+	 * <p>When overriding this, {@link #hasComparatorOutput} must also be overridden.
+	 * 
+	 * @deprecated Consider calling {@link AbstractBlockState#getComparatorOutput} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * 
+	 * @see #hasComparatorOutput
 	 */
 	@Deprecated
 	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
@@ -398,7 +837,7 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#getOutlineShape(BlockView, BlockPos, ShapeContext)} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * @deprecated Consider calling {@link AbstractBlockState#getOutlineShape(BlockView, BlockPos, ShapeContext)} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
 	 */
 	@Deprecated
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
@@ -406,7 +845,7 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#getCollisionShape(BlockView, BlockPos, ShapeContext)} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * @deprecated Consider calling {@link AbstractBlockState#getCollisionShape(BlockView, BlockPos, ShapeContext)} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
 	 */
 	@Deprecated
 	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
@@ -414,7 +853,7 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#isFullCube} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * @deprecated Consider calling {@link AbstractBlockState#isFullCube} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
 	 */
 	@Deprecated
 	public boolean isShapeFullCube(BlockState state, BlockView world, BlockPos pos) {
@@ -427,7 +866,7 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#getCameraCollisionShape} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * @deprecated Consider calling {@link AbstractBlockState#getCameraCollisionShape} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
 	 */
 	@Deprecated
 	public VoxelShape getCameraCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
@@ -435,7 +874,30 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#randomTick} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * Called server-side when a block gets ticked randomly. This can be overridden to implement
+	 * various logics, most commonly plant growth. Default implementation calls
+	 * {@link #scheduledTick}. To control the rate of the action, use {@code random}.
+	 * 
+	 * <p>Random tick speed is controlled by the game rule {@link
+	 * net.minecraft.world.GameRules#RANDOM_TICK_SPEED randomTickSpeed} and can be disabled.
+	 * Only blocks within 128-block cylinder (i.e. ignoring Y coordinates) around players
+	 * receive random ticks.
+	 * 
+	 * <p>Blocks overriding this must use {@link AbstractBlock.Settings#ticksRandomly}
+	 * block settings.
+	 * 
+	 * <p>Here are some examples:
+	 * <ul>
+	 * <li>{@link SugarCaneBlock} uses this to grow sugar cane.</li>
+	 * <li>{@link OxidizableBlock} uses this to oxidize.</li>
+	 * <li>{@link NetherPortalBlock} uses this to spawn zombified piglins.</li>
+	 * <li>{@link LeavesBlock} uses this to decay when far from logs.</li>
+	 * </ul>
+	 * 
+	 * @deprecated Consider calling {@link AbstractBlockState#randomTick} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * 
+	 * @see CropBlock
+	 * @see #scheduledTick
 	 */
 	@Deprecated
 	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
@@ -443,14 +905,36 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#scheduledTick} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * Called server-side when a block receives a scheduled tick. This can be used like a timer.
+	 * Scheduled ticks are added using {@link
+	 * WorldAccess#createAndScheduleBlockTick(BlockPos, Block, int)}. Additionally, {@link
+	 * #randomTick} by default calls this method; override {@link #randomTick} to disable this
+	 * behavior.
+	 * 
+	 * <p>Scheduled ticks are often used inside {@link #getStateForNeighborUpdate}.
+	 * 
+	 * <p>Here are some examples:
+	 * <ul>
+	 * <li>{@link SugarCaneBlock} checks the placement requirement.</li>
+	 * <li>{@link DispenserBlock} dispenses its content.</li>
+	 * <li>{@link CommandBlock} executes its command.</li>
+	 * <li>{@link FrogspawnBlock} spawns a tadpole.</li>
+	 * <li>{@link SoulSandBlock} updates a bubble column.</li>
+	 * <li>{@link FallingBlock} tries to fall.</li>
+	 * </ul>
+	 * 
+	 * @deprecated Consider calling {@link AbstractBlockState#scheduledTick} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * 
+	 * @see WorldAccess#createAndScheduleBlockTick(BlockPos, Block, int)
+	 * @see #getStateForNeighborUpdate
+	 * @see #randomTick
 	 */
 	@Deprecated
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#calcBlockBreakingDelta} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * @deprecated Consider calling {@link AbstractBlockState#calcBlockBreakingDelta} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
 	 */
 	@Deprecated
 	public float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
@@ -464,21 +948,55 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#onStacksDropped} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * Called server-side when the stacks are dropped by mining or explosion. This is mostly
+	 * overridden to drop experience orbs. To change the dropped item stacks, use loot tables
+	 * or {@link #getDroppedStacks}. To drop inventory contents, use {@link #onStateReplaced}
+	 * instead.
+	 * 
+	 * <p>Experience orbs should only be dropped if {@code dropExperience} is {@code true}.
+	 * {@link Block#dropExperienceWhenMined} can be used to drop experience orbs.
+	 * {@link OreBlock} provides the implementation for experience-dropping blocks.
+	 * 
+	 * @deprecated Consider calling {@link AbstractBlockState#onStacksDropped} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * 
+	 * @see OreBlock
+	 * @see Block#dropExperienceWhenMined
+	 * @see #getDroppedStacks
+	 * @see #onStateReplaced
 	 */
 	@Deprecated
 	public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack, boolean dropExperience) {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#onBlockBreakStart} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * Called when a player starts breaking the block (including when instant-mining).
+	 * 
+	 * <p>This method is called on both the logical client and logical server, so take caution
+	 * when overriding this method. The logical side can be checked using {@link
+	 * World#isClient}.
+	 * 
+	 * @deprecated Consider calling {@link AbstractBlockState#onBlockBreakStart} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
 	 */
 	@Deprecated
 	public void onBlockBreakStart(BlockState state, World world, BlockPos pos, PlayerEntity player) {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#getWeakRedstonePower} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * {@return the weak redstone power emitted from the block}
+	 * 
+	 * <p>When overriding this, make sure to also override {@link #emitsRedstonePower} to
+	 * return {@code true}.
+	 * 
+	 * <p>Weak redstone power is a power that cannot power a redstone wire when a solid block
+	 * is in between. For example, {@link RedstoneBlock} and {@link TargetBlock} emits weak
+	 * redstone power only. {@link LeverBlock} and {@link AbstractButtonBlock} emits both
+	 * weak and strong redstone power depending on the direction.
+	 * 
+	 * @deprecated Consider calling {@link AbstractBlockState#getWeakRedstonePower} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * 
+	 * @see #emitsRedstonePower
+	 * @see #getStrongRedstonePower
+	 * @see World#isReceivingRedstonePower
 	 */
 	@Deprecated
 	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
@@ -486,14 +1004,48 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#onEntityCollision} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * Called when the entity's collision box intersects the block. Therefore,
+	 * this method is not called for blocks with a collision; use {@link Block#onSteppedOn}
+	 * for those blocks.
+	 * 
+	 * <p>This method is called on both the logical client and logical server, so take caution
+	 * when overriding this method. The logical side can be checked using {@link
+	 * World#isClient}.
+	 * 
+	 * <p>Here are some examples:
+	 * <ul>
+	 * <li>{@link CactusBlock} damages the entity.</li>
+	 * <li>{@link AbstractPressurePlateBlock} triggers.</li>
+	 * <li>{@link CobwebBlock} slows the entity.</li>
+	 * <li>{@link EndPortalBlock} teleports the entity.</li>
+	 * <li>{@link HopperBlock} collects the item entity.</li>
+	 * </ul>
+	 * 
+	 * @deprecated Consider calling {@link AbstractBlockState#onEntityCollision} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * 
+	 * @see Block#onSteppedOn
+	 * @see #onProjectileHit
 	 */
 	@Deprecated
 	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#getStrongRedstonePower} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * {@return the strong redstone power emitted from the block}
+	 * 
+	 * <p>When overriding this, make sure to also override {@link #emitsRedstonePower} to
+	 * return {@code true}. {@link #getWeakRedstonePower} might also need to be overridden.
+	 * 
+	 * <p>Strong redstone power is a power that can power a redstone wire when a solid block
+	 * is in between. For example, {@link RedstoneBlock} and {@link TargetBlock} emits weak
+	 * redstone power only. {@link LeverBlock} and {@link AbstractButtonBlock} emits both
+	 * weak and strong redstone power.
+	 * 
+	 * @deprecated Consider calling {@link AbstractBlockState#getStrongRedstonePower} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * 
+	 * @see #emitsRedstonePower
+	 * @see #getWeakRedstonePower
+	 * @see World#isReceivingRedstonePower
 	 */
 	@Deprecated
 	public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
@@ -510,14 +1062,44 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * @deprecated Consider calling {@link AbstractBlockState#onProjectileHit} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+	 * Called when a {@link ProjectileEntity} hits a block.
+	 * 
+	 * <p>This method is called on both the logical client and logical server, so take caution
+	 * when overriding this method. The logical side can be checked using {@link
+	 * World#isClient}.
+	 * 
+	 * <p>Here are some examples:
+	 * <ul>
+	 * <li>{@link TargetBlock} activates.</li>
+	 * <li>{@link BellBlock} rings.</li>
+	 * <li>{@link LightningRodBlock} spawns a lightning.</li>
+	 * <li>{@link AbstractCandleBlock} lights on fire when hit by a projectile on fire.</li>
+	 * </ul>
+	 * 
+	 * @deprecated Consider calling {@link AbstractBlockState#onProjectileHit} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
+	 * 
+	 * @see ProjectileEntity#onBlockHit
+	 * @see #onEntityCollision
 	 */
 	@Deprecated
 	public void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
 	}
 
+	/**
+	 * {@return the block's corresponding item}
+	 * 
+	 * <p>This is not affected by loot tables. Blocks without corresponding items,
+	 * such as piston head, will return {@link net.minecraft.item.Items#AIR}.
+	 * 
+	 * @see net.minecraft.item.BlockItem
+	 */
 	public abstract Item asItem();
 
+	/**
+	 * {@return the block as {@link Block}}
+	 * 
+	 * <p>This is used for casting purposes.
+	 */
 	protected abstract Block asBlock();
 
 	public MapColor getDefaultMapColor() {
@@ -971,7 +1553,9 @@ public abstract class AbstractBlock {
 				this.collisionShape = block.getCollisionShape(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, ShapeContext.absent());
 				if (!this.collisionShape.isEmpty() && state.getOffsetType() != AbstractBlock.OffsetType.NONE) {
 					throw new IllegalStateException(
-						String.format("%s has a collision shape and an offset type, but is not marked as dynamicShape in its properties.", Registry.BLOCK.getId(block))
+						String.format(
+							Locale.ROOT, "%s has a collision shape and an offset type, but is not marked as dynamicShape in its properties.", Registry.BLOCK.getId(block)
+						)
 					);
 				} else {
 					this.exceedsCube = Arrays.stream(Direction.Axis.values())

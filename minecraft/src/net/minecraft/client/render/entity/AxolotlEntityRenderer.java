@@ -1,6 +1,7 @@
 package net.minecraft.client.render.entity;
 
 import com.google.common.collect.Maps;
+import java.util.Locale;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -14,7 +15,7 @@ import net.minecraft.util.Util;
 public class AxolotlEntityRenderer extends MobEntityRenderer<AxolotlEntity, AxolotlEntityModel<AxolotlEntity>> {
 	private static final Map<AxolotlEntity.Variant, Identifier> TEXTURES = Util.make(Maps.<AxolotlEntity.Variant, Identifier>newHashMap(), variants -> {
 		for (AxolotlEntity.Variant variant : AxolotlEntity.Variant.VARIANTS) {
-			variants.put(variant, new Identifier(String.format("textures/entity/axolotl/axolotl_%s.png", variant.getName())));
+			variants.put(variant, new Identifier(String.format(Locale.ROOT, "textures/entity/axolotl/axolotl_%s.png", variant.getName())));
 		}
 	});
 

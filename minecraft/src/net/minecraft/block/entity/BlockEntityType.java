@@ -16,6 +16,23 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
 import org.slf4j.Logger;
 
+/**
+ * Represents a type of {@linkplain BlockEntity block entities}.
+ * There is one instance of block entity for each placed block entity; this class
+ * represents the type of the placed block entities, like chests or furnaces.
+ * 
+ * <p>Block entity types are pre-defined and registered in {@link
+ * Registry#BLOCK_ENTITY_TYPE}. To create a block entity type, the {@linkplain
+ * BlockEntityType.Builder#create builder} should be used.
+ * 
+ * <p>Blocks that have corresponding block entities must implement {@link
+ * net.minecraft.block.BlockEntityProvider} and list it in the builder of the block
+ * entity type. Multiple blocks or block states can be associated with a single block
+ * entity type.
+ * 
+ * @see BlockEntity
+ * @see net.minecraft.block.BlockEntityProvider
+ */
 public class BlockEntityType<T extends BlockEntity> {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final BlockEntityType<FurnaceBlockEntity> FURNACE = create("furnace", BlockEntityType.Builder.create(FurnaceBlockEntity::new, Blocks.FURNACE));
@@ -215,6 +232,11 @@ public class BlockEntityType<T extends BlockEntity> {
 	private final Set<Block> blocks;
 	private final Type<?> type;
 
+	/**
+	 * {@return the block entity type's ID, or {@code null} if it is unregistered}
+	 * 
+	 * <p>This should never return {@code null} under normal circumstances.
+	 */
 	@Nullable
 	public static Identifier getId(BlockEntityType<?> type) {
 		return Registry.BLOCK_ENTITY_TYPE.getId(type);
@@ -235,26 +257,52 @@ public class BlockEntityType<T extends BlockEntity> {
 		this.type = type;
 	}
 
+	/**
+	 * {@return a new instance of the block entity}
+	 * 
+	 * @see BlockEntityType.BlockEntityFactory
+	 */
 	@Nullable
 	public T instantiate(BlockPos pos, BlockState state) {
 		return (T)this.factory.create(pos, state);
 	}
 
+	/**
+	 * {@return whether the block entity type supports {@code state}}
+	 * 
+	 * <p>The block, not the block state, determines the corresponding block entity type;
+	 * therefore, for states of the same block, the return value is the same.
+	 */
 	public boolean supports(BlockState state) {
 		return this.blocks.contains(state.getBlock());
 	}
 
+	/**
+	 * {@return the block entity instance of this type at {@code pos}, or {@code null} if
+	 * no such block entity exists}
+	 * 
+	 * @see BlockView#getBlockEntity
+	 */
 	@Nullable
 	public T get(BlockView world, BlockPos pos) {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		return (T)(blockEntity != null && blockEntity.getType() == this ? blockEntity : null);
 	}
 
+	/**
+	 * A functional interface for a factory that creates a new block entity
+	 * instance. This is usually not implemented directly; the block entity class's
+	 * constructor (such as {@code MyBlockEntity::MyBlockEntity}) can be used as the
+	 * implementation.
+	 */
 	@FunctionalInterface
 	interface BlockEntityFactory<T extends BlockEntity> {
 		T create(BlockPos pos, BlockState state);
 	}
 
+	/**
+	 * Builder for {@link BlockEntityType}.
+	 */
 	public static final class Builder<T extends BlockEntity> {
 		private final BlockEntityType.BlockEntityFactory<? extends T> factory;
 		final Set<Block> blocks;
@@ -264,10 +312,20 @@ public class BlockEntityType<T extends BlockEntity> {
 			this.blocks = blocks;
 		}
 
+		/**
+		 * {@return a new builder of a block entity type that supports {@code blocks}}
+		 */
 		public static <T extends BlockEntity> BlockEntityType.Builder<T> create(BlockEntityType.BlockEntityFactory<? extends T> factory, Block... blocks) {
 			return new BlockEntityType.Builder<>(factory, ImmutableSet.copyOf(blocks));
 		}
 
+		/**
+		 * Builds the block entity type.
+		 * 
+		 * @return the built block entity type
+		 * 
+		 * @param type the datafixer type of the block entity, or {@code null} if there is none
+		 */
 		public BlockEntityType<T> build(Type<?> type) {
 			return new BlockEntityType<>(this.factory, this.blocks, type);
 		}

@@ -127,18 +127,18 @@ public final class DensityFunctionTypes {
 		return new DensityFunctionTypes.Wrapping(DensityFunctionTypes.Wrapping.Type.CACHE_ALL_IN_CELL, inputFunction);
 	}
 
-	public static DensityFunction noise(
-		RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseParameters, @Deprecated double xzScale, double yScale, double d, double e
+	public static DensityFunction noiseInRange(
+		RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseParameters, @Deprecated double scaleXz, double scaleY, double min, double max
 	) {
-		return method_40484(new DensityFunctionTypes.Noise(new DensityFunction.Noise(noiseParameters), xzScale, yScale), d, e);
+		return mapRange(new DensityFunctionTypes.Noise(new DensityFunction.Noise(noiseParameters), scaleXz, scaleY), min, max);
 	}
 
-	public static DensityFunction noise(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseParameters, double yScale, double d, double e) {
-		return noise(noiseParameters, 1.0, yScale, d, e);
+	public static DensityFunction noiseInRange(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseParameters, double scaleY, double min, double max) {
+		return noiseInRange(noiseParameters, 1.0, scaleY, min, max);
 	}
 
-	public static DensityFunction noise(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseParameters, double d, double e) {
-		return noise(noiseParameters, 1.0, 1.0, d, e);
+	public static DensityFunction noiseInRange(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseParameters, double min, double max) {
+		return noiseInRange(noiseParameters, 1.0, 1.0, min, max);
 	}
 
 	public static DensityFunction shiftedNoise(
@@ -148,15 +148,15 @@ public final class DensityFunctionTypes {
 	}
 
 	public static DensityFunction noise(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseParameters) {
-		return method_40502(noiseParameters, 1.0, 1.0);
+		return noise(noiseParameters, 1.0, 1.0);
 	}
 
-	public static DensityFunction method_40502(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseParameters, double xzScale, double yScale) {
-		return new DensityFunctionTypes.Noise(new DensityFunction.Noise(noiseParameters), xzScale, yScale);
+	public static DensityFunction noise(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseParameters, double scaleXz, double scaleY) {
+		return new DensityFunctionTypes.Noise(new DensityFunction.Noise(noiseParameters), scaleXz, scaleY);
 	}
 
-	public static DensityFunction noise(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseParameters, double yScale) {
-		return method_40502(noiseParameters, 1.0, yScale);
+	public static DensityFunction noise(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseParameters, double scaleY) {
+		return noise(noiseParameters, 1.0, scaleY);
 	}
 
 	public static DensityFunction rangeChoice(
@@ -229,10 +229,20 @@ public final class DensityFunctionTypes {
 		return DensityFunctionTypes.UnaryOperation.create(type, input);
 	}
 
-	private static DensityFunction method_40484(DensityFunction densityFunction, double d, double e) {
-		double f = (d + e) * 0.5;
-		double g = (e - d) * 0.5;
-		return add(constant(f), mul(constant(g), densityFunction));
+	/**
+	 * Creates a new density function based on {@code function}, but with a different range.
+	 * {@code function} is assumed to be in the range {@code -1.0} to {@code 1.0},
+	 * while the new function will be in the range {@code min} to {@code max}.
+	 * 
+	 * @return the created density function
+	 * 
+	 * @param min the new minimum value
+	 * @param max the new maximum value
+	 */
+	private static DensityFunction mapRange(DensityFunction function, double min, double max) {
+		double d = (min + max) * 0.5;
+		double e = (max - min) * 0.5;
+		return add(constant(d), mul(constant(e), function));
 	}
 
 	public static DensityFunction blendAlpha() {
@@ -243,18 +253,37 @@ public final class DensityFunctionTypes {
 		return DensityFunctionTypes.BlendOffset.INSTANCE;
 	}
 
-	public static DensityFunction method_40488(DensityFunction densityFunction, DensityFunction densityFunction2, DensityFunction densityFunction3) {
-		if (densityFunction2 instanceof DensityFunctionTypes.Constant constant) {
-			return method_42359(densityFunction, constant.value, densityFunction3);
+	/**
+	 * Creates a new density function which interpolates between the values of
+	 * {@code start} and {@code end}, based on {@code delta}.
+	 * 
+	 * @return the created density function
+	 * 
+	 * @param delta the function used for the delta value
+	 * @param start the function used for the start value, for the {@code delta} value {@code 0.0}
+	 * @param end the function used for the end value, for the {@code delta} value {@code 1.0}
+	 */
+	public static DensityFunction lerp(DensityFunction delta, DensityFunction start, DensityFunction end) {
+		if (start instanceof DensityFunctionTypes.Constant constant) {
+			return lerp(delta, constant.value, end);
 		} else {
-			DensityFunction densityFunction4 = cacheOnce(densityFunction);
-			DensityFunction densityFunction5 = add(mul(densityFunction4, constant(-1.0)), constant(1.0));
-			return add(mul(densityFunction2, densityFunction5), mul(densityFunction3, densityFunction4));
+			DensityFunction densityFunction = cacheOnce(delta);
+			DensityFunction densityFunction2 = add(mul(densityFunction, constant(-1.0)), constant(1.0));
+			return add(mul(start, densityFunction2), mul(end, densityFunction));
 		}
 	}
 
-	public static DensityFunction method_42359(DensityFunction densityFunction, double d, DensityFunction densityFunction2) {
-		return add(mul(densityFunction, add(densityFunction2, constant(-d))), constant(d));
+	/**
+	 * Creates a new density function which interpolates between the values of
+	 * {@code start} and {@code end}, based on {@code delta}.
+	 * 
+	 * @return the created density function
+	 * 
+	 * @param start the start value, for the {@code delta} value {@code 0.0}
+	 * @param end the function used for the end value, for the {@code delta} value {@code 1.0}
+	 */
+	public static DensityFunction lerp(DensityFunction delta, double start, DensityFunction end) {
+		return add(mul(delta, add(end, constant(-start))), constant(start));
 	}
 
 	protected static enum Beardifier implements DensityFunctionTypes.Beardifying {
@@ -479,7 +508,7 @@ public final class DensityFunctionTypes {
 
 		@Override
 		public double apply(DensityFunction.NoisePos pos, double density) {
-			return pos.getBlender().method_39338(pos, density);
+			return pos.getBlender().applyBlendDensity(pos, density);
 		}
 
 		@Override
@@ -1031,7 +1060,7 @@ public final class DensityFunctionTypes {
 
 		@Override
 		public DensityFunction apply(DensityFunction.DensityFunctionVisitor visitor) {
-			return visitor.apply(new DensityFunctionTypes.Spline(this.spline.method_41187(densityFunctionWrapper -> densityFunctionWrapper.apply(visitor))));
+			return visitor.apply(new DensityFunctionTypes.Spline(this.spline.apply(densityFunctionWrapper -> densityFunctionWrapper.apply(visitor))));
 		}
 
 		@Override

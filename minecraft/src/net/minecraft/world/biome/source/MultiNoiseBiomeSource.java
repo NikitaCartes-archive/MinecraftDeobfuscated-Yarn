@@ -91,7 +91,7 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 
 	@Debug
 	public RegistryEntry<Biome> getBiomeAtPoint(MultiNoiseUtil.NoiseValuePoint point) {
-		return this.biomeEntries.method_39529(point);
+		return this.biomeEntries.get(point);
 	}
 
 	@Override
@@ -100,11 +100,11 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 		int j = BiomeCoords.fromBlock(pos.getY());
 		int k = BiomeCoords.fromBlock(pos.getZ());
 		MultiNoiseUtil.NoiseValuePoint noiseValuePoint = noiseSampler.sample(i, j, k);
-		float f = MultiNoiseUtil.method_38666(noiseValuePoint.continentalnessNoise());
-		float g = MultiNoiseUtil.method_38666(noiseValuePoint.erosionNoise());
-		float h = MultiNoiseUtil.method_38666(noiseValuePoint.temperatureNoise());
-		float l = MultiNoiseUtil.method_38666(noiseValuePoint.humidityNoise());
-		float m = MultiNoiseUtil.method_38666(noiseValuePoint.weirdnessNoise());
+		float f = MultiNoiseUtil.toFloat(noiseValuePoint.continentalnessNoise());
+		float g = MultiNoiseUtil.toFloat(noiseValuePoint.erosionNoise());
+		float h = MultiNoiseUtil.toFloat(noiseValuePoint.temperatureNoise());
+		float l = MultiNoiseUtil.toFloat(noiseValuePoint.humidityNoise());
+		float m = MultiNoiseUtil.toFloat(noiseValuePoint.weirdnessNoise());
 		double d = (double)DensityFunctions.getPeaksValleysNoise(m);
 		VanillaBiomeParameters vanillaBiomeParameters = new VanillaBiomeParameters();
 		info.add(
@@ -160,7 +160,7 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 		);
 		public static final MultiNoiseBiomeSource.Preset OVERWORLD = new MultiNoiseBiomeSource.Preset(new Identifier("overworld"), biomeRegistry -> {
 			Builder<Pair<MultiNoiseUtil.NoiseHypercube, RegistryEntry<Biome>>> builder = ImmutableList.builder();
-			new VanillaBiomeParameters().writeVanillaBiomeParameters(pair -> builder.add(pair.mapSecond(biomeRegistry::getOrCreateEntry)));
+			new VanillaBiomeParameters().writeOverworldBiomeParameters(pair -> builder.add(pair.mapSecond(biomeRegistry::getOrCreateEntry)));
 			return new MultiNoiseUtil.Entries(builder.build());
 		});
 		final Identifier id;

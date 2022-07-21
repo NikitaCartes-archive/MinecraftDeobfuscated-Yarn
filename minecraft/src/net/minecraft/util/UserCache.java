@@ -190,7 +190,7 @@ public class UserCache {
 	}
 
 	private static DateFormat getDateFormat() {
-		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z", Locale.ROOT);
 	}
 
 	public List<UserCache.Entry> load() {

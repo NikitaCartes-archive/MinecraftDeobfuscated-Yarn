@@ -775,7 +775,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	}
 
 	@Override
-	public boolean collides() {
+	public boolean canHit() {
 		return false;
 	}
 

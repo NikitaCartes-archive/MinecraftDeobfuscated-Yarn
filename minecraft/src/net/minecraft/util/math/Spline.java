@@ -21,7 +21,7 @@ public interface Spline<C, I extends ToFloatFunction<C>> extends ToFloatFunction
 	@Debug
 	String getDebugString();
 
-	Spline<C, I> method_41187(Spline.class_7073<I> arg);
+	Spline<C, I> apply(Spline.Visitor<I> visitor);
 
 	static <C, I extends ToFloatFunction<C>> Codec<Spline<C, I>> createCodec(Codec<I> locationFunctionCodec) {
 		MutableObject<Codec<Spline<C, I>>> mutableObject = new MutableObject<>();
@@ -60,7 +60,7 @@ public interface Spline<C, I extends ToFloatFunction<C>> extends ToFloatFunction
 							gs[i] = serialized.derivative();
 						}
 
-						return Spline.Implementation.method_41299((I)locationFunction, fs, builder.build(), gs);
+						return Spline.Implementation.build((I)locationFunction, fs, builder.build(), gs);
 					})
 		);
 		mutableObject.setValue(
@@ -95,7 +95,7 @@ public interface Spline<C, I extends ToFloatFunction<C>> extends ToFloatFunction
 		private final FloatList derivatives = new FloatArrayList();
 
 		protected Builder(I locationFunction) {
-			this(locationFunction, ToFloatFunction.field_37409);
+			this(locationFunction, ToFloatFunction.IDENTITY);
 		}
 
 		protected Builder(I locationFunction, ToFloatFunction<Float> amplifier) {
@@ -103,19 +103,19 @@ public interface Spline<C, I extends ToFloatFunction<C>> extends ToFloatFunction
 			this.amplifier = amplifier;
 		}
 
-		public Spline.Builder<C, I> method_41294(float f, float g) {
-			return this.add(f, new Spline.FixedFloatFunction<>(this.amplifier.apply(g)), 0.0F);
+		public Spline.Builder<C, I> add(float location, float value) {
+			return this.addPoint(location, new Spline.FixedFloatFunction<>(this.amplifier.apply(value)), 0.0F);
 		}
 
 		public Spline.Builder<C, I> add(float location, float value, float derivative) {
-			return this.add(location, new Spline.FixedFloatFunction<>(this.amplifier.apply(value)), derivative);
+			return this.addPoint(location, new Spline.FixedFloatFunction<>(this.amplifier.apply(value)), derivative);
 		}
 
-		public Spline.Builder<C, I> method_41295(float f, Spline<C, I> spline) {
-			return this.add(f, spline, 0.0F);
+		public Spline.Builder<C, I> add(float location, Spline<C, I> value) {
+			return this.addPoint(location, value, 0.0F);
 		}
 
-		private Spline.Builder<C, I> add(float location, Spline<C, I> value, float derivative) {
+		private Spline.Builder<C, I> addPoint(float location, Spline<C, I> value, float derivative) {
 			if (!this.locations.isEmpty() && location <= this.locations.getFloat(this.locations.size() - 1)) {
 				throw new IllegalArgumentException("Please register points in ascending order");
 			} else {
@@ -130,9 +130,7 @@ public interface Spline<C, I extends ToFloatFunction<C>> extends ToFloatFunction
 			if (this.locations.isEmpty()) {
 				throw new IllegalStateException("No elements added");
 			} else {
-				return Spline.Implementation.method_41299(
-					this.locationFunction, this.locations.toFloatArray(), ImmutableList.copyOf(this.values), this.derivatives.toFloatArray()
-				);
+				return Spline.Implementation.build(this.locationFunction, this.locations.toFloatArray(), ImmutableList.copyOf(this.values), this.derivatives.toFloatArray());
 			}
 		}
 	}
@@ -146,7 +144,7 @@ public interface Spline<C, I extends ToFloatFunction<C>> extends ToFloatFunction
 
 		@Override
 		public String getDebugString() {
-			return String.format("k=%.3f", this.value);
+			return String.format(Locale.ROOT, "k=%.3f", this.value);
 		}
 
 		@Override
@@ -160,7 +158,7 @@ public interface Spline<C, I extends ToFloatFunction<C>> extends ToFloatFunction
 		}
 
 		@Override
-		public Spline<C, I> method_41187(Spline.class_7073<I> arg) {
+		public Spline<C, I> apply(Spline.Visitor<I> visitor) {
 			return this;
 		}
 	}
@@ -180,44 +178,46 @@ public interface Spline<C, I extends ToFloatFunction<C>> extends ToFloatFunction
 			this.max = max;
 		}
 
-		static <C, I extends ToFloatFunction<C>> Spline.Implementation<C, I> method_41299(I toFloatFunction, float[] fs, List<Spline<C, I>> list, float[] gs) {
-			method_41301(fs, list, gs);
-			int i = fs.length - 1;
+		static <C, I extends ToFloatFunction<C>> Spline.Implementation<C, I> build(
+			I locationFunction, float[] locations, List<Spline<C, I>> values, float[] derivatives
+		) {
+			method_41301(locations, values, derivatives);
+			int i = locations.length - 1;
 			float f = Float.POSITIVE_INFINITY;
 			float g = Float.NEGATIVE_INFINITY;
-			float h = toFloatFunction.min();
-			float j = toFloatFunction.max();
-			if (h < fs[0]) {
-				float k = method_41297(h, fs, ((Spline)list.get(0)).min(), gs, 0);
-				float l = method_41297(h, fs, ((Spline)list.get(0)).max(), gs, 0);
+			float h = locationFunction.min();
+			float j = locationFunction.max();
+			if (h < locations[0]) {
+				float k = method_41297(h, locations, ((Spline)values.get(0)).min(), derivatives, 0);
+				float l = method_41297(h, locations, ((Spline)values.get(0)).max(), derivatives, 0);
 				f = Math.min(f, Math.min(k, l));
 				g = Math.max(g, Math.max(k, l));
 			}
 
-			if (j > fs[i]) {
-				float k = method_41297(j, fs, ((Spline)list.get(i)).min(), gs, i);
-				float l = method_41297(j, fs, ((Spline)list.get(i)).max(), gs, i);
+			if (j > locations[i]) {
+				float k = method_41297(j, locations, ((Spline)values.get(i)).min(), derivatives, i);
+				float l = method_41297(j, locations, ((Spline)values.get(i)).max(), derivatives, i);
 				f = Math.min(f, Math.min(k, l));
 				g = Math.max(g, Math.max(k, l));
 			}
 
-			for (Spline<C, I> spline : list) {
+			for (Spline<C, I> spline : values) {
 				f = Math.min(f, spline.min());
 				g = Math.max(g, spline.max());
 			}
 
 			for (int m = 0; m < i; m++) {
-				float l = fs[m];
-				float n = fs[m + 1];
+				float l = locations[m];
+				float n = locations[m + 1];
 				float o = n - l;
-				Spline<C, I> spline2 = (Spline<C, I>)list.get(m);
-				Spline<C, I> spline3 = (Spline<C, I>)list.get(m + 1);
+				Spline<C, I> spline2 = (Spline<C, I>)values.get(m);
+				Spline<C, I> spline3 = (Spline<C, I>)values.get(m + 1);
 				float p = spline2.min();
 				float q = spline2.max();
 				float r = spline3.min();
 				float s = spline3.max();
-				float t = gs[m];
-				float u = gs[m + 1];
+				float t = derivatives[m];
+				float u = derivatives[m + 1];
 				if (t != 0.0F || u != 0.0F) {
 					float v = t * o;
 					float w = u * o;
@@ -234,7 +234,7 @@ public interface Spline<C, I extends ToFloatFunction<C>> extends ToFloatFunction
 				}
 			}
 
-			return new Spline.Implementation<>(toFloatFunction, fs, list, gs, f, g);
+			return new Spline.Implementation<>(locationFunction, locations, values, derivatives, f, g);
 		}
 
 		private static float method_41297(float f, float[] fs, float g, float[] gs, int i) {
@@ -303,14 +303,12 @@ public interface Spline<C, I extends ToFloatFunction<C>> extends ToFloatFunction
 		}
 
 		@Override
-		public Spline<C, I> method_41187(Spline.class_7073<I> arg) {
-			return method_41299(
-				arg.visit(this.locationFunction), this.locations, this.values().stream().map(spline -> spline.method_41187(arg)).toList(), this.derivatives
-			);
+		public Spline<C, I> apply(Spline.Visitor<I> visitor) {
+			return build(visitor.visit(this.locationFunction), this.locations, this.values().stream().map(value -> value.apply(visitor)).toList(), this.derivatives);
 		}
 	}
 
-	public interface class_7073<I> {
-		I visit(I object);
+	public interface Visitor<I> {
+		I visit(I value);
 	}
 }

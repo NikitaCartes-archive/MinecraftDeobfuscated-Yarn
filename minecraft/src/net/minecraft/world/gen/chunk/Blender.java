@@ -38,13 +38,13 @@ import org.apache.commons.lang3.mutable.MutableObject;
 public class Blender {
 	private static final Blender NO_BLENDING = new Blender(new Long2ObjectOpenHashMap(), new Long2ObjectOpenHashMap()) {
 		@Override
-		public Blender.class_6956 method_39340(int i, int j) {
-			return new Blender.class_6956(1.0, 0.0);
+		public Blender.BlendResult calculate(int blockX, int blockZ) {
+			return new Blender.BlendResult(1.0, 0.0);
 		}
 
 		@Override
-		public double method_39338(DensityFunction.NoisePos noisePos, double d) {
-			return d;
+		public double applyBlendDensity(DensityFunction.NoisePos pos, double density) {
+			return density;
 		}
 
 		@Override
@@ -52,16 +52,16 @@ public class Blender {
 			return biomeSupplier;
 		}
 	};
-	private static final DoublePerlinNoiseSampler field_35681 = DoublePerlinNoiseSampler.create(
+	private static final DoublePerlinNoiseSampler OFFSET_NOISE = DoublePerlinNoiseSampler.create(
 		new Xoroshiro128PlusPlusRandom(42L), BuiltinRegistries.NOISE_PARAMETERS.getOrThrow(NoiseParametersKeys.OFFSET)
 	);
-	private static final int field_35502 = BiomeCoords.fromChunk(7) - 1;
-	private static final int field_35503 = BiomeCoords.toChunk(field_35502 + 3);
+	private static final int BLENDING_BIOME_DISTANCE_THRESHOLD = BiomeCoords.fromChunk(7) - 1;
+	private static final int BLENDING_CHUNK_DISTANCE_THRESHOLD = BiomeCoords.toChunk(BLENDING_BIOME_DISTANCE_THRESHOLD + 3);
 	private static final int field_35504 = 2;
-	private static final int field_35505 = BiomeCoords.toChunk(5);
+	private static final int CLOSE_BLENDING_DISTANCE_THRESHOLD = BiomeCoords.toChunk(5);
 	private static final double field_36224 = 8.0;
-	private final Long2ObjectOpenHashMap<BlendingData> field_36343;
-	private final Long2ObjectOpenHashMap<BlendingData> field_36344;
+	private final Long2ObjectOpenHashMap<BlendingData> blendingData;
+	private final Long2ObjectOpenHashMap<BlendingData> closeBlendingData;
 
 	public static Blender getNoBlending() {
 		return NO_BLENDING;
@@ -72,22 +72,25 @@ public class Blender {
 			return NO_BLENDING;
 		} else {
 			ChunkPos chunkPos = chunkRegion.getCenterPos();
-			if (!chunkRegion.needsBlending(chunkPos, field_35503)) {
+			if (!chunkRegion.needsBlending(chunkPos, BLENDING_CHUNK_DISTANCE_THRESHOLD)) {
 				return NO_BLENDING;
 			} else {
 				Long2ObjectOpenHashMap<BlendingData> long2ObjectOpenHashMap = new Long2ObjectOpenHashMap<>();
 				Long2ObjectOpenHashMap<BlendingData> long2ObjectOpenHashMap2 = new Long2ObjectOpenHashMap<>();
-				int i = MathHelper.square(field_35503 + 1);
+				int i = MathHelper.square(BLENDING_CHUNK_DISTANCE_THRESHOLD + 1);
 
-				for (int j = -field_35503; j <= field_35503; j++) {
-					for (int k = -field_35503; k <= field_35503; k++) {
+				for (int j = -BLENDING_CHUNK_DISTANCE_THRESHOLD; j <= BLENDING_CHUNK_DISTANCE_THRESHOLD; j++) {
+					for (int k = -BLENDING_CHUNK_DISTANCE_THRESHOLD; k <= BLENDING_CHUNK_DISTANCE_THRESHOLD; k++) {
 						if (j * j + k * k <= i) {
 							int l = chunkPos.x + j;
 							int m = chunkPos.z + k;
 							BlendingData blendingData = BlendingData.getBlendingData(chunkRegion, l, m);
 							if (blendingData != null) {
 								long2ObjectOpenHashMap.put(ChunkPos.toLong(l, m), blendingData);
-								if (j >= -field_35505 && j <= field_35505 && k >= -field_35505 && k <= field_35505) {
+								if (j >= -CLOSE_BLENDING_DISTANCE_THRESHOLD
+									&& j <= CLOSE_BLENDING_DISTANCE_THRESHOLD
+									&& k >= -CLOSE_BLENDING_DISTANCE_THRESHOLD
+									&& k <= CLOSE_BLENDING_DISTANCE_THRESHOLD) {
 									long2ObjectOpenHashMap2.put(ChunkPos.toLong(l, m), blendingData);
 								}
 							}
@@ -100,112 +103,116 @@ public class Blender {
 		}
 	}
 
-	Blender(Long2ObjectOpenHashMap<BlendingData> long2ObjectOpenHashMap, Long2ObjectOpenHashMap<BlendingData> long2ObjectOpenHashMap2) {
-		this.field_36343 = long2ObjectOpenHashMap;
-		this.field_36344 = long2ObjectOpenHashMap2;
+	Blender(Long2ObjectOpenHashMap<BlendingData> blendingData, Long2ObjectOpenHashMap<BlendingData> closeBlendingData) {
+		this.blendingData = blendingData;
+		this.closeBlendingData = closeBlendingData;
 	}
 
-	public Blender.class_6956 method_39340(int i, int j) {
-		int k = BiomeCoords.fromBlock(i);
-		int l = BiomeCoords.fromBlock(j);
-		double d = this.method_39562(k, 0, l, BlendingData::method_39344);
+	public Blender.BlendResult calculate(int blockX, int blockZ) {
+		int i = BiomeCoords.fromBlock(blockX);
+		int j = BiomeCoords.fromBlock(blockZ);
+		double d = this.sampleClosest(i, 0, j, BlendingData::getHeight);
 		if (d != Double.MAX_VALUE) {
-			return new Blender.class_6956(0.0, method_39337(d));
+			return new Blender.BlendResult(0.0, getBlendOffset(d));
 		} else {
 			MutableDouble mutableDouble = new MutableDouble(0.0);
 			MutableDouble mutableDouble2 = new MutableDouble(0.0);
 			MutableDouble mutableDouble3 = new MutableDouble(Double.POSITIVE_INFINITY);
-			this.field_36343
+			this.blendingData
 				.forEach(
-					(long_, blendingData) -> blendingData.method_39351(
-							BiomeCoords.fromChunk(ChunkPos.getPackedX(long_)), BiomeCoords.fromChunk(ChunkPos.getPackedZ(long_)), (kx, lx, dx) -> {
-								double ex = MathHelper.hypot((double)(k - kx), (double)(l - lx));
-								if (!(ex > (double)field_35502)) {
-									if (ex < mutableDouble3.doubleValue()) {
-										mutableDouble3.setValue(ex);
+					(chunkPos, data) -> data.acceptHeights(
+							BiomeCoords.fromChunk(ChunkPos.getPackedX(chunkPos)), BiomeCoords.fromChunk(ChunkPos.getPackedZ(chunkPos)), (biomeX, biomeZ, height) -> {
+								double dx = MathHelper.hypot((double)(i - biomeX), (double)(j - biomeZ));
+								if (!(dx > (double)BLENDING_BIOME_DISTANCE_THRESHOLD)) {
+									if (dx < mutableDouble3.doubleValue()) {
+										mutableDouble3.setValue(dx);
 									}
 
-									double fx = 1.0 / (ex * ex * ex * ex);
-									mutableDouble2.add(dx * fx);
-									mutableDouble.add(fx);
+									double ex = 1.0 / (dx * dx * dx * dx);
+									mutableDouble2.add(height * ex);
+									mutableDouble.add(ex);
 								}
 							}
 						)
 				);
 			if (mutableDouble3.doubleValue() == Double.POSITIVE_INFINITY) {
-				return new Blender.class_6956(1.0, 0.0);
+				return new Blender.BlendResult(1.0, 0.0);
 			} else {
 				double e = mutableDouble2.doubleValue() / mutableDouble.doubleValue();
-				double f = MathHelper.clamp(mutableDouble3.doubleValue() / (double)(field_35502 + 1), 0.0, 1.0);
+				double f = MathHelper.clamp(mutableDouble3.doubleValue() / (double)(BLENDING_BIOME_DISTANCE_THRESHOLD + 1), 0.0, 1.0);
 				f = 3.0 * f * f - 2.0 * f * f * f;
-				return new Blender.class_6956(f, method_39337(e));
+				return new Blender.BlendResult(f, getBlendOffset(e));
 			}
 		}
 	}
 
-	private static double method_39337(double d) {
-		double e = 1.0;
-		double f = d + 0.5;
-		double g = MathHelper.floorMod(f, 8.0);
-		return 1.0 * (32.0 * (f - 128.0) - 3.0 * (f - 120.0) * g + 3.0 * g * g) / (128.0 * (32.0 - 3.0 * g));
+	private static double getBlendOffset(double height) {
+		double d = 1.0;
+		double e = height + 0.5;
+		double f = MathHelper.floorMod(e, 8.0);
+		return 1.0 * (32.0 * (e - 128.0) - 3.0 * (e - 120.0) * f + 3.0 * f * f) / (128.0 * (32.0 - 3.0 * f));
 	}
 
-	public double method_39338(DensityFunction.NoisePos noisePos, double d) {
-		int i = BiomeCoords.fromBlock(noisePos.blockX());
-		int j = noisePos.blockY() / 8;
-		int k = BiomeCoords.fromBlock(noisePos.blockZ());
-		double e = this.method_39562(i, j, k, BlendingData::method_39345);
-		if (e != Double.MAX_VALUE) {
-			return e;
+	public double applyBlendDensity(DensityFunction.NoisePos pos, double density) {
+		int i = BiomeCoords.fromBlock(pos.blockX());
+		int j = pos.blockY() / 8;
+		int k = BiomeCoords.fromBlock(pos.blockZ());
+		double d = this.sampleClosest(i, j, k, BlendingData::getCollidableBlockDensity);
+		if (d != Double.MAX_VALUE) {
+			return d;
 		} else {
 			MutableDouble mutableDouble = new MutableDouble(0.0);
 			MutableDouble mutableDouble2 = new MutableDouble(0.0);
 			MutableDouble mutableDouble3 = new MutableDouble(Double.POSITIVE_INFINITY);
-			this.field_36344
+			this.closeBlendingData
 				.forEach(
-					(long_, blendingData) -> blendingData.method_39346(
-							BiomeCoords.fromChunk(ChunkPos.getPackedX(long_)), BiomeCoords.fromChunk(ChunkPos.getPackedZ(long_)), j - 1, j + 1, (l, m, n, dx) -> {
-								double ex = MathHelper.magnitude((double)(i - l), (double)((j - m) * 2), (double)(k - n));
-								if (!(ex > 2.0)) {
-									if (ex < mutableDouble3.doubleValue()) {
-										mutableDouble3.setValue(ex);
+					(chunkPos, data) -> data.acceptCollidableBlockDensities(
+							BiomeCoords.fromChunk(ChunkPos.getPackedX(chunkPos)),
+							BiomeCoords.fromChunk(ChunkPos.getPackedZ(chunkPos)),
+							j - 1,
+							j + 1,
+							(biomeX, halfSectionY, biomeZ, collidableBlockDensity) -> {
+								double dx = MathHelper.magnitude((double)(i - biomeX), (double)((j - halfSectionY) * 2), (double)(k - biomeZ));
+								if (!(dx > 2.0)) {
+									if (dx < mutableDouble3.doubleValue()) {
+										mutableDouble3.setValue(dx);
 									}
 
-									double fx = 1.0 / (ex * ex * ex * ex);
-									mutableDouble2.add(dx * fx);
-									mutableDouble.add(fx);
+									double ex = 1.0 / (dx * dx * dx * dx);
+									mutableDouble2.add(collidableBlockDensity * ex);
+									mutableDouble.add(ex);
 								}
 							}
 						)
 				);
 			if (mutableDouble3.doubleValue() == Double.POSITIVE_INFINITY) {
-				return d;
+				return density;
 			} else {
-				double f = mutableDouble2.doubleValue() / mutableDouble.doubleValue();
-				double g = MathHelper.clamp(mutableDouble3.doubleValue() / 3.0, 0.0, 1.0);
-				return MathHelper.lerp(g, f, d);
+				double e = mutableDouble2.doubleValue() / mutableDouble.doubleValue();
+				double f = MathHelper.clamp(mutableDouble3.doubleValue() / 3.0, 0.0, 1.0);
+				return MathHelper.lerp(f, e, density);
 			}
 		}
 	}
 
-	private double method_39562(int i, int j, int k, Blender.class_6781 arg) {
-		int l = BiomeCoords.toChunk(i);
-		int m = BiomeCoords.toChunk(k);
-		boolean bl = (i & 3) == 0;
-		boolean bl2 = (k & 3) == 0;
-		double d = this.method_39565(arg, l, m, i, j, k);
+	private double sampleClosest(int biomeX, int biomeY, int biomeZ, Blender.BlendingSampler sampler) {
+		int i = BiomeCoords.toChunk(biomeX);
+		int j = BiomeCoords.toChunk(biomeZ);
+		boolean bl = (biomeX & 3) == 0;
+		boolean bl2 = (biomeZ & 3) == 0;
+		double d = this.sample(sampler, i, j, biomeX, biomeY, biomeZ);
 		if (d == Double.MAX_VALUE) {
 			if (bl && bl2) {
-				d = this.method_39565(arg, l - 1, m - 1, i, j, k);
+				d = this.sample(sampler, i - 1, j - 1, biomeX, biomeY, biomeZ);
 			}
 
 			if (d == Double.MAX_VALUE) {
 				if (bl) {
-					d = this.method_39565(arg, l - 1, m, i, j, k);
+					d = this.sample(sampler, i - 1, j, biomeX, biomeY, biomeZ);
 				}
 
 				if (d == Double.MAX_VALUE && bl2) {
-					d = this.method_39565(arg, l, m - 1, i, j, k);
+					d = this.sample(sampler, i, j - 1, biomeX, biomeY, biomeZ);
 				}
 			}
 		}
@@ -213,9 +220,11 @@ public class Blender {
 		return d;
 	}
 
-	private double method_39565(Blender.class_6781 arg, int i, int j, int k, int l, int m) {
-		BlendingData blendingData = this.field_36343.get(ChunkPos.toLong(i, j));
-		return blendingData != null ? arg.get(blendingData, k - BiomeCoords.fromChunk(i), l, m - BiomeCoords.fromChunk(j)) : Double.MAX_VALUE;
+	private double sample(Blender.BlendingSampler sampler, int chunkX, int chunkZ, int biomeX, int biomeY, int biomeZ) {
+		BlendingData blendingData = this.blendingData.get(ChunkPos.toLong(chunkX, chunkZ));
+		return blendingData != null
+			? sampler.get(blendingData, biomeX - BiomeCoords.fromChunk(chunkX), biomeY, biomeZ - BiomeCoords.fromChunk(chunkZ))
+			: Double.MAX_VALUE;
 	}
 
 	public BiomeSupplier getBiomeSupplier(BiomeSupplier biomeSupplier) {
@@ -226,17 +235,17 @@ public class Blender {
 	}
 
 	@Nullable
-	private RegistryEntry<Biome> blendBiome(int x, int y, int i) {
+	private RegistryEntry<Biome> blendBiome(int x, int y, int z) {
 		MutableDouble mutableDouble = new MutableDouble(Double.POSITIVE_INFINITY);
 		MutableObject<RegistryEntry<Biome>> mutableObject = new MutableObject<>();
-		this.field_36343
+		this.blendingData
 			.forEach(
-				(long_, blendingData) -> blendingData.method_40028(
-						BiomeCoords.fromChunk(ChunkPos.getPackedX(long_)), y, BiomeCoords.fromChunk(ChunkPos.getPackedZ(long_)), (kx, l, registryEntry) -> {
-							double dx = MathHelper.hypot((double)(x - kx), (double)(i - l));
-							if (!(dx > (double)field_35502)) {
+				(chunkPos, data) -> data.acceptBiomes(
+						BiomeCoords.fromChunk(ChunkPos.getPackedX(chunkPos)), y, BiomeCoords.fromChunk(ChunkPos.getPackedZ(chunkPos)), (biomeX, biomeZ, biome) -> {
+							double dx = MathHelper.hypot((double)(x - biomeX), (double)(z - biomeZ));
+							if (!(dx > (double)BLENDING_BIOME_DISTANCE_THRESHOLD)) {
 								if (dx < mutableDouble.doubleValue()) {
-									mutableObject.setValue(registryEntry);
+									mutableObject.setValue(biome);
 									mutableDouble.setValue(dx);
 								}
 							}
@@ -246,8 +255,8 @@ public class Blender {
 		if (mutableDouble.doubleValue() == Double.POSITIVE_INFINITY) {
 			return null;
 		} else {
-			double d = field_35681.sample((double)x, 0.0, (double)i) * 12.0;
-			double e = MathHelper.clamp((mutableDouble.doubleValue() + d) / (double)(field_35502 + 1), 0.0, 1.0);
+			double d = OFFSET_NOISE.sample((double)x, 0.0, (double)z) * 12.0;
+			double e = MathHelper.clamp((mutableDouble.doubleValue() + d) / (double)(BLENDING_BIOME_DISTANCE_THRESHOLD + 1), 0.0, 1.0);
 			return e > 0.5 ? null : mutableObject.getValue();
 		}
 	}
@@ -259,8 +268,8 @@ public class Blender {
 		BlockPos blockPos = new BlockPos(chunkPos.getStartX(), 0, chunkPos.getStartZ());
 		BlendingData blendingData = chunk.getBlendingData();
 		if (blendingData != null) {
-			int i = blendingData.method_41564().getBottomY();
-			int j = blendingData.method_41564().getTopY() - 1;
+			int i = blendingData.getOldHeightLimit().getBottomY();
+			int j = blendingData.getOldHeightLimit().getTopY() - 1;
 			if (bl) {
 				for (int k = 0; k < 16; k++) {
 					for (int l = 0; l < 16; l++) {
@@ -305,85 +314,85 @@ public class Blender {
 		}
 	}
 
-	public static void method_39809(StructureWorldAccess structureWorldAccess, ProtoChunk protoChunk) {
-		ChunkPos chunkPos = protoChunk.getPos();
+	public static void createCarvingMasks(StructureWorldAccess world, ProtoChunk chunk) {
+		ChunkPos chunkPos = chunk.getPos();
 		Builder<EightWayDirection, BlendingData> builder = ImmutableMap.builder();
 
 		for (EightWayDirection eightWayDirection : EightWayDirection.values()) {
-			int i = chunkPos.x + eightWayDirection.method_42015();
-			int j = chunkPos.z + eightWayDirection.method_42016();
-			BlendingData blendingData = structureWorldAccess.getChunk(i, j).getBlendingData();
+			int i = chunkPos.x + eightWayDirection.getOffsetX();
+			int j = chunkPos.z + eightWayDirection.getOffsetZ();
+			BlendingData blendingData = world.getChunk(i, j).getBlendingData();
 			if (blendingData != null) {
 				builder.put(eightWayDirection, blendingData);
 			}
 		}
 
 		ImmutableMap<EightWayDirection, BlendingData> immutableMap = builder.build();
-		if (protoChunk.usesOldNoise() || !immutableMap.isEmpty()) {
-			Blender.class_6831 lv = method_39815(protoChunk.getBlendingData(), immutableMap);
-			CarvingMask.MaskPredicate maskPredicate = (ix, jx, k) -> {
-				double d = (double)ix + 0.5 + field_35681.sample((double)ix, (double)jx, (double)k) * 4.0;
-				double e = (double)jx + 0.5 + field_35681.sample((double)jx, (double)k, (double)ix) * 4.0;
-				double f = (double)k + 0.5 + field_35681.sample((double)k, (double)ix, (double)jx) * 4.0;
-				return lv.getDistance(d, e, f) < 4.0;
+		if (chunk.usesOldNoise() || !immutableMap.isEmpty()) {
+			Blender.DistanceFunction distanceFunction = createClosestDistanceFunction(chunk.getBlendingData(), immutableMap);
+			CarvingMask.MaskPredicate maskPredicate = (offsetX, y, offsetZ) -> {
+				double d = (double)offsetX + 0.5 + OFFSET_NOISE.sample((double)offsetX, (double)y, (double)offsetZ) * 4.0;
+				double e = (double)y + 0.5 + OFFSET_NOISE.sample((double)y, (double)offsetZ, (double)offsetX) * 4.0;
+				double f = (double)offsetZ + 0.5 + OFFSET_NOISE.sample((double)offsetZ, (double)offsetX, (double)y) * 4.0;
+				return distanceFunction.getDistance(d, e, f) < 4.0;
 			};
-			Stream.of(GenerationStep.Carver.values()).map(protoChunk::getOrCreateCarvingMask).forEach(carvingMask -> carvingMask.setMaskPredicate(maskPredicate));
+			Stream.of(GenerationStep.Carver.values()).map(chunk::getOrCreateCarvingMask).forEach(mask -> mask.setMaskPredicate(maskPredicate));
 		}
 	}
 
-	public static Blender.class_6831 method_39815(@Nullable BlendingData blendingData, Map<EightWayDirection, BlendingData> map) {
-		List<Blender.class_6831> list = Lists.<Blender.class_6831>newArrayList();
-		if (blendingData != null) {
-			list.add(method_39812(null, blendingData));
+	public static Blender.DistanceFunction createClosestDistanceFunction(@Nullable BlendingData data, Map<EightWayDirection, BlendingData> neighborData) {
+		List<Blender.DistanceFunction> list = Lists.<Blender.DistanceFunction>newArrayList();
+		if (data != null) {
+			list.add(createDistanceFunction(null, data));
 		}
 
-		map.forEach((eightWayDirection, blendingDatax) -> list.add(method_39812(eightWayDirection, blendingDatax)));
-		return (d, e, f) -> {
-			double g = Double.POSITIVE_INFINITY;
+		neighborData.forEach((direction, datax) -> list.add(createDistanceFunction(direction, datax)));
+		return (offsetX, y, offsetZ) -> {
+			double d = Double.POSITIVE_INFINITY;
 
-			for (Blender.class_6831 lv : list) {
-				double h = lv.getDistance(d, e, f);
-				if (h < g) {
-					g = h;
+			for (Blender.DistanceFunction distanceFunction : list) {
+				double e = distanceFunction.getDistance(offsetX, y, offsetZ);
+				if (e < d) {
+					d = e;
 				}
 			}
 
-			return g;
+			return d;
 		};
 	}
 
-	private static Blender.class_6831 method_39812(@Nullable EightWayDirection eightWayDirection, BlendingData blendingData) {
+	private static Blender.DistanceFunction createDistanceFunction(@Nullable EightWayDirection direction, BlendingData data) {
 		double d = 0.0;
 		double e = 0.0;
-		if (eightWayDirection != null) {
-			for (Direction direction : eightWayDirection.getDirections()) {
-				d += (double)(direction.getOffsetX() * 16);
-				e += (double)(direction.getOffsetZ() * 16);
+		if (direction != null) {
+			for (Direction direction2 : direction.getDirections()) {
+				d += (double)(direction2.getOffsetX() * 16);
+				e += (double)(direction2.getOffsetZ() * 16);
 			}
 		}
 
 		double f = d;
 		double g = e;
-		double h = (double)blendingData.method_41564().getHeight() / 2.0;
-		double i = (double)blendingData.method_41564().getBottomY() + h;
-		return (hx, ix, j) -> method_39808(hx - 8.0 - f, ix - i, j - 8.0 - g, 8.0, h, 8.0);
+		double h = (double)data.getOldHeightLimit().getHeight() / 2.0;
+		double i = (double)data.getOldHeightLimit().getBottomY() + h;
+		return (offsetX, y, offsetZ) -> getDistance(offsetX - 8.0 - f, y - i, offsetZ - 8.0 - g, 8.0, h, 8.0);
 	}
 
-	private static double method_39808(double d, double e, double f, double g, double h, double i) {
-		double j = Math.abs(d) - g;
-		double k = Math.abs(e) - h;
-		double l = Math.abs(f) - i;
-		return MathHelper.magnitude(Math.max(0.0, j), Math.max(0.0, k), Math.max(0.0, l));
+	private static double getDistance(double x1, double y1, double z1, double x2, double y2, double z2) {
+		double d = Math.abs(x1) - x2;
+		double e = Math.abs(y1) - y2;
+		double f = Math.abs(z1) - z2;
+		return MathHelper.magnitude(Math.max(0.0, d), Math.max(0.0, e), Math.max(0.0, f));
 	}
 
-	interface class_6781 {
-		double get(BlendingData blendingData, int i, int j, int k);
+	public static record BlendResult(double alpha, double blendingOffset) {
 	}
 
-	public interface class_6831 {
-		double getDistance(double d, double e, double f);
+	interface BlendingSampler {
+		double get(BlendingData data, int biomeX, int biomeY, int biomeZ);
 	}
 
-	public static record class_6956(double alpha, double blendingOffset) {
+	public interface DistanceFunction {
+		double getDistance(double offsetX, double y, double offsetZ);
 	}
 }
