@@ -7,11 +7,10 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import java.util.List;
 import net.minecraft.command.argument.MessageArgumentType;
 import net.minecraft.entity.Entity;
-import net.minecraft.network.message.MessageSourceProfile;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SentMessage;
 import net.minecraft.scoreboard.Team;
-import net.minecraft.server.filter.FilteredMessage;
+import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
@@ -47,7 +46,6 @@ public class TeamMsgCommand {
 			throw NO_TEAM_EXCEPTION.create();
 		} else {
 			Text text = team.getFormattedName().fillStyle(STYLE);
-			MessageSourceProfile messageSourceProfile = source.getMessageSourceProfile();
 			MessageType.Parameters parameters = MessageType.params(MessageType.TEAM_MSG_COMMAND_INCOMING, source).withTargetName(text);
 			MessageType.Parameters parameters2 = MessageType.params(MessageType.TEAM_MSG_COMMAND_OUTGOING, source).withTargetName(text);
 			List<ServerPlayerEntity> list = source.getServer()
@@ -56,21 +54,23 @@ public class TeamMsgCommand {
 				.stream()
 				.filter(player -> player == entity || player.getScoreboardTeam() == team)
 				.toList();
-			signedMessage.decorate(source, filteredMessage -> {
-				FilteredMessage<SentMessage> filteredMessage2 = SentMessage.of(filteredMessage);
+			signedMessage.decorate(source, signedMessagex -> {
+				SentMessage sentMessage = SentMessage.of(signedMessagex);
+				boolean bl = signedMessagex.method_45100();
+				boolean bl2 = false;
 
 				for (ServerPlayerEntity serverPlayerEntity : list) {
-					if (serverPlayerEntity == entity) {
-						serverPlayerEntity.sendChatMessage(filteredMessage2.raw(), parameters2);
-					} else {
-						SentMessage sentMessage = filteredMessage2.getFilterableFor(source, serverPlayerEntity);
-						if (sentMessage != null) {
-							serverPlayerEntity.sendChatMessage(sentMessage, parameters);
-						}
-					}
+					MessageType.Parameters parameters3 = serverPlayerEntity == entity ? parameters2 : parameters;
+					boolean bl3 = source.method_45067(serverPlayerEntity);
+					serverPlayerEntity.sendChatMessage(sentMessage, bl3, parameters3);
+					bl2 |= bl && bl3 && serverPlayerEntity != entity;
 				}
 
-				filteredMessage2.raw().afterPacketsSent(source.getServer().getPlayerManager());
+				if (bl2) {
+					source.method_45068(PlayerManager.field_39921);
+				}
+
+				sentMessage.afterPacketsSent(source.getServer().getPlayerManager());
 			});
 			return list.size();
 		}

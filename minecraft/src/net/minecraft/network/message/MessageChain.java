@@ -2,6 +2,7 @@ package net.minecraft.network.message;
 
 import java.util.Optional;
 import javax.annotation.Nullable;
+import net.minecraft.class_7649;
 import net.minecraft.network.encryption.Signer;
 
 /**
@@ -51,7 +52,7 @@ public class MessageChain {
 	) {
 		MessageHeader messageHeader = new MessageHeader(precedingSignature, metadata.sender());
 		MessageBody messageBody = new MessageBody(contents, metadata.timestamp(), metadata.salt(), lastSeenMessage);
-		return new SignedMessage(messageHeader, signature.signature, messageBody, Optional.empty());
+		return new SignedMessage(messageHeader, signature.signature, messageBody, Optional.empty(), class_7649.field_39942);
 	}
 
 	public MessageChain.Unpacker getUnpacker() {
@@ -87,6 +88,10 @@ public class MessageChain {
 	 */
 	@FunctionalInterface
 	public interface Unpacker {
+		MessageChain.Unpacker field_39951 = (signature, messageMetadata, decoratedContents, lastSeenMessageList) -> SignedMessage.method_45098(
+				messageMetadata, decoratedContents
+			);
+
 		SignedMessage unpack(MessageChain.Signature signature, MessageMetadata metadata, DecoratedContents decoratedContents, LastSeenMessageList lastSeenMessages);
 	}
 }

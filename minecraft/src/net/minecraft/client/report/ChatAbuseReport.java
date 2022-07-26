@@ -185,8 +185,8 @@ public class ChatAbuseReport {
 	private static Int2ObjectMap<ReceivedMessage.ChatMessage> collectEvidences(ChatLog log, int selectedIndex, AbuseReportLimits abuseReportLimits) {
 		int i = abuseReportLimits.leadingContextMessageCount() + 1;
 		Int2ObjectMap<ReceivedMessage.ChatMessage> int2ObjectMap = new Int2ObjectOpenHashMap<>();
-		collectPrecedingMessages(log, selectedIndex, (j, chatMessage) -> {
-			int2ObjectMap.put(j, chatMessage);
+		collectPrecedingMessages(log, selectedIndex, (ix, chatMessage) -> {
+			int2ObjectMap.put(ix, chatMessage);
 			return int2ObjectMap.size() < i;
 		});
 		streamSucceedingMessages(log, selectedIndex, abuseReportLimits.trailingContextMessageCount())
@@ -227,14 +227,14 @@ public class ChatAbuseReport {
 		}
 	}
 
-	private static IntCollection collectIndicesUntilLastSeen(ChatLog log, int selectedIndex, SignedMessage signedMessage) {
-		Set<MessageSignatureData> set = (Set<MessageSignatureData>)signedMessage.signedBody()
+	private static IntCollection collectIndicesUntilLastSeen(ChatLog log, int selectedIndex, SignedMessage message) {
+		Set<MessageSignatureData> set = (Set<MessageSignatureData>)message.signedBody()
 			.lastSeenMessages()
 			.entries()
 			.stream()
 			.map(LastSeenMessageList.Entry::lastSignature)
 			.collect(Collectors.toCollection(ObjectOpenHashSet::new));
-		MessageSignatureData messageSignatureData = signedMessage.signedHeader().precedingSignature();
+		MessageSignatureData messageSignatureData = message.signedHeader().precedingSignature();
 		if (messageSignatureData != null) {
 			set.add(messageSignatureData);
 		}

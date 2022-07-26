@@ -8,8 +8,6 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -24,14 +22,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_7642;
-import net.minecraft.class_7644;
+import net.minecraft.class_7648;
+import net.minecraft.class_7649;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractBlock;
@@ -45,6 +42,7 @@ import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.client.option.ChatVisibility;
+import net.minecraft.command.argument.DecoratableArgumentList;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
@@ -67,15 +65,16 @@ import net.minecraft.nbt.NbtString;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.Packet;
+import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.listener.TickablePacketListener;
 import net.minecraft.network.message.AcknowledgmentValidator;
 import net.minecraft.network.message.ArgumentSignatureDataMap;
+import net.minecraft.network.message.CachedDecoratorResult;
 import net.minecraft.network.message.DecoratedContents;
 import net.minecraft.network.message.LastSeenMessageList;
 import net.minecraft.network.message.MessageChain;
 import net.minecraft.network.message.MessageChainTaskQueue;
-import net.minecraft.network.message.MessageDecorator;
 import net.minecraft.network.message.MessageMetadata;
 import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.network.message.MessageSourceProfile;
@@ -146,7 +145,6 @@ import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.AnvilScreenHandler;
 import net.minecraft.screen.BeaconScreenHandler;
 import net.minecraft.screen.MerchantScreenHandler;
-import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -177,7 +175,6 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.util.thread.ThreadExecutor;
 import net.minecraft.world.CommandBlockExecutor;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
@@ -226,10 +223,10 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 	private int vehicleFloatingTicks;
 	private int movePacketsCount;
 	private int lastTickMovePacketsCount;
-	private final class_7642 field_39899 = new class_7642();
+	private final CachedDecoratorResult cachedDecoratorResult = new CachedDecoratorResult();
 	private final PendingTaskRunner previewTaskRunner = new PendingTaskRunner();
 	private final AtomicReference<Instant> lastMessageTimestamp = new AtomicReference(Instant.EPOCH);
-	private final MessageChain.Unpacker messageUnpacker = new MessageChain().getUnpacker();
+	private final MessageChain.Unpacker messageUnpacker;
 	private final AcknowledgmentValidator acknowledgmentValidator = new AcknowledgmentValidator();
 	private final MessageChainTaskQueue messageChainTaskQueue;
 
@@ -241,6 +238,13 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 		player.networkHandler = this;
 		this.lastKeepAliveTime = Util.getMeasuringTimeMs();
 		player.getTextStream().onConnect();
+		PlayerPublicKey playerPublicKey = player.getPublicKey();
+		if (playerPublicKey != null) {
+			this.messageUnpacker = new MessageChain().getUnpacker();
+		} else {
+			this.messageUnpacker = MessageChain.Unpacker.field_39951;
+		}
+
 		this.messageChainTaskQueue = new MessageChainTaskQueue(server);
 	}
 
@@ -344,35 +348,28 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 	}
 
 	public void disconnect(Text reason) {
-		this.connection.send(new DisconnectS2CPacket(reason), future -> this.connection.disconnect(reason));
+		this.connection.send(new DisconnectS2CPacket(reason), class_7648.method_45084(() -> this.connection.disconnect(reason)));
 		this.connection.disableAutoRead();
 		this.server.submitAndJoin(this.connection::handleDisconnection);
 	}
 
-	private <T, R, O> CompletableFuture<O> filterText(
-		T text, Function<R, CompletableFuture<O>> handler, BiFunction<TextStream, T, CompletableFuture<R>> backingFilterer
-	) {
-		ThreadExecutor<?> threadExecutor = this.player.getWorld().getServer();
-		Function<R, CompletableFuture<O>> function = message -> {
-			if (this.getConnection().isOpen()) {
-				return (CompletableFuture)handler.apply(message);
-			} else {
+	private <T, R> CompletableFuture<R> filterText(T text, BiFunction<TextStream, T, CompletableFuture<R>> biFunction) {
+		return ((CompletableFuture)biFunction.apply(this.player.getTextStream(), text)).thenApply(object -> {
+			if (!this.getConnection().isOpen()) {
 				LOGGER.debug("Ignoring packet due to disconnection");
-				return CompletableFuture.failedFuture(new CancellationException("disconnected"));
+				throw new CancellationException("disconnected");
+			} else {
+				return object;
 			}
-		};
-		return ((CompletableFuture)backingFilterer.apply(this.player.getTextStream(), text)).thenComposeAsync(function, threadExecutor);
+		});
 	}
 
-	private CompletableFuture<Void> filterText(String text, Function<FilteredMessage<String>, CompletableFuture<Void>> handler) {
-		return this.filterText(text, handler, TextStream::filterText);
+	private CompletableFuture<FilteredMessage> filterText(String text) {
+		return this.filterText(text, TextStream::filterText);
 	}
 
-	private void filterTexts(List<String> texts, Consumer<List<FilteredMessage<String>>> consumer) {
-		this.filterText(texts, messages -> {
-			consumer.accept(messages);
-			return CompletableFuture.completedFuture(null);
-		}, TextStream::filterTexts);
+	private CompletableFuture<List<FilteredMessage>> filterTexts(List<String> texts) {
+		return this.filterText(texts, TextStream::filterTexts);
 	}
 
 	@Override
@@ -759,23 +756,21 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 			Optional<String> optional = packet.getTitle();
 			optional.ifPresent(list::add);
 			packet.getPages().stream().limit(100L).forEach(list::add);
-			this.filterTexts(
-				list,
-				optional.isPresent()
-					? texts -> this.addBook((FilteredMessage<String>)texts.get(0), texts.subList(1, texts.size()), i)
-					: texts -> this.updateBookContent(texts, i)
-			);
+			Consumer<List<FilteredMessage>> consumer = optional.isPresent()
+				? texts -> this.addBook((FilteredMessage)texts.get(0), texts.subList(1, texts.size()), i)
+				: texts -> this.updateBookContent(texts, i);
+			this.filterTexts(list).thenAcceptAsync(consumer, this.server);
 		}
 	}
 
-	private void updateBookContent(List<FilteredMessage<String>> pages, int slotId) {
+	private void updateBookContent(List<FilteredMessage> pages, int slotId) {
 		ItemStack itemStack = this.player.getInventory().getStack(slotId);
 		if (itemStack.isOf(Items.WRITABLE_BOOK)) {
 			this.setTextToBook(pages, UnaryOperator.identity(), itemStack);
 		}
 	}
 
-	private void addBook(FilteredMessage<String> title, List<FilteredMessage<String>> pages, int slotId) {
+	private void addBook(FilteredMessage title, List<FilteredMessage> pages, int slotId) {
 		ItemStack itemStack = this.player.getInventory().getStack(slotId);
 		if (itemStack.isOf(Items.WRITABLE_BOOK)) {
 			ItemStack itemStack2 = new ItemStack(Items.WRITTEN_BOOK);
@@ -786,9 +781,9 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 			itemStack2.setSubNbt("author", NbtString.of(this.player.getName().getString()));
 			if (this.player.shouldFilterText()) {
-				itemStack2.setSubNbt("title", NbtString.of(title.filteredOrElse("")));
+				itemStack2.setSubNbt("title", NbtString.of(title.method_45061()));
 			} else {
-				itemStack2.setSubNbt("filtered_title", NbtString.of(title.filteredOrElse("")));
+				itemStack2.setSubNbt("filtered_title", NbtString.of(title.method_45061()));
 				itemStack2.setSubNbt("title", NbtString.of(title.raw()));
 			}
 
@@ -797,20 +792,20 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 		}
 	}
 
-	private void setTextToBook(List<FilteredMessage<String>> messages, UnaryOperator<String> postProcessor, ItemStack book) {
+	private void setTextToBook(List<FilteredMessage> messages, UnaryOperator<String> postProcessor, ItemStack book) {
 		NbtList nbtList = new NbtList();
 		if (this.player.shouldFilterText()) {
-			messages.stream().map(message -> NbtString.of((String)postProcessor.apply(message.filteredOrElse("")))).forEach(nbtList::add);
+			messages.stream().map(message -> NbtString.of((String)postProcessor.apply(message.method_45061()))).forEach(nbtList::add);
 		} else {
 			NbtCompound nbtCompound = new NbtCompound();
 			int i = 0;
 
 			for (int j = messages.size(); i < j; i++) {
-				FilteredMessage<String> filteredMessage = (FilteredMessage<String>)messages.get(i);
+				FilteredMessage filteredMessage = (FilteredMessage)messages.get(i);
 				String string = filteredMessage.raw();
 				nbtList.add(NbtString.of((String)postProcessor.apply(string)));
-				if (filteredMessage.isFiltered()) {
-					nbtCompound.putString(String.valueOf(i), (String)postProcessor.apply(filteredMessage.filteredOrElse("")));
+				if (filteredMessage.method_45063()) {
+					nbtCompound.putString(String.valueOf(i), (String)postProcessor.apply(filteredMessage.method_45061()));
 				}
 			}
 
@@ -1187,9 +1182,9 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 		this.sendPacket(packet, null);
 	}
 
-	public void sendPacket(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> listener) {
+	public void sendPacket(Packet<?> packet, @Nullable class_7648 arg) {
 		try {
-			this.connection.send(packet, listener);
+			this.connection.send(packet, arg);
 		} catch (Throwable var6) {
 			CrashReport crashReport = CrashReport.create(var6, "Sending packet");
 			CrashReportSection crashReportSection = crashReport.addElement("Packet being sent");
@@ -1220,11 +1215,16 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 		} else {
 			if (this.canAcceptMessage(packet.chatMessage(), packet.timestamp(), packet.acknowledgment())) {
 				this.server.submit(() -> {
-					SignedMessage signedMessage = this.method_45011(packet);
-					if (this.method_45009(signedMessage)) {
+					SignedMessage signedMessage = this.getSignedMessage(packet);
+					if (this.canAcceptMessage(signedMessage)) {
 						this.messageChainTaskQueue.append(() -> {
-							String string = signedMessage.getSignedContent().plain();
-							return this.filterText(string, message -> this.handleMessage(signedMessage, message));
+							CompletableFuture<FilteredMessage> completableFuture = this.filterText(signedMessage.getSignedContent().plain());
+							CompletableFuture<SignedMessage> completableFuture2 = this.server.getMessageDecorator().decorate(this.player, signedMessage);
+							return CompletableFuture.allOf(completableFuture, completableFuture2).thenAcceptAsync(void_ -> {
+								class_7649 lv = ((FilteredMessage)completableFuture.join()).mask();
+								SignedMessage signedMessagexx = ((SignedMessage)completableFuture2.join()).method_45097(lv);
+								this.handleDecoratedMessage(signedMessagexx);
+							}, this.server);
 						});
 					}
 				});
@@ -1239,41 +1239,44 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 		} else {
 			if (this.canAcceptMessage(packet.command(), packet.timestamp(), packet.acknowledgment())) {
 				this.server.submit(() -> {
-					this.method_45010(packet);
+					this.handleCommandExecution(packet);
 					this.checkForSpam();
 				});
 			}
 		}
 	}
 
-	private void method_45010(CommandExecutionC2SPacket commandExecutionC2SPacket) {
-		ParseResults<ServerCommandSource> parseResults = this.method_45003(commandExecutionC2SPacket.command());
-		Map<String, SignedMessage> map = this.method_45006(commandExecutionC2SPacket, class_7644.method_45043(parseResults));
+	private void handleCommandExecution(CommandExecutionC2SPacket packet) {
+		ParseResults<ServerCommandSource> parseResults = this.parse(packet.command());
+		Map<String, SignedMessage> map = this.collectArgumentMessages(packet, DecoratableArgumentList.of(parseResults));
 
 		for (SignedMessage signedMessage : map.values()) {
-			if (!this.method_45009(signedMessage)) {
+			if (!this.canAcceptMessage(signedMessage)) {
 				return;
 			}
 		}
 
 		SignedCommandArguments signedCommandArguments = new SignedCommandArguments.Impl(map);
-		parseResults = CommandManager.method_45018(parseResults, serverCommandSource -> serverCommandSource.withSignedArguments(signedCommandArguments));
-		this.server.getCommandManager().execute(parseResults, commandExecutionC2SPacket.command());
+		parseResults = CommandManager.withCommandSource(parseResults, source -> source.withSignedArguments(signedCommandArguments));
+		this.server.getCommandManager().execute(parseResults, packet.command());
 	}
 
-	private Map<String, SignedMessage> method_45006(CommandExecutionC2SPacket commandExecutionC2SPacket, class_7644<?> arg) {
-		Text text = this.field_39899.method_45035(commandExecutionC2SPacket.command());
-		MessageMetadata messageMetadata = new MessageMetadata(this.player.getUuid(), commandExecutionC2SPacket.timestamp(), commandExecutionC2SPacket.salt());
-		LastSeenMessageList lastSeenMessageList = commandExecutionC2SPacket.acknowledgment().lastSeen();
+	/**
+	 * {@return a map of argument name and value as signed messages}
+	 */
+	private Map<String, SignedMessage> collectArgumentMessages(CommandExecutionC2SPacket packet, DecoratableArgumentList<?> arguments) {
+		Text text = this.cachedDecoratorResult.tryConsume(packet.command());
+		MessageMetadata messageMetadata = new MessageMetadata(this.player.getUuid(), packet.timestamp(), packet.salt());
+		LastSeenMessageList lastSeenMessageList = packet.acknowledgment().lastSeen();
 		Map<String, SignedMessage> map = new Object2ObjectOpenHashMap<>();
 		MessageChain.Unpacker unpacker = this.player.networkHandler.getMessageUnpacker();
 
-		for (Pair<String, String> pair : ArgumentSignatureDataMap.method_45020(arg)) {
+		for (Pair<String, String> pair : ArgumentSignatureDataMap.toNameValuePairs(arguments)) {
 			String string = pair.getFirst();
 			String string2 = pair.getSecond();
-			MessageSignatureData messageSignatureData = commandExecutionC2SPacket.argumentSignatures().get(string);
+			MessageSignatureData messageSignatureData = packet.argumentSignatures().get(string);
 			DecoratedContents decoratedContents;
-			if (commandExecutionC2SPacket.signedPreview() && text != null) {
+			if (packet.signedPreview() && text != null) {
 				decoratedContents = new DecoratedContents(string2, text);
 			} else {
 				decoratedContents = new DecoratedContents(string2);
@@ -1286,16 +1289,25 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 		return map;
 	}
 
-	private ParseResults<ServerCommandSource> method_45003(String string) {
+	/**
+	 * {@return the result of parsing {@code command}}
+	 * 
+	 * @param command the command to parse (without the leading slash)
+	 */
+	private ParseResults<ServerCommandSource> parse(String command) {
 		CommandDispatcher<ServerCommandSource> commandDispatcher = this.server.getCommandManager().getDispatcher();
-		return commandDispatcher.parse(string, this.player.getCommandSource());
+		return commandDispatcher.parse(command, this.player.getCommandSource());
 	}
 
 	/**
 	 * {@return whether {@code message}, sent at {@code timestamp}, should be accepted}
 	 * 
-	 * @implNote This returns {@code false} if the message arrives in {@linkplain
-	 * #isInProperOrder improper order} or if chat is disabled.
+	 * <p>This returns {@code false} if the message arrives in {@linkplain
+	 * #isInProperOrder improper order}, if chat is disabled, or if {@linkplain
+	 * AcknowledgmentValidator#validate acknowledgment validation fails}.
+	 * Note that the signatures are verified in {@link #canAcceptMessage(SignedMessage)}.
+	 * 
+	 * @see #canAcceptMessage(SignedMessage)
 	 */
 	private boolean canAcceptMessage(String message, Instant timestamp, LastSeenMessageList.Acknowledgment acknowledgment) {
 		if (!this.isInProperOrder(timestamp)) {
@@ -1353,55 +1365,51 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 		return false;
 	}
 
-	private CompletableFuture<Void> handleMessage(SignedMessage signedMessage, FilteredMessage<String> filteredMessage) {
-		MessageDecorator messageDecorator = this.server.getMessageDecorator();
-		FilteredMessage<Text> filteredMessage2 = filteredMessage.map(Text::literal);
-		DecoratedContents decoratedContents = signedMessage.getSignedContent();
-		return decoratedContents.isDecorated()
-			? messageDecorator.rebuildFiltered(this.player, filteredMessage2, decoratedContents.decorated()).thenAcceptAsync(filteredMessage2x -> {
-				FilteredMessage<DecoratedContents> filteredMessage3 = DecoratedContents.of(filteredMessage, filteredMessage2x);
-				this.handleDecoratedMessage(signedMessage.withFilteredContent(filteredMessage3));
-			}, this.server)
-			: messageDecorator.decorate(this.player, Text.literal(filteredMessage.raw()))
-				.thenComposeAsync(text -> messageDecorator.rebuildFiltered(this.player, filteredMessage2, text), this.server)
-				.thenAcceptAsync(filteredMessage2x -> {
-					FilteredMessage<DecoratedContents> filteredMessage3 = DecoratedContents.of(filteredMessage);
-					FilteredMessage<SignedMessage> filteredMessage4 = signedMessage.withFilteredContent(filteredMessage3);
-					this.handleDecoratedMessage(MessageDecorator.attachUnsignedDecoration(filteredMessage4, filteredMessage2x));
-				}, this.server);
-	}
-
-	private SignedMessage method_45011(ChatMessageC2SPacket chatMessageC2SPacket) {
-		MessageMetadata messageMetadata = chatMessageC2SPacket.getMetadata(this.player);
-		MessageChain.Signature signature = new MessageChain.Signature(chatMessageC2SPacket.signature());
-		LastSeenMessageList lastSeenMessageList = chatMessageC2SPacket.acknowledgment().lastSeen();
-		DecoratedContents decoratedContents = this.method_45013(chatMessageC2SPacket);
+	private SignedMessage getSignedMessage(ChatMessageC2SPacket packet) {
+		MessageMetadata messageMetadata = packet.getMetadata(this.player);
+		MessageChain.Signature signature = new MessageChain.Signature(packet.signature());
+		LastSeenMessageList lastSeenMessageList = packet.acknowledgment().lastSeen();
+		DecoratedContents decoratedContents = this.getDecoratedContents(packet);
 		return this.messageUnpacker.unpack(signature, messageMetadata, decoratedContents, lastSeenMessageList);
 	}
 
-	private DecoratedContents method_45013(ChatMessageC2SPacket chatMessageC2SPacket) {
-		Text text = this.field_39899.method_45035(chatMessageC2SPacket.chatMessage());
-		return chatMessageC2SPacket.signedPreview() && text != null
-			? new DecoratedContents(chatMessageC2SPacket.chatMessage(), text)
-			: new DecoratedContents(chatMessageC2SPacket.chatMessage());
+	/**
+	 * {@return the decorated contents for {@code packet}}
+	 * 
+	 * @implNote This returns the {@linkplain CachedDecoratorResult#tryConsume consumed
+	 * cached result} if it exists, and otherwise returns a new {@link DecoratedContents}
+	 * without message decorators applied. This method does not execute message decorators;
+	 * they are executed in {@link #onRequestChatPreview} (for normal messages) or {@link
+	 * #handleMessage(SignedMessage, FilteredMessage)} (for filtered parts of messages).
+	 */
+	private DecoratedContents getDecoratedContents(ChatMessageC2SPacket packet) {
+		Text text = this.cachedDecoratorResult.tryConsume(packet.chatMessage());
+		return packet.signedPreview() && text != null ? new DecoratedContents(packet.chatMessage(), text) : new DecoratedContents(packet.chatMessage());
 	}
 
-	private void handleDecoratedMessage(FilteredMessage<SignedMessage> filteredMessage) {
-		this.server.getPlayerManager().broadcast(filteredMessage, this.player, MessageType.params(MessageType.CHAT, this.player));
+	private void handleDecoratedMessage(SignedMessage signedMessage) {
+		this.server.getPlayerManager().broadcast(signedMessage, this.player, MessageType.params(MessageType.CHAT, this.player));
 		this.checkForSpam();
 	}
 
-	private boolean method_45009(SignedMessage signedMessage) {
+	/**
+	 * {@return whether {@code message} can be accepted}
+	 * 
+	 * <p>This verifies the message's signature and disconnects the client if it cannot
+	 * be verified. Additionally, this logs a warning (without disconnection or
+	 * rejection of messages) for expired messages.
+	 * 
+	 * @see #canAcceptMessage(String, Instant, LastSeenMessageList.Acknowledgment)
+	 */
+	private boolean canAcceptMessage(SignedMessage message) {
 		MessageSourceProfile messageSourceProfile = this.player.getMessageSourceProfile();
-		if (messageSourceProfile.playerPublicKey() != null && !signedMessage.verify(messageSourceProfile)) {
+		if (messageSourceProfile.playerPublicKey() != null && !message.verify(messageSourceProfile)) {
 			this.disconnect(Text.translatable("multiplayer.disconnect.unsigned_chat"));
 			return false;
 		} else {
-			if (signedMessage.isExpiredOnServer(Instant.now())) {
+			if (message.isExpiredOnServer(Instant.now())) {
 				LOGGER.warn(
-					"{} sent expired chat: '{}'. Is the client/server system time unsynchronized?",
-					this.player.getName().getString(),
-					signedMessage.getSignedContent().plain()
+					"{} sent expired chat: '{}'. Is the client/server system time unsynchronized?", this.player.getName().getString(), message.getSignedContent().plain()
 				);
 			}
 
@@ -1440,11 +1448,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 	}
 
 	private void sendChatPreviewPacket(int queryId, Text preview) {
-		this.sendPacket(new ChatPreviewS2CPacket(queryId, preview), future -> {
-			if (!future.isSuccess()) {
-				this.sendPacket(new ChatPreviewS2CPacket(queryId, null));
-			}
-		});
+		this.sendPacket(new ChatPreviewS2CPacket(queryId, preview), class_7648.method_45085(() -> new ChatPreviewS2CPacket(queryId, null)));
 	}
 
 	private CompletableFuture<Text> decorate(String query) {
@@ -1458,28 +1462,28 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 			.getMessageDecorator()
 			.decorate(this.player, text)
 			.thenApply(decorated -> !text.equals(decorated) ? decorated : null);
-		completableFuture.thenAcceptAsync(textx -> this.field_39899.method_45036(query, textx), this.server);
+		completableFuture.thenAcceptAsync(decorated -> this.cachedDecoratorResult.setCachedResult(query, decorated), this.server);
 		return completableFuture;
 	}
 
 	private CompletableFuture<Text> decorateCommand(String query) {
 		ServerCommandSource serverCommandSource = this.player.getCommandSource();
 		ParseResults<ServerCommandSource> parseResults = this.server.getCommandManager().getDispatcher().parse(query, serverCommandSource);
-		CompletableFuture<Text> completableFuture = this.decorateCommand(serverCommandSource, class_7644.method_45043(parseResults));
-		completableFuture.thenAcceptAsync(text -> this.field_39899.method_45036(query, text), this.server);
+		CompletableFuture<Text> completableFuture = this.decorateCommand(serverCommandSource, DecoratableArgumentList.of(parseResults));
+		completableFuture.thenAcceptAsync(decorated -> this.cachedDecoratorResult.setCachedResult(query, decorated), this.server);
 		return completableFuture;
 	}
 
-	private CompletableFuture<Text> decorateCommand(ServerCommandSource serverCommandSource, class_7644<ServerCommandSource> arg) {
-		List<class_7644.class_7645<ServerCommandSource>> list = arg.arguments();
+	private CompletableFuture<Text> decorateCommand(ServerCommandSource source, DecoratableArgumentList<ServerCommandSource> arguments) {
+		List<DecoratableArgumentList.ParsedArgument<ServerCommandSource>> list = arguments.arguments();
 		if (list.isEmpty()) {
 			return CompletableFuture.completedFuture(null);
 		} else {
 			for (int i = list.size() - 1; i >= 0; i--) {
-				class_7644.class_7645<ServerCommandSource> lv = (class_7644.class_7645<ServerCommandSource>)list.get(i);
+				DecoratableArgumentList.ParsedArgument<ServerCommandSource> parsedArgument = (DecoratableArgumentList.ParsedArgument<ServerCommandSource>)list.get(i);
 
 				try {
-					CompletableFuture<Text> completableFuture = lv.previewType().decorate(serverCommandSource, lv.parsedValue());
+					CompletableFuture<Text> completableFuture = parsedArgument.argumentType().decorate(source, parsedArgument.parsedValue());
 					if (completableFuture != null) {
 						return completableFuture;
 					}
@@ -1780,10 +1784,10 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 	@Override
 	public void onUpdateSign(UpdateSignC2SPacket packet) {
 		List<String> list = (List<String>)Stream.of(packet.getText()).map(Formatting::strip).collect(Collectors.toList());
-		this.filterTexts(list, texts -> this.onSignUpdate(packet, texts));
+		this.filterTexts(list).thenAcceptAsync(texts -> this.onSignUpdate(packet, texts), this.server);
 	}
 
-	private void onSignUpdate(UpdateSignC2SPacket packet, List<FilteredMessage<String>> signText) {
+	private void onSignUpdate(UpdateSignC2SPacket packet, List<FilteredMessage> signText) {
 		this.player.updateLastActionTime();
 		ServerWorld serverWorld = this.player.getWorld();
 		BlockPos blockPos = packet.getPos();
@@ -1799,11 +1803,11 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 			}
 
 			for (int i = 0; i < signText.size(); i++) {
-				FilteredMessage<Text> filteredMessage = ((FilteredMessage)signText.get(i)).map(Text::literal);
+				FilteredMessage filteredMessage = (FilteredMessage)signText.get(i);
 				if (this.player.shouldFilterText()) {
-					signBlockEntity.setTextOnRow(i, filteredMessage.filteredOrElse(ScreenTexts.EMPTY));
+					signBlockEntity.setTextOnRow(i, Text.literal(filteredMessage.method_45061()));
 				} else {
-					signBlockEntity.setTextOnRow(i, filteredMessage.raw(), filteredMessage.filteredOrElse(ScreenTexts.EMPTY));
+					signBlockEntity.setTextOnRow(i, Text.literal(filteredMessage.raw()), Text.literal(filteredMessage.method_45061()));
 				}
 			}
 

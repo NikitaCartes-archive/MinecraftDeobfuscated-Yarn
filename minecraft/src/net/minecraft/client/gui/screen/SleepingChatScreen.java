@@ -11,7 +11,7 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class SleepingChatScreen extends ChatScreen {
-	private ButtonWidget field_39902;
+	private ButtonWidget stopSleepingButton;
 
 	public SleepingChatScreen() {
 		super("");
@@ -20,14 +20,14 @@ public class SleepingChatScreen extends ChatScreen {
 	@Override
 	protected void init() {
 		super.init();
-		this.field_39902 = this.addDrawableChild(
+		this.stopSleepingButton = this.addDrawableChild(
 			new ButtonWidget(this.width / 2 - 100, this.height - 40, 200, 20, Text.translatable("multiplayer.stopSleeping"), button -> this.stopSleeping())
 		);
 	}
 
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.field_39902.visible = this.method_45029() == null;
+		this.stopSleepingButton.visible = this.getPreviewScreenText() == null;
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 

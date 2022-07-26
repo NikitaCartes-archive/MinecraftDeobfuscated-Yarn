@@ -21,17 +21,17 @@ public enum AbuseReportReason {
 
 	private final int banReasonId;
 	private final String id;
-	private final boolean field_39907;
+	private final boolean reportable;
 	private final Text text;
 	private final Text description;
 
-	private AbuseReportReason(int banReasonId, String string2, boolean bl) {
+	private AbuseReportReason(int banReasonId, String id, boolean reportable) {
 		this.banReasonId = banReasonId;
-		this.id = string2.toUpperCase(Locale.ROOT);
-		this.field_39907 = bl;
-		String string3 = "gui.abuseReport.reason." + string2;
-		this.text = Text.translatable(string3);
-		this.description = Text.translatable(string3 + ".description");
+		this.id = id.toUpperCase(Locale.ROOT);
+		this.reportable = reportable;
+		String string2 = "gui.abuseReport.reason." + id;
+		this.text = Text.translatable(string2);
+		this.description = Text.translatable(string2 + ".description");
 	}
 
 	public String getId() {
@@ -46,8 +46,8 @@ public enum AbuseReportReason {
 		return this.description;
 	}
 
-	public boolean method_45032() {
-		return this.field_39907;
+	public boolean isReportable() {
+		return this.reportable;
 	}
 
 	@Nullable

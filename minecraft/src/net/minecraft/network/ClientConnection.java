@@ -25,14 +25,13 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.TimeoutException;
 import io.netty.util.AttributeKey;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.Queue;
 import java.util.concurrent.RejectedExecutionException;
 import javax.annotation.Nullable;
 import javax.crypto.Cipher;
+import net.minecraft.class_7648;
 import net.minecraft.network.encryption.PacketDecryptor;
 import net.minecraft.network.encryption.PacketEncryptor;
 import net.minecraft.network.listener.PacketListener;
@@ -144,7 +143,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 						LOGGER.debug("Failed to sent packet", ex);
 						NetworkState networkState = this.getState();
 						Packet<?> packet = (Packet<?>)(networkState == NetworkState.LOGIN ? new LoginDisconnectS2CPacket(text) : new DisconnectS2CPacket(text));
-						this.send(packet, future -> this.disconnect(text));
+						this.send(packet, class_7648.method_45084(() -> this.disconnect(text)));
 						this.disableAutoRead();
 					} else {
 						LOGGER.debug("Double fault", ex);
@@ -191,16 +190,16 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		this.send(packet, null);
 	}
 
-	public void send(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> callback) {
+	public void send(Packet<?> packet, @Nullable class_7648 arg) {
 		if (this.isOpen()) {
 			this.sendQueuedPackets();
-			this.sendImmediately(packet, callback);
+			this.sendImmediately(packet, arg);
 		} else {
-			this.packetQueue.add(new ClientConnection.QueuedPacket(packet, callback));
+			this.packetQueue.add(new ClientConnection.QueuedPacket(packet, arg));
 		}
 	}
 
-	private void sendImmediately(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> callback) {
+	private void sendImmediately(Packet<?> packet, @Nullable class_7648 arg) {
 		NetworkState networkState = NetworkState.getPacketHandlerState(packet);
 		NetworkState networkState2 = this.getState();
 		this.packetsSentCounter++;
@@ -210,22 +209,30 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		}
 
 		if (this.channel.eventLoop().inEventLoop()) {
-			this.sendInternal(packet, callback, networkState, networkState2);
+			this.sendInternal(packet, arg, networkState, networkState2);
 		} else {
-			this.channel.eventLoop().execute(() -> this.sendInternal(packet, callback, networkState, networkState2));
+			this.channel.eventLoop().execute(() -> this.sendInternal(packet, arg, networkState, networkState2));
 		}
 	}
 
-	private void sendInternal(
-		Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> callback, NetworkState packetState, NetworkState currentState
-	) {
+	private void sendInternal(Packet<?> packet, @Nullable class_7648 arg, NetworkState packetState, NetworkState currentState) {
 		if (packetState != currentState) {
 			this.setState(packetState);
 		}
 
 		ChannelFuture channelFuture = this.channel.writeAndFlush(packet);
-		if (callback != null) {
-			channelFuture.addListener(callback);
+		if (arg != null) {
+			channelFuture.addListener(future -> {
+				if (future.isSuccess()) {
+					arg.method_45083();
+				} else {
+					Packet<?> packetx = arg.method_45086();
+					if (packetx != null) {
+						ChannelFuture channelFuturex = this.channel.writeAndFlush(packetx);
+						channelFuturex.addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
+					}
+				}
+			});
 		}
 
 		channelFuture.addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
@@ -450,11 +457,11 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	static class QueuedPacket {
 		final Packet<?> packet;
 		@Nullable
-		final GenericFutureListener<? extends Future<? super Void>> callback;
+		final class_7648 callback;
 
-		public QueuedPacket(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> callback) {
+		public QueuedPacket(Packet<?> packet, @Nullable class_7648 arg) {
 			this.packet = packet;
-			this.callback = callback;
+			this.callback = arg;
 		}
 	}
 }

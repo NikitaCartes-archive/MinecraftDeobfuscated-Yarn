@@ -62,8 +62,9 @@ public class SocialInteractionsPlayerListWidget extends ElementListWidget<Social
 			PlayerListEntry playerListEntry = clientPlayNetworkHandler.getPlayerListEntry(uUID);
 			if (playerListEntry != null) {
 				UUID uUID2 = playerListEntry.getProfile().getId();
+				boolean bl = playerListEntry.getPublicKeyData() != null;
 				map.put(
-					uUID2, new SocialInteractionsPlayerListEntry(this.client, this.parent, uUID2, playerListEntry.getProfile().getName(), playerListEntry::getSkinTexture)
+					uUID2, new SocialInteractionsPlayerListEntry(this.client, this.parent, uUID2, playerListEntry.getProfile().getName(), playerListEntry::getSkinTexture, bl)
 				);
 			}
 		}
@@ -77,7 +78,7 @@ public class SocialInteractionsPlayerListWidget extends ElementListWidget<Social
 					gameProfile.getId(),
 					uuid -> {
 						SocialInteractionsPlayerListEntry socialInteractionsPlayerListEntryx = new SocialInteractionsPlayerListEntry(
-							this.client, this.parent, gameProfile.getId(), gameProfile.getName(), Suppliers.memoize(() -> this.client.getSkinProvider().loadSkin(gameProfile))
+							this.client, this.parent, gameProfile.getId(), gameProfile.getName(), Suppliers.memoize(() -> this.client.getSkinProvider().loadSkin(gameProfile)), true
 						);
 						socialInteractionsPlayerListEntryx.setOffline(true);
 						return socialInteractionsPlayerListEntryx;
@@ -145,11 +146,12 @@ public class SocialInteractionsPlayerListWidget extends ElementListWidget<Social
 
 		if ((tab == SocialInteractionsScreen.Tab.ALL || this.client.getSocialInteractionsManager().isPlayerMuted(uUID))
 			&& (Strings.isNullOrEmpty(this.currentSearch) || player.getProfile().getName().toLowerCase(Locale.ROOT).contains(this.currentSearch))) {
-			SocialInteractionsPlayerListEntry socialInteractionsPlayerListEntry2 = new SocialInteractionsPlayerListEntry(
-				this.client, this.parent, player.getProfile().getId(), player.getProfile().getName(), player::getSkinTexture
+			boolean bl = player.getPublicKeyData() != null;
+			SocialInteractionsPlayerListEntry socialInteractionsPlayerListEntryx = new SocialInteractionsPlayerListEntry(
+				this.client, this.parent, player.getProfile().getId(), player.getProfile().getName(), player::getSkinTexture, bl
 			);
-			this.addEntry(socialInteractionsPlayerListEntry2);
-			this.players.add(socialInteractionsPlayerListEntry2);
+			this.addEntry(socialInteractionsPlayerListEntryx);
+			this.players.add(socialInteractionsPlayerListEntryx);
 		}
 	}
 

@@ -2,7 +2,6 @@ package net.minecraft.network.message;
 
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
-import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
@@ -19,12 +18,10 @@ import net.minecraft.text.Text;
  * "Only Show Secure Chat" option}, they will see the undecorated message. Therefore,
  * message decorator is <strong>not recommended for censoring messages</strong>.
  * 
- * <p>It is <strong>very important that the decorator be pure; i.e. return the
- * same text when given the same text (and sender)</strong>. Otherwise, the server
- * detects a mismatch between the preview and the actual message, and discards the message
- * as it is now considered improperly signed. For example, a decorator that appends
- * the time the decoration was applied would be likely to fail, since there is usually
- * a delay between the previewing and the submission.
+ * <p>Message decorator results are {@linkplain CachedDecoratorResult cached}, allowing
+ * non-pure decorators (i.e. ones affected by externally controlled variables) without
+ * affecting the signature verification process. Note that the decorator can still
+ * run during message submission to decorate filtered parts of the message.
  */
 @FunctionalInterface
 public interface MessageDecorator {
@@ -41,16 +38,13 @@ public interface MessageDecorator {
 	 */
 	CompletableFuture<Text> decorate(@Nullable ServerPlayerEntity sender, Text message);
 
-	default CompletableFuture<FilteredMessage<Text>> rebuildFiltered(
-		@Nullable ServerPlayerEntity serverPlayerEntity, FilteredMessage<Text> filteredMessage, Text text
-	) {
-		return filteredMessage.method_45001(text, textx -> this.decorate(serverPlayerEntity, textx));
+	default CompletableFuture<SignedMessage> decorate(@Nullable ServerPlayerEntity serverPlayerEntity, SignedMessage signedMessage) {
+		return signedMessage.getSignedContent().isDecorated()
+			? CompletableFuture.completedFuture(signedMessage)
+			: this.decorate(serverPlayerEntity, signedMessage.getContent()).thenApply(signedMessage::withUnsignedContent);
 	}
 
-	static FilteredMessage<SignedMessage> attachUnsignedDecoration(FilteredMessage<SignedMessage> message, FilteredMessage<Text> decorated) {
-		return message.map(
-			rawMessage -> rawMessage.withUnsignedContent(decorated.raw()),
-			filteredMessage -> decorated.filtered() != null ? filteredMessage.withUnsignedContent(decorated.filtered()) : filteredMessage
-		);
+	static SignedMessage attachIfNotDecorated(SignedMessage signedMessage, Text text) {
+		return !signedMessage.getSignedContent().isDecorated() ? signedMessage.withUnsignedContent(text) : signedMessage;
 	}
 }

@@ -68,7 +68,7 @@ public class ServerCommandSource implements CommandSource {
 		CommandOutput output, Vec3d pos, Vec2f rot, ServerWorld world, int level, String name, Text displayName, MinecraftServer server, @Nullable Entity entity
 	) {
 		this(output, pos, rot, world, level, name, displayName, server, entity, false, (context, success, result) -> {
-		}, EntityAnchorArgumentType.EntityAnchor.FEET, SignedCommandArguments.field_39901, FutureQueue.NOOP);
+		}, EntityAnchorArgumentType.EntityAnchor.FEET, SignedCommandArguments.EMPTY, FutureQueue.NOOP);
 	}
 
 	protected ServerCommandSource(
@@ -469,17 +469,35 @@ public class ServerCommandSource implements CommandSource {
 		return this.messageChainTaskQueue;
 	}
 
+	public boolean method_45067(ServerPlayerEntity serverPlayerEntity) {
+		ServerPlayerEntity serverPlayerEntity2 = this.getPlayer();
+		return serverPlayerEntity == serverPlayerEntity2
+			? false
+			: serverPlayerEntity2 != null && serverPlayerEntity2.shouldFilterText() || serverPlayerEntity.shouldFilterText();
+	}
+
 	/**
 	 * Sends {@code message} as the feedback to the command's executor, or to the server's log
 	 * if the command is not executed by a player.
 	 */
-	public void sendChatMessage(SentMessage message, MessageType.Parameters params) {
+	public void sendChatMessage(SentMessage message, boolean bl, MessageType.Parameters parameters) {
 		if (!this.silent) {
 			ServerPlayerEntity serverPlayerEntity = this.getPlayer();
 			if (serverPlayerEntity != null) {
-				serverPlayerEntity.sendChatMessage(message, params);
+				serverPlayerEntity.sendChatMessage(message, bl, parameters);
 			} else {
-				this.output.sendMessage(params.applyChatDecoration(message.method_45039()));
+				this.output.sendMessage(parameters.applyChatDecoration(message.getContent()));
+			}
+		}
+	}
+
+	public void method_45068(Text text) {
+		if (!this.silent) {
+			ServerPlayerEntity serverPlayerEntity = this.getPlayer();
+			if (serverPlayerEntity != null) {
+				serverPlayerEntity.sendMessage(text);
+			} else {
+				this.output.sendMessage(text);
 			}
 		}
 	}

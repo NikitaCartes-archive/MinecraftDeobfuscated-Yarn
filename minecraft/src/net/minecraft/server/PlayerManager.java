@@ -69,7 +69,6 @@ import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -106,6 +105,7 @@ public abstract class PlayerManager {
 	public static final File BANNED_IPS_FILE = new File("banned-ips.json");
 	public static final File OPERATORS_FILE = new File("ops.json");
 	public static final File WHITELIST_FILE = new File("whitelist.json");
+	public static final Text field_39921 = Text.translatable("chat.filtered_full");
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int LATENCY_UPDATE_INTERVAL = 600;
 	private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
@@ -825,13 +825,8 @@ public abstract class PlayerManager {
 	 * @see #broadcast(SignedMessage, MessageSourceProfile, MessageType.Parameters)
 	 * @see #broadcast(FilteredMessage, Predicate, MessageSourceProfile, MessageType.Parameters)
 	 */
-	public void broadcast(FilteredMessage<SignedMessage> message, ServerCommandSource source, MessageType.Parameters params) {
-		ServerPlayerEntity serverPlayerEntity = source.getPlayer();
-		if (serverPlayerEntity != null) {
-			this.broadcast(message, serverPlayerEntity, params);
-		} else {
-			this.broadcast(message.raw(), source.getMessageSourceProfile(), params);
-		}
+	public void broadcast(SignedMessage signedMessage, ServerCommandSource serverCommandSource, MessageType.Parameters params) {
+		this.broadcast(signedMessage, serverCommandSource::method_45067, serverCommandSource.getPlayer(), serverCommandSource.getMessageSourceProfile(), params);
 	}
 
 	/**
@@ -854,30 +849,8 @@ public abstract class PlayerManager {
 	 * @see #broadcast(SignedMessage, MessageSourceProfile, MessageType.Parameters)
 	 * @see #broadcast(FilteredMessage, Predicate, MessageSourceProfile, MessageType.Parameters)
 	 */
-	public void broadcast(FilteredMessage<SignedMessage> message, ServerPlayerEntity sender, MessageType.Parameters params) {
-		this.broadcast(message, sender::shouldFilterMessagesSentTo, sender.getMessageSourceProfile(), params);
-	}
-
-	/**
-	 * Broadcasts a chat message to all players and the server console.
-	 * 
-	 * <p>Chat messages have signatures. It is possible to use a bogus signature - such as
-	 * {@link net.minecraft.network.message.SignedMessage#ofUnsigned} - to send a chat
-	 * message; however if the signature is invalid (e.g. because the text's content differs
-	 * from the one sent by the client, or because the passed signature is invalid) the client
-	 * will show a warning and can discard it depending on the client's options.
-	 * 
-	 * @apiNote This method is used to broadcast messages from commands like {@link
-	 * net.minecraft.server.command.MeCommand} or {@link net.minecraft.server.command.SayCommand}.
-	 * 
-	 * @see #broadcast(Text, boolean)
-	 * @see #broadcast(Text, Function, boolean)
-	 * @see #broadcast(FilteredMessage, ServerCommandSource, MessageType.Parameters)
-	 * @see #broadcast(FilteredMessage, ServerPlayerEntity, MessageType.Parameters)
-	 * @see #broadcast(FilteredMessage, Predicate, MessageSourceProfile, MessageType.Parameters)
-	 */
-	public void broadcast(SignedMessage message, MessageSourceProfile profile, MessageType.Parameters params) {
-		this.broadcast(FilteredMessage.permitted(message), player -> false, profile, params);
+	public void broadcast(SignedMessage signedMessage, ServerPlayerEntity sender, MessageType.Parameters params) {
+		this.broadcast(signedMessage, sender::shouldFilterMessagesSentTo, sender, sender.getMessageSourceProfile(), params);
 	}
 
 	/**
@@ -898,20 +871,31 @@ public abstract class PlayerManager {
 	 * @param shouldSendFiltered predicate that determines whether to send the filtered message for the given player
 	 */
 	private void broadcast(
-		FilteredMessage<SignedMessage> message, Predicate<ServerPlayerEntity> shouldSendFiltered, MessageSourceProfile profile, MessageType.Parameters params
+		SignedMessage signedMessage,
+		Predicate<ServerPlayerEntity> shouldSendFiltered,
+		@Nullable ServerPlayerEntity serverPlayerEntity,
+		MessageSourceProfile messageSourceProfile,
+		MessageType.Parameters parameters
 	) {
-		boolean bl = this.verify(message.raw(), profile);
-		this.server.logChatMessage(message.raw().getContent(), params, bl ? null : "Not Secure");
-		FilteredMessage<SentMessage> filteredMessage = SentMessage.of(message);
+		boolean bl = this.verify(signedMessage, messageSourceProfile);
+		this.server.logChatMessage(signedMessage.getContent(), parameters, bl ? null : "Not Secure");
+		SentMessage sentMessage = SentMessage.of(signedMessage);
+		boolean bl2 = signedMessage.method_45100();
+		boolean bl3 = false;
 
-		for (ServerPlayerEntity serverPlayerEntity : this.players) {
-			SentMessage sentMessage = filteredMessage.get(shouldSendFiltered.test(serverPlayerEntity));
-			if (sentMessage != null) {
-				serverPlayerEntity.sendChatMessage(sentMessage, params);
+		for (ServerPlayerEntity serverPlayerEntity2 : this.players) {
+			boolean bl4 = shouldSendFiltered.test(serverPlayerEntity2);
+			serverPlayerEntity2.sendChatMessage(sentMessage, bl4, parameters);
+			if (serverPlayerEntity != serverPlayerEntity2) {
+				bl3 |= bl2 && bl4;
 			}
 		}
 
-		filteredMessage.raw().afterPacketsSent(this);
+		if (bl3 && serverPlayerEntity != null) {
+			serverPlayerEntity.sendMessage(field_39921);
+		}
+
+		sentMessage.afterPacketsSent(this);
 	}
 
 	/**

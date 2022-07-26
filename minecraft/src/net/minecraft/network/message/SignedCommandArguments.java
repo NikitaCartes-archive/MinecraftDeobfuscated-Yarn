@@ -7,7 +7,11 @@ import javax.annotation.Nullable;
  * An interface wrapping {@link ArgumentSignatureDataMap} with metadata attached.
  */
 public interface SignedCommandArguments {
-	SignedCommandArguments field_39901 = new SignedCommandArguments() {
+	/**
+	 * An empty signed command arguments that always returns {@code null} for
+	 * {@link #createSignature}.
+	 */
+	SignedCommandArguments EMPTY = new SignedCommandArguments() {
 		@Nullable
 		@Override
 		public SignedMessage createSignature(String argumentName) {

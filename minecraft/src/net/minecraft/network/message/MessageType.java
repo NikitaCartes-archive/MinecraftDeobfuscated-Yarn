@@ -194,12 +194,13 @@ public record MessageType(Decoration chat, Decoration narration) {
 		}
 
 		/**
-		 * {@return a deserialized version of this instance}
+		 * {@return a deserialized version of this instance, or {@link Optional#empty} if
+		 * {@link #typeId} is unknown to the client}
 		 */
 		public Optional<MessageType.Parameters> toParameters(DynamicRegistryManager registryManager) {
 			Registry<MessageType> registry = registryManager.get(Registry.MESSAGE_TYPE_KEY);
 			MessageType messageType = registry.get(this.typeId);
-			return Optional.ofNullable(messageType).map(messageTypex -> new MessageType.Parameters(messageTypex, this.name, this.targetName));
+			return Optional.ofNullable(messageType).map(type -> new MessageType.Parameters(type, this.name, this.targetName));
 		}
 	}
 }

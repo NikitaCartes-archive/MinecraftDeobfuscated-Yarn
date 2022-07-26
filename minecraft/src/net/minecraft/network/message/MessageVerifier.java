@@ -11,36 +11,22 @@ import net.minecraft.network.encryption.SignatureVerifier;
  * as it affects the verification result.
  */
 public interface MessageVerifier {
-	static MessageVerifier method_45057(MessageVerifier.class_7646 arg) {
-		return new MessageVerifier() {
-			@Override
-			public MessageVerifier.class_7646 storeHeaderVerification(MessageHeader header, MessageSignatureData signature, byte[] bodyDigest) {
-				return arg;
-			}
-
-			@Override
-			public MessageVerifier.class_7646 verify(SignedMessage message) {
-				return arg;
-			}
-		};
-	}
-
 	static MessageVerifier create(@Nullable PlayerPublicKey publicKey, boolean bl) {
-		return (MessageVerifier)(publicKey == null
-			? method_45057(bl ? MessageVerifier.class_7646.BROKEN_CHAIN : MessageVerifier.class_7646.NOT_SECURE)
-			: new MessageVerifier.Impl(publicKey.createSignatureInstance()));
+		return (MessageVerifier)(publicKey != null ? new MessageVerifier.Impl(publicKey.createSignatureInstance()) : new MessageVerifier.class_7651(bl));
 	}
 
 	/**
-	 * Stores the status of verifying the header.
+	 * {@return the status of verifying the header}
 	 * 
 	 * <p>Clients can receive only the message header instead of the whole message. This
-	 * allows the chain to reference such messages. Since no actual content is received,
-	 * this does not return the verification status.
+	 * allows the verification of such messages.
 	 */
-	MessageVerifier.class_7646 storeHeaderVerification(MessageHeader header, MessageSignatureData signature, byte[] bodyDigest);
+	MessageVerifier.Status verify(MessageHeader header, MessageSignatureData signature, byte[] bodyDigest);
 
-	MessageVerifier.class_7646 verify(SignedMessage message);
+	/**
+	 * {@return the status of verifying the message}
+	 */
+	MessageVerifier.Status verify(SignedMessage message);
 
 	public static class Impl implements MessageVerifier {
 		private final SignatureVerifier signatureVerifier;
@@ -52,44 +38,83 @@ public interface MessageVerifier {
 			this.signatureVerifier = signatureVerifier;
 		}
 
-		private boolean verifyPrecedingSignature(MessageHeader header, MessageSignatureData signature) {
-			return signature.isEmpty()
-				? false
-				: this.precedingSignature == null || this.precedingSignature.equals(header.precedingSignature()) || this.precedingSignature.equals(signature);
-		}
-
-		private boolean verify(MessageHeader messageHeader, MessageSignatureData signature, byte[] bodyDigest) {
-			return signature.verify(this.signatureVerifier, messageHeader, bodyDigest);
-		}
-
-		private MessageVerifier.class_7646 method_45048(MessageHeader messageHeader, MessageSignatureData messageSignatureData, byte[] bs) {
-			this.lastMessageVerified = this.lastMessageVerified && this.verifyPrecedingSignature(messageHeader, messageSignatureData);
-			if (!this.lastMessageVerified) {
-				return MessageVerifier.class_7646.BROKEN_CHAIN;
-			} else if (!this.verify(messageHeader, messageSignatureData, bs)) {
-				this.precedingSignature = null;
-				return MessageVerifier.class_7646.NOT_SECURE;
+		private boolean verifyPrecedingSignature(MessageHeader header, MessageSignatureData messageSignatureData, boolean bl) {
+			if (messageSignatureData.isEmpty()) {
+				return false;
 			} else {
-				this.precedingSignature = messageSignatureData;
-				return MessageVerifier.class_7646.SECURE;
+				return bl && messageSignatureData.equals(this.precedingSignature)
+					? true
+					: this.precedingSignature == null || this.precedingSignature.equals(header.precedingSignature());
+			}
+		}
+
+		private boolean verifyInternal(MessageHeader header, MessageSignatureData messageSignatureData, byte[] bodyDigest, boolean bl) {
+			return this.verifyPrecedingSignature(header, messageSignatureData, bl) && messageSignatureData.verify(this.signatureVerifier, header, bodyDigest);
+		}
+
+		private MessageVerifier.Status getStatus(MessageHeader header, MessageSignatureData signature, byte[] bodyDigest, boolean bl) {
+			this.lastMessageVerified = this.lastMessageVerified && this.verifyInternal(header, signature, bodyDigest, bl);
+			if (!this.lastMessageVerified) {
+				return MessageVerifier.Status.BROKEN_CHAIN;
+			} else {
+				this.precedingSignature = signature;
+				return MessageVerifier.Status.SECURE;
 			}
 		}
 
 		@Override
-		public MessageVerifier.class_7646 storeHeaderVerification(MessageHeader header, MessageSignatureData signature, byte[] bodyDigest) {
-			return this.method_45048(header, signature, bodyDigest);
+		public MessageVerifier.Status verify(MessageHeader header, MessageSignatureData signature, byte[] bodyDigest) {
+			return this.getStatus(header, signature, bodyDigest, false);
 		}
 
 		@Override
-		public MessageVerifier.class_7646 verify(SignedMessage message) {
+		public MessageVerifier.Status verify(SignedMessage message) {
 			byte[] bs = message.signedBody().digest().asBytes();
-			return this.method_45048(message.signedHeader(), message.headerSignature(), bs);
+			return this.getStatus(message.signedHeader(), message.headerSignature(), bs, true);
 		}
 	}
 
-	public static enum class_7646 {
+	/**
+	 * The verification status of a message.
+	 */
+	public static enum Status {
+		/**
+		 * The message is verified.
+		 */
 		SECURE,
+		/**
+		 * The message cannot be verified.
+		 */
 		NOT_SECURE,
+		/**
+		 * The message cannot be verified due to the last message not being verified.
+		 */
 		BROKEN_CHAIN;
+	}
+
+	public static class class_7651 implements MessageVerifier {
+		private final boolean field_39952;
+
+		public class_7651(boolean bl) {
+			this.field_39952 = bl;
+		}
+
+		private MessageVerifier.Status method_45102(MessageSignatureData messageSignatureData) {
+			if (!messageSignatureData.isEmpty()) {
+				return MessageVerifier.Status.BROKEN_CHAIN;
+			} else {
+				return this.field_39952 ? MessageVerifier.Status.BROKEN_CHAIN : MessageVerifier.Status.NOT_SECURE;
+			}
+		}
+
+		@Override
+		public MessageVerifier.Status verify(MessageHeader header, MessageSignatureData signature, byte[] bodyDigest) {
+			return this.method_45102(signature);
+		}
+
+		@Override
+		public MessageVerifier.Status verify(SignedMessage message) {
+			return this.method_45102(message.headerSignature());
+		}
 	}
 }

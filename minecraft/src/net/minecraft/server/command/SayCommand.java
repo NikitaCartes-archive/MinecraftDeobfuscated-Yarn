@@ -19,7 +19,7 @@ public class SayCommand {
 								PlayerManager playerManager = serverCommandSource.getServer().getPlayerManager();
 								signedMessage.decorate(
 									serverCommandSource,
-									decoratedMessage -> playerManager.broadcast(decoratedMessage, serverCommandSource, MessageType.params(MessageType.SAY_COMMAND, serverCommandSource))
+									signedMessagex -> playerManager.broadcast(signedMessagex, serverCommandSource, MessageType.params(MessageType.SAY_COMMAND, serverCommandSource))
 								);
 								return 1;
 							}

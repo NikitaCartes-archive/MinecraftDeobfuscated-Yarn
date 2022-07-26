@@ -330,6 +330,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final SearchManager searchManager = new SearchManager();
 	private final Session session;
 	public final TextRenderer textRenderer;
+	public final TextRenderer field_39924;
 	public final GameRenderer gameRenderer;
 	public final DebugRenderer debugRenderer;
 	private final AtomicReference<WorldGenerationProgressTracker> worldGenProgressTracker = new AtomicReference();
@@ -576,6 +577,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.musicTracker = new MusicTracker(this);
 		this.fontManager = new FontManager(this.textureManager);
 		this.textRenderer = this.fontManager.createTextRenderer();
+		this.field_39924 = this.fontManager.method_45078();
 		this.resourceManager.registerReloader(this.fontManager.getResourceReloadListener());
 		this.initFont(this.forcesUnicodeFont());
 		this.resourceManager.registerReloader(new GrassColormapResourceSupplier());

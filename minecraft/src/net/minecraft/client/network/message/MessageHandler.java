@@ -8,6 +8,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_7649;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextVisitFactory;
 import net.minecraft.client.gui.hud.MessageIndicator;
@@ -31,7 +32,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 @Environment(EnvType.CLIENT)
 public class MessageHandler {
-	private static final Text field_39904 = Text.translatable("multiplayer.disconnect.chat_validation_failed");
+	private static final Text CHAT_VALIDATION_FAILED_DISCONNECT_REASON = Text.translatable("multiplayer.disconnect.chat_validation_failed");
 	private final MinecraftClient client;
 	private final Deque<MessageHandler.ProcessableMessage> delayedMessages = Queues.<MessageHandler.ProcessableMessage>newArrayDeque();
 	private long chatDelay;
@@ -240,6 +241,9 @@ public class MessageHandler {
 	/**
 	 * Processes a chat message.
 	 * 
+	 * <p>If the message cannot be verified due to a broken chain, this disconnects
+	 * the client from the server.
+	 * 
 	 * <p>The message can still end up not being displayed if the verification
 	 * fails and {@code onlyShowSecureChat} is {@code true} or if the sender is
 	 * blocked via the social interactions screen.
@@ -261,19 +265,30 @@ public class MessageHandler {
 	) {
 		MessageTrustStatus messageTrustStatus = this.getStatus(message, decorated, senderEntry, receptionTimestamp);
 		if (messageTrustStatus == MessageTrustStatus.BROKEN_CHAIN) {
-			this.method_45031();
+			this.disconnect();
 			return true;
 		} else if (onlyShowSecureChat && messageTrustStatus.isInsecure()) {
 			return false;
-		} else if (this.client.shouldBlockMessages(message.createMetadata().sender())) {
-			return false;
-		} else {
+		} else if (!this.client.shouldBlockMessages(message.createMetadata().sender()) && !message.method_45100()) {
 			MessageIndicator messageIndicator = messageTrustStatus.createIndicator(message);
-			this.client.inGameHud.getChatHud().addMessage(decorated, message.headerSignature(), messageIndicator);
-			this.narrate(params, message);
+			MessageSignatureData messageSignatureData = message.headerSignature();
+			class_7649 lv = message.filterMask();
+			if (lv.method_45087()) {
+				this.client.inGameHud.getChatHud().addMessage(decorated, messageSignatureData, messageIndicator);
+				this.narrate(params, message.getContent());
+			} else {
+				Text text = lv.method_45092(message.getSignedContent());
+				if (text != null) {
+					this.client.inGameHud.getChatHud().addMessage(params.applyChatDecoration(text), messageSignatureData, messageIndicator);
+					this.narrate(params, text);
+				}
+			}
+
 			this.addToChatLog(message, params, senderEntry, messageTrustStatus);
 			this.lastProcessTime = Util.getMeasuringTimeMs();
 			return true;
+		} else {
+			return false;
 		}
 	}
 
@@ -288,7 +303,7 @@ public class MessageHandler {
 	 */
 	boolean processProfilelessMessage(MessageType.Parameters params, SignedMessage message, Text decorated) {
 		this.client.inGameHud.getChatHud().addMessage(decorated);
-		this.narrate(params, message);
+		this.narrate(params, message.getContent());
 		this.addToChatLog(decorated, message.getTimestamp());
 		this.lastProcessTime = Util.getMeasuringTimeMs();
 		return true;
@@ -301,28 +316,32 @@ public class MessageHandler {
 	 * or when the message is originally sent without metadata due to it being originated from
 	 * entities. This is to keep the integrity of the "message chain".
 	 * 
-	 * <p>This stores the header verification result and adds it to the chat log.
+	 * <p>If the header cannot be verified due to a broken chain, this disconnects
+	 * the client from the server.
 	 * 
-	 * @see net.minecraft.network.message.MessageVerifier#storeHeaderVerification
+	 * <p>This adds the header to the chat log.
 	 */
-	boolean processHeader(MessageHeader messageHeader, MessageSignatureData messageSignatureData, byte[] bodyDigest) {
-		PlayerListEntry playerListEntry = this.getPlayerListEntry(messageHeader.sender());
+	boolean processHeader(MessageHeader header, MessageSignatureData signature, byte[] bodyDigest) {
+		PlayerListEntry playerListEntry = this.getPlayerListEntry(header.sender());
 		if (playerListEntry != null) {
-			MessageVerifier.class_7646 lv = playerListEntry.getMessageVerifier().storeHeaderVerification(messageHeader, messageSignatureData, bodyDigest);
-			if (lv == MessageVerifier.class_7646.BROKEN_CHAIN) {
-				this.method_45031();
+			MessageVerifier.Status status = playerListEntry.getMessageVerifier().verify(header, signature, bodyDigest);
+			if (status == MessageVerifier.Status.BROKEN_CHAIN) {
+				this.disconnect();
 				return true;
 			}
 		}
 
-		this.addToChatLog(messageHeader, messageSignatureData, bodyDigest);
+		this.addToChatLog(header, signature, bodyDigest);
 		return false;
 	}
 
-	private void method_45031() {
+	/**
+	 * Disconnects from the server with reason {@link #CHAT_VALIDATION_FAILED_DISCONNECT_REASON}.
+	 */
+	private void disconnect() {
 		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
 		if (clientPlayNetworkHandler != null) {
-			clientPlayNetworkHandler.getConnection().disconnect(field_39904);
+			clientPlayNetworkHandler.getConnection().disconnect(CHAT_VALIDATION_FAILED_DISCONNECT_REASON);
 		}
 	}
 
@@ -331,8 +350,8 @@ public class MessageHandler {
 	 * 
 	 * @see net.minecraft.client.util.NarratorManager#narrateChatMessage
 	 */
-	private void narrate(MessageType.Parameters params, SignedMessage message) {
-		this.client.getNarratorManager().narrateChatMessage(() -> params.applyNarrationDecoration(message.getContent()));
+	private void narrate(MessageType.Parameters params, Text text) {
+		this.client.getNarratorManager().narrateChatMessage(() -> params.applyNarrationDecoration(text));
 	}
 
 	/**

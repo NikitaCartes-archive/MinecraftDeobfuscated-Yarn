@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 import javax.annotation.Nullable;
+import net.minecraft.class_7648;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
@@ -53,7 +54,6 @@ import net.minecraft.network.message.SentMessage;
 import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.DeathMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
@@ -578,16 +578,16 @@ public class ServerPlayerEntity extends PlayerEntity {
 			this.networkHandler
 				.sendPacket(
 					new DeathMessageS2CPacket(this.getDamageTracker(), text),
-					future -> {
-						if (!future.isSuccess()) {
+					class_7648.method_45085(
+						() -> {
 							int i = 256;
 							String string = text.asTruncatedString(256);
 							Text text2 = Text.translatable("death.attack.message_too_long", Text.literal(string).formatted(Formatting.YELLOW));
 							Text text3 = Text.translatable("death.attack.even_more_magic", this.getDisplayName())
 								.styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text2)));
-							this.networkHandler.sendPacket(new DeathMessageS2CPacket(this.getDamageTracker(), text3));
+							return new DeathMessageS2CPacket(this.getDamageTracker(), text3);
 						}
-					}
+					)
 				);
 			AbstractTeam abstractTeam = this.getScoreboardTeam();
 			if (abstractTeam == null || abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.ALWAYS) {
@@ -1294,20 +1294,16 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	public void sendMessageToClient(Text message, boolean overlay) {
 		if (this.acceptsMessage(overlay)) {
-			this.networkHandler.sendPacket(new GameMessageS2CPacket(message, overlay), future -> {
-				if (!future.isSuccess()) {
-					this.sendMessageDeliverError(message);
+			this.networkHandler.sendPacket(new GameMessageS2CPacket(message, overlay), class_7648.method_45085(() -> {
+				if (this.acceptsMessage(false)) {
+					int i = 256;
+					String string = message.asTruncatedString(256);
+					Text text2 = Text.literal(string).formatted(Formatting.YELLOW);
+					return new GameMessageS2CPacket(Text.translatable("multiplayer.message_not_delivered", text2).formatted(Formatting.RED), false);
+				} else {
+					return null;
 				}
-			});
-		}
-	}
-
-	private void sendMessageDeliverError(Text message) {
-		if (this.acceptsMessage(false)) {
-			int i = 256;
-			String string = message.asTruncatedString(256);
-			Text text = Text.literal(string).formatted(Formatting.YELLOW);
-			this.networkHandler.sendPacket(new GameMessageS2CPacket(Text.translatable("multiplayer.message_not_delivered", text).formatted(Formatting.RED), false));
+			}));
 		}
 	}
 
@@ -1323,11 +1319,9 @@ public class ServerPlayerEntity extends PlayerEntity {
 	 * @see #sendMessage(Text)
 	 * @see #sendMessage(Text, boolean)
 	 */
-	public void sendChatMessage(SentMessage message, MessageType.Parameters params) {
+	public void sendChatMessage(SentMessage message, boolean bl, MessageType.Parameters parameters) {
 		if (this.acceptsChatMessage()) {
-			ChatMessageS2CPacket chatMessageS2CPacket = message.toPacket(this, params);
-			this.networkHandler.addPendingAcknowledgment(chatMessageS2CPacket.message());
-			this.networkHandler.sendPacket(chatMessageS2CPacket);
+			message.method_45095(this, bl, parameters);
 		}
 	}
 
@@ -1381,7 +1375,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	public void sendServerMetadata(ServerMetadata metadata) {
 		this.networkHandler
-			.sendPacket(new ServerMetadataS2CPacket(metadata.getDescription(), metadata.getFavicon(), metadata.shouldPreviewChat(), metadata.method_45051()));
+			.sendPacket(new ServerMetadataS2CPacket(metadata.getDescription(), metadata.getFavicon(), metadata.shouldPreviewChat(), metadata.isSecureChatEnforced()));
 	}
 
 	@Override

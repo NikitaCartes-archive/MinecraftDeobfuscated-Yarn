@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
+import net.minecraft.class_7648;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
@@ -155,7 +156,7 @@ public class ServerLoginNetworkHandler implements TickablePacketListener, Server
 				this.connection
 					.send(
 						new LoginCompressionS2CPacket(this.server.getNetworkCompressionThreshold()),
-						channelFuture -> this.connection.setCompressionThreshold(this.server.getNetworkCompressionThreshold(), true)
+						class_7648.method_45084(() -> this.connection.setCompressionThreshold(this.server.getNetworkCompressionThreshold(), true))
 					);
 			}
 

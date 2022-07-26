@@ -11,7 +11,6 @@ import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_7644;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
@@ -40,6 +39,7 @@ import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.ClientPlayerTickable;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.command.CommandSource;
+import net.minecraft.command.argument.DecoratableArgumentList;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
@@ -327,24 +327,28 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	/**
-	 * {@return whether to preview {@code command}}
+	 * {@return whether {@code command} contains a signed argument}
 	 * 
-	 * @see ArgumentSignatureDataMap#shouldPreview
+	 * @see ArgumentSignatureDataMap#hasSignedArgument
 	 * 
 	 * @param command the command (without the leading slash)
 	 */
-	public boolean shouldPreview(String command) {
+	public boolean hasSignedArgument(String command) {
 		ParseResults<CommandSource> parseResults = this.networkHandler.getCommandDispatcher().parse(command, this.networkHandler.getCommandSource());
-		return ArgumentSignatureDataMap.shouldPreview(class_7644.method_45043(parseResults));
+		return ArgumentSignatureDataMap.hasSignedArgument(DecoratableArgumentList.of(parseResults));
 	}
 
 	/**
-	 * Sends an unsigned command to the server.
+	 * Sends an unsigned command to the server. This fails for commands that
+	 * {@linkplain #hasSignedArgument have signed arguments}.
+	 * 
+	 * @see #sendCommand(String, Text)
+	 * @return whether the command was sent successfully
 	 * 
 	 * @param command the command (without the leading slash)
 	 */
 	public boolean sendCommand(String command) {
-		if (!this.shouldPreview(command)) {
+		if (!this.hasSignedArgument(command)) {
 			LastSeenMessageList.Acknowledgment acknowledgment = this.networkHandler.consumeAcknowledgment();
 			this.networkHandler.sendPacket(new CommandExecutionC2SPacket(command, Instant.now(), 0L, ArgumentSignatureDataMap.EMPTY, false, acknowledgment));
 			return true;
@@ -362,21 +366,17 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		this.sendCommandInternal(command, preview);
 	}
 
-	private void sendChatMessagePacket(String content, @Nullable Text preview) {
-		String string = StringHelper.truncateChat(content);
+	private void sendChatMessagePacket(String string, @Nullable Text text) {
+		DecoratedContents decoratedContents = this.method_45081(string, text);
 		MessageMetadata messageMetadata = this.createMessageMetadata();
 		LastSeenMessageList.Acknowledgment acknowledgment = this.networkHandler.consumeAcknowledgment();
-		if (preview != null) {
-			DecoratedContents decoratedContents = new DecoratedContents(string, preview);
-			MessageSignatureData messageSignatureData = this.signChatMessage(messageMetadata, decoratedContents, acknowledgment.lastSeen());
-			this.networkHandler
-				.sendPacket(new ChatMessageC2SPacket(string, messageMetadata.timestamp(), messageMetadata.salt(), messageSignatureData, true, acknowledgment));
-		} else {
-			DecoratedContents decoratedContents = new DecoratedContents(string);
-			MessageSignatureData messageSignatureData = this.signChatMessage(messageMetadata, decoratedContents, acknowledgment.lastSeen());
-			this.networkHandler
-				.sendPacket(new ChatMessageC2SPacket(string, messageMetadata.timestamp(), messageMetadata.salt(), messageSignatureData, false, acknowledgment));
-		}
+		MessageSignatureData messageSignatureData = this.signChatMessage(messageMetadata, decoratedContents, acknowledgment.lastSeen());
+		this.networkHandler
+			.sendPacket(
+				new ChatMessageC2SPacket(
+					decoratedContents.plain(), messageMetadata.timestamp(), messageMetadata.salt(), messageSignatureData, decoratedContents.isDecorated(), acknowledgment
+				)
+			);
 	}
 
 	/**
@@ -424,8 +424,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			return ArgumentSignatureDataMap.EMPTY;
 		} else {
 			try {
-				return ArgumentSignatureDataMap.sign(class_7644.method_45043(parseResults), (argumentName, value) -> {
-					DecoratedContents decoratedContents = preview != null ? new DecoratedContents(value, preview) : new DecoratedContents(value);
+				return ArgumentSignatureDataMap.sign(DecoratableArgumentList.of(parseResults), (argumentName, value) -> {
+					DecoratedContents decoratedContents = this.method_45081(value, preview);
 					return this.networkHandler.getMessagePacker().pack(signer2, signer, decoratedContents, lastSeenMessages).signature();
 				});
 			} catch (Exception var7) {
@@ -433,6 +433,11 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 				return ArgumentSignatureDataMap.EMPTY;
 			}
 		}
+	}
+
+	private DecoratedContents method_45081(String string, @Nullable Text text) {
+		String string2 = StringHelper.truncateChat(string);
+		return text != null ? new DecoratedContents(string2, text) : new DecoratedContents(string2);
 	}
 
 	private MessageMetadata createMessageMetadata() {

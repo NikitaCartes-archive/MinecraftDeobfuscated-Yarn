@@ -156,7 +156,13 @@ public class FontManager implements AutoCloseable {
 	}
 
 	public TextRenderer createTextRenderer() {
-		return new TextRenderer(id -> (FontStorage)this.fontStorages.getOrDefault(this.idOverrides.getOrDefault(id, id), this.missingStorage));
+		return new TextRenderer(id -> (FontStorage)this.fontStorages.getOrDefault(this.idOverrides.getOrDefault(id, id), this.missingStorage), false);
+	}
+
+	public TextRenderer method_45078() {
+		return new TextRenderer(
+			identifier -> (FontStorage)this.fontStorages.getOrDefault(this.idOverrides.getOrDefault(identifier, identifier), this.missingStorage), true
+		);
 	}
 
 	public ResourceReloader getResourceReloadListener() {

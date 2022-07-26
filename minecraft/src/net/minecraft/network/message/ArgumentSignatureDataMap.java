@@ -4,7 +4,7 @@ import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.datafixers.util.Pair;
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.class_7644;
+import net.minecraft.command.argument.DecoratableArgumentList;
 import net.minecraft.command.argument.SignedArgumentType;
 import net.minecraft.network.PacketByteBuf;
 
@@ -41,34 +41,34 @@ public record ArgumentSignatureDataMap(List<ArgumentSignatureDataMap.Entry> entr
 	}
 
 	/**
-	 * {@return whether to preview {@code parseResults}}
-	 * 
-	 * <p>This returns {@code true} if the parsed arguments include {@link
-	 * SignedArgumentType}.
+	 * {@return whether the parsed arguments include {@link SignedArgumentType}}
 	 */
-	public static boolean shouldPreview(class_7644<?> arg) {
-		return arg.arguments().stream().anyMatch(argx -> argx.previewType() instanceof SignedArgumentType);
+	public static boolean hasSignedArgument(DecoratableArgumentList<?> arguments) {
+		return arguments.arguments().stream().anyMatch(argument -> argument.argumentType() instanceof SignedArgumentType);
 	}
 
 	/**
-	 * {@return the signature map with arguments from {@code builder} signed with
+	 * {@return the signature map with {@code arguments} signed with
 	 * {@code signer}}
 	 */
-	public static ArgumentSignatureDataMap sign(class_7644<?> arg, ArgumentSignatureDataMap.ArgumentSigner signer) {
-		List<ArgumentSignatureDataMap.Entry> list = method_45020(arg).stream().map(entry -> {
+	public static ArgumentSignatureDataMap sign(DecoratableArgumentList<?> arguments, ArgumentSignatureDataMap.ArgumentSigner signer) {
+		List<ArgumentSignatureDataMap.Entry> list = toNameValuePairs(arguments).stream().map(entry -> {
 			MessageSignatureData messageSignatureData = signer.sign((String)entry.getFirst(), (String)entry.getSecond());
 			return new ArgumentSignatureDataMap.Entry((String)entry.getFirst(), messageSignatureData);
 		}).toList();
 		return new ArgumentSignatureDataMap(list);
 	}
 
-	public static List<Pair<String, String>> method_45020(class_7644<?> arg) {
+	/**
+	 * {@return {@code arguments} converted to a list of signed name/value pairs}
+	 */
+	public static List<Pair<String, String>> toNameValuePairs(DecoratableArgumentList<?> arguments) {
 		List<Pair<String, String>> list = new ArrayList();
 
-		for (class_7644.class_7645<?> lv : arg.arguments()) {
-			if (lv.previewType() instanceof SignedArgumentType<?> signedArgumentType) {
-				String string = resultToString(signedArgumentType, lv.parsedValue());
-				list.add(Pair.of(lv.method_45046(), string));
+		for (DecoratableArgumentList.ParsedArgument<?> parsedArgument : arguments.arguments()) {
+			if (parsedArgument.argumentType() instanceof SignedArgumentType<?> signedArgumentType) {
+				String string = resultToString(signedArgumentType, parsedArgument.parsedValue());
+				list.add(Pair.of(parsedArgument.getNodeName(), string));
 			}
 		}
 
