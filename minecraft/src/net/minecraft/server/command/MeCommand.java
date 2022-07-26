@@ -4,8 +4,8 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.command.argument.MessageArgumentType;
 import net.minecraft.network.message.MessageType;
+import net.minecraft.network.message.SignedMessage;
 import net.minecraft.server.PlayerManager;
-import net.minecraft.server.filter.FilteredMessage;
 
 public class MeCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -20,7 +20,7 @@ public class MeCommand {
 								PlayerManager playerManager = serverCommandSource.getServer().getPlayerManager();
 								signedMessage.decorate(
 									serverCommandSource,
-									decoratedMessage -> playerManager.broadcast(decoratedMessage, serverCommandSource, MessageType.params(MessageType.EMOTE_COMMAND, serverCommandSource))
+									signedMessagex -> playerManager.broadcast(signedMessagex, serverCommandSource, MessageType.params(MessageType.EMOTE_COMMAND, serverCommandSource))
 								);
 								return 1;
 							}

@@ -9,7 +9,6 @@ import com.mojang.authlib.exceptions.InvalidCredentialsException;
 import com.mojang.authlib.exceptions.UserBannedException;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.logging.LogUtils;
-import io.netty.util.concurrent.Future;
 import java.math.BigInteger;
 import java.security.PublicKey;
 import java.util.function.Consumer;
@@ -18,6 +17,7 @@ import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_7648;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -99,7 +99,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 			}
 
 			this.statusConsumer.accept(Text.translatable("connect.encrypting"));
-			this.connection.send(loginKeyC2SPacket, future -> this.connection.setupEncryption(cipher, cipher2));
+			this.connection.send(loginKeyC2SPacket, class_7648.method_45084(() -> this.connection.setupEncryption(cipher, cipher2)));
 		}));
 	}
 

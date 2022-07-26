@@ -5,8 +5,13 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.message.MessageHeader;
 import net.minecraft.network.message.MessageSignatureData;
+import net.minecraft.network.message.SignedMessage;
 
 public record MessageHeaderS2CPacket(MessageHeader header, MessageSignatureData headerSignature, byte[] bodyDigest) implements Packet<ClientPlayPacketListener> {
+	public MessageHeaderS2CPacket(SignedMessage signedMessage) {
+		this(signedMessage.signedHeader(), signedMessage.headerSignature(), signedMessage.signedBody().digest().asBytes());
+	}
+
 	public MessageHeaderS2CPacket(PacketByteBuf buf) {
 		this(new MessageHeader(buf), new MessageSignatureData(buf), buf.readByteArray());
 	}

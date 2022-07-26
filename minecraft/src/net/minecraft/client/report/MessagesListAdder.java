@@ -17,13 +17,13 @@ public class MessagesListAdder<T extends ReceivedMessage> {
 	private final ChatLog log;
 	private final Predicate<T> reportablePredicate;
 	private int logMaxIndex;
-	final Class<T> field_39903;
+	final Class<T> collectedMessageClass;
 
-	public MessagesListAdder(ChatLog log, Predicate<T> reportablePredicate, Class<T> class_) {
+	public MessagesListAdder(ChatLog log, Predicate<T> reportablePredicate, Class<T> collectedMessageClass) {
 		this.log = log;
 		this.reportablePredicate = reportablePredicate;
 		this.logMaxIndex = log.getMaxIndex();
-		this.field_39903 = class_;
+		this.collectedMessageClass = collectedMessageClass;
 	}
 
 	public void add(int minAmount, MessagesListAdder.MessagesList<T> messagesList) {
@@ -44,17 +44,17 @@ public class MessagesListAdder<T extends ReceivedMessage> {
 		}
 	}
 
-	private int addContextMessages(List<ChatLog.IndexedEntry<T>> list, MessagesListAdder.MessagesList<T> messagesList) {
+	private int addContextMessages(List<ChatLog.IndexedEntry<T>> messages, MessagesListAdder.MessagesList<T> messagesList) {
 		int i = 8;
-		if (list.size() > 8) {
-			int j = list.size() - 8;
-			messagesList.addMessages(list.subList(0, 4));
+		if (messages.size() > 8) {
+			int j = messages.size() - 8;
+			messagesList.addMessages(messages.subList(0, 4));
 			messagesList.addText(Text.translatable("gui.chatSelection.fold", j));
-			messagesList.addMessages(list.subList(list.size() - 4, list.size()));
+			messagesList.addMessages(messages.subList(messages.size() - 4, messages.size()));
 			return 9;
 		} else {
-			messagesList.addMessages(list);
-			return list.size();
+			messagesList.addMessages(messages);
+			return messages.size();
 		}
 	}
 
@@ -64,7 +64,7 @@ public class MessagesListAdder<T extends ReceivedMessage> {
 		OptionalInt optionalInt = this.log
 			.streamBackward(this.logMaxIndex)
 			.streamIndexedEntries()
-			.map(indexedEntry -> indexedEntry.cast(this.field_39903))
+			.map(entry -> entry.cast(this.collectedMessageClass))
 			.filter(Objects::nonNull)
 			.takeWhile(groupedMessagesCollector::add)
 			.mapToInt(ChatLog.IndexedEntry::index)

@@ -8,7 +8,6 @@ import com.mojang.logging.LogUtils;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -44,13 +43,13 @@ public class MessageArgumentType implements SignedArgumentType<MessageArgumentTy
 		MessageArgumentType.MessageFormat messageFormat = context.getArgument(name, MessageArgumentType.MessageFormat.class);
 		Text text = messageFormat.format(context.getSource());
 		SignedCommandArguments signedCommandArguments = context.getSource().getSignedArguments();
-		net.minecraft.network.message.SignedMessage signedMessage = (net.minecraft.network.message.SignedMessage)Objects.requireNonNullElseGet(
-			signedCommandArguments.createSignature(name), () -> {
-				DecoratedContents decoratedContents = new DecoratedContents(messageFormat.contents);
-				return net.minecraft.network.message.SignedMessage.method_45041(decoratedContents);
-			}
-		);
-		return new MessageArgumentType.SignedMessage(text, signedMessage);
+		net.minecraft.network.message.SignedMessage signedMessage = signedCommandArguments.createSignature(name);
+		if (signedMessage == null) {
+			DecoratedContents decoratedContents = new DecoratedContents(messageFormat.contents, text);
+			return new MessageArgumentType.SignedMessage(net.minecraft.network.message.SignedMessage.ofUnsigned(decoratedContents));
+		} else {
+			return new MessageArgumentType.SignedMessage(MessageDecorator.attachIfNotDecorated(signedMessage, text));
+		}
 	}
 
 	public MessageArgumentType.MessageFormat parse(StringReader stringReader) throws CommandSyntaxException {
@@ -209,55 +208,33 @@ public class MessageArgumentType implements SignedArgumentType<MessageArgumentTy
 		}
 	}
 
-	public static record SignedMessage(Text formatted, net.minecraft.network.message.SignedMessage signedArgument) {
-		public void decorate(ServerCommandSource source, Consumer<FilteredMessage<net.minecraft.network.message.SignedMessage>> callback) {
+	public static record SignedMessage(net.minecraft.network.message.SignedMessage signedArgument) {
+		public void decorate(ServerCommandSource source, Consumer<net.minecraft.network.message.SignedMessage> callback) {
 			MinecraftServer minecraftServer = source.getServer();
-			String string = this.signedArgument.getSignedContent().plain();
-			source.getMessageChainTaskQueue().append(() -> this.filterText(source, string).thenComposeAsync(filteredMessage -> {
-					FilteredMessage<Text> filteredMessage2 = filteredMessage.method_45000(this.formatted, stringxx -> this.format(source, stringxx));
-					return this.decorate(source, filteredMessage, filteredMessage2);
-				}, minecraftServer).thenAcceptAsync(callback, minecraftServer));
+			source.getMessageChainTaskQueue()
+				.append(
+					() -> {
+						CompletableFuture<FilteredMessage> completableFuture = this.filterText(source, this.signedArgument.getSignedContent().plain());
+						CompletableFuture<net.minecraft.network.message.SignedMessage> completableFuture2 = minecraftServer.getMessageDecorator()
+							.decorate(source.getPlayer(), this.signedArgument);
+						return CompletableFuture.allOf(completableFuture, completableFuture2)
+							.thenAcceptAsync(
+								void_ -> {
+									net.minecraft.network.message.SignedMessage signedMessage = ((net.minecraft.network.message.SignedMessage)completableFuture2.join())
+										.method_45097(((FilteredMessage)completableFuture.join()).mask());
+									callback.accept(signedMessage);
+								},
+								minecraftServer
+							);
+					}
+				);
 		}
 
-		/**
-		 * {@return the parsed and formatted {@code filteredText}, or {@code null} if it fails}
-		 */
-		@Nullable
-		private Text format(ServerCommandSource source, String filteredText) {
-			try {
-				MessageArgumentType.MessageFormat messageFormat = MessageArgumentType.MessageFormat.parse(new StringReader(filteredText), true);
-				return messageFormat.format(source);
-			} catch (CommandSyntaxException var4) {
-				return null;
-			}
-		}
-
-		private CompletableFuture<FilteredMessage<net.minecraft.network.message.SignedMessage>> decorate(
-			ServerCommandSource source, FilteredMessage<String> filtered, FilteredMessage<Text> formatted
-		) {
-			MinecraftServer minecraftServer = source.getServer();
-			MessageDecorator messageDecorator = minecraftServer.getMessageDecorator();
+		private CompletableFuture<FilteredMessage> filterText(ServerCommandSource source, String text) {
 			ServerPlayerEntity serverPlayerEntity = source.getPlayer();
-			DecoratedContents decoratedContents = this.signedArgument.getSignedContent();
-			return decoratedContents.isDecorated()
-				? messageDecorator.rebuildFiltered(serverPlayerEntity, formatted, decoratedContents.decorated()).thenApply(filteredMessage2 -> {
-					FilteredMessage<DecoratedContents> filteredMessage3 = DecoratedContents.of(filtered, filteredMessage2);
-					return this.signedArgument.withFilteredContent(filteredMessage3);
-				})
-				: messageDecorator.decorate(serverPlayerEntity, formatted.raw())
-					.thenComposeAsync(text -> messageDecorator.rebuildFiltered(serverPlayerEntity, formatted, text), minecraftServer)
-					.thenApply(filteredMessage2 -> {
-						FilteredMessage<DecoratedContents> filteredMessage3 = DecoratedContents.of(filtered);
-						FilteredMessage<net.minecraft.network.message.SignedMessage> filteredMessage4 = this.signedArgument.withFilteredContent(filteredMessage3);
-						return MessageDecorator.attachUnsignedDecoration(filteredMessage4, filteredMessage2);
-					});
-		}
-
-		private CompletableFuture<FilteredMessage<String>> filterText(ServerCommandSource source, String text) {
-			ServerPlayerEntity serverPlayerEntity = source.getPlayer();
-			return serverPlayerEntity != null && this.signedArgument.method_45040(serverPlayerEntity)
+			return serverPlayerEntity != null && this.signedArgument.canVerifyFrom(serverPlayerEntity.getUuid())
 				? serverPlayerEntity.getTextStream().filterText(text)
-				: CompletableFuture.completedFuture(FilteredMessage.permitted(text));
+				: CompletableFuture.completedFuture(FilteredMessage.method_45060(text));
 		}
 
 		/**
@@ -266,11 +243,11 @@ public class MessageArgumentType implements SignedArgumentType<MessageArgumentTy
 		 * <p>This should be called if the message could not be sent due to an exception.
 		 * See {@link net.minecraft.server.command.MessageCommand} for an example.
 		 */
-		public void sendHeader(ServerCommandSource serverCommandSource) {
+		public void sendHeader(ServerCommandSource source) {
 			if (!this.signedArgument.createMetadata().lacksSender()) {
-				this.decorate(serverCommandSource, decoratedMessage -> {
-					PlayerManager playerManager = serverCommandSource.getServer().getPlayerManager();
-					playerManager.sendMessageHeader((net.minecraft.network.message.SignedMessage)decoratedMessage.raw(), Set.of());
+				this.decorate(source, signedMessage -> {
+					PlayerManager playerManager = source.getServer().getPlayerManager();
+					playerManager.sendMessageHeader(signedMessage, Set.of());
 				});
 			}
 		}

@@ -229,11 +229,13 @@ public interface ChatLog {
 		 * <p>This ignores game messages, and the returned collection has no duplicates.
 		 */
 		public Collection<GameProfile> collectSenderProfiles() {
-			return this.streamLogEntries()
-				.map(message -> message instanceof ReceivedMessage.ChatMessage chatMessage ? chatMessage.profile() : null)
-				.filter(Objects::nonNull)
-				.distinct()
-				.toList();
+			return this.streamLogEntries().map(message -> {
+				if (message instanceof ReceivedMessage.ChatMessage chatMessage && chatMessage.isSentFrom(chatMessage.profile().getId())) {
+					return chatMessage.profile();
+				}
+
+				return null;
+			}).filter(Objects::nonNull).distinct().toList();
 		}
 
 		/**

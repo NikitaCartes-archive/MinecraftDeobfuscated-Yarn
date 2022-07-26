@@ -61,7 +61,10 @@ public record MessageBody(DecoratedContents content, Instant timestamp, long sal
 		return hashingOutputStream.hash();
 	}
 
-	public MessageBody method_45047(DecoratedContents decoratedContents) {
-		return new MessageBody(decoratedContents, this.timestamp, this.salt, this.lastSeenMessages);
+	/**
+	 * {@return a new message body with its content replaced with {@code content}}
+	 */
+	public MessageBody withContent(DecoratedContents content) {
+		return new MessageBody(content, this.timestamp, this.salt, this.lastSeenMessages);
 	}
 }

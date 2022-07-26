@@ -2,7 +2,6 @@ package net.minecraft.network.message;
 
 import java.util.Objects;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.text.Text;
 
 /**
@@ -12,17 +11,6 @@ import net.minecraft.text.Text;
 public record DecoratedContents(String plain, Text decorated) {
 	public DecoratedContents(String content) {
 		this(content, Text.literal(content));
-	}
-
-	public static FilteredMessage<DecoratedContents> of(FilteredMessage<String> message) {
-		return message.map(DecoratedContents::new);
-	}
-
-	public static FilteredMessage<DecoratedContents> of(FilteredMessage<String> plain, FilteredMessage<Text> decorated) {
-		return plain.map(
-			rawMessage -> new DecoratedContents(rawMessage, decorated.raw()),
-			filteredMessage -> decorated.filtered() != null ? new DecoratedContents(filteredMessage, decorated.filtered()) : null
-		);
 	}
 
 	public boolean isDecorated() {

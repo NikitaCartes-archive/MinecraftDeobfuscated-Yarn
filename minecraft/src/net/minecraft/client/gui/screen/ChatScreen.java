@@ -9,7 +9,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_7644;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextHandler;
 import net.minecraft.client.gui.hud.ChatHud;
@@ -24,6 +23,7 @@ import net.minecraft.client.option.ServerList;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.command.CommandSource;
+import net.minecraft.command.argument.DecoratableArgumentList;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
@@ -76,7 +76,7 @@ public class ChatScreen extends Screen {
 	protected void init() {
 		this.client.keyboard.setRepeatEvents(true);
 		this.messageHistorySize = this.client.inGameHud.getChatHud().getMessageHistory().size();
-		this.chatField = new TextFieldWidget(this.textRenderer, 4, this.height - 12, this.width - 4, 12, Text.translatable("chat.editBox")) {
+		this.chatField = new TextFieldWidget(this.client.field_39924, 4, this.height - 12, this.width - 4, 12, Text.translatable("chat.editBox")) {
 			@Override
 			protected MutableText getNarrationMessage() {
 				return super.getNarrationMessage().append(ChatScreen.this.chatInputSuggestor.getNarration());
@@ -107,7 +107,7 @@ public class ChatScreen extends Screen {
 		}
 
 		if (this.chatPreviewMode == ChatPreviewMode.CONFIRM) {
-			this.missingPreview = this.originalChatText.startsWith("/") && !this.client.player.shouldPreview(this.originalChatText.substring(1));
+			this.missingPreview = this.originalChatText.startsWith("/") && !this.client.player.hasSignedArgument(this.originalChatText.substring(1));
 		}
 	}
 
@@ -138,7 +138,7 @@ public class ChatScreen extends Screen {
 		if (this.chatPreviewMode == ChatPreviewMode.LIVE) {
 			this.updatePreviewer(string);
 		} else if (this.chatPreviewMode == ChatPreviewMode.CONFIRM && !this.chatPreviewer.equalsLastPreviewed(string)) {
-			this.missingPreview = string.startsWith("/") && !this.client.player.shouldPreview(string.substring(1));
+			this.missingPreview = string.startsWith("/") && !this.client.player.hasSignedArgument(string.substring(1));
 			this.chatPreviewer.tryRequest("");
 		}
 	}
@@ -165,9 +165,9 @@ public class ChatScreen extends Screen {
 	}
 
 	private void tryRequestCommandPreview(String chatText) {
-		ParseResults<CommandSource> parseResults = this.chatInputSuggestor.method_45028();
+		ParseResults<CommandSource> parseResults = this.chatInputSuggestor.getParse();
 		CommandNode<CommandSource> commandNode = this.chatInputSuggestor.getNodeAt(this.chatField.getCursor());
-		if (parseResults != null && commandNode != null && class_7644.method_45043(parseResults).method_45045(commandNode)) {
+		if (parseResults != null && commandNode != null && DecoratableArgumentList.of(parseResults).contains(commandNode)) {
 			this.chatPreviewer.tryRequest(chatText);
 		} else {
 			this.chatPreviewer.disablePreview();
@@ -301,7 +301,7 @@ public class ChatScreen extends Screen {
 		this.chatField.render(matrices, mouseX, mouseY, delta);
 		super.render(matrices, mouseX, mouseY, delta);
 		boolean bl = this.client.getProfileKeys().getSigner() != null;
-		ChatPreviewBackground.RenderData renderData = this.chatPreviewBackground.computeRenderData(Util.getMeasuringTimeMs(), this.method_45029());
+		ChatPreviewBackground.RenderData renderData = this.chatPreviewBackground.computeRenderData(Util.getMeasuringTimeMs(), this.getPreviewScreenText());
 		if (renderData.preview() != null) {
 			this.renderChatPreview(matrices, renderData.preview(), renderData.alpha(), bl);
 			this.chatInputSuggestor.tryRenderWindow(matrices, mouseX, mouseY);
@@ -325,8 +325,12 @@ public class ChatScreen extends Screen {
 		}
 	}
 
+	/**
+	 * {@return the text to show in the preview screen, or {@code null} if there is
+	 * nothing to show}
+	 */
 	@Nullable
-	protected Text method_45029() {
+	protected Text getPreviewScreenText() {
 		String string = this.chatField.getText();
 		if (string.isBlank()) {
 			return null;

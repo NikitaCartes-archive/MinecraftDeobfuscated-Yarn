@@ -381,7 +381,7 @@ public class ChatInputSuggestor {
 	}
 
 	@Nullable
-	public ParseResults<CommandSource> method_45028() {
+	public ParseResults<CommandSource> getParse() {
 		return this.parse;
 	}
 

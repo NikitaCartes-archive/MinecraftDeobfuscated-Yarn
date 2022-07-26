@@ -10,10 +10,8 @@ import net.minecraft.text.Text;
 
 public interface DecoratableArgumentType<T> extends ArgumentType<T> {
 	@Nullable
-	default CompletableFuture<Text> decorate(ServerCommandSource serverCommandSource, ParsedArgument<ServerCommandSource, ?> parsedArgument) throws CommandSyntaxException {
-		return this.getFormatClass().isInstance(parsedArgument.getResult())
-			? this.decorate(serverCommandSource, (T)this.getFormatClass().cast(parsedArgument.getResult()))
-			: null;
+	default CompletableFuture<Text> decorate(ServerCommandSource source, ParsedArgument<ServerCommandSource, ?> parsedValue) throws CommandSyntaxException {
+		return this.getFormatClass().isInstance(parsedValue.getResult()) ? this.decorate(source, (T)this.getFormatClass().cast(parsedValue.getResult())) : null;
 	}
 
 	CompletableFuture<Text> decorate(ServerCommandSource source, T format) throws CommandSyntaxException;
