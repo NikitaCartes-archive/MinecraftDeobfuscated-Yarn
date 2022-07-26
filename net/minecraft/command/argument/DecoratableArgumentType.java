@@ -14,9 +14,9 @@ import org.jetbrains.annotations.Nullable;
 public interface DecoratableArgumentType<T>
 extends ArgumentType<T> {
     @Nullable
-    default public CompletableFuture<Text> decorate(ServerCommandSource serverCommandSource, ParsedArgument<ServerCommandSource, ?> parsedArgument) throws CommandSyntaxException {
-        if (this.getFormatClass().isInstance(parsedArgument.getResult())) {
-            return this.decorate(serverCommandSource, this.getFormatClass().cast(parsedArgument.getResult()));
+    default public CompletableFuture<Text> decorate(ServerCommandSource source, ParsedArgument<ServerCommandSource, ?> parsedValue) throws CommandSyntaxException {
+        if (this.getFormatClass().isInstance(parsedValue.getResult())) {
+            return this.decorate(source, this.getFormatClass().cast(parsedValue.getResult()));
         }
         return null;
     }

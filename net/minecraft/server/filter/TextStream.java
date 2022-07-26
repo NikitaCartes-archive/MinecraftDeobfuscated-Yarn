@@ -20,13 +20,13 @@ public interface TextStream {
         }
 
         @Override
-        public CompletableFuture<FilteredMessage<String>> filterText(String text) {
-            return CompletableFuture.completedFuture(FilteredMessage.permitted(text));
+        public CompletableFuture<FilteredMessage> filterText(String text) {
+            return CompletableFuture.completedFuture(FilteredMessage.method_45060(text));
         }
 
         @Override
-        public CompletableFuture<List<FilteredMessage<String>>> filterTexts(List<String> texts) {
-            return CompletableFuture.completedFuture((List)texts.stream().map(FilteredMessage::permitted).collect(ImmutableList.toImmutableList()));
+        public CompletableFuture<List<FilteredMessage>> filterTexts(List<String> texts) {
+            return CompletableFuture.completedFuture((List)texts.stream().map(FilteredMessage::method_45060).collect(ImmutableList.toImmutableList()));
         }
     };
 
@@ -34,8 +34,8 @@ public interface TextStream {
 
     public void onDisconnect();
 
-    public CompletableFuture<FilteredMessage<String>> filterText(String var1);
+    public CompletableFuture<FilteredMessage> filterText(String var1);
 
-    public CompletableFuture<List<FilteredMessage<String>>> filterTexts(List<String> var1);
+    public CompletableFuture<List<FilteredMessage>> filterTexts(List<String> var1);
 }
 

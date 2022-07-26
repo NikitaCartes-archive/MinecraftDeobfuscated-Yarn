@@ -175,8 +175,8 @@ public record MessageType(Decoration chat, Decoration narration) {
 
         public Optional<Parameters> toParameters(DynamicRegistryManager registryManager) {
             Registry<MessageType> registry = registryManager.get(Registry.MESSAGE_TYPE_KEY);
-            MessageType messageType2 = (MessageType)registry.get(this.typeId);
-            return Optional.ofNullable(messageType2).map(messageType -> new Parameters((MessageType)messageType, this.name, this.targetName));
+            MessageType messageType = (MessageType)registry.get(this.typeId);
+            return Optional.ofNullable(messageType).map(type -> new Parameters((MessageType)type, this.name, this.targetName));
         }
 
         @Nullable

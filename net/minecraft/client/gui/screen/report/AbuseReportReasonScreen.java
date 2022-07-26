@@ -123,7 +123,7 @@ extends Screen {
         public ReasonListWidget(MinecraftClient client) {
             super(client, AbuseReportReasonScreen.this.width, AbuseReportReasonScreen.this.height, 40, AbuseReportReasonScreen.this.height - 95, 18);
             for (AbuseReportReason abuseReportReason : AbuseReportReason.values()) {
-                if (!abuseReportReason.method_45032()) continue;
+                if (!abuseReportReason.isReportable()) continue;
                 this.addEntry(new ReasonEntry(abuseReportReason));
             }
         }

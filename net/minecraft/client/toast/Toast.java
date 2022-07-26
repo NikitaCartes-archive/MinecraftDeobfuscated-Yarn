@@ -12,11 +12,13 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public interface Toast {
     public static final Identifier TEXTURE = new Identifier("textures/gui/toasts.png");
     public static final Object TYPE = new Object();
+    public static final int field_39928 = 32;
 
     public Visibility draw(MatrixStack var1, ToastManager var2, long var3);
 
@@ -30,6 +32,10 @@ public interface Toast {
 
     default public int getHeight() {
         return 32;
+    }
+
+    default public int method_45072() {
+        return MathHelper.ceilDiv(this.getHeight(), 32);
     }
 
     @Environment(value=EnvType.CLIENT)

@@ -210,9 +210,13 @@ public class CommandManager {
         this.dispatcher.setConsumer((context, success, result) -> ((ServerCommandSource)context.getSource()).onCommandComplete(context, success, result));
     }
 
-    public static <S> ParseResults<S> method_45018(ParseResults<S> parseResults, UnaryOperator<S> unaryOperator) {
+    /**
+     * {@return {@code parseResults} with {@code sourceMapper} applied to the
+     * command source}
+     */
+    public static <S> ParseResults<S> withCommandSource(ParseResults<S> parseResults, UnaryOperator<S> sourceMapper) {
         CommandContextBuilder commandContextBuilder = parseResults.getContext();
-        CommandContextBuilder<S> commandContextBuilder2 = commandContextBuilder.withSource(unaryOperator.apply(commandContextBuilder.getSource()));
+        CommandContextBuilder<S> commandContextBuilder2 = commandContextBuilder.withSource(sourceMapper.apply(commandContextBuilder.getSource()));
         return new ParseResults<S>(commandContextBuilder2, parseResults.getReader(), parseResults.getExceptions());
     }
 

@@ -229,8 +229,8 @@ public interface ChatLog {
 
         public Collection<GameProfile> collectSenderProfiles() {
             return this.streamLogEntries().map(message -> {
-                if (message instanceof ReceivedMessage.ChatMessage) {
-                    ReceivedMessage.ChatMessage chatMessage = (ReceivedMessage.ChatMessage)message;
+                ReceivedMessage.ChatMessage chatMessage;
+                if (message instanceof ReceivedMessage.ChatMessage && (chatMessage = (ReceivedMessage.ChatMessage)message).isSentFrom(chatMessage.profile().getId())) {
                     return chatMessage.profile();
                 }
                 return null;

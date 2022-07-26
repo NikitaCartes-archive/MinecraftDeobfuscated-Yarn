@@ -10,11 +10,12 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import java.util.Collection;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.MessageArgumentType;
+import net.minecraft.entity.Entity;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SentMessage;
+import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public class MessageCommand {
@@ -32,20 +33,26 @@ public class MessageCommand {
         dispatcher.register((LiteralArgumentBuilder)CommandManager.literal("w").redirect(literalCommandNode));
     }
 
-    private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, MessageArgumentType.SignedMessage signedMessage) {
-        MessageType.Parameters parameters = MessageType.params(MessageType.MSG_COMMAND_INCOMING, source);
-        signedMessage.decorate(source, filteredMessage -> {
-            FilteredMessage<SentMessage> filteredMessage2 = SentMessage.of(filteredMessage);
-            for (ServerPlayerEntity serverPlayerEntity : targets) {
-                MessageType.Parameters parameters2 = MessageType.params(MessageType.MSG_COMMAND_OUTGOING, source).withTargetName(serverPlayerEntity.getDisplayName());
-                source.sendChatMessage(filteredMessage2.raw(), parameters2);
-                SentMessage sentMessage = filteredMessage2.getFilterableFor(source, serverPlayerEntity);
-                if (sentMessage == null) continue;
-                serverPlayerEntity.sendChatMessage(sentMessage, parameters);
+    private static int execute(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, MessageArgumentType.SignedMessage signedMessage2) {
+        MessageType.Parameters parameters = MessageType.params(MessageType.MSG_COMMAND_INCOMING, serverCommandSource);
+        signedMessage2.decorate(serverCommandSource, signedMessage -> {
+            SentMessage sentMessage = SentMessage.of(signedMessage);
+            boolean bl = signedMessage.method_45100();
+            Entity entity = serverCommandSource.getEntity();
+            boolean bl2 = false;
+            for (ServerPlayerEntity serverPlayerEntity : collection) {
+                MessageType.Parameters parameters2 = MessageType.params(MessageType.MSG_COMMAND_OUTGOING, serverCommandSource).withTargetName(serverPlayerEntity.getDisplayName());
+                serverCommandSource.sendChatMessage(sentMessage, false, parameters2);
+                boolean bl3 = serverCommandSource.method_45067(serverPlayerEntity);
+                serverPlayerEntity.sendChatMessage(sentMessage, bl3, parameters);
+                bl2 |= bl && bl3 && serverPlayerEntity != entity;
             }
-            filteredMessage2.raw().afterPacketsSent(source.getServer().getPlayerManager());
+            if (bl2) {
+                serverCommandSource.method_45068(PlayerManager.field_39921);
+            }
+            sentMessage.afterPacketsSent(serverCommandSource.getServer().getPlayerManager());
         });
-        return targets.size();
+        return collection.size();
     }
 }
 

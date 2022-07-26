@@ -50,7 +50,7 @@ public class ServerInfo {
     @Nullable
     private ChatPreview chatPreview;
     private boolean temporaryChatPreviewState = true;
-    private boolean field_39918;
+    private boolean secureChatEnforced;
 
     public ServerInfo(String name, String address, boolean local) {
         this.name = name;
@@ -164,12 +164,12 @@ public class ServerInfo {
         return this.temporaryChatPreviewState && this.chatPreview != null;
     }
 
-    public void method_45055(boolean bl) {
-        this.field_39918 = bl;
+    public void setSecureChatEnforced(boolean secureChatEnforced) {
+        this.secureChatEnforced = secureChatEnforced;
     }
 
-    public boolean method_45056() {
-        return this.field_39918;
+    public boolean isSecureChatEnforced() {
+        return this.secureChatEnforced;
     }
 
     public void copyFrom(ServerInfo serverInfo) {
@@ -183,7 +183,7 @@ public class ServerInfo {
         this.setResourcePackPolicy(serverInfo.getResourcePackPolicy());
         this.local = serverInfo.local;
         this.chatPreview = Util.map(serverInfo.chatPreview, ChatPreview::copy);
-        this.field_39918 = serverInfo.field_39918;
+        this.secureChatEnforced = serverInfo.secureChatEnforced;
     }
 
     @Environment(value=EnvType.CLIENT)

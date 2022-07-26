@@ -47,7 +47,7 @@ public class PlayerListEntry {
     private final PlayerPublicKey publicKeyData;
     private final MessageVerifier messageVerifier;
 
-    public PlayerListEntry(PlayerListS2CPacket.Entry playerListPacketEntry, SignatureVerifier servicesSignatureVerifier, boolean bl) {
+    public PlayerListEntry(PlayerListS2CPacket.Entry playerListPacketEntry, SignatureVerifier servicesSignatureVerifier, boolean secureChatEnforced) {
         this.profile = playerListPacketEntry.getProfile();
         this.gameMode = playerListPacketEntry.getGameMode();
         this.latency = playerListPacketEntry.getLatency();
@@ -62,7 +62,7 @@ public class PlayerListEntry {
             LOGGER.error("Failed to retrieve publicKey property for profile {}", (Object)this.profile.getId(), (Object)exception);
         }
         this.publicKeyData = playerPublicKey;
-        this.messageVerifier = MessageVerifier.create(playerPublicKey, bl);
+        this.messageVerifier = MessageVerifier.create(playerPublicKey, secureChatEnforced);
     }
 
     public GameProfile getProfile() {

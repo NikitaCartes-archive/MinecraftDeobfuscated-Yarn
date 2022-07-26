@@ -73,7 +73,8 @@ extends Screen {
     private ButtonWidget buttonResetDemo;
     private static final Identifier MINECRAFT_TITLE_TEXTURE = new Identifier("textures/gui/title/minecraft.png");
     private static final Identifier EDITION_TITLE_TEXTURE = new Identifier("textures/gui/title/edition.png");
-    private Screen realmsNotificationGui;
+    @Nullable
+    private RealmsNotificationsScreen realmsNotificationGui;
     private final RotatingCubeMapRenderer backgroundRenderer = new RotatingCubeMapRenderer(PANORAMA_CUBE_MAP);
     private final boolean doBackgroundFade;
     private long backgroundFadeStart;
@@ -304,6 +305,7 @@ extends Screen {
         }
         super.render(matrices, mouseX, mouseY, delta);
         if (this.areRealmsNotificationsEnabled() && g >= 1.0f) {
+            RenderSystem.enableDepthTest();
             this.realmsNotificationGui.render(matrices, mouseX, mouseY, delta);
         }
     }

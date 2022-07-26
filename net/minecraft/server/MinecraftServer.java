@@ -623,7 +623,7 @@ AutoCloseable {
                     this.metadata.setDescription(Text.literal(this.motd));
                     this.metadata.setVersion(new ServerMetadata.Version(SharedConstants.getGameVersion().getName(), SharedConstants.getGameVersion().getProtocolVersion()));
                     this.metadata.setPreviewsChat(this.shouldPreviewChat());
-                    this.metadata.method_45050(this.shouldEnforceSecureProfile());
+                    this.metadata.setSecureChatEnforced(this.shouldEnforceSecureProfile());
                     this.setFavicon(this.metadata);
                     while (this.running) {
                         long l = Util.getMeasuringTimeMs() - this.timeReference;
@@ -1686,12 +1686,12 @@ AutoCloseable {
         return 1000000;
     }
 
-    public void logChatMessage(Text text, MessageType.Parameters parameters, @Nullable String string) {
-        String string2 = parameters.applyChatDecoration(text).getString();
-        if (string != null) {
-            LOGGER.info("[{}] {}", (Object)string, (Object)string2);
+    public void logChatMessage(Text message, MessageType.Parameters params, @Nullable String prefix) {
+        String string = params.applyChatDecoration(message).getString();
+        if (prefix != null) {
+            LOGGER.info("[{}] {}", (Object)prefix, (Object)string);
         } else {
-            LOGGER.info("{}", (Object)string2);
+            LOGGER.info("{}", (Object)string);
         }
     }
 

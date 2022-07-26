@@ -5,6 +5,7 @@ package net.minecraft.server.filter;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonReader;
@@ -29,6 +30,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_7649;
 import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.filter.TextStream;
 import net.minecraft.util.JsonHelper;
@@ -156,7 +158,7 @@ implements AutoCloseable {
         });
     }
 
-    CompletableFuture<FilteredMessage<String>> filterMessage(GameProfile gameProfile, String message, HashIgnorer ignorer, Executor executor) {
+    CompletableFuture<FilteredMessage> filterMessage(GameProfile gameProfile, String message, HashIgnorer ignorer, Executor executor) {
         if (message.isEmpty()) {
             return CompletableFuture.completedFuture(FilteredMessage.EMPTY);
         }
@@ -166,19 +168,34 @@ implements AutoCloseable {
                 JsonObject jsonObject2 = this.sendJsonRequest(jsonObject, this.chatEndpoint);
                 boolean bl = JsonHelper.getBoolean(jsonObject2, "response", false);
                 if (bl) {
-                    return FilteredMessage.permitted(message);
+                    return FilteredMessage.method_45060(message);
                 }
                 String string2 = JsonHelper.getString(jsonObject2, "hashed", null);
                 if (string2 == null) {
-                    return FilteredMessage.censored(message);
+                    return FilteredMessage.method_45062(message);
                 }
-                int i = JsonHelper.getArray(jsonObject2, "hashes").size();
-                return ignorer.shouldIgnore(string2, i) ? FilteredMessage.censored(message) : new FilteredMessage<String>(message, string2);
+                JsonArray jsonArray = JsonHelper.getArray(jsonObject2, "hashes");
+                class_7649 lv = this.method_45066(message, jsonArray, ignorer);
+                return new FilteredMessage(message, lv);
             } catch (Exception exception) {
                 LOGGER.warn("Failed to validate message '{}'", (Object)message, (Object)exception);
-                return FilteredMessage.censored(message);
+                return FilteredMessage.method_45062(message);
             }
         }, executor);
+    }
+
+    private class_7649 method_45066(String string, JsonArray jsonArray, HashIgnorer hashIgnorer) {
+        if (jsonArray.isEmpty()) {
+            return class_7649.field_39942;
+        }
+        if (hashIgnorer.shouldIgnore(string, jsonArray.size())) {
+            return class_7649.field_39941;
+        }
+        class_7649 lv = new class_7649(string.length());
+        for (int i = 0; i < jsonArray.size(); ++i) {
+            lv.method_45088(jsonArray.get(i).getAsInt());
+        }
+        return lv;
     }
 
     @Override
@@ -307,13 +324,13 @@ implements AutoCloseable {
         }
 
         @Override
-        public CompletableFuture<List<FilteredMessage<String>>> filterTexts(List<String> texts) {
+        public CompletableFuture<List<FilteredMessage>> filterTexts(List<String> texts) {
             List list = texts.stream().map(text -> TextFilterer.this.filterMessage(this.gameProfile, (String)text, TextFilterer.this.ignorer, this.executor)).collect(ImmutableList.toImmutableList());
             return Util.combine(list).exceptionally(throwable -> ImmutableList.of());
         }
 
         @Override
-        public CompletableFuture<FilteredMessage<String>> filterText(String text) {
+        public CompletableFuture<FilteredMessage> filterText(String text) {
             return TextFilterer.this.filterMessage(this.gameProfile, text, TextFilterer.this.ignorer, this.executor);
         }
     }

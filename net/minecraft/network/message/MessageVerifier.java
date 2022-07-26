@@ -17,45 +17,25 @@ import org.jetbrains.annotations.Nullable;
  * as it affects the verification result.
  */
 public interface MessageVerifier {
-    public static MessageVerifier method_45057(final class_7646 arg) {
-        return new MessageVerifier(){
-
-            @Override
-            public class_7646 storeHeaderVerification(MessageHeader header, MessageSignatureData signature, byte[] bodyDigest) {
-                return arg;
-            }
-
-            @Override
-            public class_7646 verify(SignedMessage message) {
-                return arg;
-            }
-        };
-    }
-
     public static MessageVerifier create(@Nullable PlayerPublicKey publicKey, boolean bl) {
-        if (publicKey == null) {
-            return MessageVerifier.method_45057(bl ? class_7646.BROKEN_CHAIN : class_7646.NOT_SECURE);
+        if (publicKey != null) {
+            return new Impl(publicKey.createSignatureInstance());
         }
-        return new Impl(publicKey.createSignatureInstance());
+        return new class_7651(bl);
     }
 
     /**
-     * Stores the status of verifying the header.
+     * {@return the status of verifying the header}
      * 
      * <p>Clients can receive only the message header instead of the whole message. This
-     * allows the chain to reference such messages. Since no actual content is received,
-     * this does not return the verification status.
+     * allows the verification of such messages.
      */
-    public class_7646 storeHeaderVerification(MessageHeader var1, MessageSignatureData var2, byte[] var3);
+    public Status verify(MessageHeader var1, MessageSignatureData var2, byte[] var3);
 
-    public class_7646 verify(SignedMessage var1);
-
-    public static enum class_7646 {
-        SECURE,
-        NOT_SECURE,
-        BROKEN_CHAIN;
-
-    }
+    /**
+     * {@return the status of verifying the message}
+     */
+    public Status verify(SignedMessage var1);
 
     public static class Impl
     implements MessageVerifier {
@@ -68,40 +48,72 @@ public interface MessageVerifier {
             this.signatureVerifier = signatureVerifier;
         }
 
-        private boolean verifyPrecedingSignature(MessageHeader header, MessageSignatureData signature) {
-            if (signature.isEmpty()) {
+        private boolean verifyPrecedingSignature(MessageHeader header, MessageSignatureData messageSignatureData, boolean bl) {
+            if (messageSignatureData.isEmpty()) {
                 return false;
             }
-            return this.precedingSignature == null || this.precedingSignature.equals(header.precedingSignature()) || this.precedingSignature.equals(signature);
+            if (bl && messageSignatureData.equals(this.precedingSignature)) {
+                return true;
+            }
+            return this.precedingSignature == null || this.precedingSignature.equals(header.precedingSignature());
         }
 
-        private boolean verify(MessageHeader messageHeader, MessageSignatureData signature, byte[] bodyDigest) {
-            return signature.verify(this.signatureVerifier, messageHeader, bodyDigest);
+        private boolean verifyInternal(MessageHeader header, MessageSignatureData messageSignatureData, byte[] bodyDigest, boolean bl) {
+            return this.verifyPrecedingSignature(header, messageSignatureData, bl) && messageSignatureData.verify(this.signatureVerifier, header, bodyDigest);
         }
 
-        private class_7646 method_45048(MessageHeader messageHeader, MessageSignatureData messageSignatureData, byte[] bs) {
-            boolean bl = this.lastMessageVerified = this.lastMessageVerified && this.verifyPrecedingSignature(messageHeader, messageSignatureData);
+        private Status getStatus(MessageHeader header, MessageSignatureData signature, byte[] bodyDigest, boolean bl) {
+            boolean bl2 = this.lastMessageVerified = this.lastMessageVerified && this.verifyInternal(header, signature, bodyDigest, bl);
             if (!this.lastMessageVerified) {
-                return class_7646.BROKEN_CHAIN;
+                return Status.BROKEN_CHAIN;
             }
-            if (!this.verify(messageHeader, messageSignatureData, bs)) {
-                this.precedingSignature = null;
-                return class_7646.NOT_SECURE;
-            }
-            this.precedingSignature = messageSignatureData;
-            return class_7646.SECURE;
+            this.precedingSignature = signature;
+            return Status.SECURE;
         }
 
         @Override
-        public class_7646 storeHeaderVerification(MessageHeader header, MessageSignatureData signature, byte[] bodyDigest) {
-            return this.method_45048(header, signature, bodyDigest);
+        public Status verify(MessageHeader header, MessageSignatureData signature, byte[] bodyDigest) {
+            return this.getStatus(header, signature, bodyDigest, false);
         }
 
         @Override
-        public class_7646 verify(SignedMessage message) {
+        public Status verify(SignedMessage message) {
             byte[] bs = message.signedBody().digest().asBytes();
-            return this.method_45048(message.signedHeader(), message.headerSignature(), bs);
+            return this.getStatus(message.signedHeader(), message.headerSignature(), bs, true);
         }
+    }
+
+    public static class class_7651
+    implements MessageVerifier {
+        private final boolean field_39952;
+
+        public class_7651(boolean bl) {
+            this.field_39952 = bl;
+        }
+
+        private Status method_45102(MessageSignatureData messageSignatureData) {
+            if (!messageSignatureData.isEmpty()) {
+                return Status.BROKEN_CHAIN;
+            }
+            return this.field_39952 ? Status.BROKEN_CHAIN : Status.NOT_SECURE;
+        }
+
+        @Override
+        public Status verify(MessageHeader header, MessageSignatureData signature, byte[] bodyDigest) {
+            return this.method_45102(signature);
+        }
+
+        @Override
+        public Status verify(SignedMessage message) {
+            return this.method_45102(message.headerSignature());
+        }
+    }
+
+    public static enum Status {
+        SECURE,
+        NOT_SECURE,
+        BROKEN_CHAIN;
+
     }
 }
 

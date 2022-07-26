@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 public enum MessageTrustStatus {
     SECURE,
     MODIFIED,
+    FILTERED,
     NOT_SECURE,
     BROKEN_CHAIN;
 
@@ -25,15 +26,18 @@ public enum MessageTrustStatus {
         if (sender == null) {
             return NOT_SECURE;
         }
-        MessageVerifier.class_7646 lv = sender.getMessageVerifier().verify(message);
-        if (lv == MessageVerifier.class_7646.BROKEN_CHAIN) {
+        MessageVerifier.Status status = sender.getMessageVerifier().verify(message);
+        if (status == MessageVerifier.Status.BROKEN_CHAIN) {
             return BROKEN_CHAIN;
         }
-        if (lv == MessageVerifier.class_7646.NOT_SECURE) {
+        if (status == MessageVerifier.Status.NOT_SECURE) {
             return NOT_SECURE;
         }
         if (message.isExpiredOnClient(receptionTimestamp)) {
             return NOT_SECURE;
+        }
+        if (!message.filterMask().method_45087()) {
+            return FILTERED;
         }
         if (message.unsignedContent().isPresent()) {
             return MODIFIED;
@@ -52,6 +56,7 @@ public enum MessageTrustStatus {
     public MessageIndicator createIndicator(SignedMessage message) {
         return switch (this) {
             case MODIFIED -> MessageIndicator.modified(message.getSignedContent().plain());
+            case FILTERED -> MessageIndicator.method_45071();
             case NOT_SECURE -> MessageIndicator.notSecure();
             default -> null;
         };

@@ -11,7 +11,11 @@ import org.jetbrains.annotations.Nullable;
  * An interface wrapping {@link ArgumentSignatureDataMap} with metadata attached.
  */
 public interface SignedCommandArguments {
-    public static final SignedCommandArguments field_39901 = new SignedCommandArguments(){
+    /**
+     * An empty signed command arguments that always returns {@code null} for
+     * {@link #createSignature}.
+     */
+    public static final SignedCommandArguments EMPTY = new SignedCommandArguments(){
 
         @Override
         @Nullable

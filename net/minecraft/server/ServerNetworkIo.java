@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import net.minecraft.class_7648;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.DecoderHandler;
 import net.minecraft.network.LegacyQueryHandler;
@@ -157,7 +158,7 @@ public class ServerNetworkIo {
                         }
                         LOGGER.warn("Failed to handle packet for {}", (Object)clientConnection.getAddress(), (Object)exception);
                         MutableText text = Text.literal("Internal server error");
-                        clientConnection.send(new DisconnectS2CPacket(text), future -> clientConnection.disconnect(text));
+                        clientConnection.send(new DisconnectS2CPacket(text), class_7648.method_45084(() -> clientConnection.disconnect(text)));
                         clientConnection.disableAutoRead();
                     }
                     continue;

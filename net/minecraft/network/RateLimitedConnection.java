@@ -4,6 +4,7 @@
 package net.minecraft.network;
 
 import com.mojang.logging.LogUtils;
+import net.minecraft.class_7648;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkSide;
 import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
@@ -31,7 +32,7 @@ extends ClientConnection {
         float f = this.getAveragePacketsReceived();
         if (f > (float)this.rateLimit) {
             LOGGER.warn("Player exceeded rate-limit (sent {} packets per second)", (Object)Float.valueOf(f));
-            this.send(new DisconnectS2CPacket(RATE_LIMIT_EXCEEDED_MESSAGE), future -> this.disconnect(RATE_LIMIT_EXCEEDED_MESSAGE));
+            this.send(new DisconnectS2CPacket(RATE_LIMIT_EXCEEDED_MESSAGE), class_7648.method_45084(() -> this.disconnect(RATE_LIMIT_EXCEEDED_MESSAGE)));
             this.disableAutoRead();
         }
     }

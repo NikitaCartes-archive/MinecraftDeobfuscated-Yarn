@@ -176,11 +176,11 @@ public class ChatAbuseReport {
     }
 
     private static Int2ObjectMap<ReceivedMessage.ChatMessage> collectEvidences(ChatLog log, int selectedIndex, AbuseReportLimits abuseReportLimits) {
-        int i = abuseReportLimits.leadingContextMessageCount() + 1;
+        int i2 = abuseReportLimits.leadingContextMessageCount() + 1;
         Int2ObjectOpenHashMap<ReceivedMessage.ChatMessage> int2ObjectMap = new Int2ObjectOpenHashMap<ReceivedMessage.ChatMessage>();
-        ChatAbuseReport.collectPrecedingMessages(log, selectedIndex, (j, chatMessage) -> {
-            int2ObjectMap.put(j, chatMessage);
-            return int2ObjectMap.size() < i;
+        ChatAbuseReport.collectPrecedingMessages(log, selectedIndex, (i, chatMessage) -> {
+            int2ObjectMap.put(i, chatMessage);
+            return int2ObjectMap.size() < i2;
         });
         ChatAbuseReport.streamSucceedingMessages(log, selectedIndex, abuseReportLimits.trailingContextMessageCount()).forEach(indexedEntry -> int2ObjectMap.put(indexedEntry.index(), (ReceivedMessage.ChatMessage)indexedEntry.entry()));
         return int2ObjectMap;
@@ -210,9 +210,9 @@ public class ChatAbuseReport {
         }
     }
 
-    private static IntCollection collectIndicesUntilLastSeen(ChatLog log, int selectedIndex, SignedMessage signedMessage) {
-        Set set = signedMessage.signedBody().lastSeenMessages().entries().stream().map(LastSeenMessageList.Entry::lastSignature).collect(Collectors.toCollection(ObjectOpenHashSet::new));
-        MessageSignatureData messageSignatureData = signedMessage.signedHeader().precedingSignature();
+    private static IntCollection collectIndicesUntilLastSeen(ChatLog log, int selectedIndex, SignedMessage message) {
+        Set set = message.signedBody().lastSeenMessages().entries().stream().map(LastSeenMessageList.Entry::lastSignature).collect(Collectors.toCollection(ObjectOpenHashSet::new));
+        MessageSignatureData messageSignatureData = message.signedHeader().precedingSignature();
         if (messageSignatureData != null) {
             set.add(messageSignatureData);
         }

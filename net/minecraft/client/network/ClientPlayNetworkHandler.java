@@ -310,8 +310,8 @@ public class ClientPlayNetworkHandler
 implements ClientPlayPacketListener {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final Text DISCONNECT_LOST_TEXT = Text.translatable("disconnect.lost");
-    private static final Text field_39916 = Text.translatable("multiplayer.unsecureserver.toast.title");
-    private static final Text field_39917 = Text.translatable("multiplayer.unsecureserver.toast");
+    private static final Text UNSECURE_SERVER_TOAST_TITLE = Text.translatable("multiplayer.unsecureserver.toast.title");
+    private static final Text UNSECURE_SERVER_TOAST_TEXT = Text.translatable("multiplayer.unsecureserver.toast");
     private static final int MAX_PENDING_ACKNOWLEDGMENTS = 64;
     private final ClientConnection connection;
     private final GameProfile profile;
@@ -1449,10 +1449,10 @@ implements ClientPlayPacketListener {
             }
         });
         serverInfo.setPreviewsChat(packet.shouldPreviewChat());
-        serverInfo.method_45055(packet.method_45058());
+        serverInfo.setSecureChatEnforced(packet.isSecureChatEnforced());
         ServerList.updateServerListEntry(serverInfo);
-        if (!packet.method_45058()) {
-            SystemToast systemToast = SystemToast.create(this.client, SystemToast.Type.UNSECURE_SERVER_WARNING, field_39916, field_39917);
+        if (!packet.isSecureChatEnforced()) {
+            SystemToast systemToast = SystemToast.create(this.client, SystemToast.Type.UNSECURE_SERVER_WARNING, UNSECURE_SERVER_TOAST_TITLE, UNSECURE_SERVER_TOAST_TEXT);
             this.client.getToastManager().add(systemToast);
         }
         if ((chatPreview = serverInfo.getChatPreview()) != null && !chatPreview.isAcknowledged()) {
@@ -1516,8 +1516,8 @@ implements ClientPlayPacketListener {
                 continue;
             }
             PlayerListEntry playerListEntry = this.playerListEntries.get(entry.getProfile().getId());
-            if (packet.getAction() == PlayerListS2CPacket.Action.ADD_PLAYER) {
-                boolean bl = Util.mapOrElse(this.client.getCurrentServerEntry(), ServerInfo::method_45056, false);
+            if (packet.getAction() == PlayerListS2CPacket.Action.ADD_PLAYER && playerListEntry == null) {
+                boolean bl = Util.mapOrElse(this.client.getCurrentServerEntry(), ServerInfo::isSecureChatEnforced, false);
                 playerListEntry = new PlayerListEntry(entry, this.client.getServicesSignatureVerifier(), bl);
                 this.playerListEntries.put(playerListEntry.getProfile().getId(), playerListEntry);
                 this.client.getSocialInteractionsManager().setPlayerOnline(playerListEntry);

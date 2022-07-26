@@ -21,6 +21,7 @@ import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
+import net.minecraft.class_7648;
 import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
@@ -56,7 +57,6 @@ import net.minecraft.network.message.SentMessage;
 import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.DeathMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
@@ -552,15 +552,13 @@ extends PlayerEntity {
         boolean bl = this.world.getGameRules().getBoolean(GameRules.SHOW_DEATH_MESSAGES);
         if (bl) {
             Text text = this.getDamageTracker().getDeathMessage();
-            this.networkHandler.sendPacket(new DeathMessageS2CPacket(this.getDamageTracker(), text), future -> {
-                if (!future.isSuccess()) {
-                    int i = 256;
-                    String string = text.asTruncatedString(256);
-                    MutableText text2 = Text.translatable("death.attack.message_too_long", Text.literal(string).formatted(Formatting.YELLOW));
-                    MutableText text3 = Text.translatable("death.attack.even_more_magic", this.getDisplayName()).styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text2)));
-                    this.networkHandler.sendPacket(new DeathMessageS2CPacket(this.getDamageTracker(), text3));
-                }
-            });
+            this.networkHandler.sendPacket(new DeathMessageS2CPacket(this.getDamageTracker(), text), class_7648.method_45085(() -> {
+                int i = 256;
+                String string = text.asTruncatedString(256);
+                MutableText text2 = Text.translatable("death.attack.message_too_long", Text.literal(string).formatted(Formatting.YELLOW));
+                MutableText text3 = Text.translatable("death.attack.even_more_magic", this.getDisplayName()).styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text2)));
+                return new DeathMessageS2CPacket(this.getDamageTracker(), text3);
+            }));
             AbstractTeam abstractTeam = this.getScoreboardTeam();
             if (abstractTeam == null || abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.ALWAYS) {
                 this.server.getPlayerManager().broadcast(text, false);
@@ -1213,20 +1211,15 @@ extends PlayerEntity {
         if (!this.acceptsMessage(overlay)) {
             return;
         }
-        this.networkHandler.sendPacket(new GameMessageS2CPacket(message, overlay), future -> {
-            if (!future.isSuccess()) {
-                this.sendMessageDeliverError(message);
+        this.networkHandler.sendPacket(new GameMessageS2CPacket(message, overlay), class_7648.method_45085(() -> {
+            if (this.acceptsMessage(false)) {
+                int i = 256;
+                String string = message.asTruncatedString(256);
+                MutableText text2 = Text.literal(string).formatted(Formatting.YELLOW);
+                return new GameMessageS2CPacket(Text.translatable("multiplayer.message_not_delivered", text2).formatted(Formatting.RED), false);
             }
-        });
-    }
-
-    private void sendMessageDeliverError(Text message) {
-        if (this.acceptsMessage(false)) {
-            int i = 256;
-            String string = message.asTruncatedString(256);
-            MutableText text = Text.literal(string).formatted(Formatting.YELLOW);
-            this.networkHandler.sendPacket(new GameMessageS2CPacket(Text.translatable("multiplayer.message_not_delivered", text).formatted(Formatting.RED), false));
-        }
+            return null;
+        }));
     }
 
     /**
@@ -1241,11 +1234,9 @@ extends PlayerEntity {
      * @see #sendMessage(Text)
      * @see #sendMessage(Text, boolean)
      */
-    public void sendChatMessage(SentMessage message, MessageType.Parameters params) {
+    public void sendChatMessage(SentMessage message, boolean bl, MessageType.Parameters parameters) {
         if (this.acceptsChatMessage()) {
-            ChatMessageS2CPacket chatMessageS2CPacket = message.toPacket(this, params);
-            this.networkHandler.addPendingAcknowledgment(chatMessageS2CPacket.message());
-            this.networkHandler.sendPacket(chatMessageS2CPacket);
+            message.method_45095(this, bl, parameters);
         }
     }
 
@@ -1302,7 +1293,7 @@ extends PlayerEntity {
     }
 
     public void sendServerMetadata(ServerMetadata metadata) {
-        this.networkHandler.sendPacket(new ServerMetadataS2CPacket(metadata.getDescription(), metadata.getFavicon(), metadata.shouldPreviewChat(), metadata.method_45051()));
+        this.networkHandler.sendPacket(new ServerMetadataS2CPacket(metadata.getDescription(), metadata.getFavicon(), metadata.shouldPreviewChat(), metadata.isSecureChatEnforced()));
     }
 
     @Override

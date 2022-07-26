@@ -5,11 +5,12 @@ package net.minecraft.network.message;
 
 import com.google.common.collect.Sets;
 import java.util.Set;
+import net.minecraft.class_7648;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
+import net.minecraft.network.packet.s2c.play.MessageHeaderS2CPacket;
 import net.minecraft.server.PlayerManager;
-import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.registry.DynamicRegistryManager;
@@ -19,12 +20,9 @@ import net.minecraft.util.registry.DynamicRegistryManager;
  * sending messages.
  */
 public interface SentMessage {
-    public Text method_45039();
+    public Text getContent();
 
-    /**
-     * {@return the chat message packet to be sent}
-     */
-    public ChatMessageS2CPacket toPacket(ServerPlayerEntity var1, MessageType.Parameters var2);
+    public void method_45095(ServerPlayerEntity var1, boolean var2, MessageType.Parameters var3);
 
     /**
      * Called after sending the message to applicable clients.
@@ -46,14 +44,6 @@ public interface SentMessage {
         return new Chat(message);
     }
 
-    /**
-     * {@return the wrapped {@code message}}
-     */
-    public static FilteredMessage<SentMessage> of(FilteredMessage<SignedMessage> message) {
-        SentMessage sentMessage = SentMessage.of(message.raw());
-        return message.method_45000(sentMessage, Profileless::new);
-    }
-
     public static class Profileless
     implements SentMessage {
         private final SignedMessage message;
@@ -63,15 +53,19 @@ public interface SentMessage {
         }
 
         @Override
-        public Text method_45039() {
+        public Text getContent() {
             return this.message.getContent();
         }
 
         @Override
-        public ChatMessageS2CPacket toPacket(ServerPlayerEntity player, MessageType.Parameters params) {
-            DynamicRegistryManager dynamicRegistryManager = player.world.getRegistryManager();
-            MessageType.Serialized serialized = params.toSerialized(dynamicRegistryManager);
-            return new ChatMessageS2CPacket(this.message, serialized);
+        public void method_45095(ServerPlayerEntity serverPlayerEntity, boolean bl, MessageType.Parameters parameters) {
+            SignedMessage signedMessage = this.message.method_45099(bl);
+            if (!signedMessage.method_45100()) {
+                DynamicRegistryManager dynamicRegistryManager = serverPlayerEntity.world.getRegistryManager();
+                MessageType.Serialized serialized = parameters.toSerialized(dynamicRegistryManager);
+                serverPlayerEntity.networkHandler.sendPacket(new ChatMessageS2CPacket(signedMessage, serialized));
+                serverPlayerEntity.networkHandler.addPendingAcknowledgment(signedMessage);
+            }
         }
 
         @Override
@@ -89,16 +83,20 @@ public interface SentMessage {
         }
 
         @Override
-        public Text method_45039() {
+        public Text getContent() {
             return this.message.getContent();
         }
 
         @Override
-        public ChatMessageS2CPacket toPacket(ServerPlayerEntity player, MessageType.Parameters params) {
-            this.recipients.add(player);
-            DynamicRegistryManager dynamicRegistryManager = player.world.getRegistryManager();
-            MessageType.Serialized serialized = params.toSerialized(dynamicRegistryManager);
-            return new ChatMessageS2CPacket(this.message, serialized);
+        public void method_45095(ServerPlayerEntity serverPlayerEntity, boolean bl, MessageType.Parameters parameters) {
+            SignedMessage signedMessage = this.message.method_45099(bl);
+            if (!signedMessage.method_45100()) {
+                this.recipients.add(serverPlayerEntity);
+                DynamicRegistryManager dynamicRegistryManager = serverPlayerEntity.world.getRegistryManager();
+                MessageType.Serialized serialized = parameters.toSerialized(dynamicRegistryManager);
+                serverPlayerEntity.networkHandler.sendPacket(new ChatMessageS2CPacket(signedMessage, serialized), class_7648.method_45085(() -> new MessageHeaderS2CPacket(this.message)));
+                serverPlayerEntity.networkHandler.addPendingAcknowledgment(signedMessage);
+            }
         }
 
         @Override

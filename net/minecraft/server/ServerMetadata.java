@@ -33,7 +33,7 @@ public class ServerMetadata {
     @Nullable
     private String favicon;
     private boolean previewsChat;
-    private boolean field_39914;
+    private boolean secureChatEnforced;
 
     @Nullable
     public Text getDescription() {
@@ -79,12 +79,12 @@ public class ServerMetadata {
         return this.previewsChat;
     }
 
-    public void method_45050(boolean bl) {
-        this.field_39914 = bl;
+    public void setSecureChatEnforced(boolean secureChatEnforced) {
+        this.secureChatEnforced = secureChatEnforced;
     }
 
-    public boolean method_45051() {
-        return this.field_39914;
+    public boolean isSecureChatEnforced() {
+        return this.secureChatEnforced;
     }
 
     public static class Players {
@@ -236,7 +236,7 @@ public class ServerMetadata {
                 serverMetadata.setPreviewsChat(JsonHelper.getBoolean(jsonObject, "previewsChat"));
             }
             if (jsonObject.has("enforcesSecureChat")) {
-                serverMetadata.method_45050(JsonHelper.getBoolean(jsonObject, "enforcesSecureChat"));
+                serverMetadata.setSecureChatEnforced(JsonHelper.getBoolean(jsonObject, "enforcesSecureChat"));
             }
             return serverMetadata;
         }
@@ -245,7 +245,7 @@ public class ServerMetadata {
         public JsonElement serialize(ServerMetadata serverMetadata, Type type, JsonSerializationContext jsonSerializationContext) {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("previewsChat", serverMetadata.shouldPreviewChat());
-            jsonObject.addProperty("enforcesSecureChat", serverMetadata.method_45051());
+            jsonObject.addProperty("enforcesSecureChat", serverMetadata.isSecureChatEnforced());
             if (serverMetadata.getDescription() != null) {
                 jsonObject.add("description", jsonSerializationContext.serialize(serverMetadata.getDescription()));
             }

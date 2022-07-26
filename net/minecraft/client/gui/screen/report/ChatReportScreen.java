@@ -129,7 +129,7 @@ extends Screen {
                 }
                 return null;
             }, (Executor)this.client);
-        }).ifRight(validationError -> this.method_45054(validationError.message()));
+        }).ifRight(validationError -> this.showErrorScreen(validationError.message()));
     }
 
     private void onSubmissionFinished() {
@@ -146,12 +146,12 @@ extends Screen {
         } else {
             text = GENERIC_ERROR_TEXT;
         }
-        this.method_45054(text);
+        this.showErrorScreen(text);
     }
 
-    private void method_45054(Text text) {
-        MutableText text2 = text.copy().formatted(Formatting.RED);
-        this.client.setScreen(TaskScreen.createResultScreen(REPORT_ERROR_TITLE, text2, ScreenTexts.BACK, () -> this.client.setScreen(this)));
+    private void showErrorScreen(Text message) {
+        MutableText text = message.copy().formatted(Formatting.RED);
+        this.client.setScreen(TaskScreen.createResultScreen(REPORT_ERROR_TITLE, text, ScreenTexts.BACK, () -> this.client.setScreen(this)));
     }
 
     @Override

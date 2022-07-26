@@ -15,20 +15,20 @@ implements Packet<ClientPlayPacketListener> {
     private final Optional<Text> description;
     private final Optional<String> favicon;
     private final boolean previewsChat;
-    private final boolean field_39920;
+    private final boolean secureChatEnforced;
 
-    public ServerMetadataS2CPacket(@Nullable Text description, @Nullable String favicon, boolean previewsChat, boolean bl) {
+    public ServerMetadataS2CPacket(@Nullable Text description, @Nullable String favicon, boolean previewsChat, boolean secureChatEnforced) {
         this.description = Optional.ofNullable(description);
         this.favicon = Optional.ofNullable(favicon);
         this.previewsChat = previewsChat;
-        this.field_39920 = bl;
+        this.secureChatEnforced = secureChatEnforced;
     }
 
     public ServerMetadataS2CPacket(PacketByteBuf buf) {
         this.description = buf.readOptional(PacketByteBuf::readText);
         this.favicon = buf.readOptional(PacketByteBuf::readString);
         this.previewsChat = buf.readBoolean();
-        this.field_39920 = buf.readBoolean();
+        this.secureChatEnforced = buf.readBoolean();
     }
 
     @Override
@@ -36,7 +36,7 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeOptional(this.description, PacketByteBuf::writeText);
         buf.writeOptional(this.favicon, PacketByteBuf::writeString);
         buf.writeBoolean(this.previewsChat);
-        buf.writeBoolean(this.field_39920);
+        buf.writeBoolean(this.secureChatEnforced);
     }
 
     @Override
@@ -56,8 +56,8 @@ implements Packet<ClientPlayPacketListener> {
         return this.previewsChat;
     }
 
-    public boolean method_45058() {
-        return this.field_39920;
+    public boolean isSecureChatEnforced() {
+        return this.secureChatEnforced;
     }
 }
 

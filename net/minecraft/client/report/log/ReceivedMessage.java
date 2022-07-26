@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.Objects;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -18,6 +19,7 @@ import net.minecraft.client.report.log.HeaderEntry;
 import net.minecraft.network.message.MessageHeader;
 import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.network.message.SignedMessage;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
@@ -81,12 +83,16 @@ extends ChatLogEntry {
 
         @Override
         public Text getContent() {
+            if (!this.message.filterMask().method_45087()) {
+                Text text = this.message.filterMask().method_45092(this.message.getSignedContent());
+                return Objects.requireNonNullElse(text, ScreenTexts.EMPTY);
+            }
             return this.message.getContent();
         }
 
         @Override
         public Text getNarration() {
-            Text text = this.message.getContent();
+            Text text = this.getContent();
             Text text2 = this.getFormattedTimestamp();
             return Text.translatable("gui.chatSelection.message.narrate", this.displayName, text, text2);
         }
@@ -103,7 +109,7 @@ extends ChatLogEntry {
 
         @Override
         public boolean isSentFrom(UUID uuid) {
-            return this.getSenderUuid().equals(uuid);
+            return this.message.canVerifyFrom(uuid);
         }
 
         @Override

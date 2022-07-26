@@ -62,7 +62,8 @@ extends ElementListWidget<SocialInteractionsPlayerListEntry> {
             PlayerListEntry playerListEntry = clientPlayNetworkHandler.getPlayerListEntry(uUID);
             if (playerListEntry == null) continue;
             UUID uUID2 = playerListEntry.getProfile().getId();
-            map.put(uUID2, new SocialInteractionsPlayerListEntry(this.client, this.parent, uUID2, playerListEntry.getProfile().getName(), playerListEntry::getSkinTexture));
+            boolean bl = playerListEntry.getPublicKeyData() != null;
+            map.put(uUID2, new SocialInteractionsPlayerListEntry(this.client, this.parent, uUID2, playerListEntry.getProfile().getName(), playerListEntry::getSkinTexture, bl));
         }
     }
 
@@ -72,7 +73,7 @@ extends ElementListWidget<SocialInteractionsPlayerListEntry> {
             SocialInteractionsPlayerListEntry socialInteractionsPlayerListEntry;
             if (includeOffline) {
                 socialInteractionsPlayerListEntry = entries.computeIfAbsent(gameProfile.getId(), uuid -> {
-                    SocialInteractionsPlayerListEntry socialInteractionsPlayerListEntry = new SocialInteractionsPlayerListEntry(this.client, this.parent, gameProfile.getId(), gameProfile.getName(), Suppliers.memoize(() -> this.client.getSkinProvider().loadSkin(gameProfile)));
+                    SocialInteractionsPlayerListEntry socialInteractionsPlayerListEntry = new SocialInteractionsPlayerListEntry(this.client, this.parent, gameProfile.getId(), gameProfile.getName(), Suppliers.memoize(() -> this.client.getSkinProvider().loadSkin(gameProfile)), true);
                     socialInteractionsPlayerListEntry.setOffline(true);
                     return socialInteractionsPlayerListEntry;
                 });
@@ -137,9 +138,11 @@ extends ElementListWidget<SocialInteractionsPlayerListEntry> {
             return;
         }
         if ((tab == SocialInteractionsScreen.Tab.ALL || this.client.getSocialInteractionsManager().isPlayerMuted(uUID)) && (Strings.isNullOrEmpty(this.currentSearch) || player.getProfile().getName().toLowerCase(Locale.ROOT).contains(this.currentSearch))) {
-            SocialInteractionsPlayerListEntry socialInteractionsPlayerListEntry2 = new SocialInteractionsPlayerListEntry(this.client, this.parent, player.getProfile().getId(), player.getProfile().getName(), player::getSkinTexture);
-            this.addEntry(socialInteractionsPlayerListEntry2);
-            this.players.add(socialInteractionsPlayerListEntry2);
+            SocialInteractionsPlayerListEntry socialInteractionsPlayerListEntry;
+            boolean bl = player.getPublicKeyData() != null;
+            socialInteractionsPlayerListEntry = new SocialInteractionsPlayerListEntry(this.client, this.parent, player.getProfile().getId(), player.getProfile().getName(), player::getSkinTexture, bl);
+            this.addEntry(socialInteractionsPlayerListEntry);
+            this.players.add(socialInteractionsPlayerListEntry);
         }
     }
 

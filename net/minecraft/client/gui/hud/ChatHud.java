@@ -54,7 +54,7 @@ extends DrawableHelper {
         this.client = client;
     }
 
-    public void render(MatrixStack matrices, int tickDelta) {
+    public void render(MatrixStack matrices, int currentTick) {
         int u;
         int t;
         int s;
@@ -83,7 +83,7 @@ extends DrawableHelper {
         int m = 0;
         for (int n = 0; n + this.scrolledLines < this.visibleMessages.size() && n < i; ++n) {
             ChatHudLine.Visible visible = this.visibleMessages.get(n + this.scrolledLines);
-            if (visible == null || (o = tickDelta - visible.addedTime()) >= 200 && !bl) continue;
+            if (visible == null || (o = currentTick - visible.addedTime()) >= 200 && !bl) continue;
             double p = bl ? 1.0 : ChatHud.getMessageOpacityMultiplier(o);
             q = (int)(255.0 * p * d);
             r = (int)(255.0 * p * e);
@@ -180,9 +180,9 @@ extends DrawableHelper {
         this.addMessage(message, signature, this.client.inGameHud.getTicks(), indicator, false);
     }
 
-    private void method_45027(Text text, @Nullable MessageIndicator messageIndicator) {
-        String string = text.getString().replaceAll("\r", "\\\\r").replaceAll("\n", "\\\\n");
-        String string2 = Util.map(messageIndicator, MessageIndicator::loggedName);
+    private void logChatMessage(Text message, @Nullable MessageIndicator indicator) {
+        String string = message.getString().replaceAll("\r", "\\\\r").replaceAll("\n", "\\\\n");
+        String string2 = Util.map(indicator, MessageIndicator::loggedName);
         if (string2 != null) {
             LOGGER.info("[{}] [CHAT] {}", (Object)string2, (Object)string);
         } else {
@@ -191,7 +191,7 @@ extends DrawableHelper {
     }
 
     private void addMessage(Text message, @Nullable MessageSignatureData signature, int ticks, @Nullable MessageIndicator indicator, boolean refresh) {
-        this.method_45027(message, indicator);
+        this.logChatMessage(message, indicator);
         int i = MathHelper.floor((double)this.getWidth() / this.getChatScale());
         if (indicator != null && indicator.icon() != null) {
             i -= indicator.icon().width + 4 + 2;
