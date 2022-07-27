@@ -16,7 +16,7 @@ public class MobSpawnerBlockEntityRenderer implements BlockEntityRenderer<MobSpa
 	private final EntityRenderDispatcher entityRenderDispatcher;
 
 	public MobSpawnerBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
-		this.entityRenderDispatcher = ctx.getEntityRenderDIspatcher();
+		this.entityRenderDispatcher = ctx.getEntityRenderDispatcher();
 	}
 
 	public void render(MobSpawnerBlockEntity mobSpawnerBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {

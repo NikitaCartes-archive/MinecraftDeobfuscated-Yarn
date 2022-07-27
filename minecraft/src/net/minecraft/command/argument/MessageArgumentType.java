@@ -43,7 +43,7 @@ public class MessageArgumentType implements SignedArgumentType<MessageArgumentTy
 		MessageArgumentType.MessageFormat messageFormat = context.getArgument(name, MessageArgumentType.MessageFormat.class);
 		Text text = messageFormat.format(context.getSource());
 		SignedCommandArguments signedCommandArguments = context.getSource().getSignedArguments();
-		net.minecraft.network.message.SignedMessage signedMessage = signedCommandArguments.createSignature(name);
+		net.minecraft.network.message.SignedMessage signedMessage = signedCommandArguments.getMessage(name);
 		if (signedMessage == null) {
 			DecoratedContents decoratedContents = new DecoratedContents(messageFormat.contents, text);
 			return new MessageArgumentType.SignedMessage(net.minecraft.network.message.SignedMessage.ofUnsigned(decoratedContents));
@@ -221,7 +221,7 @@ public class MessageArgumentType implements SignedArgumentType<MessageArgumentTy
 							.thenAcceptAsync(
 								void_ -> {
 									net.minecraft.network.message.SignedMessage signedMessage = ((net.minecraft.network.message.SignedMessage)completableFuture2.join())
-										.method_45097(((FilteredMessage)completableFuture.join()).mask());
+										.withFilterMask(((FilteredMessage)completableFuture.join()).mask());
 									callback.accept(signedMessage);
 								},
 								minecraftServer
@@ -234,7 +234,7 @@ public class MessageArgumentType implements SignedArgumentType<MessageArgumentTy
 			ServerPlayerEntity serverPlayerEntity = source.getPlayer();
 			return serverPlayerEntity != null && this.signedArgument.canVerifyFrom(serverPlayerEntity.getUuid())
 				? serverPlayerEntity.getTextStream().filterText(text)
-				: CompletableFuture.completedFuture(FilteredMessage.method_45060(text));
+				: CompletableFuture.completedFuture(FilteredMessage.permitted(text));
 		}
 
 		/**
@@ -245,9 +245,9 @@ public class MessageArgumentType implements SignedArgumentType<MessageArgumentTy
 		 */
 		public void sendHeader(ServerCommandSource source) {
 			if (!this.signedArgument.createMetadata().lacksSender()) {
-				this.decorate(source, signedMessage -> {
+				this.decorate(source, message -> {
 					PlayerManager playerManager = source.getServer().getPlayerManager();
-					playerManager.sendMessageHeader(signedMessage, Set.of());
+					playerManager.sendMessageHeader(message, Set.of());
 				});
 			}
 		}

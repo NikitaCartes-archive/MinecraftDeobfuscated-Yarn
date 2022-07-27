@@ -470,12 +470,34 @@ public class ServerCommandSource implements CommandSource {
 		return this.messageChainTaskQueue;
 	}
 
-	public boolean method_45067(ServerPlayerEntity serverPlayerEntity) {
-		ServerPlayerEntity serverPlayerEntity2 = this.getPlayer();
-		if (serverPlayerEntity == serverPlayerEntity2) {
+	/**
+	 * {@return whether to filter text sent to {@code recipient}}
+	 * 
+	 * <p>This returns {@code true} if either of the command executor or the recipient
+	 * requires text filtering, unless {@code recipient} executed the command, where
+	 * {@code false} is always returned.
+	 */
+	public boolean shouldFilterText(ServerPlayerEntity recipient) {
+		ServerPlayerEntity serverPlayerEntity = this.getPlayer();
+		if (recipient == serverPlayerEntity) {
 			return false;
 		} else {
-			return serverPlayerEntity2 != null && serverPlayerEntity2.shouldFilterText() || serverPlayerEntity.shouldFilterText();
+			return serverPlayerEntity != null && serverPlayerEntity.shouldFilterText() || recipient.shouldFilterText();
+		}
+	}
+
+	/**
+	 * Sends {@code message} as a chat message to the command's executor, or to the server's log
+	 * if the command is not executed by a player.
+	 */
+	public void sendChatMessage(SentMessage message, boolean filterMaskEnabled, MessageType.Parameters params) {
+		if (!this.silent) {
+			ServerPlayerEntity serverPlayerEntity = this.getPlayer();
+			if (serverPlayerEntity != null) {
+				serverPlayerEntity.sendChatMessage(message, filterMaskEnabled, params);
+			} else {
+				this.output.sendMessage(params.applyChatDecoration(message.getContent()));
+			}
 		}
 	}
 
@@ -483,24 +505,13 @@ public class ServerCommandSource implements CommandSource {
 	 * Sends {@code message} as the feedback to the command's executor, or to the server's log
 	 * if the command is not executed by a player.
 	 */
-	public void sendChatMessage(SentMessage message, boolean bl, MessageType.Parameters parameters) {
+	public void sendMessage(Text message) {
 		if (!this.silent) {
 			ServerPlayerEntity serverPlayerEntity = this.getPlayer();
 			if (serverPlayerEntity != null) {
-				serverPlayerEntity.sendChatMessage(message, bl, parameters);
+				serverPlayerEntity.sendMessage(message);
 			} else {
-				this.output.sendMessage(parameters.applyChatDecoration(message.getContent()));
-			}
-		}
-	}
-
-	public void method_45068(Text text) {
-		if (!this.silent) {
-			ServerPlayerEntity serverPlayerEntity = this.getPlayer();
-			if (serverPlayerEntity != null) {
-				serverPlayerEntity.sendMessage(text);
-			} else {
-				this.output.sendMessage(text);
+				this.output.sendMessage(message);
 			}
 		}
 	}

@@ -50,7 +50,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 			gameOptions.getGuiScale(),
 			gameOptions.getAttackIndicator(),
 			gameOptions.getGamma(),
-			gameOptions.getCloudRenderMod(),
+			gameOptions.getCloudRenderMode(),
 			gameOptions.getFullscreen(),
 			gameOptions.getParticles(),
 			gameOptions.getMipmapLevels(),

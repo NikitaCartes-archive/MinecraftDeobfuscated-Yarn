@@ -16,12 +16,12 @@ public interface TextStream {
 
 		@Override
 		public CompletableFuture<FilteredMessage> filterText(String text) {
-			return CompletableFuture.completedFuture(FilteredMessage.method_45060(text));
+			return CompletableFuture.completedFuture(FilteredMessage.permitted(text));
 		}
 
 		@Override
 		public CompletableFuture<List<FilteredMessage>> filterTexts(List<String> texts) {
-			return CompletableFuture.completedFuture((List)texts.stream().map(FilteredMessage::method_45060).collect(ImmutableList.toImmutableList()));
+			return CompletableFuture.completedFuture((List)texts.stream().map(FilteredMessage::permitted).collect(ImmutableList.toImmutableList()));
 		}
 	};
 

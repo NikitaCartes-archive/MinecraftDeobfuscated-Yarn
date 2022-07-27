@@ -8,7 +8,6 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_7649;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextVisitFactory;
 import net.minecraft.client.gui.hud.MessageIndicator;
@@ -17,6 +16,7 @@ import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.report.log.ChatLog;
 import net.minecraft.client.report.log.HeaderEntry;
 import net.minecraft.client.report.log.ReceivedMessage;
+import net.minecraft.network.message.FilterMask;
 import net.minecraft.network.message.MessageHeader;
 import net.minecraft.network.message.MessageMetadata;
 import net.minecraft.network.message.MessageSignatureData;
@@ -269,15 +269,15 @@ public class MessageHandler {
 			return true;
 		} else if (onlyShowSecureChat && messageTrustStatus.isInsecure()) {
 			return false;
-		} else if (!this.client.shouldBlockMessages(message.createMetadata().sender()) && !message.method_45100()) {
+		} else if (!this.client.shouldBlockMessages(message.createMetadata().sender()) && !message.isFullyFiltered()) {
 			MessageIndicator messageIndicator = messageTrustStatus.createIndicator(message);
 			MessageSignatureData messageSignatureData = message.headerSignature();
-			class_7649 lv = message.filterMask();
-			if (lv.method_45087()) {
+			FilterMask filterMask = message.filterMask();
+			if (filterMask.isPassThrough()) {
 				this.client.inGameHud.getChatHud().addMessage(decorated, messageSignatureData, messageIndicator);
 				this.narrate(params, message.getContent());
 			} else {
-				Text text = lv.method_45092(message.getSignedContent());
+				Text text = filterMask.filter(message.getSignedContent());
 				if (text != null) {
 					this.client.inGameHud.getChatHud().addMessage(params.applyChatDecoration(text), messageSignatureData, messageIndicator);
 					this.narrate(params, text);
@@ -350,8 +350,8 @@ public class MessageHandler {
 	 * 
 	 * @see net.minecraft.client.util.NarratorManager#narrateChatMessage
 	 */
-	private void narrate(MessageType.Parameters params, Text text) {
-		this.client.getNarratorManager().narrateChatMessage(() -> params.applyNarrationDecoration(text));
+	private void narrate(MessageType.Parameters params, Text message) {
+		this.client.getNarratorManager().narrateChatMessage(() -> params.applyNarrationDecoration(message));
 	}
 
 	/**

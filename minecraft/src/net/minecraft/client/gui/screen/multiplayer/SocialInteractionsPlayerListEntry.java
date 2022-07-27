@@ -43,7 +43,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 	private boolean offline;
 	private boolean sentMessage;
 	private final boolean canSendReports;
-	private final boolean field_39937;
+	private final boolean reportable;
 	@Nullable
 	private ButtonWidget hideButton;
 	@Nullable
@@ -60,7 +60,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 	private static final Text HIDDEN_OFFLINE_TEXT = Text.translatable("gui.socialInteractions.status_hidden_offline").formatted(Formatting.ITALIC);
 	private static final Text BLOCKED_OFFLINE_TEXT = Text.translatable("gui.socialInteractions.status_blocked_offline").formatted(Formatting.ITALIC);
 	private static final Text REPORT_DISABLED_TEXT = Text.translatable("gui.socialInteractions.tooltip.report.disabled");
-	private static final Text field_39936 = Text.translatable("gui.socialInteractions.tooltip.report.not_reportable");
+	private static final Text NOT_REPORTABLE_TEXT = Text.translatable("gui.socialInteractions.tooltip.report.not_reportable");
 	private static final Text hideText = Text.translatable("gui.socialInteractions.tooltip.hide");
 	private static final Text showText = Text.translatable("gui.socialInteractions.tooltip.show");
 	private static final Text reportText = Text.translatable("gui.socialInteractions.tooltip.report");
@@ -76,7 +76,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 	public static final int LIGHT_GRAY_COLOR = ColorHelper.Argb.getArgb(140, 255, 255, 255);
 
 	public SocialInteractionsPlayerListEntry(
-		MinecraftClient client, SocialInteractionsScreen parent, UUID uuid, String name, Supplier<Identifier> skinTexture, boolean bl
+		MinecraftClient client, SocialInteractionsScreen parent, UUID uuid, String name, Supplier<Identifier> skinTexture, boolean reportable
 	) {
 		this.client = client;
 		this.uuid = uuid;
@@ -84,16 +84,16 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 		this.skinTexture = skinTexture;
 		AbuseReportContext abuseReportContext = client.getAbuseReportContext();
 		this.canSendReports = abuseReportContext.sender().canSendReports();
-		this.field_39937 = bl;
+		this.reportable = reportable;
 		final Text text = Text.translatable("gui.socialInteractions.narration.hide", name);
 		final Text text2 = Text.translatable("gui.socialInteractions.narration.show", name);
 		this.hideTooltip = client.textRenderer.wrapLines(hideText, 150);
 		this.showTooltip = client.textRenderer.wrapLines(showText, 150);
 		this.reportTooltip = client.textRenderer.wrapLines(this.getReportText(false), 150);
 		SocialInteractionsManager socialInteractionsManager = client.getSocialInteractionsManager();
-		boolean bl2 = client.getChatRestriction().allowsChat(client.isInSingleplayer());
-		boolean bl3 = !client.player.getUuid().equals(uuid);
-		if (bl3 && bl2 && !socialInteractionsManager.isPlayerBlocked(uuid)) {
+		boolean bl = client.getChatRestriction().allowsChat(client.isInSingleplayer());
+		boolean bl2 = !client.player.getUuid().equals(uuid);
+		if (bl2 && bl && !socialInteractionsManager.isPlayerBlocked(uuid)) {
 			this.reportButton = new TexturedButtonWidget(
 				0,
 				0,
@@ -215,8 +215,8 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 	}
 
 	Text getReportText(boolean narrated) {
-		if (!this.field_39937) {
-			return field_39936;
+		if (!this.reportable) {
+			return NOT_REPORTABLE_TEXT;
 		} else if (!this.canSendReports) {
 			return REPORT_DISABLED_TEXT;
 		} else if (!this.sentMessage) {
@@ -295,7 +295,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 	public void setSentMessage(boolean sentMessage) {
 		this.sentMessage = sentMessage;
 		if (this.reportButton != null) {
-			this.reportButton.active = this.canSendReports && this.field_39937 && sentMessage;
+			this.reportButton.active = this.canSendReports && this.reportable && sentMessage;
 		}
 
 		this.reportTooltip = this.client.textRenderer.wrapLines(this.getReportText(false), 150);

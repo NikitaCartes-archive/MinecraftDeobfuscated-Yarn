@@ -323,7 +323,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	 * net.minecraft.client.gui.screen the chat screen} that has a preview.
 	 */
 	public void sendChatMessage(String message, @Nullable Text preview) {
-		this.sendChatMessagePacket(message, preview);
+		this.sendChatMessageInternal(message, preview);
 	}
 
 	/**
@@ -366,8 +366,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		this.sendCommandInternal(command, preview);
 	}
 
-	private void sendChatMessagePacket(String string, @Nullable Text text) {
-		DecoratedContents decoratedContents = this.method_45081(string, text);
+	private void sendChatMessageInternal(String message, @Nullable Text preview) {
+		DecoratedContents decoratedContents = this.toDecoratedContents(message, preview);
 		MessageMetadata messageMetadata = this.createMessageMetadata();
 		LastSeenMessageList.Acknowledgment acknowledgment = this.networkHandler.consumeAcknowledgment();
 		MessageSignatureData messageSignatureData = this.signChatMessage(messageMetadata, decoratedContents, acknowledgment.lastSeen());
@@ -425,7 +425,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		} else {
 			try {
 				return ArgumentSignatureDataMap.sign(DecoratableArgumentList.of(parseResults), (argumentName, value) -> {
-					DecoratedContents decoratedContents = this.method_45081(value, preview);
+					DecoratedContents decoratedContents = this.toDecoratedContents(value, preview);
 					return this.networkHandler.getMessagePacker().pack(signer2, signer, decoratedContents, lastSeenMessages).signature();
 				});
 			} catch (Exception var7) {
@@ -435,9 +435,9 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 	}
 
-	private DecoratedContents method_45081(String string, @Nullable Text text) {
-		String string2 = StringHelper.truncateChat(string);
-		return text != null ? new DecoratedContents(string2, text) : new DecoratedContents(string2);
+	private DecoratedContents toDecoratedContents(String message, @Nullable Text preview) {
+		String string = StringHelper.truncateChat(message);
+		return preview != null ? new DecoratedContents(string, preview) : new DecoratedContents(string);
 	}
 
 	private MessageMetadata createMessageMetadata() {

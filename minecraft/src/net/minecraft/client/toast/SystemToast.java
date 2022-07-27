@@ -15,8 +15,8 @@ import net.minecraft.text.Text;
 @Environment(EnvType.CLIENT)
 public class SystemToast implements Toast {
 	private static final int MIN_WIDTH = 200;
-	private static final int field_39926 = 12;
-	private static final int field_39927 = 10;
+	private static final int LINE_HEIGHT = 12;
+	private static final int PADDING_Y = 10;
 	private final SystemToast.Type type;
 	private Text title;
 	private List<OrderedText> lines;

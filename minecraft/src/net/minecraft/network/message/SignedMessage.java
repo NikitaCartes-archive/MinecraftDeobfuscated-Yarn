@@ -5,7 +5,6 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nullable;
-import net.minecraft.class_7649;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.encryption.SignatureVerifier;
@@ -19,26 +18,29 @@ import net.minecraft.text.Text;
  * <p>Note that the signature itself might not be valid.
  */
 public record SignedMessage(
-	MessageHeader signedHeader, MessageSignatureData headerSignature, MessageBody signedBody, Optional<Text> unsignedContent, class_7649 filterMask
+	MessageHeader signedHeader, MessageSignatureData headerSignature, MessageBody signedBody, Optional<Text> unsignedContent, FilterMask filterMask
 ) {
 	public static final Duration SERVERBOUND_TIME_TO_LIVE = Duration.ofMinutes(5L);
 	public static final Duration CLIENTBOUND_TIME_TO_LIVE = SERVERBOUND_TIME_TO_LIVE.plus(Duration.ofMinutes(2L));
 
 	public SignedMessage(PacketByteBuf buf) {
-		this(new MessageHeader(buf), new MessageSignatureData(buf), new MessageBody(buf), buf.readOptional(PacketByteBuf::readText), class_7649.method_45090(buf));
+		this(new MessageHeader(buf), new MessageSignatureData(buf), new MessageBody(buf), buf.readOptional(PacketByteBuf::readText), FilterMask.readMask(buf));
 	}
 
 	/**
 	 * {@return a new signed message with empty signature}
 	 */
 	public static SignedMessage ofUnsigned(DecoratedContents content) {
-		return method_45098(MessageMetadata.of(), content);
+		return ofUnsigned(MessageMetadata.of(), content);
 	}
 
-	public static SignedMessage method_45098(MessageMetadata messageMetadata, DecoratedContents decoratedContents) {
-		MessageBody messageBody = new MessageBody(decoratedContents, messageMetadata.timestamp(), messageMetadata.salt(), LastSeenMessageList.EMPTY);
-		MessageHeader messageHeader = new MessageHeader(null, messageMetadata.sender());
-		return new SignedMessage(messageHeader, MessageSignatureData.EMPTY, messageBody, Optional.empty(), class_7649.field_39942);
+	/**
+	 * {@return a new signed message with given metadata and empty signature}
+	 */
+	public static SignedMessage ofUnsigned(MessageMetadata metadata, DecoratedContents content) {
+		MessageBody messageBody = new MessageBody(content, metadata.timestamp(), metadata.salt(), LastSeenMessageList.EMPTY);
+		MessageHeader messageHeader = new MessageHeader(null, metadata.sender());
+		return new SignedMessage(messageHeader, MessageSignatureData.EMPTY, messageBody, Optional.empty(), FilterMask.PASS_THROUGH);
 	}
 
 	public void write(PacketByteBuf buf) {
@@ -46,7 +48,7 @@ public record SignedMessage(
 		this.headerSignature.write(buf);
 		this.signedBody.write(buf);
 		buf.writeOptional(this.unsignedContent, PacketByteBuf::writeText);
-		class_7649.method_45091(buf, this.filterMask);
+		FilterMask.writeMask(buf, this.filterMask);
 	}
 
 	public SignedMessage withUnsignedContent(Text unsignedContent) {
@@ -65,12 +67,21 @@ public record SignedMessage(
 			: this;
 	}
 
-	public SignedMessage method_45097(class_7649 arg) {
-		return this.filterMask.equals(arg) ? this : new SignedMessage(this.signedHeader, this.headerSignature, this.signedBody, this.unsignedContent, arg);
+	/**
+	 * {@return the signed chat message with {@code filterMask} added}
+	 */
+	public SignedMessage withFilterMask(FilterMask filterMask) {
+		return this.filterMask.equals(filterMask)
+			? this
+			: new SignedMessage(this.signedHeader, this.headerSignature, this.signedBody, this.unsignedContent, filterMask);
 	}
 
-	public SignedMessage method_45099(boolean bl) {
-		return this.method_45097(bl ? this.filterMask : class_7649.field_39942);
+	/**
+	 * {@return this signed chat message if {@code enabled} is {@code true},
+	 * otherwise a new signed chat message without filtered parts}
+	 */
+	public SignedMessage withFilterMaskEnabled(boolean enabled) {
+		return this.withFilterMask(enabled ? this.filterMask : FilterMask.PASS_THROUGH);
 	}
 
 	public boolean verify(SignatureVerifier verifier) {
@@ -142,11 +153,11 @@ public record SignedMessage(
 	 * Rather, this returns whether it's possible to verify that {@code sender} sent this
 	 * message.
 	 */
-	public boolean canVerifyFrom(UUID uUID) {
-		return !this.headerSignature.isEmpty() && this.signedHeader.sender().equals(uUID);
+	public boolean canVerifyFrom(UUID sender) {
+		return !this.headerSignature.isEmpty() && this.signedHeader.sender().equals(sender);
 	}
 
-	public boolean method_45100() {
-		return this.filterMask.method_45093();
+	public boolean isFullyFiltered() {
+		return this.filterMask.isFullyFiltered();
 	}
 }

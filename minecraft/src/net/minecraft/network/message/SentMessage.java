@@ -2,7 +2,7 @@ package net.minecraft.network.message;
 
 import com.google.common.collect.Sets;
 import java.util.Set;
-import net.minecraft.class_7648;
+import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.MessageHeaderS2CPacket;
 import net.minecraft.server.PlayerManager;
@@ -17,7 +17,7 @@ import net.minecraft.util.registry.DynamicRegistryManager;
 public interface SentMessage {
 	Text getContent();
 
-	void method_45095(ServerPlayerEntity serverPlayerEntity, boolean bl, MessageType.Parameters parameters);
+	void send(ServerPlayerEntity sender, boolean filterMaskEnabled, MessageType.Parameters params);
 
 	/**
 	 * Called after sending the message to applicable clients.
@@ -56,15 +56,14 @@ public interface SentMessage {
 		}
 
 		@Override
-		public void method_45095(ServerPlayerEntity serverPlayerEntity, boolean bl, MessageType.Parameters parameters) {
-			SignedMessage signedMessage = this.message.method_45099(bl);
-			if (!signedMessage.method_45100()) {
-				this.recipients.add(serverPlayerEntity);
-				DynamicRegistryManager dynamicRegistryManager = serverPlayerEntity.world.getRegistryManager();
-				MessageType.Serialized serialized = parameters.toSerialized(dynamicRegistryManager);
-				serverPlayerEntity.networkHandler
-					.sendPacket(new ChatMessageS2CPacket(signedMessage, serialized), class_7648.method_45085(() -> new MessageHeaderS2CPacket(this.message)));
-				serverPlayerEntity.networkHandler.addPendingAcknowledgment(signedMessage);
+		public void send(ServerPlayerEntity sender, boolean filterMaskEnabled, MessageType.Parameters params) {
+			SignedMessage signedMessage = this.message.withFilterMaskEnabled(filterMaskEnabled);
+			if (!signedMessage.isFullyFiltered()) {
+				this.recipients.add(sender);
+				DynamicRegistryManager dynamicRegistryManager = sender.world.getRegistryManager();
+				MessageType.Serialized serialized = params.toSerialized(dynamicRegistryManager);
+				sender.networkHandler.sendPacket(new ChatMessageS2CPacket(signedMessage, serialized), PacketCallbacks.of(() -> new MessageHeaderS2CPacket(this.message)));
+				sender.networkHandler.addPendingAcknowledgment(signedMessage);
 			}
 		}
 
@@ -90,13 +89,13 @@ public interface SentMessage {
 		}
 
 		@Override
-		public void method_45095(ServerPlayerEntity serverPlayerEntity, boolean bl, MessageType.Parameters parameters) {
-			SignedMessage signedMessage = this.message.method_45099(bl);
-			if (!signedMessage.method_45100()) {
-				DynamicRegistryManager dynamicRegistryManager = serverPlayerEntity.world.getRegistryManager();
-				MessageType.Serialized serialized = parameters.toSerialized(dynamicRegistryManager);
-				serverPlayerEntity.networkHandler.sendPacket(new ChatMessageS2CPacket(signedMessage, serialized));
-				serverPlayerEntity.networkHandler.addPendingAcknowledgment(signedMessage);
+		public void send(ServerPlayerEntity sender, boolean filterMaskEnabled, MessageType.Parameters params) {
+			SignedMessage signedMessage = this.message.withFilterMaskEnabled(filterMaskEnabled);
+			if (!signedMessage.isFullyFiltered()) {
+				DynamicRegistryManager dynamicRegistryManager = sender.world.getRegistryManager();
+				MessageType.Serialized serialized = params.toSerialized(dynamicRegistryManager);
+				sender.networkHandler.sendPacket(new ChatMessageS2CPacket(signedMessage, serialized));
+				sender.networkHandler.addPendingAcknowledgment(signedMessage);
 			}
 		}
 
