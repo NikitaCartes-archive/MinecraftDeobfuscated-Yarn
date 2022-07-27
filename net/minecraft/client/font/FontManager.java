@@ -152,8 +152,8 @@ implements AutoCloseable {
         return new TextRenderer(id -> this.fontStorages.getOrDefault(this.idOverrides.getOrDefault(id, (Identifier)id), this.missingStorage), false);
     }
 
-    public TextRenderer method_45078() {
-        return new TextRenderer(identifier -> this.fontStorages.getOrDefault(this.idOverrides.getOrDefault(identifier, (Identifier)identifier), this.missingStorage), true);
+    public TextRenderer createAdvanceValidatingTextRenderer() {
+        return new TextRenderer(id -> this.fontStorages.getOrDefault(this.idOverrides.getOrDefault(id, (Identifier)id), this.missingStorage), true);
     }
 
     public ResourceReloader getResourceReloadListener() {

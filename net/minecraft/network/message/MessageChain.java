@@ -4,9 +4,9 @@
 package net.minecraft.network.message;
 
 import java.util.Optional;
-import net.minecraft.class_7649;
 import net.minecraft.network.encryption.Signer;
 import net.minecraft.network.message.DecoratedContents;
+import net.minecraft.network.message.FilterMask;
 import net.minecraft.network.message.LastSeenMessageList;
 import net.minecraft.network.message.MessageBody;
 import net.minecraft.network.message.MessageHeader;
@@ -54,7 +54,7 @@ public class MessageChain {
     private static SignedMessage createMessage(Signature signature, @Nullable MessageSignatureData precedingSignature, MessageMetadata metadata, DecoratedContents contents, LastSeenMessageList lastSeenMessage) {
         MessageHeader messageHeader = new MessageHeader(precedingSignature, metadata.sender());
         MessageBody messageBody = new MessageBody(contents, metadata.timestamp(), metadata.salt(), lastSeenMessage);
-        return new SignedMessage(messageHeader, signature.signature, messageBody, Optional.empty(), class_7649.field_39942);
+        return new SignedMessage(messageHeader, signature.signature, messageBody, Optional.empty(), FilterMask.PASS_THROUGH);
     }
 
     public Unpacker getUnpacker() {
@@ -70,7 +70,7 @@ public class MessageChain {
 
     @FunctionalInterface
     public static interface Unpacker {
-        public static final Unpacker field_39951 = (signature, messageMetadata, decoratedContents, lastSeenMessageList) -> SignedMessage.method_45098(messageMetadata, decoratedContents);
+        public static final Unpacker UNSIGNED = (signature, metadata, content, lastSeenMessages) -> SignedMessage.ofUnsigned(metadata, content);
 
         public SignedMessage unpack(Signature var1, MessageMetadata var2, DecoratedContents var3, LastSeenMessageList var4);
     }

@@ -42,8 +42,8 @@ implements Comparable<StatusEffectInstance> {
     private StatusEffectInstance hiddenEffect;
     private Optional<FactorCalculationData> factorCalculationData;
 
-    public StatusEffectInstance(StatusEffect statusEffect) {
-        this(statusEffect, 0, 0);
+    public StatusEffectInstance(StatusEffect type) {
+        this(type, 0, 0);
     }
 
     public StatusEffectInstance(StatusEffect type, int duration) {
@@ -73,10 +73,10 @@ implements Comparable<StatusEffectInstance> {
         this.factorCalculationData = factorCalculationData;
     }
 
-    public StatusEffectInstance(StatusEffectInstance statusEffectInstance) {
-        this.type = statusEffectInstance.type;
+    public StatusEffectInstance(StatusEffectInstance instance) {
+        this.type = instance.type;
         this.factorCalculationData = this.type.getFactorCalculationDataSupplier();
-        this.copyFrom(statusEffectInstance);
+        this.copyFrom(instance);
     }
 
     public Optional<FactorCalculationData> getFactorCalculationData() {
@@ -295,23 +295,23 @@ implements Comparable<StatusEffectInstance> {
     }
 
     public static class FactorCalculationData {
-        public static final Codec<FactorCalculationData> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codecs.NONNEGATIVE_INT.fieldOf("padding_duration")).forGetter(data -> data.paddingDuration), ((MapCodec)Codec.FLOAT.fieldOf("factor_start")).orElse(Float.valueOf(0.0f)).forGetter(factorCalculationData -> Float.valueOf(factorCalculationData.field_39111)), ((MapCodec)Codec.FLOAT.fieldOf("factor_target")).orElse(Float.valueOf(1.0f)).forGetter(data -> Float.valueOf(data.factorTarget)), ((MapCodec)Codec.FLOAT.fieldOf("factor_current")).orElse(Float.valueOf(0.0f)).forGetter(data -> Float.valueOf(data.factorCurrent)), ((MapCodec)Codecs.NONNEGATIVE_INT.fieldOf("effect_changed_timestamp")).orElse(0).forGetter(data -> data.effectChangedTimestamp), ((MapCodec)Codec.FLOAT.fieldOf("factor_previous_frame")).orElse(Float.valueOf(0.0f)).forGetter(data -> Float.valueOf(data.factorPreviousFrame)), ((MapCodec)Codec.BOOL.fieldOf("had_effect_last_tick")).orElse(false).forGetter(data -> data.hadEffectLastTick)).apply((Applicative<FactorCalculationData, ?>)instance, FactorCalculationData::new));
+        public static final Codec<FactorCalculationData> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codecs.NONNEGATIVE_INT.fieldOf("padding_duration")).forGetter(data -> data.paddingDuration), ((MapCodec)Codec.FLOAT.fieldOf("factor_start")).orElse(Float.valueOf(0.0f)).forGetter(data -> Float.valueOf(data.factorStart)), ((MapCodec)Codec.FLOAT.fieldOf("factor_target")).orElse(Float.valueOf(1.0f)).forGetter(data -> Float.valueOf(data.factorTarget)), ((MapCodec)Codec.FLOAT.fieldOf("factor_current")).orElse(Float.valueOf(0.0f)).forGetter(data -> Float.valueOf(data.factorCurrent)), ((MapCodec)Codecs.NONNEGATIVE_INT.fieldOf("effect_changed_timestamp")).orElse(0).forGetter(data -> data.effectChangedTimestamp), ((MapCodec)Codec.FLOAT.fieldOf("factor_previous_frame")).orElse(Float.valueOf(0.0f)).forGetter(data -> Float.valueOf(data.factorPreviousFrame)), ((MapCodec)Codec.BOOL.fieldOf("had_effect_last_tick")).orElse(false).forGetter(data -> data.hadEffectLastTick)).apply((Applicative<FactorCalculationData, ?>)instance, FactorCalculationData::new));
         private final int paddingDuration;
-        private float field_39111;
+        private float factorStart;
         private float factorTarget;
         private float factorCurrent;
         int effectChangedTimestamp;
         private float factorPreviousFrame;
         private boolean hadEffectLastTick;
 
-        public FactorCalculationData(int paddingDuration, float factorTarget, float f, float g, int i, float h, boolean bl) {
+        public FactorCalculationData(int paddingDuration, float factorStart, float factorTarget, float factorCurrent, int effectChangedTimestamp, float factorPreviousFrame, boolean hadEffectLastTick) {
             this.paddingDuration = paddingDuration;
-            this.field_39111 = factorTarget;
-            this.factorTarget = f;
-            this.factorCurrent = g;
-            this.effectChangedTimestamp = i;
-            this.factorPreviousFrame = h;
-            this.hadEffectLastTick = bl;
+            this.factorStart = factorStart;
+            this.factorTarget = factorTarget;
+            this.factorCurrent = factorCurrent;
+            this.effectChangedTimestamp = effectChangedTimestamp;
+            this.factorPreviousFrame = factorPreviousFrame;
+            this.hadEffectLastTick = hadEffectLastTick;
         }
 
         public FactorCalculationData(int paddingDuration) {
@@ -325,18 +325,18 @@ implements Comparable<StatusEffectInstance> {
             if (this.hadEffectLastTick != bl) {
                 this.hadEffectLastTick = bl;
                 this.effectChangedTimestamp = instance.duration;
-                this.field_39111 = this.factorCurrent;
+                this.factorStart = this.factorCurrent;
                 this.factorTarget = bl ? 1.0f : 0.0f;
             }
             float f = MathHelper.clamp(((float)this.effectChangedTimestamp - (float)instance.duration) / (float)this.paddingDuration, 0.0f, 1.0f);
-            this.factorCurrent = MathHelper.lerp(f, this.field_39111, this.factorTarget);
+            this.factorCurrent = MathHelper.lerp(f, this.factorStart, this.factorTarget);
         }
 
-        public float lerp(LivingEntity livingEntity, float f) {
-            if (livingEntity.isRemoved()) {
+        public float lerp(LivingEntity entity, float tickDelta) {
+            if (entity.isRemoved()) {
                 this.factorPreviousFrame = this.factorCurrent;
             }
-            return MathHelper.lerp(f, this.factorPreviousFrame, this.factorCurrent);
+            return MathHelper.lerp(tickDelta, this.factorPreviousFrame, this.factorCurrent);
         }
     }
 }

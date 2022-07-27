@@ -107,7 +107,7 @@ extends EndPortalBlockEntity {
     }
 
     public static boolean canTeleport(Entity entity) {
-        return EntityPredicates.EXCEPT_SPECTATOR.test(entity) && !entity.getRootVehicle().hasPortalCooldown();
+        return EntityPredicates.EXCEPT_SPECTATOR.test(entity) && !entity.getRootVehicle().hasPortalCooldownn();
     }
 
     public boolean isRecentlyGenerated() {

@@ -30,7 +30,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_7649;
+import net.minecraft.network.message.FilterMask;
 import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.filter.TextStream;
 import net.minecraft.util.JsonHelper;
@@ -168,34 +168,34 @@ implements AutoCloseable {
                 JsonObject jsonObject2 = this.sendJsonRequest(jsonObject, this.chatEndpoint);
                 boolean bl = JsonHelper.getBoolean(jsonObject2, "response", false);
                 if (bl) {
-                    return FilteredMessage.method_45060(message);
+                    return FilteredMessage.permitted(message);
                 }
                 String string2 = JsonHelper.getString(jsonObject2, "hashed", null);
                 if (string2 == null) {
-                    return FilteredMessage.method_45062(message);
+                    return FilteredMessage.censored(message);
                 }
                 JsonArray jsonArray = JsonHelper.getArray(jsonObject2, "hashes");
-                class_7649 lv = this.method_45066(message, jsonArray, ignorer);
-                return new FilteredMessage(message, lv);
+                FilterMask filterMask = this.getMask(message, jsonArray, ignorer);
+                return new FilteredMessage(message, filterMask);
             } catch (Exception exception) {
                 LOGGER.warn("Failed to validate message '{}'", (Object)message, (Object)exception);
-                return FilteredMessage.method_45062(message);
+                return FilteredMessage.censored(message);
             }
         }, executor);
     }
 
-    private class_7649 method_45066(String string, JsonArray jsonArray, HashIgnorer hashIgnorer) {
-        if (jsonArray.isEmpty()) {
-            return class_7649.field_39942;
+    private FilterMask getMask(String message, JsonArray mask, HashIgnorer ignorer) {
+        if (mask.isEmpty()) {
+            return FilterMask.PASS_THROUGH;
         }
-        if (hashIgnorer.shouldIgnore(string, jsonArray.size())) {
-            return class_7649.field_39941;
+        if (ignorer.shouldIgnore(message, mask.size())) {
+            return FilterMask.FULLY_FILTERED;
         }
-        class_7649 lv = new class_7649(string.length());
-        for (int i = 0; i < jsonArray.size(); ++i) {
-            lv.method_45088(jsonArray.get(i).getAsInt());
+        FilterMask filterMask = new FilterMask(message.length());
+        for (int i = 0; i < mask.size(); ++i) {
+            filterMask.markFiltered(mask.get(i).getAsInt());
         }
-        return lv;
+        return filterMask;
     }
 
     @Override

@@ -341,7 +341,7 @@ implements WindowEventHandler {
     private final SearchManager searchManager = new SearchManager();
     private final Session session;
     public final TextRenderer textRenderer;
-    public final TextRenderer field_39924;
+    public final TextRenderer advanceValidatingTextRenderer;
     public final GameRenderer gameRenderer;
     public final DebugRenderer debugRenderer;
     private final AtomicReference<WorldGenerationProgressTracker> worldGenProgressTracker = new AtomicReference();
@@ -567,7 +567,7 @@ implements WindowEventHandler {
         this.musicTracker = new MusicTracker(this);
         this.fontManager = new FontManager(this.textureManager);
         this.textRenderer = this.fontManager.createTextRenderer();
-        this.field_39924 = this.fontManager.method_45078();
+        this.advanceValidatingTextRenderer = this.fontManager.createAdvanceValidatingTextRenderer();
         this.resourceManager.registerReloader(this.fontManager.getResourceReloadListener());
         this.initFont(this.forcesUnicodeFont());
         this.resourceManager.registerReloader(new GrassColormapResourceSupplier());
@@ -1144,7 +1144,7 @@ implements WindowEventHandler {
         while (Util.getMeasuringTimeMs() >= this.nextDebugInfoUpdateTime + 1000L) {
             Object string = this.gpuUtilizationPercentage > 0.0 ? " GPU: " + (this.gpuUtilizationPercentage > 100.0 ? Formatting.RED + "100%" : Math.round(this.gpuUtilizationPercentage) + "%") : "";
             currentFps = this.fpsCounter;
-            this.fpsDebugString = String.format(Locale.ROOT, "%d fps T: %s%s%s%s B: %d%s", currentFps, k == 260 ? "inf" : Integer.valueOf(k), this.options.getEnableVsync().getValue() != false ? " vsync" : "", this.options.getGraphicsMode().getValue(), this.options.getCloudRenderMod().getValue() == CloudRenderMode.OFF ? "" : (this.options.getCloudRenderMod().getValue() == CloudRenderMode.FAST ? " fast-clouds" : " fancy-clouds"), this.options.getBiomeBlendRadius().getValue(), string);
+            this.fpsDebugString = String.format(Locale.ROOT, "%d fps T: %s%s%s%s B: %d%s", currentFps, k == 260 ? "inf" : Integer.valueOf(k), this.options.getEnableVsync().getValue() != false ? " vsync" : "", this.options.getGraphicsMode().getValue(), this.options.getCloudRenderMode().getValue() == CloudRenderMode.OFF ? "" : (this.options.getCloudRenderMode().getValue() == CloudRenderMode.FAST ? " fast-clouds" : " fancy-clouds"), this.options.getBiomeBlendRadius().getValue(), string);
             this.nextDebugInfoUpdateTime += 1000L;
             this.fpsCounter = 0;
         }

@@ -18,7 +18,7 @@ import net.minecraft.util.math.MathHelper;
 public interface Toast {
     public static final Identifier TEXTURE = new Identifier("textures/gui/toasts.png");
     public static final Object TYPE = new Object();
-    public static final int field_39928 = 32;
+    public static final int BASE_HEIGHT = 32;
 
     public Visibility draw(MatrixStack var1, ToastManager var2, long var3);
 
@@ -34,7 +34,7 @@ public interface Toast {
         return 32;
     }
 
-    default public int method_45072() {
+    default public int getRequiredSpaceCount() {
         return MathHelper.ceilDiv(this.getHeight(), 32);
     }
 

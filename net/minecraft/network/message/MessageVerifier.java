@@ -17,11 +17,11 @@ import org.jetbrains.annotations.Nullable;
  * as it affects the verification result.
  */
 public interface MessageVerifier {
-    public static MessageVerifier create(@Nullable PlayerPublicKey publicKey, boolean bl) {
+    public static MessageVerifier create(@Nullable PlayerPublicKey publicKey, boolean secureChatEnforced) {
         if (publicKey != null) {
             return new Impl(publicKey.createSignatureInstance());
         }
-        return new class_7651(bl);
+        return new Unsigned(secureChatEnforced);
     }
 
     /**
@@ -48,22 +48,22 @@ public interface MessageVerifier {
             this.signatureVerifier = signatureVerifier;
         }
 
-        private boolean verifyPrecedingSignature(MessageHeader header, MessageSignatureData messageSignatureData, boolean bl) {
-            if (messageSignatureData.isEmpty()) {
+        private boolean verifyPrecedingSignature(MessageHeader header, MessageSignatureData signature, boolean fullMessage) {
+            if (signature.isEmpty()) {
                 return false;
             }
-            if (bl && messageSignatureData.equals(this.precedingSignature)) {
+            if (fullMessage && signature.equals(this.precedingSignature)) {
                 return true;
             }
             return this.precedingSignature == null || this.precedingSignature.equals(header.precedingSignature());
         }
 
-        private boolean verifyInternal(MessageHeader header, MessageSignatureData messageSignatureData, byte[] bodyDigest, boolean bl) {
-            return this.verifyPrecedingSignature(header, messageSignatureData, bl) && messageSignatureData.verify(this.signatureVerifier, header, bodyDigest);
+        private boolean verifyInternal(MessageHeader header, MessageSignatureData signature, byte[] bodyDigest, boolean fullMessage) {
+            return this.verifyPrecedingSignature(header, signature, fullMessage) && signature.verify(this.signatureVerifier, header, bodyDigest);
         }
 
-        private Status getStatus(MessageHeader header, MessageSignatureData signature, byte[] bodyDigest, boolean bl) {
-            boolean bl2 = this.lastMessageVerified = this.lastMessageVerified && this.verifyInternal(header, signature, bodyDigest, bl);
+        private Status getStatus(MessageHeader header, MessageSignatureData signature, byte[] bodyDigest, boolean fullMessage) {
+            boolean bl = this.lastMessageVerified = this.lastMessageVerified && this.verifyInternal(header, signature, bodyDigest, fullMessage);
             if (!this.lastMessageVerified) {
                 return Status.BROKEN_CHAIN;
             }
@@ -83,29 +83,29 @@ public interface MessageVerifier {
         }
     }
 
-    public static class class_7651
+    public static class Unsigned
     implements MessageVerifier {
-        private final boolean field_39952;
+        private final boolean secureChatEnforced;
 
-        public class_7651(boolean bl) {
-            this.field_39952 = bl;
+        public Unsigned(boolean secureChatEnforced) {
+            this.secureChatEnforced = secureChatEnforced;
         }
 
-        private Status method_45102(MessageSignatureData messageSignatureData) {
-            if (!messageSignatureData.isEmpty()) {
+        private Status getStatus(MessageSignatureData signature) {
+            if (!signature.isEmpty()) {
                 return Status.BROKEN_CHAIN;
             }
-            return this.field_39952 ? Status.BROKEN_CHAIN : Status.NOT_SECURE;
+            return this.secureChatEnforced ? Status.BROKEN_CHAIN : Status.NOT_SECURE;
         }
 
         @Override
         public Status verify(MessageHeader header, MessageSignatureData signature, byte[] bodyDigest) {
-            return this.method_45102(signature);
+            return this.getStatus(signature);
         }
 
         @Override
         public Status verify(SignedMessage message) {
-            return this.method_45102(message.headerSignature());
+            return this.getStatus(message.headerSignature());
         }
     }
 

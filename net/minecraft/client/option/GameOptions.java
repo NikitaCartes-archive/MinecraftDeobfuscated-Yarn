@@ -568,7 +568,7 @@ public class GameOptions {
         return this.maxFps;
     }
 
-    public SimpleOption<CloudRenderMode> getCloudRenderMod() {
+    public SimpleOption<CloudRenderMode> getCloudRenderMode() {
         return this.cloudRenderMode;
     }
 
@@ -1142,7 +1142,7 @@ public class GameOptions {
         this.sendClientSettings();
     }
 
-    public CloudRenderMode getCloudRenderMode() {
+    public CloudRenderMode getCloudRenderModeValue() {
         if (this.getClampedViewDistance() >= 4) {
             return this.cloudRenderMode.getValue();
         }

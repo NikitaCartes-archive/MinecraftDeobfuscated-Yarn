@@ -47,7 +47,7 @@ public interface BlockEntityRendererFactory<T extends BlockEntity> {
             return this.renderManager;
         }
 
-        public EntityRenderDispatcher getEntityRenderDIspatcher() {
+        public EntityRenderDispatcher getEntityRenderDispatcher() {
             return this.entityRenderDispatcher;
         }
 

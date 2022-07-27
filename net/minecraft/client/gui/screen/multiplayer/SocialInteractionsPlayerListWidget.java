@@ -56,14 +56,14 @@ extends ElementListWidget<SocialInteractionsPlayerListEntry> {
         this.refresh(map.values(), scrollAmount);
     }
 
-    private void setPlayers(Collection<UUID> playerUuids, Map<UUID, SocialInteractionsPlayerListEntry> map) {
+    private void setPlayers(Collection<UUID> playerUuids, Map<UUID, SocialInteractionsPlayerListEntry> entriesByUuids) {
         ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.player.networkHandler;
         for (UUID uUID : playerUuids) {
             PlayerListEntry playerListEntry = clientPlayNetworkHandler.getPlayerListEntry(uUID);
             if (playerListEntry == null) continue;
             UUID uUID2 = playerListEntry.getProfile().getId();
             boolean bl = playerListEntry.getPublicKeyData() != null;
-            map.put(uUID2, new SocialInteractionsPlayerListEntry(this.client, this.parent, uUID2, playerListEntry.getProfile().getName(), playerListEntry::getSkinTexture, bl));
+            entriesByUuids.put(uUID2, new SocialInteractionsPlayerListEntry(this.client, this.parent, uUID2, playerListEntry.getProfile().getName(), playerListEntry::getSkinTexture, bl));
         }
     }
 

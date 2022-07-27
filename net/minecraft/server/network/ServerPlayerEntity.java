@@ -21,7 +21,6 @@ import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
-import net.minecraft.class_7648;
 import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
@@ -49,6 +48,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.message.MessageHeader;
 import net.minecraft.network.message.MessageSignatureData;
@@ -552,7 +552,7 @@ extends PlayerEntity {
         boolean bl = this.world.getGameRules().getBoolean(GameRules.SHOW_DEATH_MESSAGES);
         if (bl) {
             Text text = this.getDamageTracker().getDeathMessage();
-            this.networkHandler.sendPacket(new DeathMessageS2CPacket(this.getDamageTracker(), text), class_7648.method_45085(() -> {
+            this.networkHandler.sendPacket(new DeathMessageS2CPacket(this.getDamageTracker(), text), PacketCallbacks.of(() -> {
                 int i = 256;
                 String string = text.asTruncatedString(256);
                 MutableText text2 = Text.translatable("death.attack.message_too_long", Text.literal(string).formatted(Formatting.YELLOW));
@@ -1211,7 +1211,7 @@ extends PlayerEntity {
         if (!this.acceptsMessage(overlay)) {
             return;
         }
-        this.networkHandler.sendPacket(new GameMessageS2CPacket(message, overlay), class_7648.method_45085(() -> {
+        this.networkHandler.sendPacket(new GameMessageS2CPacket(message, overlay), PacketCallbacks.of(() -> {
             if (this.acceptsMessage(false)) {
                 int i = 256;
                 String string = message.asTruncatedString(256);
@@ -1234,9 +1234,9 @@ extends PlayerEntity {
      * @see #sendMessage(Text)
      * @see #sendMessage(Text, boolean)
      */
-    public void sendChatMessage(SentMessage message, boolean bl, MessageType.Parameters parameters) {
+    public void sendChatMessage(SentMessage message, boolean filterMaskEnabled, MessageType.Parameters params) {
         if (this.acceptsChatMessage()) {
-            message.method_45095(this, bl, parameters);
+            message.send(this, filterMaskEnabled, params);
         }
     }
 

@@ -33,7 +33,7 @@ public interface Glyph {
     extends Glyph {
         @Override
         default public GlyphRenderer bake(Function<RenderableGlyph, GlyphRenderer> function) {
-            return EmptyGlyphRenderer.field_38311;
+            return EmptyGlyphRenderer.INSTANCE;
         }
     }
 }

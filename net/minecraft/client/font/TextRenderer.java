@@ -56,13 +56,13 @@ public class TextRenderer {
     public final int fontHeight = 9;
     public final Random random = Random.create();
     private final Function<Identifier, FontStorage> fontStorageAccessor;
-    final boolean field_39925;
+    final boolean validateAdvance;
     private final TextHandler handler;
 
-    public TextRenderer(Function<Identifier, FontStorage> fontStorageAccessor, boolean bl) {
+    public TextRenderer(Function<Identifier, FontStorage> fontStorageAccessor, boolean validateAdvance) {
         this.fontStorageAccessor = fontStorageAccessor;
-        this.field_39925 = bl;
-        this.handler = new TextHandler((codePoint, style) -> this.getFontStorage(style.getFont()).getGlyph(codePoint, this.field_39925).getAdvance(style.isBold()));
+        this.validateAdvance = validateAdvance;
+        this.handler = new TextHandler((codePoint, style) -> this.getFontStorage(style.getFont()).getGlyph(codePoint, this.validateAdvance).getAdvance(style.isBold()));
     }
 
     FontStorage getFontStorage(Identifier id) {
@@ -189,7 +189,7 @@ public class TextRenderer {
                 text.accept((index, style, codePoint) -> {
                     boolean bl = style.isBold();
                     FontStorage fontStorage = this.getFontStorage(style.getFont());
-                    Glyph glyph = fontStorage.getGlyph(codePoint, this.field_39925);
+                    Glyph glyph = fontStorage.getGlyph(codePoint, this.validateAdvance);
                     drawer.x = fs[0] + (float)l * glyph.getShadowOffset();
                     drawer.y = y + (float)m * glyph.getShadowOffset();
                     fs[0] = fs[0] + glyph.getAdvance(bl);
@@ -409,7 +409,7 @@ public class TextRenderer {
             float h;
             float g;
             FontStorage fontStorage = TextRenderer.this.getFontStorage(style.getFont());
-            Glyph glyph = fontStorage.getGlyph(j, TextRenderer.this.field_39925);
+            Glyph glyph = fontStorage.getGlyph(j, TextRenderer.this.validateAdvance);
             GlyphRenderer glyphRenderer = style.isObfuscated() && j != 32 ? fontStorage.getObfuscatedGlyphRenderer(glyph) : fontStorage.getGlyphRenderer(j);
             boolean bl = style.isBold();
             float f = this.alpha;

@@ -22,7 +22,7 @@ implements BlockEntityRenderer<MobSpawnerBlockEntity> {
     private final EntityRenderDispatcher entityRenderDispatcher;
 
     public MobSpawnerBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
-        this.entityRenderDispatcher = ctx.getEntityRenderDIspatcher();
+        this.entityRenderDispatcher = ctx.getEntityRenderDispatcher();
     }
 
     @Override

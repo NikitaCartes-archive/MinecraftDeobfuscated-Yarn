@@ -83,8 +83,8 @@ extends ChatLogEntry {
 
         @Override
         public Text getContent() {
-            if (!this.message.filterMask().method_45087()) {
-                Text text = this.message.filterMask().method_45092(this.message.getSignedContent());
+            if (!this.message.filterMask().isPassThrough()) {
+                Text text = this.message.filterMask().filter(this.message.getSignedContent());
                 return Objects.requireNonNullElse(text, ScreenTexts.EMPTY);
             }
             return this.message.getContent();

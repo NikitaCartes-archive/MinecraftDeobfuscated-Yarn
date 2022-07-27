@@ -29,14 +29,14 @@ import net.minecraft.util.math.random.Random;
 public class FontStorage
 implements AutoCloseable {
     private static final Random RANDOM = Random.create();
-    private static final float field_39934 = 32.0f;
+    private static final float MAX_ADVANCE = 32.0f;
     private final TextureManager textureManager;
     private final Identifier id;
     private GlyphRenderer blankGlyphRenderer;
     private GlyphRenderer whiteRectangleGlyphRenderer;
     private final List<Font> fonts = Lists.newArrayList();
     private final Int2ObjectMap<GlyphRenderer> glyphRendererCache = new Int2ObjectOpenHashMap<GlyphRenderer>();
-    private final Int2ObjectMap<class_7647> glyphCache = new Int2ObjectOpenHashMap<class_7647>();
+    private final Int2ObjectMap<GlyphPair> glyphCache = new Int2ObjectOpenHashMap<GlyphPair>();
     private final Int2ObjectMap<IntList> charactersByWidth = new Int2ObjectOpenHashMap<IntList>();
     private final List<GlyphAtlasTexture> glyphAtlases = Lists.newArrayList();
 
@@ -91,7 +91,7 @@ implements AutoCloseable {
         this.glyphAtlases.clear();
     }
 
-    private static boolean method_45079(Glyph glyph) {
+    private static boolean isAdvanceInvalid(Glyph glyph) {
         float f = glyph.getAdvance(false);
         if (f < 0.0f || f > 32.0f) {
             return true;
@@ -105,7 +105,7 @@ implements AutoCloseable {
      * 
      * @apiNote Call {@link #getGlyph} instead, as that method provides caching.
      */
-    private class_7647 findGlyph(int codePoint) {
+    private GlyphPair findGlyph(int codePoint) {
         Glyph glyph = null;
         for (Font font : this.fonts) {
             Glyph glyph2 = font.getGlyph(codePoint);
@@ -113,13 +113,13 @@ implements AutoCloseable {
             if (glyph == null) {
                 glyph = glyph2;
             }
-            if (FontStorage.method_45079(glyph2)) continue;
-            return new class_7647(glyph, glyph2);
+            if (FontStorage.isAdvanceInvalid(glyph2)) continue;
+            return new GlyphPair(glyph, glyph2);
         }
         if (glyph != null) {
-            return new class_7647(glyph, BuiltinEmptyGlyph.MISSING);
+            return new GlyphPair(glyph, BuiltinEmptyGlyph.MISSING);
         }
-        return class_7647.field_39935;
+        return GlyphPair.MISSING;
     }
 
     /**
@@ -127,8 +127,8 @@ implements AutoCloseable {
      * 
      * @implNote {@link BuiltinEmptyGlyph#MISSING} is returned for missing code points.
      */
-    public Glyph getGlyph(int codePoint, boolean bl) {
-        return this.glyphCache.computeIfAbsent(codePoint, this::findGlyph).method_45080(bl);
+    public Glyph getGlyph(int codePoint, boolean validateAdvance) {
+        return this.glyphCache.computeIfAbsent(codePoint, this::findGlyph).getGlyph(validateAdvance);
     }
 
     private GlyphRenderer findGlyphRenderer(int codePoint) {
@@ -170,11 +170,11 @@ implements AutoCloseable {
     }
 
     @Environment(value=EnvType.CLIENT)
-    record class_7647(Glyph glyphInfo, Glyph glyphInfoNotFishy) {
-        static final class_7647 field_39935 = new class_7647(BuiltinEmptyGlyph.MISSING, BuiltinEmptyGlyph.MISSING);
+    record GlyphPair(Glyph glyph, Glyph advanceValidatedGlyph) {
+        static final GlyphPair MISSING = new GlyphPair(BuiltinEmptyGlyph.MISSING, BuiltinEmptyGlyph.MISSING);
 
-        Glyph method_45080(boolean bl) {
-            return bl ? this.glyphInfoNotFishy : this.glyphInfo;
+        Glyph getGlyph(boolean validateAdvance) {
+            return validateAdvance ? this.advanceValidatedGlyph : this.glyph;
         }
     }
 }

@@ -101,12 +101,12 @@ implements EntryCombiner {
             return new AlternativeEntry.Builder(this, builder);
         }
 
-        public SequenceEntry.Builder sequenceEntry(Builder<?> entry) {
-            return new SequenceEntry.Builder(this, entry);
+        public GroupEntry.Builder sequenceEntry(Builder<?> entry) {
+            return new GroupEntry.Builder(this, entry);
         }
 
-        public GroupEntry.Builder groupEntry(Builder<?> entry) {
-            return new GroupEntry.Builder(this, entry);
+        public SequenceEntry.Builder groupEntry(Builder<?> entry) {
+            return new SequenceEntry.Builder(this, entry);
         }
 
         public abstract LootPoolEntry build();

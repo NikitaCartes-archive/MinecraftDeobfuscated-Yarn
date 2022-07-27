@@ -15,10 +15,10 @@ import net.minecraft.server.command.ServerCommandSource;
 public class SayCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("say").requires(source -> source.hasPermissionLevel(2))).then(CommandManager.argument("message", MessageArgumentType.message()).executes(context -> {
-            MessageArgumentType.SignedMessage signedMessage2 = MessageArgumentType.getSignedMessage(context, "message");
+            MessageArgumentType.SignedMessage signedMessage = MessageArgumentType.getSignedMessage(context, "message");
             ServerCommandSource serverCommandSource = (ServerCommandSource)context.getSource();
             PlayerManager playerManager = serverCommandSource.getServer().getPlayerManager();
-            signedMessage2.decorate(serverCommandSource, signedMessage -> playerManager.broadcast((SignedMessage)signedMessage, serverCommandSource, MessageType.params(MessageType.SAY_COMMAND, serverCommandSource)));
+            signedMessage.decorate(serverCommandSource, message -> playerManager.broadcast((SignedMessage)message, serverCommandSource, MessageType.params(MessageType.SAY_COMMAND, serverCommandSource)));
             return 1;
         })));
     }

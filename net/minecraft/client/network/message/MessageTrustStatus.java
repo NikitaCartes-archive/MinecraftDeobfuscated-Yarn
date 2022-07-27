@@ -36,7 +36,7 @@ public enum MessageTrustStatus {
         if (message.isExpiredOnClient(receptionTimestamp)) {
             return NOT_SECURE;
         }
-        if (!message.filterMask().method_45087()) {
+        if (!message.filterMask().isPassThrough()) {
             return FILTERED;
         }
         if (message.unsignedContent().isPresent()) {
@@ -56,7 +56,7 @@ public enum MessageTrustStatus {
     public MessageIndicator createIndicator(SignedMessage message) {
         return switch (this) {
             case MODIFIED -> MessageIndicator.modified(message.getSignedContent().plain());
-            case FILTERED -> MessageIndicator.method_45071();
+            case FILTERED -> MessageIndicator.filtered();
             case NOT_SECURE -> MessageIndicator.notSecure();
             default -> null;
         };

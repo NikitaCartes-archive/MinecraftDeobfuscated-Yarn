@@ -42,18 +42,18 @@ public interface MessageDecorator {
      */
     public CompletableFuture<Text> decorate(@Nullable ServerPlayerEntity var1, Text var2);
 
-    default public CompletableFuture<SignedMessage> decorate(@Nullable ServerPlayerEntity serverPlayerEntity, SignedMessage signedMessage) {
-        if (signedMessage.getSignedContent().isDecorated()) {
-            return CompletableFuture.completedFuture(signedMessage);
+    default public CompletableFuture<SignedMessage> decorate(@Nullable ServerPlayerEntity sender, SignedMessage message) {
+        if (message.getSignedContent().isDecorated()) {
+            return CompletableFuture.completedFuture(message);
         }
-        return this.decorate(serverPlayerEntity, signedMessage.getContent()).thenApply(signedMessage::withUnsignedContent);
+        return this.decorate(sender, message.getContent()).thenApply(message::withUnsignedContent);
     }
 
-    public static SignedMessage attachIfNotDecorated(SignedMessage signedMessage, Text text) {
-        if (!signedMessage.getSignedContent().isDecorated()) {
-            return signedMessage.withUnsignedContent(text);
+    public static SignedMessage attachIfNotDecorated(SignedMessage message, Text attached) {
+        if (!message.getSignedContent().isDecorated()) {
+            return message.withUnsignedContent(attached);
         }
-        return signedMessage;
+        return message;
     }
 }
 

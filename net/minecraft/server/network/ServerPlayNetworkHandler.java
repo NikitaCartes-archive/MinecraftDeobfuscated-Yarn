@@ -45,8 +45,6 @@ import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
-import net.minecraft.class_7648;
-import net.minecraft.class_7649;
 import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.command.argument.DecoratableArgumentList;
 import net.minecraft.entity.Entity;
@@ -71,6 +69,7 @@ import net.minecraft.nbt.NbtString;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.listener.TickablePacketListener;
@@ -78,6 +77,7 @@ import net.minecraft.network.message.AcknowledgmentValidator;
 import net.minecraft.network.message.ArgumentSignatureDataMap;
 import net.minecraft.network.message.CachedDecoratorResult;
 import net.minecraft.network.message.DecoratedContents;
+import net.minecraft.network.message.FilterMask;
 import net.minecraft.network.message.LastSeenMessageList;
 import net.minecraft.network.message.MessageChain;
 import net.minecraft.network.message.MessageChainTaskQueue;
@@ -252,7 +252,7 @@ ServerPlayPacketListener {
         this.lastKeepAliveTime = Util.getMeasuringTimeMs();
         player.getTextStream().onConnect();
         PlayerPublicKey playerPublicKey = player.getPublicKey();
-        this.messageUnpacker = playerPublicKey != null ? new MessageChain().getUnpacker() : MessageChain.Unpacker.field_39951;
+        this.messageUnpacker = playerPublicKey != null ? new MessageChain().getUnpacker() : MessageChain.Unpacker.UNSIGNED;
         this.messageChainTaskQueue = new MessageChainTaskQueue(server);
     }
 
@@ -347,18 +347,18 @@ ServerPlayPacketListener {
     }
 
     public void disconnect(Text reason) {
-        this.connection.send(new DisconnectS2CPacket(reason), class_7648.method_45084(() -> this.connection.disconnect(reason)));
+        this.connection.send(new DisconnectS2CPacket(reason), PacketCallbacks.always(() -> this.connection.disconnect(reason)));
         this.connection.disableAutoRead();
         this.server.submitAndJoin(this.connection::handleDisconnection);
     }
 
-    private <T, R> CompletableFuture<R> filterText(T text, BiFunction<TextStream, T, CompletableFuture<R>> biFunction) {
-        return biFunction.apply(this.player.getTextStream(), (TextStream)text).thenApply(object -> {
+    private <T, R> CompletableFuture<R> filterText(T text, BiFunction<TextStream, T, CompletableFuture<R>> filterer) {
+        return filterer.apply(this.player.getTextStream(), (TextStream)text).thenApply(filtered -> {
             if (!this.getConnection().isOpen()) {
                 LOGGER.debug("Ignoring packet due to disconnection");
                 throw new CancellationException("disconnected");
             }
-            return object;
+            return filtered;
         });
     }
 
@@ -770,9 +770,9 @@ ServerPlayPacketListener {
         }
         itemStack2.setSubNbt("author", NbtString.of(this.player.getName().getString()));
         if (this.player.shouldFilterText()) {
-            itemStack2.setSubNbt("title", NbtString.of(title.method_45061()));
+            itemStack2.setSubNbt("title", NbtString.of(title.getString()));
         } else {
-            itemStack2.setSubNbt("filtered_title", NbtString.of(title.method_45061()));
+            itemStack2.setSubNbt("filtered_title", NbtString.of(title.getString()));
             itemStack2.setSubNbt("title", NbtString.of(title.raw()));
         }
         this.setTextToBook(pages, text -> Text.Serializer.toJson(Text.literal(text)), itemStack2);
@@ -782,7 +782,7 @@ ServerPlayPacketListener {
     private void setTextToBook(List<FilteredMessage> messages, UnaryOperator<String> postProcessor, ItemStack book) {
         NbtList nbtList = new NbtList();
         if (this.player.shouldFilterText()) {
-            messages.stream().map(message -> NbtString.of((String)postProcessor.apply(message.method_45061()))).forEach(nbtList::add);
+            messages.stream().map(message -> NbtString.of((String)postProcessor.apply(message.getString()))).forEach(nbtList::add);
         } else {
             NbtCompound nbtCompound = new NbtCompound();
             int j = messages.size();
@@ -790,8 +790,8 @@ ServerPlayPacketListener {
                 FilteredMessage filteredMessage = messages.get(i);
                 String string = filteredMessage.raw();
                 nbtList.add(NbtString.of((String)postProcessor.apply(string)));
-                if (!filteredMessage.method_45063()) continue;
-                nbtCompound.putString(String.valueOf(i), (String)postProcessor.apply(filteredMessage.method_45061()));
+                if (!filteredMessage.isFiltered()) continue;
+                nbtCompound.putString(String.valueOf(i), (String)postProcessor.apply(filteredMessage.getString()));
             }
             if (!nbtCompound.isEmpty()) {
                 book.setSubNbt("filtered_pages", nbtCompound);
@@ -1140,9 +1140,9 @@ ServerPlayPacketListener {
         this.sendPacket(packet, null);
     }
 
-    public void sendPacket(Packet<?> packet, @Nullable class_7648 arg) {
+    public void sendPacket(Packet<?> packet, @Nullable PacketCallbacks callbacks) {
         try {
-            this.connection.send(packet, arg);
+            this.connection.send(packet, callbacks);
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Sending packet");
             CrashReportSection crashReportSection = crashReport.addElement("Packet being sent");
@@ -1181,8 +1181,8 @@ ServerPlayPacketListener {
                     CompletableFuture<FilteredMessage> completableFuture = this.filterText(signedMessage.getSignedContent().plain());
                     CompletableFuture<SignedMessage> completableFuture2 = this.server.getMessageDecorator().decorate(this.player, signedMessage);
                     return CompletableFuture.allOf(completableFuture, completableFuture2).thenAcceptAsync(void_ -> {
-                        class_7649 lv = ((FilteredMessage)completableFuture.join()).mask();
-                        SignedMessage signedMessage = ((SignedMessage)completableFuture2.join()).method_45097(lv);
+                        FilterMask filterMask = ((FilteredMessage)completableFuture.join()).mask();
+                        SignedMessage signedMessage = ((SignedMessage)completableFuture2.join()).withFilterMask(filterMask);
                         this.handleDecoratedMessage(signedMessage);
                     }, (Executor)this.server);
                 });
@@ -1323,8 +1323,8 @@ ServerPlayPacketListener {
      * @implNote This returns the {@linkplain CachedDecoratorResult#tryConsume consumed
      * cached result} if it exists, and otherwise returns a new {@link DecoratedContents}
      * without message decorators applied. This method does not execute message decorators;
-     * they are executed in {@link #onRequestChatPreview} (for normal messages) or {@link
-     * #handleMessage(SignedMessage, FilteredMessage)} (for filtered parts of messages).
+     * they are executed in {@link #onRequestChatPreview} (for previewed messages) or {@link
+     * #onChatMessage} (for unpreviewed messages).
      */
     private DecoratedContents getDecoratedContents(ChatMessageC2SPacket packet) {
         Text text = this.cachedDecoratorResult.tryConsume(packet.chatMessage());
@@ -1334,8 +1334,8 @@ ServerPlayPacketListener {
         return new DecoratedContents(packet.chatMessage());
     }
 
-    private void handleDecoratedMessage(SignedMessage signedMessage) {
-        this.server.getPlayerManager().broadcast(signedMessage, this.player, MessageType.params(MessageType.CHAT, this.player));
+    private void handleDecoratedMessage(SignedMessage message) {
+        this.server.getPlayerManager().broadcast(message, this.player, MessageType.params(MessageType.CHAT, this.player));
         this.checkForSpam();
     }
 
@@ -1391,7 +1391,7 @@ ServerPlayPacketListener {
     }
 
     private void sendChatPreviewPacket(int queryId, Text preview) {
-        this.sendPacket(new ChatPreviewS2CPacket(queryId, preview), class_7648.method_45085(() -> new ChatPreviewS2CPacket(queryId, null)));
+        this.sendPacket(new ChatPreviewS2CPacket(queryId, preview), PacketCallbacks.of(() -> new ChatPreviewS2CPacket(queryId, null)));
     }
 
     private CompletableFuture<Text> decorate(String query) {
@@ -1742,10 +1742,10 @@ ServerPlayPacketListener {
             for (int i = 0; i < signText.size(); ++i) {
                 FilteredMessage filteredMessage = signText.get(i);
                 if (this.player.shouldFilterText()) {
-                    signBlockEntity.setTextOnRow(i, Text.literal(filteredMessage.method_45061()));
+                    signBlockEntity.setTextOnRow(i, Text.literal(filteredMessage.getString()));
                     continue;
                 }
-                signBlockEntity.setTextOnRow(i, Text.literal(filteredMessage.raw()), Text.literal(filteredMessage.method_45061()));
+                signBlockEntity.setTextOnRow(i, Text.literal(filteredMessage.raw()), Text.literal(filteredMessage.getString()));
             }
             signBlockEntity.markDirty();
             serverWorld.updateListeners(blockPos, blockState, blockState, Block.NOTIFY_ALL);
