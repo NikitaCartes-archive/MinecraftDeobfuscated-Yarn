@@ -26,7 +26,7 @@ public interface Glyph {
 	public interface EmptyGlyph extends Glyph {
 		@Override
 		default GlyphRenderer bake(Function<RenderableGlyph, GlyphRenderer> function) {
-			return EmptyGlyphRenderer.field_38311;
+			return EmptyGlyphRenderer.INSTANCE;
 		}
 	}
 }

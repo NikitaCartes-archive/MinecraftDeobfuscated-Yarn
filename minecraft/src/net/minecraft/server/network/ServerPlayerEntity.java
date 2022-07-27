@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 import javax.annotation.Nullable;
-import net.minecraft.class_7648;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
@@ -46,6 +45,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.message.MessageHeader;
 import net.minecraft.network.message.MessageSignatureData;
@@ -578,7 +578,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			this.networkHandler
 				.sendPacket(
 					new DeathMessageS2CPacket(this.getDamageTracker(), text),
-					class_7648.method_45085(
+					PacketCallbacks.of(
 						() -> {
 							int i = 256;
 							String string = text.asTruncatedString(256);
@@ -1294,7 +1294,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	public void sendMessageToClient(Text message, boolean overlay) {
 		if (this.acceptsMessage(overlay)) {
-			this.networkHandler.sendPacket(new GameMessageS2CPacket(message, overlay), class_7648.method_45085(() -> {
+			this.networkHandler.sendPacket(new GameMessageS2CPacket(message, overlay), PacketCallbacks.of(() -> {
 				if (this.acceptsMessage(false)) {
 					int i = 256;
 					String string = message.asTruncatedString(256);
@@ -1319,9 +1319,9 @@ public class ServerPlayerEntity extends PlayerEntity {
 	 * @see #sendMessage(Text)
 	 * @see #sendMessage(Text, boolean)
 	 */
-	public void sendChatMessage(SentMessage message, boolean bl, MessageType.Parameters parameters) {
+	public void sendChatMessage(SentMessage message, boolean filterMaskEnabled, MessageType.Parameters params) {
 		if (this.acceptsChatMessage()) {
-			message.method_45095(this, bl, parameters);
+			message.send(this, filterMaskEnabled, params);
 		}
 	}
 

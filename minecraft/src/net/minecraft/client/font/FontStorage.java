@@ -21,14 +21,14 @@ import net.minecraft.util.math.random.Random;
 @Environment(EnvType.CLIENT)
 public class FontStorage implements AutoCloseable {
 	private static final Random RANDOM = Random.create();
-	private static final float field_39934 = 32.0F;
+	private static final float MAX_ADVANCE = 32.0F;
 	private final TextureManager textureManager;
 	private final Identifier id;
 	private GlyphRenderer blankGlyphRenderer;
 	private GlyphRenderer whiteRectangleGlyphRenderer;
 	private final List<Font> fonts = Lists.<Font>newArrayList();
 	private final Int2ObjectMap<GlyphRenderer> glyphRendererCache = new Int2ObjectOpenHashMap<>();
-	private final Int2ObjectMap<FontStorage.class_7647> glyphCache = new Int2ObjectOpenHashMap<>();
+	private final Int2ObjectMap<FontStorage.GlyphPair> glyphCache = new Int2ObjectOpenHashMap<>();
 	private final Int2ObjectMap<IntList> charactersByWidth = new Int2ObjectOpenHashMap<>();
 	private final List<GlyphAtlasTexture> glyphAtlases = Lists.<GlyphAtlasTexture>newArrayList();
 
@@ -92,7 +92,7 @@ public class FontStorage implements AutoCloseable {
 		this.glyphAtlases.clear();
 	}
 
-	private static boolean method_45079(Glyph glyph) {
+	private static boolean isAdvanceInvalid(Glyph glyph) {
 		float f = glyph.getAdvance(false);
 		if (!(f < 0.0F) && !(f > 32.0F)) {
 			float g = glyph.getAdvance(true);
@@ -107,7 +107,7 @@ public class FontStorage implements AutoCloseable {
 	 * 
 	 * @apiNote Call {@link #getGlyph} instead, as that method provides caching.
 	 */
-	private FontStorage.class_7647 findGlyph(int codePoint) {
+	private FontStorage.GlyphPair findGlyph(int codePoint) {
 		Glyph glyph = null;
 
 		for (Font font : this.fonts) {
@@ -117,13 +117,13 @@ public class FontStorage implements AutoCloseable {
 					glyph = glyph2;
 				}
 
-				if (!method_45079(glyph2)) {
-					return new FontStorage.class_7647(glyph, glyph2);
+				if (!isAdvanceInvalid(glyph2)) {
+					return new FontStorage.GlyphPair(glyph, glyph2);
 				}
 			}
 		}
 
-		return glyph != null ? new FontStorage.class_7647(glyph, BuiltinEmptyGlyph.MISSING) : FontStorage.class_7647.field_39935;
+		return glyph != null ? new FontStorage.GlyphPair(glyph, BuiltinEmptyGlyph.MISSING) : FontStorage.GlyphPair.MISSING;
 	}
 
 	/**
@@ -131,8 +131,8 @@ public class FontStorage implements AutoCloseable {
 	 * 
 	 * @implNote {@link BuiltinEmptyGlyph#MISSING} is returned for missing code points.
 	 */
-	public Glyph getGlyph(int codePoint, boolean bl) {
-		return this.glyphCache.computeIfAbsent(codePoint, this::findGlyph).method_45080(bl);
+	public Glyph getGlyph(int codePoint, boolean validateAdvance) {
+		return this.glyphCache.computeIfAbsent(codePoint, this::findGlyph).getGlyph(validateAdvance);
 	}
 
 	private GlyphRenderer findGlyphRenderer(int codePoint) {
@@ -177,11 +177,11 @@ public class FontStorage implements AutoCloseable {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static record class_7647(Glyph glyphInfo, Glyph glyphInfoNotFishy) {
-		static final FontStorage.class_7647 field_39935 = new FontStorage.class_7647(BuiltinEmptyGlyph.MISSING, BuiltinEmptyGlyph.MISSING);
+	static record GlyphPair(Glyph glyph, Glyph advanceValidatedGlyph) {
+		static final FontStorage.GlyphPair MISSING = new FontStorage.GlyphPair(BuiltinEmptyGlyph.MISSING, BuiltinEmptyGlyph.MISSING);
 
-		Glyph method_45080(boolean bl) {
-			return bl ? this.glyphInfoNotFishy : this.glyphInfo;
+		Glyph getGlyph(boolean validateAdvance) {
+			return validateAdvance ? this.advanceValidatedGlyph : this.glyph;
 		}
 	}
 }

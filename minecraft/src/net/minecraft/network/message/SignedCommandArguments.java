@@ -4,32 +4,31 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 /**
- * An interface wrapping {@link ArgumentSignatureDataMap} with metadata attached.
+ * An interface wrapping {@link ArgumentSignatureDataMap}.
  */
 public interface SignedCommandArguments {
 	/**
 	 * An empty signed command arguments that always returns {@code null} for
-	 * {@link #createSignature}.
+	 * {@link #getMessage}.
 	 */
 	SignedCommandArguments EMPTY = new SignedCommandArguments() {
 		@Nullable
 		@Override
-		public SignedMessage createSignature(String argumentName) {
+		public SignedMessage getMessage(String argumentName) {
 			return null;
 		}
 	};
 
 	@Nullable
-	SignedMessage createSignature(String argumentName);
+	SignedMessage getMessage(String argumentName);
 
 	/**
-	 * A signature for command arguments, consisting of the sender, the timestamp,
-	 * and the signature datas for the arguments.
+	 * A basic implementation of {@link SignedCommandArguments}.
 	 */
 	public static record Impl(Map<String, SignedMessage> arguments) implements SignedCommandArguments {
 		@Nullable
 		@Override
-		public SignedMessage createSignature(String argumentName) {
+		public SignedMessage getMessage(String argumentName) {
 			return (SignedMessage)this.arguments.get(argumentName);
 		}
 	}

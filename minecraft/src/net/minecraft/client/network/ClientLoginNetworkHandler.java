@@ -17,7 +17,6 @@ import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_7648;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -26,6 +25,7 @@ import net.minecraft.client.realms.gui.screen.RealmsScreen;
 import net.minecraft.client.util.NetworkUtils;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
+import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.encryption.Signer;
 import net.minecraft.network.listener.ClientLoginPacketListener;
@@ -98,7 +98,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 			}
 
 			this.statusConsumer.accept(Text.translatable("connect.encrypting"));
-			this.connection.send(loginKeyC2SPacket, class_7648.method_45084(() -> this.connection.setupEncryption(cipher, cipher2)));
+			this.connection.send(loginKeyC2SPacket, PacketCallbacks.always(() -> this.connection.setupEncryption(cipher, cipher2)));
 		}));
 	}
 

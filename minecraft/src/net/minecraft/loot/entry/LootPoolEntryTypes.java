@@ -12,8 +12,8 @@ public class LootPoolEntryTypes {
 	public static final LootPoolEntryType DYNAMIC = register("dynamic", new DynamicEntry.Serializer());
 	public static final LootPoolEntryType TAG = register("tag", new TagEntry.Serializer());
 	public static final LootPoolEntryType ALTERNATIVES = register("alternatives", CombinedEntry.createSerializer(AlternativeEntry::new));
-	public static final LootPoolEntryType SEQUENCE = register("sequence", CombinedEntry.createSerializer(GroupEntry::new));
-	public static final LootPoolEntryType GROUP = register("group", CombinedEntry.createSerializer(SequenceEntry::new));
+	public static final LootPoolEntryType SEQUENCE = register("sequence", CombinedEntry.createSerializer(SequenceEntry::new));
+	public static final LootPoolEntryType GROUP = register("group", CombinedEntry.createSerializer(GroupEntry::new));
 
 	private static LootPoolEntryType register(String id, JsonSerializer<? extends LootPoolEntry> jsonSerializer) {
 		return Registry.register(Registry.LOOT_POOL_ENTRY_TYPE, new Identifier(id), new LootPoolEntryType(jsonSerializer));

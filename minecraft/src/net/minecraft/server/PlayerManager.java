@@ -105,7 +105,7 @@ public abstract class PlayerManager {
 	public static final File BANNED_IPS_FILE = new File("banned-ips.json");
 	public static final File OPERATORS_FILE = new File("ops.json");
 	public static final File WHITELIST_FILE = new File("whitelist.json");
-	public static final Text field_39921 = Text.translatable("chat.filtered_full");
+	public static final Text FILTERED_FULL_TEXT = Text.translatable("chat.filtered_full");
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int LATENCY_UPDATE_INTERVAL = 600;
 	private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
@@ -778,10 +778,8 @@ public abstract class PlayerManager {
 	 * message or a join/leave message.
 	 * 
 	 * @see #broadcast(Text, Function, boolean)
-	 * @see #broadcast(FilteredMessage, ServerCommandSource, MessageType.Parameters)
-	 * @see #broadcast(FilteredMessage, ServerPlayerEntity, MessageType.Parameters)
-	 * @see #broadcast(SignedMessage, MessageSourceProfile, MessageType.Parameters)
-	 * @see #broadcast(FilteredMessage, Predicate, MessageSourceProfile, MessageType.Parameters)
+	 * @see #broadcast(SignedMessage, ServerCommandSource, MessageType.Parameters)
+	 * @see #broadcast(SignedMessage, ServerPlayerEntity, MessageType.Parameters)
 	 */
 	public void broadcast(Text message, boolean overlay) {
 		this.broadcast(message, player -> message, overlay);
@@ -792,10 +790,8 @@ public abstract class PlayerManager {
 	 * message can be sent to a different player.
 	 * 
 	 * @see #broadcast(Text, boolean)
-	 * @see #broadcast(FilteredMessage, ServerCommandSource, MessageType.Parameters)
-	 * @see #broadcast(FilteredMessage, ServerPlayerEntity, MessageType.Parameters)
-	 * @see #broadcast(SignedMessage, MessageSourceProfile, MessageType.Parameters)
-	 * @see #broadcast(FilteredMessage, Predicate, MessageSourceProfile, MessageType.Parameters)
+	 * @see #broadcast(SignedMessage, ServerCommandSource, MessageType.Parameters)
+	 * @see #broadcast(SignedMessage, ServerPlayerEntity, MessageType.Parameters)
 	 * 
 	 * @param playerMessageFactory a function that takes the player to send the message to
 	 * and returns either the text to send to them or {@code null}
@@ -821,12 +817,10 @@ public abstract class PlayerManager {
 	 * 
 	 * @see #broadcast(Text, boolean)
 	 * @see #broadcast(Text, Function, boolean)
-	 * @see #broadcast(FilteredMessage, ServerPlayerEntity, MessageType.Parameters)
-	 * @see #broadcast(SignedMessage, MessageSourceProfile, MessageType.Parameters)
-	 * @see #broadcast(FilteredMessage, Predicate, MessageSourceProfile, MessageType.Parameters)
+	 * @see #broadcast(SignedMessage, ServerPlayerEntity, MessageType.Parameters)
 	 */
-	public void broadcast(SignedMessage signedMessage, ServerCommandSource serverCommandSource, MessageType.Parameters params) {
-		this.broadcast(signedMessage, serverCommandSource::method_45067, serverCommandSource.getPlayer(), serverCommandSource.getMessageSourceProfile(), params);
+	public void broadcast(SignedMessage message, ServerCommandSource source, MessageType.Parameters params) {
+		this.broadcast(message, source::shouldFilterText, source.getPlayer(), source.getMessageSourceProfile(), params);
 	}
 
 	/**
@@ -845,12 +839,10 @@ public abstract class PlayerManager {
 	 * 
 	 * @see #broadcast(Text, boolean)
 	 * @see #broadcast(Text, Function, boolean)
-	 * @see #broadcast(FilteredMessage, ServerCommandSource, MessageType.Parameters)
-	 * @see #broadcast(SignedMessage, MessageSourceProfile, MessageType.Parameters)
-	 * @see #broadcast(FilteredMessage, Predicate, MessageSourceProfile, MessageType.Parameters)
+	 * @see #broadcast(SignedMessage, ServerCommandSource, MessageType.Parameters)
 	 */
-	public void broadcast(SignedMessage signedMessage, ServerPlayerEntity sender, MessageType.Parameters params) {
-		this.broadcast(signedMessage, sender::shouldFilterMessagesSentTo, sender, sender.getMessageSourceProfile(), params);
+	public void broadcast(SignedMessage message, ServerPlayerEntity sender, MessageType.Parameters params) {
+		this.broadcast(message, sender::shouldFilterMessagesSentTo, sender, sender.getMessageSourceProfile(), params);
 	}
 
 	/**
@@ -864,35 +856,34 @@ public abstract class PlayerManager {
 	 * 
 	 * @see #broadcast(Text, boolean)
 	 * @see #broadcast(Text, Function, boolean)
-	 * @see #broadcast(FilteredMessage, ServerCommandSource, MessageType.Parameters)
-	 * @see #broadcast(FilteredMessage, ServerPlayerEntity, MessageType.Parameters)
-	 * @see #broadcast(SignedMessage, MessageSourceProfile, MessageType.Parameters)
+	 * @see #broadcast(SignedMessage, ServerCommandSource, MessageType.Parameters)
+	 * @see #broadcast(SignedMessage, ServerPlayerEntity, MessageType.Parameters)
 	 * 
 	 * @param shouldSendFiltered predicate that determines whether to send the filtered message for the given player
 	 */
 	private void broadcast(
-		SignedMessage signedMessage,
+		SignedMessage message,
 		Predicate<ServerPlayerEntity> shouldSendFiltered,
-		@Nullable ServerPlayerEntity serverPlayerEntity,
-		MessageSourceProfile messageSourceProfile,
-		MessageType.Parameters parameters
+		@Nullable ServerPlayerEntity sender,
+		MessageSourceProfile sourceProfile,
+		MessageType.Parameters params
 	) {
-		boolean bl = this.verify(signedMessage, messageSourceProfile);
-		this.server.logChatMessage(signedMessage.getContent(), parameters, bl ? null : "Not Secure");
-		SentMessage sentMessage = SentMessage.of(signedMessage);
-		boolean bl2 = signedMessage.method_45100();
+		boolean bl = this.verify(message, sourceProfile);
+		this.server.logChatMessage(message.getContent(), params, bl ? null : "Not Secure");
+		SentMessage sentMessage = SentMessage.of(message);
+		boolean bl2 = message.isFullyFiltered();
 		boolean bl3 = false;
 
-		for (ServerPlayerEntity serverPlayerEntity2 : this.players) {
-			boolean bl4 = shouldSendFiltered.test(serverPlayerEntity2);
-			serverPlayerEntity2.sendChatMessage(sentMessage, bl4, parameters);
-			if (serverPlayerEntity != serverPlayerEntity2) {
+		for (ServerPlayerEntity serverPlayerEntity : this.players) {
+			boolean bl4 = shouldSendFiltered.test(serverPlayerEntity);
+			serverPlayerEntity.sendChatMessage(sentMessage, bl4, params);
+			if (sender != serverPlayerEntity) {
 				bl3 |= bl2 && bl4;
 			}
 		}
 
-		if (bl3 && serverPlayerEntity != null) {
-			serverPlayerEntity.sendMessage(field_39921);
+		if (bl3 && sender != null) {
+			sender.sendMessage(FILTERED_FULL_TEXT);
 		}
 
 		sentMessage.afterPacketsSent(this);

@@ -11,7 +11,7 @@ public class SequenceEntry extends CombinedEntry {
 
 	@Override
 	public LootPoolEntryType getType() {
-		return LootPoolEntryTypes.GROUP;
+		return LootPoolEntryTypes.SEQUENCE;
 	}
 
 	@Override
@@ -22,17 +22,13 @@ public class SequenceEntry extends CombinedEntry {
 			case 1:
 				return children[0];
 			case 2:
-				EntryCombiner entryCombiner = children[0];
-				EntryCombiner entryCombiner2 = children[1];
-				return (context, consumer) -> {
-					entryCombiner.expand(context, consumer);
-					entryCombiner2.expand(context, consumer);
-					return true;
-				};
+				return children[0].and(children[1]);
 			default:
 				return (context, lootChoiceExpander) -> {
-					for (EntryCombiner entryCombinerx : children) {
-						entryCombinerx.expand(context, lootChoiceExpander);
+					for (EntryCombiner entryCombiner : children) {
+						if (!entryCombiner.expand(context, lootChoiceExpander)) {
+							return false;
+						}
 					}
 
 					return true;
@@ -58,7 +54,7 @@ public class SequenceEntry extends CombinedEntry {
 		}
 
 		@Override
-		public SequenceEntry.Builder sequenceEntry(LootPoolEntry.Builder<?> entry) {
+		public SequenceEntry.Builder groupEntry(LootPoolEntry.Builder<?> entry) {
 			this.entries.add(entry.build());
 			return this;
 		}

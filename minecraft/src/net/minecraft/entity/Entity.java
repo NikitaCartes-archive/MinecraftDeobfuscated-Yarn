@@ -121,6 +121,91 @@ import net.minecraft.world.event.listener.EntityGameEventHandler;
 import net.minecraft.world.explosion.Explosion;
 import org.slf4j.Logger;
 
+/**
+ * An object that exists in a world and has {@code double}-precision position.
+ * They are registered in {@link EntityType}.
+ * 
+ * <p>Examples of entities include players, mobs, minecarts, projectiles, and
+ * dropped items.
+ * 
+ * <p>Entity can be identified by the {@link #id ID} or the {#link #uuid UUID}.
+ * Entity ID is an integer used in networking, and is not saved on disk. UUID is
+ * used to identify an entity in NBT and other places where persistence is required.
+ * 
+ * <h2 id="spawning">Creating and spawning entities</h2>
+ * Entities must be created first, which then can be added to a world ("spawning").
+ * There are multiple methods of doing this, shown on the table below:
+ * 
+ * <div class="fabric">
+ * <table border=1>
+ * <caption>Creation &amp; Spawning (at once)</caption>
+ * <tr>
+ * 	<th>Method</th><th>Recommended usage</th><th>Additional note</th>
+ * </tr>
+ * <tr>
+ * 	<td>{@link EntityType#spawn}</td><td>Any entity</td><td>Initializes mobs.</td>
+ * </tr>
+ * <tr>
+ * 	<td>{@link EntityType#spawnFromItemStack}</td><td>Entities in items (such as buckets)</td><td>Initializes mobs.</td>
+ * </tr>
+ * <tr>
+ * 	<td>{@link ExperienceOrbEntity#spawn}</td><td>Experience orbs with set amount</td><td>Can spawn multiple orbs.</td>
+ * </tr>
+ * <tr>
+ * 	<td>{@link net.minecraft.util.ItemScatterer} methods</td><td>Items</td><td>Will spawn with random velocity.</td>
+ * </tr>
+ * </table>
+ * 
+ * <table border=1>
+ * <caption>Creation only</caption>
+ * <tr>
+ * 	<th>Method</th><th>Recommended usage</th><th>Additional note</th>
+ * </tr>
+ * <tr>
+ * 	<td>Subclass constructors</td><td>Non-mob entities (such as projectiles)</td><td>NBT and other data must be set manually.</td>
+ * </tr>
+ * <tr>
+ * 	<td>{#link EntityType#create}</td><td>Any entity</td><td>Initializes mobs and supports custom NBT.</td>
+ * </tr>
+ * <tr>
+ * 	<td>{#link EntityType#getEntityFromNbt}</td><td>Entities stored in NBT</td><td>Can throw exceptions.</td>
+ * </tr>
+ * <tr>
+ * 	<td>{#link EntityType#loadEntityFromNbt}</td><td>Entities stored in user-provided NBT</td><td>Ignores exceptions.</td>
+ * </tr>
+ * <tr>
+ * 	<td>{#link EntityType#loadEntityWithPassengers}</td><td>Entities with passengers stored in user-provided NBT</td><td>Ignores exceptions. Initializes rides.</td>
+ * </tr>
+ * <tr>
+ * 	<td>{#link EntityType#streamFromNbt}</td><td>Entities with passengers stored in NBT</td><td>Ignores exceptions.</td>
+ * </tr>
+ * </table>
+ * 
+ * <table border=1>
+ * <caption>Spawning only</caption>
+ * <tr>
+ * 	<th>Method</th><th>Recommended usage</th><th>Additional note</th>
+ * </tr>
+ * <tr>
+ * 	<td>{#link net.minecraft.world.ServerWorldAccess#spawnEntityAndPassengers}</td><td>Any entity</td><td>Does not check duplicate UUID.</td>
+ * </tr>
+ * <tr>
+ * 	<td>{#link ServerWorld#spawnNewEntityAndPassengers}</td><td>Any entity</td><td>Checks duplicate UUID.</td>
+ * </tr>
+ * <tr>
+ * 	<td>{#link net.minecraft.world.ModifiableWorld#spawnEntity}</td><td>Any entity</td><td>Does not spawn passengers.</td>
+ * </tr>
+ * </table>
+ * </div>
+ * 
+ * <p><strong>Warning</strong>: When using constructors to spawn mobs instead of
+ * {#link EntityType#create}, they must be manually
+ * {@link net.minecraft.entity.mob.MobEntity#initialize initialized} before spawning.
+ * 
+ * <h2 id="discarding">Discarding</h2>
+ * Entities can be discarded (despawned) by calling {#link #discard}. This does not drop loot.
+ * To kill entities and drop loot, call {#link #kill} or {#link damage} (with large enough damage amount).
+ */
 public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final String ID_KEY = "id";
@@ -304,17 +389,29 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.standingEyeHeight = this.getEyeHeight(EntityPose.STANDING, this.dimensions);
 	}
 
+	/**
+	 * {@return whether the entity collides with the block {@code state} at {@code pos}}
+	 */
 	public boolean collidesWithStateAtPos(BlockPos pos, BlockState state) {
 		VoxelShape voxelShape = state.getCollisionShape(this.world, pos, ShapeContext.of(this));
 		VoxelShape voxelShape2 = voxelShape.offset((double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
 		return VoxelShapes.matchesAnywhere(voxelShape2, VoxelShapes.cuboid(this.getBoundingBox()), BooleanBiFunction.AND);
 	}
 
+	/**
+	 * {@return the team color value, or {@code 0xFFFFFF} if the entity is not in
+	 * a team or the color is not set}
+	 */
 	public int getTeamColorValue() {
 		AbstractTeam abstractTeam = this.getScoreboardTeam();
 		return abstractTeam != null && abstractTeam.getColor().getColorValue() != null ? abstractTeam.getColor().getColorValue() : 16777215;
 	}
 
+	/**
+	 * {@return whether the entity is a spectator}
+	 * 
+	 * <p>This returns {@code false} unless the entity is a player in spectator gamemode.
+	 */
 	public boolean isSpectator() {
 		return false;
 	}
@@ -362,27 +459,66 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.id = id;
 	}
 
+	/**
+	 * {@return all scoreboard tags the entity belongs to}
+	 * 
+	 * <p>Scoreboard tags are set using the {@linkplain net.minecraft.server.command.TagCommand
+	 * /tag command}, and is different from entity type tags defined in data packs.
+	 */
 	public Set<String> getScoreboardTags() {
 		return this.scoreboardTags;
 	}
 
+	/**
+	 * Adds a scoreboard tag to this entity. An entity can have up to {@code 1024}
+	 * scoreboard tags.
+	 * 
+	 * <p>Scoreboard tags are set using the {@linkplain net.minecraft.server.command.TagCommand
+	 * /tag command}, and is different from entity type tags defined in data packs.
+	 * 
+	 * @return whether the scorebord tag was successfully added
+	 */
 	public boolean addScoreboardTag(String tag) {
 		return this.scoreboardTags.size() >= 1024 ? false : this.scoreboardTags.add(tag);
 	}
 
+	/**
+	 * Removes a scoreboard tag from this entity.
+	 * 
+	 * <p>Scoreboard tags are set using the {@linkplain net.minecraft.server.command.TagCommand
+	 * /tag command}, and is different from entity type tags defined in data packs.
+	 * 
+	 * @return whether the scorebord tag was successfully removed
+	 */
 	public boolean removeScoreboardTag(String tag) {
 		return this.scoreboardTags.remove(tag);
 	}
 
+	/**
+	 * Kills the entity.
+	 * 
+	 * <p>This drops loot when applicable, and emits the {@link GameEvent#ENTITY_DIE} game event.
+	 */
 	public void kill() {
 		this.remove(Entity.RemovalReason.KILLED);
 		this.emitGameEvent(GameEvent.ENTITY_DIE);
 	}
 
+	/**
+	 * Discards the entity. This is also referred to as "despawning".
+	 * 
+	 * <p>This does not cause the entity to drop loot.
+	 */
 	public final void discard() {
 		this.remove(Entity.RemovalReason.DISCARDED);
 	}
 
+	/**
+	 * Initializes data tracker.
+	 * 
+	 * @apiNote Subclasses should override this and call {@link DataTracker#startTracking}
+	 * for any data that needs to be tracked.
+	 */
 	protected abstract void initDataTracker();
 
 	public DataTracker getDataTracker() {
@@ -397,10 +533,22 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this.id;
 	}
 
+	/**
+	 * Removes the entity.
+	 * 
+	 * @see #kill
+	 * @see #discard
+	 */
 	public void remove(Entity.RemovalReason reason) {
 		this.setRemoved(reason);
 	}
 
+	/**
+	 * Called on the client side when the entity is removed.
+	 * 
+	 * @apiNote To handle entity removal server-side, override {@link #remove} and
+	 * add custom logic there.
+	 */
 	public void onRemoved() {
 	}
 
@@ -417,13 +565,17 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	/**
-	 * Checks if the distance between this entity and the {@code other} entity is less
-	 * than {@code radius}.
+	 * {@return whether the distance between this entity and {@code entity} is below
+	 * {@code radius}}
 	 */
 	public boolean isInRange(Entity entity, double radius) {
 		return this.getPos().isInRange(entity.getPos(), radius);
 	}
 
+	/**
+	 * {@return whether both the horizontal and vertical distances between this entity and
+	 * {@code entity} are below the passed values}
+	 */
 	public boolean isInRange(Entity entity, double horizontalRadius, double verticalRadius) {
 		double d = entity.getX() - this.getX();
 		double e = entity.getY() - this.getY();
@@ -431,15 +583,36 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return MathHelper.squaredHypot(d, f) < MathHelper.square(horizontalRadius) && MathHelper.square(e) < MathHelper.square(verticalRadius);
 	}
 
+	/**
+	 * Sets the entity's yaw and pitch.
+	 */
 	protected void setRotation(float yaw, float pitch) {
 		this.setYaw(yaw % 360.0F);
 		this.setPitch(pitch % 360.0F);
 	}
 
+	/**
+	 * Sets the position and refreshes the bounding box.
+	 * 
+	 * <p>This should be called after creating an instance of non-living entities.
+	 * For living entities, {@link #refreshPositionAndAngles} should be used instead.
+	 * 
+	 * @see #refreshPositionAndAngles
+	 * @see #teleport
+	 */
 	public final void setPosition(Vec3d pos) {
 		this.setPosition(pos.getX(), pos.getY(), pos.getZ());
 	}
 
+	/**
+	 * Sets the position and refreshes the bounding box.
+	 * 
+	 * <p>This should be called after creating an instance of non-living entities.
+	 * For living entities, {@link #refreshPositionAndAngles} should be used instead.
+	 * 
+	 * @see #refreshPositionAndAngles
+	 * @see #teleport
+	 */
 	public void setPosition(double x, double y, double z) {
 		this.setPos(x, y, z);
 		this.setBoundingBox(this.calculateBoundingBox());
@@ -467,6 +640,17 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
+	/**
+	 * Ticks this entity.
+	 * 
+	 * @apiNote This can be overridden to add additional logics. {@code super.tick();}
+	 * should be called in those cases.
+	 * 
+	 * @implNote By default, this delegates all logics to {@link #baseTick}.
+	 * 
+	 * @see LivingEntity#tickMovement
+	 * @see net.minecraft.entity.mob.MobEntity#mobTick
+	 */
 	public void tick() {
 		this.baseTick();
 	}
@@ -544,24 +728,41 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
+	/**
+	 * Resets the entity's portal cooldown to the default.
+	 * 
+	 * @see #getDefaultPortalCooldown
+	 */
 	public void resetPortalCooldown() {
 		this.portalCooldown = this.getDefaultPortalCooldown();
 	}
 
-	public boolean hasPortalCooldown() {
+	/**
+	 * {@return whether the entity's portal cooldown is in effect}
+	 */
+	public boolean hasPortalCooldownn() {
 		return this.portalCooldown > 0;
 	}
 
 	protected void tickPortalCooldown() {
-		if (this.hasPortalCooldown()) {
+		if (this.hasPortalCooldownn()) {
 			this.portalCooldown--;
 		}
 	}
 
+	/**
+	 * {@return how long entities can be inside the nether portal without teleporting,
+	 * in ticks}
+	 */
 	public int getMaxNetherPortalTime() {
 		return 0;
 	}
 
+	/**
+	 * Sets the entity on fire from lava, applies lava damage, and plays the burning sound.
+	 * 
+	 * @implNote Fire from lava lasts 15 seconds by default.
+	 */
 	public void setOnFireFromLava() {
 		if (!this.isFireImmune()) {
 			this.setOnFireFor(15);
@@ -571,6 +772,15 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
+	/**
+	 * Sets the entity on fire for {@code seconds} seconds.
+	 * 
+	 * @implNote The actual duration can be reduced using the
+	 * {@linkplain net.minecraft.enchantment.ProtectionEnchantment.Type#FIRE
+	 * fire protection} enchantment.
+	 * 
+	 * @see net.minecraft.enchantment.ProtectionEnchantment#transformFireDuration
+	 */
 	public void setOnFireFor(int seconds) {
 		int i = seconds * 20;
 		if (this instanceof LivingEntity) {
@@ -582,6 +792,11 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
+	/**
+	 * Sets the entity on fire for {@code ticks} ticks.
+	 * 
+	 * @see #setOnFireFor
+	 */
 	public void setFireTicks(int fireTicks) {
 		this.fireTicks = fireTicks;
 	}
@@ -590,6 +805,12 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this.fireTicks;
 	}
 
+	/**
+	 * Extinguishes this entity.
+	 * 
+	 * @apiNote This is used by water, {@link net.minecraft.block.LeveledCauldronBlock},
+	 * and splash water bottles in vanilla.
+	 */
 	public void extinguish() {
 		this.setFireTicks(0);
 	}
@@ -603,6 +824,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.discard();
 	}
 
+	/**
+	 * {@return whether the bounding box with the given offsets do not collide with
+	 * blocks or fluids}
+	 */
 	public boolean doesNotCollide(double offsetX, double offsetY, double offsetZ) {
 		return this.doesNotCollide(this.getBoundingBox().offset(offsetX, offsetY, offsetZ));
 	}
@@ -615,6 +840,9 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.onGround = onGround;
 	}
 
+	/**
+	 * {@return whether the entity is on the ground}
+	 */
 	public boolean isOnGround() {
 		return this.onGround;
 	}
@@ -768,6 +996,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
+	/**
+	 * Plays the {@link
+	 * net.minecraft.sound.SoundEvents#ENTITY_GENERIC_EXTINGUISH_FIRE} sound.
+	 */
 	protected void playExtinguishSound() {
 		this.playSound(SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.7F, 1.6F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
 	}
@@ -985,6 +1217,11 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return SoundEvents.ENTITY_GENERIC_SPLASH;
 	}
 
+	/**
+	 * Checks the entity's block collision, calling {@link
+	 * net.minecraft.block.AbstractBlock#onEntityCollision} and {@link #onBlockCollision}.
+	 * This should be called manually if {@link #tick} is overridden.
+	 */
 	protected void checkBlockCollision() {
 		Box box = this.getBoundingBox();
 		BlockPos blockPos = new BlockPos(box.minX + 0.001, box.minY + 0.001, box.minZ + 0.001);
@@ -1013,13 +1250,33 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
+	/**
+	 * Called when this entity's collision box intersects {@code state}.
+	 * 
+	 * @see net.minecraft.block.AbstractBlock#onEntityCollision
+	 */
 	protected void onBlockCollision(BlockState state) {
 	}
 
+	/**
+	 * Emits a game event originating from another entity at this entity's position.
+	 * 
+	 * <p>A common example is a game event called in {@link #interact}, where the player
+	 * interacting with the entity is the emitter of the event.
+	 * 
+	 * @see #emitGameEvent(GameEvent)
+	 * 
+	 * @param entity the entity that emitted the game event, or {@code null} if there is none
+	 */
 	public void emitGameEvent(GameEvent event, @Nullable Entity entity) {
 		this.world.emitGameEvent(entity, event, this.pos);
 	}
 
+	/**
+	 * Emits a game event originating from this entity at this entity's position.
+	 * 
+	 * @see #emitGameEvent(GameEvent, Entity)
+	 */
 	public void emitGameEvent(GameEvent event) {
 		this.emitGameEvent(event, this);
 	}
@@ -1060,10 +1317,20 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	protected void addFlapEffects() {
 	}
 
+	/**
+	 * {@return whether the entity has wings}
+	 * 
+	 * <p>Entities with wings will call {@link #addFlapEffects} inside
+	 * {@link #addAirTravelEffects}.
+	 */
 	protected boolean hasWings() {
 		return false;
 	}
 
+	/**
+	 * Plays {@code sound} at this entity's position with the entity's {@linkplain
+	 * #getSoundCategory sound category} if the entity is {@linkplain #isSilent not silent}.
+	 */
 	public void playSound(SoundEvent sound, float volume, float pitch) {
 		if (!this.isSilent()) {
 			this.world.playSound(null, this.getX(), this.getY(), this.getZ(), sound, this.getSoundCategory(), volume, pitch);
@@ -1076,18 +1343,43 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
+	/**
+	 * {@return whether the entity is silent}
+	 * 
+	 * <p>Silent entities should not make sounds. {@link #playSound} checks this method by
+	 * default, but if a sound is played manually, this has to be checked too.
+	 * 
+	 * <p>This is saved under the {@code Silent} NBT key.
+	 */
 	public boolean isSilent() {
 		return this.dataTracker.get(SILENT);
 	}
 
+	/**
+	 * Sets whether the entity is silent.
+	 * 
+	 * <p>This is saved under the {@code Silent} NBT key.
+	 */
 	public void setSilent(boolean silent) {
 		this.dataTracker.set(SILENT, silent);
 	}
 
+	/**
+	 * {@return whether the entity has no gravity}
+	 * 
+	 * <p>Entities using {@link net.minecraft.entity.ai.control.FlightMoveControl} has
+	 * no gravity. This is saved under the {@code NoGravity} NBT key.
+	 */
 	public boolean hasNoGravity() {
 		return this.dataTracker.get(NO_GRAVITY);
 	}
 
+	/**
+	 * Sets  whether the entity has no gravity.
+	 * 
+	 * <p>Entities using {@link net.minecraft.entity.ai.control.FlightMoveControl} has
+	 * no gravity. This is saved under the {@code NoGravity} NBT key.
+	 */
 	public void setNoGravity(boolean noGravity) {
 		this.dataTracker.set(NO_GRAVITY, noGravity);
 	}
@@ -1104,10 +1396,24 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return Entity.MoveEffect.ALL;
 	}
 
+	/**
+	 * {@return whether the entity should not emit vibrations}
+	 * 
+	 * <p>By default, wool or carpet {@linkplain ItemEntity item entities}, and
+	 * {@link net.minecraft.entity.mob.WardenEntity} do not emit vibrations.
+	 */
 	public boolean occludeVibrationSignals() {
 		return false;
 	}
 
+	/**
+	 * Called when the entity falls. Flying mobs should override this to do nothing.
+	 * 
+	 * @implNote If on ground, this calls {@link net.minecraft.block.Block#onLandedUpon}, which can add or
+	 * reduce fall damage, emits {@link GameEvent#HIT_GROUND}, then calls {@link #onLanding}.
+	 * Otherwise, if {@code heightDifference} is negative, it subtracts that value from
+	 * {@link #fallDistance}.
+	 */
 	protected void fall(double heightDifference, boolean onGround, BlockState state, BlockPos landedPosition) {
 		if (onGround) {
 			if (this.fallDistance > 0.0F) {
@@ -1121,10 +1427,26 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
+	/**
+	 * {@return whether the entity is immune to {@linkplain DamageSource#setFire fire damage}}
+	 * 
+	 * @see EntityType.Builder#makeFireImmune
+	 */
 	public boolean isFireImmune() {
 		return this.getType().isFireImmune();
 	}
 
+	/**
+	 * Called when an entity falls.
+	 * 
+	 * <p>Flying mobs and mobs immune to fall damage should override this to do nothing.
+	 * Mobs with reduced fall damage should override this method to apply reduced damage instead.
+	 * Some entities explode instead of applying fall damage, like {@link
+	 * net.minecraft.entity.vehicle.TntMinecartEntity}.
+	 * 
+	 * @return whether to play the sound when falling on honey block; {@code false} for all
+	 * entities except horses and llamas
+	 */
 	public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
 		if (this.hasPassengers()) {
 			for (Entity entity : this.getPassengerList()) {
@@ -1142,36 +1464,61 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this.touchingWater;
 	}
 
+	/**
+	 * {@return whether it is raining at the entity's position}
+	 */
 	private boolean isBeingRainedOn() {
 		BlockPos blockPos = this.getBlockPos();
 		return this.world.hasRain(blockPos) || this.world.hasRain(new BlockPos((double)blockPos.getX(), this.getBoundingBox().maxY, (double)blockPos.getZ()));
 	}
 
+	/**
+	 * {@return whether the block at the entity's position is a bubble column}
+	 */
 	private boolean isInsideBubbleColumn() {
 		return this.world.getBlockState(this.getBlockPos()).isOf(Blocks.BUBBLE_COLUMN);
 	}
 
+	/**
+	 * {@return whether this entity is touching water or is being rained on (but does not check
+	 * for a bubble column)}
+	 * 
+	 * @see net.minecraft.entity.Entity#isTouchingWater()
+	 * @see net.minecraft.entity.Entity#isBeingRainedOn()
+	 * @see net.minecraft.entity.Entity#isWet()
+	 * @see net.minecraft.entity.Entity#isInsideWaterOrBubbleColumn()
+	 */
 	public boolean isTouchingWaterOrRain() {
 		return this.isTouchingWater() || this.isBeingRainedOn();
 	}
 
 	/**
-	 * Returns whether this entity is touching water, or is being rained on, or is inside a bubble column...
+	 * {@return whether this entity is touching water, or is being rained on, or is
+	 * inside a bubble column}
 	 * 
 	 * @see net.minecraft.entity.Entity#isTouchingWater()
 	 * @see net.minecraft.entity.Entity#isBeingRainedOn()
 	 * @see net.minecraft.entity.Entity#isInsideBubbleColumn()
+	 * @see net.minecraft.entity.Entity#isInsideWaterOrBubbleColumn()
 	 */
 	public boolean isWet() {
 		return this.isTouchingWater() || this.isBeingRainedOn() || this.isInsideBubbleColumn();
 	}
 
+	/**
+	 * {@return whether this entity is touching water or a bubble column}
+	 * 
+	 * @see net.minecraft.entity.Entity#isTouchingWater()
+	 * @see net.minecraft.entity.Entity#isBeingRainedOn()
+	 * @see net.minecraft.entity.Entity#isInsideBubbleColumn()
+	 * @see net.minecraft.entity.Entity#isWet()
+	 */
 	public boolean isInsideWaterOrBubbleColumn() {
 		return this.isTouchingWater() || this.isInsideBubbleColumn();
 	}
 
 	/**
-	 * Returns whether this entity's hitbox is fully submerged in water.
+	 * {@return whether this entity's hitbox is fully submerged in water}
 	 */
 	public boolean isSubmergedInWater() {
 		return this.submergedInWater && this.isTouchingWater();
@@ -1313,19 +1660,36 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
+	/**
+	 * {@return whether the entity is submerged in a fluid in {@code fluidTag}}
+	 */
 	public boolean isSubmergedIn(TagKey<Fluid> fluidTag) {
 		return this.submergedFluidTag.contains(fluidTag);
 	}
 
+	/**
+	 * {@return whether the entity is in lava}
+	 */
 	public boolean isInLava() {
 		return !this.firstUpdate && this.fluidHeight.getDouble(FluidTags.LAVA) > 0.0;
 	}
 
+	/**
+	 * Updates the entity's velocity to add a vector in the direction of the entity's yaw
+	 * whose absolute value is {@code movementInput} normalized and multiplied by {@code speed}.
+	 * 
+	 * <p>This is usually called inside overridden {@link LivingEntity#travel} if the entity is
+	 * touching water; see {@link net.minecraft.entity.passive.FishEntity} for an example.
+	 */
 	public void updateVelocity(float speed, Vec3d movementInput) {
 		Vec3d vec3d = movementInputToVelocity(movementInput, speed, this.getYaw());
 		this.setVelocity(this.getVelocity().add(vec3d));
 	}
 
+	/**
+	 * {@return a vector with the horizontal direction being {@code yaw} degrees and the
+	 * absolute value being {@code movementInput} normalized and multiplied by {@code speed}}
+	 */
 	private static Vec3d movementInputToVelocity(Vec3d movementInput, float speed, float yaw) {
 		double d = movementInput.lengthSquared();
 		if (d < 1.0E-7) {
@@ -1368,10 +1732,26 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.refreshPositionAndAngles(x, y, z, this.getYaw(), this.getPitch());
 	}
 
+	/**
+	 * Sets the entity's position, yaw, and pitch, and refreshes several position-related
+	 * fields.
+	 * 
+	 * <p>This should be used over other methods for setting positions of mobs.
+	 * 
+	 * @see #refreshPositionAndAngles(double, double, double, float, float)
+	 */
 	public void refreshPositionAndAngles(BlockPos pos, float yaw, float pitch) {
 		this.refreshPositionAndAngles((double)pos.getX() + 0.5, (double)pos.getY(), (double)pos.getZ() + 0.5, yaw, pitch);
 	}
 
+	/**
+	 * Sets the entity's position, yaw, and pitch, and refreshes several position-related
+	 * fields.
+	 * 
+	 * <p>This should be used over other methods for setting positions of mobs.
+	 * 
+	 * @see #refreshPositionAndAngles(BlockPos, float, float)
+	 */
 	public void refreshPositionAndAngles(double x, double y, double z, float yaw, float pitch) {
 		this.setPos(x, y, z);
 		this.setYaw(yaw);
@@ -1394,6 +1774,9 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.prevPitch = this.getPitch();
 	}
 
+	/**
+	 * {@return the distance between this entity and {@code entity}}
+	 */
 	public float distanceTo(Entity entity) {
 		float f = (float)(this.getX() - entity.getX());
 		float g = (float)(this.getY() - entity.getY());
@@ -1401,6 +1784,9 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return MathHelper.sqrt(f * f + g * g + h * h);
 	}
 
+	/**
+	 * {@return the squared distance between this entity and the given position}
+	 */
 	public double squaredDistanceTo(double x, double y, double z) {
 		double d = this.getX() - x;
 		double e = this.getY() - y;
@@ -1408,10 +1794,16 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return d * d + e * e + f * f;
 	}
 
+	/**
+	 * {@return the squared distance between this entity and {@code entity}}
+	 */
 	public double squaredDistanceTo(Entity entity) {
 		return this.squaredDistanceTo(entity.getPos());
 	}
 
+	/**
+	 * {@return the squared distance between this entity and the given position}
+	 */
 	public double squaredDistanceTo(Vec3d vector) {
 		double d = this.getX() - vector.x;
 		double e = this.getY() - vector.y;
@@ -1419,6 +1811,12 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return d * d + e * e + f * f;
 	}
 
+	/**
+	 * Called when a player collides with the entity. Does nothing by default.
+	 * 
+	 * <p>This should be overridden if the collision logic is specific to players,
+	 * such as picking up item entities, experience orbs, or arrows.
+	 */
 	public void onPlayerCollision(PlayerEntity player) {
 	}
 
@@ -1462,6 +1860,26 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.velocityModified = true;
 	}
 
+	/**
+	 * Applies a damage to this entity. The exact implementation differes between subclasses.
+	 * 
+	 * <p>{@link LivingEntity} has health value, and damaging the entity decreases it. This
+	 * also handles shields, extra damage to helmets for falling blocks, setting the attacker,
+	 * playing hurt sound, etc.
+	 * 
+	 * <p>Some entities like {@link ItemEntity} also have health value, which the overridden
+	 * method decrements. There also exist several entities, like {@link
+	 * net.minecraft.entity.decoration.EndCrystalEntity}, where any damage discards the entity
+	 * (perhaps with an explosion).
+	 * 
+	 * <p>If this is overridden, it must check the result of {@link #isInvulnerableTo} and
+	 * return early.
+	 * 
+	 * @return whether the entity was actually damaged
+	 * 
+	 * @see #isInvulnerableTo
+	 * @see LivingEntity#modifyAppliedDamage
+	 */
 	public boolean damage(DamageSource source, float amount) {
 		if (this.isInvulnerableTo(source)) {
 			return false;
@@ -1501,6 +1919,11 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this.getRotationVector(pitch - 90.0F, yaw);
 	}
 
+	/**
+	 * {@return the position of the eye}
+	 * 
+	 * @see #getEyeY
+	 */
 	public final Vec3d getEyePos() {
 		return new Vec3d(this.getX(), this.getEyeY(), this.getZ());
 	}
@@ -1535,10 +1958,17 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			);
 	}
 
+	/**
+	 * {@return whether the entity can be hit with a projectile or be targetted by
+	 * the player crosshair}
+	 */
 	public boolean canHit() {
 		return false;
 	}
 
+	/**
+	 * {@return whether the entity can be pushed by other entities}
+	 */
 	public boolean isPushable() {
 		return false;
 	}
@@ -1760,8 +2190,30 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return entityType.isSaveable() && identifier != null ? identifier.toString() : null;
 	}
 
+	/**
+	 * Reads custom data from {@code nbt}. Subclasses has to implement this.
+	 * 
+	 * <p>NBT is a storage format; therefore, a data from NBT is loaded to an entity instance's
+	 * fields, which are used for other operations instead of the NBT. The data is written
+	 * back to NBT when saving the entity.
+	 * 
+	 * <p>{@code nbt} might not have all expected keys, or might have a key whose value
+	 * does not meet the requirement (such as the type or the range). This method should
+	 * fall back to a reasonable default value instead of throwing an exception.
+	 * 
+	 * @see #writeCustomDataToNbt
+	 */
 	protected abstract void readCustomDataFromNbt(NbtCompound nbt);
 
+	/**
+	 * Writes custom data to {@code nbt}. Subclasses has to implement this.
+	 * 
+	 * <p>NBT is a storage format; therefore, a data from NBT is loaded to an entity instance's
+	 * fields, which are used for other operations instead of the NBT. The data is written
+	 * back to NBT when saving the entity.
+	 * 
+	 * @see #readCustomDataFromNbt
+	 */
 	protected abstract void writeCustomDataToNbt(NbtCompound nbt);
 
 	protected NbtList toNbtList(double... values) {
@@ -1784,21 +2236,59 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return nbtList;
 	}
 
+	/**
+	 * Drops one {@code item} at the entity's position.
+	 * 
+	 * @return the spawned item entity, or {@code null} if called on the client
+	 * 
+	 * @see #dropItem(ItemConvertible, int)
+	 * @see #dropStack(ItemStack)
+	 * @see #dropStack(ItemStack, float)
+	 */
 	@Nullable
 	public ItemEntity dropItem(ItemConvertible item) {
 		return this.dropItem(item, 0);
 	}
 
+	/**
+	 * Drops one {@code item} at the entity's position with the given Y offset.
+	 * 
+	 * @return the spawned item entity, or {@code null} if called on the client
+	 * 
+	 * @see #dropItem(ItemConvertible)
+	 * @see #dropStack(ItemStack)
+	 * @see #dropStack(ItemStack, float)
+	 */
 	@Nullable
 	public ItemEntity dropItem(ItemConvertible item, int yOffset) {
 		return this.dropStack(new ItemStack(item), (float)yOffset);
 	}
 
+	/**
+	 * Drops {@code stack} at the entity's position.
+	 * 
+	 * @return the spawned item entity, or {@code null} if the stack is empty or if called
+	 * on the client
+	 * 
+	 * @see #dropItem(ItemConvertible)
+	 * @see #dropItem(ItemConvertible, int)
+	 * @see #dropStack(ItemStack, float)
+	 */
 	@Nullable
 	public ItemEntity dropStack(ItemStack stack) {
 		return this.dropStack(stack, 0.0F);
 	}
 
+	/**
+	 * Drops {@code stack} at the entity's position with the given Y offset.
+	 * 
+	 * @return the spawned item entity, or {@code null} if the stack is empty or if called
+	 * on the client
+	 * 
+	 * @see #dropItem(ItemConvertible)
+	 * @see #dropItem(ItemConvertible, int)
+	 * @see #dropStack(ItemStack)
+	 */
 	@Nullable
 	public ItemEntity dropStack(ItemStack stack, float yOffset) {
 		if (stack.isEmpty()) {
@@ -1813,10 +2303,23 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
+	/**
+	 * {@return whether the entity is alive}
+	 * 
+	 * <p>For non-{@link LivingEntity}, this is the same as negating {@link #isRemoved}.
+	 * {@link LivingEntity} checks the entity's health in addition to the removal.
+	 */
 	public boolean isAlive() {
 		return !this.isRemoved();
 	}
 
+	/**
+	 * {@return whether the entity is in a wall and should suffocate}
+	 * 
+	 * <p>This returns {@code false} if {@link #noClip} is {@code true}; otherwise,
+	 * this returns {@code true} if the eye position is occupied by a {@linkplain
+	 * net.minecraft.block.AbstractBlock.Settings#suffocates block that can suffocate}.
+	 */
 	public boolean isInsideWall() {
 		if (this.noClip) {
 			return false;
@@ -1849,10 +2352,27 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return ActionResult.PASS;
 	}
 
+	/**
+	 * {@return whether this entity cannot occupy the same space with {@code other}}
+	 * 
+	 * <p>This returns {@code false} if {@code other} is {@linkplain #isConnectedThroughVehicle
+	 * connected through vehicles}.
+	 * 
+	 * @see #isCollidable
+	 */
 	public boolean collidesWith(Entity other) {
 		return other.isCollidable() && !this.isConnectedThroughVehicle(other);
 	}
 
+	/**
+	 * {@return whether other entities cannot occupy the same space with this entity}
+	 * 
+	 * <p>If {@code true}, other entities can stand on this entity without falling.
+	 * {@link net.minecraft.entity.vehicle.BoatEntity} and {@link
+	 * net.minecraft.entity.mob.ShulkerEntity} has this behavior.
+	 * 
+	 * @see #collidesWith
+	 */
 	public boolean isCollidable() {
 		return false;
 	}
@@ -1887,6 +2407,26 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return (double)this.dimensions.height * 0.75;
 	}
 
+	/**
+	 * Starts riding {@code entity}.
+	 * 
+	 * <p>For example, {@code player.startRiding(horse)} causes the player to ride a
+	 * horse; the opposite, {@code horse.startRiding(player)}, will cause the horse
+	 * to ride a player.
+	 * 
+	 * <p>This fails when this entity is already riding the entity (or vice versa),
+	 * or when this entity {@linkplain #canStartRiding does not allow riding other entities}
+	 * (or {@linkplain #canAddPassenger vice versa}).
+	 * If this entity is already riding another entity, it will stop riding that entity first.
+	 * 
+	 * @return whether this entity successfully started riding
+	 * 
+	 * @see #startRiding(Entity, boolean)
+	 * @see #canAddPassenger
+	 * @see #canStartRiding
+	 * @see #stopRiding
+	 * @see #hasVehicle
+	 */
 	public boolean startRiding(Entity entity) {
 		return this.startRiding(entity, false);
 	}
@@ -1895,6 +2435,28 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this instanceof LivingEntity;
 	}
 
+	/**
+	 * Starts riding {@code entity}.
+	 * 
+	 * <p>For example, {@code player.startRiding(horse)} causes the player to ride a
+	 * horse; the opposite, {@code horse.startRiding(player)}, will cause the horse
+	 * to ride a player.
+	 * 
+	 * <p>This fails when this entity is already riding the entity (or vice versa),
+	 * or when this entity {@linkplain #canStartRiding does not allow riding other entities}
+	 * (or {@linkplain #canAddPassenger vice versa}) unless {@code force} is {@code true}.
+	 * If this entity is already riding another entity, it will stop riding that entity first.
+	 * 
+	 * @return whether this entity successfully started riding
+	 * 
+	 * @see #startRiding(Entity)
+	 * @see #canAddPassenger
+	 * @see #canStartRiding
+	 * @see #stopRiding
+	 * @see #hasVehicle
+	 * 
+	 * @param force whether to bypass the entity's rideability check
+	 */
 	public boolean startRiding(Entity entity, boolean force) {
 		if (entity == this.vehicle) {
 			return false;
@@ -1923,14 +2485,42 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
+	/**
+	 * {@return whether <strong>this entity can ride</strong> {@code entity}}
+	 * 
+	 * <p>Returning {@code false} causes the entity to be unable to ride other entities. For
+	 * example, {@link net.minecraft.entity.boss.WitherEntity} overrides this to return
+	 * {@code false}, so withers cannot ride boats or minecarts. Note that this check can be
+	 * bypassed by passing {@code true} to {@link #startRiding(Entity, boolean)}.
+	 * 
+	 * <p>This is the opposite of {@link #canAddPassenger}.
+	 * 
+	 * @see #startRiding(Entity)
+	 * @see #startRiding(Entity, boolean)
+	 * @see #canAddPassenger
+	 * @see #stopRiding
+	 * @see #hasVehicle
+	 */
 	protected boolean canStartRiding(Entity entity) {
 		return !this.isSneaking() && this.ridingCooldown <= 0;
 	}
 
+	/**
+	 * {@return {@code true} if the entity would not collide with blocks if the pose is
+	 * {@code pose}}
+	 */
 	protected boolean wouldPoseNotCollide(EntityPose pose) {
 		return this.world.isSpaceEmpty(this, this.calculateBoundsForPose(pose).contract(1.0E-7));
 	}
 
+	/**
+	 * Causes all passengers of this entity to stop riding this entity.
+	 * 
+	 * <p>For example, {@code boat.removeAllPassengers()} will dismount all passengers of
+	 * the boat.
+	 * 
+	 * @see #stopRiding
+	 */
 	public void removeAllPassengers() {
 		for (int i = this.passengerList.size() - 1; i >= 0; i--) {
 			((Entity)this.passengerList.get(i)).stopRiding();
@@ -1952,10 +2542,27 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
+	/**
+	 * Stops riding the vehicle if present.
+	 * 
+	 * <p>For example, if {@code player} is riding on a horse, {@code player.stopRiding()}
+	 * will dismount that player from the horse.
+	 * 
+	 * @see #removeAllPassengers
+	 */
 	public void stopRiding() {
 		this.dismountVehicle();
 	}
 
+	/**
+	 * Adds {@code passenger} as a passenger. <strong>This should not be called
+	 * normally; call {@link #startRiding(Entity)} instead.</strong> (Note that
+	 * the entity to pass and the entity to call are swapped in this case;
+	 * {@code entity.startRiding(vehicle)} is the equivalent of {@code
+	 * vehicle.addPassenger(entity)}.)
+	 * 
+	 * @throws IllegalStateException when the method is called directly
+	 */
 	protected void addPassenger(Entity passenger) {
 		if (passenger.getVehicle() != this) {
 			throw new IllegalStateException("Use x.startRiding(y), not y.addPassenger(x)");
@@ -1975,6 +2582,14 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
+	/**
+	 * Removes {@code passenger} from the passengers. <strong>This should not be called
+	 * normally; call {@link #stopRiding} instead.</strong> (Note that vehicles are not
+	 * passed to that method; {@code entity.stopRiding()} is the equivalent of {@code
+	 * vehicle.removePassenger(entity)}.)
+	 * 
+	 * @throws IllegalStateException when the method is called directly
+	 */
 	protected void removePassenger(Entity passenger) {
 		if (passenger.getVehicle() == this) {
 			throw new IllegalStateException("Use x.stopRiding(y), not y.removePassenger(x)");
@@ -1989,6 +2604,21 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
+	/**
+	 * {@return whether {@code entity} <strong>can ride this entity</strong>}
+	 * 
+	 * <p>Returning {@code false} causes other entities to be unable to ride this entity. For
+	 * example, {@link net.minecraft.entity.vehicle.BoatEntity} uses this to restrict how many
+	 * passengers can ride the same boat (2 for normal, 1 for chest boat).
+	 * 
+	 * <p>This is the opposite of {@link #canStartRiding}.
+	 * 
+	 * @see #startRiding(Entity)
+	 * @see #startRiding(Entity, boolean)
+	 * @see #canStartRiding
+	 * @see #stopRiding
+	 * @see #hasVehicle
+	 */
 	protected boolean canAddPassenger(Entity passenger) {
 		return this.passengerList.isEmpty();
 	}
@@ -2002,6 +2632,14 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.setHeadYaw(yaw);
 	}
 
+	/**
+	 * {@return the margin around the entity's bounding box where the entity
+	 * targetting is still successful}
+	 * 
+	 * @apiNote {@link net.minecraft.entity.projectile.ExplosiveProjectileEntity}
+	 * overrides this method to return {@code 1.0f}, which expands the ghast fireball's
+	 * effective hitbox.
+	 */
 	public float getTargetingMargin() {
 		return 0.0F;
 	}
@@ -2010,6 +2648,14 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this.getRotationVector(this.getPitch(), this.getYaw());
 	}
 
+	/**
+	 * {@return the offset of the hand that holds {@code item}}
+	 * 
+	 * <p>This returns {@link Vec3d#ZERO} if the entity is not a player.
+	 * 
+	 * @apiNote The offset is applied to the position of the firework rocket particle
+	 * when used by players.
+	 */
 	public Vec3d getHandPosOffset(Item item) {
 		if (!(this instanceof PlayerEntity playerEntity)) {
 			return Vec3d.ZERO;
@@ -2029,7 +2675,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public void setInNetherPortal(BlockPos pos) {
-		if (this.hasPortalCooldown()) {
+		if (this.hasPortalCooldownn()) {
 			this.resetPortalCooldown();
 		} else {
 			if (!this.world.isClient && !pos.equals(this.lastNetherPortalPosition)) {
@@ -2071,6 +2717,13 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
+	/**
+	 * {@return the entity's default portal cooldown}
+	 * 
+	 * <p>This is 300 ticks by default, or 10 ticks for players.
+	 * 
+	 * @see #resetPortalCooldown
+	 */
 	public int getDefaultPortalCooldown() {
 		return 300;
 	}
@@ -2079,6 +2732,15 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.setVelocity(x, y, z);
 	}
 
+	/**
+	 * Called on the client when the entity receives an entity status from the server.
+	 * They are often used to spawn particles or play sounds.
+	 * Subclasses can override this method to handle custom entity status.
+	 * 
+	 * @apiNote To send an entity status, use {@link World#sendEntityStatus}.
+	 * 
+	 * @see net.minecraft.entity.EntityStatuses
+	 */
 	public void handleStatus(byte status) {
 		switch (status) {
 			case 53:
@@ -2086,53 +2748,151 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
+	/**
+	 * Called on the client to animate the entity's damage (the wobble).
+	 */
 	public void animateDamage() {
 	}
 
+	/**
+	 * {@return an iterable of item stacks held in the hands}
+	 * 
+	 * @see #getArmorItems
+	 * @see #getItemsEquipped
+	 */
 	public Iterable<ItemStack> getHandItems() {
 		return EMPTY_STACK_LIST;
 	}
 
+	/**
+	 * {@return an iterable of item stacks equipped as armor}
+	 * 
+	 * @see #getHandItems
+	 * @see #getItemsEquipped
+	 */
 	public Iterable<ItemStack> getArmorItems() {
 		return EMPTY_STACK_LIST;
 	}
 
+	/**
+	 * {@return an iterable of item stacks held in the hands or equpipped as armor}
+	 * 
+	 * @see #getHandItems
+	 * @see #getArmorItems
+	 */
 	public Iterable<ItemStack> getItemsEquipped() {
 		return Iterables.concat(this.getHandItems(), this.getArmorItems());
 	}
 
+	/**
+	 * Equips {@code stack} at {@code slot}.This is also used to set an entity's
+	 * mainhand or offhand stack. This overwrites any stacks present in that slot
+	 * without dropping them.
+	 */
 	public void equipStack(EquipmentSlot slot, ItemStack stack) {
 	}
 
+	/**
+	 * {@return whether the entity is on fire and is not fire immune}
+	 * 
+	 * @see #isFireImmune
+	 */
 	public boolean isOnFire() {
 		boolean bl = this.world != null && this.world.isClient;
 		return !this.isFireImmune() && (this.fireTicks > 0 || bl && this.getFlag(ON_FIRE_FLAG_INDEX));
 	}
 
+	/**
+	 * {@return whether this entity is riding an entity}
+	 * 
+	 * <p>This is the opposite of {@link #hasPassengers}.
+	 * 
+	 * @see #startRiding(Entity)
+	 * @see #startRiding(Entity, boolean)
+	 * @see #stopRiding
+	 * @see #hasPassengers
+	 */
 	public boolean hasVehicle() {
 		return this.getVehicle() != null;
 	}
 
+	/**
+	 * {@return whether another entity is riding this entity}
+	 * 
+	 * <p>This is the opposite of {@link #hasVehicle}.
+	 * 
+	 * @see #startRiding(Entity)
+	 * @see #startRiding(Entity, boolean)
+	 * @see #stopRiding
+	 * @see #hasVehicle
+	 */
 	public boolean hasPassengers() {
 		return !this.passengerList.isEmpty();
 	}
 
+	/**
+	 * {@return whether the passenger dismounts this entity when the entity is submerged
+	 * in water}
+	 * 
+	 * <p>This is not used to check whether the entity can start riding this entity in the
+	 * first place; override {@link #canAddPassenger} instead.
+	 * 
+	 * @apiNote This returns {@code true} for non-living entities and {@link
+	 * net.minecraft.entity.mob.SkeletonHorseEntity}.
+	 * 
+	 * @see #canAddPassenger
+	 */
 	public boolean canBeRiddenInWater() {
 		return true;
 	}
 
+	/**
+	 * Sets whether the entity is sneaking.
+	 * 
+	 * @see #isSneaking
+	 * @see #isInSneakingPose
+	 */
 	public void setSneaking(boolean sneaking) {
 		this.setFlag(SNEAKING_FLAG_INDEX, sneaking);
 	}
 
+	/**
+	 * {@return whether the entity is sneaking}
+	 * 
+	 * <p>This only returns {@code true} if the entity is a player and that player
+	 * is pressing the Sneak key. See also {@link #isInSneakingPose}.
+	 * 
+	 * @see #setSneaking
+	 * @see #isInSneakingPose
+	 */
 	public boolean isSneaking() {
 		return this.getFlag(SNEAKING_FLAG_INDEX);
 	}
 
+	/**
+	 * {@return whether the entity should bypass effects caused by stepping}
+	 * 
+	 * <p>This returns {@link #isSneaking} by default.
+	 * 
+	 * @apiNote Stepping effects include magma blocks dealing fire damage, turtle eggs
+	 * breaking, or sculk sensors triggering.
+	 * 
+	 * @see #bypassesLandingEffects
+	 */
 	public boolean bypassesSteppingEffects() {
 		return this.isSneaking();
 	}
 
+	/**
+	 * {@return whether the entity should bypass effects caused by landing on a block}
+	 * 
+	 * <p>This returns {@link #isSneaking} by default.
+	 * 
+	 * @apiNote Landing effects include slime blocks nullifying the fall damage and
+	 * slime blocks and beds bouncing the entity.
+	 * 
+	 * @see #bypassesSteppingEffects
+	 */
 	public boolean bypassesLandingEffects() {
 		return this.isSneaking();
 	}
@@ -2141,65 +2901,162 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this.isSneaking();
 	}
 
+	/**
+	 * {@return whether the entity is actively descending}
+	 * 
+	 * <p>This affects scaffolding and powder snow (if the entity can walk on it), and
+	 * returns {@link #isSneaking} by default. This returns {@code false} for entities
+	 * descending a ladder, since the entity is not actively doing so, instead letting
+	 * the gravity to do so.
+	 */
 	public boolean isDescending() {
 		return this.isSneaking();
 	}
 
 	/**
-	 * Returns whether the entity is in a crouching pose.
+	 * {@return whether the entity is in a crouching pose}
 	 * 
 	 * <p>Compared to {@link #isSneaking()}, it only makes the entity appear
 	 * crouching and does not bring other effects of sneaking, such as no less
 	 * obvious name label rendering, no dismounting while riding, etc.
 	 * 
 	 * <p>This is used by vanilla for non-player entities to crouch, such as
-	 * for foxes and cats.
+	 * for foxes and cats. This is also used when the entity is a player and
+	 * the player would otherwise collide with blocks (for example, when the
+	 * player is in a 1.5 blocks tall tunnel).
 	 */
 	public boolean isInSneakingPose() {
 		return this.isInPose(EntityPose.CROUCHING);
 	}
 
+	/**
+	 * {@return whether the entity is sprinting}
+	 * 
+	 * <p>Swimming is also considered as sprinting.
+	 * 
+	 * #setSprinting
+	 */
 	public boolean isSprinting() {
 		return this.getFlag(SPRINTING_FLAG_INDEX);
 	}
 
+	/**
+	 * Sets whether the entity is sprinting.
+	 * 
+	 * @see #isSprinting
+	 */
 	public void setSprinting(boolean sprinting) {
 		this.setFlag(SPRINTING_FLAG_INDEX, sprinting);
 	}
 
+	/**
+	 * {@return whether the entity is swimming}
+	 * 
+	 * <p>An entity is swimming if it is touching water, not riding any entities, and is
+	 * sprinting. Note that to start swimming, the entity must first be submerged in
+	 * water.
+	 * 
+	 * @see #setSwimming
+	 */
 	public boolean isSwimming() {
 		return this.getFlag(SWIMMING_FLAG_INDEX);
 	}
 
+	/**
+	 * {@return whether the entity is in swimming pose}
+	 * 
+	 * <p>This includes crawling entities and entities using elytra that aren't fall-flying.
+	 * Players start crawling if they would otherwise collide with blocks (for example,
+	 * when the player is in a 1 block tall tunnel).
+	 * 
+	 * @see #isCrawling
+	 */
 	public boolean isInSwimmingPose() {
 		return this.isInPose(EntityPose.SWIMMING);
 	}
 
+	/**
+	 * {@return whether the entity is crawling}
+	 * 
+	 * <p>An entity is crawling if it is in swimming pose, but is not touching water.
+	 * Players start crawling if they would otherwise collide with blocks (for example,
+	 * when the player is in a 1 block tall tunnel).
+	 * 
+	 * @see #isInSwimmingPose
+	 */
 	public boolean isCrawling() {
 		return this.isInSwimmingPose() && !this.isTouchingWater();
 	}
 
+	/**
+	 * Sets whether the entity is swimming.
+	 * 
+	 * @see #isSwimming
+	 */
 	public void setSwimming(boolean swimming) {
 		this.setFlag(SWIMMING_FLAG_INDEX, swimming);
 	}
 
+	/**
+	 * {@return whether the entity is glowing, without checking the entity flags}
+	 * 
+	 * @apiNote This is only used to copy entity data to NBT when bucketing.
+	 * 
+	 * @see #isGlowing
+	 * @see #setGlowing
+	 */
 	public final boolean isGlowingLocal() {
 		return this.glowing;
 	}
 
+	/**
+	 * Sets whether the entity is glowing.
+	 * 
+	 * <p>Glowing entities have an outline when rendered.
+	 * 
+	 * @see #isGlowing
+	 */
 	public final void setGlowing(boolean glowing) {
 		this.glowing = glowing;
 		this.setFlag(GLOWING_FLAG_INDEX, this.isGlowing());
 	}
 
+	/**
+	 * {@return whether the entity is glowing, checking the entity flags on the client}
+	 * 
+	 * <p>Glowing entities have an outline when rendered.
+	 * 
+	 * @see #isGlowingLocal
+	 * @see #setGlowing
+	 */
 	public boolean isGlowing() {
 		return this.world.isClient() ? this.getFlag(GLOWING_FLAG_INDEX) : this.glowing;
 	}
 
+	/**
+	 * {@return whether the entity is invisible to everyone}
+	 * 
+	 * <p>Invisibility status effect and {@link
+	 * net.minecraft.entity.decoration.ArmorStandEntity}'s {@code Invisible} NBT key can
+	 * cause an entity to be invisible.
+	 * 
+	 * @see #isInvisibleTo
+	 * @see #setInvisible
+	 */
 	public boolean isInvisible() {
 		return this.getFlag(INVISIBLE_FLAG_INDEX);
 	}
 
+	/**
+	 * {@return whether the entity is invisible to {@code player}}
+	 * 
+	 * <p>Spectators can see all entities, and entities on the same team as player's can
+	 * see all entities if {@link AbstractTeam#shouldShowFriendlyInvisibles} returns
+	 * {@code true}. Otherwise, this returns {@link #isInvisible}.
+	 * 
+	 * @see AbstractTeam#shouldShowFriendlyInvisibles
+	 * @see #isInvisible
+	 */
 	public boolean isInvisibleTo(PlayerEntity player) {
 		if (player.isSpectator()) {
 			return false;
@@ -2211,30 +3068,78 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
+	/**
+	 * Called when the entity is loaded to register game event handlers.
+	 * 
+	 * <p>Entities that listen to game events should first create an instance of
+	 * {@link net.minecraft.world.event.listener.EntityGameEventHandler} in the
+	 * entity's constructor, and override this to call {@code callback}. For example:
+	 * 
+	 * <pre>{@code
+	 * if (this.world instanceof ServerWorld serverWorld) {
+	 *   callback.accept(this.handler, serverWorld);
+	 * }
+	 * }</pre>
+	 */
 	public void updateEventHandler(BiConsumer<EntityGameEventHandler<?>, ServerWorld> callback) {
 	}
 
+	/**
+	 * {@return the scoreboard team the entity belongs to, or {@code null} if there is none}
+	 */
 	@Nullable
 	public AbstractTeam getScoreboardTeam() {
 		return this.world.getScoreboard().getPlayerTeam(this.getEntityName());
 	}
 
+	/**
+	 * {@return whether this entity and {@code other} are in the same team}
+	 * 
+	 * <p>This returns {@code false} if this entity is not in any team.
+	 */
 	public boolean isTeammate(Entity other) {
 		return this.isTeamPlayer(other.getScoreboardTeam());
 	}
 
+	/**
+	 * {@return whether this entity is in {@code team}}
+	 * 
+	 * <p>This returns {@code false} if this entity is not in any team.
+	 */
 	public boolean isTeamPlayer(AbstractTeam team) {
 		return this.getScoreboardTeam() != null ? this.getScoreboardTeam().isEqual(team) : false;
 	}
 
+	/**
+	 * Sets whether the entity is invisible to everyone.
+	 * 
+	 * <p>Invisibility status effect and {@link
+	 * net.minecraft.entity.decoration.ArmorStandEntity}'s {@code Invisible} NBT key can
+	 * cause an entity to be invisible.
+	 * 
+	 * @see #isInvisible
+	 * @see #isInvisibleTo
+	 */
 	public void setInvisible(boolean invisible) {
 		this.setFlag(INVISIBLE_FLAG_INDEX, invisible);
 	}
 
+	/**
+	 * {@return the entity flag with index {@code flag}}
+	 * 
+	 * <p>Entity flag is used to track whether the entity is sneaking, sprinting, invisible,
+	 * etc.
+	 */
 	protected boolean getFlag(int index) {
 		return (this.dataTracker.get(FLAGS) & 1 << index) != 0;
 	}
 
+	/**
+	 * Sets the entity flag with index {@code flag} to {@code value}.
+	 * 
+	 * <p>Entity flag is used to track whether the entity is sneaking, sprinting, invisible,
+	 * etc.
+	 */
 	protected void setFlag(int index, boolean value) {
 		byte b = this.dataTracker.get(FLAGS);
 		if (value) {
@@ -2244,39 +3149,140 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
+	/**
+	 * {@return the maximum amount of air the entity can hold, in ticks}
+	 * 
+	 * <p>Most entities have the max air of 300 ticks, or 15 seconds.
+	 * {@link net.minecraft.entity.passive.DolphinEntity} has 4800 ticks or 4
+	 * minutes; {@link net.minecraft.entity.passive.AxolotlEntity} has 6000 ticks
+	 * or 5 minutes. Note that this does not include enchantments.
+	 * 
+	 * @see #getAir
+	 * @see #setAir
+	 */
 	public int getMaxAir() {
 		return 300;
 	}
 
+	/**
+	 * {@return the air left for the entity, in ticks}
+	 * 
+	 * <p>Air is decremented every tick if the entity's eye is submerged in water.
+	 * If this is {@code -20}, the air will be reset to {@code 0} and the entity takes
+	 * a drowning damage.
+	 * 
+	 * @apiNote {@link net.minecraft.entity.mob.WaterCreatureEntity} reuses the air to
+	 * indicate the entity's air breathed when the entity is in water. If the entity is
+	 * not touching a water, the air decrements, and the entity drowns in the same way
+	 * as other entities.
+	 * 
+	 * @see #getMaxAir
+	 * @see #setAir
+	 * @see net.minecraft.entity.mob.WaterCreatureEntity#tickWaterBreathingAir
+	 */
 	public int getAir() {
 		return this.dataTracker.get(AIR);
 	}
 
+	/**
+	 * Sets the air left for the entity in ticks.
+	 * 
+	 * <p>Air is decremented every tick if the entity's eye is submerged in water.
+	 * If this is {@code -20}, the air will be reset to {@code 0} and the entity takes
+	 * a drowning damage.
+	 * 
+	 * @apiNote {@link net.minecraft.entity.mob.WaterCreatureEntity} reuses the air to
+	 * indicate the entity's air breathed when the entity is in water. If the entity is
+	 * not touching a water, the air decrements, and the entity drowns in the same way
+	 * as other entities.
+	 * 
+	 * @see #getMaxAir
+	 * @see #getAir
+	 * @see net.minecraft.entity.mob.WaterCreatureEntity#tickWaterBreathingAir
+	 */
 	public void setAir(int air) {
 		this.dataTracker.set(AIR, air);
 	}
 
+	/**
+	 * {@return how long the entity is freezing, in ticks}
+	 * 
+	 * <p>If this is equal to or above {@link #getMinFreezeDamageTicks}, the entity
+	 * receives freezing damage.
+	 * 
+	 * @see #setFrozenTicks
+	 * @see #getFreezingScale
+	 * @see #isFrozen
+	 * @see #getMinFreezeDamageTicks
+	 */
 	public int getFrozenTicks() {
 		return this.dataTracker.get(FROZEN_TICKS);
 	}
 
+	/**
+	 * Sets how long the entity is freezing in ticks.
+	 * 
+	 * <p>If this is equal to or above {@link #getMinFreezeDamageTicks}, the entity
+	 * receives freezing damage.
+	 * 
+	 * @see #setFrozenTicks
+	 * @see #getFreezingScale
+	 * @see #isFrozen
+	 * @see #getMinFreezeDamageTicks
+	 */
 	public void setFrozenTicks(int frozenTicks) {
 		this.dataTracker.set(FROZEN_TICKS, frozenTicks);
 	}
 
+	/**
+	 * {@return the current freezing scale}
+	 * 
+	 * <p>Freezing scale is calculated as {@code
+	 * Math.min(1, getFrozenTicks() / getMinFreezeDamageTicks())}.
+	 * 
+	 * @see #setFrozenTicks
+	 * @see #getFrozenTicks
+	 * @see #isFrozen
+	 * @see #getMinFreezeDamageTicks
+	 */
 	public float getFreezingScale() {
 		int i = this.getMinFreezeDamageTicks();
 		return (float)Math.min(this.getFrozenTicks(), i) / (float)i;
 	}
 
+	/**
+	 * {@return whether the entity is frozen}
+	 * 
+	 * <p>Frozen entities take freezing damage. Entity becomes frozen {@link
+	 * #getMinFreezeDamageTicks} ticks after starting to freeze.
+	 * 
+	 * @see #getFrozenTicks
+	 * @see #setFrozenTicks
+	 * @see #getFreezingScale
+	 * @see #getMinFreezeDamageTicks
+	 */
 	public boolean isFrozen() {
 		return this.getFrozenTicks() >= this.getMinFreezeDamageTicks();
 	}
 
+	/**
+	 * {@return how long it takes for the entity to be completely frozen and receive
+	 * freezing damage, in ticks}
+	 * 
+	 * @see #getFrozenTicks
+	 * @see #setFrozenTicks
+	 * @see #getFreezingScale
+	 * @see #isFrozen
+	 */
 	public int getMinFreezeDamageTicks() {
 		return 140;
 	}
 
+	/**
+	 * Called when the entity is struck by lightning. This sets the entity on fire and
+	 * deals lightning damage by default; entities that do not take such damage should
+	 * override this method to do nothing.
+	 */
 	public void onStruckByLightning(ServerWorld world, LightningEntity lightning) {
 		this.setFireTicks(this.fireTicks + 1);
 		if (this.fireTicks == 0) {
@@ -2286,6 +3292,14 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.damage(DamageSource.LIGHTNING_BOLT, 5.0F);
 	}
 
+	/**
+	 * Called when the entity collides with a bubble column with an air above.
+	 * 
+	 * <p>This applies the bubble column velocity by default. {@link
+	 * net.minecraft.entity.vehicle.BoatEntity} uses this to spawn splash particles.
+	 * 
+	 * @param drag whether the entity should be dragged downwards
+	 */
 	public void onBubbleColumnSurfaceCollision(boolean drag) {
 		Vec3d vec3d = this.getVelocity();
 		double d;
@@ -2298,6 +3312,13 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.setVelocity(vec3d.x, d, vec3d.z);
 	}
 
+	/**
+	 * Called when the entity collides with a bubble column without an air above.
+	 * 
+	 * <p>This applies the bubble column velocity by default.
+	 * 
+	 * @param drag whether the entity should be dragged downwards
+	 */
 	public void onBubbleColumnCollision(boolean drag) {
 		Vec3d vec3d = this.getVelocity();
 		double d;
@@ -2311,14 +3332,34 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.onLanding();
 	}
 
+	/**
+	 * Called when this entity kills {@code other}.
+	 * 
+	 * @apiNote {@link net.minecraft.entity.mob.ZombieEntity} overrides this to convert the
+	 * killed villager to a zombie villager.
+	 * 
+	 * @return whether the entity died (and not converted to another entity)
+	 */
 	public boolean onKilledOther(ServerWorld world, LivingEntity other) {
 		return true;
 	}
 
+	/**
+	 * Called when the entity lands on a block.
+	 */
 	public void onLanding() {
 		this.fallDistance = 0.0F;
 	}
 
+	/**
+	 * Pushes this entity out of blocks.
+	 * 
+	 * @apiNote This is used by {@link ItemEntity} and {@link ExperienceOrbEntity}.
+	 * 
+	 * @param x the entity's X position
+	 * @param y the entity bounding box's center Y position
+	 * @param z the entity's Z position
+	 */
 	protected void pushOutOfBlocks(double x, double y, double z) {
 		BlockPos blockPos = new BlockPos(x, y, z);
 		Vec3d vec3d = new Vec3d(x - (double)blockPos.getX(), y - (double)blockPos.getY(), z - (double)blockPos.getZ());
@@ -2350,6 +3391,15 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
+	/**
+	 * Calls {@link #onLanding} and slows this entity.
+	 * 
+	 * <p>This means that the entity will avoid taking fall damage.
+	 * 
+	 * @apiNote This should be called inside {@link
+	 * net.minecraft.block.AbstractBlock#onEntityCollision}. This is used by cobwebs,
+	 * sweet berries, and powder snow.
+	 */
 	public void slowMovement(BlockState state, Vec3d multiplier) {
 		this.onLanding();
 		this.movementMultiplier = multiplier;
@@ -2371,28 +3421,76 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return text != null ? removeClickEvents(text) : this.getDefaultName();
 	}
 
+	/**
+	 * {@return the default name of the entity}
+	 * 
+	 * @see EntityType#getName
+	 */
 	protected Text getDefaultName() {
 		return this.type.getName();
 	}
 
+	/**
+	 * {@return whether this entity is part of {@code entity}}
+	 * 
+	 * <p>This is just an equality check for all entities except the ender dragon part.
+	 * An ender dragon is composed of several entity parts; each part returns {@code true}
+	 * for {@code part.isPartOf(dragon)}.
+	 */
 	public boolean isPartOf(Entity entity) {
 		return this == entity;
 	}
 
+	/**
+	 * {@return the head yaw of the entity}
+	 * 
+	 * @see #setHeadYaw
+	 */
 	public float getHeadYaw() {
 		return 0.0F;
 	}
 
+	/**
+	 * Sets the head yaw of this entity.
+	 * 
+	 * @see #getHeadYaw
+	 */
 	public void setHeadYaw(float headYaw) {
 	}
 
+	/**
+	 * Sets the body yaw of this entity.
+	 * 
+	 * @see #getBodyYaw
+	 */
 	public void setBodyYaw(float bodyYaw) {
 	}
 
+	/**
+	 * {@return whether the entity can be attacked by players}
+	 * 
+	 * <p>Note that this is not called for most entities defined in vanilla as unattackable
+	 * (such as {@link ItemEntity} and {@link ExperienceOrbEntity}) as trying to attack them
+	 * kicks the player.
+	 * 
+	 * @see net.minecraft.server.network.ServerPlayNetworkHandler#onPlayerInteractEntity
+	 */
 	public boolean isAttackable() {
 		return true;
 	}
 
+	/**
+	 * Handles a player attacking the entity. This is called before {@link
+	 * #damage} and can be used to restrict players from attacking the entity
+	 * by returning {@code true}.
+	 * 
+	 * @apiNote For example, {@link net.minecraft.entity.decoration.ArmorStandEntity}
+	 * checks whether the player can modify blocks at the entity's position.
+	 * 
+	 * @return whether to stop handling the attack
+	 * 
+	 * @see World#canPlayerModifyAt
+	 */
 	public boolean handleAttack(Entity attacker) {
 		return false;
 	}
@@ -2425,24 +3523,73 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			);
 	}
 
+	/**
+	 * {@return whether the entity is invulnerable to {@code damageSource}}
+	 * 
+	 * <p>This can be overridden to make the entity invulnerable to some damages, but
+	 * {@code super.isInvulnerableTo()} should be called in this case.
+	 * 
+	 * @implNote Entity is invulnerable to all damages if it is {@linkplain #isRemoved
+	 * removed}, and is invulnerable to all damages except {@link DamageSource#OUT_OF_WORLD}
+	 * or damages from creative mode players if the entity is {@linkplain #isInvulnerable
+	 * invulnerable}. This also checks {@link #isFireImmune}.
+	 * 
+	 * @see DamageSource
+	 * @see #isFireImmune
+	 * @see #damage
+	 * @see #isInvulnerable
+	 */
 	public boolean isInvulnerableTo(DamageSource damageSource) {
 		return this.isRemoved()
 			|| this.invulnerable && damageSource != DamageSource.OUT_OF_WORLD && !damageSource.isSourceCreativePlayer()
 			|| damageSource.isFire() && this.isFireImmune();
 	}
 
+	/**
+	 * {@return whether the entity is invulnerable}
+	 * 
+	 * <p>This is saved on the {@code Invulnerable} NBT key.
+	 * 
+	 * @implNote Invulnerable entities are immune from all damages except {@link
+	 * DamageSource#OUT_OF_WORLD} and damages by creative mode players by default.
+	 * 
+	 * @see #isInvulnerableTo
+	 * @see #setInvulnerable
+	 */
 	public boolean isInvulnerable() {
 		return this.invulnerable;
 	}
 
+	/**
+	 * Sets whether the entity is invulnerable.
+	 * 
+	 * <p>This is saved on the {@code Invulnerable} NBT key.
+	 * 
+	 * @implNote Invulnerable entities are immune from all damages except {@link
+	 * DamageSource#OUT_OF_WORLD} and damages by creative mode players by default.
+	 * 
+	 * @see #isInvulnerableTo
+	 * @see #isInvulnerable
+	 */
 	public void setInvulnerable(boolean invulnerable) {
 		this.invulnerable = invulnerable;
 	}
 
+	/**
+	 * Sets the entity's position and rotation the same as {@code entity}.
+	 * 
+	 * @see #refreshPositionAndAngles(double, double, double, float, float)
+	 */
 	public void copyPositionAndRotation(Entity entity) {
 		this.refreshPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), entity.getYaw(), entity.getPitch());
 	}
 
+	/**
+	 * Copies serializable data and nether portal data from {@code original}.
+	 * 
+	 * @see #readNbt
+	 * @see #moveToWorld
+	 */
 	public void copyFrom(Entity original) {
 		NbtCompound nbtCompound = original.writeNbt(new NbtCompound());
 		nbtCompound.remove("Dimension");
@@ -2492,14 +3639,22 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
+	/**
+	 * Removes this entity from the current dimension.
+	 * 
+	 * <p>This calls {@link #setRemoved} by default. Subclasses can add other logics,
+	 * such as setting the stack count of {@linkplain #getItemsEquipped equipped stacks}
+	 * to zero.
+	 * 
+	 * @see #moveToWorld
+	 */
 	protected void removeFromDimension() {
 		this.setRemoved(Entity.RemovalReason.CHANGED_DIMENSION);
 	}
 
 	/**
-	 * Determines a {@link TeleportTarget} for the entity
-	 * based on its current and destination worlds, plus
-	 * any portals that may be present.
+	 * {@return a {@link TeleportTarget} for the entity based on its current and
+	 * destination worlds, plus any nether portals that may be present}
 	 */
 	@Nullable
 	protected TeleportTarget getTeleportTarget(ServerWorld destination) {
@@ -2551,34 +3706,81 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
+	/**
+	 * {@return the entity's position in the portal after teleportation}
+	 * 
+	 * @see net.minecraft.world.dimension.AreaHelper#entityPosInPortal
+	 */
 	protected Vec3d positionInPortal(Direction.Axis portalAxis, BlockLocating.Rectangle portalRect) {
 		return AreaHelper.entityPosInPortal(portalRect, portalAxis, this.getPos(), this.getDimensions(this.getPose()));
 	}
 
+	/**
+	 * {@return the portal rect at {@code destPos}}
+	 * 
+	 * @see net.minecraft.world.PortalForcer#getPortalRect
+	 */
 	protected Optional<BlockLocating.Rectangle> getPortalRect(ServerWorld destWorld, BlockPos destPos, boolean destIsNether, WorldBorder worldBorder) {
 		return destWorld.getPortalForcer().getPortalRect(destPos, destIsNether, worldBorder);
 	}
 
+	/**
+	 * {@return whether the entity can use nether portals and end portals}
+	 * 
+	 * <p>{@link net.minecraft.entity.boss.dragon.EnderDragonEntity},
+	 * {@link net.minecraft.entity.boss.WitherEntity}, and {@link
+	 * net.minecraft.entity.projectile.FishingBobberEntity} cannot use portals.
+	 */
 	public boolean canUsePortals() {
 		return true;
 	}
 
+	/**
+	 * {@return the blast resistance of {@code blockState} for an explosion caused
+	 * by this entity}
+	 * 
+	 * @apiNote {@link net.minecraft.entity.projectile.WitherSkullEntity} overrides
+	 * this to implement the "charged/blue skull" behavior.
+	 * 
+	 * @see net.minecraft.world.explosion.ExplosionBehavior#getBlastResistance
+	 */
 	public float getEffectiveExplosionResistance(Explosion explosion, BlockView world, BlockPos pos, BlockState blockState, FluidState fluidState, float max) {
 		return max;
 	}
 
+	/**
+	 * {@return whether {@code explosion} from this entity can destroy {@code state}}
+	 * 
+	 * @apiNote This is used by {@link
+	 * net.minecraft.entity.vehicle.TntMinecartEntity} to prevent the rail from being
+	 * destroyed by explosion.
+	 * 
+	 * @see net.minecraft.world.explosion.ExplosionBehavior#canDestroyBlock
+	 */
 	public boolean canExplosionDestroyBlock(Explosion explosion, BlockView world, BlockPos pos, BlockState state, float explosionPower) {
 		return true;
 	}
 
+	/**
+	 * {@return the maximum height of a fall the entity takes during pathfinding}
+	 */
 	public int getSafeFallDistance() {
 		return 3;
 	}
 
+	/**
+	 * {@return whether the entity cannot trigger pressure plates or tripwires}
+	 * 
+	 * <p>{@link net.minecraft.entity.passive.BatEntity} is the only entity in vanilla
+	 * that can avoid traps.
+	 */
 	public boolean canAvoidTraps() {
 		return false;
 	}
 
+	/**
+	 * Populates the crash report section to include the entity's information.
+	 */
 	public void populateCrashReport(CrashReportSection section) {
 		section.add("Entity Type", (CrashCallable<String>)(() -> EntityType.getId(this.getType()) + " (" + this.getClass().getCanonicalName() + ")"));
 		section.add("Entity ID", this.id);
@@ -2594,10 +3796,26 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		section.add("Entity's Vehicle", (CrashCallable<String>)(() -> String.valueOf(this.getVehicle())));
 	}
 
+	/**
+	 * {@return whether an entity should render as being on fire}
+	 * 
+	 * <p>This returns whether the entity {@linkplain #isOnFire is on fire} and
+	 * is not a spectator.
+	 * 
+	 * @see #isOnFire
+	 */
 	public boolean doesRenderOnFire() {
 		return this.isOnFire() && !this.isSpectator();
 	}
 
+	/**
+	 * Sets the UUID of the entity to {@code uuid}.
+	 * 
+	 * <p>This should not be called after spawning the entity.
+	 * 
+	 * @see #getUuid
+	 * @see #getUuidAsString
+	 */
 	public void setUuid(UUID uuid) {
 		this.uuid = uuid;
 		this.uuidString = this.uuid.toString();
@@ -2608,22 +3826,56 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this.uuid;
 	}
 
+	/**
+	 * {@return the entity's UUID as string}
+	 * 
+	 * <p>This is a shortcut of {@code getUuid().toString()}.
+	 * 
+	 * @see #getUuid
+	 */
 	public String getUuidAsString() {
 		return this.uuidString;
 	}
 
+	/**
+	 * {@return the name uniquely identifying the entity}
+	 * 
+	 * <p>Unlike {@link #getName}, this is guaranteed to be unique. This is the UUID
+	 * for all entities except players (which use the player's username).
+	 * This is mostly used when passing the player name to {@code
+	 * net.minecraft.scoreboard.Scoreboard} methods.
+	 * 
+	 * @see #getName
+	 * @see #getUuidAsString
+	 */
 	public String getEntityName() {
 		return this.uuidString;
 	}
 
+	/**
+	 * {@return whether the entity is pushed by fluids}
+	 * 
+	 * @apiNote Aquatic mobs should override this to return {@code false}.
+	 * Players are not pushed by fluids if they can fly (e.g. because of gamemode).
+	 */
 	public boolean isPushedByFluids() {
 		return true;
 	}
 
+	/**
+	 * {@return the entity render distance multiplier}
+	 * 
+	 * <p>This is only usable on the client.
+	 */
 	public static double getRenderDistanceMultiplier() {
 		return renderDistanceMultiplier;
 	}
 
+	/**
+	 * Sets the render distance multiplier.
+	 * 
+	 * <p>This is only used on the client.
+	 */
 	public static void setRenderDistanceMultiplier(double value) {
 		renderDistanceMultiplier = value;
 	}
@@ -2634,6 +3886,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			.styled(style -> style.withHoverEvent(this.getHoverEvent()).withInsertion(this.getUuidAsString()));
 	}
 
+	/**
+	 * Sets the custom name of the entity to {@code name} (or {@code null} to
+	 * remove the custom name).
+	 */
 	public void setCustomName(@Nullable Text name) {
 		this.dataTracker.set(CUSTOM_NAME, Optional.ofNullable(name));
 	}
@@ -2649,14 +3905,36 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this.dataTracker.get(CUSTOM_NAME).isPresent();
 	}
 
+	/**
+	 * Sets whether the custom name should be shown.
+	 * 
+	 * <p>This is stored on {@code CustomNameVisible} NBT key.
+	 * 
+	 * @see #isCustomNameVisible
+	 */
 	public void setCustomNameVisible(boolean visible) {
 		this.dataTracker.set(NAME_VISIBLE, visible);
 	}
 
+	/**
+	 * {@return whether the custom name should be shown}
+	 * 
+	 * <p>This is stored on {@code CustomNameVisible} NBT key.
+	 * 
+	 * @see #setCustomNameVisible
+	 */
 	public boolean isCustomNameVisible() {
 		return this.dataTracker.get(NAME_VISIBLE);
 	}
 
+	/**
+	 * Teleports the entity to the given position, loading the chunk with
+	 * {@link net.minecraft.server.world.ChunkTicketType#POST_TELEPORT}.
+	 * 
+	 * @see #requestTeleportAndDismount
+	 * @see #requestTeleport
+	 * @see #refreshPositionAndAngles(double, double, double, float, float)
+	 */
 	public final void teleport(double destX, double destY, double destZ) {
 		if (this.world instanceof ServerWorld) {
 			ChunkPos chunkPos = new ChunkPos(new BlockPos(destX, destY, destZ));
@@ -2666,10 +3944,28 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
+	/**
+	 * Requests the entity to teleport to the given position. If the entity is
+	 * a player, this also dismounts the player.
+	 * 
+	 * @see #teleport
+	 * @see #requestTeleport
+	 * @see #refreshPositionAndAngles(double, double, double, float, float)
+	 */
 	public void requestTeleportAndDismount(double destX, double destY, double destZ) {
 		this.requestTeleport(destX, destY, destZ);
 	}
 
+	/**
+	 * Requests the entity to teleport to the given position.
+	 * 
+	 * <p>For players, this sends the teleport packet. For other entities,
+	 * this just sets the position of the entity and its passengers.
+	 * 
+	 * @see #teleport
+	 * @see #requestTeleportAndDismount
+	 * @see #refreshPositionAndAngles(double, double, double, float, float)
+	 */
 	public void requestTeleport(double destX, double destY, double destZ) {
 		if (this.world instanceof ServerWorld) {
 			this.refreshPositionAndAngles(destX, destY, destZ, this.getYaw(), this.getPitch());
@@ -2681,16 +3977,34 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
+	/**
+	 * {@return whether to render the name of the entity}
+	 * 
+	 * <p>This returns {@code true} for players and {@link #isCustomNameVisible} for
+	 * other entities.
+	 * 
+	 * @see #isCustomNameVisible
+	 */
 	public boolean shouldRenderName() {
 		return this.isCustomNameVisible();
 	}
 
+	/**
+	 * Called on the client when the tracked data is set.
+	 * 
+	 * <p>This can be overridden to refresh other fields when the tracked data
+	 * is set or changed.
+	 */
 	public void onTrackedDataSet(TrackedData<?> data) {
 		if (POSE.equals(data)) {
 			this.calculateDimensions();
 		}
 	}
 
+	/**
+	 * Calculates and sets the dimension (bounding box) of the entity and refreshes
+	 * its position.
+	 */
 	public void calculateDimensions() {
 		EntityDimensions entityDimensions = this.dimensions;
 		EntityPose entityPose = this.getPose();
@@ -2723,10 +4037,18 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this.getHorizontalFacing();
 	}
 
+	/**
+	 * {@return the hover event referencing this entity}
+	 */
 	protected HoverEvent getHoverEvent() {
 		return new HoverEvent(HoverEvent.Action.SHOW_ENTITY, new HoverEvent.EntityContent(this.getType(), this.getUuid(), this.getName()));
 	}
 
+	/**
+	 * {@return whether {@code spectator} can spectate this entity}
+	 * 
+	 * <p>Spectator players (other than themselves) cannot be spectated.
+	 */
 	public boolean canBeSpectated(ServerPlayerEntity spectator) {
 		return true;
 	}
@@ -2756,14 +4078,33 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return dimensions.height * 0.85F;
 	}
 
+	/**
+	 * {@return the eye height for {@code pose}}
+	 */
 	public float getEyeHeight(EntityPose pose) {
 		return this.getEyeHeight(pose, this.getDimensions(pose));
 	}
 
+	/**
+	 * {@return the standing eye height}
+	 * 
+	 * <p>This is used for calculating the leash offset.
+	 * 
+	 * @see #getLeashOffset
+	 */
 	public final float getStandingEyeHeight() {
 		return this.standingEyeHeight;
 	}
 
+	/**
+	 * {@return the offset from the entity's position where the leash is attached to}
+	 * 
+	 * <p>This is different from {@link #getLeashPos}; this method is called on the entity
+	 * which a leash is attached to.
+	 * 
+	 * @see #getLeashPos
+	 * @see #getStandingEyeHeight
+	 */
 	public Vec3d getLeashOffset() {
 		return new Vec3d(0.0, (double)this.getStandingEyeHeight(), (double)(this.getWidth() * 0.4F));
 	}
@@ -2788,15 +4129,34 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this.world;
 	}
 
+	/**
+	 * {@return the server the entity is in, or {@code null} if called on the client side}
+	 */
 	@Nullable
 	public MinecraftServer getServer() {
 		return this.world.getServer();
 	}
 
+	/**
+	 * Called when the player interacts with the entity at the specific position.
+	 * 
+	 * <p>This should not be used in most cases; {@link #interact} should be used.
+	 * This should be used if the interaction's result depends on which part of the
+	 * entity was interacted at.
+	 * 
+	 * @param hitPos the interaction's position offset from the entity's position
+	 */
 	public ActionResult interactAt(PlayerEntity player, Vec3d hitPos, Hand hand) {
 		return ActionResult.PASS;
 	}
 
+	/**
+	 * {@return whether the entity is immune from explosion knockback and damage}
+	 * 
+	 * <p>Invisible {@link net.minecraft.entity.decoration.ArmorStandEntity} and
+	 * emerging or digging {@link net.minecraft.entity.mob.WardenEntity} are
+	 * immune from explosions.
+	 */
 	public boolean isImmuneToExplosion() {
 		return false;
 	}
@@ -2824,12 +4184,27 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		EnchantmentHelper.onTargetDamaged(attacker, target);
 	}
 
+	/**
+	 * Called when {@code player} starts tracking this entity.
+	 * 
+	 * <p>Entities with boss bars like {@link net.minecraft.entity.boss.WitherEntity}
+	 * should override this to add the player to the boss bar.
+	 */
 	public void onStartedTrackingBy(ServerPlayerEntity player) {
 	}
 
+	/**
+	 * Called when {@code player} stops tracking this entity.
+	 * 
+	 * <p>Entities with boss bars like {@link net.minecraft.entity.boss.WitherEntity}
+	 * should override this to remove the player from the boss bar.
+	 */
 	public void onStoppedTrackingBy(ServerPlayerEntity player) {
 	}
 
+	/**
+	 * Applies {@code rotation} to the entity's yaw.
+	 */
 	public float applyRotation(BlockRotation rotation) {
 		float f = MathHelper.wrapDegrees(this.getYaw());
 		switch (rotation) {
@@ -2844,6 +4219,9 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
+	/**
+	 * Applies {@code mirror} to the entity's yaw.
+	 */
 	public float applyMirror(BlockMirror mirror) {
 		float f = MathHelper.wrapDegrees(this.getYaw());
 		switch (mirror) {
@@ -2856,32 +4234,98 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
+	/**
+	 * {@return whether {@link EntityType#loadFromEntityNbt} should reject entity
+	 * NBTs unless called by an operator}
+	 * 
+	 * <p>This is {@code false} by default, and should be overridden if the entity
+	 * provides functionality that is usually restricted to operators (such as {@link
+	 * net.minecraft.entity.vehicle.CommandBlockMinecartEntity}).
+	 */
 	public boolean entityDataRequiresOperator() {
 		return false;
 	}
 
+	/**
+	 * {@return the passenger in control of this entity, or {@code null} if there is none}
+	 * 
+	 * <p>Rideable entities should override this to return the entity. This is
+	 * usually {@code #getFirstPassenger}.
+	 * 
+	 * @see #hasPrimaryPassenger
+	 * @see #getPassengerList
+	 * @see #getFirstPassenger
+	 */
 	@Nullable
 	public Entity getPrimaryPassenger() {
 		return null;
 	}
 
+	/**
+	 * {@return whether there is a passenger in control of this entity}
+	 * 
+	 * @see #getPrimaryPassenger
+	 * @see #getPassengerList
+	 * @see #getFirstPassenger
+	 */
 	public final boolean hasPrimaryPassenger() {
 		return this.getPrimaryPassenger() != null;
 	}
 
+	/**
+	 * {@return the list of passengers of this entity}
+	 * 
+	 * @see #getPrimaryPassenger
+	 * @see #getFirstPassenger
+	 * @see #streamIntoPassengers
+	 * @see #streamSelfAndPassengers
+	 * @see #streamPassengersAndSelf
+	 * @see #getPassengersDeep
+	 */
 	public final List<Entity> getPassengerList() {
 		return this.passengerList;
 	}
 
+	/**
+	 * {@return the first passenger of the {@linkplain #getPassengerList passenger list},
+	 * or {@code null} if there is no passengers}
+	 * 
+	 * <p>Such passenger is usually also the {@linkplain #getPrimaryPassenger the
+	 * primary passenger}.
+	 * 
+	 * @see #getPrimaryPassenger
+	 * @see #hasPrimaryPassenger
+	 * @see #getPassengerList
+	 */
 	@Nullable
 	public Entity getFirstPassenger() {
 		return this.passengerList.isEmpty() ? null : (Entity)this.passengerList.get(0);
 	}
 
+	/**
+	 * {@return whether {@code passenger} is a passenger of this entity}
+	 * 
+	 * @see #getPassengerList
+	 * @see #streamIntoPassengers
+	 * @see #streamSelfAndPassengers
+	 * @see #streamPassengersAndSelf
+	 * @see #getPassengersDeep
+	 * @see #hasPassenger(Predicate)
+	 */
 	public boolean hasPassenger(Entity passenger) {
 		return this.passengerList.contains(passenger);
 	}
 
+	/**
+	 * {@return whether there is a passenger of this entity matching {@code predicate}}
+	 * 
+	 * @see #getPassengerList
+	 * @see #streamIntoPassengers
+	 * @see #streamSelfAndPassengers
+	 * @see #streamPassengersAndSelf
+	 * @see #getPassengersDeep
+	 * @see #hasPassenger(Entity)
+	 */
 	public boolean hasPassenger(Predicate<Entity> predicate) {
 		for (Entity entity : this.passengerList) {
 			if (predicate.test(entity)) {
@@ -2892,6 +4336,19 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return false;
 	}
 
+	/**
+	 * {@return a recursive stream of all passengers}
+	 * 
+	 * <p>This is recursive; for example, if a boat has 2 pigs, ridden by player A and
+	 * player B, then {@code boat.streamIntoPassengers()} would return a stream of
+	 * the first pig, player A, the second pig, and player B. This does not stream
+	 * the vehicle itself.
+	 * 
+	 * @see #getPassengerList
+	 * @see #streamSelfAndPassengers
+	 * @see #streamPassengersAndSelf
+	 * @see #getPassengersDeep
+	 */
 	private Stream<Entity> streamIntoPassengers() {
 		return this.passengerList.stream().flatMap(Entity::streamSelfAndPassengers);
 	}
@@ -2906,16 +4363,43 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return Stream.concat(this.passengerList.stream().flatMap(Entity::streamPassengersAndSelf), Stream.of(this));
 	}
 
+	/**
+	 * {@return an iterable of all passengers}
+	 * 
+	 * <p>This is recursive; for example, if a boat has 2 pigs, ridden by player A and
+	 * player B, then {@code boat.streamIntoPassengers()} would return a stream of
+	 * the first pig, player A, the second pig, and player B. This does not stream
+	 * the vehicle itself.
+	 * 
+	 * @see #getPassengerList
+	 * @see #streamIntoPassengers
+	 * @see #streamSelfAndPassengers
+	 * @see #streamPassengersAndSelf
+	 */
 	public Iterable<Entity> getPassengersDeep() {
 		return () -> this.streamIntoPassengers().iterator();
 	}
 
+	/**
+	 * {@return whether a player is riding this entity or any of its passengers}
+	 * 
+	 * @implNote The default implementation is very inefficient.
+	 * 
+	 * @see #getPassengerList
+	 * @see #streamIntoPassengers
+	 * @see #streamSelfAndPassengers
+	 * @see #streamPassengersAndSelf
+	 * @see #getPassengersDeep
+	 * @see #hasPassengerDeep
+	 */
 	public boolean hasPlayerRider() {
 		return this.streamIntoPassengers().filter(entity -> entity instanceof PlayerEntity).count() == 1L;
 	}
 
 	/**
-	 * Gets the lowest entity this entity is riding.
+	 * {@return the lowest entity this entity is riding}
+	 * 
+	 * @see #getVehicle
 	 */
 	public Entity getRootVehicle() {
 		Entity entity = this;
@@ -2928,7 +4412,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	/**
-	 * Checks if this entity and another entity share the same root vehicle.
+	 * {@return whether this entity and another entity share the same root vehicle}
+	 * 
+	 * @see #getRootVehicle
+	 * @see #getVehicle
 	 * 
 	 * @param entity the other entity
 	 */
@@ -2936,15 +4423,37 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this.getRootVehicle() == entity.getRootVehicle();
 	}
 
+	/**
+	 * {@return whether {@code passenger} is riding this entity or any of its passengers}
+	 * 
+	 * @see #getPassengerList
+	 * @see #streamIntoPassengers
+	 * @see #streamSelfAndPassengers
+	 * @see #streamPassengersAndSelf
+	 * @see #getPassengersDeep
+	 * @see #hasPlayerRider
+	 */
 	public boolean hasPassengerDeep(Entity passenger) {
 		return this.streamIntoPassengers().anyMatch(entity -> entity == passenger);
 	}
 
+	/**
+	 * {@return whether the current side is responsible for updating the movement}
+	 * 
+	 * <p>For non-player ridden entities, this checks whether the entity is
+	 * on the server; for player-ridden entities, this checks whether the entity
+	 * is on the client.
+	 * 
+	 * @see #getPrimaryPassenger
+	 */
 	public boolean isLogicalSideForUpdatingMovement() {
 		Entity entity = this.getPrimaryPassenger();
 		return entity instanceof PlayerEntity ? ((PlayerEntity)entity).isMainPlayer() : !this.world.isClient;
 	}
 
+	/**
+	 * {@return the offset for dismounting the passenger}
+	 */
 	protected static Vec3d getPassengerDismountOffset(double vehicleWidth, double passengerWidth, float passengerYaw) {
 		double d = (vehicleWidth + passengerWidth + 1.0E-5F) / 2.0;
 		float f = -MathHelper.sin(passengerYaw * (float) (Math.PI / 180.0));
@@ -2953,19 +4462,51 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return new Vec3d((double)f * d / (double)h, 0.0, (double)g * d / (double)h);
 	}
 
+	/**
+	 * {@return the position of the dismounted {@code passenger}}
+	 * 
+	 * <p>Vehicles should override this to return a suitable dismounting position
+	 * for the passenger. Check the implementation of the subclass for details.
+	 * 
+	 * @see #getPassengerDismountOffset
+	 * @see Dismounting
+	 */
 	public Vec3d updatePassengerForDismount(LivingEntity passenger) {
 		return new Vec3d(this.getX(), this.getBoundingBox().maxY, this.getZ());
 	}
 
+	/**
+	 * {@return the entity this entity rides, or {@code null} if there is none}
+	 * 
+	 * @see #getRootVehicle
+	 */
 	@Nullable
 	public Entity getVehicle() {
 		return this.vehicle;
 	}
 
+	/**
+	 * {@return the behavior of the piston for this entity}
+	 * 
+	 * <p>This is {@link PistonBehavior#NORMAL} by default. {@link AreaEffectCloudEntity},
+	 * {@link MarkerEntity}, and marker {@link net.minecraft.entity.decoration.ArmorStandEntity}
+	 * return {@link PistonBehavior#IGNORE}, causing the piston to not affect the entity's
+	 * position. Other piston behaviors are inapplicable to entities, and treated like
+	 * {@link PistonBehavior#NORMAL}.
+	 */
 	public PistonBehavior getPistonBehavior() {
 		return PistonBehavior.NORMAL;
 	}
 
+	/**
+	 * {@return the sound category for sounds from this entity}
+	 * 
+	 * <p>This is used by {@link #playSound(SoundEvent, float, float)} and defaults to
+	 * {@link SoundCategory#NEUTRAL}. Hostile entities should override this to
+	 * return {@link SoundCategory#HOSTILE}.
+	 * 
+	 * @see #playSound(SoundEvent, float, float)
+	 */
 	public SoundCategory getSoundCategory() {
 		return SoundCategory.NEUTRAL;
 	}
@@ -2975,7 +4516,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	/**
-	 * Creates a command source which represents this entity.
+	 * {@return a command source which represents this entity}
 	 */
 	public ServerCommandSource getCommandSource() {
 		return new ServerCommandSource(
@@ -2991,10 +4532,24 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		);
 	}
 
+	/**
+	 * {@return the permission level of this entity}
+	 * 
+	 * <p>This is {@code 0} for non-players.
+	 * 
+	 * @see #hasPermissionLevel
+	 */
 	protected int getPermissionLevel() {
 		return 0;
 	}
 
+	/**
+	 * {@return whether this entity has at least permission level {@code permissionLevel}}
+	 * 
+	 * <p>This is always {@code false} for non-players.
+	 * 
+	 * @see #getPermissionLevel
+	 */
 	public boolean hasPermissionLevel(int permissionLevel) {
 		return this.getPermissionLevel() >= permissionLevel;
 	}
@@ -3014,6 +4569,9 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return true;
 	}
 
+	/**
+	 * Changes this entity's pitch and yaw to look at {@code target}.
+	 */
 	public void lookAt(EntityAnchorArgumentType.EntityAnchor anchorPoint, Vec3d target) {
 		Vec3d vec3d = anchorPoint.positionAt(this);
 		double d = target.x - vec3d.x;
@@ -3095,10 +4653,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	/**
-	 * Returns whether any part of this entity's bounding box is in an unloaded
-	 * region of the world the entity is in.
+	 * {@return whether any part of this entity's bounding box is in an unloaded
+	 * region of the world the entity is in}
 	 * 
-	 * @implSpec This implementation expands this entity's bounding box by 1 in
+	 * @implNote This implementation expands this entity's bounding box by 1 in
 	 * each axis and checks whether the expanded box's smallest enclosing
 	 * axis-aligned integer box is fully loaded in the world.
 	 */
@@ -3111,46 +4669,83 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return !this.world.isRegionLoaded(i, k, j, l);
 	}
 
+	/**
+	 * {@return the height of the fluid in {@code fluid} tag}
+	 */
 	public double getFluidHeight(TagKey<Fluid> fluid) {
 		return this.fluidHeight.getDouble(fluid);
 	}
 
 	/**
-	 * Returns the minimum submerged height of this entity in fluid so that it
-	 * would be affected by fluid physics.
+	 * {@return the minimum submerged height of this entity in fluid so that it
+	 * would be affected by fluid physics}
 	 * 
 	 * @apiNote This is also used by living entities for checking whether to
 	 * start swimming.
 	 * 
-	 * @implSpec This implementation returns {@code 0.4} if its
+	 * @implNote This implementation returns {@code 0.4} if its
 	 * {@linkplain #getStandingEyeHeight standing eye height} is larger than
 	 * {@code 0.4}; otherwise it returns {@code 0.0} for shorter entities.
-	 * 
-	 * @implNote The swim height of 0 allows short entities like baby animals
+	 * The swim height of 0 allows short entities like baby animals
 	 * to start swimming to avoid suffocation.
 	 */
 	public double getSwimHeight() {
 		return (double)this.getStandingEyeHeight() < 0.4 ? 0.0 : 0.4;
 	}
 
+	/**
+	 * {@return the width of the entity's current dimension}
+	 */
 	public final float getWidth() {
 		return this.dimensions.width;
 	}
 
+	/**
+	 * {@return the height of the entity's current dimension}
+	 */
 	public final float getHeight() {
 		return this.dimensions.height;
 	}
 
+	/**
+	 * {@return a packet to notify the clients of the entity's spawning}
+	 * 
+	 * @apiNote Subclasses should return {@code new EntitySpawnS2CPacket(this)},
+	 * unless they use a custom spawning packet.
+	 */
 	public abstract Packet<?> createSpawnPacket();
 
+	/**
+	 * {@return the dimensions of the entity with the given {@code pose}}
+	 * 
+	 * @see #getWidth
+	 * @see #getHeight
+	 */
 	public EntityDimensions getDimensions(EntityPose pose) {
 		return this.type.getDimensions();
 	}
 
+	/**
+	 * {@return the exact position of the entity}
+	 * 
+	 * @see #getSyncedPos
+	 * @see #getBlockPos
+	 * @see #getChunkPos
+	 */
 	public Vec3d getPos() {
 		return this.pos;
 	}
 
+	/**
+	 * {@return the position of the entity synced to clients}
+	 * 
+	 * <p>This is the same as {@link #getPos} except for paintings which return the
+	 * attachment position.
+	 * 
+	 * @see #getPos
+	 * @see #getBlockPos
+	 * @see #getChunkPos
+	 */
 	public Vec3d getSyncedPos() {
 		return this.getPos();
 	}
@@ -3160,6 +4755,15 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this.blockPos;
 	}
 
+	/**
+	 * {@return the block state at the entity's position}
+	 * 
+	 * <p>The result is cached.
+	 * 
+	 * @see #getBlockPos
+	 * @see #getLandingBlockState
+	 * @see #getSteppingBlockState
+	 */
 	public BlockState getBlockStateAtPos() {
 		if (this.blockStateAtPos == null) {
 			this.blockStateAtPos = this.world.getBlockState(this.getBlockPos());
@@ -3168,6 +4772,9 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this.blockStateAtPos;
 	}
 
+	/**
+	 * {@return the chunk position of the entity}
+	 */
 	public ChunkPos getChunkPos() {
 		return this.chunkPos;
 	}
@@ -3236,6 +4843,16 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this.offsetZ((2.0 * this.random.nextDouble() - 1.0) * widthScale);
 	}
 
+	/**
+	 * Sets the position of this entity.
+	 * 
+	 * <p>This should be used when overriding {@link #tick} to change the
+	 * entity's position; in other cases, use {@link #setPosition(double, double, double)}
+	 * or {@link #refreshPositionAndAngles(double, double, double, float, float)}.
+	 * 
+	 * @see #setPosition(double, double, double)
+	 * @see #refreshPositionAndAngles(double, double, double, float, float)
+	 */
 	public final void setPos(double x, double y, double z) {
 		if (this.pos.x != x || this.pos.y != y || this.pos.z != z) {
 			this.pos = new Vec3d(x, y, z);
@@ -3254,13 +4871,35 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
+	/**
+	 * Checks whether the entity should be despawned.
+	 * 
+	 * <p>To despawn this entity, call {@link #discard}.
+	 * 
+	 * @see #discard
+	 */
 	public void checkDespawn() {
 	}
 
+	/**
+	 * {@return the position of the leash this entity holds}
+	 * 
+	 * <p>This is different from {@link #getLeashOffset}; this method is called on the entity
+	 * that holds the leash.
+	 * 
+	 * @see #getLeashOffset
+	 * @see #getStandingEyeHeight
+	 */
 	public Vec3d getLeashPos(float delta) {
 		return this.getLerpedPos(delta).add(0.0, (double)this.standingEyeHeight * 0.7, 0.0);
 	}
 
+	/**
+	 * Called on the client when the entity receives a spawn packet.
+	 * 
+	 * <p>This sets the entity's position, angles, ID, and UUID. Subclasses
+	 * can override this to initialize additional fields.
+	 */
 	public void onSpawnPacket(EntitySpawnS2CPacket packet) {
 		int i = packet.getId();
 		double d = packet.getX();
@@ -3274,6 +4913,16 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.setUuid(packet.getUuid());
 	}
 
+	/**
+	 * {@return the stack for creative "pick block" functionality, or {@code null}
+	 * if there is none}
+	 * 
+	 * <p>If the entity has an item representation (such as boats or minecarts),
+	 * this should be overridden to return a new stack. Note that {@link
+	 * net.minecraft.entity.mob.MobEntity} handles the spawn eggs.
+	 * {@link net.minecraft.entity.decoration.ItemFrameEntity} instead returns
+	 * the copy of the stack held in the frame.
+	 */
 	@Nullable
 	public ItemStack getPickBlockStack() {
 		return null;
@@ -3283,10 +4932,27 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.inPowderSnow = inPowderSnow;
 	}
 
+	/**
+	 * {@return whether the entity can freeze}
+	 * 
+	 * @implNote Entities cannot be frozen if they are in the {@link
+	 * net.minecraft.tag.EntityTypeTags#FREEZE_IMMUNE_ENTITY_TYPES} tag. In addition to this, {@link
+	 * LivingEntity} cannot be frozen if they are spectator or if they wear an
+	 * item inside {@link net.minecraft.tag.ItemTags#FREEZE_IMMUNE_WEARABLES} tag.
+	 */
 	public boolean canFreeze() {
 		return !this.getType().isIn(EntityTypeTags.FREEZE_IMMUNE_ENTITY_TYPES);
 	}
 
+	/**
+	 * {@return whether the entity should escape from powder snow}
+	 * 
+	 * <p>This returns {@code true} if the entity is/was in powder snow and
+	 * if it can freeze.
+	 * 
+	 * @see #canFreeze
+	 * @see #isFrozen
+	 */
 	public boolean shouldEscapePowderSnow() {
 		return (this.inPowderSnow || this.wasInPowderSnow) && this.canFreeze();
 	}
@@ -3295,6 +4961,11 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this.yaw;
 	}
 
+	/**
+	 * {@return the body yaw of the entity}
+	 * 
+	 * @see #setBodyYaw
+	 */
 	public float getBodyYaw() {
 		return this.getYaw();
 	}
@@ -3319,10 +4990,18 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
+	/**
+	 * {@return whether the entity is removed}
+	 * 
+	 * <p>Removed entities should not be interacted with.
+	 */
 	public final boolean isRemoved() {
 		return this.removalReason != null;
 	}
 
+	/**
+	 * {@return the reason for the entity's removal, or {@code null} if it is not removed}
+	 */
 	@Nullable
 	public Entity.RemovalReason getRemovalReason() {
 		return this.removalReason;
@@ -3342,6 +5021,11 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.changeListener.remove(reason);
 	}
 
+	/**
+	 * Unsets this entity's removal.
+	 * 
+	 * <p>This should rarely be used; this is only used by players during teleportation.
+	 */
 	protected void unsetRemoved() {
 		this.removalReason = null;
 	}
@@ -3365,6 +5049,19 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return false;
 	}
 
+	/**
+	 * {@return whether the entity can modify the world at {@code pos}}
+	 * 
+	 * <p>This returns {@code true} for most entities. Players check {@link
+	 * World#canPlayerModifyAt} to prevent them from modifying entities in the spawn
+	 * protection or outside the world border. {@link
+	 * net.minecraft.entity.projectile.ProjectileEntity} delegates it to the owner
+	 * if the owner is a player; if the owner is a non-player entity, this returns
+	 * the value of {@link net.minecraft.world.GameRules#DO_MOB_GRIEFING}, and ownerless
+	 * projectiles are always allowed to modify the world.
+	 * 
+	 * @see World#canPlayerModifyAt
+	 */
 	public boolean canModifyAt(World world, BlockPos pos) {
 		return true;
 	}
@@ -3421,11 +5118,19 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		void accept(Entity entity, double x, double y, double z);
 	}
 
+	/**
+	 * The reason of the entity's removal.
+	 * 
+	 * @see Entity#setRemoved
+	 */
 	public static enum RemovalReason {
 		/**
 		 * The entity is killed.
 		 */
 		KILLED(true, false),
+		/**
+		 * The entity is discarded (despawned).
+		 */
 		DISCARDED(true, false),
 		/**
 		 * The entity is unloaded to chunk.
@@ -3433,6 +5138,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		 * The entity should be saved.
 		 */
 		UNLOADED_TO_CHUNK(false, true),
+		/**
+		 * The entity is unloaded because the player was riding it and the player
+		 * disconnected.
+		 */
 		UNLOADED_WITH_PLAYER(false, false),
 		/**
 		 * The entity changed dimension.

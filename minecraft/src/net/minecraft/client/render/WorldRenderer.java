@@ -211,7 +211,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 	private int lastCloudsBlockZ = Integer.MIN_VALUE;
 	private Vec3d lastCloudsColor = Vec3d.ZERO;
 	@Nullable
-	private CloudRenderMode lastCloudsRenderMode;
+	private CloudRenderMode lastCloudRenderMode;
 	@Nullable
 	private ChunkBuilder chunkBuilder;
 	private int viewDistance = -1;
@@ -1389,7 +1389,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		matrixStack.push();
 		matrixStack.multiplyPositionMatrix(matrices.peek().getPositionMatrix());
 		RenderSystem.applyModelViewMatrix();
-		if (this.client.options.getCloudRenderMode() != CloudRenderMode.OFF) {
+		if (this.client.options.getCloudRenderModeValue() != CloudRenderMode.OFF) {
 			if (this.transparencyShader != null) {
 				this.cloudsFramebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
 				RenderPhase.CLOUDS_TARGET.startDrawing();
@@ -1999,13 +1999,13 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			if (r != this.lastCloudsBlockX
 				|| s != this.lastCloudsBlockY
 				|| t != this.lastCloudsBlockZ
-				|| this.client.options.getCloudRenderMode() != this.lastCloudsRenderMode
+				|| this.client.options.getCloudRenderModeValue() != this.lastCloudRenderMode
 				|| this.lastCloudsColor.squaredDistanceTo(vec3d) > 2.0E-4) {
 				this.lastCloudsBlockX = r;
 				this.lastCloudsBlockY = s;
 				this.lastCloudsBlockZ = t;
 				this.lastCloudsColor = vec3d;
-				this.lastCloudsRenderMode = this.client.options.getCloudRenderMode();
+				this.lastCloudRenderMode = this.client.options.getCloudRenderModeValue();
 				this.cloudsDirty = true;
 			}
 
@@ -2031,7 +2031,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			matrices.translate((double)(-o), (double)p, (double)(-q));
 			if (this.cloudsBuffer != null) {
 				this.cloudsBuffer.bind();
-				int u = this.lastCloudsRenderMode == CloudRenderMode.FANCY ? 0 : 1;
+				int u = this.lastCloudRenderMode == CloudRenderMode.FANCY ? 0 : 1;
 
 				for (int v = u; v < 2; v++) {
 					if (v == 0) {
@@ -2077,7 +2077,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		RenderSystem.setShader(GameRenderer::getPositionTexColorNormalShader);
 		builder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_NORMAL);
 		float ab = (float)Math.floor(y / 4.0) * 4.0F;
-		if (this.lastCloudsRenderMode == CloudRenderMode.FANCY) {
+		if (this.lastCloudRenderMode == CloudRenderMode.FANCY) {
 			for (int ac = -3; ac <= 4; ac++) {
 				for (int ad = -3; ad <= 4; ad++) {
 					float ae = (float)(ac * 8);

@@ -76,7 +76,7 @@ public class ChatScreen extends Screen {
 	protected void init() {
 		this.client.keyboard.setRepeatEvents(true);
 		this.messageHistorySize = this.client.inGameHud.getChatHud().getMessageHistory().size();
-		this.chatField = new TextFieldWidget(this.client.field_39924, 4, this.height - 12, this.width - 4, 12, Text.translatable("chat.editBox")) {
+		this.chatField = new TextFieldWidget(this.client.advanceValidatingTextRenderer, 4, this.height - 12, this.width - 4, 12, Text.translatable("chat.editBox")) {
 			@Override
 			protected MutableText getNarrationMessage() {
 				return super.getNarrationMessage().append(ChatScreen.this.chatInputSuggestor.getNarration());

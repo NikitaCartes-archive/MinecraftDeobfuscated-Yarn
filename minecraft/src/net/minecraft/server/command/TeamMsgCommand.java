@@ -54,20 +54,20 @@ public class TeamMsgCommand {
 				.stream()
 				.filter(player -> player == entity || player.getScoreboardTeam() == team)
 				.toList();
-			signedMessage.decorate(source, signedMessagex -> {
-				SentMessage sentMessage = SentMessage.of(signedMessagex);
-				boolean bl = signedMessagex.method_45100();
+			signedMessage.decorate(source, message -> {
+				SentMessage sentMessage = SentMessage.of(message);
+				boolean bl = message.isFullyFiltered();
 				boolean bl2 = false;
 
 				for (ServerPlayerEntity serverPlayerEntity : list) {
 					MessageType.Parameters parameters3 = serverPlayerEntity == entity ? parameters2 : parameters;
-					boolean bl3 = source.method_45067(serverPlayerEntity);
+					boolean bl3 = source.shouldFilterText(serverPlayerEntity);
 					serverPlayerEntity.sendChatMessage(sentMessage, bl3, parameters3);
 					bl2 |= bl && bl3 && serverPlayerEntity != entity;
 				}
 
 				if (bl2) {
-					source.method_45068(PlayerManager.field_39921);
+					source.sendMessage(PlayerManager.FILTERED_FULL_TEXT);
 				}
 
 				sentMessage.afterPacketsSent(source.getServer().getPlayerManager());

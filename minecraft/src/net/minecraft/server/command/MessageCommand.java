@@ -33,32 +33,28 @@ public class MessageCommand {
 		dispatcher.register(CommandManager.literal("w").redirect(literalCommandNode));
 	}
 
-	private static int execute(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, MessageArgumentType.SignedMessage signedMessage) {
-		MessageType.Parameters parameters = MessageType.params(MessageType.MSG_COMMAND_INCOMING, serverCommandSource);
-		signedMessage.decorate(
-			serverCommandSource,
-			signedMessagex -> {
-				SentMessage sentMessage = SentMessage.of(signedMessagex);
-				boolean bl = signedMessagex.method_45100();
-				Entity entity = serverCommandSource.getEntity();
-				boolean bl2 = false;
+	private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, MessageArgumentType.SignedMessage signedMessage) {
+		MessageType.Parameters parameters = MessageType.params(MessageType.MSG_COMMAND_INCOMING, source);
+		signedMessage.decorate(source, message -> {
+			SentMessage sentMessage = SentMessage.of(message);
+			boolean bl = message.isFullyFiltered();
+			Entity entity = source.getEntity();
+			boolean bl2 = false;
 
-				for (ServerPlayerEntity serverPlayerEntity : collection) {
-					MessageType.Parameters parameters2 = MessageType.params(MessageType.MSG_COMMAND_OUTGOING, serverCommandSource)
-						.withTargetName(serverPlayerEntity.getDisplayName());
-					serverCommandSource.sendChatMessage(sentMessage, false, parameters2);
-					boolean bl3 = serverCommandSource.method_45067(serverPlayerEntity);
-					serverPlayerEntity.sendChatMessage(sentMessage, bl3, parameters);
-					bl2 |= bl && bl3 && serverPlayerEntity != entity;
-				}
-
-				if (bl2) {
-					serverCommandSource.method_45068(PlayerManager.field_39921);
-				}
-
-				sentMessage.afterPacketsSent(serverCommandSource.getServer().getPlayerManager());
+			for (ServerPlayerEntity serverPlayerEntity : targets) {
+				MessageType.Parameters parameters2 = MessageType.params(MessageType.MSG_COMMAND_OUTGOING, source).withTargetName(serverPlayerEntity.getDisplayName());
+				source.sendChatMessage(sentMessage, false, parameters2);
+				boolean bl3 = source.shouldFilterText(serverPlayerEntity);
+				serverPlayerEntity.sendChatMessage(sentMessage, bl3, parameters);
+				bl2 |= bl && bl3 && serverPlayerEntity != entity;
 			}
-		);
-		return collection.size();
+
+			if (bl2) {
+				source.sendMessage(PlayerManager.FILTERED_FULL_TEXT);
+			}
+
+			sentMessage.afterPacketsSent(source.getServer().getPlayerManager());
+		});
+		return targets.size();
 	}
 }

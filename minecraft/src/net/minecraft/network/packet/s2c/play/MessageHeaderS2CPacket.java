@@ -8,8 +8,8 @@ import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.network.message.SignedMessage;
 
 public record MessageHeaderS2CPacket(MessageHeader header, MessageSignatureData headerSignature, byte[] bodyDigest) implements Packet<ClientPlayPacketListener> {
-	public MessageHeaderS2CPacket(SignedMessage signedMessage) {
-		this(signedMessage.signedHeader(), signedMessage.headerSignature(), signedMessage.signedBody().digest().asBytes());
+	public MessageHeaderS2CPacket(SignedMessage message) {
+		this(message.signedHeader(), message.headerSignature(), message.signedBody().digest().asBytes());
 	}
 
 	public MessageHeaderS2CPacket(PacketByteBuf buf) {

@@ -31,7 +31,6 @@ import java.util.Queue;
 import java.util.concurrent.RejectedExecutionException;
 import javax.annotation.Nullable;
 import javax.crypto.Cipher;
-import net.minecraft.class_7648;
 import net.minecraft.network.encryption.PacketDecryptor;
 import net.minecraft.network.encryption.PacketEncryptor;
 import net.minecraft.network.listener.PacketListener;
@@ -143,7 +142,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 						LOGGER.debug("Failed to sent packet", ex);
 						NetworkState networkState = this.getState();
 						Packet<?> packet = (Packet<?>)(networkState == NetworkState.LOGIN ? new LoginDisconnectS2CPacket(text) : new DisconnectS2CPacket(text));
-						this.send(packet, class_7648.method_45084(() -> this.disconnect(text)));
+						this.send(packet, PacketCallbacks.always(() -> this.disconnect(text)));
 						this.disableAutoRead();
 					} else {
 						LOGGER.debug("Double fault", ex);
@@ -190,16 +189,16 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		this.send(packet, null);
 	}
 
-	public void send(Packet<?> packet, @Nullable class_7648 arg) {
+	public void send(Packet<?> packet, @Nullable PacketCallbacks callbacks) {
 		if (this.isOpen()) {
 			this.sendQueuedPackets();
-			this.sendImmediately(packet, arg);
+			this.sendImmediately(packet, callbacks);
 		} else {
-			this.packetQueue.add(new ClientConnection.QueuedPacket(packet, arg));
+			this.packetQueue.add(new ClientConnection.QueuedPacket(packet, callbacks));
 		}
 	}
 
-	private void sendImmediately(Packet<?> packet, @Nullable class_7648 arg) {
+	private void sendImmediately(Packet<?> packet, @Nullable PacketCallbacks callbacks) {
 		NetworkState networkState = NetworkState.getPacketHandlerState(packet);
 		NetworkState networkState2 = this.getState();
 		this.packetsSentCounter++;
@@ -209,24 +208,24 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		}
 
 		if (this.channel.eventLoop().inEventLoop()) {
-			this.sendInternal(packet, arg, networkState, networkState2);
+			this.sendInternal(packet, callbacks, networkState, networkState2);
 		} else {
-			this.channel.eventLoop().execute(() -> this.sendInternal(packet, arg, networkState, networkState2));
+			this.channel.eventLoop().execute(() -> this.sendInternal(packet, callbacks, networkState, networkState2));
 		}
 	}
 
-	private void sendInternal(Packet<?> packet, @Nullable class_7648 arg, NetworkState packetState, NetworkState currentState) {
+	private void sendInternal(Packet<?> packet, @Nullable PacketCallbacks callbacks, NetworkState packetState, NetworkState currentState) {
 		if (packetState != currentState) {
 			this.setState(packetState);
 		}
 
 		ChannelFuture channelFuture = this.channel.writeAndFlush(packet);
-		if (arg != null) {
+		if (callbacks != null) {
 			channelFuture.addListener(future -> {
 				if (future.isSuccess()) {
-					arg.method_45083();
+					callbacks.onSuccess();
 				} else {
-					Packet<?> packetx = arg.method_45086();
+					Packet<?> packetx = callbacks.getFailurePacket();
 					if (packetx != null) {
 						ChannelFuture channelFuturex = this.channel.writeAndFlush(packetx);
 						channelFuturex.addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
@@ -250,7 +249,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 			synchronized (this.packetQueue) {
 				ClientConnection.QueuedPacket queuedPacket;
 				while ((queuedPacket = (ClientConnection.QueuedPacket)this.packetQueue.poll()) != null) {
-					this.sendImmediately(queuedPacket.packet, queuedPacket.callback);
+					this.sendImmediately(queuedPacket.packet, queuedPacket.callbacks);
 				}
 			}
 		}
@@ -457,11 +456,11 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	static class QueuedPacket {
 		final Packet<?> packet;
 		@Nullable
-		final class_7648 callback;
+		final PacketCallbacks callbacks;
 
-		public QueuedPacket(Packet<?> packet, @Nullable class_7648 arg) {
+		public QueuedPacket(Packet<?> packet, @Nullable PacketCallbacks callbacks) {
 			this.packet = packet;
-			this.callback = arg;
+			this.callbacks = callbacks;
 		}
 	}
 }

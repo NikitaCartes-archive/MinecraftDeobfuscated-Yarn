@@ -18,7 +18,7 @@ public class MeCommand {
 								PlayerManager playerManager = serverCommandSource.getServer().getPlayerManager();
 								signedMessage.decorate(
 									serverCommandSource,
-									signedMessagex -> playerManager.broadcast(signedMessagex, serverCommandSource, MessageType.params(MessageType.EMOTE_COMMAND, serverCommandSource))
+									message -> playerManager.broadcast(message, serverCommandSource, MessageType.params(MessageType.EMOTE_COMMAND, serverCommandSource))
 								);
 								return 1;
 							}
