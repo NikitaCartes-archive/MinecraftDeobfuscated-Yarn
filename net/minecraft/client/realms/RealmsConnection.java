@@ -7,6 +7,7 @@ import com.mojang.logging.LogUtils;
 import java.net.InetSocketAddress;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -17,6 +18,7 @@ import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.gui.screen.DisconnectedRealmsScreen;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
+import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.screen.ScreenTexts;
@@ -41,6 +43,7 @@ public class RealmsConnection {
         minecraftClient.setConnectedToRealms(true);
         minecraftClient.loadBlockList();
         minecraftClient.getNarratorManager().narrate(Text.translatable("mco.connect.success"));
+        final CompletableFuture<Optional<PlayerPublicKey.PublicKeyData>> completableFuture = minecraftClient.getProfileKeys().method_45104();
         final String string = address.getAddress();
         final int i = address.getPort();
         new Thread("Realms-connect-task"){
@@ -67,7 +70,7 @@ public class RealmsConnection {
                     }
                     String string4 = minecraftClient.getSession().getUsername();
                     UUID uUID = minecraftClient.getSession().getUuidOrNull();
-                    RealmsConnection.this.connection.send(new LoginHelloC2SPacket(string4, minecraftClient.getProfileKeys().getPublicKeyData(), Optional.ofNullable(uUID)));
+                    RealmsConnection.this.connection.send(new LoginHelloC2SPacket(string4, (Optional)completableFuture.join(), Optional.ofNullable(uUID)));
                     minecraftClient.setCurrentServerEntry(server, string);
                 } catch (Exception exception) {
                     minecraftClient.getResourcePackProvider().clear();

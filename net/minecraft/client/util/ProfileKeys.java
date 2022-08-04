@@ -44,22 +44,26 @@ import org.slf4j.Logger;
 public class ProfileKeys {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final Path PROFILE_KEYS_PATH = Path.of("profilekeys", new String[0]);
+    private final UserApiService field_39958;
     private final Path jsonPath;
-    private final CompletableFuture<Optional<PlayerPublicKey>> publicKeyFuture;
-    private final CompletableFuture<Optional<Signer>> signerFuture;
+    private CompletableFuture<Optional<class_7653>> field_39959;
 
-    public ProfileKeys(UserApiService userApiService, UUID uuid, Path root) {
-        this.jsonPath = root.resolve(PROFILE_KEYS_PATH).resolve(uuid + ".json");
-        CompletableFuture<Optional<PlayerKeyPair>> completableFuture = this.getKeyPair(userApiService);
-        this.publicKeyFuture = completableFuture.thenApply(optionalKeyPair -> optionalKeyPair.map(PlayerKeyPair::publicKey));
-        this.signerFuture = completableFuture.thenApply(optionalKeyPair -> optionalKeyPair.map(keyPair -> Signer.create(keyPair.privateKey(), "SHA256withRSA")));
+    public ProfileKeys(UserApiService userApiService, UUID uuid, Path path) {
+        this.field_39958 = userApiService;
+        this.jsonPath = path.resolve(PROFILE_KEYS_PATH).resolve(uuid + ".json");
+        this.field_39959 = this.getKeyPair();
+    }
+
+    public CompletableFuture<Optional<PlayerPublicKey.PublicKeyData>> method_45104() {
+        this.field_39959 = this.getKeyPair();
+        return this.field_39959.thenApply(optional -> optional.map(arg -> arg.keyPair().publicKey().data()));
     }
 
     /**
      * Gets the key pair from the file cache, or if it is unavailable or expired,
      * the Mojang server.
      */
-    private CompletableFuture<Optional<PlayerKeyPair>> getKeyPair(UserApiService userApiService) {
+    private CompletableFuture<Optional<class_7653>> getKeyPair() {
         return CompletableFuture.supplyAsync(() -> {
             Optional<PlayerKeyPair> optional = this.loadKeyPairFromFile().filter(keyPair -> !keyPair.publicKey().data().isExpired());
             if (optional.isPresent() && !optional.get().isExpired()) {
@@ -70,7 +74,7 @@ public class ProfileKeys {
                 }
             }
             try {
-                PlayerKeyPair playerKeyPair = this.fetchKeyPair(userApiService);
+                PlayerKeyPair playerKeyPair = this.fetchKeyPair(this.field_39958);
                 this.saveKeyPairToFile(playerKeyPair);
                 return Optional.of(playerKeyPair);
             } catch (MinecraftClientException | IOException | NetworkEncryptionException exception) {
@@ -78,7 +82,7 @@ public class ProfileKeys {
                 this.saveKeyPairToFile(null);
                 return optional;
             }
-        }, Util.getMainWorkerExecutor());
+        }, Util.getMainWorkerExecutor()).thenApply(optional -> optional.map(class_7653::new));
     }
 
     /**
@@ -90,14 +94,17 @@ public class ProfileKeys {
      */
     private Optional<PlayerKeyPair> loadKeyPairFromFile() {
         Optional<PlayerKeyPair> optional;
-        block9: {
+        block10: {
+            if (this.field_39959.isDone()) {
+                return this.field_39959.join().map(class_7653::keyPair);
+            }
             if (Files.notExists(this.jsonPath, new LinkOption[0])) {
                 return Optional.empty();
             }
             BufferedReader bufferedReader = Files.newBufferedReader(this.jsonPath);
             try {
                 optional = PlayerKeyPair.CODEC.parse(JsonOps.INSTANCE, JsonParser.parseReader(bufferedReader)).result();
-                if (bufferedReader == null) break block9;
+                if (bufferedReader == null) break block10;
             } catch (Throwable throwable) {
                 try {
                     if (bufferedReader != null) {
@@ -153,7 +160,7 @@ public class ProfileKeys {
         KeyPairResponse keyPairResponse = userApiService.getKeyPair();
         if (keyPairResponse != null) {
             PlayerPublicKey.PublicKeyData publicKeyData = ProfileKeys.decodeKeyPairResponse(keyPairResponse);
-            return new PlayerKeyPair(NetworkEncryptionUtils.decodeRsaPrivateKeyPem(keyPairResponse.getPrivateKey()), PlayerPublicKey.fromKeyData(publicKeyData), Instant.parse(keyPairResponse.getRefreshedAfter()));
+            return new PlayerKeyPair(NetworkEncryptionUtils.decodeRsaPrivateKeyPem(keyPairResponse.getPrivateKey()), new PlayerPublicKey(publicKeyData), Instant.parse(keyPairResponse.getRefreshedAfter()));
         }
         throw new IOException("Could not retrieve profile key pair");
     }
@@ -182,7 +189,7 @@ public class ProfileKeys {
      */
     @Nullable
     public Signer getSigner() {
-        return this.signerFuture.join().orElse(null);
+        return this.field_39959.join().map(class_7653::signer).orElse(null);
     }
 
     /**
@@ -190,11 +197,14 @@ public class ProfileKeys {
      * with the profile}
      */
     public Optional<PlayerPublicKey> getPublicKey() {
-        return this.publicKeyFuture.join();
+        return this.field_39959.join().map(arg -> arg.keyPair().publicKey());
     }
 
-    public Optional<PlayerPublicKey.PublicKeyData> getPublicKeyData() {
-        return this.getPublicKey().map(PlayerPublicKey::data);
+    @Environment(value=EnvType.CLIENT)
+    record class_7653(PlayerKeyPair keyPair, Signer signer) {
+        public class_7653(PlayerKeyPair playerKeyPair) {
+            this(playerKeyPair, Signer.create(playerKeyPair.privateKey(), "SHA256withRSA"));
+        }
     }
 }
 

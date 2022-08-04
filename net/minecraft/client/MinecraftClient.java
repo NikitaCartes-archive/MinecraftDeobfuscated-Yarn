@@ -189,6 +189,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
+import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
@@ -1796,6 +1797,7 @@ implements WindowEventHandler {
     }
 
     public void startIntegratedServer(String levelName, LevelStorage.Session session, ResourcePackManager dataPackManager, SaveLoader saveLoader) {
+        CompletableFuture<Optional<PlayerPublicKey.PublicKeyData>> completableFuture = this.profileKeys.method_45104();
         this.disconnect();
         this.worldGenProgressTracker.set(null);
         try {
@@ -1841,7 +1843,7 @@ implements WindowEventHandler {
         ClientConnection clientConnection = ClientConnection.connectLocal(socketAddress);
         clientConnection.setPacketListener(new ClientLoginNetworkHandler(clientConnection, this, null, status -> {}));
         clientConnection.send(new HandshakeC2SPacket(socketAddress.toString(), 0, NetworkState.LOGIN));
-        clientConnection.send(new LoginHelloC2SPacket(this.getSession().getUsername(), this.profileKeys.getPublicKeyData(), Optional.ofNullable(this.getSession().getUuidOrNull())));
+        clientConnection.send(new LoginHelloC2SPacket(this.getSession().getUsername(), completableFuture.join(), Optional.ofNullable(this.getSession().getUuidOrNull())));
         this.integratedServerConnection = clientConnection;
     }
 

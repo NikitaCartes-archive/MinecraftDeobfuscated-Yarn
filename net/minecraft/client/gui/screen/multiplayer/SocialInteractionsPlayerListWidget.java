@@ -98,8 +98,8 @@ extends ElementListWidget<SocialInteractionsPlayerListEntry> {
             }
             return 2;
         }).thenComparing(player -> {
-            int i = player.getName().codePointAt(0);
-            if (i == 95 || i >= 97 && i <= 122 || i >= 65 && i <= 90 || i >= 48 && i <= 57) {
+            int i;
+            if (!player.getName().isBlank() && ((i = player.getName().codePointAt(0)) == 95 || i >= 97 && i <= 122 || i >= 65 && i <= 90 || i >= 48 && i <= 57)) {
                 return 0;
             }
             return 1;

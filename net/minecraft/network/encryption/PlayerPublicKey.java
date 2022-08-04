@@ -3,21 +3,21 @@
  */
 package net.minecraft.network.encryption;
 
-import com.mojang.authlib.minecraft.InsecurePublicKeyException;
 import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.security.PublicKey;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.encryption.SignatureVerifier;
+import net.minecraft.text.Text;
+import net.minecraft.util.TextifiedException;
 import net.minecraft.util.dynamic.Codecs;
 
 /**
@@ -30,17 +30,11 @@ import net.minecraft.util.dynamic.Codecs;
  * @see PlayerKeyPair
  */
 public record PlayerPublicKey(PublicKeyData data) {
-    public static final Codec<PlayerPublicKey> CODEC = PublicKeyData.CODEC.comapFlatMap(publicKeyData -> {
-        try {
-            return DataResult.success(PlayerPublicKey.fromKeyData(publicKeyData));
-        } catch (NetworkEncryptionException networkEncryptionException) {
-            return DataResult.error("Malformed public key");
-        }
-    }, PlayerPublicKey::data);
-
-    public static PlayerPublicKey fromKeyData(PublicKeyData publicKeyData) throws NetworkEncryptionException {
-        return new PlayerPublicKey(publicKeyData);
-    }
+    public static final Text field_39953 = Text.translatable("multiplayer.disconnect.missing_public_key");
+    public static final Text field_39954 = Text.translatable("multiplayer.disconnect.expired_public_key");
+    private static final Text field_39956 = Text.translatable("multiplayer.disconnect.invalid_public_key_signature");
+    public static final Duration field_39955 = Duration.ofHours(8L);
+    public static final Codec<PlayerPublicKey> CODEC = PublicKeyData.CODEC.xmap(PlayerPublicKey::new, PlayerPublicKey::data);
 
     /**
      * Verifies the public key and decodes it.
@@ -52,14 +46,14 @@ public record PlayerPublicKey(PublicKeyData data) {
      * @throws InsecurePublicKeyException.InvalidException when the key does not belong to the profile, is unsigned, or expired
      * @throws NetworkEncryptionException when the key is malformed
      */
-    public static PlayerPublicKey verifyAndDecode(SignatureVerifier servicesSignatureVerifier, UUID playerUuid, PublicKeyData publicKeyData) throws InsecurePublicKeyException, NetworkEncryptionException {
-        if (publicKeyData.isExpired()) {
-            throw new InsecurePublicKeyException.InvalidException("Expired profile public key");
+    public static PlayerPublicKey verifyAndDecode(SignatureVerifier servicesSignatureVerifier, UUID playerUuid, PublicKeyData publicKeyData, Duration duration) throws class_7652 {
+        if (publicKeyData.method_45103(duration)) {
+            throw new class_7652(field_39954);
         }
         if (!publicKeyData.verifyKey(servicesSignatureVerifier, playerUuid)) {
-            throw new InsecurePublicKeyException.InvalidException("Invalid profile public key signature");
+            throw new class_7652(field_39956);
         }
-        return PlayerPublicKey.fromKeyData(publicKeyData);
+        return new PlayerPublicKey(publicKeyData);
     }
 
     public SignatureVerifier createSignatureInstance() {
@@ -94,6 +88,17 @@ public record PlayerPublicKey(PublicKeyData data) {
 
         public boolean isExpired() {
             return this.expiresAt.isBefore(Instant.now());
+        }
+
+        public boolean method_45103(Duration duration) {
+            return this.expiresAt.plus(duration).isBefore(Instant.now());
+        }
+    }
+
+    public static class class_7652
+    extends TextifiedException {
+        public class_7652(Text text) {
+            super(text);
         }
     }
 }
