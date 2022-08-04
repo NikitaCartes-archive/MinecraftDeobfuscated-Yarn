@@ -46,11 +46,17 @@ public class ProfileKeys {
 	public ProfileKeys(UserApiService userApiService, UUID uuid, Path path) {
 		this.field_39958 = userApiService;
 		this.jsonPath = path.resolve(PROFILE_KEYS_PATH).resolve(uuid + ".json");
-		this.field_39959 = this.getKeyPair();
+		this.field_39959 = CompletableFuture.supplyAsync(
+				() -> this.loadKeyPairFromFile().filter(playerKeyPair -> !playerKeyPair.publicKey().data().isExpired()), Util.getMainWorkerExecutor()
+			)
+			.thenCompose(this::getKeyPair);
 	}
 
 	public CompletableFuture<Optional<PlayerPublicKey.PublicKeyData>> method_45104() {
-		this.field_39959 = this.getKeyPair();
+		this.field_39959 = this.field_39959.thenCompose(optional -> {
+			Optional<PlayerKeyPair> optional2 = optional.map(ProfileKeys.class_7653::keyPair);
+			return this.getKeyPair(optional2);
+		});
 		return this.field_39959.thenApply(optional -> optional.map(arg -> arg.keyPair().publicKey().data()));
 	}
 
@@ -58,9 +64,8 @@ public class ProfileKeys {
 	 * Gets the key pair from the file cache, or if it is unavailable or expired,
 	 * the Mojang server.
 	 */
-	private CompletableFuture<Optional<ProfileKeys.class_7653>> getKeyPair() {
+	private CompletableFuture<Optional<ProfileKeys.class_7653>> getKeyPair(Optional<PlayerKeyPair> optional) {
 		return CompletableFuture.supplyAsync(() -> {
-			Optional<PlayerKeyPair> optional = this.loadKeyPairFromFile().filter(keyPair -> !keyPair.publicKey().data().isExpired());
 			if (optional.isPresent() && !((PlayerKeyPair)optional.get()).isExpired()) {
 				if (SharedConstants.isDevelopment) {
 					return optional;
@@ -78,7 +83,7 @@ public class ProfileKeys {
 				this.saveKeyPairToFile(null);
 				return optional;
 			}
-		}, Util.getMainWorkerExecutor()).thenApply(optional -> optional.map(ProfileKeys.class_7653::new));
+		}, Util.getMainWorkerExecutor()).thenApply(optionalx -> optionalx.map(ProfileKeys.class_7653::new));
 	}
 
 	/**
@@ -89,9 +94,7 @@ public class ProfileKeys {
 	 * @implNote The cache file is stored at {@code .minecraft/profilekeys/<uuid>.json}.
 	 */
 	private Optional<PlayerKeyPair> loadKeyPairFromFile() {
-		if (this.field_39959.isDone()) {
-			return ((Optional)this.field_39959.join()).map(ProfileKeys.class_7653::keyPair);
-		} else if (Files.notExists(this.jsonPath, new LinkOption[0])) {
+		if (Files.notExists(this.jsonPath, new LinkOption[0])) {
 			return Optional.empty();
 		} else {
 			try {
