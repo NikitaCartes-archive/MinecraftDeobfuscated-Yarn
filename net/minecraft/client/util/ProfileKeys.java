@@ -51,11 +51,14 @@ public class ProfileKeys {
     public ProfileKeys(UserApiService userApiService, UUID uuid, Path path) {
         this.field_39958 = userApiService;
         this.jsonPath = path.resolve(PROFILE_KEYS_PATH).resolve(uuid + ".json");
-        this.field_39959 = this.getKeyPair();
+        this.field_39959 = CompletableFuture.supplyAsync(() -> this.loadKeyPairFromFile().filter(playerKeyPair -> !playerKeyPair.publicKey().data().isExpired()), Util.getMainWorkerExecutor()).thenCompose(this::getKeyPair);
     }
 
     public CompletableFuture<Optional<PlayerPublicKey.PublicKeyData>> method_45104() {
-        this.field_39959 = this.getKeyPair();
+        this.field_39959 = this.field_39959.thenCompose(optional -> {
+            Optional<PlayerKeyPair> optional2 = optional.map(class_7653::keyPair);
+            return this.getKeyPair(optional2);
+        });
         return this.field_39959.thenApply(optional -> optional.map(arg -> arg.keyPair().publicKey().data()));
     }
 
@@ -63,14 +66,13 @@ public class ProfileKeys {
      * Gets the key pair from the file cache, or if it is unavailable or expired,
      * the Mojang server.
      */
-    private CompletableFuture<Optional<class_7653>> getKeyPair() {
+    private CompletableFuture<Optional<class_7653>> getKeyPair(Optional<PlayerKeyPair> optional2) {
         return CompletableFuture.supplyAsync(() -> {
-            Optional<PlayerKeyPair> optional = this.loadKeyPairFromFile().filter(keyPair -> !keyPair.publicKey().data().isExpired());
-            if (optional.isPresent() && !optional.get().isExpired()) {
+            if (optional2.isPresent() && !((PlayerKeyPair)optional2.get()).isExpired()) {
                 if (!SharedConstants.isDevelopment) {
                     this.saveKeyPairToFile(null);
                 } else {
-                    return optional;
+                    return optional2;
                 }
             }
             try {
@@ -80,7 +82,7 @@ public class ProfileKeys {
             } catch (MinecraftClientException | IOException | NetworkEncryptionException exception) {
                 LOGGER.error("Failed to retrieve profile key pair", exception);
                 this.saveKeyPairToFile(null);
-                return optional;
+                return optional2;
             }
         }, Util.getMainWorkerExecutor()).thenApply(optional -> optional.map(class_7653::new));
     }
@@ -94,17 +96,14 @@ public class ProfileKeys {
      */
     private Optional<PlayerKeyPair> loadKeyPairFromFile() {
         Optional<PlayerKeyPair> optional;
-        block10: {
-            if (this.field_39959.isDone()) {
-                return this.field_39959.join().map(class_7653::keyPair);
-            }
+        block9: {
             if (Files.notExists(this.jsonPath, new LinkOption[0])) {
                 return Optional.empty();
             }
             BufferedReader bufferedReader = Files.newBufferedReader(this.jsonPath);
             try {
                 optional = PlayerKeyPair.CODEC.parse(JsonOps.INSTANCE, JsonParser.parseReader(bufferedReader)).result();
-                if (bufferedReader == null) break block10;
+                if (bufferedReader == null) break block9;
             } catch (Throwable throwable) {
                 try {
                     if (bufferedReader != null) {
