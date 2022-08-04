@@ -3,7 +3,6 @@ package net.minecraft.client.network;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.minecraft.InsecurePublicKeyException;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture.Type;
 import com.mojang.logging.LogUtils;
@@ -13,7 +12,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.DefaultSkinHelper;
-import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.network.message.MessageVerifier;
@@ -55,10 +53,10 @@ public class PlayerListEntry {
 		try {
 			PlayerPublicKey.PublicKeyData publicKeyData = playerListPacketEntry.getPublicKeyData();
 			if (publicKeyData != null) {
-				playerPublicKey = PlayerPublicKey.verifyAndDecode(servicesSignatureVerifier, this.profile.getId(), publicKeyData);
+				playerPublicKey = PlayerPublicKey.verifyAndDecode(servicesSignatureVerifier, this.profile.getId(), publicKeyData, PlayerPublicKey.field_39955);
 			}
-		} catch (InsecurePublicKeyException | NetworkEncryptionException var6) {
-			LOGGER.error("Failed to retrieve publicKey property for profile {}", this.profile.getId(), var6);
+		} catch (Exception var6) {
+			LOGGER.error("Failed to validate publicKey property for profile {}", this.profile.getId(), var6);
 		}
 
 		this.publicKeyData = playerPublicKey;
