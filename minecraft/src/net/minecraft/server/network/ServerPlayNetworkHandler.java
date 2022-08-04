@@ -1401,20 +1401,28 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 	 * 
 	 * @see #canAcceptMessage(String, Instant, LastSeenMessageList.Acknowledgment)
 	 */
-	private boolean canAcceptMessage(SignedMessage message) {
+	private boolean canAcceptMessage(SignedMessage signedMessage) {
 		MessageSourceProfile messageSourceProfile = this.player.getMessageSourceProfile();
-		if (messageSourceProfile.playerPublicKey() != null && !message.verify(messageSourceProfile)) {
-			this.disconnect(Text.translatable("multiplayer.disconnect.unsigned_chat"));
-			return false;
-		} else {
-			if (message.isExpiredOnServer(Instant.now())) {
-				LOGGER.warn(
-					"{} sent expired chat: '{}'. Is the client/server system time unsynchronized?", this.player.getName().getString(), message.getSignedContent().plain()
-				);
+		PlayerPublicKey playerPublicKey = messageSourceProfile.playerPublicKey();
+		if (playerPublicKey != null) {
+			if (playerPublicKey.data().isExpired()) {
+				this.player.sendMessage(Text.translatable("chat.disabled.expiredProfileKey").formatted(Formatting.RED));
+				return false;
 			}
 
-			return true;
+			if (!signedMessage.verify(messageSourceProfile)) {
+				this.disconnect(Text.translatable("multiplayer.disconnect.unsigned_chat"));
+				return false;
+			}
 		}
+
+		if (signedMessage.isExpiredOnServer(Instant.now())) {
+			LOGGER.warn(
+				"{} sent expired chat: '{}'. Is the client/server system time unsynchronized?", this.player.getName().getString(), signedMessage.getSignedContent().plain()
+			);
+		}
+
+		return true;
 	}
 
 	private void checkForSpam() {

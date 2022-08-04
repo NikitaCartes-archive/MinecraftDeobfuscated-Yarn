@@ -11,19 +11,19 @@ import net.minecraft.util.math.ChunkPos;
 
 public class SharedConstants {
 	@Deprecated
-	public static final boolean IS_DEVELOPMENT_VERSION = false;
+	public static final boolean IS_DEVELOPMENT_VERSION = true;
 	@Deprecated
-	public static final int WORLD_VERSION = 3117;
+	public static final int WORLD_VERSION = 3118;
 	@Deprecated
 	public static final String CURRENT_SERIES = "main";
 	@Deprecated
-	public static final String VERSION_NAME = "1.19.1";
+	public static final String VERSION_NAME = "1.19.2-rc1";
 	@Deprecated
-	public static final String RELEASE_TARGET = "1.19.1";
+	public static final String RELEASE_TARGET = "1.19.2";
 	@Deprecated
 	public static final int RELEASE_TARGET_PROTOCOL_VERSION = 760;
 	@Deprecated
-	public static final int field_29736 = 101;
+	public static final int field_29736 = 102;
 	public static final int SNBT_TOO_OLD_THRESHOLD = 3075;
 	private static final int field_29708 = 30;
 	public static final boolean field_36325 = false;
@@ -203,7 +203,7 @@ public class SharedConstants {
 	}
 
 	public static int getProtocolVersion() {
-		return 760;
+		return 1073741926;
 	}
 
 	public static boolean isOutsideGenerationArea(ChunkPos pos) {

@@ -180,6 +180,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
+import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
@@ -2022,6 +2023,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public void startIntegratedServer(String levelName, LevelStorage.Session session, ResourcePackManager dataPackManager, SaveLoader saveLoader) {
+		CompletableFuture<Optional<PlayerPublicKey.PublicKeyData>> completableFuture = this.profileKeys.method_45104();
 		this.disconnect();
 		this.worldGenProgressTracker.set(null);
 
@@ -2040,8 +2042,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			);
 			this.integratedServerRunning = true;
 			this.ensureAbuseReportContext(ReporterEnvironment.ofIntegratedServer());
-		} catch (Throwable var9) {
-			CrashReport crashReport = CrashReport.create(var9, "Starting integrated server");
+		} catch (Throwable var10) {
+			CrashReport crashReport = CrashReport.create(var10, "Starting integrated server");
 			CrashReportSection crashReportSection = crashReport.addElement("Starting integrated server");
 			crashReportSection.add("Level ID", levelName);
 			crashReportSection.add("Level Name", (CrashCallable<String>)(() -> saveLoader.saveProperties().getLevelName()));
@@ -2062,7 +2064,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 			try {
 				Thread.sleep(16L);
-			} catch (InterruptedException var8) {
+			} catch (InterruptedException var9) {
 			}
 
 			if (this.crashReportSupplier != null) {
@@ -2078,7 +2080,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}));
 		clientConnection.send(new HandshakeC2SPacket(socketAddress.toString(), 0, NetworkState.LOGIN));
 		clientConnection.send(
-			new LoginHelloC2SPacket(this.getSession().getUsername(), this.profileKeys.getPublicKeyData(), Optional.ofNullable(this.getSession().getUuidOrNull()))
+			new LoginHelloC2SPacket(
+				this.getSession().getUsername(), (Optional<PlayerPublicKey.PublicKeyData>)completableFuture.join(), Optional.ofNullable(this.getSession().getUuidOrNull())
+			)
 		);
 		this.integratedServerConnection = clientConnection;
 	}
