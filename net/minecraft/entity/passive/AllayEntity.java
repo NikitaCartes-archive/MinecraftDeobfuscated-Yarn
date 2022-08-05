@@ -77,7 +77,7 @@ import org.slf4j.Logger;
 public class AllayEntity
 extends PathAwareEntity
 implements InventoryOwner {
-    private static final Logger field_39045 = LogUtils.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final int field_38405 = 16;
     private static final Vec3i ITEM_PICKUP_RANGE_EXPANDER = new Vec3i(1, 1, 1);
     private static final int field_39461 = 5;
@@ -418,7 +418,7 @@ implements InventoryOwner {
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
         nbt.put("Inventory", this.inventory.toNbtList());
-        VibrationListener.createCodec(this.listenerCallback).encodeStart(NbtOps.INSTANCE, this.gameEventHandler.getListener()).resultOrPartial(field_39045::error).ifPresent(nbtElement -> nbt.put("listener", (NbtElement)nbtElement));
+        VibrationListener.createCodec(this.listenerCallback).encodeStart(NbtOps.INSTANCE, this.gameEventHandler.getListener()).resultOrPartial(LOGGER::error).ifPresent(nbtElement -> nbt.put("listener", (NbtElement)nbtElement));
         nbt.putLong("DuplicationCooldown", this.duplicationCooldown);
         nbt.putBoolean("CanDuplicate", this.canDuplicate());
     }
@@ -428,7 +428,7 @@ implements InventoryOwner {
         super.readCustomDataFromNbt(nbt);
         this.inventory.readNbtList(nbt.getList("Inventory", NbtElement.COMPOUND_TYPE));
         if (nbt.contains("listener", NbtElement.COMPOUND_TYPE)) {
-            VibrationListener.createCodec(this.listenerCallback).parse(new Dynamic<NbtCompound>(NbtOps.INSTANCE, nbt.getCompound("listener"))).resultOrPartial(field_39045::error).ifPresent(vibrationListener -> this.gameEventHandler.setListener((VibrationListener)vibrationListener, this.world));
+            VibrationListener.createCodec(this.listenerCallback).parse(new Dynamic<NbtCompound>(NbtOps.INSTANCE, nbt.getCompound("listener"))).resultOrPartial(LOGGER::error).ifPresent(vibrationListener -> this.gameEventHandler.setListener((VibrationListener)vibrationListener, this.world));
         }
         this.duplicationCooldown = nbt.getInt("DuplicationCooldown");
         this.dataTracker.set(CAN_DUPLICATE, nbt.getBoolean("CanDuplicate"));

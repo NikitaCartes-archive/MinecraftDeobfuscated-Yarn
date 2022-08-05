@@ -192,8 +192,8 @@ implements Comparable<AdvancementProgress> {
     }
 
     @Override
-    public /* synthetic */ int compareTo(Object object) {
-        return this.compareTo((AdvancementProgress)object);
+    public /* synthetic */ int compareTo(Object other) {
+        return this.compareTo((AdvancementProgress)other);
     }
 
     public static class Serializer

@@ -48,14 +48,14 @@ extends RangedWeaponItem
 implements Vanishable {
     private static final String CHARGED_KEY = "Charged";
     private static final String CHARGED_PROJECTILES_KEY = "ChargedProjectiles";
-    private static final int field_30866 = 25;
+    private static final int DEFAULT_PULL_TIME = 25;
     public static final int RANGE = 8;
     private boolean charged = false;
     private boolean loaded = false;
     private static final float field_30867 = 0.2f;
     private static final float field_30868 = 0.5f;
-    private static final float field_30869 = 3.15f;
-    private static final float field_30870 = 1.6f;
+    private static final float DEFAULT_SPEED = 3.15f;
+    private static final float FIREWORK_ROCKET_SPEED = 1.6f;
 
     public CrossbowItem(Item.Settings settings) {
         super(settings);

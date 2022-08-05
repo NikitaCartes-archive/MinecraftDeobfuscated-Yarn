@@ -38,11 +38,11 @@ public class LocateCommand {
     private static final DynamicCommandExceptionType BIOME_INVALID_EXCEPTION = new DynamicCommandExceptionType(id -> Text.translatable("commands.locate.biome.invalid", id));
     private static final DynamicCommandExceptionType POI_NOT_FOUND_EXCEPTION = new DynamicCommandExceptionType(id -> Text.translatable("commands.locate.poi.not_found", id));
     private static final DynamicCommandExceptionType POI_INVALID_EXCEPTION = new DynamicCommandExceptionType(id -> Text.translatable("commands.locate.poi.invalid", id));
-    private static final int field_39251 = 100;
-    private static final int field_39252 = 6400;
-    private static final int field_39253 = 32;
-    private static final int field_39254 = 64;
-    private static final int field_39255 = 256;
+    private static final int LOCATE_STRUCTURE_RADIUS = 100;
+    private static final int LOCATE_BIOME_RADIUS = 6400;
+    private static final int LOCATE_BIOME_HORIZONTAL_BLOCK_CHECK_INTERVAL = 32;
+    private static final int LOCATE_BIOME_VERTICAL_BLOCK_CHECK_INTERVAL = 64;
+    private static final int LOCATE_POI_RADIUS = 256;
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("locate").requires(source -> source.hasPermissionLevel(2))).then(CommandManager.literal("structure").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("structure", RegistryPredicateArgumentType.registryPredicate(Registry.STRUCTURE_KEY)).executes(commandContext -> LocateCommand.executeLocateStructure((ServerCommandSource)commandContext.getSource(), RegistryPredicateArgumentType.getPredicate(commandContext, "structure", Registry.STRUCTURE_KEY, STRUCTURE_INVALID_EXCEPTION)))))).then(CommandManager.literal("biome").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("biome", RegistryPredicateArgumentType.registryPredicate(Registry.BIOME_KEY)).executes(commandContext -> LocateCommand.executeLocateBiome((ServerCommandSource)commandContext.getSource(), RegistryPredicateArgumentType.getPredicate(commandContext, "biome", Registry.BIOME_KEY, BIOME_INVALID_EXCEPTION)))))).then(CommandManager.literal("poi").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("poi", RegistryPredicateArgumentType.registryPredicate(Registry.POINT_OF_INTEREST_TYPE_KEY)).executes(commandContext -> LocateCommand.executeLocatePoi((ServerCommandSource)commandContext.getSource(), RegistryPredicateArgumentType.getPredicate(commandContext, "poi", Registry.POINT_OF_INTEREST_TYPE_KEY, POI_INVALID_EXCEPTION))))));

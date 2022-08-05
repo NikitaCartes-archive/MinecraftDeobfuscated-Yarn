@@ -17,6 +17,9 @@ import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.render.VertexFormatElement;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Defines what {@link VertexFormatElement elements} a vertex has.
+ */
 @Environment(value=EnvType.CLIENT)
 public class VertexFormat {
     private final ImmutableList<VertexFormatElement> elements;
@@ -110,6 +113,12 @@ public class VertexFormat {
         }
     }
 
+    /**
+     * {@return a vertex buffer shared with the users of this vertex format}
+     * 
+     * <p>The data uploaded to the returned vertex buffer cannot be reused as
+     * it can be overwritten by other users of this method.
+     */
     public VertexBuffer getBuffer() {
         VertexBuffer vertexBuffer = this.buffer;
         if (vertexBuffer == null) {

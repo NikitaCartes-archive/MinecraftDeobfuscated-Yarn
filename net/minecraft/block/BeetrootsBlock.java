@@ -22,7 +22,7 @@ import net.minecraft.world.World;
 
 public class BeetrootsBlock
 extends CropBlock {
-    public static final int field_31013 = 3;
+    public static final int BEETROOTS_MAX_AGE = 3;
     public static final IntProperty AGE = Properties.AGE_3;
     private static final VoxelShape[] AGE_TO_SHAPE = new VoxelShape[]{Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0), Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 4.0, 16.0), Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 6.0, 16.0), Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0)};
 

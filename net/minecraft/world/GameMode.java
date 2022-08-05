@@ -14,7 +14,7 @@ public enum GameMode {
     SPECTATOR(3, "spectator");
 
     public static final GameMode DEFAULT;
-    private static final int field_30964 = -1;
+    private static final int UNKNOWN = -1;
     private final int id;
     private final String name;
     private final Text simpleTranslatableName;

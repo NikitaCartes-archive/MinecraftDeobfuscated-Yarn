@@ -25,15 +25,15 @@ public class PointOfInterest {
         return RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockPos.CODEC.fieldOf("pos")).forGetter(poi -> poi.pos), ((MapCodec)RegistryFixedCodec.of(Registry.POINT_OF_INTEREST_TYPE_KEY).fieldOf("type")).forGetter(poi -> poi.type), ((MapCodec)Codec.INT.fieldOf("free_tickets")).orElse(0).forGetter(poi -> poi.freeTickets), RecordCodecBuilder.point(updateListener)).apply((Applicative<PointOfInterest, ?>)instance, PointOfInterest::new));
     }
 
-    private PointOfInterest(BlockPos pos, RegistryEntry<PointOfInterestType> registryEntry, int freeTickets, Runnable updateListener) {
+    private PointOfInterest(BlockPos pos, RegistryEntry<PointOfInterestType> type, int freeTickets, Runnable updateListener) {
         this.pos = pos.toImmutable();
-        this.type = registryEntry;
+        this.type = type;
         this.freeTickets = freeTickets;
         this.updateListener = updateListener;
     }
 
-    public PointOfInterest(BlockPos pos, RegistryEntry<PointOfInterestType> registryEntry, Runnable updateListener) {
-        this(pos, registryEntry, registryEntry.value().ticketCount(), updateListener);
+    public PointOfInterest(BlockPos pos, RegistryEntry<PointOfInterestType> type, Runnable updateListener) {
+        this(pos, type, type.value().ticketCount(), updateListener);
     }
 
     @Deprecated

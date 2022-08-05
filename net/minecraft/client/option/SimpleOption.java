@@ -401,12 +401,12 @@ public final class SimpleOption<T> {
 
         @Override
         default public double toSliderProgress(Integer integer) {
-            return MathHelper.lerpFromProgress(integer.intValue(), this.minInclusive(), this.maxInclusive(), 0.0f, 1.0f);
+            return MathHelper.map(integer.intValue(), this.minInclusive(), this.maxInclusive(), 0.0f, 1.0f);
         }
 
         @Override
         default public Integer toValue(double d) {
-            return MathHelper.floor(MathHelper.lerpFromProgress(d, 0.0, 1.0, (double)this.minInclusive(), (double)this.maxInclusive()));
+            return MathHelper.floor(MathHelper.map(d, 0.0, 1.0, (double)this.minInclusive(), (double)this.maxInclusive()));
         }
 
         default public <R> SliderCallbacks<R> withModifier(final IntFunction<? extends R> sliderProgressValueToValue, final ToIntFunction<? super R> valueToSliderProgressValue) {

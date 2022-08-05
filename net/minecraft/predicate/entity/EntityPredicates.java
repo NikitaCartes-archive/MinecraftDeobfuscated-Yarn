@@ -95,9 +95,9 @@ public final class EntityPredicates {
     }
 
     public static Predicate<Entity> rides(Entity entity) {
-        return entity2 -> {
-            while (entity2.hasVehicle()) {
-                if ((entity2 = entity2.getVehicle()) != entity) continue;
+        return testedEntity -> {
+            while (testedEntity.hasVehicle()) {
+                if ((testedEntity = testedEntity.getVehicle()) != entity) continue;
                 return false;
             }
             return true;

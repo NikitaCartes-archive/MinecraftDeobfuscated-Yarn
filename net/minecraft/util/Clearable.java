@@ -11,6 +11,9 @@ import org.jetbrains.annotations.Nullable;
 public interface Clearable {
     public void clear();
 
+    /**
+     * Clears {@code o} if it is {@link Clearable}.
+     */
     public static void clear(@Nullable Object o) {
         if (o instanceof Clearable) {
             ((Clearable)o).clear();

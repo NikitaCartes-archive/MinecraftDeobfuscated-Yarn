@@ -73,7 +73,7 @@ implements AutoCloseable {
     protected void write(ChunkPos pos, @Nullable NbtCompound nbt) throws IOException {
         RegionFile regionFile = this.getRegionFile(pos);
         if (nbt == null) {
-            regionFile.method_31740(pos);
+            regionFile.delete(pos);
         } else {
             try (DataOutputStream dataOutputStream = regionFile.getChunkOutputStream(pos);){
                 NbtIo.write(nbt, (DataOutput)dataOutputStream);

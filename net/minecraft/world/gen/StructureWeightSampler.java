@@ -126,7 +126,7 @@ implements DensityFunctionTypes.Beardifying {
 
     private static double getMagnitudeWeight(int x, int y, int z) {
         double d = MathHelper.magnitude(x, (double)y / 2.0, z);
-        return MathHelper.clampedLerpFromProgress(d, 0.0, 6.0, 1.0, 0.0);
+        return MathHelper.clampedMap(d, 0.0, 6.0, 1.0, 0.0);
     }
 
     /**

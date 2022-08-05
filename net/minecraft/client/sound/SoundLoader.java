@@ -32,8 +32,8 @@ public class SoundLoader {
     }
 
     public CompletableFuture<StaticSound> loadStatic(Identifier id) {
-        return this.loadedSounds.computeIfAbsent(id, identifier -> CompletableFuture.supplyAsync(() -> {
-            try (InputStream inputStream = this.resourceManager.open((Identifier)identifier);){
+        return this.loadedSounds.computeIfAbsent(id, id2 -> CompletableFuture.supplyAsync(() -> {
+            try (InputStream inputStream = this.resourceManager.open((Identifier)id2);){
                 StaticSound staticSound;
                 try (OggAudioStream oggAudioStream = new OggAudioStream(inputStream);){
                     ByteBuffer byteBuffer = oggAudioStream.getBuffer();

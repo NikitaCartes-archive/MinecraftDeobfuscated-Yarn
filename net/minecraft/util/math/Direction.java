@@ -29,6 +29,13 @@ import net.minecraft.util.math.Vector4f;
 import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * An enum representing 6 cardinal directions in Minecraft.
+ * 
+ * <p>In Minecraft, the X axis determines the east-west direction, the Y axis determines
+ * the up-down direction, and the Z axis determines the south-north direction (note
+ * that positive-Z direction is south, not north).
+ */
 public enum Direction implements StringIdentifiable
 {
     DOWN(0, 1, -1, "down", AxisDirection.NEGATIVE, Axis.Y, new Vec3i(0, -1, 0)),
@@ -113,6 +120,9 @@ public enum Direction implements StringIdentifiable
         return Direction.getFacing(vector4f.getX(), vector4f.getY(), vector4f.getZ());
     }
 
+    /**
+     * {@return a shuffled collection of all directions}
+     */
     public static Collection<Direction> shuffle(Random random) {
         return Util.copyShuffled(Direction.values(), random);
     }
@@ -300,6 +310,10 @@ public enum Direction implements StringIdentifiable
         return this.axis;
     }
 
+    /**
+     * {@return a direction with the given {@code name}, or {@code null} if there is
+     * no such direction}
+     */
     @Nullable
     public static Direction byName(@Nullable String name) {
         return CODEC.byId(name);

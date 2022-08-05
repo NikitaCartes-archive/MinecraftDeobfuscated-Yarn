@@ -32,6 +32,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Provides methods for validating and deserializing JSON elements.
+ */
 public class JsonHelper {
     private static final Gson GSON = new GsonBuilder().create();
 

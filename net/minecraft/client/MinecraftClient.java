@@ -1448,14 +1448,14 @@ implements WindowEventHandler {
         }
     }
 
-    private void handleBlockBreaking(boolean bl) {
-        if (!bl) {
+    private void handleBlockBreaking(boolean breaking) {
+        if (!breaking) {
             this.attackCooldown = 0;
         }
         if (this.attackCooldown > 0 || this.player.isUsingItem()) {
             return;
         }
-        if (bl && this.crosshairTarget != null && this.crosshairTarget.getType() == HitResult.Type.BLOCK) {
+        if (breaking && this.crosshairTarget != null && this.crosshairTarget.getType() == HitResult.Type.BLOCK) {
             Direction direction;
             BlockHitResult blockHitResult = (BlockHitResult)this.crosshairTarget;
             BlockPos blockPos = blockHitResult.getBlockPos();
@@ -1797,7 +1797,7 @@ implements WindowEventHandler {
     }
 
     public void startIntegratedServer(String levelName, LevelStorage.Session session, ResourcePackManager dataPackManager, SaveLoader saveLoader) {
-        CompletableFuture<Optional<PlayerPublicKey.PublicKeyData>> completableFuture = this.profileKeys.method_45104();
+        CompletableFuture<Optional<PlayerPublicKey.PublicKeyData>> completableFuture = this.profileKeys.refresh();
         this.disconnect();
         this.worldGenProgressTracker.set(null);
         try {
@@ -2449,10 +2449,10 @@ implements WindowEventHandler {
                 } catch (InterruptedException interruptedException) {
                     // empty catch block
                 }
-                ScreenshotRecorder.saveScreenshot(directory, "panorama_" + l + ".png", framebuffer, text -> {});
+                ScreenshotRecorder.saveScreenshot(directory, "panorama_" + l + ".png", framebuffer, message -> {});
             }
-            MutableText text2 = Text.literal(directory.getName()).formatted(Formatting.UNDERLINE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, directory.getAbsolutePath())));
-            MutableText mutableText = Text.translatable("screenshot.success", text2);
+            MutableText text = Text.literal(directory.getName()).formatted(Formatting.UNDERLINE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, directory.getAbsolutePath())));
+            MutableText mutableText = Text.translatable("screenshot.success", text);
             return mutableText;
         } catch (Exception exception) {
             LOGGER.error("Couldn't save image", exception);

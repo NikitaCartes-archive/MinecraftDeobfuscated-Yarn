@@ -50,7 +50,7 @@ implements Supplier<JsonElement> {
             return variants.get(0).get();
         }
         JsonArray jsonArray = new JsonArray();
-        variants.forEach(blockStateVariant -> jsonArray.add(blockStateVariant.get()));
+        variants.forEach(variant -> jsonArray.add(variant.get()));
         return jsonArray;
     }
 

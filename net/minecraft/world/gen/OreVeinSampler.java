@@ -38,7 +38,7 @@ public final class OreVeinSampler {
                 return blockState;
             }
             int l = Math.min(j, k);
-            double f = MathHelper.clampedLerpFromProgress((double)l, 0.0, 20.0, -0.2, 0.0);
+            double f = MathHelper.clampedMap((double)l, 0.0, 20.0, -0.2, 0.0);
             if (e + f < (double)0.4f) {
                 return blockState;
             }
@@ -49,7 +49,7 @@ public final class OreVeinSampler {
             if (veinRidged.sample(pos) >= 0.0) {
                 return blockState;
             }
-            double g = MathHelper.clampedLerpFromProgress(e, (double)0.4f, (double)0.6f, (double)0.1f, (double)0.3f);
+            double g = MathHelper.clampedMap(e, (double)0.4f, (double)0.6f, (double)0.1f, (double)0.3f);
             if ((double)random.nextFloat() < g && veinGap.sample(pos) > (double)-0.3f) {
                 return random.nextFloat() < 0.02f ? veinType.rawOreBlock : veinType.ore;
             }

@@ -8,6 +8,9 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Contains string-related helper methods.
+ */
 public class StringHelper {
     private static final Pattern FORMATTING_CODE = Pattern.compile("(?i)\\u00A7[0-9A-FK-OR]");
     private static final Pattern LINE_BREAK = Pattern.compile("\\r\\n|\\v");

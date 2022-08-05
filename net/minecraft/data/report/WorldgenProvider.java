@@ -37,18 +37,18 @@ implements DataProvider {
         DynamicRegistryManager.getInfos().forEach(info -> this.writeRegistryEntries(writer, dynamicRegistryManager, (DynamicOps<JsonElement>)dynamicOps, (DynamicRegistryManager.Info)info));
     }
 
-    private <T> void writeRegistryEntries(DataWriter dataWriter, DynamicRegistryManager dynamicRegistryManager, DynamicOps<JsonElement> dynamicOps, DynamicRegistryManager.Info<T> info) {
-        RegistryKey<Registry<T>> registryKey = info.registry();
-        Registry<T> registry = dynamicRegistryManager.getManaged(registryKey);
+    private <T> void writeRegistryEntries(DataWriter writer, DynamicRegistryManager registryManager, DynamicOps<JsonElement> ops, DynamicRegistryManager.Info<T> registry) {
+        RegistryKey<Registry<T>> registryKey = registry.registry();
+        Registry<T> registry2 = registryManager.getManaged(registryKey);
         DataGenerator.PathResolver pathResolver = this.generator.createPathResolver(DataGenerator.OutputType.REPORTS, registryKey.getValue().getPath());
-        for (Map.Entry<RegistryKey<T>, T> entry : registry.getEntrySet()) {
-            WorldgenProvider.writeToPath(pathResolver.resolveJson(entry.getKey().getValue()), dataWriter, dynamicOps, info.entryCodec(), entry.getValue());
+        for (Map.Entry<RegistryKey<T>, T> entry : registry2.getEntrySet()) {
+            WorldgenProvider.writeToPath(pathResolver.resolveJson(entry.getKey().getValue()), writer, ops, registry.entryCodec(), entry.getValue());
         }
     }
 
     private static <E> void writeToPath(Path path, DataWriter cache, DynamicOps<JsonElement> json, Encoder<E> encoder, E value) {
         try {
-            Optional<JsonElement> optional = encoder.encodeStart(json, value).resultOrPartial(string -> LOGGER.error("Couldn't serialize element {}: {}", (Object)path, string));
+            Optional<JsonElement> optional = encoder.encodeStart(json, value).resultOrPartial(error -> LOGGER.error("Couldn't serialize element {}: {}", (Object)path, error));
             if (optional.isPresent()) {
                 DataProvider.writeToPath(cache, optional.get(), path);
             }

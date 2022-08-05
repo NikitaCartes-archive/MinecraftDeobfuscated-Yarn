@@ -15,13 +15,13 @@ import org.jetbrains.annotations.Nullable;
 
 public class SharedConstants {
     @Deprecated
-    public static final boolean IS_DEVELOPMENT_VERSION = true;
+    public static final boolean IS_DEVELOPMENT_VERSION = false;
     @Deprecated
-    public static final int WORLD_VERSION = 3119;
+    public static final int WORLD_VERSION = 3120;
     @Deprecated
     public static final String CURRENT_SERIES = "main";
     @Deprecated
-    public static final String VERSION_NAME = "1.19.2-rc2";
+    public static final String VERSION_NAME = "1.19.2";
     @Deprecated
     public static final String RELEASE_TARGET = "1.19.2";
     @Deprecated
@@ -30,7 +30,7 @@ public class SharedConstants {
     public static final int field_29736 = 103;
     public static final int SNBT_TOO_OLD_THRESHOLD = 3075;
     private static final int field_29708 = 30;
-    public static final boolean field_36325 = false;
+    public static final boolean CRASH_ON_UNCAUGHT_THREAD_EXCEPTION = false;
     @Deprecated
     public static final int RESOURCE_PACK_VERSION = 9;
     @Deprecated
@@ -205,7 +205,7 @@ public class SharedConstants {
     }
 
     public static int getProtocolVersion() {
-        return 1073741927;
+        return 760;
     }
 
     public static boolean isOutsideGenerationArea(ChunkPos pos) {

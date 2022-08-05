@@ -47,7 +47,7 @@ public class PortalForcer {
         PointOfInterestStorage pointOfInterestStorage = this.world.getPointOfInterestStorage();
         int i = destIsNether ? 16 : 128;
         pointOfInterestStorage.preloadChunks(this.world, pos, i);
-        Optional<PointOfInterest> optional = pointOfInterestStorage.getInSquare(registryEntry -> registryEntry.matchesKey(PointOfInterestTypes.NETHER_PORTAL), pos, i, PointOfInterestStorage.OccupationStatus.ANY).filter(poi -> worldBorder.contains(poi.getPos())).sorted(Comparator.comparingDouble(poi -> poi.getPos().getSquaredDistance(pos)).thenComparingInt(poi -> poi.getPos().getY())).filter(poi -> this.world.getBlockState(poi.getPos()).contains(Properties.HORIZONTAL_AXIS)).findFirst();
+        Optional<PointOfInterest> optional = pointOfInterestStorage.getInSquare(poiType -> poiType.matchesKey(PointOfInterestTypes.NETHER_PORTAL), pos, i, PointOfInterestStorage.OccupationStatus.ANY).filter(poi -> worldBorder.contains(poi.getPos())).sorted(Comparator.comparingDouble(poi -> poi.getPos().getSquaredDistance(pos)).thenComparingInt(poi -> poi.getPos().getY())).filter(poi -> this.world.getBlockState(poi.getPos()).contains(Properties.HORIZONTAL_AXIS)).findFirst();
         return optional.map(poi -> {
             BlockPos blockPos = poi.getPos();
             this.world.getChunkManager().addTicket(ChunkTicketType.PORTAL, new ChunkPos(blockPos), 3, blockPos);

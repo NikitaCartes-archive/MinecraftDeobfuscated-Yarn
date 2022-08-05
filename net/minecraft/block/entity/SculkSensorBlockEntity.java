@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 public class SculkSensorBlockEntity
 extends BlockEntity
 implements VibrationListener.Callback {
-    private static final Logger field_38236 = LogUtils.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private VibrationListener listener;
     private int lastVibrationFrequency;
 
@@ -40,7 +40,7 @@ implements VibrationListener.Callback {
         super.readNbt(nbt);
         this.lastVibrationFrequency = nbt.getInt("last_vibration_frequency");
         if (nbt.contains("listener", NbtElement.COMPOUND_TYPE)) {
-            VibrationListener.createCodec(this).parse(new Dynamic<NbtCompound>(NbtOps.INSTANCE, nbt.getCompound("listener"))).resultOrPartial(field_38236::error).ifPresent(listener -> {
+            VibrationListener.createCodec(this).parse(new Dynamic<NbtCompound>(NbtOps.INSTANCE, nbt.getCompound("listener"))).resultOrPartial(LOGGER::error).ifPresent(listener -> {
                 this.listener = listener;
             });
         }
@@ -50,7 +50,7 @@ implements VibrationListener.Callback {
     protected void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
         nbt.putInt("last_vibration_frequency", this.lastVibrationFrequency);
-        VibrationListener.createCodec(this).encodeStart(NbtOps.INSTANCE, this.listener).resultOrPartial(field_38236::error).ifPresent(listenerNbt -> nbt.put("listener", (NbtElement)listenerNbt));
+        VibrationListener.createCodec(this).encodeStart(NbtOps.INSTANCE, this.listener).resultOrPartial(LOGGER::error).ifPresent(listenerNbt -> nbt.put("listener", (NbtElement)listenerNbt));
     }
 
     public VibrationListener getEventListener() {

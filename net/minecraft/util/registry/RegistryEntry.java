@@ -15,33 +15,106 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * An object holding a value that can be registered in a registry. In most cases, the
+ * value is already registered in a registry ("reference entry"), hence the name;
+ * however, it is possible to create a registry entry by direct reference
+ * ("direct entry"). This is useful for data packs, as they can define
+ * one-time use values directly without having to register them every time.
+ * 
+ * <p>Registry entries do not define {@code equals} method. Instead, compare the result
+ * of {@link #getKeyOrValue}.
+ * 
+ * <p>Reference registry entries also hold their {@linkplain TagKey tags}. For more
+ * information on type-specific behaviors, including "intrusive" and "stand-alone"
+ * reference registry entries, see the respective class documentations.
+ * 
+ * <p>A registry entry is sometimes referred to as a "holder" in error messages.
+ * 
+ * @see RegistryEntry.Direct
+ * @see RegistryEntry.Reference
+ * @see Registry#entryOf
+ * @see Registry#getEntry
+ */
 public interface RegistryEntry<T> {
     public T value();
 
     public boolean hasKeyAndValue();
 
+    /**
+     * {@return whether the ID of this entry is {@code id}}
+     * 
+     * <p>This always returns {@code false} for direct entries.
+     */
     public boolean matchesId(Identifier var1);
 
+    /**
+     * {@return whether the registry key of this entry is {@code key}}
+     * 
+     * <p>This always returns {@code false} for direct entries.
+     */
     public boolean matchesKey(RegistryKey<T> var1);
 
+    /**
+     * {@return whether this entry's key matches {@code predicate}}
+     * 
+     * <p>This always returns {@code false} for direct entries.
+     */
     public boolean matches(Predicate<RegistryKey<T>> var1);
 
+    /**
+     * {@return whether this entry is in {@code tag}}
+     * 
+     * <p>This always returns {@code false} for direct entries, since tags are managed by
+     * a registry.
+     */
     public boolean isIn(TagKey<T> var1);
 
+    /**
+     * {@return a stream of the tags of this entry, or an empty stream if this is a direct entry}
+     */
     public Stream<TagKey<T>> streamTags();
 
+    /**
+     * {@return the object that identifies this registry key}
+     * 
+     * <p>For direct entries, this is the held value, and for reference entries, this is the
+     * key of the entry.
+     */
     public Either<RegistryKey<T>, T> getKeyOrValue();
 
+    /**
+     * {@return the registry key of this entry, or an empty optional if this is a direct entry}
+     */
     public Optional<RegistryKey<T>> getKey();
 
+    /**
+     * {@return the type (direct or reference) of this registry entry}
+     * 
+     * <p>This is different from the types of reference registry entries, i.e.
+     * stand-alone or intrusive.
+     */
     public Type getType();
 
+    /**
+     * {@return whether the registry for the entry is {@code registry}}
+     * 
+     * <p>This always returns {@code true} for direct entries.
+     */
     public boolean matchesRegistry(Registry<T> var1);
 
+    /**
+     * {@return a new direct registry entry of {@code value}}
+     */
     public static <T> RegistryEntry<T> of(T value) {
         return new Direct<T>(value);
     }
 
+    /**
+     * Casts {@code RegistryEntry<? extends T>} to {@code RegistryEntry<T>}.
+     * 
+     * @return the cast value
+     */
     public static <T> RegistryEntry<T> upcast(RegistryEntry<? extends T> entry) {
         return entry;
     }

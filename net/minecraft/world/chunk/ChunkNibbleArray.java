@@ -56,8 +56,8 @@ public final class ChunkNibbleArray {
         this.set(ChunkNibbleArray.getIndex(x, y, z), value);
     }
 
-    private static int getIndex(int i, int x, int y) {
-        return x << 8 | y << 4 | i;
+    private static int getIndex(int x, int y, int z) {
+        return y << 8 | z << 4 | x;
     }
 
     private int get(int index) {

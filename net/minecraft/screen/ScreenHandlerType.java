@@ -26,6 +26,21 @@ import net.minecraft.screen.SmokerScreenHandler;
 import net.minecraft.screen.StonecutterScreenHandler;
 import net.minecraft.util.registry.Registry;
 
+/**
+ * Screen handler type is used to create screen handlers on the client.
+ * It is a holder object holding a factory (usually a reference to the constructor).
+ * They are registered in the registry under {@link
+ * net.minecraft.util.registry.Registry#SCREEN_HANDLER}.
+ * 
+ * <p>Technically speaking, screen handlers do not have to register screen handler
+ * types. However, such screen handlers are practically useless as they cannot be
+ * opened server-side using conventional methods.
+ * 
+ * @apiNote Screen handler types should not be used to create a new screen handler
+ * on the server. See {@link ScreenHandlerFactory} for server-side creation.
+ * 
+ * @see ScreenHandler
+ */
 public class ScreenHandlerType<T extends ScreenHandler> {
     public static final ScreenHandlerType<GenericContainerScreenHandler> GENERIC_9X1 = ScreenHandlerType.register("generic_9x1", GenericContainerScreenHandler::createGeneric9x1);
     public static final ScreenHandlerType<GenericContainerScreenHandler> GENERIC_9X2 = ScreenHandlerType.register("generic_9x2", GenericContainerScreenHandler::createGeneric9x2);

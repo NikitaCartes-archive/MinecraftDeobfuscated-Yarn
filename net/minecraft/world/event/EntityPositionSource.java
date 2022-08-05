@@ -22,7 +22,7 @@ import net.minecraft.world.event.PositionSourceType;
 
 public class EntityPositionSource
 implements PositionSource {
-    public static final Codec<EntityPositionSource> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codecs.UUID.fieldOf("source_entity")).forGetter(EntityPositionSource::getUuid), ((MapCodec)Codec.FLOAT.fieldOf("y_offset")).orElse(Float.valueOf(0.0f)).forGetter(entityPositionSource -> Float.valueOf(entityPositionSource.yOffset))).apply((Applicative<EntityPositionSource, ?>)instance, (uUID, float_) -> new EntityPositionSource(Either.right(Either.left(uUID)), float_.floatValue())));
+    public static final Codec<EntityPositionSource> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codecs.UUID.fieldOf("source_entity")).forGetter(EntityPositionSource::getUuid), ((MapCodec)Codec.FLOAT.fieldOf("y_offset")).orElse(Float.valueOf(0.0f)).forGetter(entityPositionSource -> Float.valueOf(entityPositionSource.yOffset))).apply((Applicative<EntityPositionSource, ?>)instance, (uuid, yOffset) -> new EntityPositionSource(Either.right(Either.left(uuid)), yOffset.floatValue())));
     private Either<Entity, Either<UUID, Integer>> source;
     final float yOffset;
 
@@ -44,7 +44,7 @@ implements PositionSource {
     }
 
     private void findEntityInWorld(World world) {
-        this.source.map(Optional::of, either -> Optional.ofNullable(either.map(uuid -> {
+        this.source.map(Optional::of, entityId -> Optional.ofNullable(entityId.map(uuid -> {
             Entity entity;
             if (world instanceof ServerWorld) {
                 ServerWorld serverWorld = (ServerWorld)world;
@@ -59,13 +59,13 @@ implements PositionSource {
     }
 
     private UUID getUuid() {
-        return this.source.map(Entity::getUuid, either -> either.map(Function.identity(), integer -> {
+        return this.source.map(Entity::getUuid, entityId2 -> entityId2.map(Function.identity(), entityId -> {
             throw new RuntimeException("Unable to get entityId from uuid");
         }));
     }
 
     int getEntityId() {
-        return this.source.map(Entity::getId, either -> either.map(uUID -> {
+        return this.source.map(Entity::getId, entityId -> entityId.map(uuid -> {
             throw new IllegalStateException("Unable to get entityId from uuid");
         }, Function.identity()));
     }

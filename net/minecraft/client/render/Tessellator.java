@@ -9,6 +9,12 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 
+/**
+ * Holding a single instance of {@link BufferBuilder}.
+ * 
+ * <p>This class reuses the buffer builder so a buffer doesn't have to be
+ * allocated every time.
+ */
 @Environment(value=EnvType.CLIENT)
 public class Tessellator {
     private static final int field_32051 = 0x800000;
@@ -29,6 +35,11 @@ public class Tessellator {
         this(0x200000);
     }
 
+    /**
+     * Draws the contents of the buffer builder using the shader specified with
+     * {@link com.mojang.blaze3d.systems.RenderSystem#setShader
+     * RenderSystem#setShader}.
+     */
     public void draw() {
         BufferRenderer.drawWithShader(this.buffer.end());
     }

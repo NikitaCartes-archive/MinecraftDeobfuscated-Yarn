@@ -11,10 +11,20 @@ import net.fabricmc.api.Environment;
 import net.minecraft.text.Text;
 import net.minecraft.util.Unit;
 
+/**
+ * A narration is a message consisting of a list of string "sentences".
+ * The sentences can be iterated using {@link #forEachSentence forEachSentence}.
+ * 
+ * <p>Narrations are attached to {@linkplain NarrationPart narration parts}
+ * using {@link NarrationMessageBuilder#put(NarrationPart, Narration)}.
+ */
 @Environment(value=EnvType.CLIENT)
 public class Narration<T> {
     private final T value;
     private final BiConsumer<Consumer<String>, T> transformer;
+    /**
+     * An empty narration that contains no sentences.
+     */
     public static final Narration<?> EMPTY = new Narration<Unit>(Unit.INSTANCE, (consumer, text) -> {});
 
     private Narration(T value, BiConsumer<Consumer<String>, T> transformer) {
@@ -22,18 +32,46 @@ public class Narration<T> {
         this.transformer = transformer;
     }
 
+    /**
+     * Creates a narration from a single string sentence.
+     * 
+     * @return the created narration
+     * 
+     * @param string the narrated sentence
+     */
     public static Narration<?> string(String string) {
         return new Narration<String>(string, Consumer::accept);
     }
 
+    /**
+     * Creates a narration from a single {@link Text} sentence.
+     * 
+     * @implSpec The sentence is converted to a string using {@link Text#getString}.
+     * @return the created narration
+     * 
+     * @param text the narrated sentence
+     */
     public static Narration<?> text(Text text2) {
         return new Narration<Text>(text2, (consumer, text) -> consumer.accept(text.getString()));
     }
 
+    /**
+     * Creates a narration from a list of {@link Text} sentences.
+     * 
+     * @implSpec The sentences are converted to strings using {@link Text#getString}.
+     * @return the created narration
+     * 
+     * @param texts the narrated sentences
+     */
     public static Narration<?> texts(List<Text> texts2) {
         return new Narration<List>(texts2, (consumer, texts) -> texts2.stream().map(Text::getString).forEach((Consumer<String>)consumer));
     }
 
+    /**
+     * Iterates all sentences in this narration with a {@link Consumer}.
+     * 
+     * @param consumer the consumer to accept all sentences in this narration
+     */
     public void forEachSentence(Consumer<String> consumer) {
         this.transformer.accept(consumer, (Consumer<String>)this.value);
     }

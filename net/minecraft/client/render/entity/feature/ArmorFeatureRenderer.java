@@ -29,21 +29,21 @@ import org.jetbrains.annotations.Nullable;
 public class ArmorFeatureRenderer<T extends LivingEntity, M extends BipedEntityModel<T>, A extends BipedEntityModel<T>>
 extends FeatureRenderer<T, M> {
     private static final Map<String, Identifier> ARMOR_TEXTURE_CACHE = Maps.newHashMap();
-    private final A leggingsModel;
-    private final A bodyModel;
+    private final A innerModel;
+    private final A outerModel;
 
-    public ArmorFeatureRenderer(FeatureRendererContext<T, M> context, A leggingsModel, A bodyModel) {
+    public ArmorFeatureRenderer(FeatureRendererContext<T, M> context, A innerModel, A outerModel) {
         super(context);
-        this.leggingsModel = leggingsModel;
-        this.bodyModel = bodyModel;
+        this.innerModel = innerModel;
+        this.outerModel = outerModel;
     }
 
     @Override
     public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l) {
-        this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, EquipmentSlot.CHEST, i, this.getArmor(EquipmentSlot.CHEST));
-        this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, EquipmentSlot.LEGS, i, this.getArmor(EquipmentSlot.LEGS));
-        this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, EquipmentSlot.FEET, i, this.getArmor(EquipmentSlot.FEET));
-        this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, EquipmentSlot.HEAD, i, this.getArmor(EquipmentSlot.HEAD));
+        this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, EquipmentSlot.CHEST, i, this.getModel(EquipmentSlot.CHEST));
+        this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, EquipmentSlot.LEGS, i, this.getModel(EquipmentSlot.LEGS));
+        this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, EquipmentSlot.FEET, i, this.getModel(EquipmentSlot.FEET));
+        this.renderArmor(matrixStack, vertexConsumerProvider, livingEntity, EquipmentSlot.HEAD, i, this.getModel(EquipmentSlot.HEAD));
     }
 
     private void renderArmor(MatrixStack matrices, VertexConsumerProvider vertexConsumers, T entity, EquipmentSlot armorSlot, int light, A model) {
@@ -57,7 +57,7 @@ extends FeatureRenderer<T, M> {
         }
         ((BipedEntityModel)this.getContextModel()).setAttributes(model);
         this.setVisible(model, armorSlot);
-        boolean bl = this.usesSecondLayer(armorSlot);
+        boolean bl = this.usesInnerModel(armorSlot);
         boolean bl2 = itemStack.hasGlint();
         if (armorItem instanceof DyeableArmorItem) {
             int i = ((DyeableArmorItem)armorItem).getColor(itemStack);
@@ -98,21 +98,21 @@ extends FeatureRenderer<T, M> {
         }
     }
 
-    private void renderArmorParts(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, ArmorItem item, boolean usesSecondLayer, A model, boolean legs, float red, float green, float blue, @Nullable String overlay) {
-        VertexConsumer vertexConsumer = ItemRenderer.getArmorGlintConsumer(vertexConsumers, RenderLayer.getArmorCutoutNoCull(this.getArmorTexture(item, legs, overlay)), false, usesSecondLayer);
+    private void renderArmorParts(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, ArmorItem item, boolean glint, A model, boolean secondTextureLayer, float red, float green, float blue, @Nullable String overlay) {
+        VertexConsumer vertexConsumer = ItemRenderer.getArmorGlintConsumer(vertexConsumers, RenderLayer.getArmorCutoutNoCull(this.getArmorTexture(item, secondTextureLayer, overlay)), false, glint);
         ((AnimalModel)model).render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, red, green, blue, 1.0f);
     }
 
-    private A getArmor(EquipmentSlot slot) {
-        return this.usesSecondLayer(slot) ? this.leggingsModel : this.bodyModel;
+    private A getModel(EquipmentSlot slot) {
+        return this.usesInnerModel(slot) ? this.innerModel : this.outerModel;
     }
 
-    private boolean usesSecondLayer(EquipmentSlot slot) {
+    private boolean usesInnerModel(EquipmentSlot slot) {
         return slot == EquipmentSlot.LEGS;
     }
 
-    private Identifier getArmorTexture(ArmorItem item, boolean legs, @Nullable String overlay) {
-        String string = "textures/models/armor/" + item.getMaterial().getName() + "_layer_" + (legs ? 2 : 1) + (String)(overlay == null ? "" : "_" + overlay) + ".png";
+    private Identifier getArmorTexture(ArmorItem item, boolean secondLayer, @Nullable String overlay) {
+        String string = "textures/models/armor/" + item.getMaterial().getName() + "_layer_" + (secondLayer ? 2 : 1) + (String)(overlay == null ? "" : "_" + overlay) + ".png";
         return ARMOR_TEXTURE_CACHE.computeIfAbsent(string, Identifier::new);
     }
 }

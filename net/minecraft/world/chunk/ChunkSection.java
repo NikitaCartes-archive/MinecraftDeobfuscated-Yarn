@@ -31,10 +31,10 @@ public class ChunkSection {
     private final PalettedContainer<BlockState> blockStateContainer;
     private ReadableContainer<RegistryEntry<Biome>> biomeContainer;
 
-    public ChunkSection(int chunkPos, PalettedContainer<BlockState> blockStateContainer, ReadableContainer<RegistryEntry<Biome>> readableContainer) {
+    public ChunkSection(int chunkPos, PalettedContainer<BlockState> blockStateContainer, ReadableContainer<RegistryEntry<Biome>> biomeContainer) {
         this.yOffset = ChunkSection.blockCoordFromChunkCoord(chunkPos);
         this.blockStateContainer = blockStateContainer;
-        this.biomeContainer = readableContainer;
+        this.biomeContainer = biomeContainer;
         this.calculateCounts();
     }
 
@@ -114,28 +114,28 @@ public class ChunkSection {
     }
 
     public void calculateCounts() {
-        class class_6869
+        class BlockStateCounter
         implements PalettedContainer.Counter<BlockState> {
-            public int field_36408;
-            public int field_36409;
-            public int field_36410;
+            public int nonEmptyBlockCount;
+            public int randomTickableBlockCount;
+            public int nonEmptyFluidCount;
 
-            class_6869() {
+            BlockStateCounter() {
             }
 
             @Override
             public void accept(BlockState blockState, int i) {
                 FluidState fluidState = blockState.getFluidState();
                 if (!blockState.isAir()) {
-                    this.field_36408 += i;
+                    this.nonEmptyBlockCount += i;
                     if (blockState.hasRandomTicks()) {
-                        this.field_36409 += i;
+                        this.randomTickableBlockCount += i;
                     }
                 }
                 if (!fluidState.isEmpty()) {
-                    this.field_36408 += i;
+                    this.nonEmptyBlockCount += i;
                     if (fluidState.hasRandomTicks()) {
-                        this.field_36410 += i;
+                        this.nonEmptyFluidCount += i;
                     }
                 }
             }
@@ -145,11 +145,11 @@ public class ChunkSection {
                 this.accept((BlockState)object, i);
             }
         }
-        class_6869 lv = new class_6869();
-        this.blockStateContainer.count(lv);
-        this.nonEmptyBlockCount = (short)lv.field_36408;
-        this.randomTickableBlockCount = (short)lv.field_36409;
-        this.nonEmptyFluidCount = (short)lv.field_36410;
+        BlockStateCounter blockStateCounter = new BlockStateCounter();
+        this.blockStateContainer.count(blockStateCounter);
+        this.nonEmptyBlockCount = (short)blockStateCounter.nonEmptyBlockCount;
+        this.randomTickableBlockCount = (short)blockStateCounter.randomTickableBlockCount;
+        this.nonEmptyFluidCount = (short)blockStateCounter.nonEmptyFluidCount;
     }
 
     public PalettedContainer<BlockState> getBlockStateContainer() {

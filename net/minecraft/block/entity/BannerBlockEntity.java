@@ -32,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 public class BannerBlockEntity
 extends BlockEntity
 implements Nameable {
-    public static final int field_31296 = 6;
+    public static final int MAX_PATTERN_COUNT = 6;
     public static final String PATTERNS_KEY = "Patterns";
     public static final String PATTERN_KEY = "Pattern";
     public static final String COLOR_KEY = "Color";

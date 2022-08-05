@@ -121,24 +121,24 @@ extends Task<E> {
             }
         } else {
             --this.cooldown;
-            this.method_41342(serverWorld, mobEntity, l);
+            this.findTarget(serverWorld, mobEntity, l);
         }
     }
 
-    protected void method_41342(ServerWorld serverWorld, E mobEntity, long l) {
+    protected void findTarget(ServerWorld world, E entity, long time) {
         while (!this.targets.isEmpty()) {
             Vec3d vec3d;
             Vec3d vec3d2;
             Target target;
             BlockPos blockPos;
-            Optional<Target> optional = this.getTarget(serverWorld);
-            if (optional.isEmpty() || !this.canJumpTo(serverWorld, mobEntity, blockPos = (target = optional.get()).getPos()) || (vec3d2 = this.getRammingVelocity((MobEntity)mobEntity, vec3d = Vec3d.ofCenter(blockPos))) == null) continue;
-            ((LivingEntity)mobEntity).getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(blockPos));
-            EntityNavigation entityNavigation = ((MobEntity)mobEntity).getNavigation();
+            Optional<Target> optional = this.getTarget(world);
+            if (optional.isEmpty() || !this.canJumpTo(world, entity, blockPos = (target = optional.get()).getPos()) || (vec3d2 = this.getRammingVelocity((MobEntity)entity, vec3d = Vec3d.ofCenter(blockPos))) == null) continue;
+            ((LivingEntity)entity).getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(blockPos));
+            EntityNavigation entityNavigation = ((MobEntity)entity).getNavigation();
             Path path = entityNavigation.findPathTo(blockPos, 0, 8);
             if (path != null && path.reachesTarget()) continue;
             this.lastTarget = vec3d2;
-            this.targetTime = l;
+            this.targetTime = time;
             return;
         }
     }

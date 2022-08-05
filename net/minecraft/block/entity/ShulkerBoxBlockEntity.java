@@ -42,7 +42,7 @@ extends LootableContainerBlockEntity
 implements SidedInventory {
     public static final int field_31354 = 9;
     public static final int field_31355 = 3;
-    public static final int field_31356 = 27;
+    public static final int INVENTORY_SIZE = 27;
     public static final int field_31357 = 1;
     public static final int field_31358 = 10;
     public static final float field_31359 = 0.5f;

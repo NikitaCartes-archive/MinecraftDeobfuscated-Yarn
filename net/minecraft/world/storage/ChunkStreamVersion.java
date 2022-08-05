@@ -18,9 +18,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class ChunkStreamVersion {
     private static final Int2ObjectMap<ChunkStreamVersion> VERSIONS = new Int2ObjectOpenHashMap<ChunkStreamVersion>();
-    public static final ChunkStreamVersion GZIP = ChunkStreamVersion.add(new ChunkStreamVersion(1, inputStream -> new FixedBufferInputStream(new GZIPInputStream((InputStream)inputStream)), outputStream -> new BufferedOutputStream(new GZIPOutputStream((OutputStream)outputStream))));
-    public static final ChunkStreamVersion DEFLATE = ChunkStreamVersion.add(new ChunkStreamVersion(2, inputStream -> new FixedBufferInputStream(new InflaterInputStream((InputStream)inputStream)), outputStream -> new BufferedOutputStream(new DeflaterOutputStream((OutputStream)outputStream))));
-    public static final ChunkStreamVersion UNCOMPRESSED = ChunkStreamVersion.add(new ChunkStreamVersion(3, inputStream -> inputStream, outputStream -> outputStream));
+    public static final ChunkStreamVersion GZIP = ChunkStreamVersion.add(new ChunkStreamVersion(1, stream -> new FixedBufferInputStream(new GZIPInputStream((InputStream)stream)), stream -> new BufferedOutputStream(new GZIPOutputStream((OutputStream)stream))));
+    public static final ChunkStreamVersion DEFLATE = ChunkStreamVersion.add(new ChunkStreamVersion(2, stream -> new FixedBufferInputStream(new InflaterInputStream((InputStream)stream)), stream -> new BufferedOutputStream(new DeflaterOutputStream((OutputStream)stream))));
+    public static final ChunkStreamVersion UNCOMPRESSED = ChunkStreamVersion.add(new ChunkStreamVersion(3, stream -> stream, stream -> stream));
     private final int id;
     private final Wrapper<InputStream> inputStreamWrapper;
     private final Wrapper<OutputStream> outputStreamWrapper;

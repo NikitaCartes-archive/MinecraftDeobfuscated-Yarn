@@ -72,7 +72,7 @@ extends Screen {
     }
 
     private void connect(final MinecraftClient client, final ServerAddress address) {
-        final CompletableFuture<Optional<PlayerPublicKey.PublicKeyData>> completableFuture = client.getProfileKeys().method_45104();
+        final CompletableFuture<Optional<PlayerPublicKey.PublicKeyData>> completableFuture = client.getProfileKeys().refresh();
         LOGGER.info("Connecting to {}, {}", (Object)address.getAddress(), (Object)address.getPort());
         Thread thread = new Thread("Server Connector #" + CONNECTOR_THREADS_COUNT.incrementAndGet()){
 

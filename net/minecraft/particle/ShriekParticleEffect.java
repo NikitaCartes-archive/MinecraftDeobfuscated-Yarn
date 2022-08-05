@@ -18,7 +18,7 @@ import net.minecraft.util.registry.Registry;
 
 public class ShriekParticleEffect
 implements ParticleEffect {
-    public static final Codec<ShriekParticleEffect> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.INT.fieldOf("delay")).forGetter(shriekParticleEffect -> shriekParticleEffect.delay)).apply((Applicative<ShriekParticleEffect, ?>)instance, ShriekParticleEffect::new));
+    public static final Codec<ShriekParticleEffect> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.INT.fieldOf("delay")).forGetter(particleEffect -> particleEffect.delay)).apply((Applicative<ShriekParticleEffect, ?>)instance, ShriekParticleEffect::new));
     public static final ParticleEffect.Factory<ShriekParticleEffect> FACTORY = new ParticleEffect.Factory<ShriekParticleEffect>(){
 
         @Override
@@ -45,8 +45,8 @@ implements ParticleEffect {
     };
     private final int delay;
 
-    public ShriekParticleEffect(int i) {
-        this.delay = i;
+    public ShriekParticleEffect(int delay) {
+        this.delay = delay;
     }
 
     @Override

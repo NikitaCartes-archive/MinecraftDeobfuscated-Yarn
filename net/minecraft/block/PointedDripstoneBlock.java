@@ -65,8 +65,8 @@ Waterloggable {
     private static final float field_31208 = 0.02f;
     private static final float field_31209 = 0.12f;
     private static final int field_31210 = 11;
-    private static final float field_31211 = 0.17578125f;
-    private static final float field_31212 = 0.05859375f;
+    private static final float WATER_DRIP_CHANCE = 0.17578125f;
+    private static final float LAVA_DRIP_CHANCE = 0.05859375f;
     private static final double field_31213 = 0.6;
     private static final float field_31214 = 1.0f;
     private static final int field_31215 = 40;

@@ -29,11 +29,11 @@ extends SpriteBillboardParticle {
     private float field_28250;
     private float field_28248;
 
-    VibrationParticle(ClientWorld world, double d, double e, double f, PositionSource positionSource, int i) {
-        super(world, d, e, f, 0.0, 0.0, 0.0);
+    VibrationParticle(ClientWorld world, double x, double y, double z, PositionSource vibration, int maxAge) {
+        super(world, x, y, z, 0.0, 0.0, 0.0);
         this.scale = 0.3f;
-        this.vibration = positionSource;
-        this.maxAge = i;
+        this.vibration = vibration;
+        this.maxAge = maxAge;
     }
 
     @Override

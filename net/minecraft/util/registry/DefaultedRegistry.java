@@ -15,6 +15,9 @@ import net.minecraft.util.registry.SimpleRegistry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * An implementation of {@link Registry} with a default ID and value for unknown lookups.
+ */
 public class DefaultedRegistry<T>
 extends SimpleRegistry<T> {
     private final Identifier defaultId;
@@ -71,6 +74,9 @@ extends SimpleRegistry<T> {
         return super.getRandom(random).or(() -> Optional.of(this.defaultEntry));
     }
 
+    /**
+     * {@return the ID of the default value}
+     */
     public Identifier getDefaultId() {
         return this.defaultId;
     }

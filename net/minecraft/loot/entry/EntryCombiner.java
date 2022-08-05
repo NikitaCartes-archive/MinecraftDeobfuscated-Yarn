@@ -10,8 +10,8 @@ import net.minecraft.loot.context.LootContext;
 
 @FunctionalInterface
 interface EntryCombiner {
-    public static final EntryCombiner ALWAYS_FALSE = (lootContext, consumer) -> false;
-    public static final EntryCombiner ALWAYS_TRUE = (lootContext, consumer) -> true;
+    public static final EntryCombiner ALWAYS_FALSE = (context, choiceConsumer) -> false;
+    public static final EntryCombiner ALWAYS_TRUE = (context, choiceConsumer) -> true;
 
     public boolean expand(LootContext var1, Consumer<LootChoice> var2);
 

@@ -69,7 +69,7 @@ public final class SpawnHelper {
     private SpawnHelper() {
     }
 
-    public static Info setupSpawn(int spawningChunkCount, Iterable<Entity> entities, ChunkSource chunkSource, SpawnDensityCapper spawnDensityCapper) {
+    public static Info setupSpawn(int spawningChunkCount, Iterable<Entity> entities, ChunkSource chunkSource, SpawnDensityCapper densityCapper) {
         GravityField gravityField = new GravityField();
         Object2IntOpenHashMap<SpawnGroup> object2IntOpenHashMap = new Object2IntOpenHashMap<SpawnGroup>();
         for (Entity entity : entities) {
@@ -77,18 +77,18 @@ public final class SpawnHelper {
             MobEntity mobEntity;
             if (entity instanceof MobEntity && ((mobEntity = (MobEntity)entity).isPersistent() || mobEntity.cannotDespawn()) || (spawnGroup = entity.getType().getSpawnGroup()) == SpawnGroup.MISC) continue;
             BlockPos blockPos = entity.getBlockPos();
-            chunkSource.query(ChunkPos.toLong(blockPos), worldChunk -> {
-                SpawnSettings.SpawnDensity spawnDensity = SpawnHelper.getBiomeDirectly(blockPos, worldChunk).getSpawnSettings().getSpawnDensity(entity.getType());
+            chunkSource.query(ChunkPos.toLong(blockPos), chunk -> {
+                SpawnSettings.SpawnDensity spawnDensity = SpawnHelper.getBiomeDirectly(blockPos, chunk).getSpawnSettings().getSpawnDensity(entity.getType());
                 if (spawnDensity != null) {
                     gravityField.addPoint(entity.getBlockPos(), spawnDensity.getMass());
                 }
                 if (entity instanceof MobEntity) {
-                    spawnDensityCapper.increaseDensity(worldChunk.getPos(), spawnGroup);
+                    densityCapper.increaseDensity(chunk.getPos(), spawnGroup);
                 }
                 object2IntOpenHashMap.addTo(spawnGroup, 1);
             });
         }
-        return new Info(spawningChunkCount, object2IntOpenHashMap, gravityField, spawnDensityCapper);
+        return new Info(spawningChunkCount, object2IntOpenHashMap, gravityField, densityCapper);
     }
 
     static Biome getBiomeDirectly(BlockPos pos, Chunk chunk) {
@@ -302,8 +302,8 @@ public final class SpawnHelper {
         return SpawnHelper.isClearForSpawn(world, pos, blockState, fluidState, entityType) && SpawnHelper.isClearForSpawn(world, blockPos, world.getBlockState(blockPos), world.getFluidState(blockPos), entityType);
     }
 
-    public static void populateEntities(ServerWorldAccess world, RegistryEntry<Biome> registryEntry, ChunkPos chunkPos, Random random) {
-        SpawnSettings spawnSettings = registryEntry.value().getSpawnSettings();
+    public static void populateEntities(ServerWorldAccess world, RegistryEntry<Biome> biomeEntry, ChunkPos chunkPos, Random random) {
+        SpawnSettings spawnSettings = biomeEntry.value().getSpawnSettings();
         Pool<SpawnSettings.SpawnEntry> pool = spawnSettings.getSpawnEntries(SpawnGroup.CREATURE);
         if (pool.isEmpty()) {
             return;

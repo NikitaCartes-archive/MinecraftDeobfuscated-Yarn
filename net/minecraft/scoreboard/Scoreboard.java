@@ -80,7 +80,7 @@ public class Scoreboard {
     }
 
     public ScoreboardPlayerScore getPlayerScore(String playerName, ScoreboardObjective objective2) {
-        Map map = this.playerObjectives.computeIfAbsent(playerName, string -> Maps.newHashMap());
+        Map map = this.playerObjectives.computeIfAbsent(playerName, name -> Maps.newHashMap());
         return map.computeIfAbsent(objective2, objective -> {
             ScoreboardPlayerScore scoreboardPlayerScore = new ScoreboardPlayerScore(this, (ScoreboardObjective)objective, playerName);
             scoreboardPlayerScore.setScore(0);

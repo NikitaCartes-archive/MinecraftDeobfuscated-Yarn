@@ -27,6 +27,9 @@ import net.minecraft.util.registry.RegistryFixedCodec;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.registry.SimpleRegistry;
 
+/**
+ * A utility class for serialization of registries using codecs.
+ */
 public class RegistryCodecs {
     private static <T> MapCodec<RegistryManagerEntry<T>> managerEntry(RegistryKey<? extends Registry<T>> registryRef, MapCodec<T> elementCodec) {
         return RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec)RegistryKey.createCodec(registryRef).fieldOf("name")).forGetter(RegistryManagerEntry::key), ((MapCodec)Codec.INT.fieldOf("id")).forGetter(RegistryManagerEntry::rawId), elementCodec.forGetter(RegistryManagerEntry::value)).apply((Applicative<RegistryManagerEntry, ?>)instance, RegistryManagerEntry::new));

@@ -75,28 +75,28 @@ implements ChunkLightingView {
         Arrays.fill(this.cachedChunks, null);
     }
 
-    protected BlockState getStateForLighting(long pos, @Nullable MutableInt mutableInt) {
+    protected BlockState getStateForLighting(long pos, @Nullable MutableInt opacity) {
         boolean bl;
         int j;
         if (pos == Long.MAX_VALUE) {
-            if (mutableInt != null) {
-                mutableInt.setValue(0);
+            if (opacity != null) {
+                opacity.setValue(0);
             }
             return Blocks.AIR.getDefaultState();
         }
         int i = ChunkSectionPos.getSectionCoord(BlockPos.unpackLongX(pos));
         BlockView blockView = this.getChunk(i, j = ChunkSectionPos.getSectionCoord(BlockPos.unpackLongZ(pos)));
         if (blockView == null) {
-            if (mutableInt != null) {
-                mutableInt.setValue(16);
+            if (opacity != null) {
+                opacity.setValue(16);
             }
             return Blocks.BEDROCK.getDefaultState();
         }
         this.reusableBlockPos.set(pos);
         BlockState blockState = blockView.getBlockState(this.reusableBlockPos);
         boolean bl2 = bl = blockState.isOpaque() && blockState.hasSidedTransparency();
-        if (mutableInt != null) {
-            mutableInt.setValue(blockState.getOpacity(this.chunkProvider.getWorld(), this.reusableBlockPos));
+        if (opacity != null) {
+            opacity.setValue(blockState.getOpacity(this.chunkProvider.getWorld(), this.reusableBlockPos));
         }
         return bl ? blockState : Blocks.AIR.getDefaultState();
     }

@@ -65,7 +65,7 @@ implements CraftingRecipeJsonBuilder {
     @Override
     public void offerTo(Consumer<RecipeJsonProvider> exporter, Identifier recipeId) {
         this.validate(recipeId);
-        this.advancementBuilder.parent(field_39377).criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeId)).rewards(AdvancementRewards.Builder.recipe(recipeId)).criteriaMerger(CriterionMerger.OR);
+        this.advancementBuilder.parent(ROOT).criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeId)).rewards(AdvancementRewards.Builder.recipe(recipeId)).criteriaMerger(CriterionMerger.OR);
         exporter.accept(new SingleItemRecipeJsonProvider(recipeId, this.serializer, this.group == null ? "" : this.group, this.input, this.output, this.count, this.advancementBuilder, new Identifier(recipeId.getNamespace(), "recipes/" + this.output.getGroup().getName() + "/" + recipeId.getPath())));
     }
 

@@ -29,8 +29,8 @@ implements TypeSpecificPredicate {
         return new LightningBoltPredicate(blocksSetOnFire, EntityPredicate.ANY);
     }
 
-    public static LightningBoltPredicate fromJson(JsonObject jsonObject) {
-        return new LightningBoltPredicate(NumberRange.IntRange.fromJson(jsonObject.get(BLOCKS_SET_ON_FIRE_KEY)), EntityPredicate.fromJson(jsonObject.get(ENTITY_STRUCK_KEY)));
+    public static LightningBoltPredicate fromJson(JsonObject json) {
+        return new LightningBoltPredicate(NumberRange.IntRange.fromJson(json.get(BLOCKS_SET_ON_FIRE_KEY)), EntityPredicate.fromJson(json.get(ENTITY_STRUCK_KEY)));
     }
 
     @Override
@@ -47,12 +47,12 @@ implements TypeSpecificPredicate {
     }
 
     @Override
-    public boolean test(Entity entity2, ServerWorld world, @Nullable Vec3d pos) {
-        if (!(entity2 instanceof LightningEntity)) {
+    public boolean test(Entity entity, ServerWorld world, @Nullable Vec3d pos) {
+        if (!(entity instanceof LightningEntity)) {
             return false;
         }
-        LightningEntity lightningEntity = (LightningEntity)entity2;
-        return this.blocksSetOnFire.test(lightningEntity.getBlocksSetOnFire()) && (this.entityStruck == EntityPredicate.ANY || lightningEntity.getStruckEntities().anyMatch(entity -> this.entityStruck.test(world, pos, (Entity)entity)));
+        LightningEntity lightningEntity = (LightningEntity)entity;
+        return this.blocksSetOnFire.test(lightningEntity.getBlocksSetOnFire()) && (this.entityStruck == EntityPredicate.ANY || lightningEntity.getStruckEntities().anyMatch(struckEntity -> this.entityStruck.test(world, pos, (Entity)struckEntity)));
     }
 }
 

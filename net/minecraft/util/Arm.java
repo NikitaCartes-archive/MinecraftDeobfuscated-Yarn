@@ -5,6 +5,11 @@ package net.minecraft.util;
 
 import net.minecraft.util.TranslatableOption;
 
+/**
+ * An enum representing an entity's arm.
+ * 
+ * @see Hand
+ */
 public enum Arm implements TranslatableOption
 {
     LEFT(0, "options.mainHand.left"),
@@ -18,6 +23,9 @@ public enum Arm implements TranslatableOption
         this.translationKey = translationKey;
     }
 
+    /**
+     * {@return the arm on the opposite side}
+     */
     public Arm getOpposite() {
         if (this == LEFT) {
             return RIGHT;

@@ -3,6 +3,9 @@
  */
 package net.minecraft.util.math;
 
+/**
+ * Contains color-related helper methods.
+ */
 public class ColorHelper {
 
     public static class Argb {

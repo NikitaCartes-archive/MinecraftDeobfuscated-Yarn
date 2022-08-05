@@ -26,7 +26,7 @@ import net.minecraft.world.World;
 public class BowItem
 extends RangedWeaponItem
 implements Vanishable {
-    public static final int field_30855 = 20;
+    public static final int TICKS_PER_SECOND = 20;
     public static final int RANGE = 15;
 
     public BowItem(Item.Settings settings) {

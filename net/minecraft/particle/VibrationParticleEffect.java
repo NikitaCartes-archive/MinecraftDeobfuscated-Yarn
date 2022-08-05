@@ -23,7 +23,7 @@ import net.minecraft.world.event.PositionSourceType;
 
 public class VibrationParticleEffect
 implements ParticleEffect {
-    public static final Codec<VibrationParticleEffect> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)PositionSource.CODEC.fieldOf("destination")).forGetter(effect -> effect.destination), ((MapCodec)Codec.INT.fieldOf("arrival_in_ticks")).forGetter(vibrationParticleEffect -> vibrationParticleEffect.arrivalInTicks)).apply((Applicative<VibrationParticleEffect, ?>)instance, VibrationParticleEffect::new));
+    public static final Codec<VibrationParticleEffect> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)PositionSource.CODEC.fieldOf("destination")).forGetter(effect -> effect.destination), ((MapCodec)Codec.INT.fieldOf("arrival_in_ticks")).forGetter(effect -> effect.arrivalInTicks)).apply((Applicative<VibrationParticleEffect, ?>)instance, VibrationParticleEffect::new));
     public static final ParticleEffect.Factory<VibrationParticleEffect> PARAMETERS_FACTORY = new ParticleEffect.Factory<VibrationParticleEffect>(){
 
         @Override
@@ -60,9 +60,9 @@ implements ParticleEffect {
     private final PositionSource destination;
     private final int arrivalInTicks;
 
-    public VibrationParticleEffect(PositionSource positionSource, int i) {
-        this.destination = positionSource;
-        this.arrivalInTicks = i;
+    public VibrationParticleEffect(PositionSource destination, int arrivalInTicks) {
+        this.destination = destination;
+        this.arrivalInTicks = arrivalInTicks;
     }
 
     @Override

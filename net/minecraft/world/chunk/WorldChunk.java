@@ -95,8 +95,8 @@ extends Chunk {
     private final ChunkTickScheduler<Block> blockTickScheduler;
     private final ChunkTickScheduler<Fluid> fluidTickScheduler;
 
-    public WorldChunk(World world, ChunkPos chunkPos) {
-        this(world, chunkPos, UpgradeData.NO_UPGRADE_DATA, new ChunkTickScheduler<Block>(), new ChunkTickScheduler<Fluid>(), 0L, null, null, null);
+    public WorldChunk(World world, ChunkPos pos) {
+        this(world, pos, UpgradeData.NO_UPGRADE_DATA, new ChunkTickScheduler<Block>(), new ChunkTickScheduler<Fluid>(), 0L, null, null, null);
     }
 
     public WorldChunk(World world, ChunkPos pos, UpgradeData upgradeData, ChunkTickScheduler<Block> blockTickScheduler, ChunkTickScheduler<Fluid> fluidTickScheduler, long inhabitedTime, @Nullable ChunkSection[] sectionArrayInitializer, @Nullable EntityLoader entityLoader, @Nullable BlendingData blendingData) {
@@ -372,10 +372,10 @@ extends Chunk {
         this.removeBlockEntityTicker(pos);
     }
 
-    private <T extends BlockEntity> void removeGameEventListener(T blockEntity, ServerWorld serverWorld) {
+    private <T extends BlockEntity> void removeGameEventListener(T blockEntity, ServerWorld world) {
         GameEventListener gameEventListener;
         Block block = blockEntity.getCachedState().getBlock();
-        if (block instanceof BlockEntityProvider && (gameEventListener = ((BlockEntityProvider)((Object)block)).getGameEventListener(serverWorld, blockEntity)) != null) {
+        if (block instanceof BlockEntityProvider && (gameEventListener = ((BlockEntityProvider)((Object)block)).getGameEventListener(world, blockEntity)) != null) {
             int i = ChunkSectionPos.getSectionCoord(blockEntity.getPos().getY());
             GameEventDispatcher gameEventDispatcher = this.getGameEventDispatcher(i);
             gameEventDispatcher.removeListener(gameEventListener);
@@ -534,10 +534,10 @@ extends Chunk {
         });
     }
 
-    private <T extends BlockEntity> void updateGameEventListener(T blockEntity, ServerWorld serverWorld) {
+    private <T extends BlockEntity> void updateGameEventListener(T blockEntity, ServerWorld world) {
         GameEventListener gameEventListener;
         Block block = blockEntity.getCachedState().getBlock();
-        if (block instanceof BlockEntityProvider && (gameEventListener = ((BlockEntityProvider)((Object)block)).getGameEventListener(serverWorld, blockEntity)) != null) {
+        if (block instanceof BlockEntityProvider && (gameEventListener = ((BlockEntityProvider)((Object)block)).getGameEventListener(world, blockEntity)) != null) {
             GameEventDispatcher gameEventDispatcher = this.getGameEventDispatcher(ChunkSectionPos.getSectionCoord(blockEntity.getPos().getY()));
             gameEventDispatcher.addListener(gameEventListener);
         }
@@ -549,16 +549,16 @@ extends Chunk {
         if (blockEntityTicker == null) {
             this.removeBlockEntityTicker(blockEntity.getPos());
         } else {
-            this.blockEntityTickers.compute(blockEntity.getPos(), (pos, wrappedBlockEntityTickInvoker) -> {
+            this.blockEntityTickers.compute(blockEntity.getPos(), (pos, ticker) -> {
                 BlockEntityTickInvoker blockEntityTickInvoker = this.wrapTicker(blockEntity, blockEntityTicker);
-                if (wrappedBlockEntityTickInvoker != null) {
-                    wrappedBlockEntityTickInvoker.setWrapped(blockEntityTickInvoker);
-                    return wrappedBlockEntityTickInvoker;
+                if (ticker != null) {
+                    ticker.setWrapped(blockEntityTickInvoker);
+                    return ticker;
                 }
                 if (this.canTickBlockEntities()) {
-                    WrappedBlockEntityTickInvoker wrappedBlockEntityTickInvoker2 = new WrappedBlockEntityTickInvoker(blockEntityTickInvoker);
-                    this.world.addBlockEntityTicker(wrappedBlockEntityTickInvoker2);
-                    return wrappedBlockEntityTickInvoker2;
+                    WrappedBlockEntityTickInvoker wrappedBlockEntityTickInvoker = new WrappedBlockEntityTickInvoker(blockEntityTickInvoker);
+                    this.world.addBlockEntityTicker(wrappedBlockEntityTickInvoker);
+                    return wrappedBlockEntityTickInvoker;
                 }
                 return null;
             });

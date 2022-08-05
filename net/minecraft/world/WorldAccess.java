@@ -105,7 +105,7 @@ LunarWorldView {
     }
 
     /**
-     * Emits an game event.
+     * Emits a game event.
      */
     public void emitGameEvent(GameEvent var1, Vec3d var2, GameEvent.Emitter var3);
 

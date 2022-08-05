@@ -43,7 +43,7 @@ implements ResourceReloader {
 
     @Override
     public CompletableFuture<Void> reload(ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
-        List<CompletableFuture> list = this.registryManager.streamAllRegistries().map(entry -> this.buildRequiredGroup(manager, prepareExecutor, (DynamicRegistryManager.Entry)entry)).toList();
+        List<CompletableFuture> list = this.registryManager.streamAllRegistries().map(registry -> this.buildRequiredGroup(manager, prepareExecutor, (DynamicRegistryManager.Entry)registry)).toList();
         return ((CompletableFuture)CompletableFuture.allOf((CompletableFuture[])list.toArray(CompletableFuture[]::new)).thenCompose(synchronizer::whenPrepared)).thenAcceptAsync(void_ -> {
             this.registryTags = list.stream().map(CompletableFuture::join).collect(Collectors.toUnmodifiableList());
         }, applyExecutor);
@@ -52,7 +52,7 @@ implements ResourceReloader {
     private <T> CompletableFuture<RegistryTags<T>> buildRequiredGroup(ResourceManager resourceManager, Executor prepareExecutor, DynamicRegistryManager.Entry<T> requirement) {
         RegistryKey registryKey = requirement.key();
         Registry registry = requirement.value();
-        TagGroupLoader tagGroupLoader = new TagGroupLoader(identifier -> registry.getEntry(RegistryKey.of(registryKey, identifier)), TagManagerLoader.getPath(registryKey));
+        TagGroupLoader tagGroupLoader = new TagGroupLoader(id -> registry.getEntry(RegistryKey.of(registryKey, id)), TagManagerLoader.getPath(registryKey));
         return CompletableFuture.supplyAsync(() -> new RegistryTags(registryKey, tagGroupLoader.load(resourceManager)), prepareExecutor);
     }
 

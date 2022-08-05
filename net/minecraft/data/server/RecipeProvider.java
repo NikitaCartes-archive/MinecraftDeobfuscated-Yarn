@@ -85,7 +85,7 @@ implements DataProvider {
                 RecipeProvider.saveRecipeAdvancement(writer, jsonObject, this.advancementsPathResolver.resolveJson(provider.getAdvancementId()));
             }
         });
-        RecipeProvider.saveRecipeAdvancement(writer, Advancement.Builder.create().criterion("impossible", new ImpossibleCriterion.Conditions()).toJson(), this.advancementsPathResolver.resolveJson(CraftingRecipeJsonBuilder.field_39377));
+        RecipeProvider.saveRecipeAdvancement(writer, Advancement.Builder.create().criterion("impossible", new ImpossibleCriterion.Conditions()).toJson(), this.advancementsPathResolver.resolveJson(CraftingRecipeJsonBuilder.ROOT));
     }
 
     private static void saveRecipe(DataWriter cache, JsonObject json, Path path) {

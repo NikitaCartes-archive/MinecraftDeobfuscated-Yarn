@@ -144,7 +144,7 @@ public abstract class MobSpawnerLogic {
     private void updateSpawns(World world, BlockPos pos) {
         Random random = world.random;
         this.spawnDelay = this.maxSpawnDelay <= this.minSpawnDelay ? this.minSpawnDelay : this.minSpawnDelay + random.nextInt(this.maxSpawnDelay - this.minSpawnDelay);
-        this.spawnPotentials.getOrEmpty(random).ifPresent(present -> this.setSpawnEntry(world, pos, (MobSpawnerEntry)present.getData()));
+        this.spawnPotentials.getOrEmpty(random).ifPresent(spawnPotential -> this.setSpawnEntry(world, pos, (MobSpawnerEntry)spawnPotential.getData()));
         this.sendStatus(world, pos, 1);
     }
 
@@ -153,17 +153,17 @@ public abstract class MobSpawnerLogic {
         boolean bl = nbt.contains("SpawnPotentials", NbtElement.LIST_TYPE);
         boolean bl2 = nbt.contains("SpawnData", NbtElement.COMPOUND_TYPE);
         if (!bl) {
-            MobSpawnerEntry mobSpawnerEntry = bl2 ? MobSpawnerEntry.CODEC.parse(NbtOps.INSTANCE, nbt.getCompound("SpawnData")).resultOrPartial(string -> LOGGER.warn("Invalid SpawnData: {}", string)).orElseGet(MobSpawnerEntry::new) : new MobSpawnerEntry();
+            MobSpawnerEntry mobSpawnerEntry = bl2 ? MobSpawnerEntry.CODEC.parse(NbtOps.INSTANCE, nbt.getCompound("SpawnData")).resultOrPartial(error -> LOGGER.warn("Invalid SpawnData: {}", error)).orElseGet(MobSpawnerEntry::new) : new MobSpawnerEntry();
             this.spawnPotentials = DataPool.of(mobSpawnerEntry);
             this.setSpawnEntry(world, pos, mobSpawnerEntry);
         } else {
             NbtList nbtList = nbt.getList("SpawnPotentials", NbtElement.COMPOUND_TYPE);
-            this.spawnPotentials = MobSpawnerEntry.DATA_POOL_CODEC.parse(NbtOps.INSTANCE, nbtList).resultOrPartial(string -> LOGGER.warn("Invalid SpawnPotentials list: {}", string)).orElseGet(DataPool::empty);
+            this.spawnPotentials = MobSpawnerEntry.DATA_POOL_CODEC.parse(NbtOps.INSTANCE, nbtList).resultOrPartial(error -> LOGGER.warn("Invalid SpawnPotentials list: {}", error)).orElseGet(DataPool::empty);
             if (bl2) {
-                MobSpawnerEntry mobSpawnerEntry2 = MobSpawnerEntry.CODEC.parse(NbtOps.INSTANCE, nbt.getCompound("SpawnData")).resultOrPartial(string -> LOGGER.warn("Invalid SpawnData: {}", string)).orElseGet(MobSpawnerEntry::new);
+                MobSpawnerEntry mobSpawnerEntry2 = MobSpawnerEntry.CODEC.parse(NbtOps.INSTANCE, nbt.getCompound("SpawnData")).resultOrPartial(error -> LOGGER.warn("Invalid SpawnData: {}", error)).orElseGet(MobSpawnerEntry::new);
                 this.setSpawnEntry(world, pos, mobSpawnerEntry2);
             } else {
-                this.spawnPotentials.getOrEmpty(world.getRandom()).ifPresent(present -> this.setSpawnEntry(world, pos, (MobSpawnerEntry)present.getData()));
+                this.spawnPotentials.getOrEmpty(world.getRandom()).ifPresent(spawnPotential -> this.setSpawnEntry(world, pos, (MobSpawnerEntry)spawnPotential.getData()));
             }
         }
         if (nbt.contains("MinSpawnDelay", NbtElement.NUMBER_TYPE)) {

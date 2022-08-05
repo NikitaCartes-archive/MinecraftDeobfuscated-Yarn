@@ -54,7 +54,7 @@ public class PlayerListEntry {
         try {
             PlayerPublicKey.PublicKeyData publicKeyData = playerListPacketEntry.getPublicKeyData();
             if (publicKeyData != null) {
-                playerPublicKey = PlayerPublicKey.verifyAndDecode(servicesSignatureVerifier, this.profile.getId(), publicKeyData, PlayerPublicKey.field_39955);
+                playerPublicKey = PlayerPublicKey.verifyAndDecode(servicesSignatureVerifier, this.profile.getId(), publicKeyData, PlayerPublicKey.EXPIRATION_GRACE_PERIOD);
             }
         } catch (Exception exception) {
             LOGGER.error("Failed to validate publicKey property for profile {}", (Object)this.profile.getId(), (Object)exception);

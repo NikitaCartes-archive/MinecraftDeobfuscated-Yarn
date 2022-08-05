@@ -27,6 +27,22 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 
+/**
+ * Builds a buffer of primitives and optionally sorts them by the distance
+ * from the camera.
+ * 
+ * <p>This builder can sort quad primitives. It sorts them by the distance
+ * between the camera position and the center of the quad. Sorting is
+ * required when drawing translucent objects because they have to be drawn
+ * in back-to-front order. See
+ * <a href="https://www.khronos.org/opengl/wiki/Transparency_Sorting">
+ * Transparency Sorting - OpenGL Wiki</a>.
+ * 
+ * <p>For {@link VertexFormat.DrawMode#LINES LINES} and {@link
+ * VertexFormat.DrawMode#LINE_STRIP LINE_STRIP} draw modes, this builder
+ * duplicates every vertex in a line to produce a quad with zero area. See
+ * {@link GameRenderer#getRenderTypeLinesShader}.
+ */
 @Environment(value=EnvType.CLIENT)
 public class BufferBuilder
 extends FixedColorVertexConsumer

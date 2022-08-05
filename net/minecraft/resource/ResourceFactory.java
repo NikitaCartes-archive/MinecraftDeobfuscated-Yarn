@@ -28,16 +28,16 @@ public interface ResourceFactory {
      */
     public Optional<Resource> getResource(Identifier var1);
 
-    default public Resource getResourceOrThrow(Identifier identifier) throws FileNotFoundException {
-        return this.getResource(identifier).orElseThrow(() -> new FileNotFoundException(identifier.toString()));
+    default public Resource getResourceOrThrow(Identifier id) throws FileNotFoundException {
+        return this.getResource(id).orElseThrow(() -> new FileNotFoundException(id.toString()));
     }
 
-    default public InputStream open(Identifier identifier) throws IOException {
-        return this.getResourceOrThrow(identifier).getInputStream();
+    default public InputStream open(Identifier id) throws IOException {
+        return this.getResourceOrThrow(id).getInputStream();
     }
 
-    default public BufferedReader openAsReader(Identifier identifier) throws IOException {
-        return this.getResourceOrThrow(identifier).getReader();
+    default public BufferedReader openAsReader(Identifier id) throws IOException {
+        return this.getResourceOrThrow(id).getReader();
     }
 }
 

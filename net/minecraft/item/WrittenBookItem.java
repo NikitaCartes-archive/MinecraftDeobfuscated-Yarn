@@ -34,11 +34,11 @@ import org.jetbrains.annotations.Nullable;
 
 public class WrittenBookItem
 extends Item {
-    public static final int field_30929 = 16;
-    public static final int MAX_TITLE_LENGTH = 32;
-    public static final int field_30931 = 1024;
-    public static final int field_30932 = Short.MAX_VALUE;
-    public static final int field_30933 = 100;
+    public static final int MAX_TITLE_EDIT_LENGTH = 16;
+    public static final int MAX_TITLE_VIEW_LENGTH = 32;
+    public static final int MAX_PAGE_EDIT_LENGTH = 1024;
+    public static final int MAX_PAGE_VIEW_LENGTH = Short.MAX_VALUE;
+    public static final int MAX_PAGES = 100;
     public static final int field_30934 = 2;
     public static final String TITLE_KEY = "title";
     public static final String FILTERED_TITLE_KEY = "filtered_title";

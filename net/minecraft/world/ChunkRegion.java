@@ -90,7 +90,7 @@ implements StructureWorldAccess {
     @Nullable
     private Supplier<String> currentlyGeneratingStructureName;
     private final AtomicLong tickOrder = new AtomicLong();
-    private static final Identifier field_38683 = new Identifier("worldgen_region_random");
+    private static final Identifier WORLDGEN_REGION_RANDOM_ID = new Identifier("worldgen_region_random");
 
     public ChunkRegion(ServerWorld world, List<Chunk> chunks, ChunkStatus status, int placementRadius) {
         this.status = status;
@@ -105,7 +105,7 @@ implements StructureWorldAccess {
         this.world = world;
         this.seed = world.getSeed();
         this.levelProperties = world.getLevelProperties();
-        this.random = world.getChunkManager().getNoiseConfig().getOrCreateRandomDeriver(field_38683).split(this.centerPos.getPos().getStartPos());
+        this.random = world.getChunkManager().getNoiseConfig().getOrCreateRandomDeriver(WORLDGEN_REGION_RANDOM_ID).split(this.centerPos.getPos().getStartPos());
         this.dimension = world.getDimension();
         this.biomeAccess = new BiomeAccess(this, BiomeAccess.hashSeed(this.seed));
         this.lowerCorner = chunks.get(0).getPos();

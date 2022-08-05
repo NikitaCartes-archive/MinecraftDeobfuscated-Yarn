@@ -50,10 +50,10 @@ implements NamedScreenHandlerFactory {
     private static final int field_31304 = 4;
     public static final StatusEffect[][] EFFECTS_BY_LEVEL = new StatusEffect[][]{{StatusEffects.SPEED, StatusEffects.HASTE}, {StatusEffects.RESISTANCE, StatusEffects.JUMP_BOOST}, {StatusEffects.STRENGTH}, {StatusEffects.REGENERATION}};
     private static final Set<StatusEffect> EFFECTS = Arrays.stream(EFFECTS_BY_LEVEL).flatMap(Arrays::stream).collect(Collectors.toSet());
-    public static final int field_31300 = 0;
-    public static final int field_31301 = 1;
-    public static final int field_31302 = 2;
-    public static final int field_31303 = 3;
+    public static final int LEVEL_PROPERTY_INDEX = 0;
+    public static final int PRIMARY_PROPERTY_INDEX = 1;
+    public static final int SECONDARY_PROPERTY_INDEX = 2;
+    public static final int PROPERTY_COUNT = 3;
     private static final int field_31305 = 10;
     List<BeamSegment> beamSegments = Lists.newArrayList();
     private List<BeamSegment> field_19178 = Lists.newArrayList();

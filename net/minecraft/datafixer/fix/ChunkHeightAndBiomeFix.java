@@ -76,27 +76,27 @@ extends DataFix {
         Type<?> type2 = schema.getType(TypeReferences.CHUNK);
         Type<?> type3 = type2.findField("Level").type();
         Type<?> type4 = type3.findField("Sections").type();
-        return this.fixTypeEverywhereTyped(NAME, type, type2, (Typed<?> typed) -> typed.updateTyped(opticFinder, type3, typed22 -> {
-            Dynamic dynamic2 = typed22.get(DSL.remainderFinder());
-            OptionalDynamic<?> optionalDynamic = typed.get(DSL.remainderFinder()).get(CONTEXT);
+        return this.fixTypeEverywhereTyped(NAME, type, type2, (Typed<?> chunk) -> chunk.updateTyped(opticFinder, type3, level -> {
+            Dynamic dynamic = level.get(DSL.remainderFinder());
+            OptionalDynamic<?> optionalDynamic = chunk.get(DSL.remainderFinder()).get(CONTEXT);
             String string = optionalDynamic.get("dimension").asString().result().orElse("");
             String string2 = optionalDynamic.get("generator").asString().result().orElse("");
             boolean bl = "minecraft:overworld".equals(string);
             MutableBoolean mutableBoolean = new MutableBoolean();
             int i = bl ? -4 : 0;
-            Dynamic[] dynamics = ChunkHeightAndBiomeFix.fixBiomes(dynamic2, bl, i, mutableBoolean);
-            Dynamic<?> dynamic22 = ChunkHeightAndBiomeFix.fixPalette(dynamic2.createList(Stream.of(dynamic2.createMap(ImmutableMap.of(dynamic2.createString("Name"), dynamic2.createString("minecraft:air"))))));
+            Dynamic[] dynamics = ChunkHeightAndBiomeFix.fixBiomes(dynamic, bl, i, mutableBoolean);
+            Dynamic<?> dynamic2 = ChunkHeightAndBiomeFix.fixPalette(dynamic.createList(Stream.of(dynamic.createMap(ImmutableMap.of(dynamic.createString("Name"), dynamic.createString("minecraft:air"))))));
             HashSet set = Sets.newHashSet();
             MutableObject<Supplier<ProtoChunkTickListFix.class_6741>> mutableObject = new MutableObject<Supplier<ProtoChunkTickListFix.class_6741>>(() -> null);
-            typed22 = typed22.updateTyped(opticFinder2, type4, typed -> {
+            level = level.updateTyped(opticFinder2, type4, sections -> {
                 IntOpenHashSet intSet = new IntOpenHashSet();
-                Dynamic<?> dynamic3 = typed.write().result().orElseThrow(() -> new IllegalStateException("Malformed Chunk.Level.Sections"));
+                Dynamic<?> dynamic3 = sections.write().result().orElseThrow(() -> new IllegalStateException("Malformed Chunk.Level.Sections"));
                 List list = dynamic3.asStream().map(dynamic2 -> {
                     int j = dynamic2.get("Y").asInt(0);
                     Dynamic dynamic3 = DataFixUtils.orElse(dynamic2.get("Palette").result().flatMap(dynamic22 -> {
                         dynamic22.asStream().map(dynamic -> dynamic.get("Name").asString("minecraft:air")).forEach(set::add);
                         return dynamic2.get("BlockStates").result().map(dynamic2 -> ChunkHeightAndBiomeFix.fixPalette(dynamic22, dynamic2));
-                    }), dynamic22);
+                    }), dynamic2);
                     Dynamic dynamic4 = dynamic2;
                     int k = j - i;
                     if (k >= 0 && k < dynamics.length) {
@@ -115,209 +115,209 @@ extends DataFix {
                 for (int j = 0; j < dynamics.length; ++j) {
                     int k = j + i;
                     if (!intSet.add(k)) continue;
-                    Dynamic dynamic4 = dynamic2.createMap(Map.of(dynamic2.createString("Y"), dynamic2.createInt(k)));
-                    dynamic4 = dynamic4.set("block_states", dynamic22);
+                    Dynamic dynamic4 = dynamic.createMap(Map.of(dynamic.createString("Y"), dynamic.createInt(k)));
+                    dynamic4 = dynamic4.set("block_states", dynamic2);
                     dynamic4 = dynamic4.set("biomes", dynamics[j]);
                     list.add(dynamic4);
                 }
-                return type4.readTyped(dynamic2.createList(list.stream())).result().orElseThrow(() -> new IllegalStateException("ChunkHeightAndBiomeFix failed.")).getFirst();
+                return type4.readTyped(dynamic.createList(list.stream())).result().orElseThrow(() -> new IllegalStateException("ChunkHeightAndBiomeFix failed.")).getFirst();
             });
-            return typed22.update(DSL.remainderFinder(), dynamic -> {
+            return level.update(DSL.remainderFinder(), level2 -> {
                 if (bl) {
-                    dynamic = this.fixStatus((Dynamic<?>)dynamic, set);
+                    level2 = this.fixStatus((Dynamic<?>)level2, set);
                 }
-                return ChunkHeightAndBiomeFix.fixLevel(dynamic, bl, mutableBoolean.booleanValue(), "minecraft:noise".equals(string2), (Supplier)mutableObject.getValue());
+                return ChunkHeightAndBiomeFix.fixLevel(level2, bl, mutableBoolean.booleanValue(), "minecraft:noise".equals(string2), (Supplier)mutableObject.getValue());
             });
         }));
     }
 
-    private Dynamic<?> fixStatus(Dynamic<?> dynamic2, Set<String> set) {
-        return dynamic2.update("Status", dynamic -> {
+    private Dynamic<?> fixStatus(Dynamic<?> level, Set<String> blocks) {
+        return level.update("Status", status -> {
             boolean bl2;
-            String string = dynamic.asString("empty");
+            String string = status.asString("empty");
             if (STATUSES_TO_SKIP_UPDATE.contains(string)) {
-                return dynamic;
+                return status;
             }
-            set.remove("minecraft:air");
-            boolean bl = !set.isEmpty();
-            set.removeAll(SURFACE_BLOCKS);
-            boolean bl3 = bl2 = !set.isEmpty();
+            blocks.remove("minecraft:air");
+            boolean bl = !blocks.isEmpty();
+            blocks.removeAll(SURFACE_BLOCKS);
+            boolean bl3 = bl2 = !blocks.isEmpty();
             if (bl2) {
-                return dynamic.createString("liquid_carvers");
+                return status.createString("liquid_carvers");
             }
             if ("noise".equals(string) || bl) {
-                return dynamic.createString("noise");
+                return status.createString("noise");
             }
             if ("biomes".equals(string)) {
-                return dynamic.createString("structure_references");
+                return status.createString("structure_references");
             }
-            return dynamic;
+            return status;
         });
     }
 
-    private static Dynamic<?>[] fixBiomes(Dynamic<?> dynamic, boolean bl, int i2, MutableBoolean mutableBoolean) {
-        Object[] dynamics = new Dynamic[bl ? 24 : 16];
-        int[] is = dynamic.get("Biomes").asIntStreamOpt().result().map(IntStream::toArray).orElse(null);
+    private static Dynamic<?>[] fixBiomes(Dynamic<?> level, boolean overworld, int i, MutableBoolean heightAlreadyUpdated) {
+        Object[] dynamics = new Dynamic[overworld ? 24 : 16];
+        int[] is = level.get("Biomes").asIntStreamOpt().result().map(IntStream::toArray).orElse(null);
         if (is != null && is.length == 1536) {
-            mutableBoolean.setValue(true);
-            for (int j2 = 0; j2 < 24; ++j2) {
-                int k = j2;
-                dynamics[j2] = ChunkHeightAndBiomeFix.fixBiomes(dynamic, j -> ChunkHeightAndBiomeFix.method_39519(is, k * 64 + j));
+            heightAlreadyUpdated.setValue(true);
+            for (int j = 0; j < 24; ++j) {
+                int k = j;
+                dynamics[j] = ChunkHeightAndBiomeFix.fixBiomes(level, sectionY -> ChunkHeightAndBiomeFix.getClamped(is, k * 64 + sectionY));
             }
         } else if (is != null && is.length == 1024) {
             int l;
-            int j3 = 0;
-            while (j3 < 16) {
-                int k = j3 - i2;
-                l = j3++;
-                dynamics[k] = ChunkHeightAndBiomeFix.fixBiomes(dynamic, j -> ChunkHeightAndBiomeFix.method_39519(is, l * 64 + j));
+            int j = 0;
+            while (j < 16) {
+                int k = j - i;
+                l = j++;
+                dynamics[k] = ChunkHeightAndBiomeFix.fixBiomes(level, sectionY -> ChunkHeightAndBiomeFix.getClamped(is, l * 64 + sectionY));
             }
-            if (bl) {
-                Dynamic<?> dynamic2 = ChunkHeightAndBiomeFix.fixBiomes(dynamic, i -> ChunkHeightAndBiomeFix.method_39519(is, i % 16));
-                Dynamic<?> dynamic3 = ChunkHeightAndBiomeFix.fixBiomes(dynamic, i -> ChunkHeightAndBiomeFix.method_39519(is, i % 16 + 1008));
+            if (overworld) {
+                Dynamic<?> dynamic = ChunkHeightAndBiomeFix.fixBiomes(level, sectionY -> ChunkHeightAndBiomeFix.getClamped(is, sectionY % 16));
+                Dynamic<?> dynamic2 = ChunkHeightAndBiomeFix.fixBiomes(level, sectionY -> ChunkHeightAndBiomeFix.getClamped(is, sectionY % 16 + 1008));
                 for (l = 0; l < 4; ++l) {
-                    dynamics[l] = dynamic2;
+                    dynamics[l] = dynamic;
                 }
                 for (l = 20; l < 24; ++l) {
-                    dynamics[l] = dynamic3;
+                    dynamics[l] = dynamic2;
                 }
             }
         } else {
-            Arrays.fill(dynamics, ChunkHeightAndBiomeFix.fixPalette(dynamic.createList(Stream.of(dynamic.createString(PLAINS_ID)))));
+            Arrays.fill(dynamics, ChunkHeightAndBiomeFix.fixPalette(level.createList(Stream.of(level.createString(PLAINS_ID)))));
         }
         return dynamics;
     }
 
-    private static int method_39519(int[] is, int i) {
-        return is[i] & 0xFF;
+    private static int getClamped(int[] is, int index) {
+        return is[index] & 0xFF;
     }
 
-    private static Dynamic<?> fixLevel(Dynamic<?> dynamic, boolean bl, boolean bl2, boolean bl3, Supplier<ProtoChunkTickListFix.class_6741> supplier) {
-        Dynamic<?> dynamic2;
+    private static Dynamic<?> fixLevel(Dynamic<?> level, boolean overworld, boolean heightAlreadyUpdated, boolean atNoiseStatus, Supplier<ProtoChunkTickListFix.class_6741> supplier) {
+        Dynamic<?> dynamic;
         String string;
-        dynamic = dynamic.remove("Biomes");
-        if (!bl) {
-            return ChunkHeightAndBiomeFix.fixCarvingMasks(dynamic, 16, 0);
+        level = level.remove("Biomes");
+        if (!overworld) {
+            return ChunkHeightAndBiomeFix.fixCarvingMasks(level, 16, 0);
         }
-        if (bl2) {
-            return ChunkHeightAndBiomeFix.fixCarvingMasks(dynamic, 24, 0);
+        if (heightAlreadyUpdated) {
+            return ChunkHeightAndBiomeFix.fixCarvingMasks(level, 24, 0);
         }
-        dynamic = ChunkHeightAndBiomeFix.fixHeightmaps(dynamic);
-        dynamic = ChunkHeightAndBiomeFix.fixChunkSectionList(dynamic, "Lights");
-        dynamic = ChunkHeightAndBiomeFix.fixChunkSectionList(dynamic, "LiquidsToBeTicked");
-        dynamic = ChunkHeightAndBiomeFix.fixChunkSectionList(dynamic, "PostProcessing");
-        dynamic = ChunkHeightAndBiomeFix.fixChunkSectionList(dynamic, "ToBeTicked");
-        dynamic = ChunkHeightAndBiomeFix.fixCarvingMasks(dynamic, 24, 4);
-        dynamic = dynamic.update("UpgradeData", ChunkHeightAndBiomeFix::fixUpgradeData);
-        if (!bl3) {
-            return dynamic;
+        level = ChunkHeightAndBiomeFix.fixHeightmaps(level);
+        level = ChunkHeightAndBiomeFix.fixChunkSectionList(level, "Lights");
+        level = ChunkHeightAndBiomeFix.fixChunkSectionList(level, "LiquidsToBeTicked");
+        level = ChunkHeightAndBiomeFix.fixChunkSectionList(level, "PostProcessing");
+        level = ChunkHeightAndBiomeFix.fixChunkSectionList(level, "ToBeTicked");
+        level = ChunkHeightAndBiomeFix.fixCarvingMasks(level, 24, 4);
+        level = level.update("UpgradeData", ChunkHeightAndBiomeFix::fixUpgradeData);
+        if (!atNoiseStatus) {
+            return level;
         }
-        Optional<Dynamic<?>> optional = dynamic.get("Status").result();
-        if (optional.isPresent() && !"empty".equals(string = (dynamic2 = optional.get()).asString(""))) {
-            dynamic = dynamic.set("blending_data", dynamic.createMap(ImmutableMap.of(dynamic.createString("old_noise"), dynamic.createBoolean(field_35668.contains(string)))));
+        Optional<Dynamic<?>> optional = level.get("Status").result();
+        if (optional.isPresent() && !"empty".equals(string = (dynamic = optional.get()).asString(""))) {
+            level = level.set("blending_data", level.createMap(ImmutableMap.of(level.createString("old_noise"), level.createBoolean(field_35668.contains(string)))));
             ProtoChunkTickListFix.class_6741 lv = supplier.get();
             if (lv != null) {
                 BitSet bitSet = new BitSet(256);
-                boolean bl4 = string.equals("noise");
+                boolean bl = string.equals("noise");
                 for (int i = 0; i < 16; ++i) {
                     for (int j = 0; j < 16; ++j) {
-                        boolean bl6;
-                        Dynamic<?> dynamic3 = lv.method_39265(j, 0, i);
-                        boolean bl5 = dynamic3 != null && "minecraft:bedrock".equals(dynamic3.get("Name").asString(""));
-                        boolean bl7 = bl6 = dynamic3 != null && "minecraft:air".equals(dynamic3.get("Name").asString(""));
-                        if (bl6) {
+                        boolean bl3;
+                        Dynamic<?> dynamic2 = lv.method_39265(j, 0, i);
+                        boolean bl2 = dynamic2 != null && "minecraft:bedrock".equals(dynamic2.get("Name").asString(""));
+                        boolean bl4 = bl3 = dynamic2 != null && "minecraft:air".equals(dynamic2.get("Name").asString(""));
+                        if (bl3) {
                             bitSet.set(i * 16 + j);
                         }
-                        bl4 |= bl5;
+                        bl |= bl2;
                     }
                 }
-                if (bl4 && bitSet.cardinality() != bitSet.size()) {
-                    Dynamic<?> dynamic4 = "full".equals(string) ? dynamic.createString("heightmaps") : dynamic2;
-                    dynamic = dynamic.set("below_zero_retrogen", dynamic.createMap(ImmutableMap.of(dynamic.createString("target_status"), dynamic4, dynamic.createString("missing_bedrock"), dynamic.createLongList(LongStream.of(bitSet.toLongArray())))));
-                    dynamic = dynamic.set("Status", dynamic.createString("empty"));
+                if (bl && bitSet.cardinality() != bitSet.size()) {
+                    Dynamic<?> dynamic3 = "full".equals(string) ? level.createString("heightmaps") : dynamic;
+                    level = level.set("below_zero_retrogen", level.createMap(ImmutableMap.of(level.createString("target_status"), dynamic3, level.createString("missing_bedrock"), level.createLongList(LongStream.of(bitSet.toLongArray())))));
+                    level = level.set("Status", level.createString("empty"));
                 }
-                dynamic = dynamic.set("isLightOn", dynamic.createBoolean(false));
+                level = level.set("isLightOn", level.createBoolean(false));
             }
         }
-        return dynamic;
+        return level;
     }
 
-    private static <T> Dynamic<T> fixUpgradeData(Dynamic<T> dynamic2) {
-        return dynamic2.update("Indices", dynamic -> {
+    private static <T> Dynamic<T> fixUpgradeData(Dynamic<T> upgradeData) {
+        return upgradeData.update("Indices", indices -> {
             HashMap map = new HashMap();
-            dynamic.getMapValues().result().ifPresent(map2 -> map2.forEach((dynamic, dynamic2) -> {
+            indices.getMapValues().result().ifPresent(indicesMap -> indicesMap.forEach((key, value) -> {
                 try {
-                    dynamic.asString().result().map(Integer::parseInt).ifPresent(integer -> {
-                        int i = integer - -4;
-                        map.put(dynamic.createString(Integer.toString(i)), dynamic2);
+                    key.asString().result().map(Integer::parseInt).ifPresent(index -> {
+                        int i = index - -4;
+                        map.put(key.createString(Integer.toString(i)), value);
                     });
                 } catch (NumberFormatException numberFormatException) {
                     // empty catch block
                 }
             }));
-            return dynamic.createMap(map);
+            return indices.createMap(map);
         });
     }
 
-    private static Dynamic<?> fixCarvingMasks(Dynamic<?> dynamic, int i, int j) {
-        Dynamic<?> dynamic2 = dynamic.get("CarvingMasks").orElseEmptyMap();
-        dynamic2 = dynamic2.updateMapValues(pair -> {
-            long[] ls = BitSet.valueOf(((Dynamic)pair.getSecond()).asByteBuffer().array()).toLongArray();
-            long[] ms = new long[64 * i];
-            System.arraycopy(ls, 0, ms, 64 * j, ls.length);
-            return Pair.of((Dynamic)pair.getFirst(), dynamic.createLongList(LongStream.of(ms)));
+    private static Dynamic<?> fixCarvingMasks(Dynamic<?> level, int sectionsPerChunk, int oldBottomSectionY) {
+        Dynamic<?> dynamic = level.get("CarvingMasks").orElseEmptyMap();
+        dynamic = dynamic.updateMapValues(mask -> {
+            long[] ls = BitSet.valueOf(((Dynamic)mask.getSecond()).asByteBuffer().array()).toLongArray();
+            long[] ms = new long[64 * sectionsPerChunk];
+            System.arraycopy(ls, 0, ms, 64 * oldBottomSectionY, ls.length);
+            return Pair.of((Dynamic)mask.getFirst(), level.createLongList(LongStream.of(ms)));
         });
-        return dynamic.set("CarvingMasks", dynamic2);
+        return level.set("CarvingMasks", dynamic);
     }
 
-    private static Dynamic<?> fixChunkSectionList(Dynamic<?> dynamic, String string) {
-        List list = dynamic.get(string).orElseEmptyList().asStream().collect(Collectors.toCollection(ArrayList::new));
+    private static Dynamic<?> fixChunkSectionList(Dynamic<?> level, String key) {
+        List list = level.get(key).orElseEmptyList().asStream().collect(Collectors.toCollection(ArrayList::new));
         if (list.size() == 24) {
-            return dynamic;
+            return level;
         }
-        Dynamic dynamic2 = dynamic.emptyList();
+        Dynamic dynamic = level.emptyList();
         for (int i = 0; i < 4; ++i) {
-            list.add(0, dynamic2);
-            list.add(dynamic2);
+            list.add(0, dynamic);
+            list.add(dynamic);
         }
-        return dynamic.set(string, dynamic.createList(list.stream()));
+        return level.set(key, level.createList(list.stream()));
     }
 
-    private static Dynamic<?> fixHeightmaps(Dynamic<?> dynamic2) {
-        return dynamic2.update("Heightmaps", dynamic -> {
+    private static Dynamic<?> fixHeightmaps(Dynamic<?> level) {
+        return level.update("Heightmaps", heightmaps -> {
             for (String string : HEIGHTMAP_KEYS) {
-                dynamic = dynamic.update(string, ChunkHeightAndBiomeFix::fixHeightmap);
+                heightmaps = heightmaps.update(string, ChunkHeightAndBiomeFix::fixHeightmap);
             }
-            return dynamic;
+            return heightmaps;
         });
     }
 
-    private static Dynamic<?> fixHeightmap(Dynamic<?> dynamic) {
-        return dynamic.createLongList(dynamic.asLongStream().map(l -> {
-            long m = 0L;
+    private static Dynamic<?> fixHeightmap(Dynamic<?> heightmap) {
+        return heightmap.createLongList(heightmap.asLongStream().map(entry -> {
+            long l = 0L;
             int i = 0;
             while (i + 9 <= 64) {
-                long n = l >> i & 0x1FFL;
-                long o = n == 0L ? 0L : Math.min(n + 64L, 511L);
-                m |= o << i;
+                long m = entry >> i & 0x1FFL;
+                long n = m == 0L ? 0L : Math.min(m + 64L, 511L);
+                l |= n << i;
                 i += 9;
             }
-            return m;
+            return l;
         }));
     }
 
-    private static Dynamic<?> fixBiomes(Dynamic<?> dynamic, Int2IntFunction int2IntFunction) {
+    private static Dynamic<?> fixBiomes(Dynamic<?> level, Int2IntFunction biomeGetter) {
         int j;
         Int2IntLinkedOpenHashMap int2IntMap = new Int2IntLinkedOpenHashMap();
         for (int i = 0; i < 64; ++i) {
-            j = int2IntFunction.applyAsInt(i);
+            j = biomeGetter.applyAsInt(i);
             if (int2IntMap.containsKey(j)) continue;
             int2IntMap.put(j, int2IntMap.size());
         }
-        Dynamic dynamic2 = dynamic.createList(int2IntMap.keySet().stream().map(integer -> dynamic.createString(RAW_BIOME_IDS.getOrDefault((int)integer, PLAINS_ID))));
+        Dynamic dynamic = level.createList(int2IntMap.keySet().stream().map(rawBiomeId -> level.createString(RAW_BIOME_IDS.getOrDefault((int)rawBiomeId, PLAINS_ID))));
         j = ChunkHeightAndBiomeFix.ceilLog2(int2IntMap.size());
         if (j == 0) {
-            return ChunkHeightAndBiomeFix.fixPalette(dynamic2);
+            return ChunkHeightAndBiomeFix.fixPalette(dynamic);
         }
         int k = 64 / j;
         int l = (64 + k - 1) / k;
@@ -325,22 +325,22 @@ extends DataFix {
         int m = 0;
         int n = 0;
         for (int o = 0; o < 64; ++o) {
-            int p = int2IntFunction.applyAsInt(o);
+            int p = biomeGetter.applyAsInt(o);
             int n2 = m++;
             ls[n2] = ls[n2] | (long)int2IntMap.get(p) << n;
             if ((n += j) + j <= 64) continue;
             n = 0;
         }
-        Dynamic<?> dynamic3 = dynamic.createLongList(Arrays.stream(ls));
-        return ChunkHeightAndBiomeFix.fixPaletteWithData(dynamic2, dynamic3);
+        Dynamic<?> dynamic2 = level.createLongList(Arrays.stream(ls));
+        return ChunkHeightAndBiomeFix.fixPaletteWithData(dynamic, dynamic2);
     }
 
-    private static Dynamic<?> fixPalette(Dynamic<?> dynamic) {
-        return dynamic.createMap(ImmutableMap.of(dynamic.createString("palette"), dynamic));
+    private static Dynamic<?> fixPalette(Dynamic<?> palette) {
+        return palette.createMap(ImmutableMap.of(palette.createString("palette"), palette));
     }
 
-    private static Dynamic<?> fixPaletteWithData(Dynamic<?> dynamic, Dynamic<?> dynamic2) {
-        return dynamic.createMap(ImmutableMap.of(dynamic.createString("palette"), dynamic, dynamic.createString("data"), dynamic2));
+    private static Dynamic<?> fixPaletteWithData(Dynamic<?> palette, Dynamic<?> data) {
+        return palette.createMap(ImmutableMap.of(palette.createString("palette"), palette, palette.createString("data"), data));
     }
 
     private static Dynamic<?> fixPalette(Dynamic<?> dynamic, Dynamic<?> dynamic2) {

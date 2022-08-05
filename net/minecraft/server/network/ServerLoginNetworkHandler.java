@@ -140,10 +140,10 @@ ServerLoginPacketListener {
                 try {
                     SignatureVerifier signatureVerifier = this.server.getServicesSignatureVerifier();
                     playerPublicKey = ServerLoginNetworkHandler.getVerifiedPublicKey(this.publicKeyData, this.profile.getId(), signatureVerifier, this.server.shouldEnforceSecureProfile());
-                } catch (PlayerPublicKey.class_7652 lv) {
-                    LOGGER.error("Failed to validate profile key: {}", (Object)lv.getMessage());
+                } catch (PlayerPublicKey.PublicKeyException publicKeyException) {
+                    LOGGER.error("Failed to validate profile key: {}", (Object)publicKeyException.getMessage());
                     if (this.connection.isLocal()) break block11;
-                    this.disconnect(lv.getMessageText());
+                    this.disconnect(publicKeyException.getMessageText());
                     return;
                 }
             }
@@ -192,10 +192,10 @@ ServerLoginPacketListener {
     }
 
     @Nullable
-    private static PlayerPublicKey getVerifiedPublicKey(@Nullable PlayerPublicKey.PublicKeyData publicKeyData, UUID playerUuid, SignatureVerifier servicesSignatureVerifier, boolean shouldThrowOnMissingKey) throws PlayerPublicKey.class_7652 {
+    private static PlayerPublicKey getVerifiedPublicKey(@Nullable PlayerPublicKey.PublicKeyData publicKeyData, UUID playerUuid, SignatureVerifier servicesSignatureVerifier, boolean shouldThrowOnMissingKey) throws PlayerPublicKey.PublicKeyException {
         if (publicKeyData == null) {
             if (shouldThrowOnMissingKey) {
-                throw new PlayerPublicKey.class_7652(PlayerPublicKey.field_39953);
+                throw new PlayerPublicKey.PublicKeyException(PlayerPublicKey.MISSING_PUBLIC_KEY_TEXT);
             }
             return null;
         }

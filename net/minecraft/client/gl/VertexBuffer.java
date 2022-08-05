@@ -18,6 +18,17 @@ import net.minecraft.client.util.Window;
 import net.minecraft.util.math.Matrix4f;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Stores vertex data on GPU.
+ * 
+ * <p>If you don't need to change the geometry, you can upload data once
+ * and reuse it every frame. For example, {@linkplain
+ * net.minecraft.client.render.WorldRenderer#renderStars star rendering}
+ * uses this technique to save bandwidth.
+ * 
+ * @implNote This is mostly a wrapper around vertex buffer object (VBO),
+ * element buffer object (EBO), and vertex array object (VAO).
+ */
 @Environment(value=EnvType.CLIENT)
 public class VertexBuffer
 implements AutoCloseable {
@@ -39,6 +50,13 @@ implements AutoCloseable {
         this.vertexArrayId = GlStateManager._glGenVertexArrays();
     }
 
+    /**
+     * Uploads the contents of {@code buffer} to GPU, discarding previously
+     * uploaded data.
+     * 
+     * <p>The caller of this method must {@linkplain #bind bind} this vertex
+     * buffer before calling this method.
+     */
     public void upload(BufferBuilder.BuiltBuffer buffer) {
         if (this.isClosed()) {
             return;
@@ -89,6 +107,11 @@ implements AutoCloseable {
         return null;
     }
 
+    /**
+     * Sets this vertex buffer as the current one.
+     * 
+     * <p>This method must be called before uploading or drawing data.
+     */
     public void bind() {
         BufferRenderer.resetCurrentVertexBuffer();
         GlStateManager._glBindVertexArray(this.vertexArrayId);
@@ -99,6 +122,15 @@ implements AutoCloseable {
         GlStateManager._glBindVertexArray(0);
     }
 
+    /**
+     * Draws the contents in this vertex buffer.
+     * 
+     * <p>The caller of this method must {@linkplain #bind bind} this vertex
+     * buffer before calling this method.
+     * 
+     * <p>Unlike {@link #draw(Matrix4f, Matrix4f, Shader)}, the caller of this
+     * method must manually bind a shader before calling this method.
+     */
     public void drawElements() {
         RenderSystem.drawElements(this.drawMode.glMode, this.vertexCount, this.getIndexType().glType);
     }
@@ -108,6 +140,12 @@ implements AutoCloseable {
         return indexBuffer != null ? indexBuffer.getIndexType() : this.indexType;
     }
 
+    /**
+     * Draws the contents in this vertex buffer with {@code shader}.
+     * 
+     * <p>The caller of this method must {@linkplain #bind bind} this vertex
+     * buffer before calling this method.
+     */
     public void draw(Matrix4f viewMatrix, Matrix4f projectionMatrix, Shader shader) {
         if (!RenderSystem.isOnRenderThread()) {
             RenderSystem.recordRenderCall(() -> this.drawInternal(viewMatrix.copy(), projectionMatrix.copy(), shader));

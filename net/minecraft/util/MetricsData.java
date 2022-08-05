@@ -4,7 +4,7 @@
 package net.minecraft.util;
 
 public class MetricsData {
-    public static final int field_29839 = 240;
+    public static final int SIZE = 240;
     private final long[] samples = new long[240];
     private int startIndex;
     private int sampleCount;

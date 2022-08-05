@@ -92,7 +92,7 @@ implements CraftingRecipeJsonBuilder {
     @Override
     public void offerTo(Consumer<RecipeJsonProvider> exporter, Identifier recipeId) {
         this.validate(recipeId);
-        this.advancementBuilder.parent(field_39377).criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeId)).rewards(AdvancementRewards.Builder.recipe(recipeId)).criteriaMerger(CriterionMerger.OR);
+        this.advancementBuilder.parent(ROOT).criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeId)).rewards(AdvancementRewards.Builder.recipe(recipeId)).criteriaMerger(CriterionMerger.OR);
         exporter.accept(new ShapelessRecipeJsonProvider(recipeId, this.output, this.outputCount, this.group == null ? "" : this.group, this.inputs, this.advancementBuilder, new Identifier(recipeId.getNamespace(), "recipes/" + this.output.getGroup().getName() + "/" + recipeId.getPath())));
     }
 

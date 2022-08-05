@@ -23,9 +23,9 @@ public class ElderGuardianEntity
 extends GuardianEntity {
     public static final float SCALE = EntityType.ELDER_GUARDIAN.getWidth() / EntityType.GUARDIAN.getWidth();
     private static final int field_38119 = 1200;
-    private static final int field_38115 = 50;
-    private static final int field_38116 = 6000;
-    private static final int field_38117 = 2;
+    private static final int AFFECTED_PLAYER_RANGE = 50;
+    private static final int MINING_FATIGUE_DURATION = 6000;
+    private static final int MINING_FATIGUE_AMPLIFIER = 2;
     private static final int field_38118 = 1200;
 
     public ElderGuardianEntity(EntityType<? extends ElderGuardianEntity> entityType, World world) {

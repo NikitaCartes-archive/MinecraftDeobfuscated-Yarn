@@ -88,12 +88,12 @@ extends ConditionalLootFunction {
         public void toJson(JsonObject jsonObject, SetEnchantmentsLootFunction setEnchantmentsLootFunction, JsonSerializationContext jsonSerializationContext) {
             super.toJson(jsonObject, setEnchantmentsLootFunction, jsonSerializationContext);
             JsonObject jsonObject2 = new JsonObject();
-            setEnchantmentsLootFunction.enchantments.forEach((enchantment, lootNumberProvider) -> {
+            setEnchantmentsLootFunction.enchantments.forEach((enchantment, numberProvider) -> {
                 Identifier identifier = Registry.ENCHANTMENT.getId((Enchantment)enchantment);
                 if (identifier == null) {
                     throw new IllegalArgumentException("Don't know how to serialize enchantment " + enchantment);
                 }
-                jsonObject2.add(identifier.toString(), jsonSerializationContext.serialize(lootNumberProvider));
+                jsonObject2.add(identifier.toString(), jsonSerializationContext.serialize(numberProvider));
             });
             jsonObject.add("enchantments", jsonObject2);
             jsonObject.addProperty("add", setEnchantmentsLootFunction.add);

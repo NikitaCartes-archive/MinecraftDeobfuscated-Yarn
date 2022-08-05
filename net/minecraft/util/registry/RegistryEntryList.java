@@ -19,36 +19,87 @@ import net.minecraft.util.registry.RegistryEntry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * A registry entry list is an immutable list of registry entries. This, is either a direct
+ * reference to each item, or a reference to a tag. A <strong>tag</strong> is a way
+ * to dynamically define a list of registered values. Anything registered in a registry
+ * can be tagged, and each registry holds a list of tags it recognizes.
+ * 
+ * <p>This can be iterated directly (i.e. {@code for (RegistryEntry<T> entry : entries)}.
+ * Note that this does not implement {@link java.util.Collection}.
+ * 
+ * @see Registry
+ * @see RegistryEntry
+ */
 public interface RegistryEntryList<T>
 extends Iterable<RegistryEntry<T>> {
+    /**
+     * {@return a stream of registry entries in this list}
+     */
     public Stream<RegistryEntry<T>> stream();
 
+    /**
+     * {@return the number of entries in this list}
+     */
     public int size();
 
+    /**
+     * {@return the object that identifies this registry entry list}
+     * 
+     * <p>This is the tag key for a reference list, and the backing list for a direct list.
+     */
     public Either<TagKey<T>, List<RegistryEntry<T>>> getStorage();
 
+    /**
+     * {@return a random entry of the list, or an empty optional if this list is empty}
+     */
     public Optional<RegistryEntry<T>> getRandom(Random var1);
 
+    /**
+     * {@return the registry entry at {@code index}}
+     * 
+     * @throws IndexOutOfBoundsException if the index is out of bounds
+     */
     public RegistryEntry<T> get(int var1);
 
+    /**
+     * {@return whether {@code entry} is in this list}
+     */
     public boolean contains(RegistryEntry<T> var1);
 
+    /**
+     * {@return whether the list is of entries from {@code registry}}
+     * 
+     * <p>This always returns {@code true} for direct lists.
+     */
     public boolean isOf(Registry<T> var1);
 
+    /**
+     * {@return a new direct list of {@code entries}}
+     */
     @SafeVarargs
     public static <T> Direct<T> of(RegistryEntry<T> ... entries) {
         return new Direct<T>(List.of(entries));
     }
 
+    /**
+     * {@return a new direct list of {@code entries}}
+     */
     public static <T> Direct<T> of(List<? extends RegistryEntry<T>> entries) {
         return new Direct(List.copyOf(entries));
     }
 
+    /**
+     * {@return a new direct list of {@code values} converted to a registry entry with {@code mapper}}
+     */
     @SafeVarargs
     public static <E, T> Direct<T> of(Function<E, RegistryEntry<T>> mapper, E ... values) {
         return RegistryEntryList.of(Stream.of(values).map(mapper).toList());
     }
 
+    /**
+     * {@return a new direct list of {@code values} converted to a registry entry with {@code mapper}}
+     */
     public static <E, T> Direct<T> of(Function<E, RegistryEntry<T>> mapper, List<E> values) {
         return RegistryEntryList.of(values.stream().map(mapper).toList());
     }

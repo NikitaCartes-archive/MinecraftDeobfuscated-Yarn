@@ -34,12 +34,12 @@ extends RecipeBook {
     private Map<RecipeBookGroup, List<RecipeResultCollection>> resultsByGroup = ImmutableMap.of();
     private List<RecipeResultCollection> orderedResults = ImmutableList.of();
 
-    public void reload(Iterable<Recipe<?>> recipes) {
-        Map<RecipeBookGroup, List<List<Recipe<?>>>> map = ClientRecipeBook.toGroupedMap(recipes);
+    public void reload(Iterable<Recipe<?>> recipes2) {
+        Map<RecipeBookGroup, List<List<Recipe<?>>>> map = ClientRecipeBook.toGroupedMap(recipes2);
         HashMap map2 = Maps.newHashMap();
         ImmutableList.Builder builder = ImmutableList.builder();
-        map.forEach((recipeBookGroup, list) -> map2.put(recipeBookGroup, (List)list.stream().map(RecipeResultCollection::new).peek(builder::add).collect(ImmutableList.toImmutableList())));
-        RecipeBookGroup.SEARCH_MAP.forEach((recipeBookGroup2, list) -> map2.put(recipeBookGroup2, (List)list.stream().flatMap(recipeBookGroup -> ((List)map2.getOrDefault(recipeBookGroup, ImmutableList.of())).stream()).collect(ImmutableList.toImmutableList())));
+        map.forEach((group, recipes) -> map2.put(group, (List)recipes.stream().map(RecipeResultCollection::new).peek(builder::add).collect(ImmutableList.toImmutableList())));
+        RecipeBookGroup.SEARCH_MAP.forEach((group, searchGroups) -> map2.put(group, (List)searchGroups.stream().flatMap(searchGroup -> ((List)map2.getOrDefault(searchGroup, ImmutableList.of())).stream()).collect(ImmutableList.toImmutableList())));
         this.resultsByGroup = ImmutableMap.copyOf(map2);
         this.orderedResults = builder.build();
     }

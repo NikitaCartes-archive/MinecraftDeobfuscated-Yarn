@@ -85,20 +85,20 @@ implements ResourceReloader {
     @Override
     public CompletableFuture<Void> reload(ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
         CompletableFuture<Map> completableFuture = CompletableFuture.supplyAsync(() -> this.tagLoader.loadTags(manager), prepareExecutor);
-        CompletionStage completableFuture2 = CompletableFuture.supplyAsync(() -> manager.findResources("functions", identifier -> identifier.getPath().endsWith(EXTENSION)), prepareExecutor).thenCompose(map -> {
-            HashMap<Identifier, CompletableFuture<CommandFunction>> map2 = Maps.newHashMap();
+        CompletionStage completableFuture2 = CompletableFuture.supplyAsync(() -> manager.findResources("functions", id -> id.getPath().endsWith(EXTENSION)), prepareExecutor).thenCompose(functions -> {
+            HashMap<Identifier, CompletableFuture<CommandFunction>> map = Maps.newHashMap();
             ServerCommandSource serverCommandSource = new ServerCommandSource(CommandOutput.DUMMY, Vec3d.ZERO, Vec2f.ZERO, null, this.level, "", ScreenTexts.EMPTY, null, null);
-            for (Map.Entry entry : map.entrySet()) {
+            for (Map.Entry entry : functions.entrySet()) {
                 Identifier identifier = (Identifier)entry.getKey();
                 String string = identifier.getPath();
                 Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(PATH_PREFIX_LENGTH, string.length() - EXTENSION_LENGTH));
-                map2.put(identifier2, CompletableFuture.supplyAsync(() -> {
+                map.put(identifier2, CompletableFuture.supplyAsync(() -> {
                     List<String> list = FunctionLoader.readLines((Resource)entry.getValue());
                     return CommandFunction.create(identifier2, this.commandDispatcher, serverCommandSource, list);
                 }, prepareExecutor));
             }
-            CompletableFuture[] completableFutures = map2.values().toArray(new CompletableFuture[0]);
-            return CompletableFuture.allOf(completableFutures).handle((unused, ex) -> map2);
+            CompletableFuture[] completableFutures = map.values().toArray(new CompletableFuture[0]);
+            return CompletableFuture.allOf(completableFutures).handle((unused, ex) -> map);
         });
         return ((CompletableFuture)((CompletableFuture)completableFuture.thenCombine(completableFuture2, Pair::of)).thenCompose(synchronizer::whenPrepared)).thenAcceptAsync(intermediate -> {
             Map map = (Map)intermediate.getSecond();

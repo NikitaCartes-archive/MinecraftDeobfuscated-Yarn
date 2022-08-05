@@ -6,15 +6,15 @@ package net.minecraft.advancement;
 import java.util.Collection;
 
 public interface CriterionMerger {
-    public static final CriterionMerger AND = collection -> {
-        String[][] strings = new String[collection.size()][];
+    public static final CriterionMerger AND = criteriaNames -> {
+        String[][] strings = new String[criteriaNames.size()][];
         int i = 0;
-        for (String string : collection) {
+        for (String string : criteriaNames) {
             strings[i++] = new String[]{string};
         }
         return strings;
     };
-    public static final CriterionMerger OR = collection -> new String[][]{collection.toArray(new String[0])};
+    public static final CriterionMerger OR = criteriaNames -> new String[][]{criteriaNames.toArray(new String[0])};
 
     public String[][] createRequirements(Collection<String> var1);
 }

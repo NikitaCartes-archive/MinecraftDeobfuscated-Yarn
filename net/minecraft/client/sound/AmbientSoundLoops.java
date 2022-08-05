@@ -18,7 +18,7 @@ public class AmbientSoundLoops {
     @Environment(value=EnvType.CLIENT)
     public static class Underwater
     extends MovingSoundInstance {
-        public static final int field_33012 = 40;
+        public static final int MAX_TRANSITION_TIMER = 40;
         private final ClientPlayerEntity player;
         private int transitionTimer;
 

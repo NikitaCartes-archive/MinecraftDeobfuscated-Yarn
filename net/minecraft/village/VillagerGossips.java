@@ -133,12 +133,12 @@ public class VillagerGossips {
         }
     }
 
-    public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-        return new Dynamic<Object>(dynamicOps, dynamicOps.createList(this.entries().map(gossipEntry -> gossipEntry.serialize(dynamicOps)).map(Dynamic::getValue)));
+    public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+        return new Dynamic<Object>(ops, ops.createList(this.entries().map(entry -> entry.serialize(ops)).map(Dynamic::getValue)));
     }
 
     public void deserialize(Dynamic<?> dynamic) {
-        dynamic.asStream().map(GossipEntry::deserialize).flatMap(dataResult -> dataResult.result().stream()).forEach(gossipEntry -> this.getReputationFor((UUID)gossipEntry.target).associatedGossip.put(gossipEntry.type, gossipEntry.value));
+        dynamic.asStream().map(GossipEntry::deserialize).flatMap(result -> result.result().stream()).forEach(entry -> this.getReputationFor((UUID)entry.target).associatedGossip.put(entry.type, entry.value));
     }
 
     private static int max(int left, int right) {
@@ -218,8 +218,8 @@ public class VillagerGossips {
             return "GossipEntry{target=" + this.target + ", type=" + this.type + ", value=" + this.value + "}";
         }
 
-        public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-            return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString(TARGET_KEY), DynamicSerializableUuid.CODEC.encodeStart(dynamicOps, this.target).result().orElseThrow(RuntimeException::new), dynamicOps.createString(TYPE_KEY), dynamicOps.createString(this.type.key), dynamicOps.createString(VALUE_KEY), dynamicOps.createInt(this.value))));
+        public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+            return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString(TARGET_KEY), DynamicSerializableUuid.CODEC.encodeStart(ops, this.target).result().orElseThrow(RuntimeException::new), ops.createString(TYPE_KEY), ops.createString(this.type.key), ops.createString(VALUE_KEY), ops.createInt(this.value))));
         }
 
         public static DataResult<GossipEntry> deserialize(Dynamic<?> dynamic) {

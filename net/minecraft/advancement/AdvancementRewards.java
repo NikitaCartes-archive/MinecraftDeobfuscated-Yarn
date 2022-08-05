@@ -67,7 +67,7 @@ public class AdvancementRewards {
             player.unlockRecipes(this.recipes);
         }
         MinecraftServer minecraftServer = player.server;
-        this.function.get(minecraftServer.getCommandFunctionManager()).ifPresent(commandFunction -> minecraftServer.getCommandFunctionManager().execute((CommandFunction)commandFunction, player.getCommandSource().withSilent().withLevel(2)));
+        this.function.get(minecraftServer.getCommandFunctionManager()).ifPresent(function -> minecraftServer.getCommandFunctionManager().execute((CommandFunction)function, player.getCommandSource().withSilent().withLevel(2)));
     }
 
     public String toString() {

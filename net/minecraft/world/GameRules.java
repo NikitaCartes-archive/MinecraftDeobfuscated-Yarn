@@ -132,9 +132,9 @@ public class GameRules {
         return key;
     }
 
-    public GameRules(DynamicLike<?> dynamicLike) {
+    public GameRules(DynamicLike<?> dynamic) {
         this();
-        this.load(dynamicLike);
+        this.load(dynamic);
     }
 
     public GameRules() {
@@ -155,8 +155,8 @@ public class GameRules {
         return nbtCompound;
     }
 
-    private void load(DynamicLike<?> dynamicLike) {
-        this.rules.forEach((key, rule) -> dynamicLike.get(key.name).asString().result().ifPresent(rule::deserialize));
+    private void load(DynamicLike<?> dynamic) {
+        this.rules.forEach((key, rule) -> dynamic.get(key.name).asString().result().ifPresent(rule::deserialize));
     }
 
     public GameRules copy() {

@@ -292,7 +292,7 @@ extends Chunk {
     }
 
     public CarvingMask getOrCreateCarvingMask(GenerationStep.Carver step) {
-        return this.carvingMasks.computeIfAbsent(step, carver -> new CarvingMask(this.getHeight(), this.getBottomY()));
+        return this.carvingMasks.computeIfAbsent(step, step2 -> new CarvingMask(this.getHeight(), this.getBottomY()));
     }
 
     public void setCarvingMask(GenerationStep.Carver step, CarvingMask carvingMask) {

@@ -59,7 +59,7 @@ extends JsonDataLoader {
         ImmutableMap<Identifier, LootCondition> map2 = builder.build();
         LootTableReporter lootTableReporter = new LootTableReporter(LootContextTypes.GENERIC, map2::get, id -> null);
         map2.forEach((id, condition) -> condition.validate(lootTableReporter.withCondition("{" + id + "}", (Identifier)id)));
-        lootTableReporter.getMessages().forEach((string, string2) -> LOGGER.warn("Found validation problem in {}: {}", string, string2));
+        lootTableReporter.getMessages().forEach((name, message) -> LOGGER.warn("Found validation problem in {}: {}", name, message));
         this.conditions = map2;
     }
 

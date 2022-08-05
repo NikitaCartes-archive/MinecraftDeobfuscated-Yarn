@@ -80,15 +80,15 @@ import org.slf4j.Logger;
 public class WardenEntity
 extends HostileEntity
 implements VibrationListener.Callback {
-    private static final Logger field_38138 = LogUtils.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final int field_38139 = 16;
     private static final int field_38142 = 40;
     private static final int field_38860 = 200;
-    private static final int field_38143 = 500;
-    private static final float field_38144 = 0.3f;
-    private static final float field_38145 = 1.0f;
-    private static final float field_38146 = 1.5f;
-    private static final int field_38147 = 30;
+    private static final int MAX_HEALTH = 500;
+    private static final float MOVEMENT_SPEED = 0.3f;
+    private static final float KNOCKBACK_RESISTANCE = 1.0f;
+    private static final float ATTACK_KNOCKBACK = 1.5f;
+    private static final int ATTACK_DAMAGE = 30;
     private static final TrackedData<Integer> ANGER = DataTracker.registerData(WardenEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final int field_38149 = 200;
     private static final int field_38150 = 260;
@@ -427,21 +427,21 @@ implements VibrationListener.Callback {
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-        WardenAngerManager.createCodec(this::isValidTarget).encodeStart(NbtOps.INSTANCE, this.angerManager).resultOrPartial(field_38138::error).ifPresent(angerNbt -> nbt.put("anger", (NbtElement)angerNbt));
-        VibrationListener.createCodec(this).encodeStart(NbtOps.INSTANCE, this.gameEventHandler.getListener()).resultOrPartial(field_38138::error).ifPresent(nbtElement -> nbt.put("listener", (NbtElement)nbtElement));
+        WardenAngerManager.createCodec(this::isValidTarget).encodeStart(NbtOps.INSTANCE, this.angerManager).resultOrPartial(LOGGER::error).ifPresent(angerNbt -> nbt.put("anger", (NbtElement)angerNbt));
+        VibrationListener.createCodec(this).encodeStart(NbtOps.INSTANCE, this.gameEventHandler.getListener()).resultOrPartial(LOGGER::error).ifPresent(nbtElement -> nbt.put("listener", (NbtElement)nbtElement));
     }
 
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
         if (nbt.contains("anger")) {
-            WardenAngerManager.createCodec(this::isValidTarget).parse(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt.get("anger"))).resultOrPartial(field_38138::error).ifPresent(angerManager -> {
+            WardenAngerManager.createCodec(this::isValidTarget).parse(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt.get("anger"))).resultOrPartial(LOGGER::error).ifPresent(angerManager -> {
                 this.angerManager = angerManager;
             });
             this.updateAnger();
         }
         if (nbt.contains("listener", NbtElement.COMPOUND_TYPE)) {
-            VibrationListener.createCodec(this).parse(new Dynamic<NbtCompound>(NbtOps.INSTANCE, nbt.getCompound("listener"))).resultOrPartial(field_38138::error).ifPresent(vibrationListener -> this.gameEventHandler.setListener((VibrationListener)vibrationListener, this.world));
+            VibrationListener.createCodec(this).parse(new Dynamic<NbtCompound>(NbtOps.INSTANCE, nbt.getCompound("listener"))).resultOrPartial(LOGGER::error).ifPresent(vibrationListener -> this.gameEventHandler.setListener((VibrationListener)vibrationListener, this.world));
         }
     }
 

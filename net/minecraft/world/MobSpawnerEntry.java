@@ -17,7 +17,7 @@ import net.minecraft.util.dynamic.Range;
 
 public record MobSpawnerEntry(NbtCompound entity, Optional<CustomSpawnRules> customSpawnRules) {
     public static final Codec<MobSpawnerEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)NbtCompound.CODEC.fieldOf("entity")).forGetter(entry -> entry.entity), CustomSpawnRules.CODEC.optionalFieldOf("custom_spawn_rules").forGetter(mobSpawnerEntry -> mobSpawnerEntry.customSpawnRules)).apply((Applicative<MobSpawnerEntry, ?>)instance, MobSpawnerEntry::new));
-    public static final Codec<DataPool<MobSpawnerEntry>> DATA_POOL_CODEC = DataPool.method_39521(CODEC);
+    public static final Codec<DataPool<MobSpawnerEntry>> DATA_POOL_CODEC = DataPool.createEmptyAllowedCodec(CODEC);
     public static final String DEFAULT_ENTITY_ID = "minecraft:pig";
 
     public MobSpawnerEntry() {

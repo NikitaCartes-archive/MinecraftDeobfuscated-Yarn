@@ -32,7 +32,7 @@ public class FoliageColors {
         return 4764952;
     }
 
-    public static int method_43717() {
+    public static int getMangroveColor() {
         return 9619016;
     }
 }

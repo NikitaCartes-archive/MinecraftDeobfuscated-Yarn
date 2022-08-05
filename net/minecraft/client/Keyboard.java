@@ -49,7 +49,7 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(value=EnvType.CLIENT)
 public class Keyboard {
-    public static final int field_32143 = 10000;
+    public static final int DEBUG_CRASH_TIME = 10000;
     private final MinecraftClient client;
     private boolean repeatEvents;
     private final Clipboard clipboard = new Clipboard();

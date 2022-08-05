@@ -25,7 +25,7 @@ import org.apache.commons.lang3.Validate;
 @Environment(value=EnvType.CLIENT)
 public class SoundEntryDeserializer
 implements JsonDeserializer<SoundEntry> {
-    private static final FloatProvider field_38801 = ConstantFloatProvider.create(1.0f);
+    private static final FloatProvider ONE = ConstantFloatProvider.create(1.0f);
 
     @Override
     public SoundEntry deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
@@ -44,7 +44,7 @@ implements JsonDeserializer<SoundEntry> {
                 JsonElement jsonElement = jsonArray.get(i);
                 if (JsonHelper.isString(jsonElement)) {
                     String string = JsonHelper.asString(jsonElement, "sound");
-                    list.add(new Sound(string, field_38801, field_38801, 1, Sound.RegistrationType.FILE, false, false, 16));
+                    list.add(new Sound(string, ONE, ONE, 1, Sound.RegistrationType.FILE, false, false, 16));
                     continue;
                 }
                 list.add(this.deserializeSound(JsonHelper.asObject(jsonElement, "sound")));

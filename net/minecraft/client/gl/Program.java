@@ -18,6 +18,19 @@ import net.minecraft.client.gl.GlShader;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * Represents a (vertex or fragment) shader object.
+ * 
+ * <p><strong>Warning:</strong> This does NOT represent a program object
+ * that can be created with {@code glCreateProgram}. However, this class is
+ * referred to as a program in strings, hence the class name. {@link
+ * net.minecraft.client.render.Shader} represents a program object instead.
+ * 
+ * @see <a href="https://www.khronos.org/opengl/wiki/Shader">
+ * Shader - OpenGL Wiki</a>
+ * @see <a href="https://www.khronos.org/opengl/wiki/GLSL_Object#Shader_objects">
+ * GLSL Object - OpenGL Wiki (Shader objects)</a>
+ */
 @Environment(value=EnvType.CLIENT)
 public class Program {
     private static final int MAX_SHADER_INFO_LOG_LENGTH = 32768;

@@ -29,7 +29,7 @@ implements SoundInstance {
     protected int repeatDelay;
     protected SoundInstance.AttenuationType attenuationType = SoundInstance.AttenuationType.LINEAR;
     protected boolean relative;
-    protected Random field_38800;
+    protected Random random;
 
     protected AbstractSoundInstance(SoundEvent sound, SoundCategory category, Random random) {
         this(sound.getId(), category, random);
@@ -38,7 +38,7 @@ implements SoundInstance {
     protected AbstractSoundInstance(Identifier soundId, SoundCategory category, Random random) {
         this.id = soundId;
         this.category = category;
-        this.field_38800 = random;
+        this.random = random;
     }
 
     @Override
@@ -49,7 +49,7 @@ implements SoundInstance {
     @Override
     public WeightedSoundSet getSoundSet(SoundManager soundManager) {
         WeightedSoundSet weightedSoundSet = soundManager.get(this.id);
-        this.sound = weightedSoundSet == null ? SoundManager.MISSING_SOUND : weightedSoundSet.getSound(this.field_38800);
+        this.sound = weightedSoundSet == null ? SoundManager.MISSING_SOUND : weightedSoundSet.getSound(this.random);
         return weightedSoundSet;
     }
 
@@ -75,12 +75,12 @@ implements SoundInstance {
 
     @Override
     public float getVolume() {
-        return this.volume * this.sound.getVolume().get(this.field_38800);
+        return this.volume * this.sound.getVolume().get(this.random);
     }
 
     @Override
     public float getPitch() {
-        return this.pitch * this.sound.getPitch().get(this.field_38800);
+        return this.pitch * this.sound.getPitch().get(this.random);
     }
 
     @Override

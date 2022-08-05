@@ -15,6 +15,14 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 
+/**
+ * Defines rendering setup & draw logic for particles based on their requirements for depth checking, textures, and transparency.
+ * 
+ * <p>
+ * Each {@link net.minecraft.client.particle.Particle} returns a {@link ParticleTextureSheet} in {@link net.minecraft.client.particle.Particle#getType()}.
+ * When particles are rendered, each sheet will be drawn once.
+ * {@link ParticleTextureSheet#begin(BufferBuilder, TextureManager)} is first called to set up render state, and after each particle has emitted geometry, {@link ParticleTextureSheet#draw(Tessellator)} is called to draw to a target buffer.
+ */
 @Environment(value=EnvType.CLIENT)
 public interface ParticleTextureSheet {
     public static final ParticleTextureSheet TERRAIN_SHEET = new ParticleTextureSheet(){
@@ -127,8 +135,19 @@ public interface ParticleTextureSheet {
         }
     };
 
+    /**
+     * Called to set up OpenGL render state for drawing particles of a given type.
+     * 
+     * @param builder the buffer particles will draw to in {@link net.minecraft.client.particle.Particle#buildGeometry(VertexConsumer, Camera, float)}
+     * @param textureManager texture loading context
+     */
     public void begin(BufferBuilder var1, TextureManager var2);
 
+    /**
+     * Called after all particles of a {@link ParticleTextureSheet} have finished drawing.
+     * 
+     * @param tessellator the {@code Tessellator} all particles in this sheet drew to
+     */
     public void draw(Tessellator var1);
 }
 

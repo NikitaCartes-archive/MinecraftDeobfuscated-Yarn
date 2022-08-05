@@ -156,7 +156,7 @@ public class MaterialRules {
                 protected boolean test() {
                     int i = bl ? this.context.stoneDepthBelow : this.context.stoneDepthAbove;
                     int j = StoneDepthMaterialCondition.this.addSurfaceDepth ? this.context.runDepth : 0;
-                    int k = StoneDepthMaterialCondition.this.secondaryDepthRange == 0 ? 0 : (int)MathHelper.lerpFromProgress(this.context.method_39550(), -1.0, 1.0, 0.0, (double)StoneDepthMaterialCondition.this.secondaryDepthRange);
+                    int k = StoneDepthMaterialCondition.this.secondaryDepthRange == 0 ? 0 : (int)MathHelper.map(this.context.method_39550(), -1.0, 1.0, 0.0, (double)StoneDepthMaterialCondition.this.secondaryDepthRange);
                     return i <= 1 + StoneDepthMaterialCondition.this.offset + j + k;
                 }
             }
@@ -391,7 +391,7 @@ public class MaterialRules {
                     if (i2 >= j) {
                         return false;
                     }
-                    double d = MathHelper.lerpFromProgress((double)i2, (double)i, (double)j, 1.0, 0.0);
+                    double d = MathHelper.map((double)i2, (double)i, (double)j, 1.0, 0.0);
                     Random random = randomSplitter.split(this.context.blockX, i2, this.context.blockZ);
                     return (double)random.nextFloat() < d;
                 }

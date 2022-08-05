@@ -118,7 +118,7 @@ public class LocationPredicate {
             jsonObject.add("position", jsonObject2);
         }
         if (this.dimension != null) {
-            World.CODEC.encodeStart(JsonOps.INSTANCE, this.dimension).resultOrPartial(LOGGER::error).ifPresent(jsonElement -> jsonObject.add("dimension", (JsonElement)jsonElement));
+            World.CODEC.encodeStart(JsonOps.INSTANCE, this.dimension).resultOrPartial(LOGGER::error).ifPresent(json -> jsonObject.add("dimension", (JsonElement)json));
         }
         if (this.feature != null) {
             jsonObject.addProperty("structure", this.feature.getValue().toString());

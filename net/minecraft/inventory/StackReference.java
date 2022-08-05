@@ -68,7 +68,7 @@ public interface StackReference {
     }
 
     /**
-     * Creates a stack reference backed by an equipment slot of an living entity and
+     * Creates a stack reference backed by an equipment slot of a living entity and
      * guarded by a condition for setting stacks into the inventory.
      * 
      * @param filter the condition to guard stack setting
@@ -93,7 +93,7 @@ public interface StackReference {
     }
 
     /**
-     * Creates a stack reference backed by an equipment slot of an living entity with
+     * Creates a stack reference backed by an equipment slot of a living entity with
      * no filter, allowing direct manipulation of the equipment slot.
      */
     public static StackReference of(LivingEntity entity, EquipmentSlot slot) {

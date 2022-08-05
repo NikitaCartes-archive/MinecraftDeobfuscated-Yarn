@@ -38,11 +38,11 @@ import org.slf4j.Logger;
 
 public class MapState
 extends PersistentState {
-    private static final Logger field_25019 = LogUtils.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final int field_31832 = 128;
     private static final int field_31833 = 64;
-    public static final int field_31831 = 4;
-    public static final int field_33991 = 256;
+    public static final int MAX_SCALE = 4;
+    public static final int MAX_ICONS = 256;
     /**
      * The scaled center coordinate of the map state on the X axis.
      * <p>
@@ -71,7 +71,7 @@ extends PersistentState {
     private final Map<String, MapBannerMarker> banners = Maps.newHashMap();
     final Map<String, MapIcon> icons = Maps.newLinkedHashMap();
     private final Map<String, MapFrameMarker> frames = Maps.newHashMap();
-    private int field_33992;
+    private int iconCount;
 
     private MapState(int centerX, int centerZ, byte scale, boolean showIcons, boolean unlimitedTracking, boolean locked, RegistryKey<World> dimension) {
         this.scale = scale;
@@ -109,7 +109,7 @@ extends PersistentState {
     }
 
     public static MapState fromNbt(NbtCompound nbt) {
-        RegistryKey<World> registryKey = DimensionType.worldFromDimensionNbt(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt.get("dimension"))).resultOrPartial(field_25019::error).orElseThrow(() -> new IllegalArgumentException("Invalid map dimension: " + nbt.get("dimension")));
+        RegistryKey<World> registryKey = DimensionType.worldFromDimensionNbt(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt.get("dimension"))).resultOrPartial(LOGGER::error).orElseThrow(() -> new IllegalArgumentException("Invalid map dimension: " + nbt.get("dimension")));
         int i = nbt.getInt("xCenter");
         int j = nbt.getInt("zCenter");
         byte b = (byte)MathHelper.clamp((int)nbt.getByte("scale"), 0, 4);
@@ -138,7 +138,7 @@ extends PersistentState {
 
     @Override
     public NbtCompound writeNbt(NbtCompound nbt) {
-        Identifier.CODEC.encodeStart(NbtOps.INSTANCE, this.dimension.getValue()).resultOrPartial(field_25019::error).ifPresent(nbtElement -> nbt.put("dimension", (NbtElement)nbtElement));
+        Identifier.CODEC.encodeStart(NbtOps.INSTANCE, this.dimension.getValue()).resultOrPartial(LOGGER::error).ifPresent(nbtElement -> nbt.put("dimension", (NbtElement)nbtElement));
         nbt.putInt("xCenter", this.centerX);
         nbt.putInt("zCenter", this.centerZ);
         nbt.putByte("scale", this.scale);
@@ -163,7 +163,7 @@ extends PersistentState {
         MapState mapState = new MapState(this.centerX, this.centerZ, this.scale, this.showIcons, this.unlimitedTracking, true, this.dimension);
         mapState.banners.putAll(this.banners);
         mapState.icons.putAll(this.icons);
-        mapState.field_33992 = this.field_33992;
+        mapState.iconCount = this.iconCount;
         System.arraycopy(this.colors, 0, mapState.colors, 0, this.colors.length);
         mapState.markDirty();
         return mapState;
@@ -227,8 +227,8 @@ extends PersistentState {
 
     private void removeIcon(String id) {
         MapIcon mapIcon = this.icons.remove(id);
-        if (mapIcon != null && mapIcon.getType().method_37342()) {
-            --this.field_33992;
+        if (mapIcon != null && mapIcon.getType().shouldUseIconCountLimit()) {
+            --this.iconCount;
         }
         this.markIconsDirty();
     }
@@ -298,11 +298,11 @@ extends PersistentState {
             return;
         }
         if (!(mapIcon = new MapIcon(type, b, c, d, text)).equals(mapIcon2 = this.icons.put(key, mapIcon))) {
-            if (mapIcon2 != null && mapIcon2.getType().method_37342()) {
-                --this.field_33992;
+            if (mapIcon2 != null && mapIcon2.getType().shouldUseIconCountLimit()) {
+                --this.iconCount;
             }
-            if (type.method_37342()) {
-                ++this.field_33992;
+            if (type.shouldUseIconCountLimit()) {
+                ++this.iconCount;
             }
             this.markIconsDirty();
         }
@@ -355,7 +355,7 @@ extends PersistentState {
                 this.removeIcon(mapBannerMarker.getKey());
                 return true;
             }
-            if (!this.method_37343(256)) {
+            if (!this.iconCountNotLessThan(256)) {
                 this.banners.put(mapBannerMarker.getKey(), mapBannerMarker);
                 this.addIcon(mapBannerMarker.getIconType(), world, mapBannerMarker.getKey(), d, e, 180.0, mapBannerMarker.getName());
                 return true;
@@ -413,12 +413,12 @@ extends PersistentState {
 
     public void replaceIcons(List<MapIcon> icons) {
         this.icons.clear();
-        this.field_33992 = 0;
+        this.iconCount = 0;
         for (int i = 0; i < icons.size(); ++i) {
             MapIcon mapIcon = icons.get(i);
             this.icons.put("icon-" + i, mapIcon);
-            if (!mapIcon.getType().method_37342()) continue;
-            ++this.field_33992;
+            if (!mapIcon.getType().shouldUseIconCountLimit()) continue;
+            ++this.iconCount;
         }
     }
 
@@ -426,8 +426,8 @@ extends PersistentState {
         return this.icons.values();
     }
 
-    public boolean method_37343(int i) {
-        return this.field_33992 >= i;
+    public boolean iconCountNotLessThan(int iconCount) {
+        return this.iconCount >= iconCount;
     }
 
     public class PlayerUpdateTracker {

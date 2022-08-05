@@ -35,7 +35,7 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class LavaFluid
 extends FlowableFluid {
-    public static final float field_31729 = 0.44444445f;
+    public static final float MIN_HEIGHT_TO_REPLACE = 0.44444445f;
 
     @Override
     public Fluid getFlowing() {

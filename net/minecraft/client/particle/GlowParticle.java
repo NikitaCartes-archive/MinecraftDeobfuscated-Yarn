@@ -58,7 +58,7 @@ extends SpriteBillboardParticle {
     @Environment(value=EnvType.CLIENT)
     public static class ScrapeFactory
     implements ParticleFactory<DefaultParticleType> {
-        private final double field_29573 = 0.01;
+        private final double velocityMultiplier = 0.01;
         private final SpriteProvider spriteProvider;
 
         public ScrapeFactory(SpriteProvider spriteProvider) {
@@ -84,7 +84,7 @@ extends SpriteBillboardParticle {
     @Environment(value=EnvType.CLIENT)
     public static class ElectricSparkFactory
     implements ParticleFactory<DefaultParticleType> {
-        private final double field_29570 = 0.25;
+        private final double velocityMultiplier = 0.25;
         private final SpriteProvider spriteProvider;
 
         public ElectricSparkFactory(SpriteProvider spriteProvider) {
@@ -106,7 +106,7 @@ extends SpriteBillboardParticle {
     @Environment(value=EnvType.CLIENT)
     public static class WaxOffFactory
     implements ParticleFactory<DefaultParticleType> {
-        private final double field_29575 = 0.01;
+        private final double velocityMultiplier = 0.01;
         private final SpriteProvider spriteProvider;
 
         public WaxOffFactory(SpriteProvider spriteProvider) {
@@ -128,7 +128,7 @@ extends SpriteBillboardParticle {
     @Environment(value=EnvType.CLIENT)
     public static class WaxOnFactory
     implements ParticleFactory<DefaultParticleType> {
-        private final double field_29577 = 0.01;
+        private final double velocityMultiplier = 0.01;
         private final SpriteProvider spriteProvider;
 
         public WaxOnFactory(SpriteProvider spriteProvider) {

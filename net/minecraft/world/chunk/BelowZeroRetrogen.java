@@ -31,8 +31,8 @@ import org.jetbrains.annotations.Nullable;
 
 public final class BelowZeroRetrogen {
     private static final BitSet EMPTY_MISSING_BEDROCK_BIT_SET = new BitSet(0);
-    private static final Codec<BitSet> MISSING_BEDROCK_CODEC = Codec.LONG_STREAM.xmap(longStream -> BitSet.valueOf(longStream.toArray()), bitSet -> LongStream.of(bitSet.toLongArray()));
-    private static final Codec<ChunkStatus> STATUS_CODEC = Registry.CHUNK_STATUS.getCodec().comapFlatMap(chunkStatus -> chunkStatus == ChunkStatus.EMPTY ? DataResult.error("target_status cannot be empty") : DataResult.success(chunkStatus), Function.identity());
+    private static final Codec<BitSet> MISSING_BEDROCK_CODEC = Codec.LONG_STREAM.xmap(serializedBedrockBitSet -> BitSet.valueOf(serializedBedrockBitSet.toArray()), bedrockBitSet -> LongStream.of(bedrockBitSet.toLongArray()));
+    private static final Codec<ChunkStatus> STATUS_CODEC = Registry.CHUNK_STATUS.getCodec().comapFlatMap(status -> status == ChunkStatus.EMPTY ? DataResult.error("target_status cannot be empty") : DataResult.success(status), Function.identity());
     public static final Codec<BelowZeroRetrogen> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)STATUS_CODEC.fieldOf("target_status")).forGetter(BelowZeroRetrogen::getTargetStatus), MISSING_BEDROCK_CODEC.optionalFieldOf("missing_bedrock").forGetter(belowZeroRetrogen -> belowZeroRetrogen.missingBedrock.isEmpty() ? Optional.empty() : Optional.of(belowZeroRetrogen.missingBedrock))).apply((Applicative<BelowZeroRetrogen, ?>)instance, BelowZeroRetrogen::new));
     private static final Set<RegistryKey<Biome>> CAVE_BIOMES = Set.of(BiomeKeys.LUSH_CAVES, BiomeKeys.DRIPSTONE_CAVES);
     public static final HeightLimitView BELOW_ZERO_VIEW = new HeightLimitView(){

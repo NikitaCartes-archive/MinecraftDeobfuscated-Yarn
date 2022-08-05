@@ -102,7 +102,7 @@ extends StatHandler {
                         NbtCompound nbtCompound2 = nbtCompound2.getCompound(string);
                         for (String string2 : nbtCompound2.getKeys()) {
                             if (nbtCompound2.contains(string2, NbtElement.NUMBER_TYPE)) {
-                                Util.ifPresentOrElse(this.createStat((StatType)statType, string2), stat -> this.statMap.put(stat, nbtCompound2.getInt(string2)), () -> LOGGER.warn("Invalid statistic in {}: Don't know what {} is", (Object)this.file, (Object)string2));
+                                Util.ifPresentOrElse(this.createStat((StatType)statType, string2), id -> this.statMap.put(id, nbtCompound2.getInt(string2)), () -> LOGGER.warn("Invalid statistic in {}: Don't know what {} is", (Object)this.file, (Object)string2));
                                 continue;
                             }
                             LOGGER.warn("Invalid statistic value in {}: Don't know what {} is for key {}", this.file, nbtCompound2.get(string2), string2);

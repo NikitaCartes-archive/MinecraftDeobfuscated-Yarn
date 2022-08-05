@@ -44,6 +44,17 @@ import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
+/**
+ * Represents a program object.
+ * 
+ * <p><strong>Warning:</strong> This does NOT represent a shader object
+ * that can be created with {@code glCreateShader}. However, this class is
+ * referred to as a shader in strings, hence the class name. {@link
+ * net.minecraft.client.gl.Program} represents a shader object instead.
+ * 
+ * @see <a href="https://www.khronos.org/opengl/wiki/GLSL_Object#Program_objects">
+ * GLSL Object - OpenGL Wiki (Program objects)</a>
+ */
 @Environment(value=EnvType.CLIENT)
 public class Shader
 implements GlShader,

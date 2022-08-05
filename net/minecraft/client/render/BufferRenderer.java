@@ -11,6 +11,10 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.VertexFormat;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Containing methods for immediately drawing a buffer built with {@link
+ * BufferBuilder}.
+ */
 @Environment(value=EnvType.CLIENT)
 public class BufferRenderer {
     @Nullable
@@ -27,6 +31,11 @@ public class BufferRenderer {
         currentVertexBuffer = null;
     }
 
+    /**
+     * Draws {@code buffer} using the shader specified with {@link
+     * com.mojang.blaze3d.systems.RenderSystem#setShader
+     * RenderSystem#setShader}
+     */
     public static void drawWithShader(BufferBuilder.BuiltBuffer buffer) {
         if (!RenderSystem.isOnRenderThreadOrInit()) {
             RenderSystem.recordRenderCall(() -> BufferRenderer.drawWithShaderInternal(buffer));
@@ -42,6 +51,14 @@ public class BufferRenderer {
         }
     }
 
+    /**
+     * Draws {@code buffer}.
+     * 
+     * <p>Unlike {@link #drawWithShader}, the shader cannot be specified with
+     * {@link com.mojang.blaze3d.systems.RenderSystem#setShader
+     * RenderSystem#setShader}. The caller of this method must manually bind a
+     * shader before calling this method.
+     */
     public static void drawWithoutShader(BufferBuilder.BuiltBuffer buffer) {
         VertexBuffer vertexBuffer = BufferRenderer.getVertexBuffer(buffer);
         if (vertexBuffer != null) {

@@ -108,7 +108,7 @@ import org.slf4j.Logger;
 @Environment(value=EnvType.CLIENT)
 public class ClientPlayerEntity
 extends AbstractClientPlayerEntity {
-    public static final Logger field_39078 = LogUtils.getLogger();
+    public static final Logger LOGGER = LogUtils.getLogger();
     private static final int field_32671 = 20;
     private static final int field_32672 = 600;
     private static final int field_32673 = 100;
@@ -376,7 +376,7 @@ extends AbstractClientPlayerEntity {
                 return this.networkHandler.getMessagePacker().pack(signer, metadata, content, lastSeenMessages).signature();
             }
         } catch (Exception exception) {
-            field_39078.error("Failed to sign chat message: '{}'", (Object)content.plain(), (Object)exception);
+            LOGGER.error("Failed to sign chat message: '{}'", (Object)content.plain(), (Object)exception);
         }
         return MessageSignatureData.EMPTY;
     }
@@ -409,7 +409,7 @@ extends AbstractClientPlayerEntity {
                 return this.networkHandler.getMessagePacker().pack(signer2, signer, decoratedContents, lastSeenMessages).signature();
             });
         } catch (Exception exception) {
-            field_39078.error("Failed to sign command arguments", exception);
+            LOGGER.error("Failed to sign command arguments", exception);
             return ArgumentSignatureDataMap.EMPTY;
         }
     }

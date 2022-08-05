@@ -130,7 +130,7 @@ implements AutoCloseable {
             if (n != 0) {
                 LOGGER.warn("Chunk has both internal and external streams");
             }
-            return this.method_22408(pos, RegionFile.getChunkStreamVersionId(b));
+            return this.getInputStream(pos, RegionFile.getChunkStreamVersionId(b));
         }
         if (n > byteBuffer.remaining()) {
             LOGGER.error("Chunk {} stream is truncated: expected {} but read {}", pos, n, byteBuffer.remaining());
@@ -140,39 +140,39 @@ implements AutoCloseable {
             LOGGER.error("Declared size {} of chunk {} is negative", (Object)m, (Object)pos);
             return null;
         }
-        return this.method_22409(pos, b, RegionFile.getInputStream(byteBuffer, n));
+        return this.decompress(pos, b, RegionFile.getInputStream(byteBuffer, n));
     }
 
     private static int getEpochTimeSeconds() {
         return (int)(Util.getEpochTimeMs() / 1000L);
     }
 
-    private static boolean hasChunkStreamVersionId(byte b) {
-        return (b & 0x80) != 0;
+    private static boolean hasChunkStreamVersionId(byte flags) {
+        return (flags & 0x80) != 0;
     }
 
-    private static byte getChunkStreamVersionId(byte b) {
-        return (byte)(b & 0xFFFFFF7F);
+    private static byte getChunkStreamVersionId(byte flags) {
+        return (byte)(flags & 0xFFFFFF7F);
     }
 
     @Nullable
-    private DataInputStream method_22409(ChunkPos chunkPos, byte b, InputStream inputStream) throws IOException {
-        ChunkStreamVersion chunkStreamVersion = ChunkStreamVersion.get(b);
+    private DataInputStream decompress(ChunkPos pos, byte flags, InputStream stream) throws IOException {
+        ChunkStreamVersion chunkStreamVersion = ChunkStreamVersion.get(flags);
         if (chunkStreamVersion == null) {
-            LOGGER.error("Chunk {} has invalid chunk stream version {}", (Object)chunkPos, (Object)b);
+            LOGGER.error("Chunk {} has invalid chunk stream version {}", (Object)pos, (Object)flags);
             return null;
         }
-        return new DataInputStream(chunkStreamVersion.wrap(inputStream));
+        return new DataInputStream(chunkStreamVersion.wrap(stream));
     }
 
     @Nullable
-    private DataInputStream method_22408(ChunkPos chunkPos, byte b) throws IOException {
-        Path path = this.getExternalChunkPath(chunkPos);
+    private DataInputStream getInputStream(ChunkPos pos, byte flags) throws IOException {
+        Path path = this.getExternalChunkPath(pos);
         if (!Files.isRegularFile(path, new LinkOption[0])) {
             LOGGER.error("External chunk path {} is not file", (Object)path);
             return null;
         }
-        return this.method_22409(chunkPos, b, Files.newInputStream(path, new OpenOption[0]));
+        return this.decompress(pos, flags, Files.newInputStream(path, new OpenOption[0]));
     }
 
     private static ByteArrayInputStream getInputStream(ByteBuffer buffer, int length) {
@@ -244,8 +244,8 @@ implements AutoCloseable {
         this.channel.force(true);
     }
 
-    public void method_31740(ChunkPos chunkPos) throws IOException {
-        int i = RegionFile.getIndex(chunkPos);
+    public void delete(ChunkPos pos) throws IOException {
+        int i = RegionFile.getIndex(pos);
         int j = this.sectorData.get(i);
         if (j == 0) {
             return;
@@ -253,31 +253,31 @@ implements AutoCloseable {
         this.sectorData.put(i, 0);
         this.saveTimes.put(i, RegionFile.getEpochTimeSeconds());
         this.writeHeader();
-        Files.deleteIfExists(this.getExternalChunkPath(chunkPos));
+        Files.deleteIfExists(this.getExternalChunkPath(pos));
         this.sectors.free(RegionFile.getOffset(j), RegionFile.getSize(j));
     }
 
-    protected synchronized void writeChunk(ChunkPos pos, ByteBuffer byteBuffer) throws IOException {
+    protected synchronized void writeChunk(ChunkPos pos, ByteBuffer buf) throws IOException {
         OutputAction outputAction;
         int o;
         int i = RegionFile.getIndex(pos);
         int j = this.sectorData.get(i);
         int k = RegionFile.getOffset(j);
         int l = RegionFile.getSize(j);
-        int m = byteBuffer.remaining();
+        int m = buf.remaining();
         int n = RegionFile.getSectorCount(m);
         if (n >= 256) {
             Path path = this.getExternalChunkPath(pos);
             LOGGER.warn("Saving oversized chunk {} ({} bytes} to external file {}", pos, m, path);
             n = 1;
             o = this.sectors.allocate(n);
-            outputAction = this.writeSafely(path, byteBuffer);
-            ByteBuffer byteBuffer2 = this.method_22406();
-            this.channel.write(byteBuffer2, o * 4096);
+            outputAction = this.writeSafely(path, buf);
+            ByteBuffer byteBuffer = this.getHeaderBuf();
+            this.channel.write(byteBuffer, o * 4096);
         } else {
             o = this.sectors.allocate(n);
             outputAction = () -> Files.deleteIfExists(this.getExternalChunkPath(pos));
-            this.channel.write(byteBuffer, o * 4096);
+            this.channel.write(buf, o * 4096);
         }
         this.sectorData.put(i, this.packSectorData(o, n));
         this.saveTimes.put(i, RegionFile.getEpochTimeSeconds());
@@ -288,7 +288,7 @@ implements AutoCloseable {
         }
     }
 
-    private ByteBuffer method_22406() {
+    private ByteBuffer getHeaderBuf() {
         ByteBuffer byteBuffer = ByteBuffer.allocate(5);
         byteBuffer.putInt(1);
         byteBuffer.put((byte)(this.outputChunkStreamVersion.getId() | 0x80));
@@ -296,11 +296,11 @@ implements AutoCloseable {
         return byteBuffer;
     }
 
-    private OutputAction writeSafely(Path path, ByteBuffer byteBuffer) throws IOException {
+    private OutputAction writeSafely(Path path, ByteBuffer buf) throws IOException {
         Path path2 = Files.createTempFile(this.directory, "tmp", null, new FileAttribute[0]);
         try (FileChannel fileChannel = FileChannel.open(path2, StandardOpenOption.CREATE, StandardOpenOption.WRITE);){
-            byteBuffer.position(5);
-            fileChannel.write(byteBuffer);
+            buf.position(5);
+            fileChannel.write(buf);
         }
         return () -> Files.move(path2, path, StandardCopyOption.REPLACE_EXISTING);
     }

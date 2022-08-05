@@ -96,7 +96,7 @@ implements Spawner {
         BlockPos blockPos = playerEntity.getBlockPos();
         int i = 48;
         PointOfInterestStorage pointOfInterestStorage = world.getPointOfInterestStorage();
-        Optional<BlockPos> optional = pointOfInterestStorage.getPosition(registryEntry -> registryEntry.matchesKey(PointOfInterestTypes.MEETING), pos -> true, blockPos, 48, PointOfInterestStorage.OccupationStatus.ANY);
+        Optional<BlockPos> optional = pointOfInterestStorage.getPosition(poiType -> poiType.matchesKey(PointOfInterestTypes.MEETING), pos -> true, blockPos, 48, PointOfInterestStorage.OccupationStatus.ANY);
         BlockPos blockPos2 = optional.orElse(blockPos);
         BlockPos blockPos3 = this.getNearbySpawnPos(world, blockPos2, 48);
         if (blockPos3 != null && this.doesNotSuffocateAt(world, blockPos3)) {

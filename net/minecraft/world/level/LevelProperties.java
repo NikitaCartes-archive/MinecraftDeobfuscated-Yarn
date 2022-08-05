@@ -48,7 +48,7 @@ public class LevelProperties
 implements ServerWorldProperties,
 SaveProperties {
     private static final Logger LOGGER = LogUtils.getLogger();
-    protected static final String field_36349 = "Player";
+    protected static final String PLAYER_KEY = "Player";
     protected static final String WORLD_GEN_SETTINGS_KEY = "WorldGenSettings";
     private LevelInfo levelInfo;
     private final GeneratorOptions generatorOptions;
@@ -179,7 +179,7 @@ SaveProperties {
         levelNbt.put("GameRules", this.levelInfo.getGameRules().toNbt());
         levelNbt.put("DragonFight", this.dragonFight);
         if (playerNbt != null) {
-            levelNbt.put(field_36349, playerNbt);
+            levelNbt.put(PLAYER_KEY, playerNbt);
         }
         DataPackSettings.CODEC.encodeStart(NbtOps.INSTANCE, this.levelInfo.getDataPackSettings()).result().ifPresent(nbtElement -> levelNbt.put("DataPacks", (NbtElement)nbtElement));
         if (this.customBossEvents != null) {

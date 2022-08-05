@@ -9,6 +9,12 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 
+/**
+ * A registry that allows adding or modifying values.
+ * Note that in vanilla, all registries are instances of this.
+ * 
+ * @see Registry
+ */
 public abstract class MutableRegistry<T>
 extends Registry<T> {
     public MutableRegistry(RegistryKey<? extends Registry<T>> registryKey, Lifecycle lifecycle) {
@@ -30,6 +36,9 @@ extends Registry<T> {
      */
     public abstract RegistryEntry<T> replace(OptionalInt var1, RegistryKey<T> var2, T var3, Lifecycle var4);
 
+    /**
+     * {@return whether the registry is empty}
+     */
     public abstract boolean isEmpty();
 }
 

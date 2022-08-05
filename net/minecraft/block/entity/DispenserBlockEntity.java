@@ -19,7 +19,7 @@ import net.minecraft.util.math.random.Random;
 
 public class DispenserBlockEntity
 extends LootableContainerBlockEntity {
-    public static final int field_31340 = 9;
+    public static final int INVENTORY_SIZE = 9;
     private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(9, ItemStack.EMPTY);
 
     protected DispenserBlockEntity(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {

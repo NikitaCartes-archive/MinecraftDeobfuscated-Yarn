@@ -36,10 +36,10 @@ public class CsvWriter {
     }
 
     private void printRow(Stream<?> columns) throws IOException {
-        this.writer.write(columns.map(CsvWriter::print).collect(Collectors.joining(COMMA)) + CRLF);
+        this.writer.write(columns.map(CsvWriter::escape).collect(Collectors.joining(COMMA)) + CRLF);
     }
 
-    private static String print(@Nullable Object o) {
+    private static String escape(@Nullable Object o) {
         return StringEscapeUtils.escapeCsv(o != null ? o.toString() : "[null]");
     }
 

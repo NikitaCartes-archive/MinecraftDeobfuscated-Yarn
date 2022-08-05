@@ -48,7 +48,7 @@ public class SmithingRecipeJsonBuilder {
 
     public void offerTo(Consumer<RecipeJsonProvider> exporter, Identifier recipeId) {
         this.validate(recipeId);
-        this.advancementBuilder.parent(CraftingRecipeJsonBuilder.field_39377).criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeId)).rewards(AdvancementRewards.Builder.recipe(recipeId)).criteriaMerger(CriterionMerger.OR);
+        this.advancementBuilder.parent(CraftingRecipeJsonBuilder.ROOT).criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeId)).rewards(AdvancementRewards.Builder.recipe(recipeId)).criteriaMerger(CriterionMerger.OR);
         exporter.accept(new SmithingRecipeJsonProvider(recipeId, this.serializer, this.base, this.addition, this.result, this.advancementBuilder, new Identifier(recipeId.getNamespace(), "recipes/" + this.result.getGroup().getName() + "/" + recipeId.getPath())));
     }
 

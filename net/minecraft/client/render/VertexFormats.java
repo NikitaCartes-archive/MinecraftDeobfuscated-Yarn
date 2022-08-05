@@ -9,6 +9,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormatElement;
 
+/**
+ * Holding vertex formats and vertex format elements.
+ */
 @Environment(value=EnvType.CLIENT)
 public class VertexFormats {
     public static final VertexFormatElement POSITION_ELEMENT = new VertexFormatElement(0, VertexFormatElement.ComponentType.FLOAT, VertexFormatElement.Type.POSITION, 3);

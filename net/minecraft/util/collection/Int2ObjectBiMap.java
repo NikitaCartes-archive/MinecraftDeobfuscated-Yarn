@@ -28,12 +28,12 @@ implements IndexedIterable<K> {
         this.idToValues = new Object[size];
     }
 
-    private Int2ObjectBiMap(K[] objects, int[] is, K[] objects2, int i, int j) {
-        this.values = objects;
-        this.ids = is;
-        this.idToValues = objects2;
-        this.nextId = i;
-        this.size = j;
+    private Int2ObjectBiMap(K[] values, int[] ids, K[] idToValues, int nextId, int size) {
+        this.values = values;
+        this.ids = ids;
+        this.idToValues = idToValues;
+        this.nextId = nextId;
+        this.size = size;
     }
 
     public static <A> Int2ObjectBiMap<A> create(int expectedSize) {

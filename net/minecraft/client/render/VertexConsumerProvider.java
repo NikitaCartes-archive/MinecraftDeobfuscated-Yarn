@@ -15,16 +15,46 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 
+/**
+ * Manages rendering with multiple {@linkplain RenderLayer render layers}.
+ */
 @Environment(value=EnvType.CLIENT)
 public interface VertexConsumerProvider {
+    /**
+     * {@return a vertex consumer provider that immediately draws the current
+     * buffer builder when a different render layer is requested}.
+     */
     public static Immediate immediate(BufferBuilder buffer) {
         return VertexConsumerProvider.immediate(ImmutableMap.of(), buffer);
     }
 
+    /**
+     * {@return a vertex consumer provider that immediately draws the current
+     * buffer builder when a different render layer is requested except {@code
+     * layerBuffers}}.
+     * 
+     * <p>{@code layerBuffers} will not be drawn immediately after switching
+     * the current render layer. The caller of this method can control when to
+     * draw these render layers. For example, {@linkplain
+     * RenderLayer#TRANSLUCENT the translucent render layer} should be drawn in
+     * a later stage so the other things behind translucent objects are
+     * visible.
+     */
     public static Immediate immediate(Map<RenderLayer, BufferBuilder> layerBuffers, BufferBuilder fallbackBuffer) {
         return new Immediate(fallbackBuffer, layerBuffers);
     }
 
+    /**
+     * Starts building a buffer that will be drawn with {@code layer}.
+     * 
+     * <p>The returned vertex consumer can only be safely used until this
+     * method is called with a different render layer.
+     * 
+     * <p>Note that the user of this method cannot modify states controlled
+     * by the render layer. Those states will be overridden by the render layer
+     * before drawing them. If you need to set states yourself, consider using
+     * {@link Tessellator} or making a custom render layer.
+     */
     public VertexConsumer getBuffer(RenderLayer var1);
 
     @Environment(value=EnvType.CLIENT)
