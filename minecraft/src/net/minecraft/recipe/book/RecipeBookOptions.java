@@ -26,9 +26,9 @@ public final class RecipeBookOptions {
 	}
 
 	public RecipeBookOptions() {
-		this(Util.make(Maps.newEnumMap(RecipeBookCategory.class), enumMap -> {
+		this(Util.make(Maps.newEnumMap(RecipeBookCategory.class), categoryOptions -> {
 			for (RecipeBookCategory recipeBookCategory : RecipeBookCategory.values()) {
-				enumMap.put(recipeBookCategory, new RecipeBookOptions.CategoryOption(false, false));
+				categoryOptions.put(recipeBookCategory, new RecipeBookOptions.CategoryOption(false, false));
 			}
 		}));
 	}

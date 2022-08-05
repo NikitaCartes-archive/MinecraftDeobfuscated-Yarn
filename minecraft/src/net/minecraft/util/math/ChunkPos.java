@@ -6,9 +6,21 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 
+/**
+ * An immutable pair of two integers representing the X and Z coordinates of a chunk.
+ * 
+ * <p>Chunk positions are usually serialized as a {@code long}.
+ */
 public class ChunkPos {
 	private static final int field_36299 = 1056;
+	/**
+	 * A {@code long}-serialized chunk position {@code 1875066, 1875066}. This is a
+	 * special value used as a marker.
+	 */
 	public static final long MARKER = toLong(1875066, 1875066);
+	/**
+	 * The origin of the chunk position, {@code 0, 0}.
+	 */
 	public static final ChunkPos ORIGIN = new ChunkPos(0, 0);
 	private static final long field_30953 = 32L;
 	private static final long field_30954 = 4294967295L;
@@ -45,14 +57,31 @@ public class ChunkPos {
 		return new ChunkPos((x << 5) + 31, (z << 5) + 31);
 	}
 
+	/**
+	 * {@return the chunk position serialized as {@code long}}
+	 * 
+	 * @see #toLong(int, int)
+	 */
 	public long toLong() {
 		return toLong(this.x, this.z);
 	}
 
+	/**
+	 * {@return the chunk position serialized as {@code long}}
+	 * 
+	 * <p>This returns {@code chunkX | (chunkZ << 32)}.
+	 * 
+	 * @see #toLong()
+	 */
 	public static long toLong(int chunkX, int chunkZ) {
 		return (long)chunkX & 4294967295L | ((long)chunkZ & 4294967295L) << 32;
 	}
 
+	/**
+	 * {@return the chunk position of the given {@code pos} serialized as {@code long}}
+	 * 
+	 * @see #toLong(int, int)
+	 */
 	public static long toLong(BlockPos pos) {
 		return toLong(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ()));
 	}

@@ -31,8 +31,8 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
 
 public class HopperBlockEntity extends LootableContainerBlockEntity implements Hopper {
-	public static final int field_31341 = 8;
-	public static final int field_31342 = 5;
+	public static final int TRANSFER_COOLDOWN = 8;
+	public static final int INVENTORY_SIZE = 5;
 	private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(5, ItemStack.EMPTY);
 	private int transferCooldown = -1;
 	private long lastTickTime;

@@ -78,8 +78,8 @@ public class Item implements ItemConvertible {
 	protected static final UUID ATTACK_DAMAGE_MODIFIER_ID = UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A33DB5CF");
 	protected static final UUID ATTACK_SPEED_MODIFIER_ID = UUID.fromString("FA233E1C-4180-4865-B01B-BCCE9785ACA3");
 	public static final int DEFAULT_MAX_COUNT = 64;
-	public static final int field_30888 = 32;
-	public static final int field_30889 = 13;
+	public static final int DEFAULT_MAX_USE_TIME = 32;
+	public static final int ITEM_BAR_STEPS = 13;
 	private final RegistryEntry.Reference<Item> registryEntry = Registry.ITEM.createEntry(this);
 	@Nullable
 	protected final ItemGroup group;

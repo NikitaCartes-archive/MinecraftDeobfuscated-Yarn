@@ -8,6 +8,13 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.random.Random;
 import org.apache.commons.lang3.math.NumberUtils;
 
+/**
+ * Contains math-related helper methods. This includes {@code float}-specific extensions
+ * to {@link Math}, linear interpolation (lerp), and color-related methods.
+ * 
+ * <p>Trigonometric functions defined in this class use the "sine table", a pre-calculated
+ * table of {@code sin(N)} ({@code 0 <= N < pi * 2}).
+ */
 public class MathHelper {
 	private static final int field_29850 = 1024;
 	private static final float field_29851 = 1024.0F;
@@ -559,6 +566,12 @@ public class MathHelper {
 		}
 	}
 
+	/**
+	 * {@return an approximation of {@code 1 / Math.sqrt(x)}}
+	 * 
+	 * @see <a href="https://en.wikipedia.org/wiki/Fast_inverse_square_root">
+	 * Fast inverse square root - Wikipedia</a>
+	 */
 	public static float fastInverseSqrt(float x) {
 		float f = 0.5F * x;
 		int i = Float.floatToIntBits(x);
@@ -567,6 +580,9 @@ public class MathHelper {
 		return x * (1.5F - f * x * x);
 	}
 
+	/**
+	 * {@return an approximation of {@code 1 / Math.sqrt(x)}}
+	 */
 	public static double fastInverseSqrt(double x) {
 		double d = 0.5 * x;
 		long l = Double.doubleToRawLongBits(x);
@@ -575,6 +591,9 @@ public class MathHelper {
 		return x * (1.5 - d * x * x);
 	}
 
+	/**
+	 * {@return an approximation of {@code 1 / Math.cbrt(x)}}
+	 */
 	public static float fastInverseCbrt(float x) {
 		int i = Float.floatToIntBits(x);
 		i = 1419967116 - i / 3;
@@ -809,8 +828,25 @@ public class MathHelper {
 		return lerp(deltaZ, lerp2(deltaX, deltaY, x0y0z0, x1y0z0, x0y1z0, x1y1z0), lerp2(deltaX, deltaY, x0y0z1, x1y0z1, x0y1z1, x1y1z1));
 	}
 
-	public static float method_41303(float f, float g, float h, float i, float j) {
-		return 0.5F * (2.0F * h + (i - g) * f + (2.0F * g - 5.0F * h + 4.0F * i - j) * f * f + (3.0F * h - g - 3.0F * i + j) * f * f * f);
+	/**
+	 * Interpolates a point on a Catmull-Rom Spline. This spline has a property that if there are two
+	 * splines with arguments {@code p0, p1, p2, p3} and {@code p1, p2, p3, p4}, the resulting curve
+	 * will have a continuous first derivative at {@code p2}, where the two input curves connect. For
+	 * higher-dimensional curves, the interpolation on the curve is done component-wise: for
+	 * inputs {@code delta, (p0x, p0y), (p1x, p1y), (p2x, p2y), (p3x, p3y)}, the output is
+	 * {@code (catmullRom(delta, p0x, p1x, p2x, p3x), catmullRom(delta, p0y, p1y, p2y, p3y))}.
+	 * 
+	 * @see <a href="https://en.wikipedia.org/wiki/Cubic_Hermite_spline#Catmull%E2%80%93Rom_spline">Cubic Hermite spline (Catmull–Rom spline)</a>
+	 * 
+	 * @param delta the progress along the interpolation
+	 * @param p0 the previous data point to assist in curve-smoothing
+	 * @param p1 the output if {@code delta} is 0
+	 * @param p2 the output if {@code delta} is 1
+	 * @param p3 the next data point to assist in curve-smoothing
+	 */
+	public static float catmullRom(float delta, float p0, float p1, float p2, float p3) {
+		return 0.5F
+			* (2.0F * p1 + (p2 - p0) * delta + (2.0F * p0 - 5.0F * p1 + 4.0F * p2 - p3) * delta * delta + (3.0F * p1 - p0 - 3.0F * p2 + p3) * delta * delta * delta);
 	}
 
 	public static double perlinFade(double value) {
@@ -889,20 +925,76 @@ public class MathHelper {
 		return n * n * n;
 	}
 
-	public static double clampedLerpFromProgress(double lerpValue, double lerpStart, double lerpEnd, double start, double end) {
-		return clampedLerp(start, end, getLerpProgress(lerpValue, lerpStart, lerpEnd));
+	/**
+	 * Linearly maps a value from one number range to another
+	 * and clamps the result.
+	 * 
+	 * @return the mapped value, clamped between {@code newStart} and {@code newEnd}
+	 * @see #map(double, double, double, double, double) the unclamped variant
+	 * 
+	 * @param value the input value
+	 * @param oldStart the starting value of the original range
+	 * @param oldEnd the end value of the original range
+	 * @param newStart the starting value of the new range
+	 * @param newEnd the end value of the new range
+	 */
+	public static double clampedMap(double value, double oldStart, double oldEnd, double newStart, double newEnd) {
+		return clampedLerp(newStart, newEnd, getLerpProgress(value, oldStart, oldEnd));
 	}
 
-	public static float clampedLerpFromProgress(float lerpValue, float lerpStart, float lerpEnd, float start, float end) {
-		return clampedLerp(start, end, getLerpProgress(lerpValue, lerpStart, lerpEnd));
+	/**
+	 * Linearly maps a value from one number range to another
+	 * and clamps the result.
+	 * 
+	 * @return the mapped value, clamped between {@code newStart} and {@code newEnd}
+	 * @see #map(float, float, float, float, float) the unclamped variant
+	 * 
+	 * @param value the input value
+	 * @param oldStart the starting value of the original range
+	 * @param oldEnd the end value of the original range
+	 * @param newStart the starting value of the new range
+	 * @param newEnd the end value of the new range
+	 */
+	public static float clampedMap(float value, float oldStart, float oldEnd, float newStart, float newEnd) {
+		return clampedLerp(newStart, newEnd, getLerpProgress(value, oldStart, oldEnd));
 	}
 
-	public static double lerpFromProgress(double lerpValue, double lerpStart, double lerpEnd, double start, double end) {
-		return lerp(getLerpProgress(lerpValue, lerpStart, lerpEnd), start, end);
+	/**
+	 * Linearly maps a value from one number range to another, unclamped.
+	 * 
+	 * <p>For the return value {@code result}, {@code getLerpProgress(value, oldStart, oldEnd)}
+	 * is approximately equal to {@code getLerpProgress(result, newStart, newEnd)}
+	 * (accounting for floating point errors).
+	 * 
+	 * @return the mapped value
+	 * 
+	 * @param value the input value
+	 * @param oldStart the starting value of the original range
+	 * @param oldEnd the end value of the original range
+	 * @param newStart the starting value of the new range
+	 * @param newEnd the end value of the new range
+	 */
+	public static double map(double value, double oldStart, double oldEnd, double newStart, double newEnd) {
+		return lerp(getLerpProgress(value, oldStart, oldEnd), newStart, newEnd);
 	}
 
-	public static float lerpFromProgress(float lerpValue, float lerpStart, float lerpEnd, float start, float end) {
-		return lerp(getLerpProgress(lerpValue, lerpStart, lerpEnd), start, end);
+	/**
+	 * Linearly maps a value from one number range to another, unclamped.
+	 * 
+	 * <p>For the return value {@code result}, {@code getLerpProgress(value, oldStart, oldEnd)}
+	 * is approximately equal to {@code getLerpProgress(result, newStart, newEnd)}
+	 * (accounting for floating point errors).
+	 * 
+	 * @return the mapped value
+	 * 
+	 * @param value the input value
+	 * @param oldStart the starting value of the original range
+	 * @param oldEnd the end value of the original range
+	 * @param newStart the starting value of the new range
+	 * @param newEnd the end value of the new range
+	 */
+	public static float map(float value, float oldStart, float oldEnd, float newStart, float newEnd) {
+		return lerp(getLerpProgress(value, oldStart, oldEnd), newStart, newEnd);
 	}
 
 	public static double method_34957(double d) {

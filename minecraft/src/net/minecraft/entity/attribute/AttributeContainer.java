@@ -75,10 +75,10 @@ public class AttributeContainer {
 	}
 
 	public void removeModifiers(Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers) {
-		attributeModifiers.asMap().forEach((attribute, collection) -> {
+		attributeModifiers.asMap().forEach((attribute, modifiers) -> {
 			EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.custom.get(attribute);
 			if (entityAttributeInstance != null) {
-				collection.forEach(entityAttributeInstance::removeModifier);
+				modifiers.forEach(entityAttributeInstance::removeModifier);
 			}
 		});
 	}

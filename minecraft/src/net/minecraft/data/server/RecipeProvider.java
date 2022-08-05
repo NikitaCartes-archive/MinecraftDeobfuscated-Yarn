@@ -102,7 +102,7 @@ public class RecipeProvider implements DataProvider {
 		saveRecipeAdvancement(
 			writer,
 			Advancement.Builder.create().criterion("impossible", new ImpossibleCriterion.Conditions()).toJson(),
-			this.advancementsPathResolver.resolveJson(CraftingRecipeJsonBuilder.field_39377)
+			this.advancementsPathResolver.resolveJson(CraftingRecipeJsonBuilder.ROOT)
 		);
 	}
 

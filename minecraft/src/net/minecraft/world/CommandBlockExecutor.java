@@ -123,8 +123,8 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 			if (minecraftServer.areCommandBlocksEnabled() && !StringHelper.isEmpty(this.command)) {
 				try {
 					this.lastOutput = null;
-					ServerCommandSource serverCommandSource = this.getSource().withConsumer((commandContext, bl, i) -> {
-						if (bl) {
+					ServerCommandSource serverCommandSource = this.getSource().withConsumer((context, success, result) -> {
+						if (success) {
 							this.successCount++;
 						}
 					});

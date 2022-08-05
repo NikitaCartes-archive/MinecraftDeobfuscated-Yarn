@@ -62,7 +62,7 @@ public final class SpawnHelper {
 	}
 
 	public static SpawnHelper.Info setupSpawn(
-		int spawningChunkCount, Iterable<Entity> entities, SpawnHelper.ChunkSource chunkSource, SpawnDensityCapper spawnDensityCapper
+		int spawningChunkCount, Iterable<Entity> entities, SpawnHelper.ChunkSource chunkSource, SpawnDensityCapper densityCapper
 	) {
 		GravityField gravityField = new GravityField();
 		Object2IntOpenHashMap<SpawnGroup> object2IntOpenHashMap = new Object2IntOpenHashMap<>();
@@ -75,14 +75,14 @@ public final class SpawnHelper {
 			SpawnGroup spawnGroup = entity.getType().getSpawnGroup();
 			if (spawnGroup != SpawnGroup.MISC) {
 				BlockPos blockPos = entity.getBlockPos();
-				chunkSource.query(ChunkPos.toLong(blockPos), worldChunk -> {
-					SpawnSettings.SpawnDensity spawnDensity = getBiomeDirectly(blockPos, worldChunk).getSpawnSettings().getSpawnDensity(entity.getType());
+				chunkSource.query(ChunkPos.toLong(blockPos), chunk -> {
+					SpawnSettings.SpawnDensity spawnDensity = getBiomeDirectly(blockPos, chunk).getSpawnSettings().getSpawnDensity(entity.getType());
 					if (spawnDensity != null) {
 						gravityField.addPoint(entity.getBlockPos(), spawnDensity.getMass());
 					}
 
 					if (entity instanceof MobEntity) {
-						spawnDensityCapper.increaseDensity(worldChunk.getPos(), spawnGroup);
+						densityCapper.increaseDensity(chunk.getPos(), spawnGroup);
 					}
 
 					object2IntOpenHashMap.addTo(spawnGroup, 1);
@@ -90,7 +90,7 @@ public final class SpawnHelper {
 			}
 		}
 
-		return new SpawnHelper.Info(spawningChunkCount, object2IntOpenHashMap, gravityField, spawnDensityCapper);
+		return new SpawnHelper.Info(spawningChunkCount, object2IntOpenHashMap, gravityField, densityCapper);
 	}
 
 	static Biome getBiomeDirectly(BlockPos pos, Chunk chunk) {
@@ -342,8 +342,8 @@ public final class SpawnHelper {
 		}
 	}
 
-	public static void populateEntities(ServerWorldAccess world, RegistryEntry<Biome> registryEntry, ChunkPos chunkPos, Random random) {
-		SpawnSettings spawnSettings = registryEntry.value().getSpawnSettings();
+	public static void populateEntities(ServerWorldAccess world, RegistryEntry<Biome> biomeEntry, ChunkPos chunkPos, Random random) {
+		SpawnSettings spawnSettings = biomeEntry.value().getSpawnSettings();
 		Pool<SpawnSettings.SpawnEntry> pool = spawnSettings.getSpawnEntries(SpawnGroup.CREATURE);
 		if (!pool.isEmpty()) {
 			int i = chunkPos.getStartX();

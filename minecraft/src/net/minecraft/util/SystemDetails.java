@@ -18,6 +18,11 @@ import oshi.hardware.PhysicalMemory;
 import oshi.hardware.VirtualMemory;
 import oshi.hardware.CentralProcessor.ProcessorIdentifier;
 
+/**
+ * Fetches the hardware and software information to populate crash reports
+ * and debug profiles. A custom section can be added by calling {@link
+ * #addSection(String, String)}.
+ */
 public class SystemDetails {
 	public static final long MEBI = 1048576L;
 	private static final long GIGA = 1000000000L;
@@ -59,10 +64,18 @@ public class SystemDetails {
 		}));
 	}
 
+	/**
+	 * Adds a section with the given {@code name} and {@code value}.
+	 */
 	public void addSection(String name, String value) {
 		this.sections.put(name, value);
 	}
 
+	/**
+	 * Adds a section with the given {@code name} and the value supplied by
+	 * {@code valueSupplier}. If an exception is thrown while calling the supplier,
+	 * {@code ERR} is used as the value.
+	 */
 	public void addSection(String name, Supplier<String> valueSupplier) {
 		try {
 			this.addSection(name, (String)valueSupplier.get());
@@ -135,6 +148,10 @@ public class SystemDetails {
 		this.addSection("Number of logical CPUs", (Supplier<String>)(() -> String.valueOf(centralProcessor.getLogicalProcessorCount())));
 	}
 
+	/**
+	 * Writes the system details to {@code stringBuilder}.
+	 * This writes the header and the sections (indented by one tab).
+	 */
 	public void writeTo(StringBuilder stringBuilder) {
 		stringBuilder.append("-- ").append("System Details").append(" --\n");
 		stringBuilder.append("Details:");
@@ -146,6 +163,12 @@ public class SystemDetails {
 		});
 	}
 
+	/**
+	 * {@return a string representation of the system details}
+	 * 
+	 * <p>Sections are separated by newlines, and each section consists of the name, a colon,
+	 * a space, and the value. No indent is added by this method.
+	 */
 	public String collect() {
 		return (String)this.sections
 			.entrySet()

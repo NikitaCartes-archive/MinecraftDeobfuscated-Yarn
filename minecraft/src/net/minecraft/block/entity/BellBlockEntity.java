@@ -19,13 +19,13 @@ import net.minecraft.world.World;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 public class BellBlockEntity extends BlockEntity {
-	private static final int field_31316 = 50;
+	private static final int MAX_RINGING_TICKS = 50;
 	private static final int field_31317 = 60;
 	private static final int field_31318 = 60;
-	private static final int field_31319 = 40;
+	private static final int MAX_RESONATING_TICKS = 40;
 	private static final int field_31320 = 5;
 	private static final int field_31321 = 48;
-	private static final int field_31322 = 32;
+	private static final int MAX_BELL_HEARING_DISTANCE = 32;
 	private static final int field_31323 = 48;
 	private long lastRingTime;
 	public int ringTicks;

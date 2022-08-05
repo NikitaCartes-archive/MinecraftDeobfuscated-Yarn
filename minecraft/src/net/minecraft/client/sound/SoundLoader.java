@@ -24,9 +24,9 @@ public class SoundLoader {
 	}
 
 	public CompletableFuture<StaticSound> loadStatic(Identifier id) {
-		return (CompletableFuture<StaticSound>)this.loadedSounds.computeIfAbsent(id, identifier -> CompletableFuture.supplyAsync(() -> {
+		return (CompletableFuture<StaticSound>)this.loadedSounds.computeIfAbsent(id, id2 -> CompletableFuture.supplyAsync(() -> {
 				try {
-					InputStream inputStream = this.resourceManager.open(identifier);
+					InputStream inputStream = this.resourceManager.open(id2);
 
 					StaticSound var5;
 					try {

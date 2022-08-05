@@ -225,13 +225,13 @@ public class UpgradeData {
 		nbtCompound.putByte("Sides", (byte)ix);
 		if (!this.blockTicks.isEmpty()) {
 			NbtList nbtList = new NbtList();
-			this.blockTicks.forEach(tick2 -> nbtList.add(tick2.toNbt(block -> Registry.BLOCK.getId(block).toString())));
+			this.blockTicks.forEach(blockTick -> nbtList.add(blockTick.toNbt(block -> Registry.BLOCK.getId(block).toString())));
 			nbtCompound.put("neighbor_block_ticks", nbtList);
 		}
 
 		if (!this.fluidTicks.isEmpty()) {
 			NbtList nbtList = new NbtList();
-			this.fluidTicks.forEach(tick2 -> nbtList.add(tick2.toNbt(fluid -> Registry.FLUID.getId(fluid).toString())));
+			this.fluidTicks.forEach(fluidTick -> nbtList.add(fluidTick.toNbt(fluid -> Registry.FLUID.getId(fluid).toString())));
 			nbtCompound.put("neighbor_fluid_ticks", nbtList);
 		}
 

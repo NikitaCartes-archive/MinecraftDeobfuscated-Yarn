@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class VersionedChunkStorage implements AutoCloseable {
-	public static final int field_36219 = 1493;
+	public static final int FEATURE_UPDATING_VERSION = 1493;
 	private final StorageIoWorker worker;
 	protected final DataFixer dataFixer;
 	@Nullable
@@ -46,7 +46,7 @@ public class VersionedChunkStorage implements AutoCloseable {
 		if (i < 1493) {
 			nbt = NbtHelper.update(this.dataFixer, DataFixTypes.CHUNK, nbt, i, 1493);
 			if (nbt.getCompound("Level").getBoolean("hasLegacyStructureData")) {
-				FeatureUpdater featureUpdater = this.method_43411(worldKey, persistentStateManagerFactory);
+				FeatureUpdater featureUpdater = this.getFeatureUpdater(worldKey, persistentStateManagerFactory);
 				nbt = featureUpdater.getUpdatedReferences(nbt);
 			}
 		}
@@ -61,13 +61,13 @@ public class VersionedChunkStorage implements AutoCloseable {
 		return nbt;
 	}
 
-	private FeatureUpdater method_43411(RegistryKey<World> registryKey, Supplier<PersistentStateManager> supplier) {
+	private FeatureUpdater getFeatureUpdater(RegistryKey<World> worldKey, Supplier<PersistentStateManager> stateManagerGetter) {
 		FeatureUpdater featureUpdater = this.featureUpdater;
 		if (featureUpdater == null) {
 			synchronized (this) {
 				featureUpdater = this.featureUpdater;
 				if (featureUpdater == null) {
-					this.featureUpdater = featureUpdater = FeatureUpdater.create(registryKey, (PersistentStateManager)supplier.get());
+					this.featureUpdater = featureUpdater = FeatureUpdater.create(worldKey, (PersistentStateManager)stateManagerGetter.get());
 				}
 			}
 		}

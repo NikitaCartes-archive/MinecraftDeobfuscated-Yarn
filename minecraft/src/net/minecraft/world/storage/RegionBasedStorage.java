@@ -111,7 +111,7 @@ public final class RegionBasedStorage implements AutoCloseable {
 	protected void write(ChunkPos pos, @Nullable NbtCompound nbt) throws IOException {
 		RegionFile regionFile = this.getRegionFile(pos);
 		if (nbt == null) {
-			regionFile.method_31740(pos);
+			regionFile.delete(pos);
 		} else {
 			DataOutputStream dataOutputStream = regionFile.getChunkOutputStream(pos);
 

@@ -21,8 +21,8 @@ import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.WorldAccess;
 
 public class AreaHelper {
-	private static final int field_31825 = 2;
-	public static final int field_31823 = 21;
+	private static final int MIN_WIDTH = 2;
+	public static final int MAX_WIDTH = 21;
 	private static final int field_31826 = 3;
 	public static final int field_31824 = 21;
 	private static final AbstractBlock.ContextPredicate IS_VALID_FRAME_BLOCK = (state, world, pos) -> state.isOf(Blocks.OBSIDIAN);
@@ -39,13 +39,13 @@ public class AreaHelper {
 		return getOrEmpty(world, pos, areaHelper -> areaHelper.isValid() && areaHelper.foundPortalBlocks == 0, axis);
 	}
 
-	public static Optional<AreaHelper> getOrEmpty(WorldAccess world, BlockPos pos, Predicate<AreaHelper> predicate, Direction.Axis axis) {
-		Optional<AreaHelper> optional = Optional.of(new AreaHelper(world, pos, axis)).filter(predicate);
+	public static Optional<AreaHelper> getOrEmpty(WorldAccess world, BlockPos pos, Predicate<AreaHelper> validator, Direction.Axis axis) {
+		Optional<AreaHelper> optional = Optional.of(new AreaHelper(world, pos, axis)).filter(validator);
 		if (optional.isPresent()) {
 			return optional;
 		} else {
 			Direction.Axis axis2 = axis == Direction.Axis.X ? Direction.Axis.Z : Direction.Axis.X;
-			return Optional.of(new AreaHelper(world, pos, axis2)).filter(predicate);
+			return Optional.of(new AreaHelper(world, pos, axis2)).filter(validator);
 		}
 	}
 
@@ -108,14 +108,14 @@ public class AreaHelper {
 
 	private int getHeight() {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
-		int i = this.method_30490(mutable);
-		return i >= 3 && i <= 21 && this.method_30491(mutable, i) ? i : 0;
+		int i = this.getPotentialHeight(mutable);
+		return i >= 3 && i <= 21 && this.isHorizontalFrameValid(mutable, i) ? i : 0;
 	}
 
-	private boolean method_30491(BlockPos.Mutable mutable, int i) {
-		for (int j = 0; j < this.width; j++) {
-			BlockPos.Mutable mutable2 = mutable.set(this.lowerCorner).move(Direction.UP, i).move(this.negativeDir, j);
-			if (!IS_VALID_FRAME_BLOCK.test(this.world.getBlockState(mutable2), this.world, mutable2)) {
+	private boolean isHorizontalFrameValid(BlockPos.Mutable pos, int height) {
+		for (int i = 0; i < this.width; i++) {
+			BlockPos.Mutable mutable = pos.set(this.lowerCorner).move(Direction.UP, height).move(this.negativeDir, i);
+			if (!IS_VALID_FRAME_BLOCK.test(this.world.getBlockState(mutable), this.world, mutable)) {
 				return false;
 			}
 		}
@@ -123,21 +123,21 @@ public class AreaHelper {
 		return true;
 	}
 
-	private int method_30490(BlockPos.Mutable mutable) {
+	private int getPotentialHeight(BlockPos.Mutable pos) {
 		for (int i = 0; i < 21; i++) {
-			mutable.set(this.lowerCorner).move(Direction.UP, i).move(this.negativeDir, -1);
-			if (!IS_VALID_FRAME_BLOCK.test(this.world.getBlockState(mutable), this.world, mutable)) {
+			pos.set(this.lowerCorner).move(Direction.UP, i).move(this.negativeDir, -1);
+			if (!IS_VALID_FRAME_BLOCK.test(this.world.getBlockState(pos), this.world, pos)) {
 				return i;
 			}
 
-			mutable.set(this.lowerCorner).move(Direction.UP, i).move(this.negativeDir, this.width);
-			if (!IS_VALID_FRAME_BLOCK.test(this.world.getBlockState(mutable), this.world, mutable)) {
+			pos.set(this.lowerCorner).move(Direction.UP, i).move(this.negativeDir, this.width);
+			if (!IS_VALID_FRAME_BLOCK.test(this.world.getBlockState(pos), this.world, pos)) {
 				return i;
 			}
 
 			for (int j = 0; j < this.width; j++) {
-				mutable.set(this.lowerCorner).move(Direction.UP, i).move(this.negativeDir, j);
-				BlockState blockState = this.world.getBlockState(mutable);
+				pos.set(this.lowerCorner).move(Direction.UP, i).move(this.negativeDir, j);
+				BlockState blockState = this.world.getBlockState(pos);
 				if (!validStateInsidePortal(blockState)) {
 					return i;
 				}

@@ -24,8 +24,8 @@ public class TimerCallbackSerializer<C> {
 		return this;
 	}
 
-	private <T extends TimerCallback<C>> TimerCallback.Serializer<C, T> getSerializer(Class<?> class_) {
-		return (TimerCallback.Serializer<C, T>)this.serializersByClass.get(class_);
+	private <T extends TimerCallback<C>> TimerCallback.Serializer<C, T> getSerializer(Class<?> clazz) {
+		return (TimerCallback.Serializer<C, T>)this.serializersByClass.get(clazz);
 	}
 
 	public <T extends TimerCallback<C>> NbtCompound serialize(T callback) {

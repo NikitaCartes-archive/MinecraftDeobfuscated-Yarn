@@ -95,7 +95,7 @@ import net.minecraft.world.poi.PointOfInterestTypes;
 import org.slf4j.Logger;
 
 public class VillagerEntity extends MerchantEntity implements InteractionObserver, VillagerDataContainer {
-	private static final Logger field_36335 = LogUtils.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final TrackedData<VillagerData> VILLAGER_DATA = DataTracker.registerData(VillagerEntity.class, TrackedDataHandlerRegistry.VILLAGER_DATA);
 	public static final int field_30602 = 12;
 	public static final Map<Item, Integer> ITEM_FOOD_VALUES = ImmutableMap.of(Items.BREAD, 4, Items.POTATO, 1, Items.CARROT, 1, Items.BEETROOT, 1);
@@ -494,7 +494,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		super.writeCustomDataToNbt(nbt);
 		VillagerData.CODEC
 			.encodeStart(NbtOps.INSTANCE, this.getVillagerData())
-			.resultOrPartial(field_36335::error)
+			.resultOrPartial(LOGGER::error)
 			.ifPresent(nbtElement -> nbt.put("VillagerData", nbtElement));
 		nbt.putByte("FoodLevel", (byte)this.foodLevel);
 		nbt.put("Gossips", this.gossip.serialize(NbtOps.INSTANCE).getValue());
@@ -512,7 +512,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		super.readCustomDataFromNbt(nbt);
 		if (nbt.contains("VillagerData", NbtElement.COMPOUND_TYPE)) {
 			DataResult<VillagerData> dataResult = VillagerData.CODEC.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.get("VillagerData")));
-			dataResult.resultOrPartial(field_36335::error).ifPresent(this::setVillagerData);
+			dataResult.resultOrPartial(LOGGER::error).ifPresent(this::setVillagerData);
 		}
 
 		if (nbt.contains("Offers", NbtElement.COMPOUND_TYPE)) {
@@ -627,7 +627,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 
 	@Override
 	public void onDeath(DamageSource damageSource) {
-		field_36335.info("Villager {} died, message: '{}'", this, damageSource.getDeathMessage(this).getString());
+		LOGGER.info("Villager {} died, message: '{}'", this, damageSource.getDeathMessage(this).getString());
 		Entity entity = damageSource.getAttacker();
 		if (entity != null) {
 			this.notifyDeath(entity);
@@ -796,7 +796,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	@Override
 	public void onStruckByLightning(ServerWorld world, LightningEntity lightning) {
 		if (world.getDifficulty() != Difficulty.PEACEFUL) {
-			field_36335.info("Villager {} was struck by lightning {}.", this, lightning);
+			LOGGER.info("Villager {} was struck by lightning {}.", this, lightning);
 			WitchEntity witchEntity = EntityType.WITCH.create(world);
 			witchEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
 			witchEntity.initialize(world, world.getLocalDifficulty(witchEntity.getBlockPos()), SpawnReason.CONVERSION, null, null);

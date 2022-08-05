@@ -15,6 +15,16 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 
+/**
+ * {@link Particle} is a client-side visual effect with position, velocity, collision, and additional render properties.
+ * 
+ * <p>
+ * Each {@code Particle} is typically rendered as a camera-facing texture quad.
+ * {@link net.minecraft.client.particle.SpriteBillboardParticle} provides this behavior, and most vanilla particles inherit from it.
+ * 
+ * <p>
+ * If you would like a {@link Particle} with no direct rendering effects, inherit from {@link net.minecraft.client.particle.NoRenderParticle}.
+ */
 @Environment(EnvType.CLIENT)
 public abstract class Particle {
 	private static final Box EMPTY_BOUNDING_BOX = new Box(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
@@ -71,6 +81,11 @@ public abstract class Particle {
 		this.velocityZ = this.velocityZ / e * d * 0.4F;
 	}
 
+	/**
+	 * Multiplies this {@link Particle}'s current velocity by the target {@code speed} amount.
+	 * 
+	 * @param speed the velocity multiplier to apply to this {@link Particle}
+	 */
 	public Particle move(float speed) {
 		this.velocityX *= (double)speed;
 		this.velocityY = (this.velocityY - 0.1F) * (double)speed + 0.1F;
@@ -78,35 +93,82 @@ public abstract class Particle {
 		return this;
 	}
 
+	/**
+	 * Updates this {@link Particle}'s velocity to the target X, Y, and Z values.
+	 * 
+	 * @param velocityX the new x-velocity of this {@link Particle}
+	 * @param velocityY the new y-velocity of this {@link Particle}
+	 * @param velocityZ the new z-velocity of this {@link Particle}
+	 */
 	public void setVelocity(double velocityX, double velocityY, double velocityZ) {
 		this.velocityX = velocityX;
 		this.velocityY = velocityY;
 		this.velocityZ = velocityZ;
 	}
 
+	/**
+	 * Scales the size of this particle by the given {@code scale} amount.
+	 * 
+	 * @return this {@link Particle}
+	 * 
+	 * @param scale the amount to scale this particle's size by
+	 */
 	public Particle scale(float scale) {
 		this.setBoundingBoxSpacing(0.2F * scale, 0.2F * scale);
 		return this;
 	}
 
+	/**
+	 * Updates the rendering color of this particle.
+	 * Each value should be between 0.0 (no channel color) and 1.0 (full channel color).
+	 * 
+	 * @param red the target red color to use while rendering
+	 * @param green the target green color to use while rendering
+	 * @param blue the target blue color to use while rendering
+	 */
 	public void setColor(float red, float green, float blue) {
 		this.red = red;
 		this.green = green;
 		this.blue = blue;
 	}
 
+	/**
+	 * Updates the alpha value of this {@link Particle} to use while rendering.
+	 * 
+	 * <p>
+	 * Note that a {@link Particle} cannot render with transparency unless {@link Particle#getType()} is
+	 * {@link ParticleTextureSheet#PARTICLE_SHEET_TRANSLUCENT}, or another sheet that supports transparency.
+	 * 
+	 * <p>
+	 * Also note that the default particle shader (core/particle.fsh) will discard all transparent pixels below 0.1 alpha.
+	 * 
+	 * @param alpha the new alpha value of this particle
+	 */
 	protected void setAlpha(float alpha) {
 		this.alpha = alpha;
 	}
 
+	/**
+	 * Sets the maximum age, in ticks, that this particle can exist for.
+	 * 
+	 * @param maxAge the new maximum age of this {@link Particle}, in ticks
+	 */
 	public void setMaxAge(int maxAge) {
 		this.maxAge = maxAge;
 	}
 
+	/**
+	 * Returns the maximum age, in ticks, of this particle. If this particle's age exceeds this value, it will be removed from the world.
+	 * 
+	 * @return this particle's maximum age, in ticks
+	 */
 	public int getMaxAge() {
 		return this.maxAge;
 	}
 
+	/**
+	 * This method is called each game tick (20 times per second), and should be used to do core {@link Particle} logic, such as movement and collision.
+	 */
 	public void tick() {
 		this.prevPosX = this.x;
 		this.prevPosY = this.y;
@@ -131,8 +193,23 @@ public abstract class Particle {
 		}
 	}
 
+	/**
+	 * Renders this {@link Particle} to the given {@link VertexConsumer} buffer.
+	 * 
+	 * @param vertexConsumer the buffer to render to
+	 * @param camera the current active game {@link Camera}
+	 * @param tickDelta frame tick delta amount
+	 */
 	public abstract void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta);
 
+	/**
+	 * Returns the rendering category this {@link Particle} is rendered under.
+	 * 
+	 * <p>
+	 * For more information on the properties and types available to each {@code Particle}, visit {@link ParticleTextureSheet}.
+	 * 
+	 * @return the {@link ParticleTextureSheet} any {@link Particle} of this type will render through
+	 */
 	public abstract ParticleTextureSheet getType();
 
 	public String toString() {
@@ -155,6 +232,9 @@ public abstract class Particle {
 			+ this.age;
 	}
 
+	/**
+	 * Marks this {@link Particle} as ready to be removed from the containing {@link ClientWorld}.
+	 */
 	public void markDead() {
 		this.dead = true;
 	}
@@ -170,6 +250,13 @@ public abstract class Particle {
 		}
 	}
 
+	/**
+	 * Updates the position and bounding box of this {@link Particle} to the target {@code x}, {@code y}, {@code z} position.
+	 * 
+	 * @param x the x position to move this particle to
+	 * @param y the y position to move this particle to
+	 * @param z the z position to move this particle to
+	 */
 	public void setPos(double x, double y, double z) {
 		this.x = x;
 		this.y = y;
@@ -179,6 +266,13 @@ public abstract class Particle {
 		this.setBoundingBox(new Box(x - (double)f, y, z - (double)f, x + (double)f, y + (double)g, z + (double)f));
 	}
 
+	/**
+	 * Moves this {@link Particle} by the specified delta amounts, re-positioning bounding boxes and adjusting movement for collision with the world.
+	 * 
+	 * @param dx the delta x to move this particle by
+	 * @param dy the delta y to move this particle by
+	 * @param dz the delta z to move this particle by
+	 */
 	public void move(double dx, double dy, double dz) {
 		if (!this.field_21507) {
 			double d = dx;
@@ -218,15 +312,32 @@ public abstract class Particle {
 		this.z = (box.minZ + box.maxZ) / 2.0;
 	}
 
+	/**
+	 * @return the packed light level this particle should render at
+	 * @see net.minecraft.client.render.LightmapTextureManager
+	 */
 	protected int getBrightness(float tint) {
 		BlockPos blockPos = new BlockPos(this.x, this.y, this.z);
 		return this.world.isChunkLoaded(blockPos) ? WorldRenderer.getLightmapCoordinates(this.world, blockPos) : 0;
 	}
 
+	/**
+	 * @return {@code false} if this particle is finished & should be removed from the parent {@link ParticleManager}, otherwise {@code true} if the particle is still alive
+	 */
 	public boolean isAlive() {
 		return !this.dead;
 	}
 
+	/**
+	 * Returns the bounding {@link Box} of this particle, which is used for collision and movement logic.
+	 * 
+	 * <p>
+	 * By default, this bounding box is automatically repositioned when a particle moves in {@link Particle#tick()}.
+	 * To adjust the size of the returned box, visit {@link Particle#setBoundingBoxSpacing(float, float)}.
+	 * To directly update the current bounding box, visit {@link Particle#setBoundingBox(Box)};
+	 * 
+	 * @return the bounding {@link Box} of this particle, used for collision and movement
+	 */
 	public Box getBoundingBox() {
 		return this.boundingBox;
 	}

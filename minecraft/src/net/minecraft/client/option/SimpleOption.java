@@ -403,11 +403,11 @@ public final class SimpleOption<T> {
 		int maxInclusive();
 
 		default double toSliderProgress(Integer integer) {
-			return (double)MathHelper.lerpFromProgress((float)integer.intValue(), (float)this.minInclusive(), (float)this.maxInclusive(), 0.0F, 1.0F);
+			return (double)MathHelper.map((float)integer.intValue(), (float)this.minInclusive(), (float)this.maxInclusive(), 0.0F, 1.0F);
 		}
 
 		default Integer toValue(double d) {
-			return MathHelper.floor(MathHelper.lerpFromProgress(d, 0.0, 1.0, (double)this.minInclusive(), (double)this.maxInclusive()));
+			return MathHelper.floor(MathHelper.map(d, 0.0, 1.0, (double)this.minInclusive(), (double)this.maxInclusive()));
 		}
 
 		/**

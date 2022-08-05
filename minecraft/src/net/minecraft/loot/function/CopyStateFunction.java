@@ -113,7 +113,7 @@ public class CopyStateFunction extends ConditionalLootFunction {
 			Set<Property<?>> set = Sets.<Property<?>>newHashSet();
 			JsonArray jsonArray = JsonHelper.getArray(jsonObject, "properties", null);
 			if (jsonArray != null) {
-				jsonArray.forEach(jsonElement -> set.add(stateManager.getProperty(JsonHelper.asString(jsonElement, "property"))));
+				jsonArray.forEach(property -> set.add(stateManager.getProperty(JsonHelper.asString(property, "property"))));
 			}
 
 			return new CopyStateFunction(lootConditions, block, set);

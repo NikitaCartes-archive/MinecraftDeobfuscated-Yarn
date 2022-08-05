@@ -43,9 +43,9 @@ import org.slf4j.Logger;
 
 public class SculkSpreadManager {
 	public static final int field_37609 = 24;
-	public static final int field_37610 = 1000;
+	public static final int MAX_CHARGE = 1000;
 	public static final float field_37611 = 0.5F;
-	private static final int field_37613 = 32;
+	private static final int MAX_CURSORS = 32;
 	public static final int field_37612 = 11;
 	final boolean worldGen;
 	private final TagKey<Block> replaceableTag;

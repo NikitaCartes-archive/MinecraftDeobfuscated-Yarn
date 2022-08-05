@@ -24,9 +24,9 @@ public class GroupEntry extends CombinedEntry {
 			case 2:
 				EntryCombiner entryCombiner = children[0];
 				EntryCombiner entryCombiner2 = children[1];
-				return (context, consumer) -> {
-					entryCombiner.expand(context, consumer);
-					entryCombiner2.expand(context, consumer);
+				return (context, choiceConsumer) -> {
+					entryCombiner.expand(context, choiceConsumer);
+					entryCombiner2.expand(context, choiceConsumer);
 					return true;
 				};
 			default:

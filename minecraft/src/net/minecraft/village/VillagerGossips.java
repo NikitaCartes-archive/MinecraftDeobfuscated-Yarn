@@ -145,15 +145,15 @@ public class VillagerGossips {
 		}
 	}
 
-	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-		return new Dynamic<>(dynamicOps, dynamicOps.createList(this.entries().map(gossipEntry -> gossipEntry.serialize(dynamicOps)).map(Dynamic::getValue)));
+	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
+		return new Dynamic<>(ops, ops.createList(this.entries().map(entry -> entry.serialize(ops)).map(Dynamic::getValue)));
 	}
 
 	public void deserialize(Dynamic<?> dynamic) {
 		dynamic.asStream()
 			.map(VillagerGossips.GossipEntry::deserialize)
-			.flatMap(dataResult -> dataResult.result().stream())
-			.forEach(gossipEntry -> this.getReputationFor(gossipEntry.target).associatedGossip.put(gossipEntry.type, gossipEntry.value));
+			.flatMap(result -> result.result().stream())
+			.forEach(entry -> this.getReputationFor(entry.target).associatedGossip.put(entry.type, entry.value));
 	}
 
 	private static int max(int left, int right) {
@@ -187,17 +187,17 @@ public class VillagerGossips {
 			return "GossipEntry{target=" + this.target + ", type=" + this.type + ", value=" + this.value + "}";
 		}
 
-		public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
+		public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
 			return new Dynamic<>(
-				dynamicOps,
-				dynamicOps.createMap(
+				ops,
+				ops.createMap(
 					ImmutableMap.of(
-						dynamicOps.createString("Target"),
-						(T)DynamicSerializableUuid.CODEC.encodeStart(dynamicOps, this.target).result().orElseThrow(RuntimeException::new),
-						dynamicOps.createString("Type"),
-						dynamicOps.createString(this.type.key),
-						dynamicOps.createString("Value"),
-						dynamicOps.createInt(this.value)
+						ops.createString("Target"),
+						(T)DynamicSerializableUuid.CODEC.encodeStart(ops, this.target).result().orElseThrow(RuntimeException::new),
+						ops.createString("Type"),
+						ops.createString(this.type.key),
+						ops.createString("Value"),
+						ops.createInt(this.value)
 					)
 				)
 			);

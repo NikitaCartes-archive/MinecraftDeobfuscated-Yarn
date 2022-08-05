@@ -16,7 +16,7 @@ import net.minecraft.world.World;
 
 public class ShieldItem extends Item {
 	public static final int field_30918 = 5;
-	public static final float field_30919 = 3.0F;
+	public static final float MIN_DAMAGE_AMOUNT_TO_BREAK = 3.0F;
 	public static final String BASE_KEY = "Base";
 
 	public ShieldItem(Item.Settings settings) {

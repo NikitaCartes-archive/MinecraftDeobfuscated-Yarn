@@ -91,10 +91,10 @@ public final class EntityPredicates {
 	}
 
 	public static Predicate<Entity> rides(Entity entity) {
-		return entity2 -> {
-			while (entity2.hasVehicle()) {
-				entity2 = entity2.getVehicle();
-				if (entity2 == entity) {
+		return testedEntity -> {
+			while (testedEntity.hasVehicle()) {
+				testedEntity = testedEntity.getVehicle();
+				if (testedEntity == entity) {
 					return false;
 				}
 			}

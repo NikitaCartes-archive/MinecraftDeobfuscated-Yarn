@@ -12,11 +12,26 @@ import java.util.regex.Pattern;
 import net.minecraft.SharedConstants;
 import org.apache.commons.io.FilenameUtils;
 
+/**
+ * A class holding file name-related utility methods.
+ */
 public class FileNameUtil {
 	private static final Pattern FILE_NAME_WITH_COUNT = Pattern.compile("(<name>.*) \\((<count>\\d*)\\)", 66);
 	private static final int MAX_NAME_LENGTH = 255;
 	private static final Pattern RESERVED_WINDOWS_NAMES = Pattern.compile(".*\\.|(?:COM|CLOCK\\$|CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\\..*)?", 2);
 
+	/**
+	 * {@return a filename, prefixed with {@code name}, that does not currently
+	 * exist inside {@code path}}
+	 * 
+	 * @implNote This strips any illegal characters from {@code name}, then
+	 * attempts to make a directory with the name and the extension. If this succeeds,
+	 * the directory is deleted and the name with the extension is returned. If not, it
+	 * appends {@code (1)} to the name and tries again until it succeeds.
+	 * 
+	 * @throws IOException if creating the temporary directory fails, e.g. due to {@code path}
+	 * not being a directory
+	 */
 	public static String getNextUniqueName(Path path, String name, String extension) throws IOException {
 		for (char c : SharedConstants.INVALID_CHARS_LEVEL_NAME) {
 			name = name.replace(c, '_');
@@ -63,11 +78,21 @@ public class FileNameUtil {
 		}
 	}
 
+	/**
+	 * {@return whether {@code path} is already normalized}
+	 */
 	public static boolean isNormal(Path path) {
 		Path path2 = path.normalize();
 		return path2.equals(path);
 	}
 
+	/**
+	 * {@return whether {@code path} does not contain reserved Windows file names}
+	 * 
+	 * @apiNote This returns {@code false} for reserved names regardless of whether the platform
+	 * the game is running is actually Windows. Note that this does not check for
+	 * illegal characters or file permissions.
+	 */
 	public static boolean isAllowedName(Path path) {
 		for (Path path2 : path) {
 			if (RESERVED_WINDOWS_NAMES.matcher(path2.toString()).matches()) {
@@ -88,10 +113,18 @@ public class FileNameUtil {
 		}
 	}
 
+	/**
+	 * {@return the full path of {@code path} with directory separator normalized
+	 * to {@code /}}
+	 */
 	public static String getPosixFullPath(String path) {
 		return FilenameUtils.getFullPath(path).replace(File.separator, "/");
 	}
 
+	/**
+	 * {@return the normalized path of {@code path} with directory separator normalized
+	 * to {@code /}}
+	 */
 	public static String normalizeToPosix(String path) {
 		return FilenameUtils.normalize(path).replace(File.separator, "/");
 	}

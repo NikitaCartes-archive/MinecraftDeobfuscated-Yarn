@@ -34,6 +34,132 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
 
+/**
+ * Manages lists of item stacks and properties between the server and the client for use
+ * in a screen. They are usually used for synchronizing the screens of container blocks
+ * such as chests and furnaces.
+ * 
+ * <p>On the client, screen handlers are coupled with a {@link
+ * net.minecraft.client.gui.screen.ingame.HandledScreen}. Handled screens have a
+ * reference to a client-sided screen handler that is exposed through the
+ * {@link net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider} interface.
+ * 
+ * <h2 id="models">Models</h2>
+ * <p>Screen handlers hold slots, properties, property delegates, and screen handler
+ * contexts. This allows easy synchronization of states between the client and the
+ * server, and prevents running code on the wrong side.
+ * 
+ * <p>{@link Slot} holds one item stack. The slots are usually controlled by the server,
+ * and the changes to slots on the server are automatically synchronized to the client.
+ * Slots can be backed by an inventory, allowing the changes to be reflected to the
+ * persistent storage (like block entities) on the server. Clients manipulate the
+ * slots by issuing a "slot click" packet. "Clicking" a slot includes actions like
+ * picking up crafting result, shift-clicking stacks, swapping stacks between the
+ * inventory and the hotbar, or dropping stacks.
+ * 
+ * <p>Screen handlers also contain a list of {@linkplain Property properties}
+ * that are used for syncing integers (e.g. progress bars) from the server to the client.
+ * Properties can also be used to sync an integer from the client to the server, although
+ * it has to be manually performed. If a property relies on other objects, like
+ * a value from a block entity instance, then the property can delegate its operations
+ * using {@link PropertyDelegate}. The delegate is passed when creating the screen handler.
+ * On the server, access to the property's value is delegated to the delegate (which in
+ * turn delegates to another object like a block entity instance).
+ * On the client, access to the property's value still uses the synced value.
+ * 
+ * <p>{@link ScreenHandlerContext} allows running code on the server side only. Screen
+ * handlers are designed to be used on both sides; any action modifying the world has
+ * to be wrapped in a call to the context. Like with the property delegate, a context
+ * with the world is passed to the screen handler on creation on the server. On the
+ * server, the context executes the function with the world and the position. On the
+ * client, the context does nothing.
+ * 
+ * <h2 id="usage">How to use screen handlers</h2>
+ * <h3 id="creation">Creation</h3>
+ * <p>To create a new screen handler, subclass {@link ScreenHandler}, create and register
+ * a new {@linkplain ScreenHandlerType screen handler type}, and associate it with
+ * a handled screen.
+ * 
+ * <p>A subclass should have two constructors. One is for the server, and should take
+ * the {@code syncId} and inventories, property delegates, or contexts that are used.
+ * The {@link #syncId} is shared between the two sides. It is used to verify that a player
+ * has a specific screen (handler) open so that they can move items, for example.
+ * The inventories are used to back a slot so that any changes to a slot is reflected
+ * on the backing inventory, and vice versa. Property delegates and contexts bridge
+ * between the screen handler and other parts of the world; see above for more description.
+ * 
+ * <p>The constructor should {@linkplain #addSlot add slots}, {@link #addProperties
+ * add properties from delegates}, and store the property delegates and screen handler
+ * context in the instance fields.
+ * 
+ * <p>The other constructor is for the client. There, the only parameters allowed are the
+ * {@code syncId} and the player inventory. This is because all other things are
+ * unavailable at creation time and synced later. This constructor should call the
+ * other constructor with {@linkplain net.minecraft.inventory.SimpleInventory
+ * a new simple inventory of sufficient size}, {@linkplain ArrayPropertyDelegate
+ * a new array property delegate}, and {@linkplain ScreenHandlerContext#EMPTY
+ * an empty screen handler context}. Synced data then fills the inventory and property
+ * delegate.
+ * 
+ * <p>The screen handler then has to be registered in a registry. Create a new instance of
+ * {@link ScreenHandlerType} with the screen handler type factory (which can be a reference
+ * to the client-side constructor; i.e. {@code MyScreenHandler::MyScreenHandler})
+ * and register it to {@link net.minecraft.util.registry.Registry#SCREEN_HANDLER}.
+ * 
+ * <h3 id="opening">Opening</h3>
+ * <p>Most of the screen handlers are associated with a block and opened by using the block.
+ * Screen handlers are opened on the server and synced to the client. To open a
+ * screen handler, use {@link PlayerEntity#openHandledScreen}. This takes a
+ * {@link NamedScreenHandlerFactory}, which creates a screen handler. In vanilla,
+ * block entity instances implement the interface, allowing them to be passed.
+ * {@link SimpleNamedScreenHandlerFactory} is a screen handler factory implementation
+ * for use cases that do not involve a block entity.
+ * 
+ * <p>The factory should create a new instance of a screen handler with the server-side
+ * constructor (one that takes inventories, etc). If the screen handler requires
+ * a property delegate or a context, create an instance and pass it here.
+ * 
+ * <p>As long as the screen handler only uses the slots and properties, there should not
+ * be any need for external synchronization.
+ * 
+ * <h3 id="interaction">Interaction</h3>
+ * <p>Screen handler interaction mainly involves "slot clicks" and "button clicks".
+ * A {@linkplain #onSlotClick slot click} is, as mentioned before, an action manipulating
+ * the slots' held item stacks. Slot clicks are implemented in this class and
+ * {@link #transferSlot}. To manipulate the stacks, get the slot via {@link #getSlot}
+ * and call methods of it. Screen handlers also provide methods for common operations,
+ * such as {@link #insertItem} that inserts a stack to the screen handler's available slots.
+ * 
+ * <p>The "cursor stack" is an item stack held by the cursor. When moving item stacks
+ * between slots, the cursor stack can hold the stack temporarily. The cursor stack
+ * is not held by any slots. When the screen handler is closed, the stack will be
+ * inserted to the player inventory or dropped as an item entity.
+ * 
+ * <p>Some screen handlers also handle {@linkplain #onButtonClick button clicks}.
+ * This is used to execute an action on the server as a response to clients sending a
+ * button click packet. In most cases, this is triggered by a button in the screen
+ * rendered by the client, hence the name. Inside screen handlers, buttons are identified
+ * with an integer.
+ * 
+ * <p>Subclasses must implement two methods: {@link #canUse(PlayerEntity)} and {@link
+ * #transferSlot}. See the documentation of each method for more details.
+ * 
+ * <h3 id="closing">Closing</h3>
+ * <p>Since a screen handler handles the client's screen, the screen must be closed at the
+ * same time. To close the screen handler and the screen, call {@link
+ * PlayerEntity#closeHandledScreen} on the server.
+ * 
+ * <p>Screen handlers should override {@link #close}. In there, it should {@linkplain
+ * #dropInventory drop contents} of all slots not backed by an inventory and call
+ * {@link Inventory#onClose} on the backing inventory. See the documentation of
+ * the method for more details.
+ * 
+ * @see ScreenHandlerType
+ * @see ScreenHandlerFactory
+ * @see Slot
+ * @see Inventory
+ * @see net.minecraft.client.gui.screen.ingame.HandledScreen
+ */
 public abstract class ScreenHandler {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	/**
@@ -75,6 +201,16 @@ public abstract class ScreenHandler {
 		this.syncId = syncId;
 	}
 
+	/**
+	 * {@return whether the screen handler can be used}
+	 * 
+	 * @apiNote This should be called inside {@link #canUse(PlayerEntity)}.
+	 * 
+	 * @implNote On the server, this checks that the block at the position is
+	 * {@code block} and the player is within 8 blocks from the block's center.
+	 * 
+	 * @see #canUse(PlayerEntity)
+	 */
 	protected static boolean canUse(ScreenHandlerContext context, PlayerEntity player, Block block) {
 		return context.get(
 			(world, pos) -> !world.getBlockState(pos).isOf(block)
@@ -84,6 +220,13 @@ public abstract class ScreenHandler {
 		);
 	}
 
+	/**
+	 * {@return the screen handler type}
+	 * 
+	 * <p>A screen handler must have associated screen handler type to open it.
+	 * 
+	 * @throws UnsupportedOperationException if the type is not passed in the constructor
+	 */
 	public ScreenHandlerType<?> getType() {
 		if (this.type == null) {
 			throw new UnsupportedOperationException("Unable to construct this menu by type");
@@ -116,10 +259,22 @@ public abstract class ScreenHandler {
 		}
 	}
 
+	/**
+	 * {@return whether the given slot index is valid}
+	 * 
+	 * <p>This returns {@code true} for all added slots, {@value #EMPTY_SPACE_SLOT_INDEX},
+	 * and {@code -1}.
+	 */
 	public boolean isValid(int slot) {
 		return slot == -1 || slot == -999 || slot < this.slots.size();
 	}
 
+	/**
+	 * Adds {@code slot} to this screen handler. This must be called inside
+	 * the subclass's constructor.
+	 * 
+	 * @return the added slot
+	 */
 	protected Slot addSlot(Slot slot) {
 		slot.id = this.slots.size();
 		this.slots.add(slot);
@@ -128,18 +283,41 @@ public abstract class ScreenHandler {
 		return slot;
 	}
 
+	/**
+	 * Adds {@code property} to this screen handler. This must be called inside the
+	 * subclass's constructor.
+	 * 
+	 * <p>If the property relies on external objects (such as a block entity instance),
+	 * it should instead use property delegates and {@link #addProperties}.
+	 * 
+	 * @return the added property
+	 * 
+	 * @see #addProperties
+	 */
 	protected Property addProperty(Property property) {
 		this.properties.add(property);
 		this.trackedPropertyValues.add(0);
 		return property;
 	}
 
+	/**
+	 * Adds properties of {@code propertyDelegate} to this screen handler.
+	 * This must be called inside the subclass's constructor.
+	 * 
+	 * @see #addProperty
+	 */
 	protected void addProperties(PropertyDelegate propertyDelegate) {
 		for (int i = 0; i < propertyDelegate.size(); i++) {
 			this.addProperty(Property.create(propertyDelegate, i));
 		}
 	}
 
+	/**
+	 * Adds {@code listener} to the screen handler.
+	 * 
+	 * <p>Listeners are often used to listen to slot or property changes on the
+	 * client's screen.
+	 */
 	public void addListener(ScreenHandlerListener listener) {
 		if (!this.listeners.contains(listener)) {
 			this.listeners.add(listener);
@@ -171,10 +349,19 @@ public abstract class ScreenHandler {
 		}
 	}
 
+	/**
+	 * Removes {@code listener} from this screen handler.
+	 */
 	public void removeListener(ScreenHandlerListener listener) {
 		this.listeners.remove(listener);
 	}
 
+	/**
+	 * {@return a list of all stacks of the screen handler's slot}
+	 * 
+	 * <p>This should not be used in most cases, and modifying the returned list
+	 * has no effect to the screen handler.
+	 */
 	public DefaultedList<ItemStack> getStacks() {
 		DefaultedList<ItemStack> defaultedList = DefaultedList.of();
 
@@ -295,14 +482,43 @@ public abstract class ScreenHandler {
 		this.previousCursorStack = stack.copy();
 	}
 
+	/**
+	 * Called when {@code player} clicks a button with {@code id}.
+	 * 
+	 * <p>"Button click" is an abstract concept; it does not have to be triggered by a
+	 * button. Examples of button clicks include selecting a recipe for a stonecutter,
+	 * turning a page of a lectern's book, or selecting an enchantment on an enchanting table.
+	 * Buttons are identified by an integer.
+	 * 
+	 * @implNote This is normally only called by the server; however, screens that use buttons
+	 * can call this on the client.
+	 * 
+	 * @return whether the button click is handled successfully
+	 */
 	public boolean onButtonClick(PlayerEntity player, int id) {
 		return false;
 	}
 
+	/**
+	 * {@return the slot with index {@code index}}
+	 */
 	public Slot getSlot(int index) {
 		return this.slots.get(index);
 	}
 
+	/**
+	 * Transfers (or "quick-moves") the stack at slot {@code index} to other
+	 * slots of the screen handler that belong to a different inventory.
+	 * 
+	 * <p>Subclasses should call {@link #insertItem}, and if the insertion was successful,
+	 * clear the slot (if the stack is exhausted) or mark it as dirty. See the vanilla
+	 * subclasses for basic implementation.
+	 * 
+	 * @return {@link ItemStack#EMPTY} when no stack can be transferred, otherwise
+	 * the original stack
+	 * 
+	 * @see #insertItem
+	 */
 	public abstract ItemStack transferSlot(PlayerEntity player, int index);
 
 	/**
@@ -540,6 +756,9 @@ public abstract class ScreenHandler {
 		}
 	}
 
+	/**
+	 * {@return a reference to the cursor's stack}
+	 */
 	private StackReference getCursorStackReference() {
 		return new StackReference() {
 			@Override
@@ -555,10 +774,25 @@ public abstract class ScreenHandler {
 		};
 	}
 
+	/**
+	 * {@return whether {@code stack} can be inserted to {@code slot}}
+	 * 
+	 * <p>Subclasses should override this to return {@code false} if the slot is
+	 * used for output.
+	 */
 	public boolean canInsertIntoSlot(ItemStack stack, Slot slot) {
 		return true;
 	}
 
+	/**
+	 * Closes this screen handler.
+	 * 
+	 * <p>To close a screen handler, call {@link PlayerEntity#closeHandledScreen}
+	 * on the server instead of this method.
+	 * 
+	 * <p>This drops the cursor stack by default. Subclasses that have slots not backed
+	 * by a persistent inventory should call {@link #dropInventory} to drop the stacks.
+	 */
 	public void close(PlayerEntity player) {
 		if (player instanceof ServerPlayerEntity) {
 			ItemStack itemStack = this.getCursorStack();
@@ -589,6 +823,15 @@ public abstract class ScreenHandler {
 		}
 	}
 
+	/**
+	 * Called when a slot's content has changed.
+	 * 
+	 * <p>This is not called by default; subclasses that override this method
+	 * should also use a custom {@link Inventory} whose {@link Inventory#markDirty markDirty} method is
+	 * overridden to call this method as a backing inventory of the slot.
+	 * 
+	 * <p>This can be used to update the output slot when input changes.
+	 */
 	public void onContentChanged(Inventory inventory) {
 		this.sendContentUpdates();
 	}
@@ -607,12 +850,35 @@ public abstract class ScreenHandler {
 		this.revision = revision;
 	}
 
+	/**
+	 * Sets the property with ID {@code id} to {@code value}.
+	 * 
+	 * <p>Subclasses can call {@link #sendContentUpdates} to manually sync the change
+	 * to the client.
+	 */
 	public void setProperty(int id, int value) {
 		((Property)this.properties.get(id)).set(value);
 	}
 
+	/**
+	 * {@return whether the screen handler can be used}
+	 * 
+	 * <p>Subclasses should call #canUse(ScreenHandlerContext, PlayerEntity, Block)}
+	 * or implement the check itself. The implementation should check that the
+	 * player is near the screen handler's source position (e.g. block position) and
+	 * that the source (e.g. block) is not destroyed.
+	 */
 	public abstract boolean canUse(PlayerEntity player);
 
+	/**
+	 * Tries to consume {@code stack} by inserting to slots from {@code startIndex}
+	 * to {@code endIndex - 1} (both inclusive) until the entire stack is used.
+	 * 
+	 * <p>If {@code fromLast} is {@code true}, this attempts the insertion in reverse
+	 * order; i.e. {@code endIndex - 1} to {@code startIndex} (both inclusive).
+	 * 
+	 * @return whether {@code stack} was decremented
+	 */
 	protected boolean insertItem(ItemStack stack, int startIndex, int endIndex, boolean fromLast) {
 		boolean bl = false;
 		int i = startIndex;

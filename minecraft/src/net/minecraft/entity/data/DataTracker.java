@@ -87,24 +87,24 @@ public class DataTracker {
 		}
 	}
 
-	private <T> void addTrackedData(TrackedData<T> trackedData, T object) {
-		DataTracker.Entry<T> entry = new DataTracker.Entry<>(trackedData, object);
+	private <T> void addTrackedData(TrackedData<T> key, T value) {
+		DataTracker.Entry<T> entry = new DataTracker.Entry<>(key, value);
 		this.lock.writeLock().lock();
-		this.entries.put(trackedData.getId(), entry);
+		this.entries.put(key.getId(), entry);
 		this.empty = false;
 		this.lock.writeLock().unlock();
 	}
 
-	private <T> DataTracker.Entry<T> getEntry(TrackedData<T> trackedData) {
+	private <T> DataTracker.Entry<T> getEntry(TrackedData<T> key) {
 		this.lock.readLock().lock();
 
 		DataTracker.Entry<T> entry;
 		try {
-			entry = (DataTracker.Entry<T>)this.entries.get(trackedData.getId());
+			entry = (DataTracker.Entry<T>)this.entries.get(key.getId());
 		} catch (Throwable var9) {
 			CrashReport crashReport = CrashReport.create(var9, "Getting synched entity data");
 			CrashReportSection crashReportSection = crashReport.addElement("Synched entity data");
-			crashReportSection.add("Data ID", trackedData);
+			crashReportSection.add("Data ID", key);
 			throw new CrashException(crashReport);
 		} finally {
 			this.lock.readLock().unlock();
@@ -216,8 +216,8 @@ public class DataTracker {
 		return list;
 	}
 
-	private static <T> DataTracker.Entry<T> entryFromPacket(PacketByteBuf buf, int i, TrackedDataHandler<T> trackedDataHandler) {
-		return new DataTracker.Entry<>(trackedDataHandler.create(i), trackedDataHandler.read(buf));
+	private static <T> DataTracker.Entry<T> entryFromPacket(PacketByteBuf buf, int id, TrackedDataHandler<T> handler) {
+		return new DataTracker.Entry<>(handler.create(id), handler.read(buf));
 	}
 
 	public void writeUpdatedEntries(List<DataTracker.Entry<?>> entries) {

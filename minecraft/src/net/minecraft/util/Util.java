@@ -76,6 +76,9 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import org.slf4j.Logger;
 
+/**
+ * A class holding various utility methods.
+ */
 public class Util {
 	static final Logger LOGGER = LogUtils.getLogger();
 	private static final int MAX_PARALLELISM = 255;
@@ -84,6 +87,10 @@ public class Util {
 	private static final ExecutorService BOOTSTRAP_EXECUTOR = createWorker("Bootstrap");
 	private static final ExecutorService MAIN_WORKER_EXECUTOR = createWorker("Main");
 	private static final ExecutorService IO_WORKER_EXECUTOR = createIoWorker();
+	/**
+	 * A locale-independent datetime formatter that uses {@code yyyy-MM-dd_HH.mm.ss}
+	 * as the format string. Example: {@code 2022-01-01_00.00.00}
+	 */
 	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH.mm.ss", Locale.ROOT);
 	public static TimeSupplier.Nanoseconds nanoTimeSupplier = System::nanoTime;
 	public static final Ticker TICKER = new Ticker() {
@@ -92,7 +99,13 @@ public class Util {
 			return Util.nanoTimeSupplier.getAsLong();
 		}
 	};
+	/**
+	 * The "nil UUID" that represents lack of a UUID.
+	 */
 	public static final UUID NIL_UUID = new UUID(0L, 0L);
+	/**
+	 * The file system provider for handling jar and zip files.
+	 */
 	public static final FileSystemProvider JAR_FILE_SYSTEM_PROVIDER = (FileSystemProvider)FileSystemProvider.installedProviders()
 		.stream()
 		.filter(fileSystemProvider -> fileSystemProvider.getScheme().equalsIgnoreCase("jar"))
@@ -109,22 +122,59 @@ public class Util {
 		return property.name((T)value);
 	}
 
+	/**
+	 * {@return the translation key constructed from {@code type} and {@code id}}
+	 * 
+	 * <p>If {@code id} is {@code null}, {@code unregistered_sadface} is used as the ID.
+	 * 
+	 * @see Identifier#toTranslationKey(String)
+	 */
 	public static String createTranslationKey(String type, @Nullable Identifier id) {
 		return id == null ? type + ".unregistered_sadface" : type + "." + id.getNamespace() + "." + id.getPath().replace('/', '.');
 	}
 
+	/**
+	 * {@return the current time in milliseconds, to be used for measuring a duration}
+	 * 
+	 * <p>This is not the Unix epoch time, and can only be used to determine the duration
+	 * between two calls of this method.
+	 * 
+	 * @see #getMeasuringTimeNano
+	 * @see #getEpochTimeMs
+	 */
 	public static long getMeasuringTimeMs() {
 		return getMeasuringTimeNano() / 1000000L;
 	}
 
+	/**
+	 * {@return the current time in nanoseconds, to be used for measuring a duration}
+	 * 
+	 * <p>This is not the Unix epoch time, and can only be used to determine the duration
+	 * between two calls of this method.
+	 * 
+	 * @see #getMeasuringTimeMs
+	 * @see #getEpochTimeMs
+	 */
 	public static long getMeasuringTimeNano() {
 		return nanoTimeSupplier.getAsLong();
 	}
 
+	/**
+	 * {@return the milliseconds passed since the Unix epoch}
+	 * 
+	 * <p>This should be used to display or store the current time. {@link #getMeasuringTimeMs}
+	 * should be used for determining the duration between two calls.
+	 * 
+	 * @see #getMeasuringTimeMs
+	 * @see #getMeasuringTimeNano
+	 */
 	public static long getEpochTimeMs() {
 		return Instant.now().toEpochMilli();
 	}
 
+	/**
+	 * {@return the current time formatted using {@link #DATE_TIME_FORMATTER}}
+	 */
 	public static String getFormattedCurrentTime() {
 		return DATE_TIME_FORMATTER.format(ZonedDateTime.now());
 	}
@@ -173,14 +223,25 @@ public class Util {
 		return 255;
 	}
 
+	/**
+	 * {@return the executor for asynchronous bootstrapping}
+	 * 
+	 * <p>This is used by DataFixerUpper to build schemas.
+	 */
 	public static ExecutorService getBootstrapExecutor() {
 		return BOOTSTRAP_EXECUTOR;
 	}
 
+	/**
+	 * {@return the main worker executor for miscellaneous asynchronous tasks}
+	 */
 	public static ExecutorService getMainWorkerExecutor() {
 		return MAIN_WORKER_EXECUTOR;
 	}
 
+	/**
+	 * {@return the executor for disk or network IO tasks}
+	 */
 	public static ExecutorService getIoWorkerExecutor() {
 		return IO_WORKER_EXECUTOR;
 	}
@@ -214,12 +275,21 @@ public class Util {
 		});
 	}
 
+	/**
+	 * {@return a future that is already completed exceptionally with {@code throwable}}
+	 */
 	public static <T> CompletableFuture<T> completeExceptionally(Throwable throwable) {
 		CompletableFuture<T> completableFuture = new CompletableFuture();
 		completableFuture.completeExceptionally(throwable);
 		return completableFuture;
 	}
 
+	/**
+	 * Throws {@code t} if it's a {@link RuntimeException} (or any of its subclass), otherwise
+	 * {@code t} wrapped in a RuntimeException.
+	 * 
+	 * <p>{@link Error} is wrapped as well, despite being unchecked.
+	 */
 	public static void throwUnchecked(Throwable t) {
 		throw t instanceof RuntimeException ? (RuntimeException)t : new RuntimeException(t);
 	}
@@ -290,6 +360,12 @@ public class Util {
 		} : supplier;
 	}
 
+	/**
+	 * {@return the operating system instance for the current platform}
+	 * 
+	 * @implNote This uses the {@code os.name} system property to determine the operating system.
+	 * @apiNote This is used for opening links.
+	 */
 	public static Util.OperatingSystem getOperatingSystem() {
 		String string = System.getProperty("os.name").toLowerCase(Locale.ROOT);
 		if (string.contains("win")) {
@@ -307,15 +383,32 @@ public class Util {
 		}
 	}
 
+	/**
+	 * {@return a stream of JVM flags passed when launching}
+	 * 
+	 * <p>The streamed strings include the {@code -X} prefix.
+	 */
 	public static Stream<String> getJVMFlags() {
 		RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
 		return runtimeMXBean.getInputArguments().stream().filter(runtimeArg -> runtimeArg.startsWith("-X"));
 	}
 
+	/**
+	 * {@return the last item of {@code list}}
+	 * 
+	 * @throws IndexOutOfBoundsException if {@code list} is empty
+	 */
 	public static <T> T getLast(List<T> list) {
 		return (T)list.get(list.size() - 1);
 	}
 
+	/**
+	 * {@return the item succeeding {@code object} in {@code iterable}}
+	 * 
+	 * @implNote If {@code object} is {@code null}, this returns the first item of the iterable.
+	 * If {@code object} is not in {@code iterable}, this enters into an infinite loop.
+	 * {@code object} is compared using the {@code ==} operator.
+	 */
 	public static <T> T next(Iterable<T> iterable, @Nullable T object) {
 		Iterator<T> iterator = iterable.iterator();
 		T object2 = (T)iterator.next();
@@ -336,6 +429,12 @@ public class Util {
 		return object2;
 	}
 
+	/**
+	 * {@return the item preceding {@code object} in {@code iterable}}
+	 * 
+	 * <p>If {@code object} is not in {@code iterable}, this returns the last item of the iterable.
+	 * {@code object} is compared using the {@code ==} operator.
+	 */
 	public static <T> T previous(Iterable<T> iterable, @Nullable T object) {
 		Iterator<T> iterator = iterable.iterator();
 		T object2 = null;
@@ -355,10 +454,32 @@ public class Util {
 		return object2;
 	}
 
+	/**
+	 * {@return the value supplied from {@code factory}}
+	 * 
+	 * <p>This is useful when initializing static fields:
+	 * <pre>{@code
+	 * private static final Map<String, String> MAP = Util.make(() -> {
+	 *     Map<String, String> map = new HashMap<>();
+	 *     map.put("example", "hello");
+	 *     return map;
+	 * });
+	 * }</pre>
+	 */
 	public static <T> T make(Supplier<T> factory) {
 		return (T)factory.get();
 	}
 
+	/**
+	 * {@return {@code object} initialized with {@code initializer}}
+	 * 
+	 * <p>This is useful when initializing static fields:
+	 * <pre>{@code
+	 * private static final Map<String, String> MAP = Util.make(new HashMap<>(), (map) -> {
+	 *     map.put("example", "hello");
+	 * });
+	 * }</pre>
+	 */
 	public static <T> T make(T object, Consumer<T> initializer) {
 		initializer.accept(object);
 		return object;
@@ -386,6 +507,11 @@ public class Util {
 		return (R)(value == null ? other : mapper.apply(value));
 	}
 
+	/**
+	 * {@return the {@link Hash.Strategy} that uses identity comparison}
+	 * 
+	 * <p>fastutil's "reference" object types should be used instead in most cases.
+	 */
 	public static <K> Strategy<K> identityHashStrategy() {
 		return Util.IdentityHashStrategy.INSTANCE;
 	}
@@ -473,6 +599,12 @@ public class Util {
 		return CompletableFuture.allOf(completableFutures).thenApply(void_ -> list);
 	}
 
+	/**
+	 * If {@code optional} has value, calls {@code presentAction} with the value,
+	 * otherwise calls {@code elseAction}.
+	 * 
+	 * @return the passed {@code optional}
+	 */
 	public static <T> Optional<T> ifPresentOrElse(Optional<T> optional, Consumer<T> presentAction, Runnable elseAction) {
 		if (optional.isPresent()) {
 			presentAction.accept(optional.get());
@@ -535,18 +667,41 @@ public class Util {
 		}
 	}
 
+	/**
+	 * {@return a random item from {@code array}}
+	 * 
+	 * @throws IllegalArgumentException if {@code array} is empty
+	 */
 	public static <T> T getRandom(T[] array, Random random) {
 		return array[random.nextInt(array.length)];
 	}
 
+	/**
+	 * {@return a random integer from {@code array}}
+	 * 
+	 * @throws IllegalArgumentException if {@code array} is empty
+	 */
 	public static int getRandom(int[] array, Random random) {
 		return array[random.nextInt(array.length)];
 	}
 
+	/**
+	 * {@return a random item from {@code list}}
+	 * 
+	 * @throws IllegalArgumentException if {@code list} is empty
+	 * 
+	 * @see #getRandomOrEmpty
+	 */
 	public static <T> T getRandom(List<T> list, Random random) {
 		return (T)list.get(random.nextInt(list.size()));
 	}
 
+	/**
+	 * {@return an {@link Optional} of a random item from {@code list}, or an empty optional
+	 * if the list is empty}
+	 * 
+	 * @see #getRandom(List, Random)
+	 */
 	public static <T> Optional<T> getRandomOrEmpty(List<T> list, Random random) {
 		return list.isEmpty() ? Optional.empty() : Optional.of(getRandom(list, random));
 	}
@@ -635,21 +790,34 @@ public class Util {
 		return false;
 	}
 
+	/**
+	 * Copies {@code current} to {@code backup} and then replaces {@code current} with {@code newPath}.
+	 */
 	public static void backupAndReplace(File current, File newFile, File backup) {
 		backupAndReplace(current.toPath(), newFile.toPath(), backup.toPath());
 	}
 
 	/**
-	 * Copies {@code current} to {@code backup} and then replaces {@code current} with {@code newPath}
+	 * Copies {@code current} to {@code backup} and then replaces {@code current} with {@code newPath}.
 	 */
 	public static void backupAndReplace(Path current, Path newPath, Path backup) {
 		backupAndReplace(current, newPath, backup, false);
 	}
 
+	/**
+	 * Copies {@code current} to {@code backup} and then replaces {@code current} with {@code newPath}.
+	 * 
+	 * @param noRestoreOnFail if {@code true}, does not restore the current file when replacing fails
+	 */
 	public static void backupAndReplace(File current, File newPath, File backup, boolean noRestoreOnFail) {
 		backupAndReplace(current.toPath(), newPath.toPath(), backup.toPath(), noRestoreOnFail);
 	}
 
+	/**
+	 * Copies {@code current} to {@code backup} and then replaces {@code current} with {@code newPath}.
+	 * 
+	 * @param noRestoreOnFail if {@code true}, does not restore the current file when replacing fails
+	 */
 	public static void backupAndReplace(Path current, Path newPath, Path backup, boolean noRestoreOnFail) {
 		int i = 10;
 		if (!Files.exists(current, new LinkOption[0])
@@ -686,6 +854,14 @@ public class Util {
 		return cursor;
 	}
 
+	/**
+	 * {@return a consumer that first prepends {@code prefix} to its input
+	 * string and passes the result to {@code consumer}}
+	 * 
+	 * @apiNote This is useful in codec-based deserialization when passing the
+	 * error consumer to some methods, e.g. {@code
+	 * Util.addPrefix("Could not parse Example", LOGGER::error)}.
+	 */
 	public static Consumer<String> addPrefix(String prefix, Consumer<String> consumer) {
 		return string -> consumer.accept(prefix + string);
 	}
@@ -772,12 +948,18 @@ public class Util {
 		};
 	}
 
+	/**
+	 * {@return the contents of {@code stream} copied to a list and then shuffled}
+	 */
 	public static <T> List<T> copyShuffled(Stream<T> stream, Random random) {
 		ObjectArrayList<T> objectArrayList = (ObjectArrayList<T>)stream.collect(ObjectArrayList.toList());
 		shuffle(objectArrayList, random);
 		return objectArrayList;
 	}
 
+	/**
+	 * {@return the contents of {@code stream} copied to a list and then shuffled}
+	 */
 	public static IntArrayList shuffle(IntStream stream, Random random) {
 		IntArrayList intArrayList = IntArrayList.wrap(stream.toArray());
 		int i = intArrayList.size();
@@ -790,18 +972,27 @@ public class Util {
 		return intArrayList;
 	}
 
+	/**
+	 * {@return the contents of {@code array} copied to a list and then shuffled}
+	 */
 	public static <T> List<T> copyShuffled(T[] array, Random random) {
 		ObjectArrayList<T> objectArrayList = new ObjectArrayList<>(array);
 		shuffle(objectArrayList, random);
 		return objectArrayList;
 	}
 
+	/**
+	 * {@return the contents of {@code stream} copied to a list and then shuffled}
+	 */
 	public static <T> List<T> copyShuffled(ObjectArrayList<T> list, Random random) {
 		ObjectArrayList<T> objectArrayList = new ObjectArrayList<>(list);
 		shuffle(objectArrayList, random);
 		return objectArrayList;
 	}
 
+	/**
+	 * Shuffles {@code list}, modifying the passed list in place.
+	 */
 	public static <T> void shuffle(ObjectArrayList<T> list, Random random) {
 		int i = list.size();
 
@@ -904,6 +1095,11 @@ public class Util {
 		}
 	}
 
+	/**
+	 * An enum representing the operating system of the current platform.
+	 * This defines the behavior for opening links.
+	 * The current one can be obtained via {@link Util#getOperatingSystem}.
+	 */
 	public static enum OperatingSystem {
 		LINUX("linux"),
 		SOLARIS("solaris"),
@@ -927,6 +1123,13 @@ public class Util {
 			this.name = name;
 		}
 
+		/**
+		 * Opens {@code url}. If this points to an HTTP(S) URL, it is usually opened using
+		 * the system's default browser. Otherwise, it is opened directly.
+		 * 
+		 * <p><strong>Always validate the passed URL's schema</strong> as some values can
+		 * execute code.
+		 */
 		public void open(URL url) {
 			try {
 				Process process = (Process)AccessController.doPrivileged(() -> Runtime.getRuntime().exec(this.getURLOpenCommand(url)));
@@ -938,6 +1141,13 @@ public class Util {
 			}
 		}
 
+		/**
+		 * Opens {@code uri}. If this points to an HTTP(S) URI, it is usually opened using
+		 * the system's default browser. Otherwise, it is opened directly.
+		 * 
+		 * <p><strong>Always validate the passed URI's schema</strong> as some values can
+		 * execute code.
+		 */
 		public void open(URI uri) {
 			try {
 				this.open(uri.toURL());
@@ -946,6 +1156,12 @@ public class Util {
 			}
 		}
 
+		/**
+		 * Opens {@code file}.
+		 * 
+		 * <p><strong>Do not pass untrusted file to this method</strong> as some values can
+		 * execute code.
+		 */
 		public void open(File file) {
 			try {
 				this.open(file.toURI().toURL());
@@ -963,6 +1179,13 @@ public class Util {
 			return new String[]{"xdg-open", string};
 		}
 
+		/**
+		 * Opens {@code uri}. If this points to an HTTP(S) URI, it is usually opened using
+		 * the system's default browser. Otherwise, it is opened directly.
+		 * 
+		 * <p><strong>Always validate the passed URI's schema</strong> as some values can
+		 * execute code.
+		 */
 		public void open(String uri) {
 			try {
 				this.open(new URI(uri).toURL());

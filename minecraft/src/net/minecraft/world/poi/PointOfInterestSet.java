@@ -62,9 +62,9 @@ public class PointOfInterestSet {
 			.filter(occupationStatus.getPredicate());
 	}
 
-	public void add(BlockPos pos, RegistryEntry<PointOfInterestType> registryEntry) {
-		if (this.add(new PointOfInterest(pos, registryEntry, this.updateListener))) {
-			LOGGER.debug("Added POI of type {} @ {}", registryEntry.getKey().map(registryKey -> registryKey.getValue().toString()).orElse("[unregistered]"), pos);
+	public void add(BlockPos pos, RegistryEntry<PointOfInterestType> type) {
+		if (this.add(new PointOfInterest(pos, type, this.updateListener))) {
+			LOGGER.debug("Added POI of type {} @ {}", type.getKey().map(key -> key.getValue().toString()).orElse("[unregistered]"), pos);
 			this.updateListener.run();
 		}
 	}
@@ -83,7 +83,7 @@ public class PointOfInterestSet {
 		}
 
 		this.pointsOfInterestByPos.put(s, poi);
-		((Set)this.pointsOfInterestByType.computeIfAbsent(registryEntry, registryEntryx -> Sets.newHashSet())).add(poi);
+		((Set)this.pointsOfInterestByType.computeIfAbsent(registryEntry, type -> Sets.newHashSet())).add(poi);
 		return true;
 	}
 
@@ -127,11 +127,11 @@ public class PointOfInterestSet {
 		return Optional.ofNullable(this.pointsOfInterestByPos.get(ChunkSectionPos.packLocal(pos)));
 	}
 
-	public void updatePointsOfInterest(Consumer<BiConsumer<BlockPos, RegistryEntry<PointOfInterestType>>> consumer) {
+	public void updatePointsOfInterest(Consumer<BiConsumer<BlockPos, RegistryEntry<PointOfInterestType>>> updater) {
 		if (!this.valid) {
 			Short2ObjectMap<PointOfInterest> short2ObjectMap = new Short2ObjectOpenHashMap<>(this.pointsOfInterestByPos);
 			this.clear();
-			consumer.accept(
+			updater.accept(
 				(BiConsumer)(pos, registryEntry) -> {
 					short s = ChunkSectionPos.packLocal(pos);
 					PointOfInterest pointOfInterest = short2ObjectMap.computeIfAbsent(

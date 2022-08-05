@@ -16,18 +16,14 @@ import net.minecraft.util.FixedBufferInputStream;
 public class ChunkStreamVersion {
 	private static final Int2ObjectMap<ChunkStreamVersion> VERSIONS = new Int2ObjectOpenHashMap<>();
 	public static final ChunkStreamVersion GZIP = add(
-		new ChunkStreamVersion(
-			1, inputStream -> new FixedBufferInputStream(new GZIPInputStream(inputStream)), outputStream -> new BufferedOutputStream(new GZIPOutputStream(outputStream))
-		)
+		new ChunkStreamVersion(1, stream -> new FixedBufferInputStream(new GZIPInputStream(stream)), stream -> new BufferedOutputStream(new GZIPOutputStream(stream)))
 	);
 	public static final ChunkStreamVersion DEFLATE = add(
 		new ChunkStreamVersion(
-			2,
-			inputStream -> new FixedBufferInputStream(new InflaterInputStream(inputStream)),
-			outputStream -> new BufferedOutputStream(new DeflaterOutputStream(outputStream))
+			2, stream -> new FixedBufferInputStream(new InflaterInputStream(stream)), stream -> new BufferedOutputStream(new DeflaterOutputStream(stream))
 		)
 	);
-	public static final ChunkStreamVersion UNCOMPRESSED = add(new ChunkStreamVersion(3, inputStream -> inputStream, outputStream -> outputStream));
+	public static final ChunkStreamVersion UNCOMPRESSED = add(new ChunkStreamVersion(3, stream -> stream, stream -> stream));
 	private final int id;
 	private final ChunkStreamVersion.Wrapper<InputStream> inputStreamWrapper;
 	private final ChunkStreamVersion.Wrapper<OutputStream> outputStreamWrapper;

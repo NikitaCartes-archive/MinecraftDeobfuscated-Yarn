@@ -19,7 +19,7 @@ import net.minecraft.world.event.listener.VibrationListener;
 import org.slf4j.Logger;
 
 public class SculkSensorBlockEntity extends BlockEntity implements VibrationListener.Callback {
-	private static final Logger field_38236 = LogUtils.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private VibrationListener listener;
 	private int lastVibrationFrequency;
 
@@ -35,7 +35,7 @@ public class SculkSensorBlockEntity extends BlockEntity implements VibrationList
 		if (nbt.contains("listener", NbtElement.COMPOUND_TYPE)) {
 			VibrationListener.createCodec(this)
 				.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("listener")))
-				.resultOrPartial(field_38236::error)
+				.resultOrPartial(LOGGER::error)
 				.ifPresent(listener -> this.listener = listener);
 		}
 	}
@@ -46,7 +46,7 @@ public class SculkSensorBlockEntity extends BlockEntity implements VibrationList
 		nbt.putInt("last_vibration_frequency", this.lastVibrationFrequency);
 		VibrationListener.createCodec(this)
 			.encodeStart(NbtOps.INSTANCE, this.listener)
-			.resultOrPartial(field_38236::error)
+			.resultOrPartial(LOGGER::error)
 			.ifPresent(listenerNbt -> nbt.put("listener", listenerNbt));
 	}
 

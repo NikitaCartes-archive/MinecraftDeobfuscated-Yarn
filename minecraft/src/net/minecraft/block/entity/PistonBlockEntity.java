@@ -178,9 +178,12 @@ public class PistonBlockEntity extends BlockEntity {
 		}
 	}
 
-	private static void moveEntity(Direction direction, Entity entity, double d, Direction direction2) {
+	private static void moveEntity(Direction direction, Entity entity, double d, Direction movementDirection) {
 		field_12205.set(direction);
-		entity.move(MovementType.PISTON, new Vec3d(d * (double)direction2.getOffsetX(), d * (double)direction2.getOffsetY(), d * (double)direction2.getOffsetZ()));
+		entity.move(
+			MovementType.PISTON,
+			new Vec3d(d * (double)movementDirection.getOffsetX(), d * (double)movementDirection.getOffsetY(), d * (double)movementDirection.getOffsetZ())
+		);
 		field_12205.set(null);
 	}
 

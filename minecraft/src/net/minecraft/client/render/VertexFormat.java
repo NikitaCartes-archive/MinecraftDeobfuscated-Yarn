@@ -13,6 +13,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gl.VertexBuffer;
 
+/**
+ * Defines what {@link VertexFormatElement elements} a vertex has.
+ */
 @Environment(EnvType.CLIENT)
 public class VertexFormat {
 	private final ImmutableList<VertexFormatElement> elements;
@@ -110,6 +113,12 @@ public class VertexFormat {
 		}
 	}
 
+	/**
+	 * {@return a vertex buffer shared with the users of this vertex format}
+	 * 
+	 * <p>The data uploaded to the returned vertex buffer cannot be reused as
+	 * it can be overwritten by other users of this method.
+	 */
 	public VertexBuffer getBuffer() {
 		VertexBuffer vertexBuffer = this.buffer;
 		if (vertexBuffer == null) {

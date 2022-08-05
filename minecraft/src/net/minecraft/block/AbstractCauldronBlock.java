@@ -21,6 +21,17 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
+/**
+ * The base class for all cauldrons.
+ * 
+ * <p>Interaction with cauldrons is controlled by {@linkplain CauldronBehavior
+ * cauldron behaviors}.
+ * 
+ * @see CauldronBlock empty cauldrons
+ * @see LavaCauldronBlock cauldrons filled with lava
+ * @see LeveledCauldronBlock cauldrons with varying levels of contents
+ * @see PowderSnowCauldronBlock cauldrons filled with powder snow
+ */
 public abstract class AbstractCauldronBlock extends Block {
 	private static final int field_30989 = 2;
 	private static final int field_30990 = 4;
@@ -40,6 +51,14 @@ public abstract class AbstractCauldronBlock extends Block {
 	);
 	private final Map<Item, CauldronBehavior> behaviorMap;
 
+	/**
+	 * Constructs a cauldron block.
+	 * 
+	 * <p>The behavior map must match {@link CauldronBehavior#createMap} by providing
+	 * a nonnull value for <em>all</em> items.
+	 * 
+	 * @param behaviorMap the map containing cauldron behaviors for each item
+	 */
 	public AbstractCauldronBlock(AbstractBlock.Settings settings, Map<Item, CauldronBehavior> behaviorMap) {
 		super(settings);
 		this.behaviorMap = behaviorMap;
@@ -80,6 +99,12 @@ public abstract class AbstractCauldronBlock extends Block {
 		return false;
 	}
 
+	/**
+	 * {@return {@code true} if the specified cauldron state is completely full,
+	 * {@code false} otherwise}
+	 * 
+	 * @param state the cauldron state to check
+	 */
 	public abstract boolean isFull(BlockState state);
 
 	@Override
@@ -93,10 +118,25 @@ public abstract class AbstractCauldronBlock extends Block {
 		}
 	}
 
+	/**
+	 * Checks if this cauldron block can be filled with the specified fluid by dripstone.
+	 * 
+	 * @return {@code true} if this block can be filled, {@code false} otherwise
+	 * 
+	 * @param fluid the fluid to check
+	 */
 	protected boolean canBeFilledByDripstone(Fluid fluid) {
 		return false;
 	}
 
+	/**
+	 * Fills a cauldron with one level of the specified fluid if possible.
+	 * 
+	 * @param state the current cauldron state
+	 * @param world the world where the cauldron is located
+	 * @param pos the cauldron's position
+	 * @param fluid the fluid to fill the cauldron with
+	 */
 	protected void fillFromDripstone(BlockState state, World world, BlockPos pos, Fluid fluid) {
 	}
 }

@@ -28,17 +28,89 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
+/**
+ * Cauldron behaviors control what happens when a player interacts with
+ * cauldrons using a specific item.
+ * 
+ * <p>To register new cauldron behaviors, you can add them to the corresponding
+ * maps based on the cauldron type.
+ * <div class="fabric"><table>
+ * <caption>Behavior maps by cauldron type</caption>
+ * <thead><tr>
+ *     <th>Type</th>
+ *     <th>Block</th>
+ *     <th>Behavior map</th>
+ * </tr></thead>
+ * <tbody>
+ *     <tr>
+ *         <td>Empty</td>
+ *         <td>{@link net.minecraft.block.Blocks#CAULDRON minecraft:cauldron}</td>
+ *         <td>{@link #EMPTY_CAULDRON_BEHAVIOR}</td>
+ *     </tr>
+ *     <tr>
+ *         <td>Water</td>
+ *         <td>{@link net.minecraft.block.Blocks#WATER_CAULDRON minecraft:water_cauldron}</td>
+ *         <td>{@link #WATER_CAULDRON_BEHAVIOR}</td>
+ *     </tr>
+ *     <tr>
+ *         <td>Lava</td>
+ *         <td>{@link net.minecraft.block.Blocks#LAVA_CAULDRON minecraft:lava_cauldron}</td>
+ *         <td>{@link #LAVA_CAULDRON_BEHAVIOR}</td>
+ *     </tr>
+ *     <tr>
+ *         <td>Powder snow</td>
+ *         <td>{@link net.minecraft.block.Blocks#POWDER_SNOW_CAULDRON minecraft:powder_snow_cauldron}</td>
+ *         <td>{@link #POWDER_SNOW_CAULDRON_BEHAVIOR}</td>
+ *     </tr>
+ * </tbody>
+ * </table></div>
+ */
 public interface CauldronBehavior {
+	/**
+	 * The cauldron behaviors for empty cauldrons.
+	 * 
+	 * @see #createMap
+	 */
 	Map<Item, CauldronBehavior> EMPTY_CAULDRON_BEHAVIOR = createMap();
+	/**
+	 * The cauldron behaviors for water cauldrons.
+	 * 
+	 * @see #createMap
+	 */
 	Map<Item, CauldronBehavior> WATER_CAULDRON_BEHAVIOR = createMap();
+	/**
+	 * The cauldron behaviors for lava cauldrons.
+	 * 
+	 * @see #createMap
+	 */
 	Map<Item, CauldronBehavior> LAVA_CAULDRON_BEHAVIOR = createMap();
+	/**
+	 * The cauldron behaviors for powder snow cauldrons.
+	 * 
+	 * @see #createMap
+	 */
 	Map<Item, CauldronBehavior> POWDER_SNOW_CAULDRON_BEHAVIOR = createMap();
+	/**
+	 * A behavior that fills cauldrons with water.
+	 * 
+	 * @see #fillCauldron
+	 */
 	CauldronBehavior FILL_WITH_WATER = (state, world, pos, player, hand, stack) -> fillCauldron(
 			world, pos, player, hand, stack, Blocks.WATER_CAULDRON.getDefaultState().with(LeveledCauldronBlock.LEVEL, Integer.valueOf(3)), SoundEvents.ITEM_BUCKET_EMPTY
 		);
+	/**
+	 * A behavior that fills cauldrons with lava.
+	 * 
+	 * @see #fillCauldron
+	 */
 	CauldronBehavior FILL_WITH_LAVA = (state, world, pos, player, hand, stack) -> fillCauldron(
 			world, pos, player, hand, stack, Blocks.LAVA_CAULDRON.getDefaultState(), SoundEvents.ITEM_BUCKET_EMPTY_LAVA
 		);
+	/**
+	 * A behavior that fills cauldrons with powder snow.
+	 * 
+	 * @see #fillCauldron
+	 */
 	CauldronBehavior FILL_WITH_POWDER_SNOW = (state, world, pos, player, hand, stack) -> fillCauldron(
 			world,
 			pos,
@@ -48,6 +120,9 @@ public interface CauldronBehavior {
 			Blocks.POWDER_SNOW_CAULDRON.getDefaultState().with(LeveledCauldronBlock.LEVEL, Integer.valueOf(3)),
 			SoundEvents.ITEM_BUCKET_EMPTY_POWDER_SNOW
 		);
+	/**
+	 * A behavior that cleans dyed shulker boxes.
+	 */
 	CauldronBehavior CLEAN_SHULKER_BOX = (state, world, pos, player, hand, stack) -> {
 		Block block = Block.getBlockFromItem(stack.getItem());
 		if (!(block instanceof ShulkerBoxBlock)) {
@@ -67,6 +142,9 @@ public interface CauldronBehavior {
 			return ActionResult.success(world.isClient);
 		}
 	};
+	/**
+	 * A behavior that cleans banners with patterns.
+	 */
 	CauldronBehavior CLEAN_BANNER = (state, world, pos, player, hand, stack) -> {
 		if (BannerBlockEntity.getPatternCount(stack) <= 0) {
 			return ActionResult.PASS;
@@ -94,6 +172,9 @@ public interface CauldronBehavior {
 			return ActionResult.success(world.isClient);
 		}
 	};
+	/**
+	 * A behavior that cleans {@linkplain net.minecraft.item.DyeableItem dyeable items}.
+	 */
 	CauldronBehavior CLEAN_DYEABLE_ITEM = (state, world, pos, player, hand, stack) -> {
 		if (!(stack.getItem() instanceof DyeableItem dyeableItem)) {
 			return ActionResult.PASS;
@@ -110,12 +191,37 @@ public interface CauldronBehavior {
 		}
 	};
 
+	/**
+	 * Creates a mutable map from {@linkplain Item items} to their
+	 * corresponding cauldron behaviors.
+	 * 
+	 * <p>The default return value in the map is a cauldron behavior
+	 * that returns {@link ActionResult#PASS} for all items.
+	 * 
+	 * @return the created map
+	 */
 	static Object2ObjectOpenHashMap<Item, CauldronBehavior> createMap() {
 		return Util.make(new Object2ObjectOpenHashMap<>(), map -> map.defaultReturnValue((state, world, pos, player, hand, stack) -> ActionResult.PASS));
 	}
 
+	/**
+	 * Called when a player interacts with a cauldron.
+	 * 
+	 * @return a {@linkplain ActionResult#isAccepted successful} action result if this behavior succeeds,
+	 * {@link ActionResult#PASS} otherwise
+	 * 
+	 * @param state the current cauldron block state
+	 * @param world the world where the cauldron is located
+	 * @param pos the cauldron's position
+	 * @param player the interacting player
+	 * @param hand the hand interacting with the cauldron
+	 * @param stack the stack in the player's hand
+	 */
 	ActionResult interact(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack);
 
+	/**
+	 * Registers the vanilla cauldron behaviors.
+	 */
 	static void registerBehavior() {
 		registerBucketBehavior(EMPTY_CAULDRON_BEHAVIOR);
 		EMPTY_CAULDRON_BEHAVIOR.put(Items.POTION, (CauldronBehavior)(state, world, pos, player, hand, stack) -> {
@@ -240,12 +346,30 @@ public interface CauldronBehavior {
 		registerBucketBehavior(POWDER_SNOW_CAULDRON_BEHAVIOR);
 	}
 
+	/**
+	 * Registers the behavior for filled buckets in the specified behavior map.
+	 */
 	static void registerBucketBehavior(Map<Item, CauldronBehavior> behavior) {
 		behavior.put(Items.LAVA_BUCKET, FILL_WITH_LAVA);
 		behavior.put(Items.WATER_BUCKET, FILL_WITH_WATER);
 		behavior.put(Items.POWDER_SNOW_BUCKET, FILL_WITH_POWDER_SNOW);
 	}
 
+	/**
+	 * Empties a cauldron if it's full.
+	 * 
+	 * @return a {@linkplain ActionResult#isAccepted successful} action result if emptied, {@link ActionResult#PASS} otherwise
+	 * 
+	 * @param state the cauldron block state
+	 * @param world the world where the cauldron is located
+	 * @param pos the cauldron's position
+	 * @param player the interacting player
+	 * @param hand the hand interacting with the cauldron
+	 * @param stack the stack in the player's hand
+	 * @param output the item stack that replaces the interaction stack when the cauldron is emptied
+	 * @param fullPredicate a predicate used to check if the cauldron can be emptied into the output stack
+	 * @param soundEvent the sound produced by emptying
+	 */
 	static ActionResult emptyCauldron(
 		BlockState state,
 		World world,
@@ -254,10 +378,10 @@ public interface CauldronBehavior {
 		Hand hand,
 		ItemStack stack,
 		ItemStack output,
-		Predicate<BlockState> predicate,
+		Predicate<BlockState> fullPredicate,
 		SoundEvent soundEvent
 	) {
-		if (!predicate.test(state)) {
+		if (!fullPredicate.test(state)) {
 			return ActionResult.PASS;
 		} else {
 			if (!world.isClient) {
@@ -274,6 +398,22 @@ public interface CauldronBehavior {
 		}
 	}
 
+	/**
+	 * Fills a cauldron from a bucket stack.
+	 * 
+	 * <p>The filled bucket stack will be replaced by an empty bucket in the player's
+	 * inventory.
+	 * 
+	 * @return a {@linkplain ActionResult#isAccepted successful} action result
+	 * 
+	 * @param world the world where the cauldron is located
+	 * @param pos the cauldron's position
+	 * @param player the interacting player
+	 * @param hand the hand interacting with the cauldron
+	 * @param stack the filled bucket stack in the player's hand
+	 * @param state the filled cauldron state
+	 * @param soundEvent the sound produced by filling
+	 */
 	static ActionResult fillCauldron(World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack, BlockState state, SoundEvent soundEvent) {
 		if (!world.isClient) {
 			Item item = stack.getItem();

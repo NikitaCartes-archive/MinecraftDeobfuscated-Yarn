@@ -43,10 +43,10 @@ public class ModelProvider implements DataProvider {
 		};
 		Map<Identifier, Supplier<JsonElement>> map2 = Maps.<Identifier, Supplier<JsonElement>>newHashMap();
 		Set<Item> set = Sets.<Item>newHashSet();
-		BiConsumer<Identifier, Supplier<JsonElement>> biConsumer = (identifier, supplier) -> {
-			Supplier<JsonElement> supplier2 = (Supplier<JsonElement>)map2.put(identifier, supplier);
-			if (supplier2 != null) {
-				throw new IllegalStateException("Duplicate model definition for " + identifier);
+		BiConsumer<Identifier, Supplier<JsonElement>> biConsumer = (id, jsonSupplier) -> {
+			Supplier<JsonElement> supplier = (Supplier<JsonElement>)map2.put(id, jsonSupplier);
+			if (supplier != null) {
+				throw new IllegalStateException("Duplicate model definition for " + id);
 			}
 		};
 		Consumer<Item> consumer2 = set::add;
@@ -74,12 +74,12 @@ public class ModelProvider implements DataProvider {
 		}
 	}
 
-	private <T> void writeJsons(DataWriter cache, Map<T, ? extends Supplier<JsonElement>> map, Function<T, Path> function) {
-		map.forEach((object, supplier) -> {
-			Path path = (Path)function.apply(object);
+	private <T> void writeJsons(DataWriter cache, Map<T, ? extends Supplier<JsonElement>> models, Function<T, Path> pathGetter) {
+		models.forEach((id, jsonSupplier) -> {
+			Path path = (Path)pathGetter.apply(id);
 
 			try {
-				DataProvider.writeToPath(cache, (JsonElement)supplier.get(), path);
+				DataProvider.writeToPath(cache, (JsonElement)jsonSupplier.get(), path);
 			} catch (Exception var6) {
 				LOGGER.error("Couldn't save {}", path, var6);
 			}

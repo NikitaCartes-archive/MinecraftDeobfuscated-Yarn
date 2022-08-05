@@ -113,7 +113,7 @@ public class ServerStatHandler extends StatHandler {
 											if (nbtCompound2x.contains(string2, NbtElement.NUMBER_TYPE)) {
 												Util.ifPresentOrElse(
 													this.createStat(statType, string2),
-													stat -> this.statMap.put(stat, nbtCompound2x.getInt(string2)),
+													id -> this.statMap.put(id, nbtCompound2x.getInt(string2)),
 													() -> LOGGER.warn("Invalid statistic in {}: Don't know what {} is", this.file, string2)
 												);
 											} else {

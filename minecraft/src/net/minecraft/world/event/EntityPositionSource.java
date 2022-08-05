@@ -19,7 +19,7 @@ public class EntityPositionSource implements PositionSource {
 					Codecs.UUID.fieldOf("source_entity").forGetter(EntityPositionSource::getUuid),
 					Codec.FLOAT.fieldOf("y_offset").orElse(0.0F).forGetter(entityPositionSource -> entityPositionSource.yOffset)
 				)
-				.apply(instance, (uUID, float_) -> new EntityPositionSource(Either.right(Either.left(uUID)), float_))
+				.apply(instance, (uuid, yOffset) -> new EntityPositionSource(Either.right(Either.left(uuid)), yOffset))
 	);
 	private Either<Entity, Either<UUID, Integer>> source;
 	final float yOffset;
@@ -46,21 +46,21 @@ public class EntityPositionSource implements PositionSource {
 		this.source
 			.<Optional>map(
 				Optional::of,
-				either -> Optional.ofNullable(
-						(Entity)either.map(uuid -> world instanceof ServerWorld serverWorld ? serverWorld.getEntity(uuid) : null, world::getEntityById)
+				entityId -> Optional.ofNullable(
+						(Entity)entityId.map(uuid -> world instanceof ServerWorld serverWorld ? serverWorld.getEntity(uuid) : null, world::getEntityById)
 					)
 			)
 			.ifPresent(entity -> this.source = Either.left(entity));
 	}
 
 	private UUID getUuid() {
-		return this.source.map(Entity::getUuid, either -> either.map(Function.identity(), integer -> {
+		return this.source.map(Entity::getUuid, entityId -> entityId.map(Function.identity(), entityIdx -> {
 				throw new RuntimeException("Unable to get entityId from uuid");
 			}));
 	}
 
 	int getEntityId() {
-		return this.source.<Integer>map(Entity::getId, either -> either.map(uUID -> {
+		return this.source.<Integer>map(Entity::getId, entityId -> entityId.map(uuid -> {
 				throw new IllegalStateException("Unable to get entityId from uuid");
 			}, Function.identity()));
 	}

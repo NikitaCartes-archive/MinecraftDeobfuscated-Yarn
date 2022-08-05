@@ -5,8 +5,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.registry.Registry;
 
 public class VillagerData {
-	public static final int field_30613 = 1;
-	public static final int field_30614 = 5;
+	public static final int MIN_LEVEL = 1;
+	public static final int MAX_LEVEL = 5;
 	private static final int[] LEVEL_BASE_EXPERIENCE = new int[]{0, 10, 70, 150, 250};
 	public static final Codec<VillagerData> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(

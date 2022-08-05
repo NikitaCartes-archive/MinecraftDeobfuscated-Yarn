@@ -51,8 +51,8 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 	private static final float field_31208 = 0.02F;
 	private static final float field_31209 = 0.12F;
 	private static final int field_31210 = 11;
-	private static final float field_31211 = 0.17578125F;
-	private static final float field_31212 = 0.05859375F;
+	private static final float WATER_DRIP_CHANCE = 0.17578125F;
+	private static final float LAVA_DRIP_CHANCE = 0.05859375F;
 	private static final double field_31213 = 0.6;
 	private static final float field_31214 = 1.0F;
 	private static final int field_31215 = 40;

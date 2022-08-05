@@ -1629,13 +1629,13 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 	}
 
-	private void handleBlockBreaking(boolean bl) {
-		if (!bl) {
+	private void handleBlockBreaking(boolean breaking) {
+		if (!breaking) {
 			this.attackCooldown = 0;
 		}
 
 		if (this.attackCooldown <= 0 && !this.player.isUsingItem()) {
-			if (bl && this.crosshairTarget != null && this.crosshairTarget.getType() == HitResult.Type.BLOCK) {
+			if (breaking && this.crosshairTarget != null && this.crosshairTarget.getType() == HitResult.Type.BLOCK) {
 				BlockHitResult blockHitResult = (BlockHitResult)this.crosshairTarget;
 				BlockPos blockPos = blockHitResult.getBlockPos();
 				if (!this.world.getBlockState(blockPos).isAir()) {
@@ -2023,7 +2023,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public void startIntegratedServer(String levelName, LevelStorage.Session session, ResourcePackManager dataPackManager, SaveLoader saveLoader) {
-		CompletableFuture<Optional<PlayerPublicKey.PublicKeyData>> completableFuture = this.profileKeys.method_45104();
+		CompletableFuture<Optional<PlayerPublicKey.PublicKeyData>> completableFuture = this.profileKeys.refresh();
 		this.disconnect();
 		this.worldGenProgressTracker.set(null);
 
@@ -2719,7 +2719,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				} catch (InterruptedException var17) {
 				}
 
-				ScreenshotRecorder.saveScreenshot(directory, "panorama_" + l + ".png", framebuffer, text -> {
+				ScreenshotRecorder.saveScreenshot(directory, "panorama_" + l + ".png", framebuffer, message -> {
 				});
 			}
 

@@ -522,11 +522,11 @@ public final class ItemStack {
 	/**
 	 * Damages this item stack. This method should be used when a non-entity, such as a
 	 * dispenser, damages the stack. This does not damage {@linkplain #isDamageable non-damageable}
-	 * stacks, and the {@linkplain UnbreakingEnchantment unbreaking enchantment} is applied to
-	 * {@code amount} before damaging.
+	 * stacks, and the {@linkplain net.minecraft.enchantment.UnbreakingEnchantment
+	 * unbreaking enchantment} is applied to {@code amount} before damaging.
 	 * 
 	 * <p>If {@code player} is not {@code null}, this triggers {@link
-	 * Criteria#ITEM_DURABILITY_CHANGED}.
+	 * net.minecraft.advancement.criterion.Criteria#ITEM_DURABILITY_CHANGED}.
 	 * 
 	 * <p>This method does not decrement the item count when the item "breaks". Callers should
 	 * check the returned value and decrement themselves.
@@ -569,18 +569,18 @@ public final class ItemStack {
 	/**
 	 * Damages this item stack. This method should be used when an entity, including a player,
 	 * damages the stack. This does not damage {@linkplain #isDamageable non-damageable}
-	 * stacks, and the {@linkplain UnbreakingEnchantment unbreaking enchantment} is applied to
-	 * {@code amount} before damaging. Additionally, if {@code entity} is a player in creative
-	 * mode, the stack will not be damaged.
+	 * stacks, and the {@linkplain net.minecraft.enchantment.UnbreakingEnchantment
+	 * unbreaking enchantment} is applied to {@code amount} before damaging. Additionally,
+	 * if {@code entity} is a player in creative mode, the stack will not be damaged.
 	 * 
 	 * <p>If {@code entity} is a player, this triggers {@link
-	 * Criteria#ITEM_DURABILITY_CHANGED}.
+	 * net.minecraft.advancement.criterion.Criteria#ITEM_DURABILITY_CHANGED}.
 	 * 
 	 * <p>If the stack's damage is equal to or above {@linkplain Item#getMaxDamage the maximum
 	 * damage} (i.e. the item is "broken"), this will call {@code breakCallback}, decrement the
-	 * stack, and increment {@link Stats#BROKEN} if the stack is held by a player. The callback
-	 * should call {@link LivingEntity#sendEquipmentBreakStatus} or {@link
-	 * LivingEntity#sendToolBreakStatus}.
+	 * stack, and increment {@link net.minecraft.stat.Stats#BROKEN} if the stack is held
+	 * by a player. The callback should call {@link LivingEntity#sendEquipmentBreakStatus}
+	 * or {@link LivingEntity#sendToolBreakStatus}.
 	 * 
 	 * @param entity the entity that holds the stack to be damaged
 	 * @param breakCallback the callback that takes the entity holding the stack and is executed

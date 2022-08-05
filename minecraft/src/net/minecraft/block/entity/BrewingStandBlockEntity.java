@@ -26,15 +26,15 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 
 public class BrewingStandBlockEntity extends LockableContainerBlockEntity implements SidedInventory {
-	private static final int field_31328 = 3;
-	private static final int field_31329 = 4;
+	private static final int INPUT_SLOT_INDEX = 3;
+	private static final int FUEL_SLOT_INDEX = 4;
 	private static final int[] TOP_SLOTS = new int[]{3};
 	private static final int[] BOTTOM_SLOTS = new int[]{0, 1, 2, 3};
 	private static final int[] SIDE_SLOTS = new int[]{0, 1, 2, 4};
-	public static final int field_31324 = 20;
-	public static final int field_31325 = 0;
-	public static final int field_31326 = 1;
-	public static final int field_31327 = 2;
+	public static final int MAX_FUEL_USES = 20;
+	public static final int BREW_TIME_PROPERTY_INDEX = 0;
+	public static final int FUEL_PROPERTY_INDEX = 1;
+	public static final int PROPERTY_COUNT = 2;
 	private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(5, ItemStack.EMPTY);
 	int brewTime;
 	private boolean[] slotsEmptyLastTick;

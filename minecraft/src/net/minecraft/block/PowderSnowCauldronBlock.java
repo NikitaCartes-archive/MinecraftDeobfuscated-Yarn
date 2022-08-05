@@ -8,6 +8,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 
+/**
+ * A cauldron filled with powder snow.
+ */
 public class PowderSnowCauldronBlock extends LeveledCauldronBlock {
 	public PowderSnowCauldronBlock(AbstractBlock.Settings settings, Predicate<Biome.Precipitation> predicate, Map<Item, CauldronBehavior> map) {
 		super(settings, predicate, map);

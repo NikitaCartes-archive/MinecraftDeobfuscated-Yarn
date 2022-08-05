@@ -11,16 +11,16 @@ import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Quaternion;
 
 /**
- * A stack of transformation matrices used to specify how things are
+ * A stack of transformation matrices used to specify how 3D objects are
  * {@linkplain #translate translated}, {@linkplain #scale scaled} or
  * {@linkplain #multiply rotated} in 3D space. Each entry consists of a
- * {@linkplain Entry#getPositionMatrix position matrix} and a {@linkplain
- * Entry#getNormalMatrix normal matrix}.
+ * {@linkplain Entry#getPositionMatrix position matrix} and its
+ * corresponding {@linkplain Entry#getNormalMatrix normal matrix}.
  * 
  * <p>By putting matrices in a stack, a transformation can be expressed
- * relative to another. You can {@linkplain #push push}, transform, render
- * and {@linkplain #pop pop}, which allows you to restore the original
- * state after rendering.
+ * relative to another. You can {@linkplain #push push}, transform,
+ * render and {@linkplain #pop pop}, which allows you to restore the
+ * original matrix after rendering.
  * 
  * <p>An entry of identity matrix is pushed when a stack is created. This
  * means that a stack is {@linkplain #isEmpty empty} if and only if the
@@ -46,6 +46,9 @@ public class MatrixStack {
 
 	/**
 	 * Applies the scale transformation to the top entry.
+	 * 
+	 * @implNote This does not scale the normal matrix correctly when the
+	 * scaling is uniform and the scaling factor is negative.
 	 */
 	public void scale(float x, float y, float z) {
 		MatrixStack.Entry entry = (MatrixStack.Entry)this.stack.getLast();
@@ -114,6 +117,9 @@ public class MatrixStack {
 
 	/**
 	 * Multiplies the top position matrix with the given matrix.
+	 * 
+	 * <p>This does not update the normal matrix unlike other transformation
+	 * methods.
 	 */
 	public void multiplyPositionMatrix(Matrix4f matrix) {
 		((MatrixStack.Entry)this.stack.getLast()).positionMatrix.multiply(matrix);
@@ -137,7 +143,7 @@ public class MatrixStack {
 		}
 
 		/**
-		 * {@return the normal matrix}
+		 * {@return the matrix used to transform normal vectors}
 		 */
 		public Matrix3f getNormalMatrix() {
 			return this.normalMatrix;

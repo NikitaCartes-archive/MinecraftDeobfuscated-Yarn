@@ -36,13 +36,13 @@ import org.slf4j.MarkerFactory;
 public class SoundSystem {
 	private static final Marker MARKER = MarkerFactory.getMarker("SOUNDS");
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final float field_33021 = 0.5F;
-	private static final float field_33022 = 2.0F;
-	private static final float field_33023 = 0.0F;
-	private static final float field_33024 = 1.0F;
+	private static final float MIN_PITCH = 0.5F;
+	private static final float MAX_PITCH = 2.0F;
+	private static final float MIN_VOLUME = 0.0F;
+	private static final float MAX_VOLUME = 1.0F;
 	private static final int field_33025 = 20;
 	private static final Set<Identifier> UNKNOWN_SOUNDS = Sets.<Identifier>newHashSet();
-	private static final long field_34966 = 1000L;
+	private static final long MIN_TIME_INTERVAL_TO_RELOAD_SOUNDS = 1000L;
 	public static final String FOR_THE_DEBUG = "FOR THE DEBUG!";
 	public static final String OPENAL_SOFT_ON = "OpenAL Soft on ";
 	public static final int OPENAL_SOFT_ON_LENGTH = "OpenAL Soft on ".length();

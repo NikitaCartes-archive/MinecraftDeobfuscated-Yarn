@@ -27,7 +27,7 @@ import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 
 public abstract class LavaFluid extends FlowableFluid {
-	public static final float field_31729 = 0.44444445F;
+	public static final float MIN_HEIGHT_TO_REPLACE = 0.44444445F;
 
 	@Override
 	public Fluid getFlowing() {

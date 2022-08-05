@@ -1183,16 +1183,16 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(Blocks.DEEPSLATE_TILE_SLAB, BlockLootTableGenerator::slabDrops);
 		this.addDrop(Blocks.DEEPSLATE_BRICK_SLAB, BlockLootTableGenerator::slabDrops);
 		this.addDrop(Blocks.MUD_BRICK_SLAB, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.ACACIA_DOOR, BlockLootTableGenerator::addDoorDrop);
-		this.addDrop(Blocks.BIRCH_DOOR, BlockLootTableGenerator::addDoorDrop);
-		this.addDrop(Blocks.DARK_OAK_DOOR, BlockLootTableGenerator::addDoorDrop);
-		this.addDrop(Blocks.IRON_DOOR, BlockLootTableGenerator::addDoorDrop);
-		this.addDrop(Blocks.JUNGLE_DOOR, BlockLootTableGenerator::addDoorDrop);
-		this.addDrop(Blocks.OAK_DOOR, BlockLootTableGenerator::addDoorDrop);
-		this.addDrop(Blocks.SPRUCE_DOOR, BlockLootTableGenerator::addDoorDrop);
-		this.addDrop(Blocks.WARPED_DOOR, BlockLootTableGenerator::addDoorDrop);
-		this.addDrop(Blocks.CRIMSON_DOOR, BlockLootTableGenerator::addDoorDrop);
-		this.addDrop(Blocks.MANGROVE_DOOR, BlockLootTableGenerator::addDoorDrop);
+		this.addDrop(Blocks.ACACIA_DOOR, BlockLootTableGenerator::doorDrops);
+		this.addDrop(Blocks.BIRCH_DOOR, BlockLootTableGenerator::doorDrops);
+		this.addDrop(Blocks.DARK_OAK_DOOR, BlockLootTableGenerator::doorDrops);
+		this.addDrop(Blocks.IRON_DOOR, BlockLootTableGenerator::doorDrops);
+		this.addDrop(Blocks.JUNGLE_DOOR, BlockLootTableGenerator::doorDrops);
+		this.addDrop(Blocks.OAK_DOOR, BlockLootTableGenerator::doorDrops);
+		this.addDrop(Blocks.SPRUCE_DOOR, BlockLootTableGenerator::doorDrops);
+		this.addDrop(Blocks.WARPED_DOOR, BlockLootTableGenerator::doorDrops);
+		this.addDrop(Blocks.CRIMSON_DOOR, BlockLootTableGenerator::doorDrops);
+		this.addDrop(Blocks.MANGROVE_DOOR, BlockLootTableGenerator::doorDrops);
 		this.addDrop(Blocks.BLACK_BED, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.HEAD));
 		this.addDrop(Blocks.BLUE_BED, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.HEAD));
 		this.addDrop(Blocks.BROWN_BED, blockx -> dropsWithProperty(blockx, BedBlock.PART, BedPart.HEAD));
@@ -1785,7 +1785,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(drop, builder);
 	}
 
-	public static LootTable.Builder addDoorDrop(Block block) {
+	public static LootTable.Builder doorDrops(Block block) {
 		return dropsWithProperty(block, DoorBlock.HALF, DoubleBlockHalf.LOWER);
 	}
 

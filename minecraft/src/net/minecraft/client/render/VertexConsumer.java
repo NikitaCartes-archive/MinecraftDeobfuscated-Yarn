@@ -14,22 +14,104 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.Vector4f;
 import org.lwjgl.system.MemoryStack;
 
+/**
+ * An interface that consumes vertices in a certain {@linkplain
+ * VertexFormat vertex format}.
+ * 
+ * <p>The vertex elements must be specified in the same order as defined in
+ * the format the vertices being consumed are in.
+ */
 @Environment(EnvType.CLIENT)
 public interface VertexConsumer {
+	/**
+	 * Specifies the {@linkplain VertexFormats#POSITION_ELEMENT
+	 * position element} of the current vertex.
+	 * 
+	 * <p>This is typically the first element in a vertex, hence the name.
+	 * 
+	 * @throws IllegalStateException if this consumer is not currently
+	 * accepting a position element.
+	 * 
+	 * @return this consumer, for chaining
+	 */
 	VertexConsumer vertex(double x, double y, double z);
 
+	/**
+	 * Specifies the {@linkplain VertexFormats#COLOR_ELEMENT
+	 * color element} of the current vertex.
+	 * 
+	 * @throws IllegalStateException if this consumer is not currently
+	 * accepting a color element or if a color has been set in {@link
+	 * #fixedColor}.
+	 * 
+	 * @return this consumer, for chaining
+	 */
 	VertexConsumer color(int red, int green, int blue, int alpha);
 
+	/**
+	 * Specifies the {@linkplain VertexFormats#TEXTURE_ELEMENT
+	 * texture element} of the current vertex.
+	 * 
+	 * @throws IllegalStateException if this consumer is not currently
+	 * accepting a texture element.
+	 * 
+	 * @return this consumer, for chaining
+	 */
 	VertexConsumer texture(float u, float v);
 
+	/**
+	 * Specifies the {@linkplain VertexFormats#OVERLAY_ELEMENT
+	 * overlay element} of the current vertex.
+	 * 
+	 * @throws IllegalStateException if this consumer is not currently
+	 * accepting an overlay element.
+	 * 
+	 * @return this consumer, for chaining
+	 */
 	VertexConsumer overlay(int u, int v);
 
+	/**
+	 * Specifies the {@linkplain VertexFormats#LIGHT_ELEMENT
+	 * light element} of the current vertex.
+	 * 
+	 * @throws IllegalStateException if this consumer is not currently
+	 * accepting a light element.
+	 * 
+	 * @return this consumer, for chaining
+	 */
 	VertexConsumer light(int u, int v);
 
+	/**
+	 * Specifies the {@linkplain VertexFormats#NORMAL_ELEMENT
+	 * normal element} of the current vertex.
+	 * 
+	 * @throws IllegalStateException if this consumer is not currently
+	 * accepting a normal element.
+	 * 
+	 * @return this consumer, for chaining
+	 */
 	VertexConsumer normal(float x, float y, float z);
 
+	/**
+	 * Starts consuming the next vertex.
+	 * 
+	 * <p>This method must be called after specifying all elements in a vertex.
+	 */
 	void next();
 
+	/**
+	 * Specifies the
+	 * {@linkplain VertexFormats#POSITION_ELEMENT position},
+	 * {@linkplain VertexFormats#COLOR_ELEMENT color},
+	 * {@linkplain VertexFormats#TEXTURE_ELEMENT texture},
+	 * {@linkplain VertexFormats#OVERLAY_ELEMENT overlay},
+	 * {@linkplain VertexFormats#LIGHT_ELEMENT light}, and
+	 * {@linkplain VertexFormats#NORMAL_ELEMENT normal} elements of the
+	 * current vertex and starts consuming the next vertex.
+	 * 
+	 * @throws IllegalStateException if a color has been set in {@link
+	 * #fixedColor}.
+	 */
 	default void vertex(
 		float x,
 		float y,
@@ -55,30 +137,93 @@ public interface VertexConsumer {
 		this.next();
 	}
 
+	/**
+	 * Makes this consumer always use the same color for subsequent vertices
+	 * until {@link #unfixColor} is called.
+	 * 
+	 * <p>The color will be automatically supplied when the color element is
+	 * requested. Make sure not to specify the color yourself when using this
+	 * method.
+	 */
 	void fixedColor(int red, int green, int blue, int alpha);
 
+	/**
+	 * Makes this consumer no longer use the color set in {@link #fixedColor}.
+	 */
 	void unfixColor();
 
+	/**
+	 * Specifies the {@linkplain VertexFormats#COLOR_ELEMENT
+	 * color element} of the current vertex.
+	 * 
+	 * @throws IllegalStateException if this consumer is not currently
+	 * accepting a color element or if a color has been set in {@link
+	 * #fixedColor}.
+	 * 
+	 * @return this consumer, for chaining
+	 */
 	default VertexConsumer color(float red, float green, float blue, float alpha) {
 		return this.color((int)(red * 255.0F), (int)(green * 255.0F), (int)(blue * 255.0F), (int)(alpha * 255.0F));
 	}
 
+	/**
+	 * Specifies the {@linkplain VertexFormats#COLOR_ELEMENT
+	 * color element} of the current vertex.
+	 * 
+	 * @throws IllegalStateException if this consumer is not currently
+	 * accepting a color element or if a color has been set in {@link
+	 * #fixedColor}.
+	 * 
+	 * @return this consumer, for chaining
+	 */
 	default VertexConsumer color(int argb) {
 		return this.color(ColorHelper.Argb.getRed(argb), ColorHelper.Argb.getGreen(argb), ColorHelper.Argb.getBlue(argb), ColorHelper.Argb.getAlpha(argb));
 	}
 
+	/**
+	 * Specifies the {@linkplain VertexFormats#LIGHT_ELEMENT
+	 * light element} of the current vertex.
+	 * 
+	 * @throws IllegalStateException if this consumer is not currently
+	 * accepting a light element.
+	 * 
+	 * @return this consumer, for chaining
+	 */
 	default VertexConsumer light(int uv) {
 		return this.light(uv & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 65295), uv >> 16 & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 65295));
 	}
 
+	/**
+	 * Specifies the {@linkplain VertexFormats#OVERLAY_ELEMENT
+	 * overlay element} of the current vertex.
+	 * 
+	 * @throws IllegalStateException if this consumer is not currently
+	 * accepting an overlay element.
+	 * 
+	 * @return this consumer, for chaining
+	 */
 	default VertexConsumer overlay(int uv) {
 		return this.overlay(uv & 65535, uv >> 16 & 65535);
 	}
 
+	/**
+	 * Specifies the vertex elements from {@code quad} and starts consuming
+	 * the next vertex.
+	 * 
+	 * @throws IllegalStateException if a color has been set in {@link
+	 * #fixedColor}.
+	 */
 	default void quad(MatrixStack.Entry matrixEntry, BakedQuad quad, float red, float green, float blue, int light, int overlay) {
 		this.quad(matrixEntry, quad, new float[]{1.0F, 1.0F, 1.0F, 1.0F}, red, green, blue, new int[]{light, light, light, light}, overlay, false);
 	}
 
+	/**
+	 * Specifies the vertex elements from {@code quad} and starts consuming
+	 * the next vertex.
+	 * 
+	 * @throws IllegalStateException if a color has been set in {@link
+	 * #fixedColor}.
+	 */
 	default void quad(
 		MatrixStack.Entry matrixEntry, BakedQuad quad, float[] brightnesses, float red, float green, float blue, int[] lights, int overlay, boolean useQuadColorData
 	) {
@@ -128,12 +273,38 @@ public interface VertexConsumer {
 		}
 	}
 
+	/**
+	 * Specifies the {@linkplain VertexFormats#POSITION_ELEMENT
+	 * position element} of the current vertex.
+	 * 
+	 * @throws IllegalStateException if this consumer is not currently
+	 * accepting a position element.
+	 * 
+	 * @return this consumer, for chaining
+	 * 
+	 * @param matrix the matrix that will be applied to the vertex position, typically {@link
+	 * net.minecraft.client.util.math.MatrixStack.Entry#getPositionMatrix
+	 * MatrixStack.Entry#getPositionMatrix}
+	 */
 	default VertexConsumer vertex(Matrix4f matrix, float x, float y, float z) {
 		Vector4f vector4f = new Vector4f(x, y, z, 1.0F);
 		vector4f.transform(matrix);
 		return this.vertex((double)vector4f.getX(), (double)vector4f.getY(), (double)vector4f.getZ());
 	}
 
+	/**
+	 * Specifies the {@linkplain VertexFormats#NORMAL_ELEMENT
+	 * normal element} of the current vertex.
+	 * 
+	 * @throws IllegalStateException if this consumer is not currently
+	 * accepting a normal element.
+	 * 
+	 * @return this consumer, for chaining
+	 * 
+	 * @param matrix the matrix that will be applied to the normal vector, typically {@link
+	 * net.minecraft.client.util.math.MatrixStack.Entry#getNormalMatrix
+	 * MatrixStack.Entry#getNormalMatrix}
+	 */
 	default VertexConsumer normal(Matrix3f matrix, float x, float y, float z) {
 		Vec3f vec3f = new Vec3f(x, y, z);
 		vec3f.transform(matrix);

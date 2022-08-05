@@ -10,6 +10,9 @@ import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
 
+/**
+ * A {@link Particle} which renders a camera-facing sprite with a target texture scale.
+ */
 @Environment(EnvType.CLIENT)
 public abstract class BillboardParticle extends Particle {
 	protected float scale = 0.1F * (this.random.nextFloat() * 0.5F + 0.5F) * 2.0F;
@@ -76,6 +79,9 @@ public abstract class BillboardParticle extends Particle {
 			.next();
 	}
 
+	/**
+	 * @return the draw scale of this particle, which is used while rendering in {@link BillboardParticle#buildGeometry}
+	 */
 	public float getSize(float tickDelta) {
 		return this.scale;
 	}
@@ -86,11 +92,23 @@ public abstract class BillboardParticle extends Particle {
 		return super.scale(scale);
 	}
 
+	/**
+	 * @return the lower U coordinate of the UV coordinates used to draw this particle
+	 */
 	protected abstract float getMinU();
 
+	/**
+	 * @return the upper U coordinate of the UV coordinates used to draw this particle
+	 */
 	protected abstract float getMaxU();
 
+	/**
+	 * @return the lower V coordinate of the UV coordinates used to draw this particle
+	 */
 	protected abstract float getMinV();
 
+	/**
+	 * @return the upper V coordinate of the UV coordinates used to draw this particle
+	 */
 	protected abstract float getMaxV();
 }

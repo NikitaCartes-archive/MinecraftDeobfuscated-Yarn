@@ -1343,7 +1343,7 @@ public final class DensityFunctionTypes {
 
 		@Override
 		public double sample(DensityFunction.NoisePos pos) {
-			return MathHelper.clampedLerpFromProgress((double)pos.blockY(), (double)this.fromY, (double)this.toY, this.fromValue, this.toValue);
+			return MathHelper.clampedMap((double)pos.blockY(), (double)this.fromY, (double)this.toY, this.fromValue, this.toValue);
 		}
 
 		@Override

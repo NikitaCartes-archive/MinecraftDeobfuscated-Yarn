@@ -68,13 +68,13 @@ public class ChunkSerializer {
 	private static final String UPGRADE_DATA_KEY = "UpgradeData";
 	private static final String BLOCK_TICKS = "block_ticks";
 	private static final String FLUID_TICKS = "fluid_ticks";
-	public static final String field_37659 = "xPos";
-	public static final String field_37660 = "zPos";
-	public static final String field_37661 = "Heightmaps";
-	public static final String field_37662 = "isLightOn";
-	public static final String field_37663 = "sections";
-	public static final String field_37664 = "BlockLight";
-	public static final String field_37665 = "SkyLight";
+	public static final String X_POS_KEY = "xPos";
+	public static final String Z_POS_KEY = "zPos";
+	public static final String HEIGHTMAPS_KEY = "Heightmaps";
+	public static final String IS_LIGHT_ON_KEY = "isLightOn";
+	public static final String SECTIONS_KEY = "sections";
+	public static final String BLOCK_LIGHT_KEY = "BlockLight";
+	public static final String SKY_LIGHT_KEY = "SkyLight";
 
 	public static ProtoChunk deserialize(ServerWorld world, PointOfInterestStorage poiStorage, ChunkPos chunkPos, NbtCompound nbt) {
 		ChunkPos chunkPos2 = new ChunkPos(nbt.getInt("xPos"), nbt.getInt("zPos"));
@@ -482,23 +482,23 @@ public class ChunkSerializer {
 		return map;
 	}
 
-	private static Map<Structure, LongSet> readStructureReferences(DynamicRegistryManager dynamicRegistryManager, ChunkPos chunkPos, NbtCompound nbtCompound) {
+	private static Map<Structure, LongSet> readStructureReferences(DynamicRegistryManager registryManager, ChunkPos pos, NbtCompound nbt) {
 		Map<Structure, LongSet> map = Maps.<Structure, LongSet>newHashMap();
-		Registry<Structure> registry = dynamicRegistryManager.get(Registry.STRUCTURE_KEY);
-		NbtCompound nbtCompound2 = nbtCompound.getCompound("References");
+		Registry<Structure> registry = registryManager.get(Registry.STRUCTURE_KEY);
+		NbtCompound nbtCompound = nbt.getCompound("References");
 
-		for (String string : nbtCompound2.getKeys()) {
+		for (String string : nbtCompound.getKeys()) {
 			Identifier identifier = Identifier.tryParse(string);
 			Structure structure = registry.get(identifier);
 			if (structure == null) {
-				LOGGER.warn("Found reference to unknown structure '{}' in chunk {}, discarding", identifier, chunkPos);
+				LOGGER.warn("Found reference to unknown structure '{}' in chunk {}, discarding", identifier, pos);
 			} else {
-				long[] ls = nbtCompound2.getLongArray(string);
+				long[] ls = nbtCompound.getLongArray(string);
 				if (ls.length != 0) {
 					map.put(structure, new LongOpenHashSet(Arrays.stream(ls).filter(packedPos -> {
 						ChunkPos chunkPos2 = new ChunkPos(packedPos);
-						if (chunkPos2.getChebyshevDistance(chunkPos) > 8) {
-							LOGGER.warn("Found invalid structure reference [ {} @ {} ] for chunk {}.", identifier, chunkPos2, chunkPos);
+						if (chunkPos2.getChebyshevDistance(pos) > 8) {
+							LOGGER.warn("Found invalid structure reference [ {} @ {} ] for chunk {}.", identifier, chunkPos2, pos);
 							return false;
 						} else {
 							return true;

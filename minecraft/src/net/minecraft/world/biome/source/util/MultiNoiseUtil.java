@@ -105,7 +105,7 @@ public class MultiNoiseUtil {
 		 * {@return the closest entry at the given point}.
 		 * 
 		 * Note that this method only exists for testing, and is usually a lot slower
-		 * than {@link getValue()}.
+		 * than {@link #getValue}.
 		 */
 		@VisibleForTesting
 		public T getValueSimple(MultiNoiseUtil.NoiseValuePoint point) {

@@ -56,7 +56,7 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 	private static final float field_30508 = 0.5F;
 	private static final int field_30509 = 40;
 	private static final int field_30510 = 15;
-	private static final int field_30511 = 200;
+	private static final int ATTACK_TARGET_DURATION = 200;
 	private static final float field_30512 = 0.3F;
 	private static final float field_30513 = 0.4F;
 	private int movementCooldownTicks;

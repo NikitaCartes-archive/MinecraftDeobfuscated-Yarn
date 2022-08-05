@@ -19,7 +19,7 @@ import net.minecraft.util.registry.RegistryKey;
 public class TagPacketSerializer {
 	public static Map<RegistryKey<? extends Registry<?>>, TagPacketSerializer.Serialized> serializeTags(DynamicRegistryManager dynamicRegistryManager) {
 		return (Map<RegistryKey<? extends Registry<?>>, TagPacketSerializer.Serialized>)dynamicRegistryManager.streamSyncedRegistries()
-			.map(entry -> Pair.of(entry.key(), serializeTags(entry.value())))
+			.map(registry -> Pair.of(registry.key(), serializeTags(registry.value())))
 			.filter(pair -> !((TagPacketSerializer.Serialized)pair.getSecond()).isEmpty())
 			.collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
 	}

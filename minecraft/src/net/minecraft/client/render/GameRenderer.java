@@ -1478,6 +1478,25 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 		return renderTypeEndGatewayShader;
 	}
 
+	/**
+	 * {@return the {@code rendertype_lines} shader}
+	 * 
+	 * <p>This shader draws a line by drawing a quad (two triangles pushed
+	 * together). Each line takes four vertices. The first vertex is the line
+	 * start. The second one is a duplicate of the first one. The third one
+	 * is the line end. The fourth one is a duplicate of the third one.
+	 * 
+	 * <p>The user of this shader should use {@link VertexFormats#LINES} for
+	 * the vertex format. The normal element is a direction vector from the
+	 * starting position to the ending position. It's used to calculate in
+	 * what directions the duplicated vertices should be offset to achieve
+	 * thick lines. All four vertices should share the same value for the
+	 * normal element.
+	 * 
+	 * <p>The width of the line can be set with {@link
+	 * com.mojang.blaze3d.systems.RenderSystem#lineWidth
+	 * RenderSystem#lineWidth}.
+	 */
 	@Nullable
 	public static Shader getRenderTypeLinesShader() {
 		return renderTypeLinesShader;

@@ -34,20 +34,20 @@ public class WorldgenProvider implements DataProvider {
 	}
 
 	private <T> void writeRegistryEntries(
-		DataWriter dataWriter, DynamicRegistryManager dynamicRegistryManager, DynamicOps<JsonElement> dynamicOps, DynamicRegistryManager.Info<T> info
+		DataWriter writer, DynamicRegistryManager registryManager, DynamicOps<JsonElement> ops, DynamicRegistryManager.Info<T> registry
 	) {
-		RegistryKey<? extends Registry<T>> registryKey = info.registry();
-		Registry<T> registry = dynamicRegistryManager.getManaged(registryKey);
+		RegistryKey<? extends Registry<T>> registryKey = registry.registry();
+		Registry<T> registry2 = registryManager.getManaged(registryKey);
 		DataGenerator.PathResolver pathResolver = this.generator.createPathResolver(DataGenerator.OutputType.REPORTS, registryKey.getValue().getPath());
 
-		for (Entry<RegistryKey<T>, T> entry : registry.getEntrySet()) {
-			writeToPath(pathResolver.resolveJson(((RegistryKey)entry.getKey()).getValue()), dataWriter, dynamicOps, info.entryCodec(), (T)entry.getValue());
+		for (Entry<RegistryKey<T>, T> entry : registry2.getEntrySet()) {
+			writeToPath(pathResolver.resolveJson(((RegistryKey)entry.getKey()).getValue()), writer, ops, registry.entryCodec(), (T)entry.getValue());
 		}
 	}
 
 	private static <E> void writeToPath(Path path, DataWriter cache, DynamicOps<JsonElement> json, Encoder<E> encoder, E value) {
 		try {
-			Optional<JsonElement> optional = encoder.encodeStart(json, value).resultOrPartial(string -> LOGGER.error("Couldn't serialize element {}: {}", path, string));
+			Optional<JsonElement> optional = encoder.encodeStart(json, value).resultOrPartial(error -> LOGGER.error("Couldn't serialize element {}: {}", path, error));
 			if (optional.isPresent()) {
 				DataProvider.writeToPath(cache, (JsonElement)optional.get(), path);
 			}

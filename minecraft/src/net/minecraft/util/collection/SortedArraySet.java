@@ -150,16 +150,16 @@ public class SortedArraySet<T> extends AbstractSet<T> {
 		return (Object[])this.elements.clone();
 	}
 
-	public <U> U[] toArray(U[] objects) {
-		if (objects.length < this.size) {
-			return (U[])Arrays.copyOf(this.elements, this.size, objects.getClass());
+	public <U> U[] toArray(U[] array) {
+		if (array.length < this.size) {
+			return (U[])Arrays.copyOf(this.elements, this.size, array.getClass());
 		} else {
-			System.arraycopy(this.elements, 0, objects, 0, this.size);
-			if (objects.length > this.size) {
-				objects[this.size] = null;
+			System.arraycopy(this.elements, 0, array, 0, this.size);
+			if (array.length > this.size) {
+				array[this.size] = null;
 			}
 
-			return objects;
+			return array;
 		}
 	}
 

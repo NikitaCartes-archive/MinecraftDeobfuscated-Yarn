@@ -276,8 +276,8 @@ public class EntityBlockStateFix extends DataFix {
 		map.put("minecraft:structure_block", 255);
 	});
 
-	public EntityBlockStateFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public EntityBlockStateFix(Schema schema, boolean changesType) {
+		super(schema, changesType);
 	}
 
 	public static int getNumericalBlockId(String blockId) {
@@ -289,46 +289,46 @@ public class EntityBlockStateFix extends DataFix {
 	public TypeRewriteRule makeRule() {
 		Schema schema = this.getInputSchema();
 		Schema schema2 = this.getOutputSchema();
-		Function<Typed<?>, Typed<?>> function = typed -> this.mergeIdAndData(typed, "DisplayTile", "DisplayData", "DisplayState");
-		Function<Typed<?>, Typed<?>> function2 = typed -> this.mergeIdAndData(typed, "inTile", "inData", "inBlockState");
+		Function<Typed<?>, Typed<?>> function = minecart -> this.mergeIdAndData(minecart, "DisplayTile", "DisplayData", "DisplayState");
+		Function<Typed<?>, Typed<?>> function2 = arrow -> this.mergeIdAndData(arrow, "inTile", "inData", "inBlockState");
 		Type<Pair<Either<Pair<String, Either<Integer, String>>, Unit>, Dynamic<?>>> type = DSL.and(
 			DSL.optional(DSL.field("inTile", DSL.named(TypeReferences.BLOCK_NAME.typeName(), DSL.or(DSL.intType(), IdentifierNormalizingSchema.getIdentifierType())))),
 			DSL.remainderType()
 		);
-		Function<Typed<?>, Typed<?>> function3 = typed -> typed.update(type.finder(), DSL.remainderType(), Pair::getSecond);
-		return this.fixTypeEverywhereTyped("EntityBlockStateFix", schema.getType(TypeReferences.ENTITY), schema2.getType(TypeReferences.ENTITY), typed -> {
-			typed = this.useFunction(typed, "minecraft:falling_block", this::method_15695);
-			typed = this.useFunction(typed, "minecraft:enderman", typedx -> this.mergeIdAndData(typedx, "carried", "carriedData", "carriedBlockState"));
-			typed = this.useFunction(typed, "minecraft:arrow", function2);
-			typed = this.useFunction(typed, "minecraft:spectral_arrow", function2);
-			typed = this.useFunction(typed, "minecraft:egg", function3);
-			typed = this.useFunction(typed, "minecraft:ender_pearl", function3);
-			typed = this.useFunction(typed, "minecraft:fireball", function3);
-			typed = this.useFunction(typed, "minecraft:potion", function3);
-			typed = this.useFunction(typed, "minecraft:small_fireball", function3);
-			typed = this.useFunction(typed, "minecraft:snowball", function3);
-			typed = this.useFunction(typed, "minecraft:wither_skull", function3);
-			typed = this.useFunction(typed, "minecraft:xp_bottle", function3);
-			typed = this.useFunction(typed, "minecraft:commandblock_minecart", function);
-			typed = this.useFunction(typed, "minecraft:minecart", function);
-			typed = this.useFunction(typed, "minecraft:chest_minecart", function);
-			typed = this.useFunction(typed, "minecraft:furnace_minecart", function);
-			typed = this.useFunction(typed, "minecraft:tnt_minecart", function);
-			typed = this.useFunction(typed, "minecraft:hopper_minecart", function);
-			return this.useFunction(typed, "minecraft:spawner_minecart", function);
+		Function<Typed<?>, Typed<?>> function3 = projectile -> projectile.update(type.finder(), DSL.remainderType(), Pair::getSecond);
+		return this.fixTypeEverywhereTyped("EntityBlockStateFix", schema.getType(TypeReferences.ENTITY), schema2.getType(TypeReferences.ENTITY), entity -> {
+			entity = this.useFunction(entity, "minecraft:falling_block", this::fixFallingBlock);
+			entity = this.useFunction(entity, "minecraft:enderman", enderman -> this.mergeIdAndData(enderman, "carried", "carriedData", "carriedBlockState"));
+			entity = this.useFunction(entity, "minecraft:arrow", function2);
+			entity = this.useFunction(entity, "minecraft:spectral_arrow", function2);
+			entity = this.useFunction(entity, "minecraft:egg", function3);
+			entity = this.useFunction(entity, "minecraft:ender_pearl", function3);
+			entity = this.useFunction(entity, "minecraft:fireball", function3);
+			entity = this.useFunction(entity, "minecraft:potion", function3);
+			entity = this.useFunction(entity, "minecraft:small_fireball", function3);
+			entity = this.useFunction(entity, "minecraft:snowball", function3);
+			entity = this.useFunction(entity, "minecraft:wither_skull", function3);
+			entity = this.useFunction(entity, "minecraft:xp_bottle", function3);
+			entity = this.useFunction(entity, "minecraft:commandblock_minecart", function);
+			entity = this.useFunction(entity, "minecraft:minecart", function);
+			entity = this.useFunction(entity, "minecraft:chest_minecart", function);
+			entity = this.useFunction(entity, "minecraft:furnace_minecart", function);
+			entity = this.useFunction(entity, "minecraft:tnt_minecart", function);
+			entity = this.useFunction(entity, "minecraft:hopper_minecart", function);
+			return this.useFunction(entity, "minecraft:spawner_minecart", function);
 		});
 	}
 
-	private Typed<?> method_15695(Typed<?> typed) {
+	private Typed<?> fixFallingBlock(Typed<?> fallingBlock) {
 		Type<Either<Pair<String, Either<Integer, String>>, Unit>> type = DSL.optional(
 			DSL.field("Block", DSL.named(TypeReferences.BLOCK_NAME.typeName(), DSL.or(DSL.intType(), IdentifierNormalizingSchema.getIdentifierType())))
 		);
 		Type<Either<Pair<String, Dynamic<?>>, Unit>> type2 = DSL.optional(
 			DSL.field("BlockState", DSL.named(TypeReferences.BLOCK_STATE.typeName(), DSL.remainderType()))
 		);
-		Dynamic<?> dynamic = typed.get(DSL.remainderFinder());
-		return typed.update(type.finder(), type2, either -> {
-			int i = either.<Integer>map(pair -> ((Either)pair.getSecond()).map(integer -> integer, EntityBlockStateFix::getNumericalBlockId), unit -> {
+		Dynamic<?> dynamic = fallingBlock.get(DSL.remainderFinder());
+		return fallingBlock.update(type.finder(), type2, state -> {
+			int i = state.<Integer>map(pair -> ((Either)pair.getSecond()).map(id -> id, EntityBlockStateFix::getNumericalBlockId), unit -> {
 				Optional<Number> optional = dynamic.get("TileID").asNumber().result();
 				return (Integer)optional.map(Number::intValue).orElseGet(() -> dynamic.get("Tile").asByte((byte)0) & 0xFF);
 			});
@@ -337,22 +337,22 @@ public class EntityBlockStateFix extends DataFix {
 		}).set(DSL.remainderFinder(), dynamic.remove("Data").remove("TileID").remove("Tile"));
 	}
 
-	private Typed<?> mergeIdAndData(Typed<?> typed, String oldIdKey, String oldDataKey, String newStateKey) {
+	private Typed<?> mergeIdAndData(Typed<?> entity, String oldIdKey, String oldDataKey, String newStateKey) {
 		Type<Pair<String, Either<Integer, String>>> type = DSL.field(
 			oldIdKey, DSL.named(TypeReferences.BLOCK_NAME.typeName(), DSL.or(DSL.intType(), IdentifierNormalizingSchema.getIdentifierType()))
 		);
 		Type<Pair<String, Dynamic<?>>> type2 = DSL.field(newStateKey, DSL.named(TypeReferences.BLOCK_STATE.typeName(), DSL.remainderType()));
-		Dynamic<?> dynamic = typed.getOrCreate(DSL.remainderFinder());
-		return typed.update(type.finder(), type2, pair -> {
-			int i = ((Either)pair.getSecond()).<Integer>map(integer -> integer, EntityBlockStateFix::getNumericalBlockId);
+		Dynamic<?> dynamic = entity.getOrCreate(DSL.remainderFinder());
+		return entity.update(type.finder(), type2, state -> {
+			int i = ((Either)state.getSecond()).<Integer>map(id -> id, EntityBlockStateFix::getNumericalBlockId);
 			int j = dynamic.get(oldDataKey).asInt(0) & 15;
 			return Pair.of(TypeReferences.BLOCK_STATE.typeName(), BlockStateFlattening.lookupState(i << 4 | j));
 		}).set(DSL.remainderFinder(), dynamic.remove(oldDataKey));
 	}
 
-	private Typed<?> useFunction(Typed<?> typed, String entityId, Function<Typed<?>, Typed<?>> function) {
+	private Typed<?> useFunction(Typed<?> entity, String entityId, Function<Typed<?>, Typed<?>> function) {
 		Type<?> type = this.getInputSchema().getChoiceType(TypeReferences.ENTITY, entityId);
 		Type<?> type2 = this.getOutputSchema().getChoiceType(TypeReferences.ENTITY, entityId);
-		return typed.updateTyped(DSL.namedChoice(entityId, type), type2, function);
+		return entity.updateTyped(DSL.namedChoice(entityId, type), type2, function);
 	}
 }

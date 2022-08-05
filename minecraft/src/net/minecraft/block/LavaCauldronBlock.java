@@ -5,6 +5,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+/**
+ * A cauldron filled with lava.
+ */
 public class LavaCauldronBlock extends AbstractCauldronBlock {
 	public LavaCauldronBlock(AbstractBlock.Settings settings) {
 		super(settings, CauldronBehavior.LAVA_CAULDRON_BEHAVIOR);

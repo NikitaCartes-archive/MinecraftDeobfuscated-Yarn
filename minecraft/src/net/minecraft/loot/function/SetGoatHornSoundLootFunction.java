@@ -15,11 +15,11 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
 
 public class SetGoatHornSoundLootFunction extends ConditionalLootFunction {
-	final TagKey<Instrument> field_39184;
+	final TagKey<Instrument> options;
 
-	SetGoatHornSoundLootFunction(LootCondition[] lootConditions, TagKey<Instrument> tagKey) {
-		super(lootConditions);
-		this.field_39184 = tagKey;
+	SetGoatHornSoundLootFunction(LootCondition[] conditions, TagKey<Instrument> options) {
+		super(conditions);
+		this.options = options;
 	}
 
 	@Override
@@ -29,18 +29,18 @@ public class SetGoatHornSoundLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
-		GoatHornItem.setRandomInstrumentFromTag(stack, this.field_39184, context.getRandom());
+		GoatHornItem.setRandomInstrumentFromTag(stack, this.options, context.getRandom());
 		return stack;
 	}
 
-	public static ConditionalLootFunction.Builder<?> builder(TagKey<Instrument> tagKey) {
-		return builder(lootConditions -> new SetGoatHornSoundLootFunction(lootConditions, tagKey));
+	public static ConditionalLootFunction.Builder<?> builder(TagKey<Instrument> options) {
+		return builder(conditions -> new SetGoatHornSoundLootFunction(conditions, options));
 	}
 
 	public static class Serializer extends ConditionalLootFunction.Serializer<SetGoatHornSoundLootFunction> {
 		public void toJson(JsonObject jsonObject, SetGoatHornSoundLootFunction setGoatHornSoundLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, setGoatHornSoundLootFunction, jsonSerializationContext);
-			jsonObject.addProperty("options", "#" + setGoatHornSoundLootFunction.field_39184.id());
+			jsonObject.addProperty("options", "#" + setGoatHornSoundLootFunction.options.id());
 		}
 
 		public SetGoatHornSoundLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {

@@ -37,15 +37,15 @@ public class AnimationHelper {
 		return animation.looping() ? f % animation.lengthInSeconds() : f;
 	}
 
-	public static Vec3f method_41823(float f, float g, float h) {
+	public static Vec3f createTranslationalVector(float f, float g, float h) {
 		return new Vec3f(f, -g, h);
 	}
 
-	public static Vec3f method_41829(float f, float g, float h) {
+	public static Vec3f createRotationalVector(float f, float g, float h) {
 		return new Vec3f(f * (float) (Math.PI / 180.0), g * (float) (Math.PI / 180.0), h * (float) (Math.PI / 180.0));
 	}
 
-	public static Vec3f method_41822(double d, double e, double f) {
+	public static Vec3f createScalingVector(double d, double e, double f) {
 		return new Vec3f((float)(d - 1.0), (float)(e - 1.0), (float)(f - 1.0));
 	}
 }

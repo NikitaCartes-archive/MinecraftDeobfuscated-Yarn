@@ -9,25 +9,47 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+/**
+ * Contains utility methods for spawning item entities scattered around a certain position.
+ * All methods consume the item stack, so there is no need for decrementing the
+ * stack size yourself.
+ * 
+ * @see net.minecraft.block.AbstractBlock#onStateReplaced
+ */
 public class ItemScatterer {
+	/**
+	 * Spawns item entities from {@code inventory} around {@code pos}.
+	 */
 	public static void spawn(World world, BlockPos pos, Inventory inventory) {
 		spawn(world, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), inventory);
 	}
 
+	/**
+	 * Spawns item entities from {@code inventory} around {@code entity}'s position.
+	 */
 	public static void spawn(World world, Entity entity, Inventory inventory) {
 		spawn(world, entity.getX(), entity.getY(), entity.getZ(), inventory);
 	}
 
+	/**
+	 * Spawns item entities from {@code inventory} around the given position.
+	 */
 	private static void spawn(World world, double x, double y, double z, Inventory inventory) {
 		for (int i = 0; i < inventory.size(); i++) {
 			spawn(world, x, y, z, inventory.getStack(i));
 		}
 	}
 
+	/**
+	 * Spawns item entities from {@code stacks} around {@code pos}.
+	 */
 	public static void spawn(World world, BlockPos pos, DefaultedList<ItemStack> stacks) {
 		stacks.forEach(stack -> spawn(world, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), stack));
 	}
 
+	/**
+	 * Spawns an item entity of {@code stack} around the given position.
+	 */
 	public static void spawn(World world, double x, double y, double z, ItemStack stack) {
 		double d = (double)EntityType.ITEM.getWidth();
 		double e = 1.0 - d;

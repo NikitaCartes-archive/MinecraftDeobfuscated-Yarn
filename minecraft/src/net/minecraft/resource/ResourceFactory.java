@@ -24,15 +24,15 @@ public interface ResourceFactory {
 	 */
 	Optional<Resource> getResource(Identifier id);
 
-	default Resource getResourceOrThrow(Identifier identifier) throws FileNotFoundException {
-		return (Resource)this.getResource(identifier).orElseThrow(() -> new FileNotFoundException(identifier.toString()));
+	default Resource getResourceOrThrow(Identifier id) throws FileNotFoundException {
+		return (Resource)this.getResource(id).orElseThrow(() -> new FileNotFoundException(id.toString()));
 	}
 
-	default InputStream open(Identifier identifier) throws IOException {
-		return this.getResourceOrThrow(identifier).getInputStream();
+	default InputStream open(Identifier id) throws IOException {
+		return this.getResourceOrThrow(id).getInputStream();
 	}
 
-	default BufferedReader openAsReader(Identifier identifier) throws IOException {
-		return this.getResourceOrThrow(identifier).getReader();
+	default BufferedReader openAsReader(Identifier id) throws IOException {
+		return this.getResourceOrThrow(id).getReader();
 	}
 }

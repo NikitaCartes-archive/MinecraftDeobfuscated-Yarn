@@ -3,8 +3,13 @@ package net.minecraft.screen;
 /**
  * A property delegate represents an indexed list of integer properties.
  * 
- * <p>Property delegates are used for displaying integer values in screens,
- * such as the progress bars in furnaces.
+ * <p>The delegate is passed when creating the screen handler.
+ * On the server, access to the property's value is delegated to the delegate (which in
+ * turn delegates to another object like a block entity instance).
+ * On the client, access to the property's value still uses the synced value.
+ * 
+ * @see Property#create(PropertyDelegate, int)
+ * @see ScreenHandler#addProperties(PropertyDelegate)
  */
 public interface PropertyDelegate {
 	int get(int index);

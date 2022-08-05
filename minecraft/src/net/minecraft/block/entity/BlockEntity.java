@@ -74,7 +74,7 @@ public abstract class BlockEntity {
 	 * 
 	 * <p>The passed NBT should use lowercase {@code x}, {@code y}, and {@code z}
 	 * keys to store the position. This is incompatible with {@link
-	 * net.minecraft.nbt.NbtHelper#romBlockPos} that use uppercase keys.
+	 * net.minecraft.nbt.NbtHelper#fromBlockPos} that use uppercase keys.
 	 */
 	public static BlockPos posFromNbt(NbtCompound nbt) {
 		return new BlockPos(nbt.getInt("x"), nbt.getInt("y"), nbt.getInt("z"));

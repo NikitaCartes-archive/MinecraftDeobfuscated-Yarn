@@ -43,7 +43,7 @@ public class PortalForcer {
 		int i = destIsNether ? 16 : 128;
 		pointOfInterestStorage.preloadChunks(this.world, pos, i);
 		Optional<PointOfInterest> optional = pointOfInterestStorage.getInSquare(
-				registryEntry -> registryEntry.matchesKey(PointOfInterestTypes.NETHER_PORTAL), pos, i, PointOfInterestStorage.OccupationStatus.ANY
+				poiType -> poiType.matchesKey(PointOfInterestTypes.NETHER_PORTAL), pos, i, PointOfInterestStorage.OccupationStatus.ANY
 			)
 			.filter(poi -> worldBorder.contains(poi.getPos()))
 			.sorted(Comparator.comparingDouble(poi -> poi.getPos().getSquaredDistance(pos)).thenComparingInt(poi -> poi.getPos().getY()))

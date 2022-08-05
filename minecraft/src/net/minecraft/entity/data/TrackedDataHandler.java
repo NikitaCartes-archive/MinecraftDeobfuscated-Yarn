@@ -15,22 +15,22 @@ public interface TrackedDataHandler<T> {
 
 	T copy(T value);
 
-	static <T> TrackedDataHandler<T> of(PacketByteBuf.PacketWriter<T> packetWriter, PacketByteBuf.PacketReader<T> packetReader) {
+	static <T> TrackedDataHandler<T> of(PacketByteBuf.PacketWriter<T> writer, PacketByteBuf.PacketReader<T> reader) {
 		return new TrackedDataHandler.ImmutableHandler<T>() {
 			@Override
 			public void write(PacketByteBuf buf, T value) {
-				packetWriter.accept(buf, value);
+				writer.accept(buf, value);
 			}
 
 			@Override
 			public T read(PacketByteBuf buf) {
-				return (T)packetReader.apply(buf);
+				return (T)reader.apply(buf);
 			}
 		};
 	}
 
-	static <T> TrackedDataHandler<Optional<T>> ofOptional(PacketByteBuf.PacketWriter<T> packetWriter, PacketByteBuf.PacketReader<T> packetReader) {
-		return of(packetWriter.asOptional(), packetReader.asOptional());
+	static <T> TrackedDataHandler<Optional<T>> ofOptional(PacketByteBuf.PacketWriter<T> writer, PacketByteBuf.PacketReader<T> reader) {
+		return of(writer.asOptional(), reader.asOptional());
 	}
 
 	static <T extends Enum<T>> TrackedDataHandler<T> ofEnum(Class<T> enum_) {

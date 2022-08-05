@@ -51,12 +51,12 @@ public class AdvancementManager {
 		}
 	}
 
-	public void load(Map<Identifier, Advancement.Builder> map) {
-		Map<Identifier, Advancement.Builder> map2 = Maps.<Identifier, Advancement.Builder>newHashMap(map);
+	public void load(Map<Identifier, Advancement.Builder> advancements) {
+		Map<Identifier, Advancement.Builder> map = Maps.<Identifier, Advancement.Builder>newHashMap(advancements);
 
-		while (!map2.isEmpty()) {
+		while (!map.isEmpty()) {
 			boolean bl = false;
-			Iterator<Entry<Identifier, Advancement.Builder>> iterator = map2.entrySet().iterator();
+			Iterator<Entry<Identifier, Advancement.Builder>> iterator = map.entrySet().iterator();
 
 			while (iterator.hasNext()) {
 				Entry<Identifier, Advancement.Builder> entry = (Entry<Identifier, Advancement.Builder>)iterator.next();
@@ -82,7 +82,7 @@ public class AdvancementManager {
 			}
 
 			if (!bl) {
-				for (Entry<Identifier, Advancement.Builder> entry : map2.entrySet()) {
+				for (Entry<Identifier, Advancement.Builder> entry : map.entrySet()) {
 					LOGGER.error("Couldn't load advancement {}: {}", entry.getKey(), entry.getValue());
 				}
 				break;

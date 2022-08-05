@@ -100,14 +100,14 @@ public class MapIcon {
 		private final byte id;
 		private final boolean alwaysRender;
 		private final int tintColor;
-		private final boolean field_33990;
+		private final boolean useIconCountLimit;
 
-		private Type(boolean alwaysRender, boolean bl) {
-			this(alwaysRender, -1, bl);
+		private Type(boolean alwaysRender, boolean useIconCountLimit) {
+			this(alwaysRender, -1, useIconCountLimit);
 		}
 
-		private Type(boolean alwaysRender, int tintColor, boolean bl) {
-			this.field_33990 = bl;
+		private Type(boolean alwaysRender, int tintColor, boolean useIconCountLimit) {
+			this.useIconCountLimit = useIconCountLimit;
 			this.id = (byte)this.ordinal();
 			this.alwaysRender = alwaysRender;
 			this.tintColor = tintColor;
@@ -133,8 +133,8 @@ public class MapIcon {
 			return values()[MathHelper.clamp(id, 0, values().length - 1)];
 		}
 
-		public boolean method_37342() {
-			return this.field_33990;
+		public boolean shouldUseIconCountLimit() {
+			return this.useIconCountLimit;
 		}
 	}
 }

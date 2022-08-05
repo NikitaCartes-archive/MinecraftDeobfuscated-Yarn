@@ -23,29 +23,27 @@ import net.minecraft.util.dynamic.Codecs;
  * @see PlayerKeyPair
  */
 public record PlayerPublicKey(PlayerPublicKey.PublicKeyData data) {
-	public static final Text field_39953 = Text.translatable("multiplayer.disconnect.missing_public_key");
-	public static final Text field_39954 = Text.translatable("multiplayer.disconnect.expired_public_key");
-	private static final Text field_39956 = Text.translatable("multiplayer.disconnect.invalid_public_key_signature");
-	public static final Duration field_39955 = Duration.ofHours(8L);
+	public static final Text MISSING_PUBLIC_KEY_TEXT = Text.translatable("multiplayer.disconnect.missing_public_key");
+	public static final Text EXPIRED_PUBLIC_KEY_TEXT = Text.translatable("multiplayer.disconnect.expired_public_key");
+	private static final Text INVALID_PUBLIC_KEY_SIGNATURE_TEXT = Text.translatable("multiplayer.disconnect.invalid_public_key_signature");
+	public static final Duration EXPIRATION_GRACE_PERIOD = Duration.ofHours(8L);
 	public static final Codec<PlayerPublicKey> CODEC = PlayerPublicKey.PublicKeyData.CODEC.xmap(PlayerPublicKey::new, PlayerPublicKey::data);
 
 	/**
 	 * Verifies the public key and decodes it.
 	 * 
 	 * <p>The checks whether the public key is present, signed with the Mojang's private key,
-	 * and not expired.
+	 * and not expired (taking into account the provided grace period).
 	 * 
-	 * @throws InsecurePublicKeyException.MissingException when the key is missing or empty
-	 * @throws InsecurePublicKeyException.InvalidException when the key does not belong to the profile, is unsigned, or expired
-	 * @throws NetworkEncryptionException when the key is malformed
+	 * @throws PublicKeyException when the key is expired or malformed
 	 */
 	public static PlayerPublicKey verifyAndDecode(
-		SignatureVerifier servicesSignatureVerifier, UUID playerUuid, PlayerPublicKey.PublicKeyData publicKeyData, Duration duration
-	) throws PlayerPublicKey.class_7652 {
-		if (publicKeyData.method_45103(duration)) {
-			throw new PlayerPublicKey.class_7652(field_39954);
+		SignatureVerifier servicesSignatureVerifier, UUID playerUuid, PlayerPublicKey.PublicKeyData publicKeyData, Duration gracePeriod
+	) throws PlayerPublicKey.PublicKeyException {
+		if (publicKeyData.isExpired(gracePeriod)) {
+			throw new PlayerPublicKey.PublicKeyException(EXPIRED_PUBLIC_KEY_TEXT);
 		} else if (!publicKeyData.verifyKey(servicesSignatureVerifier, playerUuid)) {
-			throw new PlayerPublicKey.class_7652(field_39956);
+			throw new PlayerPublicKey.PublicKeyException(INVALID_PUBLIC_KEY_SIGNATURE_TEXT);
 		} else {
 			return new PlayerPublicKey(publicKeyData);
 		}
@@ -92,13 +90,16 @@ public record PlayerPublicKey(PlayerPublicKey.PublicKeyData data) {
 			return this.expiresAt.isBefore(Instant.now());
 		}
 
-		public boolean method_45103(Duration duration) {
-			return this.expiresAt.plus(duration).isBefore(Instant.now());
+		/**
+		 * {@return whether the key is expired, with the provided grace period taken into account}
+		 */
+		public boolean isExpired(Duration gracePeriod) {
+			return this.expiresAt.plus(gracePeriod).isBefore(Instant.now());
 		}
 	}
 
-	public static class class_7652 extends TextifiedException {
-		public class_7652(Text text) {
+	public static class PublicKeyException extends TextifiedException {
+		public PublicKeyException(Text text) {
 			super(text);
 		}
 	}

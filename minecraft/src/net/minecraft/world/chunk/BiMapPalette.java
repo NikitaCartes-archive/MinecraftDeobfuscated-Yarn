@@ -25,11 +25,11 @@ public class BiMapPalette<T> implements Palette<T> {
 		this(idList, indexBits, listener, Int2ObjectBiMap.create(1 << indexBits));
 	}
 
-	private BiMapPalette(IndexedIterable<T> indexedIterable, int i, PaletteResizeListener<T> paletteResizeListener, Int2ObjectBiMap<T> int2ObjectBiMap) {
-		this.idList = indexedIterable;
-		this.indexBits = i;
-		this.listener = paletteResizeListener;
-		this.map = int2ObjectBiMap;
+	private BiMapPalette(IndexedIterable<T> idList, int indexBits, PaletteResizeListener<T> listener, Int2ObjectBiMap<T> map) {
+		this.idList = idList;
+		this.indexBits = indexBits;
+		this.listener = listener;
+		this.map = map;
 	}
 
 	public static <A> Palette<A> create(int bits, IndexedIterable<A> idList, PaletteResizeListener<A> listener, List<A> entries) {

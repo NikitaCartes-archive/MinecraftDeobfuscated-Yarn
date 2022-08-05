@@ -14,8 +14,14 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import org.slf4j.Logger;
 
+/**
+ * A bridge between Minecraft and {@link com.mojang.text2speech.Narrator}.
+ */
 @Environment(EnvType.CLIENT)
 public class NarratorManager {
+	/**
+	 * An empty text for narration.
+	 */
 	public static final Text EMPTY = ScreenTexts.EMPTY;
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final MinecraftClient client;
@@ -25,20 +31,41 @@ public class NarratorManager {
 		this.client = client;
 	}
 
+	/**
+	 * Narrates a lazily supplied chat message.
+	 * 
+	 * @see NarratorMode#shouldNarrateChat
+	 * 
+	 * @param messageSupplier the message to narrate
+	 */
 	public void narrateChatMessage(Supplier<Text> messageSupplier) {
-		if (this.getNarratorOption().shouldNarrateChat()) {
+		if (this.getNarratorMode().shouldNarrateChat()) {
 			String string = ((Text)messageSupplier.get()).getString();
 			this.debugPrintMessage(string);
 			this.narrator.say(string, false);
 		}
 	}
 
+	/**
+	 * Narrates system text.
+	 * 
+	 * @see NarratorMode#shouldNarrateSystem
+	 * 
+	 * @param text the text to narrate
+	 */
 	public void narrate(Text text) {
 		this.narrate(text.getString());
 	}
 
+	/**
+	 * Narrates system text.
+	 * 
+	 * @see NarratorMode#shouldNarrateSystem
+	 * 
+	 * @param text the text to narrate
+	 */
 	public void narrate(String text) {
-		if (this.getNarratorOption().shouldNarrateSystem() && !text.isEmpty()) {
+		if (this.getNarratorMode().shouldNarrateSystem() && !text.isEmpty()) {
 			this.debugPrintMessage(text);
 			if (this.narrator.active()) {
 				this.narrator.clear();
@@ -47,25 +74,40 @@ public class NarratorManager {
 		}
 	}
 
-	private NarratorMode getNarratorOption() {
+	/**
+	 * {@return the current narrator mode of the client}
+	 */
+	private NarratorMode getNarratorMode() {
 		return this.client.options.getNarrator().getValue();
 	}
 
+	/**
+	 * If the game is {@linkplain net.minecraft.SharedConstants#isDevelopment
+	 * in a development environment}, logs a debug message for a narrated string.
+	 * 
+	 * @param message the narrated message
+	 */
 	private void debugPrintMessage(String message) {
 		if (SharedConstants.isDevelopment) {
 			LOGGER.debug("Narrating: {}", message.replaceAll("\n", "\\\\n"));
 		}
 	}
 
-	public void addToast(NarratorMode option) {
+	/**
+	 * Narrates a message informing the user about a changed narration mode
+	 * and displays it in a toast.
+	 * 
+	 * @param mode the new narrator mode
+	 */
+	public void onModeChange(NarratorMode mode) {
 		this.clear();
-		this.narrator.say(Text.translatable("options.narrator").append(" : ").append(option.getName()).getString(), true);
+		this.narrator.say(Text.translatable("options.narrator").append(" : ").append(mode.getName()).getString(), true);
 		ToastManager toastManager = MinecraftClient.getInstance().getToastManager();
 		if (this.narrator.active()) {
-			if (option == NarratorMode.OFF) {
+			if (mode == NarratorMode.OFF) {
 				SystemToast.show(toastManager, SystemToast.Type.NARRATOR_TOGGLE, Text.translatable("narrator.toast.disabled"), null);
 			} else {
-				SystemToast.show(toastManager, SystemToast.Type.NARRATOR_TOGGLE, Text.translatable("narrator.toast.enabled"), option.getName());
+				SystemToast.show(toastManager, SystemToast.Type.NARRATOR_TOGGLE, Text.translatable("narrator.toast.enabled"), mode.getName());
 			}
 		} else {
 			SystemToast.show(
@@ -79,7 +121,7 @@ public class NarratorManager {
 	}
 
 	public void clear() {
-		if (this.getNarratorOption() != NarratorMode.OFF && this.narrator.active()) {
+		if (this.getNarratorMode() != NarratorMode.OFF && this.narrator.active()) {
 			this.narrator.clear();
 		}
 	}

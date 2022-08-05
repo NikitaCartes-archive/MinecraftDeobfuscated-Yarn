@@ -9,7 +9,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Difficulty;
 
 public class StatusEffects {
-	private static final int field_38093 = 22;
+	private static final int DARKNESS_PADDING_DURATION = 22;
 	public static final StatusEffect SPEED = register(
 		1,
 		"speed",

@@ -22,8 +22,8 @@ import org.slf4j.Logger;
  * represents the type of the placed block entities, like chests or furnaces.
  * 
  * <p>Block entity types are pre-defined and registered in {@link
- * Registry#BLOCK_ENTITY_TYPE}. To create a block entity type, the {@linkplain
- * BlockEntityType.Builder#create builder} should be used.
+ * net.minecraft.util.registry.Registry#BLOCK_ENTITY_TYPE}. To create a block
+ * entity type, the {@linkplain BlockEntityType.Builder#create builder} should be used.
  * 
  * <p>Blocks that have corresponding block entities must implement {@link
  * net.minecraft.block.BlockEntityProvider} and list it in the builder of the block

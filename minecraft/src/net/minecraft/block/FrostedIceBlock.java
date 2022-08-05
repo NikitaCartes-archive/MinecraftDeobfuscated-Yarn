@@ -15,8 +15,8 @@ import net.minecraft.world.World;
 public class FrostedIceBlock extends IceBlock {
 	public static final int MAX_AGE = 3;
 	public static final IntProperty AGE = Properties.AGE_3;
-	private static final int field_31097 = 4;
-	private static final int field_31098 = 2;
+	private static final int NEIGHBORS_CHECKED_ON_SCHEDULED_TICK = 4;
+	private static final int NEIGHBORS_CHECKED_ON_NEIGHBOR_UPDATE = 2;
 
 	public FrostedIceBlock(AbstractBlock.Settings settings) {
 		super(settings);

@@ -14,11 +14,11 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 
 public class EmptyChunk extends WorldChunk {
-	private final RegistryEntry<Biome> field_36407;
+	private final RegistryEntry<Biome> biomeEntry;
 
-	public EmptyChunk(World world, ChunkPos chunkPos, RegistryEntry<Biome> registryEntry) {
-		super(world, chunkPos);
-		this.field_36407 = registryEntry;
+	public EmptyChunk(World world, ChunkPos pos, RegistryEntry<Biome> biomeEntry) {
+		super(world, pos);
+		this.biomeEntry = biomeEntry;
 	}
 
 	@Override
@@ -77,6 +77,6 @@ public class EmptyChunk extends WorldChunk {
 
 	@Override
 	public RegistryEntry<Biome> getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
-		return this.field_36407;
+		return this.biomeEntry;
 	}
 }

@@ -53,6 +53,14 @@ import org.slf4j.Logger;
  * <p>The {@link DynamicRegistryManager.ImmutableImpl}
  * class serves as an immutable implementation of any particular collection
  * or configuration of dynamic registries.
+ * 
+ * <p>To create a new instance, call {@link #createAndLoad}, then (optionally)
+ * load the data pack-defined values via {@link
+ * net.minecraft.util.dynamic.RegistryOps#ofLoaded(DynamicOps, DynamicRegistryManager.Mutable, net.minecraft.resource.ResourceManager)}.
+ * Values registered in {@link BuiltinRegistries} are always available.
+ * 
+ * @see net.minecraft.server.MinecraftServer#getRegistryManager()
+ * @see net.minecraft.client.network.ClientPlayNetworkHandler#getRegistryManager()
  */
 public interface DynamicRegistryManager {
 	Logger LOGGER = LogUtils.getLogger();
@@ -198,6 +206,13 @@ public interface DynamicRegistryManager {
 		};
 	}
 
+	/**
+	 * {@return a new dynamic registry manager instance with all built-in registries loaded}
+	 * 
+	 * <p>The registries do not contain values from data packs.
+	 * Call {@link net.minecraft.util.dynamic.RegistryOps#ofLoaded(DynamicOps, DynamicRegistryManager.Mutable, net.minecraft.resource.ResourceManager)}
+	 * to load those values.
+	 */
 	static DynamicRegistryManager.Mutable createAndLoad() {
 		DynamicRegistryManager.Mutable mutable = createMutableRegistryManager();
 		EntryLoader.Impl impl = new EntryLoader.Impl();

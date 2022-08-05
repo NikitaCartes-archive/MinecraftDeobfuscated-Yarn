@@ -4,19 +4,10 @@ import com.google.common.annotations.VisibleForTesting;
 import java.util.concurrent.atomic.AtomicLong;
 
 public final class RandomSeed {
-	/**
-	 * @see jdk.internal.util.random.RandomSupport#GOLDEN_RATIO_64
-	 */
 	public static final long GOLDEN_RATIO_64 = -7046029254386353131L;
-	/**
-	 * @see jdk.internal.util.random.RandomSupport#SILVER_RATIO_64
-	 */
 	public static final long SILVER_RATIO_64 = 7640891576956012809L;
 	private static final AtomicLong SEED_UNIQUIFIER = new AtomicLong(8682522807148012L);
 
-	/**
-	 * @see jdk.internal.util.random.RandomSupport#mixStafford13(long)
-	 */
 	@VisibleForTesting
 	public static long mixStafford13(long seed) {
 		seed = (seed ^ seed >>> 30) * -4658895280553007687L;
@@ -24,9 +15,6 @@ public final class RandomSeed {
 		return seed ^ seed >>> 31;
 	}
 
-	/**
-	 * @see jdk.random.Xoroshiro128PlusPlus#Xoroshiro128PlusPlus(long)
-	 */
 	public static RandomSeed.XoroshiroSeed createXoroshiroSeed(long seed) {
 		long l = seed ^ 7640891576956012809L;
 		long m = l + -7046029254386353131L;

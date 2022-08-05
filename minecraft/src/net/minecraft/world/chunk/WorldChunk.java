@@ -85,8 +85,8 @@ public class WorldChunk extends Chunk {
 	private final ChunkTickScheduler<Block> blockTickScheduler;
 	private final ChunkTickScheduler<Fluid> fluidTickScheduler;
 
-	public WorldChunk(World world, ChunkPos chunkPos) {
-		this(world, chunkPos, UpgradeData.NO_UPGRADE_DATA, new ChunkTickScheduler<>(), new ChunkTickScheduler<>(), 0L, null, null, null);
+	public WorldChunk(World world, ChunkPos pos) {
+		this(world, pos, UpgradeData.NO_UPGRADE_DATA, new ChunkTickScheduler<>(), new ChunkTickScheduler<>(), 0L, null, null, null);
 	}
 
 	public WorldChunk(
@@ -412,10 +412,10 @@ public class WorldChunk extends Chunk {
 		this.removeBlockEntityTicker(pos);
 	}
 
-	private <T extends BlockEntity> void removeGameEventListener(T blockEntity, ServerWorld serverWorld) {
+	private <T extends BlockEntity> void removeGameEventListener(T blockEntity, ServerWorld world) {
 		Block block = blockEntity.getCachedState().getBlock();
 		if (block instanceof BlockEntityProvider) {
-			GameEventListener gameEventListener = ((BlockEntityProvider)block).getGameEventListener(serverWorld, blockEntity);
+			GameEventListener gameEventListener = ((BlockEntityProvider)block).getGameEventListener(world, blockEntity);
 			if (gameEventListener != null) {
 				int i = ChunkSectionPos.getSectionCoord(blockEntity.getPos().getY());
 				GameEventDispatcher gameEventDispatcher = this.getGameEventDispatcher(i);
@@ -589,10 +589,10 @@ public class WorldChunk extends Chunk {
 		});
 	}
 
-	private <T extends BlockEntity> void updateGameEventListener(T blockEntity, ServerWorld serverWorld) {
+	private <T extends BlockEntity> void updateGameEventListener(T blockEntity, ServerWorld world) {
 		Block block = blockEntity.getCachedState().getBlock();
 		if (block instanceof BlockEntityProvider) {
-			GameEventListener gameEventListener = ((BlockEntityProvider)block).getGameEventListener(serverWorld, blockEntity);
+			GameEventListener gameEventListener = ((BlockEntityProvider)block).getGameEventListener(world, blockEntity);
 			if (gameEventListener != null) {
 				GameEventDispatcher gameEventDispatcher = this.getGameEventDispatcher(ChunkSectionPos.getSectionCoord(blockEntity.getPos().getY()));
 				gameEventDispatcher.addListener(gameEventListener);
@@ -606,15 +606,15 @@ public class WorldChunk extends Chunk {
 		if (blockEntityTicker == null) {
 			this.removeBlockEntityTicker(blockEntity.getPos());
 		} else {
-			this.blockEntityTickers.compute(blockEntity.getPos(), (pos, wrappedBlockEntityTickInvoker) -> {
+			this.blockEntityTickers.compute(blockEntity.getPos(), (pos, ticker) -> {
 				BlockEntityTickInvoker blockEntityTickInvoker = this.wrapTicker(blockEntity, blockEntityTicker);
-				if (wrappedBlockEntityTickInvoker != null) {
-					wrappedBlockEntityTickInvoker.setWrapped(blockEntityTickInvoker);
-					return wrappedBlockEntityTickInvoker;
+				if (ticker != null) {
+					ticker.setWrapped(blockEntityTickInvoker);
+					return ticker;
 				} else if (this.canTickBlockEntities()) {
-					WorldChunk.WrappedBlockEntityTickInvoker wrappedBlockEntityTickInvoker2 = new WorldChunk.WrappedBlockEntityTickInvoker(blockEntityTickInvoker);
-					this.world.addBlockEntityTicker(wrappedBlockEntityTickInvoker2);
-					return wrappedBlockEntityTickInvoker2;
+					WorldChunk.WrappedBlockEntityTickInvoker wrappedBlockEntityTickInvoker = new WorldChunk.WrappedBlockEntityTickInvoker(blockEntityTickInvoker);
+					this.world.addBlockEntityTicker(wrappedBlockEntityTickInvoker);
+					return wrappedBlockEntityTickInvoker;
 				} else {
 					return null;
 				}

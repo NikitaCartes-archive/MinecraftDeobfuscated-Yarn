@@ -51,8 +51,8 @@ public class CompassAnglePredicateProvider implements UnclampedModelPredicatePro
 	}
 
 	private float getAngleTo(Entity entity, long time, BlockPos pos) {
-		double d = this.method_43216(entity, pos);
-		double e = this.method_43213(entity);
+		double d = this.getAngleTo(entity, pos);
+		double e = this.getBodyYaw(entity);
 		if (entity instanceof PlayerEntity playerEntity && playerEntity.isMainPlayer()) {
 			if (this.aimedInterpolator.shouldUpdate(time)) {
 				this.aimedInterpolator.update(time, 0.5 - (e - 0.25));
@@ -75,12 +75,12 @@ public class CompassAnglePredicateProvider implements UnclampedModelPredicatePro
 		return pos != null && pos.getDimension() == entity.world.getRegistryKey() && !(pos.getPos().getSquaredDistance(entity.getPos()) < 1.0E-5F);
 	}
 
-	private double method_43216(Entity entity, BlockPos blockPos) {
-		Vec3d vec3d = Vec3d.ofCenter(blockPos);
+	private double getAngleTo(Entity entity, BlockPos pos) {
+		Vec3d vec3d = Vec3d.ofCenter(pos);
 		return Math.atan2(vec3d.getZ() - entity.getZ(), vec3d.getX() - entity.getX()) / (float) (Math.PI * 2);
 	}
 
-	private double method_43213(Entity entity) {
+	private double getBodyYaw(Entity entity) {
 		return MathHelper.floorMod((double)(entity.getBodyYaw() / 360.0F), 1.0);
 	}
 

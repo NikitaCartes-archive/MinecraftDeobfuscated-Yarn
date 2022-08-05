@@ -131,6 +131,151 @@ import net.minecraft.world.poi.PointOfInterestTypes;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 
+/**
+ * A registry is used to register various in-game components. Almost all parts of the
+ * game - from blocks, items, and entity types, to cat types, goat horn instruments,
+ * and structure pools - are registered in registries. Registry system allows the game
+ * to enumerate all known types of something, and to assign a unique identifier to each
+ * of those. Therefore, registering an object in the registry plays a very important
+ * role, and failure to register new instances of registerable object usually results
+ * in a bug or even a crash.
+ * 
+ * <h2 id="terms">Terminologies</h2>
+ * <p>A <strong>registry</strong> is an object that holds the mapping between three things:
+ * the string ID, the numeric ID, and the registered value. There are many registries
+ * for different types of registerable objects, and a registry's type parameter indicates
+ * the accepted type. For example, you register your {@link Block} to {@code
+ * Registry<Block>}. It's important to note that registries themselves are registered
+ * in a "registry of registries", {@link #ROOT}.
+ * 
+ * <p>The <strong>string ID</strong>, usually just called "ID", is a human-readable
+ * {@link Identifier} that uniquely identifies the registered value in a registry.
+ * This should stay the same between two game versions, and is usually used for disk
+ * storage.
+ * 
+ * <p>The <strong>numeric ID</strong> or <strong>raw ID</strong> is an integer
+ * assigned automatically by the registry to each registered value. This is not
+ * guaranteed to stay the same between two game versions, and is usually used for
+ * networking purposes.
+ * 
+ * <p>The <strong>registered value</strong>, often just called "value" in the code,
+ * is the value added to the registry. The registry's type parameter determines
+ * the type of the registered value.
+ * 
+ * <p>Each registered value can also be identified with a <strong>{@linkplain RegistryKey
+ * registry key}</strong>. A registry key is a combination of the registry's ID and
+ * the registered value's ID. Using a registry key makes the type of the ID's
+ * associated value clear, as the type parameter contains the type.
+ * 
+ * <p>A <strong>{@linkplain RegistryEntry registry entry}</strong> is an object
+ * holding a value that can be registered in a registry. In most cases, the
+ * value is already registered in a registry ("reference entry"), hence the name;
+ * however, it is possible to create a registry entry by direct reference
+ * ("direct entry"). This is useful for data packs, as they can define
+ * one-time use values directly without having to register them every time.
+ * 
+ * <p>A <strong>{@link RegistryEntryList registry entry list}</strong> is a list
+ * of registry entries. This, is either a direct reference to each item, or
+ * a reference to a tag. A <strong>tag</strong> is a way to dynamically
+ * define a list of registered values. Anything registered in a registry
+ * can be tagged, and each registry holds a list of tags it recognizes.
+ * 
+ * <h2 id="static-and-dynamic-registries">Static and dynamic registries</h2>
+ * <p>There are two kinds of registries: static and dynamic.
+ * 
+ * <ul>
+ * <li>A <strong>static registry</strong> is a registry whose values are hard-coded
+ * in the game and cannot be added or modified through data packs. Most registries
+ * are static. Since they cannot be modified (without mods), it is a singleton,
+ * and exists in this class. During the game bootstrap, vanilla objects are
+ * registered, after which the registry gets frozen to prohibit further changes.</li>
+ * 
+ * <li>A <strong>dynamic registry</strong> is a registry whose values can be
+ * added or replaced through data packs. Vanilla values are registered in
+ * {@link BuiltinRegistries}. When a server starts, {@link DynamicRegistryManager}
+ * (also known as "DRM") creates a copy of the vanilla registries, and loads the
+ * registry value definitions in all enabled data packs. Therefore, a dynamic
+ * registry is bound to a server, and multiple registries for the same type of
+ * registerable object can exist during the lifetime of the game. When a player
+ * joins, the server sends the contents of the dynamic registry manager to
+ * the client, but only "network serializable" registries are sent.
+ * To access a dynamic registry, first get an instance of the dynamic registry
+ * manager, then call the {@link DynamicRegistryManager#get} method. The
+ * dynamic registry manager can be obtained {@linkplain
+ * net.minecraft.server.MinecraftServer#getRegistryManager from the server} or
+ * {@linkplain net.minecraft.client.network.ClientPlayNetworkHandler#getRegistryManager
+ * from the client network handler}.</li>
+ * </ul>
+ * 
+ * <h2 id="using">Using Registry</h2>
+ * <h3 id="reading">Reading Registry</h3>
+ * <p>A registry is also an {@link IndexedIterable}. Therefore, registries can be
+ * iterated using, e.g. {@code for (Block block : Registry.BLOCK)}.
+ * 
+ * <p>There are several other methods used for reading the contents of the registry:
+ * <ul>
+ * <li>{@link #entryOf} or {@link #getEntry(RegistryEntry)} for getting the registry entry
+ * from the key.</li>
+ * <li>{@link #get(Identifier)} or {@link #get(RegistryKey)} for getting the registered
+ * value from the ID or the registry key.</li>
+ * <li>{@link #getId(Object)} for getting the ID of a registered value.</li>
+ * <li>{@link #getEntry(int)} for getting the registry entry from the raw ID.</li>
+ * <li>{@link #getEntryList} and {@link #iterateEntries} for getting the contents of a tag,</li>
+ * <li>{@link #streamTags} for streaming all tags of a registry.</li>
+ * </ul>
+ * 
+ * <h3 id="registering">Registering something to Registry</h3>
+ * <p>The steps for registration are different, depending on whether the registry is static
+ * or dynamic. For dynamic registries, data packs can usually be used to register a new
+ * value or replace one. For static registries, the game's code must be modified.
+ * 
+ * <p>Static registries are defined in this class, and unlike the dynamic registries, it
+ * cannot be changed after the game initialization. The game enforces this by "freezing"
+ * the registry. Attempting to register a value after freezing causes a crash, such as
+ * "Registry is already frozen". Modding APIs usually provide a way to bypass this restriction.
+ * 
+ * <p>To register a value to a dynamic registry, register to a registry found in {@link
+ * BuiltinRegistries}. Values registered in those registries are available in all worlds.
+ * 
+ * <p>In both cases, use {@link #register(Registry, Identifier, Object)} for registering
+ * a value to a registry.
+ * 
+ * <h3 id="intrusive-holders">Intrusive holders</h3>
+ * <p>For historical reasons, there are two types of reference registry entries.
+ * (This is different from the "direct" and "reference" registry entry types.)
+ * 
+ * <ul>
+ * <li><strong>Intrusive holders</strong> are registry entries tied to a specific
+ * registerable object at instantiation time. When instantiating those, it promises
+ * that the object is later registered - which, if broken, will result in a crash.
+ * This is used for {@link #BLOCK}, {@link #ITEM}, {@link #FLUID}, {@link #ENTITY_TYPE},
+ * and {@link #GAME_EVENT} registries.</li>
+ * <li><strong>Standalone holders</strong> are registry entries that are not intrusive.
+ * There is no restriction on instantiation.</li>
+ * </ul>
+ * 
+ * <p>When a class whose instances are registered as intrusive holders, such as
+ * {@link Block} or {@link Item}, are instantiated without registering, the game
+ * crashes with "Some intrusive holders were not added to registry" error message.
+ * <strong>This includes conditional registration</strong>. For example, the code
+ * below can cause a crash:
+ * 
+ * <pre>{@code
+ * Item myItem = new Item(new Item.Settings());
+ * if (condition) {
+ *     Registry.register(Registry.ITEM, new Identifier("example", "bad"), myItem);
+ * }
+ * }</pre>
+ * 
+ * <p>The correct way is to make the instantiation conditional as well:
+ * 
+ * <pre>{@code
+ * if (condition) {
+ *     Item myItem = new Item(new Item.Settings());
+ *     Registry.register(Registry.ITEM, new Identifier("example", "bad"), myItem);
+ * }
+ * }</pre>
+ */
 public abstract class Registry<T> implements Keyable, IndexedIterable<T> {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Map<Identifier, Supplier<?>> DEFAULT_ENTRIES = Maps.<Identifier, Supplier<?>>newLinkedHashMap();
@@ -404,6 +549,9 @@ public abstract class Registry<T> implements Keyable, IndexedIterable<T> {
 		}
 	}
 
+	/**
+	 * {@return the registry key that identifies this registry}
+	 */
 	public RegistryKey<? extends Registry<T>> getKey() {
 		return this.registryKey;
 	}
@@ -416,6 +564,11 @@ public abstract class Registry<T> implements Keyable, IndexedIterable<T> {
 		return "Registry[" + this.registryKey + " (" + this.lifecycle + ")]";
 	}
 
+	/**
+	 * {@return the codec for serializing {@code T}}
+	 * 
+	 * @implNote This serializes a value using the ID or (if compressed) the raw ID.
+	 */
 	public Codec<T> getCodec() {
 		Codec<T> codec = Identifier.CODEC
 			.flatXmap(
@@ -431,6 +584,11 @@ public abstract class Registry<T> implements Keyable, IndexedIterable<T> {
 		return Codecs.withLifecycle(Codecs.orCompressed(codec, codec2), this::getEntryLifecycle, value -> this.lifecycle);
 	}
 
+	/**
+	 * {@return the codec for serializing the registry entry of {@code T}}
+	 * 
+	 * @implNote This serializes a registry entry using the ID.
+	 */
 	public Codec<RegistryEntry<T>> createEntryCodec() {
 		Codec<RegistryEntry<T>> codec = Identifier.CODEC
 			.flatXmap(
@@ -450,17 +608,29 @@ public abstract class Registry<T> implements Keyable, IndexedIterable<T> {
 		return this.getIds().stream().map(id -> ops.createString(id.toString()));
 	}
 
+	/**
+	 * {@return the ID assigned to {@code value}, or {@code null} if it is not registered}
+	 */
 	@Nullable
 	public abstract Identifier getId(T value);
 
+	/**
+	 * {@return the registry key of {@code value}, or an empty optional if it is not registered}
+	 */
 	public abstract Optional<RegistryKey<T>> getKey(T entry);
 
 	@Override
 	public abstract int getRawId(@Nullable T value);
 
+	/**
+	 * {@return the value that is assigned {@code key}, or {@code null} if there is none}
+	 */
 	@Nullable
 	public abstract T get(@Nullable RegistryKey<T> key);
 
+	/**
+	 * {@return the value that is assigned {@code id}, or {@code null} if there is none}
+	 */
 	@Nullable
 	public abstract T get(@Nullable Identifier id);
 
@@ -471,18 +641,24 @@ public abstract class Registry<T> implements Keyable, IndexedIterable<T> {
 
 	public abstract Lifecycle getLifecycle();
 
+	/**
+	 * {@return the value that is assigned {@code id}, or an empty optional if there is none}
+	 */
 	public Optional<T> getOrEmpty(@Nullable Identifier id) {
 		return Optional.ofNullable(this.get(id));
 	}
 
+	/**
+	 * {@return the value that is assigned {@code key}, or an empty optional if there is none}
+	 */
 	public Optional<T> getOrEmpty(@Nullable RegistryKey<T> key) {
 		return Optional.ofNullable(this.get(key));
 	}
 
 	/**
-	 * Gets an entry from the registry.
+	 * {@return the value that is assigned {@code key}}
 	 * 
-	 * @throws IllegalStateException if the entry was not present in the registry
+	 * @throws IllegalStateException if there is no value with {@code key} in the registry
 	 */
 	public T getOrThrow(RegistryKey<T> key) {
 		T object = this.get(key);
@@ -493,30 +669,63 @@ public abstract class Registry<T> implements Keyable, IndexedIterable<T> {
 		}
 	}
 
+	/**
+	 * {@return the set of all IDs registered in a registry}
+	 */
 	public abstract Set<Identifier> getIds();
 
+	/**
+	 * {@return the set containing {@link Map.Entry} of the registry keys and values registered
+	 * in this registry}
+	 */
 	public abstract Set<Entry<RegistryKey<T>, T>> getEntrySet();
 
+	/**
+	 * {@return the set of all registry keys registered in a registry}
+	 */
 	public abstract Set<RegistryKey<T>> getKeys();
 
+	/**
+	 * {@return a random registry entry from this registry, or an empty optional if the
+	 * registry is empty}
+	 */
 	public abstract Optional<RegistryEntry<T>> getRandom(Random random);
 
+	/**
+	 * {@return a stream of all values of this registry}
+	 */
 	public Stream<T> stream() {
 		return StreamSupport.stream(this.spliterator(), false);
 	}
 
+	/**
+	 * {@return whether {@code id} is registered in this registry}
+	 */
 	public abstract boolean containsId(Identifier id);
 
+	/**
+	 * {@return whether {@code key} is registered in this registry}
+	 */
 	public abstract boolean contains(RegistryKey<T> key);
 
 	public static <T> T register(Registry<? super T> registry, String id, T entry) {
 		return register(registry, new Identifier(id), entry);
 	}
 
+	/**
+	 * Registers {@code entry} to {@code registry} under {@code id}.
+	 * 
+	 * @return the passed {@code entry}
+	 */
 	public static <V, T extends V> T register(Registry<V> registry, Identifier id, T entry) {
 		return register(registry, RegistryKey.of(registry.registryKey, id), entry);
 	}
 
+	/**
+	 * Registers {@code entry} to {@code registry} under {@code key}.
+	 * 
+	 * @return the passed {@code entry}
+	 */
 	public static <V, T extends V> T register(Registry<V> registry, RegistryKey<V> key, T entry) {
 		((MutableRegistry)registry).add(key, (V)entry, Lifecycle.stable());
 		return entry;
@@ -535,18 +744,46 @@ public abstract class Registry<T> implements Keyable, IndexedIterable<T> {
 
 	public abstract RegistryEntry.Reference<T> createEntry(T value);
 
+	/**
+	 * {@return the reference registry entry for the value assigned {@code rawId}, or an
+	 * empty optional if there is no such value}
+	 */
 	public abstract Optional<RegistryEntry<T>> getEntry(int rawId);
 
+	/**
+	 * {@return the reference registry entry for the value assigned {@code key}, or an
+	 * empty optional if there is no such value}
+	 * 
+	 * @see #entryOf
+	 */
 	public abstract Optional<RegistryEntry<T>> getEntry(RegistryKey<T> key);
 
+	/**
+	 * {@return the reference registry entry for the value assigned {@code key}}
+	 * 
+	 * @throws IllegalStateException if there is no value that is assigned {@code key}
+	 * 
+	 * @see #getEntry(RegistryKey)
+	 */
 	public RegistryEntry<T> entryOf(RegistryKey<T> key) {
 		return (RegistryEntry<T>)this.getEntry(key).orElseThrow(() -> new IllegalStateException("Missing key in " + this.registryKey + ": " + key));
 	}
 
+	/**
+	 * {@return a stream of reference registry entries of this registry}
+	 */
 	public abstract Stream<RegistryEntry.Reference<T>> streamEntries();
 
+	/**
+	 * {@return the registry entry list of values that are assigned {@code tag}, or an empty
+	 * optional if the tag is not known to the registry}
+	 */
 	public abstract Optional<RegistryEntryList.Named<T>> getEntryList(TagKey<T> tag);
 
+	/**
+	 * {@return an iterable of values that are assigned {@code tag}, or an empty iterable
+	 * if the tag is not known to the registry}
+	 */
 	public Iterable<RegistryEntry<T>> iterateEntries(TagKey<T> tag) {
 		return DataFixUtils.orElse(this.getEntryList(tag), List.of());
 	}
@@ -555,8 +792,14 @@ public abstract class Registry<T> implements Keyable, IndexedIterable<T> {
 
 	public abstract Stream<Pair<TagKey<T>, RegistryEntryList.Named<T>>> streamTagsAndEntries();
 
+	/**
+	 * {@return a stream of all tag keys known to this registry}
+	 */
 	public abstract Stream<TagKey<T>> streamTags();
 
+	/**
+	 * {@return whether {@code tag} is known to this registry}
+	 */
 	public abstract boolean containsTag(TagKey<T> tag);
 
 	public abstract void clearTags();

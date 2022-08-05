@@ -42,7 +42,7 @@ import org.slf4j.Logger;
 
 public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	protected static final String field_36349 = "Player";
+	protected static final String PLAYER_KEY = "Player";
 	protected static final String WORLD_GEN_SETTINGS_KEY = "WorldGenSettings";
 	private LevelInfo levelInfo;
 	private final GeneratorOptions generatorOptions;

@@ -11,17 +11,15 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.Codecs;
 
 public class TagEntry {
-	private static final Codec<TagEntry> field_39266 = RecordCodecBuilder.create(
+	private static final Codec<TagEntry> ENTRY_CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codecs.TAG_ENTRY_ID.fieldOf("id").forGetter(TagEntry::getIdForCodec),
 					Codec.BOOL.optionalFieldOf("required", Boolean.valueOf(true)).forGetter(entry -> entry.required)
 				)
 				.apply(instance, TagEntry::new)
 	);
-	public static final Codec<TagEntry> CODEC = Codec.either(Codecs.TAG_ENTRY_ID, field_39266)
-		.xmap(
-			either -> either.map(id -> new TagEntry(id, true), tagEntry -> tagEntry), entry -> entry.required ? Either.left(entry.getIdForCodec()) : Either.right(entry)
-		);
+	public static final Codec<TagEntry> CODEC = Codec.either(Codecs.TAG_ENTRY_ID, ENTRY_CODEC)
+		.xmap(either -> either.map(id -> new TagEntry(id, true), entry -> entry), entry -> entry.required ? Either.left(entry.getIdForCodec()) : Either.right(entry));
 	private final Identifier id;
 	private final boolean tag;
 	private final boolean required;
@@ -58,35 +56,35 @@ public class TagEntry {
 		return new TagEntry(id, true, false);
 	}
 
-	public <T> boolean resolve(TagEntry.ValueGetter<T> valueGetter, Consumer<T> consumer) {
+	public <T> boolean resolve(TagEntry.ValueGetter<T> valueGetter, Consumer<T> idConsumer) {
 		if (this.tag) {
 			Collection<T> collection = valueGetter.tag(this.id);
 			if (collection == null) {
 				return !this.required;
 			}
 
-			collection.forEach(consumer);
+			collection.forEach(idConsumer);
 		} else {
 			T object = valueGetter.direct(this.id);
 			if (object == null) {
 				return !this.required;
 			}
 
-			consumer.accept(object);
+			idConsumer.accept(object);
 		}
 
 		return true;
 	}
 
-	public void forEachRequiredTagId(Consumer<Identifier> consumer) {
+	public void forEachRequiredTagId(Consumer<Identifier> idConsumer) {
 		if (this.tag && this.required) {
-			consumer.accept(this.id);
+			idConsumer.accept(this.id);
 		}
 	}
 
-	public void forEachOptionalTagId(Consumer<Identifier> consumer) {
+	public void forEachOptionalTagId(Consumer<Identifier> idConsumer) {
 		if (this.tag && !this.required) {
-			consumer.accept(this.id);
+			idConsumer.accept(this.id);
 		}
 	}
 

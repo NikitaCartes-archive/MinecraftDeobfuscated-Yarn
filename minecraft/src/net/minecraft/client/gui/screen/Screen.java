@@ -566,15 +566,21 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		}
 	}
 
-	public void narrateScreenIfNarrationEnabled(boolean useTranslationsCache) {
+	/**
+	 * If narration is enabled, narrates the elements of this screen.
+	 * 
+	 * @param onlyChangedNarrations if {@code true}, the text will not include unchanged narrations that have
+	 * already been narrated previously
+	 */
+	public void narrateScreenIfNarrationEnabled(boolean onlyChangedNarrations) {
 		if (this.isNarratorActive()) {
-			this.narrateScreen(useTranslationsCache);
+			this.narrateScreen(onlyChangedNarrations);
 		}
 	}
 
-	private void narrateScreen(boolean useTranslationsCache) {
+	private void narrateScreen(boolean onlyChangedNarrations) {
 		this.narrator.buildNarrations(this::addScreenNarrations);
-		String string = this.narrator.buildNarratorText(!useTranslationsCache);
+		String string = this.narrator.buildNarratorText(!onlyChangedNarrations);
 		if (!string.isEmpty()) {
 			this.client.getNarratorManager().narrate(string);
 		}

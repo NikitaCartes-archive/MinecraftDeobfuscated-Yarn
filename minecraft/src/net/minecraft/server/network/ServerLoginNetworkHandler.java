@@ -134,7 +134,7 @@ public class ServerLoginNetworkHandler implements TickablePacketListener, Server
 			try {
 				SignatureVerifier signatureVerifier = this.server.getServicesSignatureVerifier();
 				playerPublicKey = getVerifiedPublicKey(this.publicKeyData, this.profile.getId(), signatureVerifier, this.server.shouldEnforceSecureProfile());
-			} catch (PlayerPublicKey.class_7652 var7) {
+			} catch (PlayerPublicKey.PublicKeyException var7) {
 				LOGGER.error("Failed to validate profile key: {}", var7.getMessage());
 				if (!this.connection.isLocal()) {
 					this.disconnect(var7.getMessageText());
@@ -192,10 +192,10 @@ public class ServerLoginNetworkHandler implements TickablePacketListener, Server
 	@Nullable
 	private static PlayerPublicKey getVerifiedPublicKey(
 		@Nullable PlayerPublicKey.PublicKeyData publicKeyData, UUID playerUuid, SignatureVerifier servicesSignatureVerifier, boolean shouldThrowOnMissingKey
-	) throws PlayerPublicKey.class_7652 {
+	) throws PlayerPublicKey.PublicKeyException {
 		if (publicKeyData == null) {
 			if (shouldThrowOnMissingKey) {
-				throw new PlayerPublicKey.class_7652(PlayerPublicKey.field_39953);
+				throw new PlayerPublicKey.PublicKeyException(PlayerPublicKey.MISSING_PUBLIC_KEY_TEXT);
 			} else {
 				return null;
 			}

@@ -14,6 +14,12 @@ import net.minecraft.util.math.Vector4f;
 import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 
+/**
+ * Represents a uniform variable.
+ * 
+ * @see <a href="https://www.khronos.org/opengl/wiki/Uniform_(GLSL)">
+ * Uniform (GLSL) - OpenGL Wiki</a>
+ */
 @Environment(EnvType.CLIENT)
 public class GlUniform extends Uniform implements AutoCloseable {
 	private static final Logger LOGGER = LogUtils.getLogger();

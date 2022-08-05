@@ -8,10 +8,10 @@ import net.minecraft.sound.SoundEvents;
 
 @Environment(EnvType.CLIENT)
 public class AmbientSoundPlayer implements ClientPlayerTickable {
-	public static final float field_33008 = 0.01F;
-	public static final float field_33009 = 0.001F;
-	public static final float field_33010 = 1.0E-4F;
-	private static final int field_33011 = 0;
+	public static final float MAX_TICKS_FOR_BASE_SOUND_LOOP = 0.01F;
+	public static final float MAX_TICKS_FOR_RARE_SOUND_LOOP = 0.001F;
+	public static final float MAX_TICKS_FOR_ULTRA_RARE_SOUND_LOOP = 1.0E-4F;
+	private static final int DEFAULT_TICKS_UNTIL_PLAY = 0;
 	private final ClientPlayerEntity player;
 	private final SoundManager soundManager;
 	private int ticksUntilPlay = 0;

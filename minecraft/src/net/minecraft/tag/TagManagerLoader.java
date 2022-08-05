@@ -55,7 +55,7 @@ public class TagManagerLoader implements ResourceReloader {
 	) {
 		List<? extends CompletableFuture<? extends TagManagerLoader.RegistryTags<?>>> list = this.registryManager
 			.streamAllRegistries()
-			.map(entry -> this.buildRequiredGroup(manager, prepareExecutor, entry))
+			.map(registry -> this.buildRequiredGroup(manager, prepareExecutor, registry))
 			.toList();
 		return CompletableFuture.allOf((CompletableFuture[])list.toArray(CompletableFuture[]::new))
 			.thenCompose(synchronizer::whenPrepared)
@@ -70,9 +70,7 @@ public class TagManagerLoader implements ResourceReloader {
 	) {
 		RegistryKey<? extends Registry<T>> registryKey = requirement.key();
 		Registry<T> registry = requirement.value();
-		TagGroupLoader<RegistryEntry<T>> tagGroupLoader = new TagGroupLoader<>(
-			identifier -> registry.getEntry(RegistryKey.of(registryKey, identifier)), getPath(registryKey)
-		);
+		TagGroupLoader<RegistryEntry<T>> tagGroupLoader = new TagGroupLoader<>(id -> registry.getEntry(RegistryKey.of(registryKey, id)), getPath(registryKey));
 		return CompletableFuture.supplyAsync(() -> new TagManagerLoader.RegistryTags<>(registryKey, tagGroupLoader.load(resourceManager)), prepareExecutor);
 	}
 

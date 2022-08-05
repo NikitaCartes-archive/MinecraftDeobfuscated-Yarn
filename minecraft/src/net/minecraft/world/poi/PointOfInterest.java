@@ -27,15 +27,15 @@ public class PointOfInterest {
 		);
 	}
 
-	private PointOfInterest(BlockPos pos, RegistryEntry<PointOfInterestType> registryEntry, int freeTickets, Runnable updateListener) {
+	private PointOfInterest(BlockPos pos, RegistryEntry<PointOfInterestType> type, int freeTickets, Runnable updateListener) {
 		this.pos = pos.toImmutable();
-		this.type = registryEntry;
+		this.type = type;
 		this.freeTickets = freeTickets;
 		this.updateListener = updateListener;
 	}
 
-	public PointOfInterest(BlockPos pos, RegistryEntry<PointOfInterestType> registryEntry, Runnable updateListener) {
-		this(pos, registryEntry, registryEntry.value().ticketCount(), updateListener);
+	public PointOfInterest(BlockPos pos, RegistryEntry<PointOfInterestType> type, Runnable updateListener) {
+		this(pos, type, type.value().ticketCount(), updateListener);
 	}
 
 	@Deprecated

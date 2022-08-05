@@ -40,7 +40,7 @@ public class RealmsConnection {
 		minecraftClient.setConnectedToRealms(true);
 		minecraftClient.loadBlockList();
 		minecraftClient.getNarratorManager().narrate(Text.translatable("mco.connect.success"));
-		final CompletableFuture<Optional<PlayerPublicKey.PublicKeyData>> completableFuture = minecraftClient.getProfileKeys().method_45104();
+		final CompletableFuture<Optional<PlayerPublicKey.PublicKeyData>> completableFuture = minecraftClient.getProfileKeys().refresh();
 		final String string = address.getAddress();
 		final int i = address.getPort();
 		(new Thread("Realms-connect-task") {

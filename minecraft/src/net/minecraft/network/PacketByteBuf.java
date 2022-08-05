@@ -1377,7 +1377,7 @@ public class PacketByteBuf extends ByteBuf {
 	 * string form. The written identifier's byte array can have a max length of
 	 * {@value #DEFAULT_MAX_STRING_LENGTH}.
 	 * 
-	 * @return the read identifier
+	 * @return this buf, for chaining
 	 * @throws io.netty.handler.codec.EncoderException if the {@code id}'s
 	 * byte array is longer than {@value #DEFAULT_MAX_STRING_LENGTH}
 	 * @see #readIdentifier()

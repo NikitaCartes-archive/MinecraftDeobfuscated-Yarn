@@ -136,26 +136,26 @@ public class LongJumpTask<E extends MobEntity> extends Task<E> {
 			}
 		} else {
 			this.cooldown--;
-			this.method_41342(serverWorld, mobEntity, l);
+			this.findTarget(serverWorld, mobEntity, l);
 		}
 	}
 
-	protected void method_41342(ServerWorld serverWorld, E mobEntity, long l) {
+	protected void findTarget(ServerWorld world, E entity, long time) {
 		while (!this.targets.isEmpty()) {
-			Optional<LongJumpTask.Target> optional = this.getTarget(serverWorld);
+			Optional<LongJumpTask.Target> optional = this.getTarget(world);
 			if (!optional.isEmpty()) {
 				LongJumpTask.Target target = (LongJumpTask.Target)optional.get();
 				BlockPos blockPos = target.getPos();
-				if (this.canJumpTo(serverWorld, mobEntity, blockPos)) {
+				if (this.canJumpTo(world, entity, blockPos)) {
 					Vec3d vec3d = Vec3d.ofCenter(blockPos);
-					Vec3d vec3d2 = this.getRammingVelocity(mobEntity, vec3d);
+					Vec3d vec3d2 = this.getRammingVelocity(entity, vec3d);
 					if (vec3d2 != null) {
-						mobEntity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(blockPos));
-						EntityNavigation entityNavigation = mobEntity.getNavigation();
+						entity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(blockPos));
+						EntityNavigation entityNavigation = entity.getNavigation();
 						Path path = entityNavigation.findPathTo(blockPos, 0, 8);
 						if (path == null || !path.reachesTarget()) {
 							this.lastTarget = vec3d2;
-							this.targetTime = l;
+							this.targetTime = time;
 							return;
 						}
 					}

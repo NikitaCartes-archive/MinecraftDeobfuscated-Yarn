@@ -128,7 +128,7 @@ import org.slf4j.Logger;
  * <p>Examples of entities include players, mobs, minecarts, projectiles, and
  * dropped items.
  * 
- * <p>Entity can be identified by the {@link #id ID} or the {#link #uuid UUID}.
+ * <p>Entity can be identified by the {@link #id ID} or the {@link #uuid UUID}.
  * Entity ID is an integer used in networking, and is not saved on disk. UUID is
  * used to identify an entity in NBT and other places where persistence is required.
  * 
@@ -165,19 +165,19 @@ import org.slf4j.Logger;
  * 	<td>Subclass constructors</td><td>Non-mob entities (such as projectiles)</td><td>NBT and other data must be set manually.</td>
  * </tr>
  * <tr>
- * 	<td>{#link EntityType#create}</td><td>Any entity</td><td>Initializes mobs and supports custom NBT.</td>
+ * 	<td>{@link EntityType#create}</td><td>Any entity</td><td>Initializes mobs and supports custom NBT.</td>
  * </tr>
  * <tr>
- * 	<td>{#link EntityType#getEntityFromNbt}</td><td>Entities stored in NBT</td><td>Can throw exceptions.</td>
+ * 	<td>{@link EntityType#getEntityFromNbt}</td><td>Entities stored in NBT</td><td>Can throw exceptions.</td>
  * </tr>
  * <tr>
- * 	<td>{#link EntityType#loadEntityFromNbt}</td><td>Entities stored in user-provided NBT</td><td>Ignores exceptions.</td>
+ * 	<td>{@link EntityType#loadEntityFromNbt}</td><td>Entities stored in user-provided NBT</td><td>Ignores exceptions.</td>
  * </tr>
  * <tr>
- * 	<td>{#link EntityType#loadEntityWithPassengers}</td><td>Entities with passengers stored in user-provided NBT</td><td>Ignores exceptions. Initializes rides.</td>
+ * 	<td>{@link EntityType#loadEntityWithPassengers}</td><td>Entities with passengers stored in user-provided NBT</td><td>Ignores exceptions. Initializes rides.</td>
  * </tr>
  * <tr>
- * 	<td>{#link EntityType#streamFromNbt}</td><td>Entities with passengers stored in NBT</td><td>Ignores exceptions.</td>
+ * 	<td>{@link EntityType#streamFromNbt}</td><td>Entities with passengers stored in NBT</td><td>Ignores exceptions.</td>
  * </tr>
  * </table>
  * 
@@ -187,24 +187,24 @@ import org.slf4j.Logger;
  * 	<th>Method</th><th>Recommended usage</th><th>Additional note</th>
  * </tr>
  * <tr>
- * 	<td>{#link net.minecraft.world.ServerWorldAccess#spawnEntityAndPassengers}</td><td>Any entity</td><td>Does not check duplicate UUID.</td>
+ * 	<td>{@link net.minecraft.world.ServerWorldAccess#spawnEntityAndPassengers}</td><td>Any entity</td><td>Does not check duplicate UUID.</td>
  * </tr>
  * <tr>
- * 	<td>{#link ServerWorld#spawnNewEntityAndPassengers}</td><td>Any entity</td><td>Checks duplicate UUID.</td>
+ * 	<td>{@link ServerWorld#spawnNewEntityAndPassengers}</td><td>Any entity</td><td>Checks duplicate UUID.</td>
  * </tr>
  * <tr>
- * 	<td>{#link net.minecraft.world.ModifiableWorld#spawnEntity}</td><td>Any entity</td><td>Does not spawn passengers.</td>
+ * 	<td>{@link net.minecraft.world.ModifiableWorld#spawnEntity}</td><td>Any entity</td><td>Does not spawn passengers.</td>
  * </tr>
  * </table>
  * </div>
  * 
  * <p><strong>Warning</strong>: When using constructors to spawn mobs instead of
- * {#link EntityType#create}, they must be manually
+ * {@link EntityType#create}, they must be manually
  * {@link net.minecraft.entity.mob.MobEntity#initialize initialized} before spawning.
  * 
  * <h2 id="discarding">Discarding</h2>
- * Entities can be discarded (despawned) by calling {#link #discard}. This does not drop loot.
- * To kill entities and drop loot, call {#link #kill} or {#link damage} (with large enough damage amount).
+ * Entities can be discarded (despawned) by calling {@link #discard}. This does not drop loot.
+ * To kill entities and drop loot, call {@link #kill} or {@link damage} (with large enough damage amount).
  */
 public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	private static final Logger LOGGER = LogUtils.getLogger();
@@ -410,7 +410,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	/**
 	 * {@return whether the entity is a spectator}
 	 * 
-	 * <p>This returns {@code false} unless the entity is a player in spectator gamemode.
+	 * <p>This returns {@code false} unless the entity is a player in spectator game mode.
 	 */
 	public boolean isSpectator() {
 		return false;
@@ -476,7 +476,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * <p>Scoreboard tags are set using the {@linkplain net.minecraft.server.command.TagCommand
 	 * /tag command}, and is different from entity type tags defined in data packs.
 	 * 
-	 * @return whether the scorebord tag was successfully added
+	 * @return whether the scoreboard tag was successfully added
 	 */
 	public boolean addScoreboardTag(String tag) {
 		return this.scoreboardTags.size() >= 1024 ? false : this.scoreboardTags.add(tag);
@@ -488,7 +488,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * <p>Scoreboard tags are set using the {@linkplain net.minecraft.server.command.TagCommand
 	 * /tag command}, and is different from entity type tags defined in data packs.
 	 * 
-	 * @return whether the scorebord tag was successfully removed
+	 * @return whether the scoreboard tag was successfully removed
 	 */
 	public boolean removeScoreboardTag(String tag) {
 		return this.scoreboardTags.remove(tag);
@@ -740,12 +740,12 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	/**
 	 * {@return whether the entity's portal cooldown is in effect}
 	 */
-	public boolean hasPortalCooldownn() {
+	public boolean hasPortalCooldown() {
 		return this.portalCooldown > 0;
 	}
 
 	protected void tickPortalCooldown() {
-		if (this.hasPortalCooldownn()) {
+		if (this.hasPortalCooldown()) {
 			this.portalCooldown--;
 		}
 	}
@@ -1861,7 +1861,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	/**
-	 * Applies a damage to this entity. The exact implementation differes between subclasses.
+	 * Applies a damage to this entity. The exact implementation differs between subclasses.
 	 * 
 	 * <p>{@link LivingEntity} has health value, and damaging the entity decreases it. This
 	 * also handles shields, extra damage to helmets for falling blocks, setting the attacker,
@@ -1959,7 +1959,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	/**
-	 * {@return whether the entity can be hit with a projectile or be targetted by
+	 * {@return whether the entity can be hit with a projectile or be targeted by
 	 * the player crosshair}
 	 */
 	public boolean canHit() {
@@ -2634,7 +2634,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	/**
 	 * {@return the margin around the entity's bounding box where the entity
-	 * targetting is still successful}
+	 * targeting is still successful}
 	 * 
 	 * @apiNote {@link net.minecraft.entity.projectile.ExplosiveProjectileEntity}
 	 * overrides this method to return {@code 1.0f}, which expands the ghast fireball's
@@ -2675,7 +2675,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public void setInNetherPortal(BlockPos pos) {
-		if (this.hasPortalCooldownn()) {
+		if (this.hasPortalCooldown()) {
 			this.resetPortalCooldown();
 		} else {
 			if (!this.world.isClient && !pos.equals(this.lastNetherPortalPosition)) {
@@ -2775,7 +2775,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	/**
-	 * {@return an iterable of item stacks held in the hands or equpipped as armor}
+	 * {@return an iterable of item stacks held in the hands or equipped as armor}
 	 * 
 	 * @see #getHandItems
 	 * @see #getArmorItems
@@ -3856,7 +3856,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * {@return whether the entity is pushed by fluids}
 	 * 
 	 * @apiNote Aquatic mobs should override this to return {@code false}.
-	 * Players are not pushed by fluids if they can fly (e.g. because of gamemode).
+	 * Players are not pushed by fluids if they can fly (e.g. because of game mode).
 	 */
 	public boolean isPushedByFluids() {
 		return true;

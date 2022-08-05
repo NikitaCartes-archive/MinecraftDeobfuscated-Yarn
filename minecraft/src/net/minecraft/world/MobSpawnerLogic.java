@@ -169,7 +169,7 @@ public abstract class MobSpawnerLogic {
 			this.spawnDelay = this.minSpawnDelay + random.nextInt(this.maxSpawnDelay - this.minSpawnDelay);
 		}
 
-		this.spawnPotentials.getOrEmpty(random).ifPresent(present -> this.setSpawnEntry(world, pos, (MobSpawnerEntry)present.getData()));
+		this.spawnPotentials.getOrEmpty(random).ifPresent(spawnPotential -> this.setSpawnEntry(world, pos, (MobSpawnerEntry)spawnPotential.getData()));
 		this.sendStatus(world, pos, 1);
 	}
 
@@ -182,7 +182,7 @@ public abstract class MobSpawnerLogic {
 			if (bl2) {
 				mobSpawnerEntry = (MobSpawnerEntry)MobSpawnerEntry.CODEC
 					.parse(NbtOps.INSTANCE, nbt.getCompound("SpawnData"))
-					.resultOrPartial(string -> LOGGER.warn("Invalid SpawnData: {}", string))
+					.resultOrPartial(error -> LOGGER.warn("Invalid SpawnData: {}", error))
 					.orElseGet(MobSpawnerEntry::new);
 			} else {
 				mobSpawnerEntry = new MobSpawnerEntry();
@@ -194,16 +194,16 @@ public abstract class MobSpawnerLogic {
 			NbtList nbtList = nbt.getList("SpawnPotentials", NbtElement.COMPOUND_TYPE);
 			this.spawnPotentials = (DataPool<MobSpawnerEntry>)MobSpawnerEntry.DATA_POOL_CODEC
 				.parse(NbtOps.INSTANCE, nbtList)
-				.resultOrPartial(string -> LOGGER.warn("Invalid SpawnPotentials list: {}", string))
+				.resultOrPartial(error -> LOGGER.warn("Invalid SpawnPotentials list: {}", error))
 				.orElseGet(DataPool::empty);
 			if (bl2) {
 				MobSpawnerEntry mobSpawnerEntry2 = (MobSpawnerEntry)MobSpawnerEntry.CODEC
 					.parse(NbtOps.INSTANCE, nbt.getCompound("SpawnData"))
-					.resultOrPartial(string -> LOGGER.warn("Invalid SpawnData: {}", string))
+					.resultOrPartial(error -> LOGGER.warn("Invalid SpawnData: {}", error))
 					.orElseGet(MobSpawnerEntry::new);
 				this.setSpawnEntry(world, pos, mobSpawnerEntry2);
 			} else {
-				this.spawnPotentials.getOrEmpty(world.getRandom()).ifPresent(present -> this.setSpawnEntry(world, pos, (MobSpawnerEntry)present.getData()));
+				this.spawnPotentials.getOrEmpty(world.getRandom()).ifPresent(spawnPotential -> this.setSpawnEntry(world, pos, (MobSpawnerEntry)spawnPotential.getData()));
 			}
 		}
 

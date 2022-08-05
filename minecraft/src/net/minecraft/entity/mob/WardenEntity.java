@@ -72,15 +72,15 @@ import org.jetbrains.annotations.Contract;
 import org.slf4j.Logger;
 
 public class WardenEntity extends HostileEntity implements VibrationListener.Callback {
-	private static final Logger field_38138 = LogUtils.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int field_38139 = 16;
 	private static final int field_38142 = 40;
 	private static final int field_38860 = 200;
-	private static final int field_38143 = 500;
-	private static final float field_38144 = 0.3F;
-	private static final float field_38145 = 1.0F;
-	private static final float field_38146 = 1.5F;
-	private static final int field_38147 = 30;
+	private static final int MAX_HEALTH = 500;
+	private static final float MOVEMENT_SPEED = 0.3F;
+	private static final float KNOCKBACK_RESISTANCE = 1.0F;
+	private static final float ATTACK_KNOCKBACK = 1.5F;
+	private static final int ATTACK_DAMAGE = 30;
 	private static final TrackedData<Integer> ANGER = DataTracker.registerData(WardenEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final int field_38149 = 200;
 	private static final int field_38150 = 260;
@@ -419,11 +419,11 @@ public class WardenEntity extends HostileEntity implements VibrationListener.Cal
 		super.writeCustomDataToNbt(nbt);
 		WardenAngerManager.createCodec(this::isValidTarget)
 			.encodeStart(NbtOps.INSTANCE, this.angerManager)
-			.resultOrPartial(field_38138::error)
+			.resultOrPartial(LOGGER::error)
 			.ifPresent(angerNbt -> nbt.put("anger", angerNbt));
 		VibrationListener.createCodec(this)
 			.encodeStart(NbtOps.INSTANCE, this.gameEventHandler.getListener())
-			.resultOrPartial(field_38138::error)
+			.resultOrPartial(LOGGER::error)
 			.ifPresent(nbtElement -> nbt.put("listener", nbtElement));
 	}
 
@@ -433,7 +433,7 @@ public class WardenEntity extends HostileEntity implements VibrationListener.Cal
 		if (nbt.contains("anger")) {
 			WardenAngerManager.createCodec(this::isValidTarget)
 				.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.get("anger")))
-				.resultOrPartial(field_38138::error)
+				.resultOrPartial(LOGGER::error)
 				.ifPresent(angerManager -> this.angerManager = angerManager);
 			this.updateAnger();
 		}
@@ -441,7 +441,7 @@ public class WardenEntity extends HostileEntity implements VibrationListener.Cal
 		if (nbt.contains("listener", NbtElement.COMPOUND_TYPE)) {
 			VibrationListener.createCodec(this)
 				.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("listener")))
-				.resultOrPartial(field_38138::error)
+				.resultOrPartial(LOGGER::error)
 				.ifPresent(vibrationListener -> this.gameEventHandler.setListener(vibrationListener, this.world));
 		}
 	}

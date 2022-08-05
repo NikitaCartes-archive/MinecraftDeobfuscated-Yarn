@@ -26,7 +26,7 @@ public class ItemUsage {
 	 * {@return the stack to put in the player's hand after exchanging stacks}
 	 * 
 	 * <p>Exchanging stacks causes the input stack to be decremented and the output stack to
-	 * be inserted to the player's invetory (or dropped if it cannot be inserted.)
+	 * be inserted to the player's inventory (or dropped if it cannot be inserted.)
 	 * For example, milking a cow exchanges one empty bucket and one milk bucket.
 	 * If {@code creativeOverride} is {@code true} and the player is in creative mode,
 	 * the player only receives the new stack when they do not have the output stack.
@@ -62,7 +62,7 @@ public class ItemUsage {
 	 * {@return the stack to put in the player's hand after exchanging stacks}
 	 * 
 	 * <p>Exchanging stacks causes the input stack to be decremented and the output stack to
-	 * be inserted to the player's invetory (or dropped if it cannot be inserted.)
+	 * be inserted to the player's inventory (or dropped if it cannot be inserted.)
 	 * For example, milking a cow exchanges one empty bucket and one milk bucket.
 	 * If the player is in creative mode, the player only receives the new stack when
 	 * they do not have the output stack.

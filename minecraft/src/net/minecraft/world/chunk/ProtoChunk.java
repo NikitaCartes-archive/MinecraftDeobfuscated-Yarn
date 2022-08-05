@@ -307,7 +307,7 @@ public class ProtoChunk extends Chunk {
 	}
 
 	public CarvingMask getOrCreateCarvingMask(GenerationStep.Carver step) {
-		return (CarvingMask)this.carvingMasks.computeIfAbsent(step, carver -> new CarvingMask(this.getHeight(), this.getBottomY()));
+		return (CarvingMask)this.carvingMasks.computeIfAbsent(step, step2 -> new CarvingMask(this.getHeight(), this.getBottomY()));
 	}
 
 	public void setCarvingMask(GenerationStep.Carver step, CarvingMask carvingMask) {

@@ -29,16 +29,16 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 	);
 	private static final Ingredient TRAIL_MODIFIER = Ingredient.ofItems(Items.DIAMOND);
 	private static final Ingredient FLICKER_MODIFIER = Ingredient.ofItems(Items.GLOWSTONE_DUST);
-	private static final Map<Item, FireworkRocketItem.Type> TYPE_MODIFIER_MAP = Util.make(Maps.<Item, FireworkRocketItem.Type>newHashMap(), hashMap -> {
-		hashMap.put(Items.FIRE_CHARGE, FireworkRocketItem.Type.LARGE_BALL);
-		hashMap.put(Items.FEATHER, FireworkRocketItem.Type.BURST);
-		hashMap.put(Items.GOLD_NUGGET, FireworkRocketItem.Type.STAR);
-		hashMap.put(Items.SKELETON_SKULL, FireworkRocketItem.Type.CREEPER);
-		hashMap.put(Items.WITHER_SKELETON_SKULL, FireworkRocketItem.Type.CREEPER);
-		hashMap.put(Items.CREEPER_HEAD, FireworkRocketItem.Type.CREEPER);
-		hashMap.put(Items.PLAYER_HEAD, FireworkRocketItem.Type.CREEPER);
-		hashMap.put(Items.DRAGON_HEAD, FireworkRocketItem.Type.CREEPER);
-		hashMap.put(Items.ZOMBIE_HEAD, FireworkRocketItem.Type.CREEPER);
+	private static final Map<Item, FireworkRocketItem.Type> TYPE_MODIFIER_MAP = Util.make(Maps.<Item, FireworkRocketItem.Type>newHashMap(), typeModifiers -> {
+		typeModifiers.put(Items.FIRE_CHARGE, FireworkRocketItem.Type.LARGE_BALL);
+		typeModifiers.put(Items.FEATHER, FireworkRocketItem.Type.BURST);
+		typeModifiers.put(Items.GOLD_NUGGET, FireworkRocketItem.Type.STAR);
+		typeModifiers.put(Items.SKELETON_SKULL, FireworkRocketItem.Type.CREEPER);
+		typeModifiers.put(Items.WITHER_SKELETON_SKULL, FireworkRocketItem.Type.CREEPER);
+		typeModifiers.put(Items.CREEPER_HEAD, FireworkRocketItem.Type.CREEPER);
+		typeModifiers.put(Items.PLAYER_HEAD, FireworkRocketItem.Type.CREEPER);
+		typeModifiers.put(Items.DRAGON_HEAD, FireworkRocketItem.Type.CREEPER);
+		typeModifiers.put(Items.ZOMBIE_HEAD, FireworkRocketItem.Type.CREEPER);
 	});
 	private static final Ingredient GUNPOWDER = Ingredient.ofItems(Items.GUNPOWDER);
 

@@ -8,7 +8,7 @@ import net.minecraft.world.event.GameEvent;
 
 public class GameEventTagProvider extends AbstractTagProvider<GameEvent> {
 	@VisibleForTesting
-	static final GameEvent[] field_38363 = new GameEvent[]{
+	static final GameEvent[] BASIC_GAME_EVENTS = new GameEvent[]{
 		GameEvent.BLOCK_ATTACH,
 		GameEvent.BLOCK_CHANGE,
 		GameEvent.BLOCK_CLOSE,
@@ -57,9 +57,9 @@ public class GameEventTagProvider extends AbstractTagProvider<GameEvent> {
 
 	@Override
 	protected void configure() {
-		this.getOrCreateTagBuilder(GameEventTags.VIBRATIONS).add(field_38363).add(GameEvent.FLAP);
+		this.getOrCreateTagBuilder(GameEventTags.VIBRATIONS).add(BASIC_GAME_EVENTS).add(GameEvent.FLAP);
 		this.getOrCreateTagBuilder(GameEventTags.SHRIEKER_CAN_LISTEN).add(GameEvent.SCULK_SENSOR_TENDRILS_CLICKING);
-		this.getOrCreateTagBuilder(GameEventTags.WARDEN_CAN_LISTEN).add(field_38363).add(GameEvent.SHRIEK).addTag(GameEventTags.SHRIEKER_CAN_LISTEN);
+		this.getOrCreateTagBuilder(GameEventTags.WARDEN_CAN_LISTEN).add(BASIC_GAME_EVENTS).add(GameEvent.SHRIEK).addTag(GameEventTags.SHRIEKER_CAN_LISTEN);
 		this.getOrCreateTagBuilder(GameEventTags.IGNORE_VIBRATIONS_SNEAKING)
 			.add(GameEvent.HIT_GROUND, GameEvent.PROJECTILE_SHOOT, GameEvent.STEP, GameEvent.SWIM, GameEvent.ITEM_INTERACT_START, GameEvent.ITEM_INTERACT_FINISH);
 		this.getOrCreateTagBuilder(GameEventTags.ALLAY_CAN_LISTEN).add(GameEvent.NOTE_BLOCK_PLAY);

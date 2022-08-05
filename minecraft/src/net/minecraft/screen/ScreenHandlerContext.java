@@ -7,8 +7,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
- * Screen handler contexts allow screen handlers to interact with the
- * logical server's world safely.
+ * A screen handler context allows running code on the server side only. Screen
+ * handlers are designed to be used on both sides; any action modifying the world has
+ * to be wrapped in a call to the context. This guarantees that no casting error occurs
+ * inside the screen handler code.
+ * 
+ * <p>A context with the world is passed to the screen handler on creation on the server.
+ * On the server, the context executes the function with the world and the position.
+ * On the client, the {@linkplain #EMPTY empty context} is used.
  */
 public interface ScreenHandlerContext {
 	/**

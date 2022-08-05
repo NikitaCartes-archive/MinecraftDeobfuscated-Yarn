@@ -72,10 +72,10 @@ public abstract class ChunkLightProvider<M extends ChunkToNibbleArrayMap<M>, S e
 		Arrays.fill(this.cachedChunks, null);
 	}
 
-	protected BlockState getStateForLighting(long pos, @Nullable MutableInt mutableInt) {
+	protected BlockState getStateForLighting(long pos, @Nullable MutableInt opacity) {
 		if (pos == Long.MAX_VALUE) {
-			if (mutableInt != null) {
-				mutableInt.setValue(0);
+			if (opacity != null) {
+				opacity.setValue(0);
 			}
 
 			return Blocks.AIR.getDefaultState();
@@ -84,8 +84,8 @@ public abstract class ChunkLightProvider<M extends ChunkToNibbleArrayMap<M>, S e
 			int j = ChunkSectionPos.getSectionCoord(BlockPos.unpackLongZ(pos));
 			BlockView blockView = this.getChunk(i, j);
 			if (blockView == null) {
-				if (mutableInt != null) {
-					mutableInt.setValue(16);
+				if (opacity != null) {
+					opacity.setValue(16);
 				}
 
 				return Blocks.BEDROCK.getDefaultState();
@@ -93,8 +93,8 @@ public abstract class ChunkLightProvider<M extends ChunkToNibbleArrayMap<M>, S e
 				this.reusableBlockPos.set(pos);
 				BlockState blockState = blockView.getBlockState(this.reusableBlockPos);
 				boolean bl = blockState.isOpaque() && blockState.hasSidedTransparency();
-				if (mutableInt != null) {
-					mutableInt.setValue(blockState.getOpacity(this.chunkProvider.getWorld(), this.reusableBlockPos));
+				if (opacity != null) {
+					opacity.setValue(blockState.getOpacity(this.chunkProvider.getWorld(), this.reusableBlockPos));
 				}
 
 				return bl ? blockState : Blocks.AIR.getDefaultState();

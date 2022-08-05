@@ -10,8 +10,7 @@ import net.minecraft.util.registry.Registry;
 
 public class ShriekParticleEffect implements ParticleEffect {
 	public static final Codec<ShriekParticleEffect> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(Codec.INT.fieldOf("delay").forGetter(shriekParticleEffect -> shriekParticleEffect.delay))
-				.apply(instance, ShriekParticleEffect::new)
+		instance -> instance.group(Codec.INT.fieldOf("delay").forGetter(particleEffect -> particleEffect.delay)).apply(instance, ShriekParticleEffect::new)
 	);
 	public static final ParticleEffect.Factory<ShriekParticleEffect> FACTORY = new ParticleEffect.Factory<ShriekParticleEffect>() {
 		public ShriekParticleEffect read(ParticleType<ShriekParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {
@@ -26,8 +25,8 @@ public class ShriekParticleEffect implements ParticleEffect {
 	};
 	private final int delay;
 
-	public ShriekParticleEffect(int i) {
-		this.delay = i;
+	public ShriekParticleEffect(int delay) {
+		this.delay = delay;
 	}
 
 	@Override

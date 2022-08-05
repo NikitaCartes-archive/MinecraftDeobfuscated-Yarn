@@ -1019,7 +1019,7 @@ public final class VanillaBiomeParameters {
 	/**
 	 * {@return badlands if {@code temperature} is {@code 4}, otherwise a regular biome}.
 	 * 
-	 * @see #getRegularBiome()
+	 * @see #getRegularBiome
 	 */
 	private RegistryKey<Biome> getBadlandsOrRegularBiome(int temperature, int humidity, MultiNoiseUtil.ParameterRange weirdness) {
 		return temperature == 4 ? this.getBadlandsBiome(humidity, weirdness) : this.getRegularBiome(temperature, humidity, weirdness);
@@ -1028,8 +1028,8 @@ public final class VanillaBiomeParameters {
 	/**
 	 * {@return a slope biome if {@code temperature} is {@code 0}, otherwise a regular biome}.
 	 * 
-	 * @see #getMountainSlopeBiome()
-	 * @see getBadlandsOrRegularBiome()
+	 * @see #getMountainSlopeBiome
+	 * @see getBadlandsOrRegularBiome
 	 */
 	private RegistryKey<Biome> getMountainStartBiome(int temperature, int humidity, MultiNoiseUtil.ParameterRange weirdness) {
 		return temperature == 0 ? this.getMountainSlopeBiome(temperature, humidity, weirdness) : this.getBadlandsOrRegularBiome(temperature, humidity, weirdness);
@@ -1052,9 +1052,9 @@ public final class VanillaBiomeParameters {
 	 * If {@code weirdness} is positive, this will be a regular biome.
 	 * For some specific conditions, this can also be a windswept savanna.
 	 * 
-	 * @see #getShoreBiome()
-	 * @see #getRegularBiome()
-	 * @see #getBiomeOrWindsweptSavanna()
+	 * @see #getShoreBiome
+	 * @see #getRegularBiome
+	 * @see #getBiomeOrWindsweptSavanna
 	 */
 	private RegistryKey<Biome> getErodedShoreBiome(int temperature, int humidity, MultiNoiseUtil.ParameterRange weirdness) {
 		RegistryKey<Biome> registryKey = weirdness.max() >= 0L ? this.getRegularBiome(temperature, humidity, weirdness) : this.getShoreBiome(temperature, humidity);
@@ -1112,9 +1112,9 @@ public final class VanillaBiomeParameters {
 	}
 
 	/**
-	 * {@return a mountain slope biome for the given temperature, humidity and weirdness.
+	 * {@return a mountain slope biome for the given temperature, humidity and weirdness}
 	 * 
-	 * @see #getNearMountainBiome()
+	 * @see #getNearMountainBiome
 	 */
 	private RegistryKey<Biome> getMountainSlopeBiome(int temperature, int humidity, MultiNoiseUtil.ParameterRange weirdness) {
 		if (temperature >= 3) {
@@ -1127,7 +1127,7 @@ public final class VanillaBiomeParameters {
 	/**
 	 * {@return a windswept or regular biome, depending on temperature and humidity}.
 	 * 
-	 * @see #getRegularBiome()
+	 * @see #getRegularBiome
 	 */
 	private RegistryKey<Biome> getWindsweptOrRegularBiome(int temperature, int humidity, MultiNoiseUtil.ParameterRange weirdness) {
 		RegistryKey<Biome> registryKey = this.windsweptBiomes[temperature][humidity];

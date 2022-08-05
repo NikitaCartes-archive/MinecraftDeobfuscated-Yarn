@@ -71,7 +71,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 public class AllayEntity extends PathAwareEntity implements InventoryOwner {
-	private static final Logger field_39045 = LogUtils.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int field_38405 = 16;
 	private static final Vec3i ITEM_PICKUP_RANGE_EXPANDER = new Vec3i(1, 1, 1);
 	private static final int field_39461 = 5;
@@ -453,7 +453,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 		nbt.put("Inventory", this.inventory.toNbtList());
 		VibrationListener.createCodec(this.listenerCallback)
 			.encodeStart(NbtOps.INSTANCE, this.gameEventHandler.getListener())
-			.resultOrPartial(field_39045::error)
+			.resultOrPartial(LOGGER::error)
 			.ifPresent(nbtElement -> nbt.put("listener", nbtElement));
 		nbt.putLong("DuplicationCooldown", this.duplicationCooldown);
 		nbt.putBoolean("CanDuplicate", this.canDuplicate());
@@ -466,7 +466,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 		if (nbt.contains("listener", NbtElement.COMPOUND_TYPE)) {
 			VibrationListener.createCodec(this.listenerCallback)
 				.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("listener")))
-				.resultOrPartial(field_39045::error)
+				.resultOrPartial(LOGGER::error)
 				.ifPresent(vibrationListener -> this.gameEventHandler.setListener(vibrationListener, this.world));
 		}
 

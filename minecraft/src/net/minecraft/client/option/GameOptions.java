@@ -755,7 +755,7 @@ public class GameOptions {
 		(optionText, value) -> (Text)(this.client.getNarratorManager().isActive() ? value.getName() : Text.translatable("options.narrator.notavailable")),
 		new SimpleOption.PotentialValuesBasedCallbacks<>(Arrays.asList(NarratorMode.values()), Codec.INT.xmap(NarratorMode::byId, NarratorMode::getId)),
 		NarratorMode.OFF,
-		value -> this.client.getNarratorManager().addToast(value)
+		value -> this.client.getNarratorManager().onModeChange(value)
 	);
 	public String language = "en_us";
 	private final SimpleOption<String> soundDevice = new SimpleOption<>(

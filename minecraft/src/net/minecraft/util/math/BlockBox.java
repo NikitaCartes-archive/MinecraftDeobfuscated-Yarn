@@ -72,6 +72,9 @@ public class BlockBox {
 		}
 	}
 
+	/**
+	 * {@return a new box from two corners, {@code first} and {@code second}}
+	 */
 	public static BlockBox create(Vec3i first, Vec3i second) {
 		return new BlockBox(
 			Math.min(first.getX(), second.getX()),
@@ -84,7 +87,7 @@ public class BlockBox {
 	}
 
 	/**
-	 * Creates an all-encompassing, infinite box.
+	 * {@return a new all-encompassing, infinite box}
 	 */
 	public static BlockBox infinite() {
 		return new BlockBox(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
@@ -104,6 +107,9 @@ public class BlockBox {
 		}
 	}
 
+	/**
+	 * {@return whether {@code other} intersects with this box}
+	 */
 	public boolean intersects(BlockBox other) {
 		return this.maxX >= other.minX
 			&& this.minX <= other.maxX
@@ -113,10 +119,17 @@ public class BlockBox {
 			&& this.minY <= other.maxY;
 	}
 
+	/**
+	 * {@return whether the rectangle from the given coordinates intersects with this box's XZ plane}
+	 */
 	public boolean intersectsXZ(int minX, int minZ, int maxX, int maxZ) {
 		return this.maxX >= minX && this.minX <= maxX && this.maxZ >= minZ && this.minZ <= maxZ;
 	}
 
+	/**
+	 * {@return the minimum box encompassing all of the given {@code positions},
+	 * or an empty optional if {@code positions} is empty}
+	 */
 	public static Optional<BlockBox> encompassPositions(Iterable<BlockPos> positions) {
 		Iterator<BlockPos> iterator = positions.iterator();
 		if (!iterator.hasNext()) {
@@ -128,6 +141,10 @@ public class BlockBox {
 		}
 	}
 
+	/**
+	 * {@return the minimum box encompassing all of the given {@code boxes},
+	 * or an empty optional if {@code boxes} is empty}
+	 */
 	public static Optional<BlockBox> encompass(Iterable<BlockBox> boxes) {
 		Iterator<BlockBox> iterator = boxes.iterator();
 		if (!iterator.hasNext()) {
@@ -186,54 +203,82 @@ public class BlockBox {
 	}
 
 	/**
-	 * Creates a new box that is translated by {@code x}, {@code y}, {@code z}
-	 * on each axis from this box.
+	 * {@return a new box that is translated by {@code x}, {@code y}, {@code z}
+	 * on each axis from this box}
 	 * 
-	 * @return the new box created
 	 * @see #move(int, int, int)
 	 */
 	public BlockBox offset(int x, int y, int z) {
 		return new BlockBox(this.minX + x, this.minY + y, this.minZ + z, this.maxX + x, this.maxY + y, this.maxZ + z);
 	}
 
+	/**
+	 * {@return a new box that is expanded on each direction by {@code offset}}
+	 */
 	public BlockBox expand(int offset) {
 		return new BlockBox(
 			this.getMinX() - offset, this.getMinY() - offset, this.getMinZ() - offset, this.getMaxX() + offset, this.getMaxY() + offset, this.getMaxZ() + offset
 		);
 	}
 
-	public boolean contains(Vec3i vec) {
-		return vec.getX() >= this.minX
-			&& vec.getX() <= this.maxX
-			&& vec.getZ() >= this.minZ
-			&& vec.getZ() <= this.maxZ
-			&& vec.getY() >= this.minY
-			&& vec.getY() <= this.maxY;
+	/**
+	 * {@return whether this box contains {@code pos}}
+	 */
+	public boolean contains(Vec3i pos) {
+		return pos.getX() >= this.minX
+			&& pos.getX() <= this.maxX
+			&& pos.getZ() >= this.minZ
+			&& pos.getZ() <= this.maxZ
+			&& pos.getY() >= this.minY
+			&& pos.getY() <= this.maxY;
 	}
 
+	/**
+	 * {@return the dimensions (the size) of this box}
+	 */
 	public Vec3i getDimensions() {
 		return new Vec3i(this.maxX - this.minX, this.maxY - this.minY, this.maxZ - this.minZ);
 	}
 
+	/**
+	 * {@return the number of blocks on the X axis}
+	 * 
+	 * <p>This is equal to {@code maxX - minX + 1}.
+	 */
 	public int getBlockCountX() {
 		return this.maxX - this.minX + 1;
 	}
 
+	/**
+	 * {@return the number of blocks on the Y axis}
+	 * 
+	 * <p>This is equal to {@code maxY - minY + 1}.
+	 */
 	public int getBlockCountY() {
 		return this.maxY - this.minY + 1;
 	}
 
+	/**
+	 * {@return the number of blocks on the Z axis}
+	 * 
+	 * <p>This is equal to {@code maxZ - minZ + 1}.
+	 */
 	public int getBlockCountZ() {
 		return this.maxZ - this.minZ + 1;
 	}
 
 	/**
-	 * @implNote Biased toward the minimum bound corner of the box.
+	 * {@return the center of this box}
+	 * 
+	 * @apiNote This is biased toward the minimum bound corner of the box.
 	 */
 	public BlockPos getCenter() {
 		return new BlockPos(this.minX + (this.maxX - this.minX + 1) / 2, this.minY + (this.maxY - this.minY + 1) / 2, this.minZ + (this.maxZ - this.minZ + 1) / 2);
 	}
 
+	/**
+	 * Calls {@code consumer} for each vertex (corner) of this box.
+	 */
 	public void forEachVertex(Consumer<BlockPos> consumer) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 		consumer.accept(mutable.set(this.maxX, this.maxY, this.maxZ));

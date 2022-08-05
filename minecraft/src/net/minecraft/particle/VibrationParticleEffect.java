@@ -17,7 +17,7 @@ public class VibrationParticleEffect implements ParticleEffect {
 	public static final Codec<VibrationParticleEffect> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					PositionSource.CODEC.fieldOf("destination").forGetter(effect -> effect.destination),
-					Codec.INT.fieldOf("arrival_in_ticks").forGetter(vibrationParticleEffect -> vibrationParticleEffect.arrivalInTicks)
+					Codec.INT.fieldOf("arrival_in_ticks").forGetter(effect -> effect.arrivalInTicks)
 				)
 				.apply(instance, VibrationParticleEffect::new)
 	);
@@ -44,9 +44,9 @@ public class VibrationParticleEffect implements ParticleEffect {
 	private final PositionSource destination;
 	private final int arrivalInTicks;
 
-	public VibrationParticleEffect(PositionSource positionSource, int i) {
-		this.destination = positionSource;
-		this.arrivalInTicks = i;
+	public VibrationParticleEffect(PositionSource destination, int arrivalInTicks) {
+		this.destination = destination;
+		this.arrivalInTicks = arrivalInTicks;
 	}
 
 	@Override

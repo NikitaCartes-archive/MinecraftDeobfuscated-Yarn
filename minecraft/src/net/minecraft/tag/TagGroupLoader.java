@@ -56,14 +56,14 @@ public class TagGroupLoader<T> {
 
 					try {
 						JsonElement jsonElement = JsonParser.parseReader(reader);
-						List<TagGroupLoader.TrackedEntry> list = (List<TagGroupLoader.TrackedEntry>)map.computeIfAbsent(identifier2, identifierx -> new ArrayList());
+						List<TagGroupLoader.TrackedEntry> list = (List<TagGroupLoader.TrackedEntry>)map.computeIfAbsent(identifier2, id -> new ArrayList());
 						TagFile tagFile = TagFile.CODEC.parse(new Dynamic<>(JsonOps.INSTANCE, jsonElement)).getOrThrow(false, LOGGER::error);
 						if (tagFile.replace()) {
 							list.clear();
 						}
 
 						String string2 = resource.getResourcePackName();
-						tagFile.entries().forEach(tagEntry -> list.add(new TagGroupLoader.TrackedEntry(tagEntry, string2)));
+						tagFile.entries().forEach(entryx -> list.add(new TagGroupLoader.TrackedEntry(entryx, string2)));
 					} catch (Throwable var16) {
 						if (reader != null) {
 							try {
@@ -88,50 +88,50 @@ public class TagGroupLoader<T> {
 		return map;
 	}
 
-	private static void method_32839(
-		Map<Identifier, List<TagGroupLoader.TrackedEntry>> map,
-		Multimap<Identifier, Identifier> multimap,
-		Set<Identifier> set,
-		Identifier identifier,
-		BiConsumer<Identifier, List<TagGroupLoader.TrackedEntry>> biConsumer
+	private static void resolveAll(
+		Map<Identifier, List<TagGroupLoader.TrackedEntry>> tags,
+		Multimap<Identifier, Identifier> referencedTagIdsByTagId,
+		Set<Identifier> alreadyResolved,
+		Identifier tagId,
+		BiConsumer<Identifier, List<TagGroupLoader.TrackedEntry>> resolver
 	) {
-		if (set.add(identifier)) {
-			multimap.get(identifier).forEach(identifierx -> method_32839(map, multimap, set, identifierx, biConsumer));
-			List<TagGroupLoader.TrackedEntry> list = (List<TagGroupLoader.TrackedEntry>)map.get(identifier);
+		if (alreadyResolved.add(tagId)) {
+			referencedTagIdsByTagId.get(tagId).forEach(resolvedTagId -> resolveAll(tags, referencedTagIdsByTagId, alreadyResolved, resolvedTagId, resolver));
+			List<TagGroupLoader.TrackedEntry> list = (List<TagGroupLoader.TrackedEntry>)tags.get(tagId);
 			if (list != null) {
-				biConsumer.accept(identifier, list);
+				resolver.accept(tagId, list);
 			}
 		}
 	}
 
-	private static boolean method_32836(Multimap<Identifier, Identifier> multimap, Identifier identifier, Identifier identifier2) {
-		Collection<Identifier> collection = multimap.get(identifier2);
-		return collection.contains(identifier) ? true : collection.stream().anyMatch(identifier2x -> method_32836(multimap, identifier, identifier2x));
+	private static boolean hasCircularDependency(Multimap<Identifier, Identifier> referencedTagIdsByTagId, Identifier tagId, Identifier referencedTagId) {
+		Collection<Identifier> collection = referencedTagIdsByTagId.get(referencedTagId);
+		return collection.contains(tagId) ? true : collection.stream().anyMatch(id -> hasCircularDependency(referencedTagIdsByTagId, tagId, id));
 	}
 
-	private static void method_32844(Multimap<Identifier, Identifier> multimap, Identifier identifier, Identifier identifier2) {
-		if (!method_32836(multimap, identifier, identifier2)) {
-			multimap.put(identifier, identifier2);
+	private static void addReference(Multimap<Identifier, Identifier> referencedTagIdsByTagId, Identifier tagId, Identifier referencedTagId) {
+		if (!hasCircularDependency(referencedTagIdsByTagId, tagId, referencedTagId)) {
+			referencedTagIdsByTagId.put(tagId, referencedTagId);
 		}
 	}
 
-	private Either<Collection<TagGroupLoader.TrackedEntry>, Collection<T>> method_43952(
-		TagEntry.ValueGetter<T> valueGetter, List<TagGroupLoader.TrackedEntry> list
+	private Either<Collection<TagGroupLoader.TrackedEntry>, Collection<T>> resolveAll(
+		TagEntry.ValueGetter<T> valueGetter, List<TagGroupLoader.TrackedEntry> entries
 	) {
 		Builder<T> builder = ImmutableSet.builder();
-		List<TagGroupLoader.TrackedEntry> list2 = new ArrayList();
+		List<TagGroupLoader.TrackedEntry> list = new ArrayList();
 
-		for (TagGroupLoader.TrackedEntry trackedEntry : list) {
+		for (TagGroupLoader.TrackedEntry trackedEntry : entries) {
 			if (!trackedEntry.entry().resolve(valueGetter, builder::add)) {
-				list2.add(trackedEntry);
+				list.add(trackedEntry);
 			}
 		}
 
-		return list2.isEmpty() ? Either.right(builder.build()) : Either.left(list2);
+		return list.isEmpty() ? Either.right(builder.build()) : Either.left(list);
 	}
 
-	public Map<Identifier, Collection<T>> buildGroup(Map<Identifier, List<TagGroupLoader.TrackedEntry>> map) {
-		final Map<Identifier, Collection<T>> map2 = Maps.<Identifier, Collection<T>>newHashMap();
+	public Map<Identifier, Collection<T>> buildGroup(Map<Identifier, List<TagGroupLoader.TrackedEntry>> tags) {
+		final Map<Identifier, Collection<T>> map = Maps.<Identifier, Collection<T>>newHashMap();
 		TagEntry.ValueGetter<T> valueGetter = new TagEntry.ValueGetter<T>() {
 			@Nullable
 			@Override
@@ -142,36 +142,36 @@ public class TagGroupLoader<T> {
 			@Nullable
 			@Override
 			public Collection<T> tag(Identifier id) {
-				return (Collection<T>)map2.get(id);
+				return (Collection<T>)map.get(id);
 			}
 		};
 		Multimap<Identifier, Identifier> multimap = HashMultimap.create();
-		map.forEach(
-			(identifier, list) -> list.forEach(trackedEntry -> trackedEntry.entry.forEachRequiredTagId(identifier2 -> method_32844(multimap, identifier, identifier2)))
+		tags.forEach(
+			(tagId, entries) -> entries.forEach(entry -> entry.entry.forEachRequiredTagId(referencedTagId -> addReference(multimap, tagId, referencedTagId)))
 		);
-		map.forEach(
-			(identifier, list) -> list.forEach(trackedEntry -> trackedEntry.entry.forEachOptionalTagId(identifier2 -> method_32844(multimap, identifier, identifier2)))
+		tags.forEach(
+			(tagId, entries) -> entries.forEach(entry -> entry.entry.forEachOptionalTagId(referencedTagId -> addReference(multimap, tagId, referencedTagId)))
 		);
 		Set<Identifier> set = Sets.<Identifier>newHashSet();
-		map.keySet()
+		tags.keySet()
 			.forEach(
-				identifier -> method_32839(
-						map,
+				tagId -> resolveAll(
+						tags,
 						multimap,
 						set,
-						identifier,
-						(identifierx, list) -> this.method_43952(valueGetter, list)
+						tagId,
+						(tagId2, entries) -> this.resolveAll(valueGetter, entries)
 								.ifLeft(
-									collection -> LOGGER.error(
+									missingReferences -> LOGGER.error(
 											"Couldn't load tag {} as it is missing following references: {}",
-											identifierx,
-											collection.stream().map(Objects::toString).collect(Collectors.joining(", "))
+											tagId2,
+											missingReferences.stream().map(Objects::toString).collect(Collectors.joining(", "))
 										)
 								)
-								.ifRight(collection -> map2.put(identifierx, collection))
+								.ifRight(resolvedEntries -> map.put(tagId2, resolvedEntries))
 					)
 			);
-		return map2;
+		return map;
 	}
 
 	public Map<Identifier, Collection<T>> load(ResourceManager manager) {

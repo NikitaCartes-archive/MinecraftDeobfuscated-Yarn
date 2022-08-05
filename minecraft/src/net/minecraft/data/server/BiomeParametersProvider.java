@@ -32,18 +32,18 @@ public class BiomeParametersProvider implements DataProvider {
 		DynamicRegistryManager.Immutable immutable = (DynamicRegistryManager.Immutable)DynamicRegistryManager.BUILTIN.get();
 		DynamicOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, immutable);
 		Registry<Biome> registry = immutable.get(Registry.BIOME_KEY);
-		MultiNoiseBiomeSource.Preset.streamPresets().forEach(pair -> {
-			MultiNoiseBiomeSource multiNoiseBiomeSource = ((MultiNoiseBiomeSource.Preset)pair.getSecond()).getBiomeSource(registry, false);
-			method_42030(this.resolvePath((Identifier)pair.getFirst()), writer, dynamicOps, MultiNoiseBiomeSource.CODEC, multiNoiseBiomeSource);
+		MultiNoiseBiomeSource.Preset.streamPresets().forEach(preset -> {
+			MultiNoiseBiomeSource multiNoiseBiomeSource = ((MultiNoiseBiomeSource.Preset)preset.getSecond()).getBiomeSource(registry, false);
+			write(this.resolvePath((Identifier)preset.getFirst()), writer, dynamicOps, MultiNoiseBiomeSource.CODEC, multiNoiseBiomeSource);
 		});
 	}
 
-	private static <E> void method_42030(Path path, DataWriter dataWriter, DynamicOps<JsonElement> dynamicOps, Encoder<E> encoder, E object) {
+	private static <E> void write(Path path, DataWriter writer, DynamicOps<JsonElement> ops, Encoder<E> codec, E biomeSource) {
 		try {
-			Optional<JsonElement> optional = encoder.encodeStart(dynamicOps, object)
-				.resultOrPartial(string -> LOGGER.error("Couldn't serialize element {}: {}", path, string));
+			Optional<JsonElement> optional = codec.encodeStart(ops, biomeSource)
+				.resultOrPartial(error -> LOGGER.error("Couldn't serialize element {}: {}", path, error));
 			if (optional.isPresent()) {
-				DataProvider.writeToPath(dataWriter, (JsonElement)optional.get(), path);
+				DataProvider.writeToPath(writer, (JsonElement)optional.get(), path);
 			}
 		} catch (IOException var6) {
 			LOGGER.error("Couldn't save element {}", path, var6);

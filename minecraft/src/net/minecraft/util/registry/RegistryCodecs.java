@@ -17,6 +17,9 @@ import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.dynamic.RegistryLoader;
 import net.minecraft.util.dynamic.RegistryOps;
 
+/**
+ * A utility class for serialization of registries using codecs.
+ */
 public class RegistryCodecs {
 	private static <T> MapCodec<RegistryCodecs.RegistryManagerEntry<T>> managerEntry(RegistryKey<? extends Registry<T>> registryRef, MapCodec<T> elementCodec) {
 		return RecordCodecBuilder.mapCodec(

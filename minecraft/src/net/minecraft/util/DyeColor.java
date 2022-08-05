@@ -9,6 +9,9 @@ import javax.annotation.Nullable;
 import net.minecraft.block.MapColor;
 import org.jetbrains.annotations.Contract;
 
+/**
+ * An enum representing 16 dye colors.
+ */
 public enum DyeColor implements StringIdentifiable {
 	WHITE(0, "white", 16383998, MapColor.WHITE, 15790320, 16777215),
 	ORANGE(1, "orange", 16351261, MapColor.ORANGE, 15435844, 16738335),
@@ -50,35 +53,59 @@ public enum DyeColor implements StringIdentifiable {
 		this.fireworkColor = fireworkColor;
 	}
 
+	/**
+	 * {@return the integer ID of the dye color}
+	 */
 	public int getId() {
 		return this.id;
 	}
 
+	/**
+	 * {@return the name of the dye color}
+	 */
 	public String getName() {
 		return this.name;
 	}
 
 	/**
-	 * Returns the red, blue and green components of this dye color.
+	 * {@return the float array containing the red, green and blue components of this dye color}
 	 * 
-	 * @return an array composed of the red, blue and green floats
+	 * <p>Each value of the array is between {@code 0.0} and {@code 255.0} (both inclusive).
 	 */
 	public float[] getColorComponents() {
 		return this.colorComponents;
 	}
 
+	/**
+	 * {@return the corresponding map color}
+	 */
 	public MapColor getMapColor() {
 		return this.mapColor;
 	}
 
+	/**
+	 * {@return the color used for colored fireworks as RGB integer}
+	 * 
+	 * <p>The returned value is between {@code 0} and {@code 0xFFFFFF}.
+	 */
 	public int getFireworkColor() {
 		return this.fireworkColor;
 	}
 
+	/**
+	 * {@return the color used for dyed signs as RGB integer}
+	 * 
+	 * <p>The returned value is between {@code 0} and {@code 0xFFFFFF}.
+	 */
 	public int getSignColor() {
 		return this.signColor;
 	}
 
+	/**
+	 * {@return the dye color whose ID is {@code id}}
+	 * 
+	 * @apiNote If out-of-range IDs are passed, this returns {@link #WHITE}.
+	 */
 	public static DyeColor byId(int id) {
 		if (id < 0 || id >= VALUES.length) {
 			id = 0;
@@ -87,6 +114,12 @@ public enum DyeColor implements StringIdentifiable {
 		return VALUES[id];
 	}
 
+	/**
+	 * {@return the dye color whose name is {@code name}, or {@code defaultColor} if
+	 * there is no such color}
+	 * 
+	 * @apiNote This returns {@code null} only if {@code defaultColor} is {@code null}.
+	 */
 	@Nullable
 	@Contract("_,!null->!null;_,null->_")
 	public static DyeColor byName(String name, @Nullable DyeColor defaultColor) {
@@ -99,6 +132,10 @@ public enum DyeColor implements StringIdentifiable {
 		return defaultColor;
 	}
 
+	/**
+	 * {@return the dye color whose firework color is {@code color}, or {@code null}
+	 * if there is no such color}
+	 */
 	@Nullable
 	public static DyeColor byFireworkColor(int color) {
 		return BY_FIREWORK_COLOR.get(color);

@@ -36,7 +36,7 @@ public class PiglinBruteBrain {
 	private static final double field_30591 = 0.0125;
 	private static final int field_30592 = 8;
 	private static final int field_30593 = 8;
-	private static final double field_30594 = 12.0;
+	private static final double TARGET_RANGE = 12.0;
 	private static final float field_30595 = 0.6F;
 	private static final int field_30596 = 2;
 	private static final int field_30597 = 100;
@@ -68,7 +68,7 @@ public class PiglinBruteBrain {
 			Activity.IDLE,
 			10,
 			ImmutableList.of(
-				new UpdateAttackTargetTask<>(PiglinBruteBrain::getTarget), method_30244(), method_30254(), new FindInteractionTargetTask(EntityType.PLAYER, 4)
+				new UpdateAttackTargetTask<>(PiglinBruteBrain::getTarget), getFollowTasks(), getIdleTasks(), new FindInteractionTargetTask(EntityType.PLAYER, 4)
 			)
 		);
 	}
@@ -78,15 +78,13 @@ public class PiglinBruteBrain {
 			Activity.FIGHT,
 			10,
 			ImmutableList.of(
-				new ForgetAttackTargetTask<>((Predicate<LivingEntity>)(livingEntity -> !isTarget(piglinBrute, livingEntity))),
-				new RangedApproachTask(1.0F),
-				new MeleeAttackTask(20)
+				new ForgetAttackTargetTask<>((Predicate<LivingEntity>)(entity -> !isTarget(piglinBrute, entity))), new RangedApproachTask(1.0F), new MeleeAttackTask(20)
 			),
 			MemoryModuleType.ATTACK_TARGET
 		);
 	}
 
-	private static RandomTask<PiglinBruteEntity> method_30244() {
+	private static RandomTask<PiglinBruteEntity> getFollowTasks() {
 		return new RandomTask<>(
 			ImmutableList.of(
 				Pair.of(new FollowMobTask(EntityType.PLAYER, 8.0F), 1),
@@ -98,7 +96,7 @@ public class PiglinBruteBrain {
 		);
 	}
 
-	private static RandomTask<PiglinBruteEntity> method_30254() {
+	private static RandomTask<PiglinBruteEntity> getIdleTasks() {
 		return new RandomTask<>(
 			ImmutableList.of(
 				Pair.of(new StrollTask(0.6F), 2),
@@ -124,7 +122,7 @@ public class PiglinBruteBrain {
 	}
 
 	private static boolean isTarget(AbstractPiglinEntity piglin, LivingEntity entity) {
-		return getTarget(piglin).filter(livingEntity2 -> livingEntity2 == entity).isPresent();
+		return getTarget(piglin).filter(target -> target == entity).isPresent();
 	}
 
 	private static Optional<? extends LivingEntity> getTarget(AbstractPiglinEntity piglin) {

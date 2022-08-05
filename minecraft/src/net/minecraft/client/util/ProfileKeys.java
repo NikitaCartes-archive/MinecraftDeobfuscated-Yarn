@@ -39,51 +39,51 @@ import org.slf4j.Logger;
 public class ProfileKeys {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Path PROFILE_KEYS_PATH = Path.of("profilekeys");
-	private final UserApiService field_39958;
+	private final UserApiService userApiService;
 	private final Path jsonPath;
-	private CompletableFuture<Optional<ProfileKeys.class_7653>> field_39959;
+	private CompletableFuture<Optional<ProfileKeys.SignableKey>> keyFuture;
 
-	public ProfileKeys(UserApiService userApiService, UUID uuid, Path path) {
-		this.field_39958 = userApiService;
-		this.jsonPath = path.resolve(PROFILE_KEYS_PATH).resolve(uuid + ".json");
-		this.field_39959 = CompletableFuture.supplyAsync(
-				() -> this.loadKeyPairFromFile().filter(playerKeyPair -> !playerKeyPair.publicKey().data().isExpired()), Util.getMainWorkerExecutor()
+	public ProfileKeys(UserApiService userApiService, UUID uuid, Path root) {
+		this.userApiService = userApiService;
+		this.jsonPath = root.resolve(PROFILE_KEYS_PATH).resolve(uuid + ".json");
+		this.keyFuture = CompletableFuture.supplyAsync(
+				() -> this.loadKeyPairFromFile().filter(key -> !key.publicKey().data().isExpired()), Util.getMainWorkerExecutor()
 			)
 			.thenCompose(this::getKeyPair);
 	}
 
-	public CompletableFuture<Optional<PlayerPublicKey.PublicKeyData>> method_45104() {
-		this.field_39959 = this.field_39959.thenCompose(optional -> {
-			Optional<PlayerKeyPair> optional2 = optional.map(ProfileKeys.class_7653::keyPair);
-			return this.getKeyPair(optional2);
+	public CompletableFuture<Optional<PlayerPublicKey.PublicKeyData>> refresh() {
+		this.keyFuture = this.keyFuture.thenCompose(key -> {
+			Optional<PlayerKeyPair> optional = key.map(ProfileKeys.SignableKey::keyPair);
+			return this.getKeyPair(optional);
 		});
-		return this.field_39959.thenApply(optional -> optional.map(arg -> arg.keyPair().publicKey().data()));
+		return this.keyFuture.thenApply(maybeKey -> maybeKey.map(key -> key.keyPair().publicKey().data()));
 	}
 
 	/**
 	 * Gets the key pair from the file cache, or if it is unavailable or expired,
 	 * the Mojang server.
 	 */
-	private CompletableFuture<Optional<ProfileKeys.class_7653>> getKeyPair(Optional<PlayerKeyPair> optional) {
+	private CompletableFuture<Optional<ProfileKeys.SignableKey>> getKeyPair(Optional<PlayerKeyPair> currentKey) {
 		return CompletableFuture.supplyAsync(() -> {
-			if (optional.isPresent() && !((PlayerKeyPair)optional.get()).isExpired()) {
+			if (currentKey.isPresent() && !((PlayerKeyPair)currentKey.get()).isExpired()) {
 				if (SharedConstants.isDevelopment) {
-					return optional;
+					return currentKey;
 				}
 
 				this.saveKeyPairToFile(null);
 			}
 
 			try {
-				PlayerKeyPair playerKeyPair = this.fetchKeyPair(this.field_39958);
+				PlayerKeyPair playerKeyPair = this.fetchKeyPair(this.userApiService);
 				this.saveKeyPairToFile(playerKeyPair);
 				return Optional.of(playerKeyPair);
 			} catch (NetworkEncryptionException | MinecraftClientException | IOException var3) {
 				LOGGER.error("Failed to retrieve profile key pair", (Throwable)var3);
 				this.saveKeyPairToFile(null);
-				return optional;
+				return currentKey;
 			}
-		}, Util.getMainWorkerExecutor()).thenApply(optionalx -> optionalx.map(ProfileKeys.class_7653::new));
+		}, Util.getMainWorkerExecutor()).thenApply(key -> key.map(ProfileKeys.SignableKey::new));
 	}
 
 	/**
@@ -128,7 +128,9 @@ public class ProfileKeys {
 	}
 
 	/**
-	 * Saves the {@code keyPair} to the cache file.
+	 * Saves the {@code keyPair} to the cache file if {@link
+	 * net.minecraft.SharedConstants#isDevelopment} is {@code true};
+	 * otherwise, just deletes the cache file.
 	 */
 	private void saveKeyPairToFile(@Nullable PlayerKeyPair keyPair) {
 		try {
@@ -198,21 +200,21 @@ public class ProfileKeys {
 	 */
 	@Nullable
 	public Signer getSigner() {
-		return (Signer)((Optional)this.field_39959.join()).map(ProfileKeys.class_7653::signer).orElse(null);
+		return (Signer)((Optional)this.keyFuture.join()).map(ProfileKeys.SignableKey::signer).orElse(null);
 	}
 
 	/**
-	 * {@return the public key, or {@code null} if there is no public key associated
-	 * with the profile}
+	 * {@return the public key, or {@link java.util.Optional#empty} if there is no
+	 * public key associated with the profile}
 	 */
 	public Optional<PlayerPublicKey> getPublicKey() {
-		return ((Optional)this.field_39959.join()).map(arg -> arg.keyPair().publicKey());
+		return ((Optional)this.keyFuture.join()).map(key -> key.keyPair().publicKey());
 	}
 
 	@Environment(EnvType.CLIENT)
-	static record class_7653(PlayerKeyPair keyPair, Signer signer) {
-		public class_7653(PlayerKeyPair playerKeyPair) {
-			this(playerKeyPair, Signer.create(playerKeyPair.privateKey(), "SHA256withRSA"));
+	static record SignableKey(PlayerKeyPair keyPair, Signer signer) {
+		public SignableKey(PlayerKeyPair keyPair) {
+			this(keyPair, Signer.create(keyPair.privateKey(), "SHA256withRSA"));
 		}
 	}
 }

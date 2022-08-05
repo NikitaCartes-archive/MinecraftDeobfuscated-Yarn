@@ -30,21 +30,21 @@ public class ChunkUpdateState extends PersistentState {
 		return nbt;
 	}
 
-	public void add(long l) {
-		this.all.add(l);
-		this.remaining.add(l);
+	public void add(long pos) {
+		this.all.add(pos);
+		this.remaining.add(pos);
 	}
 
-	public boolean contains(long l) {
-		return this.all.contains(l);
+	public boolean contains(long pos) {
+		return this.all.contains(pos);
 	}
 
-	public boolean isRemaining(long l) {
-		return this.remaining.contains(l);
+	public boolean isRemaining(long pos) {
+		return this.remaining.contains(pos);
 	}
 
-	public void markResolved(long l) {
-		this.remaining.remove(l);
+	public void markResolved(long pos) {
+		this.remaining.remove(pos);
 	}
 
 	public LongSet getAll() {

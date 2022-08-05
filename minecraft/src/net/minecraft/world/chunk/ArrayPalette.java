@@ -31,12 +31,12 @@ public class ArrayPalette<T> implements Palette<T> {
 		this.size = list.size();
 	}
 
-	private ArrayPalette(IndexedIterable<T> indexedIterable, T[] objects, PaletteResizeListener<T> paletteResizeListener, int i, int j) {
-		this.idList = indexedIterable;
-		this.array = objects;
-		this.listener = paletteResizeListener;
-		this.indexBits = i;
-		this.size = j;
+	private ArrayPalette(IndexedIterable<T> idList, T[] array, PaletteResizeListener<T> listener, int indexBits, int size) {
+		this.idList = idList;
+		this.array = array;
+		this.listener = listener;
+		this.indexBits = indexBits;
+		this.size = size;
 	}
 
 	public static <A> Palette<A> create(int bits, IndexedIterable<A> idList, PaletteResizeListener<A> listener, List<A> list) {

@@ -6,6 +6,10 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.world.ClientWorld;
 
+/**
+ * A {@link Particle} with no rendered texture. Useful for emitter particles (such as {@link net.minecraft.client.particle.EmitterParticle})
+ * that spawn other particles while ticking, but do not render anything themselves.
+ */
 @Environment(EnvType.CLIENT)
 public class NoRenderParticle extends Particle {
 	protected NoRenderParticle(ClientWorld clientWorld, double d, double e, double f) {

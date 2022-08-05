@@ -14,7 +14,7 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
 
 /**
- * Represents the model of an held shield.
+ * Represents the model of a held shield.
  * 
  * <div class="fabric">
  * <table border=1>

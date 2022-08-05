@@ -3,17 +3,17 @@ package net.minecraft.advancement;
 import java.util.Collection;
 
 public interface CriterionMerger {
-	CriterionMerger AND = collection -> {
-		String[][] strings = new String[collection.size()][];
+	CriterionMerger AND = criteriaNames -> {
+		String[][] strings = new String[criteriaNames.size()][];
 		int i = 0;
 
-		for (String string : collection) {
+		for (String string : criteriaNames) {
 			strings[i++] = new String[]{string};
 		}
 
 		return strings;
 	};
-	CriterionMerger OR = collection -> new String[][]{(String[])collection.toArray(new String[0])};
+	CriterionMerger OR = criteriaNames -> new String[][]{(String[])criteriaNames.toArray(new String[0])};
 
 	String[][] createRequirements(Collection<String> criteriaNames);
 }

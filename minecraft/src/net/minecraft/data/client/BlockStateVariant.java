@@ -45,7 +45,7 @@ public class BlockStateVariant implements Supplier<JsonElement> {
 			return ((BlockStateVariant)variants.get(0)).get();
 		} else {
 			JsonArray jsonArray = new JsonArray();
-			variants.forEach(blockStateVariant -> jsonArray.add(blockStateVariant.get()));
+			variants.forEach(variant -> jsonArray.add(variant.get()));
 			return jsonArray;
 		}
 	}
