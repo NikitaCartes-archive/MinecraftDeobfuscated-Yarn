@@ -4,6 +4,14 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
 
+/**
+ * An implementation of {@link NamedScreenHandlerFactory} that can be used
+ * without the use of anonymous class. This delegates the creation to {@link
+ * #baseFactory}.
+ * 
+ * <p>An instance is passed to {@link net.minecraft.entity.player.PlayerEntity#openHandledScreen}
+ * to open a screen handler.
+ */
 public final class SimpleNamedScreenHandlerFactory implements NamedScreenHandlerFactory {
 	private final Text name;
 	private final ScreenHandlerFactory baseFactory;

@@ -28,7 +28,7 @@ import net.minecraft.world.GameMode;
 public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 	private static final String SKIN_URL = "http://skins.minecraft.net/MinecraftSkins/%s.png";
 	@Nullable
-	private PlayerListEntry cachedScoreboardEntry;
+	private PlayerListEntry playerListEntry;
 	public float elytraPitch;
 	public float elytraYaw;
 	public float elytraRoll;
@@ -57,11 +57,11 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 
 	@Nullable
 	protected PlayerListEntry getPlayerListEntry() {
-		if (this.cachedScoreboardEntry == null) {
-			this.cachedScoreboardEntry = MinecraftClient.getInstance().getNetworkHandler().getPlayerListEntry(this.getUuid());
+		if (this.playerListEntry == null) {
+			this.playerListEntry = MinecraftClient.getInstance().getNetworkHandler().getPlayerListEntry(this.getUuid());
 		}
 
-		return this.cachedScoreboardEntry;
+		return this.playerListEntry;
 	}
 
 	public boolean hasSkinTexture() {

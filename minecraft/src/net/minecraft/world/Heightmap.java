@@ -114,12 +114,12 @@ public class Heightmap {
 		this.storage.set(toIndex(x, z), height - this.chunk.getBottomY());
 	}
 
-	public void setTo(Chunk chunk, Heightmap.Type type, long[] ls) {
-		long[] ms = this.storage.getData();
-		if (ms.length == ls.length) {
-			System.arraycopy(ls, 0, ms, 0, ls.length);
+	public void setTo(Chunk chunk, Heightmap.Type type, long[] values) {
+		long[] ls = this.storage.getData();
+		if (ls.length == values.length) {
+			System.arraycopy(values, 0, ls, 0, values.length);
 		} else {
-			LOGGER.warn("Ignoring heightmap data for chunk " + chunk.getPos() + ", size does not match; expected: " + ms.length + ", got: " + ls.length);
+			LOGGER.warn("Ignoring heightmap data for chunk " + chunk.getPos() + ", size does not match; expected: " + ls.length + ", got: " + values.length);
 			populateHeightmaps(chunk, EnumSet.of(type));
 		}
 	}

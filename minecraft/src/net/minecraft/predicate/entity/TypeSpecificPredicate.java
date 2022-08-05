@@ -81,7 +81,7 @@ public interface TypeSpecificPredicate {
 	}
 
 	public interface Deserializer {
-		TypeSpecificPredicate deserialize(JsonObject jsonObject);
+		TypeSpecificPredicate deserialize(JsonObject json);
 	}
 
 	public static final class Deserializers {

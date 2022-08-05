@@ -43,10 +43,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
 public class WardenBrain {
-	private static final float field_38175 = 0.5F;
-	private static final float field_38176 = 0.7F;
-	private static final float field_38177 = 1.2F;
-	private static final int field_38178 = 18;
+	private static final float STROLL_SPEED = 0.5F;
+	private static final float CELEBRATE_TIME = 0.7F;
+	private static final float RANGED_APPROACH_SPEED = 1.2F;
+	private static final int MELEE_ATTACK_INTERVAL = 18;
 	private static final int DIG_DURATION = MathHelper.ceil(100.0F);
 	public static final int EMERGE_DURATION = MathHelper.ceil(133.59999F);
 	public static final int ROAR_DURATION = MathHelper.ceil(84.0F);

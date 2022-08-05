@@ -8,14 +8,14 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class DragonBreathParticle extends SpriteBillboardParticle {
-	private static final int field_32654 = 11993298;
-	private static final int field_32655 = 14614777;
-	private static final float field_32648 = 0.7176471F;
-	private static final float field_32649 = 0.0F;
-	private static final float field_32650 = 0.8235294F;
-	private static final float field_32651 = 0.8745098F;
-	private static final float field_32652 = 0.0F;
-	private static final float field_32653 = 0.9764706F;
+	private static final int MIN_COLOR = 11993298;
+	private static final int MAX_COLOR = 14614777;
+	private static final float MIN_RED = 0.7176471F;
+	private static final float MIN_GREEN = 0.0F;
+	private static final float MIN_BLUE = 0.8235294F;
+	private static final float MAX_RED = 0.8745098F;
+	private static final float MAX_GREEN = 0.0F;
+	private static final float MAX_BLUE = 0.9764706F;
 	private boolean reachedGround;
 	private final SpriteProvider spriteProvider;
 

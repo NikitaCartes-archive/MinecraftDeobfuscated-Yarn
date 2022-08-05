@@ -3,6 +3,9 @@ package net.minecraft.util;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * A buffered input stream that uses a fixed-size buffer array.
+ */
 public class FixedBufferInputStream extends InputStream {
 	private static final int DEFAULT_BUFFER_SIZE = 8192;
 	private final InputStream stream;

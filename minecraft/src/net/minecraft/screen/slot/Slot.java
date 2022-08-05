@@ -8,6 +8,14 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
+/**
+ * A slot of a screen handler that holds an item stack. A slot is temporary
+ * holder that holds the stack for the lifetime of the screen handler. They are backed
+ * by an inventory, which implements the persistent storage if necessary.
+ * 
+ * <p>To add slots, call {@link net.minecraft.screen.ScreenHandler#addSlot} inside
+ * the screen handler's constructor.
+ */
 public class Slot {
 	private final int index;
 	public final Inventory inventory;

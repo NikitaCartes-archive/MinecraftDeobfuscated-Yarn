@@ -8,7 +8,7 @@ import net.minecraft.util.math.random.Random;
 
 @Environment(EnvType.CLIENT)
 public class WhiteAshParticle extends AscendingParticle {
-	private static final int field_32658 = 12235202;
+	private static final int COLOR = 12235202;
 
 	protected WhiteAshParticle(
 		ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, float scaleMultiplier, SpriteProvider spriteProvider

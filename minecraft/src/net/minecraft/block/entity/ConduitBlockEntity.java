@@ -32,7 +32,7 @@ public class ConduitBlockEntity extends BlockEntity {
 	private static final int field_31334 = 13;
 	private static final float field_31335 = -0.0375F;
 	private static final int field_31336 = 16;
-	private static final int field_31337 = 42;
+	private static final int MIN_BLOCKS_TO_ACTIVATE = 42;
 	private static final int field_31338 = 8;
 	private static final Block[] ACTIVATING_BLOCKS = new Block[]{Blocks.PRISMARINE, Blocks.PRISMARINE_BRICKS, Blocks.SEA_LANTERN, Blocks.DARK_PRISMARINE};
 	public int ticks;

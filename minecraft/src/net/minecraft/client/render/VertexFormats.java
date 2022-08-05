@@ -4,6 +4,9 @@ import com.google.common.collect.ImmutableMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
+/**
+ * Holding vertex formats and vertex format elements.
+ */
 @Environment(EnvType.CLIENT)
 public class VertexFormats {
 	public static final VertexFormatElement POSITION_ELEMENT = new VertexFormatElement(

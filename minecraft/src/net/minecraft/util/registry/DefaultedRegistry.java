@@ -8,6 +8,9 @@ import javax.annotation.Nullable;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
 
+/**
+ * An implementation of {@link Registry} with a default ID and value for unknown lookups.
+ */
 public class DefaultedRegistry<T> extends SimpleRegistry<T> {
 	private final Identifier defaultId;
 	private RegistryEntry<T> defaultEntry;
@@ -66,6 +69,9 @@ public class DefaultedRegistry<T> extends SimpleRegistry<T> {
 		return super.getRandom(random).or(() -> Optional.of(this.defaultEntry));
 	}
 
+	/**
+	 * {@return the ID of the default value}
+	 */
 	public Identifier getDefaultId() {
 		return this.defaultId;
 	}

@@ -12,9 +12,20 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.util.dynamic.Codecs;
 
+/**
+ * An interface, implemented by enums, that allows the enum to be serialized
+ * by codecs. An instance is identified using a string.
+ * 
+ * @apiNote To make an enum serializable with codecs, implement this on the enum class,
+ * implement {@link #asString} to return a unique ID, and add a {@code static final}
+ * field that holds {@linkplain #createCodec the codec for the enum}.
+ */
 public interface StringIdentifiable {
 	int field_38377 = 16;
 
+	/**
+	 * {@return the unique string representation of the enum, used for serialization}
+	 */
 	String asString();
 
 	/**

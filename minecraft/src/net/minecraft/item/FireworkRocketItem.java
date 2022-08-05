@@ -31,7 +31,7 @@ public class FireworkRocketItem extends Item {
 	public static final String FLICKER_KEY = "Flicker";
 	public static final String COLORS_KEY = "Colors";
 	public static final String FADE_COLORS_KEY = "FadeColors";
-	public static final double field_30884 = 0.15;
+	public static final double OFFSET_POS_MULTIPLIER = 0.15;
 
 	public FireworkRocketItem(Item.Settings settings) {
 		super(settings);

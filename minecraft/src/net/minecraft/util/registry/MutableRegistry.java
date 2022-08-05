@@ -3,6 +3,12 @@ package net.minecraft.util.registry;
 import com.mojang.serialization.Lifecycle;
 import java.util.OptionalInt;
 
+/**
+ * A registry that allows adding or modifying values.
+ * Note that in vanilla, all registries are instances of this.
+ * 
+ * @see Registry
+ */
 public abstract class MutableRegistry<T> extends Registry<T> {
 	public MutableRegistry(RegistryKey<? extends Registry<T>> registryKey, Lifecycle lifecycle) {
 		super(registryKey, lifecycle);
@@ -23,5 +29,8 @@ public abstract class MutableRegistry<T> extends Registry<T> {
 	 */
 	public abstract RegistryEntry<T> replace(OptionalInt rawId, RegistryKey<T> key, T newEntry, Lifecycle lifecycle);
 
+	/**
+	 * {@return whether the registry is empty}
+	 */
 	public abstract boolean isEmpty();
 }

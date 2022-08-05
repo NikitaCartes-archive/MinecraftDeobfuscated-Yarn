@@ -13,16 +13,16 @@ public enum VillageGossipType {
 	MAJOR_POSITIVE("major_positive", 5, 100, 0, 100),
 	TRADING("trading", 1, 25, 2, 20);
 
-	public static final int field_30240 = 25;
-	public static final int field_30241 = 20;
-	public static final int field_30242 = 2;
+	public static final int MAX_TRADING_REPUTATION = 25;
+	public static final int TRADING_GOSSIP_SHARE_DECREMENT = 20;
+	public static final int TRADING_GOSSIP_DECAY = 2;
 	public final String key;
 	public final int multiplier;
 	public final int maxValue;
 	public final int decay;
 	public final int shareDecrement;
 	private static final Map<String, VillageGossipType> BY_KEY = (Map<String, VillageGossipType>)Stream.of(values())
-		.collect(ImmutableMap.toImmutableMap(villageGossipType -> villageGossipType.key, Function.identity()));
+		.collect(ImmutableMap.toImmutableMap(type -> type.key, Function.identity()));
 
 	private VillageGossipType(String key, int multiplier, int maxReputation, int decay, int shareDecrement) {
 		this.key = key;

@@ -43,10 +43,10 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 		{StatusEffects.SPEED, StatusEffects.HASTE}, {StatusEffects.RESISTANCE, StatusEffects.JUMP_BOOST}, {StatusEffects.STRENGTH}, {StatusEffects.REGENERATION}
 	};
 	private static final Set<StatusEffect> EFFECTS = (Set<StatusEffect>)Arrays.stream(EFFECTS_BY_LEVEL).flatMap(Arrays::stream).collect(Collectors.toSet());
-	public static final int field_31300 = 0;
-	public static final int field_31301 = 1;
-	public static final int field_31302 = 2;
-	public static final int field_31303 = 3;
+	public static final int LEVEL_PROPERTY_INDEX = 0;
+	public static final int PRIMARY_PROPERTY_INDEX = 1;
+	public static final int SECONDARY_PROPERTY_INDEX = 2;
+	public static final int PROPERTY_COUNT = 3;
 	private static final int field_31305 = 10;
 	List<BeaconBlockEntity.BeamSegment> beamSegments = Lists.<BeaconBlockEntity.BeamSegment>newArrayList();
 	private List<BeaconBlockEntity.BeamSegment> field_19178 = Lists.<BeaconBlockEntity.BeamSegment>newArrayList();

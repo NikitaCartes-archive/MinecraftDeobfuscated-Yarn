@@ -29,22 +29,22 @@ public class LowercaseEnumTypeAdapterFactory implements TypeAdapterFactory {
 
 			return new TypeAdapter<T>() {
 				@Override
-				public void write(JsonWriter jsonWriter, T object) throws IOException {
-					if (object == null) {
-						jsonWriter.nullValue();
+				public void write(JsonWriter writer, T o) throws IOException {
+					if (o == null) {
+						writer.nullValue();
 					} else {
-						jsonWriter.value(LowercaseEnumTypeAdapterFactory.this.getKey(object));
+						writer.value(LowercaseEnumTypeAdapterFactory.this.getKey(o));
 					}
 				}
 
 				@Nullable
 				@Override
-				public T read(JsonReader jsonReader) throws IOException {
-					if (jsonReader.peek() == JsonToken.NULL) {
-						jsonReader.nextNull();
+				public T read(JsonReader reader) throws IOException {
+					if (reader.peek() == JsonToken.NULL) {
+						reader.nextNull();
 						return null;
 					} else {
-						return (T)map.get(jsonReader.nextString());
+						return (T)map.get(reader.nextString());
 					}
 				}
 			};

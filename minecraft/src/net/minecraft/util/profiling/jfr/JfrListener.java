@@ -42,19 +42,19 @@ public class JfrListener {
 		}
 	}
 
-	private static void log(Supplier<String> supplier) {
+	private static void log(Supplier<String> logSupplier) {
 		if (LogUtils.isLoggerActive()) {
-			LOGGER.info((String)supplier.get());
+			LOGGER.info((String)logSupplier.get());
 		} else {
-			Bootstrap.println((String)supplier.get());
+			Bootstrap.println((String)logSupplier.get());
 		}
 	}
 
-	private static void warn(Supplier<String> supplier, Throwable throwable) {
+	private static void warn(Supplier<String> logSupplier, Throwable throwable) {
 		if (LogUtils.isLoggerActive()) {
-			LOGGER.warn((String)supplier.get(), throwable);
+			LOGGER.warn((String)logSupplier.get(), throwable);
 		} else {
-			Bootstrap.println((String)supplier.get());
+			Bootstrap.println((String)logSupplier.get());
 			throwable.printStackTrace(Bootstrap.SYSOUT);
 		}
 	}

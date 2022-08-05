@@ -9,10 +9,10 @@ import net.minecraft.screen.slot.Slot;
 public class LecternScreenHandler extends ScreenHandler {
 	private static final int field_30824 = 1;
 	private static final int field_30825 = 1;
-	public static final int field_30820 = 1;
-	public static final int field_30821 = 2;
-	public static final int field_30822 = 3;
-	public static final int field_30823 = 100;
+	public static final int PREVIOUS_PAGE_BUTTON_ID = 1;
+	public static final int NEXT_PAGE_BUTTON_ID = 2;
+	public static final int TAKE_BOOK_BUTTON_ID = 3;
+	public static final int BASE_JUMP_TO_PAGE_BUTTON_ID = 100;
 	private final Inventory inventory;
 	private final PropertyDelegate propertyDelegate;
 

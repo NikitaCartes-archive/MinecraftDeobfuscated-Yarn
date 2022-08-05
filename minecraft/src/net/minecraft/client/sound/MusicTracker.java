@@ -10,7 +10,7 @@ import net.minecraft.util.math.random.Random;
 
 @Environment(EnvType.CLIENT)
 public class MusicTracker {
-	private static final int field_33019 = 100;
+	private static final int DEFAULT_TIME_UNTIL_NEXT_SONG = 100;
 	private final Random random = Random.create();
 	private final MinecraftClient client;
 	@Nullable

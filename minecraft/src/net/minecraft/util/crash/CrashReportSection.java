@@ -82,9 +82,9 @@ public class CrashReportSection {
 		return stringBuilder.toString();
 	}
 
-	public CrashReportSection add(String name, CrashCallable<String> crashCallable) {
+	public CrashReportSection add(String name, CrashCallable<String> callable) {
 		try {
-			this.add(name, crashCallable.call());
+			this.add(name, callable.call());
 		} catch (Throwable var4) {
 			this.add(name, var4);
 		}

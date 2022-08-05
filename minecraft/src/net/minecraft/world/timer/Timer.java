@@ -31,16 +31,16 @@ public class Timer<T> {
 		return Comparator.comparingLong(event -> event.triggerTime).thenComparing(event -> event.id);
 	}
 
-	public Timer(TimerCallbackSerializer<T> timerCallbackSerializer, Stream<Dynamic<NbtElement>> stream) {
+	public Timer(TimerCallbackSerializer<T> timerCallbackSerializer, Stream<Dynamic<NbtElement>> nbts) {
 		this(timerCallbackSerializer);
 		this.events.clear();
 		this.eventsByName.clear();
 		this.eventCounter = UnsignedLong.ZERO;
-		stream.forEach(dynamic -> {
-			if (!(dynamic.getValue() instanceof NbtCompound)) {
-				LOGGER.warn("Invalid format of events: {}", dynamic);
+		nbts.forEach(nbt -> {
+			if (!(nbt.getValue() instanceof NbtCompound)) {
+				LOGGER.warn("Invalid format of events: {}", nbt);
 			} else {
-				this.addEvent((NbtCompound)dynamic.getValue());
+				this.addEvent((NbtCompound)nbt.getValue());
 			}
 		});
 	}

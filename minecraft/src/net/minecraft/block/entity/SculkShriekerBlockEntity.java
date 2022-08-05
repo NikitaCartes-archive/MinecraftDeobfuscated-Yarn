@@ -40,20 +40,20 @@ import net.minecraft.world.event.listener.VibrationListener;
 import org.slf4j.Logger;
 
 public class SculkShriekerBlockEntity extends BlockEntity implements VibrationListener.Callback {
-	private static final Logger field_38237 = LogUtils.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int RANGE = 8;
 	private static final int field_38750 = 10;
-	private static final int field_38751 = 20;
-	private static final int field_38752 = 5;
-	private static final int field_38753 = 6;
-	private static final int field_38754 = 40;
+	private static final int WARDEN_SPAWN_TRIES = 20;
+	private static final int WARDEN_SPAWN_HORIZONTAL_RANGE = 5;
+	private static final int WARDEN_SPAWN_VERTICAL_RANGE = 6;
+	private static final int DARKNESS_RANGE = 40;
 	private static final Int2ObjectMap<SoundEvent> WARNING_SOUNDS = Util.make(new Int2ObjectOpenHashMap<>(), warningSounds -> {
 		warningSounds.put(1, SoundEvents.ENTITY_WARDEN_NEARBY_CLOSE);
 		warningSounds.put(2, SoundEvents.ENTITY_WARDEN_NEARBY_CLOSER);
 		warningSounds.put(3, SoundEvents.ENTITY_WARDEN_NEARBY_CLOSEST);
 		warningSounds.put(4, SoundEvents.ENTITY_WARDEN_LISTENING_ANGRY);
 	});
-	private static final int field_38756 = 90;
+	private static final int SHRIEK_DELAY = 90;
 	private int warningLevel;
 	private VibrationListener vibrationListener = new VibrationListener(new BlockPositionSource(this.pos), 8, this, null, 0.0F, 0);
 
@@ -75,7 +75,7 @@ public class SculkShriekerBlockEntity extends BlockEntity implements VibrationLi
 		if (nbt.contains("listener", NbtElement.COMPOUND_TYPE)) {
 			VibrationListener.createCodec(this)
 				.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("listener")))
-				.resultOrPartial(field_38237::error)
+				.resultOrPartial(LOGGER::error)
 				.ifPresent(vibrationListener -> this.vibrationListener = vibrationListener);
 		}
 	}
@@ -86,7 +86,7 @@ public class SculkShriekerBlockEntity extends BlockEntity implements VibrationLi
 		nbt.putInt("warning_level", this.warningLevel);
 		VibrationListener.createCodec(this)
 			.encodeStart(NbtOps.INSTANCE, this.vibrationListener)
-			.resultOrPartial(field_38237::error)
+			.resultOrPartial(LOGGER::error)
 			.ifPresent(nbtElement -> nbt.put("listener", nbtElement));
 	}
 

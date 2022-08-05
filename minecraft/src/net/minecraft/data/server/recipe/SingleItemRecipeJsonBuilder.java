@@ -58,7 +58,7 @@ public class SingleItemRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 	public void offerTo(Consumer<RecipeJsonProvider> exporter, Identifier recipeId) {
 		this.validate(recipeId);
 		this.advancementBuilder
-			.parent(field_39377)
+			.parent(ROOT)
 			.criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeId))
 			.rewards(AdvancementRewards.Builder.recipe(recipeId))
 			.criteriaMerger(CriterionMerger.OR);

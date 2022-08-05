@@ -82,13 +82,13 @@ public class BellBlock extends BlockWithEntity {
 		return this.ring(world, state, hit, player, true) ? ActionResult.success(world.isClient) : ActionResult.PASS;
 	}
 
-	public boolean ring(World world, BlockState state, BlockHitResult hitResult, @Nullable PlayerEntity player, boolean bl) {
+	public boolean ring(World world, BlockState state, BlockHitResult hitResult, @Nullable PlayerEntity player, boolean checkHitPos) {
 		Direction direction = hitResult.getSide();
 		BlockPos blockPos = hitResult.getBlockPos();
-		boolean bl2 = !bl || this.isPointOnBell(state, direction, hitResult.getPos().y - (double)blockPos.getY());
-		if (bl2) {
-			boolean bl3 = this.ring(player, world, blockPos, direction);
-			if (bl3 && player != null) {
+		boolean bl = !checkHitPos || this.isPointOnBell(state, direction, hitResult.getPos().y - (double)blockPos.getY());
+		if (bl) {
+			boolean bl2 = this.ring(player, world, blockPos, direction);
+			if (bl2 && player != null) {
 				player.incrementStat(Stats.BELL_RING);
 			}
 

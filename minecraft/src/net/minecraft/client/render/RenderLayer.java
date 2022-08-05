@@ -13,6 +13,18 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
+/**
+ * Defines settings that should be used when rendering something.
+ * 
+ * <p>This includes {@linkplain VertexFormat vertex format}, {@linkplain
+ * VertexFormat.DrawMode draw mode}, {@linkplain Shader shader}, texture,
+ * some uniform variables values (such as {@code LineWidth} when using the
+ * {@link GameRenderer#getRenderTypeLinesShader rendertype_lines} shader),
+ * and some GL state values (such as whether to enable depth testing).
+ * 
+ * <p>Before drawing something, a render layer setups these states. After
+ * drawing something, a render layer resets those states to default.
+ */
 @Environment(EnvType.CLIENT)
 public abstract class RenderLayer extends RenderPhase {
 	private static final int field_32776 = 4;

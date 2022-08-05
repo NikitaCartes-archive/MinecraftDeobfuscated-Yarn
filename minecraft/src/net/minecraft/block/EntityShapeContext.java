@@ -50,8 +50,8 @@ public class EntityShapeContext implements ShapeContext {
 	}
 
 	@Override
-	public boolean canWalkOnFluid(FluidState state, FluidState fluidState) {
-		return this.walkOnFluidPredicate.test(fluidState) && !state.getFluid().matchesType(fluidState.getFluid());
+	public boolean canWalkOnFluid(FluidState stateAbove, FluidState state) {
+		return this.walkOnFluidPredicate.test(state) && !stateAbove.getFluid().matchesType(state.getFluid());
 	}
 
 	@Override

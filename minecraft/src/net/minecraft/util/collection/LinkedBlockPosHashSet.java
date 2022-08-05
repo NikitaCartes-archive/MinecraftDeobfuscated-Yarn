@@ -94,7 +94,7 @@ public class LinkedBlockPosHashSet extends LongLinkedOpenHashSet {
 		}
 
 		/**
-		 * Converts a individual position into a key
+		 * Converts an individual position into a key
 		 * representing the 2x cube region containing that position.
 		 */
 		static long getKey(long posLong) {

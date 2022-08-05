@@ -96,7 +96,7 @@ public interface WorldAccess extends RegistryWorldView, LunarWorldView {
 	}
 
 	/**
-	 * Emits an game event.
+	 * Emits a game event.
 	 */
 	void emitGameEvent(GameEvent event, Vec3d emitterPos, GameEvent.Emitter emitter);
 

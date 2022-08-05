@@ -31,11 +31,11 @@ public class ChunkCache implements BlockView, CollisionView {
 	protected final Chunk[][] chunks;
 	protected boolean empty;
 	protected final World world;
-	private final Supplier<RegistryEntry<Biome>> field_36403;
+	private final Supplier<RegistryEntry<Biome>> plainsEntryGetter;
 
 	public ChunkCache(World world, BlockPos minPos, BlockPos maxPos) {
 		this.world = world;
-		this.field_36403 = Suppliers.memoize(() -> world.getRegistryManager().get(Registry.BIOME_KEY).entryOf(BiomeKeys.PLAINS));
+		this.plainsEntryGetter = Suppliers.memoize(() -> world.getRegistryManager().get(Registry.BIOME_KEY).entryOf(BiomeKeys.PLAINS));
 		this.minX = ChunkSectionPos.getSectionCoord(minPos.getX());
 		this.minZ = ChunkSectionPos.getSectionCoord(minPos.getZ());
 		int i = ChunkSectionPos.getSectionCoord(maxPos.getX());
@@ -70,9 +70,9 @@ public class ChunkCache implements BlockView, CollisionView {
 		int j = chunkZ - this.minZ;
 		if (i >= 0 && i < this.chunks.length && j >= 0 && j < this.chunks[i].length) {
 			Chunk chunk = this.chunks[i][j];
-			return (Chunk)(chunk != null ? chunk : new EmptyChunk(this.world, new ChunkPos(chunkX, chunkZ), (RegistryEntry<Biome>)this.field_36403.get()));
+			return (Chunk)(chunk != null ? chunk : new EmptyChunk(this.world, new ChunkPos(chunkX, chunkZ), (RegistryEntry<Biome>)this.plainsEntryGetter.get()));
 		} else {
-			return new EmptyChunk(this.world, new ChunkPos(chunkX, chunkZ), (RegistryEntry<Biome>)this.field_36403.get());
+			return new EmptyChunk(this.world, new ChunkPos(chunkX, chunkZ), (RegistryEntry<Biome>)this.plainsEntryGetter.get());
 		}
 	}
 

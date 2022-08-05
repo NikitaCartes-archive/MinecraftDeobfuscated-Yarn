@@ -321,7 +321,7 @@ public abstract class AbstractBlock {
 	}
 
 	/**
-	 * Called when the block state changes, before the {#linkplain #getStateForNeighborUpdate
+	 * Called when the block state changes, before the {@linkplain #getStateForNeighborUpdate
 	 * neighbor-triggered state update} on the original block, and after the
 	 * neighbor-triggered state update on the replaced block.
 	 * 

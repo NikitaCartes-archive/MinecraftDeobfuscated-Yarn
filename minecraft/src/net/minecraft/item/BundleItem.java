@@ -29,7 +29,7 @@ import net.minecraft.world.World;
 public class BundleItem extends Item {
 	private static final String ITEMS_KEY = "Items";
 	public static final int MAX_STORAGE = 64;
-	private static final int field_30859 = 4;
+	private static final int BUNDLE_ITEM_OCCUPANCY = 4;
 	private static final int ITEM_BAR_COLOR = MathHelper.packRgb(0.4F, 0.4F, 1.0F);
 
 	public BundleItem(Item.Settings settings) {

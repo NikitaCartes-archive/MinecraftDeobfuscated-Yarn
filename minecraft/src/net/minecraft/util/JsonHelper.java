@@ -29,6 +29,9 @@ import net.minecraft.util.registry.Registry;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Contract;
 
+/**
+ * Provides methods for validating and deserializing JSON elements.
+ */
 public class JsonHelper {
 	private static final Gson GSON = new GsonBuilder().create();
 

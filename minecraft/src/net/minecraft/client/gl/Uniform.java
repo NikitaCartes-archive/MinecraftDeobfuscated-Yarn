@@ -7,6 +7,10 @@ import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.Vector4f;
 
+/**
+ * Defines methods that set a value of a uniform variable. The actual
+ * implementation is in {@link GlUniform}.
+ */
 @Environment(EnvType.CLIENT)
 public class Uniform {
 	public void set(float value1) {

@@ -90,7 +90,7 @@ public class ItemColors {
 			Blocks.DARK_OAK_LEAVES,
 			Blocks.LILY_PAD
 		);
-		itemColors.register((itemStack, i) -> FoliageColors.method_43717(), Blocks.MANGROVE_LEAVES);
+		itemColors.register((stack, tintIndex) -> FoliageColors.getMangroveColor(), Blocks.MANGROVE_LEAVES);
 		itemColors.register((stack, tintIndex) -> tintIndex == 0 ? PotionUtil.getColor(stack) : -1, Items.TIPPED_ARROW);
 		itemColors.register((stack, tintIndex) -> tintIndex == 0 ? -1 : FilledMapItem.getMapColor(stack), Items.FILLED_MAP);
 		return itemColors;

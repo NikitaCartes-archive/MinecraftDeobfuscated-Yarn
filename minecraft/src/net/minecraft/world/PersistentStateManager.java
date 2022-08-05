@@ -133,10 +133,10 @@ public class PersistentStateManager {
 		return var8;
 	}
 
-	private boolean isCompressed(PushbackInputStream pushbackInputStream) throws IOException {
+	private boolean isCompressed(PushbackInputStream stream) throws IOException {
 		byte[] bs = new byte[2];
 		boolean bl = false;
-		int i = pushbackInputStream.read(bs, 0, 2);
+		int i = stream.read(bs, 0, 2);
 		if (i == 2) {
 			int j = (bs[1] & 255) << 8 | bs[0] & 255;
 			if (j == 35615) {
@@ -145,7 +145,7 @@ public class PersistentStateManager {
 		}
 
 		if (i != 0) {
-			pushbackInputStream.unread(bs, 0, i);
+			stream.unread(bs, 0, i);
 		}
 
 		return bl;

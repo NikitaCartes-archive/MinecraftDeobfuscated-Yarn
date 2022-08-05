@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public interface CraftingRecipeJsonBuilder {
-	Identifier field_39377 = new Identifier("recipes/root");
+	Identifier ROOT = new Identifier("recipes/root");
 
 	CraftingRecipeJsonBuilder criterion(String name, CriterionConditions conditions);
 

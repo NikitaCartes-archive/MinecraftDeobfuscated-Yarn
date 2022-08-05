@@ -16,16 +16,39 @@ import net.minecraft.world.WorldEvents;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.event.GameEvent;
 
+/**
+ * A cauldron with a varying level of contents.
+ * This includes water and powder snow cauldrons.
+ * 
+ * <p>The amount of stored substance is controlled with the {@link #LEVEL}
+ * block state property which can take values between {@value #MIN_LEVEL} and
+ * {@value #MAX_LEVEL} (inclusive).
+ */
 public class LeveledCauldronBlock extends AbstractCauldronBlock {
-	public static final int field_31107 = 1;
-	public static final int field_31108 = 3;
+	public static final int MIN_LEVEL = 1;
+	public static final int MAX_LEVEL = 3;
 	public static final IntProperty LEVEL = Properties.LEVEL_3;
-	private static final int field_31109 = 6;
-	private static final double field_31110 = 3.0;
+	private static final int BASE_FLUID_HEIGHT = 6;
+	private static final double FLUID_HEIGHT_PER_LEVEL = 3.0;
+	/**
+	 * A precipitation predicate that allows {@link Biome.Precipitation#RAIN}.
+	 */
 	public static final Predicate<Biome.Precipitation> RAIN_PREDICATE = precipitation -> precipitation == Biome.Precipitation.RAIN;
+	/**
+	 * A precipitation predicate that allows {@link Biome.Precipitation#SNOW}.
+	 */
 	public static final Predicate<Biome.Precipitation> SNOW_PREDICATE = precipitation -> precipitation == Biome.Precipitation.SNOW;
 	private final Predicate<Biome.Precipitation> precipitationPredicate;
 
+	/**
+	 * Constructs a leveled cauldron block.
+	 * 
+	 * @apiNote The precipitation predicates are compared using identity comparisons in some cases,
+	 * so callers should typically use {@link #RAIN_PREDICATE} and {@link #SNOW_PREDICATE} if applicable.
+	 * 
+	 * @param precipitationPredicate a predicate that checks what type of precipitation can fill this cauldron
+	 * @param behaviorMap the map containing cauldron behaviors for each item
+	 */
 	public LeveledCauldronBlock(AbstractBlock.Settings settings, Predicate<Biome.Precipitation> precipitationPredicate, Map<Item, CauldronBehavior> behaviorMap) {
 		super(settings, behaviorMap);
 		this.precipitationPredicate = precipitationPredicate;

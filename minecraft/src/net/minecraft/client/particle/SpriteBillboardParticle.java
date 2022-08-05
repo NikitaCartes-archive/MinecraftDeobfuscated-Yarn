@@ -5,6 +5,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.world.ClientWorld;
 
+/**
+ * {@link SpriteBillboardParticle} is a {@link BillboardParticle} implementation class that renders a {@link Sprite} as its camera-facing texture.
+ */
 @Environment(EnvType.CLIENT)
 public abstract class SpriteBillboardParticle extends BillboardParticle {
 	protected Sprite sprite;
@@ -17,6 +20,14 @@ public abstract class SpriteBillboardParticle extends BillboardParticle {
 		super(clientWorld, d, e, f, g, h, i);
 	}
 
+	/**
+	 * Sets the current {@link Sprite} of this {@link SpriteBillboardParticle}.
+	 * 
+	 * <p>
+	 * To assign a {@link Sprite} based on particle age, visit {@link SpriteBillboardParticle#setSpriteForAge}.
+	 * 
+	 * @param sprite the new {@link Sprite} to assign to this {@link Particle}
+	 */
 	protected void setSprite(Sprite sprite) {
 		this.sprite = sprite;
 	}
@@ -41,10 +52,20 @@ public abstract class SpriteBillboardParticle extends BillboardParticle {
 		return this.sprite.getMaxV();
 	}
 
+	/**
+	 * Sets the current {@link Sprite} of this {@link SpriteBillboardParticle} to a random frame in its atlas sheet.
+	 * 
+	 * @param spriteProvider sprite access for retrieving random {@link Sprite} frames
+	 */
 	public void setSprite(SpriteProvider spriteProvider) {
 		this.setSprite(spriteProvider.getSprite(this.random));
 	}
 
+	/**
+	 * Sets the current {@link Sprite} of this {@link SpriteBillboardParticle} based on the age of the particle, assuming the particle texture is an atlas with multiple frames.
+	 * 
+	 * @param spriteProvider sprite access for retrieving the proper {@link Sprite} based on lifetime progress
+	 */
 	public void setSpriteForAge(SpriteProvider spriteProvider) {
 		if (!this.dead) {
 			this.setSprite(spriteProvider.getSprite(this.age, this.maxAge));

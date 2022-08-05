@@ -150,7 +150,7 @@ public class DripstoneClusterFeature extends Feature<DripstoneClusterFeatureConf
 			return 0;
 		} else {
 			int i = Math.abs(localX) + Math.abs(localZ);
-			float f = (float)MathHelper.clampedLerpFromProgress((double)i, 0.0, (double)config.maxDistanceFromCenterAffectingHeightBias, (double)height / 2.0, 0.0);
+			float f = (float)MathHelper.clampedMap((double)i, 0.0, (double)config.maxDistanceFromCenterAffectingHeightBias, (double)height / 2.0, 0.0);
 			return (int)clampedGaussian(random, 0.0F, (float)height, f, (float)config.heightDeviation);
 		}
 	}
@@ -195,7 +195,7 @@ public class DripstoneClusterFeature extends Feature<DripstoneClusterFeatureConf
 		int i = radiusX - Math.abs(localX);
 		int j = radiusZ - Math.abs(localZ);
 		int k = Math.min(i, j);
-		return (double)MathHelper.clampedLerpFromProgress(
+		return (double)MathHelper.clampedMap(
 			(float)k, 0.0F, (float)config.maxDistanceFromCenterAffectingChanceOfDripstoneColumn, config.chanceOfDripstoneColumnAtMaxDistanceFromCenter, 1.0F
 		);
 	}

@@ -62,8 +62,8 @@ public class LootFunctionManager extends JsonDataLoader {
 		});
 		Map<Identifier, LootFunction> map2 = builder.build();
 		LootTableReporter lootTableReporter = new LootTableReporter(LootContextTypes.GENERIC, this.lootConditionManager::get, this.lootManager::getTable);
-		map2.forEach((id, lootFunction) -> lootFunction.validate(lootTableReporter));
-		lootTableReporter.getMessages().forEach((string, string2) -> LOGGER.warn("Found item modifier validation problem in {}: {}", string, string2));
+		map2.forEach((id, function) -> function.validate(lootTableReporter));
+		lootTableReporter.getMessages().forEach((name, message) -> LOGGER.warn("Found item modifier validation problem in {}: {}", name, message));
 		this.functions = map2;
 	}
 
@@ -73,15 +73,15 @@ public class LootFunctionManager extends JsonDataLoader {
 
 	static class AndFunction implements LootFunction {
 		protected final LootFunction[] functions;
-		private final BiFunction<ItemStack, LootContext, ItemStack> field_27905;
+		private final BiFunction<ItemStack, LootContext, ItemStack> applier;
 
 		public AndFunction(LootFunction[] functions) {
 			this.functions = functions;
-			this.field_27905 = LootFunctionTypes.join(functions);
+			this.applier = LootFunctionTypes.join(functions);
 		}
 
 		public ItemStack apply(ItemStack itemStack, LootContext lootContext) {
-			return (ItemStack)this.field_27905.apply(itemStack, lootContext);
+			return (ItemStack)this.applier.apply(itemStack, lootContext);
 		}
 
 		@Override

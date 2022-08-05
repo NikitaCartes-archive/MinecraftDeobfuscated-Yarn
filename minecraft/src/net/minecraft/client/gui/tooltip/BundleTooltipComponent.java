@@ -18,9 +18,9 @@ public class BundleTooltipComponent implements TooltipComponent {
 	public static final Identifier TEXTURE = new Identifier("textures/gui/container/bundle.png");
 	private static final int field_32381 = 4;
 	private static final int field_32382 = 1;
-	private static final int field_32383 = 128;
-	private static final int field_32384 = 18;
-	private static final int field_32385 = 20;
+	private static final int TEXTURE_SIZE = 128;
+	private static final int WIDTH_PER_COLUMN = 18;
+	private static final int HEIGHT_PER_ROW = 20;
 	private final DefaultedList<ItemStack> inventory;
 	private final int occupancy;
 

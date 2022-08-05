@@ -44,7 +44,7 @@ public class SmithingRecipeJsonBuilder {
 	public void offerTo(Consumer<RecipeJsonProvider> exporter, Identifier recipeId) {
 		this.validate(recipeId);
 		this.advancementBuilder
-			.parent(CraftingRecipeJsonBuilder.field_39377)
+			.parent(CraftingRecipeJsonBuilder.ROOT)
 			.criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeId))
 			.rewards(AdvancementRewards.Builder.recipe(recipeId))
 			.criteriaMerger(CriterionMerger.OR);

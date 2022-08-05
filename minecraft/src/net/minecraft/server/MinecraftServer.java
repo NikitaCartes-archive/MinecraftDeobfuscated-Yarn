@@ -1371,7 +1371,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	/**
-	 * Reloads this server's datapacks.
+	 * Reloads this server's data packs.
 	 * 
 	 * @return a completable future which specifies whether the reload was successful
 	 * A reload has failed when the future is exceptionally completed.

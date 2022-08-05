@@ -174,10 +174,7 @@ public class LocationPredicate {
 			}
 
 			if (this.dimension != null) {
-				World.CODEC
-					.encodeStart(JsonOps.INSTANCE, this.dimension)
-					.resultOrPartial(LOGGER::error)
-					.ifPresent(jsonElement -> jsonObject.add("dimension", jsonElement));
+				World.CODEC.encodeStart(JsonOps.INSTANCE, this.dimension).resultOrPartial(LOGGER::error).ifPresent(json -> jsonObject.add("dimension", json));
 			}
 
 			if (this.feature != null) {

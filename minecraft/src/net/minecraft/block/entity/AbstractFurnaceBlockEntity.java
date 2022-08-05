@@ -46,18 +46,18 @@ import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.World;
 
 public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockEntity implements SidedInventory, RecipeUnlocker, RecipeInputProvider {
-	protected static final int field_31286 = 0;
-	protected static final int field_31287 = 1;
-	protected static final int field_31288 = 2;
-	public static final int field_31289 = 0;
+	protected static final int INPUT_SLOT_INDEX = 0;
+	protected static final int FUEL_SLOT_INDEX = 1;
+	protected static final int OUTPUT_SLOT_INDEX = 2;
+	public static final int BURN_TIME_PROPERTY_INDEX = 0;
 	private static final int[] TOP_SLOTS = new int[]{0};
 	private static final int[] BOTTOM_SLOTS = new int[]{2, 1};
 	private static final int[] SIDE_SLOTS = new int[]{1};
-	public static final int field_31290 = 1;
-	public static final int field_31291 = 2;
-	public static final int field_31292 = 3;
-	public static final int field_31293 = 4;
-	public static final int field_31294 = 200;
+	public static final int FUEL_TIME_PROPERTY_INDEX = 1;
+	public static final int COOK_TIME_PROPERTY_INDEX = 2;
+	public static final int COOK_TIME_TOTAL_PROPERTY_INDEX = 3;
+	public static final int PROPERTY_COUNT = 4;
+	public static final int DEFAULT_COOK_TIME = 200;
 	public static final int field_31295 = 2;
 	protected DefaultedList<ItemStack> inventory = DefaultedList.ofSize(3, ItemStack.EMPTY);
 	int burnTime;

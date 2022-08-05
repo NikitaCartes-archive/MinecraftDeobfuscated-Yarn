@@ -34,6 +34,12 @@ import net.minecraft.util.math.random.Random;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 
+/**
+ * An implementation of a mutable registry. All vanilla registries use this (or its
+ * subclass, {@link DefaultedRegistry}).
+ * 
+ * @see Registry
+ */
 public class SimpleRegistry<T> extends MutableRegistry<T> {
 	private static final Logger field_36635 = LogUtils.getLogger();
 	private final ObjectList<RegistryEntry.Reference<T>> rawIdToEntry = new ObjectArrayList<>(256);

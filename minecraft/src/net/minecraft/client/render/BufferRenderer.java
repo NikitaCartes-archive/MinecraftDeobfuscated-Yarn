@@ -6,6 +6,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gl.VertexBuffer;
 
+/**
+ * Containing methods for immediately drawing a buffer built with {@link
+ * BufferBuilder}.
+ */
 @Environment(EnvType.CLIENT)
 public class BufferRenderer {
 	@Nullable
@@ -22,6 +26,11 @@ public class BufferRenderer {
 		currentVertexBuffer = null;
 	}
 
+	/**
+	 * Draws {@code buffer} using the shader specified with {@link
+	 * com.mojang.blaze3d.systems.RenderSystem#setShader
+	 * RenderSystem#setShader}
+	 */
 	public static void drawWithShader(BufferBuilder.BuiltBuffer buffer) {
 		if (!RenderSystem.isOnRenderThreadOrInit()) {
 			RenderSystem.recordRenderCall(() -> drawWithShaderInternal(buffer));
@@ -37,6 +46,14 @@ public class BufferRenderer {
 		}
 	}
 
+	/**
+	 * Draws {@code buffer}.
+	 * 
+	 * <p>Unlike {@link #drawWithShader}, the shader cannot be specified with
+	 * {@link com.mojang.blaze3d.systems.RenderSystem#setShader
+	 * RenderSystem#setShader}. The caller of this method must manually bind a
+	 * shader before calling this method.
+	 */
 	public static void drawWithoutShader(BufferBuilder.BuiltBuffer buffer) {
 		VertexBuffer vertexBuffer = getVertexBuffer(buffer);
 		if (vertexBuffer != null) {

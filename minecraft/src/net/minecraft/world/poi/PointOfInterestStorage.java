@@ -242,9 +242,9 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 
 	public void initForPalette(ChunkPos chunkPos, ChunkSection chunkSection) {
 		ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(chunkPos, ChunkSectionPos.getSectionCoord(chunkSection.getYOffset()));
-		Util.ifPresentOrElse(this.get(chunkSectionPos.asLong()), poiSet -> poiSet.updatePointsOfInterest(biConsumer -> {
+		Util.ifPresentOrElse(this.get(chunkSectionPos.asLong()), poiSet -> poiSet.updatePointsOfInterest(populator -> {
 				if (shouldScan(chunkSection)) {
-					this.scanAndPopulate(chunkSection, chunkSectionPos, biConsumer);
+					this.scanAndPopulate(chunkSection, chunkSectionPos, populator);
 				}
 			}), () -> {
 			if (shouldScan(chunkSection)) {
@@ -258,14 +258,14 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 		return chunkSection.hasAny(PointOfInterestTypes.POI_STATES::contains);
 	}
 
-	private void scanAndPopulate(ChunkSection chunkSection, ChunkSectionPos sectionPos, BiConsumer<BlockPos, RegistryEntry<PointOfInterestType>> biConsumer) {
+	private void scanAndPopulate(ChunkSection chunkSection, ChunkSectionPos sectionPos, BiConsumer<BlockPos, RegistryEntry<PointOfInterestType>> populator) {
 		sectionPos.streamBlocks()
 			.forEach(
 				pos -> {
 					BlockState blockState = chunkSection.getBlockState(
 						ChunkSectionPos.getLocalCoord(pos.getX()), ChunkSectionPos.getLocalCoord(pos.getY()), ChunkSectionPos.getLocalCoord(pos.getZ())
 					);
-					PointOfInterestTypes.getTypeForState(blockState).ifPresent(poiType -> biConsumer.accept(pos, poiType));
+					PointOfInterestTypes.getTypeForState(blockState).ifPresent(poiType -> populator.accept(pos, poiType));
 				}
 			);
 	}

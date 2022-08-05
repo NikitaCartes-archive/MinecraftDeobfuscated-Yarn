@@ -398,10 +398,10 @@ public interface AquiferSampler {
 			} else {
 				int i = surfaceHeightEstimate + 8 - blockY;
 				int j = 64;
-				double f = bl ? MathHelper.clampedLerpFromProgress((double)i, 0.0, 64.0, 1.0, 0.0) : 0.0;
+				double f = bl ? MathHelper.clampedMap((double)i, 0.0, 64.0, 1.0, 0.0) : 0.0;
 				double g = MathHelper.clamp(this.fluidLevelFloodednessNoise.sample(unblendedNoisePos), -1.0, 1.0);
-				double h = MathHelper.lerpFromProgress(f, 1.0, 0.0, -0.3, 0.8);
-				double k = MathHelper.lerpFromProgress(f, 1.0, 0.0, -0.8, 0.4);
+				double h = MathHelper.map(f, 1.0, 0.0, -0.3, 0.8);
+				double k = MathHelper.map(f, 1.0, 0.0, -0.8, 0.4);
 				d = g - k;
 				e = g - h;
 			}

@@ -17,7 +17,7 @@ import net.minecraft.util.registry.RegistryKey;
  * to make it easier to handle user-passed arguments. For example, {@link #getEntryList(TagKey)}
  * may return an empty {@link RegistryEntryList} instead of {@link Optional#empty()}.
  * 
- * <p>A wrapper without any special behaviors can be created by calling {#link of(Registry)}.
+ * <p>A wrapper without any special behaviors can be created by calling {@link of(Registry)}.
  */
 public interface CommandRegistryWrapper<T> {
 	/**

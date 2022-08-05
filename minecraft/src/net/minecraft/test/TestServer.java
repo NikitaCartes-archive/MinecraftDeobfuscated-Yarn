@@ -48,7 +48,7 @@ import org.slf4j.Logger;
 public class TestServer extends MinecraftServer {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int RESULT_STRING_LOG_INTERVAL = 20;
-	private static final ApiServices field_39441 = new ApiServices(null, SignatureVerifier.NOOP, null, null);
+	private static final ApiServices NONE_API_SERVICES = new ApiServices(null, SignatureVerifier.NOOP, null, null);
 	private final List<GameTestBatch> batches;
 	private final BlockPos pos;
 	private static final GameRules GAME_RULES = Util.make(new GameRules(), gameRules -> {
@@ -74,7 +74,7 @@ public class TestServer extends MinecraftServer {
 				LOGGER.debug("Starting resource loading");
 				Stopwatch stopwatch = Stopwatch.createStarted();
 				SaveLoader saveLoader = (SaveLoader)Util.waitAndApply(
-						executor -> SaveLoader.load(
+						applyExecutor -> SaveLoader.load(
 								serverConfig,
 								(resourceManager, dataPackSettings) -> {
 									DynamicRegistryManager.Immutable immutable = (DynamicRegistryManager.Immutable)DynamicRegistryManager.BUILTIN.get();
@@ -86,7 +86,7 @@ public class TestServer extends MinecraftServer {
 									return Pair.of(saveProperties, immutable);
 								},
 								Util.getMainWorkerExecutor(),
-								executor
+								applyExecutor
 							)
 					)
 					.get();
@@ -109,7 +109,7 @@ public class TestServer extends MinecraftServer {
 		Collection<GameTestBatch> batches,
 		BlockPos pos
 	) {
-		super(serverThread, session, dataPackManager, saveLoader, Proxy.NO_PROXY, Schemas.getFixer(), field_39441, WorldGenerationProgressLogger::new);
+		super(serverThread, session, dataPackManager, saveLoader, Proxy.NO_PROXY, Schemas.getFixer(), NONE_API_SERVICES, WorldGenerationProgressLogger::new);
 		this.batches = Lists.<GameTestBatch>newArrayList(batches);
 		this.pos = pos;
 	}

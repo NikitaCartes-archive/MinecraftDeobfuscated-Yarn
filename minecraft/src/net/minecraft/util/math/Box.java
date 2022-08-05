@@ -71,57 +71,63 @@ public class Box {
 	}
 
 	/**
-	 * Creates a box with the minimum X provided and all other coordinates
-	 * of this box.
+	 * {@return a new box with the minimum X provided and all other coordinates
+	 * of this box}
 	 */
 	public Box withMinX(double minX) {
 		return new Box(minX, this.minY, this.minZ, this.maxX, this.maxY, this.maxZ);
 	}
 
 	/**
-	 * Creates a box with the minimum Y provided and all other coordinates
-	 * of this box.
+	 * {@return a new box with the minimum Y provided and all other coordinates
+	 * of this box}
 	 */
 	public Box withMinY(double minY) {
 		return new Box(this.minX, minY, this.minZ, this.maxX, this.maxY, this.maxZ);
 	}
 
 	/**
-	 * Creates a box with the minimum Z provided and all other coordinates
-	 * of this box.
+	 * {@return a new box with the minimum Z provided and all other coordinates
+	 * of this box}
 	 */
 	public Box withMinZ(double minZ) {
 		return new Box(this.minX, this.minY, minZ, this.maxX, this.maxY, this.maxZ);
 	}
 
 	/**
-	 * Creates a box with the maximum X provided and all other coordinates
-	 * of this box.
+	 * {@return a new box with the maximum X provided and all other coordinates
+	 * of this box}
 	 */
 	public Box withMaxX(double maxX) {
 		return new Box(this.minX, this.minY, this.minZ, maxX, this.maxY, this.maxZ);
 	}
 
 	/**
-	 * Creates a box with the maximum Y provided and all other coordinates
-	 * of this box.
+	 * {@return a new box with the maximum Y provided and all other coordinates
+	 * of this box}
 	 */
 	public Box withMaxY(double maxY) {
 		return new Box(this.minX, this.minY, this.minZ, this.maxX, maxY, this.maxZ);
 	}
 
 	/**
-	 * Creates a box with the maximum Z provided and all other coordinates
-	 * of this box.
+	 * {@return a new box with the maximum Z provided and all other coordinates
+	 * of this box}
 	 */
 	public Box withMaxZ(double maxZ) {
 		return new Box(this.minX, this.minY, this.minZ, this.maxX, this.maxY, maxZ);
 	}
 
+	/**
+	 * {@return the minimum coordinate for the given {@code axis} of this box}
+	 */
 	public double getMin(Direction.Axis axis) {
 		return axis.choose(this.minX, this.minY, this.minZ);
 	}
 
+	/**
+	 * {@return the maximum coordinate for the given {@code axis} of this box}
+	 */
 	public double getMax(Direction.Axis axis) {
 		return axis.choose(this.maxX, this.maxY, this.maxZ);
 	}

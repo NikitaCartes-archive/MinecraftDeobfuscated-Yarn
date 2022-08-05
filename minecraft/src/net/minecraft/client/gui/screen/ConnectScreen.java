@@ -66,7 +66,7 @@ public class ConnectScreen extends Screen {
 	}
 
 	private void connect(MinecraftClient client, ServerAddress address) {
-		final CompletableFuture<Optional<PlayerPublicKey.PublicKeyData>> completableFuture = client.getProfileKeys().method_45104();
+		final CompletableFuture<Optional<PlayerPublicKey.PublicKeyData>> completableFuture = client.getProfileKeys().refresh();
 		LOGGER.info("Connecting to {}, {}", address.getAddress(), address.getPort());
 		Thread thread = new Thread("Server Connector #" + CONNECTOR_THREADS_COUNT.incrementAndGet()) {
 			public void run() {

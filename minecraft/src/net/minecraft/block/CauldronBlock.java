@@ -9,6 +9,9 @@ import net.minecraft.world.WorldEvents;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.event.GameEvent;
 
+/**
+ * An empty cauldron block.
+ */
 public class CauldronBlock extends AbstractCauldronBlock {
 	private static final float FILL_WITH_RAIN_CHANCE = 0.05F;
 	private static final float FILL_WITH_SNOW_CHANCE = 0.1F;

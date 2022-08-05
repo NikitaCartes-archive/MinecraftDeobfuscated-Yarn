@@ -1,5 +1,11 @@
 package net.minecraft.util;
 
+/**
+ * An enum indicating the hand interaction's result. Methods called on hand interaction,
+ * such as {@link net.minecraft.block.AbstractBlock#onUse}, return this.
+ * 
+ * @see TypedActionResult
+ */
 public enum ActionResult {
 	/**
 	 * Indicates an action is performed and the actor's hand should swing to
@@ -28,28 +34,34 @@ public enum ActionResult {
 	FAIL;
 
 	/**
-	 * Returns whether an action is performed.
+	 * {@return whether an action is performed}
 	 */
 	public boolean isAccepted() {
 		return this == SUCCESS || this == CONSUME || this == CONSUME_PARTIAL;
 	}
 
 	/**
-	 * Returns whether an actor should have a hand-swinging animation on
-	 * action performance.
+	 * {@return whether an actor should have a hand-swinging animation on
+	 * action performance}
 	 */
 	public boolean shouldSwingHand() {
 		return this == SUCCESS;
 	}
 
 	/**
-	 * Returns whether action performance should increment an item's 'used'
-	 * statistic.
+	 * {@return whether action performance should increment an item's "used"
+	 * statistic}
 	 */
 	public boolean shouldIncrementStat() {
 		return this == SUCCESS || this == CONSUME;
 	}
 
+	/**
+	 * {@return an action result indicating success}
+	 * 
+	 * <p>This returns {@link #SUCCESS} if {@code swingHand} is {@code true}, otherwise
+	 * {@link #CONSUME}.
+	 */
 	public static ActionResult success(boolean swingHand) {
 		return swingHand ? SUCCESS : CONSUME;
 	}

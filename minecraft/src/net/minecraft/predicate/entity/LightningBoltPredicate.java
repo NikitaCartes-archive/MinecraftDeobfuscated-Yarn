@@ -23,10 +23,8 @@ public class LightningBoltPredicate implements TypeSpecificPredicate {
 		return new LightningBoltPredicate(blocksSetOnFire, EntityPredicate.ANY);
 	}
 
-	public static LightningBoltPredicate fromJson(JsonObject jsonObject) {
-		return new LightningBoltPredicate(
-			NumberRange.IntRange.fromJson(jsonObject.get("blocks_set_on_fire")), EntityPredicate.fromJson(jsonObject.get("entity_struck"))
-		);
+	public static LightningBoltPredicate fromJson(JsonObject json) {
+		return new LightningBoltPredicate(NumberRange.IntRange.fromJson(json.get("blocks_set_on_fire")), EntityPredicate.fromJson(json.get("entity_struck")));
 	}
 
 	@Override
@@ -49,7 +47,10 @@ public class LightningBoltPredicate implements TypeSpecificPredicate {
 		} else {
 			LightningEntity lightningEntity = (LightningEntity)entity;
 			return this.blocksSetOnFire.test(lightningEntity.getBlocksSetOnFire())
-				&& (this.entityStruck == EntityPredicate.ANY || lightningEntity.getStruckEntities().anyMatch(entityx -> this.entityStruck.test(world, pos, entityx)));
+				&& (
+					this.entityStruck == EntityPredicate.ANY
+						|| lightningEntity.getStruckEntities().anyMatch(struckEntity -> this.entityStruck.test(world, pos, struckEntity))
+				);
 		}
 	}
 }

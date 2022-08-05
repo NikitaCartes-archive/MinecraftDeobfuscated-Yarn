@@ -8,8 +8,8 @@ import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.random.Random;
 
 public class DataPool<E> extends Pool<Weighted.Present<E>> {
-	public static <E> Codec<DataPool<E>> method_39521(Codec<E> codec) {
-		return Weighted.Present.createCodec(codec).listOf().xmap(DataPool::new, Pool::getEntries);
+	public static <E> Codec<DataPool<E>> createEmptyAllowedCodec(Codec<E> dataCodec) {
+		return Weighted.Present.createCodec(dataCodec).listOf().xmap(DataPool::new, Pool::getEntries);
 	}
 
 	public static <E> Codec<DataPool<E>> createCodec(Codec<E> dataCodec) {
