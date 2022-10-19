@@ -41,9 +41,11 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.StatusEffectSpriteManager;
+import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffect;
@@ -160,8 +162,9 @@ extends DrawableHelper {
     public void render(MatrixStack matrices, float tickDelta) {
         int k;
         float g;
-        this.scaledWidth = this.client.getWindow().getScaledWidth();
-        this.scaledHeight = this.client.getWindow().getScaledHeight();
+        Window window = this.client.getWindow();
+        this.scaledWidth = window.getScaledWidth();
+        this.scaledHeight = window.getScaledHeight();
         TextRenderer textRenderer = this.getTextRenderer();
         RenderSystem.enableBlend();
         if (MinecraftClient.isFancyGraphicsOrBetter()) {
@@ -214,8 +217,9 @@ extends DrawableHelper {
             this.renderMountHealth(matrices);
             RenderSystem.disableBlend();
             int i = this.scaledWidth / 2 - 91;
-            if (this.client.player.hasJumpingMount()) {
-                this.renderMountJumpBar(matrices, i);
+            JumpingMount jumpingMount = this.client.player.getJumpingMount();
+            if (jumpingMount != null) {
+                this.renderMountJumpBar(jumpingMount, matrices, i);
             } else if (this.client.interactionManager.hasExperienceBar()) {
                 this.renderExperienceBar(matrices, i);
             }
@@ -324,14 +328,13 @@ extends DrawableHelper {
             }
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
-            matrices.push();
-            matrices.translate(0.0, this.scaledHeight - 48, 0.0);
+            n = MathHelper.floor(this.client.mouse.getX() * (double)window.getScaledWidth() / (double)window.getWidth());
+            int p = MathHelper.floor(this.client.mouse.getY() * (double)window.getScaledHeight() / (double)window.getHeight());
             this.client.getProfiler().push("chat");
-            this.chatHud.render(matrices, this.ticks);
+            this.chatHud.render(matrices, this.ticks, n, p);
             this.client.getProfiler().pop();
-            matrices.pop();
             scoreboardObjective2 = scoreboard.getObjectiveForSlot(0);
-            if (this.client.options.playerListKey.isPressed() && (!this.client.isInSingleplayer() || this.client.player.networkHandler.getPlayerList().size() > 1 || scoreboardObjective2 != null)) {
+            if (this.client.options.playerListKey.isPressed() && (!this.client.isInSingleplayer() || this.client.player.networkHandler.getListedPlayerListEntries().size() > 1 || scoreboardObjective2 != null)) {
                 this.playerListHud.setVisible(true);
                 this.playerListHud.render(matrices, this.scaledWidth, scoreboard, scoreboardObjective2);
             } else {
@@ -452,7 +455,7 @@ extends DrawableHelper {
             int o = l;
             float g = f;
             list.add(() -> {
-                RenderSystem.setShaderTexture(0, sprite.getAtlas().getId());
+                RenderSystem.setShaderTexture(0, sprite.getId());
                 RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, g);
                 InGameHud.drawSprite(matrices, n + 3, o + 3, this.getZOffset(), 18, 18, sprite);
             });
@@ -521,7 +524,7 @@ extends DrawableHelper {
         RenderSystem.disableBlend();
     }
 
-    public void renderMountJumpBar(MatrixStack matrices, int x) {
+    public void renderMountJumpBar(JumpingMount mount, MatrixStack matrices, int x) {
         this.client.getProfiler().push("jumpBar");
         RenderSystem.setShaderTexture(0, DrawableHelper.GUI_ICONS_TEXTURE);
         float f = this.client.player.getMountJumpStrength();
@@ -529,7 +532,9 @@ extends DrawableHelper {
         int j = (int)(f * 183.0f);
         int k = this.scaledHeight - 32 + 3;
         this.drawTexture(matrices, x, k, 0, 84, 182, 5);
-        if (j > 0) {
+        if (mount.getDashCooldown() > 0) {
+            this.drawTexture(matrices, x, k, 0, 74, 182, 5);
+        } else if (j > 0) {
             this.drawTexture(matrices, x, k, 0, 89, j, 5);
         }
         this.client.getProfiler().pop();
@@ -1060,6 +1065,7 @@ extends DrawableHelper {
             }
             this.currentStack = itemStack;
         }
+        this.chatHud.tickRemovalQueueIfExists();
     }
 
     private void tickAutosaveIndicator() {

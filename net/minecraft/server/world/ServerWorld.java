@@ -25,7 +25,6 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -76,6 +75,7 @@ import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.recipe.RecipeManager;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.server.MinecraftServer;
@@ -143,7 +143,7 @@ import net.minecraft.world.entity.EntityHandler;
 import net.minecraft.world.entity.EntityLookup;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.listener.EntityGameEventHandler;
-import net.minecraft.world.event.listener.GameEventListener;
+import net.minecraft.world.event.listener.GameEventDispatchManager;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 import net.minecraft.world.gen.StructureAccessor;
@@ -187,6 +187,7 @@ implements StructureWorldAccess {
     private final ServerWorldProperties worldProperties;
     final EntityList entityList = new EntityList();
     private final ServerEntityManager<Entity> entityManager;
+    private final GameEventDispatchManager gameEventDispatchManager;
     public boolean savingDisabled;
     private final SleepManager sleepManager;
     private int idleTimeout;
@@ -198,7 +199,6 @@ implements StructureWorldAccess {
     protected final RaidManager raidManager;
     private final ObjectLinkedOpenHashSet<BlockEvent> syncedBlockEventQueue = new ObjectLinkedOpenHashSet();
     private final List<BlockEvent> blockEventQueue = new ArrayList<BlockEvent>(64);
-    private List<GameEvent.Message> queuedEvents = new ArrayList<GameEvent.Message>();
     private boolean inBlockTick;
     private final List<Spawner> spawners;
     @Nullable
@@ -209,12 +209,12 @@ implements StructureWorldAccess {
     private final boolean shouldTickTime;
 
     public ServerWorld(MinecraftServer server, Executor workerExecutor, LevelStorage.Session session, ServerWorldProperties properties, RegistryKey<World> worldKey, DimensionOptions dimensionOptions, WorldGenerationProgressListener worldGenerationProgressListener, boolean debugWorld, long seed, List<Spawner> spawners, boolean shouldTickTime) {
-        super(properties, worldKey, dimensionOptions.getDimensionTypeEntry(), server::getProfiler, false, debugWorld, seed, server.getMaxChainedNeighborUpdates());
+        super(properties, worldKey, dimensionOptions.dimensionTypeEntry(), server::getProfiler, false, debugWorld, seed, server.getMaxChainedNeighborUpdates());
         this.shouldTickTime = shouldTickTime;
         this.server = server;
         this.spawners = spawners;
         this.worldProperties = properties;
-        ChunkGenerator chunkGenerator = dimensionOptions.getChunkGenerator();
+        ChunkGenerator chunkGenerator = dimensionOptions.chunkGenerator();
         boolean bl = server.syncChunkWrites();
         DataFixer dataFixer = server.getDataFixer();
         EntityChunkDataAccess chunkDataAccess = new EntityChunkDataAccess(this, session.getWorldDirectory(worldKey).resolve("entities"), dataFixer, bl, server);
@@ -234,6 +234,7 @@ implements StructureWorldAccess {
         this.structureAccessor = new StructureAccessor(this, server.getSaveProperties().getGeneratorOptions(), this.structureLocator);
         this.enderDragonFight = this.getRegistryKey() == World.END && this.getDimensionEntry().matchesKey(DimensionTypes.THE_END) ? new EnderDragonFight(this, l, server.getSaveProperties().getDragonFight()) : null;
         this.sleepManager = new SleepManager();
+        this.gameEventDispatchManager = new GameEventDispatchManager(this);
     }
 
     /**
@@ -348,8 +349,6 @@ implements StructureWorldAccess {
         }
         profiler.push("entityManagement");
         this.entityManager.tick();
-        profiler.swap("gameEvents");
-        this.processEventQueue();
         profiler.pop();
     }
 
@@ -412,20 +411,22 @@ implements StructureWorldAccess {
         Profiler profiler = this.getProfiler();
         profiler.push("thunder");
         if (bl && this.isThundering() && this.random.nextInt(100000) == 0 && this.hasRain(blockPos = this.getLightningPos(this.getRandomPosInChunk(i, 0, j, 15)))) {
+            LightningEntity lightningEntity;
+            SkeletonHorseEntity skeletonHorseEntity;
             boolean bl2;
             LocalDifficulty localDifficulty = this.getLocalDifficulty(blockPos);
             boolean bl3 = bl2 = this.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) && this.random.nextDouble() < (double)localDifficulty.getLocalDifficulty() * 0.01 && !this.getBlockState(blockPos.down()).isOf(Blocks.LIGHTNING_ROD);
-            if (bl2) {
-                SkeletonHorseEntity skeletonHorseEntity = EntityType.SKELETON_HORSE.create(this);
+            if (bl2 && (skeletonHorseEntity = EntityType.SKELETON_HORSE.create(this)) != null) {
                 skeletonHorseEntity.setTrapped(true);
                 skeletonHorseEntity.setBreedingAge(0);
                 skeletonHorseEntity.setPosition(blockPos.getX(), blockPos.getY(), blockPos.getZ());
                 this.spawnEntity(skeletonHorseEntity);
             }
-            LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(this);
-            lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(blockPos));
-            lightningEntity.setCosmetic(bl2);
-            this.spawnEntity(lightningEntity);
+            if ((lightningEntity = EntityType.LIGHTNING_BOLT.create(this)) != null) {
+                lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(blockPos));
+                lightningEntity.setCosmetic(bl2);
+                this.spawnEntity(lightningEntity);
+            }
         }
         profiler.swap("iceandsnow");
         if (this.random.nextInt(16) == 0) {
@@ -882,48 +883,7 @@ implements StructureWorldAccess {
 
     @Override
     public void emitGameEvent(GameEvent event, Vec3d emitterPos, GameEvent.Emitter emitter) {
-        int i = event.getRange();
-        BlockPos blockPos = new BlockPos(emitterPos);
-        int j = ChunkSectionPos.getSectionCoord(blockPos.getX() - i);
-        int k = ChunkSectionPos.getSectionCoord(blockPos.getY() - i);
-        int l = ChunkSectionPos.getSectionCoord(blockPos.getZ() - i);
-        int m = ChunkSectionPos.getSectionCoord(blockPos.getX() + i);
-        int n = ChunkSectionPos.getSectionCoord(blockPos.getY() + i);
-        int o = ChunkSectionPos.getSectionCoord(blockPos.getZ() + i);
-        ArrayList<GameEvent.Message> list = new ArrayList<GameEvent.Message>();
-        boolean bl = false;
-        for (int p = j; p <= m; ++p) {
-            for (int q = l; q <= o; ++q) {
-                WorldChunk chunk = this.getChunkManager().getWorldChunk(p, q);
-                if (chunk == null) continue;
-                for (int r = k; r <= n; ++r) {
-                    bl |= ((Chunk)chunk).getGameEventDispatcher(r).dispatch(event, emitterPos, emitter, (listener, listenerPos) -> (listener.shouldListenImmediately() ? list : this.queuedEvents).add(new GameEvent.Message(event, emitterPos, emitter, (GameEventListener)listener, (Vec3d)listenerPos)));
-                }
-            }
-        }
-        if (!list.isEmpty()) {
-            this.processEvents(list);
-        }
-        if (bl) {
-            DebugInfoSender.sendGameEvent(this, event, emitterPos);
-        }
-    }
-
-    private void processEventQueue() {
-        if (this.queuedEvents.isEmpty()) {
-            return;
-        }
-        List<GameEvent.Message> list = this.queuedEvents;
-        this.queuedEvents = new ArrayList<GameEvent.Message>();
-        this.processEvents(list);
-    }
-
-    private void processEvents(List<GameEvent.Message> events) {
-        Collections.sort(events);
-        for (GameEvent.Message message : events) {
-            GameEventListener gameEventListener = message.getListener();
-            gameEventListener.listen(this, message);
-        }
+        this.gameEventDispatchManager.dispatch(event, emitterPos, emitter);
     }
 
     /*
@@ -1262,12 +1222,12 @@ implements StructureWorldAccess {
             return;
         }
         BlockPos blockPos = pos.toImmutable();
-        optional.ifPresent(registryEntry -> this.getServer().execute(() -> {
+        optional.ifPresent(oldPoiType -> this.getServer().execute(() -> {
             this.getPointOfInterestStorage().remove(blockPos);
             DebugInfoSender.sendPoiRemoval(this, blockPos);
         }));
-        optional2.ifPresent(registryEntry -> this.getServer().execute(() -> {
-            this.getPointOfInterestStorage().add(blockPos, (RegistryEntry<PointOfInterestType>)registryEntry);
+        optional2.ifPresent(newPoiType -> this.getServer().execute(() -> {
+            this.getPointOfInterestStorage().add(blockPos, (RegistryEntry<PointOfInterestType>)newPoiType);
             DebugInfoSender.sendPoiAddition(this, blockPos);
         }));
     }
@@ -1401,7 +1361,7 @@ implements StructureWorldAccess {
     }
 
     public boolean isFlat() {
-        return this.server.getSaveProperties().getGeneratorOptions().isFlatWorld();
+        return this.server.getSaveProperties().isFlatWorld();
     }
 
     @Override
@@ -1509,6 +1469,11 @@ implements StructureWorldAccess {
 
     public boolean shouldTick(ChunkPos pos) {
         return this.entityManager.shouldTick(pos);
+    }
+
+    @Override
+    public FeatureSet getEnabledFeatures() {
+        return this.server.getSaveProperties().getEnabledFeatures();
     }
 
     @Override

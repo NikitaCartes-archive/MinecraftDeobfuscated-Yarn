@@ -12,13 +12,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialCraftingRecipe;
+import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 public class ShulkerBoxColoringRecipe
 extends SpecialCraftingRecipe {
-    public ShulkerBoxColoringRecipe(Identifier identifier) {
-        super(identifier);
+    public ShulkerBoxColoringRecipe(Identifier identifier, CraftingRecipeCategory craftingRecipeCategory) {
+        super(identifier, craftingRecipeCategory);
     }
 
     @Override

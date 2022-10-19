@@ -10,7 +10,6 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Lifecycle;
 import java.util.Optional;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.dynamic.RegistryLoader;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
@@ -78,10 +77,6 @@ implements Codec<RegistryEntry<E>> {
             }
             Pair pair2 = dataResult.result().get();
             RegistryKey registryKey = RegistryKey.of(this.registryRef, (Identifier)pair2.getFirst());
-            Optional<RegistryLoader.LoaderAccess> optional2 = registryOps.getLoaderAccess();
-            if (optional2.isPresent()) {
-                return optional2.get().load(this.registryRef, this.elementCodec, registryKey, registryOps.getEntryOps()).map((? super R entry) -> Pair.of(entry, pair2.getSecond()));
-            }
             DataResult dataResult2 = registry.getOrCreateEntryDataResult(registryKey);
             return dataResult2.map((? super R entry) -> Pair.of(entry, pair2.getSecond())).setLifecycle(Lifecycle.stable());
         }

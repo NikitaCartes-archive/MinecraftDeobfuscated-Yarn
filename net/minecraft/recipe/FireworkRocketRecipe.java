@@ -11,6 +11,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialCraftingRecipe;
+import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
@@ -20,8 +21,8 @@ extends SpecialCraftingRecipe {
     private static final Ingredient DURATION_MODIFIER = Ingredient.ofItems(Items.GUNPOWDER);
     private static final Ingredient FIREWORK_STAR = Ingredient.ofItems(Items.FIREWORK_STAR);
 
-    public FireworkRocketRecipe(Identifier identifier) {
-        super(identifier);
+    public FireworkRocketRecipe(Identifier identifier, CraftingRecipeCategory craftingRecipeCategory) {
+        super(identifier, craftingRecipeCategory);
     }
 
     @Override

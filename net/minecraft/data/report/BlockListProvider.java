@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.DataOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
 import net.minecraft.state.StateManager;
@@ -20,10 +20,10 @@ import net.minecraft.util.registry.Registry;
 
 public class BlockListProvider
 implements DataProvider {
-    private final DataGenerator generator;
+    private final DataOutput field_40599;
 
-    public BlockListProvider(DataGenerator generator) {
-        this.generator = generator;
+    public BlockListProvider(DataOutput generator) {
+        this.field_40599 = generator;
     }
 
     @Override
@@ -63,7 +63,7 @@ implements DataProvider {
             jsonObject2.add("states", jsonArray2);
             jsonObject.add(identifier.toString(), jsonObject2);
         }
-        Path path = this.generator.resolveRootDirectoryPath(DataGenerator.OutputType.REPORTS).resolve("blocks.json");
+        Path path = this.field_40599.resolvePath(DataOutput.OutputType.REPORTS).resolve("blocks.json");
         DataProvider.writeToPath(writer, jsonObject, path);
     }
 

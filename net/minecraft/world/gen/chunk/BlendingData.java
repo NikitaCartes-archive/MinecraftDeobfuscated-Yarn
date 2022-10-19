@@ -59,7 +59,7 @@ public class BlendingData {
     private final List<List<RegistryEntry<Biome>>> biomes;
     private final transient double[][] collidableBlockDensities;
     private static final Codec<double[]> DOUBLE_ARRAY_CODEC = Codec.DOUBLE.listOf().xmap(Doubles::toArray, Doubles::asList);
-    public static final Codec<BlendingData> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.INT.fieldOf("min_section")).forGetter(blendingData -> blendingData.oldHeightLimit.getBottomSectionCoord()), ((MapCodec)Codec.INT.fieldOf("max_section")).forGetter(blendingData -> blendingData.oldHeightLimit.getTopSectionCoord()), DOUBLE_ARRAY_CODEC.optionalFieldOf("heights").forGetter(blendingData -> DoubleStream.of(blendingData.surfaceHeights).anyMatch(d -> d != Double.MAX_VALUE) ? Optional.of(blendingData.surfaceHeights) : Optional.empty())).apply((Applicative<BlendingData, ?>)instance, BlendingData::new)).comapFlatMap(BlendingData::validate, Function.identity());
+    public static final Codec<BlendingData> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.INT.fieldOf("min_section")).forGetter(blendingData -> blendingData.oldHeightLimit.getBottomSectionCoord()), ((MapCodec)Codec.INT.fieldOf("max_section")).forGetter(blendingData -> blendingData.oldHeightLimit.getTopSectionCoord()), DOUBLE_ARRAY_CODEC.optionalFieldOf("heights").forGetter(blendingData -> DoubleStream.of(blendingData.surfaceHeights).anyMatch(height -> height != Double.MAX_VALUE) ? Optional.of(blendingData.surfaceHeights) : Optional.empty())).apply((Applicative<BlendingData, ?>)instance, BlendingData::new)).comapFlatMap(BlendingData::validate, Function.identity());
 
     private static DataResult<BlendingData> validate(BlendingData data) {
         if (data.surfaceHeights.length != HORIZONTAL_BIOME_COUNT) {
@@ -69,7 +69,7 @@ public class BlendingData {
     }
 
     private BlendingData(int oldBottomSectionY, int oldTopSectionY, Optional<double[]> heights) {
-        this.surfaceHeights = heights.orElse(Util.make(new double[HORIZONTAL_BIOME_COUNT], ds -> Arrays.fill(ds, Double.MAX_VALUE)));
+        this.surfaceHeights = heights.orElse(Util.make(new double[HORIZONTAL_BIOME_COUNT], heights2 -> Arrays.fill(heights2, Double.MAX_VALUE)));
         this.collidableBlockDensities = new double[HORIZONTAL_BIOME_COUNT][];
         ObjectArrayList<List<RegistryEntry<Biome>>> objectArrayList = new ObjectArrayList<List<RegistryEntry<Biome>>>(HORIZONTAL_BIOME_COUNT);
         objectArrayList.size(HORIZONTAL_BIOME_COUNT);

@@ -7,7 +7,6 @@ import com.mojang.logging.LogUtils;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
 import net.minecraft.util.thread.FutureQueue;
 import org.slf4j.Logger;
@@ -16,18 +15,23 @@ import org.slf4j.Logger;
  * Queues a future that handles received messages on the server thread.
  */
 public class MessageChainTaskQueue
-implements FutureQueue {
+implements FutureQueue,
+AutoCloseable {
     private static final Logger field_39828 = LogUtils.getLogger();
     private CompletableFuture<?> current = CompletableFuture.completedFuture(null);
-    private final Executor executor;
+    private final Executor executor = runnable -> {
+        if (!this.closed) {
+            executor.execute(runnable);
+        }
+    };
+    private volatile boolean closed;
 
     public MessageChainTaskQueue(Executor executor) {
-        this.executor = executor;
     }
 
     @Override
     public void append(FutureQueue.FutureSupplier futureSupplier) {
-        this.current = ((CompletableFuture)this.current.thenComposeAsync(void_ -> (CompletionStage)futureSupplier.get(), this.executor)).exceptionally(throwable -> {
+        this.current = ((CompletableFuture)this.current.thenComposeAsync(object -> futureSupplier.submit(this.executor), this.executor)).exceptionally(throwable -> {
             if (throwable instanceof CompletionException) {
                 CompletionException completionException = (CompletionException)throwable;
                 throwable = completionException.getCause();
@@ -39,6 +43,11 @@ implements FutureQueue {
             field_39828.error("Chain link failed, continuing to next one", (Throwable)throwable);
             return null;
         });
+    }
+
+    @Override
+    public void close() {
+        this.closed = true;
     }
 }
 

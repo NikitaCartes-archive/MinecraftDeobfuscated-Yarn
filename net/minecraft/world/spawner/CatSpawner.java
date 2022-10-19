@@ -74,7 +74,7 @@ implements Spawner {
     private int spawnInHouse(ServerWorld world, BlockPos pos) {
         List<CatEntity> list;
         int i = 48;
-        if (world.getPointOfInterestStorage().count(registryEntry -> registryEntry.matchesKey(PointOfInterestTypes.HOME), pos, 48, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED) > 4L && (list = world.getNonSpectatingEntities(CatEntity.class, new Box(pos).expand(48.0, 8.0, 48.0))).size() < 5) {
+        if (world.getPointOfInterestStorage().count(entry -> entry.matchesKey(PointOfInterestTypes.HOME), pos, 48, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED) > 4L && (list = world.getNonSpectatingEntities(CatEntity.class, new Box(pos).expand(48.0, 8.0, 48.0))).size() < 5) {
             return this.spawn(pos, world);
         }
         return 0;

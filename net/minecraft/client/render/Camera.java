@@ -79,7 +79,7 @@ public class Camera {
             float g = (i >> 1 & 1) * 2 - 1;
             float h = (i >> 2 & 1) * 2 - 1;
             Vec3d vec3d = this.pos.add(f *= 0.1f, g *= 0.1f, h *= 0.1f);
-            if (((HitResult)(hitResult = this.area.raycast(new RaycastContext(vec3d, vec3d2 = new Vec3d(this.pos.x - (double)this.horizontalPlane.getX() * desiredCameraDistance + (double)f + (double)h, this.pos.y - (double)this.horizontalPlane.getY() * desiredCameraDistance + (double)g, this.pos.z - (double)this.horizontalPlane.getZ() * desiredCameraDistance + (double)h), RaycastContext.ShapeType.VISUAL, RaycastContext.FluidHandling.NONE, this.focusedEntity)))).getType() == HitResult.Type.MISS || !((d = hitResult.getPos().distanceTo(this.pos)) < desiredCameraDistance)) continue;
+            if (((HitResult)(hitResult = this.area.raycast(new RaycastContext(vec3d, vec3d2 = new Vec3d(this.pos.x - (double)this.horizontalPlane.getX() * desiredCameraDistance + (double)f, this.pos.y - (double)this.horizontalPlane.getY() * desiredCameraDistance + (double)g, this.pos.z - (double)this.horizontalPlane.getZ() * desiredCameraDistance + (double)h), RaycastContext.ShapeType.VISUAL, RaycastContext.FluidHandling.NONE, this.focusedEntity)))).getType() == HitResult.Type.MISS || !((d = hitResult.getPos().distanceTo(this.pos)) < desiredCameraDistance)) continue;
             desiredCameraDistance = d;
         }
         return desiredCameraDistance;

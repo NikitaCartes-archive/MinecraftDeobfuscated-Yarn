@@ -3,60 +3,66 @@
  */
 package net.minecraft.network.message;
 
-import java.io.DataOutput;
-import java.io.IOException;
+import com.google.common.primitives.Ints;
+import java.security.SignatureException;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.encryption.SignatureUpdatable;
 import net.minecraft.network.message.MessageSignatureData;
 
 /**
  * A list of messages a client has seen.
  */
-public record LastSeenMessageList(List<Entry> entries) {
+public record LastSeenMessageList(List<MessageSignatureData> entries) {
     public static LastSeenMessageList EMPTY = new LastSeenMessageList(List.of());
-    public static final int MAX_ENTRIES = 5;
+    public static final int MAX_ENTRIES = 20;
 
-    public LastSeenMessageList(PacketByteBuf buf) {
-        this(buf.readCollection(PacketByteBuf.getMaxValidator(ArrayList::new, 5), Entry::new));
-    }
-
-    public void write(PacketByteBuf buf) {
-        buf.writeCollection(this.entries, (buf2, entries) -> entries.write((PacketByteBuf)buf2));
-    }
-
-    public void write(DataOutput output) throws IOException {
-        for (Entry entry : this.entries) {
-            UUID uUID = entry.profileId();
-            MessageSignatureData messageSignatureData = entry.lastSignature();
-            output.writeByte(70);
-            output.writeLong(uUID.getMostSignificantBits());
-            output.writeLong(uUID.getLeastSignificantBits());
-            output.write(messageSignatureData.data());
+    public void updateSignatures(SignatureUpdatable.SignatureUpdater updater) throws SignatureException {
+        updater.update(Ints.toByteArray(this.entries.size()));
+        for (MessageSignatureData messageSignatureData : this.entries) {
+            updater.update(messageSignatureData.data());
         }
     }
 
-    public record Entry(UUID profileId, MessageSignatureData lastSignature) {
-        public Entry(PacketByteBuf buf) {
-            this(buf.readUuid(), new MessageSignatureData(buf));
+    public Indexed pack(MessageSignatureData.Packer packer) {
+        return new Indexed(this.entries.stream().map(signature -> signature.pack(packer)).toList());
+    }
+
+    public record Indexed(List<MessageSignatureData.Indexed> buf) {
+        public static final Indexed EMPTY = new Indexed(List.of());
+
+        public Indexed(PacketByteBuf buf) {
+            this(buf.readCollection(PacketByteBuf.getMaxValidator(ArrayList::new, 20), MessageSignatureData.Indexed::fromBuf));
         }
 
         public void write(PacketByteBuf buf) {
-            buf.writeUuid(this.profileId);
-            this.lastSignature.write(buf);
+            buf.writeCollection(this.buf, MessageSignatureData.Indexed::write);
+        }
+
+        public Optional<LastSeenMessageList> unpack(MessageSignatureData.Unpacker unpacker) {
+            ArrayList<MessageSignatureData> list = new ArrayList<MessageSignatureData>(this.buf.size());
+            for (MessageSignatureData.Indexed indexed : this.buf) {
+                Optional<MessageSignatureData> optional = indexed.getSignature(unpacker);
+                if (optional.isEmpty()) {
+                    return Optional.empty();
+                }
+                list.add(optional.get());
+            }
+            return Optional.of(new LastSeenMessageList(list));
         }
     }
 
-    public record Acknowledgment(LastSeenMessageList lastSeen, Optional<Entry> lastReceived) {
+    public record Acknowledgment(int offset, BitSet acknowledged) {
         public Acknowledgment(PacketByteBuf buf) {
-            this(new LastSeenMessageList(buf), buf.readOptional(Entry::new));
+            this(buf.readVarInt(), buf.readBitSet(20));
         }
 
         public void write(PacketByteBuf buf) {
-            this.lastSeen.write(buf);
-            buf.writeOptional(this.lastReceived, (buf2, lastReceived) -> lastReceived.write((PacketByteBuf)buf2));
+            buf.writeVarInt(this.offset);
+            buf.writeBitSet(this.acknowledged, 20);
         }
     }
 }

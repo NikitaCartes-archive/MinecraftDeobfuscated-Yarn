@@ -1176,6 +1176,9 @@ extends LivingEntity {
             return null;
         }
         MobEntity mobEntity = (MobEntity)entityType.create(this.world);
+        if (mobEntity == null) {
+            return null;
+        }
         mobEntity.copyPositionAndRotation(this);
         mobEntity.setBaby(this.isBaby());
         mobEntity.setAiDisabled(this.isAiDisabled());

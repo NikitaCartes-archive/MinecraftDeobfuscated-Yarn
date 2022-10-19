@@ -23,14 +23,14 @@ import net.minecraft.world.gen.noise.NoiseConfig;
 
 public class ConcentricRingsStructurePlacement
 extends StructurePlacement {
-    public static final Codec<ConcentricRingsStructurePlacement> CODEC = RecordCodecBuilder.create(instance -> ConcentricRingsStructurePlacement.method_41629(instance).apply((Applicative<RecordCodecBuilder.Mu<ConcentricRingsStructurePlacement>, ?>)instance, ConcentricRingsStructurePlacement::new));
+    public static final Codec<ConcentricRingsStructurePlacement> CODEC = RecordCodecBuilder.create(instance -> ConcentricRingsStructurePlacement.buildConcentricRingsCodec(instance).apply((Applicative<RecordCodecBuilder.Mu<ConcentricRingsStructurePlacement>, ?>)instance, ConcentricRingsStructurePlacement::new));
     private final int distance;
     private final int spread;
     private final int count;
     private final RegistryEntryList<Biome> preferredBiomes;
 
-    private static Products.P9<RecordCodecBuilder.Mu<ConcentricRingsStructurePlacement>, Vec3i, StructurePlacement.FrequencyReductionMethod, Float, Integer, Optional<StructurePlacement.ExclusionZone>, Integer, Integer, Integer, RegistryEntryList<Biome>> method_41629(RecordCodecBuilder.Instance<ConcentricRingsStructurePlacement> instance) {
-        Products.P5<RecordCodecBuilder.Mu<ConcentricRingsStructurePlacement>, Vec3i, StructurePlacement.FrequencyReductionMethod, Float, Integer, Optional<StructurePlacement.ExclusionZone>> p5 = ConcentricRingsStructurePlacement.method_41637(instance);
+    private static Products.P9<RecordCodecBuilder.Mu<ConcentricRingsStructurePlacement>, Vec3i, StructurePlacement.FrequencyReductionMethod, Float, Integer, Optional<StructurePlacement.ExclusionZone>, Integer, Integer, Integer, RegistryEntryList<Biome>> buildConcentricRingsCodec(RecordCodecBuilder.Instance<ConcentricRingsStructurePlacement> instance) {
+        Products.P5<RecordCodecBuilder.Mu<ConcentricRingsStructurePlacement>, Vec3i, StructurePlacement.FrequencyReductionMethod, Float, Integer, Optional<StructurePlacement.ExclusionZone>> p5 = ConcentricRingsStructurePlacement.buildCodec(instance);
         Products.P4<ConcentricRingsStructurePlacement, Integer, Integer, Integer, RegistryEntryList> p4 = instance.group(((MapCodec)Codec.intRange(0, 1023).fieldOf("distance")).forGetter(ConcentricRingsStructurePlacement::getDistance), ((MapCodec)Codec.intRange(0, 1023).fieldOf("spread")).forGetter(ConcentricRingsStructurePlacement::getSpread), ((MapCodec)Codec.intRange(1, 4095).fieldOf("count")).forGetter(ConcentricRingsStructurePlacement::getCount), ((MapCodec)RegistryCodecs.entryList(Registry.BIOME_KEY).fieldOf("preferred_biomes")).forGetter(ConcentricRingsStructurePlacement::getPreferredBiomes));
         return new Products.P9<ConcentricRingsStructurePlacement, Vec3i, StructurePlacement.FrequencyReductionMethod, Float, Integer, Optional<StructurePlacement.ExclusionZone>, Integer, Integer, Integer, RegistryEntryList>(p5.t1(), p5.t2(), p5.t3(), p5.t4(), p5.t5(), p4.t1(), p4.t2(), p4.t3(), p4.t4());
     }

@@ -67,6 +67,7 @@ extends AbstractRecipeScreenHandler<CraftingInventory> {
     }
 
     protected static void updateResult(ScreenHandler handler, World world, PlayerEntity player, CraftingInventory craftingInventory, CraftingResultInventory resultInventory) {
+        ItemStack itemStack2;
         CraftingRecipe craftingRecipe;
         if (world.isClient) {
             return;
@@ -74,8 +75,8 @@ extends AbstractRecipeScreenHandler<CraftingInventory> {
         ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)player;
         ItemStack itemStack = ItemStack.EMPTY;
         Optional<CraftingRecipe> optional = world.getServer().getRecipeManager().getFirstMatch(RecipeType.CRAFTING, craftingInventory, world);
-        if (optional.isPresent() && resultInventory.shouldCraftRecipe(world, serverPlayerEntity, craftingRecipe = optional.get())) {
-            itemStack = craftingRecipe.craft(craftingInventory);
+        if (optional.isPresent() && resultInventory.shouldCraftRecipe(world, serverPlayerEntity, craftingRecipe = optional.get()) && (itemStack2 = craftingRecipe.craft(craftingInventory)).isItemEnabled(world.getEnabledFeatures())) {
+            itemStack = itemStack2;
         }
         resultInventory.setStack(0, itemStack);
         handler.setPreviousTrackedSlot(0, itemStack);

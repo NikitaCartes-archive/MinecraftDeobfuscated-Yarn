@@ -19,10 +19,10 @@ import java.util.stream.Stream;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
-import net.minecraft.network.message.MessageSourceProfile;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SentMessage;
 import net.minecraft.network.message.SignedCommandArguments;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -71,7 +71,7 @@ implements CommandSource {
     private final FutureQueue messageChainTaskQueue;
 
     public ServerCommandSource(CommandOutput output, Vec3d pos, Vec2f rot, ServerWorld world, int level, String name, Text displayName, MinecraftServer server, @Nullable Entity entity) {
-        this(output, pos, rot, world, level, name, displayName, server, entity, false, (context, success, result) -> {}, EntityAnchorArgumentType.EntityAnchor.FEET, SignedCommandArguments.EMPTY, FutureQueue.NOOP);
+        this(output, pos, rot, world, level, name, displayName, server, entity, false, (context, success, result) -> {}, EntityAnchorArgumentType.EntityAnchor.FEET, SignedCommandArguments.EMPTY, FutureQueue.immediate(server));
     }
 
     protected ServerCommandSource(CommandOutput output, Vec3d pos, Vec2f rot, ServerWorld world, int level, String name, Text displayName, MinecraftServer server, @Nullable Entity entity, boolean silent, @Nullable ResultConsumer<ServerCommandSource> consumer, EntityAnchorArgumentType.EntityAnchor entityAnchor, SignedCommandArguments signedArguments, FutureQueue messageChainTaskQueue) {
@@ -203,13 +203,6 @@ implements CommandSource {
 
     public String getName() {
         return this.name;
-    }
-
-    public MessageSourceProfile getMessageSourceProfile() {
-        if (this.entity != null) {
-            return this.entity.getMessageSourceProfile();
-        }
-        return MessageSourceProfile.NONE;
     }
 
     @Override
@@ -413,6 +406,11 @@ implements CommandSource {
     @Override
     public DynamicRegistryManager getRegistryManager() {
         return this.server.getRegistryManager();
+    }
+
+    @Override
+    public FeatureSet getEnabledFeatures() {
+        return this.world.getEnabledFeatures();
     }
 }
 

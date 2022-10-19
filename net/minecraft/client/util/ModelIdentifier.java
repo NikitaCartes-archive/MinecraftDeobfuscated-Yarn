@@ -8,6 +8,7 @@ import java.util.Locale;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class ModelIdentifier
@@ -16,39 +17,26 @@ extends Identifier {
     static final char SEPARATOR = '#';
     private final String variant;
 
-    protected ModelIdentifier(String[] strings) {
-        super(strings);
-        this.variant = strings[2].toLowerCase(Locale.ROOT);
+    private ModelIdentifier(String namespace, String path, String variant, @Nullable Identifier.ExtraData extraData) {
+        super(namespace, path, extraData);
+        this.variant = variant;
     }
 
     public ModelIdentifier(String namespace, String path, String variant) {
-        this(new String[]{namespace, path, variant});
-    }
-
-    public ModelIdentifier(String string) {
-        this(ModelIdentifier.split(string));
+        super(namespace, path);
+        this.variant = ModelIdentifier.toLowerCase(variant);
     }
 
     public ModelIdentifier(Identifier id, String variant) {
-        this(id.toString(), variant);
+        this(id.getNamespace(), id.getPath(), ModelIdentifier.toLowerCase(variant), null);
     }
 
-    public ModelIdentifier(String string, String string2) {
-        this(ModelIdentifier.split(string + "#" + string2));
+    public static ModelIdentifier ofVanilla(String path, String variant) {
+        return new ModelIdentifier("minecraft", path, variant);
     }
 
-    protected static String[] split(String id) {
-        String[] strings = new String[]{null, id, ""};
-        int i = id.indexOf(35);
-        String string = id;
-        if (i >= 0) {
-            strings[2] = id.substring(i + 1, id.length());
-            if (i > 1) {
-                string = id.substring(0, i);
-            }
-        }
-        System.arraycopy(Identifier.split(string, ':'), 0, strings, 0, 2);
-        return strings;
+    private static String toLowerCase(String string) {
+        return string.toLowerCase(Locale.ROOT);
     }
 
     public String getVariant() {

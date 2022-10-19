@@ -88,8 +88,8 @@ public class ItemStringReader {
     private void readItem() throws CommandSyntaxException {
         int i = this.reader.getCursor();
         Identifier identifier = Identifier.fromCommandInput(this.reader);
-        Optional<RegistryEntry<Item>> optional = this.registryWrapper.getEntry(RegistryKey.of(Registry.ITEM_KEY, identifier));
-        this.result = Either.left(optional.orElseThrow(() -> {
+        Optional<RegistryEntry.Reference<Item>> optional = this.registryWrapper.getEntry(RegistryKey.of(Registry.ITEM_KEY, identifier));
+        this.result = Either.left((RegistryEntry)optional.orElseThrow(() -> {
             this.reader.setCursor(i);
             return ID_INVALID_EXCEPTION.createWithContext(this.reader, identifier);
         }));
@@ -103,8 +103,8 @@ public class ItemStringReader {
         this.reader.expect('#');
         this.suggestions = this::suggestTag;
         Identifier identifier = Identifier.fromCommandInput(this.reader);
-        Optional<RegistryEntryList<Item>> optional = this.registryWrapper.getEntryList(TagKey.of(Registry.ITEM_KEY, identifier));
-        this.result = Either.right(optional.orElseThrow(() -> {
+        Optional<RegistryEntryList.Named<Item>> optional = this.registryWrapper.getEntryList(TagKey.of(Registry.ITEM_KEY, identifier));
+        this.result = Either.right((RegistryEntryList)optional.orElseThrow(() -> {
             this.reader.setCursor(i);
             return UNKNOWN_TAG_EXCEPTION.createWithContext(this.reader, identifier);
         }));

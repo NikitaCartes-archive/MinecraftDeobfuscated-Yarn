@@ -41,9 +41,9 @@ extends Screen {
         super(Text.translatable("createWorld.customize.buffet.title"));
         this.parent = parent;
         this.onDone = onDone;
-        this.biomeRegistry = generatorOptionsHolder.dynamicRegistryManager().get(Registry.BIOME_KEY);
-        RegistryEntry<Biome> registryEntry = this.biomeRegistry.getEntry(BiomeKeys.PLAINS).or(() -> this.biomeRegistry.streamEntries().findAny()).orElseThrow();
-        this.biome = generatorOptionsHolder.generatorOptions().getChunkGenerator().getBiomeSource().getBiomes().stream().findFirst().orElse(registryEntry);
+        this.biomeRegistry = generatorOptionsHolder.getCombinedRegistryManager().get(Registry.BIOME_KEY);
+        RegistryEntry registryEntry = this.biomeRegistry.getEntry(BiomeKeys.PLAINS).or(() -> this.biomeRegistry.streamEntries().findAny()).orElseThrow();
+        this.biome = generatorOptionsHolder.selectedDimensions().getChunkGenerator().getBiomeSource().getBiomes().stream().findFirst().orElse(registryEntry);
     }
 
     @Override

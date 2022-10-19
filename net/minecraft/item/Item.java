@@ -27,11 +27,14 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemConvertible;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.resource.featuretoggle.FeatureFlag;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
+import net.minecraft.resource.featuretoggle.FeatureSet;
+import net.minecraft.resource.featuretoggle.ToggleableFeature;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -43,7 +46,6 @@ import net.minecraft.util.Rarity;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.Util;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -63,8 +65,7 @@ import org.slf4j.Logger;
  * is held by an {@link ItemStack} which represents a stack of specific item. Therefore,
  * there is one - and only one - instance of Item for one item (like apples, oak planks, etc),
  * while there can be infinite amounts of {@link ItemStack} instances. This also means that
- * items themselves cannot hold NBT data. To append item stacks with NBT data to the
- * creative inventory, override {@link #appendStacks}.
+ * items themselves cannot hold NBT data.
  * 
  * <p>Items with no custom behavior, like diamonds, can call the constructor of Item
  * directly. If a custom behavior is needed, this should be subclassed. Items also have
@@ -82,7 +83,8 @@ import org.slf4j.Logger;
  * @see net.minecraft.inventory.Inventory
  */
 public class Item
-implements ItemConvertible {
+implements ToggleableFeature,
+ItemConvertible {
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final Map<Block, Item> BLOCK_ITEMS = Maps.newHashMap();
     protected static final UUID ATTACK_DAMAGE_MODIFIER_ID = UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A33DB5CF");
@@ -91,8 +93,6 @@ implements ItemConvertible {
     public static final int DEFAULT_MAX_USE_TIME = 32;
     public static final int ITEM_BAR_STEPS = 13;
     private final RegistryEntry.Reference<Item> registryEntry = Registry.ITEM.createEntry(this);
-    @Nullable
-    protected final ItemGroup group;
     private final Rarity rarity;
     private final int maxCount;
     private final int maxDamage;
@@ -103,6 +103,7 @@ implements ItemConvertible {
     private String translationKey;
     @Nullable
     private final FoodComponent foodComponent;
+    private final FeatureSet requiredFeatures;
 
     /**
      * {@return the raw ID of {@code item}, or 0 if passed {@code null}}
@@ -128,13 +129,13 @@ implements ItemConvertible {
 
     public Item(Settings settings) {
         String string;
-        this.group = settings.group;
         this.rarity = settings.rarity;
         this.recipeRemainder = settings.recipeRemainder;
         this.maxDamage = settings.maxDamage;
         this.maxCount = settings.maxCount;
         this.foodComponent = settings.foodComponent;
         this.fireproof = settings.fireproof;
+        this.requiredFeatures = settings.requiredFeatures;
         if (SharedConstants.isDevelopment && !(string = this.getClass().getSimpleName()).endsWith("Item")) {
             LOGGER.error("Item classes should end with Item and {} doesn't.", (Object)string);
         }
@@ -635,35 +636,6 @@ implements ItemConvertible {
     }
 
     /**
-     * Appends the stacks of this item shown in the item group to the list.
-     * 
-     * <p>This can be overridden to append item stacks with custom NBT data to the
-     * creative inventory.
-     * 
-     * @see #isIn(ItemGroup)
-     */
-    public void appendStacks(ItemGroup group, DefaultedList<ItemStack> stacks) {
-        if (this.isIn(group)) {
-            stacks.add(new ItemStack(this));
-        }
-    }
-
-    /**
-     * Checks whether this item should appear in a specified item group.
-     * 
-     * @return true if the item is in the specified item group or the item group is {@link net.minecraft.item.ItemGroup#SEARCH}.
-     */
-    protected boolean isIn(ItemGroup group) {
-        ItemGroup itemGroup = this.getGroup();
-        return itemGroup != null && (group == ItemGroup.SEARCH || group == itemGroup);
-    }
-
-    @Nullable
-    public final ItemGroup getGroup() {
-        return this.group;
-    }
-
-    /**
      * {@return whether {@code stack} can be repaired using {@code ingredient}}
      * 
      * <p>This only handles repairing using the ingredient such as diamonds, and does
@@ -754,17 +726,21 @@ implements ItemConvertible {
         return true;
     }
 
+    @Override
+    public FeatureSet getRequiredFeatures() {
+        return this.requiredFeatures;
+    }
+
     public static class Settings {
         int maxCount = 64;
         int maxDamage;
         @Nullable
         Item recipeRemainder;
-        @Nullable
-        ItemGroup group;
         Rarity rarity = Rarity.COMMON;
         @Nullable
         FoodComponent foodComponent;
         boolean fireproof;
+        FeatureSet requiredFeatures = FeatureFlags.VANILLA_FEATURES;
 
         public Settings food(FoodComponent foodComponent) {
             this.foodComponent = foodComponent;
@@ -794,11 +770,6 @@ implements ItemConvertible {
             return this;
         }
 
-        public Settings group(ItemGroup group) {
-            this.group = group;
-            return this;
-        }
-
         public Settings rarity(Rarity rarity) {
             this.rarity = rarity;
             return this;
@@ -806,6 +777,11 @@ implements ItemConvertible {
 
         public Settings fireproof() {
             this.fireproof = true;
+            return this;
+        }
+
+        public Settings requires(FeatureFlag ... features) {
+            this.requiredFeatures = FeatureFlags.FEATURE_MANAGER.featureSetOf(features);
             return this;
         }
     }

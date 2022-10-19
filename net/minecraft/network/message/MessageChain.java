@@ -3,81 +3,114 @@
  */
 package net.minecraft.network.message;
 
-import java.util.Optional;
+import com.mojang.logging.LogUtils;
+import java.time.Instant;
+import java.util.UUID;
+import net.minecraft.network.encryption.PlayerPublicKey;
+import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.network.encryption.Signer;
-import net.minecraft.network.message.DecoratedContents;
 import net.minecraft.network.message.FilterMask;
-import net.minecraft.network.message.LastSeenMessageList;
 import net.minecraft.network.message.MessageBody;
-import net.minecraft.network.message.MessageHeader;
-import net.minecraft.network.message.MessageMetadata;
+import net.minecraft.network.message.MessageLink;
 import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.network.message.SignedMessage;
+import net.minecraft.text.Text;
+import net.minecraft.util.TextifiedException;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 /**
  * A class for handling the "message chain".
  * 
- * <p>{@link MessageHeader} includes the signature of the last message the client has seen.
- * This can be used to verify the legitimacy of a chain of messages, since if the chain
- * is valid, the last message's  "previous signature" should be able to verify the preceding
- * message.
+ * <p>A message chain (since 1.19.3) is implemented using an integer that is incremented
+ * for each message, called "index". {@link MessageLink} represents the link that a
+ * particular message has.
  * 
- * <p>Clients signing a message with its preceding message's signature is called
+ * <p>Clients signing a message with its preceding message's index is called
  * "packing", and the server creating a signed message with its preceding message's
- * signature is called "unpacking". Unpacked messages can then be verified to check the
+ * index is called "unpacking". Unpacked messages can then be verified to check the
  * chain's legitimacy.
+ * 
+ * @see MessageLink
  */
 public class MessageChain {
+    private static final Logger LOGGER = LogUtils.getLogger();
     @Nullable
-    private MessageSignatureData precedingSignature;
+    private MessageLink link;
 
-    private Signature pack(Signer signer, MessageMetadata metadata, DecoratedContents contents, LastSeenMessageList lastSeenMessages) {
-        MessageSignatureData messageSignatureData;
-        this.precedingSignature = messageSignatureData = MessageChain.sign(signer, metadata, this.precedingSignature, contents, lastSeenMessages);
-        return new Signature(messageSignatureData);
+    public MessageChain(UUID sender, UUID sessionId) {
+        this.link = MessageLink.of(sender, sessionId);
     }
 
-    private static MessageSignatureData sign(Signer signer, MessageMetadata metadata, @Nullable MessageSignatureData precedingSignature, DecoratedContents contents, LastSeenMessageList lastSeenMessages) {
-        MessageHeader messageHeader = new MessageHeader(precedingSignature, metadata.sender());
-        MessageBody messageBody = new MessageBody(contents, metadata.timestamp(), metadata.salt(), lastSeenMessages);
-        byte[] bs = messageBody.digest().asBytes();
-        return new MessageSignatureData(signer.sign(updatable -> messageHeader.update(updatable, bs)));
+    public Packer getPacker(Signer signer) {
+        return body -> {
+            MessageLink messageLink = this.nextLink();
+            if (messageLink == null) {
+                return null;
+            }
+            return new MessageSignatureData(signer.sign(updatable -> SignedMessage.update(updatable, messageLink, body)));
+        };
     }
 
-    private SignedMessage unpack(Signature signature, MessageMetadata metadata, DecoratedContents contents, LastSeenMessageList lastSeenMessages) {
-        SignedMessage signedMessage = MessageChain.createMessage(signature, this.precedingSignature, metadata, contents, lastSeenMessages);
-        this.precedingSignature = signature.signature;
-        return signedMessage;
+    public Unpacker getUnpacker(PlayerPublicKey playerPublicKey) {
+        SignatureVerifier signatureVerifier = playerPublicKey.createSignatureInstance();
+        return (signature, body) -> {
+            MessageLink messageLink = this.nextLink();
+            if (messageLink == null) {
+                throw new MessageChainException((Text)Text.translatable("chat.disabled.chain_broken"), false);
+            }
+            if (playerPublicKey.data().isExpired()) {
+                throw new MessageChainException((Text)Text.translatable("chat.disabled.expiredProfileKey"), false);
+            }
+            SignedMessage signedMessage = new SignedMessage(messageLink, signature, body, null, FilterMask.PASS_THROUGH);
+            if (!signedMessage.verify(signatureVerifier)) {
+                throw new MessageChainException((Text)Text.translatable("multiplayer.disconnect.unsigned_chat"), true);
+            }
+            if (signedMessage.isExpiredOnServer(Instant.now())) {
+                LOGGER.warn("Received expired chat: '{}'. Is the client/server system time unsynchronized?", (Object)body.content());
+            }
+            return signedMessage;
+        };
     }
 
-    private static SignedMessage createMessage(Signature signature, @Nullable MessageSignatureData precedingSignature, MessageMetadata metadata, DecoratedContents contents, LastSeenMessageList lastSeenMessage) {
-        MessageHeader messageHeader = new MessageHeader(precedingSignature, metadata.sender());
-        MessageBody messageBody = new MessageBody(contents, metadata.timestamp(), metadata.salt(), lastSeenMessage);
-        return new SignedMessage(messageHeader, signature.signature, messageBody, Optional.empty(), FilterMask.PASS_THROUGH);
-    }
-
-    public Unpacker getUnpacker() {
-        return this::unpack;
-    }
-
-    public Packer getPacker() {
-        return this::pack;
-    }
-
-    public record Signature(MessageSignatureData signature) {
-    }
-
-    @FunctionalInterface
-    public static interface Unpacker {
-        public static final Unpacker UNSIGNED = (signature, metadata, content, lastSeenMessages) -> SignedMessage.ofUnsigned(metadata, content);
-
-        public SignedMessage unpack(Signature var1, MessageMetadata var2, DecoratedContents var3, LastSeenMessageList var4);
+    @Nullable
+    private MessageLink nextLink() {
+        MessageLink messageLink = this.link;
+        if (messageLink != null) {
+            this.link = messageLink.next();
+        }
+        return messageLink;
     }
 
     @FunctionalInterface
     public static interface Packer {
-        public Signature pack(Signer var1, MessageMetadata var2, DecoratedContents var3, LastSeenMessageList var4);
+        public static final Packer NONE = body -> null;
+
+        @Nullable
+        public MessageSignatureData pack(MessageBody var1);
+    }
+
+    @FunctionalInterface
+    public static interface Unpacker {
+        public static Unpacker unsigned(UUID uuid) {
+            return (signature, body) -> SignedMessage.ofUnsigned(uuid, body.content());
+        }
+
+        public SignedMessage unpack(@Nullable MessageSignatureData var1, MessageBody var2) throws MessageChainException;
+    }
+
+    public static class MessageChainException
+    extends TextifiedException {
+        private final boolean shouldDisconnect;
+
+        public MessageChainException(Text message, boolean shouldDisconnect) {
+            super(message);
+            this.shouldDisconnect = shouldDisconnect;
+        }
+
+        public boolean shouldDisconnect() {
+            return this.shouldDisconnect;
+        }
     }
 }
 

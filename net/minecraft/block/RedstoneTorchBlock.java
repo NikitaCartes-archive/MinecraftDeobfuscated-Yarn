@@ -78,7 +78,7 @@ extends TorchBlock {
                 world.setBlockState(pos, (BlockState)state.with(LIT, false), Block.NOTIFY_ALL);
                 if (RedstoneTorchBlock.isBurnedOut(world, pos, true)) {
                     world.syncWorldEvent(WorldEvents.REDSTONE_TORCH_BURNS_OUT, pos, 0);
-                    world.createAndScheduleBlockTick(pos, world.getBlockState(pos).getBlock(), 160);
+                    world.scheduleBlockTick(pos, world.getBlockState(pos).getBlock(), 160);
                 }
             }
         } else if (!bl && !RedstoneTorchBlock.isBurnedOut(world, pos, false)) {
@@ -89,7 +89,7 @@ extends TorchBlock {
     @Override
     public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
         if (state.get(LIT).booleanValue() == this.shouldUnpower(world, pos, state) && !world.getBlockTickScheduler().isTicking(pos, this)) {
-            world.createAndScheduleBlockTick(pos, this, 2);
+            world.scheduleBlockTick(pos, this, 2);
         }
     }
 

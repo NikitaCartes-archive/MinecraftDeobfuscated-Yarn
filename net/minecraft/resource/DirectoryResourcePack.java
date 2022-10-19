@@ -3,129 +3,130 @@
  */
 package net.minecraft.resource;
 
-import com.google.common.base.CharMatcher;
-import com.google.common.collect.Lists;
+import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
 import com.mojang.logging.LogUtils;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.nio.file.DirectoryStream;
+import java.nio.file.FileVisitOption;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.function.Predicate;
+import java.util.stream.Stream;
 import net.minecraft.resource.AbstractFileResourcePack;
-import net.minecraft.resource.ResourceNotFoundException;
+import net.minecraft.resource.InputSupplier;
+import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.InvalidIdentifierException;
+import net.minecraft.util.PathUtil;
 import net.minecraft.util.Util;
-import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 public class DirectoryResourcePack
 extends AbstractFileResourcePack {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final boolean IS_WINDOWS = Util.getOperatingSystem() == Util.OperatingSystem.WINDOWS;
-    private static final CharMatcher BACKSLASH_MATCHER = CharMatcher.is('\\');
+    private static final Joiner SEPARATOR_JOINER = Joiner.on("/");
+    private final Path root;
 
-    public DirectoryResourcePack(File file) {
-        super(file);
-    }
-
-    public static boolean isValidPath(File file, String filename) throws IOException {
-        String string = file.getCanonicalPath();
-        if (IS_WINDOWS) {
-            string = BACKSLASH_MATCHER.replaceFrom((CharSequence)string, '/');
-        }
-        return string.endsWith(filename);
+    public DirectoryResourcePack(String name, Path root) {
+        super(name);
+        this.root = root;
     }
 
     @Override
-    protected InputStream openFile(String name) throws IOException {
-        File file = this.getFile(name);
-        if (file == null) {
-            throw new ResourceNotFoundException(this.base, name);
+    @Nullable
+    public InputSupplier<InputStream> openRoot(String ... segments) {
+        PathUtil.validatePath(segments);
+        Path path = PathUtil.getPath(this.root, List.of(segments));
+        if (Files.exists(path, new LinkOption[0])) {
+            return InputSupplier.create(path);
         }
-        return new FileInputStream(file);
+        return null;
+    }
+
+    public static boolean isValidPath(Path path) {
+        return true;
     }
 
     @Override
-    protected boolean containsFile(String name) {
-        return this.getFile(name) != null;
+    @Nullable
+    public InputSupplier<InputStream> open(ResourceType type, Identifier id) {
+        Path path = this.root.resolve(type.getDirectory()).resolve(id.getNamespace());
+        return DirectoryResourcePack.open(id, path);
+    }
+
+    public static InputSupplier<InputStream> open(Identifier id, Path path) {
+        return PathUtil.split(id.getPath()).get().map(segments -> {
+            Path path2 = PathUtil.getPath(path, segments);
+            return DirectoryResourcePack.open(path2);
+        }, result -> {
+            LOGGER.error("Invalid path {}: {}", (Object)id, (Object)result.message());
+            return null;
+        });
     }
 
     @Nullable
-    private File getFile(String name) {
-        try {
-            File file = new File(this.base, name);
-            if (file.isFile() && DirectoryResourcePack.isValidPath(file, name)) {
-                return file;
-            }
-        } catch (IOException iOException) {
-            // empty catch block
+    private static InputSupplier<InputStream> open(Path path) {
+        if (Files.exists(path, new LinkOption[0]) && DirectoryResourcePack.isValidPath(path)) {
+            return InputSupplier.create(path);
         }
         return null;
     }
 
     @Override
+    public void findResources(ResourceType type, String namespace, String prefix, ResourcePack.ResultConsumer consumer) {
+        PathUtil.split(prefix).get().ifLeft(prefixSegments -> {
+            Path path = this.root.resolve(type.getDirectory()).resolve(namespace);
+            DirectoryResourcePack.findResources(namespace, path, prefixSegments, consumer);
+        }).ifRight(result -> LOGGER.error("Invalid path {}: {}", (Object)prefix, (Object)result.message()));
+    }
+
+    public static void findResources(String namespace, Path path, List<String> prefixSegments, ResourcePack.ResultConsumer consumer) {
+        Path path22 = PathUtil.getPath(path, prefixSegments);
+        try (Stream<Path> stream2 = Files.find(path22, Integer.MAX_VALUE, (path2, attributes) -> attributes.isRegularFile(), new FileVisitOption[0]);){
+            stream2.forEach(foundPath -> {
+                String string2 = SEPARATOR_JOINER.join(path.relativize((Path)foundPath));
+                Identifier identifier = Identifier.of(namespace, string2);
+                if (identifier == null) {
+                    Util.error(String.format(Locale.ROOT, "Invalid path in pack: %s:%s, ignoring", namespace, string2));
+                } else {
+                    consumer.accept(identifier, InputSupplier.create(foundPath));
+                }
+            });
+        } catch (NoSuchFileException stream2) {
+        } catch (IOException iOException) {
+            LOGGER.error("Failed to list path {}", (Object)path22, (Object)iOException);
+        }
+    }
+
+    @Override
     public Set<String> getNamespaces(ResourceType type) {
         HashSet<String> set = Sets.newHashSet();
-        File file = new File(this.base, type.getDirectory());
-        File[] files = file.listFiles(DirectoryFileFilter.DIRECTORY);
-        if (files != null) {
-            for (File file2 : files) {
-                String string = DirectoryResourcePack.relativize(file, file2);
+        Path path = this.root.resolve(type.getDirectory());
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path);){
+            for (Path path2 : directoryStream) {
+                String string = path2.getFileName().toString();
                 if (string.equals(string.toLowerCase(Locale.ROOT))) {
-                    set.add(string.substring(0, string.length() - 1));
+                    set.add(string);
                     continue;
                 }
-                this.warnNonLowerCaseNamespace(string);
+                LOGGER.warn("Ignored non-lowercase namespace: {} in {}", (Object)string, (Object)this.root);
             }
+        } catch (IOException iOException) {
+            LOGGER.error("Failed to list path {}", (Object)path, (Object)iOException);
         }
         return set;
     }
 
     @Override
     public void close() {
-    }
-
-    @Override
-    public Collection<Identifier> findResources(ResourceType type, String namespace, String prefix, Predicate<Identifier> allowedPathPredicate) {
-        File file = new File(this.base, type.getDirectory());
-        ArrayList<Identifier> list = Lists.newArrayList();
-        this.findFiles(new File(new File(file, namespace), prefix), namespace, list, prefix + "/", allowedPathPredicate);
-        return list;
-    }
-
-    private void findFiles(File file, String namespace, List<Identifier> foundIds, String rootDirectory, Predicate<Identifier> allowedPathPredicate) {
-        File[] files = file.listFiles();
-        if (files != null) {
-            for (File file2 : files) {
-                if (file2.isDirectory()) {
-                    this.findFiles(file2, namespace, foundIds, rootDirectory + file2.getName() + "/", allowedPathPredicate);
-                    continue;
-                }
-                if (file2.getName().endsWith(".mcmeta")) continue;
-                try {
-                    String string = rootDirectory + file2.getName();
-                    Identifier identifier = Identifier.of(namespace, string);
-                    if (identifier == null) {
-                        LOGGER.warn("Invalid path in datapack: {}:{}, ignoring", (Object)namespace, (Object)string);
-                        continue;
-                    }
-                    if (!allowedPathPredicate.test(identifier)) continue;
-                    foundIds.add(identifier);
-                } catch (InvalidIdentifierException invalidIdentifierException) {
-                    LOGGER.error(invalidIdentifierException.getMessage());
-                }
-            }
-        }
     }
 }
 

@@ -40,6 +40,9 @@ extends EntityModel<E> {
     public abstract ModelPart getPart();
 
     public Optional<ModelPart> getChild(String name) {
+        if (name.equals("root")) {
+            return Optional.of(this.getPart());
+        }
         return this.getPart().traverse().filter(part -> part.hasChild(name)).findFirst().map(part -> part.getChild(name));
     }
 

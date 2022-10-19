@@ -14,7 +14,6 @@ import java.util.OptionalInt;
 import java.util.function.Predicate;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.WardenEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -59,22 +58,25 @@ public class SculkShriekerWarningManager {
         this.cooldownTicks = 0;
     }
 
-    public static OptionalInt warnNearbyPlayers(ServerWorld world, BlockPos pos, ServerPlayerEntity player) {
+    public static OptionalInt warnNearbyPlayers(ServerWorld world, BlockPos pos, ServerPlayerEntity player2) {
         if (SculkShriekerWarningManager.canIncreaseWarningLevel(world, pos)) {
             return OptionalInt.empty();
         }
         List<ServerPlayerEntity> list = SculkShriekerWarningManager.getPlayersInRange(world, pos);
-        if (!list.contains(player)) {
-            list.add(player);
+        if (!list.contains(player2)) {
+            list.add(player2);
         }
-        if (list.stream().anyMatch(nearbyPlayer -> nearbyPlayer.getSculkShriekerWarningManager().isInCooldown())) {
+        if (list.stream().anyMatch(nearbyPlayer -> nearbyPlayer.getSculkShriekerWarningManager().map(SculkShriekerWarningManager::isInCooldown).orElse(false))) {
             return OptionalInt.empty();
         }
-        Optional<SculkShriekerWarningManager> optional = list.stream().map(PlayerEntity::getSculkShriekerWarningManager).max(Comparator.comparingInt(manager -> manager.warningLevel));
-        SculkShriekerWarningManager sculkShriekerWarningManager = optional.get();
-        sculkShriekerWarningManager.increaseWarningLevel();
-        list.forEach(nearbyPlayer -> nearbyPlayer.getSculkShriekerWarningManager().copy(sculkShriekerWarningManager));
-        return OptionalInt.of(sculkShriekerWarningManager.warningLevel);
+        Optional<SculkShriekerWarningManager> optional = list.stream().flatMap(player -> player.getSculkShriekerWarningManager().stream()).max(Comparator.comparingInt(SculkShriekerWarningManager::getWarningLevel));
+        if (optional.isPresent()) {
+            SculkShriekerWarningManager sculkShriekerWarningManager = optional.get();
+            sculkShriekerWarningManager.increaseWarningLevel();
+            list.forEach(nearbyPlayer -> nearbyPlayer.getSculkShriekerWarningManager().ifPresent(warningManager -> warningManager.copy(sculkShriekerWarningManager)));
+            return OptionalInt.of(sculkShriekerWarningManager.warningLevel);
+        }
+        return OptionalInt.empty();
     }
 
     private boolean isInCooldown() {

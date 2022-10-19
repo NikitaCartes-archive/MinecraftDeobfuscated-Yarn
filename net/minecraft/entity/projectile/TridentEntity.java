@@ -113,6 +113,7 @@ extends PersistentProjectileEntity {
 
     @Override
     protected void onEntityHit(EntityHitResult entityHitResult) {
+        LightningEntity lightningEntity;
         BlockPos blockPos;
         Entity entity2;
         Entity entity = entityHitResult.getEntity();
@@ -139,8 +140,7 @@ extends PersistentProjectileEntity {
         }
         this.setVelocity(this.getVelocity().multiply(-0.01, -0.1, -0.01));
         float g = 1.0f;
-        if (this.world instanceof ServerWorld && this.world.isThundering() && this.hasChanneling() && this.world.isSkyVisible(blockPos = entity.getBlockPos())) {
-            LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(this.world);
+        if (this.world instanceof ServerWorld && this.world.isThundering() && this.hasChanneling() && this.world.isSkyVisible(blockPos = entity.getBlockPos()) && (lightningEntity = EntityType.LIGHTNING_BOLT.create(this.world)) != null) {
             lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(blockPos));
             lightningEntity.setChanneler(entity2 instanceof ServerPlayerEntity ? (ServerPlayerEntity)entity2 : null);
             this.world.spawnEntity(lightningEntity);

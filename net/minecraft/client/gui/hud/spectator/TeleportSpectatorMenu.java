@@ -33,7 +33,7 @@ SpectatorMenuCommand {
     private final List<SpectatorMenuCommand> elements = Lists.newArrayList();
 
     public TeleportSpectatorMenu() {
-        this(ORDERING.sortedCopy(MinecraftClient.getInstance().getNetworkHandler().getPlayerList()));
+        this(ORDERING.sortedCopy(MinecraftClient.getInstance().getNetworkHandler().getListedPlayerListEntries()));
     }
 
     public TeleportSpectatorMenu(Collection<PlayerListEntry> entries) {

@@ -82,6 +82,7 @@ import net.minecraft.entity.passive.AllayEntity;
 import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.passive.BatEntity;
 import net.minecraft.entity.passive.BeeEntity;
+import net.minecraft.entity.passive.CamelEntity;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.entity.passive.CodEntity;
@@ -146,6 +147,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.resource.featuretoggle.FeatureFlag;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
+import net.minecraft.resource.featuretoggle.FeatureSet;
+import net.minecraft.resource.featuretoggle.ToggleableFeature;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.TagKey;
@@ -167,7 +172,8 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 public class EntityType<T extends Entity>
-implements TypeFilter<Entity, T> {
+implements ToggleableFeature,
+TypeFilter<Entity, T> {
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final String ENTITY_TAG_KEY = "EntityTag";
     private final RegistryEntry.Reference<EntityType<?>> registryEntry = Registry.ENTITY_TYPE.createEntry(this);
@@ -183,6 +189,7 @@ implements TypeFilter<Entity, T> {
     public static final EntityType<BoatEntity> BOAT = EntityType.register("boat", Builder.create(BoatEntity::new, SpawnGroup.MISC).setDimensions(1.375f, 0.5625f).maxTrackingRange(10));
     public static final EntityType<ChestBoatEntity> CHEST_BOAT = EntityType.register("chest_boat", Builder.create(ChestBoatEntity::new, SpawnGroup.MISC).setDimensions(1.375f, 0.5625f).maxTrackingRange(10));
     public static final EntityType<CatEntity> CAT = EntityType.register("cat", Builder.create(CatEntity::new, SpawnGroup.CREATURE).setDimensions(0.6f, 0.7f).maxTrackingRange(8));
+    public static final EntityType<CamelEntity> CAMEL = EntityType.register("camel", Builder.create(CamelEntity::new, SpawnGroup.CREATURE).setDimensions(1.7f, 2.375f).maxTrackingRange(10).requires(FeatureFlags.UPDATE_1_20));
     public static final EntityType<CaveSpiderEntity> CAVE_SPIDER = EntityType.register("cave_spider", Builder.create(CaveSpiderEntity::new, SpawnGroup.MONSTER).setDimensions(0.7f, 0.5f).maxTrackingRange(8));
     public static final EntityType<ChickenEntity> CHICKEN = EntityType.register("chicken", Builder.create(ChickenEntity::new, SpawnGroup.CREATURE).setDimensions(0.4f, 0.7f).maxTrackingRange(10));
     public static final EntityType<CodEntity> COD = EntityType.register("cod", Builder.create(CodEntity::new, SpawnGroup.WATER_AMBIENT).setDimensions(0.5f, 0.3f).maxTrackingRange(4));
@@ -306,6 +313,7 @@ implements TypeFilter<Entity, T> {
     @Nullable
     private Identifier lootTableId;
     private final EntityDimensions dimensions;
+    private final FeatureSet requiredFeatures;
 
     private static <T extends Entity> EntityType<T> register(String id, Builder<T> type) {
         return Registry.register(Registry.ENTITY_TYPE, id, type.build(id));
@@ -319,7 +327,7 @@ implements TypeFilter<Entity, T> {
         return Registry.ENTITY_TYPE.getOrEmpty(Identifier.tryParse(id));
     }
 
-    public EntityType(EntityFactory<T> factory, SpawnGroup spawnGroup, boolean saveable, boolean summonable, boolean fireImmune, boolean spawnableFarFromPlayer, ImmutableSet<Block> canSpawnInside, EntityDimensions dimensions, int maxTrackDistance, int trackTickInterval) {
+    public EntityType(EntityFactory<T> factory, SpawnGroup spawnGroup, boolean saveable, boolean summonable, boolean fireImmune, boolean spawnableFarFromPlayer, ImmutableSet<Block> canSpawnInside, EntityDimensions dimensions, int maxTrackDistance, int trackTickInterval, FeatureSet requiredFeatures) {
         this.factory = factory;
         this.spawnGroup = spawnGroup;
         this.spawnableFarFromPlayer = spawnableFarFromPlayer;
@@ -330,6 +338,7 @@ implements TypeFilter<Entity, T> {
         this.dimensions = dimensions;
         this.maxTrackDistance = maxTrackDistance;
         this.trackTickInterval = trackTickInterval;
+        this.requiredFeatures = requiredFeatures;
     }
 
     @Nullable
@@ -447,7 +456,7 @@ implements TypeFilter<Entity, T> {
     public Identifier getLootTableId() {
         if (this.lootTableId == null) {
             Identifier identifier = Registry.ENTITY_TYPE.getId(this);
-            this.lootTableId = new Identifier(identifier.getNamespace(), "entities/" + identifier.getPath());
+            this.lootTableId = identifier.withPrefixedPath("entities/");
         }
         return this.lootTableId;
     }
@@ -460,8 +469,16 @@ implements TypeFilter<Entity, T> {
         return this.dimensions.height;
     }
 
+    @Override
+    public FeatureSet getRequiredFeatures() {
+        return this.requiredFeatures;
+    }
+
     @Nullable
     public T create(World world) {
+        if (!this.isEnabled(world.getEnabledFeatures())) {
+            return null;
+        }
         return this.factory.create(this, world);
     }
 
@@ -601,6 +618,7 @@ implements TypeFilter<Entity, T> {
         private int maxTrackingRange = 5;
         private int trackingTickInterval = 3;
         private EntityDimensions dimensions = EntityDimensions.changing(0.6f, 1.8f);
+        private FeatureSet requiredFeatures = FeatureFlags.VANILLA_FEATURES;
 
         private Builder(EntityFactory<T> factory, SpawnGroup spawnGroup) {
             this.factory = factory;
@@ -656,11 +674,16 @@ implements TypeFilter<Entity, T> {
             return this;
         }
 
+        public Builder<T> requires(FeatureFlag ... features) {
+            this.requiredFeatures = FeatureFlags.FEATURE_MANAGER.featureSetOf(features);
+            return this;
+        }
+
         public EntityType<T> build(String id) {
             if (this.saveable) {
                 Util.getChoiceType(TypeReferences.ENTITY_TREE, id);
             }
-            return new EntityType<T>(this.factory, this.spawnGroup, this.saveable, this.summonable, this.fireImmune, this.spawnableFarFromPlayer, this.canSpawnInside, this.dimensions, this.maxTrackingRange, this.trackingTickInterval);
+            return new EntityType<T>(this.factory, this.spawnGroup, this.saveable, this.summonable, this.fireImmune, this.spawnableFarFromPlayer, this.canSpawnInside, this.dimensions, this.maxTrackingRange, this.trackingTickInterval, this.requiredFeatures);
         }
     }
 

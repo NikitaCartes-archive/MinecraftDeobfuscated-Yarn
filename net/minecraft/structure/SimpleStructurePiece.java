@@ -90,7 +90,7 @@ extends StructurePiece {
                 String string = structureBlockInfo2.nbt.getString("final_state");
                 BlockState blockState = Blocks.AIR.getDefaultState();
                 try {
-                    blockState = BlockArgumentParser.block(Registry.BLOCK, string, true).blockState();
+                    blockState = BlockArgumentParser.block(world.createCommandRegistryWrapper(Registry.BLOCK_KEY), string, true).blockState();
                 } catch (CommandSyntaxException commandSyntaxException) {
                     LOGGER.error("Error while parsing blockstate {} in jigsaw block @ {}", (Object)string, (Object)structureBlockInfo2.pos);
                 }

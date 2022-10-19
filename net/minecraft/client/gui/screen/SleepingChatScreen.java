@@ -8,7 +8,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
@@ -16,8 +15,6 @@ import org.lwjgl.glfw.GLFW;
 @Environment(value=EnvType.CLIENT)
 public class SleepingChatScreen
 extends ChatScreen {
-    private ButtonWidget stopSleepingButton;
-
     public SleepingChatScreen() {
         super("");
     }
@@ -25,13 +22,7 @@ extends ChatScreen {
     @Override
     protected void init() {
         super.init();
-        this.stopSleepingButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height - 40, 200, 20, Text.translatable("multiplayer.stopSleeping"), button -> this.stopSleeping()));
-    }
-
-    @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        this.stopSleepingButton.visible = this.getPreviewScreenText() == null;
-        super.render(matrices, mouseX, mouseY, delta);
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height - 40, 200, 20, Text.translatable("multiplayer.stopSleeping"), button -> this.stopSleeping()));
     }
 
     @Override

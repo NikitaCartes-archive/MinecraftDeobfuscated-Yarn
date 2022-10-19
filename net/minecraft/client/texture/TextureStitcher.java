@@ -4,25 +4,22 @@
 package net.minecraft.client.texture;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
-import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.TextureStitcherCannotFitException;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
-public class TextureStitcher {
-    private static final Comparator<Holder> COMPARATOR = Comparator.comparing(holder -> -holder.height).thenComparing(holder -> -holder.width).thenComparing(holder -> holder.sprite.getId());
+public class TextureStitcher<T extends Stitchable> {
+    private static final Comparator<Holder<?>> COMPARATOR = Comparator.comparing(holder -> -holder.height).thenComparing(holder -> -holder.width).thenComparing(holder -> holder.sprite.getId());
     private final int mipLevel;
-    private final Set<Holder> holders = Sets.newHashSetWithExpectedSize(256);
-    private final List<Slot> slots = Lists.newArrayListWithCapacity(256);
+    private final List<Holder<T>> holders = new ArrayList<Holder<T>>();
+    private final List<Slot<T>> slots = new ArrayList<Slot<T>>();
     private int width;
     private int height;
     private final int maxWidth;
@@ -42,29 +39,25 @@ public class TextureStitcher {
         return this.height;
     }
 
-    public void add(Sprite.Info info) {
-        Holder holder = new Holder(info, this.mipLevel);
+    public void add(T info) {
+        Holder<T> holder = new Holder<T>(info, this.mipLevel);
         this.holders.add(holder);
     }
 
     public void stitch() {
-        ArrayList<Holder> list = Lists.newArrayList(this.holders);
+        ArrayList<Holder<T>> list = new ArrayList<Holder<T>>(this.holders);
         list.sort(COMPARATOR);
         for (Holder holder2 : list) {
             if (this.fit(holder2)) continue;
-            throw new TextureStitcherCannotFitException(holder2.sprite, list.stream().map(holder -> holder.sprite).collect(ImmutableList.toImmutableList()));
+            throw new TextureStitcherCannotFitException((Stitchable)holder2.sprite, list.stream().map(holder -> holder.sprite).collect(ImmutableList.toImmutableList()));
         }
         this.width = MathHelper.smallestEncompassingPowerOfTwo(this.width);
         this.height = MathHelper.smallestEncompassingPowerOfTwo(this.height);
     }
 
-    public void getStitchedSprites(SpriteConsumer consumer) {
-        for (Slot slot2 : this.slots) {
-            slot2.addAllFilledSlots(slot -> {
-                Holder holder = slot.getTexture();
-                Sprite.Info info = holder.sprite;
-                consumer.load(info, this.width, this.height, slot.getX(), slot.getY());
-            });
+    public void getStitchedSprites(SpriteConsumer<T> consumer) {
+        for (Slot<T> slot : this.slots) {
+            slot.addAllFilledSlots(consumer);
         }
     }
 
@@ -72,16 +65,16 @@ public class TextureStitcher {
         return (size >> mipLevel) + ((size & (1 << mipLevel) - 1) == 0 ? 0 : 1) << mipLevel;
     }
 
-    private boolean fit(Holder holder) {
-        for (Slot slot : this.slots) {
+    private boolean fit(Holder<T> holder) {
+        for (Slot<T> slot : this.slots) {
             if (!slot.fit(holder)) continue;
             return true;
         }
         return this.growAndFit(holder);
     }
 
-    private boolean growAndFit(Holder holder) {
-        Slot slot;
+    private boolean growAndFit(Holder<T> holder) {
+        Slot<T> slot;
         boolean bl5;
         boolean bl4;
         boolean bl2;
@@ -108,7 +101,7 @@ public class TextureStitcher {
             slot = new Slot(this.width, 0, holder.width, this.height);
             this.width += holder.width;
         } else {
-            slot = new Slot(0, this.height, this.width, holder.height);
+            slot = new Slot<T>(0, this.height, this.width, holder.height);
             this.height += holder.height;
         }
         slot.fit(holder);
@@ -117,40 +110,37 @@ public class TextureStitcher {
     }
 
     @Environment(value=EnvType.CLIENT)
-    static class Holder {
-        public final Sprite.Info sprite;
-        public final int width;
-        public final int height;
-
-        public Holder(Sprite.Info sprite, int mipLevel) {
-            this.sprite = sprite;
-            this.width = TextureStitcher.applyMipLevel(sprite.getWidth(), mipLevel);
-            this.height = TextureStitcher.applyMipLevel(sprite.getHeight(), mipLevel);
-        }
-
-        public String toString() {
-            return "Holder{width=" + this.width + ", height=" + this.height + "}";
+    record Holder<T extends Stitchable>(T sprite, int width, int height) {
+        public Holder(T sprite, int mipLevel) {
+            this(sprite, TextureStitcher.applyMipLevel(sprite.getWidth(), mipLevel), TextureStitcher.applyMipLevel(sprite.getHeight(), mipLevel));
         }
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static class Slot {
+    public static interface Stitchable {
+        public int getWidth();
+
+        public int getHeight();
+
+        public Identifier getId();
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static class Slot<T extends Stitchable> {
         private final int x;
         private final int y;
         private final int width;
         private final int height;
-        private List<Slot> subSlots;
-        private Holder texture;
+        @Nullable
+        private List<Slot<T>> subSlots;
+        @Nullable
+        private Holder<T> texture;
 
         public Slot(int x, int y, int width, int height) {
             this.x = x;
             this.y = y;
             this.width = width;
             this.height = height;
-        }
-
-        public Holder getTexture() {
-            return this.texture;
         }
 
         public int getX() {
@@ -161,7 +151,7 @@ public class TextureStitcher {
             return this.y;
         }
 
-        public boolean fit(Holder holder) {
+        public boolean fit(Holder<T> holder) {
             if (this.texture != null) {
                 return false;
             }
@@ -175,39 +165,39 @@ public class TextureStitcher {
                 return true;
             }
             if (this.subSlots == null) {
-                this.subSlots = Lists.newArrayListWithCapacity(1);
-                this.subSlots.add(new Slot(this.x, this.y, i, j));
+                this.subSlots = new ArrayList<Slot<T>>(1);
+                this.subSlots.add(new Slot<T>(this.x, this.y, i, j));
                 int k = this.width - i;
                 int l = this.height - j;
                 if (l > 0 && k > 0) {
                     int n;
                     int m = Math.max(this.height, k);
                     if (m >= (n = Math.max(this.width, l))) {
-                        this.subSlots.add(new Slot(this.x, this.y + j, i, l));
-                        this.subSlots.add(new Slot(this.x + i, this.y, k, this.height));
+                        this.subSlots.add(new Slot<T>(this.x, this.y + j, i, l));
+                        this.subSlots.add(new Slot<T>(this.x + i, this.y, k, this.height));
                     } else {
-                        this.subSlots.add(new Slot(this.x + i, this.y, k, j));
-                        this.subSlots.add(new Slot(this.x, this.y + j, this.width, l));
+                        this.subSlots.add(new Slot<T>(this.x + i, this.y, k, j));
+                        this.subSlots.add(new Slot<T>(this.x, this.y + j, this.width, l));
                     }
                 } else if (k == 0) {
-                    this.subSlots.add(new Slot(this.x, this.y + j, i, l));
+                    this.subSlots.add(new Slot<T>(this.x, this.y + j, i, l));
                 } else if (l == 0) {
-                    this.subSlots.add(new Slot(this.x + i, this.y, k, j));
+                    this.subSlots.add(new Slot<T>(this.x + i, this.y, k, j));
                 }
             }
-            for (Slot slot : this.subSlots) {
+            for (Slot<T> slot : this.subSlots) {
                 if (!slot.fit(holder)) continue;
                 return true;
             }
             return false;
         }
 
-        public void addAllFilledSlots(Consumer<Slot> slotConsumer) {
+        public void addAllFilledSlots(SpriteConsumer<T> consumer) {
             if (this.texture != null) {
-                slotConsumer.accept(this);
+                consumer.load(this.texture.sprite, this.getX(), this.getY());
             } else if (this.subSlots != null) {
                 for (Slot slot : this.subSlots) {
-                    slot.addAllFilledSlots(slotConsumer);
+                    slot.addAllFilledSlots(consumer);
                 }
             }
         }
@@ -218,8 +208,8 @@ public class TextureStitcher {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static interface SpriteConsumer {
-        public void load(Sprite.Info var1, int var2, int var3, int var4, int var5);
+    public static interface SpriteConsumer<T extends Stitchable> {
+        public void load(T var1, int var2, int var3);
     }
 }
 

@@ -15,8 +15,8 @@ public interface StructurePlacementType<SP extends StructurePlacement> {
 
     public Codec<SP> codec();
 
-    private static <SP extends StructurePlacement> StructurePlacementType<SP> register(String string, Codec<SP> codec) {
-        return Registry.register(Registry.STRUCTURE_PLACEMENT, string, () -> codec);
+    private static <SP extends StructurePlacement> StructurePlacementType<SP> register(String id, Codec<SP> codec) {
+        return Registry.register(Registry.STRUCTURE_PLACEMENT, id, () -> codec);
     }
 }
 

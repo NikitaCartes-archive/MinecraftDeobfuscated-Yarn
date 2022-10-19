@@ -98,6 +98,8 @@ implements Packet<ClientPlayPacketListener> {
         Y_ROT(3),
         X_ROT(4);
 
+        public static final Set<Flag> VALUES;
+        public static final Set<Flag> ROT;
         private final int shift;
 
         private Flag(int shift) {
@@ -127,6 +129,11 @@ implements Packet<ClientPlayPacketListener> {
                 i |= flag.getMask();
             }
             return i;
+        }
+
+        static {
+            VALUES = Set.of(Flag.values());
+            ROT = Set.of(X_ROT, Y_ROT);
         }
     }
 }

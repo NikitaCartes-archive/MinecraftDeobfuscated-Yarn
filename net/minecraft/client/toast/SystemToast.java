@@ -59,7 +59,7 @@ implements Toast {
 
     @Override
     public int getHeight() {
-        return 20 + this.lines.size() * 12;
+        return 20 + Math.max(this.lines.size(), 1) * 12;
     }
 
     @Override
@@ -155,7 +155,6 @@ implements Toast {
         WORLD_ACCESS_FAILURE,
         PACK_COPY_FAILURE,
         PERIODIC_NOTIFICATION,
-        CHAT_PREVIEW_WARNING(10000L),
         UNSECURE_SERVER_WARNING(10000L);
 
         final long displayDuration;

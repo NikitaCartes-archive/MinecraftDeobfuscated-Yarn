@@ -54,7 +54,7 @@ extends MinecraftServer {
         super(serverThread, session, dataPackManager, saveLoader, client.getNetworkProxy(), client.getDataFixer(), apiServices, worldGenerationProgressListenerFactory);
         this.setHostProfile(client.getSession().getProfile());
         this.setDemo(client.isDemo());
-        this.setPlayerManager(new IntegratedPlayerManager(this, this.getRegistryManager(), this.saveHandler));
+        this.setPlayerManager(new IntegratedPlayerManager(this, this.getCombinedDynamicRegistries(), this.saveHandler));
         this.client = client;
     }
 
@@ -189,7 +189,7 @@ extends MinecraftServer {
     }
 
     @Override
-    public void stop(boolean bl) {
+    public void stop(boolean waitForShutdown) {
         this.submitAndJoin(() -> {
             ArrayList<ServerPlayerEntity> list = Lists.newArrayList(this.getPlayerManager().getPlayerList());
             for (ServerPlayerEntity serverPlayerEntity : list) {
@@ -197,7 +197,7 @@ extends MinecraftServer {
                 this.getPlayerManager().remove(serverPlayerEntity);
             }
         });
-        super.stop(bl);
+        super.stop(waitForShutdown);
         if (this.lanPinger != null) {
             this.lanPinger.interrupt();
             this.lanPinger = null;

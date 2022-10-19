@@ -13,14 +13,15 @@ import net.minecraft.item.Items;
 import net.minecraft.item.SuspiciousStewItem;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialCraftingRecipe;
+import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 public class SuspiciousStewRecipe
 extends SpecialCraftingRecipe {
-    public SuspiciousStewRecipe(Identifier identifier) {
-        super(identifier);
+    public SuspiciousStewRecipe(Identifier identifier, CraftingRecipeCategory craftingRecipeCategory) {
+        super(identifier, craftingRecipeCategory);
     }
 
     @Override

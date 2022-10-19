@@ -21,6 +21,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.PlayerSkinDrawer;
+import net.minecraft.client.gui.screen.ConfirmLinkScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -1125,7 +1126,12 @@ extends RealmsScreen {
                 if (realmsMainScreen.newsLink == null) {
                     return;
                 }
-                Util.getOperatingSystem().open(realmsMainScreen.newsLink);
+                RealmsMainScreen.this.client.setScreen(new ConfirmLinkScreen(confirmed -> {
+                    if (confirmed) {
+                        Util.getOperatingSystem().open(realmsMainScreen.newsLink);
+                    }
+                    RealmsMainScreen.this.client.setScreen(RealmsMainScreen.this);
+                }, realmsMainScreen.newsLink, true));
                 if (realmsMainScreen.hasUnreadNews) {
                     RealmsPersistence.RealmsPersistenceData realmsPersistenceData = RealmsPersistence.readFile();
                     realmsPersistenceData.hasUnreadNews = false;

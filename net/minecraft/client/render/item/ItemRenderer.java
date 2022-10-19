@@ -73,6 +73,10 @@ implements SynchronousResourceReloader {
     public static final int field_32934 = 200;
     public static final float COMPASS_WITH_GLINT_GUI_MODEL_MULTIPLIER = 0.5f;
     public static final float COMPASS_WITH_GLINT_FIRST_PERSON_MODEL_MULTIPLIER = 0.75f;
+    private static final ModelIdentifier TRIDENT = ModelIdentifier.ofVanilla("trident", "inventory");
+    public static final ModelIdentifier TRIDENT_IN_HAND = ModelIdentifier.ofVanilla("trident_in_hand", "inventory");
+    private static final ModelIdentifier SPYGLASS = ModelIdentifier.ofVanilla("spyglass", "inventory");
+    public static final ModelIdentifier SPYGLASS_IN_HAND = ModelIdentifier.ofVanilla("spyglass_in_hand", "inventory");
     public float zOffset;
     private final ItemModels models;
     private final TextureManager textureManager;
@@ -114,9 +118,9 @@ implements SynchronousResourceReloader {
         boolean bl2 = bl = renderMode == ModelTransformation.Mode.GUI || renderMode == ModelTransformation.Mode.GROUND || renderMode == ModelTransformation.Mode.FIXED;
         if (bl) {
             if (stack.isOf(Items.TRIDENT)) {
-                model = this.models.getModelManager().getModel(new ModelIdentifier("minecraft:trident#inventory"));
+                model = this.models.getModelManager().getModel(TRIDENT);
             } else if (stack.isOf(Items.SPYGLASS)) {
-                model = this.models.getModelManager().getModel(new ModelIdentifier("minecraft:spyglass#inventory"));
+                model = this.models.getModelManager().getModel(SPYGLASS);
             }
         }
         model.getTransformation().getTransformation(renderMode).apply(leftHanded, matrices);
@@ -194,7 +198,7 @@ implements SynchronousResourceReloader {
     }
 
     public BakedModel getModel(ItemStack stack, @Nullable World world, @Nullable LivingEntity entity, int seed) {
-        BakedModel bakedModel = stack.isOf(Items.TRIDENT) ? this.models.getModelManager().getModel(new ModelIdentifier("minecraft:trident_in_hand#inventory")) : (stack.isOf(Items.SPYGLASS) ? this.models.getModelManager().getModel(new ModelIdentifier("minecraft:spyglass_in_hand#inventory")) : this.models.getModel(stack));
+        BakedModel bakedModel = stack.isOf(Items.TRIDENT) ? this.models.getModelManager().getModel(TRIDENT_IN_HAND) : (stack.isOf(Items.SPYGLASS) ? this.models.getModelManager().getModel(SPYGLASS_IN_HAND) : this.models.getModel(stack));
         ClientWorld clientWorld = world instanceof ClientWorld ? (ClientWorld)world : null;
         BakedModel bakedModel2 = bakedModel.getOverrides().apply(bakedModel, stack, clientWorld, entity, seed);
         return bakedModel2 == null ? this.models.getModelManager().getMissingModel() : bakedModel2;

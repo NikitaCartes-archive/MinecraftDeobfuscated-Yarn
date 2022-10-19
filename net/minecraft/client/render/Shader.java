@@ -37,9 +37,9 @@ import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceFactory;
-import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.PathUtil;
 import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -59,7 +59,8 @@ import org.slf4j.Logger;
 public class Shader
 implements GlShader,
 AutoCloseable {
-    private static final String CORE_DIRECTORY = "shaders/core/";
+    public static final String CORE_DIRECTORY = "shaders";
+    private static final String field_40512 = "shaders/core/";
     private static final String INCLUDE_DIRECTORY = "shaders/include/";
     static final Logger LOGGER = LogUtils.getLogger();
     private static final Uniform DEFAULT_UNIFORM = new Uniform();
@@ -115,7 +116,7 @@ AutoCloseable {
     public Shader(ResourceFactory factory, String name, VertexFormat format) throws IOException {
         this.name = name;
         this.format = format;
-        Identifier identifier = new Identifier(CORE_DIRECTORY + name + ".json");
+        Identifier identifier = new Identifier(field_40512 + name + ".json");
         try (BufferedReader reader = factory.openAsReader(identifier);){
             JsonArray jsonArray3;
             JsonArray jsonArray2;
@@ -208,10 +209,10 @@ AutoCloseable {
         Program program2;
         Program program = type.getProgramCache().get(name);
         if (program == null) {
-            String string = CORE_DIRECTORY + name + type.getFileExtension();
+            String string = field_40512 + name + type.getFileExtension();
             Resource resource = factory.getResourceOrThrow(new Identifier(string));
             try (InputStream inputStream = resource.getInputStream();){
-                final String string2 = FileNameUtil.getPosixFullPath(string);
+                final String string2 = PathUtil.getPosixFullPath(string);
                 program2 = Program.createFromResource(type, name, inputStream, resource.getResourcePackName(), new GLImportProcessor(){
                     private final Set<String> visitedImports = Sets.newHashSet();
 
@@ -219,7 +220,7 @@ AutoCloseable {
                     public String loadImport(boolean inline, String name) {
                         String string;
                         block9: {
-                            name = FileNameUtil.normalizeToPosix((inline ? string2 : Shader.INCLUDE_DIRECTORY) + name);
+                            name = PathUtil.normalizeToPosix((inline ? string2 : Shader.INCLUDE_DIRECTORY) + name);
                             if (!this.visitedImports.add(name)) {
                                 return null;
                             }

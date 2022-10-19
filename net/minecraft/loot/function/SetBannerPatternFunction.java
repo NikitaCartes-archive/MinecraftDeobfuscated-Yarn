@@ -130,7 +130,7 @@ extends ConditionalLootFunction {
             for (int i = 0; i < jsonArray.size(); ++i) {
                 JsonObject jsonObject2 = JsonHelper.asObject(jsonArray.get(i), "pattern[" + i + "]");
                 String string = JsonHelper.getString(jsonObject2, "pattern");
-                Optional<RegistryEntry<BannerPattern>> optional = Registry.BANNER_PATTERN.getEntry(RegistryKey.of(Registry.BANNER_PATTERN_KEY, new Identifier(string)));
+                Optional<RegistryEntry.Reference<BannerPattern>> optional = Registry.BANNER_PATTERN.getEntry(RegistryKey.of(Registry.BANNER_PATTERN_KEY, new Identifier(string)));
                 if (optional.isEmpty()) {
                     throw new JsonSyntaxException("Unknown pattern: " + string);
                 }
@@ -139,7 +139,7 @@ extends ConditionalLootFunction {
                 if (dyeColor == null) {
                     throw new JsonSyntaxException("Unknown color: " + string2);
                 }
-                builder.add(Pair.of(optional.get(), dyeColor));
+                builder.add(Pair.of((RegistryEntry)optional.get(), dyeColor));
             }
             boolean bl = JsonHelper.getBoolean(jsonObject, "append");
             return new SetBannerPatternFunction(lootConditions, (List<Pair<RegistryEntry<BannerPattern>, DyeColor>>)((Object)builder.build()), bl);

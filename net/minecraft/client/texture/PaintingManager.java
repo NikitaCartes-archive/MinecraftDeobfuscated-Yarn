@@ -3,7 +3,6 @@
  */
 package net.minecraft.client.texture;
 
-import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.Sprite;
@@ -20,11 +19,6 @@ extends SpriteAtlasHolder {
 
     public PaintingManager(TextureManager manager) {
         super(manager, new Identifier("textures/atlas/paintings.png"), "painting");
-    }
-
-    @Override
-    protected Stream<Identifier> getSprites() {
-        return Stream.concat(Registry.PAINTING_VARIANT.getIds().stream(), Stream.of(PAINTING_BACK_ID));
     }
 
     public Sprite getPaintingSprite(PaintingVariant variant) {

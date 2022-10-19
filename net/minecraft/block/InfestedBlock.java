@@ -48,9 +48,11 @@ extends Block {
 
     private void spawnSilverfish(ServerWorld world, BlockPos pos) {
         SilverfishEntity silverfishEntity = EntityType.SILVERFISH.create(world);
-        silverfishEntity.refreshPositionAndAngles((double)pos.getX() + 0.5, pos.getY(), (double)pos.getZ() + 0.5, 0.0f, 0.0f);
-        world.spawnEntity(silverfishEntity);
-        silverfishEntity.playSpawnEffects();
+        if (silverfishEntity != null) {
+            silverfishEntity.refreshPositionAndAngles((double)pos.getX() + 0.5, pos.getY(), (double)pos.getZ() + 0.5, 0.0f, 0.0f);
+            world.spawnEntity(silverfishEntity);
+            silverfishEntity.playSpawnEffects();
+        }
     }
 
     @Override

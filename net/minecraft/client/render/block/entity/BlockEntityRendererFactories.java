@@ -22,6 +22,7 @@ import net.minecraft.client.render.block.entity.ConduitBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.EnchantingTableBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.EndGatewayBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.EndPortalBlockEntityRenderer;
+import net.minecraft.client.render.block.entity.HangingSignBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.LecternBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.MobSpawnerBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.PistonBlockEntityRenderer;
@@ -53,6 +54,7 @@ public class BlockEntityRendererFactories {
 
     static {
         BlockEntityRendererFactories.register(BlockEntityType.SIGN, SignBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(BlockEntityType.HANGING_SIGN, HangingSignBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(BlockEntityType.MOB_SPAWNER, MobSpawnerBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(BlockEntityType.PISTON, PistonBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(BlockEntityType.CHEST, ChestBlockEntityRenderer::new);

@@ -30,6 +30,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.item.TooltipData;
+import net.minecraft.command.CommandRegistryWrapper;
 import net.minecraft.command.argument.BlockArgumentParser;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -55,6 +56,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -213,6 +215,7 @@ public final class ItemStack {
     private static final String CAN_DESTROY_KEY = "CanDestroy";
     private static final String CAN_PLACE_ON_KEY = "CanPlaceOn";
     private static final String HIDE_FLAGS_KEY = "HideFlags";
+    private static final Text DISABLED_TEXT = Text.translatable("item.disabled").formatted(Formatting.RED);
     private static final int field_30903 = 0;
     private static final Style LORE_STYLE = Style.EMPTY.withColor(Formatting.DARK_PURPLE).withItalic(true);
     private int count;
@@ -310,6 +313,10 @@ public final class ItemStack {
             return true;
         }
         return this.count <= 0;
+    }
+
+    public boolean isItemEnabled(FeatureSet enabledFeatures) {
+        return this.isEmpty() || this.getItem().isEnabled(enabledFeatures);
     }
 
     /**
@@ -1100,6 +1107,9 @@ public final class ItemStack {
                 list.add(Text.translatable("item.nbt_tags", this.nbt.getKeys().size()).formatted(Formatting.DARK_GRAY));
             }
         }
+        if (player != null && !this.getItem().isEnabled(player.getWorld().getEnabledFeatures())) {
+            list.add(DISABLED_TEXT);
+        }
         return list;
     }
 
@@ -1131,7 +1141,7 @@ public final class ItemStack {
 
     private static Collection<Text> parseBlockTag(String tag) {
         try {
-            return BlockArgumentParser.blockOrTag(Registry.BLOCK, tag, true).map(blockResult -> Lists.newArrayList(blockResult.blockState().getBlock().getName().formatted(Formatting.DARK_GRAY)), tagResult -> tagResult.tag().stream().map(registryEntry -> ((Block)registryEntry.value()).getName().formatted(Formatting.DARK_GRAY)).collect(Collectors.toList()));
+            return BlockArgumentParser.blockOrTag(CommandRegistryWrapper.of(Registry.BLOCK), tag, true).map(blockResult -> Lists.newArrayList(blockResult.blockState().getBlock().getName().formatted(Formatting.DARK_GRAY)), tagResult -> tagResult.tag().stream().map(registryEntry -> ((Block)registryEntry.value()).getName().formatted(Formatting.DARK_GRAY)).collect(Collectors.toList()));
         } catch (CommandSyntaxException commandSyntaxException) {
             return Lists.newArrayList(Text.literal("missingno").formatted(Formatting.DARK_GRAY));
         }

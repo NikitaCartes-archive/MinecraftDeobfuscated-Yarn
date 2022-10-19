@@ -92,7 +92,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
@@ -129,6 +128,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.BlockLocating;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
@@ -1765,8 +1765,16 @@ extends Entity {
         return this.getAttributes().getCustomInstance(attribute);
     }
 
+    public double getAttributeValue(RegistryEntry<EntityAttribute> attribute) {
+        return this.getAttributeValue(attribute.value());
+    }
+
     public double getAttributeValue(EntityAttribute attribute) {
         return this.getAttributes().getValue(attribute);
+    }
+
+    public double getAttributeBaseValue(RegistryEntry<EntityAttribute> attribute) {
+        return this.getAttributeBaseValue(attribute.value());
     }
 
     public double getAttributeBaseValue(EntityAttribute attribute) {
@@ -2018,10 +2026,8 @@ extends Entity {
                 double n;
                 float o;
                 double m;
+                this.limitFallDistance();
                 Vec3d vec3d4 = this.getVelocity();
-                if (vec3d4.y > -0.5) {
-                    this.fallDistance = 1.0f;
-                }
                 Vec3d vec3d5 = this.getRotationVector();
                 float f = this.getPitch() * ((float)Math.PI / 180);
                 double i = Math.sqrt(vec3d5.x * vec3d5.x + vec3d5.z * vec3d5.z);
@@ -2273,7 +2279,7 @@ extends Entity {
                 }
             }
             ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
-            if (ItemStack.areEqual(itemStack2, itemStack)) continue;
+            if (!this.areItemsDifferent(itemStack, itemStack2)) continue;
             if (map == null) {
                 map = Maps.newEnumMap(EquipmentSlot.class);
             }
@@ -2285,6 +2291,10 @@ extends Entity {
             this.getAttributes().addTemporaryModifiers(itemStack2.getAttributeModifiers(equipmentSlot));
         }
         return map;
+    }
+
+    public boolean areItemsDifferent(ItemStack stack, ItemStack stack2) {
+        return !ItemStack.areEqual(stack2, stack);
     }
 
     /**
@@ -2952,11 +2962,6 @@ extends Entity {
 
     public boolean canEquip(ItemStack stack) {
         return false;
-    }
-
-    @Override
-    public Packet<?> createSpawnPacket() {
-        return new EntitySpawnS2CPacket(this);
     }
 
     @Override

@@ -11,9 +11,9 @@ import com.ibm.icu.text.BidiRun;
 import java.util.ArrayList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.resource.language.TextReorderingProcessor;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.StringVisitable;
+import net.minecraft.text.TextReorderingProcessor;
 
 @Environment(value=EnvType.CLIENT)
 public class ReorderingUtil {

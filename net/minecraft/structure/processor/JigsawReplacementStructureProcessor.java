@@ -35,7 +35,7 @@ extends StructureProcessor {
         }
         String string = currentBlockInfo.nbt.getString("final_state");
         try {
-            BlockArgumentParser.BlockResult blockResult = BlockArgumentParser.block(Registry.BLOCK, string, true);
+            BlockArgumentParser.BlockResult blockResult = BlockArgumentParser.block(world.createCommandRegistryWrapper(Registry.BLOCK_KEY), string, true);
             blockState2 = blockResult.blockState();
         } catch (CommandSyntaxException commandSyntaxException) {
             throw new RuntimeException(commandSyntaxException);

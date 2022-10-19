@@ -29,6 +29,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.resource.Resource;
+import net.minecraft.resource.ResourceFinder;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.tag.TagEntry;
 import net.minecraft.tag.TagFile;
@@ -38,22 +39,20 @@ import org.slf4j.Logger;
 
 public class TagGroupLoader<T> {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final String JSON_EXTENSION = ".json";
-    private static final int JSON_EXTENSION_LENGTH = ".json".length();
-    final Function<Identifier, Optional<T>> registryGetter;
+    final Function<Identifier, Optional<? extends T>> registryGetter;
     private final String dataType;
 
-    public TagGroupLoader(Function<Identifier, Optional<T>> registryGetter, String dataType) {
+    public TagGroupLoader(Function<Identifier, Optional<? extends T>> registryGetter, String dataType) {
         this.registryGetter = registryGetter;
         this.dataType = dataType;
     }
 
-    public Map<Identifier, List<TrackedEntry>> loadTags(ResourceManager manager) {
+    public Map<Identifier, List<TrackedEntry>> loadTags(ResourceManager resourceManager) {
         HashMap<Identifier, List<TrackedEntry>> map = Maps.newHashMap();
-        for (Map.Entry<Identifier, List<Resource>> entry2 : manager.findAllResources(this.dataType, id -> id.getPath().endsWith(JSON_EXTENSION)).entrySet()) {
+        ResourceFinder resourceFinder = ResourceFinder.json(this.dataType);
+        for (Map.Entry<Identifier, List<Resource>> entry2 : resourceFinder.findAllResources(resourceManager).entrySet()) {
             Identifier identifier = entry2.getKey();
-            String string = identifier.getPath();
-            Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(this.dataType.length() + 1, string.length() - JSON_EXTENSION_LENGTH));
+            Identifier identifier2 = resourceFinder.toResourceId(identifier);
             for (Resource resource : entry2.getValue()) {
                 try {
                     BufferedReader reader = resource.getReader();
@@ -64,8 +63,8 @@ public class TagGroupLoader<T> {
                         if (tagFile.replace()) {
                             list.clear();
                         }
-                        String string2 = resource.getResourcePackName();
-                        tagFile.entries().forEach(entry -> list.add(new TrackedEntry((TagEntry)entry, string2)));
+                        String string = resource.getResourcePackName();
+                        tagFile.entries().forEach(entry -> list.add(new TrackedEntry((TagEntry)entry, string)));
                     } finally {
                         if (reader == null) continue;
                         ((Reader)reader).close();

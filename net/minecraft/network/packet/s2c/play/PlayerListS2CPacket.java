@@ -4,13 +4,14 @@
 package net.minecraft.network.packet.s2c.play;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.UUID;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.encryption.PlayerPublicKey;
+import net.minecraft.network.encryption.PublicPlayerSession;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -19,40 +20,44 @@ import org.jetbrains.annotations.Nullable;
 
 public class PlayerListS2CPacket
 implements Packet<ClientPlayPacketListener> {
-    private final Action action;
+    private final EnumSet<Action> actions;
     private final List<Entry> entries;
 
-    public PlayerListS2CPacket(Action action, ServerPlayerEntity ... players) {
-        this.action = action;
-        this.entries = Lists.newArrayListWithCapacity(players.length);
-        for (ServerPlayerEntity serverPlayerEntity : players) {
-            this.entries.add(PlayerListS2CPacket.entryFromPlayer(serverPlayerEntity));
-        }
+    public PlayerListS2CPacket(EnumSet<Action> actions, Collection<ServerPlayerEntity> players) {
+        this.actions = actions;
+        this.entries = players.stream().map(Entry::new).toList();
     }
 
-    public PlayerListS2CPacket(Action action, Collection<ServerPlayerEntity> players) {
-        this.action = action;
-        this.entries = Lists.newArrayListWithCapacity(players.size());
-        for (ServerPlayerEntity serverPlayerEntity : players) {
-            this.entries.add(PlayerListS2CPacket.entryFromPlayer(serverPlayerEntity));
-        }
+    public PlayerListS2CPacket(Action action, ServerPlayerEntity player) {
+        this.actions = EnumSet.of(action);
+        this.entries = List.of(new Entry(player));
+    }
+
+    public static PlayerListS2CPacket entryFromPlayer(Collection<ServerPlayerEntity> players) {
+        EnumSet<Action[]> enumSet = EnumSet.of(Action.ADD_PLAYER, new Action[]{Action.INITIALIZE_CHAT, Action.UPDATE_GAME_MODE, Action.UPDATE_LISTED, Action.UPDATE_LATENCY, Action.UPDATE_DISPLAY_NAME});
+        return new PlayerListS2CPacket(enumSet, players);
     }
 
     public PlayerListS2CPacket(PacketByteBuf buf) {
-        this.action = buf.readEnumConstant(Action.class);
-        this.entries = buf.readList(this.action::read);
-    }
-
-    private static Entry entryFromPlayer(ServerPlayerEntity player) {
-        PlayerPublicKey playerPublicKey = player.getPublicKey();
-        PlayerPublicKey.PublicKeyData publicKeyData = playerPublicKey != null ? playerPublicKey.data() : null;
-        return new Entry(player.getGameProfile(), player.pingMilliseconds, player.interactionManager.getGameMode(), player.getPlayerListName(), publicKeyData);
+        this.actions = buf.readEnumSet(Action.class);
+        this.entries = buf.readList(buf2 -> {
+            Serialized serialized = new Serialized(buf2.readUuid());
+            for (Action action : this.actions) {
+                action.reader.read(serialized, (PacketByteBuf)buf2);
+            }
+            return serialized.toEntry();
+        });
     }
 
     @Override
     public void write(PacketByteBuf buf) {
-        buf.writeEnumConstant(this.action);
-        buf.writeCollection(this.entries, this.action::write);
+        buf.writeEnumSet(this.actions, Action.class);
+        buf.writeCollection(this.entries, (buf2, entry) -> {
+            buf2.writeUuid(entry.profileId());
+            for (Action action : this.actions) {
+                action.writer.write((PacketByteBuf)buf2, (Entry)entry);
+            }
+        });
     }
 
     @Override
@@ -60,153 +65,92 @@ implements Packet<ClientPlayPacketListener> {
         clientPlayPacketListener.onPlayerList(this);
     }
 
+    public EnumSet<Action> getActions() {
+        return this.actions;
+    }
+
     public List<Entry> getEntries() {
         return this.entries;
     }
 
-    public Action getAction() {
-        return this.action;
+    public List<Entry> getPlayerAdditionEntries() {
+        return this.actions.contains((Object)Action.ADD_PLAYER) ? this.entries : List.of();
     }
 
     public String toString() {
-        return MoreObjects.toStringHelper(this).add("action", (Object)this.action).add("entries", this.entries).toString();
+        return MoreObjects.toStringHelper(this).add("actions", this.actions).add("entries", this.entries).toString();
     }
 
-    /*
-     * Uses 'sealed' constructs - enablewith --sealed true
-     */
-    public static enum Action {
-        ADD_PLAYER{
-
-            @Override
-            protected Entry read(PacketByteBuf buf) {
-                GameProfile gameProfile = buf.readGameProfile();
-                GameMode gameMode = GameMode.byId(buf.readVarInt());
-                int i = buf.readVarInt();
-                Text text = (Text)buf.readNullable(PacketByteBuf::readText);
-                PlayerPublicKey.PublicKeyData publicKeyData = (PlayerPublicKey.PublicKeyData)buf.readNullable(PlayerPublicKey.PublicKeyData::new);
-                return new Entry(gameProfile, i, gameMode, text, publicKeyData);
-            }
-
-            @Override
-            protected void write(PacketByteBuf buf, Entry entry) {
-                buf.writeGameProfile(entry.getProfile());
-                buf.writeVarInt(entry.getGameMode().getId());
-                buf.writeVarInt(entry.getLatency());
-                buf.writeNullable(entry.getDisplayName(), PacketByteBuf::writeText);
-                buf.writeNullable(entry.getPublicKeyData(), (buf2, publicKeyData) -> publicKeyData.write((PacketByteBuf)buf2));
-            }
-        }
-        ,
-        UPDATE_GAME_MODE{
-
-            @Override
-            protected Entry read(PacketByteBuf buf) {
-                GameProfile gameProfile = new GameProfile(buf.readUuid(), null);
-                GameMode gameMode = GameMode.byId(buf.readVarInt());
-                return new Entry(gameProfile, 0, gameMode, null, null);
-            }
-
-            @Override
-            protected void write(PacketByteBuf buf, Entry entry) {
-                buf.writeUuid(entry.getProfile().getId());
-                buf.writeVarInt(entry.getGameMode().getId());
-            }
-        }
-        ,
-        UPDATE_LATENCY{
-
-            @Override
-            protected Entry read(PacketByteBuf buf) {
-                GameProfile gameProfile = new GameProfile(buf.readUuid(), null);
-                int i = buf.readVarInt();
-                return new Entry(gameProfile, i, null, null, null);
-            }
-
-            @Override
-            protected void write(PacketByteBuf buf, Entry entry) {
-                buf.writeUuid(entry.getProfile().getId());
-                buf.writeVarInt(entry.getLatency());
-            }
-        }
-        ,
-        UPDATE_DISPLAY_NAME{
-
-            @Override
-            protected Entry read(PacketByteBuf buf) {
-                GameProfile gameProfile = new GameProfile(buf.readUuid(), null);
-                Text text = (Text)buf.readNullable(PacketByteBuf::readText);
-                return new Entry(gameProfile, 0, null, text, null);
-            }
-
-            @Override
-            protected void write(PacketByteBuf buf, Entry entry) {
-                buf.writeUuid(entry.getProfile().getId());
-                buf.writeNullable(entry.getDisplayName(), PacketByteBuf::writeText);
-            }
-        }
-        ,
-        REMOVE_PLAYER{
-
-            @Override
-            protected Entry read(PacketByteBuf buf) {
-                GameProfile gameProfile = new GameProfile(buf.readUuid(), null);
-                return new Entry(gameProfile, 0, null, null, null);
-            }
-
-            @Override
-            protected void write(PacketByteBuf buf, Entry entry) {
-                buf.writeUuid(entry.getProfile().getId());
-            }
-        };
-
-
-        protected abstract Entry read(PacketByteBuf var1);
-
-        protected abstract void write(PacketByteBuf var1, Entry var2);
-    }
-
-    public static class Entry {
-        private final int latency;
-        private final GameMode gameMode;
-        private final GameProfile profile;
-        @Nullable
-        private final Text displayName;
-        @Nullable
-        private final PlayerPublicKey.PublicKeyData publicKeyData;
-
-        public Entry(GameProfile profile, int latency, @Nullable GameMode gameMode, @Nullable Text displayName, @Nullable PlayerPublicKey.PublicKeyData publicKeyData) {
-            this.profile = profile;
-            this.latency = latency;
-            this.gameMode = gameMode;
-            this.displayName = displayName;
-            this.publicKeyData = publicKeyData;
-        }
-
-        public GameProfile getProfile() {
-            return this.profile;
-        }
-
-        public int getLatency() {
-            return this.latency;
-        }
-
-        public GameMode getGameMode() {
-            return this.gameMode;
+    public record Entry(UUID profileId, GameProfile profile, boolean listed, int latency, GameMode gameMode, @Nullable Text displayName, PublicPlayerSession.Serialized chatSession) {
+        Entry(ServerPlayerEntity player) {
+            this(player.getUuid(), player.getGameProfile(), true, player.pingMilliseconds, player.interactionManager.getGameMode(), player.getPlayerListName(), player.getSession().toSerialized());
         }
 
         @Nullable
-        public Text getDisplayName() {
+        public Text displayName() {
             return this.displayName;
         }
+    }
 
-        @Nullable
-        public PlayerPublicKey.PublicKeyData getPublicKeyData() {
-            return this.publicKeyData;
+    public static enum Action {
+        ADD_PLAYER((serialized, buf) -> {
+            GameProfile gameProfile = new GameProfile(serialized.profileId, buf.readString(16));
+            gameProfile.getProperties().putAll(buf.readPropertyMap());
+            serialized.gameProfile = gameProfile;
+        }, (buf, entry) -> {
+            buf.writeString(entry.profile().getName(), 16);
+            buf.writePropertyMap(entry.profile().getProperties());
+        }),
+        INITIALIZE_CHAT((serialized, buf) -> {
+            serialized.session = PublicPlayerSession.Serialized.fromBuf(buf);
+        }, (buf, entry) -> PublicPlayerSession.Serialized.write(buf, entry.chatSession())),
+        UPDATE_GAME_MODE((serialized, buf) -> {
+            serialized.gameMode = GameMode.byId(buf.readVarInt());
+        }, (buf, entry) -> buf.writeVarInt(entry.gameMode().getId())),
+        UPDATE_LISTED((serialized, buf) -> {
+            serialized.listed = buf.readBoolean();
+        }, (buf, entry) -> buf.writeBoolean(entry.listed())),
+        UPDATE_LATENCY((serialized, buf) -> {
+            serialized.latency = buf.readVarInt();
+        }, (buf, entry) -> buf.writeVarInt(entry.latency())),
+        UPDATE_DISPLAY_NAME((serialized, buf) -> {
+            serialized.displayName = (Text)buf.readNullable(PacketByteBuf::readText);
+        }, (buf, entry) -> buf.writeNullable(entry.displayName(), PacketByteBuf::writeText));
+
+        final Reader reader;
+        final Writer writer;
+
+        private Action(Reader reader, Writer writer) {
+            this.reader = reader;
+            this.writer = writer;
         }
 
-        public String toString() {
-            return MoreObjects.toStringHelper(this).add("latency", this.latency).add("gameMode", (Object)this.gameMode).add("profile", this.profile).add("displayName", this.displayName == null ? null : Text.Serializer.toJson(this.displayName)).add("profilePublicKey", this.publicKeyData).toString();
+        public static interface Reader {
+            public void read(Serialized var1, PacketByteBuf var2);
+        }
+
+        public static interface Writer {
+            public void write(PacketByteBuf var1, Entry var2);
+        }
+    }
+
+    static class Serialized {
+        final UUID profileId;
+        GameProfile gameProfile;
+        boolean listed;
+        int latency;
+        GameMode gameMode = GameMode.DEFAULT;
+        @Nullable
+        Text displayName;
+        PublicPlayerSession.Serialized session;
+
+        Serialized(UUID profileId) {
+            this.profileId = profileId;
+            this.gameProfile = new GameProfile(profileId, null);
+        }
+
+        Entry toEntry() {
+            return new Entry(this.profileId, this.gameProfile, this.listed, this.latency, this.gameMode, this.displayName, this.session);
         }
     }
 }

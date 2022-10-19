@@ -60,13 +60,13 @@ public class PointOfInterestTypes {
     private static PointOfInterestType register(Registry<PointOfInterestType> registry, RegistryKey<PointOfInterestType> key, Set<BlockState> states, int ticketCount, int searchDistance) {
         PointOfInterestType pointOfInterestType = new PointOfInterestType(states, ticketCount, searchDistance);
         Registry.register(registry, key, pointOfInterestType);
-        PointOfInterestTypes.registerStates(registry.entryOf(key));
+        PointOfInterestTypes.registerStates(registry.entryOf(key), states);
         return pointOfInterestType;
     }
 
-    private static void registerStates(RegistryEntry<PointOfInterestType> poiType) {
-        poiType.value().blockStates().forEach(state -> {
-            RegistryEntry<PointOfInterestType> registryEntry2 = POI_STATES_TO_TYPE.put((BlockState)state, poiType);
+    private static void registerStates(RegistryEntry<PointOfInterestType> poiTypeEntry, Set<BlockState> states) {
+        states.forEach(state -> {
+            RegistryEntry<PointOfInterestType> registryEntry2 = POI_STATES_TO_TYPE.put((BlockState)state, poiTypeEntry);
             if (registryEntry2 != null) {
                 throw Util.throwOrPause(new IllegalStateException(String.format(Locale.ROOT, "%s is defined in more than one PoI type", state)));
             }

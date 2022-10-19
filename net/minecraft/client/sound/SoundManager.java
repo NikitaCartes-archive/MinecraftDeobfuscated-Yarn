@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
@@ -30,6 +31,7 @@ import net.minecraft.client.sound.SoundSystem;
 import net.minecraft.client.sound.TickableSoundInstance;
 import net.minecraft.client.sound.WeightedSoundSet;
 import net.minecraft.resource.Resource;
+import net.minecraft.resource.ResourceFactory;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SinglePreparationResourceReloader;
 import net.minecraft.sound.SoundCategory;
@@ -55,15 +57,19 @@ extends SinglePreparationResourceReloader<SoundList> {
     private static final TypeToken<Map<String, SoundEntry>> TYPE = new TypeToken<Map<String, SoundEntry>>(){};
     private final Map<Identifier, WeightedSoundSet> sounds = Maps.newHashMap();
     private final SoundSystem soundSystem;
+    private final Map<Identifier, Resource> soundResources = new HashMap<Identifier, Resource>();
 
-    public SoundManager(ResourceManager resourceManager, GameOptions gameOptions) {
-        this.soundSystem = new SoundSystem(this, gameOptions, resourceManager);
+    public SoundManager(GameOptions gameOptions) {
+        this.soundSystem = new SoundSystem(this, gameOptions, ResourceFactory.fromMap(this.soundResources));
     }
 
     @Override
     protected SoundList prepare(ResourceManager resourceManager, Profiler profiler) {
         SoundList soundList = new SoundList();
         profiler.startTick();
+        profiler.push("list");
+        soundList.findSounds(resourceManager);
+        profiler.pop();
         for (String string : resourceManager.getAllNamespaces()) {
             profiler.push(string);
             try {
@@ -75,7 +81,7 @@ extends SinglePreparationResourceReloader<SoundList> {
                         Map<String, SoundEntry> map = JsonHelper.deserialize(GSON, (Reader)reader, TYPE);
                         profiler.swap("register");
                         for (Map.Entry<String, SoundEntry> entry : map.entrySet()) {
-                            soundList.register(new Identifier(string, entry.getKey()), entry.getValue(), resourceManager);
+                            soundList.register(new Identifier(string, entry.getKey()), entry.getValue());
                         }
                         profiler.pop();
                     } catch (RuntimeException runtimeException) {
@@ -94,7 +100,7 @@ extends SinglePreparationResourceReloader<SoundList> {
 
     @Override
     protected void apply(SoundList soundList, ResourceManager resourceManager, Profiler profiler) {
-        soundList.reload(this.sounds, this.soundSystem);
+        soundList.reload(this.sounds, this.soundResources, this.soundSystem);
         if (SharedConstants.isDevelopment) {
             for (Identifier identifier : this.sounds.keySet()) {
                 WeightedSoundSet weightedSoundSet = this.sounds.get(identifier);
@@ -115,9 +121,9 @@ extends SinglePreparationResourceReloader<SoundList> {
         return this.soundSystem.getSoundDevices();
     }
 
-    static boolean isSoundResourcePresent(Sound sound, Identifier id, ResourceManager resourceManager) {
+    static boolean isSoundResourcePresent(Sound sound, Identifier id, ResourceFactory resourceFactory) {
         Identifier identifier = sound.getLocation();
-        if (resourceManager.getResource(identifier).isEmpty()) {
+        if (resourceFactory.getResource(identifier).isEmpty()) {
             LOGGER.warn("File {} does not exist, cannot add it to event {}", (Object)identifier, (Object)id);
             return false;
         }
@@ -212,11 +218,16 @@ extends SinglePreparationResourceReloader<SoundList> {
     @Environment(value=EnvType.CLIENT)
     protected static class SoundList {
         final Map<Identifier, WeightedSoundSet> loadedSounds = Maps.newHashMap();
+        private Map<Identifier, Resource> foundSounds = Map.of();
 
         protected SoundList() {
         }
 
-        void register(Identifier id, SoundEntry entry, ResourceManager resourceManager) {
+        void findSounds(ResourceManager resourceManager) {
+            this.foundSounds = Sound.FINDER.findResources(resourceManager);
+        }
+
+        void register(Identifier id, SoundEntry entry) {
             boolean bl;
             WeightedSoundSet weightedSoundSet = this.loadedSounds.get(id);
             boolean bl2 = bl = weightedSoundSet == null;
@@ -227,11 +238,12 @@ extends SinglePreparationResourceReloader<SoundList> {
                 weightedSoundSet = new WeightedSoundSet(id, entry.getSubtitle());
                 this.loadedSounds.put(id, weightedSoundSet);
             }
+            ResourceFactory resourceFactory = ResourceFactory.fromMap(this.foundSounds);
             block4: for (final Sound sound : entry.getSounds()) {
                 final Identifier identifier = sound.getIdentifier();
                 weightedSoundSet.add(switch (sound.getRegistrationType()) {
                     case Sound.RegistrationType.FILE -> {
-                        if (!SoundManager.isSoundResourcePresent(sound, id, resourceManager)) continue block4;
+                        if (!SoundManager.isSoundResourcePresent(sound, id, resourceFactory)) continue block4;
                         yield sound;
                     }
                     case Sound.RegistrationType.SOUND_EVENT -> new SoundContainer<Sound>(){
@@ -271,11 +283,13 @@ extends SinglePreparationResourceReloader<SoundList> {
             }
         }
 
-        public void reload(Map<Identifier, WeightedSoundSet> sounds, SoundSystem soundSystem) {
+        public void reload(Map<Identifier, WeightedSoundSet> sounds, Map<Identifier, Resource> soundResources, SoundSystem system) {
             sounds.clear();
+            soundResources.clear();
+            soundResources.putAll(this.foundSounds);
             for (Map.Entry<Identifier, WeightedSoundSet> entry : this.loadedSounds.entrySet()) {
                 sounds.put(entry.getKey(), entry.getValue());
-                entry.getValue().preload(soundSystem);
+                entry.getValue().preload(system);
             }
         }
     }

@@ -23,12 +23,14 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.realms.gui.screen.DisconnectedRealmsScreen;
 import net.minecraft.client.realms.gui.screen.RealmsScreen;
 import net.minecraft.client.util.NetworkUtils;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.PacketCallbacks;
+import net.minecraft.network.encryption.ClientPlayerSession;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.encryption.Signer;
 import net.minecraft.network.listener.ClientLoginPacketListener;
@@ -49,16 +51,21 @@ public class ClientLoginNetworkHandler
 implements ClientLoginPacketListener {
     private static final Logger LOGGER = LogUtils.getLogger();
     private final MinecraftClient client;
+    private final ClientPlayerSession session;
+    @Nullable
+    private final ServerInfo serverInfo;
     @Nullable
     private final Screen parentScreen;
     private final Consumer<Text> statusConsumer;
     private final ClientConnection connection;
     private GameProfile profile;
 
-    public ClientLoginNetworkHandler(ClientConnection connection, MinecraftClient client, @Nullable Screen parentGui, Consumer<Text> statusConsumer) {
+    public ClientLoginNetworkHandler(ClientConnection connection, MinecraftClient client, ClientPlayerSession session, @Nullable ServerInfo serverInfo, @Nullable Screen parentScreen, Consumer<Text> statusConsumer) {
         this.connection = connection;
         this.client = client;
-        this.parentScreen = parentGui;
+        this.session = session;
+        this.serverInfo = serverInfo;
+        this.parentScreen = parentScreen;
         this.statusConsumer = statusConsumer;
     }
 
@@ -75,7 +82,7 @@ implements ClientLoginPacketListener {
             cipher = NetworkEncryptionUtils.cipherFromKey(2, secretKey);
             cipher2 = NetworkEncryptionUtils.cipherFromKey(1, secretKey);
             byte[] bs = packet.getNonce();
-            Signer signer = this.client.getProfileKeys().getSigner();
+            Signer signer = this.session.createSigner();
             if (signer == null) {
                 loginKeyC2SPacket = new LoginKeyC2SPacket(secretKey, publicKey, bs);
             } else {
@@ -93,7 +100,7 @@ implements ClientLoginPacketListener {
         NetworkUtils.EXECUTOR.submit(() -> {
             Text text = this.joinServerSession(string);
             if (text != null) {
-                if (this.client.getCurrentServerEntry() != null && this.client.getCurrentServerEntry().isLocal()) {
+                if (this.serverInfo != null && this.serverInfo.isLocal()) {
                     LOGGER.warn(text.getString());
                 } else {
                     this.connection.disconnect(text);
@@ -132,7 +139,7 @@ implements ClientLoginPacketListener {
         this.statusConsumer.accept(Text.translatable("connect.joining"));
         this.profile = packet.getProfile();
         this.connection.setState(NetworkState.PLAY);
-        this.connection.setPacketListener(new ClientPlayNetworkHandler(this.client, this.parentScreen, this.connection, this.profile, this.client.createTelemetrySender()));
+        this.connection.setPacketListener(new ClientPlayNetworkHandler(this.client, this.parentScreen, this.connection, this.session, this.serverInfo, this.profile, this.client.createTelemetrySender()));
     }
 
     @Override

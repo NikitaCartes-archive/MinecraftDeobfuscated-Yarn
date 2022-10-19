@@ -78,7 +78,7 @@ extends FeatureRenderer<T, M> {
     }
 
     private Identifier findTexture(String keyType, Identifier keyId) {
-        return new Identifier(keyId.getNamespace(), "textures/entity/" + this.entityType + "/" + keyType + "/" + keyId.getPath() + ".png");
+        return keyId.withPath(string2 -> "textures/entity/" + this.entityType + "/" + keyType + "/" + string2 + ".png");
     }
 
     public <K> VillagerResourceMetadata.HatType getHatType(Object2ObjectMap<K, VillagerResourceMetadata.HatType> hatLookUp, String keyType, DefaultedRegistry<K> registry, K key) {

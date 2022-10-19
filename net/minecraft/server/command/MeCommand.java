@@ -16,10 +16,11 @@ import net.minecraft.server.command.ServerCommandSource;
 public class MeCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder)CommandManager.literal("me").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("action", MessageArgumentType.message()).executes(context -> {
-            MessageArgumentType.SignedMessage signedMessage = MessageArgumentType.getSignedMessage(context, "action");
-            ServerCommandSource serverCommandSource = (ServerCommandSource)context.getSource();
-            PlayerManager playerManager = serverCommandSource.getServer().getPlayerManager();
-            signedMessage.decorate(serverCommandSource, message -> playerManager.broadcast((SignedMessage)message, serverCommandSource, MessageType.params(MessageType.EMOTE_COMMAND, serverCommandSource)));
+            MessageArgumentType.getSignedMessage(context, "action", message -> {
+                ServerCommandSource serverCommandSource = (ServerCommandSource)context.getSource();
+                PlayerManager playerManager = serverCommandSource.getServer().getPlayerManager();
+                playerManager.broadcast((SignedMessage)message, serverCommandSource, MessageType.params(MessageType.EMOTE_COMMAND, serverCommandSource));
+            });
             return 1;
         })));
     }

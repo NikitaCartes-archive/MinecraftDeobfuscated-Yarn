@@ -9,7 +9,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
@@ -22,11 +22,15 @@ public class WeightedPressurePlateBlock
 extends AbstractPressurePlateBlock {
     public static final IntProperty POWER = Properties.POWER;
     private final int weight;
+    private final SoundEvent depressSound;
+    private final SoundEvent pressSound;
 
-    protected WeightedPressurePlateBlock(int weight, AbstractBlock.Settings settings) {
+    protected WeightedPressurePlateBlock(int weight, AbstractBlock.Settings settings, SoundEvent depressSound, SoundEvent pressSound) {
         super(settings);
         this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(POWER, 0));
         this.weight = weight;
+        this.depressSound = depressSound;
+        this.pressSound = pressSound;
     }
 
     @Override
@@ -41,12 +45,12 @@ extends AbstractPressurePlateBlock {
 
     @Override
     protected void playPressSound(WorldAccess world, BlockPos pos) {
-        world.playSound(null, pos, SoundEvents.BLOCK_METAL_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 0.3f, 0.90000004f);
+        world.playSound(null, pos, this.pressSound, SoundCategory.BLOCKS);
     }
 
     @Override
     protected void playDepressSound(WorldAccess world, BlockPos pos) {
-        world.playSound(null, pos, SoundEvents.BLOCK_METAL_PRESSURE_PLATE_CLICK_OFF, SoundCategory.BLOCKS, 0.3f, 0.75f);
+        world.playSound(null, pos, this.depressSound, SoundCategory.BLOCKS);
     }
 
     @Override

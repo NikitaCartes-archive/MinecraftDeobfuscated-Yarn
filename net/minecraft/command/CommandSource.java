@@ -19,6 +19,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.DynamicRegistryManager;
@@ -56,6 +57,8 @@ public interface CommandSource {
     public Set<RegistryKey<World>> getWorldKeys();
 
     public DynamicRegistryManager getRegistryManager();
+
+    public FeatureSet getEnabledFeatures();
 
     default public void suggestIdentifiers(Registry<?> registry, SuggestedIdType suggestedIdType, SuggestionsBuilder builder) {
         if (suggestedIdType.canSuggestTags()) {

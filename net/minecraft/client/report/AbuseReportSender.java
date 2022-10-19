@@ -44,7 +44,7 @@ public interface AbuseReportSender {
         @Override
         public CompletableFuture<Unit> send(UUID id, AbuseReport report) {
             return CompletableFuture.supplyAsync(() -> {
-                AbuseReportRequest abuseReportRequest = new AbuseReportRequest(id, report, this.environment.toClientInfo(), this.environment.toThirdPartyServerInfo(), this.environment.toRealmInfo());
+                AbuseReportRequest abuseReportRequest = new AbuseReportRequest(1, id, report, this.environment.toClientInfo(), this.environment.toThirdPartyServerInfo(), this.environment.toRealmInfo());
                 try {
                     this.userApiService.reportAbuse(abuseReportRequest);
                     return Unit.INSTANCE;

@@ -7,19 +7,19 @@ import java.util.Collection;
 import java.util.Locale;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.TextureStitcher;
 
 @Environment(value=EnvType.CLIENT)
 public class TextureStitcherCannotFitException
 extends RuntimeException {
-    private final Collection<Sprite.Info> sprites;
+    private final Collection<TextureStitcher.Stitchable> sprites;
 
-    public TextureStitcherCannotFitException(Sprite.Info sprite, Collection<Sprite.Info> sprites) {
+    public TextureStitcherCannotFitException(TextureStitcher.Stitchable sprite, Collection<TextureStitcher.Stitchable> sprites) {
         super(String.format(Locale.ROOT, "Unable to fit: %s - size: %dx%d - Maybe try a lower resolution resourcepack?", sprite.getId(), sprite.getWidth(), sprite.getHeight()));
         this.sprites = sprites;
     }
 
-    public Collection<Sprite.Info> getSprites() {
+    public Collection<TextureStitcher.Stitchable> getSprites() {
         return this.sprites;
     }
 }

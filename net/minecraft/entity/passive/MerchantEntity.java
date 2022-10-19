@@ -183,7 +183,9 @@ Merchant {
         if (nbt.contains("Offers", NbtElement.COMPOUND_TYPE)) {
             this.offers = new TradeOfferList(nbt.getCompound("Offers"));
         }
-        this.inventory.readNbtList(nbt.getList("Inventory", NbtElement.COMPOUND_TYPE));
+        if (nbt.contains("Inventory", NbtElement.COMPOUND_TYPE)) {
+            this.inventory.readNbtList(nbt.getList("Inventory", NbtElement.COMPOUND_TYPE));
+        }
     }
 
     @Override

@@ -20,8 +20,6 @@ import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
-import it.unimi.dsi.fastutil.objects.Object2FloatMap;
-import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -31,11 +29,14 @@ import java.io.PrintWriter;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -49,7 +50,6 @@ import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.option.AoMode;
 import net.minecraft.client.option.AttackIndicator;
-import net.minecraft.client.option.ChatPreviewMode;
 import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.client.option.CloudRenderMode;
 import net.minecraft.client.option.GraphicsMode;
@@ -193,6 +193,7 @@ public class GameOptions {
     private final SimpleOption<Double> chatOpacity = new SimpleOption<Double>("options.chat.opacity", SimpleOption.emptyTooltip(), (optionText, value) -> GameOptions.getPercentValueText(optionText, value * 0.9 + 0.1), SimpleOption.DoubleSliderCallbacks.INSTANCE, 1.0, value -> MinecraftClient.getInstance().inGameHud.getChatHud().reset());
     private final SimpleOption<Double> chatLineSpacing = new SimpleOption<Double>("options.chat.line_spacing", SimpleOption.emptyTooltip(), GameOptions::getPercentValueText, SimpleOption.DoubleSliderCallbacks.INSTANCE, 0.0, value -> {});
     private final SimpleOption<Double> textBackgroundOpacity = new SimpleOption<Double>("options.accessibility.text_background_opacity", SimpleOption.emptyTooltip(), GameOptions::getPercentValueText, SimpleOption.DoubleSliderCallbacks.INSTANCE, 0.5, value -> MinecraftClient.getInstance().inGameHud.getChatHud().reset());
+    private final SimpleOption<Double> panoramaSpeed = new SimpleOption<Double>("options.accessibility.panorama_speed", SimpleOption.emptyTooltip(), GameOptions::getPercentValueText, SimpleOption.DoubleSliderCallbacks.INSTANCE, 1.0, value -> {});
     @Nullable
     public String fullscreenResolution;
     public boolean hideServerAddress;
@@ -224,7 +225,6 @@ public class GameOptions {
         }
         return GameOptions.getGenericValueText(optionText, value);
     }, new SimpleOption.ValidatingIntSliderCallbacks(0, 4), 4, value -> {});
-    private final Object2FloatMap<SoundCategory> soundVolumeLevels = Util.make(new Object2FloatOpenHashMap(), map -> map.defaultReturnValue(1.0f));
     public boolean useNativeTransport = true;
     private final SimpleOption<AttackIndicator> attackIndicator = new SimpleOption<AttackIndicator>("options.attackIndicator", SimpleOption.emptyTooltip(), SimpleOption.enumValueText(), new SimpleOption.PotentialValuesBasedCallbacks<AttackIndicator>(Arrays.asList(AttackIndicator.values()), Codec.INT.xmap(AttackIndicator::byId, AttackIndicator::getId)), AttackIndicator.CROSSHAIR, value -> {});
     public TutorialStep tutorialStep = TutorialStep.MOVEMENT;
@@ -266,6 +266,11 @@ public class GameOptions {
     private static final Text ALLOW_SERVER_LISTING_TOOLTIP = Text.translatable("options.allowServerListing.tooltip");
     private final SimpleOption<Boolean> allowServerListing = SimpleOption.ofBoolean("options.allowServerListing", SimpleOption.constantTooltip(ALLOW_SERVER_LISTING_TOOLTIP), true, value -> this.sendClientSettings());
     private final SimpleOption<Boolean> reducedDebugInfo = SimpleOption.ofBoolean("options.reducedDebugInfo", false);
+    private final Map<SoundCategory, SimpleOption<Double>> soundVolumeLevels = Util.make(new EnumMap(SoundCategory.class), soundVolumeLevels -> {
+        for (SoundCategory soundCategory : SoundCategory.values()) {
+            soundVolumeLevels.put(soundCategory, this.createSoundVolumeOption("soundCategory." + soundCategory.getName(), soundCategory));
+        }
+    });
     private final SimpleOption<Boolean> showSubtitles = SimpleOption.ofBoolean("options.showSubtitles", false);
     private static final Text DIRECTIONAL_AUDIO_ON_TOOLTIP = Text.translatable("options.directionalAudio.on.tooltip");
     private static final Text DIRECTIONAL_AUDIO_OFF_TOOLTIP = Text.translatable("options.directionalAudio.off.tooltip");
@@ -297,15 +302,6 @@ public class GameOptions {
     private static final Text HIDE_MATCHED_NAMES_TOOLTIP = Text.translatable("options.hideMatchedNames.tooltip");
     private final SimpleOption<Boolean> hideMatchedNames = SimpleOption.ofBoolean("options.hideMatchedNames", SimpleOption.constantTooltip(HIDE_MATCHED_NAMES_TOOLTIP), true);
     private final SimpleOption<Boolean> showAutosaveIndicator = SimpleOption.ofBoolean("options.autosaveIndicator", true);
-    private static final Text OFF_CHAT_PREVIEW_TOOLTIP = Text.translatable("options.chatPreview.tooltip.off");
-    private static final Text LIVE_CHAT_PREVIEW_TOOLTIP = Text.translatable("options.chatPreview.tooltip.live");
-    private static final Text CONFIRM_CHAT_PREVIEW_TOOLTIP = Text.translatable("options.chatPreview.tooltip.confirm");
-    private final SimpleOption<ChatPreviewMode> chatPreview = new SimpleOption<ChatPreviewMode>("options.chatPreview", client -> value -> switch (value) {
-        default -> throw new IncompatibleClassChangeError();
-        case ChatPreviewMode.OFF -> SimpleOption.wrapLines(client, OFF_CHAT_PREVIEW_TOOLTIP);
-        case ChatPreviewMode.LIVE -> SimpleOption.wrapLines(client, LIVE_CHAT_PREVIEW_TOOLTIP);
-        case ChatPreviewMode.CONFIRM -> SimpleOption.wrapLines(client, CONFIRM_CHAT_PREVIEW_TOOLTIP);
-    }, SimpleOption.enumValueText(), new SimpleOption.PotentialValuesBasedCallbacks<ChatPreviewMode>(Arrays.asList(ChatPreviewMode.values()), Codec.INT.xmap(ChatPreviewMode::byId, ChatPreviewMode::getId)), ChatPreviewMode.LIVE, value -> {});
     private static final Text ONLY_SHOW_SECURE_CHAT_TOOLTIP = Text.translatable("options.onlyShowSecureChat.tooltip");
     private final SimpleOption<Boolean> onlyShowSecureChat = SimpleOption.ofBoolean("options.onlyShowSecureChat", SimpleOption.constantTooltip(ONLY_SHOW_SECURE_CHAT_TOOLTIP), false);
     /**
@@ -600,6 +596,10 @@ public class GameOptions {
         return this.textBackgroundOpacity;
     }
 
+    public SimpleOption<Double> getPanoramaSpeed() {
+        return this.panoramaSpeed;
+    }
+
     public SimpleOption<Arm> getMainArm() {
         return this.mainArm;
     }
@@ -704,6 +704,23 @@ public class GameOptions {
         return this.reducedDebugInfo;
     }
 
+    public final float getSoundVolume(SoundCategory category) {
+        return this.getSoundVolumeOption(category).getValue().floatValue();
+    }
+
+    public final SimpleOption<Double> getSoundVolumeOption(SoundCategory category) {
+        return Objects.requireNonNull(this.soundVolumeLevels.get((Object)category));
+    }
+
+    private SimpleOption<Double> createSoundVolumeOption(String key, SoundCategory category) {
+        return new SimpleOption<Double>(key, SimpleOption.emptyTooltip(), (prefix, value) -> {
+            if (value == 0.0) {
+                return GameOptions.getGenericValueText(prefix, ScreenTexts.OFF);
+            }
+            return GameOptions.getPercentValueText(prefix, value);
+        }, SimpleOption.DoubleSliderCallbacks.INSTANCE, 1.0, value -> MinecraftClient.getInstance().getSoundManager().updateSoundVolume(category, value.floatValue()));
+    }
+
     public SimpleOption<Boolean> getShowSubtitles() {
         return this.showSubtitles;
     }
@@ -742,10 +759,6 @@ public class GameOptions {
 
     public SimpleOption<Boolean> getShowAutosaveIndicator() {
         return this.showAutosaveIndicator;
-    }
-
-    public SimpleOption<ChatPreviewMode> getChatPreview() {
-        return this.chatPreview;
     }
 
     public SimpleOption<Boolean> getOnlyShowSecureChat() {
@@ -893,7 +906,6 @@ public class GameOptions {
         this.syncChunkWrites = visitor.visitBoolean("syncChunkWrites", this.syncChunkWrites);
         visitor.accept("showAutosaveIndicator", this.showAutosaveIndicator);
         visitor.accept("allowServerListing", this.allowServerListing);
-        visitor.accept("chatPreview", this.chatPreview);
         visitor.accept("onlyShowSecureChat", this.onlyShowSecureChat);
         for (KeyBinding keyBinding : this.allKeys) {
             String string2;
@@ -902,7 +914,7 @@ public class GameOptions {
             keyBinding.setBoundKey(InputUtil.fromTranslationKey(string2));
         }
         for (SoundCategory soundCategory : SoundCategory.values()) {
-            this.soundVolumeLevels.computeFloat(soundCategory, (category, currentLevel) -> Float.valueOf(visitor.visitFloat("soundCategory_" + category.getName(), currentLevel != null ? currentLevel.floatValue() : 1.0f)));
+            visitor.accept("soundCategory_" + soundCategory.getName(), this.soundVolumeLevels.get((Object)soundCategory));
         }
         for (PlayerModelPart playerModelPart : PlayerModelPart.values()) {
             boolean bl = this.enabledPlayerModelParts.contains((Object)playerModelPart);
@@ -917,7 +929,6 @@ public class GameOptions {
             if (!this.optionsFile.exists()) {
                 return;
             }
-            this.soundVolumeLevels.clear();
             NbtCompound nbtCompound = new NbtCompound();
             try (BufferedReader bufferedReader = Files.newReader(this.optionsFile, Charsets.UTF_8);){
                 bufferedReader.lines().forEach(line -> {
@@ -1097,15 +1108,6 @@ public class GameOptions {
             LOGGER.error("Failed to save options", exception);
         }
         this.sendClientSettings();
-    }
-
-    public float getSoundVolume(SoundCategory category) {
-        return this.soundVolumeLevels.getFloat((Object)category);
-    }
-
-    public void setSoundVolume(SoundCategory category, float volume) {
-        this.soundVolumeLevels.put(category, volume);
-        this.client.getSoundManager().updateSoundVolume(category, volume);
     }
 
     /**

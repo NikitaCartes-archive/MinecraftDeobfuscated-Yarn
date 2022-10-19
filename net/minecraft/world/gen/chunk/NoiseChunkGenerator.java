@@ -4,6 +4,7 @@
 package net.minecraft.world.gen.chunk;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Suppliers;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
@@ -17,6 +18,7 @@ import java.util.OptionalInt;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -74,22 +76,23 @@ public final class NoiseChunkGenerator
 extends ChunkGenerator {
     public static final Codec<NoiseChunkGenerator> CODEC = RecordCodecBuilder.create(instance -> NoiseChunkGenerator.createStructureSetRegistryGetter(instance).and(instance.group(RegistryOps.createRegistryCodec(Registry.NOISE_KEY).forGetter(generator -> generator.noiseRegistry), ((MapCodec)BiomeSource.CODEC.fieldOf("biome_source")).forGetter(generator -> generator.biomeSource), ((MapCodec)ChunkGeneratorSettings.REGISTRY_CODEC.fieldOf("settings")).forGetter(generator -> generator.settings))).apply((Applicative<NoiseChunkGenerator, ?>)instance, instance.stable(NoiseChunkGenerator::new)));
     private static final BlockState AIR = Blocks.AIR.getDefaultState();
-    protected final BlockState defaultBlock;
     private final Registry<DoublePerlinNoiseSampler.NoiseParameters> noiseRegistry;
-    protected final RegistryEntry<ChunkGeneratorSettings> settings;
-    private final AquiferSampler.FluidLevelSampler fluidLevelSampler;
+    private final RegistryEntry<ChunkGeneratorSettings> settings;
+    private final Supplier<AquiferSampler.FluidLevelSampler> fluidLevelSampler;
 
     public NoiseChunkGenerator(Registry<StructureSet> structureSetRegistry, Registry<DoublePerlinNoiseSampler.NoiseParameters> noiseRegistry, BiomeSource populationSource, RegistryEntry<ChunkGeneratorSettings> settings) {
         super(structureSetRegistry, Optional.empty(), populationSource);
         this.noiseRegistry = noiseRegistry;
         this.settings = settings;
-        ChunkGeneratorSettings chunkGeneratorSettings = this.settings.value();
-        this.defaultBlock = chunkGeneratorSettings.defaultBlock();
+        this.fluidLevelSampler = Suppliers.memoize(() -> NoiseChunkGenerator.createFluidLevelSampler((ChunkGeneratorSettings)settings.value()));
+    }
+
+    private static AquiferSampler.FluidLevelSampler createFluidLevelSampler(ChunkGeneratorSettings settings) {
         AquiferSampler.FluidLevel fluidLevel = new AquiferSampler.FluidLevel(-54, Blocks.LAVA.getDefaultState());
-        int i = chunkGeneratorSettings.seaLevel();
-        AquiferSampler.FluidLevel fluidLevel2 = new AquiferSampler.FluidLevel(i, chunkGeneratorSettings.defaultFluid());
+        int i = settings.seaLevel();
+        AquiferSampler.FluidLevel fluidLevel2 = new AquiferSampler.FluidLevel(i, settings.defaultFluid());
         AquiferSampler.FluidLevel fluidLevel3 = new AquiferSampler.FluidLevel(DimensionType.MIN_HEIGHT * 2, Blocks.AIR.getDefaultState());
-        this.fluidLevelSampler = (x, y, z) -> {
+        return (x, y, z) -> {
             if (y < Math.min(-54, i)) {
                 return fluidLevel;
             }
@@ -112,7 +115,7 @@ extends ChunkGenerator {
     }
 
     private ChunkNoiseSampler createChunkNoiseSampler(Chunk chunk, StructureAccessor world, Blender blender, NoiseConfig noiseConfig) {
-        return ChunkNoiseSampler.create(chunk, noiseConfig, StructureWeightSampler.createStructureWeightSampler(world, chunk.getPos()), this.settings.value(), this.fluidLevelSampler, blender);
+        return ChunkNoiseSampler.create(chunk, noiseConfig, StructureWeightSampler.createStructureWeightSampler(world, chunk.getPos()), this.settings.value(), this.fluidLevelSampler.get(), blender);
     }
 
     @Override
@@ -174,7 +177,7 @@ extends ChunkGenerator {
         int s = o * m;
         double d = (double)p / (double)m;
         double e = (double)q / (double)m;
-        ChunkNoiseSampler chunkNoiseSampler = new ChunkNoiseSampler(1, noiseConfig, r, s, generationShapeConfig, DensityFunctionTypes.Beardifier.INSTANCE, this.settings.value(), this.fluidLevelSampler, Blender.getNoBlending());
+        ChunkNoiseSampler chunkNoiseSampler = new ChunkNoiseSampler(1, noiseConfig, r, s, generationShapeConfig, DensityFunctionTypes.Beardifier.INSTANCE, this.settings.value(), this.fluidLevelSampler.get(), Blender.getNoBlending());
         chunkNoiseSampler.sampleStartNoise();
         chunkNoiseSampler.sampleEndNoise(0);
         for (int t = l - 1; t >= 0; --t) {
@@ -187,7 +190,7 @@ extends ChunkGenerator {
                 chunkNoiseSampler.sampleNoiseX(x, d);
                 chunkNoiseSampler.sampleNoiseZ(z, e);
                 BlockState blockState = chunkNoiseSampler.sampleBlockState();
-                BlockState blockState3 = blockState2 = blockState == null ? this.defaultBlock : blockState;
+                BlockState blockState3 = blockState2 = blockState == null ? this.settings.value().defaultBlock() : blockState;
                 if (blockStates != null) {
                     int w = t * i + u;
                     blockStates[w] = blockState2;
@@ -311,7 +314,7 @@ extends ChunkGenerator {
                                 chunkNoiseSampler.sampleNoiseZ(z, f);
                                 BlockState blockState = chunkNoiseSampler.sampleBlockState();
                                 if (blockState == null) {
-                                    blockState = this.defaultBlock;
+                                    blockState = this.settings.value().defaultBlock();
                                 }
                                 if ((blockState = this.getBlockState(chunkNoiseSampler, w, s, z, blockState)) == AIR || SharedConstants.isOutsideGenerationArea(chunk2.getPos())) continue;
                                 if (blockState.getLuminance() != 0 && chunk2 instanceof ProtoChunk) {

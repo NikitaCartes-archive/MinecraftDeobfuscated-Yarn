@@ -5,7 +5,7 @@ package net.minecraft.client.item;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.item.UnclampedModelPredicateProvider;
+import net.minecraft.client.item.ClampedModelPredicateProvider;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class CompassAnglePredicateProvider
-implements UnclampedModelPredicateProvider {
+implements ClampedModelPredicateProvider {
     public static final int field_38798 = 0;
     private final AngleInterpolator aimedInterpolator = new AngleInterpolator();
     private final AngleInterpolator aimlessInterpolator = new AngleInterpolator();

@@ -234,6 +234,7 @@ extends AnimalEntity {
     }
 
     @Override
+    @Nullable
     public OcelotEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
         return EntityType.OCELOT.create(serverWorld);
     }
@@ -282,6 +283,7 @@ extends AnimalEntity {
     }
 
     @Override
+    @Nullable
     public /* synthetic */ PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
         return this.createChild(world, entity);
     }

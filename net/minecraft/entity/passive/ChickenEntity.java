@@ -37,6 +37,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
+import org.jetbrains.annotations.Nullable;
 
 public class ChickenEntity
 extends AnimalEntity {
@@ -136,6 +137,7 @@ extends AnimalEntity {
     }
 
     @Override
+    @Nullable
     public ChickenEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
         return EntityType.CHICKEN.create(serverWorld);
     }
@@ -196,6 +198,7 @@ extends AnimalEntity {
     }
 
     @Override
+    @Nullable
     public /* synthetic */ PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
         return this.createChild(world, entity);
     }

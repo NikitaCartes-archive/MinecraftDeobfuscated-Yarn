@@ -200,18 +200,17 @@ public final class SpawnHelper {
 
     @Nullable
     private static MobEntity createMob(ServerWorld world, EntityType<?> type) {
-        MobEntity mobEntity;
         try {
-            Object entity = type.create(world);
-            if (!(entity instanceof MobEntity)) {
-                throw new IllegalStateException("Trying to spawn a non-mob: " + Registry.ENTITY_TYPE.getId(type));
+            Object obj = type.create(world);
+            if (obj instanceof MobEntity) {
+                MobEntity mobEntity = (MobEntity)obj;
+                return mobEntity;
             }
-            mobEntity = (MobEntity)entity;
+            LOGGER.warn("Can't spawn entity of type: {}", (Object)Registry.ENTITY_TYPE.getId(type));
         } catch (Exception exception) {
             LOGGER.warn("Failed to create mob", exception);
-            return null;
         }
-        return mobEntity;
+        return null;
     }
 
     private static boolean isValidSpawn(ServerWorld world, MobEntity entity, double squaredDistance) {
@@ -337,6 +336,7 @@ public final class SpawnHelper {
                             LOGGER.warn("Failed to create mob", exception);
                             continue;
                         }
+                        if (entity == null) continue;
                         ((Entity)entity).refreshPositionAndAngles(d, blockPos.getY(), e, random.nextFloat() * 360.0f, 0.0f);
                         if (entity instanceof MobEntity && (mobEntity = (MobEntity)entity).canSpawn(world, SpawnReason.CHUNK_GENERATION) && mobEntity.canSpawn(world)) {
                             entityData = mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), SpawnReason.CHUNK_GENERATION, entityData, null);

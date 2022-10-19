@@ -16,6 +16,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.biome.source.util.VanillaTerrainParametersCreator;
+import net.minecraft.world.gen.densityfunction.DensityFunction;
 import net.minecraft.world.gen.densityfunction.DensityFunctionTypes;
 import net.minecraft.world.gen.densityfunction.DensityFunctions;
 
@@ -488,8 +489,8 @@ public final class VanillaBiomeParameters {
         parameters.accept(Pair.of(MultiNoiseUtil.createNoiseHypercube(temperature, humidity, continentalness, erosion, MultiNoiseUtil.ParameterRange.of(1.1f), weirdness, offset), biome));
     }
 
-    public static boolean method_43718(double erosion, double depth) {
-        return erosion < (double)-0.225f && depth > (double)0.9f;
+    public static boolean method_43718(DensityFunction densityFunction, DensityFunction densityFunction2, DensityFunction.NoisePos noisePos) {
+        return densityFunction.sample(noisePos) < (double)-0.225f && densityFunction2.sample(noisePos) > (double)0.9f;
     }
 
     public static String getPeaksValleysDescription(double weirdness) {

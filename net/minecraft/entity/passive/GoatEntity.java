@@ -153,12 +153,15 @@ extends AnimalEntity {
     }
 
     @Override
+    @Nullable
     public GoatEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
         GoatEntity goatEntity = EntityType.GOAT.create(serverWorld);
         if (goatEntity != null) {
+            PassiveEntity goatEntity2;
             GoatBrain.resetLongJumpCooldown(goatEntity, serverWorld.getRandom());
-            boolean bl = passiveEntity instanceof GoatEntity && ((GoatEntity)passiveEntity).isScreaming();
-            goatEntity.setScreaming(bl || serverWorld.getRandom().nextDouble() < 0.02);
+            PassiveEntity passiveEntity2 = serverWorld.getRandom().nextBoolean() ? this : passiveEntity;
+            boolean bl = passiveEntity2 instanceof GoatEntity && ((GoatEntity)(goatEntity2 = passiveEntity2)).isScreaming() || serverWorld.getRandom().nextDouble() < 0.02;
+            goatEntity.setScreaming(bl);
         }
         return goatEntity;
     }
@@ -331,6 +334,7 @@ extends AnimalEntity {
     }
 
     @Override
+    @Nullable
     public /* synthetic */ PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
         return this.createChild(world, entity);
     }

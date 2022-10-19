@@ -9,7 +9,6 @@ import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
-import com.mojang.serialization.Dynamic;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -77,8 +76,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.network.encryption.PlayerPublicKey;
-import net.minecraft.network.message.MessageSourceProfile;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -107,7 +104,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
-import net.minecraft.util.dynamic.DynamicSerializableUuid;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -151,7 +148,6 @@ extends LivingEntity {
     public final PlayerScreenHandler playerScreenHandler;
     public ScreenHandler currentScreenHandler;
     protected HungerManager hungerManager = new HungerManager();
-    protected SculkShriekerWarningManager sculkShriekerWarningManager = new SculkShriekerWarningManager(0, 0, 0);
     protected int abilityResyncCountdown;
     public float prevStrideDistance;
     public float strideDistance;
@@ -172,8 +168,6 @@ extends LivingEntity {
     protected final float field_7509 = 0.02f;
     private int lastPlayedLevelUpSoundTime;
     private final GameProfile gameProfile;
-    @Nullable
-    private final PlayerPublicKey publicKey;
     private boolean reducedDebugInfo;
     private ItemStack selectedItem = ItemStack.EMPTY;
     private final ItemCooldownManager itemCooldownManager = this.createCooldownManager();
@@ -181,11 +175,10 @@ extends LivingEntity {
     @Nullable
     public FishingBobberEntity fishHook;
 
-    public PlayerEntity(World world, BlockPos pos, float yaw, GameProfile gameProfile, @Nullable PlayerPublicKey publicKey) {
+    public PlayerEntity(World world, BlockPos pos, float yaw, GameProfile gameProfile) {
         super((EntityType<? extends LivingEntity>)EntityType.PLAYER, world);
-        this.setUuid(DynamicSerializableUuid.getUuidFromProfile(gameProfile));
+        this.setUuid(Uuids.getUuidFromProfile(gameProfile));
         this.gameProfile = gameProfile;
-        this.publicKey = publicKey;
         this.playerScreenHandler = new PlayerScreenHandler(this.inventory, !world.isClient, this);
         this.currentScreenHandler = this.playerScreenHandler;
         this.refreshPositionAndAngles((double)pos.getX() + 0.5, pos.getY() + 1, (double)pos.getZ() + 0.5, yaw, 0.0f);
@@ -253,7 +246,6 @@ extends LivingEntity {
         this.updateCapeAngles();
         if (!this.world.isClient) {
             this.hungerManager.update(this);
-            this.sculkShriekerWarningManager.tick();
             this.incrementStat(Stats.PLAY_TIME);
             this.incrementStat(Stats.TOTAL_WORLD_TIME);
             if (this.isAlive()) {
@@ -672,7 +664,7 @@ extends LivingEntity {
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        this.setUuid(DynamicSerializableUuid.getUuidFromProfile(this.gameProfile));
+        this.setUuid(Uuids.getUuidFromProfile(this.gameProfile));
         NbtList nbtList = nbt.getList("Inventory", NbtElement.COMPOUND_TYPE);
         this.inventory.readNbt(nbtList);
         this.inventory.selectedSlot = nbt.getInt("SelectedItemSlot");
@@ -686,11 +678,6 @@ extends LivingEntity {
         }
         this.setScore(nbt.getInt("Score"));
         this.hungerManager.readNbt(nbt);
-        if (nbt.contains("warden_spawn_tracker", NbtElement.COMPOUND_TYPE)) {
-            SculkShriekerWarningManager.CODEC.parse(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt.get("warden_spawn_tracker"))).resultOrPartial(field_38197::error).ifPresent(sculkShriekerWarningManager -> {
-                this.sculkShriekerWarningManager = sculkShriekerWarningManager;
-            });
-        }
         this.abilities.readNbt(nbt);
         this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(this.abilities.getWalkSpeed());
         if (nbt.contains("EnderItems", NbtElement.LIST_TYPE)) {
@@ -720,7 +707,6 @@ extends LivingEntity {
         nbt.putInt("XpSeed", this.enchantmentTableSeed);
         nbt.putInt("Score", this.getScore());
         this.hungerManager.writeNbt(nbt);
-        SculkShriekerWarningManager.CODEC.encodeStart(NbtOps.INSTANCE, this.sculkShriekerWarningManager).resultOrPartial(field_38197::error).ifPresent(nbtElement -> nbt.put("warden_spawn_tracker", (NbtElement)nbtElement));
         this.abilities.writeNbt(nbt);
         nbt.put("EnderItems", this.enderChestInventory.toNbtList());
         if (!this.getShoulderEntityLeft().isEmpty()) {
@@ -871,6 +857,10 @@ extends LivingEntity {
     @Override
     protected boolean isOnSoulSpeedBlock() {
         return !this.abilities.flying && super.isOnSoulSpeedBlock();
+    }
+
+    public boolean shouldFilterText() {
+        return false;
     }
 
     public void openEditSignScreen(SignBlockEntity sign) {
@@ -1194,11 +1184,6 @@ extends LivingEntity {
         return this.gameProfile;
     }
 
-    @Nullable
-    public PlayerPublicKey getPublicKey() {
-        return this.publicKey;
-    }
-
     public PlayerInventory getInventory() {
         return this.inventory;
     }
@@ -1275,9 +1260,9 @@ extends LivingEntity {
     public static Optional<Vec3d> findRespawnPosition(ServerWorld world, BlockPos pos, float angle, boolean forced, boolean alive) {
         BlockState blockState = world.getBlockState(pos);
         Block block = blockState.getBlock();
-        if (block instanceof RespawnAnchorBlock && blockState.get(RespawnAnchorBlock.CHARGES) > 0 && RespawnAnchorBlock.isNether(world)) {
+        if (block instanceof RespawnAnchorBlock && (forced || blockState.get(RespawnAnchorBlock.CHARGES) > 0) && RespawnAnchorBlock.isNether(world)) {
             Optional<Vec3d> optional = RespawnAnchorBlock.findRespawnPosition(EntityType.PLAYER, world, pos);
-            if (!alive && optional.isPresent()) {
+            if (!forced && !alive && optional.isPresent()) {
                 world.setBlockState(pos, (BlockState)blockState.with(RespawnAnchorBlock.CHARGES, blockState.get(RespawnAnchorBlock.CHARGES) - 1), Block.NOTIFY_ALL);
             }
             return optional;
@@ -1496,11 +1481,6 @@ extends LivingEntity {
         return super.handleFallDamage(fallDistance, damageMultiplier, damageSource);
     }
 
-    @Override
-    public MessageSourceProfile getMessageSourceProfile() {
-        return new MessageSourceProfile(this.getGameProfile().getId(), this.getPublicKey());
-    }
-
     public boolean checkFallFlying() {
         ItemStack itemStack;
         if (!this.onGround && !this.isFallFlying() && !this.isTouchingWater() && !this.hasStatusEffect(StatusEffects.LEVITATION) && (itemStack = this.getEquippedStack(EquipmentSlot.CHEST)).isOf(Items.ELYTRA) && ElytraItem.isUsable(itemStack)) {
@@ -1612,8 +1592,8 @@ extends LivingEntity {
         }
     }
 
-    public SculkShriekerWarningManager getSculkShriekerWarningManager() {
-        return this.sculkShriekerWarningManager;
+    public Optional<SculkShriekerWarningManager> getSculkShriekerWarningManager() {
+        return Optional.empty();
     }
 
     public HungerManager getHungerManager() {

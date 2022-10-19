@@ -589,6 +589,7 @@ Flutterer {
     }
 
     @Override
+    @Nullable
     public BeeEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
         return EntityType.BEE.create(serverWorld);
     }
@@ -656,6 +657,7 @@ Flutterer {
     }
 
     @Override
+    @Nullable
     public /* synthetic */ PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
         return this.createChild(world, entity);
     }

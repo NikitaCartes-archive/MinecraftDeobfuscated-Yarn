@@ -73,6 +73,7 @@ implements Angerable {
     }
 
     @Override
+    @Nullable
     public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
         return EntityType.POLAR_BEAR.create(world);
     }

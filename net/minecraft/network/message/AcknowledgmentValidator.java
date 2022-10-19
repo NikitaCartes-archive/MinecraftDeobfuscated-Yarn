@@ -5,13 +5,10 @@ package net.minecraft.network.message;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.Optional;
+import net.minecraft.network.message.AcknowledgedMessage;
 import net.minecraft.network.message.LastSeenMessageList;
+import net.minecraft.network.message.MessageSignatureData;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -24,130 +21,63 @@ import org.jetbrains.annotations.Nullable;
  * or if the acknowledgment is incorrect, the client will be disconnected.
  */
 public class AcknowledgmentValidator {
-    private static final int UNKNOWN = Integer.MIN_VALUE;
-    private LastSeenMessageList prevValidated = LastSeenMessageList.EMPTY;
-    private final ObjectList<LastSeenMessageList.Entry> pending = new ObjectArrayList<LastSeenMessageList.Entry>();
+    private final int size;
+    private final ObjectList<AcknowledgedMessage> messages = new ObjectArrayList<AcknowledgedMessage>();
+    @Nullable
+    private MessageSignatureData lastSignature;
 
-    public void addPending(LastSeenMessageList.Entry entry) {
-        this.pending.add(entry);
+    public AcknowledgmentValidator(int size) {
+        this.size = size;
+        for (int i = 0; i < size; ++i) {
+            this.messages.add(null);
+        }
     }
 
-    public int getPendingCount() {
-        return this.pending.size();
+    public void addPending(MessageSignatureData signature) {
+        if (!signature.equals(this.lastSignature)) {
+            this.messages.add(new AcknowledgedMessage(signature, true));
+            this.lastSignature = signature;
+        }
     }
 
-    /**
-     * {@return whether {@code messages} have multiple entries with the same profile ID}
-     * 
-     * <p>If {@code true}, validation fails.
-     */
-    private boolean hasDuplicateProfiles(LastSeenMessageList messages) {
-        HashSet<UUID> set = new HashSet<UUID>(messages.entries().size());
-        for (LastSeenMessageList.Entry entry : messages.entries()) {
-            if (set.add(entry.profileId())) continue;
+    public int getMessageCount() {
+        return this.messages.size();
+    }
+
+    public boolean removeUntil(int index) {
+        int i = this.messages.size() - this.size;
+        if (index >= 0 && index <= i) {
+            this.messages.removeElements(0, index);
             return true;
         }
         return false;
     }
 
-    /**
-     * Orders {@code lastSeen}. {@code result} should be an array with the same size
-     * as {@code lastSeen}, and it will hold the order of each entry, where a larger
-     * integer corresponds to more recent message. If the integer is {@value #UNKNOWN},
-     * then the message is unknown (neither previously acknowledged nor is newly sent),
-     * which causes validation failure.
-     * 
-     * @return the order of the last received message; if any messages have higher order
-     * than this, it is a validation failure.
-     */
-    private int order(List<LastSeenMessageList.Entry> lastSeen, int[] result, @Nullable LastSeenMessageList.Entry lastReceived) {
-        int k;
-        int j;
-        Arrays.fill(result, Integer.MIN_VALUE);
-        List<LastSeenMessageList.Entry> list = this.prevValidated.entries();
-        int i = list.size();
-        for (j = i - 1; j >= 0; --j) {
-            k = lastSeen.indexOf(list.get(j));
-            if (k == -1) continue;
-            result[k] = -j - 1;
+    public Optional<LastSeenMessageList> validate(LastSeenMessageList.Acknowledgment acknowledgment) {
+        if (!this.removeUntil(acknowledgment.offset())) {
+            return Optional.empty();
         }
-        j = Integer.MIN_VALUE;
-        k = this.pending.size();
-        for (int l = 0; l < k; ++l) {
-            LastSeenMessageList.Entry entry = (LastSeenMessageList.Entry)this.pending.get(l);
-            int m = lastSeen.indexOf(entry);
-            if (m != -1) {
-                result[m] = l;
-            }
-            if (!entry.equals(lastReceived)) continue;
-            j = l;
+        ObjectArrayList<MessageSignatureData> objectList = new ObjectArrayList<MessageSignatureData>(acknowledgment.acknowledged().cardinality());
+        if (acknowledgment.acknowledged().length() > this.size) {
+            return Optional.empty();
         }
-        return j;
-    }
-
-    /**
-     * Validates {@code acknowledgment}.
-     * 
-     * @return reasons for acknowledgment validation failure, or an empty set if
-     * validation is successful
-     */
-    public Set<FailureReason> validate(LastSeenMessageList.Acknowledgment acknowledgment) {
-        EnumSet<FailureReason> enumSet = EnumSet.noneOf(FailureReason.class);
-        LastSeenMessageList lastSeenMessageList = acknowledgment.lastSeen();
-        LastSeenMessageList.Entry entry = acknowledgment.lastReceived().orElse(null);
-        List<LastSeenMessageList.Entry> list = lastSeenMessageList.entries();
-        int i = this.prevValidated.entries().size();
-        int j = Integer.MIN_VALUE;
-        int k = list.size();
-        if (k < i) {
-            enumSet.add(FailureReason.REMOVED_MESSAGES);
-        }
-        int[] is = new int[k];
-        int l = this.order(list, is, entry);
-        for (int m = k - 1; m >= 0; --m) {
-            int n = is[m];
-            if (n != Integer.MIN_VALUE) {
-                if (n < j) {
-                    enumSet.add(FailureReason.OUT_OF_ORDER);
-                    continue;
+        for (int i = 0; i < this.size; ++i) {
+            boolean bl = acknowledgment.acknowledged().get(i);
+            AcknowledgedMessage acknowledgedMessage = (AcknowledgedMessage)this.messages.get(i);
+            if (bl) {
+                if (acknowledgedMessage == null) {
+                    return Optional.empty();
                 }
-                j = n;
+                this.messages.set(i, acknowledgedMessage.unmarkAsPending());
+                objectList.add(acknowledgedMessage.signature());
                 continue;
             }
-            enumSet.add(FailureReason.UNKNOWN_MESSAGES);
-        }
-        if (entry != null) {
-            if (l == Integer.MIN_VALUE || l < j) {
-                enumSet.add(FailureReason.UNKNOWN_MESSAGES);
-            } else {
-                j = l;
+            if (acknowledgedMessage != null && !acknowledgedMessage.pending()) {
+                return Optional.empty();
             }
+            this.messages.set(i, null);
         }
-        if (j >= 0) {
-            this.pending.removeElements(0, j + 1);
-        }
-        if (this.hasDuplicateProfiles(lastSeenMessageList)) {
-            enumSet.add(FailureReason.DUPLICATED_PROFILES);
-        }
-        this.prevValidated = lastSeenMessageList;
-        return enumSet;
-    }
-
-    public static enum FailureReason {
-        OUT_OF_ORDER("messages received out of order"),
-        DUPLICATED_PROFILES("multiple entries for single profile"),
-        UNKNOWN_MESSAGES("unknown message"),
-        REMOVED_MESSAGES("previously present messages removed from context");
-
-        private final String description;
-
-        private FailureReason(String description) {
-            this.description = description;
-        }
-
-        public String getDescription() {
-            return this.description;
-        }
+        return Optional.of(new LastSeenMessageList(objectList));
     }
 }
 

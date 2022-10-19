@@ -68,6 +68,7 @@ extends Feature<EndSpikeFeatureConfig> {
     }
 
     private void generateSpike(ServerWorldAccess world, Random random, EndSpikeFeatureConfig config, Spike spike) {
+        EndCrystalEntity endCrystalEntity;
         int i = spike.getRadius();
         for (BlockPos blockPos : BlockPos.iterate(new BlockPos(spike.getCenterX() - i, world.getBottomY(), spike.getCenterZ() - i), new BlockPos(spike.getCenterX() + i, spike.getHeight() + 10, spike.getCenterZ() + i))) {
             if (blockPos.getSquaredDistance(spike.getCenterX(), blockPos.getY(), spike.getCenterZ()) <= (double)(i * i + 1) && blockPos.getY() < spike.getHeight()) {
@@ -98,12 +99,13 @@ extends Feature<EndSpikeFeatureConfig> {
                 }
             }
         }
-        EndCrystalEntity endCrystalEntity = EntityType.END_CRYSTAL.create(world.toServerWorld());
-        endCrystalEntity.setBeamTarget(config.getPos());
-        endCrystalEntity.setInvulnerable(config.isCrystalInvulnerable());
-        endCrystalEntity.refreshPositionAndAngles((double)spike.getCenterX() + 0.5, spike.getHeight() + 1, (double)spike.getCenterZ() + 0.5, random.nextFloat() * 360.0f, 0.0f);
-        world.spawnEntity(endCrystalEntity);
-        this.setBlockState(world, new BlockPos(spike.getCenterX(), spike.getHeight(), spike.getCenterZ()), Blocks.BEDROCK.getDefaultState());
+        if ((endCrystalEntity = EntityType.END_CRYSTAL.create(world.toServerWorld())) != null) {
+            endCrystalEntity.setBeamTarget(config.getPos());
+            endCrystalEntity.setInvulnerable(config.isCrystalInvulnerable());
+            endCrystalEntity.refreshPositionAndAngles((double)spike.getCenterX() + 0.5, spike.getHeight() + 1, (double)spike.getCenterZ() + 0.5, random.nextFloat() * 360.0f, 0.0f);
+            world.spawnEntity(endCrystalEntity);
+            this.setBlockState(world, new BlockPos(spike.getCenterX(), spike.getHeight(), spike.getCenterZ()), Blocks.BEDROCK.getDefaultState());
+        }
     }
 
     public static class Spike {

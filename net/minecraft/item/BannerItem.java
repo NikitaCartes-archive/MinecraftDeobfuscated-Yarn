@@ -11,26 +11,27 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.WallStandingBlockItem;
+import net.minecraft.item.VerticallyAttachableBlockItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
 
 public class BannerItem
-extends WallStandingBlockItem {
+extends VerticallyAttachableBlockItem {
     private static final String TRANSLATION_KEY_PREFIX = "block.minecraft.banner.";
 
-    public BannerItem(Block block, Block block2, Item.Settings settings) {
-        super(block, block2, settings);
-        Validate.isInstanceOf(AbstractBannerBlock.class, block);
-        Validate.isInstanceOf(AbstractBannerBlock.class, block2);
+    public BannerItem(Block bannerBlock, Block wallBannerBlock, Item.Settings settings) {
+        super(bannerBlock, wallBannerBlock, settings, Direction.DOWN);
+        Validate.isInstanceOf(AbstractBannerBlock.class, bannerBlock);
+        Validate.isInstanceOf(AbstractBannerBlock.class, wallBannerBlock);
     }
 
     public static void appendBannerTooltip(ItemStack stack, List<Text> tooltip) {

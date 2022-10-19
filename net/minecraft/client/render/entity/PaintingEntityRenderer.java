@@ -49,7 +49,7 @@ extends EntityRenderer<PaintingEntity> {
 
     @Override
     public Identifier getTexture(PaintingEntity paintingEntity) {
-        return MinecraftClient.getInstance().getPaintingManager().getBackSprite().getAtlas().getId();
+        return MinecraftClient.getInstance().getPaintingManager().getBackSprite().getId();
     }
 
     private void renderPainting(MatrixStack matrices, VertexConsumer vertexConsumer, PaintingEntity entity, int width, int height, Sprite paintingSprite, Sprite backSprite) {

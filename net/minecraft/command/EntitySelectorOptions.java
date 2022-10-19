@@ -424,16 +424,7 @@ public class EntitySelectorOptions {
         }
     }
 
-    static class SelectorOption {
-        public final SelectorHandler handler;
-        public final Predicate<EntitySelectorReader> condition;
-        public final Text description;
-
-        SelectorOption(SelectorHandler handler, Predicate<EntitySelectorReader> condition, Text description) {
-            this.handler = handler;
-            this.condition = condition;
-            this.description = description;
-        }
+    record SelectorOption(SelectorHandler handler, Predicate<EntitySelectorReader> condition, Text description) {
     }
 
     public static interface SelectorHandler {

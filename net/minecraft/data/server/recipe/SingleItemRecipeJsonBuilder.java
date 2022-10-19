@@ -16,12 +16,14 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
+import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class SingleItemRecipeJsonBuilder
 implements CraftingRecipeJsonBuilder {
+    private final RecipeCategory category;
     private final Item output;
     private final Ingredient input;
     private final int count;
@@ -30,19 +32,20 @@ implements CraftingRecipeJsonBuilder {
     private String group;
     private final RecipeSerializer<?> serializer;
 
-    public SingleItemRecipeJsonBuilder(RecipeSerializer<?> serializer, Ingredient input, ItemConvertible output, int outputCount) {
+    public SingleItemRecipeJsonBuilder(RecipeCategory category, RecipeSerializer<?> serializer, Ingredient input, ItemConvertible output, int count) {
+        this.category = category;
         this.serializer = serializer;
         this.output = output.asItem();
         this.input = input;
-        this.count = outputCount;
+        this.count = count;
     }
 
-    public static SingleItemRecipeJsonBuilder createStonecutting(Ingredient input, ItemConvertible output) {
-        return new SingleItemRecipeJsonBuilder(RecipeSerializer.STONECUTTING, input, output, 1);
+    public static SingleItemRecipeJsonBuilder createStonecutting(Ingredient input, RecipeCategory category, ItemConvertible output) {
+        return new SingleItemRecipeJsonBuilder(category, RecipeSerializer.STONECUTTING, input, output, 1);
     }
 
-    public static SingleItemRecipeJsonBuilder createStonecutting(Ingredient input, ItemConvertible output, int outputCount) {
-        return new SingleItemRecipeJsonBuilder(RecipeSerializer.STONECUTTING, input, output, outputCount);
+    public static SingleItemRecipeJsonBuilder createStonecutting(Ingredient input, RecipeCategory category, ItemConvertible output, int count) {
+        return new SingleItemRecipeJsonBuilder(category, RecipeSerializer.STONECUTTING, input, output, count);
     }
 
     @Override
@@ -66,7 +69,7 @@ implements CraftingRecipeJsonBuilder {
     public void offerTo(Consumer<RecipeJsonProvider> exporter, Identifier recipeId) {
         this.validate(recipeId);
         this.advancementBuilder.parent(ROOT).criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeId)).rewards(AdvancementRewards.Builder.recipe(recipeId)).criteriaMerger(CriterionMerger.OR);
-        exporter.accept(new SingleItemRecipeJsonProvider(recipeId, this.serializer, this.group == null ? "" : this.group, this.input, this.output, this.count, this.advancementBuilder, new Identifier(recipeId.getNamespace(), "recipes/" + this.output.getGroup().getName() + "/" + recipeId.getPath())));
+        exporter.accept(new SingleItemRecipeJsonProvider(recipeId, this.serializer, this.group == null ? "" : this.group, this.input, this.output, this.count, this.advancementBuilder, recipeId.withPrefixedPath("recipes/" + this.category.getName() + "/")));
     }
 
     private void validate(Identifier recipeId) {

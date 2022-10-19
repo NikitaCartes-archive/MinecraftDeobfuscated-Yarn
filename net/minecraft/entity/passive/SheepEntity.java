@@ -151,55 +151,25 @@ implements Shearable {
         if (this.isSheared()) {
             return this.getType().getLootTableId();
         }
-        switch (this.getColor()) {
-            default: {
-                return LootTables.WHITE_SHEEP_ENTITY;
-            }
-            case ORANGE: {
-                return LootTables.ORANGE_SHEEP_ENTITY;
-            }
-            case MAGENTA: {
-                return LootTables.MAGENTA_SHEEP_ENTITY;
-            }
-            case LIGHT_BLUE: {
-                return LootTables.LIGHT_BLUE_SHEEP_ENTITY;
-            }
-            case YELLOW: {
-                return LootTables.YELLOW_SHEEP_ENTITY;
-            }
-            case LIME: {
-                return LootTables.LIME_SHEEP_ENTITY;
-            }
-            case PINK: {
-                return LootTables.PINK_SHEEP_ENTITY;
-            }
-            case GRAY: {
-                return LootTables.GRAY_SHEEP_ENTITY;
-            }
-            case LIGHT_GRAY: {
-                return LootTables.LIGHT_GRAY_SHEEP_ENTITY;
-            }
-            case CYAN: {
-                return LootTables.CYAN_SHEEP_ENTITY;
-            }
-            case PURPLE: {
-                return LootTables.PURPLE_SHEEP_ENTITY;
-            }
-            case BLUE: {
-                return LootTables.BLUE_SHEEP_ENTITY;
-            }
-            case BROWN: {
-                return LootTables.BROWN_SHEEP_ENTITY;
-            }
-            case GREEN: {
-                return LootTables.GREEN_SHEEP_ENTITY;
-            }
-            case RED: {
-                return LootTables.RED_SHEEP_ENTITY;
-            }
-            case BLACK: 
-        }
-        return LootTables.BLACK_SHEEP_ENTITY;
+        return switch (this.getColor()) {
+            default -> throw new IncompatibleClassChangeError();
+            case DyeColor.WHITE -> LootTables.WHITE_SHEEP_ENTITY;
+            case DyeColor.ORANGE -> LootTables.ORANGE_SHEEP_ENTITY;
+            case DyeColor.MAGENTA -> LootTables.MAGENTA_SHEEP_ENTITY;
+            case DyeColor.LIGHT_BLUE -> LootTables.LIGHT_BLUE_SHEEP_ENTITY;
+            case DyeColor.YELLOW -> LootTables.YELLOW_SHEEP_ENTITY;
+            case DyeColor.LIME -> LootTables.LIME_SHEEP_ENTITY;
+            case DyeColor.PINK -> LootTables.PINK_SHEEP_ENTITY;
+            case DyeColor.GRAY -> LootTables.GRAY_SHEEP_ENTITY;
+            case DyeColor.LIGHT_GRAY -> LootTables.LIGHT_GRAY_SHEEP_ENTITY;
+            case DyeColor.CYAN -> LootTables.CYAN_SHEEP_ENTITY;
+            case DyeColor.PURPLE -> LootTables.PURPLE_SHEEP_ENTITY;
+            case DyeColor.BLUE -> LootTables.BLUE_SHEEP_ENTITY;
+            case DyeColor.BROWN -> LootTables.BROWN_SHEEP_ENTITY;
+            case DyeColor.GREEN -> LootTables.GREEN_SHEEP_ENTITY;
+            case DyeColor.RED -> LootTables.RED_SHEEP_ENTITY;
+            case DyeColor.BLACK -> LootTables.BLACK_SHEEP_ENTITY;
+        };
     }
 
     @Override
@@ -344,11 +314,13 @@ implements Shearable {
     }
 
     @Override
+    @Nullable
     public SheepEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-        SheepEntity sheepEntity = (SheepEntity)passiveEntity;
-        SheepEntity sheepEntity2 = EntityType.SHEEP.create(serverWorld);
-        sheepEntity2.setColor(this.getChildColor(this, sheepEntity));
-        return sheepEntity2;
+        SheepEntity sheepEntity = EntityType.SHEEP.create(serverWorld);
+        if (sheepEntity != null) {
+            sheepEntity.setColor(this.getChildColor(this, (SheepEntity)passiveEntity));
+        }
+        return sheepEntity;
     }
 
     @Override
@@ -398,6 +370,7 @@ implements Shearable {
     }
 
     @Override
+    @Nullable
     public /* synthetic */ PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
         return this.createChild(world, entity);
     }

@@ -10,6 +10,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.Packet;
@@ -34,6 +35,8 @@ import org.jetbrains.annotations.Nullable;
 public class SignBlockEntity
 extends BlockEntity {
     public static final int TEXT_COUNT = 4;
+    private static final int MAX_TEXT_WIDTH = 90;
+    private static final int TEXT_LINE_HEIGHT = 10;
     private static final String[] TEXT_KEYS = new String[]{"Text1", "Text2", "Text3", "Text4"};
     private static final String[] FILTERED_TEXT_KEYS = new String[]{"FilteredText1", "FilteredText2", "FilteredText3", "FilteredText4"};
     private final Text[] texts = new Text[]{ScreenTexts.EMPTY, ScreenTexts.EMPTY, ScreenTexts.EMPTY, ScreenTexts.EMPTY};
@@ -49,6 +52,18 @@ extends BlockEntity {
 
     public SignBlockEntity(BlockPos pos, BlockState state) {
         super(BlockEntityType.SIGN, pos, state);
+    }
+
+    public SignBlockEntity(BlockEntityType blockEntityType, BlockPos blockPos, BlockState blockState) {
+        super(blockEntityType, blockPos, blockState);
+    }
+
+    public int getTextLineHeight() {
+        return 10;
+    }
+
+    public int getMaxTextWidth() {
+        return 90;
     }
 
     @Override
@@ -167,6 +182,16 @@ extends BlockEntity {
     @Nullable
     public UUID getEditor() {
         return this.editor;
+    }
+
+    public boolean shouldRunCommand(PlayerEntity player) {
+        for (Text text : this.getTexts(player.shouldFilterText())) {
+            Style style = text.getStyle();
+            ClickEvent clickEvent = style.getClickEvent();
+            if (clickEvent == null || clickEvent.getAction() != ClickEvent.Action.RUN_COMMAND) continue;
+            return true;
+        }
+        return false;
     }
 
     public boolean onActivate(ServerPlayerEntity player) {

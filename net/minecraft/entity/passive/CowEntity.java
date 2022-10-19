@@ -33,6 +33,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 public class CowEntity
 extends AnimalEntity {
@@ -94,6 +95,7 @@ extends AnimalEntity {
     }
 
     @Override
+    @Nullable
     public CowEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
         return EntityType.COW.create(serverWorld);
     }
@@ -107,6 +109,7 @@ extends AnimalEntity {
     }
 
     @Override
+    @Nullable
     public /* synthetic */ PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
         return this.createChild(world, entity);
     }

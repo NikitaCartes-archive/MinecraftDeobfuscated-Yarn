@@ -136,11 +136,5 @@ implements RecipeBookProvider {
     public RecipeBookWidget getRecipeBookWidget() {
         return this.recipeBook;
     }
-
-    @Override
-    public void removed() {
-        this.recipeBook.close();
-        super.removed();
-    }
 }
 

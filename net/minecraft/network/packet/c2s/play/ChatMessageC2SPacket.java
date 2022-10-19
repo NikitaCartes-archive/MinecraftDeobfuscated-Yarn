@@ -8,9 +8,8 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.message.LastSeenMessageList;
-import net.minecraft.network.message.MessageMetadata;
 import net.minecraft.network.message.MessageSignatureData;
-import net.minecraft.server.network.ServerPlayerEntity;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A packet used to send a chat message to the server.
@@ -33,13 +32,13 @@ import net.minecraft.server.network.ServerPlayerEntity;
  * message is not considered secure anymore by the clients, and may be discarded
  * depending on the clients' options.
  * 
- * @see net.minecraft.client.network.ClientPlayerEntity#sendChatMessage
+ * @see net.minecraft.client.network.ClientPlayNetworkHandler#sendChatMessage
  * @see net.minecraft.server.network.ServerPlayNetworkHandler#onChatMessage
  */
-public record ChatMessageC2SPacket(String chatMessage, Instant timestamp, long salt, MessageSignatureData signature, boolean signedPreview, LastSeenMessageList.Acknowledgment acknowledgment) implements Packet<ServerPlayPacketListener>
+public record ChatMessageC2SPacket(String chatMessage, Instant timestamp, long salt, @Nullable MessageSignatureData signature, LastSeenMessageList.Acknowledgment acknowledgment) implements Packet<ServerPlayPacketListener>
 {
     public ChatMessageC2SPacket(PacketByteBuf buf) {
-        this(buf.readString(256), buf.readInstant(), buf.readLong(), new MessageSignatureData(buf), buf.readBoolean(), new LastSeenMessageList.Acknowledgment(buf));
+        this(buf.readString(256), buf.readInstant(), buf.readLong(), (MessageSignatureData)buf.readNullable(MessageSignatureData::fromBuf), new LastSeenMessageList.Acknowledgment(buf));
     }
 
     @Override
@@ -47,8 +46,7 @@ public record ChatMessageC2SPacket(String chatMessage, Instant timestamp, long s
         buf.writeString(this.chatMessage, 256);
         buf.writeInstant(this.timestamp);
         buf.writeLong(this.salt);
-        this.signature.write(buf);
-        buf.writeBoolean(this.signedPreview);
+        buf.writeNullable(this.signature, MessageSignatureData::write);
         this.acknowledgment.write(buf);
     }
 
@@ -57,8 +55,9 @@ public record ChatMessageC2SPacket(String chatMessage, Instant timestamp, long s
         serverPlayPacketListener.onChatMessage(this);
     }
 
-    public MessageMetadata getMetadata(ServerPlayerEntity sender) {
-        return new MessageMetadata(sender.getUuid(), this.timestamp, this.salt);
+    @Nullable
+    public MessageSignatureData signature() {
+        return this.signature;
     }
 }
 

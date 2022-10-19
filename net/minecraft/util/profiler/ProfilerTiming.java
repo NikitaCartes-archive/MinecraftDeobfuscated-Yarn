@@ -33,8 +33,8 @@ implements Comparable<ProfilerTiming> {
     }
 
     @Override
-    public /* synthetic */ int compareTo(Object object) {
-        return this.compareTo((ProfilerTiming)object);
+    public /* synthetic */ int compareTo(Object other) {
+        return this.compareTo((ProfilerTiming)other);
     }
 }
 

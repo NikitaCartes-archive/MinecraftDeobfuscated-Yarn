@@ -21,6 +21,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -53,13 +54,26 @@ public class AttributeContainer {
         return this.custom.computeIfAbsent(attribute2, attribute -> this.fallback.createOverride(this::updateTrackedStatus, (EntityAttribute)attribute));
     }
 
+    @Nullable
+    public EntityAttributeInstance method_45329(RegistryEntry<EntityAttribute> registryEntry) {
+        return this.getCustomInstance(registryEntry.value());
+    }
+
     public boolean hasAttribute(EntityAttribute attribute) {
         return this.custom.get(attribute) != null || this.fallback.has(attribute);
+    }
+
+    public boolean method_45331(RegistryEntry<EntityAttribute> registryEntry) {
+        return this.hasAttribute(registryEntry.value());
     }
 
     public boolean hasModifierForAttribute(EntityAttribute attribute, UUID uuid) {
         EntityAttributeInstance entityAttributeInstance = this.custom.get(attribute);
         return entityAttributeInstance != null ? entityAttributeInstance.getModifier(uuid) != null : this.fallback.hasModifier(attribute, uuid);
+    }
+
+    public boolean method_45330(RegistryEntry<EntityAttribute> registryEntry, UUID uUID) {
+        return this.hasModifierForAttribute(registryEntry.value(), uUID);
     }
 
     public double getValue(EntityAttribute attribute) {
@@ -75,6 +89,10 @@ public class AttributeContainer {
     public double getModifierValue(EntityAttribute attribute, UUID uuid) {
         EntityAttributeInstance entityAttributeInstance = this.custom.get(attribute);
         return entityAttributeInstance != null ? entityAttributeInstance.getModifier(uuid).getValue() : this.fallback.getModifierValue(attribute, uuid);
+    }
+
+    public double method_45332(RegistryEntry<EntityAttribute> registryEntry, UUID uUID) {
+        return this.getModifierValue(registryEntry.value(), uUID);
     }
 
     public void removeModifiers(Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers) {

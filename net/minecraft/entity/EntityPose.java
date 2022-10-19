@@ -14,6 +14,7 @@ public enum EntityPose {
     DYING,
     CROAKING,
     USING_TONGUE,
+    SITTING,
     ROARING,
     SNIFFING,
     EMERGING,

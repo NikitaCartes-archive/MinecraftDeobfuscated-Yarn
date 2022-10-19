@@ -14,6 +14,7 @@ import com.google.gson.JsonSyntaxException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -23,6 +24,7 @@ import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeSerializer;
+import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.collection.DefaultedList;
@@ -37,10 +39,12 @@ implements CraftingRecipe {
     final ItemStack output;
     private final Identifier id;
     final String group;
+    final CraftingRecipeCategory category;
 
-    public ShapedRecipe(Identifier id, String group, int width, int height, DefaultedList<Ingredient> input, ItemStack output) {
+    public ShapedRecipe(Identifier id, String group, CraftingRecipeCategory category, int width, int height, DefaultedList<Ingredient> input, ItemStack output) {
         this.id = id;
         this.group = group;
+        this.category = category;
         this.width = width;
         this.height = height;
         this.input = input;
@@ -60,6 +64,11 @@ implements CraftingRecipe {
     @Override
     public String getGroup() {
         return this.group;
+    }
+
+    @Override
+    public CraftingRecipeCategory getCategory() {
+        return this.category;
     }
 
     @Override
@@ -283,13 +292,14 @@ implements CraftingRecipe {
         @Override
         public ShapedRecipe read(Identifier identifier, JsonObject jsonObject) {
             String string = JsonHelper.getString(jsonObject, "group", "");
+            CraftingRecipeCategory craftingRecipeCategory = Objects.requireNonNullElse(CraftingRecipeCategory.CODEC.byId(JsonHelper.getString(jsonObject, "category", null)), CraftingRecipeCategory.MISC);
             Map<String, Ingredient> map = ShapedRecipe.readSymbols(JsonHelper.getObject(jsonObject, "key"));
             String[] strings = ShapedRecipe.removePadding(ShapedRecipe.getPattern(JsonHelper.getArray(jsonObject, "pattern")));
             int i = strings[0].length();
             int j = strings.length;
             DefaultedList<Ingredient> defaultedList = ShapedRecipe.createPatternMatrix(strings, map, i, j);
             ItemStack itemStack = ShapedRecipe.outputFromJson(JsonHelper.getObject(jsonObject, "result"));
-            return new ShapedRecipe(identifier, string, i, j, defaultedList, itemStack);
+            return new ShapedRecipe(identifier, string, craftingRecipeCategory, i, j, defaultedList, itemStack);
         }
 
         @Override
@@ -297,12 +307,13 @@ implements CraftingRecipe {
             int i = packetByteBuf.readVarInt();
             int j = packetByteBuf.readVarInt();
             String string = packetByteBuf.readString();
+            CraftingRecipeCategory craftingRecipeCategory = packetByteBuf.readEnumConstant(CraftingRecipeCategory.class);
             DefaultedList<Ingredient> defaultedList = DefaultedList.ofSize(i * j, Ingredient.EMPTY);
             for (int k = 0; k < defaultedList.size(); ++k) {
                 defaultedList.set(k, Ingredient.fromPacket(packetByteBuf));
             }
             ItemStack itemStack = packetByteBuf.readItemStack();
-            return new ShapedRecipe(identifier, string, i, j, defaultedList, itemStack);
+            return new ShapedRecipe(identifier, string, craftingRecipeCategory, i, j, defaultedList, itemStack);
         }
 
         @Override
@@ -310,6 +321,7 @@ implements CraftingRecipe {
             packetByteBuf.writeVarInt(shapedRecipe.width);
             packetByteBuf.writeVarInt(shapedRecipe.height);
             packetByteBuf.writeString(shapedRecipe.group);
+            packetByteBuf.writeEnumConstant(shapedRecipe.category);
             for (Ingredient ingredient : shapedRecipe.input) {
                 ingredient.write(packetByteBuf);
             }

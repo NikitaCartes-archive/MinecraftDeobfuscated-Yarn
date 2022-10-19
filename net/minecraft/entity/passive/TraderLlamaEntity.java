@@ -38,6 +38,7 @@ extends LlamaEntity {
     }
 
     @Override
+    @Nullable
     protected LlamaEntity createChild() {
         return EntityType.TRADER_LLAMA.create(this.world);
     }

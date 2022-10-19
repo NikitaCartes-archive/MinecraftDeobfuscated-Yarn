@@ -217,17 +217,19 @@ extends FishEntity {
         if (world instanceof ServerWorld) {
             ServerWorld serverWorld = (ServerWorld)world;
             FrogEntity frogEntity = EntityType.FROG.create(this.world);
-            frogEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
-            frogEntity.initialize(serverWorld, this.world.getLocalDifficulty(frogEntity.getBlockPos()), SpawnReason.CONVERSION, null, null);
-            frogEntity.setAiDisabled(this.isAiDisabled());
-            if (this.hasCustomName()) {
-                frogEntity.setCustomName(this.getCustomName());
-                frogEntity.setCustomNameVisible(this.isCustomNameVisible());
+            if (frogEntity != null) {
+                frogEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
+                frogEntity.initialize(serverWorld, this.world.getLocalDifficulty(frogEntity.getBlockPos()), SpawnReason.CONVERSION, null, null);
+                frogEntity.setAiDisabled(this.isAiDisabled());
+                if (this.hasCustomName()) {
+                    frogEntity.setCustomName(this.getCustomName());
+                    frogEntity.setCustomNameVisible(this.isCustomNameVisible());
+                }
+                frogEntity.setPersistent();
+                this.playSound(SoundEvents.ENTITY_TADPOLE_GROW_UP, 0.15f, 1.0f);
+                serverWorld.spawnEntityAndPassengers(frogEntity);
+                this.discard();
             }
-            frogEntity.setPersistent();
-            this.playSound(SoundEvents.ENTITY_TADPOLE_GROW_UP, 0.15f, 1.0f);
-            serverWorld.spawnEntityAndPassengers(frogEntity);
-            this.discard();
         }
     }
 

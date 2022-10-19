@@ -287,7 +287,7 @@ public class ClientPlayerInteractionManager {
     }
 
     private ActionResult interactBlockInternal(ClientPlayerEntity player, Hand hand, BlockHitResult hitResult) {
-        ActionResult actionResult;
+        ActionResult actionResult2;
         boolean bl2;
         BlockPos blockPos = hitResult.getBlockPos();
         ItemStack itemStack = player.getStackInHand(hand);
@@ -296,8 +296,15 @@ public class ClientPlayerInteractionManager {
         }
         boolean bl = !player.getMainHandStack().isEmpty() || !player.getOffHandStack().isEmpty();
         boolean bl3 = bl2 = player.shouldCancelInteraction() && bl;
-        if (!bl2 && (actionResult = this.client.world.getBlockState(blockPos).onUse(this.client.world, player, hand, hitResult)).isAccepted()) {
-            return actionResult;
+        if (!bl2) {
+            BlockState blockState = this.client.world.getBlockState(blockPos);
+            if (!this.networkHandler.hasFeature(blockState.getBlock().getRequiredFeatures())) {
+                return ActionResult.FAIL;
+            }
+            ActionResult actionResult = blockState.onUse(this.client.world, player, hand, hitResult);
+            if (actionResult.isAccepted()) {
+                return actionResult;
+            }
         }
         if (itemStack.isEmpty() || player.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
             return ActionResult.PASS;
@@ -305,12 +312,12 @@ public class ClientPlayerInteractionManager {
         ItemUsageContext itemUsageContext = new ItemUsageContext(player, hand, hitResult);
         if (this.gameMode.isCreative()) {
             int i = itemStack.getCount();
-            actionResult = itemStack.useOnBlock(itemUsageContext);
+            actionResult2 = itemStack.useOnBlock(itemUsageContext);
             itemStack.setCount(i);
         } else {
-            actionResult = itemStack.useOnBlock(itemUsageContext);
+            actionResult2 = itemStack.useOnBlock(itemUsageContext);
         }
-        return actionResult;
+        return actionResult2;
     }
 
     public ActionResult interactItem(PlayerEntity player, Hand hand) {
@@ -409,13 +416,13 @@ public class ClientPlayerInteractionManager {
     }
 
     public void clickCreativeStack(ItemStack stack, int slotId) {
-        if (this.gameMode.isCreative()) {
+        if (this.gameMode.isCreative() && this.networkHandler.hasFeature(stack.getItem().getRequiredFeatures())) {
             this.networkHandler.sendPacket(new CreativeInventoryActionC2SPacket(slotId, stack));
         }
     }
 
     public void dropCreativeStack(ItemStack stack) {
-        if (this.gameMode.isCreative() && !stack.isEmpty()) {
+        if (this.gameMode.isCreative() && !stack.isEmpty() && this.networkHandler.hasFeature(stack.getItem().getRequiredFeatures())) {
             this.networkHandler.sendPacket(new CreativeInventoryActionC2SPacket(-1, stack));
         }
     }

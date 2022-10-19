@@ -3,10 +3,9 @@
  */
 package net.minecraft.command.argument;
 
-import net.minecraft.command.argument.DecoratableArgumentType;
+import com.mojang.brigadier.arguments.ArgumentType;
 
 public interface SignedArgumentType<T>
-extends DecoratableArgumentType<T> {
-    public String toSignedString(T var1);
+extends ArgumentType<T> {
 }
 

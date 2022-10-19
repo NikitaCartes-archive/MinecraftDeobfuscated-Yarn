@@ -12,8 +12,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -51,7 +49,6 @@ extends AbstractHorseEntity {
 
     @Override
     protected SoundEvent getAmbientSound() {
-        super.getAmbientSound();
         if (this.isSubmergedIn(FluidTags.WATER)) {
             return SoundEvents.ENTITY_SKELETON_HORSE_AMBIENT_WATER;
         }
@@ -60,13 +57,11 @@ extends AbstractHorseEntity {
 
     @Override
     protected SoundEvent getDeathSound() {
-        super.getDeathSound();
         return SoundEvents.ENTITY_SKELETON_HORSE_DEATH;
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource source) {
-        super.getHurtSound(source);
         return SoundEvents.ENTITY_SKELETON_HORSE_HURT;
     }
 
@@ -172,32 +167,10 @@ extends AbstractHorseEntity {
 
     @Override
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
-        ItemStack itemStack = player.getStackInHand(hand);
         if (!this.isTame()) {
             return ActionResult.PASS;
         }
-        if (this.isBaby()) {
-            return super.interactMob(player, hand);
-        }
-        if (player.shouldCancelInteraction()) {
-            this.openInventory(player);
-            return ActionResult.success(this.world.isClient);
-        }
-        if (this.hasPassengers()) {
-            return super.interactMob(player, hand);
-        }
-        if (!itemStack.isEmpty()) {
-            if (itemStack.isOf(Items.SADDLE) && !this.isSaddled()) {
-                this.openInventory(player);
-                return ActionResult.success(this.world.isClient);
-            }
-            ActionResult actionResult = itemStack.useOnEntity(player, this, hand);
-            if (actionResult.isAccepted()) {
-                return actionResult;
-            }
-        }
-        this.putPlayerOnBack(player);
-        return ActionResult.success(this.world.isClient);
+        return super.interactMob(player, hand);
     }
 }
 

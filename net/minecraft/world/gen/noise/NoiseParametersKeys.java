@@ -77,8 +77,8 @@ public class NoiseParametersKeys {
     }
 
     public static DoublePerlinNoiseSampler createNoiseSampler(Registry<DoublePerlinNoiseSampler.NoiseParameters> registry, RandomSplitter randomSplitter, RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> registryKey) {
-        RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> registryEntry = registry.entryOf(registryKey);
-        return DoublePerlinNoiseSampler.create(randomSplitter.split(registryEntry.getKey().orElseThrow().getValue()), registryEntry.value());
+        RegistryEntry.Reference<DoublePerlinNoiseSampler.NoiseParameters> registryEntry = registry.entryOf(registryKey);
+        return DoublePerlinNoiseSampler.create(randomSplitter.split(registryEntry.getKey().orElseThrow().getValue()), (DoublePerlinNoiseSampler.NoiseParameters)registryEntry.value());
     }
 }
 

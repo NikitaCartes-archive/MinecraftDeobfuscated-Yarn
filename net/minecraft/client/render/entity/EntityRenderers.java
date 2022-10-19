@@ -18,6 +18,7 @@ import net.minecraft.client.render.entity.BatEntityRenderer;
 import net.minecraft.client.render.entity.BeeEntityRenderer;
 import net.minecraft.client.render.entity.BlazeEntityRenderer;
 import net.minecraft.client.render.entity.BoatEntityRenderer;
+import net.minecraft.client.render.entity.CamelEntityRenderer;
 import net.minecraft.client.render.entity.CatEntityRenderer;
 import net.minecraft.client.render.entity.CaveSpiderEntityRenderer;
 import net.minecraft.client.render.entity.ChickenEntityRenderer;
@@ -175,6 +176,7 @@ public class EntityRenderers {
         EntityRenderers.register(EntityType.BLAZE, BlazeEntityRenderer::new);
         EntityRenderers.register(EntityType.BOAT, context -> new BoatEntityRenderer(context, false));
         EntityRenderers.register(EntityType.CAT, CatEntityRenderer::new);
+        EntityRenderers.register(EntityType.CAMEL, context -> new CamelEntityRenderer(context, EntityModelLayers.CAMEL));
         EntityRenderers.register(EntityType.CAVE_SPIDER, CaveSpiderEntityRenderer::new);
         EntityRenderers.register(EntityType.CHEST_BOAT, context -> new BoatEntityRenderer(context, true));
         EntityRenderers.register(EntityType.CHEST_MINECART, context -> new MinecartEntityRenderer(context, EntityModelLayers.CHEST_MINECART));

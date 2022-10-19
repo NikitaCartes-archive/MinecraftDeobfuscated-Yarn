@@ -22,6 +22,14 @@ public class AnimationState {
         }
     }
 
+    public void setRunning(boolean running, int age) {
+        if (running) {
+            this.startIfNotRunning(age);
+        } else {
+            this.stop();
+        }
+    }
+
     public void stop() {
         this.updatedAt = Long.MAX_VALUE;
     }

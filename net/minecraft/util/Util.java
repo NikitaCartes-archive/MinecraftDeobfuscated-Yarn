@@ -273,15 +273,6 @@ public class Util {
     }
 
     /**
-     * {@return a future that is already completed exceptionally with {@code throwable}}
-     */
-    public static <T> CompletableFuture<T> completeExceptionally(Throwable throwable) {
-        CompletableFuture completableFuture = new CompletableFuture();
-        completableFuture.completeExceptionally(throwable);
-        return completableFuture;
-    }
-
-    /**
      * Throws {@code t} if it's a {@link RuntimeException} (or any of its subclass), otherwise
      * {@code t} wrapped in a RuntimeException.
      * 

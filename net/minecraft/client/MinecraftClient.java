@@ -19,6 +19,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.logging.LogUtils;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -111,7 +112,6 @@ import net.minecraft.client.option.Perspective;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.RealmsPeriodicCheckers;
-import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.util.Realms32BitWarningChecker;
 import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.BufferBuilder;
@@ -136,13 +136,12 @@ import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.client.report.AbuseReportContext;
 import net.minecraft.client.report.ReporterEnvironment;
-import net.minecraft.client.resource.ClientBuiltinResourcePackProvider;
+import net.minecraft.client.resource.DefaultClientResourcePackProvider;
 import net.minecraft.client.resource.FoliageColormapResourceSupplier;
-import net.minecraft.client.resource.Format3ResourcePack;
-import net.minecraft.client.resource.Format4ResourcePack;
 import net.minecraft.client.resource.GrassColormapResourceSupplier;
 import net.minecraft.client.resource.PeriodicNotificationManager;
 import net.minecraft.client.resource.ResourceReloadLogger;
+import net.minecraft.client.resource.ServerResourcePackProvider;
 import net.minecraft.client.resource.SplashTextResourceSupplier;
 import net.minecraft.client.resource.VideoWarningManager;
 import net.minecraft.client.resource.language.I18n;
@@ -170,18 +169,17 @@ import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.ProfileKeys;
 import net.minecraft.client.util.ScreenshotRecorder;
 import net.minecraft.client.util.Session;
+import net.minecraft.client.util.TelemetrySender;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.WindowProvider;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.telemetry.TelemetrySender;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SkullItem;
 import net.minecraft.nbt.NbtCompound;
@@ -189,21 +187,22 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
-import net.minecraft.network.encryption.PlayerPublicKey;
+import net.minecraft.network.encryption.ClientPlayerSession;
 import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
+import net.minecraft.resource.DefaultResourcePack;
 import net.minecraft.resource.FileResourcePackProvider;
+import net.minecraft.resource.InputSupplier;
 import net.minecraft.resource.ReloadableResourceManagerImpl;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourcePackManager;
-import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.resource.ResourceReload;
 import net.minecraft.resource.ResourceType;
-import net.minecraft.resource.metadata.PackResourceMetadata;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.QueueingWorldGenerationProgressListener;
@@ -219,12 +218,12 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ApiServices;
-import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
 import net.minecraft.util.ModStatus;
+import net.minecraft.util.PathUtil;
 import net.minecraft.util.SystemDetails;
 import net.minecraft.util.TickDurationMonitor;
 import net.minecraft.util.TimeHelper;
@@ -232,7 +231,6 @@ import net.minecraft.util.Unit;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 import net.minecraft.util.ZipCompressor;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashMemoryReserve;
 import net.minecraft.util.crash.CrashReport;
@@ -327,7 +325,7 @@ implements WindowEventHandler {
      * @see net.minecraft.client.util.Window#throwGlError(int, long)
      */
     public static final String GL_ERROR_DIALOGUE = "Please make sure you have up-to-date drivers (see aka.ms/mcdriver for instructions).";
-    private final File resourcePackDir;
+    private final Path resourcePackDir;
     private final PropertyMap sessionPropertyMap;
     private final TextureManager textureManager;
     private final DataFixer dataFixer;
@@ -365,7 +363,8 @@ implements WindowEventHandler {
     private final boolean multiplayerEnabled;
     private final boolean onlineChatEnabled;
     private final ReloadableResourceManagerImpl resourceManager;
-    private final ClientBuiltinResourcePackProvider builtinPackProvider;
+    private final DefaultResourcePack defaultResourcePack;
+    private final ServerResourcePackProvider serverResourcePackProvider;
     private final ResourcePackManager resourcePackManager;
     private final LanguageManager languageManager;
     private final BlockColors blockColors;
@@ -411,8 +410,6 @@ implements WindowEventHandler {
     public ClientPlayerEntity player;
     @Nullable
     private IntegratedServer server;
-    @Nullable
-    private ServerInfo currentServerEntry;
     /**
      * The client connection to the integrated server.
      * This is only used when connecting to the integrated server.
@@ -491,12 +488,15 @@ implements WindowEventHandler {
         instance = this;
         this.runDirectory = args.directories.runDir;
         File file = args.directories.assetDir;
-        this.resourcePackDir = args.directories.resourcePackDir;
+        this.resourcePackDir = args.directories.resourcePackDir.toPath();
         this.gameVersion = args.game.version;
         this.versionType = args.game.versionType;
         this.sessionPropertyMap = args.network.profileProperties;
-        this.builtinPackProvider = new ClientBuiltinResourcePackProvider(new File(this.runDirectory, "server-resource-packs"), args.directories.getResourceIndex());
-        this.resourcePackManager = new ResourcePackManager(MinecraftClient::createResourcePackProfile, this.builtinPackProvider, new FileResourcePackProvider(this.resourcePackDir, ResourcePackSource.PACK_SOURCE_NONE));
+        DefaultClientResourcePackProvider defaultClientResourcePackProvider = new DefaultClientResourcePackProvider(args.directories.getAssetDir());
+        this.serverResourcePackProvider = new ServerResourcePackProvider(new File(this.runDirectory, "server-resource-packs"));
+        FileResourcePackProvider resourcePackProvider = new FileResourcePackProvider(this.resourcePackDir, ResourceType.CLIENT_RESOURCES, ResourcePackSource.NONE);
+        this.resourcePackManager = new ResourcePackManager(defaultClientResourcePackProvider, this.serverResourcePackProvider, resourcePackProvider);
+        this.defaultResourcePack = defaultClientResourcePackProvider.getResourcePack();
         this.networkProxy = args.network.netProxy;
         this.authenticationService = new YggdrasilAuthenticationService(this.networkProxy);
         this.sessionService = this.authenticationService.createMinecraftSessionService();
@@ -533,12 +533,9 @@ implements WindowEventHandler {
         this.onWindowFocusChanged(true);
         try {
             if (IS_SYSTEM_MAC) {
-                inputStream = this.getResourcePackProvider().getPack().open(ResourceType.CLIENT_RESOURCES, new Identifier("icons/minecraft.icns"));
-                MacWindowUtil.setApplicationIconImage(inputStream);
+                MacWindowUtil.setApplicationIconImage(this.getDefaultResourceSupplier("icons", "minecraft.icns"));
             } else {
-                inputStream = this.getResourcePackProvider().getPack().open(ResourceType.CLIENT_RESOURCES, new Identifier("icons/icon_16x16.png"));
-                InputStream inputStream2 = this.getResourcePackProvider().getPack().open(ResourceType.CLIENT_RESOURCES, new Identifier("icons/icon_32x32.png"));
-                this.window.setIcon(inputStream, inputStream2);
+                this.window.setIcon(this.getDefaultResourceSupplier("icons", "icon_16x16.png"), this.getDefaultResourceSupplier("icons", "icon_32x32.png"));
             }
         } catch (IOException iOException) {
             LOGGER.error("Couldn't set icon", iOException);
@@ -561,7 +558,7 @@ implements WindowEventHandler {
         this.resourceManager.registerReloader(this.textureManager);
         this.skinProvider = new PlayerSkinProvider(this.textureManager, new File(file, "skins"), this.sessionService);
         this.levelStorage = new LevelStorage(this.runDirectory.toPath().resolve("saves"), this.runDirectory.toPath().resolve("backups"), this.dataFixer);
-        this.soundManager = new SoundManager(this.resourceManager, this.options);
+        this.soundManager = new SoundManager(this.options);
         this.resourceManager.registerReloader(this.soundManager);
         this.splashTextLoader = new SplashTextResourceSupplier(this.session);
         this.resourceManager.registerReloader(this.splashTextLoader);
@@ -595,7 +592,7 @@ implements WindowEventHandler {
         this.entityRenderDispatcher = new EntityRenderDispatcher(this, this.textureManager, this.itemRenderer, this.blockRenderManager, this.textRenderer, this.options, this.entityModelLoader);
         this.resourceManager.registerReloader(this.entityRenderDispatcher);
         this.gameRenderer = new GameRenderer(this, this.entityRenderDispatcher.getHeldItemRenderer(), this.resourceManager, this.bufferBuilders);
-        this.resourceManager.registerReloader(this.gameRenderer);
+        this.resourceManager.registerReloader(this.gameRenderer.createShaderReloader());
         this.worldRenderer = new WorldRenderer(this, this.entityRenderDispatcher, this.blockEntityRenderDispatcher, this.bufferBuilders);
         this.resourceManager.registerReloader(this.worldRenderer);
         this.initializeSearchProviders();
@@ -628,7 +625,7 @@ implements WindowEventHandler {
         this.window.setRawMouseMotion(this.options.getRawMouseInput().getValue());
         this.window.logOnGlError();
         this.onResolutionChanged();
-        this.gameRenderer.preloadShaders(this.getResourcePackProvider().getPack().getFactory());
+        this.gameRenderer.preloadShaders(this.defaultResourcePack.getFactory());
         this.profileKeys = new ProfileKeys(this.userApiService, this.session.getProfile().getId(), this.runDirectory.toPath());
         this.realms32BitWarningChecker = new Realms32BitWarningChecker(this);
         this.narratorManager = new NarratorManager(this);
@@ -659,6 +656,14 @@ implements WindowEventHandler {
         }
     }
 
+    private InputSupplier<InputStream> getDefaultResourceSupplier(String ... segments) throws IOException {
+        InputSupplier<InputStream> inputSupplier = this.defaultResourcePack.openRoot(segments);
+        if (inputSupplier == null) {
+            throw new FileNotFoundException(String.join((CharSequence)"/", segments));
+        }
+        return inputSupplier;
+    }
+
     private static boolean isCountrySetTo(Object country) {
         try {
             return Locale.getDefault().getISO3Country().equals(country);
@@ -685,7 +690,7 @@ implements WindowEventHandler {
                 stringBuilder.append(I18n.translate("title.singleplayer", new Object[0]));
             } else if (this.isConnectedToRealms()) {
                 stringBuilder.append(I18n.translate("title.multiplayer.realms", new Object[0]));
-            } else if (this.server != null || this.currentServerEntry != null && this.currentServerEntry.isLocal()) {
+            } else if (this.server != null || this.getCurrentServerEntry() != null && this.getCurrentServerEntry().isLocal()) {
                 stringBuilder.append(I18n.translate("title.multiplayer.lan", new Object[0]));
             } else {
                 stringBuilder.append(I18n.translate("title.multiplayer.other", new Object[0]));
@@ -886,16 +891,11 @@ implements WindowEventHandler {
                 bl = true;
             }
         }
-        DefaultedList<ItemStack> defaultedList = DefaultedList.of();
-        for (Item item : Registry.ITEM) {
-            defaultedList.clear();
-            item.appendStacks(ItemGroup.SEARCH, defaultedList);
-            for (ItemStack itemStack : defaultedList) {
-                String string = itemStack.getTranslationKey();
-                String string2 = Text.translatable(string).getString();
-                if (!string2.toLowerCase(Locale.ROOT).equals(item.getTranslationKey())) continue;
-                LOGGER.debug("Missing translation for: {} {} {}", itemStack, string, itemStack.getItem());
-            }
+        for (ItemStack itemStack : ItemGroups.SEARCH.getDisplayStacks(FeatureFlags.FEATURE_MANAGER.getFeatureSet())) {
+            String string = itemStack.getTranslationKey();
+            String string2 = Text.translatable(string).getString();
+            if (!string2.toLowerCase(Locale.ROOT).equals(itemStack.getItem().getTranslationKey())) continue;
+            LOGGER.debug("Missing translation for: {} {} {}", itemStack, string, itemStack.getItem());
         }
         bl |= HandledScreens.isMissingScreens();
         if (bl |= EntityRenderers.isMissingRendererFactories()) {
@@ -1291,10 +1291,11 @@ implements WindowEventHandler {
      */
     private Path saveProfilingResult(SystemDetails details, List<Path> files) {
         Path path;
-        String string = this.isInSingleplayer() ? this.getServer().getSaveProperties().getLevelName() : this.getCurrentServerEntry().name;
+        ServerInfo serverInfo;
+        String string = this.isInSingleplayer() ? this.getServer().getSaveProperties().getLevelName() : ((serverInfo = this.getCurrentServerEntry()) != null ? serverInfo.name : "unknown");
         try {
             String string2 = String.format(Locale.ROOT, "%s-%s-%s", Util.getFormattedCurrentTime(), string, SharedConstants.getGameVersion().getId());
-            String string3 = FileNameUtil.getNextUniqueName(RecordDumper.DEBUG_PROFILING_DIRECTORY, string2, ".zip");
+            String string3 = PathUtil.getNextUniqueName(RecordDumper.DEBUG_PROFILING_DIRECTORY, string2, ".zip");
             path = RecordDumper.DEBUG_PROFILING_DIRECTORY.resolve(string3);
         } catch (IOException iOException) {
             throw new UncheckedIOException(iOException);
@@ -1482,6 +1483,10 @@ implements WindowEventHandler {
         if (this.player.isRiding()) {
             return false;
         }
+        ItemStack itemStack = this.player.getStackInHand(Hand.MAIN_HAND);
+        if (!itemStack.isItemEnabled(this.world.getEnabledFeatures())) {
+            return false;
+        }
         boolean bl = false;
         switch (this.crosshairTarget.getType()) {
             case ENTITY: {
@@ -1523,6 +1528,9 @@ implements WindowEventHandler {
         for (Hand hand : Hand.values()) {
             ActionResult actionResult3;
             ItemStack itemStack = this.player.getStackInHand(hand);
+            if (!itemStack.isItemEnabled(this.world.getEnabledFeatures())) {
+                return;
+            }
             if (this.crosshairTarget != null) {
                 switch (this.crosshairTarget.getType()) {
                     case ENTITY: {
@@ -1797,11 +1805,11 @@ implements WindowEventHandler {
     }
 
     public void startIntegratedServer(String levelName, LevelStorage.Session session, ResourcePackManager dataPackManager, SaveLoader saveLoader) {
-        CompletableFuture<Optional<PlayerPublicKey.PublicKeyData>> completableFuture = this.profileKeys.refresh();
+        CompletableFuture<ClientPlayerSession> completableFuture = this.profileKeys.getClientSession();
         this.disconnect();
         this.worldGenProgressTracker.set(null);
         try {
-            session.backupLevelDataFile(saveLoader.dynamicRegistryManager(), saveLoader.saveProperties());
+            session.backupLevelDataFile(saveLoader.combinedDynamicRegistries().getCombinedRegistryManager(), saveLoader.saveProperties());
             ApiServices apiServices = ApiServices.create(this.authenticationService, this.runDirectory);
             apiServices.userCache().setExecutor(this);
             SkullBlockEntity.setServices(apiServices, this);
@@ -1841,9 +1849,10 @@ implements WindowEventHandler {
         this.profiler.pop();
         SocketAddress socketAddress = this.server.getNetworkIo().bindLocal();
         ClientConnection clientConnection = ClientConnection.connectLocal(socketAddress);
-        clientConnection.setPacketListener(new ClientLoginNetworkHandler(clientConnection, this, null, status -> {}));
+        ClientPlayerSession clientPlayerSession = completableFuture.join();
+        clientConnection.setPacketListener(new ClientLoginNetworkHandler(clientConnection, this, clientPlayerSession, null, null, status -> {}));
         clientConnection.send(new HandshakeC2SPacket(socketAddress.toString(), 0, NetworkState.LOGIN));
-        clientConnection.send(new LoginHelloC2SPacket(this.getSession().getUsername(), completableFuture.join(), Optional.ofNullable(this.getSession().getUuidOrNull())));
+        clientConnection.send(new LoginHelloC2SPacket(this.getSession().getUsername(), clientPlayerSession.toPublicSession().toSerialized(), Optional.ofNullable(this.getSession().getUuidOrNull())));
         this.integratedServerConnection = clientConnection;
     }
 
@@ -1889,9 +1898,8 @@ implements WindowEventHandler {
                 }
                 this.profiler.pop();
             }
-            this.builtinPackProvider.clear();
+            this.serverResourcePackProvider.clear();
             this.inGameHud.clear();
-            this.currentServerEntry = null;
             this.integratedServerRunning = false;
             this.game.onLeaveGameSession();
         }
@@ -2129,22 +2137,11 @@ implements WindowEventHandler {
         return this.submit(this::reloadResources).thenCompose(future -> future);
     }
 
-    public void setCurrentServerEntry(@Nullable ServerInfo serverEntry) {
-        this.currentServerEntry = serverEntry;
-        ReporterEnvironment reporterEnvironment = serverEntry != null ? ReporterEnvironment.ofThirdPartyServer(serverEntry.address) : ReporterEnvironment.ofIntegratedServer();
-        this.ensureAbuseReportContext(reporterEnvironment);
-    }
-
-    public void setCurrentServerEntry(RealmsServer server, String address) {
-        this.currentServerEntry = server.createServerInfo(address);
-        this.ensureAbuseReportContext(ReporterEnvironment.ofRealm(server));
-    }
-
     /**
      * Recreates and resets {@link #abuseReportContext} if {@code environment} has
      * changed.
      */
-    private void ensureAbuseReportContext(ReporterEnvironment environment) {
+    public void ensureAbuseReportContext(ReporterEnvironment environment) {
         if (!this.abuseReportContext.environmentEquals(environment)) {
             this.abuseReportContext = AbuseReportContext.create(environment, this.userApiService);
         }
@@ -2152,7 +2149,7 @@ implements WindowEventHandler {
 
     @Nullable
     public ServerInfo getCurrentServerEntry() {
-        return this.currentServerEntry;
+        return Util.map(this.getNetworkHandler(), ClientPlayNetworkHandler::getServerInfo);
     }
 
     public boolean isInSingleplayer() {
@@ -2201,11 +2198,15 @@ implements WindowEventHandler {
         return this.resourcePackManager;
     }
 
-    public ClientBuiltinResourcePackProvider getResourcePackProvider() {
-        return this.builtinPackProvider;
+    public DefaultResourcePack getDefaultResourcePack() {
+        return this.defaultResourcePack;
     }
 
-    public File getResourcePackDir() {
+    public ServerResourcePackProvider getServerResourcePackProvider() {
+        return this.serverResourcePackProvider;
+    }
+
+    public Path getResourcePackDir() {
         return this.resourcePackDir;
     }
 
@@ -2549,26 +2550,6 @@ implements WindowEventHandler {
 
     public BufferBuilderStorage getBufferBuilders() {
         return this.bufferBuilders;
-    }
-
-    private static ResourcePackProfile createResourcePackProfile(String name, Text displayName, boolean alwaysEnabled, Supplier<ResourcePack> packFactory, PackResourceMetadata metadata, ResourcePackProfile.InsertionPosition insertionPosition, ResourcePackSource source) {
-        int i = metadata.getPackFormat();
-        Supplier<ResourcePack> supplier = packFactory;
-        if (i <= 3) {
-            supplier = MinecraftClient.createV3ResourcePackFactory(supplier);
-        }
-        if (i <= 4) {
-            supplier = MinecraftClient.createV4ResourcePackFactory(supplier);
-        }
-        return new ResourcePackProfile(name, displayName, alwaysEnabled, supplier, metadata, ResourceType.CLIENT_RESOURCES, insertionPosition, source);
-    }
-
-    private static Supplier<ResourcePack> createV3ResourcePackFactory(Supplier<ResourcePack> packFactory) {
-        return () -> new Format3ResourcePack((ResourcePack)packFactory.get(), Format3ResourcePack.NEW_TO_OLD_MAP);
-    }
-
-    private static Supplier<ResourcePack> createV4ResourcePackFactory(Supplier<ResourcePack> packFactory) {
-        return () -> new Format4ResourcePack((ResourcePack)packFactory.get());
     }
 
     public void setMipmapLevels(int mipmapLevels) {

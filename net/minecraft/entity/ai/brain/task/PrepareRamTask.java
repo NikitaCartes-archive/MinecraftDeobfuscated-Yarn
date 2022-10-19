@@ -98,7 +98,7 @@ extends Task<E> {
     @Override
     protected void keepRunning(ServerWorld serverWorld, E pathAwareEntity, long l) {
         boolean bl;
-        if (!this.ram.isPresent()) {
+        if (this.ram.isEmpty()) {
             return;
         }
         ((LivingEntity)pathAwareEntity).getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(this.ram.get().getStart(), this.speed, 0));
@@ -112,7 +112,7 @@ extends Task<E> {
             BlockPos blockPos = ((Entity)pathAwareEntity).getBlockPos();
             if (blockPos.equals(this.ram.get().getStart())) {
                 serverWorld.sendEntityStatus((Entity)pathAwareEntity, EntityStatuses.PREPARE_RAM);
-                if (!this.prepareStartTime.isPresent()) {
+                if (this.prepareStartTime.isEmpty()) {
                     this.prepareStartTime = Optional.of(l);
                 }
                 if (l - this.prepareStartTime.get() >= (long)this.prepareTime) {

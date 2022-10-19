@@ -14,7 +14,6 @@ import java.io.File;
 import java.net.Proxy;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import joptsimple.AbstractOptionSpec;
@@ -29,12 +28,10 @@ import net.minecraft.datafixer.Schemas;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.obfuscate.DontObfuscate;
-import net.minecraft.resource.DataPackSettings;
-import net.minecraft.resource.FileResourcePackProvider;
+import net.minecraft.resource.DataConfiguration;
 import net.minecraft.resource.ResourcePackManager;
-import net.minecraft.resource.ResourcePackSource;
-import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.VanillaDataPackProvider;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.SaveLoader;
 import net.minecraft.server.SaveLoading;
@@ -55,8 +52,11 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiling.jfr.FlightProfiler;
 import net.minecraft.util.profiling.jfr.InstanceType;
 import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.SaveProperties;
+import net.minecraft.world.dimension.DimensionOptions;
+import net.minecraft.world.dimension.DimensionOptionsRegistryHolder;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.gen.WorldPresets;
 import net.minecraft.world.level.LevelInfo;
@@ -135,41 +135,42 @@ public class Main {
             if (bl = optionSet.has(optionSpec7)) {
                 LOGGER.warn("Safe mode active, only vanilla datapack will be loaded");
             }
-            ResourcePackManager resourcePackManager = new ResourcePackManager(ResourceType.SERVER_DATA, new VanillaDataPackProvider(), new FileResourcePackProvider(session.getDirectory(WorldSavePath.DATAPACKS).toFile(), ResourcePackSource.PACK_SOURCE_WORLD));
+            ResourcePackManager resourcePackManager = VanillaDataPackProvider.createManager(session.getDirectory(WorldSavePath.DATAPACKS));
             try {
-                DataPackSettings dataPackSettings = Objects.requireNonNullElse(session.getDataPackSettings(), DataPackSettings.SAFE_MODE);
-                SaveLoading.DataPacks dataPacks = new SaveLoading.DataPacks(resourcePackManager, dataPackSettings, bl);
-                SaveLoading.ServerConfig serverConfig = new SaveLoading.ServerConfig(dataPacks, CommandManager.RegistrationEnvironment.DEDICATED, serverPropertiesLoader.getPropertiesHandler().functionPermissionLevel);
-                saveLoader = (SaveLoader)Util.waitAndApply(applyExecutor -> SaveLoader.load(serverConfig, (resourceManager, dataPackSettings) -> {
+                SaveLoading.ServerConfig serverConfig = Main.createServerConfig(serverPropertiesLoader.getPropertiesHandler(), session, bl, resourcePackManager);
+                saveLoader = (SaveLoader)Util.waitAndApply(applyExecutor -> SaveLoading.load(serverConfig, context -> {
+                    DimensionOptionsRegistryHolder dimensionOptionsRegistryHolder;
                     GeneratorOptions generatorOptions;
                     LevelInfo levelInfo;
-                    DynamicRegistryManager.Mutable mutable = DynamicRegistryManager.createAndLoad();
-                    RegistryOps<NbtElement> dynamicOps = RegistryOps.ofLoaded(NbtOps.INSTANCE, mutable, resourceManager);
-                    SaveProperties saveProperties = session.readLevelProperties(dynamicOps, dataPackSettings, mutable.getRegistryLifecycle());
-                    if (saveProperties != null) {
-                        return Pair.of(saveProperties, mutable.toImmutable());
+                    Registry<DimensionOptions> registry = context.dimensionsRegistryManager().get(Registry.DIMENSION_KEY);
+                    RegistryOps<NbtElement> dynamicOps = RegistryOps.of(NbtOps.INSTANCE, context.worldGenRegistryManager());
+                    Pair<SaveProperties, DimensionOptionsRegistryHolder.DimensionsConfig> pair = session.readLevelProperties(dynamicOps, context.dataConfiguration(), registry, context.worldGenRegistryManager().getRegistryLifecycle());
+                    if (pair != null) {
+                        return new SaveLoading.LoadContext<SaveProperties>(pair.getFirst(), pair.getSecond().toDynamicRegistryManager());
                     }
                     if (optionSet.has(optionSpec3)) {
                         levelInfo = MinecraftServer.DEMO_LEVEL_INFO;
-                        generatorOptions = WorldPresets.createDemoOptions(mutable);
+                        generatorOptions = GeneratorOptions.DEMO_OPTIONS;
+                        dimensionOptionsRegistryHolder = WorldPresets.createDemoOptions(context.worldGenRegistryManager());
                     } else {
                         ServerPropertiesHandler serverPropertiesHandler = serverPropertiesLoader.getPropertiesHandler();
-                        levelInfo = new LevelInfo(serverPropertiesHandler.levelName, serverPropertiesHandler.gameMode, serverPropertiesHandler.hardcore, serverPropertiesHandler.difficulty, false, new GameRules(), dataPackSettings);
-                        generatorOptions = optionSet.has(optionSpec4) ? serverPropertiesHandler.getGeneratorOptions(mutable).withBonusChest() : serverPropertiesHandler.getGeneratorOptions(mutable);
+                        levelInfo = new LevelInfo(serverPropertiesHandler.levelName, serverPropertiesHandler.gameMode, serverPropertiesHandler.hardcore, serverPropertiesHandler.difficulty, false, new GameRules(), context.dataConfiguration());
+                        generatorOptions = optionSet.has(optionSpec4) ? serverPropertiesHandler.generatorOptions.withBonusChest(true) : serverPropertiesHandler.generatorOptions;
+                        dimensionOptionsRegistryHolder = serverPropertiesHandler.createDimensionsRegistryHolder(context.worldGenRegistryManager());
                     }
-                    LevelProperties levelProperties = new LevelProperties(levelInfo, generatorOptions, Lifecycle.stable());
-                    return Pair.of(levelProperties, mutable.toImmutable());
-                }, Util.getMainWorkerExecutor(), applyExecutor)).get();
+                    DimensionOptionsRegistryHolder.DimensionsConfig dimensionsConfig = dimensionOptionsRegistryHolder.toConfig(registry);
+                    Lifecycle lifecycle = dimensionsConfig.getLifecycle().add(context.worldGenRegistryManager().getRegistryLifecycle());
+                    return new SaveLoading.LoadContext<LevelProperties>(new LevelProperties(levelInfo, generatorOptions, dimensionsConfig.specialWorldProperty(), lifecycle), dimensionsConfig.toDynamicRegistryManager());
+                }, SaveLoader::new, Util.getMainWorkerExecutor(), applyExecutor)).get();
             } catch (Exception exception) {
                 LOGGER.warn("Failed to load datapacks, can't proceed with server load. You can either fix your datapacks or reset to vanilla with --safeMode", exception);
                 return;
             }
-            DynamicRegistryManager.Immutable immutable = saveLoader.dynamicRegistryManager();
-            serverPropertiesLoader.getPropertiesHandler().getGeneratorOptions(immutable);
-            SaveProperties saveProperties = saveLoader.saveProperties();
+            DynamicRegistryManager.Immutable immutable = saveLoader.combinedDynamicRegistries().getCombinedRegistryManager();
             if (optionSet.has(optionSpec5)) {
-                Main.forceUpgradeWorld(session, Schemas.getFixer(), optionSet.has(optionSpec6), () -> true, saveProperties.getGeneratorOptions());
+                Main.forceUpgradeWorld(session, Schemas.getFixer(), optionSet.has(optionSpec6), () -> true, immutable.get(Registry.DIMENSION_KEY));
             }
+            SaveProperties saveProperties = saveLoader.saveProperties();
             session.backupLevelDataFile(immutable, saveProperties);
             final MinecraftDedicatedServer minecraftDedicatedServer = MinecraftServer.startServer(thread -> {
                 boolean bl;
@@ -198,9 +199,24 @@ public class Main {
         }
     }
 
-    private static void forceUpgradeWorld(LevelStorage.Session session, DataFixer dataFixer, boolean eraseCache, BooleanSupplier continueCheck, GeneratorOptions generatorOptions) {
+    private static SaveLoading.ServerConfig createServerConfig(ServerPropertiesHandler serverPropertiesHandler, LevelStorage.Session session, boolean safeMode, ResourcePackManager dataPackManager) {
+        DataConfiguration dataConfiguration2;
+        boolean bl;
+        DataConfiguration dataConfiguration = session.getDataPackSettings();
+        if (dataConfiguration != null) {
+            bl = false;
+            dataConfiguration2 = dataConfiguration;
+        } else {
+            bl = true;
+            dataConfiguration2 = new DataConfiguration(serverPropertiesHandler.dataPackSettings, FeatureFlags.DEFAULT_ENABLED_FEATURES);
+        }
+        SaveLoading.DataPacks dataPacks = new SaveLoading.DataPacks(dataPackManager, dataConfiguration2, safeMode, bl);
+        return new SaveLoading.ServerConfig(dataPacks, CommandManager.RegistrationEnvironment.DEDICATED, serverPropertiesHandler.functionPermissionLevel);
+    }
+
+    private static void forceUpgradeWorld(LevelStorage.Session session, DataFixer dataFixer, boolean eraseCache, BooleanSupplier continueCheck, Registry<DimensionOptions> dimensionOptionsRegistry) {
         LOGGER.info("Forcing world upgrade!");
-        WorldUpdater worldUpdater = new WorldUpdater(session, dataFixer, generatorOptions, eraseCache);
+        WorldUpdater worldUpdater = new WorldUpdater(session, dataFixer, dimensionOptionsRegistry, eraseCache);
         Text text = null;
         while (!worldUpdater.isDone()) {
             int i;

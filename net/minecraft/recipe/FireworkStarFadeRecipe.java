@@ -13,6 +13,7 @@ import net.minecraft.item.Items;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialCraftingRecipe;
+import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
@@ -20,8 +21,8 @@ public class FireworkStarFadeRecipe
 extends SpecialCraftingRecipe {
     private static final Ingredient INPUT_STAR = Ingredient.ofItems(Items.FIREWORK_STAR);
 
-    public FireworkStarFadeRecipe(Identifier identifier) {
-        super(identifier);
+    public FireworkStarFadeRecipe(Identifier identifier, CraftingRecipeCategory craftingRecipeCategory) {
+        super(identifier, craftingRecipeCategory);
     }
 
     @Override

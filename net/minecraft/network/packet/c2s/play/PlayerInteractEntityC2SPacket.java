@@ -158,7 +158,7 @@ implements Packet<ServerPlayPacketListener> {
 
     static enum InteractType {
         INTERACT(InteractHandler::new),
-        ATTACK(packetByteBuf -> ATTACK),
+        ATTACK(buf -> ATTACK),
         INTERACT_AT(InteractAtHandler::new);
 
         final Function<PacketByteBuf, InteractTypeHandler> handlerGetter;

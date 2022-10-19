@@ -158,14 +158,14 @@ public class OceanRuinGenerator {
 
         @Override
         protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox) {
+            DrownedEntity drownedEntity;
             if ("chest".equals(metadata)) {
                 world.setBlockState(pos, (BlockState)Blocks.CHEST.getDefaultState().with(ChestBlock.WATERLOGGED, world.getFluidState(pos).isIn(FluidTags.WATER)), Block.NOTIFY_LISTENERS);
                 BlockEntity blockEntity = world.getBlockEntity(pos);
                 if (blockEntity instanceof ChestBlockEntity) {
                     ((ChestBlockEntity)blockEntity).setLootTable(this.large ? LootTables.UNDERWATER_RUIN_BIG_CHEST : LootTables.UNDERWATER_RUIN_SMALL_CHEST, random.nextLong());
                 }
-            } else if ("drowned".equals(metadata)) {
-                DrownedEntity drownedEntity = EntityType.DROWNED.create(world.toServerWorld());
+            } else if ("drowned".equals(metadata) && (drownedEntity = EntityType.DROWNED.create(world.toServerWorld())) != null) {
                 drownedEntity.setPersistent();
                 drownedEntity.refreshPositionAndAngles(pos, 0.0f, 0.0f);
                 drownedEntity.initialize(world, world.getLocalDifficulty(pos), SpawnReason.STRUCTURE, null, null);

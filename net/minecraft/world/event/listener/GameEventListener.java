@@ -4,6 +4,7 @@
 package net.minecraft.world.event.listener;
 
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.PositionSource;
 
@@ -11,10 +12,6 @@ import net.minecraft.world.event.PositionSource;
  * A game event listener listens to game events from {@link GameEventDispatcher}s.
  */
 public interface GameEventListener {
-    default public boolean shouldListenImmediately() {
-        return false;
-    }
-
     /**
      * Returns the position source of this listener.
      */
@@ -30,6 +27,16 @@ public interface GameEventListener {
      * 
      * @return {@code true} if the game event has been accepted by this listener
      */
-    public boolean listen(ServerWorld var1, GameEvent.Message var2);
+    public boolean listen(ServerWorld var1, GameEvent var2, GameEvent.Emitter var3, Vec3d var4);
+
+    default public TriggerOrder getTriggerOrder() {
+        return TriggerOrder.UNSPECIFIED;
+    }
+
+    public static enum TriggerOrder {
+        UNSPECIFIED,
+        BY_DISTANCE;
+
+    }
 }
 

@@ -1702,17 +1702,15 @@ public class OceanMonumentGenerator {
             return box.intersectsXZ(Math.min(k, m), Math.min(l, n), Math.max(k, m), Math.max(l, n));
         }
 
-        protected boolean spawnElderGuardian(StructureWorldAccess world, BlockBox box, int x, int y, int z) {
+        protected void spawnElderGuardian(StructureWorldAccess world, BlockBox box, int x, int y, int z) {
+            ElderGuardianEntity elderGuardianEntity;
             BlockPos.Mutable blockPos = this.offsetPos(x, y, z);
-            if (box.contains(blockPos)) {
-                ElderGuardianEntity elderGuardianEntity = EntityType.ELDER_GUARDIAN.create(world.toServerWorld());
+            if (box.contains(blockPos) && (elderGuardianEntity = EntityType.ELDER_GUARDIAN.create(world.toServerWorld())) != null) {
                 elderGuardianEntity.heal(elderGuardianEntity.getMaxHealth());
                 elderGuardianEntity.refreshPositionAndAngles((double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5, 0.0f, 0.0f);
                 elderGuardianEntity.initialize(world, world.getLocalDifficulty(elderGuardianEntity.getBlockPos()), SpawnReason.STRUCTURE, null, null);
                 world.spawnEntityAndPassengers(elderGuardianEntity);
-                return true;
             }
-            return false;
         }
     }
 }

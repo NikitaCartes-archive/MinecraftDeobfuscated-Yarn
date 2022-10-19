@@ -84,6 +84,9 @@ public class Dismounting {
             if (voxelShape.isEmpty()) continue;
             return null;
         }
+        if (entityType == EntityType.PLAYER && (world.getBlockState(pos).isIn(BlockTags.INVALID_SPAWN_INSIDE) || world.getBlockState(pos.up()).isIn(BlockTags.INVALID_SPAWN_INSIDE))) {
+            return null;
+        }
         if (!world.getWorldBorder().contains(box)) {
             return null;
         }

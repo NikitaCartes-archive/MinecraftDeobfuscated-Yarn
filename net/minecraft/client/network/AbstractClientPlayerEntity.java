@@ -20,10 +20,9 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringHelper;
-import net.minecraft.util.dynamic.DynamicSerializableUuid;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
@@ -39,20 +38,20 @@ extends PlayerEntity {
     public float elytraRoll;
     public final ClientWorld clientWorld;
 
-    public AbstractClientPlayerEntity(ClientWorld world, GameProfile profile, @Nullable PlayerPublicKey publicKey) {
-        super(world, world.getSpawnPos(), world.getSpawnAngle(), profile, publicKey);
+    public AbstractClientPlayerEntity(ClientWorld world, GameProfile profile) {
+        super(world, world.getSpawnPos(), world.getSpawnAngle(), profile);
         this.clientWorld = world;
     }
 
     @Override
     public boolean isSpectator() {
-        PlayerListEntry playerListEntry = MinecraftClient.getInstance().getNetworkHandler().getPlayerListEntry(this.getGameProfile().getId());
+        PlayerListEntry playerListEntry = this.getPlayerListEntry();
         return playerListEntry != null && playerListEntry.getGameMode() == GameMode.SPECTATOR;
     }
 
     @Override
     public boolean isCreative() {
-        PlayerListEntry playerListEntry = MinecraftClient.getInstance().getNetworkHandler().getPlayerListEntry(this.getGameProfile().getId());
+        PlayerListEntry playerListEntry = this.getPlayerListEntry();
         return playerListEntry != null && playerListEntry.getGameMode() == GameMode.CREATIVE;
     }
 
@@ -98,7 +97,7 @@ extends PlayerEntity {
         TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
         AbstractTexture abstractTexture = textureManager.getOrDefault(id, MissingSprite.getMissingSpriteTexture());
         if (abstractTexture == MissingSprite.getMissingSpriteTexture()) {
-            abstractTexture = new PlayerSkinTexture(null, String.format(Locale.ROOT, SKIN_URL, StringHelper.stripTextFormat(playerName)), DefaultSkinHelper.getTexture(DynamicSerializableUuid.getOfflinePlayerUuid(playerName)), true, null);
+            abstractTexture = new PlayerSkinTexture(null, String.format(Locale.ROOT, SKIN_URL, StringHelper.stripTextFormat(playerName)), DefaultSkinHelper.getTexture(Uuids.getOfflinePlayerUuid(playerName)), true, null);
             textureManager.registerTexture(id, abstractTexture);
         }
     }

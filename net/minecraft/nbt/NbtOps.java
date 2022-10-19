@@ -3,22 +3,25 @@
  */
 package net.minecraft.nbt;
 
-import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.PeekingIterator;
 import com.mojang.datafixers.DataFixUtils;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapLike;
 import com.mojang.serialization.RecordBuilder;
+import it.unimi.dsi.fastutil.bytes.ByteArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
@@ -67,6 +70,7 @@ implements DynamicOps<NbtElement> {
      * cannot compress maps.
      */
     public static final NbtOps INSTANCE = new NbtOps();
+    private static final String MARKER_KEY = "";
 
     protected NbtOps() {
     }
@@ -125,7 +129,8 @@ implements DynamicOps<NbtElement> {
     @Override
     public DataResult<Number> getNumberValue(NbtElement nbtElement) {
         if (nbtElement instanceof AbstractNbtNumber) {
-            return DataResult.success(((AbstractNbtNumber)nbtElement).numberValue());
+            AbstractNbtNumber abstractNbtNumber = (AbstractNbtNumber)nbtElement;
+            return DataResult.success(abstractNbtNumber.numberValue());
         }
         return DataResult.error("Not a number");
     }
@@ -173,7 +178,8 @@ implements DynamicOps<NbtElement> {
     @Override
     public DataResult<String> getStringValue(NbtElement nbtElement) {
         if (nbtElement instanceof NbtString) {
-            return DataResult.success(nbtElement.asString());
+            NbtString nbtString = (NbtString)nbtElement;
+            return DataResult.success(nbtString.asString());
         }
         return DataResult.error("Not a string");
     }
@@ -183,57 +189,14 @@ implements DynamicOps<NbtElement> {
         return NbtString.of(string);
     }
 
-    private static AbstractNbtList<?> createList(byte knownType, byte valueType) {
-        if (NbtOps.isTypeEqual(knownType, valueType, (byte)4)) {
-            return new NbtLongArray(new long[0]);
-        }
-        if (NbtOps.isTypeEqual(knownType, valueType, (byte)1)) {
-            return new NbtByteArray(new byte[0]);
-        }
-        if (NbtOps.isTypeEqual(knownType, valueType, (byte)3)) {
-            return new NbtIntArray(new int[0]);
-        }
-        return new NbtList();
-    }
-
-    private static boolean isTypeEqual(byte knownType, byte valueType, byte expectedType) {
-        return knownType == expectedType && (valueType == expectedType || valueType == 0);
-    }
-
-    private static <T extends NbtElement> void addAll(AbstractNbtList<T> destination, NbtElement source, NbtElement additionalValue) {
-        if (source instanceof AbstractNbtList) {
-            AbstractNbtList abstractNbtList = (AbstractNbtList)source;
-            abstractNbtList.forEach(nbt -> destination.add(nbt));
-        }
-        destination.add(additionalValue);
-    }
-
-    private static <T extends NbtElement> void addAll(AbstractNbtList<T> destination, NbtElement source, List<NbtElement> additionalValues) {
-        if (source instanceof AbstractNbtList) {
-            AbstractNbtList abstractNbtList = (AbstractNbtList)source;
-            abstractNbtList.forEach(nbt -> destination.add(nbt));
-        }
-        additionalValues.forEach(nbt -> destination.add(nbt));
-    }
-
     @Override
     public DataResult<NbtElement> mergeToList(NbtElement nbtElement, NbtElement nbtElement2) {
-        if (!(nbtElement instanceof AbstractNbtList) && !(nbtElement instanceof NbtEnd)) {
-            return DataResult.error("mergeToList called with not a list: " + nbtElement, nbtElement);
-        }
-        AbstractNbtList<?> abstractNbtList = NbtOps.createList(nbtElement instanceof AbstractNbtList ? ((AbstractNbtList)nbtElement).getHeldType() : NbtElement.END_TYPE, nbtElement2.getType());
-        NbtOps.addAll(abstractNbtList, nbtElement, nbtElement2);
-        return DataResult.success(abstractNbtList);
+        return NbtOps.createMerger(nbtElement).map(merger -> DataResult.success(merger.merge(nbtElement2).getResult())).orElseGet(() -> DataResult.error("mergeToList called with not a list: " + nbtElement, nbtElement));
     }
 
     @Override
     public DataResult<NbtElement> mergeToList(NbtElement nbtElement, List<NbtElement> list) {
-        if (!(nbtElement instanceof AbstractNbtList) && !(nbtElement instanceof NbtEnd)) {
-            return DataResult.error("mergeToList called with not a list: " + nbtElement, nbtElement);
-        }
-        AbstractNbtList<?> abstractNbtList = NbtOps.createList(nbtElement instanceof AbstractNbtList ? ((AbstractNbtList)nbtElement).getHeldType() : NbtElement.END_TYPE, list.stream().findFirst().map(NbtElement::getType).orElse((byte)0));
-        NbtOps.addAll(abstractNbtList, nbtElement, list);
-        return DataResult.success(abstractNbtList);
+        return NbtOps.createMerger(nbtElement).map(merger -> DataResult.success(merger.merge(list).getResult())).orElseGet(() -> DataResult.error("mergeToList called with not a list: " + nbtElement, nbtElement));
     }
 
     @Override
@@ -280,63 +243,63 @@ implements DynamicOps<NbtElement> {
 
     @Override
     public DataResult<Stream<Pair<NbtElement, NbtElement>>> getMapValues(NbtElement nbtElement) {
-        if (!(nbtElement instanceof NbtCompound)) {
-            return DataResult.error("Not a map: " + nbtElement);
+        if (nbtElement instanceof NbtCompound) {
+            NbtCompound nbtCompound = (NbtCompound)nbtElement;
+            return DataResult.success(nbtCompound.getKeys().stream().map(key -> Pair.of(this.createString((String)key), nbtCompound.get((String)key))));
         }
-        NbtCompound nbtCompound = (NbtCompound)nbtElement;
-        return DataResult.success(nbtCompound.getKeys().stream().map(key -> Pair.of(this.createString((String)key), nbtCompound.get((String)key))));
+        return DataResult.error("Not a map: " + nbtElement);
     }
 
     @Override
     public DataResult<Consumer<BiConsumer<NbtElement, NbtElement>>> getMapEntries(NbtElement nbtElement) {
-        if (!(nbtElement instanceof NbtCompound)) {
-            return DataResult.error("Not a map: " + nbtElement);
+        if (nbtElement instanceof NbtCompound) {
+            NbtCompound nbtCompound = (NbtCompound)nbtElement;
+            return DataResult.success(entryConsumer -> nbtCompound.getKeys().forEach(key -> entryConsumer.accept(this.createString((String)key), nbtCompound.get((String)key))));
         }
-        NbtCompound nbtCompound = (NbtCompound)nbtElement;
-        return DataResult.success(entryConsumer -> nbtCompound.getKeys().forEach(key -> entryConsumer.accept(this.createString((String)key), nbtCompound.get((String)key))));
+        return DataResult.error("Not a map: " + nbtElement);
     }
 
     @Override
     public DataResult<MapLike<NbtElement>> getMap(NbtElement nbtElement) {
-        if (!(nbtElement instanceof NbtCompound)) {
-            return DataResult.error("Not a map: " + nbtElement);
+        if (nbtElement instanceof NbtCompound) {
+            final NbtCompound nbtCompound = (NbtCompound)nbtElement;
+            return DataResult.success(new MapLike<NbtElement>(){
+
+                @Override
+                @Nullable
+                public NbtElement get(NbtElement nbtElement) {
+                    return nbtCompound.get(nbtElement.asString());
+                }
+
+                @Override
+                @Nullable
+                public NbtElement get(String string) {
+                    return nbtCompound.get(string);
+                }
+
+                @Override
+                public Stream<Pair<NbtElement, NbtElement>> entries() {
+                    return nbtCompound.getKeys().stream().map(key -> Pair.of(NbtOps.this.createString((String)key), nbtCompound.get((String)key)));
+                }
+
+                public String toString() {
+                    return "MapLike[" + nbtCompound + "]";
+                }
+
+                @Override
+                @Nullable
+                public /* synthetic */ Object get(String key) {
+                    return this.get(key);
+                }
+
+                @Override
+                @Nullable
+                public /* synthetic */ Object get(Object nbt) {
+                    return this.get((NbtElement)nbt);
+                }
+            });
         }
-        final NbtCompound nbtCompound = (NbtCompound)nbtElement;
-        return DataResult.success(new MapLike<NbtElement>(){
-
-            @Override
-            @Nullable
-            public NbtElement get(NbtElement nbtElement) {
-                return nbtCompound.get(nbtElement.asString());
-            }
-
-            @Override
-            @Nullable
-            public NbtElement get(String string) {
-                return nbtCompound.get(string);
-            }
-
-            @Override
-            public Stream<Pair<NbtElement, NbtElement>> entries() {
-                return nbtCompound.getKeys().stream().map(key -> Pair.of(NbtOps.this.createString((String)key), nbtCompound.get((String)key)));
-            }
-
-            public String toString() {
-                return "MapLike[" + nbtCompound + "]";
-            }
-
-            @Override
-            @Nullable
-            public /* synthetic */ Object get(String key) {
-                return this.get(key);
-            }
-
-            @Override
-            @Nullable
-            public /* synthetic */ Object get(Object nbt) {
-                return this.get((NbtElement)nbt);
-            }
-        });
+        return DataResult.error("Not a map: " + nbtElement);
     }
 
     @Override
@@ -346,16 +309,39 @@ implements DynamicOps<NbtElement> {
         return nbtCompound;
     }
 
+    private static NbtElement method_46232(NbtCompound nbtCompound) {
+        NbtElement nbtElement;
+        if (nbtCompound.getSize() == 1 && (nbtElement = nbtCompound.get(MARKER_KEY)) != null) {
+            return nbtElement;
+        }
+        return nbtCompound;
+    }
+
     @Override
-    public DataResult<Stream<NbtElement>> getStream(NbtElement nbtElement) {
-        if (nbtElement instanceof AbstractNbtList) {
-            return DataResult.success(((AbstractNbtList)nbtElement).stream().map(nbt -> nbt));
+    public DataResult<Stream<NbtElement>> getStream(NbtElement nbtElement2) {
+        if (nbtElement2 instanceof NbtList) {
+            NbtList nbtList = (NbtList)nbtElement2;
+            if (nbtList.getHeldType() == NbtElement.COMPOUND_TYPE) {
+                return DataResult.success(nbtList.stream().map(nbtElement -> NbtOps.method_46232((NbtCompound)nbtElement)));
+            }
+            return DataResult.success(nbtList.stream());
+        }
+        if (nbtElement2 instanceof AbstractNbtList) {
+            AbstractNbtList abstractNbtList = (AbstractNbtList)nbtElement2;
+            return DataResult.success(abstractNbtList.stream().map(nbt -> nbt));
         }
         return DataResult.error("Not a list");
     }
 
     @Override
     public DataResult<Consumer<Consumer<NbtElement>>> getList(NbtElement nbtElement) {
+        if (nbtElement instanceof NbtList) {
+            NbtList nbtList = (NbtList)nbtElement;
+            if (nbtList.getHeldType() == NbtElement.COMPOUND_TYPE) {
+                return DataResult.success(consumer -> nbtList.forEach(nbtElement -> consumer.accept(NbtOps.method_46232((NbtCompound)nbtElement))));
+            }
+            return DataResult.success(nbtList::forEach);
+        }
         if (nbtElement instanceof AbstractNbtList) {
             AbstractNbtList abstractNbtList = (AbstractNbtList)nbtElement;
             return DataResult.success(abstractNbtList::forEach);
@@ -366,7 +352,8 @@ implements DynamicOps<NbtElement> {
     @Override
     public DataResult<ByteBuffer> getByteBuffer(NbtElement nbtElement) {
         if (nbtElement instanceof NbtByteArray) {
-            return DataResult.success(ByteBuffer.wrap(((NbtByteArray)nbtElement).getByteArray()));
+            NbtByteArray nbtByteArray = (NbtByteArray)nbtElement;
+            return DataResult.success(ByteBuffer.wrap(nbtByteArray.getByteArray()));
         }
         return DynamicOps.super.getByteBuffer(nbtElement);
     }
@@ -379,7 +366,8 @@ implements DynamicOps<NbtElement> {
     @Override
     public DataResult<IntStream> getIntStream(NbtElement nbtElement) {
         if (nbtElement instanceof NbtIntArray) {
-            return DataResult.success(Arrays.stream(((NbtIntArray)nbtElement).getIntArray()));
+            NbtIntArray nbtIntArray = (NbtIntArray)nbtElement;
+            return DataResult.success(Arrays.stream(nbtIntArray.getIntArray()));
         }
         return DynamicOps.super.getIntStream(nbtElement);
     }
@@ -392,7 +380,8 @@ implements DynamicOps<NbtElement> {
     @Override
     public DataResult<LongStream> getLongStream(NbtElement nbtElement) {
         if (nbtElement instanceof NbtLongArray) {
-            return DataResult.success(Arrays.stream(((NbtLongArray)nbtElement).getLongArray()));
+            NbtLongArray nbtLongArray = (NbtLongArray)nbtElement;
+            return DataResult.success(Arrays.stream(nbtLongArray.getLongArray()));
         }
         return DynamicOps.super.getLongStream(nbtElement);
     }
@@ -404,30 +393,7 @@ implements DynamicOps<NbtElement> {
 
     @Override
     public NbtElement createList(Stream<NbtElement> stream) {
-        PeekingIterator peekingIterator = Iterators.peekingIterator(stream.iterator());
-        if (!peekingIterator.hasNext()) {
-            return new NbtList();
-        }
-        NbtElement nbtElement = (NbtElement)peekingIterator.peek();
-        if (nbtElement instanceof NbtByte) {
-            ArrayList<Byte> list = Lists.newArrayList(Iterators.transform(peekingIterator, nbt -> ((NbtByte)nbt).byteValue()));
-            return new NbtByteArray(list);
-        }
-        if (nbtElement instanceof NbtInt) {
-            ArrayList<Integer> list = Lists.newArrayList(Iterators.transform(peekingIterator, nbt -> ((NbtInt)nbt).intValue()));
-            return new NbtIntArray(list);
-        }
-        if (nbtElement instanceof NbtLong) {
-            ArrayList<Long> list = Lists.newArrayList(Iterators.transform(peekingIterator, nbt -> ((NbtLong)nbt).longValue()));
-            return new NbtLongArray(list);
-        }
-        NbtList nbtList = new NbtList();
-        while (peekingIterator.hasNext()) {
-            NbtElement nbtElement2 = (NbtElement)peekingIterator.next();
-            if (nbtElement2 instanceof NbtEnd) continue;
-            nbtList.add(nbtElement2);
-        }
-        return nbtList;
+        return BasicMerger.EMPTY.merge(stream).getResult();
     }
 
     @Override
@@ -448,6 +414,39 @@ implements DynamicOps<NbtElement> {
     @Override
     public RecordBuilder<NbtElement> mapBuilder() {
         return new MapBuilder();
+    }
+
+    private static Optional<Merger> createMerger(NbtElement nbt) {
+        if (nbt instanceof NbtEnd) {
+            return Optional.of(BasicMerger.EMPTY);
+        }
+        if (nbt instanceof AbstractNbtList) {
+            AbstractNbtList abstractNbtList = (AbstractNbtList)nbt;
+            if (abstractNbtList.isEmpty()) {
+                return Optional.of(BasicMerger.EMPTY);
+            }
+            if (abstractNbtList instanceof NbtList) {
+                NbtList nbtList = (NbtList)abstractNbtList;
+                return switch (nbtList.getHeldType()) {
+                    case 0 -> Optional.of(BasicMerger.EMPTY);
+                    case 10 -> Optional.of(new CompoundListMerger(nbtList));
+                    default -> Optional.of(new ListMerger(nbtList));
+                };
+            }
+            if (abstractNbtList instanceof NbtByteArray) {
+                NbtByteArray nbtByteArray = (NbtByteArray)abstractNbtList;
+                return Optional.of(new ByteArrayMerger(nbtByteArray.getByteArray()));
+            }
+            if (abstractNbtList instanceof NbtIntArray) {
+                NbtIntArray nbtIntArray = (NbtIntArray)abstractNbtList;
+                return Optional.of(new IntArrayMerger(nbtIntArray.getIntArray()));
+            }
+            if (abstractNbtList instanceof NbtLongArray) {
+                NbtLongArray nbtLongArray = (NbtLongArray)abstractNbtList;
+                return Optional.of(new LongArrayMerger(nbtLongArray.getLongArray()));
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
@@ -596,13 +595,65 @@ implements DynamicOps<NbtElement> {
     }
 
     @Override
-    public /* synthetic */ Object convertTo(DynamicOps dynamicOps, Object element) {
-        return this.convertTo(dynamicOps, (NbtElement)element);
+    public /* synthetic */ Object convertTo(DynamicOps ops, Object element) {
+        return this.convertTo(ops, (NbtElement)element);
     }
 
     @Override
     public /* synthetic */ Object empty() {
         return this.empty();
+    }
+
+    static class BasicMerger
+    implements Merger {
+        public static final BasicMerger EMPTY = new BasicMerger();
+
+        private BasicMerger() {
+        }
+
+        @Override
+        public Merger merge(NbtElement nbt) {
+            if (nbt instanceof NbtCompound) {
+                NbtCompound nbtCompound = (NbtCompound)nbt;
+                return new CompoundListMerger().merge(nbtCompound);
+            }
+            if (nbt instanceof NbtByte) {
+                NbtByte nbtByte = (NbtByte)nbt;
+                return new ByteArrayMerger(nbtByte.byteValue());
+            }
+            if (nbt instanceof NbtInt) {
+                NbtInt nbtInt = (NbtInt)nbt;
+                return new IntArrayMerger(nbtInt.intValue());
+            }
+            if (nbt instanceof NbtLong) {
+                NbtLong nbtLong = (NbtLong)nbt;
+                return new LongArrayMerger(nbtLong.longValue());
+            }
+            return new ListMerger(nbt);
+        }
+
+        @Override
+        public NbtElement getResult() {
+            return new NbtList();
+        }
+    }
+
+    static interface Merger {
+        public Merger merge(NbtElement var1);
+
+        default public Merger merge(Iterable<NbtElement> nbts) {
+            Merger merger = this;
+            for (NbtElement nbtElement : nbts) {
+                merger = merger.merge(nbtElement);
+            }
+            return merger;
+        }
+
+        default public Merger merge(Stream<NbtElement> nbts) {
+            return this.merge(nbts::iterator);
+        }
+
+        public NbtElement getResult();
     }
 
     class MapBuilder
@@ -628,11 +679,12 @@ implements DynamicOps<NbtElement> {
                 return DataResult.success(nbtCompound);
             }
             if (nbtElement instanceof NbtCompound) {
-                NbtCompound nbtCompound2 = new NbtCompound(Maps.newHashMap(((NbtCompound)nbtElement).toMap()));
+                NbtCompound nbtCompound2 = (NbtCompound)nbtElement;
+                NbtCompound nbtCompound3 = new NbtCompound(Maps.newHashMap(nbtCompound2.toMap()));
                 for (Map.Entry<String, NbtElement> entry : nbtCompound.toMap().entrySet()) {
-                    nbtCompound2.put(entry.getKey(), entry.getValue());
+                    nbtCompound3.put(entry.getKey(), entry.getValue());
                 }
-                return DataResult.success(nbtCompound2);
+                return DataResult.success(nbtCompound3);
             }
             return DataResult.error("mergeToMap called with not a map: " + nbtElement, nbtElement);
         }
@@ -650,6 +702,170 @@ implements DynamicOps<NbtElement> {
         @Override
         protected /* synthetic */ Object initBuilder() {
             return this.initBuilder();
+        }
+    }
+
+    static class CompoundListMerger
+    implements Merger {
+        private final NbtList list = new NbtList();
+
+        public CompoundListMerger() {
+        }
+
+        public CompoundListMerger(Collection<NbtElement> nbts) {
+            this.list.addAll(nbts);
+        }
+
+        public CompoundListMerger(IntArrayList list) {
+            list.forEach(value -> this.list.add(CompoundListMerger.createMarkerNbt(NbtInt.of(value))));
+        }
+
+        public CompoundListMerger(ByteArrayList list) {
+            list.forEach(value -> this.list.add(CompoundListMerger.createMarkerNbt(NbtByte.of(value))));
+        }
+
+        public CompoundListMerger(LongArrayList list) {
+            list.forEach(value -> this.list.add(CompoundListMerger.createMarkerNbt(NbtLong.of(value))));
+        }
+
+        private static boolean isMarker(NbtCompound nbt) {
+            return nbt.getSize() == 1 && nbt.contains(NbtOps.MARKER_KEY);
+        }
+
+        private static NbtElement makeMarker(NbtElement value) {
+            NbtCompound nbtCompound;
+            if (value instanceof NbtCompound && !CompoundListMerger.isMarker(nbtCompound = (NbtCompound)value)) {
+                return nbtCompound;
+            }
+            return CompoundListMerger.createMarkerNbt(value);
+        }
+
+        private static NbtCompound createMarkerNbt(NbtElement value) {
+            NbtCompound nbtCompound = new NbtCompound();
+            nbtCompound.put(NbtOps.MARKER_KEY, value);
+            return nbtCompound;
+        }
+
+        @Override
+        public Merger merge(NbtElement nbt) {
+            this.list.add(CompoundListMerger.makeMarker(nbt));
+            return this;
+        }
+
+        @Override
+        public NbtElement getResult() {
+            return this.list;
+        }
+    }
+
+    static class ListMerger
+    implements Merger {
+        private final NbtList list = new NbtList();
+
+        ListMerger(NbtElement nbt) {
+            this.list.add(nbt);
+        }
+
+        ListMerger(NbtList nbt) {
+            this.list.addAll(nbt);
+        }
+
+        @Override
+        public Merger merge(NbtElement nbt) {
+            if (nbt.getType() != this.list.getHeldType()) {
+                return new CompoundListMerger().merge(this.list).merge(nbt);
+            }
+            this.list.add(nbt);
+            return this;
+        }
+
+        @Override
+        public NbtElement getResult() {
+            return this.list;
+        }
+    }
+
+    static class ByteArrayMerger
+    implements Merger {
+        private final ByteArrayList list = new ByteArrayList();
+
+        public ByteArrayMerger(byte value) {
+            this.list.add(value);
+        }
+
+        public ByteArrayMerger(byte[] values) {
+            this.list.addElements(0, values);
+        }
+
+        @Override
+        public Merger merge(NbtElement nbt) {
+            if (nbt instanceof NbtByte) {
+                NbtByte nbtByte = (NbtByte)nbt;
+                this.list.add(nbtByte.byteValue());
+                return this;
+            }
+            return new CompoundListMerger(this.list).merge(nbt);
+        }
+
+        @Override
+        public NbtElement getResult() {
+            return new NbtByteArray(this.list.toByteArray());
+        }
+    }
+
+    static class IntArrayMerger
+    implements Merger {
+        private final IntArrayList list = new IntArrayList();
+
+        public IntArrayMerger(int value) {
+            this.list.add(value);
+        }
+
+        public IntArrayMerger(int[] values) {
+            this.list.addElements(0, values);
+        }
+
+        @Override
+        public Merger merge(NbtElement nbt) {
+            if (nbt instanceof NbtInt) {
+                NbtInt nbtInt = (NbtInt)nbt;
+                this.list.add(nbtInt.intValue());
+                return this;
+            }
+            return new CompoundListMerger(this.list).merge(nbt);
+        }
+
+        @Override
+        public NbtElement getResult() {
+            return new NbtIntArray(this.list.toIntArray());
+        }
+    }
+
+    static class LongArrayMerger
+    implements Merger {
+        private final LongArrayList list = new LongArrayList();
+
+        public LongArrayMerger(long value) {
+            this.list.add(value);
+        }
+
+        public LongArrayMerger(long[] values) {
+            this.list.addElements(0, values);
+        }
+
+        @Override
+        public Merger merge(NbtElement nbt) {
+            if (nbt instanceof NbtLong) {
+                NbtLong nbtLong = (NbtLong)nbt;
+                this.list.add(nbtLong.longValue());
+                return this;
+            }
+            return new CompoundListMerger(this.list).merge(nbt);
+        }
+
+        @Override
+        public NbtElement getResult() {
+            return new NbtLongArray(this.list.toLongArray());
         }
     }
 }

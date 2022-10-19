@@ -8,9 +8,9 @@ import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.LightBlock;
+import net.minecraft.client.item.ClampedModelPredicateProvider;
 import net.minecraft.client.item.CompassAnglePredicateProvider;
 import net.minecraft.client.item.ModelPredicateProvider;
-import net.minecraft.client.item.UnclampedModelPredicateProvider;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -37,11 +37,11 @@ public class ModelPredicateProviderRegistry {
     private static final String CUSTOM_MODEL_DATA_KEY = "CustomModelData";
     private static final Identifier DAMAGED_ID = new Identifier("damaged");
     private static final Identifier DAMAGE_ID = new Identifier("damage");
-    private static final UnclampedModelPredicateProvider DAMAGED_PROVIDER = (stack, world, entity, seed) -> stack.isDamaged() ? 1.0f : 0.0f;
-    private static final UnclampedModelPredicateProvider DAMAGE_PROVIDER = (stack, world, entity, seed) -> MathHelper.clamp((float)stack.getDamage() / (float)stack.getMaxDamage(), 0.0f, 1.0f);
+    private static final ClampedModelPredicateProvider DAMAGED_PROVIDER = (stack, world, entity, seed) -> stack.isDamaged() ? 1.0f : 0.0f;
+    private static final ClampedModelPredicateProvider DAMAGE_PROVIDER = (stack, world, entity, seed) -> MathHelper.clamp((float)stack.getDamage() / (float)stack.getMaxDamage(), 0.0f, 1.0f);
     private static final Map<Item, Map<Identifier, ModelPredicateProvider>> ITEM_SPECIFIC = Maps.newHashMap();
 
-    private static UnclampedModelPredicateProvider register(Identifier id, UnclampedModelPredicateProvider provider) {
+    private static ClampedModelPredicateProvider register(Identifier id, ClampedModelPredicateProvider provider) {
         GLOBAL.put(id, provider);
         return provider;
     }
@@ -50,7 +50,7 @@ public class ModelPredicateProviderRegistry {
         GLOBAL.put(new Identifier("custom_model_data"), provider);
     }
 
-    private static void register(Item item, Identifier id, UnclampedModelPredicateProvider provider) {
+    private static void register(Item item, Identifier id, ClampedModelPredicateProvider provider) {
         ITEM_SPECIFIC.computeIfAbsent(item, key -> Maps.newHashMap()).put(id, provider);
     }
 
@@ -90,7 +90,7 @@ public class ModelPredicateProviderRegistry {
         });
         ModelPredicateProviderRegistry.register(Items.BOW, new Identifier("pulling"), (stack, world, entity, seed) -> entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1.0f : 0.0f);
         ModelPredicateProviderRegistry.register(Items.BUNDLE, new Identifier("filled"), (stack, world, entity, seed) -> BundleItem.getAmountFilled(stack));
-        ModelPredicateProviderRegistry.register(Items.CLOCK, new Identifier("time"), new UnclampedModelPredicateProvider(){
+        ModelPredicateProviderRegistry.register(Items.CLOCK, new Identifier("time"), new ClampedModelPredicateProvider(){
             private double time;
             private double step;
             private long lastTick;

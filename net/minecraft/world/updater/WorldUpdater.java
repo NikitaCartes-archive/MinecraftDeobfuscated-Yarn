@@ -5,7 +5,6 @@ package net.minecraft.world.updater;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mojang.datafixers.DataFixer;
@@ -19,10 +18,12 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Set;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ThreadFactory;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import net.minecraft.SharedConstants;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -31,10 +32,11 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.GeneratorOptions;
+import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.storage.RegionFile;
@@ -44,7 +46,8 @@ import org.slf4j.Logger;
 public class WorldUpdater {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final ThreadFactory UPDATE_THREAD_FACTORY = new ThreadFactoryBuilder().setDaemon(true).build();
-    private final GeneratorOptions generatorOptions;
+    private final Registry<DimensionOptions> dimensionOptionsRegistry;
+    private final Set<RegistryKey<World>> worldKeys;
     private final boolean eraseCache;
     private final LevelStorage.Session session;
     private final Thread updateThread;
@@ -60,8 +63,9 @@ public class WorldUpdater {
     private static final Pattern REGION_FILE_PATTERN = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mca$");
     private final PersistentStateManager persistentStateManager;
 
-    public WorldUpdater(LevelStorage.Session session, DataFixer dataFixer, GeneratorOptions generatorOptions, boolean eraseCache) {
-        this.generatorOptions = generatorOptions;
+    public WorldUpdater(LevelStorage.Session session, DataFixer dataFixer, Registry<DimensionOptions> dimensionOptionsRegistry, boolean eraseCache) {
+        this.dimensionOptionsRegistry = dimensionOptionsRegistry;
+        this.worldKeys = dimensionOptionsRegistry.getKeys().stream().map(Registry::createWorldKey).collect(Collectors.toUnmodifiableSet());
         this.eraseCache = eraseCache;
         this.dataFixer = dataFixer;
         this.session = session;
@@ -86,9 +90,8 @@ public class WorldUpdater {
 
     private void updateWorld() {
         this.totalChunkCount = 0;
-        ImmutableMap.Builder<RegistryKey, ListIterator<ChunkPos>> builder = ImmutableMap.builder();
-        ImmutableSet<RegistryKey<World>> immutableSet = this.generatorOptions.getWorlds();
-        for (RegistryKey registryKey : immutableSet) {
+        ImmutableMap.Builder<RegistryKey<World>, ListIterator<ChunkPos>> builder = ImmutableMap.builder();
+        for (RegistryKey<World> registryKey : this.worldKeys) {
             List<ChunkPos> list = this.getChunkPositions(registryKey);
             builder.put(registryKey, list.listIterator());
             this.totalChunkCount += list.size();
@@ -99,10 +102,10 @@ public class WorldUpdater {
         }
         float f = this.totalChunkCount;
         ImmutableMap immutableMap = builder.build();
-        ImmutableMap.Builder<RegistryKey, VersionedChunkStorage> builder2 = ImmutableMap.builder();
-        for (RegistryKey registryKey : immutableSet) {
-            Path path = this.session.getWorldDirectory(registryKey);
-            builder2.put(registryKey, new VersionedChunkStorage(path.resolve("region"), this.dataFixer, true));
+        ImmutableMap.Builder<RegistryKey<World>, VersionedChunkStorage> builder2 = ImmutableMap.builder();
+        for (RegistryKey<World> registryKey2 : this.worldKeys) {
+            Path path = this.session.getWorldDirectory(registryKey2);
+            builder2.put(registryKey2, new VersionedChunkStorage(path.resolve("region"), this.dataFixer, true));
         }
         ImmutableMap immutableMap2 = builder2.build();
         long l = Util.getMeasuringTimeMs();
@@ -110,9 +113,9 @@ public class WorldUpdater {
         while (this.keepUpgradingChunks) {
             boolean bl = false;
             float g = 0.0f;
-            for (RegistryKey registryKey : immutableSet) {
-                ListIterator listIterator = (ListIterator)immutableMap.get(registryKey);
-                VersionedChunkStorage versionedChunkStorage = (VersionedChunkStorage)immutableMap2.get(registryKey);
+            for (RegistryKey<World> registryKey3 : this.worldKeys) {
+                ListIterator listIterator = (ListIterator)immutableMap.get(registryKey3);
+                VersionedChunkStorage versionedChunkStorage = (VersionedChunkStorage)immutableMap2.get(registryKey3);
                 if (listIterator.hasNext()) {
                     ChunkPos chunkPos = (ChunkPos)listIterator.next();
                     boolean bl2 = false;
@@ -121,8 +124,8 @@ public class WorldUpdater {
                         if (nbtCompound != null) {
                             boolean bl3;
                             int i = VersionedChunkStorage.getDataVersion(nbtCompound);
-                            ChunkGenerator chunkGenerator = this.generatorOptions.getDimensions().get(GeneratorOptions.toDimensionOptionsKey(registryKey)).getChunkGenerator();
-                            NbtCompound nbtCompound2 = versionedChunkStorage.updateChunkNbt(registryKey, () -> this.persistentStateManager, nbtCompound, chunkGenerator.getCodecKey());
+                            ChunkGenerator chunkGenerator = this.dimensionOptionsRegistry.getOrThrow(Registry.createDimensionOptionsKey(registryKey3)).chunkGenerator();
+                            NbtCompound nbtCompound2 = versionedChunkStorage.updateChunkNbt(registryKey3, () -> this.persistentStateManager, nbtCompound, chunkGenerator.getCodecKey());
                             ChunkPos chunkPos2 = new ChunkPos(nbtCompound2.getInt("xPos"), nbtCompound2.getInt("zPos"));
                             if (!chunkPos2.equals(chunkPos)) {
                                 LOGGER.warn("Chunk {} has invalid position {}", (Object)chunkPos, (Object)chunkPos2);
@@ -162,7 +165,7 @@ public class WorldUpdater {
                     bl = true;
                 }
                 float h = (float)listIterator.nextIndex() / f;
-                this.dimensionProgress.put((RegistryKey<World>)registryKey, h);
+                this.dimensionProgress.put(registryKey3, h);
                 g += h;
             }
             this.progress = g;
@@ -215,8 +218,8 @@ public class WorldUpdater {
         return this.done;
     }
 
-    public ImmutableSet<RegistryKey<World>> getWorlds() {
-        return this.generatorOptions.getWorlds();
+    public Set<RegistryKey<World>> getWorlds() {
+        return this.worldKeys;
     }
 
     public float getProgress(RegistryKey<World> world) {

@@ -8,13 +8,12 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.item.ModelPredicateProvider;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.ModelLoader;
+import net.minecraft.client.render.model.Baker;
 import net.minecraft.client.render.model.ModelRotation;
 import net.minecraft.client.render.model.UnbakedModel;
 import net.minecraft.client.render.model.json.JsonUnbakedModel;
@@ -37,7 +36,7 @@ public class ModelOverrideList {
         this.conditionTypes = new Identifier[0];
     }
 
-    public ModelOverrideList(ModelLoader modelLoader, JsonUnbakedModel parent, Function<Identifier, UnbakedModel> unbakedModelGetter, List<ModelOverride> overrides) {
+    public ModelOverrideList(Baker baker, JsonUnbakedModel parent, List<ModelOverride> overrides) {
         this.conditionTypes = (Identifier[])overrides.stream().flatMap(ModelOverride::streamConditions).map(ModelOverride.Condition::getType).distinct().toArray(Identifier[]::new);
         Object2IntOpenHashMap<Identifier> object2IntMap = new Object2IntOpenHashMap<Identifier>();
         for (int i = 0; i < this.conditionTypes.length; ++i) {
@@ -46,7 +45,7 @@ public class ModelOverrideList {
         ArrayList<BakedOverride> list = Lists.newArrayList();
         for (int j = overrides.size() - 1; j >= 0; --j) {
             ModelOverride modelOverride = overrides.get(j);
-            BakedModel bakedModel = this.bakeOverridingModel(modelLoader, parent, unbakedModelGetter, modelOverride);
+            BakedModel bakedModel = this.bakeOverridingModel(baker, parent, modelOverride);
             InlinedCondition[] inlinedConditions = (InlinedCondition[])modelOverride.streamConditions().map(condition -> {
                 int i = object2IntMap.getInt(condition.getType());
                 return new InlinedCondition(i, condition.getThreshold());
@@ -57,12 +56,12 @@ public class ModelOverrideList {
     }
 
     @Nullable
-    private BakedModel bakeOverridingModel(ModelLoader loader, JsonUnbakedModel parent, Function<Identifier, UnbakedModel> unbakedModelGetter, ModelOverride override) {
-        UnbakedModel unbakedModel = unbakedModelGetter.apply(override.getModelId());
+    private BakedModel bakeOverridingModel(Baker baker, JsonUnbakedModel parent, ModelOverride override) {
+        UnbakedModel unbakedModel = baker.getOrLoadModel(override.getModelId());
         if (Objects.equals(unbakedModel, parent)) {
             return null;
         }
-        return loader.bake(override.getModelId(), ModelRotation.X0_Y0);
+        return baker.bake(override.getModelId(), ModelRotation.X0_Y0);
     }
 
     @Nullable

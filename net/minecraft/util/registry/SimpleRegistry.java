@@ -23,9 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.OptionalInt;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.tag.TagKey;
@@ -60,19 +58,20 @@ extends MutableRegistry<T> {
     private volatile Map<TagKey<T>, RegistryEntryList.Named<T>> tagToEntryList = new IdentityHashMap<TagKey<T>, RegistryEntryList.Named<T>>();
     private boolean frozen;
     @Nullable
-    private final Function<T, RegistryEntry.Reference<T>> valueToEntryFunction;
-    @Nullable
-    private Map<T, RegistryEntry.Reference<T>> unfrozenValueToEntry;
+    private Map<T, RegistryEntry.Reference<T>> intrusiveValueToEntry;
     @Nullable
     private List<RegistryEntry.Reference<T>> cachedEntries;
     private int nextId;
 
-    public SimpleRegistry(RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle, @Nullable Function<T, RegistryEntry.Reference<T>> valueToEntryFunction) {
+    public SimpleRegistry(RegistryKey<? extends Registry<T>> registryKey, Lifecycle lifecycle) {
+        this(registryKey, lifecycle, false);
+    }
+
+    public SimpleRegistry(RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle, boolean intrusive) {
         super(key, lifecycle);
         this.lifecycle = lifecycle;
-        this.valueToEntryFunction = valueToEntryFunction;
-        if (valueToEntryFunction != null) {
-            this.unfrozenValueToEntry = new IdentityHashMap<T, RegistryEntry.Reference<T>>();
+        if (intrusive) {
+            this.intrusiveValueToEntry = new IdentityHashMap<T, RegistryEntry.Reference<T>>();
         }
     }
 
@@ -83,6 +82,12 @@ extends MutableRegistry<T> {
         return this.cachedEntries;
     }
 
+    private void assertNotFrozen() {
+        if (this.frozen) {
+            throw new IllegalStateException("Registry is already frozen");
+        }
+    }
+
     private void assertNotFrozen(RegistryKey<T> key) {
         if (this.frozen) {
             throw new IllegalStateException("Registry is already frozen (trying to add key " + key + ")");
@@ -90,71 +95,44 @@ extends MutableRegistry<T> {
     }
 
     @Override
-    public RegistryEntry<T> set(int rawId, RegistryKey<T> key, T value, Lifecycle lifecycle) {
-        return this.set(rawId, key, value, lifecycle, true);
-    }
-
-    private RegistryEntry<T> set(int rawId, RegistryKey<T> key2, T value, Lifecycle lifecycle, boolean checkDuplicateKeys) {
+    public RegistryEntry<T> set(int rawId, RegistryKey<T> key2, T value, Lifecycle lifecycle) {
         RegistryEntry.Reference reference;
         this.assertNotFrozen(key2);
         Validate.notNull(key2);
         Validate.notNull(value);
-        this.rawIdToEntry.size(Math.max(this.rawIdToEntry.size(), rawId + 1));
-        this.entryToRawId.put(value, rawId);
-        this.cachedEntries = null;
-        if (checkDuplicateKeys && this.keyToEntry.containsKey(key2)) {
-            Util.error("Adding duplicate key '" + key2 + "' to registry");
+        if (this.idToEntry.containsKey(key2.getValue())) {
+            Util.throwOrPause(new IllegalStateException("Adding duplicate key '" + key2 + "' to registry"));
         }
         if (this.valueToEntry.containsKey(value)) {
-            Util.error("Adding duplicate value '" + value + "' to registry");
+            Util.throwOrPause(new IllegalStateException("Adding duplicate value '" + value + "' to registry"));
         }
-        this.entryToLifecycle.put(value, lifecycle);
-        this.lifecycle = this.lifecycle.add(lifecycle);
-        if (this.nextId <= rawId) {
-            this.nextId = rawId + 1;
-        }
-        if (this.valueToEntryFunction != null) {
-            reference = this.valueToEntryFunction.apply(value);
-            RegistryEntry.Reference reference2 = this.keyToEntry.put(key2, reference);
-            if (reference2 != null && reference2 != reference) {
-                throw new IllegalStateException("Invalid holder present for key " + key2);
+        if (this.intrusiveValueToEntry != null) {
+            reference = this.intrusiveValueToEntry.remove(value);
+            if (reference == null) {
+                throw new AssertionError((Object)("Missing intrusive holder for " + key2 + ":" + value));
             }
+            reference.setRegistryKey(key2);
         } else {
             reference = this.keyToEntry.computeIfAbsent(key2, key -> RegistryEntry.Reference.standAlone(this, key));
         }
+        this.keyToEntry.put(key2, reference);
         this.idToEntry.put(key2.getValue(), reference);
         this.valueToEntry.put(value, reference);
-        reference.setKeyAndValue(key2, value);
+        this.rawIdToEntry.size(Math.max(this.rawIdToEntry.size(), rawId + 1));
         this.rawIdToEntry.set(rawId, reference);
+        this.entryToRawId.put(value, rawId);
+        if (this.nextId <= rawId) {
+            this.nextId = rawId + 1;
+        }
+        this.entryToLifecycle.put(value, lifecycle);
+        this.lifecycle = this.lifecycle.add(lifecycle);
+        this.cachedEntries = null;
         return reference;
     }
 
     @Override
     public RegistryEntry<T> add(RegistryKey<T> key, T entry, Lifecycle lifecycle) {
         return this.set(this.nextId, key, entry, lifecycle);
-    }
-
-    @Override
-    public RegistryEntry<T> replace(OptionalInt rawId, RegistryKey<T> key, T newEntry, Lifecycle lifecycle) {
-        int i;
-        Object object;
-        this.assertNotFrozen(key);
-        Validate.notNull(key);
-        Validate.notNull(newEntry);
-        RegistryEntry registryEntry = this.keyToEntry.get(key);
-        Object v0 = object = registryEntry != null && registryEntry.hasKeyAndValue() ? registryEntry.value() : null;
-        if (object == null) {
-            i = rawId.orElse(this.nextId);
-        } else {
-            i = this.entryToRawId.getInt(object);
-            if (rawId.isPresent() && rawId.getAsInt() != i) {
-                throw new IllegalStateException("ID mismatch");
-            }
-            this.entryToLifecycle.remove(object);
-            this.entryToRawId.removeInt(object);
-            this.valueToEntry.remove(object);
-        }
-        return this.set(i, key, newEntry, lifecycle, false);
     }
 
     @Override
@@ -190,22 +168,22 @@ extends MutableRegistry<T> {
     }
 
     @Override
-    public Optional<RegistryEntry<T>> getEntry(int rawId) {
+    public Optional<RegistryEntry.Reference<T>> getEntry(int rawId) {
         if (rawId < 0 || rawId >= this.rawIdToEntry.size()) {
             return Optional.empty();
         }
-        return Optional.ofNullable((RegistryEntry)this.rawIdToEntry.get(rawId));
+        return Optional.ofNullable((RegistryEntry.Reference)this.rawIdToEntry.get(rawId));
     }
 
     @Override
-    public Optional<RegistryEntry<T>> getEntry(RegistryKey<T> key) {
-        return Optional.ofNullable((RegistryEntry)this.keyToEntry.get(key));
+    public Optional<RegistryEntry.Reference<T>> getEntry(RegistryKey<T> key) {
+        return Optional.ofNullable(this.keyToEntry.get(key));
     }
 
     @Override
-    public RegistryEntry<T> getOrCreateEntry(RegistryKey<T> key) {
+    public RegistryEntry.Reference<T> getOrCreateEntry(RegistryKey<T> key) {
         return this.keyToEntry.computeIfAbsent(key, entry -> {
-            if (this.valueToEntryFunction != null) {
+            if (this.intrusiveValueToEntry != null) {
                 throw new IllegalStateException("This registry can't create new holders without value");
             }
             this.assertNotFrozen((RegistryKey<T>)entry);
@@ -214,10 +192,10 @@ extends MutableRegistry<T> {
     }
 
     @Override
-    public DataResult<RegistryEntry<T>> getOrCreateEntryDataResult(RegistryKey<T> key) {
+    public DataResult<RegistryEntry.Reference<T>> getOrCreateEntryDataResult(RegistryKey<T> key) {
         RegistryEntry.Reference<T> reference = this.keyToEntry.get(key);
         if (reference == null) {
-            if (this.valueToEntryFunction != null) {
+            if (this.intrusiveValueToEntry != null) {
                 return DataResult.error("This registry can't create new holders without value (requested key: " + key + ")");
             }
             if (this.frozen) {
@@ -334,30 +312,31 @@ extends MutableRegistry<T> {
 
     @Override
     public Registry<T> freeze() {
+        if (this.frozen) {
+            return this;
+        }
         this.frozen = true;
+        this.valueToEntry.forEach((? super K value, ? super V entry) -> entry.setValue(value));
         List<Identifier> list = this.keyToEntry.entrySet().stream().filter(entry -> !((RegistryEntry.Reference)entry.getValue()).hasKeyAndValue()).map(entry -> ((RegistryKey)entry.getKey()).getValue()).sorted().toList();
         if (!list.isEmpty()) {
             throw new IllegalStateException("Unbound values in registry " + this.getKey() + ": " + list);
         }
-        if (this.unfrozenValueToEntry != null) {
-            List<RegistryEntry.Reference> list2 = this.unfrozenValueToEntry.values().stream().filter(entry -> !entry.hasKeyAndValue()).toList();
-            if (!list2.isEmpty()) {
-                throw new IllegalStateException("Some intrusive holders were not added to registry: " + list2);
+        if (this.intrusiveValueToEntry != null) {
+            if (!this.intrusiveValueToEntry.isEmpty()) {
+                throw new IllegalStateException("Some intrusive holders were not registered: " + this.intrusiveValueToEntry.values());
             }
-            this.unfrozenValueToEntry = null;
+            this.intrusiveValueToEntry = null;
         }
         return this;
     }
 
     @Override
     public RegistryEntry.Reference<T> createEntry(T value) {
-        if (this.valueToEntryFunction == null) {
+        if (this.intrusiveValueToEntry == null) {
             throw new IllegalStateException("This registry can't create intrusive holders");
         }
-        if (this.frozen || this.unfrozenValueToEntry == null) {
-            throw new IllegalStateException("Registry is already frozen");
-        }
-        return this.unfrozenValueToEntry.computeIfAbsent(value, valuex -> RegistryEntry.Reference.intrusive(this, valuex));
+        this.assertNotFrozen();
+        return this.intrusiveValueToEntry.computeIfAbsent(value, valuex -> RegistryEntry.Reference.intrusive(this, valuex));
     }
 
     @Override

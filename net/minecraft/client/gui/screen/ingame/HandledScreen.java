@@ -90,6 +90,7 @@ implements ScreenHandlerProvider<T> {
     @Override
     protected void init() {
         super.init();
+        this.client.keyboard.setRepeatEvents(true);
         this.x = (this.width - this.backgroundWidth) / 2;
         this.y = (this.height - this.backgroundHeight) / 2;
     }
@@ -224,7 +225,7 @@ implements ScreenHandlerProvider<T> {
         this.itemRenderer.zOffset = 100.0f;
         if (itemStack.isEmpty() && slot.isEnabled() && (pair = slot.getBackgroundSprite()) != null) {
             Sprite sprite = this.client.getSpriteAtlas(pair.getFirst()).apply(pair.getSecond());
-            RenderSystem.setShaderTexture(0, sprite.getAtlas().getId());
+            RenderSystem.setShaderTexture(0, sprite.getId());
             HandledScreen.drawSprite(matrices, i, j, this.getZOffset(), 16, 16, sprite);
             bl2 = true;
         }
@@ -552,6 +553,7 @@ implements ScreenHandlerProvider<T> {
         if (this.client.player == null) {
             return;
         }
+        this.client.keyboard.setRepeatEvents(false);
         ((ScreenHandler)this.handler).close(this.client.player);
     }
 

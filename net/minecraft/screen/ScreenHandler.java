@@ -3,7 +3,6 @@
  */
 package net.minecraft.screen;
 
-import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Lists;
@@ -15,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Set;
+import java.util.function.Supplier;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -22,6 +22,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.screen.Property;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandlerContext;
@@ -382,7 +383,7 @@ public abstract class ScreenHandler {
         int i;
         for (i = 0; i < this.slots.size(); ++i) {
             ItemStack itemStack = this.slots.get(i).getStack();
-            Supplier<ItemStack> supplier = Suppliers.memoize(itemStack::copy);
+            com.google.common.base.Supplier<ItemStack> supplier = Suppliers.memoize(itemStack::copy);
             this.updateTrackedSlot(i, itemStack, supplier);
             this.checkSlotUpdates(i, itemStack, supplier);
         }
@@ -417,7 +418,7 @@ public abstract class ScreenHandler {
         }
     }
 
-    private void updateTrackedSlot(int slot, ItemStack stack, java.util.function.Supplier<ItemStack> copySupplier) {
+    private void updateTrackedSlot(int slot, ItemStack stack, Supplier<ItemStack> copySupplier) {
         ItemStack itemStack = this.trackedStacks.get(slot);
         if (!ItemStack.areEqual(itemStack, stack)) {
             ItemStack itemStack2 = copySupplier.get();
@@ -428,7 +429,7 @@ public abstract class ScreenHandler {
         }
     }
 
-    private void checkSlotUpdates(int slot, ItemStack stack, java.util.function.Supplier<ItemStack> copySupplier) {
+    private void checkSlotUpdates(int slot, ItemStack stack, Supplier<ItemStack> copySupplier) {
         if (this.disableSync) {
             return;
         }
@@ -665,7 +666,7 @@ public abstract class ScreenHandler {
                                         ItemStack itemStack5 = slot.getStack();
                                         ItemStack itemStack52 = this.getCursorStack();
                                         player.onPickupSlotClick(itemStack52, slot.getStack(), clickType);
-                                        if (!itemStack52.onStackClicked(slot, clickType, player) && !itemStack5.onClicked(itemStack52, slot, clickType, player, this.getCursorStackReference())) {
+                                        if (!this.method_45409(player, clickType, slot, itemStack5, itemStack52)) {
                                             if (itemStack5.isEmpty()) {
                                                 if (!itemStack52.isEmpty()) {
                                                     int n = clickType == ClickType.LEFT ? itemStack52.getCount() : 1;
@@ -770,6 +771,14 @@ public abstract class ScreenHandler {
                 }
             }
         }
+    }
+
+    private boolean method_45409(PlayerEntity playerEntity, ClickType clickType, Slot slot, ItemStack itemStack, ItemStack itemStack2) {
+        FeatureSet featureSet = playerEntity.getWorld().getEnabledFeatures();
+        if (itemStack2.isItemEnabled(featureSet) && itemStack2.onStackClicked(slot, clickType, playerEntity)) {
+            return true;
+        }
+        return itemStack.isItemEnabled(featureSet) && itemStack.onClicked(itemStack2, slot, clickType, playerEntity, this.getCursorStackReference());
     }
 
     /**

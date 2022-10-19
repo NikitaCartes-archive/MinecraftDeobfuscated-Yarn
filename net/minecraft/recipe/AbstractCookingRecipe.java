@@ -8,6 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.recipe.book.CookingRecipeCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
@@ -16,14 +17,16 @@ public abstract class AbstractCookingRecipe
 implements Recipe<Inventory> {
     protected final RecipeType<?> type;
     protected final Identifier id;
+    private final CookingRecipeCategory category;
     protected final String group;
     protected final Ingredient input;
     protected final ItemStack output;
     protected final float experience;
     protected final int cookTime;
 
-    public AbstractCookingRecipe(RecipeType<?> type, Identifier id, String group, Ingredient input, ItemStack output, float experience, int cookTime) {
+    public AbstractCookingRecipe(RecipeType<?> type, Identifier id, String group, CookingRecipeCategory category, Ingredient input, ItemStack output, float experience, int cookTime) {
         this.type = type;
+        this.category = category;
         this.id = id;
         this.group = group;
         this.input = input;
@@ -80,6 +83,10 @@ implements Recipe<Inventory> {
     @Override
     public RecipeType<?> getType() {
         return this.type;
+    }
+
+    public CookingRecipeCategory getCategory() {
+        return this.category;
     }
 }
 

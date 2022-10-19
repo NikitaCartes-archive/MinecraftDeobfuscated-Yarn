@@ -42,6 +42,10 @@ public class ModelVariantMap {
         return JsonHelper.deserialize(context.gson, reader, ModelVariantMap.class);
     }
 
+    public static ModelVariantMap fromJson(DeserializationContext context, JsonElement json) {
+        return context.gson.fromJson(json, ModelVariantMap.class);
+    }
+
     public ModelVariantMap(Map<String, WeightedUnbakedModel> variantMap, MultipartUnbakedModel multipartModel) {
         this.multipartModel = multipartModel;
         this.variantMap.putAll(variantMap);

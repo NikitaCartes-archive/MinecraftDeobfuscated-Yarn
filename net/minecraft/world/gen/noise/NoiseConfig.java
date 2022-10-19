@@ -5,8 +5,6 @@ package net.minecraft.world.gen.noise;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
@@ -71,15 +69,15 @@ public final class NoiseConfig {
             public DensityFunction.Noise apply(DensityFunction.Noise noiseDensityFunction) {
                 RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> registryEntry = noiseDensityFunction.noiseData();
                 if (bl) {
-                    if (Objects.equals(registryEntry.getKey(), Optional.of(NoiseParametersKeys.TEMPERATURE))) {
+                    if (registryEntry.matchesKey(NoiseParametersKeys.TEMPERATURE)) {
                         DoublePerlinNoiseSampler doublePerlinNoiseSampler = DoublePerlinNoiseSampler.createLegacy(this.createRandom(0L), new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 1.0));
                         return new DensityFunction.Noise(registryEntry, doublePerlinNoiseSampler);
                     }
-                    if (Objects.equals(registryEntry.getKey(), Optional.of(NoiseParametersKeys.VEGETATION))) {
+                    if (registryEntry.matchesKey(NoiseParametersKeys.VEGETATION)) {
                         DoublePerlinNoiseSampler doublePerlinNoiseSampler = DoublePerlinNoiseSampler.createLegacy(this.createRandom(1L), new DoublePerlinNoiseSampler.NoiseParameters(-7, 1.0, 1.0));
                         return new DensityFunction.Noise(registryEntry, doublePerlinNoiseSampler);
                     }
-                    if (Objects.equals(registryEntry.getKey(), Optional.of(NoiseParametersKeys.OFFSET))) {
+                    if (registryEntry.matchesKey(NoiseParametersKeys.OFFSET)) {
                         DoublePerlinNoiseSampler doublePerlinNoiseSampler = DoublePerlinNoiseSampler.create(NoiseConfig.this.randomDeriver.split(NoiseParametersKeys.OFFSET.getValue()), new DoublePerlinNoiseSampler.NoiseParameters(0, 0.0, new double[0]));
                         return new DensityFunction.Noise(registryEntry, doublePerlinNoiseSampler);
                     }
@@ -106,7 +104,27 @@ public final class NoiseConfig {
             }
         }
         this.noiseRouter = chunkGeneratorSettings.noiseRouter().apply(new LegacyNoiseDensityFunctionVisitor());
-        this.multiNoiseSampler = new MultiNoiseUtil.MultiNoiseSampler(this.noiseRouter.temperature(), this.noiseRouter.vegetation(), this.noiseRouter.continents(), this.noiseRouter.erosion(), this.noiseRouter.depth(), this.noiseRouter.ridges(), chunkGeneratorSettings.spawnTarget());
+        DensityFunction.DensityFunctionVisitor densityFunctionVisitor = new DensityFunction.DensityFunctionVisitor(){
+            private final Map<DensityFunction, DensityFunction> field_40362 = new HashMap<DensityFunction, DensityFunction>();
+
+            private DensityFunction method_45512(DensityFunction densityFunction) {
+                if (densityFunction instanceof DensityFunctionTypes.RegistryEntryHolder) {
+                    DensityFunctionTypes.RegistryEntryHolder registryEntryHolder = (DensityFunctionTypes.RegistryEntryHolder)densityFunction;
+                    return registryEntryHolder.function().value();
+                }
+                if (densityFunction instanceof DensityFunctionTypes.Wrapping) {
+                    DensityFunctionTypes.Wrapping wrapping = (DensityFunctionTypes.Wrapping)densityFunction;
+                    return wrapping.wrapped();
+                }
+                return densityFunction;
+            }
+
+            @Override
+            public DensityFunction apply(DensityFunction densityFunction) {
+                return this.field_40362.computeIfAbsent(densityFunction, this::method_45512);
+            }
+        };
+        this.multiNoiseSampler = new MultiNoiseUtil.MultiNoiseSampler(this.noiseRouter.temperature().apply(densityFunctionVisitor), this.noiseRouter.vegetation().apply(densityFunctionVisitor), this.noiseRouter.continents().apply(densityFunctionVisitor), this.noiseRouter.erosion().apply(densityFunctionVisitor), this.noiseRouter.depth().apply(densityFunctionVisitor), this.noiseRouter.ridges().apply(densityFunctionVisitor), chunkGeneratorSettings.spawnTarget());
     }
 
     public DoublePerlinNoiseSampler getOrCreateSampler(RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> noiseParametersKey) {

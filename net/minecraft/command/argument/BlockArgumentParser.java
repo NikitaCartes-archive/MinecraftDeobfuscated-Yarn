@@ -76,12 +76,8 @@ public class BlockArgumentParser {
         this.allowSnbt = allowSnbt;
     }
 
-    public static BlockResult block(Registry<Block> registry, String string, boolean allowSnbt) throws CommandSyntaxException {
-        return BlockArgumentParser.block(registry, new StringReader(string), allowSnbt);
-    }
-
-    public static BlockResult block(Registry<Block> registry, StringReader reader, boolean allowSnbt) throws CommandSyntaxException {
-        return BlockArgumentParser.block(CommandRegistryWrapper.of(registry), reader, allowSnbt);
+    public static BlockResult block(CommandRegistryWrapper<Block> registryWrapper, String string, boolean allowSnbt) throws CommandSyntaxException {
+        return BlockArgumentParser.block(registryWrapper, new StringReader(string), allowSnbt);
     }
 
     public static BlockResult block(CommandRegistryWrapper<Block> registryWrapper, StringReader reader, boolean allowSnbt) throws CommandSyntaxException {
@@ -96,12 +92,8 @@ public class BlockArgumentParser {
         }
     }
 
-    public static Either<BlockResult, TagResult> blockOrTag(Registry<Block> registry, String string, boolean allowSnbt) throws CommandSyntaxException {
-        return BlockArgumentParser.blockOrTag(registry, new StringReader(string), allowSnbt);
-    }
-
-    public static Either<BlockResult, TagResult> blockOrTag(Registry<Block> registry, StringReader reader, boolean allowSnbt) throws CommandSyntaxException {
-        return BlockArgumentParser.blockOrTag(CommandRegistryWrapper.of(registry), new StringReader(reader), allowSnbt);
+    public static Either<BlockResult, TagResult> blockOrTag(CommandRegistryWrapper<Block> registryWrapper, String string, boolean allowSnbt) throws CommandSyntaxException {
+        return BlockArgumentParser.blockOrTag(registryWrapper, new StringReader(string), allowSnbt);
     }
 
     public static Either<BlockResult, TagResult> blockOrTag(CommandRegistryWrapper<Block> registryWrapper, StringReader reader, boolean allowSnbt) throws CommandSyntaxException {

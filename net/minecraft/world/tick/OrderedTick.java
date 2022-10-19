@@ -6,7 +6,7 @@ package net.minecraft.world.tick;
 import it.unimi.dsi.fastutil.Hash;
 import java.util.Comparator;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.TickPriority;
+import net.minecraft.world.tick.TickPriority;
 import org.jetbrains.annotations.Nullable;
 
 public record OrderedTick<T>(T type, BlockPos pos, long triggerTick, TickPriority priority, long subTickOrder) {

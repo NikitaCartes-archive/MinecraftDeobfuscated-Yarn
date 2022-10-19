@@ -33,7 +33,8 @@ extends Task<E> {
 
     @Override
     protected boolean shouldRun(ServerWorld world, E entity) {
-        return !this.isInPickupCooldown(entity) && this.startCondition.test(entity) && this.getNearestVisibleWantedItem(entity).isInRange((Entity)entity, this.radius);
+        ItemEntity itemEntity = this.getNearestVisibleWantedItem(entity);
+        return !this.isInPickupCooldown(entity) && this.startCondition.test(entity) && itemEntity.isInRange((Entity)entity, this.radius) && ((LivingEntity)entity).world.getWorldBorder().contains(itemEntity.getBlockPos());
     }
 
     @Override

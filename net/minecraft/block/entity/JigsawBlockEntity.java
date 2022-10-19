@@ -112,7 +112,7 @@ extends BlockEntity {
     public void generate(ServerWorld world, int maxDepth, boolean keepJigsaws) {
         BlockPos blockPos = this.getPos().offset(this.getCachedState().get(JigsawBlock.ORIENTATION).getFacing());
         Registry<StructurePool> registry = world.getRegistryManager().get(Registry.STRUCTURE_POOL_KEY);
-        RegistryEntry<StructurePool> registryEntry = registry.entryOf(this.pool);
+        RegistryEntry.Reference<StructurePool> registryEntry = registry.entryOf(this.pool);
         StructurePoolBasedGenerator.generate(world, registryEntry, this.target, maxDepth, blockPos, keepJigsaws);
     }
 

@@ -3,47 +3,31 @@
  */
 package net.minecraft.client.report;
 
+import com.google.common.collect.Lists;
 import com.mojang.authlib.minecraft.report.AbuseReport;
 import com.mojang.authlib.minecraft.report.AbuseReportLimits;
 import com.mojang.authlib.minecraft.report.ReportChatMessage;
-import com.mojang.authlib.minecraft.report.ReportChatMessageBody;
-import com.mojang.authlib.minecraft.report.ReportChatMessageContent;
-import com.mojang.authlib.minecraft.report.ReportChatMessageHeader;
 import com.mojang.authlib.minecraft.report.ReportEvidence;
 import com.mojang.authlib.minecraft.report.ReportedEntity;
 import com.mojang.datafixers.util.Either;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectRBTreeMap;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntArrayPriorityQueue;
-import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntComparators;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import java.nio.ByteBuffer;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.report.AbuseReportContext;
 import net.minecraft.client.report.AbuseReportReason;
+import net.minecraft.client.report.ContextMessageCollector;
 import net.minecraft.client.report.log.ChatLog;
-import net.minecraft.client.report.log.HeaderEntry;
 import net.minecraft.client.report.log.ReceivedMessage;
-import net.minecraft.network.message.LastSeenMessageList;
 import net.minecraft.network.message.MessageBody;
+import net.minecraft.network.message.MessageLink;
 import net.minecraft.network.message.MessageSignatureData;
-import net.minecraft.network.message.SignedMessage;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
@@ -137,119 +121,18 @@ public class ChatAbuseReport {
     }
 
     private ReportEvidence collectEvidence(ChatLog log) {
-        Int2ObjectRBTreeMap int2ObjectSortedMap = new Int2ObjectRBTreeMap();
-        this.selections.forEach(i -> {
-            Int2ObjectMap<ReceivedMessage.ChatMessage> int2ObjectMap = ChatAbuseReport.collectEvidences(log, i, this.limits);
-            ObjectOpenHashSet set = new ObjectOpenHashSet();
-            for (Int2ObjectMap.Entry entry2 : Int2ObjectMaps.fastIterable(int2ObjectMap)) {
-                int j = entry2.getIntKey();
-                ReceivedMessage.ChatMessage chatMessage = (ReceivedMessage.ChatMessage)entry2.getValue();
-                int2ObjectSortedMap.put(j, this.toReportChatMessage(j, chatMessage));
-                set.add(chatMessage.getSenderUuid());
-            }
-            for (UUID uUID : set) {
-                this.streamHeadersFrom(log, int2ObjectMap, uUID).forEach(entry -> {
-                    HeaderEntry headerEntry = (HeaderEntry)entry.entry();
-                    if (headerEntry instanceof ReceivedMessage.ChatMessage) {
-                        ReceivedMessage.ChatMessage chatMessage = (ReceivedMessage.ChatMessage)headerEntry;
-                        int2ObjectSortedMap.putIfAbsent(entry.index(), this.toReportChatMessage(entry.index(), chatMessage));
-                    } else {
-                        int2ObjectSortedMap.putIfAbsent(entry.index(), this.toReportChatMessage(headerEntry));
-                    }
-                });
-            }
-        });
-        return new ReportEvidence(new ArrayList<ReportChatMessage>(int2ObjectSortedMap.values()));
+        ArrayList list = new ArrayList();
+        ContextMessageCollector contextMessageCollector = new ContextMessageCollector(this.limits.leadingContextMessageCount());
+        contextMessageCollector.add(log, this.selections, (index, message) -> list.add(this.toReportChatMessage(message, this.hasSelectedMessage(index))));
+        return new ReportEvidence(Lists.reverse(list));
     }
 
-    private Stream<ChatLog.IndexedEntry<HeaderEntry>> streamHeadersFrom(ChatLog log, Int2ObjectMap<ReceivedMessage.ChatMessage> evidences, UUID senderUuid) {
-        int i = Integer.MAX_VALUE;
-        int j = Integer.MIN_VALUE;
-        for (Int2ObjectMap.Entry entry : Int2ObjectMaps.fastIterable(evidences)) {
-            ReceivedMessage.ChatMessage chatMessage = (ReceivedMessage.ChatMessage)entry.getValue();
-            if (!chatMessage.getSenderUuid().equals(senderUuid)) continue;
-            int k = entry.getIntKey();
-            i = Math.min(i, k);
-            j = Math.max(j, k);
-        }
-        return log.streamForward(i, j).streamIndexedEntries().map(indexedEntry -> indexedEntry.cast(HeaderEntry.class)).filter(Objects::nonNull).filter(headerEntry -> ((HeaderEntry)headerEntry.entry()).header().sender().equals(senderUuid));
-    }
-
-    private static Int2ObjectMap<ReceivedMessage.ChatMessage> collectEvidences(ChatLog log, int selectedIndex, AbuseReportLimits abuseReportLimits) {
-        int i2 = abuseReportLimits.leadingContextMessageCount() + 1;
-        Int2ObjectOpenHashMap<ReceivedMessage.ChatMessage> int2ObjectMap = new Int2ObjectOpenHashMap<ReceivedMessage.ChatMessage>();
-        ChatAbuseReport.collectPrecedingMessages(log, selectedIndex, (i, chatMessage) -> {
-            int2ObjectMap.put(i, chatMessage);
-            return int2ObjectMap.size() < i2;
-        });
-        ChatAbuseReport.streamSucceedingMessages(log, selectedIndex, abuseReportLimits.trailingContextMessageCount()).forEach(indexedEntry -> int2ObjectMap.put(indexedEntry.index(), (ReceivedMessage.ChatMessage)indexedEntry.entry()));
-        return int2ObjectMap;
-    }
-
-    private static Stream<ChatLog.IndexedEntry<ReceivedMessage.ChatMessage>> streamSucceedingMessages(ChatLog log, int selectedIndex, int maxCount) {
-        return log.streamForward(log.getNextIndex(selectedIndex)).streamIndexedEntries().map(indexedEntry -> indexedEntry.cast(ReceivedMessage.ChatMessage.class)).filter(Objects::nonNull).limit(maxCount);
-    }
-
-    private static void collectPrecedingMessages(ChatLog log, int selectedIndex, IndexedMessageConsumer consumer) {
-        IntArrayPriorityQueue intPriorityQueue = new IntArrayPriorityQueue(IntComparators.OPPOSITE_COMPARATOR);
-        intPriorityQueue.enqueue(selectedIndex);
-        IntOpenHashSet intSet = new IntOpenHashSet();
-        intSet.add(selectedIndex);
-        while (!intPriorityQueue.isEmpty()) {
-            int i = intPriorityQueue.dequeueInt();
-            Object object = log.get(i);
-            if (!(object instanceof ReceivedMessage.ChatMessage)) continue;
-            ReceivedMessage.ChatMessage chatMessage = (ReceivedMessage.ChatMessage)object;
-            if (!consumer.accept(i, chatMessage)) break;
-            object = ChatAbuseReport.collectIndicesUntilLastSeen(log, i, chatMessage.message()).iterator();
-            while (object.hasNext()) {
-                int j = (Integer)object.next();
-                if (!intSet.add(j)) continue;
-                intPriorityQueue.enqueue(j);
-            }
-        }
-    }
-
-    private static IntCollection collectIndicesUntilLastSeen(ChatLog log, int selectedIndex, SignedMessage message) {
-        Set set = message.signedBody().lastSeenMessages().entries().stream().map(LastSeenMessageList.Entry::lastSignature).collect(Collectors.toCollection(ObjectOpenHashSet::new));
-        MessageSignatureData messageSignatureData = message.signedHeader().precedingSignature();
-        if (messageSignatureData != null) {
-            set.add(messageSignatureData);
-        }
-        IntArrayList intList = new IntArrayList();
-        Iterator iterator = log.streamBackward(selectedIndex).streamIndexedEntries().iterator();
-        while (iterator.hasNext() && !set.isEmpty()) {
-            ReceivedMessage.ChatMessage chatMessage;
-            ChatLog.IndexedEntry indexedEntry = (ChatLog.IndexedEntry)iterator.next();
-            Object t = indexedEntry.entry();
-            if (!(t instanceof ReceivedMessage.ChatMessage) || !set.remove((chatMessage = (ReceivedMessage.ChatMessage)t).headerSignature())) continue;
-            intList.add(indexedEntry.index());
-        }
-        return intList;
-    }
-
-    private ReportChatMessage toReportChatMessage(int index, ReceivedMessage.ChatMessage message) {
-        SignedMessage signedMessage = message.message();
-        MessageBody messageBody = signedMessage.signedBody();
-        Instant instant = signedMessage.getTimestamp();
-        long l = signedMessage.getSalt();
-        ByteBuffer byteBuffer = signedMessage.headerSignature().toByteBuffer();
-        ByteBuffer byteBuffer2 = Util.map(signedMessage.signedHeader().precedingSignature(), MessageSignatureData::toByteBuffer);
-        ByteBuffer byteBuffer3 = ByteBuffer.wrap(messageBody.digest().asBytes());
-        ReportChatMessageContent reportChatMessageContent = new ReportChatMessageContent(signedMessage.getSignedContent().plain(), signedMessage.getSignedContent().isDecorated() ? ChatAbuseReport.serializeContent(signedMessage.getSignedContent().decorated()) : null);
-        String string = signedMessage.unsignedContent().map(ChatAbuseReport::serializeContent).orElse(null);
-        List<ReportChatMessageBody.LastSeenSignature> list = messageBody.lastSeenMessages().entries().stream().map(entry -> new ReportChatMessageBody.LastSeenSignature(entry.profileId(), entry.lastSignature().toByteBuffer())).toList();
-        return new ReportChatMessage(new ReportChatMessageHeader(byteBuffer2, message.getSenderUuid(), byteBuffer3, byteBuffer), new ReportChatMessageBody(instant, l, list, reportChatMessageContent), string, this.hasSelectedMessage(index));
-    }
-
-    private ReportChatMessage toReportChatMessage(HeaderEntry headerEntry) {
-        ByteBuffer byteBuffer = headerEntry.headerSignature().toByteBuffer();
-        ByteBuffer byteBuffer2 = Util.map(headerEntry.header().precedingSignature(), MessageSignatureData::toByteBuffer);
-        return new ReportChatMessage(new ReportChatMessageHeader(byteBuffer2, headerEntry.header().sender(), ByteBuffer.wrap(headerEntry.bodyDigest()), byteBuffer), null, null, false);
-    }
-
-    private static String serializeContent(Text content) {
-        return Text.Serializer.toSortedJsonString(content);
+    private ReportChatMessage toReportChatMessage(ReceivedMessage.ChatMessage message, boolean selected) {
+        MessageLink messageLink = message.message().link();
+        MessageBody messageBody = message.message().signedBody();
+        List<ByteBuffer> list = messageBody.lastSeenMessages().entries().stream().map(MessageSignatureData::toByteBuffer).toList();
+        ByteBuffer byteBuffer = Util.map(message.message().signature(), MessageSignatureData::toByteBuffer);
+        return new ReportChatMessage(messageLink.index(), messageLink.sender(), messageLink.sessionId(), messageBody.timestamp(), messageBody.salt(), list, messageBody.content(), byteBuffer, selected);
     }
 
     public ChatAbuseReport copy() {
@@ -270,11 +153,6 @@ public class ChatAbuseReport {
 
     @Environment(value=EnvType.CLIENT)
     public record ReportWithId(UUID id, AbuseReport report) {
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    static interface IndexedMessageConsumer {
-        public boolean accept(int var1, ReceivedMessage.ChatMessage var2);
     }
 }
 

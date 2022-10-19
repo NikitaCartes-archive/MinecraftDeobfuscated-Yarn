@@ -24,6 +24,7 @@ import net.minecraft.entity.RideableInventory;
 import net.minecraft.entity.Saddleable;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.TargetPredicate;
+import net.minecraft.entity.ai.goal.AmbientStandGoal;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FollowParentGoal;
@@ -63,6 +64,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Arm;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -107,7 +109,7 @@ Saddleable {
     protected SimpleInventory items;
     protected int temper;
     protected float jumpStrength;
-    private boolean jumping;
+    protected boolean jumping;
     private float eatingGrassAnimationProgress;
     private float lastEatingGrassAnimationProgress;
     private float angryAnimationProgress;
@@ -132,6 +134,9 @@ Saddleable {
         this.goalSelector.add(6, new WanderAroundFarGoal(this, 0.7));
         this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 6.0f));
         this.goalSelector.add(8, new LookAroundGoal(this));
+        if (this.shouldAmbientStand()) {
+            this.goalSelector.add(9, new AmbientStandGoal(this));
+        }
         this.initCustomGoals();
     }
 
@@ -217,7 +222,16 @@ Saddleable {
     public void saddle(@Nullable SoundCategory sound) {
         this.items.setStack(0, new ItemStack(Items.SADDLE));
         if (sound != null) {
-            this.world.playSoundFromEntity(null, this, SoundEvents.ENTITY_HORSE_SADDLE, sound, 0.5f, 1.0f);
+            this.world.playSoundFromEntity(null, this, this.getSaddleSound(), sound, 0.5f, 1.0f);
+        }
+    }
+
+    public void equipHorseArmor(PlayerEntity player, ItemStack stack) {
+        if (this.isHorseArmor(stack)) {
+            this.items.setStack(1, new ItemStack(stack.getItem()));
+            if (!player.getAbilities().creativeMode) {
+                stack.decrement(1);
+            }
         }
     }
 
@@ -317,38 +331,26 @@ Saddleable {
         return this.getAttributeValue(EntityAttributes.HORSE_JUMP_STRENGTH);
     }
 
+    @Override
+    public boolean damage(DamageSource source, float amount) {
+        boolean bl = super.damage(source, amount);
+        if (bl && this.random.nextInt(3) == 0) {
+            this.updateAnger();
+        }
+        return bl;
+    }
+
+    protected boolean shouldAmbientStand() {
+        return true;
+    }
+
     @Nullable
     protected SoundEvent getEatSound() {
         return null;
     }
 
-    @Override
-    @Nullable
-    protected SoundEvent getDeathSound() {
-        return null;
-    }
-
-    @Override
-    @Nullable
-    protected SoundEvent getHurtSound(DamageSource source) {
-        if (this.random.nextInt(3) == 0) {
-            this.updateAnger();
-        }
-        return null;
-    }
-
-    @Override
-    @Nullable
-    protected SoundEvent getAmbientSound() {
-        if (this.random.nextInt(10) == 0 && !this.isImmobile()) {
-            this.updateAnger();
-        }
-        return null;
-    }
-
     @Nullable
     protected SoundEvent getAngrySound() {
-        this.updateAnger();
         return null;
     }
 
@@ -493,7 +495,7 @@ Saddleable {
     }
 
     @Override
-    protected boolean isImmobile() {
+    public boolean isImmobile() {
         return super.isImmobile() && this.hasPassengers() && this.isSaddled() || this.isEatingGrass() || this.isAngry();
     }
 
@@ -614,6 +616,30 @@ Saddleable {
         }
     }
 
+    @Override
+    public ActionResult interactMob(PlayerEntity player, Hand hand) {
+        if (this.hasPassengers() || this.isBaby()) {
+            return super.interactMob(player, hand);
+        }
+        if (this.isTame() && player.shouldCancelInteraction()) {
+            this.openInventory(player);
+            return ActionResult.success(this.world.isClient);
+        }
+        ItemStack itemStack = player.getStackInHand(hand);
+        if (!itemStack.isEmpty()) {
+            ActionResult actionResult = itemStack.useOnEntity(player, this, hand);
+            if (actionResult.isAccepted()) {
+                return actionResult;
+            }
+            if (this.hasArmorSlot() && this.isHorseArmor(itemStack) && !this.hasArmorInSlot()) {
+                this.equipHorseArmor(player, itemStack);
+                return ActionResult.success(this.world.isClient);
+            }
+        }
+        this.putPlayerOnBack(player);
+        return ActionResult.success(this.world.isClient);
+    }
+
     private void setEating() {
         if (!this.world.isClient) {
             this.eatingTicks = 1;
@@ -632,8 +658,13 @@ Saddleable {
         this.setHorseFlag(ANGRY_FLAG, angry);
     }
 
-    private void updateAnger() {
-        if (this.isLogicalSideForUpdatingMovement() || this.canMoveVoluntarily()) {
+    @Nullable
+    public SoundEvent getAmbientStandSound() {
+        return this.getAmbientSound();
+    }
+
+    public void updateAnger() {
+        if (this.shouldAmbientStand() && this.isLogicalSideForUpdatingMovement() || this.canMoveVoluntarily()) {
             this.angryTicks = 1;
             this.setAngry(true);
         }
@@ -665,16 +696,14 @@ Saddleable {
             return;
         }
         LivingEntity livingEntity = this.getPrimaryPassenger();
-        if (!this.hasPassengers() || livingEntity == null) {
+        if (!this.hasPassengers() || livingEntity == null || this.ignoresMovementInput(livingEntity)) {
             this.airStrafingSpeed = 0.02f;
             super.travel(movementInput);
             return;
         }
-        this.setYaw(livingEntity.getYaw());
-        this.prevYaw = this.getYaw();
-        this.setPitch(livingEntity.getPitch() * 0.5f);
-        this.setRotation(this.getYaw(), this.getPitch());
-        this.headYaw = this.bodyYaw = this.getYaw();
+        this.setRotation(livingEntity.getYaw(), livingEntity.getPitch() * 0.5f);
+        this.bodyYaw = this.headYaw = this.getYaw();
+        this.prevYaw = this.headYaw;
         float f = livingEntity.sidewaysSpeed * 0.5f;
         float g = livingEntity.forwardSpeed;
         if (g <= 0.0f) {
@@ -686,25 +715,15 @@ Saddleable {
             g = 0.0f;
         }
         if (this.jumpStrength > 0.0f && !this.isInAir() && this.onGround) {
-            double d = this.getJumpStrength() * (double)this.jumpStrength * (double)this.getJumpVelocityMultiplier();
-            double e = d + this.getJumpBoostVelocityModifier();
-            Vec3d vec3d = this.getVelocity();
-            this.setVelocity(vec3d.x, e, vec3d.z);
-            this.setInAir(true);
-            this.velocityDirty = true;
-            if (g > 0.0f) {
-                float h = MathHelper.sin(this.getYaw() * ((float)Math.PI / 180));
-                float i = MathHelper.cos(this.getYaw() * ((float)Math.PI / 180));
-                this.setVelocity(this.getVelocity().add(-0.4f * h * this.jumpStrength, 0.0, 0.4f * i * this.jumpStrength));
-            }
+            this.jump(this.jumpStrength, f, g);
             this.jumpStrength = 0.0f;
         }
         this.airStrafingSpeed = this.getMovementSpeed() * 0.1f;
         if (this.isLogicalSideForUpdatingMovement()) {
-            this.setMovementSpeed((float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
+            this.setMovementSpeed(this.getHorsebackMovementSpeed(livingEntity));
             super.travel(new Vec3d(f, movementInput.y, g));
         } else if (livingEntity instanceof PlayerEntity) {
-            this.setVelocity(Vec3d.ZERO);
+            this.setVelocity(this.getX() - this.lastRenderX, this.getY() - this.lastRenderY, this.getZ() - this.lastRenderZ);
         }
         if (this.onGround) {
             this.jumpStrength = 0.0f;
@@ -712,6 +731,28 @@ Saddleable {
         }
         this.updateLimbs(this, false);
         this.tryCheckBlockCollision();
+    }
+
+    protected float getHorsebackMovementSpeed(LivingEntity passenger) {
+        return (float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+    }
+
+    protected boolean ignoresMovementInput(LivingEntity passenger) {
+        return false;
+    }
+
+    protected void jump(float strength, float sidewaysSpeed, float forwardSpeed) {
+        double d = this.getJumpStrength() * (double)strength * (double)this.getJumpVelocityMultiplier();
+        double e = d + this.getJumpBoostVelocityModifier();
+        Vec3d vec3d = this.getVelocity();
+        this.setVelocity(vec3d.x, e, vec3d.z);
+        this.setInAir(true);
+        this.velocityDirty = true;
+        if (forwardSpeed > 0.0f) {
+            float f = MathHelper.sin(this.getYaw() * ((float)Math.PI / 180));
+            float g = MathHelper.cos(this.getYaw() * ((float)Math.PI / 180));
+            this.setVelocity(this.getVelocity().add(-0.4f * f * strength, 0.0, 0.4f * g * strength));
+        }
     }
 
     protected void playJumpSound() {
@@ -1024,6 +1065,10 @@ Saddleable {
 
     public boolean areInventoriesDifferent(Inventory inventory) {
         return this.items != inventory;
+    }
+
+    public int getMinAmbientStandDelay() {
+        return this.getMinAmbientSoundDelay();
     }
 
     @Override

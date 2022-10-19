@@ -13,6 +13,7 @@ import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.entity.model.CompositeEntityModel;
+import net.minecraft.client.render.entity.model.ModelWithWaterPatch;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.util.math.MathHelper;
 
@@ -54,7 +55,8 @@ import net.minecraft.util.math.MathHelper;
  */
 @Environment(value=EnvType.CLIENT)
 public class BoatEntityModel
-extends CompositeEntityModel<BoatEntity> {
+extends CompositeEntityModel<BoatEntity>
+implements ModelWithWaterPatch {
     /**
      * The key of the left paddle model part, whose value is {@value}.
      */
@@ -87,40 +89,25 @@ extends CompositeEntityModel<BoatEntity> {
      * The key of the left model part, whose value is {@value}.
      */
     private static final String LEFT = "left";
-    /**
-     * The key of the chest bottom model part, whose value is {@value}.
-     */
-    private static final String CHEST_BOTTOM = "chest_bottom";
-    /**
-     * The key of the chest lid model part, whose value is {@value}.
-     */
-    private static final String CHEST_LID = "chest_lid";
-    /**
-     * The key of the chest lock model part, whose value is {@value}.
-     */
-    private static final String CHEST_LOCK = "chest_lock";
     private final ModelPart leftPaddle;
     private final ModelPart rightPaddle;
     private final ModelPart waterPatch;
     private final ImmutableList<ModelPart> parts;
 
-    public BoatEntityModel(ModelPart root, boolean chest) {
+    public BoatEntityModel(ModelPart root) {
         this.leftPaddle = root.getChild(LEFT_PADDLE);
         this.rightPaddle = root.getChild(RIGHT_PADDLE);
         this.waterPatch = root.getChild(WATER_PATCH);
-        ImmutableList.Builder builder = new ImmutableList.Builder();
-        builder.add(new ModelPart[]{root.getChild(BOTTOM), root.getChild(BACK), root.getChild(FRONT), root.getChild(RIGHT), root.getChild(LEFT), this.leftPaddle, this.rightPaddle});
-        if (chest) {
-            builder.add(root.getChild(CHEST_BOTTOM));
-            builder.add(root.getChild(CHEST_LID));
-            builder.add(root.getChild(CHEST_LOCK));
-        }
-        this.parts = builder.build();
+        this.parts = this.getParts(root).build();
     }
 
-    public static TexturedModelData getTexturedModelData(boolean chest) {
-        ModelData modelData = new ModelData();
-        ModelPartData modelPartData = modelData.getRoot();
+    protected ImmutableList.Builder<ModelPart> getParts(ModelPart root) {
+        ImmutableList.Builder<ModelPart> builder = new ImmutableList.Builder<ModelPart>();
+        builder.add(new ModelPart[]{root.getChild(BOTTOM), root.getChild(BACK), root.getChild(FRONT), root.getChild(RIGHT), root.getChild(LEFT), this.leftPaddle, this.rightPaddle});
+        return builder;
+    }
+
+    public static void addParts(ModelPartData modelPartData) {
         int i = 32;
         int j = 6;
         int k = 20;
@@ -131,11 +118,6 @@ extends CompositeEntityModel<BoatEntity> {
         modelPartData.addChild(FRONT, ModelPartBuilder.create().uv(0, 27).cuboid(-8.0f, -7.0f, -1.0f, 16.0f, 6.0f, 2.0f), ModelTransform.of(15.0f, 4.0f, 0.0f, 0.0f, 1.5707964f, 0.0f));
         modelPartData.addChild(RIGHT, ModelPartBuilder.create().uv(0, 35).cuboid(-14.0f, -7.0f, -1.0f, 28.0f, 6.0f, 2.0f), ModelTransform.of(0.0f, 4.0f, -9.0f, 0.0f, (float)Math.PI, 0.0f));
         modelPartData.addChild(LEFT, ModelPartBuilder.create().uv(0, 43).cuboid(-14.0f, -7.0f, -1.0f, 28.0f, 6.0f, 2.0f), ModelTransform.pivot(0.0f, 4.0f, 9.0f));
-        if (chest) {
-            modelPartData.addChild(CHEST_BOTTOM, ModelPartBuilder.create().uv(0, 76).cuboid(0.0f, 0.0f, 0.0f, 12.0f, 8.0f, 12.0f), ModelTransform.of(-2.0f, -5.0f, -6.0f, 0.0f, -1.5707964f, 0.0f));
-            modelPartData.addChild(CHEST_LID, ModelPartBuilder.create().uv(0, 59).cuboid(0.0f, 0.0f, 0.0f, 12.0f, 4.0f, 12.0f), ModelTransform.of(-2.0f, -9.0f, -6.0f, 0.0f, -1.5707964f, 0.0f));
-            modelPartData.addChild(CHEST_LOCK, ModelPartBuilder.create().uv(0, 59).cuboid(0.0f, 0.0f, 0.0f, 2.0f, 4.0f, 1.0f), ModelTransform.of(-1.0f, -6.0f, -1.0f, 0.0f, -1.5707964f, 0.0f));
-        }
         int n = 20;
         int o = 7;
         int p = 6;
@@ -143,7 +125,13 @@ extends CompositeEntityModel<BoatEntity> {
         modelPartData.addChild(LEFT_PADDLE, ModelPartBuilder.create().uv(62, 0).cuboid(-1.0f, 0.0f, -5.0f, 2.0f, 2.0f, 18.0f).cuboid(-1.001f, -3.0f, 8.0f, 1.0f, 6.0f, 7.0f), ModelTransform.of(3.0f, -5.0f, 9.0f, 0.0f, 0.0f, 0.19634955f));
         modelPartData.addChild(RIGHT_PADDLE, ModelPartBuilder.create().uv(62, 20).cuboid(-1.0f, 0.0f, -5.0f, 2.0f, 2.0f, 18.0f).cuboid(0.001f, -3.0f, 8.0f, 1.0f, 6.0f, 7.0f), ModelTransform.of(3.0f, -5.0f, -9.0f, 0.0f, (float)Math.PI, 0.19634955f));
         modelPartData.addChild(WATER_PATCH, ModelPartBuilder.create().uv(0, 0).cuboid(-14.0f, -9.0f, -3.0f, 28.0f, 16.0f, 3.0f), ModelTransform.of(0.0f, -3.0f, 1.0f, 1.5707964f, 0.0f, 0.0f));
-        return TexturedModelData.of(modelData, 128, chest ? 128 : 64);
+    }
+
+    public static TexturedModelData getTexturedModelData() {
+        ModelData modelData = new ModelData();
+        ModelPartData modelPartData = modelData.getRoot();
+        BoatEntityModel.addParts(modelPartData);
+        return TexturedModelData.of(modelData, 128, 64);
     }
 
     @Override
@@ -156,6 +144,7 @@ extends CompositeEntityModel<BoatEntity> {
         return this.parts;
     }
 
+    @Override
     public ModelPart getWaterPatch() {
         return this.waterPatch;
     }

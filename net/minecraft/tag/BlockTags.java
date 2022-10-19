@@ -11,6 +11,7 @@ import net.minecraft.util.registry.Registry;
 public final class BlockTags {
     public static final TagKey<Block> WOOL = BlockTags.of("wool");
     public static final TagKey<Block> PLANKS = BlockTags.of("planks");
+    public static final TagKey<Block> STRIPPED_LOGS = BlockTags.of("stripped_logs");
     public static final TagKey<Block> STONE_BRICKS = BlockTags.of("stone_bricks");
     public static final TagKey<Block> WOODEN_BUTTONS = BlockTags.of("wooden_buttons");
     public static final TagKey<Block> BUTTONS = BlockTags.of("buttons");
@@ -80,6 +81,9 @@ public final class BlockTags {
     public static final TagKey<Block> STANDING_SIGNS = BlockTags.of("standing_signs");
     public static final TagKey<Block> WALL_SIGNS = BlockTags.of("wall_signs");
     public static final TagKey<Block> SIGNS = BlockTags.of("signs");
+    public static final TagKey<Block> CEILING_HANGING_SIGNS = BlockTags.of("ceiling_hanging_signs");
+    public static final TagKey<Block> WALL_HANGING_SIGNS = BlockTags.of("wall_hanging_signs");
+    public static final TagKey<Block> ALL_HANGING_SIGNS = BlockTags.of("all_hanging_signs");
     public static final TagKey<Block> DRAGON_IMMUNE = BlockTags.of("dragon_immune");
     public static final TagKey<Block> DRAGON_TRANSPARENT = BlockTags.of("dragon_transparent");
     public static final TagKey<Block> WITHER_IMMUNE = BlockTags.of("wither_immune");
@@ -161,6 +165,7 @@ public final class BlockTags {
     public static final TagKey<Block> SNAPS_GOAT_HORN = BlockTags.of("snaps_goat_horn");
     public static final TagKey<Block> SNOW_LAYER_CANNOT_SURVIVE_ON = BlockTags.of("snow_layer_cannot_survive_on");
     public static final TagKey<Block> SNOW_LAYER_CAN_SURVIVE_ON = BlockTags.of("snow_layer_can_survive_on");
+    public static final TagKey<Block> INVALID_SPAWN_INSIDE = BlockTags.of("invalid_spawn_inside");
 
     private BlockTags() {
     }

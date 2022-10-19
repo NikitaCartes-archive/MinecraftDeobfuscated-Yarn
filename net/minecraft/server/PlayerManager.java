@@ -17,11 +17,11 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -39,8 +39,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.encryption.PlayerPublicKey;
-import net.minecraft.network.message.MessageSourceProfile;
+import net.minecraft.network.encryption.PublicPlayerSession;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SentMessage;
 import net.minecraft.network.message.SignedMessage;
@@ -50,11 +49,13 @@ import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
 import net.minecraft.network.packet.s2c.play.ExperienceBarUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.FeaturesS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerAbilitiesS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerRemoveS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.SimulationDistanceS2CPacket;
@@ -69,6 +70,7 @@ import net.minecraft.network.packet.s2c.play.WorldBorderSizeChangedS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderWarningBlocksChangedS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderWarningTimeChangedS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ServerScoreboard;
@@ -93,16 +95,17 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.TagPacketSerializer;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.PathUtil;
 import net.minecraft.util.UserCache;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.WorldSavePath;
-import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.util.registry.CombinedDynamicRegistries;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.ServerDynamicRegistryType;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProperties;
@@ -134,7 +137,7 @@ public abstract class PlayerManager {
     private final Map<UUID, PlayerAdvancementTracker> advancementTrackers = Maps.newHashMap();
     private final WorldSaveHandler saveHandler;
     private boolean whitelistEnabled;
-    private final DynamicRegistryManager.Immutable registryManager;
+    private final CombinedDynamicRegistries<ServerDynamicRegistryType> registryManager;
     protected final int maxPlayers;
     private int viewDistance;
     private int simulationDistance;
@@ -142,7 +145,7 @@ public abstract class PlayerManager {
     private static final boolean field_29791 = false;
     private int latencyUpdateTimer;
 
-    public PlayerManager(MinecraftServer server, DynamicRegistryManager.Immutable registryManager, WorldSaveHandler saveHandler, int maxPlayers) {
+    public PlayerManager(MinecraftServer server, CombinedDynamicRegistries<ServerDynamicRegistryType> registryManager, WorldSaveHandler saveHandler, int maxPlayers) {
         this.server = server;
         this.registryManager = registryManager;
         this.maxPlayers = maxPlayers;
@@ -179,7 +182,8 @@ public abstract class PlayerManager {
         GameRules gameRules = serverWorld2.getGameRules();
         boolean bl = gameRules.getBoolean(GameRules.DO_IMMEDIATE_RESPAWN);
         boolean bl2 = gameRules.getBoolean(GameRules.REDUCED_DEBUG_INFO);
-        serverPlayNetworkHandler.sendPacket(new GameJoinS2CPacket(player.getId(), worldProperties.isHardcore(), player.interactionManager.getGameMode(), player.interactionManager.getPreviousGameMode(), this.server.getWorldRegistryKeys(), this.registryManager, serverWorld2.getDimensionKey(), serverWorld2.getRegistryKey(), BiomeAccess.hashSeed(serverWorld2.getSeed()), this.getMaxPlayerCount(), this.viewDistance, this.simulationDistance, bl2, !bl, serverWorld2.isDebugWorld(), serverWorld2.isFlat(), player.getLastDeathPos()));
+        serverPlayNetworkHandler.sendPacket(new GameJoinS2CPacket(player.getId(), worldProperties.isHardcore(), player.interactionManager.getGameMode(), player.interactionManager.getPreviousGameMode(), this.server.getWorldRegistryKeys(), this.registryManager.getSucceedingRegistryManagers(ServerDynamicRegistryType.WORLDGEN), serverWorld2.getDimensionKey(), serverWorld2.getRegistryKey(), BiomeAccess.hashSeed(serverWorld2.getSeed()), this.getMaxPlayerCount(), this.viewDistance, this.simulationDistance, bl2, !bl, serverWorld2.isDebugWorld(), serverWorld2.isFlat(), player.getLastDeathPos()));
+        serverPlayNetworkHandler.sendPacket(new FeaturesS2CPacket(FeatureFlags.FEATURE_MANAGER.toId(serverWorld2.getEnabledFeatures())));
         serverPlayNetworkHandler.sendPacket(new CustomPayloadS2CPacket(CustomPayloadS2CPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString(this.getServer().getServerModName())));
         serverPlayNetworkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
         serverPlayNetworkHandler.sendPacket(new PlayerAbilitiesS2CPacket(player.getAbilities()));
@@ -194,17 +198,15 @@ public abstract class PlayerManager {
         MutableText mutableText = player.getGameProfile().getName().equalsIgnoreCase(string) ? Text.translatable("multiplayer.player.joined", player.getDisplayName()) : Text.translatable("multiplayer.player.joined.renamed", player.getDisplayName(), string);
         this.broadcast(mutableText.formatted(Formatting.YELLOW), false);
         serverPlayNetworkHandler.requestTeleport(player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch());
+        player.sendServerMetadata(this.server.getServerMetadata());
+        player.networkHandler.sendPacket(PlayerListS2CPacket.entryFromPlayer(this.players));
         this.players.add(player);
         this.playerMap.put(player.getUuid(), player);
-        this.sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.ADD_PLAYER, player));
-        for (int i = 0; i < this.players.size(); ++i) {
-            player.networkHandler.sendPacket(new PlayerListS2CPacket(PlayerListS2CPacket.Action.ADD_PLAYER, this.players.get(i)));
-        }
+        this.sendToAll(PlayerListS2CPacket.entryFromPlayer(List.of(player)));
         serverWorld2.onPlayerConnected(player);
         this.server.getBossBarManager().onPlayerConnect(player);
         this.sendWorldInfo(player, serverWorld2);
         this.server.getResourcePackProperties().ifPresent(properties -> player.sendResourcePackUrl(properties.url(), properties.hash(), properties.isRequired(), properties.prompt()));
-        player.sendServerMetadata(this.server.getServerMetadata());
         for (StatusEffectInstance statusEffectInstance : player.getStatusEffects()) {
             serverPlayNetworkHandler.sendPacket(new EntityStatusEffectS2CPacket(player.getId(), statusEffectInstance));
         }
@@ -337,7 +339,7 @@ public abstract class PlayerManager {
             this.statisticsMap.remove(uUID);
             this.advancementTrackers.remove(uUID);
         }
-        this.sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.REMOVE_PLAYER, player));
+        this.sendToAll(new PlayerRemoveS2CPacket(List.of(player.getUuid())));
     }
 
     @Nullable
@@ -367,8 +369,8 @@ public abstract class PlayerManager {
         return null;
     }
 
-    public ServerPlayerEntity createPlayer(GameProfile profile, @Nullable PlayerPublicKey publicKey) {
-        UUID uUID = DynamicSerializableUuid.getUuidFromProfile(profile);
+    public ServerPlayerEntity createPlayer(GameProfile profile, PublicPlayerSession session) {
+        UUID uUID = Uuids.getUuidFromProfile(profile);
         ArrayList<ServerPlayerEntity> list = Lists.newArrayList();
         for (int i = 0; i < this.players.size(); ++i) {
             ServerPlayerEntity serverPlayerEntity = this.players.get(i);
@@ -382,7 +384,7 @@ public abstract class PlayerManager {
         for (ServerPlayerEntity serverPlayerEntity3 : list) {
             serverPlayerEntity3.networkHandler.disconnect(Text.translatable("multiplayer.disconnect.duplicate_login"));
         }
-        return new ServerPlayerEntity(this.server, this.server.getOverworld(), profile, publicKey);
+        return new ServerPlayerEntity(this.server, this.server.getOverworld(), profile, session);
     }
 
     public ServerPlayerEntity respawnPlayer(ServerPlayerEntity player, boolean alive) {
@@ -394,7 +396,7 @@ public abstract class PlayerManager {
         ServerWorld serverWorld = this.server.getWorld(player.getSpawnPointDimension());
         Optional<Object> optional = serverWorld != null && blockPos != null ? PlayerEntity.findRespawnPosition(serverWorld, blockPos, f, bl, alive) : Optional.empty();
         ServerWorld serverWorld2 = serverWorld != null && optional.isPresent() ? serverWorld : this.server.getOverworld();
-        ServerPlayerEntity serverPlayerEntity = new ServerPlayerEntity(this.server, serverWorld2, player.getGameProfile(), player.getPublicKey());
+        ServerPlayerEntity serverPlayerEntity = new ServerPlayerEntity(this.server, serverWorld2, player.getGameProfile(), player.getSession());
         serverPlayerEntity.networkHandler = player.networkHandler;
         serverPlayerEntity.copyFrom(player, alive);
         serverPlayerEntity.setId(player.getId());
@@ -450,7 +452,7 @@ public abstract class PlayerManager {
 
     public void updatePlayerLatency() {
         if (++this.latencyUpdateTimer > 600) {
-            this.sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_LATENCY, this.players));
+            this.sendToAll(new PlayerListS2CPacket(EnumSet.of(PlayerListS2CPacket.Action.UPDATE_LATENCY), this.players));
             this.latencyUpdateTimer = 0;
         }
     }
@@ -709,7 +711,7 @@ public abstract class PlayerManager {
      * @see #broadcast(SignedMessage, ServerPlayerEntity, MessageType.Parameters)
      */
     public void broadcast(SignedMessage message, ServerCommandSource source, MessageType.Parameters params) {
-        this.broadcast(message, source::shouldFilterText, source.getPlayer(), source.getMessageSourceProfile(), params);
+        this.broadcast(message, source::shouldFilterText, source.getPlayer(), params);
     }
 
     /**
@@ -731,7 +733,7 @@ public abstract class PlayerManager {
      * @see #broadcast(SignedMessage, ServerCommandSource, MessageType.Parameters)
      */
     public void broadcast(SignedMessage message, ServerPlayerEntity sender, MessageType.Parameters params) {
-        this.broadcast(message, sender::shouldFilterMessagesSentTo, sender, sender.getMessageSourceProfile(), params);
+        this.broadcast(message, sender::shouldFilterMessagesSentTo, sender, params);
     }
 
     /**
@@ -750,36 +752,18 @@ public abstract class PlayerManager {
      * 
      * @param shouldSendFiltered predicate that determines whether to send the filtered message for the given player
      */
-    private void broadcast(SignedMessage message, Predicate<ServerPlayerEntity> shouldSendFiltered, @Nullable ServerPlayerEntity sender, MessageSourceProfile sourceProfile, MessageType.Parameters params) {
-        boolean bl = this.verify(message, sourceProfile);
+    private void broadcast(SignedMessage message, Predicate<ServerPlayerEntity> shouldSendFiltered, @Nullable ServerPlayerEntity sender, MessageType.Parameters params) {
+        boolean bl = this.verify(message);
         this.server.logChatMessage(message.getContent(), params, bl ? null : "Not Secure");
         SentMessage sentMessage = SentMessage.of(message);
-        boolean bl2 = message.isFullyFiltered();
-        boolean bl3 = false;
+        boolean bl2 = false;
         for (ServerPlayerEntity serverPlayerEntity : this.players) {
-            boolean bl4 = shouldSendFiltered.test(serverPlayerEntity);
-            serverPlayerEntity.sendChatMessage(sentMessage, bl4, params);
-            if (sender == serverPlayerEntity) continue;
-            bl3 |= bl2 && bl4;
+            boolean bl3 = shouldSendFiltered.test(serverPlayerEntity);
+            serverPlayerEntity.sendChatMessage(sentMessage, bl3, params);
+            bl2 |= bl3 && message.isFullyFiltered();
         }
-        if (bl3 && sender != null) {
+        if (bl2 && sender != null) {
             sender.sendMessage(FILTERED_FULL_TEXT);
-        }
-        sentMessage.afterPacketsSent(this);
-    }
-
-    /**
-     * Sends {@code message}'s headers (only) to all players except {@code except}.
-     * 
-     * <p>This is used to keep the integrity of the "message chain" when a message is censored
-     * or when the message is originally sent without metadata due to it being originated from
-     * entities.
-     */
-    public void sendMessageHeader(SignedMessage message, Set<ServerPlayerEntity> except) {
-        byte[] bs = message.signedBody().digest().asBytes();
-        for (ServerPlayerEntity serverPlayerEntity : this.players) {
-            if (except.contains(serverPlayerEntity)) continue;
-            serverPlayerEntity.sendMessageHeader(message.signedHeader(), message.headerSignature(), bs);
         }
     }
 
@@ -789,8 +773,8 @@ public abstract class PlayerManager {
      * @implNote This only affects the server log. Unverified messages are still broadcast
      * to other clients.
      */
-    private boolean verify(SignedMessage message, MessageSourceProfile profile) {
-        return !message.isExpiredOnServer(Instant.now()) && message.verify(profile);
+    private boolean verify(SignedMessage message) {
+        return message.hasSignature() && !message.isExpiredOnServer(Instant.now());
     }
 
     public ServerStatHandler createStatHandler(PlayerEntity player) {
@@ -801,7 +785,7 @@ public abstract class PlayerManager {
             Path path;
             File file = this.server.getSavePath(WorldSavePath.STATS).toFile();
             File file2 = new File(file, uUID + ".json");
-            if (!file2.exists() && FileNameUtil.isNormal(path = (file3 = new File(file, player.getName().getString() + ".json")).toPath()) && FileNameUtil.isAllowedName(path) && path.startsWith(file.getPath()) && file3.isFile()) {
+            if (!file2.exists() && PathUtil.isNormal(path = (file3 = new File(file, player.getName().getString() + ".json")).toPath()) && PathUtil.isAllowedName(path) && path.startsWith(file.getPath()) && file3.isFile()) {
                 file3.renameTo(file2);
             }
             serverStatHandler = new ServerStatHandler(this.server, file2);

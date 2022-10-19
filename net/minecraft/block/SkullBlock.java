@@ -15,15 +15,15 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RotationPropertyHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 
 public class SkullBlock
 extends AbstractSkullBlock {
-    public static final int field_31244 = 15;
-    private static final int field_31245 = 16;
+    public static final int field_31244 = RotationPropertyHelper.getMax();
+    private static final int field_31245 = field_31244 + 1;
     public static final IntProperty ROTATION = Properties.ROTATION;
     protected static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 8.0, 12.0);
 
@@ -44,17 +44,17 @@ extends AbstractSkullBlock {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return (BlockState)this.getDefaultState().with(ROTATION, MathHelper.floor((double)(ctx.getPlayerYaw() * 16.0f / 360.0f) + 0.5) & 0xF);
+        return (BlockState)this.getDefaultState().with(ROTATION, RotationPropertyHelper.fromYaw(ctx.getPlayerYaw()));
     }
 
     @Override
     public BlockState rotate(BlockState state, BlockRotation rotation) {
-        return (BlockState)state.with(ROTATION, rotation.rotate(state.get(ROTATION), 16));
+        return (BlockState)state.with(ROTATION, rotation.rotate(state.get(ROTATION), field_31245));
     }
 
     @Override
     public BlockState mirror(BlockState state, BlockMirror mirror) {
-        return (BlockState)state.with(ROTATION, mirror.mirror(state.get(ROTATION), 16));
+        return (BlockState)state.with(ROTATION, mirror.mirror(state.get(ROTATION), field_31245));
     }
 
     @Override

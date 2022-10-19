@@ -18,6 +18,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.VisibleForTesting;
 
 /**
  * A registry entry list is an immutable list of registry entries. This, is either a direct
@@ -74,6 +75,14 @@ extends Iterable<RegistryEntry<T>> {
      */
     public boolean isOf(Registry<T> var1);
 
+    public Optional<TagKey<T>> getTagKey();
+
+    @Deprecated
+    @VisibleForTesting
+    public static <T> Named<T> of(Registry<T> registry, TagKey<T> tagKey) {
+        return new Named<T>(registry, tagKey);
+    }
+
     /**
      * {@return a new direct list of {@code entries}}
      */
@@ -102,39 +111,6 @@ extends Iterable<RegistryEntry<T>> {
      */
     public static <E, T> Direct<T> of(Function<E, RegistryEntry<T>> mapper, List<E> values) {
         return RegistryEntryList.of(values.stream().map(mapper).toList());
-    }
-
-    public static class Direct<T>
-    extends ListBacked<T> {
-        private final List<RegistryEntry<T>> entries;
-        @Nullable
-        private Set<RegistryEntry<T>> entrySet;
-
-        Direct(List<RegistryEntry<T>> entries) {
-            this.entries = entries;
-        }
-
-        @Override
-        protected List<RegistryEntry<T>> getEntries() {
-            return this.entries;
-        }
-
-        @Override
-        public Either<TagKey<T>, List<RegistryEntry<T>>> getStorage() {
-            return Either.right(this.entries);
-        }
-
-        @Override
-        public boolean contains(RegistryEntry<T> entry) {
-            if (this.entrySet == null) {
-                this.entrySet = Set.copyOf(this.entries);
-            }
-            return this.entrySet.contains(entry);
-        }
-
-        public String toString() {
-            return "DirectSet[" + this.entries + "]";
-        }
     }
 
     public static class Named<T>
@@ -167,6 +143,11 @@ extends Iterable<RegistryEntry<T>> {
         }
 
         @Override
+        public Optional<TagKey<T>> getTagKey() {
+            return Optional.of(this.tag);
+        }
+
+        @Override
         public boolean contains(RegistryEntry<T> entry) {
             return entry.isIn(this.tag);
         }
@@ -178,6 +159,44 @@ extends Iterable<RegistryEntry<T>> {
         @Override
         public boolean isOf(Registry<T> registry) {
             return this.registry == registry;
+        }
+    }
+
+    public static class Direct<T>
+    extends ListBacked<T> {
+        private final List<RegistryEntry<T>> entries;
+        @Nullable
+        private Set<RegistryEntry<T>> entrySet;
+
+        Direct(List<RegistryEntry<T>> entries) {
+            this.entries = entries;
+        }
+
+        @Override
+        protected List<RegistryEntry<T>> getEntries() {
+            return this.entries;
+        }
+
+        @Override
+        public Either<TagKey<T>, List<RegistryEntry<T>>> getStorage() {
+            return Either.right(this.entries);
+        }
+
+        @Override
+        public Optional<TagKey<T>> getTagKey() {
+            return Optional.empty();
+        }
+
+        @Override
+        public boolean contains(RegistryEntry<T> entry) {
+            if (this.entrySet == null) {
+                this.entrySet = Set.copyOf(this.entries);
+            }
+            return this.entrySet.contains(entry);
+        }
+
+        public String toString() {
+            return "DirectSet[" + this.entries + "]";
         }
     }
 

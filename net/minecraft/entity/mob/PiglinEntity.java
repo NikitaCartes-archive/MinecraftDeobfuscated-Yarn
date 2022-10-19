@@ -106,7 +106,9 @@ InventoryOwner {
         super.readCustomDataFromNbt(nbt);
         this.setBaby(nbt.getBoolean("IsBaby"));
         this.setCannotHunt(nbt.getBoolean("CannotHunt"));
-        this.inventory.readNbtList(nbt.getList("Inventory", NbtElement.COMPOUND_TYPE));
+        if (nbt.contains("Inventory", NbtElement.COMPOUND_TYPE)) {
+            this.inventory.readNbtList(nbt.getList("Inventory", NbtElement.COMPOUND_TYPE));
+        }
     }
 
     @Override

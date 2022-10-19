@@ -5,9 +5,9 @@ package net.minecraft.block;
 
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.CarvedPumpkinBlock;
 import net.minecraft.block.Material;
 import net.minecraft.block.SkullBlock;
 import net.minecraft.block.entity.BlockEntity;
@@ -28,7 +28,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldEvents;
 import org.jetbrains.annotations.Nullable;
 
 public class WitherSkullBlock
@@ -61,31 +60,22 @@ extends SkullBlock {
         if (!bl || pos.getY() < world.getBottomY() || world.getDifficulty() == Difficulty.PEACEFUL) {
             return;
         }
-        BlockPattern blockPattern = WitherSkullBlock.getWitherBossPattern();
-        BlockPattern.Result result = blockPattern.searchAround(world, pos);
+        BlockPattern.Result result = WitherSkullBlock.getWitherBossPattern().searchAround(world, pos);
         if (result == null) {
             return;
         }
-        for (int i = 0; i < blockPattern.getWidth(); ++i) {
-            for (int j = 0; j < blockPattern.getHeight(); ++j) {
-                CachedBlockPosition cachedBlockPosition = result.translate(i, j, 0);
-                world.setBlockState(cachedBlockPosition.getBlockPos(), Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
-                world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, cachedBlockPosition.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition.getBlockState()));
-            }
-        }
         WitherEntity witherEntity = EntityType.WITHER.create(world);
-        BlockPos blockPos = result.translate(1, 2, 0).getBlockPos();
-        witherEntity.refreshPositionAndAngles((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.55, (double)blockPos.getZ() + 0.5, result.getForwards().getAxis() == Direction.Axis.X ? 0.0f : 90.0f, 0.0f);
-        witherEntity.bodyYaw = result.getForwards().getAxis() == Direction.Axis.X ? 0.0f : 90.0f;
-        witherEntity.onSummoned();
-        for (ServerPlayerEntity serverPlayerEntity : world.getNonSpectatingEntities(ServerPlayerEntity.class, witherEntity.getBoundingBox().expand(50.0))) {
-            Criteria.SUMMONED_ENTITY.trigger(serverPlayerEntity, witherEntity);
-        }
-        world.spawnEntity(witherEntity);
-        for (int k = 0; k < blockPattern.getWidth(); ++k) {
-            for (int l = 0; l < blockPattern.getHeight(); ++l) {
-                world.updateNeighbors(result.translate(k, l, 0).getBlockPos(), Blocks.AIR);
+        if (witherEntity != null) {
+            CarvedPumpkinBlock.method_45454(world, result);
+            BlockPos blockPos = result.translate(1, 2, 0).getBlockPos();
+            witherEntity.refreshPositionAndAngles((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.55, (double)blockPos.getZ() + 0.5, result.getForwards().getAxis() == Direction.Axis.X ? 0.0f : 90.0f, 0.0f);
+            witherEntity.bodyYaw = result.getForwards().getAxis() == Direction.Axis.X ? 0.0f : 90.0f;
+            witherEntity.onSummoned();
+            for (ServerPlayerEntity serverPlayerEntity : world.getNonSpectatingEntities(ServerPlayerEntity.class, witherEntity.getBoundingBox().expand(50.0))) {
+                Criteria.SUMMONED_ENTITY.trigger(serverPlayerEntity, witherEntity);
             }
+            world.spawnEntity(witherEntity);
+            CarvedPumpkinBlock.method_45456(world, result);
         }
     }
 

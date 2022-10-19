@@ -14,5 +14,9 @@ extends Mount {
     public void startJumping(int var1);
 
     public void stopJumping();
+
+    default public int getDashCooldown() {
+        return 0;
+    }
 }
 

@@ -5,14 +5,18 @@ package net.minecraft.network.message;
 
 import java.util.BitSet;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.message.DecoratedContents;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.util.Util;
+import net.minecraft.util.Formatting;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 public class FilterMask {
     public static final FilterMask FULLY_FILTERED = new FilterMask(new BitSet(0), FilterStatus.FULLY_FILTERED);
     public static final FilterMask PASS_THROUGH = new FilterMask(new BitSet(0), FilterStatus.PASS_THROUGH);
+    public static final Style FILTERED_STYLE = Style.EMPTY.withColor(Formatting.DARK_GRAY).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("chat.filtered")));
     private static final char FILTERED = '#';
     private final BitSet mask;
     private final FilterStatus status;
@@ -65,9 +69,30 @@ public class FilterMask {
     }
 
     @Nullable
-    public Text filter(DecoratedContents contents) {
-        String string = contents.plain();
-        return Util.map(this.filter(string), Text::literal);
+    public Text getFilteredText(String message) {
+        return switch (this.status) {
+            default -> throw new IncompatibleClassChangeError();
+            case FilterStatus.FULLY_FILTERED -> null;
+            case FilterStatus.PASS_THROUGH -> Text.literal(message);
+            case FilterStatus.PARTIALLY_FILTERED -> {
+                MutableText mutableText = Text.empty();
+                int i = 0;
+                boolean bl = this.mask.get(0);
+                while (true) {
+                    int j = bl ? this.mask.nextClearBit(i) : this.mask.nextSetBit(i);
+                    int v1 = j = j < 0 ? message.length() : j;
+                    if (j == i) break;
+                    if (bl) {
+                        mutableText.append(Text.literal(StringUtils.repeat('#', j - i)).fillStyle(FILTERED_STYLE));
+                    } else {
+                        mutableText.append(message.substring(i, j));
+                    }
+                    bl = !bl;
+                    i = j;
+                }
+                yield mutableText;
+            }
+        };
     }
 
     public boolean isPassThrough() {

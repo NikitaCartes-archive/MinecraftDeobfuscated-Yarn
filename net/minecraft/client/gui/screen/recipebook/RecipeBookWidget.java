@@ -98,7 +98,6 @@ RecipeDisplayListener {
         if (this.open) {
             this.reset();
         }
-        client.keyboard.setRepeatEvents(true);
     }
 
     public void reset() {
@@ -141,10 +140,6 @@ RecipeDisplayListener {
 
     protected void setBookButtonTexture() {
         this.toggleCraftableButton.setTextureUV(152, 41, 28, 18, TEXTURE);
-    }
-
-    public void close() {
-        this.client.keyboard.setRepeatEvents(false);
     }
 
     public int findLeftEdge(int width, int backgroundWidth) {
@@ -304,8 +299,8 @@ RecipeDisplayListener {
         }
     }
 
-    public void drawGhostSlots(MatrixStack matrices, int x, int y, boolean bl, float delta) {
-        this.ghostSlots.draw(matrices, this.client, x, y, bl, delta);
+    public void drawGhostSlots(MatrixStack matrices, int x, int y, boolean notInventory, float delta) {
+        this.ghostSlots.draw(matrices, this.client, x, y, notInventory, delta);
     }
 
     @Override

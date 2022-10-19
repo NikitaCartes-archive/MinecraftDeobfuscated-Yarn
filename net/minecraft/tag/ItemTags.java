@@ -11,6 +11,7 @@ import net.minecraft.util.registry.Registry;
 public final class ItemTags {
     public static final TagKey<Item> WOOL = ItemTags.of("wool");
     public static final TagKey<Item> PLANKS = ItemTags.of("planks");
+    public static final TagKey<Item> STRIPPED_LOGS = ItemTags.of("stripped_logs");
     public static final TagKey<Item> STONE_BRICKS = ItemTags.of("stone_bricks");
     public static final TagKey<Item> WOODEN_BUTTONS = ItemTags.of("wooden_buttons");
     public static final TagKey<Item> BUTTONS = ItemTags.of("buttons");
@@ -78,6 +79,7 @@ public final class ItemTags {
     public static final TagKey<Item> COALS = ItemTags.of("coals");
     public static final TagKey<Item> ARROWS = ItemTags.of("arrows");
     public static final TagKey<Item> LECTERN_BOOKS = ItemTags.of("lectern_books");
+    public static final TagKey<Item> BOOKSHELF_BOOKS = ItemTags.of("bookshelf_books");
     public static final TagKey<Item> BEACON_PAYMENT_ITEMS = ItemTags.of("beacon_payment_items");
     public static final TagKey<Item> STONE_TOOL_MATERIALS = ItemTags.of("stone_tool_materials");
     public static final TagKey<Item> STONE_CRAFTING_MATERIALS = ItemTags.of("stone_crafting_materials");
@@ -86,6 +88,7 @@ public final class ItemTags {
     public static final TagKey<Item> DAMPENS_VIBRATIONS = ItemTags.of("dampens_vibrations");
     public static final TagKey<Item> CLUSTER_MAX_HARVESTABLES = ItemTags.of("cluster_max_harvestables");
     public static final TagKey<Item> COMPASSES = ItemTags.of("compasses");
+    public static final TagKey<Item> HANGING_SIGNS = ItemTags.of("hanging_signs");
 
     private ItemTags() {
     }

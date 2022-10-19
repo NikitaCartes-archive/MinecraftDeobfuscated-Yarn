@@ -37,6 +37,7 @@ import net.minecraft.entity.passive.GolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
+import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
@@ -251,7 +252,7 @@ implements Monster {
     @Override
     public double getHeightOffset() {
         EntityType<?> entityType = this.getVehicle().getType();
-        if (entityType == EntityType.BOAT || entityType == EntityType.MINECART) {
+        if (this.getVehicle() instanceof BoatEntity || entityType == EntityType.MINECART) {
             return 0.1875 - this.getVehicle().getMountedHeightOffset();
         }
         return super.getHeightOffset();
@@ -420,12 +421,14 @@ implements Monster {
             return;
         }
         ShulkerEntity shulkerEntity = EntityType.SHULKER.create(this.world);
-        DyeColor dyeColor = this.getColor();
-        if (dyeColor != null) {
-            shulkerEntity.setColor(dyeColor);
+        if (shulkerEntity != null) {
+            DyeColor dyeColor = this.getColor();
+            if (dyeColor != null) {
+                shulkerEntity.setColor(dyeColor);
+            }
+            shulkerEntity.refreshPositionAfterTeleport(vec3d);
+            this.world.spawnEntity(shulkerEntity);
         }
-        shulkerEntity.refreshPositionAfterTeleport(vec3d);
-        this.world.spawnEntity(shulkerEntity);
     }
 
     @Override

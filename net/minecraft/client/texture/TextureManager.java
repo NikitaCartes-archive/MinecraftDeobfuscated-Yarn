@@ -175,7 +175,8 @@ AutoCloseable {
 
     @Override
     public CompletableFuture<Void> reload(ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
-        return ((CompletableFuture)CompletableFuture.allOf(TitleScreen.loadTexturesAsync(this, prepareExecutor), this.loadTextureAsync(ClickableWidget.WIDGETS_TEXTURE, prepareExecutor)).thenCompose(synchronizer::whenPrepared)).thenAcceptAsync(void_ -> {
+        CompletableFuture<Void> completableFuture = new CompletableFuture<Void>();
+        ((CompletableFuture)CompletableFuture.allOf(TitleScreen.loadTexturesAsync(this, prepareExecutor), this.loadTextureAsync(ClickableWidget.WIDGETS_TEXTURE, prepareExecutor)).thenCompose(synchronizer::whenPrepared)).thenAcceptAsync(void_ -> {
             MissingSprite.getMissingSpriteTexture();
             RealmsMainScreen.loadImages(this.resourceContainer);
             Iterator<Map.Entry<Identifier, AbstractTexture>> iterator = this.textures.entrySet().iterator();
@@ -189,7 +190,9 @@ AutoCloseable {
                 }
                 abstractTexture.registerTexture(this, manager, identifier, applyExecutor);
             }
+            MinecraftClient.getInstance().send(() -> completableFuture.complete(null));
         }, runnable -> RenderSystem.recordRenderCall(runnable::run));
+        return completableFuture;
     }
 }
 

@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -200,20 +199,12 @@ import org.slf4j.Logger;
  * registered, after which the registry gets frozen to prohibit further changes.</li>
  * 
  * <li>A <strong>dynamic registry</strong> is a registry whose values can be
- * added or replaced through data packs. Vanilla values are registered in
- * {@link BuiltinRegistries}. When a server starts, {@link DynamicRegistryManager}
- * (also known as "DRM") creates a copy of the vanilla registries, and loads the
- * registry value definitions in all enabled data packs. Therefore, a dynamic
- * registry is bound to a server, and multiple registries for the same type of
- * registerable object can exist during the lifetime of the game. When a player
- * joins, the server sends the contents of the dynamic registry manager to
- * the client, but only "network serializable" registries are sent.
- * To access a dynamic registry, first get an instance of the dynamic registry
- * manager, then call the {@link DynamicRegistryManager#get} method. The
- * dynamic registry manager can be obtained {@linkplain
- * net.minecraft.server.MinecraftServer#getRegistryManager from the server} or
- * {@linkplain net.minecraft.client.network.ClientPlayNetworkHandler#getRegistryManager
- * from the client network handler}.</li>
+ * added or replaced through data packs. A dynamic registry is bound to a server,
+ * and multiple registries for the same type of registerable object can exist during
+ * the lifetime of the game. When a player joins, the server sends the contents of
+ * the dynamic registry manager to the client, but only "network serializable"
+ * registries are sent. To access a dynamic registry, first get an instance of the
+ * dynamic registry manager, then call the {@link DynamicRegistryManager#get} method.</li>
  * </ul>
  * 
  * <h2 id="using">Using Registry</h2>
@@ -223,7 +214,7 @@ import org.slf4j.Logger;
  * 
  * <p>There are several other methods used for reading the contents of the registry:
  * <ul>
- * <li>{@link #entryOf} or {@link #getEntry(RegistryEntry)} for getting the registry entry
+ * <li>{@link #entryOf} or {@link #getEntry(RegistryKey)} for getting the registry entry
  * from the key.</li>
  * <li>{@link #get(Identifier)} or {@link #get(RegistryKey)} for getting the registered
  * value from the ID or the registry key.</li>
@@ -243,11 +234,7 @@ import org.slf4j.Logger;
  * the registry. Attempting to register a value after freezing causes a crash, such as
  * "Registry is already frozen". Modding APIs usually provide a way to bypass this restriction.
  * 
- * <p>To register a value to a dynamic registry, register to a registry found in {@link
- * BuiltinRegistries}. Values registered in those registries are available in all worlds.
- * 
- * <p>In both cases, use {@link #register(Registry, Identifier, Object)} for registering
- * a value to a registry.
+ * <p>Use {@link #register(Registry, Identifier, Object)} for registering a value to a registry.
  * 
  * <h3 id="intrusive-holders">Intrusive holders</h3>
  * <p>For historical reasons, there are two types of reference registry entries.
@@ -291,7 +278,7 @@ IndexedIterable<T> {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final Map<Identifier, Supplier<?>> DEFAULT_ENTRIES = Maps.newLinkedHashMap();
     public static final Identifier ROOT_KEY = new Identifier("root");
-    protected static final MutableRegistry<MutableRegistry<?>> ROOT = new SimpleRegistry(Registry.createRegistryKey("root"), Lifecycle.experimental(), null);
+    protected static final MutableRegistry<MutableRegistry<?>> ROOT = new SimpleRegistry(Registry.createRegistryKey("root"), Lifecycle.stable());
     public static final Registry<? extends Registry<?>> REGISTRIES = ROOT;
     public static final RegistryKey<Registry<SoundEvent>> SOUND_EVENT_KEY = Registry.createRegistryKey("sound_event");
     public static final RegistryKey<Registry<Fluid>> FLUID_KEY = Registry.createRegistryKey("fluid");
@@ -349,14 +336,14 @@ IndexedIterable<T> {
      * @see #WORLD_KEY
      */
     public static final RegistryKey<Registry<DimensionOptions>> DIMENSION_KEY = Registry.createRegistryKey("dimension");
-    public static final DefaultedRegistry<GameEvent> GAME_EVENT = Registry.create(GAME_EVENT_KEY, "step", GameEvent::getRegistryEntry, (Registry<T> registry) -> GameEvent.STEP);
+    public static final DefaultedRegistry<GameEvent> GAME_EVENT = Registry.createIntrusive(GAME_EVENT_KEY, "step", registry -> GameEvent.STEP);
     public static final Registry<SoundEvent> SOUND_EVENT = Registry.create(SOUND_EVENT_KEY, registry -> SoundEvents.ENTITY_ITEM_PICKUP);
-    public static final DefaultedRegistry<Fluid> FLUID = Registry.create(FLUID_KEY, "empty", Fluid::getRegistryEntry, (Registry<T> registry) -> Fluids.EMPTY);
+    public static final DefaultedRegistry<Fluid> FLUID = Registry.createIntrusive(FLUID_KEY, "empty", registry -> Fluids.EMPTY);
     public static final Registry<StatusEffect> STATUS_EFFECT = Registry.create(MOB_EFFECT_KEY, registry -> StatusEffects.LUCK);
-    public static final DefaultedRegistry<Block> BLOCK = Registry.create(BLOCK_KEY, "air", Block::getRegistryEntry, (Registry<T> registry) -> Blocks.AIR);
+    public static final DefaultedRegistry<Block> BLOCK = Registry.createIntrusive(BLOCK_KEY, "air", registry -> Blocks.AIR);
     public static final Registry<Enchantment> ENCHANTMENT = Registry.create(ENCHANTMENT_KEY, registry -> Enchantments.FORTUNE);
-    public static final DefaultedRegistry<EntityType<?>> ENTITY_TYPE = Registry.create(ENTITY_TYPE_KEY, "pig", EntityType::getRegistryEntry, (Registry<T> registry) -> EntityType.PIG);
-    public static final DefaultedRegistry<Item> ITEM = Registry.create(ITEM_KEY, "air", Item::getRegistryEntry, (Registry<T> registry) -> Items.AIR);
+    public static final DefaultedRegistry<EntityType<?>> ENTITY_TYPE = Registry.createIntrusive(ENTITY_TYPE_KEY, "pig", registry -> EntityType.PIG);
+    public static final DefaultedRegistry<Item> ITEM = Registry.createIntrusive(ITEM_KEY, "air", registry -> Items.AIR);
     public static final DefaultedRegistry<Potion> POTION = Registry.create(POTION_KEY, "empty", (Registry<T> registry) -> Potions.EMPTY);
     public static final Registry<ParticleType<?>> PARTICLE_TYPE = Registry.create(PARTICLE_TYPE_KEY, registry -> ParticleTypes.BLOCK);
     public static final Registry<BlockEntityType<?>> BLOCK_ENTITY_TYPE = Registry.create(BLOCK_ENTITY_TYPE_KEY, registry -> BlockEntityType.FURNACE);
@@ -460,6 +447,14 @@ IndexedIterable<T> {
     private final RegistryKey<? extends Registry<T>> registryKey;
     private final Lifecycle lifecycle;
 
+    public static RegistryKey<World> createWorldKey(RegistryKey<DimensionOptions> dimensionOptionsKey) {
+        return RegistryKey.of(WORLD_KEY, dimensionOptionsKey.getValue());
+    }
+
+    public static RegistryKey<DimensionOptions> createDimensionOptionsKey(RegistryKey<World> worldKey) {
+        return RegistryKey.of(DIMENSION_KEY, worldKey.getValue());
+    }
+
     private static <T> RegistryKey<Registry<T>> createRegistryKey(String registryId) {
         return RegistryKey.ofRegistry(new Identifier(registryId));
     }
@@ -477,31 +472,27 @@ IndexedIterable<T> {
     }
 
     private static <T> Registry<T> create(RegistryKey<? extends Registry<T>> key, DefaultEntryGetter<T> defaultEntryGetter) {
-        return Registry.create(key, Lifecycle.experimental(), defaultEntryGetter);
+        return Registry.create(key, Lifecycle.stable(), defaultEntryGetter);
     }
 
     private static <T> DefaultedRegistry<T> create(RegistryKey<? extends Registry<T>> key, String defaultId, DefaultEntryGetter<T> defaultEntryGetter) {
-        return Registry.create(key, defaultId, Lifecycle.experimental(), defaultEntryGetter);
+        return Registry.create(key, defaultId, Lifecycle.stable(), defaultEntryGetter);
     }
 
-    private static <T> DefaultedRegistry<T> create(RegistryKey<? extends Registry<T>> key, String defaultId, Function<T, RegistryEntry.Reference<T>> valueToEntryFunction, DefaultEntryGetter<T> defaultEntryGetter) {
-        return Registry.create(key, defaultId, Lifecycle.experimental(), valueToEntryFunction, defaultEntryGetter);
+    private static <T> DefaultedRegistry<T> createIntrusive(RegistryKey<? extends Registry<T>> key, String defaultId, DefaultEntryGetter<T> defaultEntryGetter) {
+        return Registry.createIntrusive(key, defaultId, Lifecycle.stable(), defaultEntryGetter);
     }
 
     private static <T> Registry<T> create(RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle, DefaultEntryGetter<T> defaultEntryGetter) {
-        return Registry.create(key, new SimpleRegistry(key, lifecycle, null), defaultEntryGetter, lifecycle);
-    }
-
-    private static <T> Registry<T> create(RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle, Function<T, RegistryEntry.Reference<T>> valueToEntryFunction, DefaultEntryGetter<T> defaultEntryGetter) {
-        return Registry.create(key, new SimpleRegistry<T>(key, lifecycle, valueToEntryFunction), defaultEntryGetter, lifecycle);
+        return Registry.create(key, new SimpleRegistry(key, lifecycle, false), defaultEntryGetter, lifecycle);
     }
 
     private static <T> DefaultedRegistry<T> create(RegistryKey<? extends Registry<T>> key, String defaultId, Lifecycle lifecycle, DefaultEntryGetter<T> defaultEntryGetter) {
-        return Registry.create(key, new DefaultedRegistry(defaultId, key, lifecycle, null), defaultEntryGetter, lifecycle);
+        return Registry.create(key, new DefaultedRegistry(defaultId, key, lifecycle, false), defaultEntryGetter, lifecycle);
     }
 
-    private static <T> DefaultedRegistry<T> create(RegistryKey<? extends Registry<T>> key, String defaultId, Lifecycle lifecycle, Function<T, RegistryEntry.Reference<T>> valueToEntryFunction, DefaultEntryGetter<T> defaultEntryGetter) {
-        return Registry.create(key, new DefaultedRegistry<T>(defaultId, key, lifecycle, valueToEntryFunction), defaultEntryGetter, lifecycle);
+    private static <T> DefaultedRegistry<T> createIntrusive(RegistryKey<? extends Registry<T>> key, String defaultId, Lifecycle lifecycle, DefaultEntryGetter<T> defaultEntryGetter) {
+        return Registry.create(key, new DefaultedRegistry(defaultId, key, lifecycle, true), defaultEntryGetter, lifecycle);
     }
 
     private static <T, R extends MutableRegistry<T>> R create(RegistryKey<? extends Registry<T>> key, R registry, DefaultEntryGetter<T> defaultEntryGetter, Lifecycle lifecycle) {
@@ -518,6 +509,7 @@ IndexedIterable<T> {
     }
 
     public static void freezeRegistries() {
+        REGISTRIES.freeze();
         for (Registry registry : REGISTRIES) {
             registry.freeze();
         }
@@ -530,12 +522,8 @@ IndexedIterable<T> {
         return this.registryKey;
     }
 
-    public Lifecycle method_39198() {
-        return this.lifecycle;
-    }
-
     public String toString() {
-        return "Registry[" + this.registryKey + " (" + this.lifecycle + ")]";
+        return "Registry[" + this.registryKey + " (" + this.lifecycle + "->" + this.getLifecycle() + ")]";
     }
 
     /**
@@ -692,9 +680,9 @@ IndexedIterable<T> {
 
     public abstract Registry<T> freeze();
 
-    public abstract RegistryEntry<T> getOrCreateEntry(RegistryKey<T> var1);
+    public abstract RegistryEntry.Reference<T> getOrCreateEntry(RegistryKey<T> var1);
 
-    public abstract DataResult<RegistryEntry<T>> getOrCreateEntryDataResult(RegistryKey<T> var1);
+    public abstract DataResult<RegistryEntry.Reference<T>> getOrCreateEntryDataResult(RegistryKey<T> var1);
 
     public abstract RegistryEntry.Reference<T> createEntry(T var1);
 
@@ -702,7 +690,7 @@ IndexedIterable<T> {
      * {@return the reference registry entry for the value assigned {@code rawId}, or an
      * empty optional if there is no such value}
      */
-    public abstract Optional<RegistryEntry<T>> getEntry(int var1);
+    public abstract Optional<RegistryEntry.Reference<T>> getEntry(int var1);
 
     /**
      * {@return the reference registry entry for the value assigned {@code key}, or an
@@ -710,7 +698,7 @@ IndexedIterable<T> {
      * 
      * @see #entryOf
      */
-    public abstract Optional<RegistryEntry<T>> getEntry(RegistryKey<T> var1);
+    public abstract Optional<RegistryEntry.Reference<T>> getEntry(RegistryKey<T> var1);
 
     /**
      * {@return the reference registry entry for the value assigned {@code key}}
@@ -719,7 +707,7 @@ IndexedIterable<T> {
      * 
      * @see #getEntry(RegistryKey)
      */
-    public RegistryEntry<T> entryOf(RegistryKey<T> key) {
+    public RegistryEntry.Reference<T> entryOf(RegistryKey<T> key) {
         return this.getEntry(key).orElseThrow(() -> new IllegalStateException("Missing key in " + this.registryKey + ": " + key));
     }
 
@@ -799,7 +787,6 @@ IndexedIterable<T> {
                 LOGGER.error("Unable to bootstrap registry '{}'", id);
             }
         });
-        Registry.validate(ROOT);
     }
 
     @FunctionalInterface

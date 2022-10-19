@@ -3,38 +3,93 @@
  */
 package net.minecraft.client.render.model;
 
-import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.client.util.SpriteIdentifier;
+import net.minecraft.client.texture.SpriteLoader;
+import net.minecraft.client.texture.TextureManager;
+import net.minecraft.resource.Resource;
+import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class SpriteAtlasManager
 implements AutoCloseable {
-    private final Map<Identifier, SpriteAtlasTexture> atlases;
+    private final Map<Identifier, Atlas> atlases;
 
-    public SpriteAtlasManager(Collection<SpriteAtlasTexture> atlases) {
-        this.atlases = atlases.stream().collect(Collectors.toMap(SpriteAtlasTexture::getId, Function.identity()));
+    public SpriteAtlasManager(Map<Identifier, SpriteResourceLoader> loaders, TextureManager textureManager) {
+        this.atlases = loaders.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> {
+            SpriteAtlasTexture spriteAtlasTexture = new SpriteAtlasTexture((Identifier)entry.getKey());
+            textureManager.registerTexture((Identifier)entry.getKey(), spriteAtlasTexture);
+            return new Atlas(spriteAtlasTexture, (SpriteResourceLoader)entry.getValue());
+        }));
     }
 
     public SpriteAtlasTexture getAtlas(Identifier id) {
-        return this.atlases.get(id);
-    }
-
-    public Sprite getSprite(SpriteIdentifier id) {
-        return this.atlases.get(id.getAtlasId()).getSprite(id.getTextureId());
+        return this.atlases.get(id).atlas();
     }
 
     @Override
     public void close() {
-        this.atlases.values().forEach(SpriteAtlasTexture::clear);
+        this.atlases.values().forEach(Atlas::close);
         this.atlases.clear();
+    }
+
+    public Map<Identifier, CompletableFuture<AtlasPreparation>> reload(ResourceManager resourceManager, int mipmapLevels, Executor executor) {
+        return this.atlases.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> {
+            Atlas atlas = (Atlas)entry.getValue();
+            return ((CompletableFuture)CompletableFuture.supplyAsync(() -> (Map)atlas.loader.apply(resourceManager), executor).thenCompose(sprites -> SpriteLoader.fromAtlas(atlas.atlas).stitch((Map<Identifier, Resource>)sprites, mipmapLevels, executor))).thenApply(stitchResult -> new AtlasPreparation(atlas.atlas, (SpriteLoader.StitchResult)stitchResult));
+        }));
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    record Atlas(SpriteAtlasTexture atlas, SpriteResourceLoader loader) implements AutoCloseable
+    {
+        @Override
+        public void close() {
+            this.atlas.clear();
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static class AtlasPreparation {
+        private final SpriteAtlasTexture atlasTexture;
+        private final SpriteLoader.StitchResult stitchResult;
+
+        public AtlasPreparation(SpriteAtlasTexture atlasTexture, SpriteLoader.StitchResult stitchResult) {
+            this.atlasTexture = atlasTexture;
+            this.stitchResult = stitchResult;
+        }
+
+        @Nullable
+        public Sprite getSprite(Identifier id) {
+            return this.stitchResult.regions().get(id);
+        }
+
+        public Sprite getMissingSprite() {
+            return this.stitchResult.missing();
+        }
+
+        public CompletableFuture<Void> whenComplete() {
+            return this.stitchResult.readyForUpload();
+        }
+
+        public void upload() {
+            this.atlasTexture.upload(this.stitchResult);
+        }
+    }
+
+    @FunctionalInterface
+    @Environment(value=EnvType.CLIENT)
+    public static interface SpriteResourceLoader
+    extends Function<ResourceManager, Map<Identifier, Resource>> {
     }
 }
 

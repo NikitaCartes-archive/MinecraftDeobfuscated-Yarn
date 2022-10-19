@@ -17,7 +17,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.DataOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
 import net.minecraft.data.dev.NbtProvider;
@@ -34,11 +34,13 @@ implements DataProvider {
     @Nullable
     private static final Path DEBUG_OUTPUT_DIRECTORY = null;
     private static final Logger LOGGER = LogUtils.getLogger();
-    private final DataGenerator root;
+    private final DataOutput field_40662;
+    private final Iterable<Path> field_40663;
     private final List<Tweaker> write = Lists.newArrayList();
 
-    public SnbtProvider(DataGenerator generator) {
-        this.root = generator;
+    public SnbtProvider(DataOutput generator, Iterable<Path> iterable) {
+        this.field_40662 = generator;
+        this.field_40663 = iterable;
     }
 
     public SnbtProvider addWriter(Tweaker tweaker) {
@@ -56,9 +58,9 @@ implements DataProvider {
 
     @Override
     public void run(DataWriter writer) throws IOException {
-        Path path2 = this.root.getOutput();
+        Path path2 = this.field_40662.getPath();
         ArrayList<CompletableFuture> list = Lists.newArrayList();
-        for (Path path22 : this.root.getInputs()) {
+        for (Path path22 : this.field_40663) {
             Files.walk(path22, new FileVisitOption[0]).filter(path -> path.toString().endsWith(".snbt")).forEach(path -> list.add(CompletableFuture.supplyAsync(() -> this.toCompressedNbt((Path)path, this.getFileName(path22, (Path)path)), Util.getMainWorkerExecutor())));
         }
         boolean bl = false;

@@ -70,7 +70,7 @@ extends Block {
 
     private static void setPower(WorldAccess world, BlockState state, int power, BlockPos pos, int delay) {
         world.setBlockState(pos, (BlockState)state.with(POWER, power), Block.NOTIFY_ALL);
-        world.createAndScheduleBlockTick(pos, state.getBlock(), delay);
+        world.scheduleBlockTick(pos, state.getBlock(), delay);
     }
 
     @Override

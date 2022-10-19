@@ -173,7 +173,7 @@ implements InventoryProvider {
 
     public static void playEffects(World world, BlockPos pos, boolean fill) {
         BlockState blockState = world.getBlockState(pos);
-        world.playSound(pos.getX(), (double)pos.getY(), (double)pos.getZ(), fill ? SoundEvents.BLOCK_COMPOSTER_FILL_SUCCESS : SoundEvents.BLOCK_COMPOSTER_FILL, SoundCategory.BLOCKS, 1.0f, 1.0f, false);
+        world.playSoundAtBlockCenter(pos, fill ? SoundEvents.BLOCK_COMPOSTER_FILL_SUCCESS : SoundEvents.BLOCK_COMPOSTER_FILL, SoundCategory.BLOCKS, 1.0f, 1.0f, false);
         double d = blockState.getOutlineShape(world, pos).getEndingCoord(Direction.Axis.Y, 0.5, 0.5) + 0.03125;
         double e = 0.13125f;
         double f = 0.7375f;
@@ -204,7 +204,7 @@ implements InventoryProvider {
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
         if (state.get(LEVEL) == 7) {
-            world.createAndScheduleBlockTick(pos, state.getBlock(), 20);
+            world.scheduleBlockTick(pos, state.getBlock(), 20);
         }
     }
 
@@ -269,7 +269,7 @@ implements InventoryProvider {
             BlockState blockState = (BlockState)state.with(LEVEL, j);
             world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
             if (j == 7) {
-                world.createAndScheduleBlockTick(pos, state.getBlock(), 20);
+                world.scheduleBlockTick(pos, state.getBlock(), 20);
             }
             return blockState;
         }

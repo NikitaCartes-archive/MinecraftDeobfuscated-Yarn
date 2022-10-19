@@ -48,8 +48,8 @@ public class FlatLevelGeneratorPresets {
         private final Registry<Biome> biomeRegistry = BuiltinRegistries.BIOME;
         private final Registry<StructureSet> structureSetRegistry = BuiltinRegistries.STRUCTURE_SET;
 
-        Registrar(Registry<FlatLevelGeneratorPreset> registry) {
-            this.flatLevelGeneratorPresetRegistry = registry;
+        Registrar(Registry<FlatLevelGeneratorPreset> flatLevelGeneratorPresetRegistry) {
+            this.flatLevelGeneratorPresetRegistry = flatLevelGeneratorPresetRegistry;
         }
 
         private RegistryEntry<FlatLevelGeneratorPreset> createAndRegister(RegistryKey<FlatLevelGeneratorPreset> registryKey, ItemConvertible icon, RegistryKey<Biome> biome, Set<RegistryKey<StructureSet>> structureSets, boolean hasFeatures, boolean hasLakes, FlatChunkGeneratorLayer ... layers) {

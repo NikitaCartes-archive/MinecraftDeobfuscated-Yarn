@@ -29,7 +29,7 @@ public class OctavePerlinNoiseSampler {
     private final DoubleList amplitudes;
     private final double persistence;
     private final double lacunarity;
-    private final double field_36632;
+    private final double maxValue;
 
     @Deprecated
     public static OctavePerlinNoiseSampler createLegacy(Random random, IntStream intStream) {
@@ -118,11 +118,11 @@ public class OctavePerlinNoiseSampler {
         }
         this.lacunarity = Math.pow(2.0, -j);
         this.persistence = Math.pow(2.0, i - 1) / (Math.pow(2.0, i) - 1.0);
-        this.field_36632 = this.method_40557(2.0);
+        this.maxValue = this.method_40557(2.0);
     }
 
-    protected double method_40555() {
-        return this.field_36632;
+    protected double getMaxValue() {
+        return this.maxValue;
     }
 
     private static void skipCalls(Random random) {

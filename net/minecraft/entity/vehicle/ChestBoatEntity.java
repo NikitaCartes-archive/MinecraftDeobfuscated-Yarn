@@ -113,6 +113,7 @@ VehicleInventory {
             case BoatEntity.Type.ACACIA -> Items.ACACIA_CHEST_BOAT;
             case BoatEntity.Type.DARK_OAK -> Items.DARK_OAK_CHEST_BOAT;
             case BoatEntity.Type.MANGROVE -> Items.MANGROVE_CHEST_BOAT;
+            case BoatEntity.Type.BAMBOO -> Items.BAMBOO_CHEST_RAFT;
             default -> Items.OAK_CHEST_BOAT;
         };
     }

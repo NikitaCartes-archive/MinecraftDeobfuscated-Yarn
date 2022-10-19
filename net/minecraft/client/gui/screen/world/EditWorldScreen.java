@@ -38,7 +38,8 @@ import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.gen.GeneratorOptions;
+import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.world.level.WorldGenSettings;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelSummary;
 import org.apache.commons.io.FileUtils;
@@ -97,8 +98,9 @@ extends Screen {
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 5, 200, 20, Text.translatable("selectWorld.edit.export_worldgen_settings"), button -> {
             DataResult<Object> dataResult2;
             try (SaveLoader saveLoader = this.client.createIntegratedServerLoader().createSaveLoader(this.storageSession, false);){
-                RegistryOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, saveLoader.dynamicRegistryManager());
-                DataResult<JsonElement> dataResult = GeneratorOptions.CODEC.encodeStart(dynamicOps, saveLoader.saveProperties().getGeneratorOptions());
+                DynamicRegistryManager.Immutable immutable = saveLoader.combinedDynamicRegistries().getCombinedRegistryManager();
+                RegistryOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, immutable);
+                DataResult<JsonElement> dataResult = WorldGenSettings.encode(dynamicOps, saveLoader.saveProperties().getGeneratorOptions(), immutable);
                 dataResult2 = dataResult.flatMap(json -> {
                     Path path = this.storageSession.getDirectory(WorldSavePath.ROOT).resolve("worldgen_settings_export.json");
                     try (JsonWriter jsonWriter = GSON.newJsonWriter(Files.newBufferedWriter(path, StandardCharsets.UTF_8, new OpenOption[0]));){

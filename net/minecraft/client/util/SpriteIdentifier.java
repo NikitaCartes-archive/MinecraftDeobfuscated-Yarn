@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.util;
 
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.Function;
 import net.fabricmc.api.EnvType;
@@ -18,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class SpriteIdentifier {
+    public static final Comparator<SpriteIdentifier> field_40566 = Comparator.comparing(SpriteIdentifier::getAtlasId).thenComparing(SpriteIdentifier::getTextureId);
     private final Identifier atlas;
     private final Identifier texture;
     @Nullable

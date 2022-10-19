@@ -538,8 +538,7 @@ extends Chunk {
         GameEventListener gameEventListener;
         Block block = blockEntity.getCachedState().getBlock();
         if (block instanceof BlockEntityProvider && (gameEventListener = ((BlockEntityProvider)((Object)block)).getGameEventListener(world, blockEntity)) != null) {
-            GameEventDispatcher gameEventDispatcher = this.getGameEventDispatcher(ChunkSectionPos.getSectionCoord(blockEntity.getPos().getY()));
-            gameEventDispatcher.addListener(gameEventListener);
+            this.getGameEventDispatcher(ChunkSectionPos.getSectionCoord(blockEntity.getPos().getY())).addListener(gameEventListener);
         }
     }
 

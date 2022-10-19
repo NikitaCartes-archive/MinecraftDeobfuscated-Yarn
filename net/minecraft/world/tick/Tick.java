@@ -11,8 +11,8 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.TickPriority;
 import net.minecraft.world.tick.OrderedTick;
+import net.minecraft.world.tick.TickPriority;
 import org.jetbrains.annotations.Nullable;
 
 public record Tick<T>(T type, BlockPos pos, int delay, TickPriority priority) {

@@ -160,6 +160,7 @@ RecipeInputProvider {
         AbstractFurnaceBlockEntity.addFuel(map, Blocks.MANGROVE_FENCE_GATE, 300);
         AbstractFurnaceBlockEntity.addFuel(map, Blocks.NOTE_BLOCK, 300);
         AbstractFurnaceBlockEntity.addFuel(map, Blocks.BOOKSHELF, 300);
+        AbstractFurnaceBlockEntity.addFuel(map, Blocks.CHISELED_BOOKSHELF, 300);
         AbstractFurnaceBlockEntity.addFuel(map, Blocks.LECTERN, 300);
         AbstractFurnaceBlockEntity.addFuel(map, Blocks.JUKEBOX, 300);
         AbstractFurnaceBlockEntity.addFuel(map, Blocks.CHEST, 300);
@@ -171,6 +172,7 @@ RecipeInputProvider {
         AbstractFurnaceBlockEntity.addFuel(map, Items.FISHING_ROD, 300);
         AbstractFurnaceBlockEntity.addFuel(map, Blocks.LADDER, 300);
         AbstractFurnaceBlockEntity.addFuel(map, ItemTags.SIGNS, 200);
+        AbstractFurnaceBlockEntity.addFuel(map, ItemTags.HANGING_SIGNS, 800);
         AbstractFurnaceBlockEntity.addFuel(map, Items.WOODEN_SHOVEL, 200);
         AbstractFurnaceBlockEntity.addFuel(map, Items.WOODEN_SWORD, 200);
         AbstractFurnaceBlockEntity.addFuel(map, Items.WOODEN_HOE, 200);

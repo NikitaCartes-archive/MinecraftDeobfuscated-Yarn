@@ -391,20 +391,22 @@ extends HostileEntity {
     public boolean onKilledOther(ServerWorld world, LivingEntity other) {
         boolean bl = super.onKilledOther(world, other);
         if ((world.getDifficulty() == Difficulty.NORMAL || world.getDifficulty() == Difficulty.HARD) && other instanceof VillagerEntity) {
+            VillagerEntity villagerEntity = (VillagerEntity)other;
             if (world.getDifficulty() != Difficulty.HARD && this.random.nextBoolean()) {
                 return bl;
             }
-            VillagerEntity villagerEntity = (VillagerEntity)other;
             ZombieVillagerEntity zombieVillagerEntity = villagerEntity.convertTo(EntityType.ZOMBIE_VILLAGER, false);
-            zombieVillagerEntity.initialize(world, world.getLocalDifficulty(zombieVillagerEntity.getBlockPos()), SpawnReason.CONVERSION, new ZombieData(false, true), null);
-            zombieVillagerEntity.setVillagerData(villagerEntity.getVillagerData());
-            zombieVillagerEntity.setGossipData(villagerEntity.getGossip().serialize(NbtOps.INSTANCE).getValue());
-            zombieVillagerEntity.setOfferData(villagerEntity.getOffers().toNbt());
-            zombieVillagerEntity.setXp(villagerEntity.getExperience());
-            if (!this.isSilent()) {
-                world.syncWorldEvent(null, WorldEvents.ZOMBIE_INFECTS_VILLAGER, this.getBlockPos(), 0);
+            if (zombieVillagerEntity != null) {
+                zombieVillagerEntity.initialize(world, world.getLocalDifficulty(zombieVillagerEntity.getBlockPos()), SpawnReason.CONVERSION, new ZombieData(false, true), null);
+                zombieVillagerEntity.setVillagerData(villagerEntity.getVillagerData());
+                zombieVillagerEntity.setGossipData(villagerEntity.getGossip().serialize(NbtOps.INSTANCE).getValue());
+                zombieVillagerEntity.setOfferData(villagerEntity.getOffers().toNbt());
+                zombieVillagerEntity.setXp(villagerEntity.getExperience());
+                if (!this.isSilent()) {
+                    world.syncWorldEvent(null, WorldEvents.ZOMBIE_INFECTS_VILLAGER, this.getBlockPos(), 0);
+                }
+                bl = false;
             }
-            bl = false;
         }
         return bl;
     }
@@ -445,6 +447,7 @@ extends HostileEntity {
             if (zombieData.baby) {
                 this.setBaby(true);
                 if (zombieData.tryChickenJockey) {
+                    ChickenEntity chickenEntity2;
                     if ((double)random.nextFloat() < 0.05) {
                         List<Entity> list = world.getEntitiesByClass(ChickenEntity.class, this.getBoundingBox().expand(5.0, 3.0, 5.0), EntityPredicates.NOT_MOUNTED);
                         if (!list.isEmpty()) {
@@ -452,8 +455,7 @@ extends HostileEntity {
                             chickenEntity.setHasJockey(true);
                             this.startRiding(chickenEntity);
                         }
-                    } else if ((double)random.nextFloat() < 0.05) {
-                        ChickenEntity chickenEntity2 = EntityType.CHICKEN.create(this.world);
+                    } else if ((double)random.nextFloat() < 0.05 && (chickenEntity2 = EntityType.CHICKEN.create(this.world)) != null) {
                         chickenEntity2.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), 0.0f);
                         chickenEntity2.initialize(world, difficulty, SpawnReason.JOCKEY, null, null);
                         chickenEntity2.setHasJockey(true);

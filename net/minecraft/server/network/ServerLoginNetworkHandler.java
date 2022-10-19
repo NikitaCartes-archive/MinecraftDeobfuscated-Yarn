@@ -22,6 +22,7 @@ import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.encryption.PlayerPublicKey;
+import net.minecraft.network.encryption.PublicPlayerSession;
 import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.network.listener.ServerLoginPacketListener;
 import net.minecraft.network.listener.TickablePacketListener;
@@ -37,7 +38,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.util.dynamic.DynamicSerializableUuid;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.random.Random;
 import org.apache.commons.lang3.Validate;
@@ -60,8 +61,8 @@ import org.slf4j.Logger;
  * ServerPlayNetworkHandler}.
  */
 public class ServerLoginNetworkHandler
-implements TickablePacketListener,
-ServerLoginPacketListener {
+implements ServerLoginPacketListener,
+TickablePacketListener {
     private static final AtomicInteger NEXT_AUTHENTICATOR_THREAD_ID = new AtomicInteger(0);
     static final Logger LOGGER = LogUtils.getLogger();
     private static final int TIMEOUT_TICKS = 600;
@@ -83,8 +84,7 @@ ServerLoginPacketListener {
      */
     @Nullable
     private ServerPlayerEntity delayedPlayer;
-    @Nullable
-    private PlayerPublicKey.PublicKeyData publicKeyData;
+    private PublicPlayerSession.Serialized session = PublicPlayerSession.Serialized.MISSING;
 
     public ServerLoginNetworkHandler(MinecraftServer server, ClientConnection connection) {
         this.server = server;
@@ -131,15 +131,15 @@ ServerLoginPacketListener {
      * @apiNote This method should only be called on the server thread.
      */
     public void acceptPlayer() {
-        PlayerPublicKey playerPublicKey;
+        PublicPlayerSession publicPlayerSession;
         block11: {
-            playerPublicKey = null;
+            publicPlayerSession = PublicPlayerSession.MISSING;
             if (!this.profile.isComplete()) {
                 this.profile = this.toOfflineProfile(this.profile);
             } else {
                 try {
                     SignatureVerifier signatureVerifier = this.server.getServicesSignatureVerifier();
-                    playerPublicKey = ServerLoginNetworkHandler.getVerifiedPublicKey(this.publicKeyData, this.profile.getId(), signatureVerifier, this.server.shouldEnforceSecureProfile());
+                    publicPlayerSession = ServerLoginNetworkHandler.getVerifiedPublicKey(this.session, this.profile, signatureVerifier, this.server.shouldEnforceSecureProfile());
                 } catch (PlayerPublicKey.PublicKeyException publicKeyException) {
                     LOGGER.error("Failed to validate profile key: {}", (Object)publicKeyException.getMessage());
                     if (this.connection.isLocal()) break block11;
@@ -159,7 +159,7 @@ ServerLoginPacketListener {
             this.connection.send(new LoginSuccessS2CPacket(this.profile));
             ServerPlayerEntity serverPlayerEntity = this.server.getPlayerManager().getPlayer(this.profile.getId());
             try {
-                ServerPlayerEntity serverPlayerEntity2 = this.server.getPlayerManager().createPlayer(this.profile, playerPublicKey);
+                ServerPlayerEntity serverPlayerEntity2 = this.server.getPlayerManager().createPlayer(this.profile, publicPlayerSession);
                 if (serverPlayerEntity != null) {
                     this.state = State.DELAY_ACCEPT;
                     this.delayedPlayer = serverPlayerEntity2;
@@ -191,22 +191,19 @@ ServerLoginPacketListener {
         return String.valueOf(this.connection.getAddress());
     }
 
-    @Nullable
-    private static PlayerPublicKey getVerifiedPublicKey(@Nullable PlayerPublicKey.PublicKeyData publicKeyData, UUID playerUuid, SignatureVerifier servicesSignatureVerifier, boolean shouldThrowOnMissingKey) throws PlayerPublicKey.PublicKeyException {
-        if (publicKeyData == null) {
-            if (shouldThrowOnMissingKey) {
-                throw new PlayerPublicKey.PublicKeyException(PlayerPublicKey.MISSING_PUBLIC_KEY_TEXT);
-            }
-            return null;
+    private static PublicPlayerSession getVerifiedPublicKey(PublicPlayerSession.Serialized session, GameProfile gameProfile, SignatureVerifier servicesSignatureVerifier, boolean shouldThrowOnMissingKey) throws PlayerPublicKey.PublicKeyException {
+        PublicPlayerSession publicPlayerSession = session.toSession(gameProfile, servicesSignatureVerifier, Duration.ZERO);
+        if (!publicPlayerSession.hasPublicKey() && shouldThrowOnMissingKey) {
+            throw new PlayerPublicKey.PublicKeyException(PlayerPublicKey.MISSING_PUBLIC_KEY_TEXT);
         }
-        return PlayerPublicKey.verifyAndDecode(servicesSignatureVerifier, playerUuid, publicKeyData, Duration.ZERO);
+        return publicPlayerSession;
     }
 
     @Override
     public void onHello(LoginHelloC2SPacket packet) {
         Validate.validState(this.state == State.HELLO, "Unexpected hello packet", new Object[0]);
         Validate.validState(ServerLoginNetworkHandler.isValidName(packet.name()), "Invalid characters in username", new Object[0]);
-        this.publicKeyData = packet.publicKey().orElse(null);
+        this.session = packet.session();
         GameProfile gameProfile = this.server.getHostProfile();
         if (gameProfile != null && packet.name().equalsIgnoreCase(gameProfile.getName())) {
             this.profile = gameProfile;
@@ -233,7 +230,7 @@ ServerLoginPacketListener {
         try {
             PlayerPublicKey playerPublicKey;
             PrivateKey privateKey = this.server.getKeyPair().getPrivate();
-            if (this.publicKeyData != null ? !packet.verifySignedNonce(this.nonce, playerPublicKey = new PlayerPublicKey(this.publicKeyData)) : !packet.verifyEncryptedNonce(this.nonce, privateKey)) {
+            if (this.session.publicKeyData() != null ? !packet.verifySignedNonce(this.nonce, (playerPublicKey = new PlayerPublicKey(this.session.publicKeyData())).createSignatureInstance()) : !packet.verifyEncryptedNonce(this.nonce, privateKey)) {
                 throw new IllegalStateException("Protocol error");
             }
             SecretKey secretKey = packet.decryptSecretKey(privateKey);
@@ -290,7 +287,7 @@ ServerLoginPacketListener {
     }
 
     protected GameProfile toOfflineProfile(GameProfile profile) {
-        UUID uUID = DynamicSerializableUuid.getOfflinePlayerUuid(profile.getName());
+        UUID uUID = Uuids.getOfflinePlayerUuid(profile.getName());
         return new GameProfile(uUID, profile.getName());
     }
 

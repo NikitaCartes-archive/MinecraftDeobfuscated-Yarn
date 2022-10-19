@@ -3,12 +3,15 @@
  */
 package net.minecraft.client.gui.hud;
 
-import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.Ordering;
 import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.systems.RenderSystem;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -45,7 +48,7 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class PlayerListHud
 extends DrawableHelper {
-    private static final Ordering<PlayerListEntry> ENTRY_ORDERING = Ordering.from(new EntryOrderComparator());
+    private static final Comparator<PlayerListEntry> ENTRY_ORDERING = Comparator.comparing(PlayerListEntry::getGameMode, Comparator.comparing(gameMode -> gameMode != GameMode.SPECTATOR)).thenComparing(playerListEntry -> Util.mapOrElse(playerListEntry.getScoreboardTeam(), Team::getName, ""));
     public static final int MAX_ROWS = 20;
     public static final int HEART_OUTLINE_U = 16;
     public static final int BLINKING_HEART_OUTLINE_U = 25;
@@ -61,11 +64,8 @@ extends DrawableHelper {
     private Text footer;
     @Nullable
     private Text header;
-    /**
-     * The time, in milliseconds, when this HUD was last set to visible.
-     */
-    private long showTime;
     private boolean visible;
+    private final Map<UUID, Heart> hearts = new Object2ObjectOpenHashMap<UUID, Heart>();
 
     public PlayerListHud(MinecraftClient client, InGameHud inGameHud) {
         this.client = client;
@@ -91,10 +91,10 @@ extends DrawableHelper {
     }
 
     public void setVisible(boolean visible) {
-        if (visible && !this.visible) {
-            this.showTime = Util.getMeasuringTimeMs();
+        if (this.visible != visible) {
+            this.hearts.clear();
+            this.visible = visible;
         }
-        this.visible = visible;
     }
 
     public void render(MatrixStack matrices, int scaledWindowWidth, Scoreboard scoreboard, @Nullable ScoreboardObjective objective) {
@@ -104,7 +104,7 @@ extends DrawableHelper {
         int l;
         int k;
         ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.player.networkHandler;
-        List<PlayerListEntry> list = ENTRY_ORDERING.sortedCopy(clientPlayNetworkHandler.getPlayerList());
+        List<PlayerListEntry> list = clientPlayNetworkHandler.getListedPlayerListEntries().stream().sorted(ENTRY_ORDERING).limit(80L).toList();
         int i = 0;
         int j = 0;
         for (PlayerListEntry playerListEntry : list) {
@@ -114,7 +114,10 @@ extends DrawableHelper {
             k = this.client.textRenderer.getWidth(" " + scoreboard.getPlayerScore(playerListEntry.getProfile().getName(), objective).getScore());
             j = Math.max(j, k);
         }
-        list = list.subList(0, Math.min(list.size(), 80));
+        if (!this.hearts.isEmpty()) {
+            Set set = list.stream().map(playerEntry -> playerEntry.getProfile().getId()).collect(Collectors.toSet());
+            this.hearts.keySet().removeIf(uuid -> !set.contains(uuid));
+        }
         int m = l = list.size();
         k = 1;
         while (m > 20) {
@@ -175,7 +178,7 @@ extends DrawableHelper {
             }
             this.client.textRenderer.drawWithShadow(matrices, this.getPlayerName(playerListEntry2), (float)w, (float)x, playerListEntry2.getGameMode() == GameMode.SPECTATOR ? -1862270977 : -1);
             if (objective != null && playerListEntry2.getGameMode() != GameMode.SPECTATOR && (z = (y = w + i + 1) + n) - y > 5) {
-                this.renderScoreboardObjective(objective, x, gameProfile.getName(), y, z, playerListEntry2, matrices);
+                this.renderScoreboardObjective(objective, x, gameProfile.getName(), y, z, gameProfile.getId(), matrices);
             }
             this.renderLatencyIcon(matrices, o, w - (bl ? 9 : 0), x, playerListEntry2);
         }
@@ -199,67 +202,56 @@ extends DrawableHelper {
         this.setZOffset(this.getZOffset() - 100);
     }
 
-    private void renderScoreboardObjective(ScoreboardObjective objective, int y, String player, int startX, int endX, PlayerListEntry entry, MatrixStack matrices) {
+    private void renderScoreboardObjective(ScoreboardObjective objective, int y, String player, int left, int right, UUID uuid, MatrixStack matrices) {
         int i = objective.getScoreboard().getPlayerScore(player, objective).getScore();
         if (objective.getRenderType() == ScoreboardCriterion.RenderType.HEARTS) {
-            boolean bl;
-            RenderSystem.setShaderTexture(0, GUI_ICONS_TEXTURE);
-            long l = Util.getMeasuringTimeMs();
-            if (this.showTime == entry.getShowTime()) {
-                if (i < entry.getLastHealth()) {
-                    entry.setLastHealthTime(l);
-                    entry.setBlinkingHeartTime(this.inGameHud.getTicks() + 20);
-                } else if (i > entry.getLastHealth()) {
-                    entry.setLastHealthTime(l);
-                    entry.setBlinkingHeartTime(this.inGameHud.getTicks() + 10);
+            this.renderHearts(y, left, right, uuid, matrices, i);
+            return;
+        }
+        String string = "" + Formatting.YELLOW + i;
+        this.client.textRenderer.drawWithShadow(matrices, string, (float)(right - this.client.textRenderer.getWidth(string)), (float)y, 0xFFFFFF);
+    }
+
+    private void renderHearts(int y, int left, int right, UUID uuid, MatrixStack matrices, int score) {
+        int m;
+        Heart heart = this.hearts.computeIfAbsent(uuid, uuid2 -> new Heart(score));
+        heart.tick(score, this.inGameHud.getTicks());
+        int i = MathHelper.ceilDiv(Math.max(score, heart.getPrevScore()), 2);
+        int j = Math.max(score, Math.max(heart.getPrevScore(), 20)) / 2;
+        boolean bl = heart.useHighlighted(this.inGameHud.getTicks());
+        if (i <= 0) {
+            return;
+        }
+        RenderSystem.setShaderTexture(0, GUI_ICONS_TEXTURE);
+        int k = MathHelper.floor(Math.min((float)(right - left - 4) / (float)j, 9.0f));
+        if (k <= 3) {
+            float f = MathHelper.clamp((float)score / 20.0f, 0.0f, 1.0f);
+            int l = (int)((1.0f - f) * 255.0f) << 16 | (int)(f * 255.0f) << 8;
+            String string = "" + (float)score / 2.0f;
+            if (right - this.client.textRenderer.getWidth(string + "hp") >= left) {
+                string = string + "hp";
+            }
+            this.client.textRenderer.drawWithShadow(matrices, string, (float)((right + left - this.client.textRenderer.getWidth(string)) / 2), (float)y, l);
+            return;
+        }
+        for (m = i; m < j; ++m) {
+            this.drawTexture(matrices, left + m * k, y, bl ? 25 : 16, 0, 9, 9);
+        }
+        for (m = 0; m < i; ++m) {
+            this.drawTexture(matrices, left + m * k, y, bl ? 25 : 16, 0, 9, 9);
+            if (bl) {
+                if (m * 2 + 1 < heart.getPrevScore()) {
+                    this.drawTexture(matrices, left + m * k, y, 70, 0, 9, 9);
+                }
+                if (m * 2 + 1 == heart.getPrevScore()) {
+                    this.drawTexture(matrices, left + m * k, y, 79, 0, 9, 9);
                 }
             }
-            if (l - entry.getLastHealthTime() > 1000L || this.showTime != entry.getShowTime()) {
-                entry.setLastHealth(i);
-                entry.setHealth(i);
-                entry.setLastHealthTime(l);
+            if (m * 2 + 1 < score) {
+                this.drawTexture(matrices, left + m * k, y, m >= 10 ? 160 : 52, 0, 9, 9);
             }
-            entry.setShowTime(this.showTime);
-            entry.setLastHealth(i);
-            int j = MathHelper.ceil((float)Math.max(i, entry.getHealth()) / 2.0f);
-            int k = Math.max(MathHelper.ceil(i / 2), Math.max(MathHelper.ceil(entry.getHealth() / 2), 10));
-            boolean bl2 = bl = entry.getBlinkingHeartTime() > (long)this.inGameHud.getTicks() && (entry.getBlinkingHeartTime() - (long)this.inGameHud.getTicks()) / 3L % 2L == 1L;
-            if (j > 0) {
-                int m = MathHelper.floor(Math.min((float)(endX - startX - 4) / (float)k, 9.0f));
-                if (m > 3) {
-                    int n;
-                    for (n = j; n < k; ++n) {
-                        this.drawTexture(matrices, startX + n * m, y, bl ? 25 : 16, 0, 9, 9);
-                    }
-                    for (n = 0; n < j; ++n) {
-                        this.drawTexture(matrices, startX + n * m, y, bl ? 25 : 16, 0, 9, 9);
-                        if (bl) {
-                            if (n * 2 + 1 < entry.getHealth()) {
-                                this.drawTexture(matrices, startX + n * m, y, 70, 0, 9, 9);
-                            }
-                            if (n * 2 + 1 == entry.getHealth()) {
-                                this.drawTexture(matrices, startX + n * m, y, 79, 0, 9, 9);
-                            }
-                        }
-                        if (n * 2 + 1 < i) {
-                            this.drawTexture(matrices, startX + n * m, y, n >= 10 ? 160 : 52, 0, 9, 9);
-                        }
-                        if (n * 2 + 1 != i) continue;
-                        this.drawTexture(matrices, startX + n * m, y, n >= 10 ? 169 : 61, 0, 9, 9);
-                    }
-                } else {
-                    float f = MathHelper.clamp((float)i / 20.0f, 0.0f, 1.0f);
-                    int o = (int)((1.0f - f) * 255.0f) << 16 | (int)(f * 255.0f) << 8;
-                    String string = "" + (float)i / 2.0f;
-                    if (endX - this.client.textRenderer.getWidth(string + "hp") >= startX) {
-                        string = string + "hp";
-                    }
-                    this.client.textRenderer.drawWithShadow(matrices, string, (float)((endX + startX) / 2 - this.client.textRenderer.getWidth(string) / 2), (float)y, o);
-                }
-            }
-        } else {
-            String string2 = "" + Formatting.YELLOW + i;
-            this.client.textRenderer.drawWithShadow(matrices, string2, (float)(endX - this.client.textRenderer.getWidth(string2)), (float)y, 0xFFFFFF);
+            if (m * 2 + 1 != score) continue;
+            this.drawTexture(matrices, left + m * k, y, m >= 10 ? 169 : 61, 0, 9, 9);
         }
     }
 
@@ -277,21 +269,38 @@ extends DrawableHelper {
     }
 
     @Environment(value=EnvType.CLIENT)
-    static class EntryOrderComparator
-    implements Comparator<PlayerListEntry> {
-        EntryOrderComparator() {
+    static class Heart {
+        private static final long COOLDOWN_TICKS = 20L;
+        private static final long SCORE_DECREASE_HIGHLIGHT_TICKS = 20L;
+        private static final long SCORE_INCREASE_HIGHLIGHT_TICKS = 10L;
+        private int score;
+        private int prevScore;
+        private long lastScoreChangeTick;
+        private long highlightEndTick;
+
+        public Heart(int score) {
+            this.prevScore = score;
+            this.score = score;
         }
 
-        @Override
-        public int compare(PlayerListEntry playerListEntry, PlayerListEntry playerListEntry2) {
-            Team team = playerListEntry.getScoreboardTeam();
-            Team team2 = playerListEntry2.getScoreboardTeam();
-            return ComparisonChain.start().compareTrueFirst(playerListEntry.getGameMode() != GameMode.SPECTATOR, playerListEntry2.getGameMode() != GameMode.SPECTATOR).compare((Comparable<?>)((Object)(team != null ? team.getName() : "")), (Comparable<?>)((Object)(team2 != null ? team2.getName() : ""))).compare(playerListEntry.getProfile().getName(), playerListEntry2.getProfile().getName(), String::compareToIgnoreCase).result();
+        public void tick(int score, long currentTick) {
+            if (score != this.score) {
+                long l = score < this.score ? 20L : 10L;
+                this.highlightEndTick = currentTick + l;
+                this.score = score;
+                this.lastScoreChangeTick = currentTick;
+            }
+            if (currentTick - this.lastScoreChangeTick > 20L) {
+                this.prevScore = score;
+            }
         }
 
-        @Override
-        public /* synthetic */ int compare(Object a, Object b) {
-            return this.compare((PlayerListEntry)a, (PlayerListEntry)b);
+        public int getPrevScore() {
+            return this.prevScore;
+        }
+
+        public boolean useHighlighted(long currentTick) {
+            return this.highlightEndTick > currentTick && (this.highlightEndTick - currentTick) % 6L >= 3L;
         }
     }
 }

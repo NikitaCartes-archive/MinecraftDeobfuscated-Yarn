@@ -19,6 +19,7 @@ import net.minecraft.recipe.RecipeManager;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
 import net.minecraft.resource.SimpleResourceReload;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.ServerAdvancementLoader;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.function.FunctionLoader;
@@ -50,10 +51,10 @@ public class DataPackContents {
     private final ServerAdvancementLoader serverAdvancementLoader = new ServerAdvancementLoader(this.lootConditionManager);
     private final FunctionLoader functionLoader;
 
-    public DataPackContents(DynamicRegistryManager.Immutable dynamicRegistryManager, CommandManager.RegistrationEnvironment commandEnvironment, int functionPermissionLevel) {
+    public DataPackContents(DynamicRegistryManager.Immutable dynamicRegistryManager, FeatureSet enabledFeatures, CommandManager.RegistrationEnvironment environment, int functionPermissionLevel) {
         this.registryTagManager = new TagManagerLoader(dynamicRegistryManager);
-        this.commandRegistryAccess = new CommandRegistryAccess(dynamicRegistryManager);
-        this.commandManager = new CommandManager(commandEnvironment, this.commandRegistryAccess);
+        this.commandRegistryAccess = new CommandRegistryAccess(dynamicRegistryManager, enabledFeatures);
+        this.commandManager = new CommandManager(environment, this.commandRegistryAccess);
         this.commandRegistryAccess.setEntryListCreationPolicy(CommandRegistryAccess.EntryListCreationPolicy.CREATE_NEW);
         this.functionLoader = new FunctionLoader(functionPermissionLevel, this.commandManager.getDispatcher());
     }
@@ -113,8 +114,8 @@ public class DataPackContents {
      * 
      * @see MinecraftServer#reloadResources
      */
-    public static CompletableFuture<DataPackContents> reload(ResourceManager manager, DynamicRegistryManager.Immutable dynamicRegistryManager, CommandManager.RegistrationEnvironment commandEnvironment, int functionPermissionLevel, Executor prepareExecutor, Executor applyExecutor) {
-        DataPackContents dataPackContents = new DataPackContents(dynamicRegistryManager, commandEnvironment, functionPermissionLevel);
+    public static CompletableFuture<DataPackContents> reload(ResourceManager manager, DynamicRegistryManager.Immutable dynamicRegistryManager, FeatureSet enabledFeatures, CommandManager.RegistrationEnvironment environment, int functionPermissionLevel, Executor prepareExecutor, Executor applyExecutor) {
+        DataPackContents dataPackContents = new DataPackContents(dynamicRegistryManager, enabledFeatures, environment, functionPermissionLevel);
         return ((CompletableFuture)SimpleResourceReload.start(manager, dataPackContents.getContents(), prepareExecutor, applyExecutor, COMPLETED_UNIT, LOGGER.isDebugEnabled()).whenComplete().whenComplete((void_, throwable) -> dataPackContents.commandRegistryAccess.setEntryListCreationPolicy(CommandRegistryAccess.EntryListCreationPolicy.FAIL))).thenApply(void_ -> dataPackContents);
     }
 

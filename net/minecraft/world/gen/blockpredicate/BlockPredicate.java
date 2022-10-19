@@ -10,6 +10,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -129,6 +130,14 @@ extends BiPredicate<StructureWorldAccess, BlockPos> {
 
     public static BlockPredicate solid() {
         return BlockPredicate.solid(Vec3i.ZERO);
+    }
+
+    public static BlockPredicate noFluid() {
+        return BlockPredicate.noFluid(Vec3i.ZERO);
+    }
+
+    public static BlockPredicate noFluid(Vec3i offset) {
+        return BlockPredicate.matchingFluids(offset, Fluids.EMPTY);
     }
 
     public static BlockPredicate insideWorldBounds(Vec3i offset) {

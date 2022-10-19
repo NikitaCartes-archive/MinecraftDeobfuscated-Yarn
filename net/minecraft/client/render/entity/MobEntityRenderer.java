@@ -64,7 +64,7 @@ extends LivingEntityRenderer<T, M> {
         matrices.push();
         Vec3d vec3d = holdingEntity.getLeashPos(tickDelta);
         double d = (double)(MathHelper.lerp(tickDelta, ((MobEntity)entity).prevBodyYaw, ((MobEntity)entity).bodyYaw) * ((float)Math.PI / 180)) + 1.5707963267948966;
-        Vec3d vec3d2 = ((Entity)entity).getLeashOffset();
+        Vec3d vec3d2 = ((Entity)entity).getLeashOffset(tickDelta);
         double e = Math.cos(d) * vec3d2.z + Math.sin(d) * vec3d2.x;
         double f = Math.sin(d) * vec3d2.z - Math.cos(d) * vec3d2.x;
         double g = MathHelper.lerp((double)tickDelta, ((MobEntity)entity).prevX, ((Entity)entity).getX()) + e;

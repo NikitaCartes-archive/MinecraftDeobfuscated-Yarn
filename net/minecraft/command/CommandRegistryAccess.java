@@ -5,10 +5,10 @@ package net.minecraft.command;
 
 import java.util.Optional;
 import net.minecraft.command.CommandRegistryWrapper;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.util.registry.RegistryKey;
 
@@ -22,10 +22,12 @@ import net.minecraft.util.registry.RegistryKey;
  */
 public final class CommandRegistryAccess {
     private final DynamicRegistryManager dynamicRegistryManager;
+    private final FeatureSet enabledFeatures;
     EntryListCreationPolicy entryListCreationPolicy = EntryListCreationPolicy.FAIL;
 
-    public CommandRegistryAccess(DynamicRegistryManager dynamicRegistryManager) {
+    public CommandRegistryAccess(DynamicRegistryManager dynamicRegistryManager, FeatureSet enabledFeatures) {
         this.dynamicRegistryManager = dynamicRegistryManager;
+        this.enabledFeatures = enabledFeatures;
     }
 
     /**
@@ -44,21 +46,22 @@ public final class CommandRegistryAccess {
      * @param registryRef the registry key of the registry to wrap
      */
     public <T> CommandRegistryWrapper<T> createWrapper(RegistryKey<? extends Registry<T>> registryRef) {
-        return new CommandRegistryWrapper.Impl<T>(this.dynamicRegistryManager.get(registryRef)){
+        CommandRegistryWrapper.Impl impl = new CommandRegistryWrapper.Impl<T>(this.dynamicRegistryManager.get(registryRef)){
 
             @Override
-            public Optional<? extends RegistryEntryList<T>> getEntryList(TagKey<T> tag) {
+            public Optional<RegistryEntryList.Named<T>> getEntryList(TagKey<T> tag) {
                 return switch (CommandRegistryAccess.this.entryListCreationPolicy) {
                     default -> throw new IncompatibleClassChangeError();
                     case EntryListCreationPolicy.FAIL -> this.registry.getEntryList(tag);
                     case EntryListCreationPolicy.CREATE_NEW -> Optional.of(this.registry.getOrCreateEntryList(tag));
                     case EntryListCreationPolicy.RETURN_EMPTY -> {
-                        Optional optional = this.registry.getEntryList(tag);
-                        yield Optional.of(optional.isPresent() ? (RegistryEntryList.Direct)((Object)optional.get()) : RegistryEntryList.of(new RegistryEntry[0]));
+                        Optional<RegistryEntryList.Named<RegistryEntryList.Named>> optional = this.registry.getEntryList(tag);
+                        yield Optional.of(optional.orElseGet(() -> RegistryEntryList.of(this.registry, tag)));
                     }
                 };
             }
         };
+        return impl.withFeatureFilter(this.enabledFeatures);
     }
 
     public static enum EntryListCreationPolicy {

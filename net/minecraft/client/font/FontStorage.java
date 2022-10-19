@@ -150,7 +150,7 @@ implements AutoCloseable {
             if (glyphRenderer == null) continue;
             return glyphRenderer;
         }
-        GlyphAtlasTexture glyphAtlasTexture2 = new GlyphAtlasTexture(new Identifier(this.id.getNamespace(), this.id.getPath() + "/" + this.glyphAtlases.size()), c.hasColor());
+        GlyphAtlasTexture glyphAtlasTexture2 = new GlyphAtlasTexture(this.id.withPath(string -> string + "/" + this.glyphAtlases.size()), c.hasColor());
         this.glyphAtlases.add(glyphAtlasTexture2);
         this.textureManager.registerTexture(glyphAtlasTexture2.getId(), glyphAtlasTexture2);
         GlyphRenderer glyphRenderer2 = glyphAtlasTexture2.getGlyphRenderer(c);

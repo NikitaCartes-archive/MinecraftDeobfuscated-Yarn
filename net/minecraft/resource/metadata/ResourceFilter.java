@@ -3,42 +3,21 @@
  */
 package net.minecraft.resource.metadata;
 
-import com.google.gson.JsonObject;
 import com.mojang.datafixers.kinds.Applicative;
-import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
-import net.minecraft.resource.metadata.ResourceMetadataReader;
+import net.minecraft.resource.metadata.ResourceMetadataSerializer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.Codecs;
-import org.slf4j.Logger;
 
 public class ResourceFilter {
-    static final Logger LOGGER = LogUtils.getLogger();
-    static final Codec<ResourceFilter> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.list(BlockEntry.CODEC).fieldOf("block")).forGetter(filter -> filter.blocks)).apply((Applicative<ResourceFilter, ?>)instance, ResourceFilter::new));
-    public static final ResourceMetadataReader<ResourceFilter> READER = new ResourceMetadataReader<ResourceFilter>(){
-
-        @Override
-        public String getKey() {
-            return "filter";
-        }
-
-        @Override
-        public ResourceFilter fromJson(JsonObject jsonObject) {
-            return (ResourceFilter)CODEC.parse(JsonOps.INSTANCE, jsonObject).getOrThrow(false, LOGGER::error);
-        }
-
-        @Override
-        public /* synthetic */ Object fromJson(JsonObject json) {
-            return this.fromJson(json);
-        }
-    };
+    private static final Codec<ResourceFilter> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.list(BlockEntry.CODEC).fieldOf("block")).forGetter(filter -> filter.blocks)).apply((Applicative<ResourceFilter, ?>)instance, ResourceFilter::new));
+    public static final ResourceMetadataSerializer<ResourceFilter> SERIALIZER = ResourceMetadataSerializer.fromCodec("filter", CODEC);
     /**
      * The list of block rules, named {@code block} in the JSON format.
      */

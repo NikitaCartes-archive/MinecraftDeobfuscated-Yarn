@@ -28,9 +28,6 @@ import javax.annotation.meta.TypeQualifierDefault;
  * 
  * <p>This annotation is not {@link java.lang.annotation.Documented}, and hence
  * will not appear in the generated javadoc for annotated elements.
- * 
- * @see net.minecraft.util.CubicSampler.RgbFetcher
- * @see net.minecraft.world.level.ColorResolver#getColor
  */
 @TypeQualifierDefault(value={ElementType.TYPE, ElementType.METHOD})
 @Retention(value=RetentionPolicy.CLASS)

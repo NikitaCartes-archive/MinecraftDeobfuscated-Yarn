@@ -14,15 +14,17 @@ import java.util.stream.Collectors;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.util.registry.CombinedDynamicRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.SerializableRegistries;
+import net.minecraft.util.registry.ServerDynamicRegistryType;
 
 public class TagPacketSerializer {
-    public static Map<RegistryKey<? extends Registry<?>>, Serialized> serializeTags(DynamicRegistryManager dynamicRegistryManager) {
-        return dynamicRegistryManager.streamSyncedRegistries().map(registry -> Pair.of(registry.key(), TagPacketSerializer.serializeTags(registry.value()))).filter(pair -> !((Serialized)pair.getSecond()).isEmpty()).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
+    public static Map<RegistryKey<? extends Registry<?>>, Serialized> serializeTags(CombinedDynamicRegistries<ServerDynamicRegistryType> dynamicRegistryManager) {
+        return SerializableRegistries.streamRegistryManagerEntries(dynamicRegistryManager).map(registry -> Pair.of(registry.key(), TagPacketSerializer.serializeTags(registry.value()))).filter(pair -> !((Serialized)pair.getSecond()).isEmpty()).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
     }
 
     private static <T> Serialized serializeTags(Registry<T> registry) {
@@ -44,7 +46,7 @@ public class TagPacketSerializer {
     public static <T> void loadTags(RegistryKey<? extends Registry<T>> registryKey, Registry<T> registry, Serialized serialized, Loader<T> loader) {
         serialized.contents.forEach((tagId, rawIds) -> {
             TagKey tagKey = TagKey.of(registryKey, tagId);
-            List list = rawIds.intStream().mapToObj(registry::getEntry).flatMap(Optional::stream).toList();
+            List list = rawIds.intStream().mapToObj(registry::getEntry).flatMap(Optional::stream).collect(Collectors.toUnmodifiableList());
             loader.accept(tagKey, list);
         });
     }

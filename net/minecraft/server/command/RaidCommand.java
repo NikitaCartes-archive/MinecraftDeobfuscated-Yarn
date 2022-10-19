@@ -63,6 +63,10 @@ public class RaidCommand {
     private static int executeSpawnLeader(ServerCommandSource source) {
         source.sendFeedback(Text.literal("Spawned a raid captain"), false);
         RaiderEntity raiderEntity = EntityType.PILLAGER.create(source.getWorld());
+        if (raiderEntity == null) {
+            source.sendError(Text.literal("Pillager failed to spawn"));
+            return 0;
+        }
         raiderEntity.setPatrolLeader(true);
         raiderEntity.equipStack(EquipmentSlot.HEAD, Raid.getOminousBanner());
         raiderEntity.setPosition(source.getPosition().x, source.getPosition().y, source.getPosition().z);
@@ -71,7 +75,7 @@ public class RaidCommand {
         return 1;
     }
 
-    private static int executeSound(ServerCommandSource source, Text type) {
+    private static int executeSound(ServerCommandSource source, @Nullable Text type) {
         if (type != null && type.getString().equals("local")) {
             source.getWorld().playSound(null, new BlockPos(source.getPosition().add(5.0, 0.0, 0.0)), SoundEvents.EVENT_RAID_HORN, SoundCategory.NEUTRAL, 2.0f, 1.0f);
         }

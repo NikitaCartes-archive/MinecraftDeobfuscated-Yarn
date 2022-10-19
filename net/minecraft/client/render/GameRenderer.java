@@ -11,13 +11,17 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -58,9 +62,11 @@ import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.ItemStack;
+import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceFactory;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SynchronousResourceReloader;
+import net.minecraft.resource.ResourceReloader;
+import net.minecraft.resource.SinglePreparationResourceReloader;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -79,6 +85,7 @@ import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
@@ -86,10 +93,9 @@ import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class GameRenderer
-implements SynchronousResourceReloader,
-AutoCloseable {
+implements AutoCloseable {
     private static final Identifier NAUSEA_OVERLAY = new Identifier("textures/misc/nausea.png");
-    private static final Logger LOGGER = LogUtils.getLogger();
+    static final Logger LOGGER = LogUtils.getLogger();
     private static final boolean field_32688 = false;
     /**
      * Since the camera is conceptualized as a single point, a depth of {@value}
@@ -99,7 +105,7 @@ AutoCloseable {
      * @see Matrix4f#viewboxMatrix
      */
     public static final float CAMERA_DEPTH = 0.05f;
-    private final MinecraftClient client;
+    final MinecraftClient client;
     private final ResourceManager resourceManager;
     private final Random random = Random.create();
     private float viewDistance;
@@ -129,10 +135,10 @@ AutoCloseable {
     private float floatingItemWidth;
     private float floatingItemHeight;
     @Nullable
-    private ShaderEffect shader;
-    private static final Identifier[] SHADERS_LOCATIONS = new Identifier[]{new Identifier("shaders/post/notch.json"), new Identifier("shaders/post/fxaa.json"), new Identifier("shaders/post/art.json"), new Identifier("shaders/post/bumpy.json"), new Identifier("shaders/post/blobs2.json"), new Identifier("shaders/post/pencil.json"), new Identifier("shaders/post/color_convolve.json"), new Identifier("shaders/post/deconverge.json"), new Identifier("shaders/post/flip.json"), new Identifier("shaders/post/invert.json"), new Identifier("shaders/post/ntsc.json"), new Identifier("shaders/post/outline.json"), new Identifier("shaders/post/phosphor.json"), new Identifier("shaders/post/scan_pincushion.json"), new Identifier("shaders/post/sobel.json"), new Identifier("shaders/post/bits.json"), new Identifier("shaders/post/desaturate.json"), new Identifier("shaders/post/green.json"), new Identifier("shaders/post/blur.json"), new Identifier("shaders/post/wobble.json"), new Identifier("shaders/post/blobs.json"), new Identifier("shaders/post/antialias.json"), new Identifier("shaders/post/creeper.json"), new Identifier("shaders/post/spider.json")};
+    ShaderEffect shader;
+    static final Identifier[] SHADERS_LOCATIONS = new Identifier[]{new Identifier("shaders/post/notch.json"), new Identifier("shaders/post/fxaa.json"), new Identifier("shaders/post/art.json"), new Identifier("shaders/post/bumpy.json"), new Identifier("shaders/post/blobs2.json"), new Identifier("shaders/post/pencil.json"), new Identifier("shaders/post/color_convolve.json"), new Identifier("shaders/post/deconverge.json"), new Identifier("shaders/post/flip.json"), new Identifier("shaders/post/invert.json"), new Identifier("shaders/post/ntsc.json"), new Identifier("shaders/post/outline.json"), new Identifier("shaders/post/phosphor.json"), new Identifier("shaders/post/scan_pincushion.json"), new Identifier("shaders/post/sobel.json"), new Identifier("shaders/post/bits.json"), new Identifier("shaders/post/desaturate.json"), new Identifier("shaders/post/green.json"), new Identifier("shaders/post/blur.json"), new Identifier("shaders/post/wobble.json"), new Identifier("shaders/post/blobs.json"), new Identifier("shaders/post/antialias.json"), new Identifier("shaders/post/creeper.json"), new Identifier("shaders/post/spider.json")};
     public static final int SHADER_COUNT = SHADERS_LOCATIONS.length;
-    private int forcedShaderIndex = SHADER_COUNT;
+    int forcedShaderIndex = SHADER_COUNT;
     private boolean shadersEnabled;
     private final Camera camera = new Camera();
     public Shader blitScreenShader;
@@ -327,7 +333,7 @@ AutoCloseable {
         }
     }
 
-    private void loadShader(Identifier id) {
+    void loadShader(Identifier id) {
         if (this.shader != null) {
             this.shader.close();
         }
@@ -346,18 +352,51 @@ AutoCloseable {
         }
     }
 
-    @Override
-    public void reload(ResourceManager manager) {
-        this.loadShaders(manager);
-        if (this.shader != null) {
-            this.shader.close();
-        }
-        this.shader = null;
-        if (this.forcedShaderIndex == SHADER_COUNT) {
-            this.onCameraEntitySet(this.client.getCameraEntity());
-        } else {
-            this.loadShader(SHADERS_LOCATIONS[this.forcedShaderIndex]);
-        }
+    public ResourceReloader createShaderReloader() {
+        return new SinglePreparationResourceReloader<CachedResourceFactory>(){
+
+            @Override
+            protected CachedResourceFactory prepare(ResourceManager resourceManager, Profiler profiler) {
+                Map<Identifier, Resource> map = resourceManager.findResources("shaders", id -> {
+                    String string = id.getPath();
+                    return string.endsWith(".json") || string.endsWith(Program.Type.FRAGMENT.getFileExtension()) || string.endsWith(Program.Type.VERTEX.getFileExtension()) || string.endsWith(".glsl");
+                });
+                HashMap<Identifier, Resource> map2 = new HashMap<Identifier, Resource>();
+                map.forEach((id, resource) -> {
+                    try (InputStream inputStream = resource.getInputStream();){
+                        byte[] bs = inputStream.readAllBytes();
+                        map2.put((Identifier)id, new Resource(resource.getPack(), () -> new ByteArrayInputStream(bs)));
+                    } catch (Exception exception) {
+                        LOGGER.warn("Failed to read resource {}", id, (Object)exception);
+                    }
+                });
+                return new CachedResourceFactory(resourceManager, map2);
+            }
+
+            @Override
+            protected void apply(CachedResourceFactory cachedResourceFactory, ResourceManager resourceManager, Profiler profiler) {
+                GameRenderer.this.loadShaders(cachedResourceFactory);
+                if (GameRenderer.this.shader != null) {
+                    GameRenderer.this.shader.close();
+                }
+                GameRenderer.this.shader = null;
+                if (GameRenderer.this.forcedShaderIndex == SHADER_COUNT) {
+                    GameRenderer.this.onCameraEntitySet(GameRenderer.this.client.getCameraEntity());
+                } else {
+                    GameRenderer.this.loadShader(SHADERS_LOCATIONS[GameRenderer.this.forcedShaderIndex]);
+                }
+            }
+
+            @Override
+            public String getName() {
+                return "Shader Loader";
+            }
+
+            @Override
+            protected /* synthetic */ Object prepare(ResourceManager manager, Profiler profiler) {
+                return this.prepare(manager, profiler);
+            }
+        };
     }
 
     public void preloadShaders(ResourceFactory factory) {
@@ -387,7 +426,7 @@ AutoCloseable {
         }
     }
 
-    public void loadShaders(ResourceManager manager) {
+    void loadShaders(ResourceFactory factory) {
         RenderSystem.assertOnRenderThread();
         ArrayList<Program> list = Lists.newArrayList();
         list.addAll(Program.Type.FRAGMENT.getProgramCache().values());
@@ -395,169 +434,169 @@ AutoCloseable {
         list.forEach(Program::release);
         ArrayList<Pair<Shader, Consumer<Shader>>> list2 = Lists.newArrayListWithCapacity(this.shaders.size());
         try {
-            list2.add(Pair.of(new Shader(manager, "block", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(factory, "block", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
                 blockShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "new_entity", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(factory, "new_entity", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
                 newEntityShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "particle", VertexFormats.POSITION_TEXTURE_COLOR_LIGHT), shader -> {
+            list2.add(Pair.of(new Shader(factory, "particle", VertexFormats.POSITION_TEXTURE_COLOR_LIGHT), shader -> {
                 particleShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "position", VertexFormats.POSITION), shader -> {
+            list2.add(Pair.of(new Shader(factory, "position", VertexFormats.POSITION), shader -> {
                 positionShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "position_color", VertexFormats.POSITION_COLOR), shader -> {
+            list2.add(Pair.of(new Shader(factory, "position_color", VertexFormats.POSITION_COLOR), shader -> {
                 positionColorShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "position_color_lightmap", VertexFormats.POSITION_COLOR_LIGHT), shader -> {
+            list2.add(Pair.of(new Shader(factory, "position_color_lightmap", VertexFormats.POSITION_COLOR_LIGHT), shader -> {
                 positionColorLightmapShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "position_color_tex", VertexFormats.POSITION_COLOR_TEXTURE), shader -> {
+            list2.add(Pair.of(new Shader(factory, "position_color_tex", VertexFormats.POSITION_COLOR_TEXTURE), shader -> {
                 positionColorTexShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "position_color_tex_lightmap", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT), shader -> {
+            list2.add(Pair.of(new Shader(factory, "position_color_tex_lightmap", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT), shader -> {
                 positionColorTexLightmapShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "position_tex", VertexFormats.POSITION_TEXTURE), shader -> {
+            list2.add(Pair.of(new Shader(factory, "position_tex", VertexFormats.POSITION_TEXTURE), shader -> {
                 positionTexShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "position_tex_color", VertexFormats.POSITION_TEXTURE_COLOR), shader -> {
+            list2.add(Pair.of(new Shader(factory, "position_tex_color", VertexFormats.POSITION_TEXTURE_COLOR), shader -> {
                 positionTexColorShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "position_tex_color_normal", VertexFormats.POSITION_TEXTURE_COLOR_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(factory, "position_tex_color_normal", VertexFormats.POSITION_TEXTURE_COLOR_NORMAL), shader -> {
                 positionTexColorNormalShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "position_tex_lightmap_color", VertexFormats.POSITION_TEXTURE_LIGHT_COLOR), shader -> {
+            list2.add(Pair.of(new Shader(factory, "position_tex_lightmap_color", VertexFormats.POSITION_TEXTURE_LIGHT_COLOR), shader -> {
                 positionTexLightmapColorShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_solid", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_solid", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
                 renderTypeSolidShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_cutout_mipped", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_cutout_mipped", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
                 renderTypeCutoutMippedShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_cutout", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_cutout", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
                 renderTypeCutoutShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_translucent", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_translucent", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
                 renderTypeTranslucentShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_translucent_moving_block", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_translucent_moving_block", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
                 renderTypeTranslucentMovingBlockShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_translucent_no_crumbling", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_translucent_no_crumbling", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
                 renderTypeTranslucentNoCrumblingShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_armor_cutout_no_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_armor_cutout_no_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
                 renderTypeArmorCutoutNoCullShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_entity_solid", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_entity_solid", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
                 renderTypeEntitySolidShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_entity_cutout", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_entity_cutout", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
                 renderTypeEntityCutoutShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_entity_cutout_no_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_entity_cutout_no_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
                 renderTypeEntityCutoutNoNullShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_entity_cutout_no_cull_z_offset", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_entity_cutout_no_cull_z_offset", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
                 renderTypeEntityCutoutNoNullZOffsetShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_item_entity_translucent_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_item_entity_translucent_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
                 renderTypeItemEntityTranslucentCullShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_entity_translucent_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_entity_translucent_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
                 renderTypeEntityTranslucentCullShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_entity_translucent", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_entity_translucent", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
                 renderTypeEntityTranslucentShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_entity_translucent_emissive", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_entity_translucent_emissive", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
                 renderTypeEntityTranslucentEmissiveShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_entity_smooth_cutout", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_entity_smooth_cutout", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
                 renderTypeEntitySmoothCutoutShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_beacon_beam", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_beacon_beam", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
                 renderTypeBeaconBeamShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_entity_decal", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_entity_decal", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
                 renderTypeEntityDecalShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_entity_no_outline", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_entity_no_outline", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
                 renderTypeEntityNoOutlineShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_entity_shadow", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_entity_shadow", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
                 renderTypeEntityShadowShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_entity_alpha", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_entity_alpha", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
                 renderTypeEntityAlphaShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_eyes", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_eyes", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
                 renderTypeEyesShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_energy_swirl", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_energy_swirl", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> {
                 renderTypeEnergySwirlShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_leash", VertexFormats.POSITION_COLOR_LIGHT), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_leash", VertexFormats.POSITION_COLOR_LIGHT), shader -> {
                 renderTypeLeashShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_water_mask", VertexFormats.POSITION), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_water_mask", VertexFormats.POSITION), shader -> {
                 renderTypeWaterMaskShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_outline", VertexFormats.POSITION_COLOR_TEXTURE), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_outline", VertexFormats.POSITION_COLOR_TEXTURE), shader -> {
                 renderTypeOutlineShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_armor_glint", VertexFormats.POSITION_TEXTURE), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_armor_glint", VertexFormats.POSITION_TEXTURE), shader -> {
                 renderTypeArmorGlintShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_armor_entity_glint", VertexFormats.POSITION_TEXTURE), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_armor_entity_glint", VertexFormats.POSITION_TEXTURE), shader -> {
                 renderTypeArmorEntityGlintShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_glint_translucent", VertexFormats.POSITION_TEXTURE), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_glint_translucent", VertexFormats.POSITION_TEXTURE), shader -> {
                 renderTypeGlintTranslucentShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_glint", VertexFormats.POSITION_TEXTURE), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_glint", VertexFormats.POSITION_TEXTURE), shader -> {
                 renderTypeGlintShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_glint_direct", VertexFormats.POSITION_TEXTURE), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_glint_direct", VertexFormats.POSITION_TEXTURE), shader -> {
                 renderTypeGlintDirectShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_entity_glint", VertexFormats.POSITION_TEXTURE), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_entity_glint", VertexFormats.POSITION_TEXTURE), shader -> {
                 renderTypeEntityGlintShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_entity_glint_direct", VertexFormats.POSITION_TEXTURE), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_entity_glint_direct", VertexFormats.POSITION_TEXTURE), shader -> {
                 renderTypeEntityGlintDirectShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_text", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_text", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT), shader -> {
                 renderTypeTextShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_text_intensity", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_text_intensity", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT), shader -> {
                 renderTypeTextIntensityShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_text_see_through", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_text_see_through", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT), shader -> {
                 renderTypeTextSeeThroughShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_text_intensity_see_through", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_text_intensity_see_through", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT), shader -> {
                 renderTypeTextIntensitySeeThroughShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_lightning", VertexFormats.POSITION_COLOR), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_lightning", VertexFormats.POSITION_COLOR), shader -> {
                 renderTypeLightningShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_tripwire", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_tripwire", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
                 renderTypeTripwireShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_end_portal", VertexFormats.POSITION), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_end_portal", VertexFormats.POSITION), shader -> {
                 renderTypeEndPortalShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_end_gateway", VertexFormats.POSITION), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_end_gateway", VertexFormats.POSITION), shader -> {
                 renderTypeEndGatewayShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_lines", VertexFormats.LINES), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_lines", VertexFormats.LINES), shader -> {
                 renderTypeLinesShader = shader;
             }));
-            list2.add(Pair.of(new Shader(manager, "rendertype_crumbling", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
+            list2.add(Pair.of(new Shader(factory, "rendertype_crumbling", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL), shader -> {
                 renderTypeCrumblingShader = shader;
             }));
         } catch (IOException iOException) {
@@ -1417,6 +1456,19 @@ AutoCloseable {
     @Nullable
     public static Shader getRenderTypeCrumblingShader() {
         return renderTypeCrumblingShader;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public record CachedResourceFactory(ResourceFactory original, Map<Identifier, Resource> cache) implements ResourceFactory
+    {
+        @Override
+        public Optional<Resource> getResource(Identifier identifier) {
+            Resource resource = this.cache.get(identifier);
+            if (resource != null) {
+                return Optional.of(resource);
+            }
+            return this.original.getResource(identifier);
+        }
     }
 }
 

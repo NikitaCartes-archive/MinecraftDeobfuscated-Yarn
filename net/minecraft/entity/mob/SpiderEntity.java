@@ -161,10 +161,10 @@ extends HostileEntity {
     @Nullable
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         StatusEffect statusEffect;
+        SkeletonEntity skeletonEntity;
         entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
         Random random = world.getRandom();
-        if (random.nextInt(100) == 0) {
-            SkeletonEntity skeletonEntity = EntityType.SKELETON.create(this.world);
+        if (random.nextInt(100) == 0 && (skeletonEntity = EntityType.SKELETON.create(this.world)) != null) {
             skeletonEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), 0.0f);
             skeletonEntity.initialize(world, difficulty, spawnReason, null, null);
             skeletonEntity.startRiding(this);

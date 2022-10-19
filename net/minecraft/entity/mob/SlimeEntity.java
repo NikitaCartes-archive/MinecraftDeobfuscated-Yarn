@@ -194,6 +194,7 @@ implements Monster {
                 float g = ((float)(l % 2) - 0.5f) * f;
                 float h = ((float)(l / 2) - 0.5f) * f;
                 SlimeEntity slimeEntity = this.getType().create(this.world);
+                if (slimeEntity == null) continue;
                 if (this.isPersistent()) {
                     slimeEntity.setPersistent();
                 }

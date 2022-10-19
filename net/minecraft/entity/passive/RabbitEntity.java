@@ -311,14 +311,31 @@ extends AnimalEntity {
         return stack.isOf(Items.CARROT) || stack.isOf(Items.GOLDEN_CARROT) || stack.isOf(Blocks.DANDELION.asItem());
     }
 
+    /*
+     * Unable to fully structure code
+     */
     @Override
+    @Nullable
     public RabbitEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-        RabbitEntity rabbitEntity = EntityType.RABBIT.create(serverWorld);
-        int i = this.chooseType(serverWorld);
-        if (this.random.nextInt(20) != 0) {
-            i = passiveEntity instanceof RabbitEntity && this.random.nextBoolean() ? ((RabbitEntity)passiveEntity).getRabbitType() : this.getRabbitType();
+        block2: {
+            block3: {
+                rabbitEntity = EntityType.RABBIT.create(serverWorld);
+                if (rabbitEntity == null) break block2;
+                i = this.chooseType(serverWorld);
+                if (this.random.nextInt(20) == 0) break block3;
+                if (!(passiveEntity instanceof RabbitEntity)) ** GOTO lbl-1000
+                rabbitEntity2 = (RabbitEntity)passiveEntity;
+                if (this.random.nextBoolean()) {
+                    i = rabbitEntity2.getRabbitType();
+                } else lbl-1000:
+                // 2 sources
+
+                {
+                    i = this.getRabbitType();
+                }
+            }
+            rabbitEntity.setRabbitType(i);
         }
-        rabbitEntity.setRabbitType(i);
         return rabbitEntity;
     }
 
@@ -375,7 +392,7 @@ extends AnimalEntity {
     }
 
     boolean wantsCarrots() {
-        return this.moreCarrotTicks == 0;
+        return this.moreCarrotTicks <= 0;
     }
 
     @Override
@@ -395,6 +412,7 @@ extends AnimalEntity {
     }
 
     @Override
+    @Nullable
     public /* synthetic */ PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
         return this.createChild(world, entity);
     }
@@ -512,7 +530,6 @@ extends AnimalEntity {
                 }
                 this.hasTarget = false;
                 this.wantsCarrots = this.rabbit.wantsCarrots();
-                this.wantsCarrots = true;
             }
             return super.canStart();
         }

@@ -17,15 +17,13 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public record MessageIndicator(int indicatorColor, @Nullable Icon icon, @Nullable Text text, @Nullable String loggedName) {
-    private static final Text NOT_SECURE_TEXT = Text.translatable("chat.tag.not_secure").formatted(Formatting.UNDERLINE);
-    private static final Text MODIFIED_TEXT = Text.translatable("chat.tag.modified").formatted(Formatting.UNDERLINE);
-    private static final Text FILTERED_TEXT = Text.translatable("chat.tag.filtered").formatted(Formatting.UNDERLINE);
-    private static final int SYSTEM_COLOR = 0xA0A0A0;
-    private static final int NOT_SECURE_COLOR = 15224664;
-    private static final int MODIFIED_COLOR = 15386724;
-    private static final MessageIndicator SYSTEM = new MessageIndicator(0xA0A0A0, null, null, "System");
-    private static final MessageIndicator NOT_SECURE = new MessageIndicator(15224664, Icon.CHAT_NOT_SECURE, NOT_SECURE_TEXT, "Not Secure");
-    private static final MessageIndicator FILTERED = new MessageIndicator(15386724, Icon.CHAT_MODIFIED, FILTERED_TEXT, "Filtered");
+    private static final Text SYSTEM_TEXT = Text.translatable("chat.tag.system");
+    private static final Text NOT_SECURE_TEXT = Text.translatable("chat.tag.not_secure");
+    private static final Text MODIFIED_TEXT = Text.translatable("chat.tag.modified");
+    private static final int NOT_SECURE_COLOR = 0xD0D0D0;
+    private static final int MODIFIED_COLOR = 0x606060;
+    private static final MessageIndicator SYSTEM = new MessageIndicator(0xD0D0D0, null, SYSTEM_TEXT, "System");
+    private static final MessageIndicator NOT_SECURE = new MessageIndicator(0xD0D0D0, null, NOT_SECURE_TEXT, "Not Secure");
     static final Identifier CHAT_TAGS_TEXTURE = new Identifier("textures/gui/chat_tags.png");
 
     public static MessageIndicator system() {
@@ -37,13 +35,9 @@ public record MessageIndicator(int indicatorColor, @Nullable Icon icon, @Nullabl
     }
 
     public static MessageIndicator modified(String originalText) {
-        MutableText text = Text.translatable("chat.tag.modified.original", originalText);
+        MutableText text = Text.literal(originalText).formatted(Formatting.GRAY);
         MutableText text2 = Text.empty().append(MODIFIED_TEXT).append(ScreenTexts.LINE_BREAK).append(text);
-        return new MessageIndicator(15386724, Icon.CHAT_MODIFIED, text2, "Modified");
-    }
-
-    public static MessageIndicator filtered() {
-        return FILTERED;
+        return new MessageIndicator(0x606060, Icon.CHAT_MODIFIED, text2, "Modified");
     }
 
     @Nullable
@@ -63,8 +57,7 @@ public record MessageIndicator(int indicatorColor, @Nullable Icon icon, @Nullabl
 
     @Environment(value=EnvType.CLIENT)
     public static enum Icon {
-        CHAT_NOT_SECURE(0, 0, 9, 9),
-        CHAT_MODIFIED(9, 0, 9, 9);
+        CHAT_MODIFIED(0, 0, 9, 9);
 
         public final int u;
         public final int v;

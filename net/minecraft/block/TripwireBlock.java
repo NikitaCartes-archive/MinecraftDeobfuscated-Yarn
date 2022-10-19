@@ -149,7 +149,7 @@ extends Block {
             this.update(world, pos, blockState);
         }
         if (bl2) {
-            world.createAndScheduleBlockTick(new BlockPos(pos), this, 10);
+            world.scheduleBlockTick(new BlockPos(pos), this, 10);
         }
     }
 

@@ -60,11 +60,12 @@ implements Spawner {
             int l = 1 + random.nextInt(localDifficulty.getGlobalDifficulty().getId() + 1);
             for (int m = 0; m < l; ++m) {
                 PhantomEntity phantomEntity = EntityType.PHANTOM.create(world);
+                if (phantomEntity == null) continue;
                 phantomEntity.refreshPositionAndAngles(blockPos2, 0.0f, 0.0f);
                 entityData = phantomEntity.initialize(world, localDifficulty, SpawnReason.NATURAL, entityData, null);
                 world.spawnEntityAndPassengers(phantomEntity);
+                ++i;
             }
-            i += l;
         }
         return i;
     }

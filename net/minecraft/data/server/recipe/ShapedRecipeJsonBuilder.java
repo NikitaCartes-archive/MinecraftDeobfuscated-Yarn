@@ -18,37 +18,43 @@ import net.minecraft.advancement.CriterionMerger;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.data.server.recipe.CraftingRecipeJsonBuilder;
+import net.minecraft.data.server.recipe.RecipeJsonBuilder;
 import net.minecraft.data.server.recipe.RecipeJsonProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
+import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class ShapedRecipeJsonBuilder
+extends RecipeJsonBuilder
 implements CraftingRecipeJsonBuilder {
+    private final RecipeCategory category;
     private final Item output;
-    private final int outputCount;
+    private final int count;
     private final List<String> pattern = Lists.newArrayList();
     private final Map<Character, Ingredient> inputs = Maps.newLinkedHashMap();
     private final Advancement.Builder advancementBuilder = Advancement.Builder.create();
     @Nullable
     private String group;
 
-    public ShapedRecipeJsonBuilder(ItemConvertible output, int outputCount) {
+    public ShapedRecipeJsonBuilder(RecipeCategory category, ItemConvertible output, int count) {
+        this.category = category;
         this.output = output.asItem();
-        this.outputCount = outputCount;
+        this.count = count;
     }
 
-    public static ShapedRecipeJsonBuilder create(ItemConvertible output) {
-        return ShapedRecipeJsonBuilder.create(output, 1);
+    public static ShapedRecipeJsonBuilder create(RecipeCategory category, ItemConvertible output) {
+        return ShapedRecipeJsonBuilder.create(category, output, 1);
     }
 
-    public static ShapedRecipeJsonBuilder create(ItemConvertible output, int outputCount) {
-        return new ShapedRecipeJsonBuilder(output, outputCount);
+    public static ShapedRecipeJsonBuilder create(RecipeCategory category, ItemConvertible output, int count) {
+        return new ShapedRecipeJsonBuilder(category, output, count);
     }
 
     public ShapedRecipeJsonBuilder input(Character c, TagKey<Item> tag) {
@@ -99,7 +105,7 @@ implements CraftingRecipeJsonBuilder {
     public void offerTo(Consumer<RecipeJsonProvider> exporter, Identifier recipeId) {
         this.validate(recipeId);
         this.advancementBuilder.parent(ROOT).criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeId)).rewards(AdvancementRewards.Builder.recipe(recipeId)).criteriaMerger(CriterionMerger.OR);
-        exporter.accept(new ShapedRecipeJsonProvider(recipeId, this.output, this.outputCount, this.group == null ? "" : this.group, this.pattern, this.inputs, this.advancementBuilder, new Identifier(recipeId.getNamespace(), "recipes/" + this.output.getGroup().getName() + "/" + recipeId.getPath())));
+        exporter.accept(new ShapedRecipeJsonProvider(recipeId, this.output, this.count, this.group == null ? "" : this.group, ShapedRecipeJsonBuilder.getCraftingCategory(this.category), this.pattern, this.inputs, this.advancementBuilder, recipeId.withPrefixedPath("recipes/" + this.category.getName() + "/")));
     }
 
     private void validate(Identifier recipeId) {
@@ -139,7 +145,7 @@ implements CraftingRecipeJsonBuilder {
     }
 
     static class ShapedRecipeJsonProvider
-    implements RecipeJsonProvider {
+    extends RecipeJsonBuilder.CraftingRecipeJsonProvider {
         private final Identifier recipeId;
         private final Item output;
         private final int resultCount;
@@ -149,7 +155,8 @@ implements CraftingRecipeJsonBuilder {
         private final Advancement.Builder advancementBuilder;
         private final Identifier advancementId;
 
-        public ShapedRecipeJsonProvider(Identifier recipeId, Item output, int resultCount, String group, List<String> pattern, Map<Character, Ingredient> inputs, Advancement.Builder advancementBuilder, Identifier advancementId) {
+        public ShapedRecipeJsonProvider(Identifier recipeId, Item output, int resultCount, String group, CraftingRecipeCategory craftingCategory, List<String> pattern, Map<Character, Ingredient> inputs, Advancement.Builder advancementBuilder, Identifier advancementId) {
+            super(craftingCategory);
             this.recipeId = recipeId;
             this.output = output;
             this.resultCount = resultCount;
@@ -162,6 +169,7 @@ implements CraftingRecipeJsonBuilder {
 
         @Override
         public void serialize(JsonObject json) {
+            super.serialize(json);
             if (!this.group.isEmpty()) {
                 json.addProperty("group", this.group);
             }

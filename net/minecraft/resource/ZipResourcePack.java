@@ -12,17 +12,15 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import net.minecraft.resource.AbstractFileResourcePack;
-import net.minecraft.resource.ResourceNotFoundException;
+import net.minecraft.resource.InputSupplier;
+import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import org.apache.commons.io.IOUtils;
@@ -33,46 +31,66 @@ public class ZipResourcePack
 extends AbstractFileResourcePack {
     private static final Logger field_39096 = LogUtils.getLogger();
     public static final Splitter TYPE_NAMESPACE_SPLITTER = Splitter.on('/').omitEmptyStrings().limit(3);
+    private final File backingZipFile;
     @Nullable
     private ZipFile file;
+    private boolean failedToOpen;
 
-    public ZipResourcePack(File file) {
-        super(file);
+    public ZipResourcePack(String name, File backingZipFile) {
+        super(name);
+        this.backingZipFile = backingZipFile;
     }
 
-    private ZipFile getZipFile() throws IOException {
+    @Nullable
+    private ZipFile getZipFile() {
+        if (this.failedToOpen) {
+            return null;
+        }
         if (this.file == null) {
-            this.file = new ZipFile(this.base);
+            try {
+                this.file = new ZipFile(this.backingZipFile);
+            } catch (IOException iOException) {
+                field_39096.error("Failed to open pack {}", (Object)this.backingZipFile, (Object)iOException);
+                this.failedToOpen = true;
+                return null;
+            }
         }
         return this.file;
     }
 
-    @Override
-    protected InputStream openFile(String name) throws IOException {
-        ZipFile zipFile = this.getZipFile();
-        ZipEntry zipEntry = zipFile.getEntry(name);
-        if (zipEntry == null) {
-            throw new ResourceNotFoundException(this.base, name);
-        }
-        return zipFile.getInputStream(zipEntry);
+    private static String toPath(ResourceType type, Identifier id) {
+        return String.format(Locale.ROOT, "%s/%s/%s", type.getDirectory(), id.getNamespace(), id.getPath());
     }
 
     @Override
-    public boolean containsFile(String name) {
-        try {
-            return this.getZipFile().getEntry(name) != null;
-        } catch (IOException iOException) {
-            return false;
+    @Nullable
+    public InputSupplier<InputStream> openRoot(String ... segments) {
+        return this.openFile(String.join((CharSequence)"/", segments));
+    }
+
+    @Override
+    public InputSupplier<InputStream> open(ResourceType type, Identifier id) {
+        return this.openFile(ZipResourcePack.toPath(type, id));
+    }
+
+    @Nullable
+    private InputSupplier<InputStream> openFile(String path) {
+        ZipFile zipFile = this.getZipFile();
+        if (zipFile == null) {
+            return null;
         }
+        ZipEntry zipEntry = zipFile.getEntry(path);
+        if (zipEntry == null) {
+            return null;
+        }
+        return InputSupplier.create(zipFile, zipEntry);
     }
 
     @Override
     public Set<String> getNamespaces(ResourceType type) {
-        ZipFile zipFile;
-        try {
-            zipFile = this.getZipFile();
-        } catch (IOException iOException) {
-            return Collections.emptySet();
+        ZipFile zipFile = this.getZipFile();
+        if (zipFile == null) {
+            return Set.of();
         }
         Enumeration<? extends ZipEntry> enumeration = zipFile.entries();
         HashSet<String> set = Sets.newHashSet();
@@ -86,7 +104,7 @@ extends AbstractFileResourcePack {
                 set.add(string2);
                 continue;
             }
-            this.warnNonLowerCaseNamespace(string2);
+            field_39096.warn("Ignored non-lowercase namespace: {} in {}", (Object)string2, (Object)this.backingZipFile);
         }
         return set;
     }
@@ -105,31 +123,26 @@ extends AbstractFileResourcePack {
     }
 
     @Override
-    public Collection<Identifier> findResources(ResourceType type, String namespace, String prefix, Predicate<Identifier> allowedPathPredicate) {
-        ZipFile zipFile;
-        try {
-            zipFile = this.getZipFile();
-        } catch (IOException iOException) {
-            return Collections.emptySet();
+    public void findResources(ResourceType type, String namespace, String prefix, ResourcePack.ResultConsumer consumer) {
+        ZipFile zipFile = this.getZipFile();
+        if (zipFile == null) {
+            return;
         }
         Enumeration<? extends ZipEntry> enumeration = zipFile.entries();
-        ArrayList<Identifier> list = Lists.newArrayList();
         String string = type.getDirectory() + "/" + namespace + "/";
         String string2 = string + prefix + "/";
         while (enumeration.hasMoreElements()) {
             String string3;
             ZipEntry zipEntry = enumeration.nextElement();
-            if (zipEntry.isDirectory() || (string3 = zipEntry.getName()).endsWith(".mcmeta") || !string3.startsWith(string2)) continue;
+            if (zipEntry.isDirectory() || !(string3 = zipEntry.getName()).startsWith(string2)) continue;
             String string4 = string3.substring(string.length());
             Identifier identifier = Identifier.of(namespace, string4);
-            if (identifier == null) {
-                field_39096.warn("Invalid path in datapack: {}:{}, ignoring", (Object)namespace, (Object)string4);
+            if (identifier != null) {
+                consumer.accept(identifier, InputSupplier.create(zipFile, zipEntry));
                 continue;
             }
-            if (!allowedPathPredicate.test(identifier)) continue;
-            list.add(identifier);
+            field_39096.warn("Invalid path in datapack: {}:{}, ignoring", (Object)namespace, (Object)string4);
         }
-        return list;
     }
 }
 

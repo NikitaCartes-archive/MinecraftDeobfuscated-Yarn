@@ -203,6 +203,7 @@ extends SpellcastingIllagerEntity {
             for (int i = 0; i < 3; ++i) {
                 BlockPos blockPos = EvokerEntity.this.getBlockPos().add(-2 + EvokerEntity.this.random.nextInt(5), 1, -2 + EvokerEntity.this.random.nextInt(5));
                 VexEntity vexEntity = EntityType.VEX.create(EvokerEntity.this.world);
+                if (vexEntity == null) continue;
                 vexEntity.refreshPositionAndAngles(blockPos, 0.0f, 0.0f);
                 vexEntity.initialize(serverWorld, EvokerEntity.this.world.getLocalDifficulty(blockPos), SpawnReason.MOB_SUMMONED, null, null);
                 vexEntity.setOwner(EvokerEntity.this);

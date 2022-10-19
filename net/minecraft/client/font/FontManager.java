@@ -27,6 +27,7 @@ import net.minecraft.client.font.FontType;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.resource.Resource;
+import net.minecraft.resource.ResourceFinder;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
 import net.minecraft.resource.SinglePreparationResourceReloader;
@@ -42,6 +43,7 @@ implements AutoCloseable {
     static final Logger LOGGER = LogUtils.getLogger();
     private static final String FONTS_JSON = "fonts.json";
     public static final Identifier MISSING_STORAGE_ID = new Identifier("minecraft", "missing");
+    static final ResourceFinder FINDER = ResourceFinder.json("font");
     private final FontStorage missingStorage;
     final Map<Identifier, FontStorage> fontStorages = Maps.newHashMap();
     final TextureManager textureManager;
@@ -56,10 +58,9 @@ implements AutoCloseable {
             profiler.startTick();
             Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
             HashMap<Identifier, List<Font>> map = Maps.newHashMap();
-            for (Map.Entry<Identifier, List<Resource>> entry : resourceManager.findAllResources("font", id -> id.getPath().endsWith(".json")).entrySet()) {
+            for (Map.Entry<Identifier, List<Resource>> entry : FINDER.findAllResources(resourceManager).entrySet()) {
                 Identifier identifier = entry.getKey();
-                String string = identifier.getPath();
-                Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring("font/".length(), string.length() - ".json".length()));
+                Identifier identifier2 = FINDER.toResourceId(identifier);
                 List list = map.computeIfAbsent(identifier2, id -> Lists.newArrayList(new BlankFont()));
                 profiler.push(identifier2::toString);
                 for (Resource resource : entry.getValue()) {
@@ -71,10 +72,10 @@ implements AutoCloseable {
                             profiler.swap("parsing");
                             for (int i = jsonArray.size() - 1; i >= 0; --i) {
                                 JsonObject jsonObject = JsonHelper.asObject(jsonArray.get(i), "providers[" + i + "]");
-                                String string2 = JsonHelper.getString(jsonObject, "type");
-                                FontType fontType = FontType.byId(string2);
+                                String string = JsonHelper.getString(jsonObject, "type");
+                                FontType fontType = FontType.byId(string);
                                 try {
-                                    profiler.push(string2);
+                                    profiler.push(string);
                                     Font font = fontType.createLoader(jsonObject).load(resourceManager);
                                     if (font == null) continue;
                                     list.add(font);

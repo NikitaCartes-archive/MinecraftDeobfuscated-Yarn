@@ -38,6 +38,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.text.Text;
+import net.minecraft.util.Nameable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.Heightmap;
@@ -46,7 +47,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class BeaconBlockEntity
 extends BlockEntity
-implements NamedScreenHandlerFactory {
+implements NamedScreenHandlerFactory,
+Nameable {
     private static final int field_31304 = 4;
     public static final StatusEffect[][] EFFECTS_BY_LEVEL = new StatusEffect[][]{{StatusEffects.SPEED, StatusEffects.HASTE}, {StatusEffects.RESISTANCE, StatusEffects.JUMP_BOOST}, {StatusEffects.STRENGTH}, {StatusEffects.REGENERATION}};
     private static final Set<StatusEffect> EFFECTS = Arrays.stream(EFFECTS_BY_LEVEL).flatMap(Arrays::stream).collect(Collectors.toSet());
@@ -55,6 +57,7 @@ implements NamedScreenHandlerFactory {
     public static final int SECONDARY_PROPERTY_INDEX = 2;
     public static final int PROPERTY_COUNT = 3;
     private static final int field_31305 = 10;
+    private static final Text field_40328 = Text.translatable("container.beacon");
     List<BeamSegment> beamSegments = Lists.newArrayList();
     private List<BeamSegment> field_19178 = Lists.newArrayList();
     int level;
@@ -286,6 +289,12 @@ implements NamedScreenHandlerFactory {
 
     @Override
     @Nullable
+    public Text getCustomName() {
+        return this.customName;
+    }
+
+    @Override
+    @Nullable
     public ScreenHandler createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
         if (LockableContainerBlockEntity.checkUnlocked(playerEntity, this.lock, this.getDisplayName())) {
             return new BeaconScreenHandler(i, playerInventory, this.propertyDelegate, ScreenHandlerContext.create(this.world, this.getPos()));
@@ -295,7 +304,15 @@ implements NamedScreenHandlerFactory {
 
     @Override
     public Text getDisplayName() {
-        return this.customName != null ? this.customName : Text.translatable("container.beacon");
+        return this.getName();
+    }
+
+    @Override
+    public Text getName() {
+        if (this.customName != null) {
+            return this.customName;
+        }
+        return field_40328;
     }
 
     @Override

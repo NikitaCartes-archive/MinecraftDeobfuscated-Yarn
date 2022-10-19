@@ -13,8 +13,9 @@ import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.Collection;
-import net.minecraft.command.argument.EnchantmentArgumentType;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.command.argument.RegistryEntryArgumentType;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -23,6 +24,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 
 public class EnchantCommand {
     private static final DynamicCommandExceptionType FAILED_ENTITY_EXCEPTION = new DynamicCommandExceptionType(entityName -> Text.translatable("commands.enchant.failed.entity", entityName));
@@ -31,13 +34,14 @@ public class EnchantCommand {
     private static final Dynamic2CommandExceptionType FAILED_LEVEL_EXCEPTION = new Dynamic2CommandExceptionType((level, maxLevel) -> Text.translatable("commands.enchant.failed.level", level, maxLevel));
     private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.enchant.failed"));
 
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("enchant").requires(source -> source.hasPermissionLevel(2))).then(CommandManager.argument("targets", EntityArgumentType.entities()).then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)CommandManager.argument("enchantment", EnchantmentArgumentType.enchantment()).executes(context -> EnchantCommand.execute((ServerCommandSource)context.getSource(), EntityArgumentType.getEntities(context, "targets"), EnchantmentArgumentType.getEnchantment(context, "enchantment"), 1))).then(CommandManager.argument("level", IntegerArgumentType.integer(0)).executes(context -> EnchantCommand.execute((ServerCommandSource)context.getSource(), EntityArgumentType.getEntities(context, "targets"), EnchantmentArgumentType.getEnchantment(context, "enchantment"), IntegerArgumentType.getInteger(context, "level")))))));
+    public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess) {
+        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("enchant").requires(source -> source.hasPermissionLevel(2))).then(CommandManager.argument("targets", EntityArgumentType.entities()).then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)CommandManager.argument("enchantment", RegistryEntryArgumentType.registryEntry(registryAccess, Registry.ENCHANTMENT_KEY)).executes(context -> EnchantCommand.execute((ServerCommandSource)context.getSource(), EntityArgumentType.getEntities(context, "targets"), RegistryEntryArgumentType.getEnchantment(context, "enchantment"), 1))).then(CommandManager.argument("level", IntegerArgumentType.integer(0)).executes(context -> EnchantCommand.execute((ServerCommandSource)context.getSource(), EntityArgumentType.getEntities(context, "targets"), RegistryEntryArgumentType.getEnchantment(context, "enchantment"), IntegerArgumentType.getInteger(context, "level")))))));
     }
 
-    private static int execute(ServerCommandSource source, Collection<? extends Entity> targets, Enchantment enchantment, int level) throws CommandSyntaxException {
-        if (level > enchantment.getMaxLevel()) {
-            throw FAILED_LEVEL_EXCEPTION.create(level, enchantment.getMaxLevel());
+    private static int execute(ServerCommandSource source, Collection<? extends Entity> targets, RegistryEntry<Enchantment> enchantment, int level) throws CommandSyntaxException {
+        Enchantment enchantment2 = enchantment.value();
+        if (level > enchantment2.getMaxLevel()) {
+            throw FAILED_LEVEL_EXCEPTION.create(level, enchantment2.getMaxLevel());
         }
         int i = 0;
         for (Entity entity : targets) {
@@ -45,8 +49,8 @@ public class EnchantCommand {
                 LivingEntity livingEntity = (LivingEntity)entity;
                 ItemStack itemStack = livingEntity.getMainHandStack();
                 if (!itemStack.isEmpty()) {
-                    if (enchantment.isAcceptableItem(itemStack) && EnchantmentHelper.isCompatible(EnchantmentHelper.get(itemStack).keySet(), enchantment)) {
-                        itemStack.addEnchantment(enchantment, level);
+                    if (enchantment2.isAcceptableItem(itemStack) && EnchantmentHelper.isCompatible(EnchantmentHelper.get(itemStack).keySet(), enchantment2)) {
+                        itemStack.addEnchantment(enchantment2, level);
                         ++i;
                         continue;
                     }
@@ -63,9 +67,9 @@ public class EnchantCommand {
             throw FAILED_EXCEPTION.create();
         }
         if (targets.size() == 1) {
-            source.sendFeedback(Text.translatable("commands.enchant.success.single", enchantment.getName(level), targets.iterator().next().getDisplayName()), true);
+            source.sendFeedback(Text.translatable("commands.enchant.success.single", enchantment2.getName(level), targets.iterator().next().getDisplayName()), true);
         } else {
-            source.sendFeedback(Text.translatable("commands.enchant.success.multiple", enchantment.getName(level), targets.size()), true);
+            source.sendFeedback(Text.translatable("commands.enchant.success.multiple", enchantment2.getName(level), targets.size()), true);
         }
         return i;
     }

@@ -6,10 +6,10 @@ package net.minecraft.client;
 import com.mojang.authlib.properties.PropertyMap;
 import java.io.File;
 import java.net.Proxy;
+import java.nio.file.Path;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.WindowSettings;
-import net.minecraft.client.resource.DirectResourceIndex;
 import net.minecraft.client.resource.ResourceIndex;
 import net.minecraft.client.util.Session;
 import org.jetbrains.annotations.Nullable;
@@ -60,8 +60,8 @@ public class RunArgs {
             this.assetIndex = assetIndex;
         }
 
-        public ResourceIndex getResourceIndex() {
-            return this.assetIndex == null ? new DirectResourceIndex(this.assetDir) : new ResourceIndex(this.assetDir, this.assetIndex);
+        public Path getAssetDir() {
+            return this.assetIndex == null ? this.assetDir.toPath() : ResourceIndex.buildFileSystem(this.assetDir.toPath(), this.assetIndex);
         }
     }
 

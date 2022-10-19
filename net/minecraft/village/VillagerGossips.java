@@ -24,8 +24,9 @@ import java.util.function.DoublePredicate;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.annotation.Debug;
-import net.minecraft.util.dynamic.DynamicSerializableUuid;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.village.VillageGossipType;
 
@@ -219,11 +220,11 @@ public class VillagerGossips {
         }
 
         public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-            return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString(TARGET_KEY), DynamicSerializableUuid.CODEC.encodeStart(ops, this.target).result().orElseThrow(RuntimeException::new), ops.createString(TYPE_KEY), ops.createString(this.type.key), ops.createString(VALUE_KEY), ops.createInt(this.value))));
+            return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString(TARGET_KEY), Uuids.CODEC.encodeStart(ops, this.target).result().orElseThrow(RuntimeException::new), ops.createString(TYPE_KEY), ops.createString(this.type.key), ops.createString(VALUE_KEY), ops.createInt(this.value))));
         }
 
         public static DataResult<GossipEntry> deserialize(Dynamic<?> dynamic) {
-            return DataResult.unbox(DataResult.instance().group(dynamic.get(TARGET_KEY).read(DynamicSerializableUuid.CODEC), dynamic.get(TYPE_KEY).asString().map(VillageGossipType::byKey), dynamic.get(VALUE_KEY).asNumber().map(Number::intValue)).apply(DataResult.instance(), GossipEntry::new));
+            return DataResult.unbox(DataResult.instance().group(dynamic.get(TARGET_KEY).read(Uuids.CODEC), dynamic.get(TYPE_KEY).asString().map(VillageGossipType::byKey), dynamic.get(VALUE_KEY).read(Codecs.POSITIVE_INT)).apply(DataResult.instance(), GossipEntry::new));
         }
     }
 }

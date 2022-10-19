@@ -43,7 +43,7 @@ public class GenerationSettings {
     GenerationSettings(Map<GenerationStep.Carver, RegistryEntryList<ConfiguredCarver<?>>> carvers, List<RegistryEntryList<PlacedFeature>> features) {
         this.carvers = carvers;
         this.features = features;
-        this.flowerFeatures = Suppliers.memoize(() -> features.stream().flatMap(RegistryEntryList::stream).map(RegistryEntry::value).flatMap(PlacedFeature::getDecoratedFeatures).filter(configuredFeature -> configuredFeature.feature() == Feature.FLOWER).collect(ImmutableList.toImmutableList()));
+        this.flowerFeatures = Suppliers.memoize(() -> features.stream().flatMap(RegistryEntryList::stream).map(RegistryEntry::value).flatMap(PlacedFeature::getDecoratedFeatures).filter(feature -> feature.feature() == Feature.FLOWER).collect(ImmutableList.toImmutableList()));
         this.allowedFeatures = Suppliers.memoize(() -> features.stream().flatMap(RegistryEntryList::stream).map(RegistryEntry::value).collect(Collectors.toSet()));
     }
 
@@ -81,8 +81,8 @@ public class GenerationSettings {
             return this;
         }
 
-        public Builder carver(GenerationStep.Carver carverStep, RegistryEntry<? extends ConfiguredCarver<?>> carver2) {
-            this.carvers.computeIfAbsent(carverStep, carver -> Lists.newArrayList()).add(RegistryEntry.upcast(carver2));
+        public Builder carver(GenerationStep.Carver carverStep, RegistryEntry<? extends ConfiguredCarver<?>> carver) {
+            this.carvers.computeIfAbsent(carverStep, step -> Lists.newArrayList()).add(RegistryEntry.upcast(carver));
             return this;
         }
 

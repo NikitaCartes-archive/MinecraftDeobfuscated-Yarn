@@ -12,10 +12,10 @@ import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
-public record ChatHudLine(int creationTick, Text content, @Nullable MessageSignatureData headerSignature, @Nullable MessageIndicator indicator) {
+public record ChatHudLine(int creationTick, Text content, @Nullable MessageSignatureData signature, @Nullable MessageIndicator indicator) {
     @Nullable
-    public MessageSignatureData headerSignature() {
-        return this.headerSignature;
+    public MessageSignatureData signature() {
+        return this.signature;
     }
 
     @Nullable

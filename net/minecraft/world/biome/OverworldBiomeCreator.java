@@ -268,8 +268,8 @@ public class OverworldBiomeCreator {
         return new Biome.Builder().precipitation(Biome.Precipitation.NONE).temperature(2.0f).downfall(0.0f).effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).skyColor(OverworldBiomeCreator.getSkyColor(2.0f)).foliageColor(10387789).grassColor(9470285).moodSound(BiomeMoodSound.CAVE).build()).spawnSettings(builder.build()).generationSettings(builder2.build()).build();
     }
 
-    private static Biome createOcean(SpawnSettings.Builder spawnSettings, int waterColor, int waterFogColor, GenerationSettings.Builder builder) {
-        return OverworldBiomeCreator.createBiome(Biome.Precipitation.RAIN, 0.5f, 0.5f, waterColor, waterFogColor, spawnSettings, builder, DEFAULT_MUSIC);
+    private static Biome createOcean(SpawnSettings.Builder spawnSettings, int waterColor, int waterFogColor, GenerationSettings.Builder generationSettings) {
+        return OverworldBiomeCreator.createBiome(Biome.Precipitation.RAIN, 0.5f, 0.5f, waterColor, waterFogColor, spawnSettings, generationSettings, DEFAULT_MUSIC);
     }
 
     private static GenerationSettings.Builder createOceanGenerationSettings() {

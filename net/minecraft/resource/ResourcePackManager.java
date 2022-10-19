@@ -14,16 +14,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ResourcePackProvider;
-import net.minecraft.resource.ResourcePackSource;
-import net.minecraft.resource.ResourceType;
-import net.minecraft.resource.metadata.PackResourceMetadata;
-import net.minecraft.text.Text;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -35,15 +31,9 @@ public class ResourcePackManager {
     private final Set<ResourcePackProvider> providers;
     private Map<String, ResourcePackProfile> profiles = ImmutableMap.of();
     private List<ResourcePackProfile> enabled = ImmutableList.of();
-    private final ResourcePackProfile.Factory profileFactory;
 
-    public ResourcePackManager(ResourcePackProfile.Factory profileFactory, ResourcePackProvider ... providers) {
-        this.profileFactory = profileFactory;
+    public ResourcePackManager(ResourcePackProvider ... providers) {
         this.providers = ImmutableSet.copyOf(providers);
-    }
-
-    public ResourcePackManager(ResourceType type, ResourcePackProvider ... providers) {
-        this((String name, Text displayName, boolean alwaysEnabled, Supplier<ResourcePack> packFactory, PackResourceMetadata metadata, ResourcePackProfile.InsertionPosition direction, ResourcePackSource source) -> new ResourcePackProfile(name, displayName, alwaysEnabled, packFactory, metadata, type, direction, source), providers);
     }
 
     public void scanPacks() {
@@ -55,7 +45,7 @@ public class ResourcePackManager {
     private Map<String, ResourcePackProfile> providePackProfiles() {
         TreeMap map = Maps.newTreeMap();
         for (ResourcePackProvider resourcePackProvider : this.providers) {
-            resourcePackProvider.register(profile -> map.put(profile.getName(), profile), this.profileFactory);
+            resourcePackProvider.register(profile -> map.put(profile.getName(), profile));
         }
         return ImmutableMap.copyOf(map);
     }
@@ -87,6 +77,10 @@ public class ResourcePackManager {
 
     public Collection<String> getEnabledNames() {
         return this.enabled.stream().map(ResourcePackProfile::getName).collect(ImmutableSet.toImmutableSet());
+    }
+
+    public FeatureSet getRequestedFeatures() {
+        return this.getEnabledProfiles().stream().map(ResourcePackProfile::getRequestedFeatures).reduce(FeatureSet::combine).orElse(FeatureSet.empty());
     }
 
     public Collection<ResourcePackProfile> getEnabledProfiles() {

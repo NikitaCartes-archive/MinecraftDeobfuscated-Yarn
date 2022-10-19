@@ -40,10 +40,10 @@ public interface SignatureVerifier {
     }
 
     public static SignatureVerifier create(ServicesKeyInfo servicesKeyInfo) {
-        return (signatureUpdatable, bs) -> {
+        return (updatable, signatureData) -> {
             Signature signature = servicesKeyInfo.signature();
             try {
-                return SignatureVerifier.verify(signatureUpdatable, bs, signature);
+                return SignatureVerifier.verify(updatable, signatureData, signature);
             } catch (SignatureException signatureException) {
                 LOGGER.error("Failed to verify Services signature", signatureException);
                 return false;

@@ -25,8 +25,8 @@ public class DoublePerlinNoiseSampler {
     private final double amplitude;
     private final OctavePerlinNoiseSampler firstSampler;
     private final OctavePerlinNoiseSampler secondSampler;
-    private final double field_36631;
-    private final NoiseParameters field_37207;
+    private final double maxValue;
+    private final NoiseParameters parameters;
 
     @Deprecated
     public static DoublePerlinNoiseSampler createLegacy(Random random, NoiseParameters parameters) {
@@ -41,10 +41,10 @@ public class DoublePerlinNoiseSampler {
         return new DoublePerlinNoiseSampler(random, parameters, true);
     }
 
-    private DoublePerlinNoiseSampler(Random random, NoiseParameters noiseParameters, boolean bl) {
-        int i = noiseParameters.firstOctave;
-        DoubleList doubleList = noiseParameters.amplitudes;
-        this.field_37207 = noiseParameters;
+    private DoublePerlinNoiseSampler(Random random, NoiseParameters parameters, boolean bl) {
+        int i = parameters.firstOctave;
+        DoubleList doubleList = parameters.amplitudes;
+        this.parameters = parameters;
         if (bl) {
             this.firstSampler = OctavePerlinNoiseSampler.create(random, i, doubleList);
             this.secondSampler = OctavePerlinNoiseSampler.create(random, i, doubleList);
@@ -63,11 +63,11 @@ public class DoublePerlinNoiseSampler {
             k = Math.max(k, l);
         }
         this.amplitude = 0.16666666666666666 / DoublePerlinNoiseSampler.createAmplitude(k - j);
-        this.field_36631 = (this.firstSampler.method_40555() + this.secondSampler.method_40555()) * this.amplitude;
+        this.maxValue = (this.firstSampler.getMaxValue() + this.secondSampler.getMaxValue()) * this.amplitude;
     }
 
-    public double method_40554() {
-        return this.field_36631;
+    public double getMaxValue() {
+        return this.maxValue;
     }
 
     private static double createAmplitude(int octaves) {
@@ -82,7 +82,7 @@ public class DoublePerlinNoiseSampler {
     }
 
     public NoiseParameters copy() {
-        return this.field_37207;
+        return this.parameters;
     }
 
     @VisibleForTesting

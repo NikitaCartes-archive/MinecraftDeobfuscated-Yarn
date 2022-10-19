@@ -147,11 +147,11 @@ implements Shearable {
 
     @Override
     public void sheared(SoundCategory shearedSoundCategory) {
+        CowEntity cowEntity;
         this.world.playSoundFromEntity(null, this, SoundEvents.ENTITY_MOOSHROOM_SHEAR, shearedSoundCategory, 1.0f, 1.0f);
-        if (!this.world.isClient()) {
+        if (!this.world.isClient() && (cowEntity = EntityType.COW.create(this.world)) != null) {
             ((ServerWorld)this.world).spawnParticles(ParticleTypes.EXPLOSION, this.getX(), this.getBodyY(0.5), this.getZ(), 1, 0.0, 0.0, 0.0, 0.0);
             this.discard();
-            CowEntity cowEntity = EntityType.COW.create(this.world);
             cowEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
             cowEntity.setHealth(this.getHealth());
             cowEntity.bodyYaw = this.bodyYaw;
@@ -216,9 +216,12 @@ implements Shearable {
     }
 
     @Override
+    @Nullable
     public MooshroomEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
         MooshroomEntity mooshroomEntity = EntityType.MOOSHROOM.create(serverWorld);
-        mooshroomEntity.setType(this.chooseBabyType((MooshroomEntity)passiveEntity));
+        if (mooshroomEntity != null) {
+            mooshroomEntity.setType(this.chooseBabyType((MooshroomEntity)passiveEntity));
+        }
         return mooshroomEntity;
     }
 
@@ -230,11 +233,13 @@ implements Shearable {
     }
 
     @Override
+    @Nullable
     public /* synthetic */ CowEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
         return this.createChild(serverWorld, passiveEntity);
     }
 
     @Override
+    @Nullable
     public /* synthetic */ PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
         return this.createChild(world, entity);
     }

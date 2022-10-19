@@ -8,11 +8,10 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AbstractPressurePlateBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
@@ -25,11 +24,15 @@ public class PressurePlateBlock
 extends AbstractPressurePlateBlock {
     public static final BooleanProperty POWERED = Properties.POWERED;
     private final ActivationRule type;
+    private final SoundEvent depressSound;
+    private final SoundEvent pressSound;
 
-    protected PressurePlateBlock(ActivationRule type, AbstractBlock.Settings settings) {
+    protected PressurePlateBlock(ActivationRule type, AbstractBlock.Settings settings, SoundEvent depressSound, SoundEvent pressSound) {
         super(settings);
         this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(POWERED, false));
         this.type = type;
+        this.depressSound = depressSound;
+        this.pressSound = pressSound;
     }
 
     @Override
@@ -44,20 +47,12 @@ extends AbstractPressurePlateBlock {
 
     @Override
     protected void playPressSound(WorldAccess world, BlockPos pos) {
-        if (this.material == Material.WOOD || this.material == Material.NETHER_WOOD) {
-            world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 0.3f, 0.8f);
-        } else {
-            world.playSound(null, pos, SoundEvents.BLOCK_STONE_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 0.3f, 0.6f);
-        }
+        world.playSound(null, pos, this.pressSound, SoundCategory.BLOCKS);
     }
 
     @Override
     protected void playDepressSound(WorldAccess world, BlockPos pos) {
-        if (this.material == Material.WOOD || this.material == Material.NETHER_WOOD) {
-            world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_OFF, SoundCategory.BLOCKS, 0.3f, 0.7f);
-        } else {
-            world.playSound(null, pos, SoundEvents.BLOCK_STONE_PRESSURE_PLATE_CLICK_OFF, SoundCategory.BLOCKS, 0.3f, 0.5f);
-        }
+        world.playSound(null, pos, this.depressSound, SoundCategory.BLOCKS);
     }
 
     @Override

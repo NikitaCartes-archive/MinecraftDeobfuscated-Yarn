@@ -19,11 +19,12 @@ import net.minecraft.client.network.AllowedAddressResolver;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.client.network.ServerAddress;
 import net.minecraft.client.network.ServerInfo;
+import net.minecraft.client.report.ReporterEnvironment;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
-import net.minecraft.network.encryption.PlayerPublicKey;
+import net.minecraft.network.encryption.ClientPlayerSession;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.screen.ScreenTexts;
@@ -66,13 +67,13 @@ extends Screen {
         ConnectScreen connectScreen = new ConnectScreen(screen);
         client.disconnect();
         client.loadBlockList();
-        client.setCurrentServerEntry(info);
+        client.ensureAbuseReportContext(ReporterEnvironment.ofThirdPartyServer(info != null ? info.address : address.getAddress()));
         client.setScreen(connectScreen);
-        connectScreen.connect(client, address);
+        connectScreen.connect(client, address, info);
     }
 
-    private void connect(final MinecraftClient client, final ServerAddress address) {
-        final CompletableFuture<Optional<PlayerPublicKey.PublicKeyData>> completableFuture = client.getProfileKeys().refresh();
+    private void connect(final MinecraftClient client, final ServerAddress address, final @Nullable ServerInfo info) {
+        final CompletableFuture<ClientPlayerSession> completableFuture = client.getProfileKeys().getClientSession();
         LOGGER.info("Connecting to {}, {}", (Object)address.getAddress(), (Object)address.getPort());
         Thread thread = new Thread("Server Connector #" + CONNECTOR_THREADS_COUNT.incrementAndGet()){
 
@@ -93,9 +94,10 @@ extends Screen {
                     }
                     inetSocketAddress = optional.get();
                     ConnectScreen.this.connection = ClientConnection.connect(inetSocketAddress, client.options.shouldUseNativeTransport());
-                    ConnectScreen.this.connection.setPacketListener(new ClientLoginNetworkHandler(ConnectScreen.this.connection, client, ConnectScreen.this.parent, ConnectScreen.this::setStatus));
+                    ClientPlayerSession clientPlayerSession = (ClientPlayerSession)completableFuture.join();
+                    ConnectScreen.this.connection.setPacketListener(new ClientLoginNetworkHandler(ConnectScreen.this.connection, client, clientPlayerSession, info, ConnectScreen.this.parent, ConnectScreen.this::setStatus));
                     ConnectScreen.this.connection.send(new HandshakeC2SPacket(inetSocketAddress.getHostName(), inetSocketAddress.getPort(), NetworkState.LOGIN));
-                    ConnectScreen.this.connection.send(new LoginHelloC2SPacket(client.getSession().getUsername(), (Optional)completableFuture.join(), Optional.ofNullable(client.getSession().getUuidOrNull())));
+                    ConnectScreen.this.connection.send(new LoginHelloC2SPacket(client.getSession().getUsername(), clientPlayerSession.toPublicSession().toSerialized(), Optional.ofNullable(client.getSession().getUuidOrNull())));
                 } catch (Exception exception) {
                     Exception exception2;
                     if (ConnectScreen.this.connectingCancelled) {

@@ -14,6 +14,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.enums.PistonType;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.command.CommandRegistryWrapper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.nbt.NbtCompound;
@@ -26,6 +27,7 @@ import net.minecraft.util.math.Boxes;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -288,7 +290,8 @@ extends BlockEntity {
     @Override
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
-        this.pushedBlock = NbtHelper.toBlockState(nbt.getCompound("blockState"));
+        CommandRegistryWrapper.Impl<Block> commandRegistryWrapper = this.world != null ? this.world.createCommandRegistryWrapper(Registry.BLOCK_KEY) : CommandRegistryWrapper.of(Registry.BLOCK);
+        this.pushedBlock = NbtHelper.toBlockState(commandRegistryWrapper, nbt.getCompound("blockState"));
         this.facing = Direction.byId(nbt.getInt("facing"));
         this.lastProgress = this.progress = nbt.getFloat("progress");
         this.extending = nbt.getBoolean("extending");
@@ -321,6 +324,14 @@ extends BlockEntity {
 
     public long getSavedWorldTime() {
         return this.savedWorldTime;
+    }
+
+    @Override
+    public void setWorld(World world) {
+        super.setWorld(world);
+        if (world.createCommandRegistryWrapper(Registry.BLOCK_KEY).getEntry(this.pushedBlock.getBlock().getRegistryEntry().registryKey()).isEmpty()) {
+            this.pushedBlock = Blocks.AIR.getDefaultState();
+        }
     }
 }
 

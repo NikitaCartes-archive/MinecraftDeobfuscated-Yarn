@@ -16,6 +16,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import java.lang.reflect.Type;
+import java.util.function.UnaryOperator;
 import net.minecraft.text.Text;
 import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.JsonHelper;
@@ -116,18 +117,20 @@ implements Comparable<Identifier> {
     public static final char NAMESPACE_SEPARATOR = ':';
     public static final String DEFAULT_NAMESPACE = "minecraft";
     public static final String REALMS_NAMESPACE = "realms";
-    protected final String namespace;
-    protected final String path;
+    private final String namespace;
+    private final String path;
 
-    protected Identifier(String[] id) {
-        this.namespace = StringUtils.isEmpty(id[0]) ? DEFAULT_NAMESPACE : id[0];
-        this.path = id[1];
-        if (!Identifier.isNamespaceValid(this.namespace)) {
-            throw new InvalidIdentifierException("Non [a-z0-9_.-] character in namespace of location: " + this.namespace + ":" + this.path);
-        }
-        if (!Identifier.isPathValid(this.path)) {
-            throw new InvalidIdentifierException("Non [a-z0-9/._-] character in path of location: " + this.namespace + ":" + this.path);
-        }
+    protected Identifier(String namespace, String path, @Nullable ExtraData extraData) {
+        this.namespace = namespace;
+        this.path = path;
+    }
+
+    public Identifier(String namespace, String path) {
+        this(Identifier.validateNamespace(namespace, path), Identifier.validatePath(namespace, path), null);
+    }
+
+    private Identifier(String[] id) {
+        this(id[0], id[1]);
     }
 
     /**
@@ -138,10 +141,6 @@ implements Comparable<Identifier> {
      */
     public Identifier(String id) {
         this(Identifier.split(id, ':'));
-    }
-
-    public Identifier(String namespace, String path) {
-        this(new String[]{namespace, path});
     }
 
     public static Identifier splitOn(String id, char delimiter) {
@@ -181,7 +180,7 @@ implements Comparable<Identifier> {
         String[] strings = new String[]{DEFAULT_NAMESPACE, id};
         int i = id.indexOf(delimiter);
         if (i >= 0) {
-            strings[1] = id.substring(i + 1, id.length());
+            strings[1] = id.substring(i + 1);
             if (i >= 1) {
                 strings[0] = id.substring(0, i);
             }
@@ -211,6 +210,18 @@ implements Comparable<Identifier> {
      */
     public String getNamespace() {
         return this.namespace;
+    }
+
+    public Identifier withPath(String path) {
+        return new Identifier(this.namespace, Identifier.validatePath(this.namespace, path), null);
+    }
+
+    public Identifier withPath(UnaryOperator<String> pathFunction) {
+        return this.withPath((String)pathFunction.apply(this.path));
+    }
+
+    public Identifier withPrefixedPath(String prefix) {
+        return this.withPath(prefix + this.path);
     }
 
     public String toString() {
@@ -311,6 +322,13 @@ implements Comparable<Identifier> {
         return true;
     }
 
+    private static String validateNamespace(String namespace, String path) {
+        if (!Identifier.isNamespaceValid(namespace)) {
+            throw new InvalidIdentifierException("Non [a-z0-9_.-] character in namespace of location: " + namespace + ":" + path);
+        }
+        return namespace;
+    }
+
     /**
      * {@return whether {@code character} is valid for use in identifier paths}
      */
@@ -333,9 +351,19 @@ implements Comparable<Identifier> {
         return Identifier.isNamespaceValid(StringUtils.isEmpty(strings[0]) ? DEFAULT_NAMESPACE : strings[0]) && Identifier.isPathValid(strings[1]);
     }
 
+    private static String validatePath(String namespace, String path) {
+        if (!Identifier.isPathValid(path)) {
+            throw new InvalidIdentifierException("Non [a-z0-9/._-] character in path of location: " + namespace + ":" + path);
+        }
+        return path;
+    }
+
     @Override
     public /* synthetic */ int compareTo(Object other) {
         return this.compareTo((Identifier)other);
+    }
+
+    protected static interface ExtraData {
     }
 
     public static class Serializer

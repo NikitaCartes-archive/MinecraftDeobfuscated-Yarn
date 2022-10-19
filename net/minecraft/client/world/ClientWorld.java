@@ -48,6 +48,7 @@ import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.RecipeManager;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -82,6 +83,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldProperties;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
+import net.minecraft.world.biome.ColorResolver;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.WorldChunk;
@@ -89,7 +91,6 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.entity.EntityHandler;
 import net.minecraft.world.entity.EntityLookup;
 import net.minecraft.world.event.GameEvent;
-import net.minecraft.world.level.ColorResolver;
 import net.minecraft.world.tick.EmptyTickSchedulers;
 import net.minecraft.world.tick.QueryableTickScheduler;
 import org.jetbrains.annotations.Nullable;
@@ -385,14 +386,14 @@ extends World {
         }
     }
 
-    private void addParticle(BlockPos pos, BlockState state, ParticleEffect parameters, boolean bl) {
+    private void addParticle(BlockPos pos, BlockState state, ParticleEffect parameters, boolean solidBelow) {
         if (!state.getFluidState().isEmpty()) {
             return;
         }
         VoxelShape voxelShape = state.getCollisionShape(this, pos);
         double d = voxelShape.getMax(Direction.Axis.Y);
         if (d < 1.0) {
-            if (bl) {
+            if (solidBelow) {
                 this.addParticle(pos.getX(), pos.getX() + 1, pos.getZ(), pos.getZ() + 1, (double)(pos.getY() + 1) - 0.05, parameters);
             }
         } else if (!state.isIn(BlockTags.IMPERMEABLE)) {
@@ -439,10 +440,6 @@ extends World {
         if (except == this.client.player) {
             this.client.getSoundManager().play(new EntityTrackingSoundInstance(sound, category, volume, pitch, entity, seed));
         }
-    }
-
-    public void playSound(BlockPos pos, SoundEvent sound, SoundCategory category, float volume, float pitch, boolean useDistance) {
-        this.playSound((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, sound, category, volume, pitch, useDistance);
     }
 
     @Override
@@ -789,6 +786,11 @@ extends World {
 
     public int getSimulationDistance() {
         return this.simulationDistance;
+    }
+
+    @Override
+    public FeatureSet getEnabledFeatures() {
+        return this.networkHandler.getEnabledFeatures();
     }
 
     @Override

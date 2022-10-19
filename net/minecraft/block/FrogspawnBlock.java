@@ -53,7 +53,7 @@ extends Block {
 
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-        world.createAndScheduleBlockTick(pos, this, FrogspawnBlock.getHatchTime(world.getRandom()));
+        world.scheduleBlockTick(pos, this, FrogspawnBlock.getHatchTime(world.getRandom()));
     }
 
     private static int getHatchTime(Random random) {
@@ -104,6 +104,7 @@ extends Block {
         int i = random.nextBetweenExclusive(2, 6);
         for (int j = 1; j <= i; ++j) {
             TadpoleEntity tadpoleEntity = EntityType.TADPOLE.create(world);
+            if (tadpoleEntity == null) continue;
             double d = (double)pos.getX() + this.getSpawnOffset(random);
             double e = (double)pos.getZ() + this.getSpawnOffset(random);
             int k = random.nextBetweenExclusive(1, 361);

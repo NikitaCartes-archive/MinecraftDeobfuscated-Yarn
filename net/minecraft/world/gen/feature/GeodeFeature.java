@@ -122,7 +122,7 @@ extends Feature<GeodeFeatureConfig> {
                     BlockPos blockPos5 = blockPos3.offset(direction);
                     FluidState fluidState = structureWorldAccess.getFluidState(blockPos5);
                     if (fluidState.isEmpty()) continue;
-                    structureWorldAccess.createAndScheduleFluidTick(blockPos5, fluidState.getFluid(), 0);
+                    structureWorldAccess.scheduleFluidTick(blockPos5, fluidState.getFluid(), 0);
                 }
                 continue;
             }

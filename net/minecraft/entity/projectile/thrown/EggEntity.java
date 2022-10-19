@@ -58,6 +58,7 @@ extends ThrownItemEntity {
                 }
                 for (int j = 0; j < i; ++j) {
                     ChickenEntity chickenEntity = EntityType.CHICKEN.create(this.world);
+                    if (chickenEntity == null) continue;
                     chickenEntity.setBreedingAge(-24000);
                     chickenEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), 0.0f);
                     this.world.spawnEntity(chickenEntity);

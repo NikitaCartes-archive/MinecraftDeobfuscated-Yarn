@@ -5,7 +5,6 @@ package net.minecraft.util.registry;
 
 import com.mojang.serialization.Lifecycle;
 import java.util.Optional;
-import java.util.function.Function;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
@@ -23,8 +22,8 @@ extends SimpleRegistry<T> {
     private final Identifier defaultId;
     private RegistryEntry<T> defaultEntry;
 
-    public DefaultedRegistry(String defaultId, RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle, @Nullable Function<T, RegistryEntry.Reference<T>> valueToEntryFunction) {
-        super(key, lifecycle, valueToEntryFunction);
+    public DefaultedRegistry(String defaultId, RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle, boolean intrusive) {
+        super(key, lifecycle, intrusive);
         this.defaultId = new Identifier(defaultId);
     }
 

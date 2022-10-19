@@ -12,18 +12,22 @@ import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.data.server.recipe.CraftingRecipeJsonBuilder;
 import net.minecraft.data.server.recipe.RecipeJsonProvider;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.recipe.AbstractCookingRecipe;
-import net.minecraft.recipe.CookingRecipeSerializer;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
+import net.minecraft.recipe.book.CookingRecipeCategory;
+import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class CookingRecipeJsonBuilder
 implements CraftingRecipeJsonBuilder {
+    private final RecipeCategory category;
+    private final CookingRecipeCategory cookingCategory;
     private final Item output;
     private final Ingredient input;
     private final float experience;
@@ -31,9 +35,11 @@ implements CraftingRecipeJsonBuilder {
     private final Advancement.Builder advancementBuilder = Advancement.Builder.create();
     @Nullable
     private String group;
-    private final CookingRecipeSerializer<?> serializer;
+    private final RecipeSerializer<? extends AbstractCookingRecipe> serializer;
 
-    private CookingRecipeJsonBuilder(ItemConvertible output, Ingredient input, float experience, int cookingTime, CookingRecipeSerializer<?> serializer) {
+    private CookingRecipeJsonBuilder(RecipeCategory category, CookingRecipeCategory cookingCategory, ItemConvertible output, Ingredient input, float experience, int cookingTime, RecipeSerializer<? extends AbstractCookingRecipe> serializer) {
+        this.category = category;
+        this.cookingCategory = cookingCategory;
         this.output = output.asItem();
         this.input = input;
         this.experience = experience;
@@ -41,24 +47,24 @@ implements CraftingRecipeJsonBuilder {
         this.serializer = serializer;
     }
 
-    public static CookingRecipeJsonBuilder create(Ingredient ingredient, ItemConvertible result, float experience, int cookingTime, CookingRecipeSerializer<?> serializer) {
-        return new CookingRecipeJsonBuilder(result, ingredient, experience, cookingTime, serializer);
+    public static CookingRecipeJsonBuilder create(Ingredient input, RecipeCategory category, ItemConvertible output, float experience, int cookingTime, RecipeSerializer<? extends AbstractCookingRecipe> serializer) {
+        return new CookingRecipeJsonBuilder(category, CookingRecipeJsonBuilder.getCookingRecipeCategory(serializer, output), output, input, experience, cookingTime, serializer);
     }
 
-    public static CookingRecipeJsonBuilder create(Ingredient result, ItemConvertible ingredient, float experience, int cookingTime) {
-        return CookingRecipeJsonBuilder.create(result, ingredient, experience, cookingTime, RecipeSerializer.CAMPFIRE_COOKING);
+    public static CookingRecipeJsonBuilder createCampfireCooking(Ingredient input, RecipeCategory category, ItemConvertible output, float experience, int cookingTime) {
+        return new CookingRecipeJsonBuilder(category, CookingRecipeCategory.FOOD, output, input, experience, cookingTime, RecipeSerializer.CAMPFIRE_COOKING);
     }
 
-    public static CookingRecipeJsonBuilder createBlasting(Ingredient ingredient, ItemConvertible result, float experience, int cookingTime) {
-        return CookingRecipeJsonBuilder.create(ingredient, result, experience, cookingTime, RecipeSerializer.BLASTING);
+    public static CookingRecipeJsonBuilder createBlasting(Ingredient input, RecipeCategory category, ItemConvertible output, float experience, int cookingTime) {
+        return new CookingRecipeJsonBuilder(category, CookingRecipeJsonBuilder.getBlastingRecipeCategory(output), output, input, experience, cookingTime, RecipeSerializer.BLASTING);
     }
 
-    public static CookingRecipeJsonBuilder createSmelting(Ingredient ingredient, ItemConvertible result, float experience, int cookingTime) {
-        return CookingRecipeJsonBuilder.create(ingredient, result, experience, cookingTime, RecipeSerializer.SMELTING);
+    public static CookingRecipeJsonBuilder createSmelting(Ingredient input, RecipeCategory category, ItemConvertible output, float experience, int cookingTime) {
+        return new CookingRecipeJsonBuilder(category, CookingRecipeJsonBuilder.getSmeltingRecipeCategory(output), output, input, experience, cookingTime, RecipeSerializer.SMELTING);
     }
 
-    public static CookingRecipeJsonBuilder createSmoking(Ingredient result, ItemConvertible ingredient, float experience, int cookingTime) {
-        return CookingRecipeJsonBuilder.create(result, ingredient, experience, cookingTime, RecipeSerializer.SMOKING);
+    public static CookingRecipeJsonBuilder createSmoking(Ingredient input, RecipeCategory category, ItemConvertible output, float experience, int cookingTime) {
+        return new CookingRecipeJsonBuilder(category, CookingRecipeCategory.FOOD, output, input, experience, cookingTime, RecipeSerializer.SMOKING);
     }
 
     @Override
@@ -82,7 +88,37 @@ implements CraftingRecipeJsonBuilder {
     public void offerTo(Consumer<RecipeJsonProvider> exporter, Identifier recipeId) {
         this.validate(recipeId);
         this.advancementBuilder.parent(ROOT).criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeId)).rewards(AdvancementRewards.Builder.recipe(recipeId)).criteriaMerger(CriterionMerger.OR);
-        exporter.accept(new CookingRecipeJsonProvider(recipeId, this.group == null ? "" : this.group, this.input, this.output, this.experience, this.cookingTime, this.advancementBuilder, new Identifier(recipeId.getNamespace(), "recipes/" + this.output.getGroup().getName() + "/" + recipeId.getPath()), this.serializer));
+        exporter.accept(new CookingRecipeJsonProvider(recipeId, this.group == null ? "" : this.group, this.cookingCategory, this.input, this.output, this.experience, this.cookingTime, this.advancementBuilder, recipeId.withPrefixedPath("recipes/" + this.category.getName() + "/"), this.serializer));
+    }
+
+    private static CookingRecipeCategory getSmeltingRecipeCategory(ItemConvertible output) {
+        if (output.asItem().isFood()) {
+            return CookingRecipeCategory.FOOD;
+        }
+        if (output.asItem() instanceof BlockItem) {
+            return CookingRecipeCategory.BLOCKS;
+        }
+        return CookingRecipeCategory.MISC;
+    }
+
+    private static CookingRecipeCategory getBlastingRecipeCategory(ItemConvertible output) {
+        if (output.asItem() instanceof BlockItem) {
+            return CookingRecipeCategory.BLOCKS;
+        }
+        return CookingRecipeCategory.MISC;
+    }
+
+    private static CookingRecipeCategory getCookingRecipeCategory(RecipeSerializer<? extends AbstractCookingRecipe> serializer, ItemConvertible output) {
+        if (serializer == RecipeSerializer.SMELTING) {
+            return CookingRecipeJsonBuilder.getSmeltingRecipeCategory(output);
+        }
+        if (serializer == RecipeSerializer.BLASTING) {
+            return CookingRecipeJsonBuilder.getBlastingRecipeCategory(output);
+        }
+        if (serializer == RecipeSerializer.SMOKING || serializer == RecipeSerializer.CAMPFIRE_COOKING) {
+            return CookingRecipeCategory.FOOD;
+        }
+        throw new IllegalStateException("Unknown cooking recipe type");
     }
 
     private void validate(Identifier recipeId) {
@@ -101,10 +137,11 @@ implements CraftingRecipeJsonBuilder {
         return this.criterion(name, conditions);
     }
 
-    public static class CookingRecipeJsonProvider
+    static class CookingRecipeJsonProvider
     implements RecipeJsonProvider {
         private final Identifier recipeId;
         private final String group;
+        private final CookingRecipeCategory category;
         private final Ingredient input;
         private final Item result;
         private final float experience;
@@ -113,9 +150,10 @@ implements CraftingRecipeJsonBuilder {
         private final Identifier advancementId;
         private final RecipeSerializer<? extends AbstractCookingRecipe> serializer;
 
-        public CookingRecipeJsonProvider(Identifier recipeId, String group, Ingredient input, Item result, float experience, int cookingTime, Advancement.Builder advancementBuilder, Identifier advancementId, RecipeSerializer<? extends AbstractCookingRecipe> serializer) {
+        public CookingRecipeJsonProvider(Identifier recipeId, String group, CookingRecipeCategory category, Ingredient input, Item result, float experience, int cookingTime, Advancement.Builder advancementBuilder, Identifier advancementId, RecipeSerializer<? extends AbstractCookingRecipe> serializer) {
             this.recipeId = recipeId;
             this.group = group;
+            this.category = category;
             this.input = input;
             this.result = result;
             this.experience = experience;
@@ -130,6 +168,7 @@ implements CraftingRecipeJsonBuilder {
             if (!this.group.isEmpty()) {
                 json.addProperty("group", this.group);
             }
+            json.addProperty("category", this.category.asString());
             json.add("ingredient", this.input.toJson());
             json.addProperty("result", Registry.ITEM.getId(this.result).toString());
             json.addProperty("experience", Float.valueOf(this.experience));

@@ -456,10 +456,10 @@ public class Raid {
         LocalDifficulty localDifficulty = this.world.getLocalDifficulty(pos);
         boolean bl2 = this.isSpawningExtraWave();
         for (Member member : Member.VALUES) {
+            RaiderEntity raiderEntity;
             int j = this.getCount(member, i, bl2) + this.getBonusCount(member, this.random, i, localDifficulty, bl2);
             int k = 0;
-            for (int l = 0; l < j; ++l) {
-                RaiderEntity raiderEntity = member.type.create(this.world);
+            for (int l = 0; l < j && (raiderEntity = member.type.create(this.world)) != null; ++l) {
                 if (!bl && raiderEntity.canLead()) {
                     raiderEntity.setPatrolLeader(true);
                     this.setWaveCaptain(i, raiderEntity);

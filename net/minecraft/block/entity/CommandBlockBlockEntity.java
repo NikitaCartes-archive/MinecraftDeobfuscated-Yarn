@@ -114,7 +114,7 @@ extends BlockEntity {
         Block block = this.getCachedState().getBlock();
         if (block instanceof CommandBlock) {
             this.updateConditionMet();
-            this.world.createAndScheduleBlockTick(this.pos, block, 1);
+            this.world.scheduleBlockTick(this.pos, block, 1);
         }
     }
 

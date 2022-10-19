@@ -41,7 +41,7 @@ public class ChunkSection {
     public ChunkSection(int chunkPos, Registry<Biome> biomeRegistry) {
         this.yOffset = ChunkSection.blockCoordFromChunkCoord(chunkPos);
         this.blockStateContainer = new PalettedContainer<BlockState>(Block.STATE_IDS, Blocks.AIR.getDefaultState(), PalettedContainer.PaletteProvider.BLOCK_STATE);
-        this.biomeContainer = new PalettedContainer<RegistryEntry<Biome>>(biomeRegistry.getIndexedEntries(), biomeRegistry.entryOf(BiomeKeys.PLAINS), PalettedContainer.PaletteProvider.BIOME);
+        this.biomeContainer = new PalettedContainer<RegistryEntry.Reference<Biome>>(biomeRegistry.getIndexedEntries(), biomeRegistry.entryOf(BiomeKeys.PLAINS), PalettedContainer.PaletteProvider.BIOME);
     }
 
     public static int blockCoordFromChunkCoord(int chunkPos) {

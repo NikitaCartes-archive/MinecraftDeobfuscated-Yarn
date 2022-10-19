@@ -37,8 +37,8 @@ import net.minecraft.server.Whitelist;
 import net.minecraft.server.WhitelistEntry;
 import net.minecraft.server.dedicated.MinecraftDedicatedServer;
 import net.minecraft.util.StringHelper;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.WorldSavePath;
-import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -65,7 +65,7 @@ public class ServerConfigHandler {
             server.getGameProfileRepo().findProfilesByNames(strings, Agent.MINECRAFT, callback);
         } else {
             for (String string : strings) {
-                UUID uUID = DynamicSerializableUuid.getUuidFromProfile(new GameProfile(null, string));
+                UUID uUID = Uuids.getUuidFromProfile(new GameProfile(null, string));
                 GameProfile gameProfile = new GameProfile(uUID, string);
                 callback.onProfileLookupSucceeded(gameProfile);
             }
@@ -257,7 +257,7 @@ public class ServerConfigHandler {
             return optional.get();
         }
         if (server.isSingleplayer() || !server.isOnlineMode()) {
-            return DynamicSerializableUuid.getUuidFromProfile(new GameProfile(null, name));
+            return Uuids.getUuidFromProfile(new GameProfile(null, name));
         }
         final ArrayList list = Lists.newArrayList();
         ProfileLookupCallback profileLookupCallback = new ProfileLookupCallback(){

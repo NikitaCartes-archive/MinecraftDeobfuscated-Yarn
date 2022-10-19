@@ -3,15 +3,13 @@
  */
 package net.minecraft.network.message;
 
-import com.mojang.brigadier.context.ParsedArgument;
-import com.mojang.datafixers.util.Pair;
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.command.argument.DecoratableArgumentList;
-import net.minecraft.command.argument.DecoratableArgumentType;
-import net.minecraft.command.argument.SignedArgumentType;
+import java.util.Objects;
+import net.minecraft.command.argument.SignedArgumentList;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.message.MessageSignatureData;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A record holding the signatures for all signable arguments of an executed command.
@@ -31,12 +29,13 @@ public record ArgumentSignatureDataMap(List<Entry> entries) {
      * {@return the signature data for {@code argumentName}, or {@code null} if the
      * argument name is not present in this signatures}
      */
+    @Nullable
     public MessageSignatureData get(String argumentName) {
         for (Entry entry : this.entries) {
             if (!entry.name.equals(argumentName)) continue;
             return entry.signature;
         }
-        return MessageSignatureData.EMPTY;
+        return null;
     }
 
     public void write(PacketByteBuf buf) {
@@ -44,57 +43,35 @@ public record ArgumentSignatureDataMap(List<Entry> entries) {
     }
 
     /**
-     * {@return whether the parsed arguments include {@link SignedArgumentType}}
-     */
-    public static boolean hasSignedArgument(DecoratableArgumentList<?> arguments) {
-        return arguments.arguments().stream().anyMatch(argument -> argument.argumentType() instanceof SignedArgumentType);
-    }
-
-    /**
      * {@return the signature map with {@code arguments} signed with
      * {@code signer}}
      */
-    public static ArgumentSignatureDataMap sign(DecoratableArgumentList<?> arguments, ArgumentSigner signer) {
-        List<Entry> list = ArgumentSignatureDataMap.toNameValuePairs(arguments).stream().map(entry -> {
-            MessageSignatureData messageSignatureData = signer.sign((String)entry.getFirst(), (String)entry.getSecond());
-            return new Entry((String)entry.getFirst(), messageSignatureData);
-        }).toList();
+    public static ArgumentSignatureDataMap sign(SignedArgumentList<?> arguments, ArgumentSigner signer) {
+        List<Entry> list = arguments.arguments().stream().map(argument -> {
+            MessageSignatureData messageSignatureData = signer.sign(argument.value());
+            if (messageSignatureData != null) {
+                return new Entry(argument.getNodeName(), messageSignatureData);
+            }
+            return null;
+        }).filter(Objects::nonNull).toList();
         return new ArgumentSignatureDataMap(list);
-    }
-
-    /**
-     * {@return {@code arguments} converted to a list of signed name/value pairs}
-     */
-    public static List<Pair<String, String>> toNameValuePairs(DecoratableArgumentList<?> arguments) {
-        ArrayList<Pair<String, String>> list = new ArrayList<Pair<String, String>>();
-        for (DecoratableArgumentList.ParsedArgument<?> parsedArgument : arguments.arguments()) {
-            DecoratableArgumentType<?> decoratableArgumentType = parsedArgument.argumentType();
-            if (!(decoratableArgumentType instanceof SignedArgumentType)) continue;
-            SignedArgumentType signedArgumentType = (SignedArgumentType)decoratableArgumentType;
-            String string = ArgumentSignatureDataMap.resultToString(signedArgumentType, parsedArgument.parsedValue());
-            list.add(Pair.of(parsedArgument.getNodeName(), string));
-        }
-        return list;
-    }
-
-    private static <T> String resultToString(SignedArgumentType<T> type, ParsedArgument<?, ?> argument) {
-        return type.toSignedString(argument.getResult());
     }
 
     public record Entry(String name, MessageSignatureData signature) {
         public Entry(PacketByteBuf buf) {
-            this(buf.readString(16), new MessageSignatureData(buf));
+            this(buf.readString(16), MessageSignatureData.fromBuf(buf));
         }
 
         public void write(PacketByteBuf buf) {
             buf.writeString(this.name, 16);
-            this.signature.write(buf);
+            MessageSignatureData.write(buf, this.signature);
         }
     }
 
     @FunctionalInterface
     public static interface ArgumentSigner {
-        public MessageSignatureData sign(String var1, String var2);
+        @Nullable
+        public MessageSignatureData sign(String var1);
     }
 }
 

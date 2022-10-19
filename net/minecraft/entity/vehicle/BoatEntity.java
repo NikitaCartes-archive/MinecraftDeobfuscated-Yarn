@@ -30,9 +30,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.network.Packet;
 import net.minecraft.network.packet.c2s.play.BoatPaddleStateC2SPacket;
-import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundEvent;
@@ -157,7 +155,7 @@ extends Entity {
 
     @Override
     public double getMountedHeightOffset() {
-        return -0.1;
+        return this.getBoatType() == Type.BAMBOO ? 0.3 : -0.1;
     }
 
     @Override
@@ -216,28 +214,16 @@ extends Entity {
     }
 
     public Item asItem() {
-        switch (this.getBoatType()) {
-            default: {
-                return Items.OAK_BOAT;
-            }
-            case SPRUCE: {
-                return Items.SPRUCE_BOAT;
-            }
-            case BIRCH: {
-                return Items.BIRCH_BOAT;
-            }
-            case JUNGLE: {
-                return Items.JUNGLE_BOAT;
-            }
-            case ACACIA: {
-                return Items.ACACIA_BOAT;
-            }
-            case DARK_OAK: {
-                return Items.DARK_OAK_BOAT;
-            }
-            case MANGROVE: 
-        }
-        return Items.MANGROVE_BOAT;
+        return switch (this.getBoatType()) {
+            case Type.SPRUCE -> Items.SPRUCE_BOAT;
+            case Type.BIRCH -> Items.BIRCH_BOAT;
+            case Type.JUNGLE -> Items.JUNGLE_BOAT;
+            case Type.ACACIA -> Items.ACACIA_BOAT;
+            case Type.DARK_OAK -> Items.DARK_OAK_BOAT;
+            case Type.MANGROVE -> Items.MANGROVE_BOAT;
+            case Type.BAMBOO -> Items.BAMBOO_RAFT;
+            default -> Items.OAK_BOAT;
+        };
     }
 
     @Override
@@ -798,11 +784,6 @@ extends Entity {
     }
 
     @Override
-    public Packet<?> createSpawnPacket() {
-        return new EntitySpawnS2CPacket(this);
-    }
-
-    @Override
     public boolean isSubmergedInWater() {
         return this.location == Location.UNDER_WATER || this.location == Location.UNDER_FLOWING_WATER;
     }
@@ -819,7 +800,8 @@ extends Entity {
         JUNGLE(Blocks.JUNGLE_PLANKS, "jungle"),
         ACACIA(Blocks.ACACIA_PLANKS, "acacia"),
         DARK_OAK(Blocks.DARK_OAK_PLANKS, "dark_oak"),
-        MANGROVE(Blocks.MANGROVE_PLANKS, "mangrove");
+        MANGROVE(Blocks.MANGROVE_PLANKS, "mangrove"),
+        BAMBOO(Blocks.BAMBOO_PLANKS, "bamboo");
 
         private final String name;
         private final Block baseBlock;

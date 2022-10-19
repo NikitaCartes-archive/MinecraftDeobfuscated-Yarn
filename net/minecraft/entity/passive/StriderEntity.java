@@ -377,6 +377,7 @@ Saddleable {
     }
 
     @Override
+    @Nullable
     public StriderEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
         return EntityType.STRIDER.create(serverWorld);
     }
@@ -431,13 +432,17 @@ Saddleable {
         Random random = world.getRandom();
         if (random.nextInt(30) == 0) {
             MobEntity mobEntity = EntityType.ZOMBIFIED_PIGLIN.create(world.toServerWorld());
-            entityData = this.initializeRider(world, difficulty, mobEntity, new ZombieEntity.ZombieData(ZombieEntity.shouldBeBaby(random), false));
-            mobEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.WARPED_FUNGUS_ON_A_STICK));
-            this.saddle(null);
+            if (mobEntity != null) {
+                entityData = this.initializeRider(world, difficulty, mobEntity, new ZombieEntity.ZombieData(ZombieEntity.shouldBeBaby(random), false));
+                mobEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.WARPED_FUNGUS_ON_A_STICK));
+                this.saddle(null);
+            }
         } else if (random.nextInt(10) == 0) {
             PassiveEntity passiveEntity = EntityType.STRIDER.create(world.toServerWorld());
-            passiveEntity.setBreedingAge(-24000);
-            entityData = this.initializeRider(world, difficulty, passiveEntity, null);
+            if (passiveEntity != null) {
+                passiveEntity.setBreedingAge(-24000);
+                entityData = this.initializeRider(world, difficulty, passiveEntity, null);
+            }
         } else {
             entityData = new PassiveEntity.PassiveData(0.5f);
         }
@@ -452,6 +457,7 @@ Saddleable {
     }
 
     @Override
+    @Nullable
     public /* synthetic */ PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
         return this.createChild(world, entity);
     }

@@ -5,6 +5,7 @@ package net.minecraft.client.gui.screen;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
@@ -20,6 +21,7 @@ import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.ResourceTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.DefaultResourcePack;
+import net.minecraft.resource.InputSupplier;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReload;
 import net.minecraft.resource.ResourceType;
@@ -167,13 +169,16 @@ extends Overlay {
         @Override
         protected ResourceTexture.TextureData loadTextureData(ResourceManager resourceManager) {
             ResourceTexture.TextureData textureData;
-            block8: {
-                MinecraftClient minecraftClient = MinecraftClient.getInstance();
-                DefaultResourcePack defaultResourcePack = minecraftClient.getResourcePackProvider().getPack();
-                InputStream inputStream = defaultResourcePack.open(ResourceType.CLIENT_RESOURCES, LOGO);
+            block9: {
+                DefaultResourcePack defaultResourcePack = MinecraftClient.getInstance().getDefaultResourcePack();
+                InputSupplier<InputStream> inputSupplier = defaultResourcePack.open(ResourceType.CLIENT_RESOURCES, LOGO);
+                if (inputSupplier == null) {
+                    return new ResourceTexture.TextureData(new FileNotFoundException(LOGO.toString()));
+                }
+                InputStream inputStream = inputSupplier.get();
                 try {
                     textureData = new ResourceTexture.TextureData(new TextureResourceMetadata(true, true), NativeImage.read(inputStream));
-                    if (inputStream == null) break block8;
+                    if (inputStream == null) break block9;
                 } catch (Throwable throwable) {
                     try {
                         if (inputStream != null) {

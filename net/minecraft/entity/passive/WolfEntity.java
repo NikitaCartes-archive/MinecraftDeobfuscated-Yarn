@@ -468,10 +468,11 @@ implements Angerable {
     }
 
     @Override
+    @Nullable
     public WolfEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+        UUID uUID;
         WolfEntity wolfEntity = EntityType.WOLF.create(serverWorld);
-        UUID uUID = this.getOwnerUuid();
-        if (uUID != null) {
+        if (wolfEntity != null && (uUID = this.getOwnerUuid()) != null) {
             wolfEntity.setOwnerUuid(uUID);
             wolfEntity.setTamed(true);
         }
@@ -540,6 +541,7 @@ implements Angerable {
     }
 
     @Override
+    @Nullable
     public /* synthetic */ PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
         return this.createChild(world, entity);
     }

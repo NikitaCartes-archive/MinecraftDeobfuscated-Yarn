@@ -210,7 +210,7 @@ implements ItemConvertible {
         List<Entity> list = world.getOtherEntities(null, voxelShape.getBoundingBox());
         for (Entity entity : list) {
             double d = VoxelShapes.calculateMaxOffset(Direction.Axis.Y, entity.getBoundingBox().offset(0.0, 1.0, 0.0), List.of(voxelShape), -1.0);
-            entity.requestTeleport(entity.getX(), entity.getY() + 1.0 + d, entity.getZ());
+            entity.requestTeleportOffset(0.0, 1.0 + d, 0.0);
         }
         return to;
     }
@@ -588,11 +588,6 @@ implements ItemConvertible {
         return new ItemStack(this);
     }
 
-    /**
-     * Appends the stacks of this block shown in the item group to the list.
-     * 
-     * @see net.minecraft.item.BlockItem#appendStacks(ItemGroup, DefaultedList)
-     */
     public void appendStacks(ItemGroup group, DefaultedList<ItemStack> stacks) {
         stacks.add(new ItemStack(this));
     }

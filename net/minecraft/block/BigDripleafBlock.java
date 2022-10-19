@@ -135,7 +135,7 @@ Waterloggable {
             return Blocks.AIR.getDefaultState();
         }
         if (state.get(WATERLOGGED).booleanValue()) {
-            world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+            world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
         if (direction == Direction.UP && neighborState.isOf(this)) {
             return Blocks.BIG_DRIPLEAF_STEM.getStateWithProperties(state);
@@ -214,7 +214,7 @@ Waterloggable {
             BigDripleafBlock.playTiltSound(world, pos, sound);
         }
         if ((i = NEXT_TILT_DELAYS.getInt(tilt)) != -1) {
-            world.createAndScheduleBlockTick(pos, this, i);
+            world.scheduleBlockTick(pos, this, i);
         }
     }
 

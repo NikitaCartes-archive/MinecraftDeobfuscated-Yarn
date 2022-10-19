@@ -6,19 +6,12 @@ package net.minecraft.util.registry;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.kinds.Applicative;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.Decoder;
-import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.Encoder;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Map;
+import com.mojang.serialization.codecs.UnboundedMapCodec;
 import net.minecraft.util.dynamic.RegistryElementCodec;
-import net.minecraft.util.dynamic.RegistryLoader;
-import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntryList;
@@ -37,7 +30,7 @@ public class RegistryCodecs {
 
     public static <T> Codec<Registry<T>> createRegistryCodec(RegistryKey<? extends Registry<T>> registryRef, Lifecycle lifecycle, Codec<T> elementCodec) {
         return RegistryCodecs.managerEntry(registryRef, elementCodec.fieldOf("element")).codec().listOf().xmap(entries -> {
-            SimpleRegistry mutableRegistry = new SimpleRegistry(registryRef, lifecycle, null);
+            SimpleRegistry mutableRegistry = new SimpleRegistry(registryRef, lifecycle);
             for (RegistryManagerEntry registryManagerEntry : entries) {
                 ((MutableRegistry)mutableRegistry).set(registryManagerEntry.rawId(), registryManagerEntry.key(), registryManagerEntry.value(), lifecycle);
             }
@@ -51,38 +44,13 @@ public class RegistryCodecs {
         });
     }
 
-    public static <E> Codec<Registry<E>> dynamicRegistry(RegistryKey<? extends Registry<E>> registryRef, Lifecycle lifecycle, Codec<E> elementCodec) {
-        Codec<Map<RegistryKey<E>, E>> codec = RegistryCodecs.registryMap(registryRef, elementCodec);
-        Encoder<Registry> encoder = codec.comap(registry -> ImmutableMap.copyOf(registry.getEntrySet()));
-        return Codec.of(encoder, RegistryCodecs.createRegistryDecoder(registryRef, elementCodec, codec, lifecycle), "DataPackRegistryCodec for " + registryRef);
-    }
-
-    private static <E> Decoder<Registry<E>> createRegistryDecoder(final RegistryKey<? extends Registry<E>> registryRef, final Codec<E> codec, Decoder<Map<RegistryKey<E>, E>> entryMapDecoder, Lifecycle lifecycle) {
-        final Decoder<MutableRegistry> decoder = entryMapDecoder.map(map -> {
-            SimpleRegistry mutableRegistry = new SimpleRegistry(registryRef, lifecycle, null);
-            map.forEach((key, value) -> mutableRegistry.add(key, value, lifecycle));
-            return mutableRegistry;
-        });
-        return new Decoder<Registry<E>>(){
-
-            @Override
-            public <T> DataResult<Pair<Registry<E>, T>> decode(DynamicOps<T> ops, T input) {
-                DataResult dataResult = decoder.decode(ops, input);
-                if (ops instanceof RegistryOps) {
-                    RegistryOps registryOps = (RegistryOps)ops;
-                    return registryOps.getLoaderAccess().map((? super T loaderAccess) -> this.load(dataResult, registryOps, loaderAccess.loader())).orElseGet(() -> DataResult.error("Can't load registry with this ops"));
-                }
-                return dataResult.map((? super R pair) -> pair.mapFirst(registry -> registry));
-            }
-
-            private <T> DataResult<Pair<Registry<E>, T>> load(DataResult<Pair<MutableRegistry<E>, T>> result, RegistryOps<?> ops, RegistryLoader loader) {
-                return result.flatMap((? super R pair) -> loader.load((MutableRegistry)pair.getFirst(), registryRef, codec, ops.getEntryOps()).map((? super R registry) -> Pair.of(registry, pair.getSecond())));
-            }
-        };
-    }
-
-    private static <T> Codec<Map<RegistryKey<T>, T>> registryMap(RegistryKey<? extends Registry<T>> registryRef, Codec<T> elementCodec) {
-        return Codec.unboundedMap(RegistryKey.createCodec(registryRef), elementCodec);
+    public static <E> Codec<Registry<E>> createKeyedRegistryCodec(RegistryKey<? extends Registry<E>> registryRef, Lifecycle lifecycle, Codec<E> elementCodec) {
+        UnboundedMapCodec codec = Codec.unboundedMap(RegistryKey.createCodec(registryRef), elementCodec);
+        return codec.xmap(entries -> {
+            SimpleRegistry mutableRegistry = new SimpleRegistry(registryRef, lifecycle);
+            entries.forEach((key, value) -> mutableRegistry.add(key, value, lifecycle));
+            return ((Registry)mutableRegistry).freeze();
+        }, registry -> ImmutableMap.copyOf(registry.getEntrySet()));
     }
 
     public static <E> Codec<RegistryEntryList<E>> entryList(RegistryKey<? extends Registry<E>> registryRef, Codec<E> elementCodec) {

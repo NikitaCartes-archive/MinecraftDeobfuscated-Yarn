@@ -14,7 +14,8 @@ import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
-import net.minecraft.data.DataGenerator;
+import java.util.Collection;
+import net.minecraft.data.DataOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
 import net.minecraft.nbt.NbtHelper;
@@ -25,16 +26,18 @@ import org.slf4j.Logger;
 public class NbtProvider
 implements DataProvider {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private final DataGenerator root;
+    private final Iterable<Path> field_40660;
+    private final DataOutput field_40661;
 
-    public NbtProvider(DataGenerator root) {
-        this.root = root;
+    public NbtProvider(DataOutput dataOutput, Collection<Path> collection) {
+        this.field_40660 = collection;
+        this.field_40661 = dataOutput;
     }
 
     @Override
     public void run(DataWriter writer) throws IOException {
-        Path path2 = this.root.getOutput();
-        for (Path path22 : this.root.getInputs()) {
+        Path path2 = this.field_40661.getPath();
+        for (Path path22 : this.field_40660) {
             Files.walk(path22, new FileVisitOption[0]).filter(path -> path.toString().endsWith(".nbt")).forEach(path -> NbtProvider.convertNbtToSnbt(writer, path, this.getLocation(path22, (Path)path), path2));
         }
     }

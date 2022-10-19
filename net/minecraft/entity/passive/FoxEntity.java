@@ -258,9 +258,12 @@ extends AnimalEntity {
     }
 
     @Override
+    @Nullable
     public FoxEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
         FoxEntity foxEntity = EntityType.FOX.create(serverWorld);
-        foxEntity.setType(this.random.nextBoolean() ? this.getFoxType() : ((FoxEntity)passiveEntity).getFoxType());
+        if (foxEntity != null) {
+            foxEntity.setType(this.random.nextBoolean() ? this.getFoxType() : ((FoxEntity)passiveEntity).getFoxType());
+        }
         return foxEntity;
     }
 
@@ -641,7 +644,7 @@ extends AnimalEntity {
             double g = f == 0.0 ? 0.0 : d * (double)((float)j / 6.0f);
             double h = f == 0.0 ? e * (double)((float)j / 6.0f) : g / f;
             for (int k = 1; k < 4; ++k) {
-                if (fox.world.getBlockState(new BlockPos(fox.getX() + h, fox.getY() + (double)k, fox.getZ() + g)).getMaterial().isReplaceable()) continue;
+                if (fox.world.getBlockState(new BlockPos(fox.getX() + h, fox.getY() + (double)k, fox.getZ() + g)).isReplaceable()) continue;
                 return false;
             }
         }
@@ -654,6 +657,7 @@ extends AnimalEntity {
     }
 
     @Override
+    @Nullable
     public /* synthetic */ PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
         return this.createChild(world, entity);
     }

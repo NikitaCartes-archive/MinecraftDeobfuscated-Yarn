@@ -26,7 +26,7 @@ import net.minecraft.loot.function.SetContentsLootFunction;
 import net.minecraft.loot.function.SetCountLootFunction;
 import net.minecraft.loot.function.SetDamageLootFunction;
 import net.minecraft.loot.function.SetEnchantmentsLootFunction;
-import net.minecraft.loot.function.SetGoatHornSoundLootFunction;
+import net.minecraft.loot.function.SetInstrumentLootFunction;
 import net.minecraft.loot.function.SetLootTableLootFunction;
 import net.minecraft.loot.function.SetLoreLootFunction;
 import net.minecraft.loot.function.SetNameLootFunction;
@@ -64,7 +64,7 @@ public class LootFunctionTypes {
     public static final LootFunctionType COPY_STATE = LootFunctionTypes.register("copy_state", new CopyStateFunction.Serializer());
     public static final LootFunctionType SET_BANNER_PATTERN = LootFunctionTypes.register("set_banner_pattern", new SetBannerPatternFunction.Serializer());
     public static final LootFunctionType SET_POTION = LootFunctionTypes.register("set_potion", new SetPotionLootFunction.Serializer());
-    public static final LootFunctionType SET_INSTRUMENT = LootFunctionTypes.register("set_instrument", new SetGoatHornSoundLootFunction.Serializer());
+    public static final LootFunctionType SET_INSTRUMENT = LootFunctionTypes.register("set_instrument", new SetInstrumentLootFunction.Serializer());
 
     private static LootFunctionType register(String id, JsonSerializer<? extends LootFunction> jsonSerializer) {
         return Registry.register(Registry.LOOT_FUNCTION_TYPE, new Identifier(id), new LootFunctionType(jsonSerializer));

@@ -373,7 +373,7 @@ extends Fluid {
                 state = fluidState;
                 BlockState blockState = state.getBlockState();
                 world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
-                world.createAndScheduleFluidTick(pos, state.getFluid(), i);
+                world.scheduleFluidTick(pos, state.getFluid(), i);
                 world.updateNeighborsAlways(pos, blockState.getBlock());
             }
         }

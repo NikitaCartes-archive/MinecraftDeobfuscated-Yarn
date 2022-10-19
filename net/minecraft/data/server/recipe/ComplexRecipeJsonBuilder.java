@@ -5,29 +5,28 @@ package net.minecraft.data.server.recipe;
 
 import com.google.gson.JsonObject;
 import java.util.function.Consumer;
+import net.minecraft.data.server.recipe.RecipeJsonBuilder;
 import net.minecraft.data.server.recipe.RecipeJsonProvider;
+import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.RecipeSerializer;
-import net.minecraft.recipe.SpecialRecipeSerializer;
+import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
-public class ComplexRecipeJsonBuilder {
-    final SpecialRecipeSerializer<?> serializer;
+public class ComplexRecipeJsonBuilder
+extends RecipeJsonBuilder {
+    final RecipeSerializer<?> serializer;
 
-    public ComplexRecipeJsonBuilder(SpecialRecipeSerializer<?> serializer) {
+    public ComplexRecipeJsonBuilder(RecipeSerializer<?> serializer) {
         this.serializer = serializer;
     }
 
-    public static ComplexRecipeJsonBuilder create(SpecialRecipeSerializer<?> serializer) {
+    public static ComplexRecipeJsonBuilder create(RecipeSerializer<? extends CraftingRecipe> serializer) {
         return new ComplexRecipeJsonBuilder(serializer);
     }
 
     public void offerTo(Consumer<RecipeJsonProvider> exporter, final String recipeId) {
-        exporter.accept(new RecipeJsonProvider(){
-
-            @Override
-            public void serialize(JsonObject json) {
-            }
+        exporter.accept(new RecipeJsonBuilder.CraftingRecipeJsonProvider(CraftingRecipeCategory.MISC){
 
             @Override
             public RecipeSerializer<?> getSerializer() {

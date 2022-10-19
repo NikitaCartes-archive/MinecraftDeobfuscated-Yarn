@@ -12,7 +12,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.random.Random;
 
 public class BiomeParticleConfig {
-    public static final Codec<BiomeParticleConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)ParticleTypes.TYPE_CODEC.fieldOf("options")).forGetter(biomeParticleConfig -> biomeParticleConfig.particle), ((MapCodec)Codec.FLOAT.fieldOf("probability")).forGetter(biomeParticleConfig -> Float.valueOf(biomeParticleConfig.probability))).apply((Applicative<BiomeParticleConfig, ?>)instance, BiomeParticleConfig::new));
+    public static final Codec<BiomeParticleConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)ParticleTypes.TYPE_CODEC.fieldOf("options")).forGetter(config -> config.particle), ((MapCodec)Codec.FLOAT.fieldOf("probability")).forGetter(config -> Float.valueOf(config.probability))).apply((Applicative<BiomeParticleConfig, ?>)instance, BiomeParticleConfig::new));
     private final ParticleEffect particle;
     private final float probability;
 

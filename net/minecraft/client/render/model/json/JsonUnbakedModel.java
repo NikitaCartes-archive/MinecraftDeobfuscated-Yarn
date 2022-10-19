@@ -17,7 +17,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mojang.datafixers.util.Either;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import java.io.Reader;
 import java.io.StringReader;
@@ -31,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
@@ -39,12 +37,12 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.BakedQuadFactory;
+import net.minecraft.client.render.model.Baker;
 import net.minecraft.client.render.model.BasicBakedModel;
 import net.minecraft.client.render.model.BuiltinBakedModel;
 import net.minecraft.client.render.model.ModelBakeSettings;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.render.model.UnbakedModel;
-import net.minecraft.client.render.model.json.ItemModelGenerator;
 import net.minecraft.client.render.model.json.ModelElement;
 import net.minecraft.client.render.model.json.ModelElementFace;
 import net.minecraft.client.render.model.json.ModelElementTexture;
@@ -139,11 +137,11 @@ implements UnbakedModel {
         return this.overrides;
     }
 
-    private ModelOverrideList compileOverrides(ModelLoader modelLoader, JsonUnbakedModel parent) {
+    private ModelOverrideList compileOverrides(Baker baker, JsonUnbakedModel parent) {
         if (this.overrides.isEmpty()) {
             return ModelOverrideList.EMPTY;
         }
-        return new ModelOverrideList(modelLoader, parent, modelLoader::getOrLoadModel, this.overrides);
+        return new ModelOverrideList(baker, parent, this.overrides);
     }
 
     @Override
@@ -159,12 +157,12 @@ implements UnbakedModel {
     }
 
     @Override
-    public Collection<SpriteIdentifier> getTextureDependencies(Function<Identifier, UnbakedModel> unbakedModelGetter, Set<Pair<String, String>> unresolvedTextureReferences) {
+    public void setParents(Function<Identifier, UnbakedModel> modelLoader) {
         LinkedHashSet<JsonUnbakedModel> set = Sets.newLinkedHashSet();
         JsonUnbakedModel jsonUnbakedModel = this;
         while (jsonUnbakedModel.parentId != null && jsonUnbakedModel.parent == null) {
             set.add(jsonUnbakedModel);
-            UnbakedModel unbakedModel = unbakedModelGetter.apply(jsonUnbakedModel.parentId);
+            UnbakedModel unbakedModel = modelLoader.apply(jsonUnbakedModel.parentId);
             if (unbakedModel == null) {
                 LOGGER.warn("No parent '{}' while loading model '{}'", (Object)this.parentId, (Object)jsonUnbakedModel);
             }
@@ -174,7 +172,7 @@ implements UnbakedModel {
             }
             if (unbakedModel == null) {
                 jsonUnbakedModel.parentId = ModelLoader.MISSING_ID;
-                unbakedModel = unbakedModelGetter.apply(jsonUnbakedModel.parentId);
+                unbakedModel = modelLoader.apply(jsonUnbakedModel.parentId);
             }
             if (!(unbakedModel instanceof JsonUnbakedModel)) {
                 throw new IllegalStateException("BlockModel parent has to be a block model.");
@@ -182,40 +180,26 @@ implements UnbakedModel {
             jsonUnbakedModel.parent = (JsonUnbakedModel)unbakedModel;
             jsonUnbakedModel = jsonUnbakedModel.parent;
         }
-        HashSet<SpriteIdentifier> set2 = Sets.newHashSet(this.resolveSprite(PARTICLE_KEY));
-        for (ModelElement modelElement : this.getElements()) {
-            for (ModelElementFace modelElementFace : modelElement.faces.values()) {
-                SpriteIdentifier spriteIdentifier = this.resolveSprite(modelElementFace.textureId);
-                if (Objects.equals(spriteIdentifier.getTextureId(), MissingSprite.getMissingSpriteId())) {
-                    unresolvedTextureReferences.add(Pair.of(modelElementFace.textureId, this.id));
-                }
-                set2.add(spriteIdentifier);
-            }
-        }
         this.overrides.forEach(override -> {
-            UnbakedModel unbakedModel = (UnbakedModel)unbakedModelGetter.apply(override.getModelId());
+            UnbakedModel unbakedModel = (UnbakedModel)modelLoader.apply(override.getModelId());
             if (Objects.equals(unbakedModel, this)) {
                 return;
             }
-            set2.addAll(unbakedModel.getTextureDependencies(unbakedModelGetter, unresolvedTextureReferences));
+            unbakedModel.setParents(modelLoader);
         });
-        if (this.getRootModel() == ModelLoader.GENERATION_MARKER) {
-            ItemModelGenerator.LAYERS.forEach(layer -> set2.add(this.resolveSprite((String)layer)));
-        }
-        return set2;
     }
 
     @Override
-    public BakedModel bake(ModelLoader loader, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
-        return this.bake(loader, this, textureGetter, rotationContainer, modelId, true);
+    public BakedModel bake(Baker baker, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
+        return this.bake(baker, this, textureGetter, rotationContainer, modelId, true);
     }
 
-    public BakedModel bake(ModelLoader loader, JsonUnbakedModel parent, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings settings, Identifier id, boolean hasDepth) {
+    public BakedModel bake(Baker baker, JsonUnbakedModel parent, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings settings, Identifier id, boolean hasDepth) {
         Sprite sprite = textureGetter.apply(this.resolveSprite(PARTICLE_KEY));
         if (this.getRootModel() == ModelLoader.BLOCK_ENTITY_MARKER) {
-            return new BuiltinBakedModel(this.getTransformations(), this.compileOverrides(loader, parent), sprite, this.getGuiLight().isSide());
+            return new BuiltinBakedModel(this.getTransformations(), this.compileOverrides(baker, parent), sprite, this.getGuiLight().isSide());
         }
-        BasicBakedModel.Builder builder = new BasicBakedModel.Builder(this, this.compileOverrides(loader, parent), hasDepth).setParticle(sprite);
+        BasicBakedModel.Builder builder = new BasicBakedModel.Builder(this, this.compileOverrides(baker, parent), hasDepth).setParticle(sprite);
         for (ModelElement modelElement : this.getElements()) {
             for (Direction direction : modelElement.faces.keySet()) {
                 ModelElementFace modelElementFace = modelElement.faces.get(direction);

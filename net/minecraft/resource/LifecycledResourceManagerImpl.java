@@ -73,7 +73,7 @@ implements LifecycledResourceManager {
     @Nullable
     private ResourceFilter parseResourceFilter(ResourcePack pack) {
         try {
-            return pack.parseMetadata(ResourceFilter.READER);
+            return pack.parseMetadata(ResourceFilter.SERIALIZER);
         } catch (IOException iOException) {
             LOGGER.error("Failed to get filter section from pack {}", (Object)pack.getName());
             return null;
@@ -105,6 +105,7 @@ implements LifecycledResourceManager {
 
     @Override
     public Map<Identifier, Resource> findResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
+        LifecycledResourceManagerImpl.validateStartingPath(startingPath);
         TreeMap<Identifier, Resource> map = new TreeMap<Identifier, Resource>();
         for (NamespaceResourceManager namespaceResourceManager : this.subManagers.values()) {
             map.putAll(namespaceResourceManager.findResources(startingPath, allowedPathPredicate));
@@ -114,11 +115,23 @@ implements LifecycledResourceManager {
 
     @Override
     public Map<Identifier, List<Resource>> findAllResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
+        LifecycledResourceManagerImpl.validateStartingPath(startingPath);
         TreeMap<Identifier, List<Resource>> map = new TreeMap<Identifier, List<Resource>>();
         for (NamespaceResourceManager namespaceResourceManager : this.subManagers.values()) {
             map.putAll(namespaceResourceManager.findAllResources(startingPath, allowedPathPredicate));
         }
         return map;
+    }
+
+    /**
+     * Validates the starting path to ensure that it does not end with a slash.
+     * 
+     * @throws IllegalArgumentException if {@code startingPath} has a trailing slash
+     */
+    private static void validateStartingPath(String startingPath) {
+        if (startingPath.endsWith("/")) {
+            throw new IllegalArgumentException("Trailing slash in path " + startingPath);
+        }
     }
 
     @Override

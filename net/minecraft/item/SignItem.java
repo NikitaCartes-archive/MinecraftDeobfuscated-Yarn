@@ -9,15 +9,16 @@ import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.WallStandingBlockItem;
+import net.minecraft.item.VerticallyAttachableBlockItem;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class SignItem
-extends WallStandingBlockItem {
+extends VerticallyAttachableBlockItem {
     public SignItem(Item.Settings settings, Block standingBlock, Block wallBlock) {
-        super(standingBlock, wallBlock, settings);
+        super(standingBlock, wallBlock, settings, Direction.DOWN);
     }
 
     @Override

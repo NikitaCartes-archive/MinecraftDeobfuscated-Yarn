@@ -61,11 +61,11 @@ implements AutoCloseable {
         }
     }
 
-    public void method_39802(ChunkPos chunkPos, NbtScanner nbtScanner) throws IOException {
+    public void scanChunk(ChunkPos chunkPos, NbtScanner scanner) throws IOException {
         RegionFile regionFile = this.getRegionFile(chunkPos);
         try (DataInputStream dataInputStream = regionFile.getChunkInputStream(chunkPos);){
             if (dataInputStream != null) {
-                NbtIo.scan(dataInputStream, nbtScanner);
+                NbtIo.scan(dataInputStream, scanner);
             }
         }
     }

@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -27,6 +28,7 @@ import net.minecraft.entity.ai.brain.task.FrogEatEntityTask;
 import net.minecraft.entity.ai.brain.task.GoTowardsLookTarget;
 import net.minecraft.entity.ai.brain.task.LayFrogSpawnTask;
 import net.minecraft.entity.ai.brain.task.LeapingChargeTask;
+import net.minecraft.entity.ai.brain.task.LongJumpTask;
 import net.minecraft.entity.ai.brain.task.LookAroundTask;
 import net.minecraft.entity.ai.brain.task.LookTargetUtil;
 import net.minecraft.entity.ai.brain.task.RandomTask;
@@ -40,12 +42,17 @@ import net.minecraft.entity.ai.brain.task.WalkTask;
 import net.minecraft.entity.ai.brain.task.WalkTowardsLandTask;
 import net.minecraft.entity.ai.brain.task.WalkTowardsWaterTask;
 import net.minecraft.entity.ai.brain.task.WanderAroundTask;
+import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
+import net.minecraft.entity.ai.pathing.PathNodeType;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.FrogEntity;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.World;
 
 public class FrogBrain {
     private static final float field_37469 = 2.0f;
@@ -93,11 +100,30 @@ public class FrogBrain {
     }
 
     private static void addLongJumpActivities(Brain<FrogEntity> brain) {
-        brain.setTaskList(Activity.LONG_JUMP, ImmutableList.of(Pair.of(0, new LeapingChargeTask(longJumpCooldownRange, SoundEvents.ENTITY_FROG_STEP)), Pair.of(1, new BiasedLongJumpTask<FrogEntity>(longJumpCooldownRange, 2, 4, 1.5f, frog -> SoundEvents.ENTITY_FROG_LONG_JUMP, BlockTags.FROG_PREFER_JUMP_TO, 0.5f, state -> state.isOf(Blocks.LILY_PAD)))), ImmutableSet.of(Pair.of(MemoryModuleType.TEMPTING_PLAYER, MemoryModuleState.VALUE_ABSENT), Pair.of(MemoryModuleType.BREED_TARGET, MemoryModuleState.VALUE_ABSENT), Pair.of(MemoryModuleType.LONG_JUMP_COOLING_DOWN, MemoryModuleState.VALUE_ABSENT), Pair.of(MemoryModuleType.IS_IN_WATER, MemoryModuleState.VALUE_ABSENT)));
+        brain.setTaskList(Activity.LONG_JUMP, ImmutableList.of(Pair.of(0, new LeapingChargeTask(longJumpCooldownRange, SoundEvents.ENTITY_FROG_STEP)), Pair.of(1, new BiasedLongJumpTask<FrogEntity>(longJumpCooldownRange, 2, 4, 1.5f, frog -> SoundEvents.ENTITY_FROG_LONG_JUMP, BlockTags.FROG_PREFER_JUMP_TO, 0.5f, FrogBrain::shouldJumpTo))), ImmutableSet.of(Pair.of(MemoryModuleType.TEMPTING_PLAYER, MemoryModuleState.VALUE_ABSENT), Pair.of(MemoryModuleType.BREED_TARGET, MemoryModuleState.VALUE_ABSENT), Pair.of(MemoryModuleType.LONG_JUMP_COOLING_DOWN, MemoryModuleState.VALUE_ABSENT), Pair.of(MemoryModuleType.IS_IN_WATER, MemoryModuleState.VALUE_ABSENT)));
     }
 
     private static void addTongueActivities(Brain<FrogEntity> brain) {
         brain.setTaskList(Activity.TONGUE, 0, ImmutableList.of(new ForgetAttackTargetTask(), new FrogEatEntityTask(SoundEvents.ENTITY_FROG_TONGUE, SoundEvents.ENTITY_FROG_EAT)), MemoryModuleType.ATTACK_TARGET);
+    }
+
+    private static <E extends MobEntity> boolean shouldJumpTo(E frog, BlockPos pos) {
+        World world = frog.world;
+        BlockPos blockPos = pos.down();
+        if (!(world.getFluidState(pos).isEmpty() && world.getFluidState(blockPos).isEmpty() && world.getFluidState(pos.up()).isEmpty())) {
+            return false;
+        }
+        BlockState blockState = world.getBlockState(pos);
+        BlockState blockState2 = world.getBlockState(blockPos);
+        if (blockState.isIn(BlockTags.FROG_PREFER_JUMP_TO) || blockState2.isIn(BlockTags.FROG_PREFER_JUMP_TO)) {
+            return true;
+        }
+        PathNodeType pathNodeType = LandPathNodeMaker.getLandNodeType(world, pos.mutableCopy());
+        PathNodeType pathNodeType2 = LandPathNodeMaker.getLandNodeType(world, blockPos.mutableCopy());
+        if (pathNodeType == PathNodeType.TRAPDOOR || blockState.isAir() && pathNodeType2 == PathNodeType.TRAPDOOR) {
+            return true;
+        }
+        return LongJumpTask.shouldJumpTo(frog, pos);
     }
 
     private static boolean isNotBreeding(FrogEntity frog) {

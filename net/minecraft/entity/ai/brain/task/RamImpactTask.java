@@ -97,7 +97,7 @@ extends Task<GoatEntity> {
             boolean bl2;
             Optional<WalkTarget> optional = brain.getOptionalMemory(MemoryModuleType.WALK_TARGET);
             Optional<Vec3d> optional2 = brain.getOptionalMemory(MemoryModuleType.RAM_TARGET);
-            boolean bl = bl2 = !optional.isPresent() || !optional2.isPresent() || optional.get().getLookTarget().getPos().isInRange(optional2.get(), 0.25);
+            boolean bl = bl2 = optional.isEmpty() || optional2.isEmpty() || optional.get().getLookTarget().getPos().isInRange(optional2.get(), 0.25);
             if (bl2) {
                 this.finishRam(serverWorld, goatEntity);
             }

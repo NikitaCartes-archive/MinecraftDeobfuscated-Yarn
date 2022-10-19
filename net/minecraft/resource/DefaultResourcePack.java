@@ -3,203 +3,113 @@
  */
 package net.minecraft.resource;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
 import com.mojang.logging.LogUtils;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.FileSystemAlreadyExistsException;
-import java.nio.file.FileSystemNotFoundException;
-import java.nio.file.FileSystems;
-import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.OpenOption;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Locale;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
+import java.util.function.Consumer;
 import net.minecraft.resource.AbstractFileResourcePack;
 import net.minecraft.resource.DirectoryResourcePack;
+import net.minecraft.resource.InputSupplier;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceFactory;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourceType;
-import net.minecraft.resource.metadata.PackResourceMetadata;
+import net.minecraft.resource.metadata.ResourceMetadataMap;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
+import net.minecraft.util.PathUtil;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 public class DefaultResourcePack
 implements ResourcePack {
-    @Nullable
-    public static Path resourcePath;
-    private static final Logger LOGGER;
-    public static Class<?> resourceClass;
-    private static final Map<ResourceType, Path> TYPE_TO_FILE_SYSTEM;
-    public final PackResourceMetadata metadata;
-    public final Set<String> namespaces;
+    private static final Logger LOGGER = LogUtils.getLogger();
+    private final ResourceMetadataMap metadata;
+    private final Set<String> namespaces;
+    private final List<Path> rootPaths;
+    private final Map<ResourceType, List<Path>> namespacePaths;
 
-    private static Path getPath(URI uri) throws IOException {
-        try {
-            return Paths.get(uri);
-        } catch (FileSystemNotFoundException fileSystemNotFoundException) {
-        } catch (Throwable throwable) {
-            LOGGER.warn("Unable to get path for: {}", (Object)uri, (Object)throwable);
-        }
-        try {
-            FileSystems.newFileSystem(uri, Collections.emptyMap());
-        } catch (FileSystemAlreadyExistsException fileSystemAlreadyExistsException) {
-            // empty catch block
-        }
-        return Paths.get(uri);
-    }
-
-    public DefaultResourcePack(PackResourceMetadata metadata, String ... namespaces) {
+    DefaultResourcePack(ResourceMetadataMap metadata, Set<String> namespaces, List<Path> rootPaths, Map<ResourceType, List<Path>> namespacePaths) {
         this.metadata = metadata;
-        this.namespaces = ImmutableSet.copyOf(namespaces);
+        this.namespaces = namespaces;
+        this.rootPaths = rootPaths;
+        this.namespacePaths = namespacePaths;
     }
 
     @Override
-    public InputStream openRoot(String fileName) throws IOException {
-        Path path;
-        if (fileName.contains("/") || fileName.contains("\\")) {
-            throw new IllegalArgumentException("Root resources can only be filenames, not paths (no / allowed!)");
-        }
-        if (resourcePath != null && Files.exists(path = resourcePath.resolve(fileName), new LinkOption[0])) {
-            return Files.newInputStream(path, new OpenOption[0]);
-        }
-        return this.getInputStream(fileName);
-    }
-
-    @Override
-    public InputStream open(ResourceType type, Identifier id) throws IOException {
-        InputStream inputStream = this.findInputStream(type, id);
-        if (inputStream != null) {
-            return inputStream;
-        }
-        throw new FileNotFoundException(id.getPath());
-    }
-
-    @Override
-    public Collection<Identifier> findResources(ResourceType type, String namespace, String prefix, Predicate<Identifier> allowedPathPredicate) {
-        HashSet<Identifier> set = Sets.newHashSet();
-        if (resourcePath != null) {
-            try {
-                DefaultResourcePack.collectIdentifiers(set, namespace, resourcePath.resolve(type.getDirectory()), prefix, allowedPathPredicate);
-            } catch (IOException iOException) {
-                // empty catch block
-            }
-            if (type == ResourceType.CLIENT_RESOURCES) {
-                Enumeration<URL> enumeration = null;
-                try {
-                    enumeration = resourceClass.getClassLoader().getResources(type.getDirectory() + "/");
-                } catch (IOException iOException) {
-                    // empty catch block
-                }
-                while (enumeration != null && enumeration.hasMoreElements()) {
-                    try {
-                        URI uRI = enumeration.nextElement().toURI();
-                        if (!"file".equals(uRI.getScheme())) continue;
-                        DefaultResourcePack.collectIdentifiers(set, namespace, Paths.get(uRI), prefix, allowedPathPredicate);
-                    } catch (IOException | URISyntaxException exception) {}
-                }
-            }
-        }
-        try {
-            Path path = TYPE_TO_FILE_SYSTEM.get((Object)type);
-            if (path != null) {
-                DefaultResourcePack.collectIdentifiers(set, namespace, path, prefix, allowedPathPredicate);
-            } else {
-                LOGGER.error("Can't access assets root for type: {}", (Object)type);
-            }
-        } catch (FileNotFoundException | NoSuchFileException path) {
-        } catch (IOException iOException) {
-            LOGGER.error("Couldn't get a list of all vanilla resources", iOException);
-        }
-        return set;
-    }
-
-    private static void collectIdentifiers(Collection<Identifier> results, String namespace, Path root, String prefix, Predicate<Identifier> allowedPathPredicate) throws IOException {
-        Path path2 = root.resolve(namespace);
-        try (Stream<Path> stream = Files.walk(path2.resolve(prefix), new FileVisitOption[0]);){
-            stream.filter(path -> !path.endsWith(".mcmeta") && Files.isRegularFile(path, new LinkOption[0])).mapMulti((path, consumer) -> {
-                String string2 = path2.relativize((Path)path).toString().replaceAll("\\\\", "/");
-                Identifier identifier = Identifier.of(namespace, string2);
-                if (identifier == null) {
-                    Util.error(String.format(Locale.ROOT, "Invalid path in datapack: %s:%s, ignoring", namespace, string2));
-                } else {
-                    consumer.accept(identifier);
-                }
-            }).filter(allowedPathPredicate).forEach(results::add);
-        }
-    }
-
     @Nullable
-    protected InputStream findInputStream(ResourceType type, Identifier id) {
-        Path path;
-        String string = DefaultResourcePack.getPath(type, id);
-        if (resourcePath != null && Files.exists(path = resourcePath.resolve(type.getDirectory() + "/" + id.getNamespace() + "/" + id.getPath()), new LinkOption[0])) {
-            try {
-                return Files.newInputStream(path, new OpenOption[0]);
-            } catch (IOException iOException) {
-                // empty catch block
-            }
-        }
-        try {
-            URL uRL = DefaultResourcePack.class.getResource(string);
-            if (DefaultResourcePack.isValidUrl(string, uRL)) {
-                return uRL.openStream();
-            }
-        } catch (IOException iOException) {
-            return DefaultResourcePack.class.getResourceAsStream(string);
+    public InputSupplier<InputStream> openRoot(String ... segments) {
+        PathUtil.validatePath(segments);
+        List<String> list = List.of(segments);
+        for (Path path : this.rootPaths) {
+            Path path2 = PathUtil.getPath(path, list);
+            if (!Files.exists(path2, new LinkOption[0]) || !DirectoryResourcePack.isValidPath(path2)) continue;
+            return InputSupplier.create(path2);
         }
         return null;
     }
 
-    private static String getPath(ResourceType type, Identifier id) {
-        return "/" + type.getDirectory() + "/" + id.getNamespace() + "/" + id.getPath();
-    }
-
-    private static boolean isValidUrl(String fileName, @Nullable URL url) throws IOException {
-        return url != null && (url.getProtocol().equals("jar") || DirectoryResourcePack.isValidPath(new File(url.getFile()), fileName));
-    }
-
-    @Nullable
-    protected InputStream getInputStream(String path) {
-        return DefaultResourcePack.class.getResourceAsStream("/" + path);
+    public void forEachNamespacedPath(ResourceType type, Identifier path, Consumer<Path> consumer) {
+        PathUtil.split(path.getPath()).get().ifLeft(segments -> {
+            String string = path.getNamespace();
+            for (Path path : this.namespacePaths.get((Object)type)) {
+                Path path2 = path.resolve(string);
+                consumer.accept(PathUtil.getPath(path2, segments));
+            }
+        }).ifRight(result -> LOGGER.error("Invalid path {}: {}", (Object)path, (Object)result.message()));
     }
 
     @Override
-    public boolean contains(ResourceType type, Identifier id) {
-        Path path;
-        String string = DefaultResourcePack.getPath(type, id);
-        if (resourcePath != null && Files.exists(path = resourcePath.resolve(type.getDirectory() + "/" + id.getNamespace() + "/" + id.getPath()), new LinkOption[0])) {
-            return true;
-        }
-        try {
-            URL uRL = DefaultResourcePack.class.getResource(string);
-            return DefaultResourcePack.isValidUrl(string, uRL);
-        } catch (IOException iOException) {
-            return false;
-        }
+    public void findResources(ResourceType type, String namespace, String prefix, ResourcePack.ResultConsumer consumer) {
+        PathUtil.split(prefix).get().ifLeft(segments -> {
+            List<Path> list = this.namespacePaths.get((Object)type);
+            int i = list.size();
+            if (i == 1) {
+                DefaultResourcePack.collectIdentifiers(consumer, namespace, list.get(0), segments);
+            } else if (i > 1) {
+                HashMap<Identifier, InputSupplier<InputStream>> map = new HashMap<Identifier, InputSupplier<InputStream>>();
+                for (int j = 0; j < i - 1; ++j) {
+                    DefaultResourcePack.collectIdentifiers(map::putIfAbsent, namespace, list.get(j), segments);
+                }
+                Path path = list.get(i - 1);
+                if (map.isEmpty()) {
+                    DefaultResourcePack.collectIdentifiers(consumer, namespace, path, segments);
+                } else {
+                    DefaultResourcePack.collectIdentifiers(map::putIfAbsent, namespace, path, segments);
+                    map.forEach(consumer);
+                }
+            }
+        }).ifRight(result -> LOGGER.error("Invalid path {}: {}", (Object)prefix, (Object)result.message()));
+    }
+
+    private static void collectIdentifiers(ResourcePack.ResultConsumer consumer, String namespace, Path root, List<String> prefixSegments) {
+        Path path = root.resolve(namespace);
+        DirectoryResourcePack.findResources(namespace, path, prefixSegments, consumer);
+    }
+
+    @Override
+    @Nullable
+    public InputSupplier<InputStream> open(ResourceType type, Identifier id) {
+        return PathUtil.split(id.getPath()).get().map(segments -> {
+            String string = id.getNamespace();
+            for (Path path : this.namespacePaths.get((Object)type)) {
+                Path path2 = PathUtil.getPath(path.resolve(string), segments);
+                if (!Files.exists(path2, new LinkOption[0]) || !DirectoryResourcePack.isValidPath(path2)) continue;
+                return InputSupplier.create(path2);
+            }
+            return null;
+        }, result -> {
+            LOGGER.error("Invalid path {}: {}", (Object)id, (Object)result.message());
+            return null;
+        });
     }
 
     @Override
@@ -214,23 +124,28 @@ implements ResourcePack {
      */
     @Override
     @Nullable
-    public <T> T parseMetadata(ResourceMetadataReader<T> metaReader) throws IOException {
-        try (InputStream inputStream = this.openRoot("pack.mcmeta");){
-            T object;
-            if (inputStream != null && (object = AbstractFileResourcePack.parseMetadata(metaReader, inputStream)) != null) {
-                T t = object;
-                return t;
-            }
-        } catch (FileNotFoundException | RuntimeException exception) {
+    public <T> T parseMetadata(ResourceMetadataReader<T> metaReader) {
+        InputSupplier<InputStream> inputSupplier = this.openRoot("pack.mcmeta");
+        if (inputSupplier == null) return this.metadata.get(metaReader);
+        try (InputStream inputStream = inputSupplier.get();){
+            T object = AbstractFileResourcePack.parseMetadata(metaReader, inputStream);
+            if (object == null) return this.metadata.get(metaReader);
+            T t = object;
+            return t;
+        } catch (IOException iOException) {
             // empty catch block
         }
-        if (metaReader != PackResourceMetadata.READER) return null;
-        return (T)this.metadata;
+        return this.metadata.get(metaReader);
     }
 
     @Override
     public String getName() {
-        return "Default";
+        return "vanilla";
+    }
+
+    @Override
+    public boolean isAlwaysStable() {
+        return true;
     }
 
     @Override
@@ -238,38 +153,7 @@ implements ResourcePack {
     }
 
     public ResourceFactory getFactory() {
-        return id -> Optional.of(new Resource(this.getName(), () -> this.open(ResourceType.CLIENT_RESOURCES, id)));
-    }
-
-    static {
-        LOGGER = LogUtils.getLogger();
-        TYPE_TO_FILE_SYSTEM = Util.make(() -> {
-            Class<DefaultResourcePack> clazz = DefaultResourcePack.class;
-            synchronized (DefaultResourcePack.class) {
-                ImmutableMap.Builder<ResourceType, Path> builder = ImmutableMap.builder();
-                for (ResourceType resourceType : ResourceType.values()) {
-                    String string = "/" + resourceType.getDirectory() + "/.mcassetsroot";
-                    URL uRL = DefaultResourcePack.class.getResource(string);
-                    if (uRL == null) {
-                        LOGGER.error("File {} does not exist in classpath", (Object)string);
-                        continue;
-                    }
-                    try {
-                        URI uRI = uRL.toURI();
-                        String string2 = uRI.getScheme();
-                        if (!"jar".equals(string2) && !"file".equals(string2)) {
-                            LOGGER.warn("Assets URL '{}' uses unexpected schema", (Object)uRI);
-                        }
-                        Path path = DefaultResourcePack.getPath(uRI);
-                        builder.put(resourceType, path.getParent());
-                    } catch (Exception exception) {
-                        LOGGER.error("Couldn't resolve path to vanilla assets", exception);
-                    }
-                }
-                // ** MonitorExit[var0] (shouldn't be in output)
-                return builder.build();
-            }
-        });
+        return name -> Optional.ofNullable(this.open(ResourceType.CLIENT_RESOURCES, name)).map(stream -> new Resource(this, (InputSupplier<InputStream>)stream));
     }
 }
 

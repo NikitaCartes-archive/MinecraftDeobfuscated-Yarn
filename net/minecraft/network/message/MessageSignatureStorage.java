@@ -1,0 +1,68 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.network.message;
+
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import java.util.ArrayDeque;
+import java.util.List;
+import net.minecraft.network.message.MessageSignatureData;
+import net.minecraft.network.message.SignedMessage;
+import org.jetbrains.annotations.VisibleForTesting;
+
+/**
+ * Collects message signatures on the server to make a message chain.
+ */
+public class MessageSignatureStorage {
+    private static final int MAX_ENTRIES = 128;
+    private final MessageSignatureData[] signatures;
+
+    public MessageSignatureStorage(int maxEntries) {
+        this.signatures = new MessageSignatureData[maxEntries];
+    }
+
+    public static MessageSignatureStorage create() {
+        return new MessageSignatureStorage(128);
+    }
+
+    public MessageSignatureData.Packer getPacker() {
+        return signature -> {
+            for (int i = 0; i < this.signatures.length; ++i) {
+                if (!signature.equals(this.signatures[i])) continue;
+                return i;
+            }
+            return -1;
+        };
+    }
+
+    public MessageSignatureData.Unpacker getUnpacker() {
+        return index -> this.signatures[index];
+    }
+
+    public void add(SignedMessage message) {
+        List<MessageSignatureData> list = message.signedBody().lastSeenMessages().entries();
+        ArrayDeque<MessageSignatureData> arrayDeque = new ArrayDeque<MessageSignatureData>(list.size() + 1);
+        arrayDeque.addAll(list);
+        MessageSignatureData messageSignatureData = message.signature();
+        if (messageSignatureData != null) {
+            arrayDeque.add(messageSignatureData);
+        }
+        this.addFrom(arrayDeque);
+    }
+
+    @VisibleForTesting
+    void addFrom(List<MessageSignatureData> signatures) {
+        this.addFrom(new ArrayDeque<MessageSignatureData>(signatures));
+    }
+
+    private void addFrom(ArrayDeque<MessageSignatureData> deque) {
+        ObjectOpenHashSet<MessageSignatureData> set = new ObjectOpenHashSet<MessageSignatureData>(deque);
+        for (int i = 0; !deque.isEmpty() && i < this.signatures.length; ++i) {
+            MessageSignatureData messageSignatureData = this.signatures[i];
+            this.signatures[i] = deque.removeLast();
+            if (messageSignatureData == null || set.contains(messageSignatureData)) continue;
+            deque.addFirst(messageSignatureData);
+        }
+    }
+}
+

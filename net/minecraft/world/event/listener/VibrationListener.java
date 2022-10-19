@@ -3,66 +3,132 @@
  */
 package net.minecraft.world.event.listener;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMaps;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.Optional;
-import java.util.UUID;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.particle.VibrationParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.GameEventTags;
 import net.minecraft.tag.TagKey;
+import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockStateRaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.PositionSource;
 import net.minecraft.world.event.listener.GameEventListener;
+import net.minecraft.world.event.listener.Vibration;
+import net.minecraft.world.event.listener.VibrationSelector;
 import org.jetbrains.annotations.Nullable;
 
 public class VibrationListener
 implements GameEventListener {
+    @VisibleForTesting
+    public static final Object2IntMap<GameEvent> FREQUENCIES = Object2IntMaps.unmodifiable(Util.make(new Object2IntOpenHashMap(), frequencies -> {
+        frequencies.put(GameEvent.STEP, 1);
+        frequencies.put(GameEvent.FLAP, 2);
+        frequencies.put(GameEvent.SWIM, 3);
+        frequencies.put(GameEvent.ELYTRA_GLIDE, 4);
+        frequencies.put(GameEvent.HIT_GROUND, 5);
+        frequencies.put(GameEvent.TELEPORT, 5);
+        frequencies.put(GameEvent.SPLASH, 6);
+        frequencies.put(GameEvent.ENTITY_SHAKE, 6);
+        frequencies.put(GameEvent.BLOCK_CHANGE, 6);
+        frequencies.put(GameEvent.NOTE_BLOCK_PLAY, 6);
+        frequencies.put(GameEvent.PROJECTILE_SHOOT, 7);
+        frequencies.put(GameEvent.DRINK, 7);
+        frequencies.put(GameEvent.PRIME_FUSE, 7);
+        frequencies.put(GameEvent.PROJECTILE_LAND, 8);
+        frequencies.put(GameEvent.EAT, 8);
+        frequencies.put(GameEvent.ENTITY_INTERACT, 8);
+        frequencies.put(GameEvent.ENTITY_DAMAGE, 8);
+        frequencies.put(GameEvent.EQUIP, 9);
+        frequencies.put(GameEvent.SHEAR, 9);
+        frequencies.put(GameEvent.ENTITY_ROAR, 9);
+        frequencies.put(GameEvent.BLOCK_CLOSE, 10);
+        frequencies.put(GameEvent.BLOCK_DEACTIVATE, 10);
+        frequencies.put(GameEvent.BLOCK_DETACH, 10);
+        frequencies.put(GameEvent.DISPENSE_FAIL, 10);
+        frequencies.put(GameEvent.BLOCK_OPEN, 11);
+        frequencies.put(GameEvent.BLOCK_ACTIVATE, 11);
+        frequencies.put(GameEvent.BLOCK_ATTACH, 11);
+        frequencies.put(GameEvent.ENTITY_PLACE, 12);
+        frequencies.put(GameEvent.BLOCK_PLACE, 12);
+        frequencies.put(GameEvent.FLUID_PLACE, 12);
+        frequencies.put(GameEvent.ENTITY_DIE, 13);
+        frequencies.put(GameEvent.BLOCK_DESTROY, 13);
+        frequencies.put(GameEvent.FLUID_PICKUP, 13);
+        frequencies.put(GameEvent.ITEM_INTERACT_FINISH, 14);
+        frequencies.put(GameEvent.CONTAINER_CLOSE, 14);
+        frequencies.put(GameEvent.PISTON_CONTRACT, 14);
+        frequencies.put(GameEvent.PISTON_EXTEND, 15);
+        frequencies.put(GameEvent.CONTAINER_OPEN, 15);
+        frequencies.put(GameEvent.EXPLODE, 15);
+        frequencies.put(GameEvent.LIGHTNING_STRIKE, 15);
+        frequencies.put(GameEvent.INSTRUMENT_PLAY, 15);
+    }));
     protected final PositionSource positionSource;
     protected final int range;
     protected final Callback callback;
     @Nullable
     protected Vibration vibration;
-    protected float distance;
     protected int delay;
+    private final VibrationSelector selector;
 
     public static Codec<VibrationListener> createCodec(Callback callback) {
-        return RecordCodecBuilder.create(instance -> instance.group(((MapCodec)PositionSource.CODEC.fieldOf("source")).forGetter(listener -> listener.positionSource), ((MapCodec)Codecs.NONNEGATIVE_INT.fieldOf("range")).forGetter(listener -> listener.range), Vibration.CODEC.optionalFieldOf("event").forGetter(listener -> Optional.ofNullable(listener.vibration)), ((MapCodec)Codec.floatRange(0.0f, Float.MAX_VALUE).fieldOf("event_distance")).orElse(Float.valueOf(0.0f)).forGetter(listener -> Float.valueOf(listener.distance)), ((MapCodec)Codecs.NONNEGATIVE_INT.fieldOf("event_delay")).orElse(0).forGetter(listener -> listener.delay)).apply((Applicative<VibrationListener, ?>)instance, (positionSource, range, vibration, distance, delay) -> new VibrationListener((PositionSource)positionSource, (int)range, callback, vibration.orElse(null), distance.floatValue(), (int)delay)));
+        return RecordCodecBuilder.create(instance -> instance.group(((MapCodec)PositionSource.CODEC.fieldOf("source")).forGetter(listener -> listener.positionSource), ((MapCodec)Codecs.NONNEGATIVE_INT.fieldOf("range")).forGetter(listener -> listener.range), Vibration.CODEC.optionalFieldOf("event").forGetter(listener -> Optional.ofNullable(listener.vibration)), ((MapCodec)VibrationSelector.CODEC.fieldOf("selector")).forGetter(listener -> listener.selector), ((MapCodec)Codecs.NONNEGATIVE_INT.fieldOf("event_delay")).orElse(0).forGetter(listener -> listener.delay)).apply((Applicative<VibrationListener, ?>)instance, (positionSource, range, vibration, selector, delay) -> new VibrationListener((PositionSource)positionSource, (int)range, callback, vibration.orElse(null), (VibrationSelector)selector, (int)delay)));
     }
 
-    public VibrationListener(PositionSource positionSource, int range, Callback callback, @Nullable Vibration vibration, float distance, int delay) {
+    private VibrationListener(PositionSource positionSource, int range, Callback callback, @Nullable Vibration vibration, VibrationSelector selector, int delay) {
         this.positionSource = positionSource;
         this.range = range;
         this.callback = callback;
         this.vibration = vibration;
-        this.distance = distance;
         this.delay = delay;
+        this.selector = selector;
+    }
+
+    public VibrationListener(PositionSource positionSource, int range, Callback callback) {
+        this(positionSource, range, callback, null, new VibrationSelector(), 0);
+    }
+
+    public static int getFrequency(GameEvent event) {
+        return FREQUENCIES.getOrDefault((Object)event, 0);
     }
 
     public void tick(World world) {
         if (world instanceof ServerWorld) {
             ServerWorld serverWorld = (ServerWorld)world;
+            if (this.vibration == null) {
+                this.selector.getVibrationToTick(serverWorld.getTime()).ifPresent(vibration -> {
+                    this.vibration = vibration;
+                    Vec3d vec3d = this.vibration.pos();
+                    this.delay = MathHelper.floor(this.vibration.distance());
+                    serverWorld.spawnParticles(new VibrationParticleEffect(this.positionSource, this.delay), vec3d.x, vec3d.y, vec3d.z, 1, 0.0, 0.0, 0.0, 0.0);
+                    this.callback.onListen();
+                    this.selector.clear();
+                });
+            }
             if (this.vibration != null) {
                 --this.delay;
                 if (this.delay <= 0) {
                     this.delay = 0;
-                    this.callback.accept(serverWorld, this, new BlockPos(this.vibration.pos), this.vibration.gameEvent, this.vibration.getEntity(serverWorld).orElse(null), this.vibration.getOwner(serverWorld).orElse(null), this.distance);
+                    this.callback.accept(serverWorld, this, new BlockPos(this.vibration.pos()), this.vibration.gameEvent(), this.vibration.getEntity(serverWorld).orElse(null), this.vibration.getOwner(serverWorld).orElse(null), this.vibration.distance());
                     this.vibration = null;
                 }
             }
@@ -80,37 +146,34 @@ implements GameEventListener {
     }
 
     @Override
-    public boolean listen(ServerWorld world, GameEvent.Message event) {
-        GameEvent.Emitter emitter;
+    public boolean listen(ServerWorld world, GameEvent event, GameEvent.Emitter emitter, Vec3d emitterPos) {
         if (this.vibration != null) {
             return false;
         }
-        GameEvent gameEvent = event.getEvent();
-        if (!this.callback.canAccept(gameEvent, emitter = event.getEmitter())) {
+        if (!this.callback.canAccept(event, emitter)) {
             return false;
         }
         Optional<Vec3d> optional = this.positionSource.getPos(world);
         if (optional.isEmpty()) {
             return false;
         }
-        Vec3d vec3d = event.getEmitterPos();
-        Vec3d vec3d2 = optional.get();
-        if (!this.callback.accepts(world, this, new BlockPos(vec3d), gameEvent, emitter)) {
+        Vec3d vec3d = optional.get();
+        if (!this.callback.accepts(world, this, new BlockPos(emitterPos), event, emitter)) {
             return false;
         }
-        if (VibrationListener.isOccluded(world, vec3d, vec3d2)) {
+        if (VibrationListener.isOccluded(world, emitterPos, vec3d)) {
             return false;
         }
-        this.listen(world, gameEvent, emitter, vec3d, vec3d2);
+        this.trySelect(world, event, emitter, emitterPos, vec3d);
         return true;
     }
 
-    private void listen(ServerWorld world, GameEvent gameEvent, GameEvent.Emitter emitter, Vec3d start, Vec3d end) {
-        this.distance = (float)start.distanceTo(end);
-        this.vibration = new Vibration(gameEvent, this.distance, start, emitter.sourceEntity());
-        this.delay = MathHelper.floor(this.distance);
-        world.spawnParticles(new VibrationParticleEffect(this.positionSource, this.delay), start.x, start.y, start.z, 1, 0.0, 0.0, 0.0, 0.0);
-        this.callback.onListen();
+    public void forceListen(ServerWorld world, GameEvent event, GameEvent.Emitter emitter, Vec3d emitterPos) {
+        this.positionSource.getPos(world).ifPresent(listenerPos -> this.trySelect(world, event, emitter, emitterPos, (Vec3d)listenerPos));
+    }
+
+    public void trySelect(ServerWorld world, GameEvent event, GameEvent.Emitter emitter, Vec3d emitterPos, Vec3d listenerPos) {
+        this.selector.tryAccept(new Vibration(event, (float)emitterPos.distanceTo(listenerPos), emitterPos, emitter.sourceEntity()), world.getTime());
     }
 
     private static boolean isOccluded(World world, Vec3d start, Vec3d end) {
@@ -164,50 +227,6 @@ implements GameEventListener {
         public void accept(ServerWorld var1, GameEventListener var2, BlockPos var3, GameEvent var4, @Nullable Entity var5, @Nullable Entity var6, float var7);
 
         default public void onListen() {
-        }
-    }
-
-    public record Vibration(GameEvent gameEvent, float distance, Vec3d pos, @Nullable UUID uuid, @Nullable UUID projectileOwnerUuid, @Nullable Entity entity) {
-        public static final Codec<Vibration> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Registry.GAME_EVENT.getCodec().fieldOf("game_event")).forGetter(Vibration::gameEvent), ((MapCodec)Codec.floatRange(0.0f, Float.MAX_VALUE).fieldOf("distance")).forGetter(Vibration::distance), ((MapCodec)Vec3d.CODEC.fieldOf("pos")).forGetter(Vibration::pos), Codecs.UUID.optionalFieldOf("source").forGetter(vibration -> Optional.ofNullable(vibration.uuid())), Codecs.UUID.optionalFieldOf("projectile_owner").forGetter(vibration -> Optional.ofNullable(vibration.projectileOwnerUuid()))).apply((Applicative<Vibration, ?>)instance, (event, distance, pos, uuid, projectileOwnerUuid) -> new Vibration((GameEvent)event, distance.floatValue(), (Vec3d)pos, uuid.orElse(null), projectileOwnerUuid.orElse(null))));
-
-        public Vibration(GameEvent gameEvent, float distance, Vec3d pos, @Nullable UUID uuid, @Nullable UUID projectileOwnerUuid) {
-            this(gameEvent, distance, pos, uuid, projectileOwnerUuid, null);
-        }
-
-        public Vibration(GameEvent gameEvent, float distance, Vec3d pos, @Nullable Entity entity) {
-            this(gameEvent, distance, pos, entity == null ? null : entity.getUuid(), Vibration.getOwnerUuid(entity), entity);
-        }
-
-        @Nullable
-        private static UUID getOwnerUuid(@Nullable Entity entity) {
-            ProjectileEntity projectileEntity;
-            if (entity instanceof ProjectileEntity && (projectileEntity = (ProjectileEntity)entity).getOwner() != null) {
-                return projectileEntity.getOwner().getUuid();
-            }
-            return null;
-        }
-
-        public Optional<Entity> getEntity(ServerWorld world) {
-            return Optional.ofNullable(this.entity).or(() -> Optional.ofNullable(this.uuid).map(world::getEntity));
-        }
-
-        public Optional<Entity> getOwner(ServerWorld world) {
-            return this.getEntity(world).filter(entity -> entity instanceof ProjectileEntity).map(entity -> (ProjectileEntity)entity).map(ProjectileEntity::getOwner).or(() -> Optional.ofNullable(this.projectileOwnerUuid).map(world::getEntity));
-        }
-
-        @Nullable
-        public UUID uuid() {
-            return this.uuid;
-        }
-
-        @Nullable
-        public UUID projectileOwnerUuid() {
-            return this.projectileOwnerUuid;
-        }
-
-        @Nullable
-        public Entity entity() {
-            return this.entity;
         }
     }
 }

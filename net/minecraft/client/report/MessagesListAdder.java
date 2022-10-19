@@ -3,82 +3,69 @@
  */
 package net.minecraft.client.report;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.OptionalInt;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.report.GroupedMessagesCollector;
+import net.minecraft.client.report.AbuseReportContext;
+import net.minecraft.client.report.ContextMessageCollector;
 import net.minecraft.client.report.log.ChatLog;
+import net.minecraft.client.report.log.ChatLogEntry;
 import net.minecraft.client.report.log.ReceivedMessage;
+import net.minecraft.network.message.SignedMessage;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
-public class MessagesListAdder<T extends ReceivedMessage> {
-    private static final int MAX_CONTIGUOUS_CONTEXT_MESSAGES = 4;
+public class MessagesListAdder {
     private final ChatLog log;
-    private final Predicate<T> reportablePredicate;
-    private int logMaxIndex;
-    final Class<T> collectedMessageClass;
-
-    public MessagesListAdder(ChatLog log, Predicate<T> reportablePredicate, Class<T> collectedMessageClass) {
-        this.log = log;
-        this.reportablePredicate = reportablePredicate;
-        this.logMaxIndex = log.getMaxIndex();
-        this.collectedMessageClass = collectedMessageClass;
-    }
-
-    public void add(int minAmount, MessagesList<T> messagesList) {
-        GroupedMessagesCollector.GroupedMessages<T> groupedMessages;
-        int i = 0;
-        while (i < minAmount && (groupedMessages = this.collectGroupedMessages()) != null) {
-            if (groupedMessages.type().isContext()) {
-                i += this.addContextMessages(groupedMessages.messages(), messagesList);
-                continue;
-            }
-            messagesList.addMessages(groupedMessages.messages());
-            i += groupedMessages.messages().size();
-        }
-    }
-
-    private int addContextMessages(List<ChatLog.IndexedEntry<T>> messages, MessagesList<T> messagesList) {
-        int i = 8;
-        if (messages.size() > 8) {
-            int j = messages.size() - 8;
-            messagesList.addMessages(messages.subList(0, 4));
-            messagesList.addText(Text.translatable("gui.chatSelection.fold", j));
-            messagesList.addMessages(messages.subList(messages.size() - 4, messages.size()));
-            return 9;
-        }
-        messagesList.addMessages(messages);
-        return messages.size();
-    }
-
+    private final ContextMessageCollector contextMessageCollector;
+    private final Predicate<ReceivedMessage.ChatMessage> reportablePredicate;
+    private int maxLogIndex;
+    private int foldedMessageCount;
     @Nullable
-    private GroupedMessagesCollector.GroupedMessages<T> collectGroupedMessages() {
-        GroupedMessagesCollector groupedMessagesCollector = new GroupedMessagesCollector(message -> this.getReportType((ReceivedMessage)message.entry()));
-        OptionalInt optionalInt = this.log.streamBackward(this.logMaxIndex).streamIndexedEntries().map(entry -> entry.cast(this.collectedMessageClass)).filter(Objects::nonNull).takeWhile(groupedMessagesCollector::add).mapToInt(ChatLog.IndexedEntry::index).reduce((acc, cur) -> cur);
-        if (optionalInt.isPresent()) {
-            this.logMaxIndex = this.log.getPreviousIndex(optionalInt.getAsInt());
-        }
-        return groupedMessagesCollector.collect();
+    private SignedMessage lastMessage;
+
+    public MessagesListAdder(AbuseReportContext context, Predicate<ReceivedMessage.ChatMessage> reportablePredicate) {
+        this.log = context.chatLog();
+        this.contextMessageCollector = new ContextMessageCollector(context.sender().getLimits().leadingContextMessageCount());
+        this.reportablePredicate = reportablePredicate;
+        this.maxLogIndex = this.log.getMaxIndex();
     }
 
-    private GroupedMessagesCollector.ReportType getReportType(T message) {
-        return this.reportablePredicate.test(message) ? GroupedMessagesCollector.ReportType.REPORTABLE : GroupedMessagesCollector.ReportType.CONTEXT;
+    public void add(int minAmount, MessagesList messages) {
+        ChatLogEntry chatLogEntry;
+        int i = 0;
+        while (i < minAmount && (chatLogEntry = this.log.get(this.maxLogIndex)) != null) {
+            ReceivedMessage.ChatMessage chatMessage;
+            int j = this.maxLogIndex--;
+            if (!(chatLogEntry instanceof ReceivedMessage.ChatMessage) || (chatMessage = (ReceivedMessage.ChatMessage)chatLogEntry).message().equals(this.lastMessage)) continue;
+            if (this.tryAdd(chatMessage)) {
+                if (this.foldedMessageCount > 0) {
+                    messages.addText(Text.translatable("gui.chatSelection.fold", this.foldedMessageCount));
+                    this.foldedMessageCount = 0;
+                }
+                messages.addMessage(j, chatMessage);
+                ++i;
+            } else {
+                ++this.foldedMessageCount;
+            }
+            this.lastMessage = chatMessage.message();
+        }
+    }
+
+    private boolean tryAdd(ReceivedMessage.ChatMessage message) {
+        SignedMessage signedMessage = message.message();
+        boolean bl = this.contextMessageCollector.tryLink(signedMessage);
+        if (this.reportablePredicate.test(message)) {
+            this.contextMessageCollector.add(signedMessage);
+            return true;
+        }
+        return bl;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static interface MessagesList<T extends ReceivedMessage> {
-        default public void addMessages(Iterable<ChatLog.IndexedEntry<T>> messages) {
-            for (ChatLog.IndexedEntry<T> indexedEntry : messages) {
-                this.addMessage(indexedEntry.index(), (ReceivedMessage)indexedEntry.entry());
-            }
-        }
-
-        public void addMessage(int var1, T var2);
+    public static interface MessagesList {
+        public void addMessage(int var1, ReceivedMessage.ChatMessage var2);
 
         public void addText(Text var1);
     }

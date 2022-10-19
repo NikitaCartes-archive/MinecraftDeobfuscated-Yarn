@@ -130,7 +130,7 @@ extends AbstractFireBlock {
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         boolean bl2;
-        world.createAndScheduleBlockTick(pos, this, FireBlock.getFireTickDelay(world.random));
+        world.scheduleBlockTick(pos, this, FireBlock.getFireTickDelay(world.random));
         if (!world.getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
             return;
         }
@@ -264,7 +264,7 @@ extends AbstractFireBlock {
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
         super.onBlockAdded(state, world, pos, oldState, notify);
-        world.createAndScheduleBlockTick(pos, this, FireBlock.getFireTickDelay(world.random));
+        world.scheduleBlockTick(pos, this, FireBlock.getFireTickDelay(world.random));
     }
 
     private static int getFireTickDelay(Random random) {
@@ -290,6 +290,8 @@ extends AbstractFireBlock {
         fireBlock.registerFlammableBlock(Blocks.ACACIA_PLANKS, 5, 20);
         fireBlock.registerFlammableBlock(Blocks.DARK_OAK_PLANKS, 5, 20);
         fireBlock.registerFlammableBlock(Blocks.MANGROVE_PLANKS, 5, 20);
+        fireBlock.registerFlammableBlock(Blocks.BAMBOO_PLANKS, 5, 20);
+        fireBlock.registerFlammableBlock(Blocks.BAMBOO_MOSAIC, 5, 20);
         fireBlock.registerFlammableBlock(Blocks.OAK_SLAB, 5, 20);
         fireBlock.registerFlammableBlock(Blocks.SPRUCE_SLAB, 5, 20);
         fireBlock.registerFlammableBlock(Blocks.BIRCH_SLAB, 5, 20);
@@ -297,6 +299,8 @@ extends AbstractFireBlock {
         fireBlock.registerFlammableBlock(Blocks.ACACIA_SLAB, 5, 20);
         fireBlock.registerFlammableBlock(Blocks.DARK_OAK_SLAB, 5, 20);
         fireBlock.registerFlammableBlock(Blocks.MANGROVE_SLAB, 5, 20);
+        fireBlock.registerFlammableBlock(Blocks.BAMBOO_SLAB, 5, 20);
+        fireBlock.registerFlammableBlock(Blocks.BAMBOO_MOSAIC_STAIRS, 5, 20);
         fireBlock.registerFlammableBlock(Blocks.OAK_FENCE_GATE, 5, 20);
         fireBlock.registerFlammableBlock(Blocks.SPRUCE_FENCE_GATE, 5, 20);
         fireBlock.registerFlammableBlock(Blocks.BIRCH_FENCE_GATE, 5, 20);
@@ -304,6 +308,7 @@ extends AbstractFireBlock {
         fireBlock.registerFlammableBlock(Blocks.ACACIA_FENCE_GATE, 5, 20);
         fireBlock.registerFlammableBlock(Blocks.DARK_OAK_FENCE_GATE, 5, 20);
         fireBlock.registerFlammableBlock(Blocks.MANGROVE_FENCE_GATE, 5, 20);
+        fireBlock.registerFlammableBlock(Blocks.BAMBOO_FENCE_GATE, 5, 20);
         fireBlock.registerFlammableBlock(Blocks.OAK_FENCE, 5, 20);
         fireBlock.registerFlammableBlock(Blocks.SPRUCE_FENCE, 5, 20);
         fireBlock.registerFlammableBlock(Blocks.BIRCH_FENCE, 5, 20);
@@ -311,6 +316,7 @@ extends AbstractFireBlock {
         fireBlock.registerFlammableBlock(Blocks.ACACIA_FENCE, 5, 20);
         fireBlock.registerFlammableBlock(Blocks.DARK_OAK_FENCE, 5, 20);
         fireBlock.registerFlammableBlock(Blocks.MANGROVE_FENCE, 5, 20);
+        fireBlock.registerFlammableBlock(Blocks.BAMBOO_FENCE, 5, 20);
         fireBlock.registerFlammableBlock(Blocks.OAK_STAIRS, 5, 20);
         fireBlock.registerFlammableBlock(Blocks.BIRCH_STAIRS, 5, 20);
         fireBlock.registerFlammableBlock(Blocks.SPRUCE_STAIRS, 5, 20);
@@ -318,6 +324,8 @@ extends AbstractFireBlock {
         fireBlock.registerFlammableBlock(Blocks.ACACIA_STAIRS, 5, 20);
         fireBlock.registerFlammableBlock(Blocks.DARK_OAK_STAIRS, 5, 20);
         fireBlock.registerFlammableBlock(Blocks.MANGROVE_STAIRS, 5, 20);
+        fireBlock.registerFlammableBlock(Blocks.BAMBOO_STAIRS, 5, 20);
+        fireBlock.registerFlammableBlock(Blocks.BAMBOO_MOSAIC_STAIRS, 5, 20);
         fireBlock.registerFlammableBlock(Blocks.OAK_LOG, 5, 5);
         fireBlock.registerFlammableBlock(Blocks.SPRUCE_LOG, 5, 5);
         fireBlock.registerFlammableBlock(Blocks.BIRCH_LOG, 5, 5);

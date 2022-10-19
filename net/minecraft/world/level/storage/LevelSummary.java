@@ -23,15 +23,17 @@ implements Comparable<LevelSummary> {
     private final String name;
     private final boolean requiresConversion;
     private final boolean locked;
+    private final boolean experimental;
     private final Path iconPath;
     @Nullable
     private Text details;
 
-    public LevelSummary(LevelInfo levelInfo, SaveVersionInfo versionInfo, String name, boolean requiresConversion, boolean locked, Path iconPath) {
+    public LevelSummary(LevelInfo levelInfo, SaveVersionInfo versionInfo, String name, boolean requiresConversion, boolean locked, boolean experimental, Path iconPath) {
         this.levelInfo = levelInfo;
         this.versionInfo = versionInfo;
         this.name = name;
         this.locked = locked;
+        this.experimental = experimental;
         this.iconPath = iconPath;
         this.requiresConversion = requiresConversion;
     }
@@ -50,6 +52,10 @@ implements Comparable<LevelSummary> {
 
     public boolean requiresConversion() {
         return this.requiresConversion;
+    }
+
+    public boolean isExperimental() {
+        return this.experimental;
     }
 
     public long getLastPlayed() {
@@ -151,6 +157,9 @@ implements Comparable<LevelSummary> {
         MutableText mutableText2 = mutableText = this.isHardcore() ? Text.empty().append(Text.translatable("gameMode.hardcore").formatted(Formatting.DARK_RED)) : Text.translatable("gameMode." + this.getGameMode().getName());
         if (this.hasCheats()) {
             mutableText.append(", ").append(Text.translatable("selectWorld.cheats"));
+        }
+        if (this.isExperimental()) {
+            mutableText.append(", ").append(Text.translatable("selectWorld.experimental").formatted(Formatting.YELLOW));
         }
         MutableText mutableText22 = this.getVersion();
         MutableText mutableText3 = Text.literal(", ").append(Text.translatable("selectWorld.version")).append(" ");

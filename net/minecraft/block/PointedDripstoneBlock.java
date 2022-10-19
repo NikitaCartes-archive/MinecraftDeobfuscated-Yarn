@@ -105,7 +105,7 @@ Waterloggable {
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (state.get(WATERLOGGED).booleanValue()) {
-            world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+            world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
         if (direction != Direction.UP && direction != Direction.DOWN) {
             return state;
@@ -116,9 +116,9 @@ Waterloggable {
         }
         if (direction == direction2.getOpposite() && !this.canPlaceAt(state, world, pos)) {
             if (direction2 == Direction.DOWN) {
-                world.createAndScheduleBlockTick(pos, this, 2);
+                world.scheduleBlockTick(pos, this, 2);
             } else {
-                world.createAndScheduleBlockTick(pos, this, 1);
+                world.scheduleBlockTick(pos, this, 1);
             }
             return state;
         }
@@ -217,7 +217,7 @@ Waterloggable {
         int i = blockPos.getY() - blockPos2.getY();
         int j = 50 + i;
         BlockState blockState2 = world.getBlockState(blockPos2);
-        world.createAndScheduleBlockTick(blockPos2, blockState2.getBlock(), j);
+        world.scheduleBlockTick(blockPos2, blockState2.getBlock(), j);
     }
 
     @Override

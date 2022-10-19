@@ -219,7 +219,7 @@ implements Drawable {
         k = i;
         int n = j;
         if (l + i > this.width) {
-            l -= 28 + i;
+            l = Math.max(l - 24 - 4 - i, 4);
         }
         if (m + n + 6 > this.height) {
             m = this.height - n - 6;
@@ -338,7 +338,7 @@ implements Drawable {
                 } else if (clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
                     String string2 = SharedConstants.stripInvalidChars(clickEvent.getValue());
                     if (string2.startsWith("/")) {
-                        if (!this.client.player.sendCommand(string2.substring(1))) {
+                        if (!this.client.player.networkHandler.sendCommand(string2.substring(1))) {
                             LOGGER.error("Not allowed to run command with signed argument from click event: '{}'", (Object)string2);
                         }
                     } else {

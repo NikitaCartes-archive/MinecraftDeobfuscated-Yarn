@@ -153,8 +153,8 @@ public interface EntityView {
     }
 
     @Nullable
-    default public <T extends LivingEntity> T getClosestEntity(Class<? extends T> entityClass, TargetPredicate targetPredicate, @Nullable LivingEntity entity, double x, double y, double z, Box box) {
-        return (T)this.getClosestEntity(this.getEntitiesByClass(entityClass, box, livingEntity -> true), targetPredicate, entity, x, y, z);
+    default public <T extends LivingEntity> T getClosestEntity(Class<? extends T> entityClass, TargetPredicate targetPredicate, @Nullable LivingEntity entity2, double x, double y, double z, Box box) {
+        return (T)this.getClosestEntity(this.getEntitiesByClass(entityClass, box, entity -> true), targetPredicate, entity2, x, y, z);
     }
 
     @Nullable

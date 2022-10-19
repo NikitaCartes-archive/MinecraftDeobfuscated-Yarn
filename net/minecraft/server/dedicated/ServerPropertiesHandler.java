@@ -3,6 +3,7 @@
  */
 package net.minecraft.server.dedicated;
 
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -10,12 +11,18 @@ import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.JsonOps;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import net.minecraft.resource.DataConfiguration;
+import net.minecraft.resource.DataPackSettings;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.AbstractPropertiesHandler;
 import net.minecraft.structure.StructureSet;
@@ -31,6 +38,7 @@ import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.dimension.DimensionOptionsRegistryHolder;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.gen.WorldPreset;
 import net.minecraft.world.gen.WorldPresets;
@@ -43,6 +51,7 @@ public class ServerPropertiesHandler
 extends AbstractPropertiesHandler<ServerPropertiesHandler> {
     static final Logger field_37276 = LogUtils.getLogger();
     private static final Pattern SHA1_PATTERN = Pattern.compile("^[a-fA-F0-9]{40}$");
+    private static final Splitter COMMA_SPLITTER = Splitter.on(',').trimResults();
     public final boolean onlineMode = this.parseBoolean("online-mode", true);
     public final boolean preventProxyConnections = this.parseBoolean("prevent-proxy-connections", false);
     public final String serverIp = this.getString("server-ip", "");
@@ -88,18 +97,23 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
     public final boolean hideOnlinePlayers = this.parseBoolean("hide-online-players", false);
     public final int entityBroadcastRangePercentage = this.transformedParseInt("entity-broadcast-range-percentage", percentage -> MathHelper.clamp(percentage, 10, 1000), 100);
     public final String textFilteringConfig = this.getString("text-filtering-config", "");
-    public Optional<MinecraftServer.ServerResourcePackProperties> serverResourcePackProperties;
-    public final boolean previewsChat = this.parseBoolean("previews-chat", false);
+    public final Optional<MinecraftServer.ServerResourcePackProperties> serverResourcePackProperties;
+    public final DataPackSettings dataPackSettings;
     public final AbstractPropertiesHandler.PropertyAccessor<Integer> playerIdleTimeout = this.intAccessor("player-idle-timeout", 0);
     public final AbstractPropertiesHandler.PropertyAccessor<Boolean> whiteList = this.booleanAccessor("white-list", false);
     public final boolean enforceSecureProfile = this.parseBoolean("enforce-secure-profile", true);
-    private final WorldGenProperties worldGenProperties = new WorldGenProperties(this.getString("level-seed", ""), this.get("generator-settings", generatorSettings -> JsonHelper.deserialize(!generatorSettings.isEmpty() ? generatorSettings : "{}"), new JsonObject()), this.parseBoolean("generate-structures", true), this.get("level-type", type -> type.toLowerCase(Locale.ROOT), WorldPresets.DEFAULT.getValue().toString()));
-    @Nullable
-    private GeneratorOptions generatorOptions;
+    private final WorldGenProperties worldGenProperties;
+    public final GeneratorOptions generatorOptions;
 
     public ServerPropertiesHandler(Properties properties) {
         super(properties);
+        String string = this.getString("level-seed", "");
+        boolean bl = this.parseBoolean("generate-structures", true);
+        long l = GeneratorOptions.parseSeed(string).orElse(Random.create().nextLong());
+        this.generatorOptions = new GeneratorOptions(l, bl, false);
+        this.worldGenProperties = new WorldGenProperties(this.get("generator-settings", generatorSettings -> JsonHelper.deserialize(!generatorSettings.isEmpty() ? generatorSettings : "{}"), new JsonObject()), this.get("level-type", type -> type.toLowerCase(Locale.ROOT), WorldPresets.DEFAULT.getValue().toString()));
         this.serverResourcePackProperties = ServerPropertiesHandler.getServerResourcePackProperties(this.getString("resource-pack", ""), this.getString("resource-pack-sha1", ""), this.getDeprecatedString("resource-pack-hash"), this.parseBoolean("require-resource-pack", false), this.getString("resource-pack-prompt", ""));
+        this.dataPackSettings = ServerPropertiesHandler.parseDataPackSettings(this.getString("initial-enabled-packs", String.join((CharSequence)",", DataConfiguration.SAFE_MODE.dataPacks().getEnabled())), this.getString("initial-disabled-packs", String.join((CharSequence)",", DataConfiguration.SAFE_MODE.dataPacks().getDisabled())));
     }
 
     public static ServerPropertiesHandler load(Path path) {
@@ -108,9 +122,7 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
 
     @Override
     protected ServerPropertiesHandler create(DynamicRegistryManager dynamicRegistryManager, Properties properties) {
-        ServerPropertiesHandler serverPropertiesHandler = new ServerPropertiesHandler(properties);
-        serverPropertiesHandler.getGeneratorOptions(dynamicRegistryManager);
-        return serverPropertiesHandler;
+        return new ServerPropertiesHandler(properties);
     }
 
     @Nullable
@@ -150,11 +162,25 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
         return Optional.of(new MinecraftServer.ServerResourcePackProperties(url, string, required, text));
     }
 
-    public GeneratorOptions getGeneratorOptions(DynamicRegistryManager dynamicRegistryManager) {
-        if (this.generatorOptions == null) {
-            this.generatorOptions = this.worldGenProperties.createGeneratorOptions(dynamicRegistryManager);
-        }
-        return this.generatorOptions;
+    private static DataPackSettings parseDataPackSettings(String enabled, String disabled) {
+        List<String> list = COMMA_SPLITTER.splitToList(enabled);
+        List<String> list2 = COMMA_SPLITTER.splitToList(disabled);
+        return new DataPackSettings(list, list2);
+    }
+
+    private static FeatureSet parseFeatureFlags(String featureFlags) {
+        return FeatureFlags.FEATURE_MANAGER.featureSetOf(COMMA_SPLITTER.splitToStream(featureFlags).mapMulti((id, consumer) -> {
+            Identifier identifier = Identifier.tryParse(id);
+            if (identifier == null) {
+                field_37276.warn("Invalid resource location {}, ignoring", id);
+            } else {
+                consumer.accept(identifier);
+            }
+        }).collect(Collectors.toList()));
+    }
+
+    public DimensionOptionsRegistryHolder createDimensionsRegistryHolder(DynamicRegistryManager dynamicRegistry) {
+        return this.worldGenProperties.createDimensionsRegistryHolder(dynamicRegistry);
     }
 
     @Override
@@ -162,27 +188,26 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
         return this.create(registryManager, properties);
     }
 
-    public record WorldGenProperties(String levelSeed, JsonObject generatorSettings, boolean generateStructures, String levelType) {
+    record WorldGenProperties(JsonObject generatorSettings, String levelType) {
         private static final Map<String, RegistryKey<WorldPreset>> LEVEL_TYPE_TO_PRESET_KEY = Map.of("default", WorldPresets.DEFAULT, "largebiomes", WorldPresets.LARGE_BIOMES);
 
-        public GeneratorOptions createGeneratorOptions(DynamicRegistryManager dynamicRegistryManager) {
-            long l = GeneratorOptions.parseSeed(this.levelSeed()).orElse(Random.create().nextLong());
+        public DimensionOptionsRegistryHolder createDimensionsRegistryHolder(DynamicRegistryManager dynamicRegistryManager) {
             Registry<WorldPreset> registry = dynamicRegistryManager.get(Registry.WORLD_PRESET_KEY);
-            RegistryEntry<WorldPreset> registryEntry = registry.getEntry(WorldPresets.DEFAULT).or(() -> registry.streamEntries().findAny()).orElseThrow(() -> new IllegalStateException("Invalid datapack contents: can't find default preset"));
-            RegistryEntry registryEntry2 = Optional.ofNullable(Identifier.tryParse(this.levelType)).map(levelTypeId -> RegistryKey.of(Registry.WORLD_PRESET_KEY, levelTypeId)).or(() -> Optional.ofNullable(LEVEL_TYPE_TO_PRESET_KEY.get(this.levelType))).flatMap(registry::getEntry).orElseGet(() -> {
-                field_37276.warn("Failed to parse level-type {}, defaulting to {}", (Object)this.levelType, (Object)registryEntry.getKey().map(key -> key.getValue().toString()).orElse("[unnamed]"));
-                return registryEntry;
+            RegistryEntry.Reference<WorldPreset> reference = registry.getEntry(WorldPresets.DEFAULT).or(() -> registry.streamEntries().findAny()).orElseThrow(() -> new IllegalStateException("Invalid datapack contents: can't find default preset"));
+            RegistryEntry registryEntry = Optional.ofNullable(Identifier.tryParse(this.levelType)).map(levelTypeId -> RegistryKey.of(Registry.WORLD_PRESET_KEY, levelTypeId)).or(() -> Optional.ofNullable(LEVEL_TYPE_TO_PRESET_KEY.get(this.levelType))).flatMap(registry::getEntry).orElseGet(() -> {
+                field_37276.warn("Failed to parse level-type {}, defaulting to {}", (Object)this.levelType, (Object)reference.registryKey().getValue());
+                return reference;
             });
-            GeneratorOptions generatorOptions = ((WorldPreset)registryEntry2.value()).createGeneratorOptions(l, this.generateStructures, false);
-            if (registryEntry2.matchesKey(WorldPresets.FLAT)) {
+            DimensionOptionsRegistryHolder dimensionOptionsRegistryHolder = ((WorldPreset)registryEntry.value()).createDimensionsRegistryHolder();
+            if (registryEntry.matchesKey(WorldPresets.FLAT)) {
                 RegistryOps<JsonElement> registryOps = RegistryOps.of(JsonOps.INSTANCE, dynamicRegistryManager);
                 Optional optional = FlatChunkGeneratorConfig.CODEC.parse(new Dynamic<JsonObject>(registryOps, this.generatorSettings())).resultOrPartial(field_37276::error);
                 if (optional.isPresent()) {
                     Registry<StructureSet> registry2 = dynamicRegistryManager.get(Registry.STRUCTURE_SET_KEY);
-                    return GeneratorOptions.create(dynamicRegistryManager, generatorOptions, new FlatChunkGenerator(registry2, (FlatChunkGeneratorConfig)optional.get()));
+                    return dimensionOptionsRegistryHolder.with(dynamicRegistryManager, new FlatChunkGenerator(registry2, (FlatChunkGeneratorConfig)optional.get()));
                 }
             }
-            return generatorOptions;
+            return dimensionOptionsRegistryHolder;
         }
     }
 }

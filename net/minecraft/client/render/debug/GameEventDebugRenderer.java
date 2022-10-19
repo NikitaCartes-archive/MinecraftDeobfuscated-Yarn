@@ -163,7 +163,7 @@ implements DebugRenderer.Renderer {
         }
 
         @Override
-        public boolean listen(ServerWorld world, GameEvent.Message event) {
+        public boolean listen(ServerWorld world, GameEvent event, GameEvent.Emitter emitter, Vec3d emitterPos) {
             return false;
         }
     }

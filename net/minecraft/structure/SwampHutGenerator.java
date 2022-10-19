@@ -94,10 +94,12 @@ extends ShiftableStructurePiece {
         if (!this.hasWitch && chunkBox.contains(blockPos = this.offsetPos(2, 2, 5))) {
             this.hasWitch = true;
             WitchEntity witchEntity = EntityType.WITCH.create(world.toServerWorld());
-            witchEntity.setPersistent();
-            witchEntity.refreshPositionAndAngles((double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5, 0.0f, 0.0f);
-            witchEntity.initialize(world, world.getLocalDifficulty(blockPos), SpawnReason.STRUCTURE, null, null);
-            world.spawnEntityAndPassengers(witchEntity);
+            if (witchEntity != null) {
+                witchEntity.setPersistent();
+                witchEntity.refreshPositionAndAngles((double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5, 0.0f, 0.0f);
+                witchEntity.initialize(world, world.getLocalDifficulty(blockPos), SpawnReason.STRUCTURE, null, null);
+                world.spawnEntityAndPassengers(witchEntity);
+            }
         }
         this.spawnCat(world, chunkBox);
     }
@@ -107,10 +109,12 @@ extends ShiftableStructurePiece {
         if (!this.hasCat && box.contains(blockPos = this.offsetPos(2, 2, 5))) {
             this.hasCat = true;
             CatEntity catEntity = EntityType.CAT.create(world.toServerWorld());
-            catEntity.setPersistent();
-            catEntity.refreshPositionAndAngles((double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5, 0.0f, 0.0f);
-            catEntity.initialize(world, world.getLocalDifficulty(blockPos), SpawnReason.STRUCTURE, null, null);
-            world.spawnEntityAndPassengers(catEntity);
+            if (catEntity != null) {
+                catEntity.setPersistent();
+                catEntity.refreshPositionAndAngles((double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5, 0.0f, 0.0f);
+                catEntity.initialize(world, world.getLocalDifficulty(blockPos), SpawnReason.STRUCTURE, null, null);
+                world.spawnEntityAndPassengers(catEntity);
+            }
         }
     }
 }

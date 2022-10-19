@@ -50,14 +50,14 @@ implements Clearable {
     public static void litServerTick(World world, BlockPos pos, BlockState state, CampfireBlockEntity campfire) {
         boolean bl = false;
         for (int i = 0; i < campfire.itemsBeingCooked.size(); ++i) {
+            SimpleInventory inventory;
+            ItemStack itemStack2;
             ItemStack itemStack = campfire.itemsBeingCooked.get(i);
             if (itemStack.isEmpty()) continue;
             bl = true;
             int n = i;
             campfire.cookingTimes[n] = campfire.cookingTimes[n] + 1;
-            if (campfire.cookingTimes[i] < campfire.cookingTotalTimes[i]) continue;
-            SimpleInventory inventory = new SimpleInventory(itemStack);
-            ItemStack itemStack2 = campfire.matchGetter.getFirstMatch(inventory, world).map(recipe -> recipe.craft(inventory)).orElse(itemStack);
+            if (campfire.cookingTimes[i] < campfire.cookingTotalTimes[i] || !(itemStack2 = campfire.matchGetter.getFirstMatch(inventory = new SimpleInventory(itemStack), world).map(recipe -> recipe.craft(inventory)).orElse(itemStack)).isItemEnabled(world.getEnabledFeatures())) continue;
             ItemScatterer.spawn(world, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), itemStack2);
             campfire.itemsBeingCooked.set(i, ItemStack.EMPTY);
             world.updateListeners(pos, state, state, Block.NOTIFY_ALL);

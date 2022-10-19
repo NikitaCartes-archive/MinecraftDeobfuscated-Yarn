@@ -400,7 +400,7 @@ ModelWithHead {
         return -65.0f * f + f * f;
     }
 
-    public void setAttributes(BipedEntityModel<T> model) {
+    public void copyBipedStateTo(BipedEntityModel<T> model) {
         super.copyStateTo(model);
         model.leftArmPose = this.leftArmPose;
         model.rightArmPose = this.rightArmPose;

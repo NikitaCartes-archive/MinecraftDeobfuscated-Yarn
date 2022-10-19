@@ -33,6 +33,7 @@ public class TrackedDataHandlerRegistry {
     private static final Int2ObjectBiMap<TrackedDataHandler<?>> DATA_HANDLERS = Int2ObjectBiMap.create(16);
     public static final TrackedDataHandler<Byte> BYTE = TrackedDataHandler.of((buf, byte_) -> buf.writeByte(byte_.byteValue()), PacketByteBuf::readByte);
     public static final TrackedDataHandler<Integer> INTEGER = TrackedDataHandler.of(PacketByteBuf::writeVarInt, PacketByteBuf::readVarInt);
+    public static final TrackedDataHandler<Long> LONG = TrackedDataHandler.of(PacketByteBuf::writeVarLong, PacketByteBuf::readVarLong);
     public static final TrackedDataHandler<Float> FLOAT = TrackedDataHandler.of(PacketByteBuf::writeFloat, PacketByteBuf::readFloat);
     public static final TrackedDataHandler<String> STRING = TrackedDataHandler.of(PacketByteBuf::writeString, PacketByteBuf::readString);
     public static final TrackedDataHandler<Text> TEXT_COMPONENT = TrackedDataHandler.of(PacketByteBuf::writeText, PacketByteBuf::readText);
@@ -214,6 +215,7 @@ public class TrackedDataHandlerRegistry {
     static {
         TrackedDataHandlerRegistry.register(BYTE);
         TrackedDataHandlerRegistry.register(INTEGER);
+        TrackedDataHandlerRegistry.register(LONG);
         TrackedDataHandlerRegistry.register(FLOAT);
         TrackedDataHandlerRegistry.register(STRING);
         TrackedDataHandlerRegistry.register(TEXT_COMPONENT);

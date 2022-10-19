@@ -54,16 +54,19 @@ public class LootTable {
         this.combinedFunction = LootFunctionTypes.join(functions);
     }
 
-    public static Consumer<ItemStack> processStacks(Consumer<ItemStack> lootConsumer) {
+    public static Consumer<ItemStack> processStacks(LootContext context, Consumer<ItemStack> consumer) {
         return stack -> {
+            if (!stack.isItemEnabled(context.getWorld().getEnabledFeatures())) {
+                return;
+            }
             if (stack.getCount() < stack.getMaxCount()) {
-                lootConsumer.accept((ItemStack)stack);
+                consumer.accept((ItemStack)stack);
             } else {
                 ItemStack itemStack;
                 for (int i = stack.getCount(); i > 0; i -= itemStack.getCount()) {
                     itemStack = stack.copy();
                     itemStack.setCount(Math.min(stack.getMaxCount(), i));
-                    lootConsumer.accept(itemStack);
+                    consumer.accept(itemStack);
                 }
             }
         };
@@ -82,7 +85,7 @@ public class LootTable {
     }
 
     public void generateLoot(LootContext context, Consumer<ItemStack> lootConsumer) {
-        this.generateUnprocessedLoot(context, LootTable.processStacks(lootConsumer));
+        this.generateUnprocessedLoot(context, LootTable.processStacks(context, lootConsumer));
     }
 
     public ObjectArrayList<ItemStack> generateLoot(LootContext context) {

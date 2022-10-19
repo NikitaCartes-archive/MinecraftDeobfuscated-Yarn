@@ -23,6 +23,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidFillable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
+import net.minecraft.command.CommandRegistryWrapper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -562,7 +563,7 @@ public class StructureTemplate {
         return nbt;
     }
 
-    public void readNbt(NbtCompound nbt) {
+    public void readNbt(CommandRegistryWrapper<Block> blockRegistryWrapper, NbtCompound nbt) {
         int i;
         NbtList nbtList3;
         this.blockInfoLists.clear();
@@ -573,10 +574,10 @@ public class StructureTemplate {
         if (nbt.contains(PALETTES_KEY, NbtElement.LIST_TYPE)) {
             nbtList3 = nbt.getList(PALETTES_KEY, NbtElement.LIST_TYPE);
             for (i = 0; i < nbtList3.size(); ++i) {
-                this.loadPalettedBlockInfo(nbtList3.getList(i), nbtList2);
+                this.loadPalettedBlockInfo(blockRegistryWrapper, nbtList3.getList(i), nbtList2);
             }
         } else {
-            this.loadPalettedBlockInfo(nbt.getList(PALETTE_KEY, NbtElement.COMPOUND_TYPE), nbtList2);
+            this.loadPalettedBlockInfo(blockRegistryWrapper, nbt.getList(PALETTE_KEY, NbtElement.COMPOUND_TYPE), nbtList2);
         }
         nbtList3 = nbt.getList(ENTITIES_KEY, NbtElement.COMPOUND_TYPE);
         for (i = 0; i < nbtList3.size(); ++i) {
@@ -591,19 +592,19 @@ public class StructureTemplate {
         }
     }
 
-    private void loadPalettedBlockInfo(NbtList paletteNbt, NbtList blocksNbt) {
-        Palette palette = new Palette();
-        for (int i = 0; i < paletteNbt.size(); ++i) {
-            palette.set(NbtHelper.toBlockState(paletteNbt.getCompound(i)), i);
+    private void loadPalettedBlockInfo(CommandRegistryWrapper<Block> blockRegistryWrapper, NbtList palette, NbtList blocks) {
+        Palette palette2 = new Palette();
+        for (int i = 0; i < palette.size(); ++i) {
+            palette2.set(NbtHelper.toBlockState(blockRegistryWrapper, palette.getCompound(i)), i);
         }
         ArrayList<StructureBlockInfo> list = Lists.newArrayList();
         ArrayList<StructureBlockInfo> list2 = Lists.newArrayList();
         ArrayList<StructureBlockInfo> list3 = Lists.newArrayList();
-        for (int j = 0; j < blocksNbt.size(); ++j) {
-            NbtCompound nbtCompound = blocksNbt.getCompound(j);
+        for (int j = 0; j < blocks.size(); ++j) {
+            NbtCompound nbtCompound = blocks.getCompound(j);
             NbtList nbtList = nbtCompound.getList("pos", NbtElement.INT_TYPE);
             BlockPos blockPos = new BlockPos(nbtList.getInt(0), nbtList.getInt(1), nbtList.getInt(2));
-            BlockState blockState = palette.getState(nbtCompound.getInt(BLOCKS_STATE_KEY));
+            BlockState blockState = palette2.getState(nbtCompound.getInt(BLOCKS_STATE_KEY));
             NbtCompound nbtCompound2 = nbtCompound.contains("nbt") ? nbtCompound.getCompound("nbt") : null;
             StructureBlockInfo structureBlockInfo = new StructureBlockInfo(blockPos, blockState, nbtCompound2);
             StructureTemplate.categorize(structureBlockInfo, list, list2, list3);

@@ -3,54 +3,95 @@
  */
 package net.minecraft.resource;
 
+import com.mojang.logging.LogUtils;
 import java.io.File;
-import java.io.FileFilter;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileAttribute;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 import net.minecraft.resource.DirectoryResourcePack;
-import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ResourcePackProvider;
 import net.minecraft.resource.ResourcePackSource;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.ZipResourcePack;
+import net.minecraft.resource.fs.ResourceFileSystem;
+import net.minecraft.text.Text;
+import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class FileResourcePackProvider
 implements ResourcePackProvider {
-    private static final FileFilter POSSIBLE_PACK = file -> {
-        boolean bl = file.isFile() && file.getName().endsWith(".zip");
-        boolean bl2 = file.isDirectory() && new File(file, "pack.mcmeta").isFile();
-        return bl || bl2;
-    };
-    private final File packsFolder;
+    private static final Logger LOGGER = LogUtils.getLogger();
+    private final Path packsDir;
+    private final ResourceType type;
     private final ResourcePackSource source;
 
-    public FileResourcePackProvider(File packsFolder, ResourcePackSource source) {
-        this.packsFolder = packsFolder;
+    public FileResourcePackProvider(Path packsDir, ResourceType type, ResourcePackSource source) {
+        this.packsDir = packsDir;
+        this.type = type;
         this.source = source;
     }
 
+    private static String getFileName(Path path) {
+        return path.getFileName().toString();
+    }
+
     @Override
-    public void register(Consumer<ResourcePackProfile> profileAdder, ResourcePackProfile.Factory factory) {
-        File[] files;
-        if (!this.packsFolder.isDirectory()) {
-            this.packsFolder.mkdirs();
-        }
-        if ((files = this.packsFolder.listFiles(POSSIBLE_PACK)) == null) {
-            return;
-        }
-        for (File file : files) {
-            String string = "file/" + file.getName();
-            ResourcePackProfile resourcePackProfile = ResourcePackProfile.of(string, false, this.createResourcePack(file), factory, ResourcePackProfile.InsertionPosition.TOP, this.source);
-            if (resourcePackProfile == null) continue;
-            profileAdder.accept(resourcePackProfile);
+    public void register(Consumer<ResourcePackProfile> profileAdder) {
+        try {
+            Files.createDirectories(this.packsDir, new FileAttribute[0]);
+            FileResourcePackProvider.forEachProfile(this.packsDir, (path, packFactory) -> {
+                String string = FileResourcePackProvider.getFileName(path);
+                ResourcePackProfile resourcePackProfile = ResourcePackProfile.create("file/" + string, Text.literal(string), false, packFactory, this.type, ResourcePackProfile.InsertionPosition.TOP, this.source);
+                if (resourcePackProfile != null) {
+                    profileAdder.accept(resourcePackProfile);
+                }
+            });
+        } catch (IOException iOException) {
+            LOGGER.warn("Failed to list packs in {}", (Object)this.packsDir, (Object)iOException);
         }
     }
 
-    private Supplier<ResourcePack> createResourcePack(File file) {
-        if (file.isDirectory()) {
-            return () -> new DirectoryResourcePack(file);
+    public static void forEachProfile(Path packsDir, BiConsumer<Path, ResourcePackProfile.PackFactory> consumer) throws IOException {
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(packsDir);){
+            for (Path path : directoryStream) {
+                ResourcePackProfile.PackFactory packFactory = FileResourcePackProvider.getFactory(path);
+                if (packFactory == null) continue;
+                consumer.accept(path, packFactory);
+            }
         }
-        return () -> new ZipResourcePack(file);
+    }
+
+    @Nullable
+    public static ResourcePackProfile.PackFactory getFactory(Path path) {
+        FileSystem fileSystem;
+        BasicFileAttributes basicFileAttributes;
+        try {
+            basicFileAttributes = Files.readAttributes(path, BasicFileAttributes.class, new LinkOption[0]);
+        } catch (NoSuchFileException noSuchFileException) {
+            return null;
+        } catch (IOException iOException) {
+            LOGGER.warn("Failed to read properties of '{}', ignoring", (Object)path, (Object)iOException);
+            return null;
+        }
+        if (basicFileAttributes.isDirectory() && Files.isRegularFile(path.resolve("pack.mcmeta"), new LinkOption[0])) {
+            return name -> new DirectoryResourcePack(name, path);
+        }
+        if (basicFileAttributes.isRegularFile() && path.getFileName().toString().endsWith(".zip") && ((fileSystem = path.getFileSystem()) == FileSystems.getDefault() || fileSystem instanceof ResourceFileSystem)) {
+            File file = path.toFile();
+            return name -> new ZipResourcePack(name, file);
+        }
+        LOGGER.info("Found non-pack entry '{}', ignoring", (Object)path);
+        return null;
     }
 }
 

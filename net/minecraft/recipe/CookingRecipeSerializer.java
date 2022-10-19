@@ -5,12 +5,14 @@ package net.minecraft.recipe;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import java.util.Objects;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.AbstractCookingRecipe;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeSerializer;
+import net.minecraft.recipe.book.CookingRecipeCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
@@ -28,6 +30,7 @@ implements RecipeSerializer<T> {
     @Override
     public T read(Identifier identifier, JsonObject jsonObject) {
         String string = JsonHelper.getString(jsonObject, "group", "");
+        CookingRecipeCategory cookingRecipeCategory = Objects.requireNonNullElse(CookingRecipeCategory.CODEC.byId(JsonHelper.getString(jsonObject, "category", null)), CookingRecipeCategory.MISC);
         JsonElement jsonElement = JsonHelper.hasArray(jsonObject, "ingredient") ? JsonHelper.getArray(jsonObject, "ingredient") : JsonHelper.getObject(jsonObject, "ingredient");
         Ingredient ingredient = Ingredient.fromJson(jsonElement);
         String string2 = JsonHelper.getString(jsonObject, "result");
@@ -35,22 +38,24 @@ implements RecipeSerializer<T> {
         ItemStack itemStack = new ItemStack(Registry.ITEM.getOrEmpty(identifier2).orElseThrow(() -> new IllegalStateException("Item: " + string2 + " does not exist")));
         float f = JsonHelper.getFloat(jsonObject, "experience", 0.0f);
         int i = JsonHelper.getInt(jsonObject, "cookingtime", this.cookingTime);
-        return this.recipeFactory.create(identifier, string, ingredient, itemStack, f, i);
+        return this.recipeFactory.create(identifier, string, cookingRecipeCategory, ingredient, itemStack, f, i);
     }
 
     @Override
     public T read(Identifier identifier, PacketByteBuf packetByteBuf) {
         String string = packetByteBuf.readString();
+        CookingRecipeCategory cookingRecipeCategory = packetByteBuf.readEnumConstant(CookingRecipeCategory.class);
         Ingredient ingredient = Ingredient.fromPacket(packetByteBuf);
         ItemStack itemStack = packetByteBuf.readItemStack();
         float f = packetByteBuf.readFloat();
         int i = packetByteBuf.readVarInt();
-        return this.recipeFactory.create(identifier, string, ingredient, itemStack, f, i);
+        return this.recipeFactory.create(identifier, string, cookingRecipeCategory, ingredient, itemStack, f, i);
     }
 
     @Override
     public void write(PacketByteBuf packetByteBuf, T abstractCookingRecipe) {
         packetByteBuf.writeString(((AbstractCookingRecipe)abstractCookingRecipe).group);
+        packetByteBuf.writeEnumConstant(((AbstractCookingRecipe)abstractCookingRecipe).getCategory());
         ((AbstractCookingRecipe)abstractCookingRecipe).input.write(packetByteBuf);
         packetByteBuf.writeItemStack(((AbstractCookingRecipe)abstractCookingRecipe).output);
         packetByteBuf.writeFloat(((AbstractCookingRecipe)abstractCookingRecipe).experience);
@@ -68,7 +73,7 @@ implements RecipeSerializer<T> {
     }
 
     static interface RecipeFactory<T extends AbstractCookingRecipe> {
-        public T create(Identifier var1, String var2, Ingredient var3, ItemStack var4, float var5, int var6);
+        public T create(Identifier var1, String var2, CookingRecipeCategory var3, Ingredient var4, ItemStack var5, float var6, int var7);
     }
 }
 

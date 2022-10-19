@@ -30,6 +30,7 @@ import net.minecraft.command.argument.ArgumentHelper;
 import net.minecraft.command.argument.ArgumentTypes;
 import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.network.packet.s2c.play.CommandTreeS2CPacket;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.command.AdvancementCommand;
 import net.minecraft.server.command.AttributeCommand;
@@ -113,7 +114,7 @@ import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import net.minecraft.util.profiling.jfr.FlightProfiler;
-import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.util.registry.BuiltinRegistries;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -128,7 +129,7 @@ public class CommandManager {
 
     public CommandManager(RegistrationEnvironment environment, CommandRegistryAccess commandRegistryAccess) {
         AdvancementCommand.register(this.dispatcher);
-        AttributeCommand.register(this.dispatcher);
+        AttributeCommand.register(this.dispatcher, commandRegistryAccess);
         ExecuteCommand.register(this.dispatcher, commandRegistryAccess);
         BossBarCommand.register(this.dispatcher);
         ClearCommand.register(this.dispatcher, commandRegistryAccess);
@@ -138,9 +139,9 @@ public class CommandManager {
         DebugCommand.register(this.dispatcher);
         DefaultGameModeCommand.register(this.dispatcher);
         DifficultyCommand.register(this.dispatcher);
-        EffectCommand.register(this.dispatcher);
+        EffectCommand.register(this.dispatcher, commandRegistryAccess);
         MeCommand.register(this.dispatcher);
-        EnchantCommand.register(this.dispatcher);
+        EnchantCommand.register(this.dispatcher, commandRegistryAccess);
         ExperienceCommand.register(this.dispatcher);
         FillCommand.register(this.dispatcher, commandRegistryAccess);
         ForceLoadCommand.register(this.dispatcher);
@@ -153,10 +154,10 @@ public class CommandManager {
         KickCommand.register(this.dispatcher);
         KillCommand.register(this.dispatcher);
         ListCommand.register(this.dispatcher);
-        LocateCommand.register(this.dispatcher);
+        LocateCommand.register(this.dispatcher, commandRegistryAccess);
         LootCommand.register(this.dispatcher, commandRegistryAccess);
         MessageCommand.register(this.dispatcher);
-        ParticleCommand.register(this.dispatcher);
+        ParticleCommand.register(this.dispatcher, commandRegistryAccess);
         PlaceCommand.register(this.dispatcher);
         PlaySoundCommand.register(this.dispatcher);
         ReloadCommand.register(this.dispatcher);
@@ -171,7 +172,7 @@ public class CommandManager {
         SpectateCommand.register(this.dispatcher);
         SpreadPlayersCommand.register(this.dispatcher);
         StopSoundCommand.register(this.dispatcher);
-        SummonCommand.register(this.dispatcher);
+        SummonCommand.register(this.dispatcher, commandRegistryAccess);
         TagCommand.register(this.dispatcher);
         TeamCommand.register(this.dispatcher);
         TeamMsgCommand.register(this.dispatcher);
@@ -356,7 +357,7 @@ public class CommandManager {
     }
 
     public static void checkMissing() {
-        CommandRegistryAccess commandRegistryAccess = new CommandRegistryAccess(DynamicRegistryManager.BUILTIN.get());
+        CommandRegistryAccess commandRegistryAccess = new CommandRegistryAccess(BuiltinRegistries.createBuiltinRegistryManager(), FeatureFlags.FEATURE_MANAGER.getFeatureSet());
         commandRegistryAccess.setEntryListCreationPolicy(CommandRegistryAccess.EntryListCreationPolicy.RETURN_EMPTY);
         CommandDispatcher<ServerCommandSource> commandDispatcher = new CommandManager(RegistrationEnvironment.ALL, commandRegistryAccess).getDispatcher();
         RootCommandNode<ServerCommandSource> rootCommandNode = commandDispatcher.getRoot();

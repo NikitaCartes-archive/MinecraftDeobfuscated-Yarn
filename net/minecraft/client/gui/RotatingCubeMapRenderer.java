@@ -13,7 +13,8 @@ import net.minecraft.util.math.MathHelper;
 public class RotatingCubeMapRenderer {
     private final MinecraftClient client;
     private final CubeMapRenderer cubeMap;
-    private float time;
+    private float pitch;
+    private float yaw;
 
     public RotatingCubeMapRenderer(CubeMapRenderer cubeMap) {
         this.cubeMap = cubeMap;
@@ -21,8 +22,14 @@ public class RotatingCubeMapRenderer {
     }
 
     public void render(float delta, float alpha) {
-        this.time += delta;
-        this.cubeMap.draw(this.client, MathHelper.sin(this.time * 0.001f) * 5.0f + 25.0f, -this.time * 0.1f, alpha);
+        float f = (float)((double)delta * this.client.options.getPanoramaSpeed().getValue());
+        this.pitch = RotatingCubeMapRenderer.wrapOnce(this.pitch + f * 0.1f, 360.0f);
+        this.yaw = RotatingCubeMapRenderer.wrapOnce(this.yaw + f * 0.001f, (float)Math.PI * 2);
+        this.cubeMap.draw(this.client, MathHelper.sin(this.yaw) * 5.0f + 25.0f, -this.pitch, alpha);
+    }
+
+    private static float wrapOnce(float a, float b) {
+        return a > b ? a - b : a;
     }
 }
 

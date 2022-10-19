@@ -17,6 +17,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialCraftingRecipe;
+import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.world.World;
@@ -39,8 +40,8 @@ extends SpecialCraftingRecipe {
     });
     private static final Ingredient GUNPOWDER = Ingredient.ofItems(Items.GUNPOWDER);
 
-    public FireworkStarRecipe(Identifier identifier) {
-        super(identifier);
+    public FireworkStarRecipe(Identifier identifier, CraftingRecipeCategory craftingRecipeCategory) {
+        super(identifier, craftingRecipeCategory);
     }
 
     @Override

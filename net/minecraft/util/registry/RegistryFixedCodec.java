@@ -47,7 +47,7 @@ implements Codec<RegistryEntry<E>> {
         if (ops instanceof RegistryOps && (optional = (registryOps = (RegistryOps)ops).getRegistry(this.registry)).isPresent()) {
             return Identifier.CODEC.decode(ops, input).flatMap((? super R pair) -> {
                 Identifier identifier = (Identifier)pair.getFirst();
-                DataResult<RegistryEntry<Pair>> dataResult = ((Registry)optional.get()).getOrCreateEntryDataResult(RegistryKey.of(this.registry, identifier));
+                DataResult<RegistryEntry.Reference<Pair>> dataResult = ((Registry)optional.get()).getOrCreateEntryDataResult(RegistryKey.of(this.registry, identifier));
                 return dataResult.map((? super R entry) -> Pair.of(entry, pair.getSecond())).setLifecycle(Lifecycle.stable());
             });
         }

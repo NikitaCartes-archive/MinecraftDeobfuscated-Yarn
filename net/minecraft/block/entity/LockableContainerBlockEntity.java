@@ -27,6 +27,7 @@ implements Inventory,
 NamedScreenHandlerFactory,
 Nameable {
     private ContainerLock lock = ContainerLock.EMPTY;
+    @Nullable
     private Text customName;
 
     protected LockableContainerBlockEntity(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {

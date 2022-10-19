@@ -52,7 +52,7 @@ public class EntityTrackerEntry {
     private final int tickInterval;
     private final boolean alwaysUpdateVelocity;
     private final Consumer<Packet<?>> receiver;
-    private final TrackedPosition field_39019 = new TrackedPosition();
+    private final TrackedPosition trackedPos = new TrackedPosition();
     private int lastYaw;
     private int lastPitch;
     private int lastHeadPitch;
@@ -69,7 +69,7 @@ public class EntityTrackerEntry {
         this.entity = entity;
         this.tickInterval = tickInterval;
         this.alwaysUpdateVelocity = alwaysUpdateVelocity;
-        this.field_39019.setPos(entity.getSyncedPos());
+        this.trackedPos.setPos(entity.getSyncedPos());
         this.lastYaw = MathHelper.floor(entity.getYaw() * 256.0f / 360.0f);
         this.lastPitch = MathHelper.floor(entity.getPitch() * 256.0f / 360.0f);
         this.lastHeadPitch = MathHelper.floor(entity.getHeadYaw() * 256.0f / 360.0f);
@@ -112,7 +112,7 @@ public class EntityTrackerEntry {
                     this.lastYaw = i;
                     this.lastPitch = j;
                 }
-                this.field_39019.setPos(this.entity.getSyncedPos());
+                this.trackedPos.setPos(this.entity.getSyncedPos());
                 this.syncEntityData();
                 this.hadVehicle = true;
             } else {
@@ -123,15 +123,15 @@ public class EntityTrackerEntry {
                 i = MathHelper.floor(this.entity.getYaw() * 256.0f / 360.0f);
                 int j = MathHelper.floor(this.entity.getPitch() * 256.0f / 360.0f);
                 Vec3d vec3d = this.entity.getSyncedPos();
-                boolean bl2 = this.field_39019.subtract(vec3d).lengthSquared() >= 7.62939453125E-6;
+                boolean bl2 = this.trackedPos.subtract(vec3d).lengthSquared() >= 7.62939453125E-6;
                 Packet<ClientPlayPacketListener> packet2 = null;
                 boolean bl3 = bl2 || this.trackingTick % 60 == 0;
                 boolean bl = bl4 = Math.abs(i - this.lastYaw) >= 1 || Math.abs(j - this.lastPitch) >= 1;
                 if (this.trackingTick > 0 || this.entity instanceof PersistentProjectileEntity) {
                     boolean bl5;
-                    long l = this.field_39019.getDeltaX(vec3d);
-                    long m = this.field_39019.getDeltaY(vec3d);
-                    long n = this.field_39019.getDeltaZ(vec3d);
+                    long l = this.trackedPos.getDeltaX(vec3d);
+                    long m = this.trackedPos.getDeltaY(vec3d);
+                    long n = this.trackedPos.getDeltaZ(vec3d);
                     boolean bl6 = bl5 = l < -32768L || l > 32767L || m < -32768L || m > 32767L || n < -32768L || n > 32767L;
                     if (bl5 || this.updatesWithoutVehicle > 400 || this.hadVehicle || this.lastOnGround != this.entity.isOnGround()) {
                         this.lastOnGround = this.entity.isOnGround();
@@ -154,7 +154,7 @@ public class EntityTrackerEntry {
                 }
                 this.syncEntityData();
                 if (bl3) {
-                    this.field_39019.setPos(vec3d);
+                    this.trackedPos.setPos(vec3d);
                 }
                 if (bl4) {
                     this.lastYaw = i;
@@ -191,7 +191,7 @@ public class EntityTrackerEntry {
         if (this.entity.isRemoved()) {
             LOGGER.warn("Fetching packet for removed entity {}", (Object)this.entity);
         }
-        Packet<?> packet = this.entity.createSpawnPacket();
+        Packet<ClientPlayPacketListener> packet = this.entity.createSpawnPacket();
         this.lastHeadPitch = MathHelper.floor(this.entity.getHeadYaw() * 256.0f / 360.0f);
         sender.accept(packet);
         if (!this.entity.getDataTracker().isEmpty()) {

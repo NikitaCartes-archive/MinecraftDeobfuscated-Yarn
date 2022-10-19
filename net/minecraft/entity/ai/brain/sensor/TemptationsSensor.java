@@ -34,7 +34,7 @@ extends Sensor<PathAwareEntity> {
     @Override
     protected void sense(ServerWorld serverWorld, PathAwareEntity pathAwareEntity) {
         Brain<?> brain = pathAwareEntity.getBrain();
-        List list = serverWorld.getPlayers().stream().filter(EntityPredicates.EXCEPT_SPECTATOR).filter(player -> TEMPTER_PREDICATE.test(pathAwareEntity, (LivingEntity)player)).filter(player -> pathAwareEntity.isInRange((Entity)player, 10.0)).filter(this::test).sorted(Comparator.comparingDouble(pathAwareEntity::squaredDistanceTo)).collect(Collectors.toList());
+        List list = serverWorld.getPlayers().stream().filter(EntityPredicates.EXCEPT_SPECTATOR).filter(player -> TEMPTER_PREDICATE.test(pathAwareEntity, (LivingEntity)player)).filter(player -> pathAwareEntity.isInRange((Entity)player, 10.0)).filter(this::test).filter(serverPlayerEntity -> !pathAwareEntity.hasPassenger((Entity)serverPlayerEntity)).sorted(Comparator.comparingDouble(pathAwareEntity::squaredDistanceTo)).collect(Collectors.toList());
         if (!list.isEmpty()) {
             PlayerEntity playerEntity = (PlayerEntity)list.get(0);
             brain.remember(MemoryModuleType.TEMPTING_PLAYER, playerEntity);

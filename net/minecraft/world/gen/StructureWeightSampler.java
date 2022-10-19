@@ -35,7 +35,7 @@ implements DensityFunctionTypes.Beardifying {
             }
         }
     });
-    private final ObjectListIterator<class_7301> pieceIterator;
+    private final ObjectListIterator<Piece> pieceIterator;
     private final ObjectListIterator<JigsawJunction> junctionIterator;
 
     public static StructureWeightSampler createStructureWeightSampler(StructureAccessor world, ChunkPos pos) {
@@ -51,7 +51,7 @@ implements DensityFunctionTypes.Beardifying {
                     PoolStructurePiece poolStructurePiece = (PoolStructurePiece)structurePiece;
                     StructurePool.Projection projection = poolStructurePiece.getPoolElement().getProjection();
                     if (projection == StructurePool.Projection.RIGID) {
-                        objectList.add(new class_7301(poolStructurePiece.getBoundingBox(), structureTerrainAdaptation, poolStructurePiece.getGroundLevelDelta()));
+                        objectList.add(new Piece(poolStructurePiece.getBoundingBox(), structureTerrainAdaptation, poolStructurePiece.getGroundLevelDelta()));
                     }
                     for (JigsawJunction jigsawJunction : poolStructurePiece.getJunctions()) {
                         int i = jigsawJunction.getSourceX();
@@ -61,16 +61,16 @@ implements DensityFunctionTypes.Beardifying {
                     }
                     continue;
                 }
-                objectList.add(new class_7301(structurePiece.getBoundingBox(), structureTerrainAdaptation, 0));
+                objectList.add(new Piece(structurePiece.getBoundingBox(), structureTerrainAdaptation, 0));
             }
         });
-        return new StructureWeightSampler((ObjectListIterator<class_7301>)objectList.iterator(), (ObjectListIterator<JigsawJunction>)objectList2.iterator());
+        return new StructureWeightSampler((ObjectListIterator<Piece>)objectList.iterator(), (ObjectListIterator<JigsawJunction>)objectList2.iterator());
     }
 
     @VisibleForTesting
-    public StructureWeightSampler(ObjectListIterator<class_7301> objectListIterator, ObjectListIterator<JigsawJunction> objectListIterator2) {
-        this.pieceIterator = objectListIterator;
-        this.junctionIterator = objectListIterator2;
+    public StructureWeightSampler(ObjectListIterator<Piece> pieceIterator, ObjectListIterator<JigsawJunction> junctionIterator) {
+        this.pieceIterator = pieceIterator;
+        this.junctionIterator = junctionIterator;
     }
 
     @Override
@@ -82,20 +82,20 @@ implements DensityFunctionTypes.Beardifying {
         int k = pos.blockZ();
         double d = 0.0;
         while (this.pieceIterator.hasNext()) {
-            class_7301 lv = (class_7301)this.pieceIterator.next();
-            BlockBox blockBox = lv.box();
-            l = lv.groundLevelDelta();
+            Piece piece = (Piece)this.pieceIterator.next();
+            BlockBox blockBox = piece.box();
+            l = piece.groundLevelDelta();
             m = Math.max(0, Math.max(blockBox.getMinX() - i, i - blockBox.getMaxX()));
             int n = Math.max(0, Math.max(blockBox.getMinZ() - k, k - blockBox.getMaxZ()));
             int o = blockBox.getMinY() + l;
             int p = j - o;
-            int q = switch (lv.terrainAdjustment()) {
+            int q = switch (piece.terrainAdjustment()) {
                 default -> throw new IncompatibleClassChangeError();
                 case StructureTerrainAdaptation.NONE -> 0;
                 case StructureTerrainAdaptation.BURY, StructureTerrainAdaptation.BEARD_THIN -> p;
                 case StructureTerrainAdaptation.BEARD_BOX -> Math.max(0, Math.max(o - j, j - blockBox.getMaxY()));
             };
-            d += (switch (lv.terrainAdjustment()) {
+            d += (switch (piece.terrainAdjustment()) {
                 default -> throw new IncompatibleClassChangeError();
                 case StructureTerrainAdaptation.NONE -> 0.0;
                 case StructureTerrainAdaptation.BURY -> StructureWeightSampler.getMagnitudeWeight(m, q, n);
@@ -164,7 +164,7 @@ implements DensityFunctionTypes.Beardifying {
     }
 
     @VisibleForTesting
-    public record class_7301(BlockBox box, StructureTerrainAdaptation terrainAdjustment, int groundLevelDelta) {
+    public record Piece(BlockBox box, StructureTerrainAdaptation terrainAdjustment, int groundLevelDelta) {
     }
 }
 

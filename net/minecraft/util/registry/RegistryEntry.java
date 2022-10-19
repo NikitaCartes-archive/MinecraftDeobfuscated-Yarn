@@ -274,6 +274,20 @@ public interface RegistryEntry<T> {
             this.value = value;
         }
 
+        void setRegistryKey(RegistryKey<T> registryKey) {
+            if (this.registryKey != null && registryKey != this.registryKey) {
+                throw new IllegalStateException("Can't change holder key: existing=" + this.registryKey + ", new=" + registryKey);
+            }
+            this.registryKey = registryKey;
+        }
+
+        void setValue(T value) {
+            if (this.referenceType == Type.INTRUSIVE && this.value != value) {
+                throw new IllegalStateException("Can't change holder " + this.registryKey + " value: existing=" + this.value + ", new=" + value);
+            }
+            this.value = value;
+        }
+
         void setTags(Collection<TagKey<T>> tags) {
             this.tags = Set.copyOf(tags);
         }

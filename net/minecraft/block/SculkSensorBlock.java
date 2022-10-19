@@ -3,9 +3,6 @@
  */
 package net.minecraft.block;
 
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntMaps;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -35,7 +32,6 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
@@ -53,50 +49,6 @@ extends BlockWithEntity
 implements Waterloggable {
     public static final int field_31239 = 40;
     public static final int field_31240 = 1;
-    public static final Object2IntMap<GameEvent> FREQUENCIES = Object2IntMaps.unmodifiable(Util.make(new Object2IntOpenHashMap(), map -> {
-        map.put(GameEvent.STEP, 1);
-        map.put(GameEvent.FLAP, 2);
-        map.put(GameEvent.SWIM, 3);
-        map.put(GameEvent.ELYTRA_GLIDE, 4);
-        map.put(GameEvent.HIT_GROUND, 5);
-        map.put(GameEvent.TELEPORT, 5);
-        map.put(GameEvent.SPLASH, 6);
-        map.put(GameEvent.ENTITY_SHAKE, 6);
-        map.put(GameEvent.BLOCK_CHANGE, 6);
-        map.put(GameEvent.NOTE_BLOCK_PLAY, 6);
-        map.put(GameEvent.PROJECTILE_SHOOT, 7);
-        map.put(GameEvent.DRINK, 7);
-        map.put(GameEvent.PRIME_FUSE, 7);
-        map.put(GameEvent.PROJECTILE_LAND, 8);
-        map.put(GameEvent.EAT, 8);
-        map.put(GameEvent.ENTITY_INTERACT, 8);
-        map.put(GameEvent.ENTITY_DAMAGE, 8);
-        map.put(GameEvent.EQUIP, 9);
-        map.put(GameEvent.SHEAR, 9);
-        map.put(GameEvent.ENTITY_ROAR, 9);
-        map.put(GameEvent.BLOCK_CLOSE, 10);
-        map.put(GameEvent.BLOCK_DEACTIVATE, 10);
-        map.put(GameEvent.BLOCK_DETACH, 10);
-        map.put(GameEvent.DISPENSE_FAIL, 10);
-        map.put(GameEvent.BLOCK_OPEN, 11);
-        map.put(GameEvent.BLOCK_ACTIVATE, 11);
-        map.put(GameEvent.BLOCK_ATTACH, 11);
-        map.put(GameEvent.ENTITY_PLACE, 12);
-        map.put(GameEvent.BLOCK_PLACE, 12);
-        map.put(GameEvent.FLUID_PLACE, 12);
-        map.put(GameEvent.ENTITY_DIE, 13);
-        map.put(GameEvent.BLOCK_DESTROY, 13);
-        map.put(GameEvent.FLUID_PICKUP, 13);
-        map.put(GameEvent.ITEM_INTERACT_FINISH, 14);
-        map.put(GameEvent.CONTAINER_CLOSE, 14);
-        map.put(GameEvent.PISTON_CONTRACT, 14);
-        map.put(GameEvent.PISTON_EXTEND, 15);
-        map.put(GameEvent.CONTAINER_OPEN, 15);
-        map.put(GameEvent.ITEM_INTERACT_START, 15);
-        map.put(GameEvent.EXPLODE, 15);
-        map.put(GameEvent.LIGHTNING_STRIKE, 15);
-        map.put(GameEvent.INSTRUMENT_PLAY, 15);
-    }));
     public static final EnumProperty<SculkSensorPhase> SCULK_SENSOR_PHASE = Properties.SCULK_SENSOR_PHASE;
     public static final IntProperty POWER = Properties.POWER;
     public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
@@ -142,13 +94,13 @@ implements Waterloggable {
 
     @Override
     public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
-        if (!world.isClient() && SculkSensorBlock.isInactive(state) && entity.getType() != EntityType.WARDEN) {
-            BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof SculkSensorBlockEntity) {
-                SculkSensorBlockEntity sculkSensorBlockEntity = (SculkSensorBlockEntity)blockEntity;
-                sculkSensorBlockEntity.setLastVibrationFrequency(FREQUENCIES.get(GameEvent.STEP));
+        BlockEntity blockEntity;
+        if (!world.isClient() && SculkSensorBlock.isInactive(state) && entity.getType() != EntityType.WARDEN && (blockEntity = world.getBlockEntity(pos)) instanceof SculkSensorBlockEntity) {
+            SculkSensorBlockEntity sculkSensorBlockEntity = (SculkSensorBlockEntity)blockEntity;
+            if (world instanceof ServerWorld) {
+                ServerWorld serverWorld = (ServerWorld)world;
+                sculkSensorBlockEntity.getEventListener().forceListen(serverWorld, GameEvent.STEP, GameEvent.Emitter.of(entity), entity.getPos());
             }
-            SculkSensorBlock.setActive(entity, world, pos, state, 15);
         }
         super.onSteppedOn(world, pos, state, entity);
     }
@@ -161,7 +113,7 @@ implements Waterloggable {
         if (state.get(POWER) > 0 && !world.getBlockTickScheduler().isQueued(pos, this)) {
             world.setBlockState(pos, (BlockState)state.with(POWER, 0), Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
         }
-        world.createAndScheduleBlockTick(new BlockPos(pos), state.getBlock(), 1);
+        world.scheduleBlockTick(new BlockPos(pos), state.getBlock(), 1);
     }
 
     @Override
@@ -178,7 +130,7 @@ implements Waterloggable {
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (state.get(WATERLOGGED).booleanValue()) {
-            world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+            world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
         return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
@@ -242,7 +194,7 @@ implements Waterloggable {
 
     public static void setCooldown(World world, BlockPos pos, BlockState state) {
         world.setBlockState(pos, (BlockState)((BlockState)state.with(SCULK_SENSOR_PHASE, SculkSensorPhase.COOLDOWN)).with(POWER, 0), Block.NOTIFY_ALL);
-        world.createAndScheduleBlockTick(pos, state.getBlock(), 1);
+        world.scheduleBlockTick(pos, state.getBlock(), 1);
         if (!state.get(WATERLOGGED).booleanValue()) {
             world.playSound(null, pos, SoundEvents.BLOCK_SCULK_SENSOR_CLICKING_STOP, SoundCategory.BLOCKS, 1.0f, world.random.nextFloat() * 0.2f + 0.8f);
         }
@@ -251,7 +203,7 @@ implements Waterloggable {
 
     public static void setActive(@Nullable Entity entity, World world, BlockPos pos, BlockState state, int power) {
         world.setBlockState(pos, (BlockState)((BlockState)state.with(SCULK_SENSOR_PHASE, SculkSensorPhase.ACTIVE)).with(POWER, power), Block.NOTIFY_ALL);
-        world.createAndScheduleBlockTick(pos, state.getBlock(), 40);
+        world.scheduleBlockTick(pos, state.getBlock(), 40);
         SculkSensorBlock.updateNeighbors(world, pos);
         world.emitGameEvent(entity, GameEvent.SCULK_SENSOR_TENDRILS_CLICKING, pos);
         if (!state.get(WATERLOGGED).booleanValue()) {

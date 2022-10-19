@@ -68,10 +68,13 @@ extends ForgingScreenHandler {
         if (list.isEmpty()) {
             this.output.setStack(0, ItemStack.EMPTY);
         } else {
-            this.currentRecipe = list.get(0);
-            ItemStack itemStack = this.currentRecipe.craft(this.input);
-            this.output.setLastRecipe(this.currentRecipe);
-            this.output.setStack(0, itemStack);
+            SmithingRecipe smithingRecipe = list.get(0);
+            ItemStack itemStack = smithingRecipe.craft(this.input);
+            if (itemStack.isItemEnabled(this.world.getEnabledFeatures())) {
+                this.currentRecipe = smithingRecipe;
+                this.output.setLastRecipe(smithingRecipe);
+                this.output.setStack(0, itemStack);
+            }
         }
     }
 

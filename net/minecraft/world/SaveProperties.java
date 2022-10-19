@@ -7,7 +7,8 @@ import com.mojang.serialization.Lifecycle;
 import java.util.Locale;
 import java.util.Set;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.resource.DataPackSettings;
+import net.minecraft.resource.DataConfiguration;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.Difficulty;
@@ -22,9 +23,9 @@ public interface SaveProperties {
     public static final int ANVIL_FORMAT_ID = 19133;
     public static final int MCREGION_FORMAT_ID = 19132;
 
-    public DataPackSettings getDataPackSettings();
+    public DataConfiguration getDataConfiguration();
 
-    public void updateLevelInfo(DataPackSettings var1);
+    public void updateLevelInfo(DataConfiguration var1);
 
     public boolean isModded();
 
@@ -95,6 +96,14 @@ public interface SaveProperties {
 
     public GeneratorOptions getGeneratorOptions();
 
+    public boolean isFlatWorld();
+
+    public boolean isDebugWorld();
+
     public Lifecycle getLifecycle();
+
+    default public FeatureSet getEnabledFeatures() {
+        return this.getDataConfiguration().enabledFeatures();
+    }
 }
 

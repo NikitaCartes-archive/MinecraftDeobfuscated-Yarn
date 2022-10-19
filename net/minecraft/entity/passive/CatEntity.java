@@ -323,13 +323,15 @@ extends TameableEntity {
     }
 
     @Override
+    @Nullable
     public CatEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
         CatEntity catEntity = EntityType.CAT.create(serverWorld);
-        if (passiveEntity instanceof CatEntity) {
+        if (catEntity != null && passiveEntity instanceof CatEntity) {
+            CatEntity catEntity2 = (CatEntity)passiveEntity;
             if (this.random.nextBoolean()) {
                 catEntity.setVariant(this.getVariant());
             } else {
-                catEntity.setVariant(((CatEntity)passiveEntity).getVariant());
+                catEntity.setVariant(catEntity2.getVariant());
             }
             if (this.isTamed()) {
                 catEntity.setOwnerUuid(this.getOwnerUuid());
@@ -337,7 +339,7 @@ extends TameableEntity {
                 if (this.random.nextBoolean()) {
                     catEntity.setCollarColor(this.getCollarColor());
                 } else {
-                    catEntity.setCollarColor(((CatEntity)passiveEntity).getCollarColor());
+                    catEntity.setCollarColor(catEntity2.getCollarColor());
                 }
             }
         }
@@ -463,6 +465,7 @@ extends TameableEntity {
     }
 
     @Override
+    @Nullable
     public /* synthetic */ PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
         return this.createChild(world, entity);
     }
@@ -579,7 +582,7 @@ extends TameableEntity {
         private void dropMorningGifts() {
             Random random = this.cat.getRandom();
             BlockPos.Mutable mutable = new BlockPos.Mutable();
-            mutable.set(this.cat.getBlockPos());
+            mutable.set(this.cat.isLeashed() ? this.cat.getHoldingEntity().getBlockPos() : this.cat.getBlockPos());
             this.cat.teleport(mutable.getX() + random.nextInt(11) - 5, mutable.getY() + random.nextInt(5) - 2, mutable.getZ() + random.nextInt(11) - 5, false);
             mutable.set(this.cat.getBlockPos());
             LootTable lootTable = this.cat.world.getServer().getLootManager().getTable(LootTables.CAT_MORNING_GIFT_GAMEPLAY);

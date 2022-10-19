@@ -35,7 +35,6 @@ import net.minecraft.network.packet.c2s.play.QueryEntityNbtC2SPacket;
 import net.minecraft.network.packet.c2s.play.RecipeBookDataC2SPacket;
 import net.minecraft.network.packet.c2s.play.RecipeCategoryOptionsC2SPacket;
 import net.minecraft.network.packet.c2s.play.RenameItemC2SPacket;
-import net.minecraft.network.packet.c2s.play.RequestChatPreviewC2SPacket;
 import net.minecraft.network.packet.c2s.play.RequestCommandCompletionsC2SPacket;
 import net.minecraft.network.packet.c2s.play.ResourcePackStatusC2SPacket;
 import net.minecraft.network.packet.c2s.play.SelectMerchantTradeC2SPacket;
@@ -63,8 +62,6 @@ extends ServerPacketListener {
     public void onChatMessage(ChatMessageC2SPacket var1);
 
     public void onCommandExecution(CommandExecutionC2SPacket var1);
-
-    public void onRequestChatPreview(RequestChatPreviewC2SPacket var1);
 
     public void onMessageAcknowledgment(MessageAcknowledgmentC2SPacket var1);
 
