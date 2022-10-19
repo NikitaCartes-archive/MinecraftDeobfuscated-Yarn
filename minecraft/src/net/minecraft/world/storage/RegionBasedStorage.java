@@ -83,13 +83,13 @@ public final class RegionBasedStorage implements AutoCloseable {
 		return var8;
 	}
 
-	public void method_39802(ChunkPos chunkPos, NbtScanner nbtScanner) throws IOException {
+	public void scanChunk(ChunkPos chunkPos, NbtScanner scanner) throws IOException {
 		RegionFile regionFile = this.getRegionFile(chunkPos);
 		DataInputStream dataInputStream = regionFile.getChunkInputStream(chunkPos);
 
 		try {
 			if (dataInputStream != null) {
-				NbtIo.scan(dataInputStream, nbtScanner);
+				NbtIo.scan(dataInputStream, scanner);
 			}
 		} catch (Throwable var8) {
 			if (dataInputStream != null) {

@@ -111,12 +111,6 @@ public class CraftingScreen extends HandledScreen<CraftingScreenHandler> impleme
 	}
 
 	@Override
-	public void removed() {
-		this.recipeBook.close();
-		super.removed();
-	}
-
-	@Override
 	public RecipeBookWidget getRecipeBookWidget() {
 		return this.recipeBook;
 	}

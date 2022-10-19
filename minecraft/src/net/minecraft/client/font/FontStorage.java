@@ -11,6 +11,7 @@ import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.UnaryOperator;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.TextureManager;
@@ -159,7 +160,7 @@ public class FontStorage implements AutoCloseable {
 		}
 
 		GlyphAtlasTexture glyphAtlasTexture2 = new GlyphAtlasTexture(
-			new Identifier(this.id.getNamespace(), this.id.getPath() + "/" + this.glyphAtlases.size()), c.hasColor()
+			this.id.withPath((UnaryOperator<String>)(string -> string + "/" + this.glyphAtlases.size())), c.hasColor()
 		);
 		this.glyphAtlases.add(glyphAtlasTexture2);
 		this.textureManager.registerTexture(glyphAtlasTexture2.getId(), glyphAtlasTexture2);

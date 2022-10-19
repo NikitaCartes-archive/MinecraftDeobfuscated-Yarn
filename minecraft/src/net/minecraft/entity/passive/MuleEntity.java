@@ -15,19 +15,16 @@ public class MuleEntity extends AbstractDonkeyEntity {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		super.getAmbientSound();
 		return SoundEvents.ENTITY_MULE_AMBIENT;
 	}
 
 	@Override
 	protected SoundEvent getAngrySound() {
-		super.getAngrySound();
 		return SoundEvents.ENTITY_MULE_ANGRY;
 	}
 
 	@Override
 	protected SoundEvent getDeathSound() {
-		super.getDeathSound();
 		return SoundEvents.ENTITY_MULE_DEATH;
 	}
 
@@ -39,7 +36,6 @@ public class MuleEntity extends AbstractDonkeyEntity {
 
 	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
-		super.getHurtSound(source);
 		return SoundEvents.ENTITY_MULE_HURT;
 	}
 
@@ -48,6 +44,7 @@ public class MuleEntity extends AbstractDonkeyEntity {
 		this.playSound(SoundEvents.ENTITY_MULE_CHEST, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 	}
 
+	@Nullable
 	@Override
 	public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
 		return EntityType.MULE.create(world);

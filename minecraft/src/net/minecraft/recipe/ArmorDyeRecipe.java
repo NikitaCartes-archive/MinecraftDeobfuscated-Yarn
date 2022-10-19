@@ -7,12 +7,13 @@ import net.minecraft.item.DyeItem;
 import net.minecraft.item.DyeableItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 public class ArmorDyeRecipe extends SpecialCraftingRecipe {
-	public ArmorDyeRecipe(Identifier identifier) {
-		super(identifier);
+	public ArmorDyeRecipe(Identifier identifier, CraftingRecipeCategory craftingRecipeCategory) {
+		super(identifier, craftingRecipeCategory);
 	}
 
 	public boolean matches(CraftingInventory craftingInventory, World world) {

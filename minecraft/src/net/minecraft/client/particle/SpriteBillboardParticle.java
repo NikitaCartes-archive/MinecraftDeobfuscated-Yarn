@@ -6,7 +6,7 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.world.ClientWorld;
 
 /**
- * {@link SpriteBillboardParticle} is a {@link BillboardParticle} implementation class that renders a {@link Sprite} as its camera-facing texture.
+ * A {@link BillboardParticle} implementation class that renders a {@link Sprite} as its camera-facing texture.
  */
 @Environment(EnvType.CLIENT)
 public abstract class SpriteBillboardParticle extends BillboardParticle {
@@ -21,10 +21,10 @@ public abstract class SpriteBillboardParticle extends BillboardParticle {
 	}
 
 	/**
-	 * Sets the current {@link Sprite} of this {@link SpriteBillboardParticle}.
+	 * Sets the current {@link Sprite} of this particle.
 	 * 
 	 * <p>
-	 * To assign a {@link Sprite} based on particle age, visit {@link SpriteBillboardParticle#setSpriteForAge}.
+	 * To assign a {@link Sprite} based on particle age, see {@link #setSpriteForAge}.
 	 * 
 	 * @param sprite the new {@link Sprite} to assign to this {@link Particle}
 	 */
@@ -53,7 +53,7 @@ public abstract class SpriteBillboardParticle extends BillboardParticle {
 	}
 
 	/**
-	 * Sets the current {@link Sprite} of this {@link SpriteBillboardParticle} to a random frame in its atlas sheet.
+	 * Sets the current {@link Sprite} of this particle to a random frame in its atlas sheet.
 	 * 
 	 * @param spriteProvider sprite access for retrieving random {@link Sprite} frames
 	 */
@@ -62,7 +62,7 @@ public abstract class SpriteBillboardParticle extends BillboardParticle {
 	}
 
 	/**
-	 * Sets the current {@link Sprite} of this {@link SpriteBillboardParticle} based on the age of the particle, assuming the particle texture is an atlas with multiple frames.
+	 * Sets the current {@link Sprite} of this particle based on the age of the particle, assuming the particle texture is an atlas with multiple frames.
 	 * 
 	 * @param spriteProvider sprite access for retrieving the proper {@link Sprite} based on lifetime progress
 	 */

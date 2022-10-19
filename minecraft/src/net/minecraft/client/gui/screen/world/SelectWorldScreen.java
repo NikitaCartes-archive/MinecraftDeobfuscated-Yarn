@@ -12,11 +12,13 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
+import net.minecraft.world.gen.GeneratorOptions;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class SelectWorldScreen extends Screen {
 	private static final Logger LOGGER = LogUtils.getLogger();
+	public static final GeneratorOptions DEBUG_GENERATOR_OPTIONS = new GeneratorOptions((long)"test1".hashCode(), true, false);
 	protected final Screen parent;
 	@Nullable
 	private List<OrderedText> tooltip;

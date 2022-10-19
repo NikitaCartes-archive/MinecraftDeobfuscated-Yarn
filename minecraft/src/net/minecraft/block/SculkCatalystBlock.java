@@ -44,7 +44,7 @@ public class SculkCatalystBlock extends BlockWithEntity {
 
 	public static void bloom(ServerWorld world, BlockPos pos, BlockState state, Random random) {
 		world.setBlockState(pos, state.with(BLOOM, Boolean.valueOf(true)), Block.NOTIFY_ALL);
-		world.createAndScheduleBlockTick(pos, state.getBlock(), 8);
+		world.scheduleBlockTick(pos, state.getBlock(), 8);
 		world.spawnParticles(ParticleTypes.SCULK_SOUL, (double)pos.getX() + 0.5, (double)pos.getY() + 1.15, (double)pos.getZ() + 0.5, 2, 0.2, 0.0, 0.2, 0.0);
 		world.playSound(null, pos, SoundEvents.BLOCK_SCULK_CATALYST_BLOOM, SoundCategory.BLOCKS, 2.0F, 0.6F + random.nextFloat() * 0.4F);
 	}

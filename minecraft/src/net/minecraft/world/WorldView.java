@@ -3,20 +3,25 @@ package net.minecraft.world;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
+import net.minecraft.command.CommandRegistryWrapper;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.ColorResolver;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.level.ColorResolver;
 
 /**
  * Represents a scoped, read-only view of a world like structure that contains biomes, chunks and is bound to a dimension.
@@ -243,5 +248,14 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 		}
 
 		return true;
+	}
+
+	DynamicRegistryManager getRegistryManager();
+
+	FeatureSet getEnabledFeatures();
+
+	default <T> CommandRegistryWrapper<T> createCommandRegistryWrapper(RegistryKey<? extends Registry<? extends T>> registryRef) {
+		Registry<T> registry = this.getRegistryManager().get(registryRef);
+		return CommandRegistryWrapper.of(registry).withFeatureFilter(this.getEnabledFeatures());
 	}
 }

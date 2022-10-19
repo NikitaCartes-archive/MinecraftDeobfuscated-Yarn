@@ -9,7 +9,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.TickPriority;
 
 public record Tick<T>(T type, BlockPos pos, int delay, TickPriority priority) {
 	private static final String TYPE_NBT_KEY = "i";

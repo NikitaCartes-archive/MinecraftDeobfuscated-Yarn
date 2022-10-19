@@ -245,14 +245,16 @@ public class OceanRuinGenerator {
 				}
 			} else if ("drowned".equals(metadata)) {
 				DrownedEntity drownedEntity = EntityType.DROWNED.create(world.toServerWorld());
-				drownedEntity.setPersistent();
-				drownedEntity.refreshPositionAndAngles(pos, 0.0F, 0.0F);
-				drownedEntity.initialize(world, world.getLocalDifficulty(pos), SpawnReason.STRUCTURE, null, null);
-				world.spawnEntityAndPassengers(drownedEntity);
-				if (pos.getY() > world.getSeaLevel()) {
-					world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
-				} else {
-					world.setBlockState(pos, Blocks.WATER.getDefaultState(), Block.NOTIFY_LISTENERS);
+				if (drownedEntity != null) {
+					drownedEntity.setPersistent();
+					drownedEntity.refreshPositionAndAngles(pos, 0.0F, 0.0F);
+					drownedEntity.initialize(world, world.getLocalDifficulty(pos), SpawnReason.STRUCTURE, null, null);
+					world.spawnEntityAndPassengers(drownedEntity);
+					if (pos.getY() > world.getSeaLevel()) {
+						world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
+					} else {
+						world.setBlockState(pos, Blocks.WATER.getDefaultState(), Block.NOTIFY_LISTENERS);
+					}
 				}
 			}
 		}

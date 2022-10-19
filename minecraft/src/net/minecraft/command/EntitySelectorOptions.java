@@ -7,7 +7,6 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -42,7 +41,6 @@ import net.minecraft.tag.TagKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameMode;
 
@@ -169,26 +167,26 @@ public class EntitySelectorOptions {
 				int i = reader.getReader().getCursor();
 				String string = reader.getReader().readUnquotedString();
 				reader.setSuggestionProvider((builder, consumer) -> CommandSource.suggestMatching(Arrays.asList("nearest", "furthest", "random", "arbitrary"), builder));
-				BiConsumer<Vec3d, List<? extends Entity>> biConsumer;
+				BiConsumer var10001;
 				switch(string) {
 					case "nearest":
-						biConsumer = EntitySelectorReader.NEAREST;
+						var10001 = EntitySelectorReader.NEAREST;
 						break;
 					case "furthest":
-						biConsumer = EntitySelectorReader.FURTHEST;
+						var10001 = EntitySelectorReader.FURTHEST;
 						break;
 					case "random":
-						biConsumer = EntitySelectorReader.RANDOM;
+						var10001 = EntitySelectorReader.RANDOM;
 						break;
 					case "arbitrary":
-						biConsumer = EntitySelectorReader.ARBITRARY;
+						var10001 = EntitySelectorReader.ARBITRARY;
 						break;
 					default:
 						reader.getReader().setCursor(i);
 						throw IRREVERSIBLE_SORT_EXCEPTION.createWithContext(reader.getReader(), string);
 				}
 
-				reader.setSorter(biConsumer);
+				reader.setSorter(var10001);
 				reader.setHasSorter(true);
 			}, reader -> !reader.isSenderOnly() && !reader.hasSorter(), Text.translatable("argument.entity.options.sort.description"));
 			putOption("gamemode", reader -> {
@@ -524,15 +522,9 @@ public class EntitySelectorOptions {
 		void handle(EntitySelectorReader reader) throws CommandSyntaxException;
 	}
 
-	static class SelectorOption {
-		public final EntitySelectorOptions.SelectorHandler handler;
-		public final Predicate<EntitySelectorReader> condition;
-		public final Text description;
-
-		SelectorOption(EntitySelectorOptions.SelectorHandler handler, Predicate<EntitySelectorReader> condition, Text description) {
-			this.handler = handler;
-			this.condition = condition;
-			this.description = description;
-		}
+	static record SelectorOption(EntitySelectorOptions.SelectorHandler handler, Predicate<EntitySelectorReader> condition, Text description) {
+		final EntitySelectorOptions.SelectorHandler handler;
+		final Predicate<EntitySelectorReader> condition;
+		final Text description;
 	}
 }

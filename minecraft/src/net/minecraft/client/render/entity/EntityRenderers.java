@@ -77,6 +77,7 @@ public class EntityRenderers {
 		register(EntityType.BLAZE, BlazeEntityRenderer::new);
 		register(EntityType.BOAT, context -> new BoatEntityRenderer(context, false));
 		register(EntityType.CAT, CatEntityRenderer::new);
+		register(EntityType.CAMEL, context -> new CamelEntityRenderer(context, EntityModelLayers.CAMEL));
 		register(EntityType.CAVE_SPIDER, CaveSpiderEntityRenderer::new);
 		register(EntityType.CHEST_BOAT, context -> new BoatEntityRenderer(context, true));
 		register(EntityType.CHEST_MINECART, context -> new MinecartEntityRenderer<>(context, EntityModelLayers.CHEST_MINECART));

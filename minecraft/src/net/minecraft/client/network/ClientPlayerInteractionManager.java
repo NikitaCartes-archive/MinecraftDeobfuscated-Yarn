@@ -309,7 +309,12 @@ public class ClientPlayerInteractionManager {
 			boolean bl = !player.getMainHandStack().isEmpty() || !player.getOffHandStack().isEmpty();
 			boolean bl2 = player.shouldCancelInteraction() && bl;
 			if (!bl2) {
-				ActionResult actionResult = this.client.world.getBlockState(blockPos).onUse(this.client.world, player, hand, hitResult);
+				BlockState blockState = this.client.world.getBlockState(blockPos);
+				if (!this.networkHandler.hasFeature(blockState.getBlock().getRequiredFeatures())) {
+					return ActionResult.FAIL;
+				}
+
+				ActionResult actionResult = blockState.onUse(this.client.world, player, hand, hitResult);
 				if (actionResult.isAccepted()) {
 					return actionResult;
 				}
@@ -317,16 +322,16 @@ public class ClientPlayerInteractionManager {
 
 			if (!itemStack.isEmpty() && !player.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
 				ItemUsageContext itemUsageContext = new ItemUsageContext(player, hand, hitResult);
-				ActionResult actionResult;
+				ActionResult actionResult2;
 				if (this.gameMode.isCreative()) {
 					int i = itemStack.getCount();
-					actionResult = itemStack.useOnBlock(itemUsageContext);
+					actionResult2 = itemStack.useOnBlock(itemUsageContext);
 					itemStack.setCount(i);
 				} else {
-					actionResult = itemStack.useOnBlock(itemUsageContext);
+					actionResult2 = itemStack.useOnBlock(itemUsageContext);
 				}
 
-				return actionResult;
+				return actionResult2;
 			} else {
 				return ActionResult.PASS;
 			}
@@ -433,13 +438,13 @@ public class ClientPlayerInteractionManager {
 	}
 
 	public void clickCreativeStack(ItemStack stack, int slotId) {
-		if (this.gameMode.isCreative()) {
+		if (this.gameMode.isCreative() && this.networkHandler.hasFeature(stack.getItem().getRequiredFeatures())) {
 			this.networkHandler.sendPacket(new CreativeInventoryActionC2SPacket(slotId, stack));
 		}
 	}
 
 	public void dropCreativeStack(ItemStack stack) {
-		if (this.gameMode.isCreative() && !stack.isEmpty()) {
+		if (this.gameMode.isCreative() && !stack.isEmpty() && this.networkHandler.hasFeature(stack.getItem().getRequiredFeatures())) {
 			this.networkHandler.sendPacket(new CreativeInventoryActionC2SPacket(-1, stack));
 		}
 	}

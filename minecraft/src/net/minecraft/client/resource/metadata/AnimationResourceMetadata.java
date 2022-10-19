@@ -1,11 +1,10 @@
 package net.minecraft.client.resource.metadata;
 
 import com.google.common.collect.Lists;
-import com.mojang.datafixers.util.Pair;
 import java.util.List;
-import java.util.Locale;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.texture.SpriteDimensions;
 
 @Environment(EnvType.CLIENT)
 public class AnimationResourceMetadata {
@@ -15,8 +14,8 @@ public class AnimationResourceMetadata {
 	public static final int UNDEFINED = -1;
 	public static final AnimationResourceMetadata EMPTY = new AnimationResourceMetadata(Lists.newArrayList(), -1, -1, 1, false) {
 		@Override
-		public Pair<Integer, Integer> ensureImageSize(int x, int y) {
-			return Pair.of(x, y);
+		public SpriteDimensions getSize(int defaultWidth, int defaultHeight) {
+			return new SpriteDimensions(defaultWidth, defaultHeight);
 		}
 	};
 	private final List<AnimationFrameResourceMetadata> frames;
@@ -33,38 +32,15 @@ public class AnimationResourceMetadata {
 		this.interpolate = interpolate;
 	}
 
-	private static boolean isMultipleOf(int dividend, int divisor) {
-		return dividend / divisor * divisor == dividend;
-	}
-
-	public Pair<Integer, Integer> ensureImageSize(int x, int y) {
-		Pair<Integer, Integer> pair = this.getSize(x, y);
-		int i = pair.getFirst();
-		int j = pair.getSecond();
-		if (isMultipleOf(x, i) && isMultipleOf(y, j)) {
-			return pair;
-		} else {
-			throw new IllegalArgumentException(String.format(Locale.ROOT, "Image size %s,%s is not multiply of frame size %s,%s", x, y, i, j));
-		}
-	}
-
-	private Pair<Integer, Integer> getSize(int defaultWidth, int defaultHeight) {
+	public SpriteDimensions getSize(int defaultWidth, int defaultHeight) {
 		if (this.width != -1) {
-			return this.height != -1 ? Pair.of(this.width, this.height) : Pair.of(this.width, defaultHeight);
+			return this.height != -1 ? new SpriteDimensions(this.width, this.height) : new SpriteDimensions(this.width, defaultHeight);
 		} else if (this.height != -1) {
-			return Pair.of(defaultWidth, this.height);
+			return new SpriteDimensions(defaultWidth, this.height);
 		} else {
 			int i = Math.min(defaultWidth, defaultHeight);
-			return Pair.of(i, i);
+			return new SpriteDimensions(i, i);
 		}
-	}
-
-	public int getHeight(int defaultHeight) {
-		return this.height == -1 ? defaultHeight : this.height;
-	}
-
-	public int getWidth(int defaultWidth) {
-		return this.width == -1 ? defaultWidth : this.width;
 	}
 
 	public int getDefaultFrameTime() {

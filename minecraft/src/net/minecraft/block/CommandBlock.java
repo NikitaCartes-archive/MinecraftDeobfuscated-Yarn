@@ -58,7 +58,7 @@ public class CommandBlock extends BlockWithEntity implements OperatorBlock {
 				if (!bl2 && !commandBlockBlockEntity.isAuto() && commandBlockBlockEntity.getCommandBlockType() != CommandBlockBlockEntity.Type.SEQUENCE) {
 					if (bl) {
 						commandBlockBlockEntity.updateConditionMet();
-						world.createAndScheduleBlockTick(pos, this, 1);
+						world.scheduleBlockTick(pos, this, 1);
 					}
 				}
 			}
@@ -82,7 +82,7 @@ public class CommandBlock extends BlockWithEntity implements OperatorBlock {
 				}
 
 				if (commandBlockBlockEntity.isPowered() || commandBlockBlockEntity.isAuto()) {
-					world.createAndScheduleBlockTick(pos, this, 1);
+					world.scheduleBlockTick(pos, this, 1);
 				}
 			} else if (type == CommandBlockBlockEntity.Type.REDSTONE) {
 				if (bl2) {

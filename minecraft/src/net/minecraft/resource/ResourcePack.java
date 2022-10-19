@@ -2,9 +2,8 @@ package net.minecraft.resource;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
 import java.util.Set;
-import java.util.function.Predicate;
+import java.util.function.BiConsumer;
 import javax.annotation.Nullable;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
 import net.minecraft.util.Identifier;
@@ -22,13 +21,12 @@ public interface ResourcePack extends AutoCloseable {
 	String PACK_METADATA_NAME = "pack.mcmeta";
 
 	@Nullable
-	InputStream openRoot(String fileName) throws IOException;
+	InputSupplier<InputStream> openRoot(String... segments);
 
-	InputStream open(ResourceType type, Identifier id) throws IOException;
+	@Nullable
+	InputSupplier<InputStream> open(ResourceType type, Identifier id);
 
-	Collection<Identifier> findResources(ResourceType type, String namespace, String prefix, Predicate<Identifier> allowedPathPredicate);
-
-	boolean contains(ResourceType type, Identifier id);
+	void findResources(ResourceType type, String namespace, String prefix, ResourcePack.ResultConsumer consumer);
 
 	Set<String> getNamespaces(ResourceType type);
 
@@ -37,5 +35,17 @@ public interface ResourcePack extends AutoCloseable {
 
 	String getName();
 
+	/**
+	 * {@return whether the dynamic registry entries from this pack are always
+	 * "stable"/not experimental}
+	 */
+	default boolean isAlwaysStable() {
+		return false;
+	}
+
 	void close();
+
+	@FunctionalInterface
+	public interface ResultConsumer extends BiConsumer<Identifier, InputSupplier<InputStream>> {
+	}
 }

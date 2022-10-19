@@ -42,7 +42,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 	@Override
 	public void handledScreenTick() {
 		if (this.client.interactionManager.hasCreativeInventory()) {
-			this.client.setScreen(new CreativeInventoryScreen(this.client.player));
+			this.client.setScreen(new CreativeInventoryScreen(this.client.player, this.client.player.networkHandler.getEnabledFeatures()));
 		} else {
 			this.recipeBook.update();
 		}
@@ -51,7 +51,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 	@Override
 	protected void init() {
 		if (this.client.interactionManager.hasCreativeInventory()) {
-			this.client.setScreen(new CreativeInventoryScreen(this.client.player));
+			this.client.setScreen(new CreativeInventoryScreen(this.client.player, this.client.player.networkHandler.getEnabledFeatures()));
 		} else {
 			super.init();
 			this.narrow = this.width < 379;
@@ -190,15 +190,6 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 	@Override
 	public void refreshRecipeBook() {
 		this.recipeBook.refresh();
-	}
-
-	@Override
-	public void removed() {
-		if (this.open) {
-			this.recipeBook.close();
-		}
-
-		super.removed();
 	}
 
 	@Override

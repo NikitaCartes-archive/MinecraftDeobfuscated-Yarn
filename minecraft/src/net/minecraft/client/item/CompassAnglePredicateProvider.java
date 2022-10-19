@@ -14,7 +14,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
-public class CompassAnglePredicateProvider implements UnclampedModelPredicateProvider {
+public class CompassAnglePredicateProvider implements ClampedModelPredicateProvider {
 	public static final int field_38798 = 0;
 	private final CompassAnglePredicateProvider.AngleInterpolator aimedInterpolator = new CompassAnglePredicateProvider.AngleInterpolator();
 	private final CompassAnglePredicateProvider.AngleInterpolator aimlessInterpolator = new CompassAnglePredicateProvider.AngleInterpolator();

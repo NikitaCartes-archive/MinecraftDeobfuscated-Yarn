@@ -7,6 +7,7 @@ import net.minecraft.util.registry.Registry;
 public final class ItemTags {
 	public static final TagKey<Item> WOOL = of("wool");
 	public static final TagKey<Item> PLANKS = of("planks");
+	public static final TagKey<Item> STRIPPED_LOGS = of("stripped_logs");
 	public static final TagKey<Item> STONE_BRICKS = of("stone_bricks");
 	public static final TagKey<Item> WOODEN_BUTTONS = of("wooden_buttons");
 	public static final TagKey<Item> BUTTONS = of("buttons");
@@ -74,6 +75,7 @@ public final class ItemTags {
 	public static final TagKey<Item> COALS = of("coals");
 	public static final TagKey<Item> ARROWS = of("arrows");
 	public static final TagKey<Item> LECTERN_BOOKS = of("lectern_books");
+	public static final TagKey<Item> BOOKSHELF_BOOKS = of("bookshelf_books");
 	public static final TagKey<Item> BEACON_PAYMENT_ITEMS = of("beacon_payment_items");
 	public static final TagKey<Item> STONE_TOOL_MATERIALS = of("stone_tool_materials");
 	public static final TagKey<Item> STONE_CRAFTING_MATERIALS = of("stone_crafting_materials");
@@ -82,6 +84,7 @@ public final class ItemTags {
 	public static final TagKey<Item> DAMPENS_VIBRATIONS = of("dampens_vibrations");
 	public static final TagKey<Item> CLUSTER_MAX_HARVESTABLES = of("cluster_max_harvestables");
 	public static final TagKey<Item> COMPASSES = of("compasses");
+	public static final TagKey<Item> HANGING_SIGNS = of("hanging_signs");
 
 	private ItemTags() {
 	}

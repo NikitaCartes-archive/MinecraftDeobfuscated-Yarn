@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.block.Block;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.DataOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
 import net.minecraft.item.Item;
@@ -23,12 +23,12 @@ import org.slf4j.Logger;
 
 public class ModelProvider implements DataProvider {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private final DataGenerator.PathResolver blockstatesPathResolver;
-	private final DataGenerator.PathResolver modelsPathResolver;
+	private final DataOutput.PathResolver blockstatesPathResolver;
+	private final DataOutput.PathResolver modelsPathResolver;
 
-	public ModelProvider(DataGenerator generator) {
-		this.blockstatesPathResolver = generator.createPathResolver(DataGenerator.OutputType.RESOURCE_PACK, "blockstates");
-		this.modelsPathResolver = generator.createPathResolver(DataGenerator.OutputType.RESOURCE_PACK, "models");
+	public ModelProvider(DataOutput generator) {
+		this.blockstatesPathResolver = generator.getResolver(DataOutput.OutputType.RESOURCE_PACK, "blockstates");
+		this.modelsPathResolver = generator.getResolver(DataOutput.OutputType.RESOURCE_PACK, "models");
 	}
 
 	@Override

@@ -11,6 +11,7 @@ import java.util.UUID;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.command.CommandRegistryWrapper;
 import net.minecraft.command.argument.ParticleEffectArgumentType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -19,8 +20,6 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.Potion;
@@ -349,7 +348,9 @@ public class AreaEffectCloudEntity extends Entity {
 
 		if (nbt.contains("Particle", NbtElement.STRING_TYPE)) {
 			try {
-				this.setParticleType(ParticleEffectArgumentType.readParameters(new StringReader(nbt.getString("Particle"))));
+				this.setParticleType(
+					ParticleEffectArgumentType.readParameters(new StringReader(nbt.getString("Particle")), CommandRegistryWrapper.of(Registry.PARTICLE_TYPE))
+				);
 			} catch (CommandSyntaxException var5) {
 				LOGGER.warn("Couldn't load custom particle {}", nbt.getString("Particle"), var5);
 			}
@@ -426,11 +427,6 @@ public class AreaEffectCloudEntity extends Entity {
 	@Override
 	public PistonBehavior getPistonBehavior() {
 		return PistonBehavior.IGNORE;
-	}
-
-	@Override
-	public Packet<?> createSpawnPacket() {
-		return new EntitySpawnS2CPacket(this);
 	}
 
 	@Override

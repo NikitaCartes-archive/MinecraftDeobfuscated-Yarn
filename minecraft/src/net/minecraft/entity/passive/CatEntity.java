@@ -322,13 +322,14 @@ public class CatEntity extends TameableEntity {
 		return MathHelper.lerp(tickDelta, this.prevHeadDownAnimation, this.headDownAnimation);
 	}
 
+	@Nullable
 	public CatEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
 		CatEntity catEntity = EntityType.CAT.create(serverWorld);
-		if (passiveEntity instanceof CatEntity) {
+		if (catEntity != null && passiveEntity instanceof CatEntity catEntity2) {
 			if (this.random.nextBoolean()) {
 				catEntity.setVariant(this.getVariant());
 			} else {
-				catEntity.setVariant(((CatEntity)passiveEntity).getVariant());
+				catEntity.setVariant(catEntity2.getVariant());
 			}
 
 			if (this.isTamed()) {
@@ -337,7 +338,7 @@ public class CatEntity extends TameableEntity {
 				if (this.random.nextBoolean()) {
 					catEntity.setCollarColor(this.getCollarColor());
 				} else {
-					catEntity.setCollarColor(((CatEntity)passiveEntity).getCollarColor());
+					catEntity.setCollarColor(catEntity2.getCollarColor());
 				}
 			}
 		}
@@ -574,7 +575,7 @@ public class CatEntity extends TameableEntity {
 		private void dropMorningGifts() {
 			Random random = this.cat.getRandom();
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
-			mutable.set(this.cat.getBlockPos());
+			mutable.set(this.cat.isLeashed() ? this.cat.getHoldingEntity().getBlockPos() : this.cat.getBlockPos());
 			this.cat
 				.teleport(
 					(double)(mutable.getX() + random.nextInt(11) - 5),

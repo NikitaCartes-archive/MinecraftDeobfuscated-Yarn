@@ -59,6 +59,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
@@ -199,7 +200,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 		super.readCustomDataFromNbt(nbt);
 		BlockState blockState = null;
 		if (nbt.contains("carriedBlockState", NbtElement.COMPOUND_TYPE)) {
-			blockState = NbtHelper.toBlockState(nbt.getCompound("carriedBlockState"));
+			blockState = NbtHelper.toBlockState(this.world.createCommandRegistryWrapper(Registry.BLOCK_KEY), nbt.getCompound("carriedBlockState"));
 			if (blockState.isAir()) {
 				blockState = null;
 			}

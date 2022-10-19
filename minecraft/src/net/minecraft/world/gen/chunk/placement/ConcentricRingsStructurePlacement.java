@@ -20,17 +20,17 @@ import net.minecraft.world.gen.noise.NoiseConfig;
 
 public class ConcentricRingsStructurePlacement extends StructurePlacement {
 	public static final Codec<ConcentricRingsStructurePlacement> CODEC = RecordCodecBuilder.create(
-		instance -> method_41629(instance).apply(instance, ConcentricRingsStructurePlacement::new)
+		instance -> buildConcentricRingsCodec(instance).apply(instance, ConcentricRingsStructurePlacement::new)
 	);
 	private final int distance;
 	private final int spread;
 	private final int count;
 	private final RegistryEntryList<Biome> preferredBiomes;
 
-	private static P9<Mu<ConcentricRingsStructurePlacement>, Vec3i, StructurePlacement.FrequencyReductionMethod, Float, Integer, Optional<StructurePlacement.ExclusionZone>, Integer, Integer, Integer, RegistryEntryList<Biome>> method_41629(
+	private static P9<Mu<ConcentricRingsStructurePlacement>, Vec3i, StructurePlacement.FrequencyReductionMethod, Float, Integer, Optional<StructurePlacement.ExclusionZone>, Integer, Integer, Integer, RegistryEntryList<Biome>> buildConcentricRingsCodec(
 		Instance<ConcentricRingsStructurePlacement> instance
 	) {
-		P5<Mu<ConcentricRingsStructurePlacement>, Vec3i, StructurePlacement.FrequencyReductionMethod, Float, Integer, Optional<StructurePlacement.ExclusionZone>> p5 = method_41637(
+		P5<Mu<ConcentricRingsStructurePlacement>, Vec3i, StructurePlacement.FrequencyReductionMethod, Float, Integer, Optional<StructurePlacement.ExclusionZone>> p5 = buildCodec(
 			instance
 		);
 		P4<Mu<ConcentricRingsStructurePlacement>, Integer, Integer, Integer, RegistryEntryList<Biome>> p4 = instance.group(

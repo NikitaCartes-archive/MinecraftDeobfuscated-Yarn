@@ -2,7 +2,6 @@ package net.minecraft.util.registry;
 
 import com.mojang.serialization.Lifecycle;
 import java.util.Optional;
-import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.util.Identifier;
@@ -15,10 +14,8 @@ public class DefaultedRegistry<T> extends SimpleRegistry<T> {
 	private final Identifier defaultId;
 	private RegistryEntry<T> defaultEntry;
 
-	public DefaultedRegistry(
-		String defaultId, RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle, @Nullable Function<T, RegistryEntry.Reference<T>> valueToEntryFunction
-	) {
-		super(key, lifecycle, valueToEntryFunction);
+	public DefaultedRegistry(String defaultId, RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle, boolean intrusive) {
+		super(key, lifecycle, intrusive);
 		this.defaultId = new Identifier(defaultId);
 	}
 

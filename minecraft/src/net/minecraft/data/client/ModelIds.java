@@ -1,5 +1,6 @@
 package net.minecraft.data.client;
 
+import java.util.function.UnaryOperator;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
@@ -17,21 +18,21 @@ public class ModelIds {
 
 	public static Identifier getBlockSubModelId(Block block, String suffix) {
 		Identifier identifier = Registry.BLOCK.getId(block);
-		return new Identifier(identifier.getNamespace(), "block/" + identifier.getPath() + suffix);
+		return identifier.withPath((UnaryOperator<String>)(path -> "block/" + path + suffix));
 	}
 
 	public static Identifier getBlockModelId(Block block) {
 		Identifier identifier = Registry.BLOCK.getId(block);
-		return new Identifier(identifier.getNamespace(), "block/" + identifier.getPath());
+		return identifier.withPrefixedPath("block/");
 	}
 
 	public static Identifier getItemModelId(Item item) {
 		Identifier identifier = Registry.ITEM.getId(item);
-		return new Identifier(identifier.getNamespace(), "item/" + identifier.getPath());
+		return identifier.withPrefixedPath("item/");
 	}
 
 	public static Identifier getItemSubModelId(Item item, String suffix) {
 		Identifier identifier = Registry.ITEM.getId(item);
-		return new Identifier(identifier.getNamespace(), "item/" + identifier.getPath() + suffix);
+		return identifier.withPath((UnaryOperator<String>)(path -> "item/" + path + suffix));
 	}
 }

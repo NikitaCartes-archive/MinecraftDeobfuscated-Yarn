@@ -95,7 +95,7 @@ public class ItemStringReader {
 	private void readItem() throws CommandSyntaxException {
 		int i = this.reader.getCursor();
 		Identifier identifier = Identifier.fromCommandInput(this.reader);
-		Optional<RegistryEntry<Item>> optional = this.registryWrapper.getEntry(RegistryKey.of(Registry.ITEM_KEY, identifier));
+		Optional<? extends RegistryEntry<Item>> optional = this.registryWrapper.getEntry(RegistryKey.of(Registry.ITEM_KEY, identifier));
 		this.result = Either.left((RegistryEntry<Item>)optional.orElseThrow(() -> {
 			this.reader.setCursor(i);
 			return ID_INVALID_EXCEPTION.createWithContext(this.reader, identifier);

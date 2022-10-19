@@ -310,8 +310,10 @@ public class EndCityGenerator {
 			} else if (boundingBox.contains(pos) && World.isValid(pos)) {
 				if (metadata.startsWith("Sentry")) {
 					ShulkerEntity shulkerEntity = EntityType.SHULKER.create(world.toServerWorld());
-					shulkerEntity.setPosition((double)pos.getX() + 0.5, (double)pos.getY(), (double)pos.getZ() + 0.5);
-					world.spawnEntity(shulkerEntity);
+					if (shulkerEntity != null) {
+						shulkerEntity.setPosition((double)pos.getX() + 0.5, (double)pos.getY(), (double)pos.getZ() + 0.5);
+						world.spawnEntity(shulkerEntity);
+					}
 				} else if (metadata.startsWith("Elytra")) {
 					ItemFrameEntity itemFrameEntity = new ItemFrameEntity(world.toServerWorld(), pos, this.placementData.getRotation().rotate(Direction.SOUTH));
 					itemFrameEntity.setHeldItemStack(new ItemStack(Items.ELYTRA), false);

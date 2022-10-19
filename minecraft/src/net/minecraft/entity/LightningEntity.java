@@ -13,8 +13,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.LightningRodBlock;
 import net.minecraft.block.Oxidizable;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -253,11 +251,6 @@ public class LightningEntity extends Entity {
 
 	@Override
 	protected void writeCustomDataToNbt(NbtCompound nbt) {
-	}
-
-	@Override
-	public Packet<?> createSpawnPacket() {
-		return new EntitySpawnS2CPacket(this);
 	}
 
 	public int getBlocksSetOnFire() {

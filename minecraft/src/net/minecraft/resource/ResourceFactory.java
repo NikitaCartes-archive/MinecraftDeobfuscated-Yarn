@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 import java.util.Optional;
 import net.minecraft.util.Identifier;
 
@@ -34,5 +35,9 @@ public interface ResourceFactory {
 
 	default BufferedReader openAsReader(Identifier id) throws IOException {
 		return this.getResourceOrThrow(id).getReader();
+	}
+
+	static ResourceFactory fromMap(Map<Identifier, Resource> map) {
+		return id -> Optional.ofNullable((Resource)map.get(id));
 	}
 }

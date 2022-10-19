@@ -225,18 +225,20 @@ public class TadpoleEntity extends FishEntity {
 		World frogEntity = this.world;
 		if (frogEntity instanceof ServerWorld serverWorld) {
 			FrogEntity frogEntityx = EntityType.FROG.create(this.world);
-			frogEntityx.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
-			frogEntityx.initialize(serverWorld, this.world.getLocalDifficulty(frogEntityx.getBlockPos()), SpawnReason.CONVERSION, null, null);
-			frogEntityx.setAiDisabled(this.isAiDisabled());
-			if (this.hasCustomName()) {
-				frogEntityx.setCustomName(this.getCustomName());
-				frogEntityx.setCustomNameVisible(this.isCustomNameVisible());
-			}
+			if (frogEntityx != null) {
+				frogEntityx.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
+				frogEntityx.initialize(serverWorld, this.world.getLocalDifficulty(frogEntityx.getBlockPos()), SpawnReason.CONVERSION, null, null);
+				frogEntityx.setAiDisabled(this.isAiDisabled());
+				if (this.hasCustomName()) {
+					frogEntityx.setCustomName(this.getCustomName());
+					frogEntityx.setCustomNameVisible(this.isCustomNameVisible());
+				}
 
-			frogEntityx.setPersistent();
-			this.playSound(SoundEvents.ENTITY_TADPOLE_GROW_UP, 0.15F, 1.0F);
-			serverWorld.spawnEntityAndPassengers(frogEntityx);
-			this.discard();
+				frogEntityx.setPersistent();
+				this.playSound(SoundEvents.ENTITY_TADPOLE_GROW_UP, 0.15F, 1.0F);
+				serverWorld.spawnEntityAndPassengers(frogEntityx);
+				this.discard();
+			}
 		}
 	}
 

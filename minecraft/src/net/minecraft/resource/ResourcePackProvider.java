@@ -14,7 +14,6 @@ public interface ResourcePackProvider {
 	 * @see ResourcePackProfile#of
 	 * 
 	 * @param profileAdder the profile adder that accepts created resource pack profiles
-	 * @param factory the factory that creates the resource pack profiles
 	 */
-	void register(Consumer<ResourcePackProfile> profileAdder, ResourcePackProfile.Factory factory);
+	void register(Consumer<ResourcePackProfile> profileAdder);
 }

@@ -5,6 +5,8 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.MathHelper;
 
 public class AquaticMoveControl extends MoveControl {
+	private static final float field_40123 = 10.0F;
+	private static final float field_40124 = 60.0F;
 	private final int pitchChange;
 	private final int yawChange;
 	private final float speedInWater;
@@ -53,7 +55,9 @@ public class AquaticMoveControl extends MoveControl {
 					this.entity.forwardSpeed = k * i;
 					this.entity.upwardSpeed = -l * i;
 				} else {
-					this.entity.setMovementSpeed(i * this.speedInAir);
+					float m = Math.abs(MathHelper.wrapDegrees(this.entity.getYaw() - h));
+					float n = method_45335(m);
+					this.entity.setMovementSpeed(i * this.speedInAir * n);
 				}
 			}
 		} else {
@@ -62,5 +66,9 @@ public class AquaticMoveControl extends MoveControl {
 			this.entity.setUpwardSpeed(0.0F);
 			this.entity.setForwardSpeed(0.0F);
 		}
+	}
+
+	private static float method_45335(float f) {
+		return 1.0F - MathHelper.clamp((f - 10.0F) / 50.0F, 0.0F, 1.0F);
 	}
 }

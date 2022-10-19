@@ -19,6 +19,7 @@ import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.tick.OrderedTick;
 import net.minecraft.world.tick.QueryableTickScheduler;
+import net.minecraft.world.tick.TickPriority;
 
 public interface WorldAccess extends RegistryWorldView, LunarWorldView {
 	@Override
@@ -38,21 +39,21 @@ public interface WorldAccess extends RegistryWorldView, LunarWorldView {
 		return new OrderedTick<>(type, pos, this.getLevelProperties().getTime() + (long)delay, this.getTickOrder());
 	}
 
-	default void createAndScheduleBlockTick(BlockPos pos, Block block, int delay, TickPriority priority) {
+	default void scheduleBlockTick(BlockPos pos, Block block, int delay, TickPriority priority) {
 		this.getBlockTickScheduler().scheduleTick(this.createOrderedTick(pos, block, delay, priority));
 	}
 
-	default void createAndScheduleBlockTick(BlockPos pos, Block block, int delay) {
+	default void scheduleBlockTick(BlockPos pos, Block block, int delay) {
 		this.getBlockTickScheduler().scheduleTick(this.createOrderedTick(pos, block, delay));
 	}
 
 	QueryableTickScheduler<Fluid> getFluidTickScheduler();
 
-	default void createAndScheduleFluidTick(BlockPos pos, Fluid fluid, int delay, TickPriority priority) {
+	default void scheduleFluidTick(BlockPos pos, Fluid fluid, int delay, TickPriority priority) {
 		this.getFluidTickScheduler().scheduleTick(this.createOrderedTick(pos, fluid, delay, priority));
 	}
 
-	default void createAndScheduleFluidTick(BlockPos pos, Fluid fluid, int delay) {
+	default void scheduleFluidTick(BlockPos pos, Fluid fluid, int delay) {
 		this.getFluidTickScheduler().scheduleTick(this.createOrderedTick(pos, fluid, delay));
 	}
 
@@ -85,7 +86,11 @@ public interface WorldAccess extends RegistryWorldView, LunarWorldView {
 		NeighborUpdater.replaceWithStateForNeighborUpdate(this, direction, neighborState, pos, neighborPos, flags, maxUpdateDepth - 1);
 	}
 
-	void playSound(@Nullable PlayerEntity player, BlockPos pos, SoundEvent sound, SoundCategory category, float volume, float pitch);
+	default void playSound(@Nullable PlayerEntity except, BlockPos pos, SoundEvent sound, SoundCategory category) {
+		this.playSound(except, pos, sound, category, 1.0F, 1.0F);
+	}
+
+	void playSound(@Nullable PlayerEntity except, BlockPos pos, SoundEvent sound, SoundCategory category, float volume, float pitch);
 
 	void addParticle(ParticleEffect parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ);
 

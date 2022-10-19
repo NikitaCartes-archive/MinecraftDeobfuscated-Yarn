@@ -87,12 +87,8 @@ public class BlockArgumentParser {
 		this.allowSnbt = allowSnbt;
 	}
 
-	public static BlockArgumentParser.BlockResult block(Registry<Block> registry, String string, boolean allowSnbt) throws CommandSyntaxException {
-		return block(registry, new StringReader(string), allowSnbt);
-	}
-
-	public static BlockArgumentParser.BlockResult block(Registry<Block> registry, StringReader reader, boolean allowSnbt) throws CommandSyntaxException {
-		return block(CommandRegistryWrapper.of(registry), reader, allowSnbt);
+	public static BlockArgumentParser.BlockResult block(CommandRegistryWrapper<Block> registryWrapper, String string, boolean allowSnbt) throws CommandSyntaxException {
+		return block(registryWrapper, new StringReader(string), allowSnbt);
 	}
 
 	public static BlockArgumentParser.BlockResult block(CommandRegistryWrapper<Block> registryWrapper, StringReader reader, boolean allowSnbt) throws CommandSyntaxException {
@@ -108,14 +104,10 @@ public class BlockArgumentParser {
 		}
 	}
 
-	public static Either<BlockArgumentParser.BlockResult, BlockArgumentParser.TagResult> blockOrTag(Registry<Block> registry, String string, boolean allowSnbt) throws CommandSyntaxException {
-		return blockOrTag(registry, new StringReader(string), allowSnbt);
-	}
-
 	public static Either<BlockArgumentParser.BlockResult, BlockArgumentParser.TagResult> blockOrTag(
-		Registry<Block> registry, StringReader reader, boolean allowSnbt
+		CommandRegistryWrapper<Block> registryWrapper, String string, boolean allowSnbt
 	) throws CommandSyntaxException {
-		return blockOrTag(CommandRegistryWrapper.of(registry), new StringReader(reader), allowSnbt);
+		return blockOrTag(registryWrapper, new StringReader(string), allowSnbt);
 	}
 
 	public static Either<BlockArgumentParser.BlockResult, BlockArgumentParser.TagResult> blockOrTag(
@@ -364,7 +356,7 @@ public class BlockArgumentParser {
 	private void parseBlockId() throws CommandSyntaxException {
 		int i = this.reader.getCursor();
 		this.blockId = Identifier.fromCommandInput(this.reader);
-		Block block = (Block)((RegistryEntry)this.registryWrapper.getEntry(RegistryKey.of(Registry.BLOCK_KEY, this.blockId)).orElseThrow(() -> {
+		Block block = (Block)((RegistryEntry.Reference)this.registryWrapper.getEntry(RegistryKey.of(Registry.BLOCK_KEY, this.blockId)).orElseThrow(() -> {
 			this.reader.setCursor(i);
 			return INVALID_BLOCK_ID_EXCEPTION.createWithContext(this.reader, this.blockId.toString());
 		})).value();

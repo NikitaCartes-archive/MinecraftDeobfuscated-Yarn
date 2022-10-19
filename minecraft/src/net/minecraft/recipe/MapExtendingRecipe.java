@@ -5,15 +5,17 @@ import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.map.MapState;
+import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
 public class MapExtendingRecipe extends ShapedRecipe {
-	public MapExtendingRecipe(Identifier id) {
+	public MapExtendingRecipe(Identifier id, CraftingRecipeCategory category) {
 		super(
 			id,
 			"",
+			category,
 			3,
 			3,
 			DefaultedList.copyOf(

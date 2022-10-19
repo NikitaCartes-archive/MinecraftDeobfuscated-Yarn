@@ -12,9 +12,9 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.TickPriority;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.tick.TickPriority;
 
 public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0);
@@ -44,7 +44,7 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 			} else if (!bl) {
 				world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
 				if (!bl2) {
-					world.createAndScheduleBlockTick(pos, this, this.getUpdateDelayInternal(state), TickPriority.VERY_HIGH);
+					world.scheduleBlockTick(pos, this, this.getUpdateDelayInternal(state), TickPriority.VERY_HIGH);
 				}
 			}
 		}
@@ -91,7 +91,7 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 					tickPriority = TickPriority.VERY_HIGH;
 				}
 
-				world.createAndScheduleBlockTick(pos, this, this.getUpdateDelayInternal(state), tickPriority);
+				world.scheduleBlockTick(pos, this, this.getUpdateDelayInternal(state), tickPriority);
 			}
 		}
 	}
@@ -149,7 +149,7 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 	@Override
 	public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
 		if (this.hasPower(world, pos, state)) {
-			world.createAndScheduleBlockTick(pos, this, 1);
+			world.scheduleBlockTick(pos, this, 1);
 		}
 	}
 

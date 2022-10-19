@@ -54,8 +54,10 @@ public class EnderPearlEntity extends ThrownItemEntity {
 				if (serverPlayerEntity.networkHandler.getConnection().isOpen() && serverPlayerEntity.world == this.world && !serverPlayerEntity.isSleeping()) {
 					if (this.random.nextFloat() < 0.05F && this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
 						EndermiteEntity endermiteEntity = EntityType.ENDERMITE.create(this.world);
-						endermiteEntity.refreshPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), entity.getYaw(), entity.getPitch());
-						this.world.spawnEntity(endermiteEntity);
+						if (endermiteEntity != null) {
+							endermiteEntity.refreshPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), entity.getYaw(), entity.getPitch());
+							this.world.spawnEntity(endermiteEntity);
+						}
 					}
 
 					if (entity.hasVehicle()) {

@@ -43,7 +43,7 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		if (state.get(WATERLOGGED)) {
-			world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+			world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
 		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
@@ -75,11 +75,11 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 		if (world.isClient) {
 			return bl4 ? ActionResult.SUCCESS : ActionResult.CONSUME;
 		} else {
-			BlockEntity blockEntity = world.getBlockEntity(pos);
-			if (!(blockEntity instanceof SignBlockEntity)) {
+			BlockEntity bl5 = world.getBlockEntity(pos);
+			if (!(bl5 instanceof SignBlockEntity)) {
 				return ActionResult.PASS;
 			} else {
-				SignBlockEntity signBlockEntity = (SignBlockEntity)blockEntity;
+				SignBlockEntity signBlockEntity = (SignBlockEntity)bl5;
 				boolean bl5 = signBlockEntity.isGlowingText();
 				if ((!bl2 || !bl5) && (!bl3 || bl5)) {
 					if (bl4) {
@@ -122,5 +122,16 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 
 	public SignType getSignType() {
 		return this.type;
+	}
+
+	public static SignType getSignType(Block block) {
+		SignType signType;
+		if (block instanceof AbstractSignBlock) {
+			signType = ((AbstractSignBlock)block).getSignType();
+		} else {
+			signType = SignType.OAK;
+		}
+
+		return signType;
 	}
 }

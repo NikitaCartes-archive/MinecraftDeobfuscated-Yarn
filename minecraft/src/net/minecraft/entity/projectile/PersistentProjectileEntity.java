@@ -460,7 +460,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		super.readCustomDataFromNbt(nbt);
 		this.life = nbt.getShort("life");
 		if (nbt.contains("inBlockState", NbtElement.COMPOUND_TYPE)) {
-			this.inBlockState = NbtHelper.toBlockState(nbt.getCompound("inBlockState"));
+			this.inBlockState = NbtHelper.toBlockState(this.world.createCommandRegistryWrapper(Registry.BLOCK_KEY), nbt.getCompound("inBlockState"));
 		}
 
 		this.shake = nbt.getByte("shake") & 255;

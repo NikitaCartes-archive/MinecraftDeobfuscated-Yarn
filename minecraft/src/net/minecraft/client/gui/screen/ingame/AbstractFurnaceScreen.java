@@ -126,10 +126,4 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceScreenHandl
 	public RecipeBookWidget getRecipeBookWidget() {
 		return this.recipeBook;
 	}
-
-	@Override
-	public void removed() {
-		this.recipeBook.close();
-		super.removed();
-	}
 }

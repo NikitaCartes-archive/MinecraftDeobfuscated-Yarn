@@ -183,6 +183,8 @@ public class ItemModelGenerator {
 		this.register(Items.MAGMA_CREAM, Models.GENERATED);
 		this.register(Items.MANGROVE_BOAT, Models.GENERATED);
 		this.register(Items.MANGROVE_CHEST_BOAT, Models.GENERATED);
+		this.register(Items.BAMBOO_RAFT, Models.GENERATED);
+		this.register(Items.BAMBOO_CHEST_RAFT, Models.GENERATED);
 		this.register(Items.MAP, Models.GENERATED);
 		this.register(Items.MELON_SLICE, Models.GENERATED);
 		this.register(Items.MILK_BUCKET, Models.GENERATED);

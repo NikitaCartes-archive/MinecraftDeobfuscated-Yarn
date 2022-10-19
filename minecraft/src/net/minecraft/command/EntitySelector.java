@@ -120,6 +120,10 @@ public class EntitySelector {
 	}
 
 	public List<? extends Entity> getEntities(ServerCommandSource source) throws CommandSyntaxException {
+		return this.getUnfilteredEntities(source).stream().filter(entity -> entity.getType().isEnabled(source.getEnabledFeatures())).toList();
+	}
+
+	private List<? extends Entity> getUnfilteredEntities(ServerCommandSource source) throws CommandSyntaxException {
 		this.checkSourcePermission(source);
 		if (!this.includesNonPlayers) {
 			return this.getPlayers(source);

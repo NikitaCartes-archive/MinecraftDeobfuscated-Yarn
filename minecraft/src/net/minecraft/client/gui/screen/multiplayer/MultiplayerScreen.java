@@ -114,9 +114,8 @@ public class MultiplayerScreen extends Screen {
 	@Override
 	public void tick() {
 		super.tick();
-		if (this.lanServers.needsUpdate()) {
-			List<LanServerInfo> list = this.lanServers.getServers();
-			this.lanServers.markClean();
+		List<LanServerInfo> list = this.lanServers.getEntriesIfUpdated();
+		if (list != null) {
 			this.serverListWidget.setLanServers(list);
 		}
 

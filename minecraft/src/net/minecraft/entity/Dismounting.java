@@ -93,7 +93,12 @@ public class Dismounting {
 					}
 				}
 
-				return !world.getWorldBorder().contains(box) ? null : vec3d;
+				if (entityType != EntityType.PLAYER
+					|| !world.getBlockState(pos).isIn(BlockTags.INVALID_SPAWN_INSIDE) && !world.getBlockState(pos.up()).isIn(BlockTags.INVALID_SPAWN_INSIDE)) {
+					return !world.getWorldBorder().contains(box) ? null : vec3d;
+				} else {
+					return null;
+				}
 			}
 		}
 	}

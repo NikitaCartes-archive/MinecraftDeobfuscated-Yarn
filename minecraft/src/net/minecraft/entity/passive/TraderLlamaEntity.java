@@ -30,6 +30,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 		return true;
 	}
 
+	@Nullable
 	@Override
 	protected LlamaEntity createChild() {
 		return EntityType.TRADER_LLAMA.create(this.world);

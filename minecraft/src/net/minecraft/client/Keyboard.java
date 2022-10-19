@@ -184,10 +184,11 @@ public class Keyboard {
 					if (!this.client.player.hasPermissionLevel(2)) {
 						this.debugLog("debug.creative_spectator.error");
 					} else if (!this.client.player.isSpectator()) {
-						this.client.player.sendCommand("gamemode spectator");
+						this.client.player.networkHandler.sendCommand("gamemode spectator");
 					} else {
 						this.client
 							.player
+							.networkHandler
 							.sendCommand("gamemode " + ((GameMode)MoreObjects.firstNonNull(this.client.interactionManager.getPreviousGameMode(), GameMode.CREATIVE)).getName());
 					}
 

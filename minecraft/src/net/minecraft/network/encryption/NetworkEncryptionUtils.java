@@ -40,6 +40,7 @@ public class NetworkEncryptionUtils {
 	private static final String ISO_8859_1 = "ISO_8859_1";
 	private static final String SHA1 = "SHA-1";
 	public static final String SHA256_WITH_RSA = "SHA256withRSA";
+	public static final int SHA256_BITS = 256;
 	private static final String RSA_PRIVATE_KEY_PREFIX = "-----BEGIN RSA PRIVATE KEY-----";
 	private static final String RSA_PRIVATE_KEY_SUFFIX = "-----END RSA PRIVATE KEY-----";
 	public static final String RSA_PUBLIC_KEY_PREFIX = "-----BEGIN RSA PUBLIC KEY-----";

@@ -52,7 +52,7 @@ import net.minecraft.nbt.NbtFloat;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.network.Packet;
-import net.minecraft.network.message.MessageSourceProfile;
+import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -1229,8 +1229,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 */
 	protected void checkBlockCollision() {
 		Box box = this.getBoundingBox();
-		BlockPos blockPos = new BlockPos(box.minX + 0.001, box.minY + 0.001, box.minZ + 0.001);
-		BlockPos blockPos2 = new BlockPos(box.maxX - 0.001, box.maxY - 0.001, box.maxZ - 0.001);
+		BlockPos blockPos = new BlockPos(box.minX + 1.0E-7, box.minY + 1.0E-7, box.minZ + 1.0E-7);
+		BlockPos blockPos2 = new BlockPos(box.maxX - 1.0E-7, box.maxY - 1.0E-7, box.maxZ - 1.0E-7);
 		if (this.world.isRegionLoaded(blockPos, blockPos2)) {
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
@@ -1527,10 +1527,6 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 */
 	public boolean isSubmergedInWater() {
 		return this.submergedInWater && this.isTouchingWater();
-	}
-
-	public MessageSourceProfile getMessageSourceProfile() {
-		return MessageSourceProfile.NONE;
 	}
 
 	public void updateSwimming() {
@@ -2548,6 +2544,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
+	public boolean method_45320(Entity entity) {
+		return true;
+	}
+
 	/**
 	 * Stops riding the vehicle if present.
 	 * 
@@ -3352,6 +3352,18 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	/**
+	 * Called when this entity is fall flying or on a lead.
+	 * 
+	 * <p>Limits this entity's {@code fallDistance} if its downward velocity isn't fast enough
+	 * in order to prevent unwarranted fall damage.
+	 */
+	public void limitFallDistance() {
+		if (this.velocity.getY() > -0.5 && this.fallDistance > 1.0F) {
+			this.fallDistance = 1.0F;
+		}
+	}
+
+	/**
 	 * Called when the entity lands on a block.
 	 */
 	public void onLanding() {
@@ -3970,6 +3982,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * this just sets the position of the entity and its passengers.
 	 * 
 	 * @see #teleport
+	 * @see #requestTeleportOffset(double, double, double)
 	 * @see #requestTeleportAndDismount
 	 * @see #refreshPositionAndAngles(double, double, double, float, float)
 	 */
@@ -3982,6 +3995,21 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				}
 			});
 		}
+	}
+
+	/**
+	 * Requests the entity to teleport to the current position offset by the given amount.
+	 * 
+	 * <p>For players, this sends the teleport packet. For other entities,
+	 * this just sets the position of the entity and its passengers.
+	 * 
+	 * @see #teleport
+	 * @see #requestTeleport(double, double, double)
+	 * @see #requestTeleportAndDismount
+	 * @see #refreshPositionAndAngles(double, double, double, float, float)
+	 */
+	public void requestTeleportOffset(double offsetX, double offsetY, double offsetZ) {
+		this.requestTeleport(this.getX() + offsetX, this.getY() + offsetY, this.getZ() + offsetZ);
 	}
 
 	/**
@@ -4103,6 +4131,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this.standingEyeHeight;
 	}
 
+	public Vec3d getLeashOffset(float tickDelta) {
+		return this.getLeashOffset();
+	}
+
 	/**
 	 * {@return the offset from the entity's position where the leash is attached to}
 	 * 
@@ -4112,7 +4144,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * @see #getLeashPos
 	 * @see #getStandingEyeHeight
 	 */
-	public Vec3d getLeashOffset() {
+	protected Vec3d getLeashOffset() {
 		return new Vec3d(0.0, (double)this.getStandingEyeHeight(), (double)(this.getWidth() * 0.4F));
 	}
 
@@ -4724,7 +4756,9 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * @apiNote Subclasses should return {@code new EntitySpawnS2CPacket(this)},
 	 * unless they use a custom spawning packet.
 	 */
-	public abstract Packet<?> createSpawnPacket();
+	public Packet<ClientPlayPacketListener> createSpawnPacket() {
+		return new EntitySpawnS2CPacket(this);
+	}
 
 	/**
 	 * {@return the dimensions of the entity with the given {@code pose}}
@@ -4796,6 +4830,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	public void setVelocity(Vec3d velocity) {
 		this.velocity = velocity;
+	}
+
+	public void addVelocity(Vec3d velocity) {
+		this.velocity = this.velocity.add(velocity);
 	}
 
 	public void setVelocity(double x, double y, double z) {

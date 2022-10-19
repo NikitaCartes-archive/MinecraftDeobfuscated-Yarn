@@ -49,7 +49,7 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 	}
 
 	public Identifier getTexture(PaintingEntity paintingEntity) {
-		return MinecraftClient.getInstance().getPaintingManager().getBackSprite().getAtlas().getId();
+		return MinecraftClient.getInstance().getPaintingManager().getBackSprite().getId();
 	}
 
 	private void renderPainting(

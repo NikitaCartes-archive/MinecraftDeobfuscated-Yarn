@@ -28,15 +28,18 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.SharedConstants;
+import net.minecraft.block.Block;
+import net.minecraft.command.CommandRegistryWrapper;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.resource.ResourceFinder;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
+import net.minecraft.util.PathUtil;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.commons.io.IOUtils;
@@ -53,11 +56,16 @@ public class StructureTemplateManager {
 	private ResourceManager resourceManager;
 	private final Path generatedPath;
 	private final List<StructureTemplateManager.Provider> providers;
+	private final CommandRegistryWrapper<Block> blockRegistryWrapper;
+	private static final ResourceFinder NBT_FINDER = new ResourceFinder("structures", ".nbt");
 
-	public StructureTemplateManager(ResourceManager resourceManager, LevelStorage.Session session, DataFixer dataFixer) {
+	public StructureTemplateManager(
+		ResourceManager resourceManager, LevelStorage.Session session, DataFixer dataFixer, CommandRegistryWrapper<Block> blockRegistryWrapper
+	) {
 		this.resourceManager = resourceManager;
 		this.dataFixer = dataFixer;
 		this.generatedPath = session.getDirectory(WorldSavePath.GENERATED).normalize();
+		this.blockRegistryWrapper = blockRegistryWrapper;
 		Builder<StructureTemplateManager.Provider> builder = ImmutableList.builder();
 		builder.add(new StructureTemplateManager.Provider(this::loadTemplateFromFile, this::streamTemplatesFromFile));
 		if (SharedConstants.isDevelopment) {
@@ -107,16 +115,12 @@ public class StructureTemplateManager {
 	}
 
 	private Optional<StructureTemplate> loadTemplateFromResource(Identifier id) {
-		Identifier identifier = new Identifier(id.getNamespace(), "structures/" + id.getPath() + ".nbt");
+		Identifier identifier = NBT_FINDER.toResourcePath(id);
 		return this.loadTemplate(() -> this.resourceManager.open(identifier), throwable -> LOGGER.error("Couldn't load structure {}", id, throwable));
 	}
 
 	private Stream<Identifier> streamTemplatesFromResource() {
-		return this.resourceManager
-			.findResources("structures", id -> true)
-			.keySet()
-			.stream()
-			.map(id -> new Identifier(id.getNamespace(), id.getPath().substring("structures".length() + 1, id.getPath().length() - ".nbt".length())));
+		return NBT_FINDER.findResources(this.resourceManager).keySet().stream().map(NBT_FINDER::toResourceId);
 	}
 
 	private Optional<StructureTemplate> loadTemplateFromGameTestFile(Identifier id) {
@@ -183,7 +187,7 @@ public class StructureTemplateManager {
 		if (!Files.isDirectory(path, new LinkOption[0])) {
 			return Optional.empty();
 		} else {
-			Path path2 = FileNameUtil.getResourcePath(path, id.getPath(), ".snbt");
+			Path path2 = PathUtil.getResourcePath(path, id.getPath(), ".snbt");
 
 			try {
 				BufferedReader bufferedReader = Files.newBufferedReader(path2);
@@ -261,7 +265,7 @@ public class StructureTemplateManager {
 		}
 
 		StructureTemplate structureTemplate = new StructureTemplate();
-		structureTemplate.readNbt(NbtHelper.update(this.dataFixer, DataFixTypes.STRUCTURE, nbt, nbt.getInt("DataVersion")));
+		structureTemplate.readNbt(this.blockRegistryWrapper, NbtHelper.update(this.dataFixer, DataFixTypes.STRUCTURE, nbt, nbt.getInt("DataVersion")));
 		return structureTemplate;
 	}
 
@@ -317,7 +321,7 @@ public class StructureTemplateManager {
 		try {
 			Path path2 = path.resolve(id.getNamespace());
 			Path path3 = path2.resolve("structures");
-			return FileNameUtil.getResourcePath(path3, id.getPath(), extension);
+			return PathUtil.getResourcePath(path3, id.getPath(), extension);
 		} catch (InvalidPathException var5) {
 			throw new InvalidIdentifierException("Invalid resource path: " + id, var5);
 		}
@@ -328,7 +332,7 @@ public class StructureTemplateManager {
 			throw new InvalidIdentifierException("Invalid resource path: " + id);
 		} else {
 			Path path2 = getTemplatePath(path, id, extension);
-			if (path2.startsWith(path) && FileNameUtil.isNormal(path2) && FileNameUtil.isAllowedName(path2)) {
+			if (path2.startsWith(path) && PathUtil.isNormal(path2) && PathUtil.isAllowedName(path2)) {
 				return path2;
 			} else {
 				throw new InvalidIdentifierException("Invalid resource path: " + path2);

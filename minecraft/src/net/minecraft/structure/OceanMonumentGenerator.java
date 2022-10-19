@@ -1490,17 +1490,16 @@ public class OceanMonumentGenerator {
 			return box.intersectsXZ(Math.min(k, m), Math.min(l, n), Math.max(k, m), Math.max(l, n));
 		}
 
-		protected boolean spawnElderGuardian(StructureWorldAccess world, BlockBox box, int x, int y, int z) {
+		protected void spawnElderGuardian(StructureWorldAccess world, BlockBox box, int x, int y, int z) {
 			BlockPos blockPos = this.offsetPos(x, y, z);
 			if (box.contains(blockPos)) {
 				ElderGuardianEntity elderGuardianEntity = EntityType.ELDER_GUARDIAN.create(world.toServerWorld());
-				elderGuardianEntity.heal(elderGuardianEntity.getMaxHealth());
-				elderGuardianEntity.refreshPositionAndAngles((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, 0.0F, 0.0F);
-				elderGuardianEntity.initialize(world, world.getLocalDifficulty(elderGuardianEntity.getBlockPos()), SpawnReason.STRUCTURE, null, null);
-				world.spawnEntityAndPassengers(elderGuardianEntity);
-				return true;
-			} else {
-				return false;
+				if (elderGuardianEntity != null) {
+					elderGuardianEntity.heal(elderGuardianEntity.getMaxHealth());
+					elderGuardianEntity.refreshPositionAndAngles((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, 0.0F, 0.0F);
+					elderGuardianEntity.initialize(world, world.getLocalDifficulty(elderGuardianEntity.getBlockPos()), SpawnReason.STRUCTURE, null, null);
+					world.spawnEntityAndPassengers(elderGuardianEntity);
+				}
 			}
 		}
 	}

@@ -83,7 +83,7 @@ public class TrueTypeFontLoader implements FontLoader {
 		ByteBuffer byteBuffer = null;
 
 		try {
-			InputStream inputStream = manager.open(new Identifier(this.filename.getNamespace(), "font/" + this.filename.getPath()));
+			InputStream inputStream = manager.open(this.filename.withPrefixedPath("font/"));
 
 			TrueTypeFont var5;
 			try {

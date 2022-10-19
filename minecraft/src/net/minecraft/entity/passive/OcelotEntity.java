@@ -231,6 +231,7 @@ public class OcelotEntity extends AnimalEntity {
 		}
 	}
 
+	@Nullable
 	public OcelotEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
 		return EntityType.OCELOT.create(serverWorld);
 	}

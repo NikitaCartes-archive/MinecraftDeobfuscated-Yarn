@@ -148,51 +148,39 @@ public abstract class AbstractDonkeyEntity extends AbstractHorseEntity {
 
 	@Override
 	public ActionResult interactMob(PlayerEntity player, Hand hand) {
-		ItemStack itemStack = player.getStackInHand(hand);
-		if (!this.isBaby()) {
-			if (this.isTame() && player.shouldCancelInteraction()) {
-				this.openInventory(player);
-				return ActionResult.success(this.world.isClient);
-			}
-
-			if (this.hasPassengers()) {
-				return super.interactMob(player, hand);
-			}
-		}
-
-		if (!itemStack.isEmpty()) {
-			if (this.isBreedingItem(itemStack)) {
-				return this.interactHorse(player, itemStack);
-			}
-
-			if (!this.isTame()) {
-				this.playAngrySound();
-				return ActionResult.success(this.world.isClient);
-			}
-
-			if (!this.hasChest() && itemStack.isOf(Blocks.CHEST.asItem())) {
-				this.setHasChest(true);
-				this.playAddChestSound();
-				if (!player.getAbilities().creativeMode) {
-					itemStack.decrement(1);
+		boolean bl = !this.isBaby() && this.isTame() && player.shouldCancelInteraction();
+		if (!this.hasPassengers() && !bl) {
+			ItemStack itemStack = player.getStackInHand(hand);
+			if (!itemStack.isEmpty()) {
+				if (this.isBreedingItem(itemStack)) {
+					return this.interactHorse(player, itemStack);
 				}
 
-				this.onChestedStatusChanged();
-				return ActionResult.success(this.world.isClient);
+				if (!this.isTame()) {
+					this.playAngrySound();
+					return ActionResult.success(this.world.isClient);
+				}
+
+				if (!this.hasChest() && itemStack.isOf(Items.CHEST)) {
+					this.method_45374(player, itemStack);
+					return ActionResult.success(this.world.isClient);
+				}
 			}
 
-			if (!this.isBaby() && !this.isSaddled() && itemStack.isOf(Items.SADDLE)) {
-				this.openInventory(player);
-				return ActionResult.success(this.world.isClient);
-			}
-		}
-
-		if (this.isBaby()) {
 			return super.interactMob(player, hand);
 		} else {
-			this.putPlayerOnBack(player);
-			return ActionResult.success(this.world.isClient);
+			return super.interactMob(player, hand);
 		}
+	}
+
+	private void method_45374(PlayerEntity playerEntity, ItemStack itemStack) {
+		this.setHasChest(true);
+		this.playAddChestSound();
+		if (!playerEntity.getAbilities().creativeMode) {
+			itemStack.decrement(1);
+		}
+
+		this.onChestedStatusChanged();
 	}
 
 	protected void playAddChestSound() {

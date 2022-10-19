@@ -20,6 +20,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleEffect;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -363,6 +364,11 @@ public class ChunkRegion implements StructureWorldAccess {
 	}
 
 	@Override
+	public FeatureSet getEnabledFeatures() {
+		return this.world.getEnabledFeatures();
+	}
+
+	@Override
 	public WorldProperties getLevelProperties() {
 		return this.levelProperties;
 	}
@@ -418,7 +424,7 @@ public class ChunkRegion implements StructureWorldAccess {
 	}
 
 	@Override
-	public void playSound(@Nullable PlayerEntity player, BlockPos pos, SoundEvent sound, SoundCategory category, float volume, float pitch) {
+	public void playSound(@Nullable PlayerEntity except, BlockPos pos, SoundEvent sound, SoundCategory category, float volume, float pitch) {
 	}
 
 	@Override

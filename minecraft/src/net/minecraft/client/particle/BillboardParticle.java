@@ -80,7 +80,7 @@ public abstract class BillboardParticle extends Particle {
 	}
 
 	/**
-	 * @return the draw scale of this particle, which is used while rendering in {@link BillboardParticle#buildGeometry}
+	 * {@return the draw scale of this particle, which is used while rendering in {@link #buildGeometry}}
 	 */
 	public float getSize(float tickDelta) {
 		return this.scale;
@@ -93,22 +93,22 @@ public abstract class BillboardParticle extends Particle {
 	}
 
 	/**
-	 * @return the lower U coordinate of the UV coordinates used to draw this particle
+	 * {@return the lower U coordinate of the UV coordinates used to draw this particle}
 	 */
 	protected abstract float getMinU();
 
 	/**
-	 * @return the upper U coordinate of the UV coordinates used to draw this particle
+	 * {@return the upper U coordinate of the UV coordinates used to draw this particle}
 	 */
 	protected abstract float getMaxU();
 
 	/**
-	 * @return the lower V coordinate of the UV coordinates used to draw this particle
+	 * {@return the lower V coordinate of the UV coordinates used to draw this particle}
 	 */
 	protected abstract float getMinV();
 
 	/**
-	 * @return the upper V coordinate of the UV coordinates used to draw this particle
+	 * {@return the upper V coordinate of the UV coordinates used to draw this particle}
 	 */
 	protected abstract float getMaxV();
 }

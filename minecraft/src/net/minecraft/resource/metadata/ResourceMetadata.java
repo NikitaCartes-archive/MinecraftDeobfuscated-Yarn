@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
+import net.minecraft.resource.InputSupplier;
 import net.minecraft.util.JsonHelper;
 
 public interface ResourceMetadata {
@@ -16,6 +17,7 @@ public interface ResourceMetadata {
 			return Optional.empty();
 		}
 	};
+	InputSupplier<ResourceMetadata> NONE_SUPPLIER = () -> NONE;
 
 	static ResourceMetadata create(InputStream stream) throws IOException {
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));

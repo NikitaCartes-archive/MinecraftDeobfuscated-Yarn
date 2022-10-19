@@ -37,12 +37,12 @@ public class CustomizeBuffetLevelScreen extends Screen {
 		super(Text.translatable("createWorld.customize.buffet.title"));
 		this.parent = parent;
 		this.onDone = onDone;
-		this.biomeRegistry = generatorOptionsHolder.dynamicRegistryManager().get(Registry.BIOME_KEY);
+		this.biomeRegistry = generatorOptionsHolder.getCombinedRegistryManager().get(Registry.BIOME_KEY);
 		RegistryEntry<Biome> registryEntry = (RegistryEntry)this.biomeRegistry
 			.getEntry(BiomeKeys.PLAINS)
 			.or(() -> this.biomeRegistry.streamEntries().findAny())
 			.orElseThrow();
-		this.biome = (RegistryEntry)generatorOptionsHolder.generatorOptions()
+		this.biome = (RegistryEntry)generatorOptionsHolder.selectedDimensions()
 			.getChunkGenerator()
 			.getBiomeSource()
 			.getBiomes()

@@ -10,15 +10,20 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.CombinedDynamicRegistries;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.SerializableRegistries;
+import net.minecraft.util.registry.ServerDynamicRegistryType;
 
 public class TagPacketSerializer {
-	public static Map<RegistryKey<? extends Registry<?>>, TagPacketSerializer.Serialized> serializeTags(DynamicRegistryManager dynamicRegistryManager) {
-		return (Map<RegistryKey<? extends Registry<?>>, TagPacketSerializer.Serialized>)dynamicRegistryManager.streamSyncedRegistries()
+	public static Map<RegistryKey<? extends Registry<?>>, TagPacketSerializer.Serialized> serializeTags(
+		CombinedDynamicRegistries<ServerDynamicRegistryType> dynamicRegistryManager
+	) {
+		return (Map<RegistryKey<? extends Registry<?>>, TagPacketSerializer.Serialized>)SerializableRegistries.streamRegistryManagerEntries(dynamicRegistryManager)
 			.map(registry -> Pair.of(registry.key(), serializeTags(registry.value())))
 			.filter(pair -> !((TagPacketSerializer.Serialized)pair.getSecond()).isEmpty())
 			.collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
@@ -48,7 +53,7 @@ public class TagPacketSerializer {
 	) {
 		serialized.contents.forEach((tagId, rawIds) -> {
 			TagKey<T> tagKey = TagKey.of(registryKey, tagId);
-			List<RegistryEntry<T>> list = rawIds.intStream().mapToObj(registry::getEntry).flatMap(Optional::stream).toList();
+			List<RegistryEntry<T>> list = (List)rawIds.intStream().mapToObj(registry::getEntry).flatMap(Optional::stream).collect(Collectors.toUnmodifiableList());
 			loader.accept(tagKey, list);
 		});
 	}

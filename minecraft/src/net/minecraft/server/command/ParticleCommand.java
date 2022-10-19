@@ -8,6 +8,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.Collection;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.ParticleEffectArgumentType;
 import net.minecraft.command.argument.Vec3ArgumentType;
@@ -20,12 +21,12 @@ import net.minecraft.util.registry.Registry;
 public class ParticleCommand {
 	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.particle.failed"));
 
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess) {
 		dispatcher.register(
 			CommandManager.literal("particle")
 				.requires(source -> source.hasPermissionLevel(2))
 				.then(
-					CommandManager.argument("name", ParticleEffectArgumentType.particleEffect())
+					CommandManager.argument("name", ParticleEffectArgumentType.particleEffect(registryAccess))
 						.executes(
 							context -> execute(
 									context.getSource(),

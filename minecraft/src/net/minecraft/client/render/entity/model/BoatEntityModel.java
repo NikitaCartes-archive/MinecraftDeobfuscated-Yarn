@@ -50,7 +50,7 @@ import net.minecraft.util.math.MathHelper;
  * </div>
  */
 @Environment(EnvType.CLIENT)
-public class BoatEntityModel extends CompositeEntityModel<BoatEntity> {
+public class BoatEntityModel extends CompositeEntityModel<BoatEntity> implements ModelWithWaterPatch {
 	/**
 	 * The key of the left paddle model part, whose value is {@value}.
 	 */
@@ -83,43 +83,27 @@ public class BoatEntityModel extends CompositeEntityModel<BoatEntity> {
 	 * The key of the left model part, whose value is {@value}.
 	 */
 	private static final String LEFT = "left";
-	/**
-	 * The key of the chest bottom model part, whose value is {@value}.
-	 */
-	private static final String CHEST_BOTTOM = "chest_bottom";
-	/**
-	 * The key of the chest lid model part, whose value is {@value}.
-	 */
-	private static final String CHEST_LID = "chest_lid";
-	/**
-	 * The key of the chest lock model part, whose value is {@value}.
-	 */
-	private static final String CHEST_LOCK = "chest_lock";
 	private final ModelPart leftPaddle;
 	private final ModelPart rightPaddle;
 	private final ModelPart waterPatch;
 	private final ImmutableList<ModelPart> parts;
 
-	public BoatEntityModel(ModelPart root, boolean chest) {
+	public BoatEntityModel(ModelPart root) {
 		this.leftPaddle = root.getChild("left_paddle");
 		this.rightPaddle = root.getChild("right_paddle");
 		this.waterPatch = root.getChild("water_patch");
+		this.parts = this.getParts(root).build();
+	}
+
+	protected Builder<ModelPart> getParts(ModelPart root) {
 		Builder<ModelPart> builder = new Builder<>();
 		builder.add(
 			root.getChild("bottom"), root.getChild("back"), root.getChild("front"), root.getChild("right"), root.getChild("left"), this.leftPaddle, this.rightPaddle
 		);
-		if (chest) {
-			builder.add(root.getChild("chest_bottom"));
-			builder.add(root.getChild("chest_lid"));
-			builder.add(root.getChild("chest_lock"));
-		}
-
-		this.parts = builder.build();
+		return builder;
 	}
 
-	public static TexturedModelData getTexturedModelData(boolean chest) {
-		ModelData modelData = new ModelData();
-		ModelPartData modelPartData = modelData.getRoot();
+	public static void addParts(ModelPartData modelPartData) {
 		int i = 32;
 		int j = 6;
 		int k = 20;
@@ -146,24 +130,6 @@ public class BoatEntityModel extends CompositeEntityModel<BoatEntity> {
 			ModelTransform.of(0.0F, 4.0F, -9.0F, 0.0F, (float) Math.PI, 0.0F)
 		);
 		modelPartData.addChild("left", ModelPartBuilder.create().uv(0, 43).cuboid(-14.0F, -7.0F, -1.0F, 28.0F, 6.0F, 2.0F), ModelTransform.pivot(0.0F, 4.0F, 9.0F));
-		if (chest) {
-			modelPartData.addChild(
-				"chest_bottom",
-				ModelPartBuilder.create().uv(0, 76).cuboid(0.0F, 0.0F, 0.0F, 12.0F, 8.0F, 12.0F),
-				ModelTransform.of(-2.0F, -5.0F, -6.0F, 0.0F, (float) (-Math.PI / 2), 0.0F)
-			);
-			modelPartData.addChild(
-				"chest_lid",
-				ModelPartBuilder.create().uv(0, 59).cuboid(0.0F, 0.0F, 0.0F, 12.0F, 4.0F, 12.0F),
-				ModelTransform.of(-2.0F, -9.0F, -6.0F, 0.0F, (float) (-Math.PI / 2), 0.0F)
-			);
-			modelPartData.addChild(
-				"chest_lock",
-				ModelPartBuilder.create().uv(0, 59).cuboid(0.0F, 0.0F, 0.0F, 2.0F, 4.0F, 1.0F),
-				ModelTransform.of(-1.0F, -6.0F, -1.0F, 0.0F, (float) (-Math.PI / 2), 0.0F)
-			);
-		}
-
 		int n = 20;
 		int o = 7;
 		int p = 6;
@@ -183,7 +149,13 @@ public class BoatEntityModel extends CompositeEntityModel<BoatEntity> {
 			ModelPartBuilder.create().uv(0, 0).cuboid(-14.0F, -9.0F, -3.0F, 28.0F, 16.0F, 3.0F),
 			ModelTransform.of(0.0F, -3.0F, 1.0F, (float) (Math.PI / 2), 0.0F, 0.0F)
 		);
-		return TexturedModelData.of(modelData, 128, chest ? 128 : 64);
+	}
+
+	public static TexturedModelData getTexturedModelData() {
+		ModelData modelData = new ModelData();
+		ModelPartData modelPartData = modelData.getRoot();
+		addParts(modelPartData);
+		return TexturedModelData.of(modelData, 128, 64);
 	}
 
 	public void setAngles(BoatEntity boatEntity, float f, float g, float h, float i, float j) {
@@ -195,6 +167,7 @@ public class BoatEntityModel extends CompositeEntityModel<BoatEntity> {
 		return this.parts;
 	}
 
+	@Override
 	public ModelPart getWaterPatch() {
 		return this.waterPatch;
 	}

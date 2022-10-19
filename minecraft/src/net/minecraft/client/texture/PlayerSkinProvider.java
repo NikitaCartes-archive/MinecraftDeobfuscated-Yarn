@@ -25,7 +25,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.dynamic.DynamicSerializableUuid;
+import net.minecraft.util.Uuids;
 
 @Environment(EnvType.CLIENT)
 public class PlayerSkinProvider {
@@ -130,9 +130,7 @@ public class PlayerSkinProvider {
 	 */
 	public Identifier loadSkin(GameProfile profile) {
 		MinecraftProfileTexture minecraftProfileTexture = (MinecraftProfileTexture)this.getTextures(profile).get(Type.SKIN);
-		return minecraftProfileTexture != null
-			? this.loadSkin(minecraftProfileTexture, Type.SKIN)
-			: DefaultSkinHelper.getTexture(DynamicSerializableUuid.getUuidFromProfile(profile));
+		return minecraftProfileTexture != null ? this.loadSkin(minecraftProfileTexture, Type.SKIN) : DefaultSkinHelper.getTexture(Uuids.getUuidFromProfile(profile));
 	}
 
 	@Environment(EnvType.CLIENT)

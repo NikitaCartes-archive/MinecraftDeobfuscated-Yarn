@@ -19,28 +19,39 @@ public class VibrationParticle extends SpriteBillboardParticle {
 	private final PositionSource vibration;
 	private float field_28250;
 	private float field_28248;
+	private float field_40507;
+	private float field_40508;
 
 	VibrationParticle(ClientWorld world, double x, double y, double z, PositionSource vibration, int maxAge) {
 		super(world, x, y, z, 0.0, 0.0, 0.0);
 		this.scale = 0.3F;
 		this.vibration = vibration;
 		this.maxAge = maxAge;
+		Optional<Vec3d> optional = vibration.getPos(world);
+		if (optional.isPresent()) {
+			Vec3d vec3d = (Vec3d)optional.get();
+			double d = x - vec3d.getX();
+			double e = y - vec3d.getY();
+			double f = z - vec3d.getZ();
+			this.field_28248 = this.field_28250 = (float)MathHelper.atan2(d, f);
+			this.field_40508 = this.field_40507 = (float)MathHelper.atan2(e, Math.sqrt(d * d + f * f));
+		}
 	}
 
 	@Override
 	public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
 		float f = MathHelper.sin(((float)this.age + tickDelta - (float) (Math.PI * 2)) * 0.05F) * 2.0F;
 		float g = MathHelper.lerp(tickDelta, this.field_28248, this.field_28250);
-		float h = 1.0472F;
-		this.render(vertexConsumer, camera, tickDelta, quaternion -> {
-			quaternion.hamiltonProduct(Vec3f.POSITIVE_Y.getRadialQuaternion(g));
-			quaternion.hamiltonProduct(Vec3f.POSITIVE_X.getRadialQuaternion(-1.0472F));
-			quaternion.hamiltonProduct(Vec3f.POSITIVE_Y.getRadialQuaternion(f));
+		float h = MathHelper.lerp(tickDelta, this.field_40508, this.field_40507) + (float) (Math.PI / 2);
+		this.render(vertexConsumer, camera, tickDelta, rotationQuaternion -> {
+			rotationQuaternion.hamiltonProduct(Vec3f.POSITIVE_Y.getRadialQuaternion(g));
+			rotationQuaternion.hamiltonProduct(Vec3f.POSITIVE_X.getRadialQuaternion(-h));
+			rotationQuaternion.hamiltonProduct(Vec3f.POSITIVE_Y.getRadialQuaternion(f));
 		});
-		this.render(vertexConsumer, camera, tickDelta, quaternion -> {
-			quaternion.hamiltonProduct(Vec3f.POSITIVE_Y.getRadialQuaternion((float) -Math.PI + g));
-			quaternion.hamiltonProduct(Vec3f.POSITIVE_X.getRadialQuaternion(1.0472F));
-			quaternion.hamiltonProduct(Vec3f.POSITIVE_Y.getRadialQuaternion(f));
+		this.render(vertexConsumer, camera, tickDelta, rotationQuaternion -> {
+			rotationQuaternion.hamiltonProduct(Vec3f.POSITIVE_Y.getRadialQuaternion((float) -Math.PI + g));
+			rotationQuaternion.hamiltonProduct(Vec3f.POSITIVE_X.getRadialQuaternion(h));
+			rotationQuaternion.hamiltonProduct(Vec3f.POSITIVE_Y.getRadialQuaternion(f));
 		});
 	}
 
@@ -120,8 +131,13 @@ public class VibrationParticle extends SpriteBillboardParticle {
 				this.x = MathHelper.lerp(d, this.x, vec3d.getX());
 				this.y = MathHelper.lerp(d, this.y, vec3d.getY());
 				this.z = MathHelper.lerp(d, this.z, vec3d.getZ());
+				double e = this.x - vec3d.getX();
+				double f = this.y - vec3d.getY();
+				double g = this.z - vec3d.getZ();
 				this.field_28248 = this.field_28250;
-				this.field_28250 = (float)MathHelper.atan2(this.x - vec3d.getX(), this.z - vec3d.getZ());
+				this.field_28250 = (float)MathHelper.atan2(e, g);
+				this.field_40508 = this.field_40507;
+				this.field_40507 = (float)MathHelper.atan2(f, Math.sqrt(e * e + g * g));
 			}
 		}
 	}

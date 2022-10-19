@@ -4,7 +4,6 @@ import it.unimi.dsi.fastutil.Hash.Strategy;
 import java.util.Comparator;
 import javax.annotation.Nullable;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.TickPriority;
 
 public record OrderedTick<T>(T type, BlockPos pos, long triggerTick, TickPriority priority, long subTickOrder) {
 	public static final Comparator<OrderedTick<?>> TRIGGER_TICK_COMPARATOR = (first, second) -> {

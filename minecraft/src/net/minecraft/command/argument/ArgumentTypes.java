@@ -70,17 +70,16 @@ public class ArgumentTypes {
 		register(registry, "team", TeamArgumentType.class, ConstantArgumentSerializer.of(TeamArgumentType::team));
 		register(registry, "item_slot", ItemSlotArgumentType.class, ConstantArgumentSerializer.of(ItemSlotArgumentType::itemSlot));
 		register(registry, "resource_location", IdentifierArgumentType.class, ConstantArgumentSerializer.of(IdentifierArgumentType::identifier));
-		register(registry, "mob_effect", StatusEffectArgumentType.class, ConstantArgumentSerializer.of(StatusEffectArgumentType::statusEffect));
 		register(registry, "function", CommandFunctionArgumentType.class, ConstantArgumentSerializer.of(CommandFunctionArgumentType::commandFunction));
 		register(registry, "entity_anchor", EntityAnchorArgumentType.class, ConstantArgumentSerializer.of(EntityAnchorArgumentType::entityAnchor));
 		register(registry, "int_range", NumberRangeArgumentType.IntRangeArgumentType.class, ConstantArgumentSerializer.of(NumberRangeArgumentType::intRange));
 		register(registry, "float_range", NumberRangeArgumentType.FloatRangeArgumentType.class, ConstantArgumentSerializer.of(NumberRangeArgumentType::floatRange));
-		register(registry, "item_enchantment", EnchantmentArgumentType.class, ConstantArgumentSerializer.of(EnchantmentArgumentType::enchantment));
-		register(registry, "entity_summon", EntitySummonArgumentType.class, ConstantArgumentSerializer.of(EntitySummonArgumentType::entitySummon));
 		register(registry, "dimension", DimensionArgumentType.class, ConstantArgumentSerializer.of(DimensionArgumentType::dimension));
 		register(registry, "time", TimeArgumentType.class, ConstantArgumentSerializer.of(TimeArgumentType::time));
-		register(registry, "resource_or_tag", upcast(RegistryPredicateArgumentType.class), new RegistryPredicateArgumentType.Serializer());
-		register(registry, "resource", upcast(RegistryKeyArgumentType.class), new RegistryKeyArgumentType.Serializer());
+		register(registry, "resource_or_tag", upcast(RegistryEntryPredicateArgumentType.class), new RegistryEntryPredicateArgumentType.Serializer());
+		register(registry, "resource_or_tag_key", upcast(RegistryPredicateArgumentType.class), new RegistryPredicateArgumentType.Serializer());
+		register(registry, "resource", upcast(RegistryEntryArgumentType.class), new RegistryEntryArgumentType.Serializer());
+		register(registry, "resource_key", upcast(RegistryKeyArgumentType.class), new RegistryKeyArgumentType.Serializer());
 		register(registry, "template_mirror", BlockMirrorArgumentType.class, ConstantArgumentSerializer.of(BlockMirrorArgumentType::blockMirror));
 		register(registry, "template_rotation", BlockRotationArgumentType.class, ConstantArgumentSerializer.of(BlockRotationArgumentType::blockRotation));
 		if (SharedConstants.isDevelopment) {

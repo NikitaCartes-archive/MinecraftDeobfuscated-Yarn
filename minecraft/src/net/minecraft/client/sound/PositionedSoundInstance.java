@@ -6,6 +6,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 
 @Environment(EnvType.CLIENT)
@@ -30,9 +31,9 @@ public class PositionedSoundInstance extends AbstractSoundInstance {
 		);
 	}
 
-	public static PositionedSoundInstance record(SoundEvent sound, double x, double y, double z) {
+	public static PositionedSoundInstance record(SoundEvent sound, Vec3d pos) {
 		return new PositionedSoundInstance(
-			sound, SoundCategory.RECORDS, 4.0F, 1.0F, SoundInstance.createRandom(), false, 0, SoundInstance.AttenuationType.LINEAR, x, y, z
+			sound, SoundCategory.RECORDS, 4.0F, 1.0F, SoundInstance.createRandom(), false, 0, SoundInstance.AttenuationType.LINEAR, pos.x, pos.y, pos.z
 		);
 	}
 

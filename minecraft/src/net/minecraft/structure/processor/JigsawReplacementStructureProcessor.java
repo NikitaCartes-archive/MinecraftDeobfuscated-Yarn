@@ -38,7 +38,7 @@ public class JigsawReplacementStructureProcessor extends StructureProcessor {
 
 			BlockState blockState2;
 			try {
-				BlockArgumentParser.BlockResult blockResult = BlockArgumentParser.block(Registry.BLOCK, string, true);
+				BlockArgumentParser.BlockResult blockResult = BlockArgumentParser.block(world.createCommandRegistryWrapper(Registry.BLOCK_KEY), string, true);
 				blockState2 = blockResult.blockState();
 			} catch (CommandSyntaxException var11) {
 				throw new RuntimeException(var11);

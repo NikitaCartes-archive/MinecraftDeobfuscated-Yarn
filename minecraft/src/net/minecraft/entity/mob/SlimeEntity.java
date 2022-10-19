@@ -195,16 +195,18 @@ public class SlimeEntity extends MobEntity implements Monster {
 				float g = ((float)(l % 2) - 0.5F) * f;
 				float h = ((float)(l / 2) - 0.5F) * f;
 				SlimeEntity slimeEntity = this.getType().create(this.world);
-				if (this.isPersistent()) {
-					slimeEntity.setPersistent();
-				}
+				if (slimeEntity != null) {
+					if (this.isPersistent()) {
+						slimeEntity.setPersistent();
+					}
 
-				slimeEntity.setCustomName(text);
-				slimeEntity.setAiDisabled(bl);
-				slimeEntity.setInvulnerable(this.isInvulnerable());
-				slimeEntity.setSize(j, true);
-				slimeEntity.refreshPositionAndAngles(this.getX() + (double)g, this.getY() + 0.5, this.getZ() + (double)h, this.random.nextFloat() * 360.0F, 0.0F);
-				this.world.spawnEntity(slimeEntity);
+					slimeEntity.setCustomName(text);
+					slimeEntity.setAiDisabled(bl);
+					slimeEntity.setInvulnerable(this.isInvulnerable());
+					slimeEntity.setSize(j, true);
+					slimeEntity.refreshPositionAndAngles(this.getX() + (double)g, this.getY() + 0.5, this.getZ() + (double)h, this.random.nextFloat() * 360.0F, 0.0F);
+					this.world.spawnEntity(slimeEntity);
+				}
 			}
 		}
 

@@ -84,6 +84,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	@Override
 	protected void init() {
 		super.init();
+		this.client.keyboard.setRepeatEvents(true);
 		this.x = (this.width - this.backgroundWidth) / 2;
 		this.y = (this.height - this.backgroundHeight) / 2;
 	}
@@ -227,7 +228,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 			Pair<Identifier, Identifier> pair = slot.getBackgroundSprite();
 			if (pair != null) {
 				Sprite sprite = (Sprite)this.client.getSpriteAtlas(pair.getFirst()).apply(pair.getSecond());
-				RenderSystem.setShaderTexture(0, sprite.getAtlas().getId());
+				RenderSystem.setShaderTexture(0, sprite.getId());
 				drawSprite(matrices, i, j, this.getZOffset(), 16, 16, sprite);
 				bl2 = true;
 			}
@@ -607,6 +608,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	@Override
 	public void removed() {
 		if (this.client.player != null) {
+			this.client.keyboard.setRepeatEvents(false);
 			this.handler.close(this.client.player);
 		}
 	}

@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -147,11 +148,19 @@ public class TextureMap {
 	}
 
 	public static TextureMap sideAndEndForTop(Block block) {
-		return new TextureMap().put(TextureKey.SIDE, getId(block)).put(TextureKey.END, getSubId(block, "_top"));
+		return new TextureMap().put(TextureKey.SIDE, getId(block)).put(TextureKey.END, getSubId(block, "_top")).put(TextureKey.PARTICLE, getId(block));
 	}
 
 	public static TextureMap sideEnd(Identifier side, Identifier end) {
 		return new TextureMap().put(TextureKey.SIDE, side).put(TextureKey.END, end);
+	}
+
+	public static TextureMap textureSideTop(Block block) {
+		return new TextureMap().put(TextureKey.TEXTURE, getId(block)).put(TextureKey.SIDE, getSubId(block, "_side")).put(TextureKey.TOP, getSubId(block, "_top"));
+	}
+
+	public static TextureMap textureParticle(Block block) {
+		return new TextureMap().put(TextureKey.TEXTURE, getId(block)).put(TextureKey.PARTICLE, getSubId(block, "_particle"));
 	}
 
 	public static TextureMap sideTopBottom(Block block) {
@@ -172,7 +181,11 @@ public class TextureMap {
 
 	public static TextureMap wallSideEnd(Block block) {
 		Identifier identifier = getId(block);
-		return new TextureMap().put(TextureKey.WALL, identifier).put(TextureKey.SIDE, identifier).put(TextureKey.END, getSubId(block, "_top"));
+		return new TextureMap()
+			.put(TextureKey.TEXTURE, identifier)
+			.put(TextureKey.WALL, identifier)
+			.put(TextureKey.SIDE, identifier)
+			.put(TextureKey.END, getSubId(block, "_top"));
 	}
 
 	public static TextureMap topBottom(Identifier top, Identifier bottom) {
@@ -317,21 +330,21 @@ public class TextureMap {
 
 	public static Identifier getId(Block block) {
 		Identifier identifier = Registry.BLOCK.getId(block);
-		return new Identifier(identifier.getNamespace(), "block/" + identifier.getPath());
+		return identifier.withPrefixedPath("block/");
 	}
 
 	public static Identifier getSubId(Block block, String suffix) {
 		Identifier identifier = Registry.BLOCK.getId(block);
-		return new Identifier(identifier.getNamespace(), "block/" + identifier.getPath() + suffix);
+		return identifier.withPath((UnaryOperator<String>)(path -> "block/" + path + suffix));
 	}
 
 	public static Identifier getId(Item item) {
 		Identifier identifier = Registry.ITEM.getId(item);
-		return new Identifier(identifier.getNamespace(), "item/" + identifier.getPath());
+		return identifier.withPrefixedPath("item/");
 	}
 
 	public static Identifier getSubId(Item item, String suffix) {
 		Identifier identifier = Registry.ITEM.getId(item);
-		return new Identifier(identifier.getNamespace(), "item/" + identifier.getPath() + suffix);
+		return identifier.withPath((UnaryOperator<String>)(path -> "item/" + path + suffix));
 	}
 }

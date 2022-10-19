@@ -21,8 +21,7 @@ public class BannerPattern {
 
 	public static Identifier getSpriteId(RegistryKey<BannerPattern> pattern, boolean banner) {
 		String string = banner ? "banner" : "shield";
-		Identifier identifier = pattern.getValue();
-		return new Identifier(identifier.getNamespace(), "entity/" + string + "/" + identifier.getPath());
+		return pattern.getValue().withPrefixedPath("entity/" + string + "/");
 	}
 
 	public String getId() {

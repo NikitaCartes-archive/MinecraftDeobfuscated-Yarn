@@ -10,7 +10,7 @@ import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.WorldAccess;
 
-public class SculkBlock extends OreBlock implements SculkSpreadable {
+public class SculkBlock extends ExperienceDroppingBlock implements SculkSpreadable {
 	public SculkBlock(AbstractBlock.Settings settings) {
 		super(settings, ConstantIntProvider.create(1));
 	}

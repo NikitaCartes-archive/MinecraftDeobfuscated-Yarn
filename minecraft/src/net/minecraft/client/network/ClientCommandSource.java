@@ -19,6 +19,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.command.CommandSource;
 import net.minecraft.network.packet.c2s.play.RequestCommandCompletionsC2SPacket;
 import net.minecraft.network.packet.s2c.play.ChatSuggestionsS2CPacket;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -154,6 +155,11 @@ public class ClientCommandSource implements CommandSource {
 	@Override
 	public DynamicRegistryManager getRegistryManager() {
 		return this.networkHandler.getRegistryManager();
+	}
+
+	@Override
+	public FeatureSet getEnabledFeatures() {
+		return this.networkHandler.getEnabledFeatures();
 	}
 
 	public void onCommandSuggestions(int completionId, Suggestions suggestions) {

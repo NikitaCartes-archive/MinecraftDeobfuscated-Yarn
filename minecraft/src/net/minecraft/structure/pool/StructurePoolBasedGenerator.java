@@ -71,7 +71,11 @@ public class StructurePoolBasedGenerator {
 				Identifier identifier = (Identifier)id.get();
 				Optional<BlockPos> optional = findStartingJigsawPos(structurePoolElement, identifier, pos, blockRotation, structureTemplateManager, chunkRandom);
 				if (optional.isEmpty()) {
-					LOGGER.error("No starting jigsaw {} found in start pool {}", identifier, ((RegistryKey)structurePool.getKey().get()).getValue());
+					LOGGER.error(
+						"No starting jigsaw {} found in start pool {}",
+						identifier,
+						structurePool.getKey().map(registryKey -> registryKey.getValue().toString()).orElse("<unregistered>")
+					);
 					return Optional.empty();
 				}
 

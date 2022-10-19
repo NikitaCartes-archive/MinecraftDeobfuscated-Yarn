@@ -724,6 +724,33 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_PACKED_MUD_HIT,
 		SoundEvents.BLOCK_PACKED_MUD_FALL
 	);
+	public static final BlockSoundGroup HANGING_SIGN = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_HANGING_SIGN_BREAK,
+		SoundEvents.BLOCK_HANGING_SIGN_STEP,
+		SoundEvents.BLOCK_HANGING_SIGN_PLACE,
+		SoundEvents.BLOCK_HANGING_SIGN_HIT,
+		SoundEvents.BLOCK_HANGING_SIGN_FALL
+	);
+	public static final BlockSoundGroup BAMBOO_WOOD = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_BAMBOO_WOOD_BREAK,
+		SoundEvents.BLOCK_BAMBOO_WOOD_STEP,
+		SoundEvents.BLOCK_BAMBOO_WOOD_PLACE,
+		SoundEvents.BLOCK_BAMBOO_WOOD_HIT,
+		SoundEvents.BLOCK_BAMBOO_WOOD_FALL
+	);
+	public static final BlockSoundGroup NETHER_WOOD = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_NETHER_WOOD_BREAK,
+		SoundEvents.BLOCK_NETHER_WOOD_STEP,
+		SoundEvents.BLOCK_NETHER_WOOD_PLACE,
+		SoundEvents.BLOCK_NETHER_WOOD_HIT,
+		SoundEvents.BLOCK_NETHER_WOOD_FALL
+	);
 	public final float volume;
 	public final float pitch;
 	private final SoundEvent breakSound;

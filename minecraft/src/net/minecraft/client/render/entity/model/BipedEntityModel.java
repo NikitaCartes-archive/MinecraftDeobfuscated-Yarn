@@ -415,7 +415,7 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 		return -65.0F * f + f * f;
 	}
 
-	public void setAttributes(BipedEntityModel<T> model) {
+	public void copyBipedStateTo(BipedEntityModel<T> model) {
 		super.copyStateTo(model);
 		model.leftArmPose = this.leftArmPose;
 		model.rightArmPose = this.rightArmPose;

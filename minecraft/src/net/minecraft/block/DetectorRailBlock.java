@@ -99,7 +99,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 			}
 
 			if (bl2) {
-				world.createAndScheduleBlockTick(pos, this, 20);
+				world.scheduleBlockTick(pos, this, 20);
 			}
 
 			world.updateComparators(pos, this);

@@ -1,5 +1,6 @@
 package net.minecraft.entity.passive;
 
+import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
@@ -131,6 +132,7 @@ public class ChickenEntity extends AnimalEntity {
 		this.playSound(SoundEvents.ENTITY_CHICKEN_STEP, 0.15F, 1.0F);
 	}
 
+	@Nullable
 	public ChickenEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
 		return EntityType.CHICKEN.create(serverWorld);
 	}

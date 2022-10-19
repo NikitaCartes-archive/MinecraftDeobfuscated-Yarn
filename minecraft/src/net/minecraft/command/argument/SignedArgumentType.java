@@ -1,5 +1,6 @@
 package net.minecraft.command.argument;
 
-public interface SignedArgumentType<T> extends DecoratableArgumentType<T> {
-	String toSignedString(T value);
+import com.mojang.brigadier.arguments.ArgumentType;
+
+public interface SignedArgumentType<T> extends ArgumentType<T> {
 }

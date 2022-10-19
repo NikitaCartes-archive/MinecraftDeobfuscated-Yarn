@@ -80,10 +80,10 @@ public class PortalForcer {
 
 				for(int l = j; l >= this.world.getBottomY(); --l) {
 					mutable2.setY(l);
-					if (this.world.isAir(mutable2)) {
+					if (this.isBlockStateValid(mutable2)) {
 						int m = l;
 
-						while(l > this.world.getBottomY() && this.world.isAir(mutable2.move(Direction.DOWN))) {
+						while(l > this.world.getBottomY() && this.isBlockStateValid(mutable2.move(Direction.DOWN))) {
 							--l;
 						}
 
@@ -160,6 +160,11 @@ public class PortalForcer {
 		return Optional.of(new BlockLocating.Rectangle(blockPos.toImmutable(), 2, 3));
 	}
 
+	private boolean isBlockStateValid(BlockPos.Mutable pos) {
+		BlockState blockState = this.world.getBlockState(pos);
+		return blockState.isReplaceable() && blockState.getFluidState().isEmpty();
+	}
+
 	private boolean isValidPortalPos(BlockPos pos, BlockPos.Mutable temp, Direction portalDirection, int distanceOrthogonalToPortal) {
 		Direction direction = portalDirection.rotateYClockwise();
 
@@ -175,7 +180,7 @@ public class PortalForcer {
 					return false;
 				}
 
-				if (j >= 0 && !this.world.isAir(temp)) {
+				if (j >= 0 && !this.isBlockStateValid(temp)) {
 					return false;
 				}
 			}

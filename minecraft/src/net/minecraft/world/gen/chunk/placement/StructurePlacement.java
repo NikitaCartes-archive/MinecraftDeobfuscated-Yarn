@@ -31,7 +31,7 @@ public abstract class StructurePlacement {
 	private final int salt;
 	private final Optional<StructurePlacement.ExclusionZone> exclusionZone;
 
-	protected static <S extends StructurePlacement> P5<Mu<S>, Vec3i, StructurePlacement.FrequencyReductionMethod, Float, Integer, Optional<StructurePlacement.ExclusionZone>> method_41637(
+	protected static <S extends StructurePlacement> P5<Mu<S>, Vec3i, StructurePlacement.FrequencyReductionMethod, Float, Integer, Optional<StructurePlacement.ExclusionZone>> buildCodec(
 		Instance<S> instance
 	) {
 		return instance.group(

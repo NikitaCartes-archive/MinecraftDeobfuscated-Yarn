@@ -1,13 +1,11 @@
 package net.minecraft.client.network;
 
 import com.mojang.authlib.GameProfile;
-import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
@@ -16,8 +14,8 @@ import net.minecraft.util.math.MathHelper;
  */
 @Environment(EnvType.CLIENT)
 public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
-	public OtherClientPlayerEntity(ClientWorld clientWorld, GameProfile gameProfile, @Nullable PlayerPublicKey playerPublicKey) {
-		super(clientWorld, gameProfile, playerPublicKey);
+	public OtherClientPlayerEntity(ClientWorld clientWorld, GameProfile gameProfile) {
+		super(clientWorld, gameProfile);
 		this.stepHeight = 1.0F;
 		this.noClip = true;
 	}

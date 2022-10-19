@@ -114,6 +114,7 @@ public class RenderLayers {
 		map.put(Blocks.CRIMSON_TRAPDOOR, renderLayer3);
 		map.put(Blocks.WARPED_TRAPDOOR, renderLayer3);
 		map.put(Blocks.MANGROVE_TRAPDOOR, renderLayer3);
+		map.put(Blocks.BAMBOO_TRAPDOOR, renderLayer3);
 		map.put(Blocks.ATTACHED_PUMPKIN_STEM, renderLayer3);
 		map.put(Blocks.ATTACHED_MELON_STEM, renderLayer3);
 		map.put(Blocks.PUMPKIN_STEM, renderLayer3);
@@ -170,6 +171,7 @@ public class RenderLayers {
 		map.put(Blocks.ACACIA_DOOR, renderLayer3);
 		map.put(Blocks.DARK_OAK_DOOR, renderLayer3);
 		map.put(Blocks.MANGROVE_DOOR, renderLayer3);
+		map.put(Blocks.BAMBOO_DOOR, renderLayer3);
 		map.put(Blocks.END_ROD, renderLayer3);
 		map.put(Blocks.CHORUS_PLANT, renderLayer3);
 		map.put(Blocks.CHORUS_FLOWER, renderLayer3);
@@ -255,6 +257,7 @@ public class RenderLayers {
 		map.put(Blocks.SCULK_SHRIEKER, renderLayer3);
 		map.put(Blocks.MANGROVE_PROPAGULE, renderLayer3);
 		map.put(Blocks.MANGROVE_LOG, renderLayer3);
+		map.put(Blocks.FROGSPAWN, renderLayer3);
 		RenderLayer renderLayer4 = RenderLayer.getTranslucent();
 		map.put(Blocks.ICE, renderLayer4);
 		map.put(Blocks.NETHER_PORTAL, renderLayer4);
@@ -295,7 +298,6 @@ public class RenderLayers {
 		map.put(Blocks.FROSTED_ICE, renderLayer4);
 		map.put(Blocks.BUBBLE_COLUMN, renderLayer4);
 		map.put(Blocks.TINTED_GLASS, renderLayer4);
-		map.put(Blocks.FROGSPAWN, renderLayer4);
 	});
 	private static final Map<Fluid, RenderLayer> FLUIDS = Util.make(Maps.<Fluid, RenderLayer>newHashMap(), map -> {
 		RenderLayer renderLayer = RenderLayer.getTranslucent();

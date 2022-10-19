@@ -17,30 +17,38 @@ import net.minecraft.resource.metadata.ResourceMetadata;
  * @see ResourceManager#getAllResources(Identifier)
  */
 public class Resource {
-	private final String resourcePackName;
-	private final Resource.InputSupplier<InputStream> inputSupplier;
-	private final Resource.InputSupplier<ResourceMetadata> metadataSupplier;
+	private final ResourcePack pack;
+	private final InputSupplier<InputStream> inputSupplier;
+	private final InputSupplier<ResourceMetadata> metadataSupplier;
 	@Nullable
 	private ResourceMetadata metadata;
 
-	public Resource(String resourcePackName, Resource.InputSupplier<InputStream> inputSupplier, Resource.InputSupplier<ResourceMetadata> metadataSupplier) {
-		this.resourcePackName = resourcePackName;
+	public Resource(ResourcePack pack, InputSupplier<InputStream> inputSupplier, InputSupplier<ResourceMetadata> metadataSupplier) {
+		this.pack = pack;
 		this.inputSupplier = inputSupplier;
 		this.metadataSupplier = metadataSupplier;
 	}
 
-	public Resource(String resourcePackName, Resource.InputSupplier<InputStream> inputSupplier) {
-		this.resourcePackName = resourcePackName;
+	public Resource(ResourcePack pack, InputSupplier<InputStream> inputSupplier) {
+		this.pack = pack;
 		this.inputSupplier = inputSupplier;
-		this.metadataSupplier = () -> ResourceMetadata.NONE;
+		this.metadataSupplier = ResourceMetadata.NONE_SUPPLIER;
 		this.metadata = ResourceMetadata.NONE;
+	}
+
+	public ResourcePack getPack() {
+		return this.pack;
 	}
 
 	/**
 	 * Returns the user-friendly name of the pack this resource is from.
 	 */
 	public String getResourcePackName() {
-		return this.resourcePackName;
+		return this.pack.getName();
+	}
+
+	public boolean isAlwaysStable() {
+		return this.pack.isAlwaysStable();
 	}
 
 	/**
@@ -68,10 +76,5 @@ public class Resource {
 		}
 
 		return this.metadata;
-	}
-
-	@FunctionalInterface
-	public interface InputSupplier<T> {
-		T get() throws IOException;
 	}
 }
