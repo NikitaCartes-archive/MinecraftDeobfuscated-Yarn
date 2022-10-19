@@ -197,7 +197,7 @@ public abstract class StructurePiece {
 				world.setBlockState(blockPos, block, Block.NOTIFY_LISTENERS);
 				FluidState fluidState = world.getFluidState(blockPos);
 				if (!fluidState.isEmpty()) {
-					world.createAndScheduleFluidTick(blockPos, fluidState.getFluid(), 0);
+					world.scheduleFluidTick(blockPos, fluidState.getFluid(), 0);
 				}
 
 				if (BLOCKS_NEEDING_POST_PROCESSING.contains(block.getBlock())) {

@@ -10,23 +10,23 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.ResourceFactory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class SoundLoader {
-	private final ResourceManager resourceManager;
+	private final ResourceFactory resourceFactory;
 	private final Map<Identifier, CompletableFuture<StaticSound>> loadedSounds = Maps.<Identifier, CompletableFuture<StaticSound>>newHashMap();
 
-	public SoundLoader(ResourceManager resourceManager) {
-		this.resourceManager = resourceManager;
+	public SoundLoader(ResourceFactory resourceFactory) {
+		this.resourceFactory = resourceFactory;
 	}
 
 	public CompletableFuture<StaticSound> loadStatic(Identifier id) {
 		return (CompletableFuture<StaticSound>)this.loadedSounds.computeIfAbsent(id, id2 -> CompletableFuture.supplyAsync(() -> {
 				try {
-					InputStream inputStream = this.resourceManager.open(id2);
+					InputStream inputStream = this.resourceFactory.open(id2);
 
 					StaticSound var5;
 					try {
@@ -72,7 +72,7 @@ public class SoundLoader {
 	public CompletableFuture<AudioStream> loadStreamed(Identifier id, boolean repeatInstantly) {
 		return CompletableFuture.supplyAsync(() -> {
 			try {
-				InputStream inputStream = this.resourceManager.open(id);
+				InputStream inputStream = this.resourceFactory.open(id);
 				return (AudioStream)(repeatInstantly ? new RepeatingAudioStream(OggAudioStream::new, inputStream) : new OggAudioStream(inputStream));
 			} catch (IOException var4) {
 				throw new CompletionException(var4);

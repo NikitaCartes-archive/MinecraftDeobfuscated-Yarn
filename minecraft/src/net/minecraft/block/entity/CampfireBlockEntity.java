@@ -50,10 +50,12 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
 				if (campfire.cookingTimes[i] >= campfire.cookingTotalTimes[i]) {
 					Inventory inventory = new SimpleInventory(itemStack);
 					ItemStack itemStack2 = (ItemStack)campfire.matchGetter.getFirstMatch(inventory, world).map(recipe -> recipe.craft(inventory)).orElse(itemStack);
-					ItemScatterer.spawn(world, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), itemStack2);
-					campfire.itemsBeingCooked.set(i, ItemStack.EMPTY);
-					world.updateListeners(pos, state, state, Block.NOTIFY_ALL);
-					world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(state));
+					if (itemStack2.isItemEnabled(world.getEnabledFeatures())) {
+						ItemScatterer.spawn(world, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), itemStack2);
+						campfire.itemsBeingCooked.set(i, ItemStack.EMPTY);
+						world.updateListeners(pos, state, state, Block.NOTIFY_ALL);
+						world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(state));
+					}
 				}
 			}
 		}

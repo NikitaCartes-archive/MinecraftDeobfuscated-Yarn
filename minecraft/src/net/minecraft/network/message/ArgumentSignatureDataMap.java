@@ -1,11 +1,10 @@
 package net.minecraft.network.message;
 
-import com.mojang.brigadier.context.ParsedArgument;
-import com.mojang.datafixers.util.Pair;
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.command.argument.DecoratableArgumentList;
-import net.minecraft.command.argument.SignedArgumentType;
+import java.util.Objects;
+import javax.annotation.Nullable;
+import net.minecraft.command.argument.SignedArgumentList;
 import net.minecraft.network.PacketByteBuf;
 
 /**
@@ -26,6 +25,7 @@ public record ArgumentSignatureDataMap(List<ArgumentSignatureDataMap.Entry> entr
 	 * {@return the signature data for {@code argumentName}, or {@code null} if the
 	 * argument name is not present in this signatures}
 	 */
+	@Nullable
 	public MessageSignatureData get(String argumentName) {
 		for (ArgumentSignatureDataMap.Entry entry : this.entries) {
 			if (entry.name.equals(argumentName)) {
@@ -33,7 +33,7 @@ public record ArgumentSignatureDataMap(List<ArgumentSignatureDataMap.Entry> entr
 			}
 		}
 
-		return MessageSignatureData.EMPTY;
+		return null;
 	}
 
 	public void write(PacketByteBuf buf) {
@@ -41,42 +41,15 @@ public record ArgumentSignatureDataMap(List<ArgumentSignatureDataMap.Entry> entr
 	}
 
 	/**
-	 * {@return whether the parsed arguments include {@link SignedArgumentType}}
-	 */
-	public static boolean hasSignedArgument(DecoratableArgumentList<?> arguments) {
-		return arguments.arguments().stream().anyMatch(argument -> argument.argumentType() instanceof SignedArgumentType);
-	}
-
-	/**
 	 * {@return the signature map with {@code arguments} signed with
 	 * {@code signer}}
 	 */
-	public static ArgumentSignatureDataMap sign(DecoratableArgumentList<?> arguments, ArgumentSignatureDataMap.ArgumentSigner signer) {
-		List<ArgumentSignatureDataMap.Entry> list = toNameValuePairs(arguments).stream().map(entry -> {
-			MessageSignatureData messageSignatureData = signer.sign((String)entry.getFirst(), (String)entry.getSecond());
-			return new ArgumentSignatureDataMap.Entry((String)entry.getFirst(), messageSignatureData);
-		}).toList();
+	public static ArgumentSignatureDataMap sign(SignedArgumentList<?> arguments, ArgumentSignatureDataMap.ArgumentSigner signer) {
+		List<ArgumentSignatureDataMap.Entry> list = arguments.arguments().stream().map(argument -> {
+			MessageSignatureData messageSignatureData = signer.sign(argument.value());
+			return messageSignatureData != null ? new ArgumentSignatureDataMap.Entry(argument.getNodeName(), messageSignatureData) : null;
+		}).filter(Objects::nonNull).toList();
 		return new ArgumentSignatureDataMap(list);
-	}
-
-	/**
-	 * {@return {@code arguments} converted to a list of signed name/value pairs}
-	 */
-	public static List<Pair<String, String>> toNameValuePairs(DecoratableArgumentList<?> arguments) {
-		List<Pair<String, String>> list = new ArrayList();
-
-		for (DecoratableArgumentList.ParsedArgument<?> parsedArgument : arguments.arguments()) {
-			if (parsedArgument.argumentType() instanceof SignedArgumentType<?> signedArgumentType) {
-				String string = resultToString(signedArgumentType, parsedArgument.parsedValue());
-				list.add(Pair.of(parsedArgument.getNodeName(), string));
-			}
-		}
-
-		return list;
-	}
-
-	private static <T> String resultToString(SignedArgumentType<T> type, ParsedArgument<?, ?> argument) {
-		return type.toSignedString((T)argument.getResult());
 	}
 
 	/**
@@ -84,7 +57,8 @@ public record ArgumentSignatureDataMap(List<ArgumentSignatureDataMap.Entry> entr
 	 */
 	@FunctionalInterface
 	public interface ArgumentSigner {
-		MessageSignatureData sign(String argumentName, String value);
+		@Nullable
+		MessageSignatureData sign(String value);
 	}
 
 	/**
@@ -93,12 +67,12 @@ public record ArgumentSignatureDataMap(List<ArgumentSignatureDataMap.Entry> entr
 	public static record Entry(String name, MessageSignatureData signature) {
 
 		public Entry(PacketByteBuf buf) {
-			this(buf.readString(16), new MessageSignatureData(buf));
+			this(buf.readString(16), MessageSignatureData.fromBuf(buf));
 		}
 
 		public void write(PacketByteBuf buf) {
 			buf.writeString(this.name, 16);
-			this.signature.write(buf);
+			MessageSignatureData.write(buf, this.signature);
 		}
 	}
 }

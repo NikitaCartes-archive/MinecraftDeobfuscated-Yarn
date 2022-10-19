@@ -9,13 +9,14 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class RepairItemRecipe extends SpecialCraftingRecipe {
-	public RepairItemRecipe(Identifier identifier) {
-		super(identifier);
+	public RepairItemRecipe(Identifier identifier, CraftingRecipeCategory craftingRecipeCategory) {
+		super(identifier, craftingRecipeCategory);
 	}
 
 	public boolean matches(CraftingInventory craftingInventory, World world) {

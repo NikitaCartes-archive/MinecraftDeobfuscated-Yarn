@@ -2,11 +2,11 @@ package net.minecraft.resource;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.logging.LogUtils;
-import java.io.IOException;
 import java.util.List;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import javax.annotation.Nullable;
+import net.minecraft.resource.featuretoggle.FeatureSet;
+import net.minecraft.resource.metadata.PackFeatureSetMetadata;
 import net.minecraft.resource.metadata.PackResourceMetadata;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
@@ -28,14 +28,29 @@ import org.slf4j.Logger;
 public class ResourcePackProfile {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final String name;
-	private final Supplier<ResourcePack> packFactory;
+	private final ResourcePackProfile.PackFactory packFactory;
 	private final Text displayName;
 	private final Text description;
 	private final ResourcePackCompatibility compatibility;
+	private final FeatureSet requestedFeatures;
 	private final ResourcePackProfile.InsertionPosition position;
 	private final boolean alwaysEnabled;
 	private final boolean pinned;
 	private final ResourcePackSource source;
+
+	@Nullable
+	public static ResourcePackProfile create(
+		String name,
+		Text displayName,
+		boolean alwaysEnabled,
+		ResourcePackProfile.PackFactory packFactory,
+		ResourceType type,
+		ResourcePackProfile.InsertionPosition position,
+		ResourcePackSource source
+	) {
+		ResourcePackProfile.Metadata metadata = loadMetadata(name, packFactory);
+		return metadata != null ? of(name, displayName, alwaysEnabled, packFactory, metadata, type, position, false, source) : null;
+	}
 
 	/**
 	 * Creates a resource pack profile from the given parameters.
@@ -47,67 +62,64 @@ public class ResourcePackProfile {
 	 * 
 	 * @return the created profile, or {@code null} if missing metadata
 	 */
-	@Nullable
 	public static ResourcePackProfile of(
 		String name,
+		Text displayName,
 		boolean alwaysEnabled,
-		Supplier<ResourcePack> packFactory,
-		ResourcePackProfile.Factory profileFactory,
-		ResourcePackProfile.InsertionPosition insertionPosition,
-		ResourcePackSource packSource
+		ResourcePackProfile.PackFactory packFactory,
+		ResourcePackProfile.Metadata metadata,
+		ResourceType type,
+		ResourcePackProfile.InsertionPosition position,
+		boolean pinned,
+		ResourcePackSource source
 	) {
-		try {
-			ResourcePackProfile var8;
-			try (ResourcePack resourcePack = (ResourcePack)packFactory.get()) {
-				PackResourceMetadata packResourceMetadata = resourcePack.parseMetadata(PackResourceMetadata.READER);
-				if (packResourceMetadata == null) {
-					LOGGER.warn("Couldn't find pack meta for pack {}", name);
-					return null;
-				}
-
-				var8 = profileFactory.create(name, Text.literal(resourcePack.getName()), alwaysEnabled, packFactory, packResourceMetadata, insertionPosition, packSource);
-			}
-
-			return var8;
-		} catch (IOException var11) {
-			LOGGER.warn("Couldn't get pack info for: {}", var11.toString());
-			return null;
-		}
+		return new ResourcePackProfile(name, alwaysEnabled, packFactory, displayName, metadata, metadata.getCompatibility(type), position, pinned, source);
 	}
 
-	public ResourcePackProfile(
+	private ResourcePackProfile(
 		String name,
 		boolean alwaysEnabled,
-		Supplier<ResourcePack> packFactory,
+		ResourcePackProfile.PackFactory packFactory,
 		Text displayName,
-		Text description,
+		ResourcePackProfile.Metadata metadata,
 		ResourcePackCompatibility compatibility,
-		ResourcePackProfile.InsertionPosition direction,
+		ResourcePackProfile.InsertionPosition position,
 		boolean pinned,
 		ResourcePackSource source
 	) {
 		this.name = name;
 		this.packFactory = packFactory;
 		this.displayName = displayName;
-		this.description = description;
+		this.description = metadata.description();
 		this.compatibility = compatibility;
+		this.requestedFeatures = metadata.requestedFeatures();
 		this.alwaysEnabled = alwaysEnabled;
-		this.position = direction;
+		this.position = position;
 		this.pinned = pinned;
 		this.source = source;
 	}
 
-	public ResourcePackProfile(
-		String name,
-		Text displayName,
-		boolean alwaysEnabled,
-		Supplier<ResourcePack> packFactory,
-		PackResourceMetadata metadata,
-		ResourceType type,
-		ResourcePackProfile.InsertionPosition direction,
-		ResourcePackSource source
-	) {
-		this(name, alwaysEnabled, packFactory, displayName, metadata.getDescription(), ResourcePackCompatibility.from(metadata, type), direction, false, source);
+	@Nullable
+	public static ResourcePackProfile.Metadata loadMetadata(String name, ResourcePackProfile.PackFactory packFactory) {
+		try {
+			ResourcePackProfile.Metadata var6;
+			try (ResourcePack resourcePack = packFactory.open(name)) {
+				PackResourceMetadata packResourceMetadata = resourcePack.parseMetadata(PackResourceMetadata.SERIALIZER);
+				if (packResourceMetadata == null) {
+					LOGGER.warn("Missing metadata in pack {}", name);
+					return null;
+				}
+
+				PackFeatureSetMetadata packFeatureSetMetadata = resourcePack.parseMetadata(PackFeatureSetMetadata.SERIALIZER);
+				FeatureSet featureSet = packFeatureSetMetadata != null ? packFeatureSetMetadata.flags() : FeatureSet.empty();
+				var6 = new ResourcePackProfile.Metadata(packResourceMetadata.getDescription(), packResourceMetadata.getPackFormat(), featureSet);
+			}
+
+			return var6;
+		} catch (Exception var9) {
+			LOGGER.warn("Failed to read pack metadata", (Throwable)var9);
+			return null;
+		}
 	}
 
 	public Text getDisplayName() {
@@ -131,8 +143,12 @@ public class ResourcePackProfile {
 		return this.compatibility;
 	}
 
+	public FeatureSet getRequestedFeatures() {
+		return this.requestedFeatures;
+	}
+
 	public ResourcePack createResourcePack() {
-		return (ResourcePack)this.packFactory.get();
+		return this.packFactory.open(this.name);
 	}
 
 	public String getName() {
@@ -165,31 +181,6 @@ public class ResourcePackProfile {
 
 	public int hashCode() {
 		return this.name.hashCode();
-	}
-
-	/**
-	 * A factory for resource pack profiles, somewhat resembling the constructor
-	 * of {@link ResourcePackProfile} but allowing more customization.
-	 */
-	@FunctionalInterface
-	public interface Factory {
-		/**
-		 * Creates a proper resource pack profile from the given parameters.
-		 * 
-		 * @apiNote Instead of calling this method, users usually call {@link
-		 * ResourcePackProfile#of}, which fills some of the parameters for a call to this
-		 * method.
-		 */
-		@Nullable
-		ResourcePackProfile create(
-			String name,
-			Text displayName,
-			boolean alwaysEnabled,
-			Supplier<ResourcePack> packFactory,
-			PackResourceMetadata metadata,
-			ResourcePackProfile.InsertionPosition initialPosition,
-			ResourcePackSource source
-		);
 	}
 
 	public static enum InsertionPosition {
@@ -226,5 +217,16 @@ public class ResourcePackProfile {
 		public ResourcePackProfile.InsertionPosition inverse() {
 			return this == TOP ? BOTTOM : TOP;
 		}
+	}
+
+	public static record Metadata(Text description, int format, FeatureSet requestedFeatures) {
+		public ResourcePackCompatibility getCompatibility(ResourceType type) {
+			return ResourcePackCompatibility.from(this.format, type);
+		}
+	}
+
+	@FunctionalInterface
+	public interface PackFactory {
+		ResourcePack open(String name);
 	}
 }

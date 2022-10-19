@@ -3,10 +3,9 @@ package net.minecraft.entity.ai.brain.task;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -29,7 +28,7 @@ public class BiasedLongJumpTask<E extends MobEntity> extends LongJumpTask<E> {
 		Function<E, SoundEvent> entityToSound,
 		TagKey<Block> favoredBlocks,
 		float biasChance,
-		Predicate<BlockState> jumpToPredicate
+		BiPredicate<E, BlockPos> jumpToPredicate
 	) {
 		super(cooldownRange, verticalRange, horizontalRange, maxRange, entityToSound, jumpToPredicate);
 		this.favoredBlocks = favoredBlocks;
@@ -64,14 +63,5 @@ public class BiasedLongJumpTask<E extends MobEntity> extends LongJumpTask<E> {
 
 			return !this.unfavoredTargets.isEmpty() ? Optional.of((LongJumpTask.Target)this.unfavoredTargets.remove(0)) : Optional.empty();
 		}
-	}
-
-	@Override
-	protected boolean canJumpTo(ServerWorld world, E entity, BlockPos pos) {
-		return super.canJumpTo(world, entity, pos) && this.isFluidStateAndBelowEmpty(world, pos);
-	}
-
-	private boolean isFluidStateAndBelowEmpty(ServerWorld world, BlockPos pos) {
-		return world.getFluidState(pos).isEmpty() && world.getFluidState(pos.down()).isEmpty();
 	}
 }

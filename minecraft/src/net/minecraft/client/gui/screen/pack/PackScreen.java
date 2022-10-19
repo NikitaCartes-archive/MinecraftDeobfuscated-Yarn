@@ -3,8 +3,6 @@ package net.minecraft.client.gui.screen.pack;
 import com.google.common.collect.Maps;
 import com.google.common.hash.Hashing;
 import com.mojang.logging.LogUtils;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.DirectoryStream;
@@ -32,6 +30,7 @@ import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.resource.InputSupplier;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
@@ -58,11 +57,11 @@ public class PackScreen extends Screen {
 	private long refreshTimeout;
 	private PackListWidget availablePackList;
 	private PackListWidget selectedPackList;
-	private final File file;
+	private final Path file;
 	private ButtonWidget doneButton;
 	private final Map<String, Identifier> iconTextures = Maps.<String, Identifier>newHashMap();
 
-	public PackScreen(Screen parent, ResourcePackManager packManager, Consumer<ResourcePackManager> applier, File file, Text title) {
+	public PackScreen(Screen parent, ResourcePackManager packManager, Consumer<ResourcePackManager> applier, Path file, Text title) {
 		super(title);
 		this.parent = parent;
 		this.organizer = new ResourcePackOrganizer(this::updatePackLists, this::getPackIconTexture, packManager, applier);
@@ -97,7 +96,7 @@ public class PackScreen extends Screen {
 				150,
 				20,
 				Text.translatable("pack.openFolder"),
-				button -> Util.getOperatingSystem().open(this.file),
+				button -> Util.getOperatingSystem().open(this.file.toUri()),
 				new ButtonWidget.TooltipSupplier() {
 					@Override
 					public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {
@@ -211,7 +210,7 @@ public class PackScreen extends Screen {
 		String string = (String)paths.stream().map(Path::getFileName).map(Path::toString).collect(Collectors.joining(", "));
 		this.client.setScreen(new ConfirmScreen(confirmed -> {
 			if (confirmed) {
-				copyPacks(this.client, paths, this.file.toPath());
+				copyPacks(this.client, paths, this.file);
 				this.refresh();
 			}
 
@@ -221,42 +220,33 @@ public class PackScreen extends Screen {
 
 	private Identifier loadPackIcon(TextureManager textureManager, ResourcePackProfile resourcePackProfile) {
 		try {
-			Identifier var8;
+			Identifier var9;
 			try (ResourcePack resourcePack = resourcePackProfile.createResourcePack()) {
-				InputStream inputStream = resourcePack.openRoot("pack.png");
+				InputSupplier<InputStream> inputSupplier = resourcePack.openRoot("pack.png");
+				if (inputSupplier == null) {
+					return UNKNOWN_PACK;
+				}
 
-				label96: {
-					Identifier string;
-					try {
-						if (inputStream != null) {
-							String stringx = resourcePackProfile.getName();
-							Identifier identifier = new Identifier(
-								"minecraft", "pack/" + Util.replaceInvalidChars(stringx, Identifier::isPathCharacterValid) + "/" + Hashing.sha1().hashUnencodedChars(stringx) + "/icon"
-							);
-							NativeImage nativeImage = NativeImage.read(inputStream);
-							textureManager.registerTexture(identifier, new NativeImageBackedTexture(nativeImage));
-							var8 = identifier;
-							break label96;
-						}
+				String string = resourcePackProfile.getName();
+				Identifier identifier = new Identifier(
+					"minecraft", "pack/" + Util.replaceInvalidChars(string, Identifier::isPathCharacterValid) + "/" + Hashing.sha1().hashUnencodedChars(string) + "/icon"
+				);
+				InputStream inputStream = inputSupplier.get();
 
-						string = UNKNOWN_PACK;
-					} catch (Throwable var11) {
-						if (inputStream != null) {
-							try {
-								inputStream.close();
-							} catch (Throwable var10) {
-								var11.addSuppressed(var10);
-							}
-						}
-
-						throw var11;
-					}
-
+				try {
+					NativeImage nativeImage = NativeImage.read(inputStream);
+					textureManager.registerTexture(identifier, new NativeImageBackedTexture(nativeImage));
+					var9 = identifier;
+				} catch (Throwable var12) {
 					if (inputStream != null) {
-						inputStream.close();
+						try {
+							inputStream.close();
+						} catch (Throwable var11) {
+							var12.addSuppressed(var11);
+						}
 					}
 
-					return string;
+					throw var12;
 				}
 
 				if (inputStream != null) {
@@ -264,13 +254,11 @@ public class PackScreen extends Screen {
 				}
 			}
 
-			return var8;
-		} catch (FileNotFoundException var13) {
+			return var9;
 		} catch (Exception var14) {
 			LOGGER.warn("Failed to load icon from pack {}", resourcePackProfile.getName(), var14);
+			return UNKNOWN_PACK;
 		}
-
-		return UNKNOWN_PACK;
 	}
 
 	private Identifier getPackIconTexture(ResourcePackProfile resourcePackProfile) {
@@ -283,18 +271,18 @@ public class PackScreen extends Screen {
 		private final WatchService watchService;
 		private final Path path;
 
-		public DirectoryWatcher(File file) throws IOException {
-			this.path = file.toPath();
-			this.watchService = this.path.getFileSystem().newWatchService();
+		public DirectoryWatcher(Path path) throws IOException {
+			this.path = path;
+			this.watchService = path.getFileSystem().newWatchService();
 
 			try {
-				this.watchDirectory(this.path);
-				DirectoryStream<Path> directoryStream = Files.newDirectoryStream(this.path);
+				this.watchDirectory(path);
+				DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path);
 
 				try {
-					for (Path path : directoryStream) {
-						if (Files.isDirectory(path, new LinkOption[]{LinkOption.NOFOLLOW_LINKS})) {
-							this.watchDirectory(path);
+					for (Path path2 : directoryStream) {
+						if (Files.isDirectory(path2, new LinkOption[]{LinkOption.NOFOLLOW_LINKS})) {
+							this.watchDirectory(path2);
 						}
 					}
 				} catch (Throwable var6) {
@@ -319,11 +307,11 @@ public class PackScreen extends Screen {
 		}
 
 		@Nullable
-		public static PackScreen.DirectoryWatcher create(File file) {
+		public static PackScreen.DirectoryWatcher create(Path path) {
 			try {
-				return new PackScreen.DirectoryWatcher(file);
+				return new PackScreen.DirectoryWatcher(path);
 			} catch (IOException var2) {
-				PackScreen.LOGGER.warn("Failed to initialize pack directory {} monitoring", file, var2);
+				PackScreen.LOGGER.warn("Failed to initialize pack directory {} monitoring", path, var2);
 				return null;
 			}
 		}

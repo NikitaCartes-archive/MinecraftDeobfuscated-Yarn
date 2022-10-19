@@ -123,7 +123,8 @@ public class SetBannerPatternFunction extends ConditionalLootFunction {
 			for (int i = 0; i < jsonArray.size(); i++) {
 				JsonObject jsonObject2 = JsonHelper.asObject(jsonArray.get(i), "pattern[" + i + "]");
 				String string = JsonHelper.getString(jsonObject2, "pattern");
-				Optional<RegistryEntry<BannerPattern>> optional = Registry.BANNER_PATTERN.getEntry(RegistryKey.of(Registry.BANNER_PATTERN_KEY, new Identifier(string)));
+				Optional<? extends RegistryEntry<BannerPattern>> optional = Registry.BANNER_PATTERN
+					.getEntry(RegistryKey.of(Registry.BANNER_PATTERN_KEY, new Identifier(string)));
 				if (optional.isEmpty()) {
 					throw new JsonSyntaxException("Unknown pattern: " + string);
 				}

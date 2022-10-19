@@ -97,7 +97,7 @@ public interface AquiferSampler {
 		private final int sizeX;
 		private final int sizeZ;
 		private static final int[][] CHUNK_POS_OFFSETS = new int[][]{
-			{-2, -1}, {-1, -1}, {0, -1}, {1, -1}, {-3, 0}, {-2, 0}, {-1, 0}, {0, 0}, {1, 0}, {-2, 1}, {-1, 1}, {0, 1}, {1, 1}
+			{0, 0}, {-2, -1}, {-1, -1}, {0, -1}, {1, -1}, {-3, 0}, {-2, 0}, {-1, 0}, {1, 0}, {-2, 1}, {-1, 1}, {0, 1}, {1, 1}
 		};
 
 		Impl(
@@ -392,7 +392,7 @@ public interface AquiferSampler {
 			DensityFunction.UnblendedNoisePos unblendedNoisePos = new DensityFunction.UnblendedNoisePos(blockX, blockY, blockZ);
 			double d;
 			double e;
-			if (VanillaBiomeParameters.method_43718(this.erosionDensityFunction.sample(unblendedNoisePos), this.depthDensityFunction.sample(unblendedNoisePos))) {
+			if (VanillaBiomeParameters.method_43718(this.erosionDensityFunction, this.depthDensityFunction, unblendedNoisePos)) {
 				d = -1.0;
 				e = -1.0;
 			} else {

@@ -22,6 +22,7 @@ import net.minecraft.entity.RideableInventory;
 import net.minecraft.entity.Saddleable;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.TargetPredicate;
+import net.minecraft.entity.ai.goal.AmbientStandGoal;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FollowParentGoal;
@@ -59,6 +60,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Arm;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -102,7 +104,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	protected SimpleInventory items;
 	protected int temper;
 	protected float jumpStrength;
-	private boolean jumping;
+	protected boolean jumping;
 	private float eatingGrassAnimationProgress;
 	private float lastEatingGrassAnimationProgress;
 	private float angryAnimationProgress;
@@ -127,6 +129,10 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 		this.goalSelector.add(6, new WanderAroundFarGoal(this, 0.7));
 		this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
 		this.goalSelector.add(8, new LookAroundGoal(this));
+		if (this.shouldAmbientStand()) {
+			this.goalSelector.add(9, new AmbientStandGoal(this));
+		}
+
 		this.initCustomGoals();
 	}
 
@@ -212,7 +218,16 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	public void saddle(@Nullable SoundCategory sound) {
 		this.items.setStack(0, new ItemStack(Items.SADDLE));
 		if (sound != null) {
-			this.world.playSoundFromEntity(null, this, SoundEvents.ENTITY_HORSE_SADDLE, sound, 0.5F, 1.0F);
+			this.world.playSoundFromEntity(null, this, this.getSaddleSound(), sound, 0.5F, 1.0F);
+		}
+	}
+
+	public void equipHorseArmor(PlayerEntity player, ItemStack stack) {
+		if (this.isHorseArmor(stack)) {
+			this.items.setStack(1, new ItemStack(stack.getItem()));
+			if (!player.getAbilities().creativeMode) {
+				stack.decrement(1);
+			}
 		}
 	}
 
@@ -322,40 +337,27 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 		return this.getAttributeValue(EntityAttributes.HORSE_JUMP_STRENGTH);
 	}
 
+	@Override
+	public boolean damage(DamageSource source, float amount) {
+		boolean bl = super.damage(source, amount);
+		if (bl && this.random.nextInt(3) == 0) {
+			this.updateAnger();
+		}
+
+		return bl;
+	}
+
+	protected boolean shouldAmbientStand() {
+		return true;
+	}
+
 	@Nullable
 	protected SoundEvent getEatSound() {
 		return null;
 	}
 
 	@Nullable
-	@Override
-	protected SoundEvent getDeathSound() {
-		return null;
-	}
-
-	@Nullable
-	@Override
-	protected SoundEvent getHurtSound(DamageSource source) {
-		if (this.random.nextInt(3) == 0) {
-			this.updateAnger();
-		}
-
-		return null;
-	}
-
-	@Nullable
-	@Override
-	protected SoundEvent getAmbientSound() {
-		if (this.random.nextInt(10) == 0 && !this.isImmobile()) {
-			this.updateAnger();
-		}
-
-		return null;
-	}
-
-	@Nullable
 	protected SoundEvent getAngrySound() {
-		this.updateAnger();
 		return null;
 	}
 
@@ -511,7 +513,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	}
 
 	@Override
-	protected boolean isImmobile() {
+	public boolean isImmobile() {
 		return super.isImmobile() && this.hasPassengers() && this.isSaddled() || this.isEatingGrass() || this.isAngry();
 	}
 
@@ -649,6 +651,32 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 		}
 	}
 
+	@Override
+	public ActionResult interactMob(PlayerEntity player, Hand hand) {
+		if (this.hasPassengers() || this.isBaby()) {
+			return super.interactMob(player, hand);
+		} else if (this.isTame() && player.shouldCancelInteraction()) {
+			this.openInventory(player);
+			return ActionResult.success(this.world.isClient);
+		} else {
+			ItemStack itemStack = player.getStackInHand(hand);
+			if (!itemStack.isEmpty()) {
+				ActionResult actionResult = itemStack.useOnEntity(player, this, hand);
+				if (actionResult.isAccepted()) {
+					return actionResult;
+				}
+
+				if (this.hasArmorSlot() && this.isHorseArmor(itemStack) && !this.hasArmorInSlot()) {
+					this.equipHorseArmor(player, itemStack);
+					return ActionResult.success(this.world.isClient);
+				}
+			}
+
+			this.putPlayerOnBack(player);
+			return ActionResult.success(this.world.isClient);
+		}
+	}
+
 	private void setEating() {
 		if (!this.world.isClient) {
 			this.eatingTicks = 1;
@@ -668,8 +696,13 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 		this.setHorseFlag(ANGRY_FLAG, angry);
 	}
 
-	private void updateAnger() {
-		if (this.isLogicalSideForUpdatingMovement() || this.canMoveVoluntarily()) {
+	@Nullable
+	public SoundEvent getAmbientStandSound() {
+		return this.getAmbientSound();
+	}
+
+	public void updateAnger() {
+		if (this.shouldAmbientStand() && this.isLogicalSideForUpdatingMovement() || this.canMoveVoluntarily()) {
 			this.angryTicks = 1;
 			this.setAngry(true);
 		}
@@ -700,13 +733,9 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	public void travel(Vec3d movementInput) {
 		if (this.isAlive()) {
 			LivingEntity livingEntity = this.getPrimaryPassenger();
-			if (this.hasPassengers() && livingEntity != null) {
-				this.setYaw(livingEntity.getYaw());
-				this.prevYaw = this.getYaw();
-				this.setPitch(livingEntity.getPitch() * 0.5F);
-				this.setRotation(this.getYaw(), this.getPitch());
-				this.bodyYaw = this.getYaw();
-				this.headYaw = this.bodyYaw;
+			if (this.hasPassengers() && livingEntity != null && !this.ignoresMovementInput(livingEntity)) {
+				this.setRotation(livingEntity.getYaw(), livingEntity.getPitch() * 0.5F);
+				this.prevYaw = this.bodyYaw = this.headYaw = this.getYaw();
 				float f = livingEntity.sidewaysSpeed * 0.5F;
 				float g = livingEntity.forwardSpeed;
 				if (g <= 0.0F) {
@@ -720,27 +749,16 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 				}
 
 				if (this.jumpStrength > 0.0F && !this.isInAir() && this.onGround) {
-					double d = this.getJumpStrength() * (double)this.jumpStrength * (double)this.getJumpVelocityMultiplier();
-					double e = d + this.getJumpBoostVelocityModifier();
-					Vec3d vec3d = this.getVelocity();
-					this.setVelocity(vec3d.x, e, vec3d.z);
-					this.setInAir(true);
-					this.velocityDirty = true;
-					if (g > 0.0F) {
-						float h = MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0));
-						float i = MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0));
-						this.setVelocity(this.getVelocity().add((double)(-0.4F * h * this.jumpStrength), 0.0, (double)(0.4F * i * this.jumpStrength)));
-					}
-
+					this.jump(this.jumpStrength, f, g);
 					this.jumpStrength = 0.0F;
 				}
 
 				this.airStrafingSpeed = this.getMovementSpeed() * 0.1F;
 				if (this.isLogicalSideForUpdatingMovement()) {
-					this.setMovementSpeed((float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
+					this.setMovementSpeed(this.getHorsebackMovementSpeed(livingEntity));
 					super.travel(new Vec3d((double)f, movementInput.y, (double)g));
 				} else if (livingEntity instanceof PlayerEntity) {
-					this.setVelocity(Vec3d.ZERO);
+					this.setVelocity(this.getX() - this.lastRenderX, this.getY() - this.lastRenderY, this.getZ() - this.lastRenderZ);
 				}
 
 				if (this.onGround) {
@@ -754,6 +772,28 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 				this.airStrafingSpeed = 0.02F;
 				super.travel(movementInput);
 			}
+		}
+	}
+
+	protected float getHorsebackMovementSpeed(LivingEntity passenger) {
+		return (float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+	}
+
+	protected boolean ignoresMovementInput(LivingEntity passenger) {
+		return false;
+	}
+
+	protected void jump(float strength, float sidewaysSpeed, float forwardSpeed) {
+		double d = this.getJumpStrength() * (double)strength * (double)this.getJumpVelocityMultiplier();
+		double e = d + this.getJumpBoostVelocityModifier();
+		Vec3d vec3d = this.getVelocity();
+		this.setVelocity(vec3d.x, e, vec3d.z);
+		this.setInAir(true);
+		this.velocityDirty = true;
+		if (forwardSpeed > 0.0F) {
+			float f = MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0));
+			float g = MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0));
+			this.setVelocity(this.getVelocity().add((double)(-0.4F * f * strength), 0.0, (double)(0.4F * g * strength)));
 		}
 	}
 
@@ -1101,5 +1141,9 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 
 	public boolean areInventoriesDifferent(Inventory inventory) {
 		return this.items != inventory;
+	}
+
+	public int getMinAmbientStandDelay() {
+		return this.getMinAmbientSoundDelay();
 	}
 }

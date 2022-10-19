@@ -8,11 +8,12 @@ import com.mojang.serialization.JsonOps;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.DataOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.RegistryOps;
+import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
@@ -23,15 +24,15 @@ public class BiomeParametersProvider implements DataProvider {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final Path path;
 
-	public BiomeParametersProvider(DataGenerator dataGenerator) {
-		this.path = dataGenerator.resolveRootDirectoryPath(DataGenerator.OutputType.REPORTS).resolve("biome_parameters");
+	public BiomeParametersProvider(DataOutput dataGenerator) {
+		this.path = dataGenerator.resolvePath(DataOutput.OutputType.REPORTS).resolve("biome_parameters");
 	}
 
 	@Override
 	public void run(DataWriter writer) {
-		DynamicRegistryManager.Immutable immutable = (DynamicRegistryManager.Immutable)DynamicRegistryManager.BUILTIN.get();
-		DynamicOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, immutable);
-		Registry<Biome> registry = immutable.get(Registry.BIOME_KEY);
+		DynamicRegistryManager dynamicRegistryManager = BuiltinRegistries.createBuiltinRegistryManager();
+		DynamicOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, dynamicRegistryManager);
+		Registry<Biome> registry = dynamicRegistryManager.get(Registry.BIOME_KEY);
 		MultiNoiseBiomeSource.Preset.streamPresets().forEach(preset -> {
 			MultiNoiseBiomeSource multiNoiseBiomeSource = ((MultiNoiseBiomeSource.Preset)preset.getSecond()).getBiomeSource(registry, false);
 			write(this.resolvePath((Identifier)preset.getFirst()), writer, dynamicOps, MultiNoiseBiomeSource.CODEC, multiNoiseBiomeSource);

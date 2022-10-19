@@ -104,7 +104,7 @@ public class BitmapFont implements Font {
 		private final int ascent;
 
 		public Loader(Identifier id, int height, int ascent, List<int[]> chars) {
-			this.filename = new Identifier(id.getNamespace(), "textures/" + id.getPath());
+			this.filename = id.withPrefixedPath("textures/");
 			this.chars = chars;
 			this.height = height;
 			this.ascent = ascent;

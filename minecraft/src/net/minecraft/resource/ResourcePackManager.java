@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 
 /**
  * A resource pack manager manages a list of {@link ResourcePackProfile}s and
@@ -23,20 +24,9 @@ public class ResourcePackManager {
 	private final Set<ResourcePackProvider> providers;
 	private Map<String, ResourcePackProfile> profiles = ImmutableMap.of();
 	private List<ResourcePackProfile> enabled = ImmutableList.of();
-	private final ResourcePackProfile.Factory profileFactory;
 
-	public ResourcePackManager(ResourcePackProfile.Factory profileFactory, ResourcePackProvider... providers) {
-		this.profileFactory = profileFactory;
+	public ResourcePackManager(ResourcePackProvider... providers) {
 		this.providers = ImmutableSet.copyOf(providers);
-	}
-
-	public ResourcePackManager(ResourceType type, ResourcePackProvider... providers) {
-		this(
-			(name, displayName, alwaysEnabled, packFactory, metadata, direction, source) -> new ResourcePackProfile(
-					name, displayName, alwaysEnabled, packFactory, metadata, type, direction, source
-				),
-			providers
-		);
 	}
 
 	public void scanPacks() {
@@ -49,7 +39,7 @@ public class ResourcePackManager {
 		Map<String, ResourcePackProfile> map = Maps.newTreeMap();
 
 		for (ResourcePackProvider resourcePackProvider : this.providers) {
-			resourcePackProvider.register(profile -> map.put(profile.getName(), profile), this.profileFactory);
+			resourcePackProvider.register(profile -> map.put(profile.getName(), profile));
 		}
 
 		return ImmutableMap.copyOf(map);
@@ -85,6 +75,10 @@ public class ResourcePackManager {
 
 	public Collection<String> getEnabledNames() {
 		return (Collection<String>)this.enabled.stream().map(ResourcePackProfile::getName).collect(ImmutableSet.toImmutableSet());
+	}
+
+	public FeatureSet getRequestedFeatures() {
+		return (FeatureSet)this.getEnabledProfiles().stream().map(ResourcePackProfile::getRequestedFeatures).reduce(FeatureSet::combine).orElse(FeatureSet.empty());
 	}
 
 	public Collection<ResourcePackProfile> getEnabledProfiles() {

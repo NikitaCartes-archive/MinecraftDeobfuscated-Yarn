@@ -6,11 +6,12 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-public class SignItem extends WallStandingBlockItem {
+public class SignItem extends VerticallyAttachableBlockItem {
 	public SignItem(Item.Settings settings, Block standingBlock, Block wallBlock) {
-		super(standingBlock, wallBlock, settings);
+		super(standingBlock, wallBlock, settings, Direction.DOWN);
 	}
 
 	@Override

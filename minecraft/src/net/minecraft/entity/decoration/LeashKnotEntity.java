@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
+import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
@@ -143,7 +144,7 @@ public class LeashKnotEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public Packet<?> createSpawnPacket() {
+	public Packet<ClientPlayPacketListener> createSpawnPacket() {
 		return new EntitySpawnS2CPacket(this, 0, this.getDecorationBlockPos());
 	}
 

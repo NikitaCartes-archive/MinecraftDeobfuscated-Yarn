@@ -8,9 +8,9 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
@@ -72,16 +72,15 @@ public class LanServerQueryManager {
 		private final List<LanServerInfo> serverEntries = Lists.<LanServerInfo>newArrayList();
 		private boolean dirty;
 
-		public synchronized boolean needsUpdate() {
-			return this.dirty;
-		}
-
-		public synchronized void markClean() {
-			this.dirty = false;
-		}
-
-		public synchronized List<LanServerInfo> getServers() {
-			return Collections.unmodifiableList(this.serverEntries);
+		@Nullable
+		public synchronized List<LanServerInfo> getEntriesIfUpdated() {
+			if (this.dirty) {
+				List<LanServerInfo> list = List.copyOf(this.serverEntries);
+				this.dirty = false;
+				return list;
+			} else {
+				return null;
+			}
 		}
 
 		public synchronized void addServer(String announcement, InetAddress address) {

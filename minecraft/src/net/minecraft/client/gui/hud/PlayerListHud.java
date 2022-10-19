@@ -1,11 +1,14 @@
 package net.minecraft.client.gui.hud;
 
-import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.Ordering;
 import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.systems.RenderSystem;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -40,7 +43,10 @@ import net.minecraft.world.GameMode;
  */
 @Environment(EnvType.CLIENT)
 public class PlayerListHud extends DrawableHelper {
-	private static final Ordering<PlayerListEntry> ENTRY_ORDERING = Ordering.from(new PlayerListHud.EntryOrderComparator());
+	private static final Comparator<PlayerListEntry> ENTRY_ORDERING = Comparator.comparing(
+			PlayerListEntry::getGameMode, Comparator.comparing(gameMode -> gameMode != GameMode.SPECTATOR)
+		)
+		.thenComparing(playerListEntry -> Util.mapOrElse(playerListEntry.getScoreboardTeam(), Team::getName, ""));
 	public static final int MAX_ROWS = 20;
 	public static final int HEART_OUTLINE_U = 16;
 	public static final int BLINKING_HEART_OUTLINE_U = 25;
@@ -56,11 +62,8 @@ public class PlayerListHud extends DrawableHelper {
 	private Text footer;
 	@Nullable
 	private Text header;
-	/**
-	 * The time, in milliseconds, when this HUD was last set to visible.
-	 */
-	private long showTime;
 	private boolean visible;
+	private final Map<UUID, PlayerListHud.Heart> hearts = new Object2ObjectOpenHashMap<>();
 
 	public PlayerListHud(MinecraftClient client, InGameHud inGameHud) {
 		this.client = client;
@@ -85,16 +88,15 @@ public class PlayerListHud extends DrawableHelper {
 	}
 
 	public void setVisible(boolean visible) {
-		if (visible && !this.visible) {
-			this.showTime = Util.getMeasuringTimeMs();
+		if (this.visible != visible) {
+			this.hearts.clear();
+			this.visible = visible;
 		}
-
-		this.visible = visible;
 	}
 
 	public void render(MatrixStack matrices, int scaledWindowWidth, Scoreboard scoreboard, @Nullable ScoreboardObjective objective) {
 		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.player.networkHandler;
-		List<PlayerListEntry> list = ENTRY_ORDERING.sortedCopy(clientPlayNetworkHandler.getPlayerList());
+		List<PlayerListEntry> list = clientPlayNetworkHandler.getListedPlayerListEntries().stream().sorted(ENTRY_ORDERING).limit(80L).toList();
 		int i = 0;
 		int j = 0;
 
@@ -107,7 +109,11 @@ public class PlayerListHud extends DrawableHelper {
 			}
 		}
 
-		list = list.subList(0, Math.min(list.size(), 80));
+		if (!this.hearts.isEmpty()) {
+			Set<UUID> set = (Set<UUID>)list.stream().map(playerEntry -> playerEntry.getProfile().getId()).collect(Collectors.toSet());
+			this.hearts.keySet().removeIf(uuid -> !set.contains(uuid));
+		}
+
 		int l = list.size();
 		int m = l;
 
@@ -195,7 +201,7 @@ public class PlayerListHud extends DrawableHelper {
 					int y = w + i + 1;
 					int z = y + n;
 					if (z - y > 5) {
-						this.renderScoreboardObjective(objective, x, gameProfile.getName(), y, z, playerListEntry2, matrices);
+						this.renderScoreboardObjective(objective, x, gameProfile.getName(), y, z, gameProfile.getId(), matrices);
 					}
 				}
 
@@ -239,74 +245,60 @@ public class PlayerListHud extends DrawableHelper {
 		this.setZOffset(this.getZOffset() - 100);
 	}
 
-	private void renderScoreboardObjective(ScoreboardObjective objective, int y, String player, int startX, int endX, PlayerListEntry entry, MatrixStack matrices) {
+	private void renderScoreboardObjective(ScoreboardObjective objective, int y, String player, int left, int right, UUID uuid, MatrixStack matrices) {
 		int i = objective.getScoreboard().getPlayerScore(player, objective).getScore();
 		if (objective.getRenderType() == ScoreboardCriterion.RenderType.HEARTS) {
-			RenderSystem.setShaderTexture(0, GUI_ICONS_TEXTURE);
-			long l = Util.getMeasuringTimeMs();
-			if (this.showTime == entry.getShowTime()) {
-				if (i < entry.getLastHealth()) {
-					entry.setLastHealthTime(l);
-					entry.setBlinkingHeartTime((long)(this.inGameHud.getTicks() + 20));
-				} else if (i > entry.getLastHealth()) {
-					entry.setLastHealthTime(l);
-					entry.setBlinkingHeartTime((long)(this.inGameHud.getTicks() + 10));
-				}
-			}
-
-			if (l - entry.getLastHealthTime() > 1000L || this.showTime != entry.getShowTime()) {
-				entry.setLastHealth(i);
-				entry.setHealth(i);
-				entry.setLastHealthTime(l);
-			}
-
-			entry.setShowTime(this.showTime);
-			entry.setLastHealth(i);
-			int j = MathHelper.ceil((float)Math.max(i, entry.getHealth()) / 2.0F);
-			int k = Math.max(MathHelper.ceil((float)(i / 2)), Math.max(MathHelper.ceil((float)(entry.getHealth() / 2)), 10));
-			boolean bl = entry.getBlinkingHeartTime() > (long)this.inGameHud.getTicks()
-				&& (entry.getBlinkingHeartTime() - (long)this.inGameHud.getTicks()) / 3L % 2L == 1L;
-			if (j > 0) {
-				int m = MathHelper.floor(Math.min((float)(endX - startX - 4) / (float)k, 9.0F));
-				if (m > 3) {
-					for (int n = j; n < k; n++) {
-						this.drawTexture(matrices, startX + n * m, y, bl ? 25 : 16, 0, 9, 9);
-					}
-
-					for (int n = 0; n < j; n++) {
-						this.drawTexture(matrices, startX + n * m, y, bl ? 25 : 16, 0, 9, 9);
-						if (bl) {
-							if (n * 2 + 1 < entry.getHealth()) {
-								this.drawTexture(matrices, startX + n * m, y, 70, 0, 9, 9);
-							}
-
-							if (n * 2 + 1 == entry.getHealth()) {
-								this.drawTexture(matrices, startX + n * m, y, 79, 0, 9, 9);
-							}
-						}
-
-						if (n * 2 + 1 < i) {
-							this.drawTexture(matrices, startX + n * m, y, n >= 10 ? 160 : 52, 0, 9, 9);
-						}
-
-						if (n * 2 + 1 == i) {
-							this.drawTexture(matrices, startX + n * m, y, n >= 10 ? 169 : 61, 0, 9, 9);
-						}
-					}
-				} else {
-					float f = MathHelper.clamp((float)i / 20.0F, 0.0F, 1.0F);
-					int o = (int)((1.0F - f) * 255.0F) << 16 | (int)(f * 255.0F) << 8;
-					String string = (float)i / 2.0F + "";
-					if (endX - this.client.textRenderer.getWidth(string + "hp") >= startX) {
-						string = string + "hp";
-					}
-
-					this.client.textRenderer.drawWithShadow(matrices, string, (float)((endX + startX) / 2 - this.client.textRenderer.getWidth(string) / 2), (float)y, o);
-				}
-			}
+			this.renderHearts(y, left, right, uuid, matrices, i);
 		} else {
-			String string2 = "" + Formatting.YELLOW + i;
-			this.client.textRenderer.drawWithShadow(matrices, string2, (float)(endX - this.client.textRenderer.getWidth(string2)), (float)y, 16777215);
+			String string = "" + Formatting.YELLOW + i;
+			this.client.textRenderer.drawWithShadow(matrices, string, (float)(right - this.client.textRenderer.getWidth(string)), (float)y, 16777215);
+		}
+	}
+
+	private void renderHearts(int y, int left, int right, UUID uuid, MatrixStack matrices, int score) {
+		PlayerListHud.Heart heart = (PlayerListHud.Heart)this.hearts.computeIfAbsent(uuid, uuid2 -> new PlayerListHud.Heart(score));
+		heart.tick(score, (long)this.inGameHud.getTicks());
+		int i = MathHelper.ceilDiv(Math.max(score, heart.getPrevScore()), 2);
+		int j = Math.max(score, Math.max(heart.getPrevScore(), 20)) / 2;
+		boolean bl = heart.useHighlighted((long)this.inGameHud.getTicks());
+		if (i > 0) {
+			RenderSystem.setShaderTexture(0, GUI_ICONS_TEXTURE);
+			int k = MathHelper.floor(Math.min((float)(right - left - 4) / (float)j, 9.0F));
+			if (k <= 3) {
+				float f = MathHelper.clamp((float)score / 20.0F, 0.0F, 1.0F);
+				int l = (int)((1.0F - f) * 255.0F) << 16 | (int)(f * 255.0F) << 8;
+				String string = (float)score / 2.0F + "";
+				if (right - this.client.textRenderer.getWidth(string + "hp") >= left) {
+					string = string + "hp";
+				}
+
+				this.client.textRenderer.drawWithShadow(matrices, string, (float)((right + left - this.client.textRenderer.getWidth(string)) / 2), (float)y, l);
+			} else {
+				for (int m = i; m < j; m++) {
+					this.drawTexture(matrices, left + m * k, y, bl ? 25 : 16, 0, 9, 9);
+				}
+
+				for (int m = 0; m < i; m++) {
+					this.drawTexture(matrices, left + m * k, y, bl ? 25 : 16, 0, 9, 9);
+					if (bl) {
+						if (m * 2 + 1 < heart.getPrevScore()) {
+							this.drawTexture(matrices, left + m * k, y, 70, 0, 9, 9);
+						}
+
+						if (m * 2 + 1 == heart.getPrevScore()) {
+							this.drawTexture(matrices, left + m * k, y, 79, 0, 9, 9);
+						}
+					}
+
+					if (m * 2 + 1 < score) {
+						this.drawTexture(matrices, left + m * k, y, m >= 10 ? 160 : 52, 0, 9, 9);
+					}
+
+					if (m * 2 + 1 == score) {
+						this.drawTexture(matrices, left + m * k, y, m >= 10 ? 169 : 61, 0, 9, 9);
+					}
+				}
+			}
 		}
 	}
 
@@ -324,15 +316,39 @@ public class PlayerListHud extends DrawableHelper {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class EntryOrderComparator implements Comparator<PlayerListEntry> {
-		public int compare(PlayerListEntry playerListEntry, PlayerListEntry playerListEntry2) {
-			Team team = playerListEntry.getScoreboardTeam();
-			Team team2 = playerListEntry2.getScoreboardTeam();
-			return ComparisonChain.start()
-				.compareTrueFirst(playerListEntry.getGameMode() != GameMode.SPECTATOR, playerListEntry2.getGameMode() != GameMode.SPECTATOR)
-				.compare(team != null ? team.getName() : "", team2 != null ? team2.getName() : "")
-				.compare(playerListEntry.getProfile().getName(), playerListEntry2.getProfile().getName(), String::compareToIgnoreCase)
-				.result();
+	static class Heart {
+		private static final long COOLDOWN_TICKS = 20L;
+		private static final long SCORE_DECREASE_HIGHLIGHT_TICKS = 20L;
+		private static final long SCORE_INCREASE_HIGHLIGHT_TICKS = 10L;
+		private int score;
+		private int prevScore;
+		private long lastScoreChangeTick;
+		private long highlightEndTick;
+
+		public Heart(int score) {
+			this.prevScore = score;
+			this.score = score;
+		}
+
+		public void tick(int score, long currentTick) {
+			if (score != this.score) {
+				long l = score < this.score ? 20L : 10L;
+				this.highlightEndTick = currentTick + l;
+				this.score = score;
+				this.lastScoreChangeTick = currentTick;
+			}
+
+			if (currentTick - this.lastScoreChangeTick > 20L) {
+				this.prevScore = score;
+			}
+		}
+
+		public int getPrevScore() {
+			return this.prevScore;
+		}
+
+		public boolean useHighlighted(long currentTick) {
+			return this.highlightEndTick > currentTick && (this.highlightEndTick - currentTick) % 6L >= 3L;
 		}
 	}
 }

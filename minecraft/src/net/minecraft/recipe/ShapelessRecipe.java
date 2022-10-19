@@ -3,9 +3,11 @@ package net.minecraft.recipe;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import java.util.Objects;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.collection.DefaultedList;
@@ -14,12 +16,14 @@ import net.minecraft.world.World;
 public class ShapelessRecipe implements CraftingRecipe {
 	private final Identifier id;
 	final String group;
+	final CraftingRecipeCategory category;
 	final ItemStack output;
 	final DefaultedList<Ingredient> input;
 
-	public ShapelessRecipe(Identifier id, String group, ItemStack output, DefaultedList<Ingredient> input) {
+	public ShapelessRecipe(Identifier id, String group, CraftingRecipeCategory category, ItemStack output, DefaultedList<Ingredient> input) {
 		this.id = id;
 		this.group = group;
+		this.category = category;
 		this.output = output;
 		this.input = input;
 	}
@@ -37,6 +41,11 @@ public class ShapelessRecipe implements CraftingRecipe {
 	@Override
 	public String getGroup() {
 		return this.group;
+	}
+
+	@Override
+	public CraftingRecipeCategory getCategory() {
+		return this.category;
 	}
 
 	@Override
@@ -76,6 +85,9 @@ public class ShapelessRecipe implements CraftingRecipe {
 	public static class Serializer implements RecipeSerializer<ShapelessRecipe> {
 		public ShapelessRecipe read(Identifier identifier, JsonObject jsonObject) {
 			String string = JsonHelper.getString(jsonObject, "group", "");
+			CraftingRecipeCategory craftingRecipeCategory = (CraftingRecipeCategory)Objects.requireNonNullElse(
+				(CraftingRecipeCategory)CraftingRecipeCategory.CODEC.byId(JsonHelper.getString(jsonObject, "category", null)), CraftingRecipeCategory.MISC
+			);
 			DefaultedList<Ingredient> defaultedList = getIngredients(JsonHelper.getArray(jsonObject, "ingredients"));
 			if (defaultedList.isEmpty()) {
 				throw new JsonParseException("No ingredients for shapeless recipe");
@@ -83,7 +95,7 @@ public class ShapelessRecipe implements CraftingRecipe {
 				throw new JsonParseException("Too many ingredients for shapeless recipe");
 			} else {
 				ItemStack itemStack = ShapedRecipe.outputFromJson(JsonHelper.getObject(jsonObject, "result"));
-				return new ShapelessRecipe(identifier, string, itemStack, defaultedList);
+				return new ShapelessRecipe(identifier, string, craftingRecipeCategory, itemStack, defaultedList);
 			}
 		}
 
@@ -102,6 +114,7 @@ public class ShapelessRecipe implements CraftingRecipe {
 
 		public ShapelessRecipe read(Identifier identifier, PacketByteBuf packetByteBuf) {
 			String string = packetByteBuf.readString();
+			CraftingRecipeCategory craftingRecipeCategory = packetByteBuf.readEnumConstant(CraftingRecipeCategory.class);
 			int i = packetByteBuf.readVarInt();
 			DefaultedList<Ingredient> defaultedList = DefaultedList.ofSize(i, Ingredient.EMPTY);
 
@@ -110,11 +123,12 @@ public class ShapelessRecipe implements CraftingRecipe {
 			}
 
 			ItemStack itemStack = packetByteBuf.readItemStack();
-			return new ShapelessRecipe(identifier, string, itemStack, defaultedList);
+			return new ShapelessRecipe(identifier, string, craftingRecipeCategory, itemStack, defaultedList);
 		}
 
 		public void write(PacketByteBuf packetByteBuf, ShapelessRecipe shapelessRecipe) {
 			packetByteBuf.writeString(shapelessRecipe.group);
+			packetByteBuf.writeEnumConstant(shapelessRecipe.category);
 			packetByteBuf.writeVarInt(shapelessRecipe.input.size());
 
 			for (Ingredient ingredient : shapelessRecipe.input) {

@@ -68,6 +68,10 @@ public class ItemRenderer implements SynchronousResourceReloader {
 	public static final int field_32934 = 200;
 	public static final float COMPASS_WITH_GLINT_GUI_MODEL_MULTIPLIER = 0.5F;
 	public static final float COMPASS_WITH_GLINT_FIRST_PERSON_MODEL_MULTIPLIER = 0.75F;
+	private static final ModelIdentifier TRIDENT = ModelIdentifier.ofVanilla("trident", "inventory");
+	public static final ModelIdentifier TRIDENT_IN_HAND = ModelIdentifier.ofVanilla("trident_in_hand", "inventory");
+	private static final ModelIdentifier SPYGLASS = ModelIdentifier.ofVanilla("spyglass", "inventory");
+	public static final ModelIdentifier SPYGLASS_IN_HAND = ModelIdentifier.ofVanilla("spyglass_in_hand", "inventory");
 	public float zOffset;
 	private final ItemModels models;
 	private final TextureManager textureManager;
@@ -120,9 +124,9 @@ public class ItemRenderer implements SynchronousResourceReloader {
 			boolean bl = renderMode == ModelTransformation.Mode.GUI || renderMode == ModelTransformation.Mode.GROUND || renderMode == ModelTransformation.Mode.FIXED;
 			if (bl) {
 				if (stack.isOf(Items.TRIDENT)) {
-					model = this.models.getModelManager().getModel(new ModelIdentifier("minecraft:trident#inventory"));
+					model = this.models.getModelManager().getModel(TRIDENT);
 				} else if (stack.isOf(Items.SPYGLASS)) {
-					model = this.models.getModelManager().getModel(new ModelIdentifier("minecraft:spyglass#inventory"));
+					model = this.models.getModelManager().getModel(SPYGLASS);
 				}
 			}
 
@@ -224,9 +228,9 @@ public class ItemRenderer implements SynchronousResourceReloader {
 	public BakedModel getModel(ItemStack stack, @Nullable World world, @Nullable LivingEntity entity, int seed) {
 		BakedModel bakedModel;
 		if (stack.isOf(Items.TRIDENT)) {
-			bakedModel = this.models.getModelManager().getModel(new ModelIdentifier("minecraft:trident_in_hand#inventory"));
+			bakedModel = this.models.getModelManager().getModel(TRIDENT_IN_HAND);
 		} else if (stack.isOf(Items.SPYGLASS)) {
-			bakedModel = this.models.getModelManager().getModel(new ModelIdentifier("minecraft:spyglass_in_hand#inventory"));
+			bakedModel = this.models.getModelManager().getModel(SPYGLASS_IN_HAND);
 		} else {
 			bakedModel = this.models.getModel(stack);
 		}

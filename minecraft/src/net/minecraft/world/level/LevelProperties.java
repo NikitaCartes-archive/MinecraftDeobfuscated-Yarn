@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Lifecycle;
@@ -19,11 +20,11 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtString;
-import net.minecraft.resource.DataPackSettings;
+import net.minecraft.resource.DataConfiguration;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Util;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
@@ -33,7 +34,6 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.border.WorldBorder;
-import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.storage.SaveVersionInfo;
 import net.minecraft.world.timer.Timer;
@@ -46,6 +46,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	protected static final String WORLD_GEN_SETTINGS_KEY = "WorldGenSettings";
 	private LevelInfo levelInfo;
 	private final GeneratorOptions generatorOptions;
+	private final LevelProperties.SpecialProperty specialProperty;
 	private final Lifecycle lifecycle;
 	private int spawnX;
 	private int spawnY;
@@ -108,44 +109,42 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 		NbtCompound dragonFight,
 		LevelInfo levelInfo,
 		GeneratorOptions generatorOptions,
+		LevelProperties.SpecialProperty specialProperty,
 		Lifecycle lifecycle
 	) {
-		if (!generatorOptions.getDimensions().contains(DimensionOptions.OVERWORLD)) {
-			throw new IllegalStateException("Missing Overworld dimension data");
-		} else {
-			this.dataFixer = dataFixer;
-			this.modded = modded;
-			this.spawnX = spawnX;
-			this.spawnY = spawnY;
-			this.spawnZ = spawnZ;
-			this.spawnAngle = spawnAngle;
-			this.time = time;
-			this.timeOfDay = timeOfDay;
-			this.version = version;
-			this.clearWeatherTime = clearWeatherTime;
-			this.rainTime = rainTime;
-			this.raining = raining;
-			this.thunderTime = thunderTime;
-			this.thundering = thundering;
-			this.initialized = initialized;
-			this.difficultyLocked = difficultyLocked;
-			this.worldBorder = worldBorder;
-			this.wanderingTraderSpawnDelay = wanderingTraderSpawnDelay;
-			this.wanderingTraderSpawnChance = wanderingTraderSpawnChance;
-			this.wanderingTraderId = wanderingTraderId;
-			this.serverBrands = serverBrands;
-			this.playerData = playerData;
-			this.dataVersion = dataVersion;
-			this.scheduledEvents = scheduledEvents;
-			this.customBossEvents = customBossEvents;
-			this.dragonFight = dragonFight;
-			this.levelInfo = levelInfo;
-			this.generatorOptions = generatorOptions;
-			this.lifecycle = lifecycle;
-		}
+		this.dataFixer = dataFixer;
+		this.modded = modded;
+		this.spawnX = spawnX;
+		this.spawnY = spawnY;
+		this.spawnZ = spawnZ;
+		this.spawnAngle = spawnAngle;
+		this.time = time;
+		this.timeOfDay = timeOfDay;
+		this.version = version;
+		this.clearWeatherTime = clearWeatherTime;
+		this.rainTime = rainTime;
+		this.raining = raining;
+		this.thunderTime = thunderTime;
+		this.thundering = thundering;
+		this.initialized = initialized;
+		this.difficultyLocked = difficultyLocked;
+		this.worldBorder = worldBorder;
+		this.wanderingTraderSpawnDelay = wanderingTraderSpawnDelay;
+		this.wanderingTraderSpawnChance = wanderingTraderSpawnChance;
+		this.wanderingTraderId = wanderingTraderId;
+		this.serverBrands = serverBrands;
+		this.playerData = playerData;
+		this.dataVersion = dataVersion;
+		this.scheduledEvents = scheduledEvents;
+		this.customBossEvents = customBossEvents;
+		this.dragonFight = dragonFight;
+		this.levelInfo = levelInfo;
+		this.generatorOptions = generatorOptions;
+		this.specialProperty = specialProperty;
+		this.lifecycle = lifecycle;
 	}
 
-	public LevelProperties(LevelInfo levelInfo, GeneratorOptions generatorOptions, Lifecycle lifecycle) {
+	public LevelProperties(LevelInfo levelInfo, GeneratorOptions generatorOptions, LevelProperties.SpecialProperty specialProperty, Lifecycle lifecycle) {
 		this(
 			null,
 			SharedConstants.getGameVersion().getWorldVersion(),
@@ -175,6 +174,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 			new NbtCompound(),
 			levelInfo.withCopiedGameRules(),
 			generatorOptions,
+			specialProperty,
 			lifecycle
 		);
 	}
@@ -186,6 +186,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 		@Nullable NbtCompound playerData,
 		LevelInfo levelInfo,
 		SaveVersionInfo saveVersionInfo,
+		LevelProperties.SpecialProperty specialProperty,
 		GeneratorOptions generatorOptions,
 		Lifecycle lifecycle
 	) {
@@ -216,7 +217,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 			WorldBorder.Properties.fromDynamic(dynamic, WorldBorder.DEFAULT_BORDER),
 			dynamic.get("WanderingTraderSpawnDelay").asInt(0),
 			dynamic.get("WanderingTraderSpawnChance").asInt(0),
-			(UUID)dynamic.get("WanderingTraderId").read(DynamicSerializableUuid.CODEC).result().orElse(null),
+			(UUID)dynamic.get("WanderingTraderId").read(Uuids.CODEC).result().orElse(null),
 			(Set<String>)dynamic.get("ServerBrands")
 				.asStream()
 				.flatMap(dynamicx -> dynamicx.asString().result().stream())
@@ -226,6 +227,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 			nbtCompound,
 			levelInfo,
 			generatorOptions,
+			specialProperty,
 			lifecycle
 		);
 	}
@@ -255,8 +257,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 		levelNbt.put("Version", nbtCompound);
 		levelNbt.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
 		DynamicOps<NbtElement> dynamicOps = RegistryOps.of(NbtOps.INSTANCE, registryManager);
-		GeneratorOptions.CODEC
-			.encodeStart(dynamicOps, this.generatorOptions)
+		WorldGenSettings.encode(dynamicOps, this.generatorOptions, registryManager)
 			.resultOrPartial(Util.addPrefix("WorldGenSettings: ", LOGGER::error))
 			.ifPresent(nbtElement -> levelNbt.put("WorldGenSettings", nbtElement));
 		levelNbt.putInt("GameType", this.levelInfo.getGameMode().getId());
@@ -286,10 +287,10 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 			levelNbt.put("Player", playerNbt);
 		}
 
-		DataPackSettings.CODEC
-			.encodeStart(NbtOps.INSTANCE, this.levelInfo.getDataPackSettings())
-			.result()
-			.ifPresent(nbtElement -> levelNbt.put("DataPacks", nbtElement));
+		DataResult<NbtElement> dataResult = DataConfiguration.CODEC.encodeStart(NbtOps.INSTANCE, this.levelInfo.getDataConfiguration());
+		dataResult.get()
+			.ifLeft(dataConfiguration -> levelNbt.copyFrom((NbtCompound)dataConfiguration))
+			.ifRight(result -> LOGGER.warn("Failed to encode configuration {}", result.message()));
 		if (this.customBossEvents != null) {
 			levelNbt.put("CustomBossEvents", this.customBossEvents);
 		}
@@ -532,6 +533,16 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	}
 
 	@Override
+	public boolean isFlatWorld() {
+		return this.specialProperty == LevelProperties.SpecialProperty.FLAT;
+	}
+
+	@Override
+	public boolean isDebugWorld() {
+		return this.specialProperty == LevelProperties.SpecialProperty.DEBUG;
+	}
+
+	@Override
 	public Lifecycle getLifecycle() {
 		return this.lifecycle;
 	}
@@ -547,13 +558,13 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	}
 
 	@Override
-	public DataPackSettings getDataPackSettings() {
-		return this.levelInfo.getDataPackSettings();
+	public DataConfiguration getDataConfiguration() {
+		return this.levelInfo.getDataConfiguration();
 	}
 
 	@Override
-	public void updateLevelInfo(DataPackSettings dataPackSettings) {
-		this.levelInfo = this.levelInfo.withDataPackSettings(dataPackSettings);
+	public void updateLevelInfo(DataConfiguration dataConfiguration) {
+		this.levelInfo = this.levelInfo.withDataConfiguration(dataConfiguration);
 	}
 
 	@Nullable
@@ -622,5 +633,12 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	@Override
 	public LevelInfo getLevelInfo() {
 		return this.levelInfo.withCopiedGameRules();
+	}
+
+	@Deprecated
+	public static enum SpecialProperty {
+		NONE,
+		FLAT,
+		DEBUG;
 	}
 }

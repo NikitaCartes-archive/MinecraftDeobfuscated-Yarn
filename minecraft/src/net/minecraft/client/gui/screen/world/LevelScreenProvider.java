@@ -17,7 +17,6 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.FixedBiomeSource;
-import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.gen.WorldPreset;
 import net.minecraft.world.gen.WorldPresets;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -31,8 +30,8 @@ public interface LevelScreenProvider {
 	Map<Optional<RegistryKey<WorldPreset>>, LevelScreenProvider> WORLD_PRESET_TO_SCREEN_PROVIDER = Map.of(
 		Optional.of(WorldPresets.FLAT),
 		(LevelScreenProvider)(parent, generatorOptionsHolder) -> {
-			ChunkGenerator chunkGenerator = generatorOptionsHolder.generatorOptions().getChunkGenerator();
-			DynamicRegistryManager dynamicRegistryManager = generatorOptionsHolder.dynamicRegistryManager();
+			ChunkGenerator chunkGenerator = generatorOptionsHolder.selectedDimensions().getChunkGenerator();
+			DynamicRegistryManager dynamicRegistryManager = generatorOptionsHolder.getCombinedRegistryManager();
 			Registry<Biome> registry = dynamicRegistryManager.get(Registry.BIOME_KEY);
 			Registry<StructureSet> registry2 = dynamicRegistryManager.get(Registry.STRUCTURE_SET_KEY);
 			return new CustomizeFlatLevelScreen(
@@ -52,22 +51,22 @@ public interface LevelScreenProvider {
 	Screen createEditScreen(CreateWorldScreen parent, GeneratorOptionsHolder generatorOptionsHolder);
 
 	private static GeneratorOptionsHolder.RegistryAwareModifier createModifier(FlatChunkGeneratorConfig config) {
-		return (dynamicRegistryManager, generatorOptions) -> {
+		return (dynamicRegistryManager, dimensionsRegistryHolder) -> {
 			Registry<StructureSet> registry = dynamicRegistryManager.get(Registry.STRUCTURE_SET_KEY);
 			ChunkGenerator chunkGenerator = new FlatChunkGenerator(registry, config);
-			return GeneratorOptions.create(dynamicRegistryManager, generatorOptions, chunkGenerator);
+			return dimensionsRegistryHolder.with(dynamicRegistryManager, chunkGenerator);
 		};
 	}
 
 	private static GeneratorOptionsHolder.RegistryAwareModifier createModifier(RegistryEntry<Biome> biomeEntry) {
-		return (dynamicRegistryManager, generatorOptions) -> {
+		return (dynamicRegistryManager, dimensionsRegistryHolder) -> {
 			Registry<StructureSet> registry = dynamicRegistryManager.get(Registry.STRUCTURE_SET_KEY);
 			Registry<ChunkGeneratorSettings> registry2 = dynamicRegistryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY);
 			Registry<DoublePerlinNoiseSampler.NoiseParameters> registry3 = dynamicRegistryManager.get(Registry.NOISE_KEY);
 			RegistryEntry<ChunkGeneratorSettings> registryEntry2 = registry2.getOrCreateEntry(ChunkGeneratorSettings.OVERWORLD);
 			BiomeSource biomeSource = new FixedBiomeSource(biomeEntry);
 			ChunkGenerator chunkGenerator = new NoiseChunkGenerator(registry, registry3, biomeSource, registryEntry2);
-			return GeneratorOptions.create(dynamicRegistryManager, generatorOptions, chunkGenerator);
+			return dimensionsRegistryHolder.with(dynamicRegistryManager, chunkGenerator);
 		};
 	}
 }

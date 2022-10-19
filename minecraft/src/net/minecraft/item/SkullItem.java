@@ -7,13 +7,14 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.Direction;
 import org.apache.commons.lang3.StringUtils;
 
-public class SkullItem extends WallStandingBlockItem {
+public class SkullItem extends VerticallyAttachableBlockItem {
 	public static final String SKULL_OWNER_KEY = "SkullOwner";
 
 	public SkullItem(Block block, Block block2, Item.Settings settings) {
-		super(block, block2, settings);
+		super(block, block2, settings, Direction.DOWN);
 	}
 
 	@Override

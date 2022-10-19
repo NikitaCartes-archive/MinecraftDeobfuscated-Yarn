@@ -404,25 +404,26 @@ public class ZombieEntity extends HostileEntity {
 	@Override
 	public boolean onKilledOther(ServerWorld world, LivingEntity other) {
 		boolean bl = super.onKilledOther(world, other);
-		if ((world.getDifficulty() == Difficulty.NORMAL || world.getDifficulty() == Difficulty.HARD) && other instanceof VillagerEntity) {
+		if ((world.getDifficulty() == Difficulty.NORMAL || world.getDifficulty() == Difficulty.HARD) && other instanceof VillagerEntity villagerEntity) {
 			if (world.getDifficulty() != Difficulty.HARD && this.random.nextBoolean()) {
 				return bl;
 			}
 
-			VillagerEntity villagerEntity = (VillagerEntity)other;
 			ZombieVillagerEntity zombieVillagerEntity = villagerEntity.convertTo(EntityType.ZOMBIE_VILLAGER, false);
-			zombieVillagerEntity.initialize(
-				world, world.getLocalDifficulty(zombieVillagerEntity.getBlockPos()), SpawnReason.CONVERSION, new ZombieEntity.ZombieData(false, true), null
-			);
-			zombieVillagerEntity.setVillagerData(villagerEntity.getVillagerData());
-			zombieVillagerEntity.setGossipData(villagerEntity.getGossip().serialize(NbtOps.INSTANCE).getValue());
-			zombieVillagerEntity.setOfferData(villagerEntity.getOffers().toNbt());
-			zombieVillagerEntity.setXp(villagerEntity.getExperience());
-			if (!this.isSilent()) {
-				world.syncWorldEvent(null, WorldEvents.ZOMBIE_INFECTS_VILLAGER, this.getBlockPos(), 0);
-			}
+			if (zombieVillagerEntity != null) {
+				zombieVillagerEntity.initialize(
+					world, world.getLocalDifficulty(zombieVillagerEntity.getBlockPos()), SpawnReason.CONVERSION, new ZombieEntity.ZombieData(false, true), null
+				);
+				zombieVillagerEntity.setVillagerData(villagerEntity.getVillagerData());
+				zombieVillagerEntity.setGossipData(villagerEntity.getGossip().serialize(NbtOps.INSTANCE).getValue());
+				zombieVillagerEntity.setOfferData(villagerEntity.getOffers().toNbt());
+				zombieVillagerEntity.setXp(villagerEntity.getExperience());
+				if (!this.isSilent()) {
+					world.syncWorldEvent(null, WorldEvents.ZOMBIE_INFECTS_VILLAGER, this.getBlockPos(), 0);
+				}
 
-			bl = false;
+				bl = false;
+			}
 		}
 
 		return bl;
@@ -469,11 +470,13 @@ public class ZombieEntity extends HostileEntity {
 						}
 					} else if ((double)random.nextFloat() < 0.05) {
 						ChickenEntity chickenEntity2 = EntityType.CHICKEN.create(this.world);
-						chickenEntity2.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), 0.0F);
-						chickenEntity2.initialize(world, difficulty, SpawnReason.JOCKEY, null, null);
-						chickenEntity2.setHasJockey(true);
-						this.startRiding(chickenEntity2);
-						world.spawnEntity(chickenEntity2);
+						if (chickenEntity2 != null) {
+							chickenEntity2.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), 0.0F);
+							chickenEntity2.initialize(world, difficulty, SpawnReason.JOCKEY, null, null);
+							chickenEntity2.setHasJockey(true);
+							this.startRiding(chickenEntity2);
+							world.spawnEntity(chickenEntity2);
+						}
 					}
 				}
 			}

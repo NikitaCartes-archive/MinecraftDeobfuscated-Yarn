@@ -496,6 +496,10 @@ public class Raid {
 
 			for (int l = 0; l < j; l++) {
 				RaiderEntity raiderEntity = member.type.create(this.world);
+				if (raiderEntity == null) {
+					break;
+				}
+
 				if (!bl && raiderEntity.canLead()) {
 					raiderEntity.setPatrolLeader(true);
 					this.setWaveCaptain(i, raiderEntity);

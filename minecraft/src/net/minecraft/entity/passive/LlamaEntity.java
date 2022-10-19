@@ -240,7 +240,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	}
 
 	@Override
-	protected boolean isImmobile() {
+	public boolean isImmobile() {
 		return this.isDead() || this.isEatingGrass();
 	}
 
@@ -261,6 +261,11 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 
 		this.setVariant(i);
 		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+	}
+
+	@Override
+	protected boolean shouldAmbientStand() {
+		return false;
 	}
 
 	@Override
@@ -297,14 +302,6 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	@Override
 	protected void playAddChestSound() {
 		this.playSound(SoundEvents.ENTITY_LLAMA_CHEST, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
-	}
-
-	@Override
-	public void playAngrySound() {
-		SoundEvent soundEvent = this.getAngrySound();
-		if (soundEvent != null) {
-			this.playSound(soundEvent, this.getSoundVolume(), this.getSoundPitch());
-		}
 	}
 
 	@Override
@@ -376,20 +373,25 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 		return other != this && other instanceof LlamaEntity && this.canBreed() && ((LlamaEntity)other).canBreed();
 	}
 
+	@Nullable
 	public LlamaEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
 		LlamaEntity llamaEntity = this.createChild();
-		this.setChildAttributes(passiveEntity, llamaEntity);
-		LlamaEntity llamaEntity2 = (LlamaEntity)passiveEntity;
-		int i = this.random.nextInt(Math.max(this.getStrength(), llamaEntity2.getStrength())) + 1;
-		if (this.random.nextFloat() < 0.03F) {
-			i++;
+		if (llamaEntity != null) {
+			this.setChildAttributes(passiveEntity, llamaEntity);
+			LlamaEntity llamaEntity2 = (LlamaEntity)passiveEntity;
+			int i = this.random.nextInt(Math.max(this.getStrength(), llamaEntity2.getStrength())) + 1;
+			if (this.random.nextFloat() < 0.03F) {
+				i++;
+			}
+
+			llamaEntity.setStrength(i);
+			llamaEntity.setVariant(this.random.nextBoolean() ? this.getVariant() : llamaEntity2.getVariant());
 		}
 
-		llamaEntity.setStrength(i);
-		llamaEntity.setVariant(this.random.nextBoolean() ? this.getVariant() : llamaEntity2.getVariant());
 		return llamaEntity;
 	}
 
+	@Nullable
 	protected LlamaEntity createChild() {
 		return EntityType.LLAMA.create(this.world);
 	}

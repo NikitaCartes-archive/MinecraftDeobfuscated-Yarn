@@ -22,8 +22,8 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.server.dedicated.MinecraftDedicatedServer;
 import net.minecraft.util.StringHelper;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.WorldSavePath;
-import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import org.slf4j.Logger;
 
 public class ServerConfigHandler {
@@ -53,7 +53,7 @@ public class ServerConfigHandler {
 			server.getGameProfileRepo().findProfilesByNames(strings, Agent.MINECRAFT, callback);
 		} else {
 			for (String string : strings) {
-				UUID uUID = DynamicSerializableUuid.getUuidFromProfile(new GameProfile(null, string));
+				UUID uUID = Uuids.getUuidFromProfile(new GameProfile(null, string));
 				GameProfile gameProfile = new GameProfile(uUID, string);
 				callback.onProfileLookupSucceeded(gameProfile);
 			}
@@ -262,7 +262,7 @@ public class ServerConfigHandler {
 				lookupProfile(server, Lists.<String>newArrayList(name), profileLookupCallback);
 				return !list.isEmpty() && ((GameProfile)list.get(0)).getId() != null ? ((GameProfile)list.get(0)).getId() : null;
 			} else {
-				return DynamicSerializableUuid.getUuidFromProfile(new GameProfile(null, name));
+				return Uuids.getUuidFromProfile(new GameProfile(null, name));
 			}
 		} else {
 			try {

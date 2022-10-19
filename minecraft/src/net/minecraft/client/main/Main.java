@@ -34,10 +34,10 @@ import net.minecraft.obfuscate.DontObfuscate;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.WinNativeModuleUtil;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.profiling.jfr.FlightProfiler;
 import net.minecraft.util.profiling.jfr.InstanceType;
@@ -132,9 +132,7 @@ public class Main {
 		File file = getOption(optionSet, optionSpec4);
 		File file2 = optionSet.has(optionSpec5) ? getOption(optionSet, optionSpec5) : new File(file, "assets/");
 		File file3 = optionSet.has(optionSpec6) ? getOption(optionSet, optionSpec6) : new File(file, "resourcepacks/");
-		String string6 = optionSet.has(optionSpec12)
-			? optionSpec12.value(optionSet)
-			: DynamicSerializableUuid.getOfflinePlayerUuid(optionSpec11.value(optionSet)).toString();
+		String string6 = optionSet.has(optionSpec12) ? optionSpec12.value(optionSet) : Uuids.getOfflinePlayerUuid(optionSpec11.value(optionSet)).toString();
 		String string7 = optionSet.has(optionSpec23) ? optionSpec23.value(optionSet) : null;
 		String string8 = optionSet.valueOf(optionSpec13);
 		String string9 = optionSet.valueOf(optionSpec14);

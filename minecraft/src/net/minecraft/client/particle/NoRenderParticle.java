@@ -7,7 +7,7 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.world.ClientWorld;
 
 /**
- * A {@link Particle} with no rendered texture. Useful for emitter particles (such as {@link net.minecraft.client.particle.EmitterParticle})
+ * A {@link Particle} with no rendered texture. Useful for emitter particles (such as {@link EmitterParticle})
  * that spawn other particles while ticking, but do not render anything themselves.
  */
 @Environment(EnvType.CLIENT)

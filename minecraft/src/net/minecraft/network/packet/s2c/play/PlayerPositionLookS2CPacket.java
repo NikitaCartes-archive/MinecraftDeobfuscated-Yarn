@@ -95,6 +95,8 @@ public class PlayerPositionLookS2CPacket implements Packet<ClientPlayPacketListe
 		Y_ROT(3),
 		X_ROT(4);
 
+		public static final Set<PlayerPositionLookS2CPacket.Flag> VALUES = Set.of(values());
+		public static final Set<PlayerPositionLookS2CPacket.Flag> ROT = Set.of(X_ROT, Y_ROT);
 		private final int shift;
 
 		private Flag(int shift) {

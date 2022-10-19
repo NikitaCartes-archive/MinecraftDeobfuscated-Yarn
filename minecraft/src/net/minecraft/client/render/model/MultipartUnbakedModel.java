@@ -7,7 +7,6 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
-import com.mojang.datafixers.util.Pair;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;
@@ -75,22 +74,17 @@ public class MultipartUnbakedModel implements UnbakedModel {
 	}
 
 	@Override
-	public Collection<SpriteIdentifier> getTextureDependencies(
-		Function<Identifier, UnbakedModel> unbakedModelGetter, Set<Pair<String, String>> unresolvedTextureReferences
-	) {
-		return (Collection<SpriteIdentifier>)this.getComponents()
-			.stream()
-			.flatMap(component -> component.getModel().getTextureDependencies(unbakedModelGetter, unresolvedTextureReferences).stream())
-			.collect(Collectors.toSet());
+	public void setParents(Function<Identifier, UnbakedModel> modelLoader) {
+		this.getComponents().forEach(component -> component.getModel().setParents(modelLoader));
 	}
 
 	@Nullable
 	@Override
-	public BakedModel bake(ModelLoader loader, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
+	public BakedModel bake(Baker baker, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
 		MultipartBakedModel.Builder builder = new MultipartBakedModel.Builder();
 
 		for (MultipartModelComponent multipartModelComponent : this.getComponents()) {
-			BakedModel bakedModel = multipartModelComponent.getModel().bake(loader, textureGetter, rotationContainer, modelId);
+			BakedModel bakedModel = multipartModelComponent.getModel().bake(baker, textureGetter, rotationContainer, modelId);
 			if (bakedModel != null) {
 				builder.addComponent(multipartModelComponent.getPredicate(this.stateFactory), bakedModel);
 			}

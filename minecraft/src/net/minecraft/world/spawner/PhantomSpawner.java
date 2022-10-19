@@ -58,12 +58,13 @@ public class PhantomSpawner implements Spawner {
 
 											for (int m = 0; m < l; m++) {
 												PhantomEntity phantomEntity = EntityType.PHANTOM.create(world);
-												phantomEntity.refreshPositionAndAngles(blockPos2, 0.0F, 0.0F);
-												entityData = phantomEntity.initialize(world, localDifficulty, SpawnReason.NATURAL, entityData, null);
-												world.spawnEntityAndPassengers(phantomEntity);
+												if (phantomEntity != null) {
+													phantomEntity.refreshPositionAndAngles(blockPos2, 0.0F, 0.0F);
+													entityData = phantomEntity.initialize(world, localDifficulty, SpawnReason.NATURAL, entityData, null);
+													world.spawnEntityAndPassengers(phantomEntity);
+													i++;
+												}
 											}
-
-											i += l;
 										}
 									}
 								}

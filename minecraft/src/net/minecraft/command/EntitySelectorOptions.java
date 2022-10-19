@@ -500,15 +500,6 @@ public class EntitySelectorOptions {
 		void handle(EntitySelectorReader reader) throws CommandSyntaxException;
 	}
 
-	static class SelectorOption {
-		public final EntitySelectorOptions.SelectorHandler handler;
-		public final Predicate<EntitySelectorReader> condition;
-		public final Text description;
-
-		SelectorOption(EntitySelectorOptions.SelectorHandler handler, Predicate<EntitySelectorReader> condition, Text description) {
-			this.handler = handler;
-			this.condition = condition;
-			this.description = description;
-		}
+	static record SelectorOption(EntitySelectorOptions.SelectorHandler handler, Predicate<EntitySelectorReader> condition, Text description) {
 	}
 }

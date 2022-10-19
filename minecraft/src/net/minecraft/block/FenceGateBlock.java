@@ -3,6 +3,8 @@ package net.minecraft.block;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
@@ -17,7 +19,6 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
 
 public class FenceGateBlock extends HorizontalFacingBlock {
@@ -42,12 +43,16 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 	protected static final VoxelShape IN_WALL_X_AXIS_CULL_SHAPE = VoxelShapes.union(
 		Block.createCuboidShape(7.0, 2.0, 0.0, 9.0, 13.0, 2.0), Block.createCuboidShape(7.0, 2.0, 14.0, 9.0, 13.0, 16.0)
 	);
+	private final SoundEvent field_40310;
+	private final SoundEvent field_40309;
 
-	public FenceGateBlock(AbstractBlock.Settings settings) {
+	public FenceGateBlock(AbstractBlock.Settings settings, SoundEvent soundEvent, SoundEvent soundEvent2) {
 		super(settings);
 		this.setDefaultState(
 			this.stateManager.getDefaultState().with(OPEN, Boolean.valueOf(false)).with(POWERED, Boolean.valueOf(false)).with(IN_WALL, Boolean.valueOf(false))
 		);
+		this.field_40310 = soundEvent;
+		this.field_40309 = soundEvent2;
 	}
 
 	@Override
@@ -136,7 +141,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 		}
 
 		boolean bl = (Boolean)state.get(OPEN);
-		world.syncWorldEvent(player, bl ? WorldEvents.FENCE_GATE_OPENS : WorldEvents.FENCE_GATE_CLOSES, pos, 0);
+		world.playSound(player, pos, bl ? this.field_40309 : this.field_40310, SoundCategory.BLOCKS, 1.0F, world.getRandom().nextFloat() * 0.1F + 0.9F);
 		world.emitGameEvent(player, bl ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
 		return ActionResult.success(world.isClient);
 	}
@@ -148,7 +153,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 			if ((Boolean)state.get(POWERED) != bl) {
 				world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl)).with(OPEN, Boolean.valueOf(bl)), Block.NOTIFY_LISTENERS);
 				if ((Boolean)state.get(OPEN) != bl) {
-					world.syncWorldEvent(null, bl ? WorldEvents.FENCE_GATE_OPENS : WorldEvents.FENCE_GATE_CLOSES, pos, 0);
+					world.playSound(null, pos, bl ? this.field_40309 : this.field_40310, SoundCategory.BLOCKS, 1.0F, world.getRandom().nextFloat() * 0.1F + 0.9F);
 					world.emitGameEvent(null, bl ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
 				}
 			}

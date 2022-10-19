@@ -45,7 +45,7 @@ public class ArmorFeatureRenderer<T extends LivingEntity, M extends BipedEntityM
 		if (itemStack.getItem() instanceof ArmorItem) {
 			ArmorItem armorItem = (ArmorItem)itemStack.getItem();
 			if (armorItem.getSlotType() == armorSlot) {
-				this.getContextModel().setAttributes(model);
+				this.getContextModel().copyBipedStateTo(model);
 				this.setVisible(model, armorSlot);
 				boolean bl = this.usesInnerModel(armorSlot);
 				boolean bl2 = itemStack.hasGlint();

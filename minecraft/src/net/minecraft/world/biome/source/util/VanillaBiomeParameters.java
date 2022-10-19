@@ -11,6 +11,7 @@ import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
+import net.minecraft.world.gen.densityfunction.DensityFunction;
 import net.minecraft.world.gen.densityfunction.DensityFunctionTypes;
 import net.minecraft.world.gen.densityfunction.DensityFunctions;
 
@@ -1191,8 +1192,8 @@ public final class VanillaBiomeParameters {
 		);
 	}
 
-	public static boolean method_43718(double erosion, double depth) {
-		return erosion < -0.225F && depth > 0.9F;
+	public static boolean method_43718(DensityFunction densityFunction, DensityFunction densityFunction2, DensityFunction.NoisePos noisePos) {
+		return densityFunction.sample(noisePos) < -0.225F && densityFunction2.sample(noisePos) > 0.9F;
 	}
 
 	public static String getPeaksValleysDescription(double weirdness) {

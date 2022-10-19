@@ -103,7 +103,7 @@ public class VegetationConfiguredFeatures {
 			PlacedFeatures.createEntry(
 				Feature.SIMPLE_BLOCK,
 				new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.MELON)),
-				BlockPredicate.bothOf(BlockPredicate.replaceable(), BlockPredicate.matchingBlocks(Direction.DOWN.getVector(), Blocks.GRASS_BLOCK))
+				BlockPredicate.allOf(BlockPredicate.replaceable(), BlockPredicate.noFluid(), BlockPredicate.matchingBlocks(Direction.DOWN.getVector(), Blocks.GRASS_BLOCK))
 			)
 		)
 	);

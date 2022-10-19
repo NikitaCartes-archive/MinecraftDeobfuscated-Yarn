@@ -87,7 +87,7 @@ public class PropaguleBlock extends SaplingBlock implements Waterloggable {
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		if ((Boolean)state.get(WATERLOGGED)) {
-			world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+			world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
 		return direction == Direction.UP && !state.canPlaceAt(world, pos)

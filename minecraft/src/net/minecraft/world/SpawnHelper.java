@@ -234,16 +234,17 @@ public final class SpawnHelper {
 	@Nullable
 	private static MobEntity createMob(ServerWorld world, EntityType<?> type) {
 		try {
-			Entity entity = type.create(world);
-			if (!(entity instanceof MobEntity)) {
-				throw new IllegalStateException("Trying to spawn a non-mob: " + Registry.ENTITY_TYPE.getId(type));
-			} else {
-				return (MobEntity)entity;
+			Entity var3 = type.create(world);
+			if (var3 instanceof MobEntity) {
+				return (MobEntity)var3;
 			}
+
+			LOGGER.warn("Can't spawn entity of type: {}", Registry.ENTITY_TYPE.getId(type));
 		} catch (Exception var4) {
 			LOGGER.warn("Failed to create mob", (Throwable)var4);
-			return null;
 		}
+
+		return null;
 	}
 
 	private static boolean isValidSpawn(ServerWorld world, MobEntity entity, double squaredDistance) {
@@ -379,6 +380,10 @@ public final class SpawnHelper {
 									entity = spawnEntry.type.create(world.toServerWorld());
 								} catch (Exception var27) {
 									LOGGER.warn("Failed to create mob", (Throwable)var27);
+									continue;
+								}
+
+								if (entity == null) {
 									continue;
 								}
 

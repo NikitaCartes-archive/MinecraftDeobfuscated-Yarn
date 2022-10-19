@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.FileNameUtil;
+import net.minecraft.util.PathUtil;
 import net.minecraft.util.StringHelper;
 import org.apache.commons.lang3.StringUtils;
 
@@ -70,7 +70,7 @@ public abstract class GLImportProcessor {
 
 						context.line++;
 						int k = context.line;
-						List<String> list2 = this.parseImports(string5, context, bl ? FileNameUtil.getPosixFullPath(string4) : "");
+						List<String> list2 = this.parseImports(string5, context, bl ? PathUtil.getPosixFullPath(string4) : "");
 						list2.set(0, String.format(Locale.ROOT, "#line %d %d\n%s", 0, k, this.extractVersion((String)list2.get(0), context)));
 						if (!StringUtils.isBlank(string3)) {
 							list.add(string3);

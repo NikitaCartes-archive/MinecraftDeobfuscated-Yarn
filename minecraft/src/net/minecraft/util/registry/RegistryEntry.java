@@ -190,15 +190,15 @@ public interface RegistryEntry<T> {
 	 * <li><strong>Intrusive</strong> registry entries are registry entries tied to a specific
 	 * registerable object at instantiation time. When instantiating those, it promises
 	 * that the object is later registered - which, if broken, will result in a crash.
-	 * This is used for {@link #BLOCK}, {@link #ITEM}, {@link #FLUID}, {@link #ENTITY_TYPE},
-	 * and {@link #GAME_EVENT} registries. This type exists for historical reasons and is
-	 * deprecated.</li>
+	 * This is used for {@link Registry#BLOCK}, {@link Registry#ITEM}, {@link Registry#FLUID},
+	 * {@link Registry#ENTITY_TYPE}, and {@link Registry#GAME_EVENT} registries. This type
+	 * exists for historical reasons and is deprecated.</li>
 	 * </ul>
 	 * 
 	 * <p>Therefore, it is very important to construct any intrusive-entry type object
 	 * and register at the same time. For example, a mod that conditionally registers an
-	 * {@link Item} has to create an instance only if the condition is met. (See {@link Registry}
-	 * for a code example.)
+	 * {@link net.minecraft.item.Item} has to create an instance only if the condition is met.
+	 * (See {@link Registry} for a code example.)
 	 * 
 	 * <p>When a reference registry entry is first instantiated, it only has either the key
 	 * or the value (depending on the type). They are later filled when registering the
@@ -335,6 +335,22 @@ public interface RegistryEntry<T> {
 				throw new IllegalStateException("Can't change holder " + key + " value: existing=" + this.value + ", new=" + value);
 			} else {
 				this.registryKey = key;
+				this.value = value;
+			}
+		}
+
+		void setRegistryKey(RegistryKey<T> registryKey) {
+			if (this.registryKey != null && registryKey != this.registryKey) {
+				throw new IllegalStateException("Can't change holder key: existing=" + this.registryKey + ", new=" + registryKey);
+			} else {
+				this.registryKey = registryKey;
+			}
+		}
+
+		void setValue(T value) {
+			if (this.referenceType == RegistryEntry.Reference.Type.INTRUSIVE && this.value != value) {
+				throw new IllegalStateException("Can't change holder " + this.registryKey + " value: existing=" + this.value + ", new=" + value);
+			} else {
 				this.value = value;
 			}
 		}

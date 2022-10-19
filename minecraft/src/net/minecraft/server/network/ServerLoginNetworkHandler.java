@@ -20,6 +20,7 @@ import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.encryption.PlayerPublicKey;
+import net.minecraft.network.encryption.PublicPlayerSession;
 import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.network.listener.ServerLoginPacketListener;
 import net.minecraft.network.listener.TickablePacketListener;
@@ -33,7 +34,7 @@ import net.minecraft.network.packet.s2c.login.LoginSuccessS2CPacket;
 import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
-import net.minecraft.util.dynamic.DynamicSerializableUuid;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.random.Random;
 import org.apache.commons.lang3.Validate;
@@ -54,7 +55,7 @@ import org.slf4j.Logger;
  * packet and then transitions the connection's packet listener to a {@link
  * ServerPlayNetworkHandler}.
  */
-public class ServerLoginNetworkHandler implements TickablePacketListener, ServerLoginPacketListener {
+public class ServerLoginNetworkHandler implements ServerLoginPacketListener, TickablePacketListener {
 	private static final AtomicInteger NEXT_AUTHENTICATOR_THREAD_ID = new AtomicInteger(0);
 	static final Logger LOGGER = LogUtils.getLogger();
 	private static final int TIMEOUT_TICKS = 600;
@@ -76,8 +77,7 @@ public class ServerLoginNetworkHandler implements TickablePacketListener, Server
 	 */
 	@Nullable
 	private ServerPlayerEntity delayedPlayer;
-	@Nullable
-	private PlayerPublicKey.PublicKeyData publicKeyData;
+	private PublicPlayerSession.Serialized session = PublicPlayerSession.Serialized.MISSING;
 
 	public ServerLoginNetworkHandler(MinecraftServer server, ClientConnection connection) {
 		this.server = server;
@@ -127,13 +127,13 @@ public class ServerLoginNetworkHandler implements TickablePacketListener, Server
 	 * @apiNote This method should only be called on the server thread.
 	 */
 	public void acceptPlayer() {
-		PlayerPublicKey playerPublicKey = null;
+		PublicPlayerSession publicPlayerSession = PublicPlayerSession.MISSING;
 		if (!this.profile.isComplete()) {
 			this.profile = this.toOfflineProfile(this.profile);
 		} else {
 			try {
 				SignatureVerifier signatureVerifier = this.server.getServicesSignatureVerifier();
-				playerPublicKey = getVerifiedPublicKey(this.publicKeyData, this.profile.getId(), signatureVerifier, this.server.shouldEnforceSecureProfile());
+				publicPlayerSession = getVerifiedPublicKey(this.session, this.profile, signatureVerifier, this.server.shouldEnforceSecureProfile());
 			} catch (PlayerPublicKey.PublicKeyException var7) {
 				LOGGER.error("Failed to validate profile key: {}", var7.getMessage());
 				if (!this.connection.isLocal()) {
@@ -160,7 +160,7 @@ public class ServerLoginNetworkHandler implements TickablePacketListener, Server
 			ServerPlayerEntity serverPlayerEntity = this.server.getPlayerManager().getPlayer(this.profile.getId());
 
 			try {
-				ServerPlayerEntity serverPlayerEntity2 = this.server.getPlayerManager().createPlayer(this.profile, playerPublicKey);
+				ServerPlayerEntity serverPlayerEntity2 = this.server.getPlayerManager().createPlayer(this.profile, publicPlayerSession);
 				if (serverPlayerEntity != null) {
 					this.state = ServerLoginNetworkHandler.State.DELAY_ACCEPT;
 					this.delayedPlayer = serverPlayerEntity2;
@@ -189,18 +189,14 @@ public class ServerLoginNetworkHandler implements TickablePacketListener, Server
 		return this.profile != null ? this.profile + " (" + this.connection.getAddress() + ")" : String.valueOf(this.connection.getAddress());
 	}
 
-	@Nullable
-	private static PlayerPublicKey getVerifiedPublicKey(
-		@Nullable PlayerPublicKey.PublicKeyData publicKeyData, UUID playerUuid, SignatureVerifier servicesSignatureVerifier, boolean shouldThrowOnMissingKey
+	private static PublicPlayerSession getVerifiedPublicKey(
+		PublicPlayerSession.Serialized session, GameProfile gameProfile, SignatureVerifier servicesSignatureVerifier, boolean shouldThrowOnMissingKey
 	) throws PlayerPublicKey.PublicKeyException {
-		if (publicKeyData == null) {
-			if (shouldThrowOnMissingKey) {
-				throw new PlayerPublicKey.PublicKeyException(PlayerPublicKey.MISSING_PUBLIC_KEY_TEXT);
-			} else {
-				return null;
-			}
+		PublicPlayerSession publicPlayerSession = session.toSession(gameProfile, servicesSignatureVerifier, Duration.ZERO);
+		if (!publicPlayerSession.hasPublicKey() && shouldThrowOnMissingKey) {
+			throw new PlayerPublicKey.PublicKeyException(PlayerPublicKey.MISSING_PUBLIC_KEY_TEXT);
 		} else {
-			return PlayerPublicKey.verifyAndDecode(servicesSignatureVerifier, playerUuid, publicKeyData, Duration.ZERO);
+			return publicPlayerSession;
 		}
 	}
 
@@ -208,7 +204,7 @@ public class ServerLoginNetworkHandler implements TickablePacketListener, Server
 	public void onHello(LoginHelloC2SPacket packet) {
 		Validate.validState(this.state == ServerLoginNetworkHandler.State.HELLO, "Unexpected hello packet");
 		Validate.validState(isValidName(packet.name()), "Invalid characters in username");
-		this.publicKeyData = (PlayerPublicKey.PublicKeyData)packet.publicKey().orElse(null);
+		this.session = packet.session();
 		GameProfile gameProfile = this.server.getHostProfile();
 		if (gameProfile != null && packet.name().equalsIgnoreCase(gameProfile.getName())) {
 			this.profile = gameProfile;
@@ -235,9 +231,9 @@ public class ServerLoginNetworkHandler implements TickablePacketListener, Server
 		final String string;
 		try {
 			PrivateKey privateKey = this.server.getKeyPair().getPrivate();
-			if (this.publicKeyData != null) {
-				PlayerPublicKey playerPublicKey = new PlayerPublicKey(this.publicKeyData);
-				if (!packet.verifySignedNonce(this.nonce, playerPublicKey)) {
+			if (this.session.publicKeyData() != null) {
+				PlayerPublicKey playerPublicKey = new PlayerPublicKey(this.session.publicKeyData());
+				if (!packet.verifySignedNonce(this.nonce, playerPublicKey.createSignatureInstance())) {
 					throw new IllegalStateException("Protocol error");
 				}
 			} else if (!packet.verifyEncryptedNonce(this.nonce, privateKey)) {
@@ -304,7 +300,7 @@ public class ServerLoginNetworkHandler implements TickablePacketListener, Server
 	}
 
 	protected GameProfile toOfflineProfile(GameProfile profile) {
-		UUID uUID = DynamicSerializableUuid.getOfflinePlayerUuid(profile.getName());
+		UUID uUID = Uuids.getOfflinePlayerUuid(profile.getName());
 		return new GameProfile(uUID, profile.getName());
 	}
 

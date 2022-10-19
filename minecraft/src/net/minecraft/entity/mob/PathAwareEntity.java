@@ -59,6 +59,7 @@ public abstract class PathAwareEntity extends MobEntity {
 				double e = (entity.getY() - this.getY()) / (double)f;
 				double g = (entity.getZ() - this.getZ()) / (double)f;
 				this.setVelocity(this.getVelocity().add(Math.copySign(d * d * 0.4, d), Math.copySign(e * e * 0.4, e), Math.copySign(g * g * 0.4, g)));
+				this.limitFallDistance();
 			} else if (this.shouldFollowLeash()) {
 				this.goalSelector.enableControl(Goal.Control.MOVE);
 				float h = 2.0F;

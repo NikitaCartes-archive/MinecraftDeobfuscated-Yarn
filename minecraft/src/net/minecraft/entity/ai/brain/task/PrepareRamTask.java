@@ -108,7 +108,7 @@ public class PrepareRamTask<E extends PathAwareEntity> extends Task<E> {
 	}
 
 	protected void keepRunning(ServerWorld serverWorld, E pathAwareEntity, long l) {
-		if (this.ram.isPresent()) {
+		if (!this.ram.isEmpty()) {
 			pathAwareEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(((PrepareRamTask.Ram)this.ram.get()).getStart(), this.speed, 0));
 			pathAwareEntity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(((PrepareRamTask.Ram)this.ram.get()).getEntity(), true));
 			boolean bl = !((PrepareRamTask.Ram)this.ram.get()).getEntity().getBlockPos().equals(((PrepareRamTask.Ram)this.ram.get()).getEnd());
@@ -120,7 +120,7 @@ public class PrepareRamTask<E extends PathAwareEntity> extends Task<E> {
 				BlockPos blockPos = pathAwareEntity.getBlockPos();
 				if (blockPos.equals(((PrepareRamTask.Ram)this.ram.get()).getStart())) {
 					serverWorld.sendEntityStatus(pathAwareEntity, EntityStatuses.PREPARE_RAM);
-					if (!this.prepareStartTime.isPresent()) {
+					if (this.prepareStartTime.isEmpty()) {
 						this.prepareStartTime = Optional.of(l);
 					}
 

@@ -3,6 +3,7 @@ package net.minecraft.world;
 import javax.annotation.Nullable;
 import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.Contract;
 
 public enum GameMode {
 	SURVIVAL(0, "survival"),
@@ -90,7 +91,9 @@ public enum GameMode {
 		return byName(name, SURVIVAL);
 	}
 
-	public static GameMode byName(String name, GameMode defaultMode) {
+	@Nullable
+	@Contract("_,!null->!null;_,null->_")
+	public static GameMode byName(String name, @Nullable GameMode defaultMode) {
 		for (GameMode gameMode : values()) {
 			if (gameMode.name.equals(name)) {
 				return gameMode;

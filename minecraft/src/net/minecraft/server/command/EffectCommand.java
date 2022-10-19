@@ -8,13 +8,16 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.Collection;
 import javax.annotation.Nullable;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.command.argument.StatusEffectArgumentType;
+import net.minecraft.command.argument.RegistryEntryArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.text.Text;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 
 public class EffectCommand {
 	private static final SimpleCommandExceptionType GIVE_FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.effect.give.failed"));
@@ -25,7 +28,7 @@ public class EffectCommand {
 		Text.translatable("commands.effect.clear.specific.failed")
 	);
 
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess) {
 		dispatcher.register(
 			CommandManager.literal("effect")
 				.requires(source -> source.hasPermissionLevel(2))
@@ -36,10 +39,10 @@ public class EffectCommand {
 							CommandManager.argument("targets", EntityArgumentType.entities())
 								.executes(context -> executeClear(context.getSource(), EntityArgumentType.getEntities(context, "targets")))
 								.then(
-									CommandManager.argument("effect", StatusEffectArgumentType.statusEffect())
+									CommandManager.argument("effect", RegistryEntryArgumentType.registryEntry(registryAccess, Registry.MOB_EFFECT_KEY))
 										.executes(
 											context -> executeClear(
-													context.getSource(), EntityArgumentType.getEntities(context, "targets"), StatusEffectArgumentType.getStatusEffect(context, "effect")
+													context.getSource(), EntityArgumentType.getEntities(context, "targets"), RegistryEntryArgumentType.getStatusEffect(context, "effect")
 												)
 										)
 								)
@@ -50,12 +53,12 @@ public class EffectCommand {
 						.then(
 							CommandManager.argument("targets", EntityArgumentType.entities())
 								.then(
-									CommandManager.argument("effect", StatusEffectArgumentType.statusEffect())
+									CommandManager.argument("effect", RegistryEntryArgumentType.registryEntry(registryAccess, Registry.MOB_EFFECT_KEY))
 										.executes(
 											context -> executeGive(
 													context.getSource(),
 													EntityArgumentType.getEntities(context, "targets"),
-													StatusEffectArgumentType.getStatusEffect(context, "effect"),
+													RegistryEntryArgumentType.getStatusEffect(context, "effect"),
 													null,
 													0,
 													true
@@ -67,7 +70,7 @@ public class EffectCommand {
 													context -> executeGive(
 															context.getSource(),
 															EntityArgumentType.getEntities(context, "targets"),
-															StatusEffectArgumentType.getStatusEffect(context, "effect"),
+															RegistryEntryArgumentType.getStatusEffect(context, "effect"),
 															IntegerArgumentType.getInteger(context, "seconds"),
 															0,
 															true
@@ -79,7 +82,7 @@ public class EffectCommand {
 															context -> executeGive(
 																	context.getSource(),
 																	EntityArgumentType.getEntities(context, "targets"),
-																	StatusEffectArgumentType.getStatusEffect(context, "effect"),
+																	RegistryEntryArgumentType.getStatusEffect(context, "effect"),
 																	IntegerArgumentType.getInteger(context, "seconds"),
 																	IntegerArgumentType.getInteger(context, "amplifier"),
 																	true
@@ -91,7 +94,7 @@ public class EffectCommand {
 																	context -> executeGive(
 																			context.getSource(),
 																			EntityArgumentType.getEntities(context, "targets"),
-																			StatusEffectArgumentType.getStatusEffect(context, "effect"),
+																			RegistryEntryArgumentType.getStatusEffect(context, "effect"),
 																			IntegerArgumentType.getInteger(context, "seconds"),
 																			IntegerArgumentType.getInteger(context, "amplifier"),
 																			!BoolArgumentType.getBool(context, "hideParticles")
@@ -107,17 +110,23 @@ public class EffectCommand {
 	}
 
 	private static int executeGive(
-		ServerCommandSource source, Collection<? extends Entity> targets, StatusEffect effect, @Nullable Integer seconds, int amplifier, boolean showParticles
+		ServerCommandSource source,
+		Collection<? extends Entity> targets,
+		RegistryEntry<StatusEffect> statusEffect,
+		@Nullable Integer seconds,
+		int amplifier,
+		boolean showParticles
 	) throws CommandSyntaxException {
+		StatusEffect statusEffect2 = statusEffect.value();
 		int i = 0;
 		int j;
 		if (seconds != null) {
-			if (effect.isInstant()) {
+			if (statusEffect2.isInstant()) {
 				j = seconds;
 			} else {
 				j = seconds * 20;
 			}
-		} else if (effect.isInstant()) {
+		} else if (statusEffect2.isInstant()) {
 			j = 1;
 		} else {
 			j = 600;
@@ -125,7 +134,7 @@ public class EffectCommand {
 
 		for (Entity entity : targets) {
 			if (entity instanceof LivingEntity) {
-				StatusEffectInstance statusEffectInstance = new StatusEffectInstance(effect, j, amplifier, false, showParticles);
+				StatusEffectInstance statusEffectInstance = new StatusEffectInstance(statusEffect2, j, amplifier, false, showParticles);
 				if (((LivingEntity)entity).addStatusEffect(statusEffectInstance, source.getEntity())) {
 					i++;
 				}
@@ -137,10 +146,10 @@ public class EffectCommand {
 		} else {
 			if (targets.size() == 1) {
 				source.sendFeedback(
-					Text.translatable("commands.effect.give.success.single", effect.getName(), ((Entity)targets.iterator().next()).getDisplayName(), j / 20), true
+					Text.translatable("commands.effect.give.success.single", statusEffect2.getName(), ((Entity)targets.iterator().next()).getDisplayName(), j / 20), true
 				);
 			} else {
-				source.sendFeedback(Text.translatable("commands.effect.give.success.multiple", effect.getName(), targets.size(), j / 20), true);
+				source.sendFeedback(Text.translatable("commands.effect.give.success.multiple", statusEffect2.getName(), targets.size(), j / 20), true);
 			}
 
 			return i;
@@ -169,11 +178,12 @@ public class EffectCommand {
 		}
 	}
 
-	private static int executeClear(ServerCommandSource source, Collection<? extends Entity> targets, StatusEffect effect) throws CommandSyntaxException {
+	private static int executeClear(ServerCommandSource source, Collection<? extends Entity> targets, RegistryEntry<StatusEffect> statusEffect) throws CommandSyntaxException {
+		StatusEffect statusEffect2 = statusEffect.value();
 		int i = 0;
 
 		for (Entity entity : targets) {
-			if (entity instanceof LivingEntity && ((LivingEntity)entity).removeStatusEffect(effect)) {
+			if (entity instanceof LivingEntity && ((LivingEntity)entity).removeStatusEffect(statusEffect2)) {
 				i++;
 			}
 		}
@@ -183,10 +193,10 @@ public class EffectCommand {
 		} else {
 			if (targets.size() == 1) {
 				source.sendFeedback(
-					Text.translatable("commands.effect.clear.specific.success.single", effect.getName(), ((Entity)targets.iterator().next()).getDisplayName()), true
+					Text.translatable("commands.effect.clear.specific.success.single", statusEffect2.getName(), ((Entity)targets.iterator().next()).getDisplayName()), true
 				);
 			} else {
-				source.sendFeedback(Text.translatable("commands.effect.clear.specific.success.multiple", effect.getName(), targets.size()), true);
+				source.sendFeedback(Text.translatable("commands.effect.clear.specific.success.multiple", statusEffect2.getName(), targets.size()), true);
 			}
 
 			return i;

@@ -8,8 +8,9 @@ import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.Dynamic3CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import java.util.UUID;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.command.argument.RegistryKeyArgumentType;
+import net.minecraft.command.argument.RegistryEntryArgumentType;
 import net.minecraft.command.argument.UuidArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -19,6 +20,7 @@ import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.text.Text;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 
 public class AttributeCommand {
 	private static final DynamicCommandExceptionType ENTITY_FAILED_EXCEPTION = new DynamicCommandExceptionType(
@@ -34,19 +36,19 @@ public class AttributeCommand {
 		(entityName, attributeName, uuid) -> Text.translatable("commands.attribute.failed.modifier_already_present", uuid, attributeName, entityName)
 	);
 
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess) {
 		dispatcher.register(
 			CommandManager.literal("attribute")
 				.requires(source -> source.hasPermissionLevel(2))
 				.then(
 					CommandManager.argument("target", EntityArgumentType.entity())
 						.then(
-							CommandManager.argument("attribute", RegistryKeyArgumentType.registryKey(Registry.ATTRIBUTE_KEY))
+							CommandManager.argument("attribute", RegistryEntryArgumentType.registryEntry(registryAccess, Registry.ATTRIBUTE_KEY))
 								.then(
 									CommandManager.literal("get")
 										.executes(
 											context -> executeValueGet(
-													context.getSource(), EntityArgumentType.getEntity(context, "target"), RegistryKeyArgumentType.getAttribute(context, "attribute"), 1.0
+													context.getSource(), EntityArgumentType.getEntity(context, "target"), RegistryEntryArgumentType.getEntityAttribute(context, "attribute"), 1.0
 												)
 										)
 										.then(
@@ -55,7 +57,7 @@ public class AttributeCommand {
 													context -> executeValueGet(
 															context.getSource(),
 															EntityArgumentType.getEntity(context, "target"),
-															RegistryKeyArgumentType.getAttribute(context, "attribute"),
+															RegistryEntryArgumentType.getEntityAttribute(context, "attribute"),
 															DoubleArgumentType.getDouble(context, "scale")
 														)
 												)
@@ -71,7 +73,7 @@ public class AttributeCommand {
 															context -> executeBaseValueSet(
 																	context.getSource(),
 																	EntityArgumentType.getEntity(context, "target"),
-																	RegistryKeyArgumentType.getAttribute(context, "attribute"),
+																	RegistryEntryArgumentType.getEntityAttribute(context, "attribute"),
 																	DoubleArgumentType.getDouble(context, "value")
 																)
 														)
@@ -81,7 +83,7 @@ public class AttributeCommand {
 											CommandManager.literal("get")
 												.executes(
 													context -> executeBaseValueGet(
-															context.getSource(), EntityArgumentType.getEntity(context, "target"), RegistryKeyArgumentType.getAttribute(context, "attribute"), 1.0
+															context.getSource(), EntityArgumentType.getEntity(context, "target"), RegistryEntryArgumentType.getEntityAttribute(context, "attribute"), 1.0
 														)
 												)
 												.then(
@@ -90,7 +92,7 @@ public class AttributeCommand {
 															context -> executeBaseValueGet(
 																	context.getSource(),
 																	EntityArgumentType.getEntity(context, "target"),
-																	RegistryKeyArgumentType.getAttribute(context, "attribute"),
+																	RegistryEntryArgumentType.getEntityAttribute(context, "attribute"),
 																	DoubleArgumentType.getDouble(context, "scale")
 																)
 														)
@@ -113,7 +115,7 @@ public class AttributeCommand {
 																					context -> executeModifierAdd(
 																							context.getSource(),
 																							EntityArgumentType.getEntity(context, "target"),
-																							RegistryKeyArgumentType.getAttribute(context, "attribute"),
+																							RegistryEntryArgumentType.getEntityAttribute(context, "attribute"),
 																							UuidArgumentType.getUuid(context, "uuid"),
 																							StringArgumentType.getString(context, "name"),
 																							DoubleArgumentType.getDouble(context, "value"),
@@ -127,7 +129,7 @@ public class AttributeCommand {
 																					context -> executeModifierAdd(
 																							context.getSource(),
 																							EntityArgumentType.getEntity(context, "target"),
-																							RegistryKeyArgumentType.getAttribute(context, "attribute"),
+																							RegistryEntryArgumentType.getEntityAttribute(context, "attribute"),
 																							UuidArgumentType.getUuid(context, "uuid"),
 																							StringArgumentType.getString(context, "name"),
 																							DoubleArgumentType.getDouble(context, "value"),
@@ -141,7 +143,7 @@ public class AttributeCommand {
 																					context -> executeModifierAdd(
 																							context.getSource(),
 																							EntityArgumentType.getEntity(context, "target"),
-																							RegistryKeyArgumentType.getAttribute(context, "attribute"),
+																							RegistryEntryArgumentType.getEntityAttribute(context, "attribute"),
 																							UuidArgumentType.getUuid(context, "uuid"),
 																							StringArgumentType.getString(context, "name"),
 																							DoubleArgumentType.getDouble(context, "value"),
@@ -161,7 +163,7 @@ public class AttributeCommand {
 															context -> executeModifierRemove(
 																	context.getSource(),
 																	EntityArgumentType.getEntity(context, "target"),
-																	RegistryKeyArgumentType.getAttribute(context, "attribute"),
+																	RegistryEntryArgumentType.getEntityAttribute(context, "attribute"),
 																	UuidArgumentType.getUuid(context, "uuid")
 																)
 														)
@@ -177,7 +179,7 @@ public class AttributeCommand {
 																	context -> executeModifierValueGet(
 																			context.getSource(),
 																			EntityArgumentType.getEntity(context, "target"),
-																			RegistryKeyArgumentType.getAttribute(context, "attribute"),
+																			RegistryEntryArgumentType.getEntityAttribute(context, "attribute"),
 																			UuidArgumentType.getUuid(context, "uuid"),
 																			1.0
 																		)
@@ -188,7 +190,7 @@ public class AttributeCommand {
 																			context -> executeModifierValueGet(
 																					context.getSource(),
 																					EntityArgumentType.getEntity(context, "target"),
-																					RegistryKeyArgumentType.getAttribute(context, "attribute"),
+																					RegistryEntryArgumentType.getEntityAttribute(context, "attribute"),
 																					UuidArgumentType.getUuid(context, "uuid"),
 																					DoubleArgumentType.getDouble(context, "scale")
 																				)
@@ -203,10 +205,10 @@ public class AttributeCommand {
 		);
 	}
 
-	private static EntityAttributeInstance getAttributeInstance(Entity entity, EntityAttribute attribute) throws CommandSyntaxException {
-		EntityAttributeInstance entityAttributeInstance = getLivingEntity(entity).getAttributes().getCustomInstance(attribute);
+	private static EntityAttributeInstance getAttributeInstance(Entity entity, RegistryEntry<EntityAttribute> attribute) throws CommandSyntaxException {
+		EntityAttributeInstance entityAttributeInstance = getLivingEntity(entity).getAttributes().method_45329(attribute);
 		if (entityAttributeInstance == null) {
-			throw NO_ATTRIBUTE_EXCEPTION.create(entity.getName(), Text.translatable(attribute.getTranslationKey()));
+			throw NO_ATTRIBUTE_EXCEPTION.create(entity.getName(), getName(attribute));
 		} else {
 			return entityAttributeInstance;
 		}
@@ -220,78 +222,78 @@ public class AttributeCommand {
 		}
 	}
 
-	private static LivingEntity getLivingEntityWithAttribute(Entity entity, EntityAttribute attribute) throws CommandSyntaxException {
+	private static LivingEntity getLivingEntityWithAttribute(Entity entity, RegistryEntry<EntityAttribute> attribute) throws CommandSyntaxException {
 		LivingEntity livingEntity = getLivingEntity(entity);
-		if (!livingEntity.getAttributes().hasAttribute(attribute)) {
-			throw NO_ATTRIBUTE_EXCEPTION.create(entity.getName(), Text.translatable(attribute.getTranslationKey()));
+		if (!livingEntity.getAttributes().method_45331(attribute)) {
+			throw NO_ATTRIBUTE_EXCEPTION.create(entity.getName(), getName(attribute));
 		} else {
 			return livingEntity;
 		}
 	}
 
-	private static int executeValueGet(ServerCommandSource source, Entity target, EntityAttribute attribute, double multiplier) throws CommandSyntaxException {
+	private static int executeValueGet(ServerCommandSource source, Entity target, RegistryEntry<EntityAttribute> attribute, double multiplier) throws CommandSyntaxException {
 		LivingEntity livingEntity = getLivingEntityWithAttribute(target, attribute);
 		double d = livingEntity.getAttributeValue(attribute);
-		source.sendFeedback(Text.translatable("commands.attribute.value.get.success", Text.translatable(attribute.getTranslationKey()), target.getName(), d), false);
+		source.sendFeedback(Text.translatable("commands.attribute.value.get.success", getName(attribute), target.getName(), d), false);
 		return (int)(d * multiplier);
 	}
 
-	private static int executeBaseValueGet(ServerCommandSource source, Entity target, EntityAttribute attribute, double multiplier) throws CommandSyntaxException {
+	private static int executeBaseValueGet(ServerCommandSource source, Entity target, RegistryEntry<EntityAttribute> attribute, double multiplier) throws CommandSyntaxException {
 		LivingEntity livingEntity = getLivingEntityWithAttribute(target, attribute);
 		double d = livingEntity.getAttributeBaseValue(attribute);
-		source.sendFeedback(
-			Text.translatable("commands.attribute.base_value.get.success", Text.translatable(attribute.getTranslationKey()), target.getName(), d), false
-		);
+		source.sendFeedback(Text.translatable("commands.attribute.base_value.get.success", getName(attribute), target.getName(), d), false);
 		return (int)(d * multiplier);
 	}
 
-	private static int executeModifierValueGet(ServerCommandSource source, Entity target, EntityAttribute attribute, UUID uuid, double multiplier) throws CommandSyntaxException {
+	private static int executeModifierValueGet(ServerCommandSource source, Entity target, RegistryEntry<EntityAttribute> attribute, UUID uuid, double multiplier) throws CommandSyntaxException {
 		LivingEntity livingEntity = getLivingEntityWithAttribute(target, attribute);
 		AttributeContainer attributeContainer = livingEntity.getAttributes();
-		if (!attributeContainer.hasModifierForAttribute(attribute, uuid)) {
-			throw NO_MODIFIER_EXCEPTION.create(target.getName(), Text.translatable(attribute.getTranslationKey()), uuid);
+		if (!attributeContainer.method_45330(attribute, uuid)) {
+			throw NO_MODIFIER_EXCEPTION.create(target.getName(), getName(attribute), uuid);
 		} else {
-			double d = attributeContainer.getModifierValue(attribute, uuid);
-			source.sendFeedback(
-				Text.translatable("commands.attribute.modifier.value.get.success", uuid, Text.translatable(attribute.getTranslationKey()), target.getName(), d), false
-			);
+			double d = attributeContainer.method_45332(attribute, uuid);
+			source.sendFeedback(Text.translatable("commands.attribute.modifier.value.get.success", uuid, getName(attribute), target.getName(), d), false);
 			return (int)(d * multiplier);
 		}
 	}
 
-	private static int executeBaseValueSet(ServerCommandSource source, Entity target, EntityAttribute attribute, double value) throws CommandSyntaxException {
+	private static int executeBaseValueSet(ServerCommandSource source, Entity target, RegistryEntry<EntityAttribute> attribute, double value) throws CommandSyntaxException {
 		getAttributeInstance(target, attribute).setBaseValue(value);
-		source.sendFeedback(
-			Text.translatable("commands.attribute.base_value.set.success", Text.translatable(attribute.getTranslationKey()), target.getName(), value), false
-		);
+		source.sendFeedback(Text.translatable("commands.attribute.base_value.set.success", getName(attribute), target.getName(), value), false);
 		return 1;
 	}
 
 	private static int executeModifierAdd(
-		ServerCommandSource source, Entity target, EntityAttribute attribute, UUID uuid, String name, double value, EntityAttributeModifier.Operation operation
+		ServerCommandSource source,
+		Entity target,
+		RegistryEntry<EntityAttribute> attribute,
+		UUID uuid,
+		String name,
+		double value,
+		EntityAttributeModifier.Operation operation
 	) throws CommandSyntaxException {
 		EntityAttributeInstance entityAttributeInstance = getAttributeInstance(target, attribute);
 		EntityAttributeModifier entityAttributeModifier = new EntityAttributeModifier(uuid, name, value, operation);
 		if (entityAttributeInstance.hasModifier(entityAttributeModifier)) {
-			throw MODIFIER_ALREADY_PRESENT_EXCEPTION.create(target.getName(), Text.translatable(attribute.getTranslationKey()), uuid);
+			throw MODIFIER_ALREADY_PRESENT_EXCEPTION.create(target.getName(), getName(attribute), uuid);
 		} else {
 			entityAttributeInstance.addPersistentModifier(entityAttributeModifier);
-			source.sendFeedback(
-				Text.translatable("commands.attribute.modifier.add.success", uuid, Text.translatable(attribute.getTranslationKey()), target.getName()), false
-			);
+			source.sendFeedback(Text.translatable("commands.attribute.modifier.add.success", uuid, getName(attribute), target.getName()), false);
 			return 1;
 		}
 	}
 
-	private static int executeModifierRemove(ServerCommandSource source, Entity target, EntityAttribute attribute, UUID uuid) throws CommandSyntaxException {
+	private static int executeModifierRemove(ServerCommandSource source, Entity target, RegistryEntry<EntityAttribute> attribute, UUID uuid) throws CommandSyntaxException {
 		EntityAttributeInstance entityAttributeInstance = getAttributeInstance(target, attribute);
 		if (entityAttributeInstance.tryRemoveModifier(uuid)) {
-			source.sendFeedback(
-				Text.translatable("commands.attribute.modifier.remove.success", uuid, Text.translatable(attribute.getTranslationKey()), target.getName()), false
-			);
+			source.sendFeedback(Text.translatable("commands.attribute.modifier.remove.success", uuid, getName(attribute), target.getName()), false);
 			return 1;
 		} else {
-			throw NO_MODIFIER_EXCEPTION.create(target.getName(), Text.translatable(attribute.getTranslationKey()), uuid);
+			throw NO_MODIFIER_EXCEPTION.create(target.getName(), getName(attribute), uuid);
 		}
+	}
+
+	private static Text getName(RegistryEntry<EntityAttribute> attribute) {
+		return Text.translatable(attribute.value().getTranslationKey());
 	}
 }

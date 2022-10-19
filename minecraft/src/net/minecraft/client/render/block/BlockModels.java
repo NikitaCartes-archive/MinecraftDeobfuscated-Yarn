@@ -1,11 +1,9 @@
 package net.minecraft.client.render.block;
 
-import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedModelManager;
@@ -17,7 +15,7 @@ import net.minecraft.util.registry.Registry;
 
 @Environment(EnvType.CLIENT)
 public class BlockModels {
-	private final Map<BlockState, BakedModel> models = Maps.<BlockState, BakedModel>newIdentityHashMap();
+	private Map<BlockState, BakedModel> models = Map.of();
 	private final BakedModelManager modelManager;
 
 	public BlockModels(BakedModelManager modelManager) {
@@ -41,12 +39,8 @@ public class BlockModels {
 		return this.modelManager;
 	}
 
-	public void reload() {
-		this.models.clear();
-
-		for (Block block : Registry.BLOCK) {
-			block.getStateManager().getStates().forEach(state -> this.models.put(state, this.modelManager.getModel(getModelId(state))));
-		}
+	public void setModels(Map<BlockState, BakedModel> models) {
+		this.models = models;
 	}
 
 	public static ModelIdentifier getModelId(BlockState state) {

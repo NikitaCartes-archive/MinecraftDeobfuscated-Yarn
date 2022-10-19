@@ -1,94 +1,118 @@
 package net.minecraft.network.message;
 
-import java.util.Optional;
+import com.mojang.logging.LogUtils;
+import java.time.Instant;
+import java.util.UUID;
 import javax.annotation.Nullable;
+import net.minecraft.network.encryption.PlayerPublicKey;
+import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.network.encryption.Signer;
+import net.minecraft.text.Text;
+import net.minecraft.util.TextifiedException;
+import org.slf4j.Logger;
 
 /**
  * A class for handling the "message chain".
  * 
- * <p>{@link MessageHeader} includes the signature of the last message the client has seen.
- * This can be used to verify the legitimacy of a chain of messages, since if the chain
- * is valid, the last message's  "previous signature" should be able to verify the preceding
- * message.
+ * <p>A message chain (since 1.19.3) is implemented using an integer that is incremented
+ * for each message, called "index". {@link MessageLink} represents the link that a
+ * particular message has.
  * 
- * <p>Clients signing a message with its preceding message's signature is called
+ * <p>Clients signing a message with its preceding message's index is called
  * "packing", and the server creating a signed message with its preceding message's
- * signature is called "unpacking". Unpacked messages can then be verified to check the
+ * index is called "unpacking". Unpacked messages can then be verified to check the
  * chain's legitimacy.
+ * 
+ * @see MessageLink
  */
 public class MessageChain {
+	private static final Logger LOGGER = LogUtils.getLogger();
 	@Nullable
-	private MessageSignatureData precedingSignature;
+	private MessageLink link;
 
-	private MessageChain.Signature pack(Signer signer, MessageMetadata metadata, DecoratedContents contents, LastSeenMessageList lastSeenMessages) {
-		MessageSignatureData messageSignatureData = sign(signer, metadata, this.precedingSignature, contents, lastSeenMessages);
-		this.precedingSignature = messageSignatureData;
-		return new MessageChain.Signature(messageSignatureData);
+	public MessageChain(UUID sender, UUID sessionId) {
+		this.link = MessageLink.of(sender, sessionId);
 	}
 
-	private static MessageSignatureData sign(
-		Signer signer, MessageMetadata metadata, @Nullable MessageSignatureData precedingSignature, DecoratedContents contents, LastSeenMessageList lastSeenMessages
-	) {
-		MessageHeader messageHeader = new MessageHeader(precedingSignature, metadata.sender());
-		MessageBody messageBody = new MessageBody(contents, metadata.timestamp(), metadata.salt(), lastSeenMessages);
-		byte[] bs = messageBody.digest().asBytes();
-		return new MessageSignatureData(signer.sign(updatable -> messageHeader.update(updatable, bs)));
+	public MessageChain.Packer getPacker(Signer signer) {
+		return body -> {
+			MessageLink messageLink = this.nextLink();
+			return messageLink == null ? null : new MessageSignatureData(signer.sign(updatable -> SignedMessage.update(updatable, messageLink, body)));
+		};
 	}
 
-	private SignedMessage unpack(MessageChain.Signature signature, MessageMetadata metadata, DecoratedContents contents, LastSeenMessageList lastSeenMessages) {
-		SignedMessage signedMessage = createMessage(signature, this.precedingSignature, metadata, contents, lastSeenMessages);
-		this.precedingSignature = signature.signature;
-		return signedMessage;
+	public MessageChain.Unpacker getUnpacker(PlayerPublicKey playerPublicKey) {
+		SignatureVerifier signatureVerifier = playerPublicKey.createSignatureInstance();
+		return (signature, body) -> {
+			MessageLink messageLink = this.nextLink();
+			if (messageLink == null) {
+				throw new MessageChain.MessageChainException(Text.translatable("chat.disabled.chain_broken"), false);
+			} else if (playerPublicKey.data().isExpired()) {
+				throw new MessageChain.MessageChainException(Text.translatable("chat.disabled.expiredProfileKey"), false);
+			} else {
+				SignedMessage signedMessage = new SignedMessage(messageLink, signature, body, null, FilterMask.PASS_THROUGH);
+				if (!signedMessage.verify(signatureVerifier)) {
+					throw new MessageChain.MessageChainException(Text.translatable("multiplayer.disconnect.unsigned_chat"), true);
+				} else {
+					if (signedMessage.isExpiredOnServer(Instant.now())) {
+						LOGGER.warn("Received expired chat: '{}'. Is the client/server system time unsynchronized?", body.content());
+					}
+
+					return signedMessage;
+				}
+			}
+		};
 	}
 
-	private static SignedMessage createMessage(
-		MessageChain.Signature signature,
-		@Nullable MessageSignatureData precedingSignature,
-		MessageMetadata metadata,
-		DecoratedContents contents,
-		LastSeenMessageList lastSeenMessage
-	) {
-		MessageHeader messageHeader = new MessageHeader(precedingSignature, metadata.sender());
-		MessageBody messageBody = new MessageBody(contents, metadata.timestamp(), metadata.salt(), lastSeenMessage);
-		return new SignedMessage(messageHeader, signature.signature, messageBody, Optional.empty(), FilterMask.PASS_THROUGH);
+	@Nullable
+	private MessageLink nextLink() {
+		MessageLink messageLink = this.link;
+		if (messageLink != null) {
+			this.link = messageLink.next();
+		}
+
+		return messageLink;
 	}
 
-	public MessageChain.Unpacker getUnpacker() {
-		return this::unpack;
-	}
+	public static class MessageChainException extends TextifiedException {
+		private final boolean shouldDisconnect;
 
-	public MessageChain.Packer getPacker() {
-		return this::pack;
+		public MessageChainException(Text message, boolean shouldDisconnect) {
+			super(message);
+			this.shouldDisconnect = shouldDisconnect;
+		}
+
+		public boolean shouldDisconnect() {
+			return this.shouldDisconnect;
+		}
 	}
 
 	/**
-	 * Packers sign a message on the client with its preceding message's signature.
+	 * Packers sign a message on the client with its preceding message's index.
 	 * 
 	 * @see MessageChain#getPacker
 	 */
 	@FunctionalInterface
 	public interface Packer {
-		MessageChain.Signature pack(Signer signer, MessageMetadata metadata, DecoratedContents contents, LastSeenMessageList lastSeenMessages);
-	}
+		MessageChain.Packer NONE = body -> null;
 
-	public static record Signature(MessageSignatureData signature) {
+		@Nullable
+		MessageSignatureData pack(MessageBody body);
 	}
 
 	/**
 	 * Unpacker creates a signed message on the server with the server's preceding message
-	 * signature when they receive a message. Unpacked messages can then be verified to check
+	 * index when they receive a message. Unpacked messages can then be verified to check
 	 * the message chain's legitimacy.
-	 * 
-	 * <p>Messages must be unpacked in the order of the message's reception, as it affects
-	 * the resulting signed message.
 	 * 
 	 * @see MessageChain#getUnpacker
 	 */
 	@FunctionalInterface
 	public interface Unpacker {
-		MessageChain.Unpacker UNSIGNED = (signature, metadata, content, lastSeenMessages) -> SignedMessage.ofUnsigned(metadata, content);
+		static MessageChain.Unpacker unsigned(UUID uuid) {
+			return (signature, body) -> SignedMessage.ofUnsigned(uuid, body.content());
+		}
 
-		SignedMessage unpack(MessageChain.Signature signature, MessageMetadata metadata, DecoratedContents content, LastSeenMessageList lastSeenMessages);
+		SignedMessage unpack(@Nullable MessageSignatureData signature, MessageBody body) throws MessageChain.MessageChainException;
 	}
 }

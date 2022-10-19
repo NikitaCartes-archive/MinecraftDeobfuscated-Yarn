@@ -438,7 +438,7 @@ public abstract class FlowableFluid extends Fluid {
 				state = fluidState;
 				BlockState blockState = fluidState.getBlockState();
 				world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
-				world.createAndScheduleFluidTick(pos, fluidState.getFluid(), i);
+				world.scheduleFluidTick(pos, fluidState.getFluid(), i);
 				world.updateNeighborsAlways(pos, blockState.getBlock());
 			}
 		}

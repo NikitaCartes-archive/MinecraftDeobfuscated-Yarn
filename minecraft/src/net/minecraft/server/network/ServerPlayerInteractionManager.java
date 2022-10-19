@@ -56,7 +56,10 @@ public class ServerPlayerInteractionManager {
 		if (gameMode == this.gameMode) {
 			return false;
 		} else {
-			this.setGameMode(gameMode, this.gameMode);
+			this.setGameMode(gameMode, this.previousGameMode);
+			this.player.sendAbilitiesUpdate();
+			this.player.server.getPlayerManager().sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_GAME_MODE, this.player));
+			this.world.updateSleepingPlayers();
 			return true;
 		}
 	}
@@ -65,9 +68,6 @@ public class ServerPlayerInteractionManager {
 		this.previousGameMode = previousGameMode;
 		this.gameMode = gameMode;
 		gameMode.setAbilities(this.player.getAbilities());
-		this.player.sendAbilitiesUpdate();
-		this.player.server.getPlayerManager().sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_GAME_MODE, this.player));
-		this.world.updateSleepingPlayers();
 	}
 
 	public GameMode getGameMode() {
@@ -299,7 +299,9 @@ public class ServerPlayerInteractionManager {
 	public ActionResult interactBlock(ServerPlayerEntity player, World world, ItemStack stack, Hand hand, BlockHitResult hitResult) {
 		BlockPos blockPos = hitResult.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
-		if (this.gameMode == GameMode.SPECTATOR) {
+		if (!blockState.getBlock().isEnabled(world.getEnabledFeatures())) {
+			return ActionResult.FAIL;
+		} else if (this.gameMode == GameMode.SPECTATOR) {
 			NamedScreenHandlerFactory namedScreenHandlerFactory = blockState.createScreenHandlerFactory(world, blockPos);
 			if (namedScreenHandlerFactory != null) {
 				player.openHandledScreen(namedScreenHandlerFactory);

@@ -594,8 +594,7 @@ public class WorldChunk extends Chunk {
 		if (block instanceof BlockEntityProvider) {
 			GameEventListener gameEventListener = ((BlockEntityProvider)block).getGameEventListener(world, blockEntity);
 			if (gameEventListener != null) {
-				GameEventDispatcher gameEventDispatcher = this.getGameEventDispatcher(ChunkSectionPos.getSectionCoord(blockEntity.getPos().getY()));
-				gameEventDispatcher.addListener(gameEventListener);
+				this.getGameEventDispatcher(ChunkSectionPos.getSectionCoord(blockEntity.getPos().getY())).addListener(gameEventListener);
 			}
 		}
 	}

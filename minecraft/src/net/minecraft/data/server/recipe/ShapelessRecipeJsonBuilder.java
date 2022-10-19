@@ -15,29 +15,33 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
+import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
-public class ShapelessRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
+public class ShapelessRecipeJsonBuilder extends RecipeJsonBuilder implements CraftingRecipeJsonBuilder {
+	private final RecipeCategory category;
 	private final Item output;
-	private final int outputCount;
+	private final int count;
 	private final List<Ingredient> inputs = Lists.<Ingredient>newArrayList();
 	private final Advancement.Builder advancementBuilder = Advancement.Builder.create();
 	@Nullable
 	private String group;
 
-	public ShapelessRecipeJsonBuilder(ItemConvertible output, int outputCount) {
+	public ShapelessRecipeJsonBuilder(RecipeCategory category, ItemConvertible output, int count) {
+		this.category = category;
 		this.output = output.asItem();
-		this.outputCount = outputCount;
+		this.count = count;
 	}
 
-	public static ShapelessRecipeJsonBuilder create(ItemConvertible output) {
-		return new ShapelessRecipeJsonBuilder(output, 1);
+	public static ShapelessRecipeJsonBuilder create(RecipeCategory category, ItemConvertible output) {
+		return new ShapelessRecipeJsonBuilder(category, output, 1);
 	}
 
-	public static ShapelessRecipeJsonBuilder create(ItemConvertible output, int outputCount) {
-		return new ShapelessRecipeJsonBuilder(output, outputCount);
+	public static ShapelessRecipeJsonBuilder create(RecipeCategory category, ItemConvertible output, int count) {
+		return new ShapelessRecipeJsonBuilder(category, output, count);
 	}
 
 	public ShapelessRecipeJsonBuilder input(TagKey<Item> tag) {
@@ -95,11 +99,12 @@ public class ShapelessRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 			new ShapelessRecipeJsonBuilder.ShapelessRecipeJsonProvider(
 				recipeId,
 				this.output,
-				this.outputCount,
+				this.count,
 				this.group == null ? "" : this.group,
+				getCraftingCategory(this.category),
 				this.inputs,
 				this.advancementBuilder,
-				new Identifier(recipeId.getNamespace(), "recipes/" + this.output.getGroup().getName() + "/" + recipeId.getPath())
+				recipeId.withPrefixedPath("recipes/" + this.category.getName() + "/")
 			)
 		);
 	}
@@ -110,7 +115,7 @@ public class ShapelessRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 		}
 	}
 
-	public static class ShapelessRecipeJsonProvider implements RecipeJsonProvider {
+	public static class ShapelessRecipeJsonProvider extends RecipeJsonBuilder.CraftingRecipeJsonProvider {
 		private final Identifier recipeId;
 		private final Item output;
 		private final int count;
@@ -120,8 +125,16 @@ public class ShapelessRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 		private final Identifier advancementId;
 
 		public ShapelessRecipeJsonProvider(
-			Identifier recipeId, Item output, int outputCount, String group, List<Ingredient> inputs, Advancement.Builder advancementBuilder, Identifier advancementId
+			Identifier recipeId,
+			Item output,
+			int outputCount,
+			String group,
+			CraftingRecipeCategory craftingCategory,
+			List<Ingredient> inputs,
+			Advancement.Builder advancementBuilder,
+			Identifier advancementId
 		) {
+			super(craftingCategory);
 			this.recipeId = recipeId;
 			this.output = output;
 			this.count = outputCount;
@@ -133,6 +146,7 @@ public class ShapelessRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 
 		@Override
 		public void serialize(JsonObject json) {
+			super.serialize(json);
 			if (!this.group.isEmpty()) {
 				json.addProperty("group", this.group);
 			}

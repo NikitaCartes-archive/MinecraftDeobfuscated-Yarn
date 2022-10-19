@@ -47,9 +47,9 @@ public class ExplosionS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public ExplosionS2CPacket(PacketByteBuf buf) {
-		this.x = (double)buf.readFloat();
-		this.y = (double)buf.readFloat();
-		this.z = (double)buf.readFloat();
+		this.x = buf.readDouble();
+		this.y = buf.readDouble();
+		this.z = buf.readDouble();
 		this.radius = buf.readFloat();
 		int i = MathHelper.floor(this.x);
 		int j = MathHelper.floor(this.y);
@@ -67,9 +67,9 @@ public class ExplosionS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	@Override
 	public void write(PacketByteBuf buf) {
-		buf.writeFloat((float)this.x);
-		buf.writeFloat((float)this.y);
-		buf.writeFloat((float)this.z);
+		buf.writeDouble(this.x);
+		buf.writeDouble(this.y);
+		buf.writeDouble(this.z);
 		buf.writeFloat(this.radius);
 		int i = MathHelper.floor(this.x);
 		int j = MathHelper.floor(this.y);

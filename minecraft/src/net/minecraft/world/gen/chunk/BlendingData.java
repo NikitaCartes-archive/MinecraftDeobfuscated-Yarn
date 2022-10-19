@@ -72,7 +72,7 @@ public class BlendingData {
 						Codec.INT.fieldOf("max_section").forGetter(blendingData -> blendingData.oldHeightLimit.getTopSectionCoord()),
 						DOUBLE_ARRAY_CODEC.optionalFieldOf("heights")
 							.forGetter(
-								blendingData -> DoubleStream.of(blendingData.surfaceHeights).anyMatch(d -> d != Double.MAX_VALUE)
+								blendingData -> DoubleStream.of(blendingData.surfaceHeights).anyMatch(height -> height != Double.MAX_VALUE)
 										? Optional.of(blendingData.surfaceHeights)
 										: Optional.empty()
 							)
@@ -88,7 +88,7 @@ public class BlendingData {
 	}
 
 	private BlendingData(int oldBottomSectionY, int oldTopSectionY, Optional<double[]> heights) {
-		this.surfaceHeights = (double[])heights.orElse(Util.make(new double[HORIZONTAL_BIOME_COUNT], ds -> Arrays.fill(ds, Double.MAX_VALUE)));
+		this.surfaceHeights = (double[])heights.orElse(Util.make(new double[HORIZONTAL_BIOME_COUNT], heights2 -> Arrays.fill(heights2, Double.MAX_VALUE)));
 		this.collidableBlockDensities = new double[HORIZONTAL_BIOME_COUNT][];
 		ObjectArrayList<List<RegistryEntry<Biome>>> objectArrayList = new ObjectArrayList<>(HORIZONTAL_BIOME_COUNT);
 		objectArrayList.size(HORIZONTAL_BIOME_COUNT);

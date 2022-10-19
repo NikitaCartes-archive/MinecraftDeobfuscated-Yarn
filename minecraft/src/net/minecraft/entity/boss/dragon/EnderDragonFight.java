@@ -256,9 +256,10 @@ public class EnderDragonFight {
 				this.dragonSpawnState = null;
 				this.dragonKilled = false;
 				EnderDragonEntity enderDragonEntity = this.createDragon();
-
-				for (ServerPlayerEntity serverPlayerEntity : this.bossBar.getPlayers()) {
-					Criteria.SUMMONED_ENTITY.trigger(serverPlayerEntity, enderDragonEntity);
+				if (enderDragonEntity != null) {
+					for (ServerPlayerEntity serverPlayerEntity : this.bossBar.getPlayers()) {
+						Criteria.SUMMONED_ENTITY.trigger(serverPlayerEntity, enderDragonEntity);
+					}
 				}
 			} else {
 				this.dragonSpawnState = spawnState;
@@ -410,13 +411,17 @@ public class EnderDragonFight {
 		);
 	}
 
+	@Nullable
 	private EnderDragonEntity createDragon() {
 		this.world.getWorldChunk(new BlockPos(0, 128, 0));
 		EnderDragonEntity enderDragonEntity = EntityType.ENDER_DRAGON.create(this.world);
-		enderDragonEntity.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);
-		enderDragonEntity.refreshPositionAndAngles(0.0, 128.0, 0.0, this.world.random.nextFloat() * 360.0F, 0.0F);
-		this.world.spawnEntity(enderDragonEntity);
-		this.dragonUuid = enderDragonEntity.getUuid();
+		if (enderDragonEntity != null) {
+			enderDragonEntity.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);
+			enderDragonEntity.refreshPositionAndAngles(0.0, 128.0, 0.0, this.world.random.nextFloat() * 360.0F, 0.0F);
+			this.world.spawnEntity(enderDragonEntity);
+			this.dragonUuid = enderDragonEntity.getUuid();
+		}
+
 		return enderDragonEntity;
 	}
 

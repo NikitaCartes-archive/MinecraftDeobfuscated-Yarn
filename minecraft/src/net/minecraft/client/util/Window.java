@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -19,6 +18,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.WindowEventHandler;
 import net.minecraft.client.WindowSettings;
+import net.minecraft.resource.InputSupplier;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
@@ -136,23 +136,15 @@ public final class Window implements AutoCloseable {
 		}
 	}
 
-	public void setIcon(InputStream icon16, InputStream icon32) {
+	public void setIcon(InputSupplier<InputStream> smallIconSupplier, InputSupplier<InputStream> bigIconSupplier) {
 		RenderSystem.assertInInitPhase();
 
 		try (MemoryStack memoryStack = MemoryStack.stackPush()) {
-			if (icon16 == null) {
-				throw new FileNotFoundException("icons/icon_16x16.png");
-			}
-
-			if (icon32 == null) {
-				throw new FileNotFoundException("icons/icon_32x32.png");
-			}
-
 			IntBuffer intBuffer = memoryStack.mallocInt(1);
 			IntBuffer intBuffer2 = memoryStack.mallocInt(1);
 			IntBuffer intBuffer3 = memoryStack.mallocInt(1);
-			Buffer buffer = GLFWImage.mallocStack(2, memoryStack);
-			ByteBuffer byteBuffer = this.readImage(icon16, intBuffer, intBuffer2, intBuffer3);
+			Buffer buffer = GLFWImage.malloc(2, memoryStack);
+			ByteBuffer byteBuffer = this.readImage(smallIconSupplier, intBuffer, intBuffer2, intBuffer3);
 			if (byteBuffer == null) {
 				throw new IllegalStateException("Could not load icon: " + STBImage.stbi_failure_reason());
 			}
@@ -161,8 +153,9 @@ public final class Window implements AutoCloseable {
 			buffer.width(intBuffer.get(0));
 			buffer.height(intBuffer2.get(0));
 			buffer.pixels(byteBuffer);
-			ByteBuffer byteBuffer2 = this.readImage(icon32, intBuffer, intBuffer2, intBuffer3);
+			ByteBuffer byteBuffer2 = this.readImage(bigIconSupplier, intBuffer, intBuffer2, intBuffer3);
 			if (byteBuffer2 == null) {
+				STBImage.stbi_image_free(byteBuffer);
 				throw new IllegalStateException("Could not load icon: " + STBImage.stbi_failure_reason());
 			}
 
@@ -180,22 +173,40 @@ public final class Window implements AutoCloseable {
 	}
 
 	@Nullable
-	private ByteBuffer readImage(InputStream in, IntBuffer x, IntBuffer y, IntBuffer channels) throws IOException {
+	private ByteBuffer readImage(InputSupplier<InputStream> imageSupplier, IntBuffer x, IntBuffer y, IntBuffer channels) throws IOException {
 		RenderSystem.assertInInitPhase();
 		ByteBuffer byteBuffer = null;
 
-		ByteBuffer var6;
+		ByteBuffer var7;
 		try {
-			byteBuffer = TextureUtil.readResource(in);
-			byteBuffer.rewind();
-			var6 = STBImage.stbi_load_from_memory(byteBuffer, x, y, channels, 0);
+			InputStream inputStream = imageSupplier.get();
+
+			try {
+				byteBuffer = TextureUtil.readResource(inputStream);
+				byteBuffer.rewind();
+				var7 = STBImage.stbi_load_from_memory(byteBuffer, x, y, channels, 0);
+			} catch (Throwable var14) {
+				if (inputStream != null) {
+					try {
+						inputStream.close();
+					} catch (Throwable var13) {
+						var14.addSuppressed(var13);
+					}
+				}
+
+				throw var14;
+			}
+
+			if (inputStream != null) {
+				inputStream.close();
+			}
 		} finally {
 			if (byteBuffer != null) {
 				MemoryUtil.memFree(byteBuffer);
 			}
 		}
 
-		return var6;
+		return var7;
 	}
 
 	public void setPhase(String phase) {

@@ -50,32 +50,6 @@ public class WorldEvents {
 	 */
 	public static final int FIREWORK_ROCKET_SHOOTS = 1004;
 	/**
-	 * An iron door is opened.
-	 * <br>Plays the iron door opening sound event.
-	 * <p>Called by {@link net.minecraft.block.DoorBlock#playOpenCloseSound(net.minecraft.world.World, net.minecraft.util.math.BlockPos, boolean) DoorBlock#playOpenCloseSound}
-	 */
-	public static final int IRON_DOOR_OPENS = 1005;
-	/**
-	 * A wooden door is opened.
-	 * <br>Plays the wooden door opening sound event.
-	 * <p>Called by {@link net.minecraft.block.DoorBlock#onUse(net.minecraft.block.BlockState, net.minecraft.world.World, net.minecraft.util.math.BlockPos, net.minecraft.entity.player.PlayerEntity, net.minecraft.util.Hand, net.minecraft.util.hit.BlockHitResult) DoorBlock#onUse},
-	 * and {@link net.minecraft.block.DoorBlock#playOpenCloseSound(net.minecraft.world.World, net.minecraft.util.math.BlockPos, boolean) DoorBlock#playOpenCloseSound}
-	 */
-	public static final int WOODEN_DOOR_OPENS = 1006;
-	/**
-	 * A wooden trapdoor is opened.
-	 * <br>Plays the wooden trapdoor opening sound event.
-	 * <p>Called by {@link net.minecraft.block.TrapdoorBlock#playToggleSound(net.minecraft.entity.player.PlayerEntity, net.minecraft.world.World, net.minecraft.util.math.BlockPos, boolean) TrapdoorBlock#playToggleSound}
-	 */
-	public static final int WOODEN_TRAPDOOR_OPENS = 1007;
-	/**
-	 * A fence gate is opened.
-	 * <br>Plays the fence gate opening sound event.
-	 * <p>Called by {@link net.minecraft.block.FenceGateBlock#onUse(net.minecraft.block.BlockState, net.minecraft.world.World, net.minecraft.util.math.BlockPos, net.minecraft.entity.player.PlayerEntity, net.minecraft.util.Hand, net.minecraft.util.hit.BlockHitResult) FenceGateBlock#onUse},
-	 * and {@link net.minecraft.block.FenceGateBlock#neighborUpdate(net.minecraft.block.BlockState, net.minecraft.world.World, net.minecraft.util.math.BlockPos, net.minecraft.block.Block, net.minecraft.util.math.BlockPos, boolean) FenceGateBlock#neighborUpdate}
-	 */
-	public static final int FENCE_GATE_OPENS = 1008;
-	/**
 	 * Fire is extinguished.
 	 * <br>Plays the appropriate fire extinguish sound event.
 	 * <br>A {@code 1} should be supplied as extra data if an entity was extinguished, and {@code 0} for a block.
@@ -93,32 +67,6 @@ public class WorldEvents {
 	 * and {@link net.minecraft.block.JukeboxBlock#removeRecord(net.minecraft.world.World, net.minecraft.util.math.BlockPos) JukeboxBlock#removeRecord}
 	 */
 	public static final int MUSIC_DISC_PLAYED = 1010;
-	/**
-	 * An iron door is closed.
-	 * <br>Plays the iron door closing sound event.
-	 * <p>Called by {@link net.minecraft.block.DoorBlock#playOpenCloseSound(net.minecraft.world.World, net.minecraft.util.math.BlockPos, boolean) DoorBlock#playOpenCloseSound}
-	 */
-	public static final int IRON_DOOR_CLOSES = 1011;
-	/**
-	 * A wooden door is closed.
-	 * <br>Plays the wooden door closing sound event.
-	 * <p>Called by {@link net.minecraft.block.DoorBlock#onUse(net.minecraft.block.BlockState, net.minecraft.world.World, net.minecraft.util.math.BlockPos, net.minecraft.entity.player.PlayerEntity, net.minecraft.util.Hand, net.minecraft.util.hit.BlockHitResult) DoorBlock#onUse},
-	 * and {@link net.minecraft.block.DoorBlock#playOpenCloseSound(net.minecraft.world.World, net.minecraft.util.math.BlockPos, boolean) DoorBlock#playOpenCloseSound}
-	 */
-	public static final int WOODEN_DOOR_CLOSES = 1012;
-	/**
-	 * A wooden trapdoor is closed.
-	 * <br>Plays the wooden trapdoor closing sound event.
-	 * <p>Called by {@link net.minecraft.block.TrapdoorBlock#playToggleSound(net.minecraft.entity.player.PlayerEntity, net.minecraft.world.World, net.minecraft.util.math.BlockPos, boolean) TrapdoorBlock#playToggleSound}
-	 */
-	public static final int WOODEN_TRAPDOOR_CLOSES = 1013;
-	/**
-	 * A fence gate is closed.
-	 * <br>Plays the fence gate closing sound event.
-	 * <p>Called by {@link net.minecraft.block.FenceGateBlock#onUse(net.minecraft.block.BlockState, net.minecraft.world.World, net.minecraft.util.math.BlockPos, net.minecraft.entity.player.PlayerEntity, net.minecraft.util.Hand, net.minecraft.util.hit.BlockHitResult) FenceGateBlock#onUse},
-	 * and {@link net.minecraft.block.FenceGateBlock#neighborUpdate(net.minecraft.block.BlockState, net.minecraft.world.World, net.minecraft.util.math.BlockPos, net.minecraft.block.Block, net.minecraft.util.math.BlockPos, boolean) FenceGateBlock#neighborUpdate}
-	 */
-	public static final int FENCE_GATE_CLOSES = 1014;
 	/**
 	 * A ghast warns its victim.
 	 * <br>Plays the ghast warn sound event.
@@ -249,18 +197,6 @@ public class WorldEvents {
 	 * <p>Called by {@link net.minecraft.block.entity.BrewingStandBlockEntity#craft(net.minecraft.world.World, net.minecraft.util.math.BlockPos, net.minecraft.util.collection.DefaultedList) BrewingStandBlockEntity#craft}
 	 */
 	public static final int BREWING_STAND_BREWS = 1035;
-	/**
-	 * An iron trapdoor closes.
-	 * <br>Plays the iron trapdoor closing sound event.
-	 * <p>Called by {@link net.minecraft.block.TrapdoorBlock#playToggleSound(net.minecraft.entity.player.PlayerEntity, net.minecraft.world.World, net.minecraft.util.math.BlockPos, boolean) TrapdoorBlock#playToggleSound}
-	 */
-	public static final int IRON_TRAPDOOR_CLOSES = 1036;
-	/**
-	 * An iron trapdoor opens.
-	 * <br>Plays the iron trapdoor opening sound event.
-	 * <p>Called by {@link net.minecraft.block.TrapdoorBlock#playToggleSound(net.minecraft.entity.player.PlayerEntity, net.minecraft.world.World, net.minecraft.util.math.BlockPos, boolean) TrapdoorBlock#playToggleSound}
-	 */
-	public static final int IRON_TRAPDOOR_OPENS = 1037;
 	/**
 	 * An end portal is opened.
 	 * <br>Plays the end portal spawn sound event.

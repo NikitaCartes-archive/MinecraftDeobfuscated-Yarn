@@ -142,6 +142,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		addFuel(map, Blocks.MANGROVE_FENCE_GATE, 300);
 		addFuel(map, Blocks.NOTE_BLOCK, 300);
 		addFuel(map, Blocks.BOOKSHELF, 300);
+		addFuel(map, Blocks.CHISELED_BOOKSHELF, 300);
 		addFuel(map, Blocks.LECTERN, 300);
 		addFuel(map, Blocks.JUKEBOX, 300);
 		addFuel(map, Blocks.CHEST, 300);
@@ -153,6 +154,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		addFuel(map, Items.FISHING_ROD, 300);
 		addFuel(map, Blocks.LADDER, 300);
 		addFuel(map, ItemTags.SIGNS, 200);
+		addFuel(map, ItemTags.HANGING_SIGNS, 800);
 		addFuel(map, Items.WOODEN_SHOVEL, 200);
 		addFuel(map, Items.WOODEN_SWORD, 200);
 		addFuel(map, Items.WOODEN_HOE, 200);

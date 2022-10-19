@@ -329,8 +329,8 @@ public class OverworldBiomeCreator {
 			.build();
 	}
 
-	private static Biome createOcean(SpawnSettings.Builder spawnSettings, int waterColor, int waterFogColor, GenerationSettings.Builder builder) {
-		return createBiome(Biome.Precipitation.RAIN, 0.5F, 0.5F, waterColor, waterFogColor, spawnSettings, builder, DEFAULT_MUSIC);
+	private static Biome createOcean(SpawnSettings.Builder spawnSettings, int waterColor, int waterFogColor, GenerationSettings.Builder generationSettings) {
+		return createBiome(Biome.Precipitation.RAIN, 0.5F, 0.5F, waterColor, waterFogColor, spawnSettings, generationSettings, DEFAULT_MUSIC);
 	}
 
 	private static GenerationSettings.Builder createOceanGenerationSettings() {

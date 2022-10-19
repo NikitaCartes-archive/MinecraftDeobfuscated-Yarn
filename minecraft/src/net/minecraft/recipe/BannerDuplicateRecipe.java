@@ -5,14 +5,15 @@ import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.BannerItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
 public class BannerDuplicateRecipe extends SpecialCraftingRecipe {
-	public BannerDuplicateRecipe(Identifier identifier) {
-		super(identifier);
+	public BannerDuplicateRecipe(Identifier identifier, CraftingRecipeCategory craftingRecipeCategory) {
+		super(identifier, craftingRecipeCategory);
 	}
 
 	public boolean matches(CraftingInventory craftingInventory, World world) {

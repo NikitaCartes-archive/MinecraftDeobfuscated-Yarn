@@ -31,7 +31,7 @@ public class CoralBlockBlock extends Block {
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		if (!this.isInWater(world, pos)) {
-			world.createAndScheduleBlockTick(pos, this, 60 + world.getRandom().nextInt(40));
+			world.scheduleBlockTick(pos, this, 60 + world.getRandom().nextInt(40));
 		}
 
 		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
@@ -52,7 +52,7 @@ public class CoralBlockBlock extends Block {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		if (!this.isInWater(ctx.getWorld(), ctx.getBlockPos())) {
-			ctx.getWorld().createAndScheduleBlockTick(ctx.getBlockPos(), this, 60 + ctx.getWorld().getRandom().nextInt(40));
+			ctx.getWorld().scheduleBlockTick(ctx.getBlockPos(), this, 60 + ctx.getWorld().getRandom().nextInt(40));
 		}
 
 		return this.getDefaultState();

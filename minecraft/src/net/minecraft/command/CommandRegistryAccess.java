@@ -1,6 +1,7 @@
 package net.minecraft.command;
 
 import java.util.Optional;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
@@ -17,10 +18,12 @@ import net.minecraft.util.registry.RegistryKey;
  */
 public final class CommandRegistryAccess {
 	private final DynamicRegistryManager dynamicRegistryManager;
+	private final FeatureSet enabledFeatures;
 	CommandRegistryAccess.EntryListCreationPolicy entryListCreationPolicy = CommandRegistryAccess.EntryListCreationPolicy.FAIL;
 
-	public CommandRegistryAccess(DynamicRegistryManager dynamicRegistryManager) {
+	public CommandRegistryAccess(DynamicRegistryManager dynamicRegistryManager, FeatureSet enabledFeatures) {
 		this.dynamicRegistryManager = dynamicRegistryManager;
+		this.enabledFeatures = enabledFeatures;
 	}
 
 	/**
@@ -39,19 +42,20 @@ public final class CommandRegistryAccess {
 	 * @param registryRef the registry key of the registry to wrap
 	 */
 	public <T> CommandRegistryWrapper<T> createWrapper(RegistryKey<? extends Registry<T>> registryRef) {
-		return new CommandRegistryWrapper.Impl<T>(this.dynamicRegistryManager.get(registryRef)) {
+		CommandRegistryWrapper.Impl<T> impl = new CommandRegistryWrapper.Impl<T>(this.dynamicRegistryManager.get(registryRef)) {
 			@Override
-			public Optional<? extends RegistryEntryList<T>> getEntryList(TagKey<T> tag) {
+			public Optional<RegistryEntryList.Named<T>> getEntryList(TagKey<T> tag) {
 				return switch (CommandRegistryAccess.this.entryListCreationPolicy) {
 					case FAIL -> this.registry.getEntryList(tag);
 					case CREATE_NEW -> Optional.of(this.registry.getOrCreateEntryList(tag));
 					case RETURN_EMPTY -> {
-						Optional<? extends RegistryEntryList<T>> optional = this.registry.getEntryList(tag);
-						yield Optional.of(optional.isPresent() ? (RegistryEntryList)optional.get() : RegistryEntryList.of());
+						Optional<RegistryEntryList.Named<T>> optional = this.registry.getEntryList(tag);
+						yield Optional.of((RegistryEntryList.Named)optional.orElseGet(() -> RegistryEntryList.of(this.registry, tag)));
 					}
 				};
 			}
 		};
+		return impl.withFeatureFilter(this.enabledFeatures);
 	}
 
 	/**

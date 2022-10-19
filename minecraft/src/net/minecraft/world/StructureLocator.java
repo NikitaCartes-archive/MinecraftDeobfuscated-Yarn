@@ -76,8 +76,8 @@ public class StructureLocator {
 		this.biomeSource = biomeSource;
 		this.seed = seed;
 		this.dataFixer = dataFixer;
-		this.biomeRegistry = registryManager.getManaged(Registry.BIOME_KEY);
-		this.structureRegistry = registryManager.getManaged(Registry.STRUCTURE_KEY);
+		this.biomeRegistry = registryManager.get(Registry.BIOME_KEY);
+		this.structureRegistry = registryManager.get(Registry.STRUCTURE_KEY);
 	}
 
 	public StructurePresence getStructurePresence(ChunkPos pos, Structure type, boolean skipReferencedStructures) {

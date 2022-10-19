@@ -13,7 +13,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mojang.datafixers.util.Either;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import java.io.Reader;
 import java.io.StringReader;
@@ -33,6 +32,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.BakedQuadFactory;
+import net.minecraft.client.render.model.Baker;
 import net.minecraft.client.render.model.BasicBakedModel;
 import net.minecraft.client.render.model.BuiltinBakedModel;
 import net.minecraft.client.render.model.ModelBakeSettings;
@@ -131,8 +131,8 @@ public class JsonUnbakedModel implements UnbakedModel {
 		return this.overrides;
 	}
 
-	private ModelOverrideList compileOverrides(ModelLoader modelLoader, JsonUnbakedModel parent) {
-		return this.overrides.isEmpty() ? ModelOverrideList.EMPTY : new ModelOverrideList(modelLoader, parent, modelLoader::getOrLoadModel, this.overrides);
+	private ModelOverrideList compileOverrides(Baker baker, JsonUnbakedModel parent) {
+		return this.overrides.isEmpty() ? ModelOverrideList.EMPTY : new ModelOverrideList(baker, parent, this.overrides);
 	}
 
 	@Override
@@ -151,9 +151,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 	}
 
 	@Override
-	public Collection<SpriteIdentifier> getTextureDependencies(
-		Function<Identifier, UnbakedModel> unbakedModelGetter, Set<Pair<String, String>> unresolvedTextureReferences
-	) {
+	public void setParents(Function<Identifier, UnbakedModel> modelLoader) {
 		Set<UnbakedModel> set = Sets.<UnbakedModel>newLinkedHashSet();
 
 		for (JsonUnbakedModel jsonUnbakedModel = this;
@@ -161,7 +159,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 			jsonUnbakedModel = jsonUnbakedModel.parent
 		) {
 			set.add(jsonUnbakedModel);
-			UnbakedModel unbakedModel = (UnbakedModel)unbakedModelGetter.apply(jsonUnbakedModel.parentId);
+			UnbakedModel unbakedModel = (UnbakedModel)modelLoader.apply(jsonUnbakedModel.parentId);
 			if (unbakedModel == null) {
 				LOGGER.warn("No parent '{}' while loading model '{}'", this.parentId, jsonUnbakedModel);
 			}
@@ -178,7 +176,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 
 			if (unbakedModel == null) {
 				jsonUnbakedModel.parentId = ModelLoader.MISSING_ID;
-				unbakedModel = (UnbakedModel)unbakedModelGetter.apply(jsonUnbakedModel.parentId);
+				unbakedModel = (UnbakedModel)modelLoader.apply(jsonUnbakedModel.parentId);
 			}
 
 			if (!(unbakedModel instanceof JsonUnbakedModel)) {
@@ -188,45 +186,27 @@ public class JsonUnbakedModel implements UnbakedModel {
 			jsonUnbakedModel.parent = (JsonUnbakedModel)unbakedModel;
 		}
 
-		Set<SpriteIdentifier> set2 = Sets.<SpriteIdentifier>newHashSet(this.resolveSprite("particle"));
-
-		for (ModelElement modelElement : this.getElements()) {
-			for (ModelElementFace modelElementFace : modelElement.faces.values()) {
-				SpriteIdentifier spriteIdentifier = this.resolveSprite(modelElementFace.textureId);
-				if (Objects.equals(spriteIdentifier.getTextureId(), MissingSprite.getMissingSpriteId())) {
-					unresolvedTextureReferences.add(Pair.of(modelElementFace.textureId, this.id));
-				}
-
-				set2.add(spriteIdentifier);
-			}
-		}
-
 		this.overrides.forEach(override -> {
-			UnbakedModel unbakedModelx = (UnbakedModel)unbakedModelGetter.apply(override.getModelId());
+			UnbakedModel unbakedModelx = (UnbakedModel)modelLoader.apply(override.getModelId());
 			if (!Objects.equals(unbakedModelx, this)) {
-				set2.addAll(unbakedModelx.getTextureDependencies(unbakedModelGetter, unresolvedTextureReferences));
+				unbakedModelx.setParents(modelLoader);
 			}
 		});
-		if (this.getRootModel() == ModelLoader.GENERATION_MARKER) {
-			ItemModelGenerator.LAYERS.forEach(layer -> set2.add(this.resolveSprite(layer)));
-		}
-
-		return set2;
 	}
 
 	@Override
-	public BakedModel bake(ModelLoader loader, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
-		return this.bake(loader, this, textureGetter, rotationContainer, modelId, true);
+	public BakedModel bake(Baker baker, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
+		return this.bake(baker, this, textureGetter, rotationContainer, modelId, true);
 	}
 
 	public BakedModel bake(
-		ModelLoader loader, JsonUnbakedModel parent, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings settings, Identifier id, boolean hasDepth
+		Baker baker, JsonUnbakedModel parent, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings settings, Identifier id, boolean hasDepth
 	) {
 		Sprite sprite = (Sprite)textureGetter.apply(this.resolveSprite("particle"));
 		if (this.getRootModel() == ModelLoader.BLOCK_ENTITY_MARKER) {
-			return new BuiltinBakedModel(this.getTransformations(), this.compileOverrides(loader, parent), sprite, this.getGuiLight().isSide());
+			return new BuiltinBakedModel(this.getTransformations(), this.compileOverrides(baker, parent), sprite, this.getGuiLight().isSide());
 		} else {
-			BasicBakedModel.Builder builder = new BasicBakedModel.Builder(this, this.compileOverrides(loader, parent), hasDepth).setParticle(sprite);
+			BasicBakedModel.Builder builder = new BasicBakedModel.Builder(this, this.compileOverrides(baker, parent), hasDepth).setParticle(sprite);
 
 			for (ModelElement modelElement : this.getElements()) {
 				for (Direction direction : modelElement.faces.keySet()) {

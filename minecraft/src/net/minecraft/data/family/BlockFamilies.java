@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.util.registry.Registry;
 
 public class BlockFamilies {
@@ -133,6 +134,26 @@ public class BlockFamilies {
 		.trapdoor(Blocks.MANGROVE_TRAPDOOR)
 		.group("wooden")
 		.unlockCriterionName("has_planks")
+		.build();
+	public static final BlockFamily BAMBOO = register(Blocks.BAMBOO_PLANKS)
+		.button(Blocks.BAMBOO_BUTTON)
+		.slab(Blocks.BAMBOO_SLAB)
+		.stairs(Blocks.BAMBOO_STAIRS)
+		.customFence(Blocks.BAMBOO_FENCE)
+		.customFenceGate(Blocks.BAMBOO_FENCE_GATE)
+		.pressurePlate(Blocks.BAMBOO_PRESSURE_PLATE)
+		.sign(Blocks.BAMBOO_SIGN, Blocks.BAMBOO_WALL_SIGN)
+		.door(Blocks.BAMBOO_DOOR)
+		.trapdoor(Blocks.BAMBOO_TRAPDOOR)
+		.mosaic(Blocks.BAMBOO_MOSAIC)
+		.group("wooden")
+		.unlockCriterionName("has_planks")
+		.requires(FeatureFlags.UPDATE_1_20)
+		.build();
+	public static final BlockFamily BAMBOO_MOSAIC = register(Blocks.BAMBOO_MOSAIC)
+		.slab(Blocks.BAMBOO_MOSAIC_SLAB)
+		.stairs(Blocks.BAMBOO_MOSAIC_STAIRS)
+		.requires(FeatureFlags.UPDATE_1_20)
 		.build();
 	public static final BlockFamily MUD_BRICK = register(Blocks.MUD_BRICKS)
 		.wall(Blocks.MUD_BRICK_WALL)

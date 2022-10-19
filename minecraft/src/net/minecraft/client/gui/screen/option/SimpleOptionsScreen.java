@@ -1,6 +1,5 @@
 package net.minecraft.client.gui.screen.option;
 
-import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -13,7 +12,6 @@ import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.SimpleOption;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
-import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
@@ -46,12 +44,7 @@ public abstract class SimpleOptionsScreen extends GameOptionsScreen {
 
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderBackground(matrices);
-		this.buttonList.render(matrices, mouseX, mouseY, delta);
-		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 20, 16777215);
-		super.render(matrices, mouseX, mouseY, delta);
-		List<OrderedText> list = getHoveredButtonTooltip(this.buttonList, mouseX, mouseY);
-		this.renderOrderedTooltip(matrices, list, mouseX, mouseY);
+		this.render(matrices, this.buttonList, mouseX, mouseY, delta);
 	}
 
 	public void updateNarratorButtonText() {

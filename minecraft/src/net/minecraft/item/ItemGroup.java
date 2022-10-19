@@ -1,146 +1,33 @@
 package net.minecraft.item;
 
+import java.util.Collection;
 import javax.annotation.Nullable;
-import net.minecraft.block.Blocks;
-import net.minecraft.enchantment.EnchantmentTarget;
-import net.minecraft.potion.PotionUtil;
-import net.minecraft.potion.Potions;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.text.Text;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.registry.Registry;
 
 /**
  * A group of items that the items belong to. This is used by the creative inventory.
- * Use {@link Item.Settings#group(ItemGroup)} to assign an item group to an item.
- * 
- * @see Item#appendStacks
- * @see Item#isIn(ItemGroup)
  */
 public abstract class ItemGroup {
-	public static final ItemGroup[] GROUPS = new ItemGroup[12];
-	public static final ItemGroup BUILDING_BLOCKS = (new ItemGroup(0, "buildingBlocks") {
-		@Override
-		public ItemStack createIcon() {
-			return new ItemStack(Blocks.BRICKS);
-		}
-	}).setName("building_blocks");
-	public static final ItemGroup DECORATIONS = new ItemGroup(1, "decorations") {
-		@Override
-		public ItemStack createIcon() {
-			return new ItemStack(Blocks.PEONY);
-		}
-	};
-	public static final ItemGroup REDSTONE = new ItemGroup(2, "redstone") {
-		@Override
-		public ItemStack createIcon() {
-			return new ItemStack(Items.REDSTONE);
-		}
-	};
-	public static final ItemGroup TRANSPORTATION = new ItemGroup(3, "transportation") {
-		@Override
-		public ItemStack createIcon() {
-			return new ItemStack(Blocks.POWERED_RAIL);
-		}
-	};
-	public static final ItemGroup MISC = new ItemGroup(6, "misc") {
-		@Override
-		public ItemStack createIcon() {
-			return new ItemStack(Items.LAVA_BUCKET);
-		}
-	};
-	public static final ItemGroup SEARCH = (new ItemGroup(5, "search") {
-		@Override
-		public ItemStack createIcon() {
-			return new ItemStack(Items.COMPASS);
-		}
-	}).setTexture("item_search.png");
-	public static final ItemGroup FOOD = new ItemGroup(7, "food") {
-		@Override
-		public ItemStack createIcon() {
-			return new ItemStack(Items.APPLE);
-		}
-	};
-	public static final ItemGroup TOOLS = (new ItemGroup(8, "tools") {
-		@Override
-		public ItemStack createIcon() {
-			return new ItemStack(Items.IRON_AXE);
-		}
-	}).setEnchantments(new EnchantmentTarget[]{EnchantmentTarget.VANISHABLE, EnchantmentTarget.DIGGER, EnchantmentTarget.FISHING_ROD, EnchantmentTarget.BREAKABLE});
-	public static final ItemGroup COMBAT = (new ItemGroup(9, "combat") {
-			@Override
-			public ItemStack createIcon() {
-				return new ItemStack(Items.GOLDEN_SWORD);
-			}
-		})
-		.setEnchantments(
-			new EnchantmentTarget[]{
-				EnchantmentTarget.VANISHABLE,
-				EnchantmentTarget.ARMOR,
-				EnchantmentTarget.ARMOR_FEET,
-				EnchantmentTarget.ARMOR_HEAD,
-				EnchantmentTarget.ARMOR_LEGS,
-				EnchantmentTarget.ARMOR_CHEST,
-				EnchantmentTarget.BOW,
-				EnchantmentTarget.WEAPON,
-				EnchantmentTarget.WEARABLE,
-				EnchantmentTarget.BREAKABLE,
-				EnchantmentTarget.TRIDENT,
-				EnchantmentTarget.CROSSBOW
-			}
-		);
-	public static final ItemGroup BREWING = new ItemGroup(10, "brewing") {
-		@Override
-		public ItemStack createIcon() {
-			return PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER);
-		}
-	};
-	public static final ItemGroup MATERIALS = MISC;
-	public static final ItemGroup HOTBAR = new ItemGroup(4, "hotbar") {
-		@Override
-		public ItemStack createIcon() {
-			return new ItemStack(Blocks.BOOKSHELF);
-		}
-
-		@Override
-		public void appendStacks(DefaultedList<ItemStack> stacks) {
-			throw new RuntimeException("Implement exception client-side.");
-		}
-
-		@Override
-		public boolean isSpecial() {
-			return true;
-		}
-	};
-	public static final ItemGroup INVENTORY = (new ItemGroup(11, "inventory") {
-		@Override
-		public ItemStack createIcon() {
-			return new ItemStack(Blocks.CHEST);
-		}
-	}).setTexture("inventory.png").setNoScrollbar().hideName();
 	private final int index;
-	private final String id;
 	private final Text displayName;
-	private String name;
 	private String texture = "items.png";
 	private boolean scrollbar = true;
 	private boolean renderName = true;
-	private EnchantmentTarget[] enchantments = new EnchantmentTarget[0];
 	private ItemStack icon;
+	@Nullable
+	private ItemStackSet displayStacks;
+	@Nullable
+	private ItemStackSet searchTabStacks;
 
-	public ItemGroup(int index, String id) {
+	public ItemGroup(int index, Text displayName) {
 		this.index = index;
-		this.id = id;
-		this.displayName = Text.translatable("itemGroup." + id);
+		this.displayName = displayName;
 		this.icon = ItemStack.EMPTY;
-		GROUPS[index] = this;
 	}
 
 	public int getIndex() {
 		return this.index;
-	}
-
-	public String getName() {
-		return this.name == null ? this.id : this.name;
 	}
 
 	public Text getDisplayName() {
@@ -157,17 +44,14 @@ public abstract class ItemGroup {
 
 	public abstract ItemStack createIcon();
 
+	protected abstract void addItems(FeatureSet enabledFeatures, ItemGroup.Entries entries);
+
 	public String getTexture() {
 		return this.texture;
 	}
 
 	public ItemGroup setTexture(String texture) {
 		this.texture = texture;
-		return this;
-	}
-
-	public ItemGroup setName(String name) {
-		this.name = name;
 		return this;
 	}
 
@@ -209,30 +93,108 @@ public abstract class ItemGroup {
 		return this.getColumn() == 5;
 	}
 
-	public EnchantmentTarget[] getEnchantments() {
-		return this.enchantments;
+	private ItemStackSet getStacks(FeatureSet enabledFeatures, boolean search) {
+		if (this.displayStacks == null || this.searchTabStacks == null) {
+			ItemGroup.EntriesImpl entriesImpl = new ItemGroup.EntriesImpl(this, enabledFeatures);
+			this.addItems(enabledFeatures, entriesImpl);
+			this.displayStacks = entriesImpl.getParentTabStacks();
+			this.searchTabStacks = entriesImpl.getSearchTabStacks();
+		}
+
+		return search ? this.searchTabStacks : this.displayStacks;
 	}
 
-	public ItemGroup setEnchantments(EnchantmentTarget... targets) {
-		this.enchantments = targets;
-		return this;
+	public ItemStackSet getDisplayStacks(FeatureSet enabledFeatures) {
+		return this.getStacks(enabledFeatures, false);
 	}
 
-	public boolean containsEnchantments(@Nullable EnchantmentTarget target) {
-		if (target != null) {
-			for (EnchantmentTarget enchantmentTarget : this.enchantments) {
-				if (enchantmentTarget == target) {
-					return true;
+	public ItemStackSet getSearchTabStacks(FeatureSet enabledFeatures) {
+		return this.getStacks(enabledFeatures, true);
+	}
+
+	public boolean contains(FeatureSet enabledFeatures, ItemStack stack) {
+		return this.getSearchTabStacks(enabledFeatures).contains(stack);
+	}
+
+	public void clearStacks() {
+		this.displayStacks = null;
+		this.searchTabStacks = null;
+	}
+
+	protected interface Entries {
+		void add(ItemStack stack, ItemGroup.StackVisibility visibility);
+
+		default void add(ItemStack stack) {
+			this.add(stack, ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS);
+		}
+
+		default void add(ItemConvertible item, ItemGroup.StackVisibility visibility) {
+			this.add(new ItemStack(item), visibility);
+		}
+
+		default void add(ItemConvertible item) {
+			this.add(new ItemStack(item), ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS);
+		}
+
+		default void addAll(Collection<ItemStack> stacks, ItemGroup.StackVisibility visibility) {
+			stacks.forEach(stack -> this.add(stack, visibility));
+		}
+
+		default void addAll(Collection<ItemStack> stacks) {
+			this.addAll(stacks, ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS);
+		}
+	}
+
+	static class EntriesImpl implements ItemGroup.Entries {
+		private final ItemStackSet parentTabStacks = new ItemStackSet();
+		private final ItemStackSet searchTabStacks = new ItemStackSet();
+		private final ItemGroup group;
+		private final FeatureSet enabledFeatures;
+
+		public EntriesImpl(ItemGroup group, FeatureSet enabledFeatures) {
+			this.group = group;
+			this.enabledFeatures = enabledFeatures;
+		}
+
+		@Override
+		public void add(ItemStack stack, ItemGroup.StackVisibility visibility) {
+			boolean bl = this.parentTabStacks.contains(stack) && visibility != ItemGroup.StackVisibility.SEARCH_TAB_ONLY;
+			if (bl) {
+				throw new IllegalStateException(
+					"Accidentally adding the same item stack twice "
+						+ stack.toHoverableText().getString()
+						+ " to a Creative Mode Tab: "
+						+ this.group.getDisplayName().getString()
+				);
+			} else {
+				if (stack.getItem().isEnabled(this.enabledFeatures)) {
+					switch (visibility) {
+						case PARENT_AND_SEARCH_TABS:
+							this.parentTabStacks.add(stack);
+							this.searchTabStacks.add(stack);
+							break;
+						case PARENT_TAB_ONLY:
+							this.parentTabStacks.add(stack);
+							break;
+						case SEARCH_TAB_ONLY:
+							this.searchTabStacks.add(stack);
+					}
 				}
 			}
 		}
 
-		return false;
+		public ItemStackSet getParentTabStacks() {
+			return this.parentTabStacks;
+		}
+
+		public ItemStackSet getSearchTabStacks() {
+			return this.searchTabStacks;
+		}
 	}
 
-	public void appendStacks(DefaultedList<ItemStack> stacks) {
-		for (Item item : Registry.ITEM) {
-			item.appendStacks(this, stacks);
-		}
+	protected static enum StackVisibility {
+		PARENT_AND_SEARCH_TABS,
+		PARENT_TAB_ONLY,
+		SEARCH_TAB_ONLY;
 	}
 }

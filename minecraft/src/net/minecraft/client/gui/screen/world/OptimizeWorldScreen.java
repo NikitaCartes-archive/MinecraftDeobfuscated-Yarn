@@ -17,10 +17,12 @@ import net.minecraft.server.SaveLoader;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.GeneratorOptions;
+import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.updater.WorldUpdater;
@@ -45,16 +47,17 @@ public class OptimizeWorldScreen extends Screen {
 		MinecraftClient client, BooleanConsumer callback, DataFixer dataFixer, LevelStorage.Session storageSession, boolean eraseCache
 	) {
 		try {
-			OptimizeWorldScreen var7;
+			OptimizeWorldScreen var8;
 			try (SaveLoader saveLoader = client.createIntegratedServerLoader().createSaveLoader(storageSession, false)) {
 				SaveProperties saveProperties = saveLoader.saveProperties();
-				storageSession.backupLevelDataFile(saveLoader.dynamicRegistryManager(), saveProperties);
-				var7 = new OptimizeWorldScreen(callback, dataFixer, storageSession, saveProperties.getLevelInfo(), eraseCache, saveProperties.getGeneratorOptions());
+				DynamicRegistryManager.Immutable immutable = saveLoader.combinedDynamicRegistries().getCombinedRegistryManager();
+				storageSession.backupLevelDataFile(immutable, saveProperties);
+				var8 = new OptimizeWorldScreen(callback, dataFixer, storageSession, saveProperties.getLevelInfo(), eraseCache, immutable.get(Registry.DIMENSION_KEY));
 			}
 
-			return var7;
-		} catch (Exception var10) {
-			LOGGER.warn("Failed to load datapacks, can't optimize world", (Throwable)var10);
+			return var8;
+		} catch (Exception var11) {
+			LOGGER.warn("Failed to load datapacks, can't optimize world", (Throwable)var11);
 			return null;
 		}
 	}
@@ -65,11 +68,11 @@ public class OptimizeWorldScreen extends Screen {
 		LevelStorage.Session storageSession,
 		LevelInfo levelInfo,
 		boolean eraseCache,
-		GeneratorOptions generatorOptions
+		Registry<DimensionOptions> dimensionOptionsRegistry
 	) {
 		super(Text.translatable("optimizeWorld.title", levelInfo.getLevelName()));
 		this.callback = callback;
-		this.updater = new WorldUpdater(storageSession, dataFixer, generatorOptions, eraseCache);
+		this.updater = new WorldUpdater(storageSession, dataFixer, dimensionOptionsRegistry, eraseCache);
 	}
 
 	@Override

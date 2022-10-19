@@ -105,7 +105,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (this.receiveNeighborFluids(world, pos, state)) {
-			world.createAndScheduleFluidTick(pos, state.getFluidState().getFluid(), this.fluid.getTickRate(world));
+			world.scheduleFluidTick(pos, state.getFluidState().getFluid(), this.fluid.getTickRate(world));
 		}
 	}
 
@@ -114,7 +114,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		if (state.getFluidState().isStill() || neighborState.getFluidState().isStill()) {
-			world.createAndScheduleFluidTick(pos, state.getFluidState().getFluid(), this.fluid.getTickRate(world));
+			world.scheduleFluidTick(pos, state.getFluidState().getFluid(), this.fluid.getTickRate(world));
 		}
 
 		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
@@ -123,7 +123,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 	@Override
 	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
 		if (this.receiveNeighborFluids(world, pos, state)) {
-			world.createAndScheduleFluidTick(pos, state.getFluidState().getFluid(), this.fluid.getTickRate(world));
+			world.scheduleFluidTick(pos, state.getFluidState().getFluid(), this.fluid.getTickRate(world));
 		}
 	}
 

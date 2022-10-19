@@ -93,10 +93,12 @@ public class TurtleEggBlock extends Block {
 				for (int j = 0; j < state.get(EGGS); j++) {
 					world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(state));
 					TurtleEntity turtleEntity = EntityType.TURTLE.create(world);
-					turtleEntity.setBreedingAge(-24000);
-					turtleEntity.setHomePos(pos);
-					turtleEntity.refreshPositionAndAngles((double)pos.getX() + 0.3 + (double)j * 0.2, (double)pos.getY(), (double)pos.getZ() + 0.3, 0.0F, 0.0F);
-					world.spawnEntity(turtleEntity);
+					if (turtleEntity != null) {
+						turtleEntity.setBreedingAge(-24000);
+						turtleEntity.setHomePos(pos);
+						turtleEntity.refreshPositionAndAngles((double)pos.getX() + 0.3 + (double)j * 0.2, (double)pos.getY(), (double)pos.getZ() + 0.3, 0.0F, 0.0F);
+						world.spawnEntity(turtleEntity);
+					}
 				}
 			}
 		}

@@ -1,25 +1,24 @@
 package net.minecraft.client.texture;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
-import java.util.function.Consumer;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class TextureStitcher {
-	private static final Comparator<TextureStitcher.Holder> COMPARATOR = Comparator.comparing(holder -> -holder.height)
+public class TextureStitcher<T extends TextureStitcher.Stitchable> {
+	private static final Comparator<TextureStitcher.Holder<?>> COMPARATOR = Comparator.comparing(holder -> -holder.height)
 		.thenComparing(holder -> -holder.width)
 		.thenComparing(holder -> holder.sprite.getId());
 	private final int mipLevel;
-	private final Set<TextureStitcher.Holder> holders = Sets.<TextureStitcher.Holder>newHashSetWithExpectedSize(256);
-	private final List<TextureStitcher.Slot> slots = Lists.<TextureStitcher.Slot>newArrayListWithCapacity(256);
+	private final List<TextureStitcher.Holder<T>> holders = new ArrayList();
+	private final List<TextureStitcher.Slot<T>> slots = new ArrayList();
 	private int width;
 	private int height;
 	private final int maxWidth;
@@ -39,19 +38,19 @@ public class TextureStitcher {
 		return this.height;
 	}
 
-	public void add(Sprite.Info info) {
-		TextureStitcher.Holder holder = new TextureStitcher.Holder(info, this.mipLevel);
+	public void add(T info) {
+		TextureStitcher.Holder<T> holder = new TextureStitcher.Holder<>(info, this.mipLevel);
 		this.holders.add(holder);
 	}
 
 	public void stitch() {
-		List<TextureStitcher.Holder> list = Lists.<TextureStitcher.Holder>newArrayList(this.holders);
+		List<TextureStitcher.Holder<T>> list = new ArrayList(this.holders);
 		list.sort(COMPARATOR);
 
-		for (TextureStitcher.Holder holder : list) {
+		for (TextureStitcher.Holder<T> holder : list) {
 			if (!this.fit(holder)) {
 				throw new TextureStitcherCannotFitException(
-					holder.sprite, (Collection<Sprite.Info>)list.stream().map(holderx -> holderx.sprite).collect(ImmutableList.toImmutableList())
+					holder.sprite, (Collection<TextureStitcher.Stitchable>)list.stream().map(holderx -> holderx.sprite).collect(ImmutableList.toImmutableList())
 				);
 			}
 		}
@@ -60,13 +59,9 @@ public class TextureStitcher {
 		this.height = MathHelper.smallestEncompassingPowerOfTwo(this.height);
 	}
 
-	public void getStitchedSprites(TextureStitcher.SpriteConsumer consumer) {
-		for (TextureStitcher.Slot slot : this.slots) {
-			slot.addAllFilledSlots(slotx -> {
-				TextureStitcher.Holder holder = slotx.getTexture();
-				Sprite.Info info = holder.sprite;
-				consumer.load(info, this.width, this.height, slotx.getX(), slotx.getY());
-			});
+	public void getStitchedSprites(TextureStitcher.SpriteConsumer<T> consumer) {
+		for (TextureStitcher.Slot<T> slot : this.slots) {
+			slot.addAllFilledSlots(consumer);
 		}
 	}
 
@@ -74,8 +69,8 @@ public class TextureStitcher {
 		return (size >> mipLevel) + ((size & (1 << mipLevel) - 1) == 0 ? 0 : 1) << mipLevel;
 	}
 
-	private boolean fit(TextureStitcher.Holder holder) {
-		for (TextureStitcher.Slot slot : this.slots) {
+	private boolean fit(TextureStitcher.Holder<T> holder) {
+		for (TextureStitcher.Slot<T> slot : this.slots) {
 			if (slot.fit(holder)) {
 				return true;
 			}
@@ -84,7 +79,7 @@ public class TextureStitcher {
 		return this.growAndFit(holder);
 	}
 
-	private boolean growAndFit(TextureStitcher.Holder holder) {
+	private boolean growAndFit(TextureStitcher.Holder<T> holder) {
 		int i = MathHelper.smallestEncompassingPowerOfTwo(this.width);
 		int j = MathHelper.smallestEncompassingPowerOfTwo(this.height);
 		int k = MathHelper.smallestEncompassingPowerOfTwo(this.width + holder.width);
@@ -103,16 +98,16 @@ public class TextureStitcher {
 				bl5 = bl && i <= j;
 			}
 
-			TextureStitcher.Slot slot;
+			TextureStitcher.Slot<T> slot;
 			if (bl5) {
 				if (this.height == 0) {
 					this.height = holder.height;
 				}
 
-				slot = new TextureStitcher.Slot(this.width, 0, holder.width, this.height);
+				slot = new TextureStitcher.Slot<>(this.width, 0, holder.width, this.height);
 				this.width = this.width + holder.width;
 			} else {
-				slot = new TextureStitcher.Slot(0, this.height, this.width, holder.height);
+				slot = new TextureStitcher.Slot<>(0, this.height, this.width, holder.height);
 				this.height = this.height + holder.height;
 			}
 
@@ -123,40 +118,29 @@ public class TextureStitcher {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class Holder {
-		public final Sprite.Info sprite;
-		public final int width;
-		public final int height;
+	static record Holder<T extends TextureStitcher.Stitchable>(T sprite, int width, int height) {
 
-		public Holder(Sprite.Info sprite, int mipLevel) {
-			this.sprite = sprite;
-			this.width = TextureStitcher.applyMipLevel(sprite.getWidth(), mipLevel);
-			this.height = TextureStitcher.applyMipLevel(sprite.getHeight(), mipLevel);
-		}
-
-		public String toString() {
-			return "Holder{width=" + this.width + ", height=" + this.height + "}";
+		public Holder(T sprite, int mipLevel) {
+			this(sprite, TextureStitcher.applyMipLevel(sprite.getWidth(), mipLevel), TextureStitcher.applyMipLevel(sprite.getHeight(), mipLevel));
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Slot {
+	public static class Slot<T extends TextureStitcher.Stitchable> {
 		private final int x;
 		private final int y;
 		private final int width;
 		private final int height;
-		private List<TextureStitcher.Slot> subSlots;
-		private TextureStitcher.Holder texture;
+		@Nullable
+		private List<TextureStitcher.Slot<T>> subSlots;
+		@Nullable
+		private TextureStitcher.Holder<T> texture;
 
 		public Slot(int x, int y, int width, int height) {
 			this.x = x;
 			this.y = y;
 			this.width = width;
 			this.height = height;
-		}
-
-		public TextureStitcher.Holder getTexture() {
-			return this.texture;
 		}
 
 		public int getX() {
@@ -167,7 +151,7 @@ public class TextureStitcher {
 			return this.y;
 		}
 
-		public boolean fit(TextureStitcher.Holder holder) {
+		public boolean fit(TextureStitcher.Holder<T> holder) {
 			if (this.texture != null) {
 				return false;
 			} else {
@@ -179,7 +163,7 @@ public class TextureStitcher {
 						return true;
 					} else {
 						if (this.subSlots == null) {
-							this.subSlots = Lists.<TextureStitcher.Slot>newArrayListWithCapacity(1);
+							this.subSlots = new ArrayList(1);
 							this.subSlots.add(new TextureStitcher.Slot(this.x, this.y, i, j));
 							int k = this.width - i;
 							int l = this.height - j;
@@ -200,7 +184,7 @@ public class TextureStitcher {
 							}
 						}
 
-						for (TextureStitcher.Slot slot : this.subSlots) {
+						for (TextureStitcher.Slot<T> slot : this.subSlots) {
 							if (slot.fit(holder)) {
 								return true;
 							}
@@ -214,12 +198,12 @@ public class TextureStitcher {
 			}
 		}
 
-		public void addAllFilledSlots(Consumer<TextureStitcher.Slot> slotConsumer) {
+		public void addAllFilledSlots(TextureStitcher.SpriteConsumer<T> consumer) {
 			if (this.texture != null) {
-				slotConsumer.accept(this);
+				consumer.load(this.texture.sprite, this.getX(), this.getY());
 			} else if (this.subSlots != null) {
-				for (TextureStitcher.Slot slot : this.subSlots) {
-					slot.addAllFilledSlots(slotConsumer);
+				for (TextureStitcher.Slot<T> slot : this.subSlots) {
+					slot.addAllFilledSlots(consumer);
 				}
 			}
 		}
@@ -242,7 +226,16 @@ public class TextureStitcher {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public interface SpriteConsumer {
-		void load(Sprite.Info info, int width, int height, int x, int y);
+	public interface SpriteConsumer<T extends TextureStitcher.Stitchable> {
+		void load(T info, int width, int height);
+	}
+
+	@Environment(EnvType.CLIENT)
+	public interface Stitchable {
+		int getWidth();
+
+		int getHeight();
+
+		Identifier getId();
 	}
 }

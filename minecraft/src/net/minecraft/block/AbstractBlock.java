@@ -31,6 +31,10 @@ import net.minecraft.loot.LootTables;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.resource.featuretoggle.FeatureFlag;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
+import net.minecraft.resource.featuretoggle.FeatureSet;
+import net.minecraft.resource.featuretoggle.ToggleableFeature;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
@@ -289,7 +293,7 @@ import net.minecraft.world.WorldView;
  * <li>Called before {@link #getDroppedStacks getDroppedStacks} in this case.</li>
  * </ol>
  */
-public abstract class AbstractBlock {
+public abstract class AbstractBlock implements ToggleableFeature {
 	protected static final Direction[] DIRECTIONS = new Direction[]{
 		Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH, Direction.DOWN, Direction.UP
 	};
@@ -302,6 +306,7 @@ public abstract class AbstractBlock {
 	protected final float velocityMultiplier;
 	protected final float jumpVelocityMultiplier;
 	protected final boolean dynamicBounds;
+	protected final FeatureSet requiredFeatures;
 	protected final AbstractBlock.Settings settings;
 	@Nullable
 	protected Identifier lootTableId;
@@ -317,6 +322,7 @@ public abstract class AbstractBlock {
 		this.velocityMultiplier = settings.velocityMultiplier;
 		this.jumpVelocityMultiplier = settings.jumpVelocityMultiplier;
 		this.dynamicBounds = settings.dynamicBounds;
+		this.requiredFeatures = settings.requiredFeatures;
 		this.settings = settings;
 	}
 
@@ -614,6 +620,11 @@ public abstract class AbstractBlock {
 		return 0.2F;
 	}
 
+	@Override
+	public FeatureSet getRequiredFeatures() {
+		return this.requiredFeatures;
+	}
+
 	/**
 	 * {@return {@code state} rotated by {@code rotation}}
 	 * 
@@ -907,7 +918,7 @@ public abstract class AbstractBlock {
 	/**
 	 * Called server-side when a block receives a scheduled tick. This can be used like a timer.
 	 * Scheduled ticks are added using {@link
-	 * WorldAccess#createAndScheduleBlockTick(BlockPos, Block, int)}. Additionally, {@link
+	 * WorldAccess#scheduleBlockTick(BlockPos, Block, int)}. Additionally, {@link
 	 * #randomTick} by default calls this method; override {@link #randomTick} to disable this
 	 * behavior.
 	 * 
@@ -925,7 +936,7 @@ public abstract class AbstractBlock {
 	 * 
 	 * @deprecated Consider calling {@link AbstractBlockState#scheduledTick} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
 	 * 
-	 * @see WorldAccess#createAndScheduleBlockTick(BlockPos, Block, int)
+	 * @see WorldAccess#scheduleBlockTick(BlockPos, Block, int)
 	 * @see #getStateForNeighborUpdate
 	 * @see #randomTick
 	 */
@@ -955,11 +966,11 @@ public abstract class AbstractBlock {
 	 * 
 	 * <p>Experience orbs should only be dropped if {@code dropExperience} is {@code true}.
 	 * {@link Block#dropExperienceWhenMined} can be used to drop experience orbs.
-	 * {@link OreBlock} provides the implementation for experience-dropping blocks.
+	 * {@link ExperienceDroppingBlock} provides the implementation for experience-dropping blocks.
 	 * 
 	 * @deprecated Consider calling {@link AbstractBlockState#onStacksDropped} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
 	 * 
-	 * @see OreBlock
+	 * @see ExperienceDroppingBlock
 	 * @see Block#dropExperienceWhenMined
 	 * @see #getDroppedStacks
 	 * @see #onStateReplaced
@@ -989,7 +1000,7 @@ public abstract class AbstractBlock {
 	 * 
 	 * <p>Weak redstone power is a power that cannot power a redstone wire when a solid block
 	 * is in between. For example, {@link RedstoneBlock} and {@link TargetBlock} emits weak
-	 * redstone power only. {@link LeverBlock} and {@link AbstractButtonBlock} emits both
+	 * redstone power only. {@link LeverBlock} and {@link ButtonBlock} emits both
 	 * weak and strong redstone power depending on the direction.
 	 * 
 	 * @deprecated Consider calling {@link AbstractBlockState#getWeakRedstonePower} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
@@ -1038,7 +1049,7 @@ public abstract class AbstractBlock {
 	 * 
 	 * <p>Strong redstone power is a power that can power a redstone wire when a solid block
 	 * is in between. For example, {@link RedstoneBlock} and {@link TargetBlock} emits weak
-	 * redstone power only. {@link LeverBlock} and {@link AbstractButtonBlock} emits both
+	 * redstone power only. {@link LeverBlock} and {@link ButtonBlock} emits both
 	 * weak and strong redstone power.
 	 * 
 	 * @deprecated Consider calling {@link AbstractBlockState#getStrongRedstonePower} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
@@ -1055,7 +1066,7 @@ public abstract class AbstractBlock {
 	public final Identifier getLootTableId() {
 		if (this.lootTableId == null) {
 			Identifier identifier = Registry.BLOCK.getId(this.asBlock());
-			this.lootTableId = new Identifier(identifier.getNamespace(), "blocks/" + identifier.getPath());
+			this.lootTableId = identifier.withPrefixedPath("blocks/");
 		}
 
 		return this.lootTableId;
@@ -1125,8 +1136,11 @@ public abstract class AbstractBlock {
 		private final AbstractBlock.ContextPredicate postProcessPredicate;
 		private final AbstractBlock.ContextPredicate emissiveLightingPredicate;
 		private final AbstractBlock.OffsetType offsetType;
+		private final boolean blockBreakParticles;
 		@Nullable
 		protected AbstractBlock.AbstractBlockState.ShapeCache shapeCache;
+		private FluidState fluidState = Fluids.EMPTY.getDefaultState();
+		private boolean ticksRandomly;
 
 		protected AbstractBlockState(Block block, ImmutableMap<Property<?>, Comparable<?>> propertyMap, MapCodec<BlockState> codec) {
 			super(block, propertyMap, codec);
@@ -1145,12 +1159,16 @@ public abstract class AbstractBlock {
 			this.postProcessPredicate = settings.postProcessPredicate;
 			this.emissiveLightingPredicate = settings.emissiveLightingPredicate;
 			this.offsetType = (AbstractBlock.OffsetType)settings.offsetType.apply(this.asBlockState());
+			this.blockBreakParticles = settings.blockBreakParticles;
 		}
 
 		public void initShapeCache() {
 			if (!this.getBlock().hasDynamicBounds()) {
 				this.shapeCache = new AbstractBlock.AbstractBlockState.ShapeCache(this.asBlockState());
 			}
+
+			this.fluidState = this.owner.getFluidState(this.asBlockState());
+			this.ticksRandomly = this.owner.hasRandomTicks(this.asBlockState());
 		}
 
 		public Block getBlock() {
@@ -1437,6 +1455,10 @@ public abstract class AbstractBlock {
 			return this.getBlock().canBucketPlace(this.asBlockState(), fluid);
 		}
 
+		public boolean isReplaceable() {
+			return this.getMaterial().isReplaceable();
+		}
+
 		public boolean canPlaceAt(WorldView world, BlockPos pos) {
 			return this.getBlock().canPlaceAt(this.asBlockState(), world, pos);
 		}
@@ -1480,11 +1502,11 @@ public abstract class AbstractBlock {
 		}
 
 		public FluidState getFluidState() {
-			return this.getBlock().getFluidState(this.asBlockState());
+			return this.fluidState;
 		}
 
 		public boolean hasRandomTicks() {
-			return this.getBlock().hasRandomTicks(this.asBlockState());
+			return this.ticksRandomly;
 		}
 
 		public long getRenderingSeed(BlockPos pos) {
@@ -1519,6 +1541,10 @@ public abstract class AbstractBlock {
 
 		public AbstractBlock.OffsetType getOffsetType() {
 			return this.offsetType;
+		}
+
+		public boolean hasBlockBreakParticles() {
+			return this.blockBreakParticles;
 		}
 
 		static final class ShapeCache {
@@ -1608,6 +1634,7 @@ public abstract class AbstractBlock {
 		Identifier lootTableId;
 		boolean opaque = true;
 		boolean isAir;
+		boolean blockBreakParticles = true;
 		AbstractBlock.TypedContextPredicate<EntityType<?>> allowsSpawningPredicate = (state, world, pos, type) -> state.isSideSolidFullSquare(
 					world, pos, Direction.UP
 				)
@@ -1618,6 +1645,7 @@ public abstract class AbstractBlock {
 		AbstractBlock.ContextPredicate postProcessPredicate = (state, world, pos) -> false;
 		AbstractBlock.ContextPredicate emissiveLightingPredicate = (state, world, pos) -> false;
 		boolean dynamicBounds;
+		FeatureSet requiredFeatures = FeatureFlags.VANILLA_FEATURES;
 		Function<BlockState, AbstractBlock.OffsetType> offsetType = state -> AbstractBlock.OffsetType.NONE;
 
 		private Settings(Material material, MapColor mapColorProvider) {
@@ -1662,6 +1690,8 @@ public abstract class AbstractBlock {
 			settings.isAir = block.settings.isAir;
 			settings.toolRequired = block.settings.toolRequired;
 			settings.offsetType = block.settings.offsetType;
+			settings.blockBreakParticles = block.settings.blockBreakParticles;
+			settings.requiredFeatures = block.settings.requiredFeatures;
 			return settings;
 		}
 
@@ -1829,6 +1859,16 @@ public abstract class AbstractBlock {
 
 		public AbstractBlock.Settings offsetType(Function<BlockState, AbstractBlock.OffsetType> offsetType) {
 			this.offsetType = offsetType;
+			return this;
+		}
+
+		public AbstractBlock.Settings noBlockBreakParticles() {
+			this.blockBreakParticles = false;
+			return this;
+		}
+
+		public AbstractBlock.Settings requires(FeatureFlag... features) {
+			this.requiredFeatures = FeatureFlags.FEATURE_MANAGER.featureSetOf(features);
 			return this;
 		}
 	}

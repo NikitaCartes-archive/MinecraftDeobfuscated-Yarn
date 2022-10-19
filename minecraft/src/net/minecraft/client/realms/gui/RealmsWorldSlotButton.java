@@ -21,7 +21,7 @@ import net.minecraft.util.Identifier;
 public class RealmsWorldSlotButton extends ButtonWidget {
 	public static final Identifier SLOT_FRAME = new Identifier("realms", "textures/gui/realms/slot_frame.png");
 	public static final Identifier EMPTY_FRAME = new Identifier("realms", "textures/gui/realms/empty_frame.png");
-	public static final Identifier CHECKMARK = new Identifier("realms", "textures/gui/realms/checkmark.png");
+	public static final Identifier CHECKMARK = new Identifier("minecraft", "textures/gui/checkmark.png");
 	public static final Identifier PANORAMA_0 = new Identifier("minecraft", "textures/gui/title/background/panorama_0.png");
 	public static final Identifier PANORAMA_2 = new Identifier("minecraft", "textures/gui/title/background/panorama_2.png");
 	public static final Identifier PANORAMA_3 = new Identifier("minecraft", "textures/gui/title/background/panorama_3.png");

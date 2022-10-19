@@ -11,7 +11,7 @@ import net.minecraft.world.gen.heightprovider.HeightProvider;
 public class CaveCarverConfig extends CarverConfig {
 	public static final Codec<CaveCarverConfig> CAVE_CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					CarverConfig.CONFIG_CODEC.forGetter(caveCarverConfig -> caveCarverConfig),
+					CarverConfig.CONFIG_CODEC.forGetter(config -> config),
 					FloatProvider.VALUE_CODEC.fieldOf("horizontal_radius_multiplier").forGetter(config -> config.horizontalRadiusMultiplier),
 					FloatProvider.VALUE_CODEC.fieldOf("vertical_radius_multiplier").forGetter(config -> config.verticalRadiusMultiplier),
 					FloatProvider.createValidatedCodec(-1.0F, 1.0F).fieldOf("floor_level").forGetter(config -> config.floorLevel)

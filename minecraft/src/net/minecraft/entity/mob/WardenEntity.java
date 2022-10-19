@@ -44,6 +44,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.Packet;
+import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -111,9 +112,7 @@ public class WardenEntity extends HostileEntity implements VibrationListener.Cal
 
 	public WardenEntity(EntityType<? extends HostileEntity> entityType, World world) {
 		super(entityType, world);
-		this.gameEventHandler = new EntityGameEventHandler<>(
-			new VibrationListener(new EntityPositionSource(this, this.getStandingEyeHeight()), 16, this, null, 0.0F, 0)
-		);
+		this.gameEventHandler = new EntityGameEventHandler<>(new VibrationListener(new EntityPositionSource(this, this.getStandingEyeHeight()), 16, this));
 		this.experiencePoints = 5;
 		this.getNavigation().setCanSwim(true);
 		this.setPathfindingPenalty(PathNodeType.UNPASSABLE_RAIL, 0.0F);
@@ -125,7 +124,7 @@ public class WardenEntity extends HostileEntity implements VibrationListener.Cal
 	}
 
 	@Override
-	public Packet<?> createSpawnPacket() {
+	public Packet<ClientPlayPacketListener> createSpawnPacket() {
 		return new EntitySpawnS2CPacket((LivingEntity)this, this.isInPose(EntityPose.EMERGING) ? 1 : 0);
 	}
 
@@ -564,9 +563,7 @@ public class WardenEntity extends HostileEntity implements VibrationListener.Cal
 			&& !this.isDead()
 			&& !this.getBrain().hasMemoryModule(MemoryModuleType.VIBRATION_COOLDOWN)
 			&& !this.isDiggingOrEmerging()
-			&& world.getWorldBorder().contains(pos)
-			&& !this.isRemoved()
-			&& this.world == world) {
+			&& world.getWorldBorder().contains(pos)) {
 			if (emitter.sourceEntity() instanceof LivingEntity livingEntity && !this.isValidTarget(livingEntity)) {
 				return false;
 			}

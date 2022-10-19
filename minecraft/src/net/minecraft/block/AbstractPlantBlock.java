@@ -28,7 +28,7 @@ public abstract class AbstractPlantBlock extends AbstractPlantPartBlock implemen
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		if (direction == this.growthDirection.getOpposite() && !state.canPlaceAt(world, pos)) {
-			world.createAndScheduleBlockTick(pos, this, 1);
+			world.scheduleBlockTick(pos, this, 1);
 		}
 
 		AbstractPlantStemBlock abstractPlantStemBlock = this.getStem();
@@ -36,7 +36,7 @@ public abstract class AbstractPlantBlock extends AbstractPlantPartBlock implemen
 			return this.copyState(state, abstractPlantStemBlock.getRandomGrowthState(world));
 		} else {
 			if (this.tickWater) {
-				world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+				world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 			}
 
 			return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);

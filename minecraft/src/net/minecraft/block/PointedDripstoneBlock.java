@@ -95,7 +95,7 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		if ((Boolean)state.get(WATERLOGGED)) {
-			world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+			world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
 		if (direction != Direction.UP && direction != Direction.DOWN) {
@@ -106,9 +106,9 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 				return state;
 			} else if (direction == direction2.getOpposite() && !this.canPlaceAt(state, world, pos)) {
 				if (direction2 == Direction.DOWN) {
-					world.createAndScheduleBlockTick(pos, this, 2);
+					world.scheduleBlockTick(pos, this, 2);
 				} else {
-					world.createAndScheduleBlockTick(pos, this, 1);
+					world.scheduleBlockTick(pos, this, 1);
 				}
 
 				return state;
@@ -200,7 +200,7 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 									int i = blockPos.getY() - blockPos2.getY();
 									int j = 50 + i;
 									BlockState blockState2 = world.getBlockState(blockPos2);
-									world.createAndScheduleBlockTick(blockPos2, blockState2.getBlock(), j);
+									world.scheduleBlockTick(blockPos2, blockState2.getBlock(), j);
 								}
 							}
 						}

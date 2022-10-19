@@ -7,6 +7,7 @@ import com.mojang.serialization.Lifecycle;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -18,14 +19,12 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.client.gui.screen.world.EditWorldScreen;
 import net.minecraft.client.toast.SystemToast;
+import net.minecraft.client.world.GeneratorOptionsHolder;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.resource.DataPackSettings;
-import net.minecraft.resource.FileResourcePackProvider;
+import net.minecraft.resource.DataConfiguration;
 import net.minecraft.resource.LifecycledResourceManager;
 import net.minecraft.resource.ResourcePackManager;
-import net.minecraft.resource.ResourcePackSource;
-import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.VanillaDataPackProvider;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.DataPackContents;
@@ -34,11 +33,16 @@ import net.minecraft.server.SaveLoading;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
-import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.dynamic.RegistryOps;
+import net.minecraft.util.registry.CombinedDynamicRegistries;
 import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.ServerDynamicRegistryType;
+import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraft.world.SaveProperties;
+import net.minecraft.world.dimension.DimensionOptions;
+import net.minecraft.world.dimension.DimensionOptionsRegistryHolder;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
@@ -60,17 +64,32 @@ public class IntegratedServerLoader {
 		this.start(parent, levelName, false, true);
 	}
 
-	public void createAndStart(String levelName, LevelInfo levelInfo, DynamicRegistryManager dynamicRegistryManager, GeneratorOptions generatorOptions) {
+	public void createAndStart(
+		String levelName,
+		LevelInfo levelInfo,
+		GeneratorOptions dynamicRegistryManager,
+		Function<DynamicRegistryManager, DimensionOptionsRegistryHolder> dimensionsRegistrySupplier
+	) {
 		LevelStorage.Session session = this.createSession(levelName);
 		if (session != null) {
-			ResourcePackManager resourcePackManager = createDataPackManager(session);
-			DataPackSettings dataPackSettings = levelInfo.getDataPackSettings();
+			ResourcePackManager resourcePackManager = VanillaDataPackProvider.createManager(session);
+			DataConfiguration dataConfiguration = levelInfo.getDataConfiguration();
 
 			try {
-				SaveLoading.DataPacks dataPacks = new SaveLoading.DataPacks(resourcePackManager, dataPackSettings, false);
-				SaveLoader saveLoader = this.createSaveLoader(
+				SaveLoading.DataPacks dataPacks = new SaveLoading.DataPacks(resourcePackManager, dataConfiguration, false, false);
+				SaveLoader saveLoader = this.load(
 					dataPacks,
-					(resourceManager, dataPackSettingsx) -> Pair.of(new LevelProperties(levelInfo, generatorOptions, Lifecycle.stable()), dynamicRegistryManager.toImmutable())
+					context -> {
+						DimensionOptionsRegistryHolder.DimensionsConfig dimensionsConfig = ((DimensionOptionsRegistryHolder)dimensionsRegistrySupplier.apply(
+								context.worldGenRegistryManager()
+							))
+							.toConfig(context.dimensionsRegistryManager().get(Registry.DIMENSION_KEY));
+						return new SaveLoading.LoadContext<>(
+							new LevelProperties(levelInfo, dynamicRegistryManager, dimensionsConfig.specialWorldProperty(), dimensionsConfig.getLifecycle()),
+							dimensionsConfig.toDynamicRegistryManager()
+						);
+					},
+					SaveLoader::new
 				);
 				this.client.startIntegratedServer(levelName, session, resourcePackManager, saveLoader);
 			} catch (Exception var10) {
@@ -93,10 +112,13 @@ public class IntegratedServerLoader {
 	}
 
 	public void start(
-		LevelStorage.Session session, DataPackContents dataPackContents, DynamicRegistryManager.Immutable dynamicRegistryManager, SaveProperties saveProperties
+		LevelStorage.Session session,
+		DataPackContents dataPackContents,
+		CombinedDynamicRegistries<ServerDynamicRegistryType> dynamicRegistryManager,
+		SaveProperties saveProperties
 	) {
-		ResourcePackManager resourcePackManager = createDataPackManager(session);
-		LifecycledResourceManager lifecycledResourceManager = new SaveLoading.DataPacks(resourcePackManager, saveProperties.getDataPackSettings(), false)
+		ResourcePackManager resourcePackManager = VanillaDataPackProvider.createManager(session);
+		LifecycledResourceManager lifecycledResourceManager = new SaveLoading.DataPacks(resourcePackManager, saveProperties.getDataConfiguration(), false, false)
 			.load()
 			.getSecond();
 		this.client
@@ -108,55 +130,100 @@ public class IntegratedServerLoader {
 			);
 	}
 
-	private static ResourcePackManager createDataPackManager(LevelStorage.Session session) {
-		return new ResourcePackManager(
-			ResourceType.SERVER_DATA,
-			new VanillaDataPackProvider(),
-			new FileResourcePackProvider(session.getDirectory(WorldSavePath.DATAPACKS).toFile(), ResourcePackSource.PACK_SOURCE_WORLD)
+	private SaveLoader createSaveLoader(LevelStorage.Session session, boolean safeMode, ResourcePackManager dataPackManager) throws Exception {
+		SaveLoading.DataPacks dataPacks = this.createDataPackConfig(session, safeMode, dataPackManager);
+		return this.load(
+			dataPacks,
+			context -> {
+				DynamicOps<NbtElement> dynamicOps = RegistryOps.of(NbtOps.INSTANCE, context.worldGenRegistryManager());
+				Registry<DimensionOptions> registry = context.dimensionsRegistryManager().get(Registry.DIMENSION_KEY);
+				Pair<SaveProperties, DimensionOptionsRegistryHolder.DimensionsConfig> pair = session.readLevelProperties(
+					dynamicOps, context.dataConfiguration(), registry, context.worldGenRegistryManager().getRegistryLifecycle()
+				);
+				if (pair == null) {
+					throw new IllegalStateException("Failed to load world");
+				} else {
+					return new SaveLoading.LoadContext<>(pair.getFirst(), pair.getSecond().toDynamicRegistryManager());
+				}
+			},
+			SaveLoader::new
 		);
 	}
 
-	private SaveLoader createSaveLoader(LevelStorage.Session session, boolean safeMode, ResourcePackManager dataPackManager) throws Exception {
-		DataPackSettings dataPackSettings = session.getDataPackSettings();
-		if (dataPackSettings == null) {
-			throw new IllegalStateException("Failed to load data pack config");
-		} else {
-			SaveLoading.DataPacks dataPacks = new SaveLoading.DataPacks(dataPackManager, dataPackSettings, safeMode);
-			return this.createSaveLoader(dataPacks, (resourceManager, dataPackSettingsx) -> {
-				DynamicRegistryManager.Mutable mutable = DynamicRegistryManager.createAndLoad();
-				DynamicOps<NbtElement> dynamicOps = RegistryOps.ofLoaded(NbtOps.INSTANCE, mutable, resourceManager);
-				SaveProperties saveProperties = session.readLevelProperties(dynamicOps, dataPackSettingsx, mutable.getRegistryLifecycle());
-				if (saveProperties == null) {
+	public Pair<LevelInfo, GeneratorOptionsHolder> loadForRecreation(LevelStorage.Session session) throws Exception {
+		ResourcePackManager resourcePackManager = VanillaDataPackProvider.createManager(session);
+		SaveLoading.DataPacks dataPacks = this.createDataPackConfig(session, false, resourcePackManager);
+
+		@Environment(EnvType.CLIENT)
+		record CurrentSettings(LevelInfo levelInfo, GeneratorOptions options, Registry<DimensionOptions> existingDimensionRegistry) {
+		}
+
+		return this.load(
+			dataPacks,
+			context -> {
+				DynamicOps<NbtElement> dynamicOps = RegistryOps.of(NbtOps.INSTANCE, context.worldGenRegistryManager());
+				Registry<DimensionOptions> registry = new SimpleRegistry<>(Registry.DIMENSION_KEY, Lifecycle.stable()).freeze();
+				Pair<SaveProperties, DimensionOptionsRegistryHolder.DimensionsConfig> pair = session.readLevelProperties(
+					dynamicOps, context.dataConfiguration(), registry, context.worldGenRegistryManager().getRegistryLifecycle()
+				);
+				if (pair == null) {
 					throw new IllegalStateException("Failed to load world");
 				} else {
-					return Pair.of(saveProperties, mutable.toImmutable());
+					return new SaveLoading.LoadContext<>(
+						new CurrentSettings(pair.getFirst().getLevelInfo(), pair.getFirst().getGeneratorOptions(), pair.getSecond().dimensions()),
+						context.dimensionsRegistryManager()
+					);
 				}
-			});
+			},
+			(resourceManager, dataPackContents, combinedRegistryManager, currentSettings) -> {
+				resourceManager.close();
+				return Pair.of(
+					currentSettings.levelInfo,
+					new GeneratorOptionsHolder(
+						currentSettings.options,
+						new DimensionOptionsRegistryHolder(currentSettings.existingDimensionRegistry),
+						combinedRegistryManager,
+						dataPackContents,
+						currentSettings.levelInfo.getDataConfiguration()
+					)
+				);
+			}
+		);
+	}
+
+	private SaveLoading.DataPacks createDataPackConfig(LevelStorage.Session session, boolean safeMode, ResourcePackManager dataPackManager) {
+		DataConfiguration dataConfiguration = session.getDataPackSettings();
+		if (dataConfiguration == null) {
+			throw new IllegalStateException("Failed to load data pack config");
+		} else {
+			return new SaveLoading.DataPacks(dataPackManager, dataConfiguration, safeMode, false);
 		}
 	}
 
 	public SaveLoader createSaveLoader(LevelStorage.Session session, boolean safeMode) throws Exception {
-		ResourcePackManager resourcePackManager = createDataPackManager(session);
+		ResourcePackManager resourcePackManager = VanillaDataPackProvider.createManager(session);
 		return this.createSaveLoader(session, safeMode, resourcePackManager);
 	}
 
-	private SaveLoader createSaveLoader(SaveLoading.DataPacks dataPacks, SaveLoading.LoadContextSupplier<SaveProperties> savePropertiesSupplier) throws Exception {
+	private <D, R> R load(
+		SaveLoading.DataPacks dataPacks, SaveLoading.LoadContextSupplier<D> loadContextSupplier, SaveLoading.SaveApplierFactory<D, R> saveApplierFactory
+	) throws Exception {
 		SaveLoading.ServerConfig serverConfig = new SaveLoading.ServerConfig(dataPacks, CommandManager.RegistrationEnvironment.INTEGRATED, 2);
-		CompletableFuture<SaveLoader> completableFuture = SaveLoader.load(serverConfig, savePropertiesSupplier, Util.getMainWorkerExecutor(), this.client);
+		CompletableFuture<R> completableFuture = SaveLoading.load(serverConfig, loadContextSupplier, saveApplierFactory, Util.getMainWorkerExecutor(), this.client);
 		this.client.runTasks(completableFuture::isDone);
-		return (SaveLoader)completableFuture.get();
+		return (R)completableFuture.get();
 	}
 
 	private void start(Screen parent, String levelName, boolean safeMode, boolean canShowBackupPrompt) {
 		LevelStorage.Session session = this.createSession(levelName);
 		if (session != null) {
-			ResourcePackManager resourcePackManager = createDataPackManager(session);
+			ResourcePackManager resourcePackManager = VanillaDataPackProvider.createManager(session);
 
 			SaveLoader saveLoader;
 			try {
 				saveLoader = this.createSaveLoader(session, safeMode, resourcePackManager);
 			} catch (Exception var11) {
-				LOGGER.warn("Failed to load datapacks, can't proceed with server load", (Throwable)var11);
+				LOGGER.warn("Failed to load level data or datapacks, can't proceed with server load", (Throwable)var11);
 				this.client.setScreen(new DatapackFailureScreen(() -> this.start(parent, levelName, true, canShowBackupPrompt)));
 				close(session, levelName);
 				return;
@@ -166,7 +233,7 @@ public class IntegratedServerLoader {
 			boolean bl = saveProperties.getGeneratorOptions().isLegacyCustomizedType();
 			boolean bl2 = saveProperties.getLifecycle() != Lifecycle.stable();
 			if (!canShowBackupPrompt || !bl && !bl2) {
-				this.client.getResourcePackProvider().loadServerPack(session).thenApply(void_ -> true).exceptionallyComposeAsync(throwable -> {
+				this.client.getServerResourcePackProvider().loadServerPack(session).thenApply(void_ -> true).exceptionallyComposeAsync(throwable -> {
 					LOGGER.warn("Failed to load pack: ", throwable);
 					return this.showPackLoadFailureScreen();
 				}, this.client).thenAcceptAsync(proceed -> {
@@ -175,7 +242,7 @@ public class IntegratedServerLoader {
 					} else {
 						saveLoader.close();
 						close(session, levelName);
-						this.client.getResourcePackProvider().clear().thenRunAsync(() -> this.client.setScreen(parent), this.client);
+						this.client.getServerResourcePackProvider().clear().thenRunAsync(() -> this.client.setScreen(parent), this.client);
 					}
 				}, this.client).exceptionally(throwable -> {
 					this.client.setCrashReportSupplierAndAddDetails(CrashReport.create(throwable, "Load world"));
@@ -245,18 +312,12 @@ public class IntegratedServerLoader {
 		} else if (lifecycle == Lifecycle.experimental()) {
 			client.setScreen(
 				new ConfirmScreen(
-					booleanConsumer,
-					Text.translatable("selectWorld.import_worldgen_settings.experimental.title"),
-					Text.translatable("selectWorld.import_worldgen_settings.experimental.question")
+					booleanConsumer, Text.translatable("selectWorld.warning.experimental.title"), Text.translatable("selectWorld.warning.experimental.question")
 				)
 			);
 		} else {
 			client.setScreen(
-				new ConfirmScreen(
-					booleanConsumer,
-					Text.translatable("selectWorld.import_worldgen_settings.deprecated.title"),
-					Text.translatable("selectWorld.import_worldgen_settings.deprecated.question")
-				)
+				new ConfirmScreen(booleanConsumer, Text.translatable("selectWorld.warning.deprecated.title"), Text.translatable("selectWorld.warning.deprecated.question"))
 			);
 		}
 	}

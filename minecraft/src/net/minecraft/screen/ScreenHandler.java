@@ -21,6 +21,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -650,7 +651,7 @@ public abstract class ScreenHandler {
 				ItemStack itemStack = slot.getStack();
 				ItemStack itemStack5 = this.getCursorStack();
 				player.onPickupSlotClick(itemStack5, slot.getStack(), clickType);
-				if (!itemStack5.onStackClicked(slot, clickType, player) && !itemStack.onClicked(itemStack5, slot, clickType, player, this.getCursorStackReference())) {
+				if (!this.method_45409(player, clickType, slot, itemStack, itemStack5)) {
 					if (itemStack.isEmpty()) {
 						if (!itemStack5.isEmpty()) {
 							int n = clickType == ClickType.LEFT ? itemStack5.getCount() : 1;
@@ -754,6 +755,13 @@ public abstract class ScreenHandler {
 				}
 			}
 		}
+	}
+
+	private boolean method_45409(PlayerEntity playerEntity, ClickType clickType, Slot slot, ItemStack itemStack, ItemStack itemStack2) {
+		FeatureSet featureSet = playerEntity.getWorld().getEnabledFeatures();
+		return itemStack2.isItemEnabled(featureSet) && itemStack2.onStackClicked(slot, clickType, playerEntity)
+			? true
+			: itemStack.isItemEnabled(featureSet) && itemStack.onClicked(itemStack2, slot, clickType, playerEntity, this.getCursorStackReference());
 	}
 
 	/**

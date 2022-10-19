@@ -1205,11 +1205,13 @@ public class WoodlandMansionGenerator {
 				}
 
 				for (MobEntity mobEntity : list) {
-					mobEntity.setPersistent();
-					mobEntity.refreshPositionAndAngles(pos, 0.0F, 0.0F);
-					mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), SpawnReason.STRUCTURE, null, null);
-					world.spawnEntityAndPassengers(mobEntity);
-					world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
+					if (mobEntity != null) {
+						mobEntity.setPersistent();
+						mobEntity.refreshPositionAndAngles(pos, 0.0F, 0.0F);
+						mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), SpawnReason.STRUCTURE, null, null);
+						world.spawnEntityAndPassengers(mobEntity);
+						world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
+					}
 				}
 			}
 		}

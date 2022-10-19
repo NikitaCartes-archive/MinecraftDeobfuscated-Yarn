@@ -24,11 +24,11 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.network.encryption.ClientPlayerSession;
 import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.encryption.PlayerKeyPair;
 import net.minecraft.network.encryption.PlayerPublicKey;
-import net.minecraft.network.encryption.Signer;
 import net.minecraft.util.Util;
 import org.slf4j.Logger;
 
@@ -41,7 +41,7 @@ public class ProfileKeys {
 	private static final Path PROFILE_KEYS_PATH = Path.of("profilekeys");
 	private final UserApiService userApiService;
 	private final Path jsonPath;
-	private CompletableFuture<Optional<ProfileKeys.SignableKey>> keyFuture;
+	private CompletableFuture<Optional<PlayerKeyPair>> keyFuture;
 
 	public ProfileKeys(UserApiService userApiService, UUID uuid, Path root) {
 		this.userApiService = userApiService;
@@ -52,19 +52,16 @@ public class ProfileKeys {
 			.thenCompose(this::getKeyPair);
 	}
 
-	public CompletableFuture<Optional<PlayerPublicKey.PublicKeyData>> refresh() {
-		this.keyFuture = this.keyFuture.thenCompose(key -> {
-			Optional<PlayerKeyPair> optional = key.map(ProfileKeys.SignableKey::keyPair);
-			return this.getKeyPair(optional);
-		});
-		return this.keyFuture.thenApply(maybeKey -> maybeKey.map(key -> key.keyPair().publicKey().data()));
+	public CompletableFuture<ClientPlayerSession> getClientSession() {
+		this.keyFuture = this.keyFuture.thenCompose(this::getKeyPair);
+		return this.keyFuture.thenApply(key -> ClientPlayerSession.create((PlayerKeyPair)key.orElse(null)));
 	}
 
 	/**
 	 * Gets the key pair from the file cache, or if it is unavailable or expired,
 	 * the Mojang server.
 	 */
-	private CompletableFuture<Optional<ProfileKeys.SignableKey>> getKeyPair(Optional<PlayerKeyPair> currentKey) {
+	private CompletableFuture<Optional<PlayerKeyPair>> getKeyPair(Optional<PlayerKeyPair> currentKey) {
 		return CompletableFuture.supplyAsync(() -> {
 			if (currentKey.isPresent() && !((PlayerKeyPair)currentKey.get()).isExpired()) {
 				if (SharedConstants.isDevelopment) {
@@ -83,7 +80,7 @@ public class ProfileKeys {
 				this.saveKeyPairToFile(null);
 				return currentKey;
 			}
-		}, Util.getMainWorkerExecutor()).thenApply(key -> key.map(ProfileKeys.SignableKey::new));
+		}, Util.getMainWorkerExecutor());
 	}
 
 	/**
@@ -192,29 +189,6 @@ public class ProfileKeys {
 			}
 		} else {
 			throw new NetworkEncryptionException(new MissingException());
-		}
-	}
-
-	/**
-	 * {@return the signer, or {@code null} if there is no key pair associated with the profile}
-	 */
-	@Nullable
-	public Signer getSigner() {
-		return (Signer)((Optional)this.keyFuture.join()).map(ProfileKeys.SignableKey::signer).orElse(null);
-	}
-
-	/**
-	 * {@return the public key, or {@link java.util.Optional#empty} if there is no
-	 * public key associated with the profile}
-	 */
-	public Optional<PlayerPublicKey> getPublicKey() {
-		return ((Optional)this.keyFuture.join()).map(key -> key.keyPair().publicKey());
-	}
-
-	@Environment(EnvType.CLIENT)
-	static record SignableKey(PlayerKeyPair keyPair, Signer signer) {
-		public SignableKey(PlayerKeyPair keyPair) {
-			this(keyPair, Signer.create(keyPair.privateKey(), "SHA256withRSA"));
 		}
 	}
 }

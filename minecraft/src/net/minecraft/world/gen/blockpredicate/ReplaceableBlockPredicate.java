@@ -16,7 +16,7 @@ class ReplaceableBlockPredicate extends OffsetPredicate {
 
 	@Override
 	protected boolean test(BlockState state) {
-		return state.getMaterial().isReplaceable();
+		return state.isReplaceable();
 	}
 
 	@Override

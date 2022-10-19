@@ -16,8 +16,6 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -148,10 +146,5 @@ public class EndCrystalEntity extends Entity {
 	@Override
 	public ItemStack getPickBlockStack() {
 		return new ItemStack(Items.END_CRYSTAL);
-	}
-
-	@Override
-	public Packet<?> createSpawnPacket() {
-		return new EntitySpawnS2CPacket(this);
 	}
 }

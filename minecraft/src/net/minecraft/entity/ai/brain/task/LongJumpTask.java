@@ -5,11 +5,10 @@ import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -26,10 +25,10 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.collection.Weighted;
 import net.minecraft.util.collection.Weighting;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
+import net.minecraft.world.World;
 
 public class LongJumpTask<E extends MobEntity> extends Task<E> {
 	protected static final int MAX_COOLDOWN = 20;
@@ -47,11 +46,18 @@ public class LongJumpTask<E extends MobEntity> extends Task<E> {
 	protected Vec3d lastTarget;
 	protected int cooldown;
 	protected long targetTime;
-	private Function<E, SoundEvent> entityToSound;
-	private final Predicate<BlockState> jumpToPredicate;
+	private final Function<E, SoundEvent> entityToSound;
+	private final BiPredicate<E, BlockPos> jumpToPredicate;
 
 	public LongJumpTask(UniformIntProvider cooldownRange, int verticalRange, int horizontalRange, float maxRange, Function<E, SoundEvent> entityToSound) {
-		this(cooldownRange, verticalRange, horizontalRange, maxRange, entityToSound, state -> false);
+		this(cooldownRange, verticalRange, horizontalRange, maxRange, entityToSound, LongJumpTask::shouldJumpTo);
+	}
+
+	public static <E extends MobEntity> boolean shouldJumpTo(E entity, BlockPos pos) {
+		World world = entity.world;
+		BlockPos blockPos = pos.down();
+		return world.getBlockState(blockPos).isOpaqueFullCube(world, blockPos)
+			&& entity.getPathfindingPenalty(LandPathNodeMaker.getLandNodeType(world, pos.mutableCopy())) == 0.0F;
 	}
 
 	public LongJumpTask(
@@ -60,7 +66,7 @@ public class LongJumpTask<E extends MobEntity> extends Task<E> {
 		int horizontalRange,
 		float maxRange,
 		Function<E, SoundEvent> entityToSound,
-		Predicate<BlockState> jumpToPredicate
+		BiPredicate<E, BlockPos> jumpToPredicate
 	) {
 		super(
 			ImmutableMap.of(
@@ -148,7 +154,7 @@ public class LongJumpTask<E extends MobEntity> extends Task<E> {
 				BlockPos blockPos = target.getPos();
 				if (this.canJumpTo(world, entity, blockPos)) {
 					Vec3d vec3d = Vec3d.ofCenter(blockPos);
-					Vec3d vec3d2 = this.getRammingVelocity(entity, vec3d);
+					Vec3d vec3d2 = this.getJumpingVelocity(entity, vec3d);
 					if (vec3d2 != null) {
 						entity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(blockPos));
 						EntityNavigation entityNavigation = entity.getNavigation();
@@ -170,26 +176,20 @@ public class LongJumpTask<E extends MobEntity> extends Task<E> {
 		return optional;
 	}
 
-	protected boolean canJumpTo(ServerWorld world, E entity, BlockPos pos) {
+	private boolean canJumpTo(ServerWorld world, E entity, BlockPos pos) {
 		BlockPos blockPos = entity.getBlockPos();
 		int i = blockPos.getX();
 		int j = blockPos.getZ();
-		if (i == pos.getX() && j == pos.getZ()) {
-			return false;
-		} else {
-			return !entity.getNavigation().isValidPosition(pos) && !this.jumpToPredicate.test(world.getBlockState(pos.down()))
-				? false
-				: entity.getPathfindingPenalty(LandPathNodeMaker.getLandNodeType(entity.world, pos.mutableCopy())) == 0.0F;
-		}
+		return i == pos.getX() && j == pos.getZ() ? false : this.jumpToPredicate.test(entity, pos);
 	}
 
 	@Nullable
-	protected Vec3d getRammingVelocity(MobEntity entity, Vec3d pos) {
+	protected Vec3d getJumpingVelocity(MobEntity entity, Vec3d pos) {
 		List<Integer> list = Lists.<Integer>newArrayList(RAM_RANGES);
 		Collections.shuffle(list);
 
 		for (int i : list) {
-			Vec3d vec3d = this.getRammingVelocity(entity, pos, i);
+			Vec3d vec3d = this.getJumpingVelocity(entity, pos, i);
 			if (vec3d != null) {
 				return vec3d;
 			}
@@ -199,7 +199,7 @@ public class LongJumpTask<E extends MobEntity> extends Task<E> {
 	}
 
 	@Nullable
-	private Vec3d getRammingVelocity(MobEntity entity, Vec3d pos, int range) {
+	private Vec3d getJumpingVelocity(MobEntity entity, Vec3d pos, int range) {
 		Vec3d vec3d = entity.getPos();
 		Vec3d vec3d2 = new Vec3d(pos.x - vec3d.x, 0.0, pos.z - vec3d.z).normalize().multiply(0.5);
 		pos = pos.subtract(vec3d2);
@@ -229,6 +229,7 @@ public class LongJumpTask<E extends MobEntity> extends Task<E> {
 				int t = MathHelper.ceil(g / r) * 2;
 				double u = 0.0;
 				Vec3d vec3d4 = null;
+				EntityDimensions entityDimensions = entity.getDimensions(EntityPose.LONG_JUMPING);
 
 				for (int v = 0; v < t - 1; v++) {
 					u += g / (double)t;
@@ -236,7 +237,7 @@ public class LongJumpTask<E extends MobEntity> extends Task<E> {
 					double x = u * o;
 					double y = u * n;
 					Vec3d vec3d5 = new Vec3d(vec3d.x + x, vec3d.y + w, vec3d.z + y);
-					if (vec3d4 != null && !this.canReach(entity, vec3d4, vec3d5)) {
+					if (vec3d4 != null && !this.canReach(entity, entityDimensions, vec3d4, vec3d5)) {
 						return null;
 					}
 
@@ -248,18 +249,16 @@ public class LongJumpTask<E extends MobEntity> extends Task<E> {
 		}
 	}
 
-	private boolean canReach(MobEntity entity, Vec3d startPos, Vec3d endPos) {
-		EntityDimensions entityDimensions = entity.getDimensions(EntityPose.LONG_JUMPING);
-		Vec3d vec3d = endPos.subtract(startPos);
-		double d = (double)Math.min(entityDimensions.width, entityDimensions.height);
-		int i = MathHelper.ceil(vec3d.length() / d);
-		Vec3d vec3d2 = vec3d.normalize();
-		Vec3d vec3d3 = startPos;
+	private boolean canReach(MobEntity entity, EntityDimensions dimensions, Vec3d vec3d, Vec3d vec3d2) {
+		Vec3d vec3d3 = vec3d2.subtract(vec3d);
+		double d = (double)Math.min(dimensions.width, dimensions.height);
+		int i = MathHelper.ceil(vec3d3.length() / d);
+		Vec3d vec3d4 = vec3d3.normalize();
+		Vec3d vec3d5 = vec3d;
 
 		for (int j = 0; j < i; j++) {
-			vec3d3 = j == i - 1 ? endPos : vec3d3.add(vec3d2.multiply(d * 0.9F));
-			Box box = entityDimensions.getBoxAt(vec3d3);
-			if (!entity.world.isSpaceEmpty(entity, box)) {
+			vec3d5 = j == i - 1 ? vec3d2 : vec3d5.add(vec3d4.multiply(d * 0.9F));
+			if (!entity.world.isSpaceEmpty(entity, dimensions.getBoxAt(vec3d5))) {
 				return false;
 			}
 		}

@@ -27,7 +27,7 @@ public class GiveInventoryToLookTargetTask<E extends LivingEntity & InventoryOwn
 	private final Function<LivingEntity, Optional<LookTarget>> lookTargetFunction;
 	private final float speed;
 
-	public GiveInventoryToLookTargetTask(Function<LivingEntity, Optional<LookTarget>> lookTargetFunction, float speed) {
+	public GiveInventoryToLookTargetTask(Function<LivingEntity, Optional<LookTarget>> lookTargetFunction, float speed, int runTime) {
 		super(
 			Map.of(
 				MemoryModuleType.LOOK_TARGET,
@@ -36,7 +36,8 @@ public class GiveInventoryToLookTargetTask<E extends LivingEntity & InventoryOwn
 				MemoryModuleState.REGISTERED,
 				MemoryModuleType.ITEM_PICKUP_COOLDOWN_TICKS,
 				MemoryModuleState.REGISTERED
-			)
+			),
+			runTime
 		);
 		this.lookTargetFunction = lookTargetFunction;
 		this.speed = speed;

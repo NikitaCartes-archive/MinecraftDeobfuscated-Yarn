@@ -81,6 +81,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 	private static final Ingredient DUPLICATION_INGREDIENT = Ingredient.ofItems(Items.AMETHYST_SHARD);
 	private static final int DUPLICATION_COOLDOWN = 6000;
 	private static final int field_39679 = 3;
+	private static final double field_40129 = 0.4;
 	private static final TrackedData<Boolean> DANCING = DataTracker.registerData(AllayEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> CAN_DUPLICATE = DataTracker.registerData(AllayEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	protected static final ImmutableList<SensorType<? extends Sensor<? super AllayEntity>>> SENSORS = ImmutableList.of(
@@ -122,7 +123,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 		this.setCanPickUpLoot(this.canPickUpLoot());
 		PositionSource positionSource = new EntityPositionSource(this, this.getStandingEyeHeight());
 		this.listenerCallback = new AllayEntity.VibrationListenerCallback();
-		this.gameEventHandler = new EntityGameEventHandler<>(new VibrationListener(positionSource, 16, this.listenerCallback, null, 0.0F, 0));
+		this.gameEventHandler = new EntityGameEventHandler<>(new VibrationListener(positionSource, 16, this.listenerCallback));
 		this.jukeboxEventHandler = new EntityGameEventHandler<>(new AllayEntity.JukeboxEventListener(positionSource, GameEvent.JUKEBOX_PLAY.getRange()));
 	}
 
@@ -291,6 +292,9 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 			}
 		} else {
 			this.gameEventHandler.getListener().tick(this.world);
+			if (this.isPanicking()) {
+				this.setDancing(false);
+			}
 		}
 	}
 
@@ -373,9 +377,31 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 	public boolean canGather(ItemStack stack) {
 		ItemStack itemStack = this.getStackInHand(Hand.MAIN_HAND);
 		return !itemStack.isEmpty()
-			&& itemStack.isItemEqual(stack)
+			&& this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)
 			&& this.inventory.canInsert(stack)
-			&& this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
+			&& this.areItemsEqual(itemStack, stack);
+	}
+
+	private boolean areItemsEqual(ItemStack stack, ItemStack stack2) {
+		return stack.isItemEqual(stack2) && !this.areDifferentPotions(stack, stack2);
+	}
+
+	private boolean areDifferentPotions(ItemStack stack, ItemStack stack2) {
+		NbtCompound nbtCompound = stack.getNbt();
+		boolean bl = nbtCompound != null && nbtCompound.contains("Potion");
+		if (!bl) {
+			return false;
+		} else {
+			NbtCompound nbtCompound2 = stack2.getNbt();
+			boolean bl2 = nbtCompound2 != null && nbtCompound2.contains("Potion");
+			if (!bl2) {
+				return true;
+			} else {
+				NbtElement nbtElement = nbtCompound.get("Potion");
+				NbtElement nbtElement2 = nbtCompound2.get("Potion");
+				return nbtElement != null && nbtElement2 != null && !nbtElement.equals(nbtElement2);
+			}
+		}
 	}
 
 	@Override
@@ -406,8 +432,12 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 		return this.dataTracker.get(DANCING);
 	}
 
+	public boolean isPanicking() {
+		return this.brain.getOptionalMemory(MemoryModuleType.IS_PANICKING).isPresent();
+	}
+
 	public void setDancing(boolean dancing) {
-		if (!this.world.isClient) {
+		if (!this.world.isClient && this.canMoveVoluntarily() && (!dancing || !this.isPanicking())) {
 			this.dataTracker.set(DANCING, dancing);
 		}
 	}
@@ -429,6 +459,11 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 
 	public float method_44368(float f) {
 		return MathHelper.lerp(f, this.field_39474, this.field_39473) / 15.0F;
+	}
+
+	@Override
+	public boolean areItemsDifferent(ItemStack stack, ItemStack stack2) {
+		return !this.areItemsEqual(stack, stack2);
 	}
 
 	@Override
@@ -462,7 +497,10 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
-		this.inventory.readNbtList(nbt.getList("Inventory", NbtElement.COMPOUND_TYPE));
+		if (nbt.contains("Inventory", NbtElement.COMPOUND_TYPE)) {
+			this.inventory.readNbtList(nbt.getList("Inventory", NbtElement.COMPOUND_TYPE));
+		}
+
 		if (nbt.contains("listener", NbtElement.COMPOUND_TYPE)) {
 			VibrationListener.createCodec(this.listenerCallback)
 				.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("listener")))
@@ -537,6 +575,11 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 	}
 
 	@Override
+	public double getHeightOffset() {
+		return 0.4;
+	}
+
+	@Override
 	public void handleStatus(byte status) {
 		if (status == EntityStatuses.ADD_BREEDING_PARTICLES) {
 			for (int i = 0; i < 3; i++) {
@@ -574,12 +617,12 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 		}
 
 		@Override
-		public boolean listen(ServerWorld world, GameEvent.Message event) {
-			if (event.getEvent() == GameEvent.JUKEBOX_PLAY) {
-				AllayEntity.this.updateJukeboxPos(new BlockPos(event.getEmitterPos()), true);
+		public boolean listen(ServerWorld world, GameEvent event, GameEvent.Emitter emitter, Vec3d emitterPos) {
+			if (event == GameEvent.JUKEBOX_PLAY) {
+				AllayEntity.this.updateJukeboxPos(new BlockPos(emitterPos), true);
 				return true;
-			} else if (event.getEvent() == GameEvent.JUKEBOX_STOP_PLAY) {
-				AllayEntity.this.updateJukeboxPos(new BlockPos(event.getEmitterPos()), false);
+			} else if (event == GameEvent.JUKEBOX_STOP_PLAY) {
+				AllayEntity.this.updateJukeboxPos(new BlockPos(emitterPos), false);
 				return true;
 			} else {
 				return false;
@@ -590,7 +633,9 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 	class VibrationListenerCallback implements VibrationListener.Callback {
 		@Override
 		public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, GameEvent.Emitter emitter) {
-			if (AllayEntity.this.getWorld() == world && !AllayEntity.this.isRemoved() && !AllayEntity.this.isAiDisabled()) {
+			if (AllayEntity.this.isAiDisabled()) {
+				return false;
+			} else {
 				Optional<GlobalPos> optional = AllayEntity.this.getBrain().getOptionalMemory(MemoryModuleType.LIKED_NOTEBLOCK);
 				if (optional.isEmpty()) {
 					return true;
@@ -598,8 +643,6 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 					GlobalPos globalPos = (GlobalPos)optional.get();
 					return globalPos.getDimension().equals(world.getRegistryKey()) && globalPos.getPos().equals(pos);
 				}
-			} else {
-				return false;
 			}
 		}
 

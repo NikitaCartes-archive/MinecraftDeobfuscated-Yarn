@@ -29,7 +29,7 @@ public class SuggestionProviders {
 	public static final SuggestionProvider<ServerCommandSource> SUMMONABLE_ENTITIES = register(
 		new Identifier("summonable_entities"),
 		(context, builder) -> CommandSource.suggestFromIdentifier(
-				Registry.ENTITY_TYPE.stream().filter(EntityType::isSummonable),
+				Registry.ENTITY_TYPE.stream().filter(entityType -> entityType.isEnabled(context.getSource().getEnabledFeatures()) && entityType.isSummonable()),
 				builder,
 				EntityType::getId,
 				entityType -> Text.translatable(Util.createTranslationKey("entity", EntityType.getId(entityType)))

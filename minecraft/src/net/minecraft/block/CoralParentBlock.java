@@ -26,7 +26,7 @@ public class CoralParentBlock extends Block implements Waterloggable {
 
 	protected void checkLivingConditions(BlockState state, WorldAccess world, BlockPos pos) {
 		if (!isInWater(state, world, pos)) {
-			world.createAndScheduleBlockTick(pos, this, 60 + world.getRandom().nextInt(40));
+			world.scheduleBlockTick(pos, this, 60 + world.getRandom().nextInt(40));
 		}
 	}
 
@@ -61,7 +61,7 @@ public class CoralParentBlock extends Block implements Waterloggable {
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		if ((Boolean)state.get(WATERLOGGED)) {
-			world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+			world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
 		return direction == Direction.DOWN && !this.canPlaceAt(state, world, pos)

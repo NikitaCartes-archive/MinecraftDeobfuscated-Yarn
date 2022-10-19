@@ -46,6 +46,7 @@ import net.minecraft.entity.passive.AllayEntity;
 import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.passive.BatEntity;
 import net.minecraft.entity.passive.BeeEntity;
+import net.minecraft.entity.passive.CamelEntity;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.entity.passive.CowEntity;
@@ -86,6 +87,7 @@ public class DefaultAttributeRegistry {
 		.put(EntityType.BEE, BeeEntity.createBeeAttributes().build())
 		.put(EntityType.BLAZE, BlazeEntity.createBlazeAttributes().build())
 		.put(EntityType.CAT, CatEntity.createCatAttributes().build())
+		.put(EntityType.CAMEL, CamelEntity.createCamelAttributes().build())
 		.put(EntityType.CAVE_SPIDER, CaveSpiderEntity.createCaveSpiderAttributes().build())
 		.put(EntityType.CHICKEN, ChickenEntity.createChickenAttributes().build())
 		.put(EntityType.COD, FishEntity.createFishAttributes().build())

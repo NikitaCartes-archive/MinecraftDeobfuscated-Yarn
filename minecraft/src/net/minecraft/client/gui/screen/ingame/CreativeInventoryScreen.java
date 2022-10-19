@@ -7,7 +7,6 @@ import com.mojang.datafixers.util.Pair;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -25,16 +24,16 @@ import net.minecraft.client.search.SearchManager;
 import net.minecraft.client.search.SearchProvider;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.screen.slot.Slot;
@@ -62,7 +61,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	static final SimpleInventory INVENTORY = new SimpleInventory(45);
 	private static final Text DELETE_ITEM_SLOT_TEXT = Text.translatable("inventory.binSlot");
 	private static final int WHITE = 16777215;
-	private static int selectedTab = ItemGroup.BUILDING_BLOCKS.getIndex();
+	private static int selectedTab = ItemGroups.BUILDING_BLOCKS.getIndex();
 	private float scrollPosition;
 	private boolean scrolling;
 	private TextFieldWidget searchBox;
@@ -74,10 +73,12 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	private boolean ignoreTypedCharacter;
 	private boolean lastClickOutsideBounds;
 	private final Set<TagKey<Item>> searchResultTags = new HashSet();
+	private final FeatureSet enabledFeatures;
 
-	public CreativeInventoryScreen(PlayerEntity player) {
+	public CreativeInventoryScreen(PlayerEntity player, FeatureSet enabledFeatures) {
 		super(new CreativeInventoryScreen.CreativeScreenHandler(player), player.getInventory(), ScreenTexts.EMPTY);
 		player.currentScreenHandler = this.handler;
+		this.enabledFeatures = enabledFeatures;
 		this.passEvents = true;
 		this.backgroundHeight = 136;
 		this.backgroundWidth = 195;
@@ -102,7 +103,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 
 		boolean bl = actionType == SlotActionType.QUICK_MOVE;
 		actionType = slotId == -999 && actionType == SlotActionType.PICKUP ? SlotActionType.THROW : actionType;
-		if (slot == null && selectedTab != ItemGroup.INVENTORY.getIndex() && actionType != SlotActionType.QUICK_CRAFT) {
+		if (slot == null && selectedTab != ItemGroups.INVENTORY.getIndex() && actionType != SlotActionType.QUICK_CRAFT) {
 			if (!this.handler.getCursorStack().isEmpty() && this.lastClickOutsideBounds) {
 				if (button == 0) {
 					this.client.player.dropItem(this.handler.getCursorStack(), true);
@@ -125,7 +126,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 				for (int i = 0; i < this.client.player.playerScreenHandler.getStacks().size(); i++) {
 					this.client.interactionManager.clickCreativeStack(ItemStack.EMPTY, i);
 				}
-			} else if (selectedTab == ItemGroup.INVENTORY.getIndex()) {
+			} else if (selectedTab == ItemGroups.INVENTORY.getIndex()) {
 				if (slot == this.deleteItemSlot) {
 					this.handler.setCursorStack(ItemStack.EMPTY);
 				} else if (actionType == SlotActionType.THROW && slot != null && slot.hasStack()) {
@@ -235,7 +236,6 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	protected void init() {
 		if (this.client.interactionManager.hasCreativeInventory()) {
 			super.init();
-			this.client.keyboard.setRepeatEvents(true);
 			this.searchBox = new TextFieldWidget(this.textRenderer, this.x + 82, this.y + 6, 80, 9, Text.translatable("itemGroup.search"));
 			this.searchBox.setMaxLength(50);
 			this.searchBox.setDrawsBackground(false);
@@ -244,7 +244,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 			this.addSelectableChild(this.searchBox);
 			int i = selectedTab;
 			selectedTab = -1;
-			this.setSelectedTab(ItemGroup.GROUPS[i]);
+			this.setSelectedTab(ItemGroups.GROUPS[i]);
 			this.client.player.playerScreenHandler.removeListener(this.listener);
 			this.listener = new CreativeInventoryListener(this.client);
 			this.client.player.playerScreenHandler.addListener(this.listener);
@@ -269,15 +269,13 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		if (this.client.player != null && this.client.player.getInventory() != null) {
 			this.client.player.playerScreenHandler.removeListener(this.listener);
 		}
-
-		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	@Override
 	public boolean charTyped(char chr, int modifiers) {
 		if (this.ignoreTypedCharacter) {
 			return false;
-		} else if (selectedTab != ItemGroup.SEARCH.getIndex()) {
+		} else if (selectedTab != ItemGroups.SEARCH.getIndex()) {
 			return false;
 		} else {
 			String string = this.searchBox.getText();
@@ -296,10 +294,10 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		this.ignoreTypedCharacter = false;
-		if (selectedTab != ItemGroup.SEARCH.getIndex()) {
+		if (selectedTab != ItemGroups.SEARCH.getIndex()) {
 			if (this.client.options.chatKey.matchesKey(keyCode, scanCode)) {
 				this.ignoreTypedCharacter = true;
-				this.setSelectedTab(ItemGroup.SEARCH);
+				this.setSelectedTab(ItemGroups.SEARCH);
 				return true;
 			} else {
 				return super.keyPressed(keyCode, scanCode, modifiers);
@@ -336,9 +334,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		this.searchResultTags.clear();
 		String string = this.searchBox.getText();
 		if (string.isEmpty()) {
-			for (Item item : Registry.ITEM) {
-				item.appendStacks(ItemGroup.SEARCH, this.handler.itemList);
-			}
+			this.handler.itemList.addAll(ItemGroups.SEARCH.getDisplayStacks(this.enabledFeatures));
 		} else {
 			SearchProvider<ItemStack> searchProvider;
 			if (string.startsWith("#")) {
@@ -367,12 +363,12 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 			predicate = idx -> idx.getNamespace().contains(string) && idx.getPath().contains(string2);
 		}
 
-		Registry.ITEM.streamTags().filter(tagKey -> predicate.test(tagKey.id())).forEach(this.searchResultTags::add);
+		Registry.ITEM.streamTags().filter(tag -> predicate.test(tag.id())).forEach(this.searchResultTags::add);
 	}
 
 	@Override
 	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-		ItemGroup itemGroup = ItemGroup.GROUPS[selectedTab];
+		ItemGroup itemGroup = ItemGroups.GROUPS[selectedTab];
 		if (itemGroup.shouldRenderName()) {
 			RenderSystem.disableBlend();
 			this.textRenderer.draw(matrices, itemGroup.getDisplayName(), 8.0F, 6.0F, 4210752);
@@ -385,13 +381,13 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 			double d = mouseX - (double)this.x;
 			double e = mouseY - (double)this.y;
 
-			for (ItemGroup itemGroup : ItemGroup.GROUPS) {
+			for (ItemGroup itemGroup : ItemGroups.GROUPS) {
 				if (this.isClickInTab(itemGroup, d, e)) {
 					return true;
 				}
 			}
 
-			if (selectedTab != ItemGroup.INVENTORY.getIndex() && this.isClickInScrollbar(mouseX, mouseY)) {
+			if (selectedTab != ItemGroups.INVENTORY.getIndex() && this.isClickInScrollbar(mouseX, mouseY)) {
 				this.scrolling = this.hasScrollbar();
 				return true;
 			}
@@ -407,7 +403,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 			double e = mouseY - (double)this.y;
 			this.scrolling = false;
 
-			for (ItemGroup itemGroup : ItemGroup.GROUPS) {
+			for (ItemGroup itemGroup : ItemGroups.GROUPS) {
 				if (this.isClickInTab(itemGroup, d, e)) {
 					this.setSelectedTab(itemGroup);
 					return true;
@@ -419,7 +415,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	}
 
 	private boolean hasScrollbar() {
-		return selectedTab != ItemGroup.INVENTORY.getIndex() && ItemGroup.GROUPS[selectedTab].hasScrollbar() && this.handler.shouldShowScrollbar();
+		return selectedTab != ItemGroups.INVENTORY.getIndex() && ItemGroups.GROUPS[selectedTab].hasScrollbar() && this.handler.shouldShowScrollbar();
 	}
 
 	private void setSelectedTab(ItemGroup group) {
@@ -428,7 +424,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		this.cursorDragSlots.clear();
 		this.handler.itemList.clear();
 		this.endTouchDrag();
-		if (group == ItemGroup.HOTBAR) {
+		if (group == ItemGroups.HOTBAR) {
 			HotbarStorage hotbarStorage = this.client.getCreativeHotbarStorage();
 
 			for (int j = 0; j < 9; j++) {
@@ -450,11 +446,11 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 					this.handler.itemList.addAll(hotbarStorageEntry);
 				}
 			}
-		} else if (group != ItemGroup.SEARCH) {
-			group.appendStacks(this.handler.itemList);
+		} else if (group != ItemGroups.SEARCH) {
+			this.handler.itemList.addAll(group.getDisplayStacks(this.enabledFeatures));
 		}
 
-		if (group == ItemGroup.INVENTORY) {
+		if (group == ItemGroups.INVENTORY) {
 			ScreenHandler screenHandler = this.client.player.playerScreenHandler;
 			if (this.slots == null) {
 				this.slots = ImmutableList.copyOf(this.handler.slots);
@@ -495,14 +491,14 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 
 			this.deleteItemSlot = new Slot(INVENTORY, 0, 173, 112);
 			this.handler.slots.add(this.deleteItemSlot);
-		} else if (i == ItemGroup.INVENTORY.getIndex()) {
+		} else if (i == ItemGroups.INVENTORY.getIndex()) {
 			this.handler.slots.clear();
 			this.handler.slots.addAll(this.slots);
 			this.slots = null;
 		}
 
 		if (this.searchBox != null) {
-			if (group == ItemGroup.SEARCH) {
+			if (group == ItemGroups.SEARCH) {
 				this.searchBox.setVisible(true);
 				this.searchBox.setFocusUnlocked(false);
 				this.searchBox.setTextFieldFocused(true);
@@ -542,7 +538,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 			|| mouseY < (double)top
 			|| mouseX >= (double)(left + this.backgroundWidth)
 			|| mouseY >= (double)(top + this.backgroundHeight);
-		this.lastClickOutsideBounds = bl && !this.isClickInTab(ItemGroup.GROUPS[selectedTab], mouseX, mouseY);
+		this.lastClickOutsideBounds = bl && !this.isClickInTab(ItemGroups.GROUPS[selectedTab], mouseX, mouseY);
 		return this.lastClickOutsideBounds;
 	}
 
@@ -575,14 +571,14 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		this.renderBackground(matrices);
 		super.render(matrices, mouseX, mouseY, delta);
 
-		for (ItemGroup itemGroup : ItemGroup.GROUPS) {
+		for (ItemGroup itemGroup : ItemGroups.GROUPS) {
 			if (this.renderTabTooltipIfHovered(matrices, itemGroup, mouseX, mouseY)) {
 				break;
 			}
 		}
 
 		if (this.deleteItemSlot != null
-			&& selectedTab == ItemGroup.INVENTORY.getIndex()
+			&& selectedTab == ItemGroups.INVENTORY.getIndex()
 			&& this.isPointWithinBounds(this.deleteItemSlot.x, this.deleteItemSlot.y, 16, 16, (double)mouseX, (double)mouseY)) {
 			this.renderTooltip(matrices, DELETE_ITEM_SLOT_TEXT, mouseX, mouseY);
 		}
@@ -593,34 +589,22 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 
 	@Override
 	protected void renderTooltip(MatrixStack matrices, ItemStack stack, int x, int y) {
-		if (selectedTab == ItemGroup.SEARCH.getIndex()) {
+		if (selectedTab == ItemGroups.SEARCH.getIndex()) {
 			List<Text> list = stack.getTooltip(
 				this.client.player, this.client.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL
 			);
 			List<Text> list2 = Lists.<Text>newArrayList(list);
-			Item item = stack.getItem();
-			ItemGroup itemGroup = item.getGroup();
-			if (itemGroup == null && stack.isOf(Items.ENCHANTED_BOOK)) {
-				Map<Enchantment, Integer> map = EnchantmentHelper.get(stack);
-				if (map.size() == 1) {
-					Enchantment enchantment = (Enchantment)map.keySet().iterator().next();
-
-					for (ItemGroup itemGroup2 : ItemGroup.GROUPS) {
-						if (itemGroup2.containsEnchantments(enchantment.type)) {
-							itemGroup = itemGroup2;
-							break;
-						}
-					}
-				}
-			}
-
-			this.searchResultTags.forEach(tagKey -> {
-				if (stack.isIn(tagKey)) {
-					list2.add(1, Text.literal("#" + tagKey.id()).formatted(Formatting.DARK_PURPLE));
+			this.searchResultTags.forEach(tag -> {
+				if (stack.isIn(tag)) {
+					list2.add(1, Text.literal("#" + tag.id()).formatted(Formatting.DARK_PURPLE));
 				}
 			});
-			if (itemGroup != null) {
-				list2.add(1, itemGroup.getDisplayName().copy().formatted(Formatting.BLUE));
+			int i = 1;
+
+			for (ItemGroup itemGroup : ItemGroups.GROUPS) {
+				if (itemGroup != ItemGroups.SEARCH && itemGroup.contains(this.enabledFeatures, stack)) {
+					list2.add(i++, itemGroup.getDisplayName().copy().formatted(Formatting.BLUE));
+				}
 			}
 
 			this.renderTooltip(matrices, list2, stack.getTooltipData(), x, y);
@@ -632,9 +616,9 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	@Override
 	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		ItemGroup itemGroup = ItemGroup.GROUPS[selectedTab];
+		ItemGroup itemGroup = ItemGroups.GROUPS[selectedTab];
 
-		for (ItemGroup itemGroup2 : ItemGroup.GROUPS) {
+		for (ItemGroup itemGroup2 : ItemGroups.GROUPS) {
 			RenderSystem.setShader(GameRenderer::getPositionTexShader);
 			RenderSystem.setShaderTexture(0, TEXTURE);
 			if (itemGroup2.getIndex() != selectedTab) {
@@ -657,7 +641,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		}
 
 		this.renderTabIcon(matrices, itemGroup);
-		if (itemGroup == ItemGroup.INVENTORY) {
+		if (itemGroup == ItemGroups.INVENTORY) {
 			InventoryScreen.drawEntity(this.x + 88, this.y + 45, 20, (float)(this.x + 88 - mouseX), (float)(this.y + 45 - 30 - mouseY), this.client.player);
 		}
 	}

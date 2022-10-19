@@ -44,7 +44,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.gen.WorldPresets;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelSummary;
@@ -249,10 +249,9 @@ public class TitleScreen extends Screen {
 					if (bl) {
 						this.client.createIntegratedServerLoader().start(this, "Demo_World");
 					} else {
-						DynamicRegistryManager dynamicRegistryManager = DynamicRegistryManager.createAndLoad().toImmutable();
 						this.client
 							.createIntegratedServerLoader()
-							.createAndStart("Demo_World", MinecraftServer.DEMO_LEVEL_INFO, dynamicRegistryManager, WorldPresets.createDemoOptions(dynamicRegistryManager));
+							.createAndStart("Demo_World", MinecraftServer.DEMO_LEVEL_INFO, GeneratorOptions.DEMO_OPTIONS, WorldPresets::createDemoOptions);
 					}
 				}
 			)

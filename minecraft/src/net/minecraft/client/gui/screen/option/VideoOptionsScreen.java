@@ -20,7 +20,6 @@ import net.minecraft.client.util.VideoMode;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
-import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
@@ -173,28 +172,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 	}
 
 	@Override
-	public boolean mouseReleased(double mouseX, double mouseY, int button) {
-		int i = this.gameOptions.getGuiScale().getValue();
-		if (super.mouseReleased(mouseX, mouseY, button)) {
-			return true;
-		} else if (this.list.mouseReleased(mouseX, mouseY, button)) {
-			if (this.gameOptions.getGuiScale().getValue() != i) {
-				this.client.onResolutionChanged();
-			}
-
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderBackground(matrices);
-		this.list.render(matrices, mouseX, mouseY, delta);
-		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 5, 16777215);
-		super.render(matrices, mouseX, mouseY, delta);
-		List<OrderedText> list = getHoveredButtonTooltip(this.list, mouseX, mouseY);
-		this.renderOrderedTooltip(matrices, list, mouseX, mouseY);
+		this.render(matrices, this.list, mouseX, mouseY, delta);
 	}
 }

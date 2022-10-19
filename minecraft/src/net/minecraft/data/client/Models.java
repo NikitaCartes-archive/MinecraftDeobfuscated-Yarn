@@ -33,6 +33,12 @@ public class Models {
 	public static final Model DOOR_TOP_LEFT_OPEN = block("door_top_left_open", "_top_left_open", TextureKey.TOP, TextureKey.BOTTOM);
 	public static final Model DOOR_TOP_RIGHT = block("door_top_right", "_top_right", TextureKey.TOP, TextureKey.BOTTOM);
 	public static final Model DOOR_TOP_RIGHT_OPEN = block("door_top_right_open", "_top_right_open", TextureKey.TOP, TextureKey.BOTTOM);
+	public static final Model CUSTOM_FENCE_POST = block("custom_fence_post", "_post", TextureKey.TEXTURE, TextureKey.PARTICLE);
+	public static final Model CUSTOM_FENCE_SIDE_NORTH = block("custom_fence_side_north", "_side_north", TextureKey.TEXTURE);
+	public static final Model CUSTOM_FENCE_SIDE_EAST = block("custom_fence_side_east", "_side_east", TextureKey.TEXTURE);
+	public static final Model CUSTOM_FENCE_SIDE_SOUTH = block("custom_fence_side_south", "_side_south", TextureKey.TEXTURE);
+	public static final Model CUSTOM_FENCE_SIDE_WEST = block("custom_fence_side_west", "_side_west", TextureKey.TEXTURE);
+	public static final Model CUSTOM_FENCE_INVENTORY = block("custom_fence_inventory", "_inventory", TextureKey.TEXTURE);
 	public static final Model FENCE_POST = block("fence_post", "_post", TextureKey.TEXTURE);
 	public static final Model FENCE_SIDE = block("fence_side", "_side", TextureKey.TEXTURE);
 	public static final Model FENCE_INVENTORY = block("fence_inventory", "_inventory", TextureKey.TEXTURE);
@@ -40,6 +46,12 @@ public class Models {
 	public static final Model TEMPLATE_WALL_SIDE = block("template_wall_side", "_side", TextureKey.WALL);
 	public static final Model TEMPLATE_WALL_SIDE_TALL = block("template_wall_side_tall", "_side_tall", TextureKey.WALL);
 	public static final Model WALL_INVENTORY = block("wall_inventory", "_inventory", TextureKey.WALL);
+	public static final Model TEMPLATE_CUSTOM_FENCE_GATE = block("template_custom_fence_gate", TextureKey.TEXTURE, TextureKey.PARTICLE);
+	public static final Model TEMPLATE_CUSTOM_FENCE_GATE_OPEN = block("template_custom_fence_gate_open", "_open", TextureKey.TEXTURE, TextureKey.PARTICLE);
+	public static final Model TEMPLATE_CUSTOM_FENCE_GATE_WALL = block("template_custom_fence_gate_wall", "_wall", TextureKey.TEXTURE, TextureKey.PARTICLE);
+	public static final Model TEMPLATE_CUSTOM_FENCE_GATE_WALL_OPEN = block(
+		"template_custom_fence_gate_wall_open", "_wall_open", TextureKey.TEXTURE, TextureKey.PARTICLE
+	);
 	public static final Model TEMPLATE_FENCE_GATE = block("template_fence_gate", TextureKey.TEXTURE);
 	public static final Model TEMPLATE_FENCE_GATE_OPEN = block("template_fence_gate_open", "_open", TextureKey.TEXTURE);
 	public static final Model TEMPLATE_FENCE_GATE_WALL = block("template_fence_gate_wall", "_wall", TextureKey.TEXTURE);
@@ -80,6 +92,7 @@ public class Models {
 	public static final Model TEMPLATE_GLASS_PANE_SIDE = block("template_glass_pane_side", "_side", TextureKey.PANE, TextureKey.EDGE);
 	public static final Model TEMPLATE_GLASS_PANE_SIDE_ALT = block("template_glass_pane_side_alt", "_side_alt", TextureKey.PANE, TextureKey.EDGE);
 	public static final Model TEMPLATE_COMMAND_BLOCK = block("template_command_block", TextureKey.FRONT, TextureKey.BACK, TextureKey.SIDE);
+	public static final Model TEMPLATE_CHISELED_BOOKSHELF = block("template_chiseled_bookshelf", TextureKey.FRONT, TextureKey.SIDE, TextureKey.TOP);
 	public static final Model TEMPLATE_ANVIL = block("template_anvil", TextureKey.TOP);
 	public static final Model[] STEM_GROWTH_STAGES = (Model[])IntStream.range(0, 8)
 		.mapToObj(stage -> block("stem_growth" + stage, "_stage" + stage, TextureKey.STEM))

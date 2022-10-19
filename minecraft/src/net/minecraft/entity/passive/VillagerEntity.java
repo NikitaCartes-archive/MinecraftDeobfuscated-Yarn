@@ -681,7 +681,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 
 	@Override
 	public boolean isReadyToBreed() {
-		return this.foodLevel + this.getAvailableFood() >= 12 && this.getBreedingAge() == 0;
+		return this.foodLevel + this.getAvailableFood() >= 12 && !this.isSleeping() && this.getBreedingAge() == 0;
 	}
 
 	private boolean lacksFood() {
@@ -777,6 +777,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 
+	@Nullable
 	public VillagerEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
 		double d = this.random.nextDouble();
 		VillagerType villagerType;
@@ -798,18 +799,22 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		if (world.getDifficulty() != Difficulty.PEACEFUL) {
 			LOGGER.info("Villager {} was struck by lightning {}.", this, lightning);
 			WitchEntity witchEntity = EntityType.WITCH.create(world);
-			witchEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
-			witchEntity.initialize(world, world.getLocalDifficulty(witchEntity.getBlockPos()), SpawnReason.CONVERSION, null, null);
-			witchEntity.setAiDisabled(this.isAiDisabled());
-			if (this.hasCustomName()) {
-				witchEntity.setCustomName(this.getCustomName());
-				witchEntity.setCustomNameVisible(this.isCustomNameVisible());
-			}
+			if (witchEntity != null) {
+				witchEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
+				witchEntity.initialize(world, world.getLocalDifficulty(witchEntity.getBlockPos()), SpawnReason.CONVERSION, null, null);
+				witchEntity.setAiDisabled(this.isAiDisabled());
+				if (this.hasCustomName()) {
+					witchEntity.setCustomName(this.getCustomName());
+					witchEntity.setCustomNameVisible(this.isCustomNameVisible());
+				}
 
-			witchEntity.setPersistent();
-			world.spawnEntityAndPassengers(witchEntity);
-			this.releaseAllTickets();
-			this.discard();
+				witchEntity.setPersistent();
+				world.spawnEntityAndPassengers(witchEntity);
+				this.releaseAllTickets();
+				this.discard();
+			} else {
+				super.onStruckByLightning(world, lightning);
+			}
 		} else {
 			super.onStruckByLightning(world, lightning);
 		}

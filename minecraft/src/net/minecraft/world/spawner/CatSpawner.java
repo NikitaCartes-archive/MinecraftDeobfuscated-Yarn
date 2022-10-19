@@ -75,7 +75,7 @@ public class CatSpawner implements Spawner {
 	private int spawnInHouse(ServerWorld world, BlockPos pos) {
 		int i = 48;
 		if (world.getPointOfInterestStorage()
-				.count(registryEntry -> registryEntry.matchesKey(PointOfInterestTypes.HOME), pos, 48, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED)
+				.count(entry -> entry.matchesKey(PointOfInterestTypes.HOME), pos, 48, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED)
 			> 4L) {
 			List<CatEntity> list = world.getNonSpectatingEntities(CatEntity.class, new Box(pos).expand(48.0, 8.0, 48.0));
 			if (list.size() < 5) {

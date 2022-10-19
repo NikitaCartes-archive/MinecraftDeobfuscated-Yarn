@@ -27,6 +27,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.command.CommandRegistryWrapper;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.visitor.NbtOrderedStringFormatter;
@@ -37,9 +38,11 @@ import net.minecraft.state.property.Property;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringHelper;
-import net.minecraft.util.dynamic.DynamicSerializableUuid;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryKey;
 import org.slf4j.Logger;
 
 /**
@@ -231,7 +234,7 @@ public final class NbtHelper {
 	 * @see #toUuid(NbtElement)
 	 */
 	public static NbtIntArray fromUuid(UUID uuid) {
-		return new NbtIntArray(DynamicSerializableUuid.toIntArray(uuid));
+		return new NbtIntArray(Uuids.toIntArray(uuid));
 	}
 
 	/**
@@ -252,7 +255,7 @@ public final class NbtHelper {
 			if (is.length != 4) {
 				throw new IllegalArgumentException("Expected UUID-Array to be of length 4, but found " + is.length + ".");
 			} else {
-				return DynamicSerializableUuid.toUuid(is);
+				return Uuids.toUuid(is);
 			}
 		}
 	}
@@ -287,25 +290,31 @@ public final class NbtHelper {
 	 * 
 	 * @see #fromBlockState(BlockState)
 	 */
-	public static BlockState toBlockState(NbtCompound nbt) {
+	public static BlockState toBlockState(CommandRegistryWrapper<Block> blockRegistryWrapper, NbtCompound nbt) {
 		if (!nbt.contains("Name", NbtElement.STRING_TYPE)) {
 			return Blocks.AIR.getDefaultState();
 		} else {
-			Block block = Registry.BLOCK.get(new Identifier(nbt.getString("Name")));
-			BlockState blockState = block.getDefaultState();
-			if (nbt.contains("Properties", NbtElement.COMPOUND_TYPE)) {
-				NbtCompound nbtCompound = nbt.getCompound("Properties");
-				StateManager<Block, BlockState> stateManager = block.getStateManager();
+			Identifier identifier = new Identifier(nbt.getString("Name"));
+			Optional<? extends RegistryEntry<Block>> optional = blockRegistryWrapper.getEntry(RegistryKey.of(Registry.BLOCK_KEY, identifier));
+			if (optional.isEmpty()) {
+				return Blocks.AIR.getDefaultState();
+			} else {
+				Block block = (Block)((RegistryEntry)optional.get()).value();
+				BlockState blockState = block.getDefaultState();
+				if (nbt.contains("Properties", NbtElement.COMPOUND_TYPE)) {
+					NbtCompound nbtCompound = nbt.getCompound("Properties");
+					StateManager<Block, BlockState> stateManager = block.getStateManager();
 
-				for (String string : nbtCompound.getKeys()) {
-					Property<?> property = stateManager.getProperty(string);
-					if (property != null) {
-						blockState = withProperty(blockState, property, string, nbtCompound, nbt);
+					for (String string : nbtCompound.getKeys()) {
+						Property<?> property = stateManager.getProperty(string);
+						if (property != null) {
+							blockState = withProperty(blockState, property, string, nbtCompound, nbt);
+						}
 					}
 				}
-			}
 
-			return blockState;
+				return blockState;
+			}
 		}
 	}
 
@@ -324,7 +333,7 @@ public final class NbtHelper {
 	/**
 	 * {@return the serialized block state}
 	 * 
-	 * @see #toBlockState(NbtCompound)
+	 * @see #toBlockState(CommandRegistryWrapper, NbtCompound)
 	 */
 	public static NbtCompound fromBlockState(BlockState state) {
 		NbtCompound nbtCompound = new NbtCompound();

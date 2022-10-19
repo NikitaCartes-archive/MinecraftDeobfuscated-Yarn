@@ -44,7 +44,7 @@ public class FrogspawnBlock extends Block {
 
 	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-		world.createAndScheduleBlockTick(pos, this, getHatchTime(world.getRandom()));
+		world.scheduleBlockTick(pos, this, getHatchTime(world.getRandom()));
 	}
 
 	private static int getHatchTime(Random random) {
@@ -97,12 +97,14 @@ public class FrogspawnBlock extends Block {
 
 		for (int j = 1; j <= i; j++) {
 			TadpoleEntity tadpoleEntity = EntityType.TADPOLE.create(world);
-			double d = (double)pos.getX() + this.getSpawnOffset(random);
-			double e = (double)pos.getZ() + this.getSpawnOffset(random);
-			int k = random.nextBetweenExclusive(1, 361);
-			tadpoleEntity.refreshPositionAndAngles(d, (double)pos.getY() - 0.5, e, (float)k, 0.0F);
-			tadpoleEntity.setPersistent();
-			world.spawnEntity(tadpoleEntity);
+			if (tadpoleEntity != null) {
+				double d = (double)pos.getX() + this.getSpawnOffset(random);
+				double e = (double)pos.getZ() + this.getSpawnOffset(random);
+				int k = random.nextBetweenExclusive(1, 361);
+				tadpoleEntity.refreshPositionAndAngles(d, (double)pos.getY() - 0.5, e, (float)k, 0.0F);
+				tadpoleEntity.setPersistent();
+				world.spawnEntity(tadpoleEntity);
+			}
 		}
 	}
 

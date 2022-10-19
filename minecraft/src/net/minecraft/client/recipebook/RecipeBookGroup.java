@@ -55,18 +55,12 @@ public enum RecipeBookGroup {
 	}
 
 	public static List<RecipeBookGroup> getGroups(RecipeBookCategory category) {
-		switch (category) {
-			case CRAFTING:
-				return CRAFTING;
-			case FURNACE:
-				return FURNACE;
-			case BLAST_FURNACE:
-				return BLAST_FURNACE;
-			case SMOKER:
-				return SMOKER;
-			default:
-				return ImmutableList.of();
-		}
+		return switch (category) {
+			case CRAFTING -> CRAFTING;
+			case FURNACE -> FURNACE;
+			case BLAST_FURNACE -> BLAST_FURNACE;
+			case SMOKER -> SMOKER;
+		};
 	}
 
 	public List<ItemStack> getIcons() {

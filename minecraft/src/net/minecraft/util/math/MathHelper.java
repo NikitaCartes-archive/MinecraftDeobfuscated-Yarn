@@ -49,6 +49,11 @@ public class MathHelper {
 	private static final double[] ARCSINE_TABLE = new double[257];
 	private static final double[] COSINE_TABLE = new double[257];
 
+	public static float method_45309(float f, float g) {
+		float h = (float)Math.pow(10.0, (double)g);
+		return (float)((int)(f * h)) / h;
+	}
+
 	public static float sin(float value) {
 		return SINE_TABLE[(int)(value * 10430.378F) & 65535];
 	}
@@ -222,6 +227,10 @@ public class MathHelper {
 
 	public static double floorMod(double dividend, double divisor) {
 		return (dividend % divisor + divisor) % divisor;
+	}
+
+	public static boolean isMultipleOf(int a, int b) {
+		return a / b * b == a;
 	}
 
 	/**

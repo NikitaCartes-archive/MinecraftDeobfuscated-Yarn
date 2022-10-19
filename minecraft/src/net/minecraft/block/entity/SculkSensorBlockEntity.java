@@ -25,7 +25,7 @@ public class SculkSensorBlockEntity extends BlockEntity implements VibrationList
 
 	public SculkSensorBlockEntity(BlockPos pos, BlockState state) {
 		super(BlockEntityType.SCULK_SENSOR, pos, state);
-		this.listener = new VibrationListener(new BlockPositionSource(this.pos), ((SculkSensorBlock)state.getBlock()).getRange(), this, null, 0.0F, 0);
+		this.listener = new VibrationListener(new BlockPositionSource(this.pos), ((SculkSensorBlock)state.getBlock()).getRange(), this);
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class SculkSensorBlockEntity extends BlockEntity implements VibrationList
 
 	@Override
 	public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable GameEvent.Emitter emitter) {
-		return !this.isRemoved() && (!pos.equals(this.getPos()) || event != GameEvent.BLOCK_DESTROY && event != GameEvent.BLOCK_PLACE)
+		return !pos.equals(this.getPos()) || event != GameEvent.BLOCK_DESTROY && event != GameEvent.BLOCK_PLACE
 			? SculkSensorBlock.isInactive(this.getCachedState())
 			: false;
 	}
@@ -76,7 +76,7 @@ public class SculkSensorBlockEntity extends BlockEntity implements VibrationList
 	) {
 		BlockState blockState = this.getCachedState();
 		if (SculkSensorBlock.isInactive(blockState)) {
-			this.lastVibrationFrequency = SculkSensorBlock.FREQUENCIES.getInt(event);
+			this.lastVibrationFrequency = VibrationListener.getFrequency(event);
 			SculkSensorBlock.setActive(entity, world, this.pos, blockState, getPower(distance, listener.getRange()));
 		}
 	}

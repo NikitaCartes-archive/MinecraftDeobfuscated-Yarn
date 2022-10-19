@@ -13,7 +13,7 @@ import net.minecraft.world.gen.noise.NoiseConfig;
 
 public class RandomSpreadStructurePlacement extends StructurePlacement {
 	public static final Codec<RandomSpreadStructurePlacement> CODEC = RecordCodecBuilder.mapCodec(
-			instance -> method_41637(instance)
+			instance -> buildCodec(instance)
 					.<int, int, SpreadType>and(
 						instance.group(
 							Codec.intRange(0, 4096).fieldOf("spacing").forGetter(RandomSpreadStructurePlacement::getSpacing),

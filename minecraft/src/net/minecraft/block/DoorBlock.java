@@ -10,6 +10,8 @@ import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
@@ -28,7 +30,6 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 
@@ -43,8 +44,10 @@ public class DoorBlock extends Block {
 	protected static final VoxelShape SOUTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 13.0, 16.0, 16.0, 16.0);
 	protected static final VoxelShape EAST_SHAPE = Block.createCuboidShape(13.0, 0.0, 0.0, 16.0, 16.0, 16.0);
 	protected static final VoxelShape WEST_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 3.0, 16.0, 16.0);
+	private final SoundEvent closeSound;
+	private final SoundEvent openSound;
 
-	protected DoorBlock(AbstractBlock.Settings settings) {
+	protected DoorBlock(AbstractBlock.Settings settings, SoundEvent closeSound, SoundEvent openSound) {
 		super(settings);
 		this.setDefaultState(
 			this.stateManager
@@ -55,6 +58,8 @@ public class DoorBlock extends Block {
 				.with(POWERED, Boolean.valueOf(false))
 				.with(HALF, DoubleBlockHalf.LOWER)
 		);
+		this.closeSound = closeSound;
+		this.openSound = openSound;
 	}
 
 	@Override
@@ -115,14 +120,6 @@ public class DoorBlock extends Block {
 			default:
 				return false;
 		}
-	}
-
-	private int getCloseSoundEventId() {
-		return this.material == Material.METAL ? WorldEvents.IRON_DOOR_CLOSES : WorldEvents.WOODEN_DOOR_CLOSES;
-	}
-
-	private int getOpenSoundEventId() {
-		return this.material == Material.METAL ? WorldEvents.IRON_DOOR_OPENS : WorldEvents.WOODEN_DOOR_OPENS;
 	}
 
 	@Nullable
@@ -192,7 +189,7 @@ public class DoorBlock extends Block {
 		} else {
 			state = state.cycle(OPEN);
 			world.setBlockState(pos, state, Block.NOTIFY_LISTENERS | Block.REDRAW_ON_MAIN_THREAD);
-			world.syncWorldEvent(player, state.get(OPEN) ? this.getOpenSoundEventId() : this.getCloseSoundEventId(), pos, 0);
+			this.playOpenCloseSound(player, world, pos, (Boolean)state.get(OPEN));
 			world.emitGameEvent(player, this.isOpen(state) ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
 			return ActionResult.success(world.isClient);
 		}
@@ -205,7 +202,7 @@ public class DoorBlock extends Block {
 	public void setOpen(@Nullable Entity entity, World world, BlockState state, BlockPos pos, boolean open) {
 		if (state.isOf(this) && (Boolean)state.get(OPEN) != open) {
 			world.setBlockState(pos, state.with(OPEN, Boolean.valueOf(open)), Block.NOTIFY_LISTENERS | Block.REDRAW_ON_MAIN_THREAD);
-			this.playOpenCloseSound(world, pos, open);
+			this.playOpenCloseSound(entity, world, pos, open);
 			world.emitGameEvent(entity, open ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
 		}
 	}
@@ -216,7 +213,7 @@ public class DoorBlock extends Block {
 			|| world.isReceivingRedstonePower(pos.offset(state.get(HALF) == DoubleBlockHalf.LOWER ? Direction.UP : Direction.DOWN));
 		if (!this.getDefaultState().isOf(sourceBlock) && bl != (Boolean)state.get(POWERED)) {
 			if (bl != (Boolean)state.get(OPEN)) {
-				this.playOpenCloseSound(world, pos, bl);
+				this.playOpenCloseSound(null, world, pos, bl);
 				world.emitGameEvent(null, bl ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
 			}
 
@@ -231,8 +228,8 @@ public class DoorBlock extends Block {
 		return state.get(HALF) == DoubleBlockHalf.LOWER ? blockState.isSideSolidFullSquare(world, blockPos, Direction.UP) : blockState.isOf(this);
 	}
 
-	private void playOpenCloseSound(World world, BlockPos pos, boolean open) {
-		world.syncWorldEvent(null, open ? this.getOpenSoundEventId() : this.getCloseSoundEventId(), pos, 0);
+	private void playOpenCloseSound(@Nullable Entity entity, World world, BlockPos pos, boolean open) {
+		world.playSound(entity, pos, open ? this.openSound : this.closeSound, SoundCategory.BLOCKS, 1.0F, world.getRandom().nextFloat() * 0.1F + 0.9F);
 	}
 
 	@Override

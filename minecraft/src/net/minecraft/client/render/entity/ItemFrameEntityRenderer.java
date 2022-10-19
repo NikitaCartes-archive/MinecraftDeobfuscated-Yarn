@@ -30,10 +30,10 @@ import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class ItemFrameEntityRenderer<T extends ItemFrameEntity> extends EntityRenderer<T> {
-	private static final ModelIdentifier NORMAL_FRAME = new ModelIdentifier("item_frame", "map=false");
-	private static final ModelIdentifier MAP_FRAME = new ModelIdentifier("item_frame", "map=true");
-	private static final ModelIdentifier GLOW_FRAME = new ModelIdentifier("glow_item_frame", "map=false");
-	private static final ModelIdentifier MAP_GLOW_FRAME = new ModelIdentifier("glow_item_frame", "map=true");
+	private static final ModelIdentifier NORMAL_FRAME = ModelIdentifier.ofVanilla("item_frame", "map=false");
+	private static final ModelIdentifier MAP_FRAME = ModelIdentifier.ofVanilla("item_frame", "map=true");
+	private static final ModelIdentifier GLOW_FRAME = ModelIdentifier.ofVanilla("glow_item_frame", "map=false");
+	private static final ModelIdentifier MAP_GLOW_FRAME = ModelIdentifier.ofVanilla("glow_item_frame", "map=true");
 	public static final int GLOW_FRAME_BLOCK_LIGHT = 5;
 	public static final int field_32933 = 30;
 	private final ItemRenderer itemRenderer;

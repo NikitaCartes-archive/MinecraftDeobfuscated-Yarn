@@ -9,6 +9,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.stat.Stats;
 import net.minecraft.tag.TagKey;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -18,7 +19,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.Util;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
@@ -28,7 +28,7 @@ import net.minecraft.world.event.GameEvent;
 
 public class GoatHornItem extends Item {
 	private static final String INSTRUMENT_KEY = "instrument";
-	private TagKey<Instrument> instrumentTag;
+	private final TagKey<Instrument> instrumentTag;
 
 	public GoatHornItem(Item.Settings settings, TagKey<Instrument> instrumentTag) {
 		super(settings);
@@ -53,9 +53,7 @@ public class GoatHornItem extends Item {
 
 	public static void setRandomInstrumentFromTag(ItemStack stack, TagKey<Instrument> instrumentTag, Random random) {
 		Optional<RegistryEntry<Instrument>> optional = Registry.INSTRUMENT.getEntryList(instrumentTag).flatMap(entryList -> entryList.getRandom(random));
-		if (optional.isPresent()) {
-			setInstrument(stack, (RegistryEntry<Instrument>)optional.get());
-		}
+		optional.ifPresent(instrument -> setInstrument(stack, instrument));
 	}
 
 	private static void setInstrument(ItemStack stack, RegistryEntry<Instrument> instrument) {
@@ -66,23 +64,15 @@ public class GoatHornItem extends Item {
 	}
 
 	@Override
-	public void appendStacks(ItemGroup group, DefaultedList<ItemStack> stacks) {
-		if (this.isIn(group)) {
-			for (RegistryEntry<Instrument> registryEntry : Registry.INSTRUMENT.iterateEntries(this.instrumentTag)) {
-				stacks.add(getStackForInstrument(Items.GOAT_HORN, registryEntry));
-			}
-		}
-	}
-
-	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
-		Optional<RegistryEntry<Instrument>> optional = this.getInstrument(itemStack);
+		Optional<? extends RegistryEntry<Instrument>> optional = this.getInstrument(itemStack);
 		if (optional.isPresent()) {
 			Instrument instrument = (Instrument)((RegistryEntry)optional.get()).value();
 			user.setCurrentHand(hand);
 			playSound(world, user, instrument);
 			user.getItemCooldownManager().set(this, instrument.useDuration());
+			user.incrementStat(Stats.USED.getOrCreateStat(this));
 			return TypedActionResult.consume(itemStack);
 		} else {
 			return TypedActionResult.fail(itemStack);
@@ -91,11 +81,11 @@ public class GoatHornItem extends Item {
 
 	@Override
 	public int getMaxUseTime(ItemStack stack) {
-		Optional<RegistryEntry<Instrument>> optional = this.getInstrument(stack);
-		return optional.isPresent() ? ((Instrument)((RegistryEntry)optional.get()).value()).useDuration() : 0;
+		Optional<? extends RegistryEntry<Instrument>> optional = this.getInstrument(stack);
+		return (Integer)optional.map(instrument -> ((Instrument)instrument.value()).useDuration()).orElse(0);
 	}
 
-	private Optional<RegistryEntry<Instrument>> getInstrument(ItemStack stack) {
+	private Optional<? extends RegistryEntry<Instrument>> getInstrument(ItemStack stack) {
 		NbtCompound nbtCompound = stack.getNbt();
 		if (nbtCompound != null) {
 			Identifier identifier = Identifier.tryParse(nbtCompound.getString("instrument"));

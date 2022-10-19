@@ -11,17 +11,10 @@ import net.minecraft.text.Text;
  * that is currently used can be obtained by
  * {@link net.minecraft.server.MinecraftServer#getMessageDecorator}.
  * 
- * <p>For the message decorator to produce a signed message, <strong>both the server
- * and the sender's client need to have chat previews enabled</strong>, Otherwise, the decorated
- * content is considered unsigned, and if the clients require chat messages to be signed
- * via the {@linkplain net.minecraft.client.option.GameOptions#getOnlyShowSecureChat
- * "Only Show Secure Chat" option}, they will see the undecorated message. Therefore,
- * message decorator is <strong>not recommended for censoring messages</strong>.
- * 
- * <p>Message decorator results are {@linkplain CachedDecoratorResult cached}, allowing
- * non-pure decorators (i.e. ones affected by externally controlled variables) without
- * affecting the signature verification process. Note that the decorator can still
- * run during message submission to decorate filtered parts of the message.
+ * <p>Messages decorated using message decorator are still marked as verifiable
+ * if there is no change in its text or used fonts. If they change, the message cannot
+ * be verified. Before 1.19.2, chat previews allowed signing of such message; however
+ * that feature was removed in 1.19.3.
  */
 @FunctionalInterface
 public interface MessageDecorator {
@@ -30,21 +23,5 @@ public interface MessageDecorator {
 	 */
 	MessageDecorator NOOP = (sender, message) -> CompletableFuture.completedFuture(message);
 
-	/**
-	 * {@return the decorated {@code message}}
-	 * 
-	 * @param sender the player who sent the message, or {@code null} if {@code message} was not
-	 * sent by a player
-	 */
 	CompletableFuture<Text> decorate(@Nullable ServerPlayerEntity sender, Text message);
-
-	default CompletableFuture<SignedMessage> decorate(@Nullable ServerPlayerEntity sender, SignedMessage message) {
-		return message.getSignedContent().isDecorated()
-			? CompletableFuture.completedFuture(message)
-			: this.decorate(sender, message.getContent()).thenApply(message::withUnsignedContent);
-	}
-
-	static SignedMessage attachIfNotDecorated(SignedMessage message, Text attached) {
-		return !message.getSignedContent().isDecorated() ? message.withUnsignedContent(attached) : message;
-	}
 }

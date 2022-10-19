@@ -1,53 +1,54 @@
 package net.minecraft.client.network.message;
 
 import java.time.Instant;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.hud.MessageIndicator;
-import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.network.message.MessageVerifier;
 import net.minecraft.network.message.SignedMessage;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public enum MessageTrustStatus {
 	SECURE,
 	MODIFIED,
-	FILTERED,
-	NOT_SECURE,
-	BROKEN_CHAIN;
+	NOT_SECURE;
 
-	public static MessageTrustStatus getStatus(SignedMessage message, Text decorated, @Nullable PlayerListEntry sender, Instant receptionTimestamp) {
-		if (sender == null) {
+	public static MessageTrustStatus getStatus(SignedMessage message, Text decorated, Instant receptionTimestamp) {
+		if (!message.hasSignature() || message.isExpiredOnClient(receptionTimestamp)) {
 			return NOT_SECURE;
 		} else {
-			MessageVerifier.Status status = sender.getMessageVerifier().verify(message);
-			if (status == MessageVerifier.Status.BROKEN_CHAIN) {
-				return BROKEN_CHAIN;
-			} else if (status == MessageVerifier.Status.NOT_SECURE) {
-				return NOT_SECURE;
-			} else if (message.isExpiredOnClient(receptionTimestamp)) {
-				return NOT_SECURE;
-			} else if (!message.filterMask().isPassThrough()) {
-				return FILTERED;
-			} else if (message.unsignedContent().isPresent()) {
-				return MODIFIED;
-			} else {
-				return !decorated.contains(message.getSignedContent().decorated()) ? MODIFIED : SECURE;
-			}
+			return isModified(message, decorated) ? MODIFIED : SECURE;
 		}
 	}
 
+	private static boolean isModified(SignedMessage message, Text decorated) {
+		if (!decorated.getString().contains(message.getSignedContent())) {
+			return true;
+		} else {
+			Text text = message.unsignedContent();
+			return text == null ? false : isNotInDefaultFont(text);
+		}
+	}
+
+	private static boolean isNotInDefaultFont(Text content) {
+		return (Boolean)content.visit((style, part) -> isNotInDefaultFont(style) ? Optional.of(true) : Optional.empty(), Style.EMPTY).orElse(false);
+	}
+
+	private static boolean isNotInDefaultFont(Style style) {
+		return !style.getFont().equals(Style.DEFAULT_FONT_ID);
+	}
+
 	public boolean isInsecure() {
-		return this == NOT_SECURE || this == BROKEN_CHAIN;
+		return this == NOT_SECURE;
 	}
 
 	@Nullable
 	public MessageIndicator createIndicator(SignedMessage message) {
 		return switch (this) {
-			case MODIFIED -> MessageIndicator.modified(message.getSignedContent().plain());
-			case FILTERED -> MessageIndicator.filtered();
+			case MODIFIED -> MessageIndicator.modified(message.getSignedContent());
 			case NOT_SECURE -> MessageIndicator.notSecure();
 			default -> null;
 		};

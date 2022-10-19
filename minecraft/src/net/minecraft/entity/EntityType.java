@@ -67,6 +67,7 @@ import net.minecraft.entity.passive.AllayEntity;
 import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.passive.BatEntity;
 import net.minecraft.entity.passive.BeeEntity;
+import net.minecraft.entity.passive.CamelEntity;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.entity.passive.CodEntity;
@@ -131,6 +132,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.resource.featuretoggle.FeatureFlag;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
+import net.minecraft.resource.featuretoggle.FeatureSet;
+import net.minecraft.resource.featuretoggle.ToggleableFeature;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.TagKey;
@@ -150,7 +155,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import org.slf4j.Logger;
 
-public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
+public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilter<Entity, T> {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final String ENTITY_TAG_KEY = "EntityTag";
 	private final RegistryEntry.Reference<EntityType<?>> registryEntry = Registry.ENTITY_TYPE.createEntry(this);
@@ -192,6 +197,9 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 	);
 	public static final EntityType<CatEntity> CAT = register(
 		"cat", EntityType.Builder.create(CatEntity::new, SpawnGroup.CREATURE).setDimensions(0.6F, 0.7F).maxTrackingRange(8)
+	);
+	public static final EntityType<CamelEntity> CAMEL = register(
+		"camel", EntityType.Builder.create(CamelEntity::new, SpawnGroup.CREATURE).setDimensions(1.7F, 2.375F).maxTrackingRange(10).requires(FeatureFlags.UPDATE_1_20)
 	);
 	public static final EntityType<CaveSpiderEntity> CAVE_SPIDER = register(
 		"cave_spider", EntityType.Builder.create(CaveSpiderEntity::new, SpawnGroup.MONSTER).setDimensions(0.7F, 0.5F).maxTrackingRange(8)
@@ -632,6 +640,7 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 	@Nullable
 	private Identifier lootTableId;
 	private final EntityDimensions dimensions;
+	private final FeatureSet requiredFeatures;
 
 	private static <T extends Entity> EntityType<T> register(String id, EntityType.Builder<T> type) {
 		return Registry.register(Registry.ENTITY_TYPE, id, type.build(id));
@@ -655,7 +664,8 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 		ImmutableSet<Block> canSpawnInside,
 		EntityDimensions dimensions,
 		int maxTrackDistance,
-		int trackTickInterval
+		int trackTickInterval,
+		FeatureSet requiredFeatures
 	) {
 		this.factory = factory;
 		this.spawnGroup = spawnGroup;
@@ -667,6 +677,7 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 		this.dimensions = dimensions;
 		this.maxTrackDistance = maxTrackDistance;
 		this.trackTickInterval = trackTickInterval;
+		this.requiredFeatures = requiredFeatures;
 	}
 
 	@Nullable
@@ -819,7 +830,7 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 	public Identifier getLootTableId() {
 		if (this.lootTableId == null) {
 			Identifier identifier = Registry.ENTITY_TYPE.getId(this);
-			this.lootTableId = new Identifier(identifier.getNamespace(), "entities/" + identifier.getPath());
+			this.lootTableId = identifier.withPrefixedPath("entities/");
 		}
 
 		return this.lootTableId;
@@ -833,9 +844,14 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 		return this.dimensions.height;
 	}
 
+	@Override
+	public FeatureSet getRequiredFeatures() {
+		return this.requiredFeatures;
+	}
+
 	@Nullable
 	public T create(World world) {
-		return this.factory.create(this, world);
+		return !this.isEnabled(world.getEnabledFeatures()) ? null : this.factory.create(this, world);
 	}
 
 	public static Optional<Entity> getEntityFromNbt(NbtCompound nbt, World world) {
@@ -984,6 +1000,7 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 		private int maxTrackingRange = 5;
 		private int trackingTickInterval = 3;
 		private EntityDimensions dimensions = EntityDimensions.changing(0.6F, 1.8F);
+		private FeatureSet requiredFeatures = FeatureFlags.VANILLA_FEATURES;
 
 		private Builder(EntityType.EntityFactory<T> factory, SpawnGroup spawnGroup) {
 			this.factory = factory;
@@ -1049,6 +1066,11 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 			return this;
 		}
 
+		public EntityType.Builder<T> requires(FeatureFlag... features) {
+			this.requiredFeatures = FeatureFlags.FEATURE_MANAGER.featureSetOf(features);
+			return this;
+		}
+
 		public EntityType<T> build(String id) {
 			if (this.saveable) {
 				Util.getChoiceType(TypeReferences.ENTITY_TREE, id);
@@ -1064,7 +1086,8 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 				this.canSpawnInside,
 				this.dimensions,
 				this.maxTrackingRange,
-				this.trackingTickInterval
+				this.trackingTickInterval,
+				this.requiredFeatures
 			);
 		}
 	}

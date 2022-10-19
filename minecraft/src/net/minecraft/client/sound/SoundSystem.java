@@ -19,7 +19,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.Camera;
-import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.ResourceFactory;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
@@ -66,10 +66,10 @@ public class SoundSystem {
 	private final List<TickableSoundInstance> soundsToPlayNextTick = Lists.<TickableSoundInstance>newArrayList();
 	private final List<Sound> preloadedSounds = Lists.<Sound>newArrayList();
 
-	public SoundSystem(SoundManager loader, GameOptions settings, ResourceManager resourceManager) {
+	public SoundSystem(SoundManager loader, GameOptions settings, ResourceFactory resourceFactory) {
 		this.loader = loader;
 		this.settings = settings;
-		this.soundLoader = new SoundLoader(resourceManager);
+		this.soundLoader = new SoundLoader(resourceFactory);
 	}
 
 	public void reloadSounds() {

@@ -8,24 +8,27 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.resource.metadata.AnimationFrameResourceMetadata;
 import net.minecraft.client.resource.metadata.AnimationResourceMetadata;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Lazy;
 
 @Environment(EnvType.CLIENT)
-public final class MissingSprite extends Sprite {
-	private static final int field_32950 = 16;
-	private static final int field_32951 = 16;
+public final class MissingSprite {
+	private static final int WIDTH = 16;
+	private static final int HEIGHT = 16;
 	private static final String MISSINGNO_ID = "missingno";
 	private static final Identifier MISSINGNO = new Identifier("missingno");
+	private static final AnimationResourceMetadata METADATA = new AnimationResourceMetadata(
+		ImmutableList.of(new AnimationFrameResourceMetadata(0, -1)), 16, 16, 1, false
+	);
 	@Nullable
 	private static NativeImageBackedTexture texture;
-	private static final Lazy<NativeImage> IMAGE = new Lazy<>(() -> {
-		NativeImage nativeImage = new NativeImage(16, 16, false);
+
+	private static NativeImage createImage(int width, int height) {
+		NativeImage nativeImage = new NativeImage(width, height, false);
 		int i = -16777216;
 		int j = -524040;
 
-		for (int k = 0; k < 16; k++) {
-			for (int l = 0; l < 16; l++) {
-				if (k < 8 ^ l < 8) {
+		for (int k = 0; k < height; k++) {
+			for (int l = 0; l < width; l++) {
+				if (k < height / 2 ^ l < width / 2) {
 					nativeImage.setColor(l, k, -524040);
 				} else {
 					nativeImage.setColor(l, k, -16777216);
@@ -33,39 +36,23 @@ public final class MissingSprite extends Sprite {
 			}
 		}
 
-		nativeImage.untrack();
 		return nativeImage;
-	});
-	private static final Sprite.Info INFO = new Sprite.Info(
-		MISSINGNO, 16, 16, new AnimationResourceMetadata(ImmutableList.of(new AnimationFrameResourceMetadata(0, -1)), 16, 16, 1, false)
-	);
-
-	private MissingSprite(SpriteAtlasTexture texture, int maxLevel, int atlasWidth, int atlasHeight, int x, int y) {
-		super(texture, INFO, maxLevel, atlasWidth, atlasHeight, x, y, IMAGE.get());
 	}
 
-	public static MissingSprite getMissingSprite(SpriteAtlasTexture texture, int maxLevel, int atlasWidth, int atlasHeight, int x, int y) {
-		return new MissingSprite(texture, maxLevel, atlasWidth, atlasHeight, x, y);
+	public static SpriteContents createSpriteContents() {
+		NativeImage nativeImage = createImage(16, 16);
+		return new SpriteContents(MISSINGNO, new SpriteDimensions(16, 16), nativeImage, METADATA);
 	}
 
 	public static Identifier getMissingSpriteId() {
 		return MISSINGNO;
 	}
 
-	public static Sprite.Info getMissingInfo() {
-		return INFO;
-	}
-
-	@Override
-	public void close() {
-		for (int i = 1; i < this.images.length; i++) {
-			this.images[i].close();
-		}
-	}
-
 	public static NativeImageBackedTexture getMissingSpriteTexture() {
 		if (texture == null) {
-			texture = new NativeImageBackedTexture(IMAGE.get());
+			NativeImage nativeImage = createImage(16, 16);
+			nativeImage.untrack();
+			texture = new NativeImageBackedTexture(nativeImage);
 			MinecraftClient.getInstance().getTextureManager().registerTexture(MISSINGNO, texture);
 		}
 

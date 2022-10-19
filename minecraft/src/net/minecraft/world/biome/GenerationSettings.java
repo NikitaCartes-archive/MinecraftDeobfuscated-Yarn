@@ -59,7 +59,7 @@ public class GenerationSettings {
 					.flatMap(RegistryEntryList::stream)
 					.map(RegistryEntry::value)
 					.flatMap(PlacedFeature::getDecoratedFeatures)
-					.filter(configuredFeature -> configuredFeature.feature() == Feature.FLOWER)
+					.filter(feature -> feature.feature() == Feature.FLOWER)
 					.collect(ImmutableList.toImmutableList())
 		);
 		this.allowedFeatures = Suppliers.memoize(
@@ -102,7 +102,7 @@ public class GenerationSettings {
 		}
 
 		public GenerationSettings.Builder carver(GenerationStep.Carver carverStep, RegistryEntry<? extends ConfiguredCarver<?>> carver) {
-			((List)this.carvers.computeIfAbsent(carverStep, carverx -> Lists.newArrayList())).add(RegistryEntry.upcast(carver));
+			((List)this.carvers.computeIfAbsent(carverStep, step -> Lists.newArrayList())).add(RegistryEntry.upcast(carver));
 			return this;
 		}
 

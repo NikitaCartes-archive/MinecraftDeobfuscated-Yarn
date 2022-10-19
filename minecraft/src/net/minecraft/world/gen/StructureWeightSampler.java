@@ -30,13 +30,13 @@ public class StructureWeightSampler implements DensityFunctionTypes.Beardifying 
 			}
 		}
 	});
-	private final ObjectListIterator<StructureWeightSampler.class_7301> pieceIterator;
+	private final ObjectListIterator<StructureWeightSampler.Piece> pieceIterator;
 	private final ObjectListIterator<JigsawJunction> junctionIterator;
 
 	public static StructureWeightSampler createStructureWeightSampler(StructureAccessor world, ChunkPos pos) {
 		int i = pos.getStartX();
 		int j = pos.getStartZ();
-		ObjectList<StructureWeightSampler.class_7301> objectList = new ObjectArrayList<>(10);
+		ObjectList<StructureWeightSampler.Piece> objectList = new ObjectArrayList<>(10);
 		ObjectList<JigsawJunction> objectList2 = new ObjectArrayList<>(32);
 		world.getStructureStarts(pos, structure -> structure.getTerrainAdaptation() != StructureTerrainAdaptation.NONE)
 			.forEach(
@@ -50,7 +50,7 @@ public class StructureWeightSampler implements DensityFunctionTypes.Beardifying 
 								StructurePool.Projection projection = poolStructurePiece.getPoolElement().getProjection();
 								if (projection == StructurePool.Projection.RIGID) {
 									objectList.add(
-										new StructureWeightSampler.class_7301(poolStructurePiece.getBoundingBox(), structureTerrainAdaptation, poolStructurePiece.getGroundLevelDelta())
+										new StructureWeightSampler.Piece(poolStructurePiece.getBoundingBox(), structureTerrainAdaptation, poolStructurePiece.getGroundLevelDelta())
 									);
 								}
 
@@ -62,7 +62,7 @@ public class StructureWeightSampler implements DensityFunctionTypes.Beardifying 
 									}
 								}
 							} else {
-								objectList.add(new StructureWeightSampler.class_7301(structurePiece.getBoundingBox(), structureTerrainAdaptation, 0));
+								objectList.add(new StructureWeightSampler.Piece(structurePiece.getBoundingBox(), structureTerrainAdaptation, 0));
 							}
 						}
 					}
@@ -72,9 +72,9 @@ public class StructureWeightSampler implements DensityFunctionTypes.Beardifying 
 	}
 
 	@VisibleForTesting
-	public StructureWeightSampler(ObjectListIterator<StructureWeightSampler.class_7301> objectListIterator, ObjectListIterator<JigsawJunction> objectListIterator2) {
-		this.pieceIterator = objectListIterator;
-		this.junctionIterator = objectListIterator2;
+	public StructureWeightSampler(ObjectListIterator<StructureWeightSampler.Piece> pieceIterator, ObjectListIterator<JigsawJunction> junctionIterator) {
+		this.pieceIterator = pieceIterator;
+		this.junctionIterator = junctionIterator;
 	}
 
 	@Override
@@ -85,21 +85,21 @@ public class StructureWeightSampler implements DensityFunctionTypes.Beardifying 
 		double d = 0.0;
 
 		while (this.pieceIterator.hasNext()) {
-			StructureWeightSampler.class_7301 lv = (StructureWeightSampler.class_7301)this.pieceIterator.next();
-			BlockBox blockBox = lv.box();
-			int l = lv.groundLevelDelta();
+			StructureWeightSampler.Piece piece = (StructureWeightSampler.Piece)this.pieceIterator.next();
+			BlockBox blockBox = piece.box();
+			int l = piece.groundLevelDelta();
 			int m = Math.max(0, Math.max(blockBox.getMinX() - i, i - blockBox.getMaxX()));
 			int n = Math.max(0, Math.max(blockBox.getMinZ() - k, k - blockBox.getMaxZ()));
 			int o = blockBox.getMinY() + l;
 			int p = j - o;
 
-			int q = switch (lv.terrainAdjustment()) {
+			int q = switch (piece.terrainAdjustment()) {
 				case NONE -> 0;
 				case BURY, BEARD_THIN -> p;
 				case BEARD_BOX -> Math.max(0, Math.max(o - j, j - blockBox.getMaxY()));
 			};
 
-			d += switch (lv.terrainAdjustment()) {
+			d += switch (piece.terrainAdjustment()) {
 				case NONE -> 0.0;
 				case BURY -> getMagnitudeWeight(m, q, n);
 				case BEARD_THIN, BEARD_BOX -> getStructureWeight(m, q, n, p) * 0.8;
@@ -170,6 +170,6 @@ public class StructureWeightSampler implements DensityFunctionTypes.Beardifying 
 	}
 
 	@VisibleForTesting
-	public static record class_7301(BlockBox box, StructureTerrainAdaptation terrainAdjustment, int groundLevelDelta) {
+	public static record Piece(BlockBox box, StructureTerrainAdaptation terrainAdjustment, int groundLevelDelta) {
 	}
 }

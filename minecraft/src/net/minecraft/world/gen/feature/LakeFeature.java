@@ -95,7 +95,7 @@ public class LakeFeature extends Feature<LakeFeature.Config> {
 								boolean bl2 = ux >= 4;
 								structureWorldAccess.setBlockState(blockPos2, bl2 ? CAVE_AIR : blockState, Block.NOTIFY_LISTENERS);
 								if (bl2) {
-									structureWorldAccess.createAndScheduleBlockTick(blockPos2, CAVE_AIR.getBlock(), 0);
+									structureWorldAccess.scheduleBlockTick(blockPos2, CAVE_AIR.getBlock(), 0);
 									this.markBlocksAboveForPostProcessing(structureWorldAccess, blockPos2);
 								}
 							}

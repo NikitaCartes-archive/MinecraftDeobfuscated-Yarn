@@ -3,7 +3,6 @@ package net.minecraft.text;
 import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import java.util.List;
-import net.minecraft.client.font.TextVisitFactory;
 
 /**
  * An object that can supply character code points

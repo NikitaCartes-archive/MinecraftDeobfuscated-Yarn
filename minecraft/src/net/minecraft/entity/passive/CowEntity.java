@@ -1,5 +1,6 @@
 package net.minecraft.entity.passive;
 
+import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -88,6 +89,7 @@ public class CowEntity extends AnimalEntity {
 		}
 	}
 
+	@Nullable
 	public CowEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
 		return EntityType.COW.create(serverWorld);
 	}

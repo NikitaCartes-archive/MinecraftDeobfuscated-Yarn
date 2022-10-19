@@ -28,8 +28,9 @@ import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.dynamic.DynamicSerializableUuid;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.RotationPropertyHelper;
 
 @Environment(EnvType.CLIENT)
 public class SkullBlockEntityRenderer implements BlockEntityRenderer<SkullBlockEntity> {
@@ -63,7 +64,8 @@ public class SkullBlockEntityRenderer implements BlockEntityRenderer<SkullBlockE
 		BlockState blockState = skullBlockEntity.getCachedState();
 		boolean bl = blockState.getBlock() instanceof WallSkullBlock;
 		Direction direction = bl ? blockState.get(WallSkullBlock.FACING) : null;
-		float h = 22.5F * (float)(bl ? (2 + direction.getHorizontal()) * 4 : (Integer)blockState.get(SkullBlock.ROTATION));
+		int k = bl ? RotationPropertyHelper.fromDirection(direction) : (Integer)blockState.get(SkullBlock.ROTATION);
+		float h = RotationPropertyHelper.toDegrees(k);
 		SkullBlock.SkullType skullType = ((AbstractSkullBlock)blockState.getBlock()).getSkullType();
 		SkullBlockEntityModel skullBlockEntityModel = (SkullBlockEntityModel)this.MODELS.get(skullType);
 		RenderLayer renderLayer = getRenderLayer(skullType, skullBlockEntity.getOwner());
@@ -102,7 +104,7 @@ public class SkullBlockEntityRenderer implements BlockEntityRenderer<SkullBlockE
 			Map<Type, MinecraftProfileTexture> map = minecraftClient.getSkinProvider().getTextures(profile);
 			return map.containsKey(Type.SKIN)
 				? RenderLayer.getEntityTranslucent(minecraftClient.getSkinProvider().loadSkin((MinecraftProfileTexture)map.get(Type.SKIN), Type.SKIN))
-				: RenderLayer.getEntityCutoutNoCull(DefaultSkinHelper.getTexture(DynamicSerializableUuid.getUuidFromProfile(profile)));
+				: RenderLayer.getEntityCutoutNoCull(DefaultSkinHelper.getTexture(Uuids.getUuidFromProfile(profile)));
 		} else {
 			return RenderLayer.getEntityCutoutNoCullZOffset(identifier);
 		}

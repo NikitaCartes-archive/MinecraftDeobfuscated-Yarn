@@ -130,6 +130,7 @@ import net.minecraft.datafixer.fix.OptionsForceVBOFix;
 import net.minecraft.datafixer.fix.OptionsKeyLwjgl3Fix;
 import net.minecraft.datafixer.fix.OptionsKeyTranslationFix;
 import net.minecraft.datafixer.fix.OptionsLowerCaseLanguageFix;
+import net.minecraft.datafixer.fix.OptionsProgrammerArtFix;
 import net.minecraft.datafixer.fix.PersistentStateUuidFix;
 import net.minecraft.datafixer.fix.PlayerUuidFix;
 import net.minecraft.datafixer.fix.PointOfInterestRemoveFix;
@@ -230,6 +231,9 @@ import net.minecraft.datafixer.schema.Schema3078;
 import net.minecraft.datafixer.schema.Schema3081;
 import net.minecraft.datafixer.schema.Schema3082;
 import net.minecraft.datafixer.schema.Schema3083;
+import net.minecraft.datafixer.schema.Schema3202;
+import net.minecraft.datafixer.schema.Schema3203;
+import net.minecraft.datafixer.schema.Schema3204;
 import net.minecraft.datafixer.schema.Schema501;
 import net.minecraft.datafixer.schema.Schema700;
 import net.minecraft.datafixer.schema.Schema701;
@@ -1010,6 +1014,14 @@ public class Schemas {
 		);
 		Schema schema170 = builder.addSchema(3108, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new BlendingDataRemoveFromNetherEndFix(schema170));
+		Schema schema171 = builder.addSchema(3201, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new OptionsProgrammerArtFix(schema171));
+		Schema schema172 = builder.addSchema(3202, Schema3202::new);
+		builder.addFixer(new ChoiceTypesFix(schema172, "Added Hanging Sign", TypeReferences.BLOCK_ENTITY));
+		Schema schema173 = builder.addSchema(3203, Schema3203::new);
+		builder.addFixer(new ChoiceTypesFix(schema173, "Added Camel", TypeReferences.ENTITY));
+		Schema schema174 = builder.addSchema(3204, Schema3204::new);
+		builder.addFixer(new ChoiceTypesFix(schema174, "Added Chiseled Bookshelf", TypeReferences.BLOCK_ENTITY));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

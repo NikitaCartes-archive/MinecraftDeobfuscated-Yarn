@@ -167,27 +167,29 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 	public void sheared(SoundCategory shearedSoundCategory) {
 		this.world.playSoundFromEntity(null, this, SoundEvents.ENTITY_MOOSHROOM_SHEAR, shearedSoundCategory, 1.0F, 1.0F);
 		if (!this.world.isClient()) {
-			((ServerWorld)this.world).spawnParticles(ParticleTypes.EXPLOSION, this.getX(), this.getBodyY(0.5), this.getZ(), 1, 0.0, 0.0, 0.0, 0.0);
-			this.discard();
 			CowEntity cowEntity = EntityType.COW.create(this.world);
-			cowEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
-			cowEntity.setHealth(this.getHealth());
-			cowEntity.bodyYaw = this.bodyYaw;
-			if (this.hasCustomName()) {
-				cowEntity.setCustomName(this.getCustomName());
-				cowEntity.setCustomNameVisible(this.isCustomNameVisible());
-			}
+			if (cowEntity != null) {
+				((ServerWorld)this.world).spawnParticles(ParticleTypes.EXPLOSION, this.getX(), this.getBodyY(0.5), this.getZ(), 1, 0.0, 0.0, 0.0, 0.0);
+				this.discard();
+				cowEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
+				cowEntity.setHealth(this.getHealth());
+				cowEntity.bodyYaw = this.bodyYaw;
+				if (this.hasCustomName()) {
+					cowEntity.setCustomName(this.getCustomName());
+					cowEntity.setCustomNameVisible(this.isCustomNameVisible());
+				}
 
-			if (this.isPersistent()) {
-				cowEntity.setPersistent();
-			}
+				if (this.isPersistent()) {
+					cowEntity.setPersistent();
+				}
 
-			cowEntity.setInvulnerable(this.isInvulnerable());
-			this.world.spawnEntity(cowEntity);
+				cowEntity.setInvulnerable(this.isInvulnerable());
+				this.world.spawnEntity(cowEntity);
 
-			for (int i = 0; i < 5; i++) {
-				this.world
-					.spawnEntity(new ItemEntity(this.world, this.getX(), this.getBodyY(1.0), this.getZ(), new ItemStack(this.getMooshroomType().mushroom.getBlock())));
+				for (int i = 0; i < 5; i++) {
+					this.world
+						.spawnEntity(new ItemEntity(this.world, this.getX(), this.getBodyY(1.0), this.getZ(), new ItemStack(this.getMooshroomType().mushroom.getBlock())));
+				}
 			}
 		}
 	}
@@ -235,9 +237,13 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 		return MooshroomEntity.Type.fromName(this.dataTracker.get(TYPE));
 	}
 
+	@Nullable
 	public MooshroomEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
 		MooshroomEntity mooshroomEntity = EntityType.MOOSHROOM.create(serverWorld);
-		mooshroomEntity.setType(this.chooseBabyType((MooshroomEntity)passiveEntity));
+		if (mooshroomEntity != null) {
+			mooshroomEntity.setType(this.chooseBabyType((MooshroomEntity)passiveEntity));
+		}
+
 		return mooshroomEntity;
 	}
 

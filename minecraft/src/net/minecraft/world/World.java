@@ -423,9 +423,13 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		return !this.getDimension().hasFixedTime() && !this.isDay();
 	}
 
+	public void playSound(@Nullable Entity except, BlockPos pos, SoundEvent sound, SoundCategory category, float volume, float pitch) {
+		this.playSound(except instanceof PlayerEntity playerEntity ? playerEntity : null, pos, sound, category, volume, pitch);
+	}
+
 	@Override
-	public void playSound(@Nullable PlayerEntity player, BlockPos pos, SoundEvent sound, SoundCategory category, float volume, float pitch) {
-		this.playSound(player, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, sound, category, volume, pitch);
+	public void playSound(@Nullable PlayerEntity except, BlockPos pos, SoundEvent sound, SoundCategory category, float volume, float pitch) {
+		this.playSound(except, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, sound, category, volume, pitch);
 	}
 
 	/**
@@ -442,12 +446,16 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		@Nullable PlayerEntity except, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch, long seed
 	);
 
-	public void playSound(@Nullable PlayerEntity player, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch) {
-		this.playSound(player, x, y, z, sound, category, volume, pitch, this.threadSafeRandom.nextLong());
+	public void playSound(@Nullable PlayerEntity except, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch) {
+		this.playSound(except, x, y, z, sound, category, volume, pitch, this.threadSafeRandom.nextLong());
 	}
 
-	public void playSoundFromEntity(@Nullable PlayerEntity player, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch) {
-		this.playSoundFromEntity(player, entity, sound, category, volume, pitch, this.threadSafeRandom.nextLong());
+	public void playSoundFromEntity(@Nullable PlayerEntity except, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch) {
+		this.playSoundFromEntity(except, entity, sound, category, volume, pitch, this.threadSafeRandom.nextLong());
+	}
+
+	public void playSoundAtBlockCenter(BlockPos pos, SoundEvent sound, SoundCategory category, float volume, float pitch, boolean useDistance) {
+		this.playSound((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, sound, category, volume, pitch, useDistance);
 	}
 
 	public void playSound(double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch, boolean useDistance) {

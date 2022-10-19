@@ -78,11 +78,11 @@ public class BigDripleafStemBlock extends HorizontalFacingBlock implements Ferti
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		if ((direction == Direction.DOWN || direction == Direction.UP) && !state.canPlaceAt(world, pos)) {
-			world.createAndScheduleBlockTick(pos, this, 1);
+			world.scheduleBlockTick(pos, this, 1);
 		}
 
 		if ((Boolean)state.get(WATERLOGGED)) {
-			world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+			world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
 		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);

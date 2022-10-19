@@ -23,7 +23,7 @@ public abstract class SinglePreparationResourceReloader<T> implements ResourceRe
 	) {
 		return CompletableFuture.supplyAsync(() -> this.prepare(manager, prepareProfiler), prepareExecutor)
 			.thenCompose(synchronizer::whenPrepared)
-			.thenAcceptAsync(object -> this.apply((T)object, manager, applyProfiler), applyExecutor);
+			.thenAcceptAsync(prepared -> this.apply((T)prepared, manager, applyProfiler), applyExecutor);
 	}
 
 	/**

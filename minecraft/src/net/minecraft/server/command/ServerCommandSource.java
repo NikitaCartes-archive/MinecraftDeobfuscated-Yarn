@@ -17,10 +17,10 @@ import javax.annotation.Nullable;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
-import net.minecraft.network.message.MessageSourceProfile;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SentMessage;
 import net.minecraft.network.message.SignedCommandArguments;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -68,7 +68,7 @@ public class ServerCommandSource implements CommandSource {
 		CommandOutput output, Vec3d pos, Vec2f rot, ServerWorld world, int level, String name, Text displayName, MinecraftServer server, @Nullable Entity entity
 	) {
 		this(output, pos, rot, world, level, name, displayName, server, entity, false, (context, success, result) -> {
-		}, EntityAnchorArgumentType.EntityAnchor.FEET, SignedCommandArguments.EMPTY, FutureQueue.NOOP);
+		}, EntityAnchorArgumentType.EntityAnchor.FEET, SignedCommandArguments.EMPTY, FutureQueue.immediate(server));
 	}
 
 	protected ServerCommandSource(
@@ -387,10 +387,6 @@ public class ServerCommandSource implements CommandSource {
 		return this.name;
 	}
 
-	public MessageSourceProfile getMessageSourceProfile() {
-		return this.entity != null ? this.entity.getMessageSourceProfile() : MessageSourceProfile.NONE;
-	}
-
 	@Override
 	public boolean hasPermissionLevel(int level) {
 		return this.level >= level;
@@ -591,5 +587,10 @@ public class ServerCommandSource implements CommandSource {
 	@Override
 	public DynamicRegistryManager getRegistryManager() {
 		return this.server.getRegistryManager();
+	}
+
+	@Override
+	public FeatureSet getEnabledFeatures() {
+		return this.world.getEnabledFeatures();
 	}
 }

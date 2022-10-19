@@ -178,7 +178,8 @@ public class TextureManager implements ResourceReloader, TextureTickListener, Au
 		Executor prepareExecutor,
 		Executor applyExecutor
 	) {
-		return CompletableFuture.allOf(TitleScreen.loadTexturesAsync(this, prepareExecutor), this.loadTextureAsync(ClickableWidget.WIDGETS_TEXTURE, prepareExecutor))
+		CompletableFuture<Void> completableFuture = new CompletableFuture();
+		CompletableFuture.allOf(TitleScreen.loadTexturesAsync(this, prepareExecutor), this.loadTextureAsync(ClickableWidget.WIDGETS_TEXTURE, prepareExecutor))
 			.thenCompose(synchronizer::whenPrepared)
 			.thenAcceptAsync(void_ -> {
 				MissingSprite.getMissingSpriteTexture();
@@ -195,6 +196,9 @@ public class TextureManager implements ResourceReloader, TextureTickListener, Au
 						abstractTexture.registerTexture(this, manager, identifier, applyExecutor);
 					}
 				}
+
+				MinecraftClient.getInstance().send(() -> completableFuture.complete(null));
 			}, runnable -> RenderSystem.recordRenderCall(runnable::run));
+		return completableFuture;
 	}
 }

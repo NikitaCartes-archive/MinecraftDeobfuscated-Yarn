@@ -316,18 +316,25 @@ public class RabbitEntity extends AnimalEntity {
 		return stack.isOf(Items.CARROT) || stack.isOf(Items.GOLDEN_CARROT) || stack.isOf(Blocks.DANDELION.asItem());
 	}
 
+	@Nullable
 	public RabbitEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
 		RabbitEntity rabbitEntity = EntityType.RABBIT.create(serverWorld);
-		int i = this.chooseType(serverWorld);
-		if (this.random.nextInt(20) != 0) {
-			if (passiveEntity instanceof RabbitEntity && this.random.nextBoolean()) {
-				i = ((RabbitEntity)passiveEntity).getRabbitType();
-			} else {
+		if (rabbitEntity != null) {
+			int i;
+			i = this.chooseType(serverWorld);
+			label16:
+			if (this.random.nextInt(20) != 0) {
+				if (passiveEntity instanceof RabbitEntity rabbitEntity2 && this.random.nextBoolean()) {
+					i = rabbitEntity2.getRabbitType();
+					break label16;
+				}
+
 				i = this.getRabbitType();
 			}
+
+			rabbitEntity.setRabbitType(i);
 		}
 
-		rabbitEntity.setRabbitType(i);
 		return rabbitEntity;
 	}
 
@@ -388,7 +395,7 @@ public class RabbitEntity extends AnimalEntity {
 	}
 
 	boolean wantsCarrots() {
-		return this.moreCarrotTicks == 0;
+		return this.moreCarrotTicks <= 0;
 	}
 
 	@Override
@@ -426,7 +433,6 @@ public class RabbitEntity extends AnimalEntity {
 
 				this.hasTarget = false;
 				this.wantsCarrots = this.rabbit.wantsCarrots();
-				this.wantsCarrots = true;
 			}
 
 			return super.canStart();

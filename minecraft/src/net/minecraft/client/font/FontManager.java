@@ -18,6 +18,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.resource.Resource;
+import net.minecraft.resource.ResourceFinder;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
 import net.minecraft.resource.SinglePreparationResourceReloader;
@@ -32,6 +33,7 @@ public class FontManager implements AutoCloseable {
 	static final Logger LOGGER = LogUtils.getLogger();
 	private static final String FONTS_JSON = "fonts.json";
 	public static final Identifier MISSING_STORAGE_ID = new Identifier("minecraft", "missing");
+	static final ResourceFinder FINDER = ResourceFinder.json("font");
 	private final FontStorage missingStorage;
 	final Map<Identifier, FontStorage> fontStorages = Maps.<Identifier, FontStorage>newHashMap();
 	final TextureManager textureManager;
@@ -42,10 +44,9 @@ public class FontManager implements AutoCloseable {
 			Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 			Map<Identifier, List<Font>> map = Maps.<Identifier, List<Font>>newHashMap();
 
-			for (Entry<Identifier, List<Resource>> entry : resourceManager.findAllResources("font", id -> id.getPath().endsWith(".json")).entrySet()) {
+			for (Entry<Identifier, List<Resource>> entry : FontManager.FINDER.findAllResources(resourceManager).entrySet()) {
 				Identifier identifier = (Identifier)entry.getKey();
-				String string = identifier.getPath();
-				Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring("font/".length(), string.length() - ".json".length()));
+				Identifier identifier2 = FontManager.FINDER.toResourceId(identifier);
 				List<Font> list = (List<Font>)map.computeIfAbsent(identifier2, id -> Lists.<Font>newArrayList(new BlankFont()));
 				profiler.push(identifier2::toString);
 
@@ -63,11 +64,11 @@ public class FontManager implements AutoCloseable {
 
 								for (int i = jsonArray.size() - 1; i >= 0; i--) {
 									JsonObject jsonObject = JsonHelper.asObject(jsonArray.get(i), "providers[" + i + "]");
-									String string2 = JsonHelper.getString(jsonObject, "type");
-									FontType fontType = FontType.byId(string2);
+									String string = JsonHelper.getString(jsonObject, "type");
+									FontType fontType = FontType.byId(string);
 
 									try {
-										profiler.push(string2);
+										profiler.push(string);
 										Font font = fontType.createLoader(jsonObject).load(resourceManager);
 										if (font != null) {
 											list.add(font);
@@ -79,23 +80,23 @@ public class FontManager implements AutoCloseable {
 							} finally {
 								profiler.pop();
 							}
-						} catch (Throwable var35) {
+						} catch (Throwable var34) {
 							if (reader != null) {
 								try {
 									reader.close();
-								} catch (Throwable var32) {
-									var35.addSuppressed(var32);
+								} catch (Throwable var31) {
+									var34.addSuppressed(var31);
 								}
 							}
 
-							throw var35;
+							throw var34;
 						}
 
 						if (reader != null) {
 							reader.close();
 						}
-					} catch (Exception var36) {
-						FontManager.LOGGER.warn("Unable to load font '{}' in {} in resourcepack: '{}'", identifier2, "fonts.json", resource.getResourcePackName(), var36);
+					} catch (Exception var35) {
+						FontManager.LOGGER.warn("Unable to load font '{}' in {} in resourcepack: '{}'", identifier2, "fonts.json", resource.getResourcePackName(), var35);
 					}
 
 					profiler.pop();

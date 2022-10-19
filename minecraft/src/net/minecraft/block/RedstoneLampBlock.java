@@ -29,7 +29,7 @@ public class RedstoneLampBlock extends Block {
 			boolean bl = (Boolean)state.get(LIT);
 			if (bl != world.isReceivingRedstonePower(pos)) {
 				if (bl) {
-					world.createAndScheduleBlockTick(pos, this, 4);
+					world.scheduleBlockTick(pos, this, 4);
 				} else {
 					world.setBlockState(pos, state.cycle(LIT), Block.NOTIFY_LISTENERS);
 				}

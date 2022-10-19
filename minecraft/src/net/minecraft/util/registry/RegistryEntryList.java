@@ -13,6 +13,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.VisibleForTesting;
 
 /**
  * A registry entry list is an immutable list of registry entries. This, is either a direct
@@ -68,6 +69,14 @@ public interface RegistryEntryList<T> extends Iterable<RegistryEntry<T>> {
 	 */
 	boolean isOf(Registry<T> registry);
 
+	Optional<TagKey<T>> getTagKey();
+
+	@Deprecated
+	@VisibleForTesting
+	static <T> RegistryEntryList.Named<T> of(Registry<T> registry, TagKey<T> tagKey) {
+		return new RegistryEntryList.Named<>(registry, tagKey);
+	}
+
 	/**
 	 * {@return a new direct list of {@code entries}}
 	 */
@@ -118,6 +127,11 @@ public interface RegistryEntryList<T> extends Iterable<RegistryEntry<T>> {
 		@Override
 		public Either<TagKey<T>, List<RegistryEntry<T>>> getStorage() {
 			return Either.right(this.entries);
+		}
+
+		@Override
+		public Optional<TagKey<T>> getTagKey() {
+			return Optional.empty();
 		}
 
 		@Override
@@ -207,6 +221,11 @@ public interface RegistryEntryList<T> extends Iterable<RegistryEntry<T>> {
 		@Override
 		public Either<TagKey<T>, List<RegistryEntry<T>>> getStorage() {
 			return Either.left(this.tag);
+		}
+
+		@Override
+		public Optional<TagKey<T>> getTagKey() {
+			return Optional.of(this.tag);
 		}
 
 		@Override

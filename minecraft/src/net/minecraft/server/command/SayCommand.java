@@ -10,21 +10,14 @@ public class SayCommand {
 		dispatcher.register(
 			CommandManager.literal("say")
 				.requires(source -> source.hasPermissionLevel(2))
-				.then(
-					CommandManager.argument("message", MessageArgumentType.message())
-						.executes(
-							context -> {
-								MessageArgumentType.SignedMessage signedMessage = MessageArgumentType.getSignedMessage(context, "message");
-								ServerCommandSource serverCommandSource = context.getSource();
-								PlayerManager playerManager = serverCommandSource.getServer().getPlayerManager();
-								signedMessage.decorate(
-									serverCommandSource,
-									message -> playerManager.broadcast(message, serverCommandSource, MessageType.params(MessageType.SAY_COMMAND, serverCommandSource))
-								);
-								return 1;
-							}
-						)
-				)
+				.then(CommandManager.argument("message", MessageArgumentType.message()).executes(context -> {
+					MessageArgumentType.getSignedMessage(context, "message", message -> {
+						ServerCommandSource serverCommandSource = context.getSource();
+						PlayerManager playerManager = serverCommandSource.getServer().getPlayerManager();
+						playerManager.broadcast(message, serverCommandSource, MessageType.params(MessageType.SAY_COMMAND, serverCommandSource));
+					});
+					return 1;
+				}))
 		);
 	}
 }

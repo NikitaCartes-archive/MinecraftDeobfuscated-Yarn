@@ -68,7 +68,7 @@ public class InGameOverlayRenderer {
 	}
 
 	private static void renderInWallOverlay(Sprite sprite, MatrixStack matrices) {
-		RenderSystem.setShaderTexture(0, sprite.getAtlas().getId());
+		RenderSystem.setShaderTexture(0, sprite.getId());
 		RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
 		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
 		float f = 0.1F;
@@ -127,7 +127,7 @@ public class InGameOverlayRenderer {
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.enableTexture();
 		Sprite sprite = ModelLoader.FIRE_1.getSprite();
-		RenderSystem.setShaderTexture(0, sprite.getAtlas().getId());
+		RenderSystem.setShaderTexture(0, sprite.getId());
 		float f = sprite.getMinU();
 		float g = sprite.getMaxU();
 		float h = (f + g) / 2.0F;

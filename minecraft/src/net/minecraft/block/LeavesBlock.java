@@ -70,12 +70,12 @@ public class LeavesBlock extends Block implements Waterloggable {
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		if ((Boolean)state.get(WATERLOGGED)) {
-			world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+			world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
 		int i = getDistanceFromLog(neighborState) + 1;
 		if (i != 1 || (Integer)state.get(DISTANCE) != i) {
-			world.createAndScheduleBlockTick(pos, this, 1);
+			world.scheduleBlockTick(pos, this, 1);
 		}
 
 		return state;

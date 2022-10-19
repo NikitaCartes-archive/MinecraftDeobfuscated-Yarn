@@ -209,6 +209,14 @@ public class DesertVillageData {
 		);
 		StructurePools.register(
 			new StructurePool(
+				new Identifier("village/desert/camel"),
+				new Identifier("empty"),
+				ImmutableList.of(Pair.of(StructurePoolElement.ofLegacySingle("village/desert/camel_spawn"), 1)),
+				StructurePool.Projection.RIGID
+			)
+		);
+		StructurePools.register(
+			new StructurePool(
 				new Identifier("village/desert/zombie/villagers"),
 				new Identifier("empty"),
 				ImmutableList.of(

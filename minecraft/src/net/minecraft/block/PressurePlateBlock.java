@@ -4,7 +4,7 @@ import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
@@ -16,11 +16,15 @@ import net.minecraft.world.WorldAccess;
 public class PressurePlateBlock extends AbstractPressurePlateBlock {
 	public static final BooleanProperty POWERED = Properties.POWERED;
 	private final PressurePlateBlock.ActivationRule type;
+	private final SoundEvent depressSound;
+	private final SoundEvent pressSound;
 
-	protected PressurePlateBlock(PressurePlateBlock.ActivationRule type, AbstractBlock.Settings settings) {
+	protected PressurePlateBlock(PressurePlateBlock.ActivationRule type, AbstractBlock.Settings settings, SoundEvent depressSound, SoundEvent pressSound) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(POWERED, Boolean.valueOf(false)));
 		this.type = type;
+		this.depressSound = depressSound;
+		this.pressSound = pressSound;
 	}
 
 	@Override
@@ -35,20 +39,12 @@ public class PressurePlateBlock extends AbstractPressurePlateBlock {
 
 	@Override
 	protected void playPressSound(WorldAccess world, BlockPos pos) {
-		if (this.material != Material.WOOD && this.material != Material.NETHER_WOOD) {
-			world.playSound(null, pos, SoundEvents.BLOCK_STONE_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 0.3F, 0.6F);
-		} else {
-			world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_ON, SoundCategory.BLOCKS, 0.3F, 0.8F);
-		}
+		world.playSound(null, pos, this.pressSound, SoundCategory.BLOCKS);
 	}
 
 	@Override
 	protected void playDepressSound(WorldAccess world, BlockPos pos) {
-		if (this.material != Material.WOOD && this.material != Material.NETHER_WOOD) {
-			world.playSound(null, pos, SoundEvents.BLOCK_STONE_PRESSURE_PLATE_CLICK_OFF, SoundCategory.BLOCKS, 0.3F, 0.5F);
-		} else {
-			world.playSound(null, pos, SoundEvents.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_OFF, SoundCategory.BLOCKS, 0.3F, 0.7F);
-		}
+		world.playSound(null, pos, this.depressSound, SoundCategory.BLOCKS);
 	}
 
 	@Override

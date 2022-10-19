@@ -20,8 +20,6 @@ import org.slf4j.Logger;
  */
 public abstract class JsonDataLoader extends SinglePreparationResourceReloader<Map<Identifier, JsonElement>> {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final String FILE_SUFFIX = ".json";
-	private static final int FILE_SUFFIX_LENGTH = ".json".length();
 	private final Gson gson;
 	private final String dataType;
 
@@ -32,12 +30,11 @@ public abstract class JsonDataLoader extends SinglePreparationResourceReloader<M
 
 	protected Map<Identifier, JsonElement> prepare(ResourceManager resourceManager, Profiler profiler) {
 		Map<Identifier, JsonElement> map = Maps.<Identifier, JsonElement>newHashMap();
-		int i = this.dataType.length() + 1;
+		ResourceFinder resourceFinder = ResourceFinder.json(this.dataType);
 
-		for (Entry<Identifier, Resource> entry : resourceManager.findResources(this.dataType, id -> id.getPath().endsWith(".json")).entrySet()) {
+		for (Entry<Identifier, Resource> entry : resourceFinder.findResources(resourceManager).entrySet()) {
 			Identifier identifier = (Identifier)entry.getKey();
-			String string = identifier.getPath();
-			Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(i, string.length() - FILE_SUFFIX_LENGTH));
+			Identifier identifier2 = resourceFinder.toResourceId(identifier);
 
 			try {
 				Reader reader = ((Resource)entry.getValue()).getReader();
@@ -52,23 +49,23 @@ public abstract class JsonDataLoader extends SinglePreparationResourceReloader<M
 					} else {
 						LOGGER.error("Couldn't load data file {} from {} as it's null or empty", identifier2, identifier);
 					}
-				} catch (Throwable var14) {
+				} catch (Throwable var13) {
 					if (reader != null) {
 						try {
 							reader.close();
-						} catch (Throwable var13) {
-							var14.addSuppressed(var13);
+						} catch (Throwable var12) {
+							var13.addSuppressed(var12);
 						}
 					}
 
-					throw var14;
+					throw var13;
 				}
 
 				if (reader != null) {
 					reader.close();
 				}
-			} catch (IllegalArgumentException | IOException | JsonParseException var15) {
-				LOGGER.error("Couldn't parse data file {} from {}", identifier2, identifier, var15);
+			} catch (IllegalArgumentException | IOException | JsonParseException var14) {
+				LOGGER.error("Couldn't parse data file {} from {}", identifier2, identifier, var14);
 			}
 		}
 

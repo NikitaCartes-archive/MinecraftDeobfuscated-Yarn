@@ -283,9 +283,13 @@ public class FoxEntity extends AnimalEntity {
 			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 2.0);
 	}
 
+	@Nullable
 	public FoxEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
 		FoxEntity foxEntity = EntityType.FOX.create(serverWorld);
-		foxEntity.setType(this.random.nextBoolean() ? this.getFoxType() : ((FoxEntity)passiveEntity).getFoxType());
+		if (foxEntity != null) {
+			foxEntity.setType(this.random.nextBoolean() ? this.getFoxType() : ((FoxEntity)passiveEntity).getFoxType());
+		}
+
 		return foxEntity;
 	}
 
@@ -689,7 +693,7 @@ public class FoxEntity extends AnimalEntity {
 			double h = f == 0.0 ? e * (double)((float)j / 6.0F) : g / f;
 
 			for (int k = 1; k < 4; k++) {
-				if (!fox.world.getBlockState(new BlockPos(fox.getX() + h, fox.getY() + (double)k, fox.getZ() + g)).getMaterial().isReplaceable()) {
+				if (!fox.world.getBlockState(new BlockPos(fox.getX() + h, fox.getY() + (double)k, fox.getZ() + g)).isReplaceable()) {
 					return false;
 				}
 			}

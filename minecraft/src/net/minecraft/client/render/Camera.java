@@ -79,7 +79,7 @@ public class Camera {
 			h *= 0.1F;
 			Vec3d vec3d = this.pos.add((double)f, (double)g, (double)h);
 			Vec3d vec3d2 = new Vec3d(
-				this.pos.x - (double)this.horizontalPlane.getX() * desiredCameraDistance + (double)f + (double)h,
+				this.pos.x - (double)this.horizontalPlane.getX() * desiredCameraDistance + (double)f,
 				this.pos.y - (double)this.horizontalPlane.getY() * desiredCameraDistance + (double)g,
 				this.pos.z - (double)this.horizontalPlane.getZ() * desiredCameraDistance + (double)h
 			);

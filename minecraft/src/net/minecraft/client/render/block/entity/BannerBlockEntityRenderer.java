@@ -27,6 +27,7 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RotationPropertyHelper;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.RegistryEntry;
 
@@ -73,7 +74,7 @@ public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBloc
 			BlockState blockState = bannerBlockEntity.getCachedState();
 			if (blockState.getBlock() instanceof BannerBlock) {
 				matrixStack.translate(0.5, 0.5, 0.5);
-				float h = (float)(-(Integer)blockState.get(BannerBlock.ROTATION) * 360) / 16.0F;
+				float h = -RotationPropertyHelper.toDegrees((Integer)blockState.get(BannerBlock.ROTATION));
 				matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(h));
 				this.pillar.visible = true;
 			} else {

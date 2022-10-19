@@ -31,12 +31,14 @@ public class TexturedRenderLayers {
 	public static final Identifier BANNER_PATTERNS_ATLAS_TEXTURE = new Identifier("textures/atlas/banner_patterns.png");
 	public static final Identifier SHIELD_PATTERNS_ATLAS_TEXTURE = new Identifier("textures/atlas/shield_patterns.png");
 	public static final Identifier SIGNS_ATLAS_TEXTURE = new Identifier("textures/atlas/signs.png");
+	public static final Identifier HANGING_SIGNS_ATLAS_TEXTURE = new Identifier("textures/atlas/hanging_signs.png");
 	public static final Identifier CHEST_ATLAS_TEXTURE = new Identifier("textures/atlas/chest.png");
 	private static final RenderLayer SHULKER_BOXES_RENDER_LAYER = RenderLayer.getEntityCutoutNoCull(SHULKER_BOXES_ATLAS_TEXTURE);
 	private static final RenderLayer BEDS_RENDER_LAYER = RenderLayer.getEntitySolid(BEDS_ATLAS_TEXTURE);
 	private static final RenderLayer BANNER_PATTERNS_RENDER_LAYER = RenderLayer.getEntityNoOutline(BANNER_PATTERNS_ATLAS_TEXTURE);
 	private static final RenderLayer SHIELD_PATTERNS_RENDER_LAYER = RenderLayer.getEntityNoOutline(SHIELD_PATTERNS_ATLAS_TEXTURE);
 	private static final RenderLayer SIGN_RENDER_LAYER = RenderLayer.getEntityCutoutNoCull(SIGNS_ATLAS_TEXTURE);
+	private static final RenderLayer HANGING_SIGN_RENDER_LAYER = RenderLayer.getEntityCutoutNoCull(HANGING_SIGNS_ATLAS_TEXTURE);
 	private static final RenderLayer CHEST_RENDER_LAYER = RenderLayer.getEntityCutout(CHEST_ATLAS_TEXTURE);
 	private static final RenderLayer ENTITY_SOLID = RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
 	private static final RenderLayer ENTITY_CUTOUT = RenderLayer.getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
@@ -48,8 +50,10 @@ public class TexturedRenderLayers {
 		)
 		.map(string -> new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, new Identifier("entity/shulker/shulker_" + string)))
 		.collect(ImmutableList.toImmutableList());
-	public static final Map<SignType, SpriteIdentifier> WOOD_TYPE_TEXTURES = (Map<SignType, SpriteIdentifier>)SignType.stream()
+	public static final Map<SignType, SpriteIdentifier> SIGN_TYPE_TEXTURES = (Map<SignType, SpriteIdentifier>)SignType.stream()
 		.collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::createSignTextureId));
+	public static final Map<SignType, SpriteIdentifier> HANGING_SIGN_TYPE_TEXTURES = (Map<SignType, SpriteIdentifier>)SignType.stream()
+		.collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::createHangingSignTextureId));
 	public static final Map<RegistryKey<BannerPattern>, SpriteIdentifier> BANNER_PATTERN_TEXTURES = (Map<RegistryKey<BannerPattern>, SpriteIdentifier>)Registry.BANNER_PATTERN
 		.getKeys()
 		.stream()
@@ -93,6 +97,10 @@ public class TexturedRenderLayers {
 		return SIGN_RENDER_LAYER;
 	}
 
+	public static RenderLayer getHangingSign() {
+		return HANGING_SIGN_RENDER_LAYER;
+	}
+
 	public static RenderLayer getChest() {
 		return CHEST_RENDER_LAYER;
 	}
@@ -118,7 +126,8 @@ public class TexturedRenderLayers {
 		COLORED_SHULKER_BOXES_TEXTURES.forEach(adder);
 		BANNER_PATTERN_TEXTURES.values().forEach(adder);
 		SHIELD_PATTERN_TEXTURES.values().forEach(adder);
-		WOOD_TYPE_TEXTURES.values().forEach(adder);
+		SIGN_TYPE_TEXTURES.values().forEach(adder);
+		HANGING_SIGN_TYPE_TEXTURES.values().forEach(adder);
 
 		for (SpriteIdentifier spriteIdentifier : BED_TEXTURES) {
 			adder.accept(spriteIdentifier);
@@ -140,8 +149,16 @@ public class TexturedRenderLayers {
 		return new SpriteIdentifier(SIGNS_ATLAS_TEXTURE, new Identifier("entity/signs/" + type.getName()));
 	}
 
+	private static SpriteIdentifier createHangingSignTextureId(SignType type) {
+		return new SpriteIdentifier(HANGING_SIGNS_ATLAS_TEXTURE, new Identifier("entity/signs/hanging/" + type.getName()));
+	}
+
 	public static SpriteIdentifier getSignTextureId(SignType signType) {
-		return (SpriteIdentifier)WOOD_TYPE_TEXTURES.get(signType);
+		return (SpriteIdentifier)SIGN_TYPE_TEXTURES.get(signType);
+	}
+
+	public static SpriteIdentifier getHangingSignTextureId(SignType signType) {
+		return (SpriteIdentifier)HANGING_SIGN_TYPE_TEXTURES.get(signType);
 	}
 
 	private static SpriteIdentifier createBannerPatternTextureId(RegistryKey<BannerPattern> bannerPattern) {

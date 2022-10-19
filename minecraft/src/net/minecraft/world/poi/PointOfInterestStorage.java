@@ -287,7 +287,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	public static enum OccupationStatus {
 		HAS_SPACE(PointOfInterest::hasSpace),
 		IS_OCCUPIED(PointOfInterest::isOccupied),
-		ANY(pointOfInterest -> true);
+		ANY(poi -> true);
 
 		private final Predicate<? super PointOfInterest> predicate;
 

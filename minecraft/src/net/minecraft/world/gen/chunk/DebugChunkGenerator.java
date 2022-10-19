@@ -34,7 +34,7 @@ import net.minecraft.world.gen.noise.NoiseConfig;
 public class DebugChunkGenerator extends ChunkGenerator {
 	public static final Codec<DebugChunkGenerator> CODEC = RecordCodecBuilder.create(
 		instance -> createStructureSetRegistryGetter(instance)
-				.and(RegistryOps.createRegistryCodec(Registry.BIOME_KEY).forGetter(debugChunkGenerator -> debugChunkGenerator.biomeRegistry))
+				.and(RegistryOps.createRegistryCodec(Registry.BIOME_KEY).forGetter(chunkGenerator -> chunkGenerator.biomeRegistry))
 				.apply(instance, instance.stable(DebugChunkGenerator::new))
 	);
 	private static final int field_31467 = 2;

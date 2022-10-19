@@ -24,24 +24,21 @@ public class MinecraftVersion implements GameVersion {
 	private final int resourcePackVersion;
 	private final int dataPackVersion;
 	private final Date buildTime;
-	private final String releaseTarget;
 
 	private MinecraftVersion() {
 		this.id = UUID.randomUUID().toString().replaceAll("-", "");
-		this.name = "1.19.2";
-		this.stable = true;
-		this.saveVersion = new SaveVersion(3120, "main");
+		this.name = "22w42a";
+		this.stable = false;
+		this.saveVersion = new SaveVersion(3205, "main");
 		this.protocolVersion = SharedConstants.getProtocolVersion();
-		this.resourcePackVersion = 9;
+		this.resourcePackVersion = 11;
 		this.dataPackVersion = 10;
 		this.buildTime = new Date();
-		this.releaseTarget = "1.19.2";
 	}
 
 	private MinecraftVersion(JsonObject json) {
 		this.id = JsonHelper.getString(json, "id");
 		this.name = JsonHelper.getString(json, "name");
-		this.releaseTarget = JsonHelper.getString(json, "release_target");
 		this.stable = JsonHelper.getBoolean(json, "stable");
 		this.saveVersion = new SaveVersion(JsonHelper.getInt(json, "world_version"), JsonHelper.getString(json, "series_id", SaveVersion.MAIN_SERIES));
 		this.protocolVersion = JsonHelper.getInt(json, "protocol_version");
@@ -117,11 +114,6 @@ public class MinecraftVersion implements GameVersion {
 	@Override
 	public String getName() {
 		return this.name;
-	}
-
-	@Override
-	public String getReleaseTarget() {
-		return this.releaseTarget;
 	}
 
 	@Override

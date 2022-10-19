@@ -50,7 +50,7 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 		matrices.push();
 		Vec3d vec3d = holdingEntity.getLeashPos(tickDelta);
 		double d = (double)(MathHelper.lerp(tickDelta, entity.prevBodyYaw, entity.bodyYaw) * (float) (Math.PI / 180.0)) + (Math.PI / 2);
-		Vec3d vec3d2 = entity.getLeashOffset();
+		Vec3d vec3d2 = entity.getLeashOffset(tickDelta);
 		double e = Math.cos(d) * vec3d2.z + Math.sin(d) * vec3d2.x;
 		double f = Math.sin(d) * vec3d2.z - Math.cos(d) * vec3d2.x;
 		double g = MathHelper.lerp((double)tickDelta, entity.prevX, entity.getX()) + e;

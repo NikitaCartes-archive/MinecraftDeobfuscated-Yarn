@@ -6,6 +6,7 @@ import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.block.pattern.BlockPatternBuilder;
 import net.minecraft.block.pattern.CachedBlockPosition;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.SnowGolemEntity;
@@ -54,52 +55,49 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock implements Wearabl
 	private void trySpawnEntity(World world, BlockPos pos) {
 		BlockPattern.Result result = this.getSnowGolemPattern().searchAround(world, pos);
 		if (result != null) {
-			for (int i = 0; i < this.getSnowGolemPattern().getHeight(); i++) {
-				CachedBlockPosition cachedBlockPosition = result.translate(0, i, 0);
+			SnowGolemEntity snowGolemEntity = EntityType.SNOW_GOLEM.create(world);
+			if (snowGolemEntity != null) {
+				method_45455(world, result, snowGolemEntity, result.translate(0, 2, 0).getBlockPos());
+			}
+		} else {
+			BlockPattern.Result result2 = this.getIronGolemPattern().searchAround(world, pos);
+			if (result2 != null) {
+				IronGolemEntity ironGolemEntity = EntityType.IRON_GOLEM.create(world);
+				if (ironGolemEntity != null) {
+					ironGolemEntity.setPlayerCreated(true);
+					method_45455(world, result2, ironGolemEntity, result2.translate(1, 2, 0).getBlockPos());
+				}
+			}
+		}
+	}
+
+	private static void method_45455(World world, BlockPattern.Result result, Entity entity, BlockPos blockPos) {
+		method_45454(world, result);
+		entity.refreshPositionAndAngles((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.05, (double)blockPos.getZ() + 0.5, 0.0F, 0.0F);
+		world.spawnEntity(entity);
+
+		for (ServerPlayerEntity serverPlayerEntity : world.getNonSpectatingEntities(ServerPlayerEntity.class, entity.getBoundingBox().expand(5.0))) {
+			Criteria.SUMMONED_ENTITY.trigger(serverPlayerEntity, entity);
+		}
+
+		method_45456(world, result);
+	}
+
+	public static void method_45454(World world, BlockPattern.Result result) {
+		for (int i = 0; i < result.getWidth(); i++) {
+			for (int j = 0; j < result.getHeight(); j++) {
+				CachedBlockPosition cachedBlockPosition = result.translate(i, j, 0);
 				world.setBlockState(cachedBlockPosition.getBlockPos(), Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
 				world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, cachedBlockPosition.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition.getBlockState()));
 			}
+		}
+	}
 
-			SnowGolemEntity snowGolemEntity = EntityType.SNOW_GOLEM.create(world);
-			BlockPos blockPos = result.translate(0, 2, 0).getBlockPos();
-			snowGolemEntity.refreshPositionAndAngles((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.05, (double)blockPos.getZ() + 0.5, 0.0F, 0.0F);
-			world.spawnEntity(snowGolemEntity);
-
-			for (ServerPlayerEntity serverPlayerEntity : world.getNonSpectatingEntities(ServerPlayerEntity.class, snowGolemEntity.getBoundingBox().expand(5.0))) {
-				Criteria.SUMMONED_ENTITY.trigger(serverPlayerEntity, snowGolemEntity);
-			}
-
-			for (int j = 0; j < this.getSnowGolemPattern().getHeight(); j++) {
-				CachedBlockPosition cachedBlockPosition2 = result.translate(0, j, 0);
-				world.updateNeighbors(cachedBlockPosition2.getBlockPos(), Blocks.AIR);
-			}
-		} else {
-			result = this.getIronGolemPattern().searchAround(world, pos);
-			if (result != null) {
-				for (int i = 0; i < this.getIronGolemPattern().getWidth(); i++) {
-					for (int k = 0; k < this.getIronGolemPattern().getHeight(); k++) {
-						CachedBlockPosition cachedBlockPosition3 = result.translate(i, k, 0);
-						world.setBlockState(cachedBlockPosition3.getBlockPos(), Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
-						world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, cachedBlockPosition3.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition3.getBlockState()));
-					}
-				}
-
-				BlockPos blockPos2 = result.translate(1, 2, 0).getBlockPos();
-				IronGolemEntity ironGolemEntity = EntityType.IRON_GOLEM.create(world);
-				ironGolemEntity.setPlayerCreated(true);
-				ironGolemEntity.refreshPositionAndAngles((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.05, (double)blockPos2.getZ() + 0.5, 0.0F, 0.0F);
-				world.spawnEntity(ironGolemEntity);
-
-				for (ServerPlayerEntity serverPlayerEntity : world.getNonSpectatingEntities(ServerPlayerEntity.class, ironGolemEntity.getBoundingBox().expand(5.0))) {
-					Criteria.SUMMONED_ENTITY.trigger(serverPlayerEntity, ironGolemEntity);
-				}
-
-				for (int j = 0; j < this.getIronGolemPattern().getWidth(); j++) {
-					for (int l = 0; l < this.getIronGolemPattern().getHeight(); l++) {
-						CachedBlockPosition cachedBlockPosition4 = result.translate(j, l, 0);
-						world.updateNeighbors(cachedBlockPosition4.getBlockPos(), Blocks.AIR);
-					}
-				}
+	public static void method_45456(World world, BlockPattern.Result result) {
+		for (int i = 0; i < result.getWidth(); i++) {
+			for (int j = 0; j < result.getHeight(); j++) {
+				CachedBlockPosition cachedBlockPosition = result.translate(i, j, 0);
+				world.updateNeighbors(cachedBlockPosition.getBlockPos(), Blocks.AIR);
 			}
 		}
 	}

@@ -8,4 +8,8 @@ public interface JumpingMount extends Mount {
 	void startJumping(int height);
 
 	void stopJumping();
+
+	default int getDashCooldown() {
+		return 0;
+	}
 }

@@ -33,6 +33,7 @@ import java.util.regex.PatternSyntaxException;
 import java.util.stream.Stream;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.registry.RegistryEntryList;
 import org.apache.commons.lang3.mutable.MutableObject;
 
@@ -44,7 +45,7 @@ import org.apache.commons.lang3.mutable.MutableObject;
  * {@link #nonEmptyList(Codec)}.
  */
 public class Codecs {
-	public static final Codec<UUID> UUID = DynamicSerializableUuid.CODEC;
+	public static final Codec<UUID> UUID = Uuids.CODEC;
 	public static final Codec<Integer> NONNEGATIVE_INT = rangedInt(0, Integer.MAX_VALUE, v -> "Value must be non-negative: " + v);
 	public static final Codec<Integer> POSITIVE_INT = rangedInt(1, Integer.MAX_VALUE, v -> "Value must be positive: " + v);
 	public static final Codec<Float> POSITIVE_FLOAT = rangedFloat(0.0F, Float.MAX_VALUE, v -> "Value must be positive: " + v);

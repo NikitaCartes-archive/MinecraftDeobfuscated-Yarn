@@ -151,11 +151,11 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 	public BlockState getStateForNeighborUpdate(
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
-		world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+		world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		if (!state.canPlaceAt(world, pos)
 			|| direction == Direction.DOWN
 			|| direction == Direction.UP && !neighborState.isOf(Blocks.BUBBLE_COLUMN) && isStillWater(neighborState)) {
-			world.createAndScheduleBlockTick(pos, this, 5);
+			world.scheduleBlockTick(pos, this, 5);
 		}
 
 		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);

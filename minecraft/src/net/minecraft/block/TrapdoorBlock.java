@@ -7,6 +7,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
@@ -20,7 +22,6 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
 
 public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggable {
@@ -35,8 +36,10 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 	protected static final VoxelShape NORTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 13.0, 16.0, 16.0, 16.0);
 	protected static final VoxelShape OPEN_BOTTOM_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 3.0, 16.0);
 	protected static final VoxelShape OPEN_TOP_SHAPE = Block.createCuboidShape(0.0, 13.0, 0.0, 16.0, 16.0, 16.0);
+	private final SoundEvent field_40317;
+	private final SoundEvent field_40318;
 
-	protected TrapdoorBlock(AbstractBlock.Settings settings) {
+	protected TrapdoorBlock(AbstractBlock.Settings settings, SoundEvent soundEvent, SoundEvent soundEvent2) {
 		super(settings);
 		this.setDefaultState(
 			this.stateManager
@@ -47,6 +50,8 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 				.with(POWERED, Boolean.valueOf(false))
 				.with(WATERLOGGED, Boolean.valueOf(false))
 		);
+		this.field_40317 = soundEvent;
+		this.field_40318 = soundEvent2;
 	}
 
 	@Override
@@ -90,7 +95,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 			state = state.cycle(OPEN);
 			world.setBlockState(pos, state, Block.NOTIFY_LISTENERS);
 			if ((Boolean)state.get(WATERLOGGED)) {
-				world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+				world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 			}
 
 			this.playToggleSound(player, world, pos, (Boolean)state.get(OPEN));
@@ -99,14 +104,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 	}
 
 	protected void playToggleSound(@Nullable PlayerEntity player, World world, BlockPos pos, boolean open) {
-		if (open) {
-			int i = this.material == Material.METAL ? WorldEvents.IRON_TRAPDOOR_OPENS : WorldEvents.WOODEN_TRAPDOOR_OPENS;
-			world.syncWorldEvent(player, i, pos, 0);
-		} else {
-			int i = this.material == Material.METAL ? WorldEvents.IRON_TRAPDOOR_CLOSES : WorldEvents.WOODEN_TRAPDOOR_CLOSES;
-			world.syncWorldEvent(player, i, pos, 0);
-		}
-
+		world.playSound(player, pos, open ? this.field_40318 : this.field_40317, SoundCategory.BLOCKS, 1.0F, world.getRandom().nextFloat() * 0.1F + 0.9F);
 		world.emitGameEvent(player, open ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
 	}
 
@@ -122,7 +120,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 
 				world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl)), Block.NOTIFY_LISTENERS);
 				if ((Boolean)state.get(WATERLOGGED)) {
-					world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+					world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 				}
 			}
 		}
@@ -161,7 +159,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		if ((Boolean)state.get(WATERLOGGED)) {
-			world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+			world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
 		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);

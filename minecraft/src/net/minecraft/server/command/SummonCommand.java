@@ -3,8 +3,9 @@ package net.minecraft.server.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import net.minecraft.command.argument.EntitySummonArgumentType;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.NbtCompoundArgumentType;
+import net.minecraft.command.argument.RegistryEntryArgumentType;
 import net.minecraft.command.argument.Vec3ArgumentType;
 import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.entity.Entity;
@@ -14,9 +15,10 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.World;
 
 public class SummonCommand {
@@ -26,23 +28,27 @@ public class SummonCommand {
 		Text.translatable("commands.summon.invalidPosition")
 	);
 
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess) {
 		dispatcher.register(
 			CommandManager.literal("summon")
 				.requires(source -> source.hasPermissionLevel(2))
 				.then(
-					CommandManager.argument("entity", EntitySummonArgumentType.entitySummon())
+					CommandManager.argument("entity", RegistryEntryArgumentType.registryEntry(registryAccess, Registry.ENTITY_TYPE_KEY))
 						.suggests(SuggestionProviders.SUMMONABLE_ENTITIES)
 						.executes(
 							context -> execute(
-									context.getSource(), EntitySummonArgumentType.getEntitySummon(context, "entity"), context.getSource().getPosition(), new NbtCompound(), true
+									context.getSource(), RegistryEntryArgumentType.getSummonableEntityType(context, "entity"), context.getSource().getPosition(), new NbtCompound(), true
 								)
 						)
 						.then(
 							CommandManager.argument("pos", Vec3ArgumentType.vec3())
 								.executes(
 									context -> execute(
-											context.getSource(), EntitySummonArgumentType.getEntitySummon(context, "entity"), Vec3ArgumentType.getVec3(context, "pos"), new NbtCompound(), true
+											context.getSource(),
+											RegistryEntryArgumentType.getSummonableEntityType(context, "entity"),
+											Vec3ArgumentType.getVec3(context, "pos"),
+											new NbtCompound(),
+											true
 										)
 								)
 								.then(
@@ -50,7 +56,7 @@ public class SummonCommand {
 										.executes(
 											context -> execute(
 													context.getSource(),
-													EntitySummonArgumentType.getEntitySummon(context, "entity"),
+													RegistryEntryArgumentType.getSummonableEntityType(context, "entity"),
 													Vec3ArgumentType.getVec3(context, "pos"),
 													NbtCompoundArgumentType.getNbtCompound(context, "nbt"),
 													false
@@ -62,29 +68,29 @@ public class SummonCommand {
 		);
 	}
 
-	private static int execute(ServerCommandSource source, Identifier entity, Vec3d pos, NbtCompound nbt, boolean initialize) throws CommandSyntaxException {
+	private static int execute(ServerCommandSource source, RegistryEntry.Reference<EntityType<?>> entityType, Vec3d pos, NbtCompound nbt, boolean initialize) throws CommandSyntaxException {
 		BlockPos blockPos = new BlockPos(pos);
 		if (!World.isValid(blockPos)) {
 			throw INVALID_POSITION_EXCEPTION.create();
 		} else {
 			NbtCompound nbtCompound = nbt.copy();
-			nbtCompound.putString("id", entity.toString());
+			nbtCompound.putString("id", entityType.registryKey().getValue().toString());
 			ServerWorld serverWorld = source.getWorld();
-			Entity entity2 = EntityType.loadEntityWithPassengers(nbtCompound, serverWorld, entityx -> {
+			Entity entity = EntityType.loadEntityWithPassengers(nbtCompound, serverWorld, entityx -> {
 				entityx.refreshPositionAndAngles(pos.x, pos.y, pos.z, entityx.getYaw(), entityx.getPitch());
 				return entityx;
 			});
-			if (entity2 == null) {
+			if (entity == null) {
 				throw FAILED_EXCEPTION.create();
 			} else {
-				if (initialize && entity2 instanceof MobEntity) {
-					((MobEntity)entity2).initialize(source.getWorld(), source.getWorld().getLocalDifficulty(entity2.getBlockPos()), SpawnReason.COMMAND, null, null);
+				if (initialize && entity instanceof MobEntity) {
+					((MobEntity)entity).initialize(source.getWorld(), source.getWorld().getLocalDifficulty(entity.getBlockPos()), SpawnReason.COMMAND, null, null);
 				}
 
-				if (!serverWorld.spawnNewEntityAndPassengers(entity2)) {
+				if (!serverWorld.spawnNewEntityAndPassengers(entity)) {
 					throw FAILED_UUID_EXCEPTION.create();
 				} else {
-					source.sendFeedback(Text.translatable("commands.summon.success", entity2.getDisplayName()), true);
+					source.sendFeedback(Text.translatable("commands.summon.success", entity.getDisplayName()), true);
 					return 1;
 				}
 			}

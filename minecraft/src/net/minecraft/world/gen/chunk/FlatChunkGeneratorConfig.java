@@ -34,17 +34,12 @@ public class FlatChunkGeneratorConfig {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final Codec<FlatChunkGeneratorConfig> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						RegistryOps.createRegistryCodec(Registry.BIOME_KEY).forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.biomeRegistry),
-						RegistryCodecs.entryList(Registry.STRUCTURE_SET_KEY)
-							.optionalFieldOf("structure_overrides")
-							.forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.structureOverrides),
+						RegistryOps.createRegistryCodec(Registry.BIOME_KEY).forGetter(config -> config.biomeRegistry),
+						RegistryCodecs.entryList(Registry.STRUCTURE_SET_KEY).optionalFieldOf("structure_overrides").forGetter(config -> config.structureOverrides),
 						FlatChunkGeneratorLayer.CODEC.listOf().fieldOf("layers").forGetter(FlatChunkGeneratorConfig::getLayers),
-						Codec.BOOL.fieldOf("lakes").orElse(false).forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.hasLakes),
-						Codec.BOOL.fieldOf("features").orElse(false).forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.hasFeatures),
-						Biome.REGISTRY_CODEC
-							.optionalFieldOf("biome")
-							.orElseGet(Optional::empty)
-							.forGetter(flatChunkGeneratorConfig -> Optional.of(flatChunkGeneratorConfig.biome))
+						Codec.BOOL.fieldOf("lakes").orElse(false).forGetter(config -> config.hasLakes),
+						Codec.BOOL.fieldOf("features").orElse(false).forGetter(config -> config.hasFeatures),
+						Biome.REGISTRY_CODEC.optionalFieldOf("biome").orElseGet(Optional::empty).forGetter(config -> Optional.of(config.biome))
 					)
 					.apply(instance, FlatChunkGeneratorConfig::new)
 		)

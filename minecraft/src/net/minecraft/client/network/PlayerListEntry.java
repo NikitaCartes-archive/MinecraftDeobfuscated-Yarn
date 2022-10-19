@@ -4,62 +4,37 @@ import com.google.common.base.MoreObjects;
 import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture.Type;
-import com.mojang.logging.LogUtils;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.DefaultSkinHelper;
-import net.minecraft.network.encryption.PlayerPublicKey;
-import net.minecraft.network.encryption.SignatureVerifier;
+import net.minecraft.network.encryption.PublicPlayerSession;
 import net.minecraft.network.message.MessageVerifier;
-import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.world.GameMode;
-import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class PlayerListEntry {
-	private static final Logger LOGGER = LogUtils.getLogger();
 	private final GameProfile profile;
 	private final Map<Type, Identifier> textures = Maps.newEnumMap(Type.class);
-	private GameMode gameMode;
+	private GameMode gameMode = GameMode.DEFAULT;
 	private int latency;
 	private boolean texturesLoaded;
 	@Nullable
 	private String model;
 	@Nullable
 	private Text displayName;
-	private int lastHealth;
-	private int health;
-	private long lastHealthTime;
-	private long blinkingHeartTime;
-	private long showTime;
 	@Nullable
-	private final PlayerPublicKey publicKeyData;
-	private final MessageVerifier messageVerifier;
+	private PublicPlayerSession session;
+	private MessageVerifier messageVerifier = MessageVerifier.UNVERIFIED;
 
-	public PlayerListEntry(PlayerListS2CPacket.Entry playerListPacketEntry, SignatureVerifier servicesSignatureVerifier, boolean secureChatEnforced) {
-		this.profile = playerListPacketEntry.getProfile();
-		this.gameMode = playerListPacketEntry.getGameMode();
-		this.latency = playerListPacketEntry.getLatency();
-		this.displayName = playerListPacketEntry.getDisplayName();
-		PlayerPublicKey playerPublicKey = null;
-
-		try {
-			PlayerPublicKey.PublicKeyData publicKeyData = playerListPacketEntry.getPublicKeyData();
-			if (publicKeyData != null) {
-				playerPublicKey = PlayerPublicKey.verifyAndDecode(servicesSignatureVerifier, this.profile.getId(), publicKeyData, PlayerPublicKey.EXPIRATION_GRACE_PERIOD);
-			}
-		} catch (Exception var6) {
-			LOGGER.error("Failed to validate publicKey property for profile {}", this.profile.getId(), var6);
-		}
-
-		this.publicKeyData = playerPublicKey;
-		this.messageVerifier = MessageVerifier.create(playerPublicKey, secureChatEnforced);
+	public PlayerListEntry(GameProfile profile) {
+		this.profile = profile;
 	}
 
 	public GameProfile getProfile() {
@@ -67,15 +42,23 @@ public class PlayerListEntry {
 	}
 
 	@Nullable
-	public PlayerPublicKey getPublicKeyData() {
-		return this.publicKeyData;
+	public PublicPlayerSession getSession() {
+		return this.session;
 	}
 
 	public MessageVerifier getMessageVerifier() {
 		return this.messageVerifier;
 	}
 
-	@Nullable
+	public boolean hasPublicKey() {
+		return this.session != null && this.session.hasPublicKey();
+	}
+
+	protected void setSession(@Nullable PublicPlayerSession session) {
+		this.session = session;
+		this.messageVerifier = Util.mapOrElse(session, PublicPlayerSession::createVerifier, MessageVerifier.UNVERIFIED);
+	}
+
 	public GameMode getGameMode() {
 		return this.gameMode;
 	}
@@ -155,45 +138,5 @@ public class PlayerListEntry {
 	@Nullable
 	public Text getDisplayName() {
 		return this.displayName;
-	}
-
-	public int getLastHealth() {
-		return this.lastHealth;
-	}
-
-	public void setLastHealth(int lastHealth) {
-		this.lastHealth = lastHealth;
-	}
-
-	public int getHealth() {
-		return this.health;
-	}
-
-	public void setHealth(int health) {
-		this.health = health;
-	}
-
-	public long getLastHealthTime() {
-		return this.lastHealthTime;
-	}
-
-	public void setLastHealthTime(long lastHealthTime) {
-		this.lastHealthTime = lastHealthTime;
-	}
-
-	public long getBlinkingHeartTime() {
-		return this.blinkingHeartTime;
-	}
-
-	public void setBlinkingHeartTime(long blinkingHeartTime) {
-		this.blinkingHeartTime = blinkingHeartTime;
-	}
-
-	public long getShowTime() {
-		return this.showTime;
-	}
-
-	public void setShowTime(long showTime) {
-		this.showTime = showTime;
 	}
 }

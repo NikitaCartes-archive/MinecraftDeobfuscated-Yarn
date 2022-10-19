@@ -18,10 +18,10 @@ import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 import java.util.regex.Pattern;
-import net.minecraft.client.font.TextVisitFactory;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Style;
+import net.minecraft.text.TextVisitFactory;
 import org.slf4j.Logger;
 
 public abstract class Language {

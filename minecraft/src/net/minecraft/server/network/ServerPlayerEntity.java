@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Dynamic;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +18,7 @@ import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
+import net.minecraft.block.entity.SculkShriekerWarningManager;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
@@ -46,9 +48,8 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketCallbacks;
-import net.minecraft.network.encryption.PlayerPublicKey;
-import net.minecraft.network.message.MessageHeader;
-import net.minecraft.network.message.MessageSignatureData;
+import net.minecraft.network.encryption.PublicPlayerSession;
+import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SentMessage;
 import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
@@ -68,12 +69,12 @@ import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.HealthUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.network.packet.s2c.play.LookAtS2CPacket;
-import net.minecraft.network.packet.s2c.play.MessageHeaderS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenHorseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenWrittenBookS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerAbilitiesS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
@@ -200,6 +201,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	private final TextStream textStream;
 	private boolean filterText;
 	private boolean allowServerListing = true;
+	private SculkShriekerWarningManager sculkShriekerWarningManager = new SculkShriekerWarningManager(0, 0, 0);
 	private final ScreenHandlerSyncHandler screenHandlerSyncHandler = new ScreenHandlerSyncHandler() {
 		@Override
 		public void updateState(ScreenHandler handler, DefaultedList<ItemStack> stacks, ItemStack cursorStack, int[] properties) {
@@ -244,18 +246,20 @@ public class ServerPlayerEntity extends PlayerEntity {
 		public void onPropertyUpdate(ScreenHandler handler, int property, int value) {
 		}
 	};
+	private final PublicPlayerSession session;
 	private int screenHandlerSyncId;
 	public int pingMilliseconds;
 	public boolean notInAnyWorld;
 
-	public ServerPlayerEntity(MinecraftServer server, ServerWorld world, GameProfile profile, @Nullable PlayerPublicKey publicKey) {
-		super(world, world.getSpawnPos(), world.getSpawnAngle(), profile, publicKey);
+	public ServerPlayerEntity(MinecraftServer server, ServerWorld world, GameProfile profile, PublicPlayerSession session) {
+		super(world, world.getSpawnPos(), world.getSpawnAngle(), profile);
 		this.textStream = server.createFilterer(this);
 		this.interactionManager = server.getPlayerInteractionManager(this);
 		this.server = server;
 		this.statHandler = server.getPlayerManager().createStatHandler(this);
 		this.advancementTracker = server.getPlayerManager().getAdvancementTracker(this);
 		this.stepHeight = 1.0F;
+		this.session = session;
 		this.moveToSpawn(world);
 	}
 
@@ -306,6 +310,13 @@ public class ServerPlayerEntity extends PlayerEntity {
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
+		if (nbt.contains("warden_spawn_tracker", NbtElement.COMPOUND_TYPE)) {
+			SculkShriekerWarningManager.CODEC
+				.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.get("warden_spawn_tracker")))
+				.resultOrPartial(LOGGER::error)
+				.ifPresent(sculkShriekerWarningManager -> this.sculkShriekerWarningManager = sculkShriekerWarningManager);
+		}
+
 		if (nbt.contains("enteredNetherPosition", NbtElement.COMPOUND_TYPE)) {
 			NbtCompound nbtCompound = nbt.getCompound("enteredNetherPosition");
 			this.enteredNetherPos = new Vec3d(nbtCompound.getDouble("x"), nbtCompound.getDouble("y"), nbtCompound.getDouble("z"));
@@ -336,6 +347,10 @@ public class ServerPlayerEntity extends PlayerEntity {
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
+		SculkShriekerWarningManager.CODEC
+			.encodeStart(NbtOps.INSTANCE, this.sculkShriekerWarningManager)
+			.resultOrPartial(LOGGER::error)
+			.ifPresent(nbtElement -> nbt.put("warden_spawn_tracker", nbtElement));
 		this.writeGameModeNbt(nbt);
 		nbt.putBoolean("seenCredits", this.seenCredits);
 		if (this.enteredNetherPos != null) {
@@ -430,6 +445,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	@Override
 	public void tick() {
 		this.interactionManager.update();
+		this.sculkShriekerWarningManager.tick();
 		this.joinInvulnerabilityTicks--;
 		if (this.timeUntilRegen > 0) {
 			this.timeUntilRegen--;
@@ -769,8 +785,9 @@ public class ServerPlayerEntity extends PlayerEntity {
 				serverWorld.getProfiler().push("placing");
 				this.setWorld(destination);
 				destination.onPlayerChangeDimension(this);
-				this.setRotation(teleportTarget.yaw, teleportTarget.pitch);
-				this.refreshPositionAfterTeleport(teleportTarget.position.x, teleportTarget.position.y, teleportTarget.position.z);
+				this.networkHandler
+					.requestTeleport(teleportTarget.position.x, teleportTarget.position.y, teleportTarget.position.z, teleportTarget.yaw, teleportTarget.pitch);
+				this.networkHandler.syncWithPlayerPosition();
 				serverWorld.getProfiler().pop();
 				this.worldChanged(serverWorld);
 				this.networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(this.getAbilities()));
@@ -1163,8 +1180,10 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	public void copyFrom(ServerPlayerEntity oldPlayer, boolean alive) {
+		this.sculkShriekerWarningManager = oldPlayer.sculkShriekerWarningManager;
 		this.filterText = oldPlayer.filterText;
 		this.interactionManager.setGameMode(oldPlayer.interactionManager.getGameMode(), oldPlayer.interactionManager.getPreviousGameMode());
+		this.sendAbilitiesUpdate();
 		if (alive) {
 			this.getInventory().clone(oldPlayer.getInventory());
 			this.setHealth(oldPlayer.getHealth());
@@ -1228,7 +1247,15 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	@Override
 	public void requestTeleport(double destX, double destY, double destZ) {
-		this.networkHandler.requestTeleport(destX, destY, destZ, this.getYaw(), this.getPitch());
+		this.networkHandler.requestTeleport(destX, destY, destZ, this.getYaw(), this.getPitch(), PlayerPositionLookS2CPacket.Flag.ROT);
+	}
+
+	@Override
+	public void requestTeleportOffset(double offsetX, double offsetY, double offsetZ) {
+		this.networkHandler
+			.requestTeleport(
+				this.getX() + offsetX, this.getY() + offsetY, this.getZ() + offsetZ, this.getYaw(), this.getPitch(), PlayerPositionLookS2CPacket.Flag.VALUES
+			);
 	}
 
 	@Override
@@ -1325,19 +1352,6 @@ public class ServerPlayerEntity extends PlayerEntity {
 		}
 	}
 
-	/**
-	 * Sends a message's header and other data required for verification to this player.
-	 * 
-	 * <p>This is used to keep the integrity of the "message chain" when a message is censored
-	 * or when the message is originally sent without metadata due to it being originated from
-	 * entities.
-	 */
-	public void sendMessageHeader(MessageHeader header, MessageSignatureData headerSignature, byte[] bodyDigest) {
-		if (this.acceptsChatMessage()) {
-			this.networkHandler.sendPacket(new MessageHeaderS2CPacket(header, headerSignature, bodyDigest));
-		}
-	}
-
 	public String getIp() {
 		String string = this.networkHandler.connection.getAddress().toString();
 		string = string.substring(string.indexOf("/") + 1);
@@ -1374,8 +1388,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	public void sendServerMetadata(ServerMetadata metadata) {
-		this.networkHandler
-			.sendPacket(new ServerMetadataS2CPacket(metadata.getDescription(), metadata.getFavicon(), metadata.shouldPreviewChat(), metadata.isSecureChatEnforced()));
+		this.networkHandler.sendPacket(new ServerMetadataS2CPacket(metadata.getDescription(), metadata.getFavicon(), metadata.isSecureChatEnforced()));
 	}
 
 	@Override
@@ -1414,7 +1427,8 @@ public class ServerPlayerEntity extends PlayerEntity {
 		this.cameraEntity = (Entity)(entity == null ? this : entity);
 		if (entity2 != this.cameraEntity) {
 			this.networkHandler.sendPacket(new SetCameraEntityS2CPacket(this.cameraEntity));
-			this.requestTeleport(this.cameraEntity.getX(), this.cameraEntity.getY(), this.cameraEntity.getZ());
+			this.networkHandler.requestTeleport(this.cameraEntity.getX(), this.cameraEntity.getY(), this.cameraEntity.getZ(), this.getYaw(), this.getPitch());
+			this.networkHandler.syncWithPlayerPosition();
 		}
 	}
 
@@ -1584,7 +1598,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
-	public Packet<?> createSpawnPacket() {
+	public Packet<ClientPlayPacketListener> createSpawnPacket() {
 		return new PlayerSpawnS2CPacket(this);
 	}
 
@@ -1651,6 +1665,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		}
 	}
 
+	@Override
 	public boolean shouldFilterText() {
 		return this.filterText;
 	}
@@ -1684,11 +1699,20 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
+	public Optional<SculkShriekerWarningManager> getSculkShriekerWarningManager() {
+		return Optional.of(this.sculkShriekerWarningManager);
+	}
+
+	@Override
 	public void triggerItemPickedUpByEntityCriteria(ItemEntity item) {
 		super.triggerItemPickedUpByEntityCriteria(item);
 		Entity entity = item.getThrower() != null ? this.getWorld().getEntity(item.getThrower()) : null;
 		if (entity != null) {
 			Criteria.THROWN_ITEM_PICKED_UP_BY_PLAYER.trigger(this, item.getStack(), entity);
 		}
+	}
+
+	public PublicPlayerSession getSession() {
+		return this.session;
 	}
 }

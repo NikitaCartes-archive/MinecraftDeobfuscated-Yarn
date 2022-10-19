@@ -23,8 +23,9 @@ import java.util.function.DoublePredicate;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.annotation.Debug;
-import net.minecraft.util.dynamic.DynamicSerializableUuid;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.random.Random;
 
 public class VillagerGossips {
@@ -193,7 +194,7 @@ public class VillagerGossips {
 				ops.createMap(
 					ImmutableMap.of(
 						ops.createString("Target"),
-						(T)DynamicSerializableUuid.CODEC.encodeStart(ops, this.target).result().orElseThrow(RuntimeException::new),
+						(T)Uuids.CODEC.encodeStart(ops, this.target).result().orElseThrow(RuntimeException::new),
 						ops.createString("Type"),
 						ops.createString(this.type.key),
 						ops.createString("Value"),
@@ -207,9 +208,7 @@ public class VillagerGossips {
 			return DataResult.unbox(
 				DataResult.instance()
 					.group(
-						dynamic.get("Target").read(DynamicSerializableUuid.CODEC),
-						dynamic.get("Type").asString().map(VillageGossipType::byKey),
-						dynamic.get("Value").asNumber().map(Number::intValue)
+						dynamic.get("Target").read(Uuids.CODEC), dynamic.get("Type").asString().map(VillageGossipType::byKey), dynamic.get("Value").read(Codecs.POSITIVE_INT)
 					)
 					.apply(DataResult.instance(), VillagerGossips.GossipEntry::new)
 			);

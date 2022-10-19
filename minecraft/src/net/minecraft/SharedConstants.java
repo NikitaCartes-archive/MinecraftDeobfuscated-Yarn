@@ -11,28 +11,28 @@ import net.minecraft.util.math.ChunkPos;
 
 public class SharedConstants {
 	@Deprecated
-	public static final boolean IS_DEVELOPMENT_VERSION = false;
+	public static final boolean IS_DEVELOPMENT_VERSION = true;
 	@Deprecated
-	public static final int WORLD_VERSION = 3120;
+	public static final int WORLD_VERSION = 3205;
 	@Deprecated
 	public static final String CURRENT_SERIES = "main";
 	@Deprecated
-	public static final String VERSION_NAME = "1.19.2";
+	public static final String VERSION_NAME = "22w42a";
 	@Deprecated
-	public static final String RELEASE_TARGET = "1.19.2";
+	public static final int RELEASE_TARGET_PROTOCOL_VERSION = 761;
 	@Deprecated
-	public static final int RELEASE_TARGET_PROTOCOL_VERSION = 760;
-	@Deprecated
-	public static final int field_29736 = 103;
-	public static final int SNBT_TOO_OLD_THRESHOLD = 3075;
+	public static final int field_29736 = 104;
+	public static final int SNBT_TOO_OLD_THRESHOLD = 3200;
 	private static final int field_29708 = 30;
-	public static final boolean CRASH_ON_UNCAUGHT_THREAD_EXCEPTION = false;
+	public static final boolean CRASH_ON_UNCAUGHT_THREAD_EXCEPTION = true;
 	@Deprecated
-	public static final int RESOURCE_PACK_VERSION = 9;
+	public static final int RESOURCE_PACK_VERSION = 11;
 	@Deprecated
 	public static final int DATA_PACK_VERSION = 10;
+	@Deprecated
+	public static final int field_39963 = 1;
+	public static final int field_39964 = 1;
 	public static final String DATA_VERSION_KEY = "DataVersion";
-	public static final boolean field_33712 = false;
 	public static final boolean field_29743 = false;
 	public static final boolean field_29744 = false;
 	public static final boolean field_29745 = false;
@@ -79,6 +79,7 @@ public class SharedConstants {
 	public static final boolean field_37273 = false;
 	public static final boolean field_39090 = false;
 	public static final boolean field_39460 = false;
+	public static final boolean field_39962 = false;
 	public static final boolean field_34368 = false;
 	public static final boolean field_29701 = false;
 	public static final boolean field_29710 = false;
@@ -107,6 +108,7 @@ public class SharedConstants {
 	public static final boolean field_29726 = false;
 	public static final boolean field_29727 = false;
 	public static final boolean field_35652 = false;
+	public static final boolean field_39961 = false;
 	public static final long field_22251 = Duration.ofMillis(300L).toNanos();
 	/**
 	 * Specifies whether Minecraft should use choice type registrations from the game's schema when entity types or block entity types are created.
@@ -203,7 +205,7 @@ public class SharedConstants {
 	}
 
 	public static int getProtocolVersion() {
-		return 760;
+		return 1073741928;
 	}
 
 	public static boolean isOutsideGenerationArea(ChunkPos pos) {

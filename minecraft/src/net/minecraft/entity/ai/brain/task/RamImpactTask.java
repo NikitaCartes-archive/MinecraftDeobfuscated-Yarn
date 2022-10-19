@@ -96,9 +96,7 @@ public class RamImpactTask extends Task<GoatEntity> {
 		} else {
 			Optional<WalkTarget> optional = brain.getOptionalMemory(MemoryModuleType.WALK_TARGET);
 			Optional<Vec3d> optional2 = brain.getOptionalMemory(MemoryModuleType.RAM_TARGET);
-			boolean bl2 = !optional.isPresent()
-				|| !optional2.isPresent()
-				|| ((WalkTarget)optional.get()).getLookTarget().getPos().isInRange((Position)optional2.get(), 0.25);
+			boolean bl2 = optional.isEmpty() || optional2.isEmpty() || ((WalkTarget)optional.get()).getLookTarget().getPos().isInRange((Position)optional2.get(), 0.25);
 			if (bl2) {
 				this.finishRam(serverWorld, goatEntity);
 			}

@@ -3,7 +3,6 @@ package net.minecraft.item;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.nbt.NbtCompound;
@@ -11,8 +10,6 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class EnchantedBookItem extends Item {
@@ -72,24 +69,5 @@ public class EnchantedBookItem extends Item {
 		ItemStack itemStack = new ItemStack(Items.ENCHANTED_BOOK);
 		addEnchantment(itemStack, info);
 		return itemStack;
-	}
-
-	@Override
-	public void appendStacks(ItemGroup group, DefaultedList<ItemStack> stacks) {
-		if (group == ItemGroup.SEARCH) {
-			for (Enchantment enchantment : Registry.ENCHANTMENT) {
-				if (enchantment.type != null) {
-					for (int i = enchantment.getMinLevel(); i <= enchantment.getMaxLevel(); i++) {
-						stacks.add(forEnchantment(new EnchantmentLevelEntry(enchantment, i)));
-					}
-				}
-			}
-		} else if (group.getEnchantments().length != 0) {
-			for (Enchantment enchantmentx : Registry.ENCHANTMENT) {
-				if (group.containsEnchantments(enchantmentx.type)) {
-					stacks.add(forEnchantment(new EnchantmentLevelEntry(enchantmentx, enchantmentx.getMaxLevel())));
-				}
-			}
-		}
 	}
 }

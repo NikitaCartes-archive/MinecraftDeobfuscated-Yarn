@@ -6,6 +6,7 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
+import net.minecraft.network.listener.ClientPlayPacketListener;
 
 public class EnderDragonPart extends Entity {
 	public final EnderDragonEntity owner;
@@ -48,7 +49,7 @@ public class EnderDragonPart extends Entity {
 	}
 
 	@Override
-	public Packet<?> createSpawnPacket() {
+	public Packet<ClientPlayPacketListener> createSpawnPacket() {
 		throw new UnsupportedOperationException();
 	}
 

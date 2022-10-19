@@ -96,10 +96,12 @@ public class SwampHutGenerator extends ShiftableStructurePiece {
 				if (chunkBox.contains(blockPos)) {
 					this.hasWitch = true;
 					WitchEntity witchEntity = EntityType.WITCH.create(world.toServerWorld());
-					witchEntity.setPersistent();
-					witchEntity.refreshPositionAndAngles((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, 0.0F, 0.0F);
-					witchEntity.initialize(world, world.getLocalDifficulty(blockPos), SpawnReason.STRUCTURE, null, null);
-					world.spawnEntityAndPassengers(witchEntity);
+					if (witchEntity != null) {
+						witchEntity.setPersistent();
+						witchEntity.refreshPositionAndAngles((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, 0.0F, 0.0F);
+						witchEntity.initialize(world, world.getLocalDifficulty(blockPos), SpawnReason.STRUCTURE, null, null);
+						world.spawnEntityAndPassengers(witchEntity);
+					}
 				}
 			}
 
@@ -113,10 +115,12 @@ public class SwampHutGenerator extends ShiftableStructurePiece {
 			if (box.contains(blockPos)) {
 				this.hasCat = true;
 				CatEntity catEntity = EntityType.CAT.create(world.toServerWorld());
-				catEntity.setPersistent();
-				catEntity.refreshPositionAndAngles((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, 0.0F, 0.0F);
-				catEntity.initialize(world, world.getLocalDifficulty(blockPos), SpawnReason.STRUCTURE, null, null);
-				world.spawnEntityAndPassengers(catEntity);
+				if (catEntity != null) {
+					catEntity.setPersistent();
+					catEntity.refreshPositionAndAngles((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, 0.0F, 0.0F);
+					catEntity.initialize(world, world.getLocalDifficulty(blockPos), SpawnReason.STRUCTURE, null, null);
+					world.spawnEntityAndPassengers(catEntity);
+				}
 			}
 		}
 	}

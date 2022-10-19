@@ -35,7 +35,9 @@ public abstract class SinglePartEntityModel<E extends Entity> extends EntityMode
 	public abstract ModelPart getPart();
 
 	public Optional<ModelPart> getChild(String name) {
-		return this.getPart().traverse().filter(part -> part.hasChild(name)).findFirst().map(part -> part.getChild(name));
+		return name.equals("root")
+			? Optional.of(this.getPart())
+			: this.getPart().traverse().filter(part -> part.hasChild(name)).findFirst().map(part -> part.getChild(name));
 	}
 
 	protected void updateAnimation(AnimationState animationState, Animation animation, float animationProgress) {

@@ -49,7 +49,6 @@ import net.minecraft.network.packet.c2s.play.QueryEntityNbtC2SPacket;
 import net.minecraft.network.packet.c2s.play.RecipeBookDataC2SPacket;
 import net.minecraft.network.packet.c2s.play.RecipeCategoryOptionsC2SPacket;
 import net.minecraft.network.packet.c2s.play.RenameItemC2SPacket;
-import net.minecraft.network.packet.c2s.play.RequestChatPreviewC2SPacket;
 import net.minecraft.network.packet.c2s.play.RequestCommandCompletionsC2SPacket;
 import net.minecraft.network.packet.c2s.play.ResourcePackStatusC2SPacket;
 import net.minecraft.network.packet.c2s.play.SelectMerchantTradeC2SPacket;
@@ -80,8 +79,6 @@ import net.minecraft.network.packet.s2c.play.BlockEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
-import net.minecraft.network.packet.s2c.play.ChatPreviewS2CPacket;
-import net.minecraft.network.packet.s2c.play.ChatPreviewStateChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDeltaUpdateS2CPacket;
@@ -116,18 +113,17 @@ import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ExperienceBarUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ExperienceOrbSpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.ExplosionS2CPacket;
+import net.minecraft.network.packet.s2c.play.FeaturesS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.HealthUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.HideMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.network.packet.s2c.play.ItemPickupAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.KeepAliveS2CPacket;
 import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.LookAtS2CPacket;
 import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.MessageHeaderS2CPacket;
 import net.minecraft.network.packet.s2c.play.NbtQueryResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenHorseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
@@ -143,10 +139,13 @@ import net.minecraft.network.packet.s2c.play.PlayerActionResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListHeaderS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerRemoveS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.ProfilelessChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
+import net.minecraft.network.packet.s2c.play.RemoveMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ResourcePackSendS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardDisplayS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardObjectiveUpdateS2CPacket;
@@ -208,7 +207,6 @@ public enum NetworkState {
 					.register(BlockUpdateS2CPacket.class, BlockUpdateS2CPacket::new)
 					.register(BossBarS2CPacket.class, BossBarS2CPacket::new)
 					.register(DifficultyS2CPacket.class, DifficultyS2CPacket::new)
-					.register(ChatPreviewS2CPacket.class, ChatPreviewS2CPacket::new)
 					.register(ClearTitleS2CPacket.class, ClearTitleS2CPacket::new)
 					.register(CommandSuggestionsS2CPacket.class, CommandSuggestionsS2CPacket::new)
 					.register(CommandTreeS2CPacket.class, CommandTreeS2CPacket::new)
@@ -220,8 +218,9 @@ public enum NetworkState {
 					.register(ChatSuggestionsS2CPacket.class, ChatSuggestionsS2CPacket::new)
 					.register(CustomPayloadS2CPacket.class, CustomPayloadS2CPacket::new)
 					.register(PlaySoundIdS2CPacket.class, PlaySoundIdS2CPacket::new)
-					.register(HideMessageS2CPacket.class, HideMessageS2CPacket::new)
+					.register(RemoveMessageS2CPacket.class, RemoveMessageS2CPacket::new)
 					.register(DisconnectS2CPacket.class, DisconnectS2CPacket::new)
+					.register(ProfilelessChatMessageS2CPacket.class, ProfilelessChatMessageS2CPacket::new)
 					.register(EntityStatusS2CPacket.class, EntityStatusS2CPacket::new)
 					.register(ExplosionS2CPacket.class, ExplosionS2CPacket::new)
 					.register(UnloadChunkS2CPacket.class, UnloadChunkS2CPacket::new)
@@ -246,11 +245,11 @@ public enum NetworkState {
 					.register(PlayPingS2CPacket.class, PlayPingS2CPacket::new)
 					.register(CraftFailedResponseS2CPacket.class, CraftFailedResponseS2CPacket::new)
 					.register(PlayerAbilitiesS2CPacket.class, PlayerAbilitiesS2CPacket::new)
-					.register(MessageHeaderS2CPacket.class, MessageHeaderS2CPacket::new)
 					.register(ChatMessageS2CPacket.class, ChatMessageS2CPacket::new)
 					.register(EndCombatS2CPacket.class, EndCombatS2CPacket::new)
 					.register(EnterCombatS2CPacket.class, EnterCombatS2CPacket::new)
 					.register(DeathMessageS2CPacket.class, DeathMessageS2CPacket::new)
+					.register(PlayerRemoveS2CPacket.class, PlayerRemoveS2CPacket::new)
 					.register(PlayerListS2CPacket.class, PlayerListS2CPacket::new)
 					.register(LookAtS2CPacket.class, LookAtS2CPacket::new)
 					.register(PlayerPositionLookS2CPacket.class, PlayerPositionLookS2CPacket::new)
@@ -274,7 +273,6 @@ public enum NetworkState {
 					.register(ChunkRenderDistanceCenterS2CPacket.class, ChunkRenderDistanceCenterS2CPacket::new)
 					.register(ChunkLoadDistanceS2CPacket.class, ChunkLoadDistanceS2CPacket::new)
 					.register(PlayerSpawnPositionS2CPacket.class, PlayerSpawnPositionS2CPacket::new)
-					.register(ChatPreviewStateChangeS2CPacket.class, ChatPreviewStateChangeS2CPacket::new)
 					.register(ScoreboardDisplayS2CPacket.class, ScoreboardDisplayS2CPacket::new)
 					.register(EntityTrackerUpdateS2CPacket.class, EntityTrackerUpdateS2CPacket::new)
 					.register(EntityAttachS2CPacket.class, EntityAttachS2CPacket::new)
@@ -301,6 +299,7 @@ public enum NetworkState {
 					.register(EntityPositionS2CPacket.class, EntityPositionS2CPacket::new)
 					.register(AdvancementUpdateS2CPacket.class, AdvancementUpdateS2CPacket::new)
 					.register(EntityAttributesS2CPacket.class, EntityAttributesS2CPacket::new)
+					.register(FeaturesS2CPacket.class, FeaturesS2CPacket::new)
 					.register(EntityStatusEffectS2CPacket.class, EntityStatusEffectS2CPacket::new)
 					.register(SynchronizeRecipesS2CPacket.class, SynchronizeRecipesS2CPacket::new)
 					.register(SynchronizeTagsS2CPacket.class, SynchronizeTagsS2CPacket::new)
@@ -314,7 +313,6 @@ public enum NetworkState {
 					.register(MessageAcknowledgmentC2SPacket.class, MessageAcknowledgmentC2SPacket::new)
 					.register(CommandExecutionC2SPacket.class, CommandExecutionC2SPacket::new)
 					.register(ChatMessageC2SPacket.class, ChatMessageC2SPacket::new)
-					.register(RequestChatPreviewC2SPacket.class, RequestChatPreviewC2SPacket::new)
 					.register(ClientStatusC2SPacket.class, ClientStatusC2SPacket::new)
 					.register(ClientSettingsC2SPacket.class, ClientSettingsC2SPacket::new)
 					.register(RequestCommandCompletionsC2SPacket.class, RequestCommandCompletionsC2SPacket::new)

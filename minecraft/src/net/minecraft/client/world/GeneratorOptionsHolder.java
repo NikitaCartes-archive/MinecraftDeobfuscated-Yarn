@@ -1,42 +1,93 @@
 package net.minecraft.client.world;
 
-import com.mojang.serialization.Lifecycle;
 import java.util.function.BiFunction;
 import java.util.function.UnaryOperator;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.resource.DataConfiguration;
 import net.minecraft.server.DataPackContents;
+import net.minecraft.util.registry.CombinedDynamicRegistries;
 import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.ServerDynamicRegistryType;
+import net.minecraft.world.dimension.DimensionOptions;
+import net.minecraft.world.dimension.DimensionOptionsRegistryHolder;
 import net.minecraft.world.gen.GeneratorOptions;
+import net.minecraft.world.level.WorldGenSettings;
 
 @Environment(EnvType.CLIENT)
 public record GeneratorOptionsHolder(
 	GeneratorOptions generatorOptions,
-	Lifecycle worldSettingsStability,
-	DynamicRegistryManager.Immutable dynamicRegistryManager,
-	DataPackContents dataPackContents
+	Registry<DimensionOptions> dimensionOptionsRegistry,
+	DimensionOptionsRegistryHolder selectedDimensions,
+	CombinedDynamicRegistries<ServerDynamicRegistryType> combinedDynamicRegistries,
+	DataPackContents dataPackContents,
+	DataConfiguration dataConfiguration
 ) {
-	public GeneratorOptionsHolder with(GeneratorOptions generatorOptions) {
-		return new GeneratorOptionsHolder(generatorOptions, this.worldSettingsStability, this.dynamicRegistryManager, this.dataPackContents);
+	public GeneratorOptionsHolder(
+		WorldGenSettings worldGenSettings,
+		CombinedDynamicRegistries<ServerDynamicRegistryType> combinedDynamicRegistries,
+		DataPackContents dataPackContents,
+		DataConfiguration dataConfiguration
+	) {
+		this(worldGenSettings.generatorOptions(), worldGenSettings.dimensionOptionsRegistryHolder(), combinedDynamicRegistries, dataPackContents, dataConfiguration);
+	}
+
+	public GeneratorOptionsHolder(
+		GeneratorOptions generatorOptions,
+		DimensionOptionsRegistryHolder selectedDimensions,
+		CombinedDynamicRegistries<ServerDynamicRegistryType> combinedDynamicRegistries,
+		DataPackContents dataPackContents,
+		DataConfiguration dataConfiguration
+	) {
+		this(
+			generatorOptions,
+			combinedDynamicRegistries.get(ServerDynamicRegistryType.DIMENSIONS).get(Registry.DIMENSION_KEY),
+			selectedDimensions,
+			combinedDynamicRegistries.with(ServerDynamicRegistryType.DIMENSIONS),
+			dataPackContents,
+			dataConfiguration
+		);
+	}
+
+	public GeneratorOptionsHolder with(GeneratorOptions generatorOptions, DimensionOptionsRegistryHolder selectedDimensions) {
+		return new GeneratorOptionsHolder(
+			generatorOptions, this.dimensionOptionsRegistry, selectedDimensions, this.combinedDynamicRegistries, this.dataPackContents, this.dataConfiguration
+		);
 	}
 
 	public GeneratorOptionsHolder apply(GeneratorOptionsHolder.Modifier modifier) {
-		GeneratorOptions generatorOptions = (GeneratorOptions)modifier.apply(this.generatorOptions);
-		return this.with(generatorOptions);
+		return new GeneratorOptionsHolder(
+			(GeneratorOptions)modifier.apply(this.generatorOptions),
+			this.dimensionOptionsRegistry,
+			this.selectedDimensions,
+			this.combinedDynamicRegistries,
+			this.dataPackContents,
+			this.dataConfiguration
+		);
 	}
 
 	public GeneratorOptionsHolder apply(GeneratorOptionsHolder.RegistryAwareModifier modifier) {
-		GeneratorOptions generatorOptions = (GeneratorOptions)modifier.apply(this.dynamicRegistryManager, this.generatorOptions);
-		return this.with(generatorOptions);
+		return new GeneratorOptionsHolder(
+			this.generatorOptions,
+			this.dimensionOptionsRegistry,
+			(DimensionOptionsRegistryHolder)modifier.apply(this.getCombinedRegistryManager(), this.selectedDimensions),
+			this.combinedDynamicRegistries,
+			this.dataPackContents,
+			this.dataConfiguration
+		);
 	}
 
-	@FunctionalInterface
+	public DynamicRegistryManager.Immutable getCombinedRegistryManager() {
+		return this.combinedDynamicRegistries.getCombinedRegistryManager();
+	}
+
 	@Environment(EnvType.CLIENT)
 	public interface Modifier extends UnaryOperator<GeneratorOptions> {
 	}
 
 	@FunctionalInterface
 	@Environment(EnvType.CLIENT)
-	public interface RegistryAwareModifier extends BiFunction<DynamicRegistryManager.Immutable, GeneratorOptions, GeneratorOptions> {
+	public interface RegistryAwareModifier extends BiFunction<DynamicRegistryManager.Immutable, DimensionOptionsRegistryHolder, DimensionOptionsRegistryHolder> {
 	}
 }

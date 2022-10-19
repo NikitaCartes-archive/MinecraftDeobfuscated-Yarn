@@ -1,7 +1,6 @@
 package net.minecraft.resource;
 
 import net.minecraft.SharedConstants;
-import net.minecraft.resource.metadata.PackResourceMetadata;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
@@ -29,10 +28,6 @@ public enum ResourcePackCompatibility {
 		} else {
 			return packVersion > i ? TOO_NEW : COMPATIBLE;
 		}
-	}
-
-	public static ResourcePackCompatibility from(PackResourceMetadata metadata, ResourceType type) {
-		return from(metadata.getPackFormat(), type);
 	}
 
 	public Text getNotification() {

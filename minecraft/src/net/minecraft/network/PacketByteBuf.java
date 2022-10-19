@@ -30,9 +30,11 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.PublicKey;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -60,6 +62,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.GlobalPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
@@ -89,6 +92,9 @@ import net.minecraft.world.World;
  * </tr>
  * <tr>
  *  <td>{@link Map}</td><td>{@link #readMap(IntFunction, PacketByteBuf.PacketReader, PacketByteBuf.PacketReader)}</td><td>{@link #writeMap(Map, PacketByteBuf.PacketWriter, PacketByteBuf.PacketWriter)}</td>
+ * </tr>
+ * <tr>
+ *  <td>{@link EnumSet}</td><td>{@link #readEnumSet(Class)}</td><td>{@link #writeEnumSet(EnumSet, Class)}</td>
  * </tr>
  * <tr>
  *  <td>{@code byte[]}</td><td>{@link #readByteArray()}</td><td>{@link #writeByteArray(byte[])}</td>
@@ -131,6 +137,9 @@ import net.minecraft.world.World;
  * </tr>
  * <tr>
  *  <td>{@index Property}</td><td>{@link #readProperty()}</td><td>{@link #writeProperty(Property)}</td>
+ * </tr>
+ * <tr>
+ *  <td>{@index PropertyMap}</td><td>{@link #readPropertyMap()}</td><td>{@link #writePropertyMap(PropertyMap)}</td>
  * </tr>
  * <tr>
  *  <td>{@link NbtCompound}</td><td>{@link #readNbt()}</td><td>{@link #writeNbt(NbtCompound)}</td>
@@ -521,6 +530,47 @@ public class PacketByteBuf extends ByteBuf {
 		for (int j = 0; j < i; j++) {
 			consumer.accept(this);
 		}
+	}
+
+	/**
+	 * Writes an enum set to this buf. An enum set is represented by a bit set that indicates
+	 * whether each element is in the set.
+	 * 
+	 * @see #readEnumSet
+	 * 
+	 * @param type the type of the enum
+	 */
+	public <E extends Enum<E>> void writeEnumSet(EnumSet<E> enumSet, Class<E> type) {
+		E[] enums = (E[])type.getEnumConstants();
+		BitSet bitSet = new BitSet(enums.length);
+
+		for (int i = 0; i < enums.length; i++) {
+			bitSet.set(i, enumSet.contains(enums[i]));
+		}
+
+		this.writeBitSet(bitSet, enums.length);
+	}
+
+	/**
+	 * Reads an enum set from this buf. An enum set is represented by a bit set that indicates
+	 * whether each element is in the set.
+	 * 
+	 * @see #writeEnumSet
+	 * 
+	 * @param type the type of the enum
+	 */
+	public <E extends Enum<E>> EnumSet<E> readEnumSet(Class<E> type) {
+		E[] enums = (E[])type.getEnumConstants();
+		BitSet bitSet = this.readBitSet(enums.length);
+		EnumSet<E> enumSet = EnumSet.noneOf(type);
+
+		for (int i = 0; i < enums.length; i++) {
+			if (bitSet.get(i)) {
+				enumSet.add(enums[i]);
+			}
+		}
+
+		return enumSet;
 	}
 
 	/**
@@ -1549,6 +1599,39 @@ public class PacketByteBuf extends ByteBuf {
 	}
 
 	/**
+	 * Reads a bit set from this buf. A bit set is represented using its byte array representation.
+	 * 
+	 * @see BitSet#valueOf
+	 * @see #writeBitSet
+	 * 
+	 * @param size the maximum size of the bit set
+	 */
+	public BitSet readBitSet(int size) {
+		byte[] bs = new byte[MathHelper.ceilDiv(size, 8)];
+		this.readBytes(bs);
+		return BitSet.valueOf(bs);
+	}
+
+	/**
+	 * Writes a bit set to this buf. A bit set is represented using its byte array representation.
+	 * 
+	 * @throws io.netty.handler.codec.EncoderException if the bit set's length is above {@code size}
+	 * 
+	 * @see BitSet#toByteArray
+	 * @see #readBitSet
+	 * 
+	 * @param size the maximum size of the bit set
+	 */
+	public void writeBitSet(BitSet bitSet, int size) {
+		if (bitSet.length() > size) {
+			throw new EncoderException("BitSet is larger than expected size (" + bitSet.length() + ">" + size + ")");
+		} else {
+			byte[] bs = bitSet.toByteArray();
+			this.writeBytes(Arrays.copyOf(bs, MathHelper.ceilDiv(size, 8)));
+		}
+	}
+
+	/**
 	 * Reads a game profile from this buf. A game profile is represented by a
 	 * {@linkplain #readUuid() uuid}, a username string, and a collection of
 	 * {@linkplain #readProperty() properties}.
@@ -1560,11 +1643,7 @@ public class PacketByteBuf extends ByteBuf {
 		UUID uUID = this.readUuid();
 		String string = this.readString(16);
 		GameProfile gameProfile = new GameProfile(uUID, string);
-		PropertyMap propertyMap = gameProfile.getProperties();
-		this.forEachInCollection(buf -> {
-			Property property = this.readProperty();
-			propertyMap.put(property.getName(), property);
-		});
+		gameProfile.getProperties().putAll(this.readPropertyMap());
 		return gameProfile;
 	}
 
@@ -1578,7 +1657,32 @@ public class PacketByteBuf extends ByteBuf {
 	public void writeGameProfile(GameProfile gameProfile) {
 		this.writeUuid(gameProfile.getId());
 		this.writeString(gameProfile.getName());
-		this.writeCollection(gameProfile.getProperties().values(), PacketByteBuf::writeProperty);
+		this.writePropertyMap(gameProfile.getProperties());
+	}
+
+	/**
+	 * Reads an authlib property map from this buf. A property map is represented as a
+	 * collection of properties.
+	 * 
+	 * @see #writePropertyMap
+	 */
+	public PropertyMap readPropertyMap() {
+		PropertyMap propertyMap = new PropertyMap();
+		this.forEachInCollection(buf -> {
+			Property property = this.readProperty();
+			propertyMap.put(property.getName(), property);
+		});
+		return propertyMap;
+	}
+
+	/**
+	 * Writes an authlib property map to this buf. A property map is represented as a
+	 * collection of properties.
+	 * 
+	 * @see #readPropertyMap
+	 */
+	public void writePropertyMap(PropertyMap propertyMap) {
+		this.writeCollection(propertyMap.values(), PacketByteBuf::writeProperty);
 	}
 
 	/**

@@ -69,7 +69,35 @@ public class BlockEntityType<T extends BlockEntity> {
 			Blocks.WARPED_SIGN,
 			Blocks.WARPED_WALL_SIGN,
 			Blocks.MANGROVE_SIGN,
-			Blocks.MANGROVE_WALL_SIGN
+			Blocks.MANGROVE_WALL_SIGN,
+			Blocks.BAMBOO_SIGN,
+			Blocks.BAMBOO_WALL_SIGN
+		)
+	);
+	public static final BlockEntityType<HangingSignBlockEntity> HANGING_SIGN = create(
+		"hanging_sign",
+		BlockEntityType.Builder.create(
+			HangingSignBlockEntity::new,
+			Blocks.OAK_HANGING_SIGN,
+			Blocks.SPRUCE_HANGING_SIGN,
+			Blocks.BIRCH_HANGING_SIGN,
+			Blocks.ACACIA_HANGING_SIGN,
+			Blocks.JUNGLE_HANGING_SIGN,
+			Blocks.DARK_OAK_HANGING_SIGN,
+			Blocks.CRIMSON_HANGING_SIGN,
+			Blocks.WARPED_HANGING_SIGN,
+			Blocks.MANGROVE_HANGING_SIGN,
+			Blocks.BAMBOO_HANGING_SIGN,
+			Blocks.OAK_WALL_HANGING_SIGN,
+			Blocks.SPRUCE_WALL_HANGING_SIGN,
+			Blocks.BIRCH_WALL_HANGING_SIGN,
+			Blocks.ACACIA_WALL_HANGING_SIGN,
+			Blocks.JUNGLE_WALL_HANGING_SIGN,
+			Blocks.DARK_OAK_WALL_HANGING_SIGN,
+			Blocks.CRIMSON_WALL_HANGING_SIGN,
+			Blocks.WARPED_WALL_HANGING_SIGN,
+			Blocks.MANGROVE_WALL_HANGING_SIGN,
+			Blocks.BAMBOO_WALL_HANGING_SIGN
 		)
 	);
 	public static final BlockEntityType<MobSpawnerBlockEntity> MOB_SPAWNER = create(
@@ -227,6 +255,9 @@ public class BlockEntityType<T extends BlockEntity> {
 	);
 	public static final BlockEntityType<SculkShriekerBlockEntity> SCULK_SHRIEKER = create(
 		"sculk_shrieker", BlockEntityType.Builder.create(SculkShriekerBlockEntity::new, Blocks.SCULK_SHRIEKER)
+	);
+	public static final BlockEntityType<ChiseledBookshelfBlockEntity> CHISELED_BOOKSHELF = create(
+		"chiseled_bookshelf", BlockEntityType.Builder.create(ChiseledBookshelfBlockEntity::new, Blocks.CHISELED_BOOKSHELF)
 	);
 	private final BlockEntityType.BlockEntityFactory<? extends T> factory;
 	private final Set<Block> blocks;

@@ -214,18 +214,22 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 	public void onStruckByLightning(ServerWorld world, LightningEntity lightning) {
 		if (world.getDifficulty() != Difficulty.PEACEFUL) {
 			ZombifiedPiglinEntity zombifiedPiglinEntity = EntityType.ZOMBIFIED_PIGLIN.create(world);
-			zombifiedPiglinEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
-			zombifiedPiglinEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
-			zombifiedPiglinEntity.setAiDisabled(this.isAiDisabled());
-			zombifiedPiglinEntity.setBaby(this.isBaby());
-			if (this.hasCustomName()) {
-				zombifiedPiglinEntity.setCustomName(this.getCustomName());
-				zombifiedPiglinEntity.setCustomNameVisible(this.isCustomNameVisible());
-			}
+			if (zombifiedPiglinEntity != null) {
+				zombifiedPiglinEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
+				zombifiedPiglinEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
+				zombifiedPiglinEntity.setAiDisabled(this.isAiDisabled());
+				zombifiedPiglinEntity.setBaby(this.isBaby());
+				if (this.hasCustomName()) {
+					zombifiedPiglinEntity.setCustomName(this.getCustomName());
+					zombifiedPiglinEntity.setCustomNameVisible(this.isCustomNameVisible());
+				}
 
-			zombifiedPiglinEntity.setPersistent();
-			world.spawnEntity(zombifiedPiglinEntity);
-			this.discard();
+				zombifiedPiglinEntity.setPersistent();
+				world.spawnEntity(zombifiedPiglinEntity);
+				this.discard();
+			} else {
+				super.onStruckByLightning(world, lightning);
+			}
 		} else {
 			super.onStruckByLightning(world, lightning);
 		}
@@ -251,6 +255,7 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 		return this.saddledComponent.boost(this.getRandom());
 	}
 
+	@Nullable
 	public PigEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
 		return EntityType.PIG.create(serverWorld);
 	}

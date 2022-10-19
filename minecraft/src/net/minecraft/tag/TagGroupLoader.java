@@ -26,29 +26,28 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.resource.Resource;
+import net.minecraft.resource.ResourceFinder;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 
 public class TagGroupLoader<T> {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final String JSON_EXTENSION = ".json";
-	private static final int JSON_EXTENSION_LENGTH = ".json".length();
-	final Function<Identifier, Optional<T>> registryGetter;
+	final Function<Identifier, Optional<? extends T>> registryGetter;
 	private final String dataType;
 
-	public TagGroupLoader(Function<Identifier, Optional<T>> registryGetter, String dataType) {
+	public TagGroupLoader(Function<Identifier, Optional<? extends T>> registryGetter, String dataType) {
 		this.registryGetter = registryGetter;
 		this.dataType = dataType;
 	}
 
-	public Map<Identifier, List<TagGroupLoader.TrackedEntry>> loadTags(ResourceManager manager) {
+	public Map<Identifier, List<TagGroupLoader.TrackedEntry>> loadTags(ResourceManager resourceManager) {
 		Map<Identifier, List<TagGroupLoader.TrackedEntry>> map = Maps.<Identifier, List<TagGroupLoader.TrackedEntry>>newHashMap();
+		ResourceFinder resourceFinder = ResourceFinder.json(this.dataType);
 
-		for (Entry<Identifier, List<Resource>> entry : manager.findAllResources(this.dataType, id -> id.getPath().endsWith(".json")).entrySet()) {
+		for (Entry<Identifier, List<Resource>> entry : resourceFinder.findAllResources(resourceManager).entrySet()) {
 			Identifier identifier = (Identifier)entry.getKey();
-			String string = identifier.getPath();
-			Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(this.dataType.length() + 1, string.length() - JSON_EXTENSION_LENGTH));
+			Identifier identifier2 = resourceFinder.toResourceId(identifier);
 
 			for (Resource resource : (List)entry.getValue()) {
 				try {
@@ -62,8 +61,8 @@ public class TagGroupLoader<T> {
 							list.clear();
 						}
 
-						String string2 = resource.getResourcePackName();
-						tagFile.entries().forEach(entryx -> list.add(new TagGroupLoader.TrackedEntry(entryx, string2)));
+						String string = resource.getResourcePackName();
+						tagFile.entries().forEach(entryx -> list.add(new TagGroupLoader.TrackedEntry(entryx, string)));
 					} catch (Throwable var16) {
 						if (reader != null) {
 							try {

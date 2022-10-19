@@ -6,13 +6,19 @@ import java.util.Map;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.BoatEntityModel;
+import net.minecraft.client.render.entity.model.ChestBoatEntityModel;
+import net.minecraft.client.render.entity.model.ChestRaftEntityModel;
+import net.minecraft.client.render.entity.model.CompositeEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.client.render.entity.model.ModelWithWaterPatch;
+import net.minecraft.client.render.entity.model.RaftEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.util.Identifier;
@@ -22,18 +28,23 @@ import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
-	private final Map<BoatEntity.Type, Pair<Identifier, BoatEntityModel>> texturesAndModels;
+	private final Map<BoatEntity.Type, Pair<Identifier, CompositeEntityModel<BoatEntity>>> texturesAndModels;
 
 	public BoatEntityRenderer(EntityRendererFactory.Context ctx, boolean chest) {
 		super(ctx);
 		this.shadowRadius = 0.8F;
-		this.texturesAndModels = (Map<BoatEntity.Type, Pair<Identifier, BoatEntityModel>>)Stream.of(BoatEntity.Type.values())
+		this.texturesAndModels = (Map<BoatEntity.Type, Pair<Identifier, CompositeEntityModel<BoatEntity>>>)Stream.of(BoatEntity.Type.values())
 			.collect(ImmutableMap.toImmutableMap(type -> type, type -> Pair.of(new Identifier(getTexture(type, chest)), this.createModel(ctx, type, chest))));
 	}
 
-	private BoatEntityModel createModel(EntityRendererFactory.Context ctx, BoatEntity.Type type, boolean chest) {
+	private CompositeEntityModel<BoatEntity> createModel(EntityRendererFactory.Context ctx, BoatEntity.Type type, boolean chest) {
 		EntityModelLayer entityModelLayer = chest ? EntityModelLayers.createChestBoat(type) : EntityModelLayers.createBoat(type);
-		return new BoatEntityModel(ctx.getPart(entityModelLayer), chest);
+		ModelPart modelPart = ctx.getPart(entityModelLayer);
+		if (type == BoatEntity.Type.BAMBOO) {
+			return (CompositeEntityModel<BoatEntity>)(chest ? new ChestRaftEntityModel(modelPart) : new RaftEntityModel(modelPart));
+		} else {
+			return (CompositeEntityModel<BoatEntity>)(chest ? new ChestBoatEntityModel(modelPart) : new BoatEntityModel(modelPart));
+		}
 	}
 
 	private static String getTexture(BoatEntity.Type type, boolean chest) {
@@ -59,17 +70,20 @@ public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
 			matrixStack.multiply(new Quaternion(new Vec3f(1.0F, 0.0F, 1.0F), boatEntity.interpolateBubbleWobble(g), true));
 		}
 
-		Pair<Identifier, BoatEntityModel> pair = (Pair<Identifier, BoatEntityModel>)this.texturesAndModels.get(boatEntity.getBoatType());
+		Pair<Identifier, CompositeEntityModel<BoatEntity>> pair = (Pair<Identifier, CompositeEntityModel<BoatEntity>>)this.texturesAndModels
+			.get(boatEntity.getBoatType());
 		Identifier identifier = pair.getFirst();
-		BoatEntityModel boatEntityModel = pair.getSecond();
+		CompositeEntityModel<BoatEntity> compositeEntityModel = pair.getSecond();
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);
 		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
-		boatEntityModel.setAngles(boatEntity, g, 0.0F, -0.1F, 0.0F, 0.0F);
-		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(boatEntityModel.getLayer(identifier));
-		boatEntityModel.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
+		compositeEntityModel.setAngles(boatEntity, g, 0.0F, -0.1F, 0.0F, 0.0F);
+		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(compositeEntityModel.getLayer(identifier));
+		compositeEntityModel.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
 		if (!boatEntity.isSubmergedInWater()) {
 			VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.getWaterMask());
-			boatEntityModel.getWaterPatch().render(matrixStack, vertexConsumer2, i, OverlayTexture.DEFAULT_UV);
+			if (compositeEntityModel instanceof ModelWithWaterPatch modelWithWaterPatch) {
+				modelWithWaterPatch.getWaterPatch().render(matrixStack, vertexConsumer2, i, OverlayTexture.DEFAULT_UV);
+			}
 		}
 
 		matrixStack.pop();

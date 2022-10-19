@@ -98,6 +98,7 @@ public abstract class ChunkGenerator {
 	protected final BiomeSource biomeSource;
 	private final Supplier<List<PlacedFeatureIndexer.IndexedFeatures>> indexedFeaturesListSupplier;
 	protected final Optional<RegistryEntryList<StructureSet>> structureOverrides;
+	private final Supplier<List<RegistryEntry<StructureSet>>> structureOverridesSupplier;
 	private final Function<RegistryEntry<Biome>, GenerationSettings> generationSettingsGetter;
 	private final Map<Structure, List<StructurePlacement>> structurePlacements = new Object2ObjectOpenHashMap<>();
 	private final Map<ConcentricRingsStructurePlacement, CompletableFuture<List<ChunkPos>>> concentricRingPositions = new Object2ObjectArrayMap<>();
@@ -121,6 +122,11 @@ public abstract class ChunkGenerator {
 		this.biomeSource = biomeSource;
 		this.generationSettingsGetter = generationSettingsGetter;
 		this.structureOverrides = structureOverrides;
+		this.structureOverridesSupplier = Suppliers.memoize(
+			() -> ((Stream)structureOverrides.map(RegistryEntryList::stream).orElseGet(() -> structureSetRegistry.streamEntries().map(RegistryEntry::upcast)))
+					.filter(entry -> this.canGenerate((StructureSet)entry.value()))
+					.toList()
+		);
 		this.indexedFeaturesListSupplier = Suppliers.memoize(
 			() -> PlacedFeatureIndexer.collectIndexedFeatures(
 					List.copyOf(biomeSource.getBiomes()), biomeEntry -> ((GenerationSettings)generationSettingsGetter.apply(biomeEntry)).getFeatures(), true
@@ -128,10 +134,16 @@ public abstract class ChunkGenerator {
 		);
 	}
 
-	public Stream<RegistryEntry<StructureSet>> streamStructureSets() {
-		return this.structureOverrides.isPresent()
-			? ((RegistryEntryList)this.structureOverrides.get()).stream()
-			: this.structureSetRegistry.streamEntries().map(RegistryEntry::upcast);
+	private boolean canGenerate(StructureSet structureSet) {
+		Stream<RegistryEntry<Biome>> stream = structureSet.structures().stream().flatMap(entry -> {
+			Structure structure = entry.structure().value();
+			return structure.getValidBiomes().stream();
+		});
+		return stream.anyMatch(this.biomeSource.getBiomes()::contains);
+	}
+
+	public List<RegistryEntry<StructureSet>> streamStructureSets() {
+		return (List<RegistryEntry<StructureSet>>)this.structureOverridesSupplier.get();
 	}
 
 	private void computeStructurePlacements(NoiseConfig noiseConfig) {
@@ -159,30 +171,31 @@ public abstract class ChunkGenerator {
 	}
 
 	private CompletableFuture<List<ChunkPos>> generateConcentricRingPositions(
-		RegistryEntry<StructureSet> structureSet, NoiseConfig noiseConfig, ConcentricRingsStructurePlacement concentricRingsStructurePlacement
+		RegistryEntry<StructureSet> structureSetEntry, NoiseConfig noiseConfig, ConcentricRingsStructurePlacement concentricRingsStructurePlacement
 	) {
-		return concentricRingsStructurePlacement.getCount() == 0
-			? CompletableFuture.completedFuture(List.of())
-			: CompletableFuture.supplyAsync(
-				Util.debugSupplier(
-					"placement calculation",
-					() -> {
-						Stopwatch stopwatch = Stopwatch.createStarted(Util.TICKER);
-						List<ChunkPos> list = new ArrayList();
-						int i = concentricRingsStructurePlacement.getDistance();
-						int j = concentricRingsStructurePlacement.getCount();
-						int k = concentricRingsStructurePlacement.getSpread();
-						RegistryEntryList<Biome> registryEntryList = concentricRingsStructurePlacement.getPreferredBiomes();
-						Random random = Random.create();
-						random.setSeed(this instanceof FlatChunkGenerator ? 0L : noiseConfig.getLegacyWorldSeed());
-						double d = random.nextDouble() * Math.PI * 2.0;
-						int l = 0;
-						int m = 0;
+		if (concentricRingsStructurePlacement.getCount() == 0) {
+			return CompletableFuture.completedFuture(List.of());
+		} else {
+			Stopwatch stopwatch = Stopwatch.createStarted(Util.TICKER);
+			int i = concentricRingsStructurePlacement.getDistance();
+			int j = concentricRingsStructurePlacement.getCount();
+			List<CompletableFuture<ChunkPos>> list = new ArrayList(j);
+			int k = concentricRingsStructurePlacement.getSpread();
+			RegistryEntryList<Biome> registryEntryList = concentricRingsStructurePlacement.getPreferredBiomes();
+			Random random = Random.create();
+			random.setSeed(this instanceof FlatChunkGenerator ? 0L : noiseConfig.getLegacyWorldSeed());
+			double d = random.nextDouble() * Math.PI * 2.0;
+			int l = 0;
+			int m = 0;
 
-						for (int n = 0; n < j; n++) {
-							double e = (double)(4 * i + i * m * 6) + (random.nextDouble() - 0.5) * (double)i * 2.5;
-							int o = (int)Math.round(Math.cos(d) * e);
-							int p = (int)Math.round(Math.sin(d) * e);
+			for (int n = 0; n < j; n++) {
+				double e = (double)(4 * i + i * m * 6) + (random.nextDouble() - 0.5) * (double)i * 2.5;
+				int o = (int)Math.round(Math.cos(d) * e);
+				int p = (int)Math.round(Math.sin(d) * e);
+				Random random2 = random.split();
+				list.add(
+					CompletableFuture.supplyAsync(
+						() -> {
 							Pair<BlockPos, RegistryEntry<Biome>> pair = this.biomeSource
 								.locateBiome(
 									ChunkSectionPos.getOffsetPos(o, 8),
@@ -190,33 +203,35 @@ public abstract class ChunkGenerator {
 									ChunkSectionPos.getOffsetPos(p, 8),
 									112,
 									registryEntryList::contains,
-									random,
+									random2,
 									noiseConfig.getMultiNoiseSampler()
 								);
 							if (pair != null) {
 								BlockPos blockPos = pair.getFirst();
-								o = ChunkSectionPos.getSectionCoord(blockPos.getX());
-								p = ChunkSectionPos.getSectionCoord(blockPos.getZ());
+								return new ChunkPos(ChunkSectionPos.getSectionCoord(blockPos.getX()), ChunkSectionPos.getSectionCoord(blockPos.getZ()));
+							} else {
+								return new ChunkPos(o, p);
 							}
+						},
+						Util.getMainWorkerExecutor()
+					)
+				);
+				d += (Math.PI * 2) / (double)k;
+				if (++l == k) {
+					m++;
+					l = 0;
+					k += 2 * k / (m + 1);
+					k = Math.min(k, j - n);
+					d += random.nextDouble() * Math.PI * 2.0;
+				}
+			}
 
-							list.add(new ChunkPos(o, p));
-							d += (Math.PI * 2) / (double)k;
-							if (++l == k) {
-								m++;
-								l = 0;
-								k += 2 * k / (m + 1);
-								k = Math.min(k, j - n);
-								d += random.nextDouble() * Math.PI * 2.0;
-							}
-						}
-
-						double f = (double)stopwatch.stop().elapsed(TimeUnit.MILLISECONDS) / 1000.0;
-						LOGGER.debug("Calculation for {} took {}s", structureSet, f);
-						return list;
-					}
-				),
-				Util.getMainWorkerExecutor()
-			);
+			return Util.combineSafe(list).thenApply(positions -> {
+				double dx = (double)stopwatch.stop().elapsed(TimeUnit.MILLISECONDS) / 1000.0;
+				LOGGER.debug("Calculation for {} took {}s", structureSetEntry, dx);
+				return positions;
+			});
+		}
 	}
 
 	protected abstract Codec<? extends ChunkGenerator> getCodec();

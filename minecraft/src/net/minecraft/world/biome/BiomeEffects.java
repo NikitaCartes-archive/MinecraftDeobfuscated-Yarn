@@ -14,20 +14,20 @@ import net.minecraft.util.StringIdentifiable;
 public class BiomeEffects {
 	public static final Codec<BiomeEffects> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codec.INT.fieldOf("fog_color").forGetter(biomeEffects -> biomeEffects.fogColor),
-					Codec.INT.fieldOf("water_color").forGetter(biomeEffects -> biomeEffects.waterColor),
-					Codec.INT.fieldOf("water_fog_color").forGetter(biomeEffects -> biomeEffects.waterFogColor),
-					Codec.INT.fieldOf("sky_color").forGetter(biomeEffects -> biomeEffects.skyColor),
-					Codec.INT.optionalFieldOf("foliage_color").forGetter(biomeEffects -> biomeEffects.foliageColor),
-					Codec.INT.optionalFieldOf("grass_color").forGetter(biomeEffects -> biomeEffects.grassColor),
+					Codec.INT.fieldOf("fog_color").forGetter(effects -> effects.fogColor),
+					Codec.INT.fieldOf("water_color").forGetter(effects -> effects.waterColor),
+					Codec.INT.fieldOf("water_fog_color").forGetter(effects -> effects.waterFogColor),
+					Codec.INT.fieldOf("sky_color").forGetter(effects -> effects.skyColor),
+					Codec.INT.optionalFieldOf("foliage_color").forGetter(effects -> effects.foliageColor),
+					Codec.INT.optionalFieldOf("grass_color").forGetter(effects -> effects.grassColor),
 					BiomeEffects.GrassColorModifier.CODEC
 						.optionalFieldOf("grass_color_modifier", BiomeEffects.GrassColorModifier.NONE)
-						.forGetter(biomeEffects -> biomeEffects.grassColorModifier),
-					BiomeParticleConfig.CODEC.optionalFieldOf("particle").forGetter(biomeEffects -> biomeEffects.particleConfig),
-					SoundEvent.CODEC.optionalFieldOf("ambient_sound").forGetter(biomeEffects -> biomeEffects.loopSound),
-					BiomeMoodSound.CODEC.optionalFieldOf("mood_sound").forGetter(biomeEffects -> biomeEffects.moodSound),
-					BiomeAdditionsSound.CODEC.optionalFieldOf("additions_sound").forGetter(biomeEffects -> biomeEffects.additionsSound),
-					MusicSound.CODEC.optionalFieldOf("music").forGetter(biomeEffects -> biomeEffects.music)
+						.forGetter(effects -> effects.grassColorModifier),
+					BiomeParticleConfig.CODEC.optionalFieldOf("particle").forGetter(effects -> effects.particleConfig),
+					SoundEvent.CODEC.optionalFieldOf("ambient_sound").forGetter(effects -> effects.loopSound),
+					BiomeMoodSound.CODEC.optionalFieldOf("mood_sound").forGetter(effects -> effects.moodSound),
+					BiomeAdditionsSound.CODEC.optionalFieldOf("additions_sound").forGetter(effects -> effects.additionsSound),
+					MusicSound.CODEC.optionalFieldOf("music").forGetter(effects -> effects.music)
 				)
 				.apply(instance, BiomeEffects::new)
 	);

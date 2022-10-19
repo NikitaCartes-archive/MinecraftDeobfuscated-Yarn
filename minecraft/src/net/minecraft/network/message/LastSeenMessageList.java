@@ -1,37 +1,31 @@
 package net.minecraft.network.message;
 
-import java.io.DataOutput;
-import java.io.IOException;
+import com.google.common.primitives.Ints;
+import java.security.SignatureException;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.encryption.SignatureUpdatable;
 
 /**
  * A list of messages a client has seen.
  */
-public record LastSeenMessageList(List<LastSeenMessageList.Entry> entries) {
+public record LastSeenMessageList(List<MessageSignatureData> entries) {
 	public static LastSeenMessageList EMPTY = new LastSeenMessageList(List.of());
-	public static final int MAX_ENTRIES = 5;
+	public static final int MAX_ENTRIES = 20;
 
-	public LastSeenMessageList(PacketByteBuf buf) {
-		this(buf.readCollection(PacketByteBuf.getMaxValidator(ArrayList::new, 5), LastSeenMessageList.Entry::new));
-	}
+	public void updateSignatures(SignatureUpdatable.SignatureUpdater updater) throws SignatureException {
+		updater.update(Ints.toByteArray(this.entries.size()));
 
-	public void write(PacketByteBuf buf) {
-		buf.writeCollection(this.entries, (buf2, entries) -> entries.write(buf2));
-	}
-
-	public void write(DataOutput output) throws IOException {
-		for (LastSeenMessageList.Entry entry : this.entries) {
-			UUID uUID = entry.profileId();
-			MessageSignatureData messageSignatureData = entry.lastSignature();
-			output.writeByte(70);
-			output.writeLong(uUID.getMostSignificantBits());
-			output.writeLong(uUID.getLeastSignificantBits());
-			output.write(messageSignatureData.data());
+		for (MessageSignatureData messageSignatureData : this.entries) {
+			updater.update(messageSignatureData.data());
 		}
+	}
+
+	public LastSeenMessageList.Indexed pack(MessageSignatureData.Packer packer) {
+		return new LastSeenMessageList.Indexed(this.entries.stream().map(signature -> signature.pack(packer)).toList());
 	}
 
 	/**
@@ -40,29 +34,41 @@ public record LastSeenMessageList(List<LastSeenMessageList.Entry> entries) {
 	 * <p>This holds the messages the client has recently seen, as well as the last
 	 * message they received, if any.
 	 */
-	public static record Acknowledgment(LastSeenMessageList lastSeen, Optional<LastSeenMessageList.Entry> lastReceived) {
+	public static record Acknowledgment(int offset, BitSet acknowledged) {
 		public Acknowledgment(PacketByteBuf buf) {
-			this(new LastSeenMessageList(buf), buf.readOptional(LastSeenMessageList.Entry::new));
+			this(buf.readVarInt(), buf.readBitSet(20));
 		}
 
 		public void write(PacketByteBuf buf) {
-			this.lastSeen.write(buf);
-			buf.writeOptional(this.lastReceived, (buf2, lastReceived) -> lastReceived.write(buf2));
+			buf.writeVarInt(this.offset);
+			buf.writeBitSet(this.acknowledged, 20);
 		}
 	}
 
-	/**
-	 * A pair of a player's UUID and the signature of the last message they saw,
-	 * used as an entry of {@link LastSeenMessageList}.
-	 */
-	public static record Entry(UUID profileId, MessageSignatureData lastSignature) {
-		public Entry(PacketByteBuf buf) {
-			this(buf.readUuid(), new MessageSignatureData(buf));
+	public static record Indexed(List<MessageSignatureData.Indexed> buf) {
+		public static final LastSeenMessageList.Indexed EMPTY = new LastSeenMessageList.Indexed(List.of());
+
+		public Indexed(PacketByteBuf buf) {
+			this(buf.readCollection(PacketByteBuf.getMaxValidator(ArrayList::new, 20), MessageSignatureData.Indexed::fromBuf));
 		}
 
 		public void write(PacketByteBuf buf) {
-			buf.writeUuid(this.profileId);
-			this.lastSignature.write(buf);
+			buf.writeCollection(this.buf, MessageSignatureData.Indexed::write);
+		}
+
+		public Optional<LastSeenMessageList> unpack(MessageSignatureData.Unpacker unpacker) {
+			List<MessageSignatureData> list = new ArrayList(this.buf.size());
+
+			for (MessageSignatureData.Indexed indexed : this.buf) {
+				Optional<MessageSignatureData> optional = indexed.getSignature(unpacker);
+				if (optional.isEmpty()) {
+					return Optional.empty();
+				}
+
+				list.add((MessageSignatureData)optional.get());
+			}
+
+			return Optional.of(new LastSeenMessageList(list));
 		}
 	}
 }

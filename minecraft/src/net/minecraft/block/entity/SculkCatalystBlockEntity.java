@@ -11,6 +11,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.BlockPositionSource;
 import net.minecraft.world.event.GameEvent;
@@ -26,11 +27,6 @@ public class SculkCatalystBlockEntity extends BlockEntity implements GameEventLi
 	}
 
 	@Override
-	public boolean shouldListenImmediately() {
-		return true;
-	}
-
-	@Override
 	public PositionSource getPositionSource() {
 		return this.positionSource;
 	}
@@ -41,32 +37,34 @@ public class SculkCatalystBlockEntity extends BlockEntity implements GameEventLi
 	}
 
 	@Override
-	public boolean listen(ServerWorld world, GameEvent.Message event) {
-		if (this.isRemoved()) {
-			return false;
-		} else {
-			GameEvent.Emitter emitter = event.getEmitter();
-			if (event.getEvent() == GameEvent.ENTITY_DIE && emitter.sourceEntity() instanceof LivingEntity livingEntity) {
-				if (!livingEntity.isExperienceDroppingDisabled()) {
-					int i = livingEntity.getXpToDrop();
-					if (livingEntity.shouldDropXp() && i > 0) {
-						this.spreadManager.spread(new BlockPos(event.getEmitterPos().withBias(Direction.UP, 0.5)), i);
-						if (livingEntity.getAttacker() instanceof ServerPlayerEntity serverPlayerEntity) {
-							DamageSource damageSource = livingEntity.getRecentDamageSource() == null
-								? DamageSource.player(serverPlayerEntity)
-								: livingEntity.getRecentDamageSource();
-							Criteria.KILL_MOB_NEAR_SCULK_CATALYST.trigger(serverPlayerEntity, emitter.sourceEntity(), damageSource);
-						}
-					}
+	public GameEventListener.TriggerOrder getTriggerOrder() {
+		return GameEventListener.TriggerOrder.BY_DISTANCE;
+	}
 
-					livingEntity.disableExperienceDropping();
-					SculkCatalystBlock.bloom(world, this.pos, this.getCachedState(), world.getRandom());
+	@Override
+	public boolean listen(ServerWorld world, GameEvent event, GameEvent.Emitter emitter, Vec3d emitterPos) {
+		if (event == GameEvent.ENTITY_DIE && emitter.sourceEntity() instanceof LivingEntity livingEntity) {
+			if (!livingEntity.isExperienceDroppingDisabled()) {
+				int i = livingEntity.getXpToDrop();
+				if (livingEntity.shouldDropXp() && i > 0) {
+					this.spreadManager.spread(new BlockPos(emitterPos.withBias(Direction.UP, 0.5)), i);
+					this.method_45471(livingEntity);
 				}
 
-				return true;
-			} else {
-				return false;
+				livingEntity.disableExperienceDropping();
+				SculkCatalystBlock.bloom(world, this.pos, this.getCachedState(), world.getRandom());
 			}
+
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	private void method_45471(LivingEntity livingEntity) {
+		if (livingEntity.getAttacker() instanceof ServerPlayerEntity serverPlayerEntity) {
+			DamageSource damageSource = livingEntity.getRecentDamageSource() == null ? DamageSource.player(serverPlayerEntity) : livingEntity.getRecentDamageSource();
+			Criteria.KILL_MOB_NEAR_SCULK_CATALYST.trigger(serverPlayerEntity, livingEntity, damageSource);
 		}
 	}
 

@@ -15,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
+import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.PaintingVariantTags;
@@ -115,8 +116,12 @@ public class PaintingEntity extends AbstractDecorationEntity {
 
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
-		RegistryKey<PaintingVariant> registryKey = RegistryKey.of(Registry.PAINTING_VARIANT_KEY, Identifier.tryParse(nbt.getString("variant")));
-		this.setVariant((RegistryEntry<PaintingVariant>)Registry.PAINTING_VARIANT.getEntry(registryKey).orElseGet(PaintingEntity::getDefaultVariant));
+		RegistryEntry<PaintingVariant> registryEntry = (RegistryEntry<PaintingVariant>)Optional.ofNullable(Identifier.tryParse(nbt.getString("variant")))
+			.map(identifier -> RegistryKey.of(Registry.PAINTING_VARIANT_KEY, identifier))
+			.flatMap(Registry.PAINTING_VARIANT::getEntry)
+			.map(reference -> reference)
+			.orElseGet(PaintingEntity::getDefaultVariant);
+		this.setVariant(registryEntry);
 		this.facing = Direction.fromHorizontal(nbt.getByte("facing"));
 		super.readCustomDataFromNbt(nbt);
 		this.setFacing(this.facing);
@@ -165,7 +170,7 @@ public class PaintingEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public Packet<?> createSpawnPacket() {
+	public Packet<ClientPlayPacketListener> createSpawnPacket() {
 		return new EntitySpawnS2CPacket(this, this.facing.getId(), this.getDecorationBlockPos());
 	}
 

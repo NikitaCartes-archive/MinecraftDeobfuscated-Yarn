@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.nio.file.Path;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.DataOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
 import net.minecraft.util.Identifier;
@@ -12,17 +12,17 @@ import net.minecraft.util.registry.DefaultedRegistry;
 import net.minecraft.util.registry.Registry;
 
 public class RegistryDumpProvider implements DataProvider {
-	private final DataGenerator generator;
+	private final DataOutput field_40601;
 
-	public RegistryDumpProvider(DataGenerator generator) {
-		this.generator = generator;
+	public RegistryDumpProvider(DataOutput generator) {
+		this.field_40601 = generator;
 	}
 
 	@Override
 	public void run(DataWriter writer) throws IOException {
 		JsonObject jsonObject = new JsonObject();
 		Registry.REGISTRIES.streamEntries().forEach(entry -> jsonObject.add(entry.registryKey().getValue().toString(), toJson((Registry)entry.value())));
-		Path path = this.generator.resolveRootDirectoryPath(DataGenerator.OutputType.REPORTS).resolve("registries.json");
+		Path path = this.field_40601.resolvePath(DataOutput.OutputType.REPORTS).resolve("registries.json");
 		DataProvider.writeToPath(writer, jsonObject, path);
 	}
 

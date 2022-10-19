@@ -8,7 +8,6 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.shape.VoxelShape;
 
 /**
@@ -37,6 +36,4 @@ public interface RegistryWorldView extends EntityView, WorldView, ModifiableTest
 	default BlockPos getTopPosition(Heightmap.Type heightmap, BlockPos pos) {
 		return WorldView.super.getTopPosition(heightmap, pos);
 	}
-
-	DynamicRegistryManager getRegistryManager();
 }

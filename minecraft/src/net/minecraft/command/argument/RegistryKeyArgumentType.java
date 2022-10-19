@@ -15,7 +15,6 @@ import java.util.concurrent.CompletableFuture;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.serialize.ArgumentSerializer;
-import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.structure.pool.StructurePool;
@@ -29,9 +28,6 @@ import net.minecraft.world.gen.structure.Structure;
 
 public class RegistryKeyArgumentType<T> implements ArgumentType<RegistryKey<T>> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "012");
-	private static final DynamicCommandExceptionType UNKNOWN_ATTRIBUTE_EXCEPTION = new DynamicCommandExceptionType(
-		id -> Text.translatable("attribute.unknown", id)
-	);
 	private static final DynamicCommandExceptionType INVALID_FEATURE_EXCEPTION = new DynamicCommandExceptionType(
 		id -> Text.translatable("commands.place.feature.invalid", id)
 	);
@@ -63,29 +59,22 @@ public class RegistryKeyArgumentType<T> implements ArgumentType<RegistryKey<T>> 
 		return context.getSource().getServer().getRegistryManager().get(registryRef);
 	}
 
-	private static <T> RegistryEntry<T> getRegistryEntry(
+	private static <T> RegistryEntry.Reference<T> getRegistryEntry(
 		CommandContext<ServerCommandSource> context, String name, RegistryKey<Registry<T>> registryRef, DynamicCommandExceptionType invalidException
 	) throws CommandSyntaxException {
 		RegistryKey<T> registryKey = getKey(context, name, registryRef, invalidException);
-		return (RegistryEntry<T>)getRegistry(context, registryRef).getEntry(registryKey).orElseThrow(() -> invalidException.create(registryKey.getValue()));
+		return (RegistryEntry.Reference<T>)getRegistry(context, registryRef).getEntry(registryKey).orElseThrow(() -> invalidException.create(registryKey.getValue()));
 	}
 
-	public static EntityAttribute getAttribute(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-		RegistryKey<EntityAttribute> registryKey = getKey(context, name, Registry.ATTRIBUTE_KEY, UNKNOWN_ATTRIBUTE_EXCEPTION);
-		return (EntityAttribute)getRegistry(context, Registry.ATTRIBUTE_KEY)
-			.getOrEmpty(registryKey)
-			.orElseThrow(() -> UNKNOWN_ATTRIBUTE_EXCEPTION.create(registryKey.getValue()));
-	}
-
-	public static RegistryEntry<ConfiguredFeature<?, ?>> getConfiguredFeatureEntry(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
+	public static RegistryEntry.Reference<ConfiguredFeature<?, ?>> getConfiguredFeatureEntry(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
 		return getRegistryEntry(context, name, Registry.CONFIGURED_FEATURE_KEY, INVALID_FEATURE_EXCEPTION);
 	}
 
-	public static RegistryEntry<Structure> getStructureEntry(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
+	public static RegistryEntry.Reference<Structure> getStructureEntry(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
 		return getRegistryEntry(context, name, Registry.STRUCTURE_KEY, INVALID_STRUCTURE_EXCEPTION);
 	}
 
-	public static RegistryEntry<StructurePool> getStructurePoolEntry(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
+	public static RegistryEntry.Reference<StructurePool> getStructurePoolEntry(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
 		return getRegistryEntry(context, name, Registry.STRUCTURE_POOL_KEY, INVALID_JIGSAW_EXCEPTION);
 	}
 
@@ -107,7 +96,7 @@ public class RegistryKeyArgumentType<T> implements ArgumentType<RegistryKey<T>> 
 	}
 
 	public static class Serializer<T> implements ArgumentSerializer<RegistryKeyArgumentType<T>, RegistryKeyArgumentType.Serializer<T>.Properties> {
-		public void writePacket(RegistryKeyArgumentType.Serializer.Properties properties, PacketByteBuf packetByteBuf) {
+		public void writePacket(RegistryKeyArgumentType.Serializer<T>.Properties properties, PacketByteBuf packetByteBuf) {
 			packetByteBuf.writeIdentifier(properties.registryRef.getValue());
 		}
 
@@ -116,7 +105,7 @@ public class RegistryKeyArgumentType<T> implements ArgumentType<RegistryKey<T>> 
 			return new RegistryKeyArgumentType.Serializer.Properties(RegistryKey.ofRegistry(identifier));
 		}
 
-		public void writeJson(RegistryKeyArgumentType.Serializer.Properties properties, JsonObject jsonObject) {
+		public void writeJson(RegistryKeyArgumentType.Serializer<T>.Properties properties, JsonObject jsonObject) {
 			jsonObject.addProperty("registry", properties.registryRef.getValue().toString());
 		}
 

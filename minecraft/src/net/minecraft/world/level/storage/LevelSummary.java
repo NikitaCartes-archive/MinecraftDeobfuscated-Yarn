@@ -18,15 +18,19 @@ public class LevelSummary implements Comparable<LevelSummary> {
 	private final String name;
 	private final boolean requiresConversion;
 	private final boolean locked;
+	private final boolean experimental;
 	private final Path iconPath;
 	@Nullable
 	private Text details;
 
-	public LevelSummary(LevelInfo levelInfo, SaveVersionInfo versionInfo, String name, boolean requiresConversion, boolean locked, Path iconPath) {
+	public LevelSummary(
+		LevelInfo levelInfo, SaveVersionInfo versionInfo, String name, boolean requiresConversion, boolean locked, boolean experimental, Path iconPath
+	) {
 		this.levelInfo = levelInfo;
 		this.versionInfo = versionInfo;
 		this.name = name;
 		this.locked = locked;
+		this.experimental = experimental;
 		this.iconPath = iconPath;
 		this.requiresConversion = requiresConversion;
 	}
@@ -45,6 +49,10 @@ public class LevelSummary implements Comparable<LevelSummary> {
 
 	public boolean requiresConversion() {
 		return this.requiresConversion;
+	}
+
+	public boolean isExperimental() {
+		return this.experimental;
 	}
 
 	public long getLastPlayed() {
@@ -137,6 +145,10 @@ public class LevelSummary implements Comparable<LevelSummary> {
 				: Text.translatable("gameMode." + this.getGameMode().getName());
 			if (this.hasCheats()) {
 				mutableText.append(", ").append(Text.translatable("selectWorld.cheats"));
+			}
+
+			if (this.isExperimental()) {
+				mutableText.append(", ").append(Text.translatable("selectWorld.experimental").formatted(Formatting.YELLOW));
 			}
 
 			MutableText mutableText2 = this.getVersion();

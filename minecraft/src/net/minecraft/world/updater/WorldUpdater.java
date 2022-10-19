@@ -2,7 +2,6 @@ package net.minecraft.world.updater;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -17,10 +16,12 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ThreadFactory;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import net.minecraft.SharedConstants;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -29,10 +30,11 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.GeneratorOptions;
+import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.storage.RegionFile;
@@ -42,7 +44,8 @@ import org.slf4j.Logger;
 public class WorldUpdater {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final ThreadFactory UPDATE_THREAD_FACTORY = new ThreadFactoryBuilder().setDaemon(true).build();
-	private final GeneratorOptions generatorOptions;
+	private final Registry<DimensionOptions> dimensionOptionsRegistry;
+	private final Set<RegistryKey<World>> worldKeys;
 	private final boolean eraseCache;
 	private final LevelStorage.Session session;
 	private final Thread updateThread;
@@ -60,8 +63,9 @@ public class WorldUpdater {
 	private static final Pattern REGION_FILE_PATTERN = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mca$");
 	private final PersistentStateManager persistentStateManager;
 
-	public WorldUpdater(LevelStorage.Session session, DataFixer dataFixer, GeneratorOptions generatorOptions, boolean eraseCache) {
-		this.generatorOptions = generatorOptions;
+	public WorldUpdater(LevelStorage.Session session, DataFixer dataFixer, Registry<DimensionOptions> dimensionOptionsRegistry, boolean eraseCache) {
+		this.dimensionOptionsRegistry = dimensionOptionsRegistry;
+		this.worldKeys = (Set<RegistryKey<World>>)dimensionOptionsRegistry.getKeys().stream().map(Registry::createWorldKey).collect(Collectors.toUnmodifiableSet());
 		this.eraseCache = eraseCache;
 		this.dataFixer = dataFixer;
 		this.session = session;
@@ -87,9 +91,8 @@ public class WorldUpdater {
 	private void updateWorld() {
 		this.totalChunkCount = 0;
 		Builder<RegistryKey<World>, ListIterator<ChunkPos>> builder = ImmutableMap.builder();
-		ImmutableSet<RegistryKey<World>> immutableSet = this.generatorOptions.getWorlds();
 
-		for (RegistryKey<World> registryKey : immutableSet) {
+		for (RegistryKey<World> registryKey : this.worldKeys) {
 			List<ChunkPos> list = this.getChunkPositions(registryKey);
 			builder.put(registryKey, list.listIterator());
 			this.totalChunkCount = this.totalChunkCount + list.size();
@@ -102,7 +105,7 @@ public class WorldUpdater {
 			ImmutableMap<RegistryKey<World>, ListIterator<ChunkPos>> immutableMap = builder.build();
 			Builder<RegistryKey<World>, VersionedChunkStorage> builder2 = ImmutableMap.builder();
 
-			for (RegistryKey<World> registryKey2 : immutableSet) {
+			for (RegistryKey<World> registryKey2 : this.worldKeys) {
 				Path path = this.session.getWorldDirectory(registryKey2);
 				builder2.put(registryKey2, new VersionedChunkStorage(path.resolve("region"), this.dataFixer, true));
 			}
@@ -115,7 +118,7 @@ public class WorldUpdater {
 				boolean bl = false;
 				float g = 0.0F;
 
-				for (RegistryKey<World> registryKey3 : immutableSet) {
+				for (RegistryKey<World> registryKey3 : this.worldKeys) {
 					ListIterator<ChunkPos> listIterator = immutableMap.get(registryKey3);
 					VersionedChunkStorage versionedChunkStorage = immutableMap2.get(registryKey3);
 					if (listIterator.hasNext()) {
@@ -126,7 +129,7 @@ public class WorldUpdater {
 							NbtCompound nbtCompound = (NbtCompound)((Optional)versionedChunkStorage.getNbt(chunkPos).join()).orElse(null);
 							if (nbtCompound != null) {
 								int i = VersionedChunkStorage.getDataVersion(nbtCompound);
-								ChunkGenerator chunkGenerator = this.generatorOptions.getDimensions().get(GeneratorOptions.toDimensionOptionsKey(registryKey3)).getChunkGenerator();
+								ChunkGenerator chunkGenerator = this.dimensionOptionsRegistry.getOrThrow(Registry.createDimensionOptionsKey(registryKey3)).chunkGenerator();
 								NbtCompound nbtCompound2 = versionedChunkStorage.updateChunkNbt(
 									registryKey3, () -> this.persistentStateManager, nbtCompound, chunkGenerator.getCodecKey()
 								);
@@ -157,10 +160,10 @@ public class WorldUpdater {
 									bl2 = true;
 								}
 							}
-						} catch (CompletionException | CrashException var27) {
-							Throwable throwable = var27.getCause();
+						} catch (CompletionException | CrashException var26) {
+							Throwable throwable = var26.getCause();
 							if (!(throwable instanceof IOException)) {
-								throw var27;
+								throw var26;
 							}
 
 							LOGGER.error("Error upgrading chunk {}", chunkPos, throwable);
@@ -191,8 +194,8 @@ public class WorldUpdater {
 			for (VersionedChunkStorage versionedChunkStorage2 : immutableMap2.values()) {
 				try {
 					versionedChunkStorage2.close();
-				} catch (IOException var26) {
-					LOGGER.error("Error upgrading chunk", (Throwable)var26);
+				} catch (IOException var25) {
+					LOGGER.error("Error upgrading chunk", (Throwable)var25);
 				}
 			}
 
@@ -240,8 +243,8 @@ public class WorldUpdater {
 		return this.done;
 	}
 
-	public ImmutableSet<RegistryKey<World>> getWorlds() {
-		return this.generatorOptions.getWorlds();
+	public Set<RegistryKey<World>> getWorlds() {
+		return this.worldKeys;
 	}
 
 	public float getProgress(RegistryKey<World> world) {

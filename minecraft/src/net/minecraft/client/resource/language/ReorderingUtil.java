@@ -10,6 +10,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.StringVisitable;
+import net.minecraft.text.TextReorderingProcessor;
 
 @Environment(EnvType.CLIENT)
 public class ReorderingUtil {

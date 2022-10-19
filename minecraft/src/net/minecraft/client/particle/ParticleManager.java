@@ -6,17 +6,21 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
@@ -31,9 +35,9 @@ import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.texture.SpriteLoader;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
@@ -41,10 +45,13 @@ import net.minecraft.entity.Entity;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.resource.Resource;
+import net.minecraft.resource.ResourceFinder;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -56,9 +63,12 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class ParticleManager implements ResourceReloader {
+	private static final Logger LOGGER = LogUtils.getLogger();
+	private static final ResourceFinder FINDER = ResourceFinder.json("particles");
 	private static final int MAX_PARTICLE_COUNT = 16384;
 	private static final List<ParticleTextureSheet> PARTICLE_TEXTURE_SHEETS = ImmutableList.of(
 		ParticleTextureSheet.TERRAIN_SHEET,
@@ -201,89 +211,118 @@ public class ParticleManager implements ResourceReloader {
 		Executor prepareExecutor,
 		Executor applyExecutor
 	) {
-		Map<Identifier, List<Identifier>> map = Maps.<Identifier, List<Identifier>>newConcurrentMap();
-		CompletableFuture<?>[] completableFutures = (CompletableFuture<?>[])Registry.PARTICLE_TYPE
-			.getIds()
-			.stream()
-			.map(id -> CompletableFuture.runAsync(() -> this.loadTextureList(manager, id, map), prepareExecutor))
-			.toArray(CompletableFuture[]::new);
-		return CompletableFuture.allOf(completableFutures)
-			.thenApplyAsync(v -> {
-				prepareProfiler.startTick();
-				prepareProfiler.push("stitching");
-				SpriteAtlasTexture.Data data = this.particleAtlasTexture.stitch(manager, map.values().stream().flatMap(Collection::stream), prepareProfiler, 0);
-				prepareProfiler.pop();
-				prepareProfiler.endTick();
-				return data;
-			}, prepareExecutor)
-			.thenCompose(synchronizer::whenPrepared)
-			.thenAcceptAsync(
-				data -> {
-					this.particles.clear();
-					applyProfiler.startTick();
-					applyProfiler.push("upload");
-					this.particleAtlasTexture.upload(data);
-					applyProfiler.swap("bindSpriteSets");
-					Sprite sprite = this.particleAtlasTexture.getSprite(MissingSprite.getMissingSpriteId());
-					map.forEach(
-						(identifier, list) -> {
-							ImmutableList<Sprite> immutableList = list.isEmpty()
-								? ImmutableList.of(sprite)
-								: (ImmutableList)list.stream().map(this.particleAtlasTexture::getSprite).collect(ImmutableList.toImmutableList());
-							((ParticleManager.SimpleSpriteProvider)this.spriteAwareFactories.get(identifier)).setSprites(immutableList);
+		@Environment(EnvType.CLIENT)
+		record ReloadResult(Identifier id, Optional<List<Identifier>> sprites) {
+		}
+
+		CompletableFuture<List<ReloadResult>> completableFuture = CompletableFuture.supplyAsync(() -> FINDER.findResources(manager), prepareExecutor)
+			.thenCompose(particles -> {
+				List<CompletableFuture<ReloadResult>> list = new ArrayList(particles.size());
+				particles.forEach((id, resource) -> {
+					Identifier identifier = FINDER.toResourceId(id);
+					list.add(CompletableFuture.supplyAsync(() -> new ReloadResult(identifier, this.loadTextureList(identifier, resource)), prepareExecutor));
+				});
+				return Util.combineSafe(list);
+			});
+		CompletableFuture<SpriteLoader.StitchResult> completableFuture2 = CompletableFuture.supplyAsync(
+				() -> SpriteLoader.findAllResources(manager, "particle"), prepareExecutor
+			)
+			.thenCompose(particles -> SpriteLoader.fromAtlas(this.particleAtlasTexture).stitch(particles, 0, prepareExecutor))
+			.thenCompose(SpriteLoader.StitchResult::whenComplete);
+		return CompletableFuture.allOf(completableFuture2, completableFuture).thenCompose(synchronizer::whenPrepared).thenAcceptAsync(void_ -> {
+			this.particles.clear();
+			applyProfiler.startTick();
+			applyProfiler.push("upload");
+			SpriteLoader.StitchResult stitchResult = (SpriteLoader.StitchResult)completableFuture2.join();
+			this.particleAtlasTexture.upload(stitchResult);
+			applyProfiler.swap("bindSpriteSets");
+			Set<Identifier> set = new HashSet();
+			Sprite sprite = stitchResult.missing();
+			((List)completableFuture.join()).forEach(result -> {
+				Optional<List<Identifier>> optional = result.sprites();
+				if (!optional.isEmpty()) {
+					List<Sprite> list = new ArrayList();
+
+					for (Identifier identifier : (List)optional.get()) {
+						Sprite sprite2 = (Sprite)stitchResult.regions().get(identifier);
+						if (sprite2 == null) {
+							set.add(identifier);
+							list.add(sprite);
+						} else {
+							list.add(sprite2);
 						}
-					);
-					applyProfiler.pop();
-					applyProfiler.endTick();
-				},
-				applyExecutor
-			);
+					}
+
+					if (list.isEmpty()) {
+						list.add(sprite);
+					}
+
+					((ParticleManager.SimpleSpriteProvider)this.spriteAwareFactories.get(result.id())).setSprites(list);
+				}
+			});
+			if (!set.isEmpty()) {
+				LOGGER.warn("Missing particle sprites: {}", set.stream().sorted().map(Identifier::toString).collect(Collectors.joining(",")));
+			}
+
+			applyProfiler.pop();
+			applyProfiler.endTick();
+		}, applyExecutor);
 	}
 
 	public void clearAtlas() {
 		this.particleAtlasTexture.clear();
 	}
 
-	private void loadTextureList(ResourceManager resourceManager, Identifier id, Map<Identifier, List<Identifier>> result) {
-		Identifier identifier = new Identifier(id.getNamespace(), "particles/" + id.getPath() + ".json");
-
+	private Optional<List<Identifier>> loadTextureList(Identifier id, Resource resource) {
 		try {
-			Reader reader = resourceManager.openAsReader(identifier);
+			Reader reader = resource.getReader();
 
-			try {
-				ParticleTextureData particleTextureData = ParticleTextureData.load(JsonHelper.deserialize(reader));
-				List<Identifier> list = particleTextureData.getTextureList();
-				boolean bl = this.spriteAwareFactories.containsKey(id);
-				if (list == null) {
-					if (bl) {
-						throw new IllegalStateException("Missing texture list for particle " + id);
+			Optional var11;
+			label56: {
+				try {
+					ParticleTextureData particleTextureData = ParticleTextureData.load(JsonHelper.deserialize(reader));
+					List<Identifier> list = particleTextureData.getTextureList();
+					boolean bl = this.spriteAwareFactories.containsKey(id);
+					if (list == null) {
+						if (bl) {
+							throw new IllegalStateException("Missing texture list for particle " + id);
+						}
+
+						var11 = Optional.empty();
+						break label56;
 					}
-				} else {
+
 					if (!bl) {
 						throw new IllegalStateException("Redundant texture list for particle " + id);
 					}
 
-					result.put(
-						id, (List)list.stream().map(identifierx -> new Identifier(identifierx.getNamespace(), "particle/" + identifierx.getPath())).collect(Collectors.toList())
-					);
-				}
-			} catch (Throwable var10) {
-				if (reader != null) {
-					try {
-						reader.close();
-					} catch (Throwable var9) {
-						var10.addSuppressed(var9);
+					var11 = Optional.of((List)list.stream().map(textureId -> textureId.withPrefixedPath("particle/")).collect(Collectors.toList()));
+				} catch (Throwable var9) {
+					if (reader != null) {
+						try {
+							reader.close();
+						} catch (Throwable var8) {
+							var9.addSuppressed(var8);
+						}
 					}
+
+					throw var9;
 				}
 
-				throw var10;
+				if (reader != null) {
+					reader.close();
+				}
+
+				return var11;
 			}
 
 			if (reader != null) {
 				reader.close();
 			}
-		} catch (IOException var11) {
-			throw new IllegalStateException("Failed to load description for particle " + id, var11);
+
+			return var11;
+		} catch (IOException var10) {
+			throw new IllegalStateException("Failed to load description for particle " + id, var10);
 		}
 	}
 
@@ -437,7 +476,7 @@ public class ParticleManager implements ResourceReloader {
 	}
 
 	public void addBlockBreakParticles(BlockPos pos, BlockState state) {
-		if (!state.isAir()) {
+		if (!state.isAir() && state.hasBlockBreakParticles()) {
 			VoxelShape voxelShape = state.getOutlineShape(this.world, pos);
 			double d = 0.25;
 			voxelShape.forEachBox(
@@ -525,8 +564,8 @@ public class ParticleManager implements ResourceReloader {
 		private List<Sprite> sprites;
 
 		@Override
-		public Sprite getSprite(int i, int j) {
-			return (Sprite)this.sprites.get(i * (this.sprites.size() - 1) / j);
+		public Sprite getSprite(int age, int maxAge) {
+			return (Sprite)this.sprites.get(age * (this.sprites.size() - 1) / maxAge);
 		}
 
 		@Override

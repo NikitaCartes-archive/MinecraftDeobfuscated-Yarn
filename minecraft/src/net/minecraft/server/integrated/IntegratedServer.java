@@ -59,7 +59,7 @@ public class IntegratedServer extends MinecraftServer {
 		);
 		this.setHostProfile(client.getSession().getProfile());
 		this.setDemo(client.isDemo());
-		this.setPlayerManager(new IntegratedPlayerManager(this, this.getRegistryManager(), this.saveHandler));
+		this.setPlayerManager(new IntegratedPlayerManager(this, this.getCombinedDynamicRegistries(), this.saveHandler));
 		this.client = client;
 	}
 
@@ -197,7 +197,7 @@ public class IntegratedServer extends MinecraftServer {
 	}
 
 	@Override
-	public void stop(boolean bl) {
+	public void stop(boolean waitForShutdown) {
 		this.submitAndJoin(() -> {
 			for (ServerPlayerEntity serverPlayerEntity : Lists.newArrayList(this.getPlayerManager().getPlayerList())) {
 				if (!serverPlayerEntity.getUuid().equals(this.localPlayerUuid)) {
@@ -205,7 +205,7 @@ public class IntegratedServer extends MinecraftServer {
 				}
 			}
 		});
-		super.stop(bl);
+		super.stop(waitForShutdown);
 		if (this.lanPinger != null) {
 			this.lanPinger.interrupt();
 			this.lanPinger = null;

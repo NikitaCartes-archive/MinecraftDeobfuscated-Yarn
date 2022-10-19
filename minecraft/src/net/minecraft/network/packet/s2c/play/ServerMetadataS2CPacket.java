@@ -10,20 +10,17 @@ import net.minecraft.text.Text;
 public class ServerMetadataS2CPacket implements Packet<ClientPlayPacketListener> {
 	private final Optional<Text> description;
 	private final Optional<String> favicon;
-	private final boolean previewsChat;
 	private final boolean secureChatEnforced;
 
-	public ServerMetadataS2CPacket(@Nullable Text description, @Nullable String favicon, boolean previewsChat, boolean secureChatEnforced) {
+	public ServerMetadataS2CPacket(@Nullable Text description, @Nullable String favicon, boolean previewsChat) {
 		this.description = Optional.ofNullable(description);
 		this.favicon = Optional.ofNullable(favicon);
-		this.previewsChat = previewsChat;
-		this.secureChatEnforced = secureChatEnforced;
+		this.secureChatEnforced = previewsChat;
 	}
 
 	public ServerMetadataS2CPacket(PacketByteBuf buf) {
 		this.description = buf.readOptional(PacketByteBuf::readText);
 		this.favicon = buf.readOptional(PacketByteBuf::readString);
-		this.previewsChat = buf.readBoolean();
 		this.secureChatEnforced = buf.readBoolean();
 	}
 
@@ -31,7 +28,6 @@ public class ServerMetadataS2CPacket implements Packet<ClientPlayPacketListener>
 	public void write(PacketByteBuf buf) {
 		buf.writeOptional(this.description, PacketByteBuf::writeText);
 		buf.writeOptional(this.favicon, PacketByteBuf::writeString);
-		buf.writeBoolean(this.previewsChat);
 		buf.writeBoolean(this.secureChatEnforced);
 	}
 
@@ -45,10 +41,6 @@ public class ServerMetadataS2CPacket implements Packet<ClientPlayPacketListener>
 
 	public Optional<String> getFavicon() {
 		return this.favicon;
-	}
-
-	public boolean shouldPreviewChat() {
-		return this.previewsChat;
 	}
 
 	public boolean isSecureChatEnforced() {

@@ -5,7 +5,8 @@ import java.util.Locale;
 import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.resource.DataPackSettings;
+import net.minecraft.resource.DataConfiguration;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.registry.DynamicRegistryManager;
@@ -17,9 +18,9 @@ public interface SaveProperties {
 	int ANVIL_FORMAT_ID = 19133;
 	int MCREGION_FORMAT_ID = 19132;
 
-	DataPackSettings getDataPackSettings();
+	DataConfiguration getDataConfiguration();
 
-	void updateLevelInfo(DataPackSettings dataPackSettings);
+	void updateLevelInfo(DataConfiguration dataConfiguration);
 
 	boolean isModded();
 
@@ -89,5 +90,13 @@ public interface SaveProperties {
 
 	GeneratorOptions getGeneratorOptions();
 
+	boolean isFlatWorld();
+
+	boolean isDebugWorld();
+
 	Lifecycle getLifecycle();
+
+	default FeatureSet getEnabledFeatures() {
+		return this.getDataConfiguration().enabledFeatures();
+	}
 }

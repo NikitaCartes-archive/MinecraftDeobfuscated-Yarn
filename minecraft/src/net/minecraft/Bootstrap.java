@@ -54,6 +54,7 @@ public class Bootstrap {
 					DispenserBehavior.registerDefaults();
 					CauldronBehavior.registerBehavior();
 					Registry.freezeRegistries();
+					Registry.validate(Registry.REGISTRIES);
 					setOutputStreams();
 				}
 			}
@@ -126,9 +127,9 @@ public class Bootstrap {
 	private static void logMissingBiomePlacementModifier() {
 		BuiltinRegistries.BIOME.stream().forEach(biome -> {
 			List<RegistryEntryList<PlacedFeature>> list = biome.getGenerationSettings().getFeatures();
-			list.stream().flatMap(RegistryEntryList::stream).forEach(registryEntry -> {
-				if (!((PlacedFeature)registryEntry.value()).placementModifiers().contains(BiomePlacementModifier.of())) {
-					Util.error("Placed feature " + BuiltinRegistries.PLACED_FEATURE.getKey((PlacedFeature)registryEntry.value()) + " is missing BiomeFilter.biome()");
+			list.stream().flatMap(RegistryEntryList::stream).forEach(feature -> {
+				if (!((PlacedFeature)feature.value()).placementModifiers().contains(BiomePlacementModifier.of())) {
+					Util.error("Placed feature " + BuiltinRegistries.PLACED_FEATURE.getKey((PlacedFeature)feature.value()) + " is missing BiomeFilter.biome()");
 				}
 			});
 		});

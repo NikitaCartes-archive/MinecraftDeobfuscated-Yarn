@@ -22,6 +22,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
+import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -36,6 +37,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
@@ -275,7 +277,7 @@ public class FallingBlockEntity extends Entity {
 
 	@Override
 	protected void readCustomDataFromNbt(NbtCompound nbt) {
-		this.block = NbtHelper.toBlockState(nbt.getCompound("BlockState"));
+		this.block = NbtHelper.toBlockState(this.world.createCommandRegistryWrapper(Registry.BLOCK_KEY), nbt.getCompound("BlockState"));
 		this.timeFalling = nbt.getInt("Time");
 		if (nbt.contains("HurtEntities", NbtElement.NUMBER_TYPE)) {
 			this.hurtEntities = nbt.getBoolean("HurtEntities");
@@ -325,7 +327,7 @@ public class FallingBlockEntity extends Entity {
 	}
 
 	@Override
-	public Packet<?> createSpawnPacket() {
+	public Packet<ClientPlayPacketListener> createSpawnPacket() {
 		return new EntitySpawnS2CPacket(this, Block.getRawIdFromState(this.getBlockState()));
 	}
 

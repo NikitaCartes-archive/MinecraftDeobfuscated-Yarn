@@ -268,12 +268,14 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 			for (int i = 0; i < 3; i++) {
 				BlockPos blockPos = EvokerEntity.this.getBlockPos().add(-2 + EvokerEntity.this.random.nextInt(5), 1, -2 + EvokerEntity.this.random.nextInt(5));
 				VexEntity vexEntity = EntityType.VEX.create(EvokerEntity.this.world);
-				vexEntity.refreshPositionAndAngles(blockPos, 0.0F, 0.0F);
-				vexEntity.initialize(serverWorld, EvokerEntity.this.world.getLocalDifficulty(blockPos), SpawnReason.MOB_SUMMONED, null, null);
-				vexEntity.setOwner(EvokerEntity.this);
-				vexEntity.setBounds(blockPos);
-				vexEntity.setLifeTicks(20 * (30 + EvokerEntity.this.random.nextInt(90)));
-				serverWorld.spawnEntityAndPassengers(vexEntity);
+				if (vexEntity != null) {
+					vexEntity.refreshPositionAndAngles(blockPos, 0.0F, 0.0F);
+					vexEntity.initialize(serverWorld, EvokerEntity.this.world.getLocalDifficulty(blockPos), SpawnReason.MOB_SUMMONED, null, null);
+					vexEntity.setOwner(EvokerEntity.this);
+					vexEntity.setBounds(blockPos);
+					vexEntity.setLifeTicks(20 * (30 + EvokerEntity.this.random.nextInt(90)));
+					serverWorld.spawnEntityAndPassengers(vexEntity);
+				}
 			}
 		}
 

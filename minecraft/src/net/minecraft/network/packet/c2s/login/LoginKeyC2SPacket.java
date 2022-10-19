@@ -10,7 +10,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
-import net.minecraft.network.encryption.PlayerPublicKey;
+import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.network.listener.ServerLoginPacketListener;
 
 public class LoginKeyC2SPacket implements Packet<ServerLoginPacketListener> {
@@ -55,8 +55,8 @@ public class LoginKeyC2SPacket implements Packet<ServerLoginPacketListener> {
 		return NetworkEncryptionUtils.decryptSecretKey(privateKey, this.encryptedSecretKey);
 	}
 
-	public boolean verifySignedNonce(byte[] nonce, PlayerPublicKey publicKeyInfo) {
-		return this.nonce.<Boolean>map(encrypted -> false, signature -> publicKeyInfo.createSignatureInstance().validate(updater -> {
+	public boolean verifySignedNonce(byte[] nonce, SignatureVerifier verifier) {
+		return this.nonce.<Boolean>map(encrypted -> false, signature -> verifier.validate(updater -> {
 				updater.update(nonce);
 				updater.update(signature.getSalt());
 			}, signature.signature()));

@@ -60,7 +60,7 @@ public class LightningRodBlock extends RodBlock implements Waterloggable {
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
 		if ((Boolean)state.get(WATERLOGGED)) {
-			world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+			world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
 		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
@@ -84,7 +84,7 @@ public class LightningRodBlock extends RodBlock implements Waterloggable {
 	public void setPowered(BlockState state, World world, BlockPos pos) {
 		world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), Block.NOTIFY_ALL);
 		this.updateNeighbors(state, world, pos);
-		world.createAndScheduleBlockTick(pos, this, 8);
+		world.scheduleBlockTick(pos, this, 8);
 		world.syncWorldEvent(WorldEvents.ELECTRICITY_SPARKS, pos, ((Direction)state.get(FACING)).getAxis().ordinal());
 	}
 
@@ -133,10 +133,13 @@ public class LightningRodBlock extends RodBlock implements Waterloggable {
 			BlockPos blockPos = hit.getBlockPos();
 			if (world.isSkyVisible(blockPos)) {
 				LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(world);
-				lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(blockPos.up()));
-				Entity entity = projectile.getOwner();
-				lightningEntity.setChanneler(entity instanceof ServerPlayerEntity ? (ServerPlayerEntity)entity : null);
-				world.spawnEntity(lightningEntity);
+				if (lightningEntity != null) {
+					lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(blockPos.up()));
+					Entity entity = projectile.getOwner();
+					lightningEntity.setChanneler(entity instanceof ServerPlayerEntity ? (ServerPlayerEntity)entity : null);
+					world.spawnEntity(lightningEntity);
+				}
+
 				world.playSound(null, blockPos, SoundEvents.ITEM_TRIDENT_THUNDER, SoundCategory.WEATHER, 5.0F, 1.0F);
 			}
 		}

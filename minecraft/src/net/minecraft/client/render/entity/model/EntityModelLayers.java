@@ -28,6 +28,7 @@ public class EntityModelLayers {
 	public static final EntityModelLayer BOOK = registerMain("book");
 	public static final EntityModelLayer CAT = registerMain("cat");
 	public static final EntityModelLayer CAT_COLLAR = register("cat", "collar");
+	public static final EntityModelLayer CAMEL = registerMain("camel");
 	public static final EntityModelLayer CAVE_SPIDER = registerMain("cave_spider");
 	public static final EntityModelLayer CHEST = registerMain("chest");
 	public static final EntityModelLayer CHEST_MINECART = registerMain("chest_minecart");
@@ -198,6 +199,14 @@ public class EntityModelLayers {
 		return register(id, "outer_armor");
 	}
 
+	public static EntityModelLayer createRaft(BoatEntity.Type type) {
+		return create("raft/" + type.getName(), "main");
+	}
+
+	public static EntityModelLayer createChestRaft(BoatEntity.Type type) {
+		return create("chest_raft/" + type.getName(), "main");
+	}
+
 	public static EntityModelLayer createBoat(BoatEntity.Type type) {
 		return create("boat/" + type.getName(), "main");
 	}
@@ -208,6 +217,10 @@ public class EntityModelLayers {
 
 	public static EntityModelLayer createSign(SignType type) {
 		return create("sign/" + type.getName(), "main");
+	}
+
+	public static EntityModelLayer createHangingSign(SignType signType) {
+		return create("hanging_sign/" + signType.getName(), "main");
 	}
 
 	public static Stream<EntityModelLayer> getLayers() {

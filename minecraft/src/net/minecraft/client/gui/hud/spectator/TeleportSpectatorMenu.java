@@ -26,7 +26,7 @@ public class TeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spectat
 	private final List<SpectatorMenuCommand> elements = Lists.<SpectatorMenuCommand>newArrayList();
 
 	public TeleportSpectatorMenu() {
-		this(ORDERING.<PlayerListEntry>sortedCopy(MinecraftClient.getInstance().getNetworkHandler().getPlayerList()));
+		this(ORDERING.<PlayerListEntry>sortedCopy(MinecraftClient.getInstance().getNetworkHandler().getListedPlayerListEntries()));
 	}
 
 	public TeleportSpectatorMenu(Collection<PlayerListEntry> entries) {

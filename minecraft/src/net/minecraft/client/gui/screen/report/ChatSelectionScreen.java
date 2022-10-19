@@ -48,7 +48,7 @@ public class ChatSelectionScreen extends Screen {
 	private ChatSelectionScreen.SelectionListWidget selectionList;
 	final ChatAbuseReport report;
 	private final Consumer<ChatAbuseReport> newReportConsumer;
-	private MessagesListAdder<ReceivedMessage.ChatMessage> listAdder;
+	private MessagesListAdder listAdder;
 	@Nullable
 	private List<OrderedText> tooltip;
 
@@ -62,7 +62,7 @@ public class ChatSelectionScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.listAdder = new MessagesListAdder<>(this.reporter.chatLog(), this::isSentByReportedPlayer, ReceivedMessage.ChatMessage.class);
+		this.listAdder = new MessagesListAdder(this.reporter, this::isSentByReportedPlayer);
 		this.contextMessage = MultilineText.create(this.textRenderer, CONTEXT_MESSAGE, this.width - 16);
 		this.selectionList = new ChatSelectionScreen.SelectionListWidget(this.client, (this.contextMessage.count() + 1) * 9);
 		this.selectionList.setRenderBackground(false);
@@ -129,7 +129,7 @@ public class ChatSelectionScreen extends Screen {
 	@Environment(EnvType.CLIENT)
 	public class SelectionListWidget
 		extends AlwaysSelectedEntryListWidget<ChatSelectionScreen.SelectionListWidget.Entry>
-		implements MessagesListAdder.MessagesList<ReceivedMessage.ChatMessage> {
+		implements MessagesListAdder.MessagesList {
 		@Nullable
 		private ChatSelectionScreen.SelectionListWidget.SenderEntryPair lastSenderEntryPair;
 
@@ -146,15 +146,16 @@ public class ChatSelectionScreen extends Screen {
 			}
 		}
 
-		public void addMessage(int i, ReceivedMessage.ChatMessage chatMessage) {
-			boolean bl = chatMessage.isSentFrom(ChatSelectionScreen.this.report.getReportedPlayerUuid());
-			MessageTrustStatus messageTrustStatus = chatMessage.trustStatus();
-			MessageIndicator messageIndicator = messageTrustStatus.createIndicator(chatMessage.message());
+		@Override
+		public void addMessage(int index, ReceivedMessage.ChatMessage message) {
+			boolean bl = message.isSentFrom(ChatSelectionScreen.this.report.getReportedPlayerUuid());
+			MessageTrustStatus messageTrustStatus = message.trustStatus();
+			MessageIndicator messageIndicator = messageTrustStatus.createIndicator(message.message());
 			ChatSelectionScreen.SelectionListWidget.Entry entry = new ChatSelectionScreen.SelectionListWidget.MessageEntry(
-				i, chatMessage.getContent(), chatMessage.getNarration(), messageIndicator, bl, true
+				index, message.getContent(), message.getNarration(), messageIndicator, bl, true
 			);
 			this.addEntryToTop(entry);
-			this.addSenderEntry(chatMessage, bl);
+			this.addSenderEntry(message, bl);
 		}
 
 		private void addSenderEntry(ReceivedMessage.ChatMessage message, boolean fromReportedPlayer) {
@@ -271,7 +272,7 @@ public class ChatSelectionScreen extends Screen {
 
 		@Environment(EnvType.CLIENT)
 		public class MessageEntry extends ChatSelectionScreen.SelectionListWidget.Entry {
-			private static final Identifier CHECKMARK = new Identifier("realms", "textures/gui/realms/checkmark.png");
+			private static final Identifier CHECKMARK = new Identifier("minecraft", "textures/gui/checkmark.png");
 			private static final int CHECKMARK_WIDTH = 9;
 			private static final int CHECKMARK_HEIGHT = 8;
 			private static final int CHAT_MESSAGE_LEFT_MARGIN = 11;

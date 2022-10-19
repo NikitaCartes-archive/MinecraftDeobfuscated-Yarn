@@ -69,7 +69,10 @@ public class CraftingScreenHandler extends AbstractRecipeScreenHandler<CraftingI
 			if (optional.isPresent()) {
 				CraftingRecipe craftingRecipe = (CraftingRecipe)optional.get();
 				if (resultInventory.shouldCraftRecipe(world, serverPlayerEntity, craftingRecipe)) {
-					itemStack = craftingRecipe.craft(craftingInventory);
+					ItemStack itemStack2 = craftingRecipe.craft(craftingInventory);
+					if (itemStack2.isItemEnabled(world.getEnabledFeatures())) {
+						itemStack = itemStack2;
+					}
 				}
 			}
 

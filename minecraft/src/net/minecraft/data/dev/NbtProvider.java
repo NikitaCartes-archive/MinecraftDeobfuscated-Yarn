@@ -9,8 +9,9 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import javax.annotation.Nullable;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.DataOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
 import net.minecraft.nbt.NbtHelper;
@@ -19,17 +20,19 @@ import org.slf4j.Logger;
 
 public class NbtProvider implements DataProvider {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private final DataGenerator root;
+	private final Iterable<Path> field_40660;
+	private final DataOutput field_40661;
 
-	public NbtProvider(DataGenerator root) {
-		this.root = root;
+	public NbtProvider(DataOutput dataOutput, Collection<Path> collection) {
+		this.field_40660 = collection;
+		this.field_40661 = dataOutput;
 	}
 
 	@Override
 	public void run(DataWriter writer) throws IOException {
-		Path path = this.root.getOutput();
+		Path path = this.field_40661.getPath();
 
-		for (Path path2 : this.root.getInputs()) {
+		for (Path path2 : this.field_40660) {
 			Files.walk(path2).filter(pathx -> pathx.toString().endsWith(".nbt")).forEach(pathx -> convertNbtToSnbt(writer, pathx, this.getLocation(path2, pathx), path));
 		}
 	}

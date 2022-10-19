@@ -5,14 +5,13 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.item.ModelPredicateProvider;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.ModelLoader;
+import net.minecraft.client.render.model.Baker;
 import net.minecraft.client.render.model.UnbakedModel;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
@@ -31,9 +30,7 @@ public class ModelOverrideList {
 		this.conditionTypes = new Identifier[0];
 	}
 
-	public ModelOverrideList(
-		ModelLoader modelLoader, JsonUnbakedModel parent, Function<Identifier, UnbakedModel> unbakedModelGetter, List<ModelOverride> overrides
-	) {
+	public ModelOverrideList(Baker baker, JsonUnbakedModel parent, List<ModelOverride> overrides) {
 		this.conditionTypes = (Identifier[])overrides.stream()
 			.flatMap(ModelOverride::streamConditions)
 			.map(ModelOverride.Condition::getType)
@@ -49,7 +46,7 @@ public class ModelOverrideList {
 
 		for (int j = overrides.size() - 1; j >= 0; j--) {
 			ModelOverride modelOverride = (ModelOverride)overrides.get(j);
-			BakedModel bakedModel = this.bakeOverridingModel(modelLoader, parent, unbakedModelGetter, modelOverride);
+			BakedModel bakedModel = this.bakeOverridingModel(baker, parent, modelOverride);
 			ModelOverrideList.InlinedCondition[] inlinedConditions = (ModelOverrideList.InlinedCondition[])modelOverride.streamConditions().map(condition -> {
 				int i = object2IntMap.getInt(condition.getType());
 				return new ModelOverrideList.InlinedCondition(i, condition.getThreshold());
@@ -61,11 +58,9 @@ public class ModelOverrideList {
 	}
 
 	@Nullable
-	private BakedModel bakeOverridingModel(
-		ModelLoader loader, JsonUnbakedModel parent, Function<Identifier, UnbakedModel> unbakedModelGetter, ModelOverride override
-	) {
-		UnbakedModel unbakedModel = (UnbakedModel)unbakedModelGetter.apply(override.getModelId());
-		return Objects.equals(unbakedModel, parent) ? null : loader.bake(override.getModelId(), net.minecraft.client.render.model.ModelRotation.X0_Y0);
+	private BakedModel bakeOverridingModel(Baker baker, JsonUnbakedModel parent, ModelOverride override) {
+		UnbakedModel unbakedModel = baker.getOrLoadModel(override.getModelId());
+		return Objects.equals(unbakedModel, parent) ? null : baker.bake(override.getModelId(), net.minecraft.client.render.model.ModelRotation.X0_Y0);
 	}
 
 	@Nullable

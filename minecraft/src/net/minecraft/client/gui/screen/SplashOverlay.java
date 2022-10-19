@@ -2,6 +2,7 @@ package net.minecraft.client.gui.screen;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
@@ -16,6 +17,7 @@ import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.ResourceTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.DefaultResourcePack;
+import net.minecraft.resource.InputSupplier;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReload;
 import net.minecraft.resource.ResourceType;
@@ -165,34 +167,37 @@ public class SplashOverlay extends Overlay {
 
 		@Override
 		protected ResourceTexture.TextureData loadTextureData(ResourceManager resourceManager) {
-			MinecraftClient minecraftClient = MinecraftClient.getInstance();
-			DefaultResourcePack defaultResourcePack = minecraftClient.getResourcePackProvider().getPack();
-
-			try {
-				InputStream inputStream = defaultResourcePack.open(ResourceType.CLIENT_RESOURCES, SplashOverlay.LOGO);
-
-				ResourceTexture.TextureData var5;
+			DefaultResourcePack defaultResourcePack = MinecraftClient.getInstance().getDefaultResourcePack();
+			InputSupplier<InputStream> inputSupplier = defaultResourcePack.open(ResourceType.CLIENT_RESOURCES, SplashOverlay.LOGO);
+			if (inputSupplier == null) {
+				return new ResourceTexture.TextureData(new FileNotFoundException(SplashOverlay.LOGO.toString()));
+			} else {
 				try {
-					var5 = new ResourceTexture.TextureData(new TextureResourceMetadata(true, true), NativeImage.read(inputStream));
-				} catch (Throwable var8) {
-					if (inputStream != null) {
-						try {
-							inputStream.close();
-						} catch (Throwable var7) {
-							var8.addSuppressed(var7);
+					InputStream inputStream = inputSupplier.get();
+
+					ResourceTexture.TextureData var5;
+					try {
+						var5 = new ResourceTexture.TextureData(new TextureResourceMetadata(true, true), NativeImage.read(inputStream));
+					} catch (Throwable var8) {
+						if (inputStream != null) {
+							try {
+								inputStream.close();
+							} catch (Throwable var7) {
+								var8.addSuppressed(var7);
+							}
 						}
+
+						throw var8;
 					}
 
-					throw var8;
-				}
+					if (inputStream != null) {
+						inputStream.close();
+					}
 
-				if (inputStream != null) {
-					inputStream.close();
+					return var5;
+				} catch (IOException var9) {
+					return new ResourceTexture.TextureData(var9);
 				}
-
-				return var5;
-			} catch (IOException var9) {
-				return new ResourceTexture.TextureData(var9);
 			}
 		}
 	}

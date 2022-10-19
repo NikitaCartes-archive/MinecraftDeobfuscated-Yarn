@@ -14,7 +14,7 @@ public record MobSpawnerEntry(NbtCompound entity, Optional<MobSpawnerEntry.Custo
 	public static final Codec<MobSpawnerEntry> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					NbtCompound.CODEC.fieldOf("entity").forGetter(entry -> entry.entity),
-					MobSpawnerEntry.CustomSpawnRules.CODEC.optionalFieldOf("custom_spawn_rules").forGetter(mobSpawnerEntry -> mobSpawnerEntry.customSpawnRules)
+					MobSpawnerEntry.CustomSpawnRules.CODEC.optionalFieldOf("custom_spawn_rules").forGetter(entry -> entry.customSpawnRules)
 				)
 				.apply(instance, MobSpawnerEntry::new)
 	);

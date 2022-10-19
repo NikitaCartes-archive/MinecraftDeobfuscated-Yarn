@@ -48,7 +48,7 @@ public interface AbuseReportSender {
 			return CompletableFuture.supplyAsync(
 				() -> {
 					AbuseReportRequest abuseReportRequest = new AbuseReportRequest(
-						id, report, this.environment.toClientInfo(), this.environment.toThirdPartyServerInfo(), this.environment.toRealmInfo()
+						1, id, report, this.environment.toClientInfo(), this.environment.toThirdPartyServerInfo(), this.environment.toRealmInfo()
 					);
 
 					try {

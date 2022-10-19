@@ -33,7 +33,8 @@ import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.gen.GeneratorOptions;
+import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.world.level.WorldGenSettings;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelSummary;
 import org.apache.commons.io.FileUtils;
@@ -123,8 +124,9 @@ public class EditWorldScreen extends Screen {
 				button -> {
 					DataResult<String> dataResult2;
 					try (SaveLoader saveLoader = this.client.createIntegratedServerLoader().createSaveLoader(this.storageSession, false)) {
-						DynamicOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, saveLoader.dynamicRegistryManager());
-						DataResult<JsonElement> dataResult = GeneratorOptions.CODEC.encodeStart(dynamicOps, saveLoader.saveProperties().getGeneratorOptions());
+						DynamicRegistryManager.Immutable immutable = saveLoader.combinedDynamicRegistries().getCombinedRegistryManager();
+						DynamicOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, immutable);
+						DataResult<JsonElement> dataResult = WorldGenSettings.encode(dynamicOps, saveLoader.saveProperties().getGeneratorOptions(), immutable);
 						dataResult2 = dataResult.flatMap(json -> {
 							Path path = this.storageSession.getDirectory(WorldSavePath.ROOT).resolve("worldgen_settings_export.json");
 
@@ -137,8 +139,8 @@ public class EditWorldScreen extends Screen {
 									if (jsonWriter != null) {
 										try {
 											jsonWriter.close();
-										} catch (Throwable var6) {
-											var7.addSuppressed(var6);
+										} catch (Throwable var6x) {
+											var7.addSuppressed(var6x);
 										}
 									}
 
@@ -148,15 +150,15 @@ public class EditWorldScreen extends Screen {
 								if (jsonWriter != null) {
 									jsonWriter.close();
 								}
-							} catch (JsonIOException | IOException var8x) {
-								return DataResult.error("Error writing file: " + var8x.getMessage());
+							} catch (JsonIOException | IOException var8) {
+								return DataResult.error("Error writing file: " + var8.getMessage());
 							}
 
 							return DataResult.success(path.toString());
 						});
-					} catch (Exception var8) {
-						LOGGER.warn("Could not parse level data", (Throwable)var8);
-						dataResult2 = DataResult.error("Could not parse level data: " + var8.getMessage());
+					} catch (Exception var9) {
+						LOGGER.warn("Could not parse level data", (Throwable)var9);
+						dataResult2 = DataResult.error("Could not parse level data: " + var9.getMessage());
 					}
 
 					Text text = Text.literal(dataResult2.get().map(Function.identity(), PartialResult::message));

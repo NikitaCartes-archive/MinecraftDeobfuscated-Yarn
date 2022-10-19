@@ -25,11 +25,13 @@ public class SnbtProvider implements DataProvider {
 	@Nullable
 	private static final Path DEBUG_OUTPUT_DIRECTORY = null;
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private final DataGenerator root;
+	private final DataOutput field_40662;
+	private final Iterable<Path> field_40663;
 	private final List<SnbtProvider.Tweaker> write = Lists.<SnbtProvider.Tweaker>newArrayList();
 
-	public SnbtProvider(DataGenerator generator) {
-		this.root = generator;
+	public SnbtProvider(DataOutput generator, Iterable<Path> iterable) {
+		this.field_40662 = generator;
+		this.field_40663 = iterable;
 	}
 
 	public SnbtProvider addWriter(SnbtProvider.Tweaker tweaker) {
@@ -49,10 +51,10 @@ public class SnbtProvider implements DataProvider {
 
 	@Override
 	public void run(DataWriter writer) throws IOException {
-		Path path = this.root.getOutput();
+		Path path = this.field_40662.getPath();
 		List<CompletableFuture<SnbtProvider.CompressedData>> list = Lists.<CompletableFuture<SnbtProvider.CompressedData>>newArrayList();
 
-		for (Path path2 : this.root.getInputs()) {
+		for (Path path2 : this.field_40663) {
 			Files.walk(path2)
 				.filter(pathx -> pathx.toString().endsWith(".snbt"))
 				.forEach(pathx -> list.add(CompletableFuture.supplyAsync(() -> this.toCompressedNbt(pathx, this.getFileName(path2, pathx)), Util.getMainWorkerExecutor())));

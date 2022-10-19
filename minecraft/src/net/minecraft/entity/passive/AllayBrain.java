@@ -46,6 +46,7 @@ public class AllayBrain {
 	private static final int field_38412 = 60;
 	private static final int field_38413 = 600;
 	private static final int field_38940 = 32;
+	private static final int field_40130 = 20;
 
 	protected static Brain<?> create(Brain<AllayEntity> brain) {
 		addCoreActivities(brain);
@@ -76,7 +77,7 @@ public class AllayBrain {
 			Activity.IDLE,
 			ImmutableList.of(
 				Pair.of(0, new WalkToNearestVisibleWantedItemTask<>(allay -> true, 1.75F, true, 32)),
-				Pair.of(1, new GiveInventoryToLookTargetTask<>(AllayBrain::getLookTarget, 2.25F)),
+				Pair.of(1, new GiveInventoryToLookTargetTask<>(AllayBrain::getLookTarget, 2.25F, 20)),
 				Pair.of(2, new WalkTowardsLookTargetTask<>(AllayBrain::getLookTarget, 4, 16, 2.25F)),
 				Pair.of(3, new TimeLimitedTask<>(new FollowMobTask(allay -> true, 6.0F), UniformIntProvider.create(30, 60))),
 				Pair.of(

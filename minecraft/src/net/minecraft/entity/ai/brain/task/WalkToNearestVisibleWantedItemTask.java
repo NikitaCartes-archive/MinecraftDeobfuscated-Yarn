@@ -35,9 +35,11 @@ public class WalkToNearestVisibleWantedItemTask<E extends LivingEntity> extends 
 
 	@Override
 	protected boolean shouldRun(ServerWorld world, E entity) {
+		ItemEntity itemEntity = this.getNearestVisibleWantedItem(entity);
 		return !this.isInPickupCooldown(entity)
 			&& this.startCondition.test(entity)
-			&& this.getNearestVisibleWantedItem(entity).isInRange(entity, (double)this.radius);
+			&& itemEntity.isInRange(entity, (double)this.radius)
+			&& entity.world.getWorldBorder().contains(itemEntity.getBlockPos());
 	}
 
 	@Override

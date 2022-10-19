@@ -6,15 +6,11 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.Objects;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.message.MessageTrustStatus;
-import net.minecraft.network.message.MessageHeader;
-import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.network.message.SignedMessage;
-import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
@@ -73,16 +69,14 @@ public interface ReceivedMessage extends ChatLogEntry {
 	 * A chat message received by the client.
 	 */
 	@Environment(EnvType.CLIENT)
-	public static record ChatMessage(GameProfile profile, Text displayName, SignedMessage message, MessageTrustStatus trustStatus)
-		implements ReceivedMessage,
-		HeaderEntry {
+	public static record ChatMessage(GameProfile profile, Text displayName, SignedMessage message, MessageTrustStatus trustStatus) implements ReceivedMessage {
 		private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
 
 		@Override
 		public Text getContent() {
 			if (!this.message.filterMask().isPassThrough()) {
-				Text text = this.message.filterMask().filter(this.message.getSignedContent());
-				return (Text)Objects.requireNonNullElse(text, ScreenTexts.EMPTY);
+				Text text = this.message.filterMask().getFilteredText(this.message.getSignedContent());
+				return (Text)(text != null ? text : Text.empty());
 			} else {
 				return this.message.getContent();
 			}
@@ -116,21 +110,6 @@ public interface ReceivedMessage extends ChatLogEntry {
 		@Override
 		public boolean isSentFrom(UUID uuid) {
 			return this.message.canVerifyFrom(uuid);
-		}
-
-		@Override
-		public MessageHeader header() {
-			return this.message.signedHeader();
-		}
-
-		@Override
-		public byte[] bodyDigest() {
-			return this.message.signedBody().digest().asBytes();
-		}
-
-		@Override
-		public MessageSignatureData headerSignature() {
-			return this.message.headerSignature();
 		}
 
 		/**

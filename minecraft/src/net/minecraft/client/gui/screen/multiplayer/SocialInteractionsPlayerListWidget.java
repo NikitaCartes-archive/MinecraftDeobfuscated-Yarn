@@ -5,12 +5,14 @@ import com.google.common.base.Suppliers;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.systems.RenderSystem;
+import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -19,6 +21,9 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.client.report.log.ChatLog;
+import net.minecraft.client.report.log.ChatLogEntry;
+import net.minecraft.client.report.log.ReceivedMessage;
 import net.minecraft.client.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
@@ -61,17 +66,16 @@ public class SocialInteractionsPlayerListWidget extends ElementListWidget<Social
 		for (UUID uUID : playerUuids) {
 			PlayerListEntry playerListEntry = clientPlayNetworkHandler.getPlayerListEntry(uUID);
 			if (playerListEntry != null) {
-				UUID uUID2 = playerListEntry.getProfile().getId();
-				boolean bl = playerListEntry.getPublicKeyData() != null;
+				boolean bl = playerListEntry.hasPublicKey();
 				entriesByUuids.put(
-					uUID2, new SocialInteractionsPlayerListEntry(this.client, this.parent, uUID2, playerListEntry.getProfile().getName(), playerListEntry::getSkinTexture, bl)
+					uUID, new SocialInteractionsPlayerListEntry(this.client, this.parent, uUID, playerListEntry.getProfile().getName(), playerListEntry::getSkinTexture, bl)
 				);
 			}
 		}
 	}
 
 	private void markOfflineMembers(Map<UUID, SocialInteractionsPlayerListEntry> entries, boolean includeOffline) {
-		for (GameProfile gameProfile : this.client.getAbuseReportContext().chatLog().streamBackward().collectSenderProfiles()) {
+		for (GameProfile gameProfile : collectReportableProfiles(this.client.getAbuseReportContext().chatLog())) {
 			SocialInteractionsPlayerListEntry socialInteractionsPlayerListEntry;
 			if (includeOffline) {
 				socialInteractionsPlayerListEntry = (SocialInteractionsPlayerListEntry)entries.computeIfAbsent(
@@ -93,6 +97,22 @@ public class SocialInteractionsPlayerListWidget extends ElementListWidget<Social
 
 			socialInteractionsPlayerListEntry.setSentMessage(true);
 		}
+	}
+
+	private static Collection<GameProfile> collectReportableProfiles(ChatLog log) {
+		Set<GameProfile> set = new ObjectLinkedOpenHashSet<>();
+
+		for (int i = log.getMaxIndex(); i >= log.getMinIndex(); i--) {
+			ChatLogEntry chatLogEntry = log.get(i);
+			if (chatLogEntry instanceof ReceivedMessage.ChatMessage) {
+				ReceivedMessage.ChatMessage chatMessage = (ReceivedMessage.ChatMessage)chatLogEntry;
+				if (chatMessage.message().hasSignature()) {
+					set.add(chatMessage.profile());
+				}
+			}
+		}
+
+		return set;
 	}
 
 	private void sortPlayers() {
@@ -152,7 +172,7 @@ public class SocialInteractionsPlayerListWidget extends ElementListWidget<Social
 
 		if ((tab == SocialInteractionsScreen.Tab.ALL || this.client.getSocialInteractionsManager().isPlayerMuted(uUID))
 			&& (Strings.isNullOrEmpty(this.currentSearch) || player.getProfile().getName().toLowerCase(Locale.ROOT).contains(this.currentSearch))) {
-			boolean bl = player.getPublicKeyData() != null;
+			boolean bl = player.hasPublicKey();
 			SocialInteractionsPlayerListEntry socialInteractionsPlayerListEntryx = new SocialInteractionsPlayerListEntry(
 				this.client, this.parent, player.getProfile().getId(), player.getProfile().getName(), player::getSkinTexture, bl
 			);

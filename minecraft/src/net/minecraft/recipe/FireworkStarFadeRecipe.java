@@ -7,14 +7,15 @@ import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 public class FireworkStarFadeRecipe extends SpecialCraftingRecipe {
 	private static final Ingredient INPUT_STAR = Ingredient.ofItems(Items.FIREWORK_STAR);
 
-	public FireworkStarFadeRecipe(Identifier identifier) {
-		super(identifier);
+	public FireworkStarFadeRecipe(Identifier identifier, CraftingRecipeCategory craftingRecipeCategory) {
+		super(identifier, craftingRecipeCategory);
 	}
 
 	public boolean matches(CraftingInventory craftingInventory, World world) {

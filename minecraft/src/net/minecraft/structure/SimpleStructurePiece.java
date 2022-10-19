@@ -100,7 +100,7 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 					BlockState blockState = Blocks.AIR.getDefaultState();
 
 					try {
-						blockState = BlockArgumentParser.block(Registry.BLOCK, string, true).blockState();
+						blockState = BlockArgumentParser.block(world.createCommandRegistryWrapper(Registry.BLOCK_KEY), string, true).blockState();
 					} catch (CommandSyntaxException var15) {
 						LOGGER.error("Error while parsing blockstate {} in jigsaw block @ {}", string, structureBlockInfo2.pos);
 					}

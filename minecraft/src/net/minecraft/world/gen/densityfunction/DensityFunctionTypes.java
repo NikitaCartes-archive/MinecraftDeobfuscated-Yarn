@@ -898,12 +898,12 @@ public final class DensityFunctionTypes {
 
 		@Override
 		public double minValue() {
-			return this.function.value().minValue();
+			return this.function.hasKeyAndValue() ? this.function.value().minValue() : Double.NEGATIVE_INFINITY;
 		}
 
 		@Override
 		public double maxValue() {
-			return this.function.value().maxValue();
+			return this.function.hasKeyAndValue() ? this.function.value().maxValue() : Double.POSITIVE_INFINITY;
 		}
 
 		@Override
@@ -1102,12 +1102,12 @@ public final class DensityFunctionTypes {
 
 			@Override
 			public float min() {
-				return (float)this.function.value().minValue();
+				return this.function.hasKeyAndValue() ? (float)this.function.value().minValue() : Float.NEGATIVE_INFINITY;
 			}
 
 			@Override
 			public float max() {
-				return (float)this.function.value().maxValue();
+				return this.function.hasKeyAndValue() ? (float)this.function.value().maxValue() : Float.POSITIVE_INFINITY;
 			}
 
 			public DensityFunctionTypes.Spline.DensityFunctionWrapper apply(DensityFunction.DensityFunctionVisitor visitor) {

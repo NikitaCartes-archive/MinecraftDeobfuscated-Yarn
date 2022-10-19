@@ -37,9 +37,11 @@ import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.dimension.DimensionOptionsRegistryHolder;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.gen.WorldPreset;
 import net.minecraft.world.gen.WorldPresets;
+import net.minecraft.world.level.WorldGenSettings;
 import org.lwjgl.util.tinyfd.TinyFileDialogs;
 import org.slf4j.Logger;
 
@@ -73,7 +75,7 @@ public class MoreOptionsDialog implements Drawable {
 	private static Optional<RegistryEntry<WorldPreset>> createPresetEntry(
 		GeneratorOptionsHolder generatorOptionsHolder, Optional<RegistryKey<WorldPreset>> presetKey
 	) {
-		return presetKey.flatMap(key -> generatorOptionsHolder.dynamicRegistryManager().get(Registry.WORLD_PRESET_KEY).getEntry(key));
+		return presetKey.flatMap(key -> generatorOptionsHolder.getCombinedRegistryManager().get(Registry.WORLD_PRESET_KEY).getEntry(key));
 	}
 
 	public void init(CreateWorldScreen parent, MinecraftClient client, TextRenderer textRenderer) {
@@ -89,11 +91,16 @@ public class MoreOptionsDialog implements Drawable {
 			CyclingButtonWidget.onOffBuilder(this.generatorOptionsHolder.generatorOptions().shouldGenerateStructures())
 				.narration(button -> ScreenTexts.joinSentences(button.getGenericNarrationMessage(), Text.translatable("selectWorld.mapFeatures.info")))
 				.build(
-					i, 100, 150, 20, Text.translatable("selectWorld.mapFeatures"), (cyclingButtonWidget, boolean_) -> this.apply(GeneratorOptions::toggleGenerateStructures)
+					i,
+					100,
+					150,
+					20,
+					Text.translatable("selectWorld.mapFeatures"),
+					(button, structures) -> this.apply(generatorOptions -> generatorOptions.withStructures(structures))
 				)
 		);
 		this.mapFeaturesButton.visible = false;
-		Registry<WorldPreset> registry = this.generatorOptionsHolder.dynamicRegistryManager().get(Registry.WORLD_PRESET_KEY);
+		Registry<WorldPreset> registry = this.generatorOptionsHolder.getCombinedRegistryManager().get(Registry.WORLD_PRESET_KEY);
 		List<RegistryEntry<WorldPreset>> list = (List<RegistryEntry<WorldPreset>>)collectPresets(registry, WorldPresetTags.NORMAL)
 			.orElseGet(() -> (List)registry.streamEntries().collect(Collectors.toUnmodifiableList()));
 		List<RegistryEntry<WorldPreset>> list2 = (List<RegistryEntry<WorldPreset>>)collectPresets(registry, WorldPresetTags.EXTENDED).orElse(list);
@@ -107,7 +114,7 @@ public class MoreOptionsDialog implements Drawable {
 				)
 				.build(j, 100, 150, 20, Text.translatable("selectWorld.mapType"), (button, presetEntry) -> {
 					this.presetEntry = Optional.of(presetEntry);
-					this.apply(generatorOptions -> ((WorldPreset)presetEntry.value()).createGeneratorOptions(generatorOptions));
+					this.apply((dynamicRegistryManager, dimensionsRegistryHolder) -> ((WorldPreset)presetEntry.value()).createDimensionsRegistryHolder());
 					parent.setMoreOptionsOpen();
 				})
 		);
@@ -138,7 +145,14 @@ public class MoreOptionsDialog implements Drawable {
 		this.customizeTypeButton.visible = false;
 		this.bonusItemsButton = parent.addDrawableChild(
 			CyclingButtonWidget.onOffBuilder(this.generatorOptionsHolder.generatorOptions().hasBonusChest() && !parent.hardcore)
-				.build(i, 151, 150, 20, Text.translatable("selectWorld.bonusItems"), (button, bonusChest) -> this.apply(GeneratorOptions::toggleBonusChest))
+				.build(
+					i,
+					151,
+					150,
+					20,
+					Text.translatable("selectWorld.bonusItems"),
+					(button, bonusChest) -> this.apply(generatorOptions -> generatorOptions.withBonusChest(bonusChest))
+				)
 		);
 		this.bonusItemsButton.visible = false;
 		this.importSettingsButton = parent.addDrawableChild(
@@ -151,15 +165,15 @@ public class MoreOptionsDialog implements Drawable {
 				button -> {
 					String string = TinyFileDialogs.tinyfd_openFileDialog(SELECT_SETTINGS_FILE_TEXT.getString(), null, null, null, false);
 					if (string != null) {
-						DynamicOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, this.generatorOptionsHolder.dynamicRegistryManager());
+						DynamicOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, this.generatorOptionsHolder.getCombinedRegistryManager());
 
-						DataResult<GeneratorOptions> dataResult;
+						DataResult<WorldGenSettings> dataResult;
 						try {
 							BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(string));
 
 							try {
 								JsonElement jsonElement = JsonParser.parseReader(bufferedReader);
-								dataResult = GeneratorOptions.CODEC.parse(dynamicOps, jsonElement);
+								dataResult = WorldGenSettings.CODEC.parse(dynamicOps, jsonElement);
 							} catch (Throwable var11) {
 								if (bufferedReader != null) {
 									try {
@@ -188,7 +202,11 @@ public class MoreOptionsDialog implements Drawable {
 						} else {
 							Lifecycle lifecycle = dataResult.lifecycle();
 							dataResult.resultOrPartial(LOGGER::error)
-								.ifPresent(generatorOptions -> IntegratedServerLoader.tryLoad(client, parent, lifecycle, () -> this.importOptions(generatorOptions)));
+								.ifPresent(
+									worldGenSettings -> IntegratedServerLoader.tryLoad(
+											client, parent, lifecycle, () -> this.importOptions(worldGenSettings.generatorOptions(), worldGenSettings.dimensionOptionsRegistryHolder())
+										)
+								);
 						}
 					}
 				}
@@ -210,9 +228,9 @@ public class MoreOptionsDialog implements Drawable {
 		return (Text)presetEntry.getKey().map(key -> Text.translatable(key.getValue().toTranslationKey("generator"))).orElse(CUSTOM_TEXT);
 	}
 
-	private void importOptions(GeneratorOptions generatorOptions) {
-		this.generatorOptionsHolder = this.generatorOptionsHolder.with(generatorOptions);
-		this.presetEntry = createPresetEntry(this.generatorOptionsHolder, WorldPresets.getWorldPreset(generatorOptions));
+	private void importOptions(GeneratorOptions generatorOptions, DimensionOptionsRegistryHolder dimensionsRegistryHolder) {
+		this.generatorOptionsHolder = this.generatorOptionsHolder.with(generatorOptions, dimensionsRegistryHolder);
+		this.presetEntry = createPresetEntry(this.generatorOptionsHolder, WorldPresets.getWorldPreset(dimensionsRegistryHolder.dimensions()));
 		this.setMapTypeButtonVisible(true);
 		this.seed = OptionalLong.of(generatorOptions.getSeed());
 		this.seedTextField.setText(seedToString(this.seed));
@@ -234,11 +252,11 @@ public class MoreOptionsDialog implements Drawable {
 		}
 	}
 
-	void apply(GeneratorOptionsHolder.Modifier modifier) {
+	void apply(GeneratorOptionsHolder.RegistryAwareModifier modifier) {
 		this.generatorOptionsHolder = this.generatorOptionsHolder.apply(modifier);
 	}
 
-	void apply(GeneratorOptionsHolder.RegistryAwareModifier modifier) {
+	private void apply(GeneratorOptionsHolder.Modifier modifier) {
 		this.generatorOptionsHolder = this.generatorOptionsHolder.apply(modifier);
 	}
 
@@ -250,13 +268,22 @@ public class MoreOptionsDialog implements Drawable {
 		return seed.isPresent() ? Long.toString(seed.getAsLong()) : "";
 	}
 
-	public GeneratorOptionsHolder getGeneratorOptionsHolder(boolean hardcore) {
+	public GeneratorOptions getGeneratorOptionsHolder(boolean debug, boolean hardcore) {
 		OptionalLong optionalLong = GeneratorOptions.parseSeed(this.seedTextField.getText());
-		return this.generatorOptionsHolder.apply(generatorOptions -> generatorOptions.withHardcore(hardcore, optionalLong));
+		GeneratorOptions generatorOptions = this.generatorOptionsHolder.generatorOptions();
+		if (debug || hardcore) {
+			generatorOptions = generatorOptions.withBonusChest(false);
+		}
+
+		if (debug) {
+			generatorOptions = generatorOptions.withStructures(false);
+		}
+
+		return generatorOptions.withSeed(optionalLong);
 	}
 
 	public boolean isDebugWorld() {
-		return this.generatorOptionsHolder.generatorOptions().isDebugWorld();
+		return this.generatorOptionsHolder.selectedDimensions().isDebug();
 	}
 
 	public void setVisible(boolean visible) {
@@ -292,7 +319,7 @@ public class MoreOptionsDialog implements Drawable {
 	}
 
 	public DynamicRegistryManager getRegistryManager() {
-		return this.generatorOptionsHolder.dynamicRegistryManager();
+		return this.generatorOptionsHolder.getCombinedRegistryManager();
 	}
 
 	public void disableBonusItems() {

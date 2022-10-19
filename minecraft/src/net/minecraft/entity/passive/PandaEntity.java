@@ -237,11 +237,14 @@ public class PandaEntity extends AnimalEntity {
 	@Override
 	public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
 		PandaEntity pandaEntity = EntityType.PANDA.create(world);
-		if (entity instanceof PandaEntity) {
-			pandaEntity.initGenes(this, (PandaEntity)entity);
+		if (pandaEntity != null) {
+			if (entity instanceof PandaEntity pandaEntity2) {
+				pandaEntity.initGenes(this, pandaEntity2);
+			}
+
+			pandaEntity.resetAttributes();
 		}
 
-		pandaEntity.resetAttributes();
 		return pandaEntity;
 	}
 

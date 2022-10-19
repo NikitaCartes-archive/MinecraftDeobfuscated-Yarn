@@ -98,7 +98,7 @@ public interface DensityFunction {
 		}
 
 		public double getMaxValue() {
-			return this.noise == null ? 2.0 : this.noise.method_40554();
+			return this.noise == null ? 2.0 : this.noise.getMaxValue();
 		}
 	}
 

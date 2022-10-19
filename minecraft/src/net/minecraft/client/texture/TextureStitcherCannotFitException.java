@@ -7,9 +7,9 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class TextureStitcherCannotFitException extends RuntimeException {
-	private final Collection<Sprite.Info> sprites;
+	private final Collection<TextureStitcher.Stitchable> sprites;
 
-	public TextureStitcherCannotFitException(Sprite.Info sprite, Collection<Sprite.Info> sprites) {
+	public TextureStitcherCannotFitException(TextureStitcher.Stitchable sprite, Collection<TextureStitcher.Stitchable> sprites) {
 		super(
 			String.format(
 				Locale.ROOT, "Unable to fit: %s - size: %dx%d - Maybe try a lower resolution resourcepack?", sprite.getId(), sprite.getWidth(), sprite.getHeight()
@@ -18,7 +18,7 @@ public class TextureStitcherCannotFitException extends RuntimeException {
 		this.sprites = sprites;
 	}
 
-	public Collection<Sprite.Info> getSprites() {
+	public Collection<TextureStitcher.Stitchable> getSprites() {
 		return this.sprites;
 	}
 }

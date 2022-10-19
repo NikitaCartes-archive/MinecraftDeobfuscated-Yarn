@@ -6,19 +6,17 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
-import com.mojang.datafixers.util.Pair;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.render.model.Baker;
 import net.minecraft.client.render.model.ModelBakeSettings;
-import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.render.model.UnbakedModel;
 import net.minecraft.client.render.model.WeightedBakedModel;
 import net.minecraft.client.texture.Sprite;
@@ -55,27 +53,20 @@ public class WeightedUnbakedModel implements UnbakedModel {
 	}
 
 	@Override
-	public Collection<SpriteIdentifier> getTextureDependencies(
-		Function<Identifier, UnbakedModel> unbakedModelGetter, Set<Pair<String, String>> unresolvedTextureReferences
-	) {
-		return (Collection<SpriteIdentifier>)this.getVariants()
-			.stream()
-			.map(ModelVariant::getLocation)
-			.distinct()
-			.flatMap(identifier -> ((UnbakedModel)unbakedModelGetter.apply(identifier)).getTextureDependencies(unbakedModelGetter, unresolvedTextureReferences).stream())
-			.collect(Collectors.toSet());
+	public void setParents(Function<Identifier, UnbakedModel> modelLoader) {
+		this.getVariants().stream().map(ModelVariant::getLocation).distinct().forEach(id -> ((UnbakedModel)modelLoader.apply(id)).setParents(modelLoader));
 	}
 
 	@Nullable
 	@Override
-	public BakedModel bake(ModelLoader loader, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
+	public BakedModel bake(Baker baker, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
 		if (this.getVariants().isEmpty()) {
 			return null;
 		} else {
 			WeightedBakedModel.Builder builder = new WeightedBakedModel.Builder();
 
 			for (ModelVariant modelVariant : this.getVariants()) {
-				BakedModel bakedModel = loader.bake(modelVariant.getLocation(), modelVariant);
+				BakedModel bakedModel = baker.bake(modelVariant.getLocation(), modelVariant);
 				builder.add(bakedModel, modelVariant.getWeight());
 			}
 

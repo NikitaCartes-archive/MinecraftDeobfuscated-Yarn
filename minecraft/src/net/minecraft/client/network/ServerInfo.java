@@ -1,8 +1,5 @@
 package net.minecraft.client.network;
 
-import com.mojang.logging.LogUtils;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.text.ParseException;
 import java.util.Collections;
 import java.util.List;
@@ -12,10 +9,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.text.Text;
-import net.minecraft.util.Util;
-import org.slf4j.Logger;
 
 /**
  * The information of a server entry in the list of servers available in
@@ -29,7 +23,6 @@ import org.slf4j.Logger;
  */
 @Environment(EnvType.CLIENT)
 public class ServerInfo {
-	private static final Logger LOGGER = LogUtils.getLogger();
 	public String name;
 	public String address;
 	public Text playerCountLabel;
@@ -43,9 +36,6 @@ public class ServerInfo {
 	@Nullable
 	private String icon;
 	private boolean local;
-	@Nullable
-	private ServerInfo.ChatPreview chatPreview;
-	private boolean temporaryChatPreviewState = true;
 	private boolean secureChatEnforced;
 
 	public ServerInfo(String name, String address, boolean local) {
@@ -66,10 +56,6 @@ public class ServerInfo {
 			nbtCompound.putBoolean("acceptTextures", true);
 		} else if (this.resourcePackPolicy == ServerInfo.ResourcePackPolicy.DISABLED) {
 			nbtCompound.putBoolean("acceptTextures", false);
-		}
-
-		if (this.chatPreview != null) {
-			ServerInfo.ChatPreview.CODEC.encodeStart(NbtOps.INSTANCE, this.chatPreview).result().ifPresent(chatPreview -> nbtCompound.put("chatPreview", chatPreview));
 		}
 
 		return nbtCompound;
@@ -108,13 +94,6 @@ public class ServerInfo {
 			serverInfo.setResourcePackPolicy(ServerInfo.ResourcePackPolicy.PROMPT);
 		}
 
-		if (root.contains("chatPreview", NbtElement.COMPOUND_TYPE)) {
-			ServerInfo.ChatPreview.CODEC
-				.parse(NbtOps.INSTANCE, root.getCompound("chatPreview"))
-				.resultOrPartial(LOGGER::error)
-				.ifPresent(chatPreview -> serverInfo.chatPreview = chatPreview);
-		}
-
 		return serverInfo;
 	}
 
@@ -139,35 +118,6 @@ public class ServerInfo {
 		return this.local;
 	}
 
-	/**
-	 * Sets whether the chat preview is enabled. This affects the saved server info;
-	 * to disable the chat preview temporarily use {@link #setTemporaryChatPreviewState}.
-	 */
-	public void setPreviewsChat(boolean enabled) {
-		if (enabled && this.chatPreview == null) {
-			this.chatPreview = new ServerInfo.ChatPreview(false, false);
-		} else if (!enabled && this.chatPreview != null) {
-			this.chatPreview = null;
-		}
-	}
-
-	@Nullable
-	public ServerInfo.ChatPreview getChatPreview() {
-		return this.chatPreview;
-	}
-
-	/**
-	 * Sets the temporary chat preview state. Unlike {@link #setPreviewsChat}, this
-	 * does not affect the saved server info.
-	 */
-	public void setTemporaryChatPreviewState(boolean temporaryChatPreviewState) {
-		this.temporaryChatPreviewState = temporaryChatPreviewState;
-	}
-
-	public boolean shouldPreviewChat() {
-		return this.temporaryChatPreviewState && this.chatPreview != null;
-	}
-
 	public void setSecureChatEnforced(boolean secureChatEnforced) {
 		this.secureChatEnforced = secureChatEnforced;
 	}
@@ -186,54 +136,7 @@ public class ServerInfo {
 		this.copyFrom(serverInfo);
 		this.setResourcePackPolicy(serverInfo.getResourcePackPolicy());
 		this.local = serverInfo.local;
-		this.chatPreview = Util.map(serverInfo.chatPreview, ServerInfo.ChatPreview::copy);
 		this.secureChatEnforced = serverInfo.secureChatEnforced;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static class ChatPreview {
-		public static final Codec<ServerInfo.ChatPreview> CODEC = RecordCodecBuilder.create(
-			instance -> instance.group(
-						Codec.BOOL.optionalFieldOf("acknowledged", Boolean.valueOf(false)).forGetter(chatPreview -> chatPreview.acknowledged),
-						Codec.BOOL.optionalFieldOf("toastShown", Boolean.valueOf(false)).forGetter(chatPreview -> chatPreview.toastShown)
-					)
-					.apply(instance, ServerInfo.ChatPreview::new)
-		);
-		private boolean acknowledged;
-		private boolean toastShown;
-
-		ChatPreview(boolean acknowledged, boolean toastShown) {
-			this.acknowledged = acknowledged;
-			this.toastShown = toastShown;
-		}
-
-		public void setAcknowledged() {
-			this.acknowledged = true;
-		}
-
-		/**
-		 * If the chat preview toast is never shown, returns {@code true} and marks that the
-		 * toast was shown; otherwise, returns {@code false}.
-		 */
-		public boolean showToast() {
-			if (!this.toastShown) {
-				this.toastShown = true;
-				return true;
-			} else {
-				return false;
-			}
-		}
-
-		/**
-		 * {@return whether the player acknowledged the chat preview warning}
-		 */
-		public boolean isAcknowledged() {
-			return this.acknowledged;
-		}
-
-		private ServerInfo.ChatPreview copy() {
-			return new ServerInfo.ChatPreview(this.acknowledged, this.toastShown);
-		}
 	}
 
 	/**

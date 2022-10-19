@@ -162,12 +162,14 @@ public class GoatEntity extends AnimalEntity {
 		return this.isScreaming() ? SoundEvents.ENTITY_GOAT_SCREAMING_MILK : SoundEvents.ENTITY_GOAT_MILK;
 	}
 
+	@Nullable
 	public GoatEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
 		GoatEntity goatEntity = EntityType.GOAT.create(serverWorld);
 		if (goatEntity != null) {
 			GoatBrain.resetLongJumpCooldown(goatEntity, serverWorld.getRandom());
-			boolean bl = passiveEntity instanceof GoatEntity && ((GoatEntity)passiveEntity).isScreaming();
-			goatEntity.setScreaming(bl || serverWorld.getRandom().nextDouble() < 0.02);
+			PassiveEntity passiveEntity2 = (PassiveEntity)(serverWorld.getRandom().nextBoolean() ? this : passiveEntity);
+			boolean bl = passiveEntity2 instanceof GoatEntity goatEntity2 && goatEntity2.isScreaming() || serverWorld.getRandom().nextDouble() < 0.02;
+			goatEntity.setScreaming(bl);
 		}
 
 		return goatEntity;

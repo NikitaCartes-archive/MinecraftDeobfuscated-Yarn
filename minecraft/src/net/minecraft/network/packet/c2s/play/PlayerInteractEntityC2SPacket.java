@@ -150,7 +150,7 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 
 	static enum InteractType {
 		INTERACT(PlayerInteractEntityC2SPacket.InteractHandler::new),
-		ATTACK(packetByteBuf -> PlayerInteractEntityC2SPacket.ATTACK),
+		ATTACK(buf -> PlayerInteractEntityC2SPacket.ATTACK),
 		INTERACT_AT(PlayerInteractEntityC2SPacket.InteractAtHandler::new);
 
 		final Function<PacketByteBuf, PlayerInteractEntityC2SPacket.InteractTypeHandler> handlerGetter;

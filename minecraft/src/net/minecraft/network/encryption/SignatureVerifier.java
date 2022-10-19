@@ -36,11 +36,11 @@ public interface SignatureVerifier {
 	}
 
 	static SignatureVerifier create(ServicesKeyInfo servicesKeyInfo) {
-		return (signatureUpdatable, bs) -> {
+		return (updatable, signatureData) -> {
 			Signature signature = servicesKeyInfo.signature();
 
 			try {
-				return verify(signatureUpdatable, bs, signature);
+				return verify(updatable, signatureData, signature);
 			} catch (SignatureException var5) {
 				LOGGER.error("Failed to verify Services signature", (Throwable)var5);
 				return false;

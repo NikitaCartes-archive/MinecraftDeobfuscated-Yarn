@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import java.util.Collection;
+import net.minecraft.block.entity.SculkShriekerWarningManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 
@@ -29,7 +30,7 @@ public class WardenSpawnTrackerCommand {
 
 	private static int setWarningLevel(ServerCommandSource source, Collection<? extends PlayerEntity> players, int warningCount) {
 		for (PlayerEntity playerEntity : players) {
-			playerEntity.getSculkShriekerWarningManager().setWarningLevel(warningCount);
+			playerEntity.getSculkShriekerWarningManager().ifPresent(sculkShriekerWarningManager -> sculkShriekerWarningManager.setWarningLevel(warningCount));
 		}
 
 		if (players.size() == 1) {
@@ -43,7 +44,7 @@ public class WardenSpawnTrackerCommand {
 
 	private static int clearTracker(ServerCommandSource source, Collection<? extends PlayerEntity> players) {
 		for (PlayerEntity playerEntity : players) {
-			playerEntity.getSculkShriekerWarningManager().reset();
+			playerEntity.getSculkShriekerWarningManager().ifPresent(SculkShriekerWarningManager::reset);
 		}
 
 		if (players.size() == 1) {

@@ -1,0 +1,124 @@
+package net.minecraft.data.server.loottable;
+
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.passive.FrogVariant;
+import net.minecraft.item.ItemConvertible;
+import net.minecraft.loot.LootPool;
+import net.minecraft.loot.LootTable;
+import net.minecraft.loot.LootTables;
+import net.minecraft.loot.condition.DamageSourcePropertiesLootCondition;
+import net.minecraft.loot.condition.LootCondition;
+import net.minecraft.loot.entry.ItemEntry;
+import net.minecraft.loot.entry.LootTableEntry;
+import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
+import net.minecraft.predicate.entity.DamageSourcePredicate;
+import net.minecraft.predicate.entity.EntityFlagsPredicate;
+import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.TypeSpecificPredicate;
+import net.minecraft.resource.featuretoggle.FeatureSet;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
+
+public abstract class EntityLootTableGenerator implements LootTableGenerator {
+	protected static final EntityPredicate.Builder NEEDS_ENTITY_ON_FIRE = EntityPredicate.Builder.create()
+		.flags(EntityFlagsPredicate.Builder.create().onFire(true).build());
+	private static final Set<EntityType<?>> ENTITY_TYPES_IN_MISC_GROUP_TO_CHECK = ImmutableSet.of(
+		EntityType.PLAYER, EntityType.ARMOR_STAND, EntityType.IRON_GOLEM, EntityType.SNOW_GOLEM, EntityType.VILLAGER
+	);
+	private final FeatureSet field_40614;
+	private final Map<EntityType<?>, Map<Identifier, LootTable.Builder>> lootTables = Maps.<EntityType<?>, Map<Identifier, LootTable.Builder>>newHashMap();
+
+	protected EntityLootTableGenerator(FeatureSet featureSet) {
+		this.field_40614 = featureSet;
+	}
+
+	protected static LootTable.Builder createForSheep(ItemConvertible item) {
+		return LootTable.builder()
+			.pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(item)))
+			.pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(LootTableEntry.builder(EntityType.SHEEP.getLootTableId())));
+	}
+
+	public abstract void generate();
+
+	@Override
+	public void accept(BiConsumer<Identifier, LootTable.Builder> exporter) {
+		this.generate();
+		Set<Identifier> set = Sets.<Identifier>newHashSet();
+		Registry.ENTITY_TYPE
+			.streamEntries()
+			.forEach(
+				reference -> {
+					EntityType<?> entityType = (EntityType<?>)reference.value();
+					if (entityType.isEnabled(this.field_40614)) {
+						if (shouldCheck(entityType)) {
+							Map<Identifier, LootTable.Builder> map = (Map<Identifier, LootTable.Builder>)this.lootTables.remove(entityType);
+							Identifier identifier = entityType.getLootTableId();
+							if (!identifier.equals(LootTables.EMPTY) && (map == null || !map.containsKey(identifier))) {
+								throw new IllegalStateException(String.format(Locale.ROOT, "Missing loottable '%s' for '%s'", identifier, reference.registryKey().getValue()));
+							}
+
+							if (map != null) {
+								map.forEach((identifierx, builder) -> {
+									if (!set.add(identifierx)) {
+										throw new IllegalStateException(String.format(Locale.ROOT, "Duplicate loottable '%s' for '%s'", identifierx, reference.registryKey().getValue()));
+									} else {
+										exporter.accept(identifierx, builder);
+									}
+								});
+							}
+						} else {
+							Map<Identifier, LootTable.Builder> mapx = (Map<Identifier, LootTable.Builder>)this.lootTables.remove(entityType);
+							if (mapx != null) {
+								throw new IllegalStateException(
+									String.format(
+										Locale.ROOT,
+										"Weird loottables '%s' for '%s', not a LivingEntity so should not have loot",
+										mapx.keySet().stream().map(Identifier::toString).collect(Collectors.joining(",")),
+										reference.registryKey().getValue()
+									)
+								);
+							}
+						}
+					}
+				}
+			);
+		if (!this.lootTables.isEmpty()) {
+			throw new IllegalStateException("Created loot tables for entities not supported by datapack: " + this.lootTables.keySet());
+		}
+	}
+
+	private static boolean shouldCheck(EntityType<?> entityType) {
+		return ENTITY_TYPES_IN_MISC_GROUP_TO_CHECK.contains(entityType) || entityType.getSpawnGroup() != SpawnGroup.MISC;
+	}
+
+	protected LootCondition.Builder killedByFrog() {
+		return DamageSourcePropertiesLootCondition.builder(
+			DamageSourcePredicate.Builder.create().sourceEntity(EntityPredicate.Builder.create().type(EntityType.FROG))
+		);
+	}
+
+	protected LootCondition.Builder killedByFrog(FrogVariant variant) {
+		return DamageSourcePropertiesLootCondition.builder(
+			DamageSourcePredicate.Builder.create()
+				.sourceEntity(EntityPredicate.Builder.create().type(EntityType.FROG).typeSpecific(TypeSpecificPredicate.frog(variant)))
+		);
+	}
+
+	protected void register(EntityType<?> entityType, LootTable.Builder lootTable) {
+		this.register(entityType, entityType.getLootTableId(), lootTable);
+	}
+
+	protected void register(EntityType<?> entityType, Identifier entityId, LootTable.Builder lootTable) {
+		((Map)this.lootTables.computeIfAbsent(entityType, entityTypex -> new HashMap())).put(entityId, lootTable);
+	}
+}

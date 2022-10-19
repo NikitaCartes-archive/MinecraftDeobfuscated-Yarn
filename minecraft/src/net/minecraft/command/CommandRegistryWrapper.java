@@ -2,7 +2,10 @@ package net.minecraft.command;
 
 import java.util.Optional;
 import java.util.Map.Entry;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
+import net.minecraft.resource.featuretoggle.FeatureSet;
+import net.minecraft.resource.featuretoggle.ToggleableFeature;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
@@ -23,7 +26,7 @@ public interface CommandRegistryWrapper<T> {
 	/**
 	 * @see Registry#getEntry
 	 */
-	Optional<RegistryEntry<T>> getEntry(RegistryKey<T> key);
+	Optional<RegistryEntry.Reference<T>> getEntry(RegistryKey<T> key);
 
 	/**
 	 * {@return a stream of registry keys defined in the wrapped registry}
@@ -44,7 +47,7 @@ public interface CommandRegistryWrapper<T> {
 	 * @see Registry#getEntryList
 	 * @see CommandRegistryAccess.EntryListCreationPolicy
 	 */
-	Optional<? extends RegistryEntryList<T>> getEntryList(TagKey<T> tag);
+	Optional<RegistryEntryList.Named<T>> getEntryList(TagKey<T> tag);
 
 	/**
 	 * @see Registry#streamTags
@@ -54,7 +57,7 @@ public interface CommandRegistryWrapper<T> {
 	/**
 	 * {@return a new wrapper for the {@code registry} without any special behaviors}
 	 */
-	static <T> CommandRegistryWrapper<T> of(Registry<T> registry) {
+	static <T> CommandRegistryWrapper.Impl<T> of(Registry<T> registry) {
 		return new CommandRegistryWrapper.Impl<>(registry);
 	}
 
@@ -66,7 +69,7 @@ public interface CommandRegistryWrapper<T> {
 		}
 
 		@Override
-		public Optional<RegistryEntry<T>> getEntry(RegistryKey<T> key) {
+		public Optional<RegistryEntry.Reference<T>> getEntry(RegistryKey<T> key) {
 			return this.registry.getEntry(key);
 		}
 
@@ -76,13 +79,43 @@ public interface CommandRegistryWrapper<T> {
 		}
 
 		@Override
-		public Optional<? extends RegistryEntryList<T>> getEntryList(TagKey<T> tag) {
+		public Optional<RegistryEntryList.Named<T>> getEntryList(TagKey<T> tag) {
 			return this.registry.getEntryList(tag);
 		}
 
 		@Override
 		public Stream<TagKey<T>> streamTags() {
 			return this.registry.streamTags();
+		}
+
+		public CommandRegistryWrapper<T> withFilter(Predicate<T> filter) {
+			return new CommandRegistryWrapper<T>() {
+				@Override
+				public Optional<RegistryEntry.Reference<T>> getEntry(RegistryKey<T> key) {
+					return Impl.this.registry.getEntry(key).filter(entry -> filter.test(entry.value()));
+				}
+
+				@Override
+				public Stream<RegistryKey<T>> streamKeys() {
+					return Impl.this.registry.getEntrySet().stream().filter(entry -> filter.test(entry.getValue())).map(Entry::getKey);
+				}
+
+				@Override
+				public Optional<RegistryEntryList.Named<T>> getEntryList(TagKey<T> tag) {
+					return Impl.this.getEntryList(tag);
+				}
+
+				@Override
+				public Stream<TagKey<T>> streamTags() {
+					return Impl.this.streamTags();
+				}
+			};
+		}
+
+		public CommandRegistryWrapper<T> withFeatureFilter(FeatureSet enabledFeatures) {
+			return (CommandRegistryWrapper<T>)(ToggleableFeature.FEATURE_ENABLED_REGISTRY_KEYS.contains(this.registry.getKey())
+				? this.withFilter(object -> ((ToggleableFeature)object).isEnabled(enabledFeatures))
+				: this);
 		}
 	}
 }

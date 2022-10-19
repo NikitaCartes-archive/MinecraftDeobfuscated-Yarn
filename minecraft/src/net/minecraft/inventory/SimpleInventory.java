@@ -220,6 +220,8 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 	}
 
 	public void readNbtList(NbtList nbtList) {
+		this.clear();
+
 		for (int i = 0; i < nbtList.size(); i++) {
 			ItemStack itemStack = ItemStack.fromNbt(nbtList.getCompound(i));
 			if (!itemStack.isEmpty()) {

@@ -12,6 +12,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import java.lang.reflect.Type;
+import java.util.function.UnaryOperator;
 import javax.annotation.Nullable;
 import net.minecraft.text.Text;
 import org.apache.commons.lang3.StringUtils;
@@ -109,17 +110,20 @@ public class Identifier implements Comparable<Identifier> {
 	public static final char NAMESPACE_SEPARATOR = ':';
 	public static final String DEFAULT_NAMESPACE = "minecraft";
 	public static final String REALMS_NAMESPACE = "realms";
-	protected final String namespace;
-	protected final String path;
+	private final String namespace;
+	private final String path;
 
-	protected Identifier(String[] id) {
-		this.namespace = StringUtils.isEmpty(id[0]) ? "minecraft" : id[0];
-		this.path = id[1];
-		if (!isNamespaceValid(this.namespace)) {
-			throw new InvalidIdentifierException("Non [a-z0-9_.-] character in namespace of location: " + this.namespace + ":" + this.path);
-		} else if (!isPathValid(this.path)) {
-			throw new InvalidIdentifierException("Non [a-z0-9/._-] character in path of location: " + this.namespace + ":" + this.path);
-		}
+	protected Identifier(String namespace, String path, @Nullable Identifier.ExtraData extraData) {
+		this.namespace = namespace;
+		this.path = path;
+	}
+
+	public Identifier(String namespace, String path) {
+		this(validateNamespace(namespace, path), validatePath(namespace, path), null);
+	}
+
+	private Identifier(String[] id) {
+		this(id[0], id[1]);
 	}
 
 	/**
@@ -130,10 +134,6 @@ public class Identifier implements Comparable<Identifier> {
 	 */
 	public Identifier(String id) {
 		this(split(id, ':'));
-	}
-
-	public Identifier(String namespace, String path) {
-		this(new String[]{namespace, path});
 	}
 
 	public static Identifier splitOn(String id, char delimiter) {
@@ -173,7 +173,7 @@ public class Identifier implements Comparable<Identifier> {
 		String[] strings = new String[]{"minecraft", id};
 		int i = id.indexOf(delimiter);
 		if (i >= 0) {
-			strings[1] = id.substring(i + 1, id.length());
+			strings[1] = id.substring(i + 1);
 			if (i >= 1) {
 				strings[0] = id.substring(0, i);
 			}
@@ -204,6 +204,18 @@ public class Identifier implements Comparable<Identifier> {
 	 */
 	public String getNamespace() {
 		return this.namespace;
+	}
+
+	public Identifier withPath(String path) {
+		return new Identifier(this.namespace, validatePath(this.namespace, path), null);
+	}
+
+	public Identifier withPath(UnaryOperator<String> pathFunction) {
+		return this.withPath((String)pathFunction.apply(this.path));
+	}
+
+	public Identifier withPrefixedPath(String prefix) {
+		return this.withPath(prefix + this.path);
 	}
 
 	public String toString() {
@@ -308,6 +320,14 @@ public class Identifier implements Comparable<Identifier> {
 		return true;
 	}
 
+	private static String validateNamespace(String namespace, String path) {
+		if (!isNamespaceValid(namespace)) {
+			throw new InvalidIdentifierException("Non [a-z0-9_.-] character in namespace of location: " + namespace + ":" + path);
+		} else {
+			return namespace;
+		}
+	}
+
 	/**
 	 * {@return whether {@code character} is valid for use in identifier paths}
 	 */
@@ -333,6 +353,21 @@ public class Identifier implements Comparable<Identifier> {
 	public static boolean isValid(String id) {
 		String[] strings = split(id, ':');
 		return isNamespaceValid(StringUtils.isEmpty(strings[0]) ? "minecraft" : strings[0]) && isPathValid(strings[1]);
+	}
+
+	private static String validatePath(String namespace, String path) {
+		if (!isPathValid(path)) {
+			throw new InvalidIdentifierException("Non [a-z0-9/._-] character in path of location: " + namespace + ":" + path);
+		} else {
+			return path;
+		}
+	}
+
+	/**
+	 * A piece of extra data that a subclass may attach to an identifier. This is
+	 * not used by {@link Identifier} itself.
+	 */
+	protected interface ExtraData {
 	}
 
 	public static class Serializer implements JsonDeserializer<Identifier>, com.google.gson.JsonSerializer<Identifier> {

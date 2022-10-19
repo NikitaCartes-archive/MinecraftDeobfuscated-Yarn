@@ -5,11 +5,15 @@ import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
+import net.minecraft.resource.featuretoggle.FeatureFlag;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import org.apache.commons.lang3.StringUtils;
 
 public class BlockFamily {
 	private final Block baseBlock;
 	final Map<BlockFamily.Variant, Block> variants = Maps.<BlockFamily.Variant, Block>newHashMap();
+	FeatureSet requiredFeatures = FeatureFlags.VANILLA_FEATURES;
 	boolean generateModels = true;
 	boolean generateRecipes = true;
 	@Nullable
@@ -37,8 +41,8 @@ public class BlockFamily {
 		return this.generateModels;
 	}
 
-	public boolean shouldGenerateRecipes() {
-		return this.generateRecipes;
+	public boolean shouldGenerateRecipes(FeatureSet enabledFeatures) {
+		return this.generateRecipes && this.requiredFeatures.isSubsetOf(enabledFeatures);
 	}
 
 	public Optional<String> getGroup() {
@@ -70,6 +74,11 @@ public class BlockFamily {
 			return this;
 		}
 
+		public BlockFamily.Builder mosaic(Block block) {
+			this.family.variants.put(BlockFamily.Variant.MOSAIC, block);
+			return this;
+		}
+
 		public BlockFamily.Builder cracked(Block block) {
 			this.family.variants.put(BlockFamily.Variant.CRACKED, block);
 			return this;
@@ -85,8 +94,18 @@ public class BlockFamily {
 			return this;
 		}
 
+		public BlockFamily.Builder customFence(Block block) {
+			this.family.variants.put(BlockFamily.Variant.CUSTOM_FENCE, block);
+			return this;
+		}
+
 		public BlockFamily.Builder fence(Block block) {
 			this.family.variants.put(BlockFamily.Variant.FENCE, block);
+			return this;
+		}
+
+		public BlockFamily.Builder customFenceGate(Block block) {
+			this.family.variants.put(BlockFamily.Variant.CUSTOM_FENCE_GATE, block);
 			return this;
 		}
 
@@ -141,6 +160,11 @@ public class BlockFamily {
 			return this;
 		}
 
+		public BlockFamily.Builder requires(FeatureFlag... features) {
+			this.family.requiredFeatures = FeatureFlags.FEATURE_MANAGER.featureSetOf(features);
+			return this;
+		}
+
 		public BlockFamily.Builder group(String group) {
 			this.family.group = group;
 			return this;
@@ -158,8 +182,11 @@ public class BlockFamily {
 		CRACKED("cracked"),
 		CUT("cut"),
 		DOOR("door"),
+		CUSTOM_FENCE("custom_fence"),
 		FENCE("fence"),
+		CUSTOM_FENCE_GATE("custom_fence_gate"),
 		FENCE_GATE("fence_gate"),
+		MOSAIC("mosaic"),
 		SIGN("sign"),
 		SLAB("slab"),
 		STAIRS("stairs"),

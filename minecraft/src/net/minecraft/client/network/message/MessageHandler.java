@@ -5,25 +5,21 @@ import com.mojang.authlib.GameProfile;
 import java.time.Instant;
 import java.util.Deque;
 import java.util.UUID;
+import java.util.function.BooleanSupplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextVisitFactory;
 import net.minecraft.client.gui.hud.MessageIndicator;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.report.log.ChatLog;
-import net.minecraft.client.report.log.HeaderEntry;
 import net.minecraft.client.report.log.ReceivedMessage;
 import net.minecraft.network.message.FilterMask;
-import net.minecraft.network.message.MessageHeader;
-import net.minecraft.network.message.MessageMetadata;
 import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.network.message.MessageType;
-import net.minecraft.network.message.MessageVerifier;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextVisitFactory;
 import net.minecraft.util.Util;
 import org.apache.commons.lang3.StringUtils;
 
@@ -32,7 +28,6 @@ import org.apache.commons.lang3.StringUtils;
  */
 @Environment(EnvType.CLIENT)
 public class MessageHandler {
-	private static final Text CHAT_VALIDATION_FAILED_DISCONNECT_REASON = Text.translatable("multiplayer.disconnect.chat_validation_failed");
 	private final MinecraftClient client;
 	private final Deque<MessageHandler.ProcessableMessage> delayedMessages = Queues.<MessageHandler.ProcessableMessage>newArrayDeque();
 	private long chatDelay;
@@ -83,17 +78,14 @@ public class MessageHandler {
 	 * {@return the number of delayed messages that are not processed yet}
 	 */
 	public long getUnprocessedMessageCount() {
-		return this.delayedMessages.stream().filter(MessageHandler.ProcessableMessage::isUnprocessed).count();
+		return (long)this.delayedMessages.size();
 	}
 
 	/**
 	 * Processes all delayed messages from the queue.
 	 */
 	public void processAll() {
-		this.delayedMessages.forEach(message -> {
-			message.markProcessed();
-			message.accept();
-		});
+		this.delayedMessages.forEach(MessageHandler.ProcessableMessage::accept);
 		this.delayedMessages.clear();
 	}
 
@@ -105,13 +97,7 @@ public class MessageHandler {
 	 * @return whether the message was removed
 	 */
 	public boolean removeDelayedMessage(MessageSignatureData signature) {
-		for (MessageHandler.ProcessableMessage processableMessage : this.delayedMessages) {
-			if (processableMessage.removeMatching(signature)) {
-				return true;
-			}
-		}
-
-		return false;
+		return this.delayedMessages.removeIf(message -> signature.equals(message.signature()));
 	}
 
 	/**
@@ -125,117 +111,40 @@ public class MessageHandler {
 	 * Queues {@code processor} during {@linkplain #shouldDelay the chat delay},
 	 * otherwise runs the processor.
 	 */
-	private void process(MessageHandler.ProcessableMessage message) {
+	private void process(@Nullable MessageSignatureData signature, BooleanSupplier processor) {
 		if (this.shouldDelay()) {
-			this.delayedMessages.add(message);
+			this.delayedMessages.add(new MessageHandler.ProcessableMessage(signature, processor));
 		} else {
-			message.accept();
+			processor.getAsBoolean();
 		}
 	}
 
-	/**
-	 * Called when a chat message is received.
-	 * 
-	 * <p>This enqueues the message to be processed after the chat delay set in
-	 * options, if any.
-	 * 
-	 * @see #processChatMessage
-	 */
-	public void onChatMessage(SignedMessage message, MessageType.Parameters params) {
-		final boolean bl = this.client.options.getOnlyShowSecureChat().getValue();
-		final SignedMessage signedMessage = bl ? message.withoutUnsigned() : message;
-		final Text text = params.applyChatDecoration(signedMessage.getContent());
-		MessageMetadata messageMetadata = message.createMetadata();
-		if (!messageMetadata.lacksSender()) {
-			final PlayerListEntry playerListEntry = this.getPlayerListEntry(messageMetadata.sender());
-			final Instant instant = Instant.now();
-			this.process(new MessageHandler.ProcessableMessage() {
-				private boolean processed;
+	public void onChatMessage(SignedMessage message, GameProfile sender, MessageType.Parameters params) {
+		boolean bl = this.client.options.getOnlyShowSecureChat().getValue();
+		SignedMessage signedMessage = bl ? message.withoutUnsigned() : message;
+		Text text = params.applyChatDecoration(signedMessage.getContent());
+		Instant instant = Instant.now();
+		this.process(message.signature(), () -> {
+			boolean bl2 = this.processChatMessageInternal(params, message, text, sender, bl, instant);
+			ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
+			if (clientPlayNetworkHandler != null) {
+				clientPlayNetworkHandler.acknowledge(message, bl2);
+			}
 
-				@Override
-				public boolean accept() {
-					if (this.processed) {
-						byte[] bs = message.signedBody().digest().asBytes();
-						MessageHandler.this.processHeader(message.signedHeader(), message.headerSignature(), bs);
-						return false;
-					} else {
-						return MessageHandler.this.processChatMessage(params, message, text, playerListEntry, bl, instant);
-					}
-				}
-
-				@Override
-				public boolean removeMatching(MessageSignatureData signature) {
-					if (message.headerSignature().equals(signature)) {
-						this.processed = true;
-						return true;
-					} else {
-						return false;
-					}
-				}
-
-				@Override
-				public void markProcessed() {
-					this.processed = true;
-				}
-
-				@Override
-				public boolean isUnprocessed() {
-					return !this.processed;
-				}
-			});
-		} else {
-			this.process(new MessageHandler.ProcessableMessage() {
-				@Override
-				public boolean accept() {
-					return MessageHandler.this.processProfilelessMessage(params, signedMessage, text);
-				}
-
-				@Override
-				public boolean isUnprocessed() {
-					return true;
-				}
-			});
-		}
+			return bl2;
+		});
 	}
 
-	/**
-	 * Called when a message header is received.
-	 * 
-	 * <p>Message header is received instead of the full message when a message is censored
-	 * or when the message is originally sent without metadata due to it being originated from
-	 * entities. This is to keep the integrity of the "message chain".
-	 */
-	public void onMessageHeader(MessageHeader header, MessageSignatureData signature, byte[] bodyDigest) {
-		this.process(() -> this.processHeader(header, signature, bodyDigest));
-	}
-
-	/**
-	 * Processes a chat message and sends acknowledgment to the server.
-	 * 
-	 * <p>The message can still end up not being displayed if the verification
-	 * fails and {@code onlyShowSecureChat} is {@code true} or if the sender is
-	 * blocked via the social interactions screen.
-	 * 
-	 * @return whether the message was actually displayed
-	 * @see #processChatMessageInternal
-	 * 
-	 * @param receptionTimestamp the timestamp when the message was received by this client
-	 */
-	boolean processChatMessage(
-		MessageType.Parameters params,
-		SignedMessage message,
-		Text decorated,
-		@Nullable PlayerListEntry senderEntry,
-		boolean onlyShowSecureChat,
-		Instant receptionTimestamp
-	) {
-		boolean bl = this.processChatMessageInternal(params, message, decorated, senderEntry, onlyShowSecureChat, receptionTimestamp);
-		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
-		if (clientPlayNetworkHandler != null) {
-			clientPlayNetworkHandler.acknowledge(message, bl);
-		}
-
-		return bl;
+	public void onProfilelessMessage(Text content, MessageType.Parameters params) {
+		Instant instant = Instant.now();
+		this.process(null, () -> {
+			Text text2 = params.applyChatDecoration(content);
+			this.client.inGameHud.getChatHud().addMessage(text2);
+			this.narrate(params, content);
+			this.addToChatLog(text2, instant);
+			this.lastProcessTime = Util.getMeasuringTimeMs();
+			return true;
+		});
 	}
 
 	/**
@@ -256,92 +165,31 @@ public class MessageHandler {
 	 * @param receptionTimestamp the timestamp when the message was received by this client
 	 */
 	private boolean processChatMessageInternal(
-		MessageType.Parameters params,
-		SignedMessage message,
-		Text decorated,
-		@Nullable PlayerListEntry senderEntry,
-		boolean onlyShowSecureChat,
-		Instant receptionTimestamp
+		MessageType.Parameters params, SignedMessage message, Text decorated, GameProfile sender, boolean onlyShowSecureChat, Instant receptionTimestamp
 	) {
-		MessageTrustStatus messageTrustStatus = this.getStatus(message, decorated, senderEntry, receptionTimestamp);
-		if (messageTrustStatus == MessageTrustStatus.BROKEN_CHAIN) {
-			this.disconnect();
-			return true;
-		} else if (onlyShowSecureChat && messageTrustStatus.isInsecure()) {
+		MessageTrustStatus messageTrustStatus = this.getStatus(message, decorated, receptionTimestamp);
+		if (onlyShowSecureChat && messageTrustStatus.isInsecure()) {
 			return false;
-		} else if (!this.client.shouldBlockMessages(message.createMetadata().sender()) && !message.isFullyFiltered()) {
+		} else if (!this.client.shouldBlockMessages(message.getSender()) && !message.isFullyFiltered()) {
 			MessageIndicator messageIndicator = messageTrustStatus.createIndicator(message);
-			MessageSignatureData messageSignatureData = message.headerSignature();
+			MessageSignatureData messageSignatureData = message.signature();
 			FilterMask filterMask = message.filterMask();
 			if (filterMask.isPassThrough()) {
 				this.client.inGameHud.getChatHud().addMessage(decorated, messageSignatureData, messageIndicator);
 				this.narrate(params, message.getContent());
 			} else {
-				Text text = filterMask.filter(message.getSignedContent());
+				Text text = filterMask.getFilteredText(message.getSignedContent());
 				if (text != null) {
 					this.client.inGameHud.getChatHud().addMessage(params.applyChatDecoration(text), messageSignatureData, messageIndicator);
 					this.narrate(params, text);
 				}
 			}
 
-			this.addToChatLog(message, params, senderEntry, messageTrustStatus);
+			this.addToChatLog(message, params, sender, messageTrustStatus);
 			this.lastProcessTime = Util.getMeasuringTimeMs();
 			return true;
 		} else {
 			return false;
-		}
-	}
-
-	/**
-	 * Processes a message that is sent as chat message but lacks the sender.
-	 * 
-	 * <p>This is usually a message sent via commands executed from {@code /execute}
-	 * command.
-	 * 
-	 * <p>This adds the message to the hud, narrates it, and appends it to the
-	 * chat log. The message is not verified.
-	 */
-	boolean processProfilelessMessage(MessageType.Parameters params, SignedMessage message, Text decorated) {
-		this.client.inGameHud.getChatHud().addMessage(decorated);
-		this.narrate(params, message.getContent());
-		this.addToChatLog(decorated, message.getTimestamp());
-		this.lastProcessTime = Util.getMeasuringTimeMs();
-		return true;
-	}
-
-	/**
-	 * Processes a received message header.
-	 * 
-	 * <p>Message header is received instead of the full message when a message is censored
-	 * or when the message is originally sent without metadata due to it being originated from
-	 * entities. This is to keep the integrity of the "message chain".
-	 * 
-	 * <p>If the header cannot be verified due to a broken chain, this disconnects
-	 * the client from the server.
-	 * 
-	 * <p>This adds the header to the chat log.
-	 */
-	boolean processHeader(MessageHeader header, MessageSignatureData signature, byte[] bodyDigest) {
-		PlayerListEntry playerListEntry = this.getPlayerListEntry(header.sender());
-		if (playerListEntry != null) {
-			MessageVerifier.Status status = playerListEntry.getMessageVerifier().verify(header, signature, bodyDigest);
-			if (status == MessageVerifier.Status.BROKEN_CHAIN) {
-				this.disconnect();
-				return true;
-			}
-		}
-
-		this.addToChatLog(header, signature, bodyDigest);
-		return false;
-	}
-
-	/**
-	 * Disconnects from the server with reason {@link #CHAT_VALIDATION_FAILED_DISCONNECT_REASON}.
-	 */
-	private void disconnect() {
-		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
-		if (clientPlayNetworkHandler != null) {
-			clientPlayNetworkHandler.getConnection().disconnect(CHAT_VALIDATION_FAILED_DISCONNECT_REASON);
 		}
 	}
 
@@ -363,42 +211,18 @@ public class MessageHandler {
 	 * @see #isAlwaysTrusted
 	 * @see MessageTrustStatus#getStatus
 	 */
-	private MessageTrustStatus getStatus(SignedMessage message, Text decorated, @Nullable PlayerListEntry senderEntry, Instant receptionTimestamp) {
-		return this.isAlwaysTrusted(message.createMetadata().sender())
-			? MessageTrustStatus.SECURE
-			: MessageTrustStatus.getStatus(message, decorated, senderEntry, receptionTimestamp);
+	private MessageTrustStatus getStatus(SignedMessage message, Text decorated, Instant receptionTimestamp) {
+		return this.isAlwaysTrusted(message.getSender()) ? MessageTrustStatus.SECURE : MessageTrustStatus.getStatus(message, decorated, receptionTimestamp);
 	}
 
-	private void addToChatLog(SignedMessage message, MessageType.Parameters params, @Nullable PlayerListEntry senderEntry, MessageTrustStatus trustStatus) {
-		GameProfile gameProfile;
-		if (senderEntry != null) {
-			gameProfile = senderEntry.getProfile();
-		} else {
-			gameProfile = new GameProfile(message.createMetadata().sender(), params.name().getString());
-		}
-
+	private void addToChatLog(SignedMessage message, MessageType.Parameters params, GameProfile sender, MessageTrustStatus trustStatus) {
 		ChatLog chatLog = this.client.getAbuseReportContext().chatLog();
-		chatLog.add(ReceivedMessage.of(gameProfile, params.name(), message, trustStatus));
+		chatLog.add(ReceivedMessage.of(sender, params.name(), message, trustStatus));
 	}
 
 	private void addToChatLog(Text message, Instant timestamp) {
 		ChatLog chatLog = this.client.getAbuseReportContext().chatLog();
 		chatLog.add(ReceivedMessage.of(message, timestamp));
-	}
-
-	private void addToChatLog(MessageHeader header, MessageSignatureData signatures, byte[] bodyDigest) {
-		ChatLog chatLog = this.client.getAbuseReportContext().chatLog();
-		chatLog.add(HeaderEntry.of(header, signatures, bodyDigest));
-	}
-
-	/**
-	 * {@return the player list entry for {@code sender}, or {@code null} if the sender's
-	 * UUID did not correspond to any known players}
-	 */
-	@Nullable
-	private PlayerListEntry getPlayerListEntry(UUID sender) {
-		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
-		return clientPlayNetworkHandler != null ? clientPlayNetworkHandler.getPlayerListEntry(sender) : null;
 	}
 
 	/**
@@ -443,34 +267,13 @@ public class MessageHandler {
 	 * A message to be processed. An instance is created for each received message.
 	 */
 	@Environment(EnvType.CLIENT)
-	interface ProcessableMessage {
-		/**
-		 * If {@code signature} equals this message's signature, marks this
-		 * as processed and returns {@code true}. Otherwise, returns {@code false}.
-		 * 
-		 * @return whether the passed signature matches the message's signature
-		 */
-		default boolean removeMatching(MessageSignatureData signature) {
-			return false;
-		}
-
-		/**
-		 * Marks this as processed.
-		 */
-		default void markProcessed() {
-		}
-
+	static record ProcessableMessage(@Nullable MessageSignatureData signature, BooleanSupplier handler) {
 		/**
 		 * If this is not processed yet, adds the message to the hud; otherwise, processes
 		 * the message header without adding to the hud.
 		 */
-		boolean accept();
-
-		/**
-		 * {@return {@code true} if this is not processed yet}
-		 */
-		default boolean isUnprocessed() {
-			return false;
+		public boolean accept() {
+			return this.handler.getAsBoolean();
 		}
 	}
 }

@@ -31,7 +31,6 @@ public class ChatOptionsScreen extends SimpleOptionsScreen {
 				options.getAutoSuggestions(),
 				options.getHideMatchedNames(),
 				options.getReducedDebugInfo(),
-				options.getChatPreview(),
 				options.getOnlyShowSecureChat()
 			}
 		);

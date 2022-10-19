@@ -6,6 +6,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.function.UnaryOperator;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -74,7 +75,7 @@ public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDa
 	}
 
 	private Identifier findTexture(String keyType, Identifier keyId) {
-		return new Identifier(keyId.getNamespace(), "textures/entity/" + this.entityType + "/" + keyType + "/" + keyId.getPath() + ".png");
+		return keyId.withPath((UnaryOperator<String>)(string2 -> "textures/entity/" + this.entityType + "/" + keyType + "/" + string2 + ".png"));
 	}
 
 	public <K> VillagerResourceMetadata.HatType getHatType(

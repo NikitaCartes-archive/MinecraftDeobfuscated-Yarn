@@ -3,10 +3,10 @@ package net.minecraft.test;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Lifecycle;
 import java.net.Proxy;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -14,8 +14,10 @@ import java.util.function.BooleanSupplier;
 import javax.annotation.Nullable;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.network.encryption.SignatureVerifier;
+import net.minecraft.resource.DataConfiguration;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.resource.ResourcePackManager;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.SaveLoader;
@@ -29,12 +31,15 @@ import net.minecraft.util.SystemDetails;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.util.registry.CombinedDynamicRegistries;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.ServerDynamicRegistryType;
+import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.SaveProperties;
+import net.minecraft.world.dimension.DimensionOptions;
+import net.minecraft.world.dimension.DimensionOptionsRegistryHolder;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.gen.WorldPresets;
 import net.minecraft.world.level.LevelInfo;
@@ -52,9 +57,7 @@ public class TestServer extends MinecraftServer {
 		gameRules.get(GameRules.DO_MOB_SPAWNING).set(false, null);
 		gameRules.get(GameRules.DO_WEATHER_CYCLE).set(false, null);
 	});
-	private static final LevelInfo TEST_LEVEL = new LevelInfo(
-		"Test Level", GameMode.CREATIVE, false, Difficulty.NORMAL, true, GAME_RULES, DataPackSettings.SAFE_MODE
-	);
+	private static final GeneratorOptions TEST_LEVEL = new GeneratorOptions(0L, false, false);
 	@Nullable
 	private TestSet testSet;
 
@@ -64,23 +67,44 @@ public class TestServer extends MinecraftServer {
 		if (batches.isEmpty()) {
 			throw new IllegalArgumentException("No test batches were given!");
 		} else {
-			SaveLoading.DataPacks dataPacks = new SaveLoading.DataPacks(resourcePackManager, DataPackSettings.SAFE_MODE, false);
+			resourcePackManager.scanPacks();
+			DataConfiguration dataConfiguration = new DataConfiguration(
+				new DataPackSettings(new ArrayList(resourcePackManager.getNames()), List.of()), FeatureFlags.FEATURE_MANAGER.getFeatureSet()
+			);
+			LevelInfo levelInfo = new LevelInfo("Test Level", GameMode.CREATIVE, false, Difficulty.NORMAL, true, GAME_RULES, dataConfiguration);
+			SaveLoading.DataPacks dataPacks = new SaveLoading.DataPacks(resourcePackManager, dataConfiguration, false, true);
 			SaveLoading.ServerConfig serverConfig = new SaveLoading.ServerConfig(dataPacks, CommandManager.RegistrationEnvironment.DEDICATED, 4);
 
 			try {
 				LOGGER.debug("Starting resource loading");
 				Stopwatch stopwatch = Stopwatch.createStarted();
-				SaveLoader saveLoader = (SaveLoader)Util.waitAndApply(applyExecutor -> SaveLoader.load(serverConfig, (resourceManager, dataPackSettings) -> {
-						DynamicRegistryManager.Immutable immutable = (DynamicRegistryManager.Immutable)DynamicRegistryManager.BUILTIN.get();
-						GeneratorOptions generatorOptions = immutable.get(Registry.WORLD_PRESET_KEY).entryOf(WorldPresets.FLAT).value().createGeneratorOptions(0L, false, false);
-						SaveProperties saveProperties = new LevelProperties(TEST_LEVEL, generatorOptions, Lifecycle.stable());
-						return Pair.of(saveProperties, immutable);
-					}, Util.getMainWorkerExecutor(), applyExecutor)).get();
+				SaveLoader saveLoader = (SaveLoader)Util.waitAndApply(
+						executor -> SaveLoading.load(
+								serverConfig,
+								loadContextSupplierContext -> {
+									Registry<DimensionOptions> registry = new SimpleRegistry<>(Registry.DIMENSION_KEY, Lifecycle.stable()).freeze();
+									DimensionOptionsRegistryHolder.DimensionsConfig dimensionsConfig = loadContextSupplierContext.worldGenRegistryManager()
+										.get(Registry.WORLD_PRESET_KEY)
+										.entryOf(WorldPresets.FLAT)
+										.value()
+										.createDimensionsRegistryHolder()
+										.toConfig(registry);
+									return new SaveLoading.LoadContext<>(
+										new LevelProperties(levelInfo, TEST_LEVEL, dimensionsConfig.specialWorldProperty(), dimensionsConfig.getLifecycle()),
+										dimensionsConfig.toDynamicRegistryManager()
+									);
+								},
+								SaveLoader::new,
+								Util.getMainWorkerExecutor(),
+								executor
+							)
+					)
+					.get();
 				stopwatch.stop();
 				LOGGER.debug("Finished resource loading after {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
 				return new TestServer(thread, session, resourcePackManager, saveLoader, batches, pos);
-			} catch (Exception var9) {
-				LOGGER.warn("Failed to load vanilla datapack, bit oops", (Throwable)var9);
+			} catch (Exception var11) {
+				LOGGER.warn("Failed to load vanilla datapack, bit oops", (Throwable)var11);
 				System.exit(-1);
 				throw new IllegalStateException();
 			}
@@ -102,7 +126,7 @@ public class TestServer extends MinecraftServer {
 
 	@Override
 	public boolean setupServer() {
-		this.setPlayerManager(new PlayerManager(this, this.getRegistryManager(), this.saveHandler, 1) {
+		this.setPlayerManager(new PlayerManager(this, this.getCombinedDynamicRegistries(), this.saveHandler, 1) {
 		});
 		this.loadWorld();
 		ServerWorld serverWorld = this.getOverworld();

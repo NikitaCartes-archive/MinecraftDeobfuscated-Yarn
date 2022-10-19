@@ -83,8 +83,6 @@ public class RecipeBookWidget extends DrawableHelper implements RecipeGridAligne
 		if (this.open) {
 			this.reset();
 		}
-
-		client.keyboard.setRepeatEvents(true);
 	}
 
 	public void reset() {
@@ -135,10 +133,6 @@ public class RecipeBookWidget extends DrawableHelper implements RecipeGridAligne
 
 	protected void setBookButtonTexture() {
 		this.toggleCraftableButton.setTextureUV(152, 41, 28, 18, TEXTURE);
-	}
-
-	public void close() {
-		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	public int findLeftEdge(int width, int backgroundWidth) {
@@ -319,8 +313,8 @@ public class RecipeBookWidget extends DrawableHelper implements RecipeGridAligne
 		}
 	}
 
-	public void drawGhostSlots(MatrixStack matrices, int x, int y, boolean bl, float delta) {
-		this.ghostSlots.draw(matrices, this.client, x, y, bl, delta);
+	public void drawGhostSlots(MatrixStack matrices, int x, int y, boolean notInventory, float delta) {
+		this.ghostSlots.draw(matrices, this.client, x, y, notInventory, delta);
 	}
 
 	@Override

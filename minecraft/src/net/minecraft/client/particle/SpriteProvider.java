@@ -7,7 +7,7 @@ import net.minecraft.util.math.random.Random;
 
 @Environment(EnvType.CLIENT)
 public interface SpriteProvider {
-	Sprite getSprite(int i, int j);
+	Sprite getSprite(int age, int maxAge);
 
 	Sprite getSprite(Random random);
 }

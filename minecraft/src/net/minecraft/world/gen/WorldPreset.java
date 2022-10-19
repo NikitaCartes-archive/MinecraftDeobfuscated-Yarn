@@ -13,6 +13,7 @@ import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraft.world.dimension.DimensionOptions;
+import net.minecraft.world.dimension.DimensionOptionsRegistryHolder;
 
 public class WorldPreset {
 	public static final Codec<WorldPreset> CODEC = RecordCodecBuilder.create(
@@ -30,8 +31,8 @@ public class WorldPreset {
 	}
 
 	private Registry<DimensionOptions> createDimensionOptionsRegistry() {
-		MutableRegistry<DimensionOptions> mutableRegistry = new SimpleRegistry<>(Registry.DIMENSION_KEY, Lifecycle.experimental(), null);
-		DimensionOptions.streamRegistry(this.dimensions.keySet().stream()).forEach(registryKey -> {
+		MutableRegistry<DimensionOptions> mutableRegistry = new SimpleRegistry<>(Registry.DIMENSION_KEY, Lifecycle.experimental());
+		DimensionOptionsRegistryHolder.streamAll(this.dimensions.keySet().stream()).forEach(registryKey -> {
 			DimensionOptions dimensionOptions = (DimensionOptions)this.dimensions.get(registryKey);
 			if (dimensionOptions != null) {
 				mutableRegistry.add(registryKey, dimensionOptions, Lifecycle.stable());
@@ -40,20 +41,12 @@ public class WorldPreset {
 		return mutableRegistry.freeze();
 	}
 
-	public GeneratorOptions createGeneratorOptions(long seed, boolean generateStructures, boolean bonusChest) {
-		return new GeneratorOptions(seed, generateStructures, bonusChest, this.createDimensionOptionsRegistry());
-	}
-
-	public GeneratorOptions createGeneratorOptions(GeneratorOptions generatorOptions) {
-		return this.createGeneratorOptions(generatorOptions.getSeed(), generatorOptions.shouldGenerateStructures(), generatorOptions.hasBonusChest());
+	public DimensionOptionsRegistryHolder createDimensionsRegistryHolder() {
+		return new DimensionOptionsRegistryHolder(this.createDimensionOptionsRegistry());
 	}
 
 	public Optional<DimensionOptions> getOverworld() {
 		return Optional.ofNullable((DimensionOptions)this.dimensions.get(DimensionOptions.OVERWORLD));
-	}
-
-	public DimensionOptions getOverworldOrElseThrow() {
-		return (DimensionOptions)this.getOverworld().orElseThrow(() -> new IllegalStateException("Can't find overworld in this preset"));
 	}
 
 	private static DataResult<WorldPreset> validate(WorldPreset preset) {

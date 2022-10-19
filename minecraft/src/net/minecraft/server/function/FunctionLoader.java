@@ -17,6 +17,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
 import net.minecraft.resource.Resource;
+import net.minecraft.resource.ResourceFinder;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
 import net.minecraft.screen.ScreenTexts;
@@ -47,9 +48,7 @@ import org.slf4j.Logger;
  */
 public class FunctionLoader implements ResourceReloader {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final String EXTENSION = ".mcfunction";
-	private static final int PATH_PREFIX_LENGTH = "functions/".length();
-	private static final int EXTENSION_LENGTH = ".mcfunction".length();
+	private static final ResourceFinder FINDER = new ResourceFinder("functions", ".mcfunction");
 	private volatile Map<Identifier, CommandFunction> functions = ImmutableMap.of();
 	private final TagGroupLoader<CommandFunction> tagLoader = new TagGroupLoader<>(this::get, "tags/functions");
 	private volatile Map<Identifier, Collection<CommandFunction>> tags = Map.of();
@@ -90,7 +89,7 @@ public class FunctionLoader implements ResourceReloader {
 			() -> this.tagLoader.loadTags(manager), prepareExecutor
 		);
 		CompletableFuture<Map<Identifier, CompletableFuture<CommandFunction>>> completableFuture2 = CompletableFuture.supplyAsync(
-				() -> manager.findResources("functions", id -> id.getPath().endsWith(".mcfunction")), prepareExecutor
+				() -> FINDER.findResources(manager), prepareExecutor
 			)
 			.thenCompose(
 				functions -> {
@@ -101,8 +100,7 @@ public class FunctionLoader implements ResourceReloader {
 
 					for (Entry<Identifier, Resource> entry : functions.entrySet()) {
 						Identifier identifier = (Identifier)entry.getKey();
-						String string = identifier.getPath();
-						Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(PATH_PREFIX_LENGTH, string.length() - EXTENSION_LENGTH));
+						Identifier identifier2 = FINDER.toResourceId(identifier);
 						map.put(identifier2, CompletableFuture.supplyAsync(() -> {
 							List<String> list = readLines((Resource)entry.getValue());
 							return CommandFunction.create(identifier2, this.commandDispatcher, serverCommandSource, list);

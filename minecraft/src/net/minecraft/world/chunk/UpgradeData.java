@@ -101,11 +101,11 @@ public class UpgradeData {
 		World world = chunk.getWorld();
 		this.blockTicks.forEach(tick -> {
 			Block block = tick.type() == Blocks.AIR ? world.getBlockState(tick.pos()).getBlock() : (Block)tick.type();
-			world.createAndScheduleBlockTick(tick.pos(), block, tick.delay(), tick.priority());
+			world.scheduleBlockTick(tick.pos(), block, tick.delay(), tick.priority());
 		});
 		this.fluidTicks.forEach(tick -> {
 			Fluid fluid = tick.type() == Fluids.EMPTY ? world.getFluidState(tick.pos()).getFluid() : (Fluid)tick.type();
-			world.createAndScheduleFluidTick(tick.pos(), fluid, tick.delay(), tick.priority());
+			world.scheduleFluidTick(tick.pos(), fluid, tick.delay(), tick.priority());
 		});
 		CALLBACK_LOGICS.forEach(logic -> logic.postUpdate(world));
 	}
@@ -276,7 +276,19 @@ public class UpgradeData {
 			Blocks.BIRCH_WALL_SIGN,
 			Blocks.ACACIA_WALL_SIGN,
 			Blocks.JUNGLE_WALL_SIGN,
-			Blocks.DARK_OAK_WALL_SIGN
+			Blocks.DARK_OAK_WALL_SIGN,
+			Blocks.OAK_HANGING_SIGN,
+			Blocks.SPRUCE_HANGING_SIGN,
+			Blocks.BIRCH_HANGING_SIGN,
+			Blocks.ACACIA_HANGING_SIGN,
+			Blocks.JUNGLE_HANGING_SIGN,
+			Blocks.DARK_OAK_HANGING_SIGN,
+			Blocks.OAK_WALL_HANGING_SIGN,
+			Blocks.SPRUCE_WALL_HANGING_SIGN,
+			Blocks.BIRCH_WALL_HANGING_SIGN,
+			Blocks.ACACIA_WALL_HANGING_SIGN,
+			Blocks.JUNGLE_WALL_HANGING_SIGN,
+			Blocks.DARK_OAK_WALL_HANGING_SIGN
 		) {
 			@Override
 			public BlockState getUpdatedState(BlockState oldState, Direction direction, BlockState otherState, WorldAccess world, BlockPos currentPos, BlockPos otherPos) {

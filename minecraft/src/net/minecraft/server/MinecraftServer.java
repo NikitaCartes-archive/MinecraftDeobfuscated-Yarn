@@ -45,9 +45,12 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import net.minecraft.SharedConstants;
+import net.minecraft.block.Block;
+import net.minecraft.command.CommandRegistryWrapper;
 import net.minecraft.command.DataCommandStorage;
 import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.player.PlayerEntity;
@@ -63,6 +66,7 @@ import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.obfuscate.DontObfuscate;
 import net.minecraft.recipe.RecipeManager;
+import net.minecraft.resource.DataConfiguration;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.resource.LifecycledResourceManager;
 import net.minecraft.resource.LifecycledResourceManagerImpl;
@@ -70,6 +74,8 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
+import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandOutput;
@@ -116,9 +122,11 @@ import net.minecraft.util.profiler.Recorder;
 import net.minecraft.util.profiler.ServerSamplerSource;
 import net.minecraft.util.profiling.jfr.Finishable;
 import net.minecraft.util.profiling.jfr.FlightProfiler;
+import net.minecraft.util.registry.CombinedDynamicRegistries;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.ServerDynamicRegistryType;
 import net.minecraft.util.thread.ReentrantThreadExecutor;
 import net.minecraft.village.ZombieSiegeManager;
 import net.minecraft.world.Difficulty;
@@ -184,7 +192,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private static final int field_33221 = 3;
 	public static final int MAX_WORLD_BORDER_RADIUS = 29999984;
 	public static final LevelInfo DEMO_LEVEL_INFO = new LevelInfo(
-		"Demo World", GameMode.SURVIVAL, false, Difficulty.NORMAL, false, new GameRules(), DataPackSettings.SAFE_MODE
+		"Demo World", GameMode.SURVIVAL, false, Difficulty.NORMAL, false, new GameRules(), DataConfiguration.SAFE_MODE
 	);
 	private static final long MILLISECONDS_PER_TICK = 50L;
 	public static final GameProfile ANONYMOUS_PLAYER_PROFILE = new GameProfile(Util.NIL_UUID, "Anonymous Player");
@@ -207,7 +215,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private final DataFixer dataFixer;
 	private String serverIp;
 	private int serverPort = -1;
-	private final DynamicRegistryManager.Immutable registryManager;
+	private final CombinedDynamicRegistries<ServerDynamicRegistryType> combinedDynamicRegistries;
 	private final Map<RegistryKey<World>, ServerWorld> worlds = Maps.<RegistryKey<World>, ServerWorld>newLinkedHashMap();
 	private PlayerManager playerManager;
 	private volatile boolean running = true;
@@ -277,9 +285,9 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory
 	) {
 		super("Server");
-		this.registryManager = saveLoader.dynamicRegistryManager();
+		this.combinedDynamicRegistries = saveLoader.combinedDynamicRegistries();
 		this.saveProperties = saveLoader.saveProperties();
-		if (!this.saveProperties.getGeneratorOptions().getDimensions().contains(DimensionOptions.OVERWORLD)) {
+		if (!this.combinedDynamicRegistries.getCombinedRegistryManager().get(Registry.DIMENSION_KEY).contains(DimensionOptions.OVERWORLD)) {
 			throw new IllegalStateException("Missing Overworld dimension data");
 		} else {
 			this.proxy = proxy;
@@ -296,7 +304,11 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			this.saveHandler = session.createSaveHandler();
 			this.dataFixer = dataFixer;
 			this.commandFunctionManager = new CommandFunctionManager(this, this.resourceManagerHolder.dataPackContents.getFunctionLoader());
-			this.structureTemplateManager = new StructureTemplateManager(saveLoader.resourceManager(), session, dataFixer);
+			CommandRegistryWrapper<Block> commandRegistryWrapper = CommandRegistryWrapper.of(
+					this.combinedDynamicRegistries.getCombinedRegistryManager().get(Registry.BLOCK_KEY)
+				)
+				.withFeatureFilter(this.saveProperties.getEnabledFeatures());
+			this.structureTemplateManager = new StructureTemplateManager(saveLoader.resourceManager(), session, dataFixer, commandRegistryWrapper);
 			this.serverThread = serverThread;
 			this.workerExecutor = Util.getMainWorkerExecutor();
 		}
@@ -343,14 +355,14 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	protected void createWorlds(WorldGenerationProgressListener worldGenerationProgressListener) {
 		ServerWorldProperties serverWorldProperties = this.saveProperties.getMainWorldProperties();
+		boolean bl = this.saveProperties.isDebugWorld();
+		Registry<DimensionOptions> registry = this.combinedDynamicRegistries.getCombinedRegistryManager().get(Registry.DIMENSION_KEY);
 		GeneratorOptions generatorOptions = this.saveProperties.getGeneratorOptions();
-		boolean bl = generatorOptions.isDebugWorld();
 		long l = generatorOptions.getSeed();
 		long m = BiomeAccess.hashSeed(l);
 		List<Spawner> list = ImmutableList.of(
 			new PhantomSpawner(), new PatrolSpawner(), new CatSpawner(), new ZombieSiegeManager(), new WanderingTraderManager(serverWorldProperties)
 		);
-		Registry<DimensionOptions> registry = generatorOptions.getDimensions();
 		DimensionOptions dimensionOptions = registry.get(DimensionOptions.OVERWORLD);
 		ServerWorld serverWorld = new ServerWorld(
 			this, this.workerExecutor, this.session, serverWorldProperties, World.OVERWORLD, dimensionOptions, worldGenerationProgressListener, bl, m, list, true
@@ -651,9 +663,18 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return this.running;
 	}
 
-	public void stop(boolean bl) {
+	/**
+	 * Stops this server.
+	 * 
+	 * @apiNote Pass {@code true} to {@code waitForShutdown} to wait until the server shuts
+	 * down. Note that this must be {@code false} if called from the server thread,
+	 * otherwise it deadlocks.
+	 * 
+	 * @param waitForShutdown whether to wait for server shutdown, if called outside the server thread
+	 */
+	public void stop(boolean waitForShutdown) {
 		this.running = false;
-		if (bl) {
+		if (waitForShutdown) {
 			try {
 				this.serverThread.join();
 			} catch (InterruptedException var3) {
@@ -671,7 +692,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			this.timeReference = Util.getMeasuringTimeMs();
 			this.metadata.setDescription(Text.literal(this.motd));
 			this.metadata.setVersion(new ServerMetadata.Version(SharedConstants.getGameVersion().getName(), SharedConstants.getGameVersion().getProtocolVersion()));
-			this.metadata.setPreviewsChat(this.shouldPreviewChat());
 			this.metadata.setSecureChatEnforced(this.shouldEnforceSecureProfile());
 			this.setFavicon(this.metadata);
 
@@ -995,22 +1015,22 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			);
 		}
 
-		details.addSection("Data Packs", (Supplier<String>)(() -> {
-			StringBuilder stringBuilder = new StringBuilder();
-
-			for (ResourcePackProfile resourcePackProfile : this.dataPackManager.getEnabledProfiles()) {
-				if (stringBuilder.length() > 0) {
-					stringBuilder.append(", ");
-				}
-
-				stringBuilder.append(resourcePackProfile.getName());
-				if (!resourcePackProfile.getCompatibility().isCompatible()) {
-					stringBuilder.append(" (incompatible)");
-				}
-			}
-
-			return stringBuilder.toString();
-		}));
+		details.addSection(
+			"Data Packs",
+			(Supplier<String>)(() -> (String)this.dataPackManager
+					.getEnabledProfiles()
+					.stream()
+					.map(resourcePackProfile -> resourcePackProfile.getName() + (resourcePackProfile.getCompatibility().isCompatible() ? "" : " (incompatible)"))
+					.collect(Collectors.joining(", ")))
+		);
+		details.addSection(
+			"Enabled Feature Flags",
+			(Supplier<String>)(() -> (String)FeatureFlags.FEATURE_MANAGER
+					.toId(this.saveProperties.getEnabledFeatures())
+					.stream()
+					.map(Identifier::toString)
+					.collect(Collectors.joining(", ")))
+		);
 		details.addSection("World Generation", (Supplier<String>)(() -> this.saveProperties.getLifecycle().toString()));
 		if (this.serverId != null) {
 			details.addSection("Server Id", (Supplier<String>)(() -> this.serverId));
@@ -1211,10 +1231,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.motd = motd;
 	}
 
-	public boolean shouldPreviewChat() {
-		return false;
-	}
-
 	public boolean isStopped() {
 		return this.stopped;
 	}
@@ -1378,7 +1394,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	 * @see CompletableFuture
 	 */
 	public CompletableFuture<Void> reloadResources(Collection<String> dataPacks) {
-		DynamicRegistryManager.Immutable immutable = this.getRegistryManager();
+		DynamicRegistryManager.Immutable immutable = this.combinedDynamicRegistries.getPrecedingRegistryManagers(ServerDynamicRegistryType.RELOADABLE);
 		CompletableFuture<Void> completableFuture = CompletableFuture.supplyAsync(
 				() -> (ImmutableList)dataPacks.stream()
 						.map(this.dataPackManager::getProfile)
@@ -1393,6 +1409,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 					return DataPackContents.reload(
 							lifecycledResourceManager,
 							immutable,
+							this.saveProperties.getEnabledFeatures(),
 							this.isDedicated() ? CommandManager.RegistrationEnvironment.DEDICATED : CommandManager.RegistrationEnvironment.INTEGRATED,
 							this.getFunctionPermissionLevel(),
 							this.workerExecutor,
@@ -1410,7 +1427,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				this.resourceManagerHolder.close();
 				this.resourceManagerHolder = resourceManagerHolder;
 				this.dataPackManager.setEnabledProfiles(dataPacks);
-				this.saveProperties.updateLevelInfo(createDataPackSettings(this.dataPackManager));
+				DataConfiguration dataConfiguration = new DataConfiguration(createDataPackSettings(this.dataPackManager), this.saveProperties.getEnabledFeatures());
+				this.saveProperties.updateLevelInfo(dataConfiguration);
 				this.resourceManagerHolder.dataPackContents.refresh(this.getRegistryManager());
 				this.getPlayerManager().saveAllPlayerData();
 				this.getPlayerManager().onDataPacksReloaded();
@@ -1424,11 +1442,13 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return completableFuture;
 	}
 
-	public static DataPackSettings loadDataPacks(ResourcePackManager resourcePackManager, DataPackSettings dataPackSettings, boolean safeMode) {
+	public static DataConfiguration loadDataPacks(
+		ResourcePackManager resourcePackManager, DataPackSettings dataPackSettings, boolean safeMode, FeatureSet enabledFeatures
+	) {
 		resourcePackManager.scanPacks();
 		if (safeMode) {
 			resourcePackManager.setEnabledProfiles(Collections.singleton("vanilla"));
-			return DataPackSettings.SAFE_MODE;
+			return DataConfiguration.SAFE_MODE;
 		} else {
 			Set<String> set = Sets.<String>newLinkedHashSet();
 
@@ -1442,9 +1462,26 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 			for (ResourcePackProfile resourcePackProfile : resourcePackManager.getProfiles()) {
 				String string2 = resourcePackProfile.getName();
-				if (!dataPackSettings.getDisabled().contains(string2) && !set.contains(string2)) {
-					LOGGER.info("Found new data pack {}, loading it automatically", string2);
-					set.add(string2);
+				if (!dataPackSettings.getDisabled().contains(string2)) {
+					FeatureSet featureSet = resourcePackProfile.getRequestedFeatures();
+					boolean bl = set.contains(string2);
+					if (!bl && resourcePackProfile.getSource().canBeEnabledLater()) {
+						if (featureSet.isSubsetOf(enabledFeatures)) {
+							LOGGER.info("Found new data pack {}, loading it automatically", string2);
+							set.add(string2);
+						} else {
+							LOGGER.info("Found new data pack {}, but can't load it due to missing features {}", string2, FeatureFlags.printMissingFlags(enabledFeatures, featureSet));
+						}
+					}
+
+					if (bl && !featureSet.isSubsetOf(enabledFeatures)) {
+						LOGGER.warn(
+							"Pack {} requires features {} that are not enabled for this world, disabling pack.",
+							string2,
+							FeatureFlags.printMissingFlags(enabledFeatures, featureSet)
+						);
+						set.remove(string2);
+					}
 				}
 			}
 
@@ -1454,7 +1491,9 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			}
 
 			resourcePackManager.setEnabledProfiles(set);
-			return createDataPackSettings(resourcePackManager);
+			DataPackSettings dataPackSettings2 = createDataPackSettings(resourcePackManager);
+			FeatureSet featureSet2 = resourcePackManager.getRequestedFeatures();
+			return new DataConfiguration(dataPackSettings2, featureSet2);
 		}
 	}
 
@@ -1847,7 +1886,11 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	public DynamicRegistryManager.Immutable getRegistryManager() {
-		return this.registryManager;
+		return this.combinedDynamicRegistries.getCombinedRegistryManager();
+	}
+
+	public CombinedDynamicRegistries<ServerDynamicRegistryType> getCombinedDynamicRegistries() {
+		return this.combinedDynamicRegistries;
 	}
 
 	public TextStream createFilterer(ServerPlayerEntity player) {

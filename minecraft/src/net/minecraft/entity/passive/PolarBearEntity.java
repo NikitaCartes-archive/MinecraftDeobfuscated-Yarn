@@ -63,6 +63,7 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 		super(entityType, world);
 	}
 
+	@Nullable
 	@Override
 	public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
 		return EntityType.POLAR_BEAR.create(world);

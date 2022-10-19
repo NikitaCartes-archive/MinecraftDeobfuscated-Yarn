@@ -32,6 +32,7 @@ public class TemptationsSensor extends Sensor<PathAwareEntity> {
 			.filter(player -> TEMPTER_PREDICATE.test(pathAwareEntity, player))
 			.filter(player -> pathAwareEntity.isInRange(player, 10.0))
 			.filter(this::test)
+			.filter(serverPlayerEntity -> !pathAwareEntity.hasPassenger(serverPlayerEntity))
 			.sorted(Comparator.comparingDouble(pathAwareEntity::squaredDistanceTo))
 			.collect(Collectors.toList());
 		if (!list.isEmpty()) {

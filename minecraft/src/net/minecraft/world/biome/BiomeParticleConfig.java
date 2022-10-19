@@ -9,8 +9,8 @@ import net.minecraft.util.math.random.Random;
 public class BiomeParticleConfig {
 	public static final Codec<BiomeParticleConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					ParticleTypes.TYPE_CODEC.fieldOf("options").forGetter(biomeParticleConfig -> biomeParticleConfig.particle),
-					Codec.FLOAT.fieldOf("probability").forGetter(biomeParticleConfig -> biomeParticleConfig.probability)
+					ParticleTypes.TYPE_CODEC.fieldOf("options").forGetter(config -> config.particle),
+					Codec.FLOAT.fieldOf("probability").forGetter(config -> config.probability)
 				)
 				.apply(instance, BiomeParticleConfig::new)
 	);

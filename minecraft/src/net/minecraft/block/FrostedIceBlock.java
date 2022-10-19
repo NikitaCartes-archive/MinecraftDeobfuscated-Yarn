@@ -39,11 +39,11 @@ public class FrostedIceBlock extends IceBlock {
 				mutable.set(pos, direction);
 				BlockState blockState = world.getBlockState(mutable);
 				if (blockState.isOf(this) && !this.increaseAge(blockState, world, mutable)) {
-					world.createAndScheduleBlockTick(mutable, this, MathHelper.nextInt(random, 20, 40));
+					world.scheduleBlockTick(mutable, this, MathHelper.nextInt(random, 20, 40));
 				}
 			}
 		} else {
-			world.createAndScheduleBlockTick(pos, this, MathHelper.nextInt(random, 20, 40));
+			world.scheduleBlockTick(pos, this, MathHelper.nextInt(random, 20, 40));
 		}
 	}
 

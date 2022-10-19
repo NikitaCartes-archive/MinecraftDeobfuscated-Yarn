@@ -145,7 +145,7 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 			return Blocks.AIR.getDefaultState();
 		} else {
 			if ((Boolean)state.get(WATERLOGGED)) {
-				world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+				world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 			}
 
 			return direction == Direction.UP && neighborState.isOf(this)
@@ -225,7 +225,7 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 
 		int i = NEXT_TILT_DELAYS.getInt(tilt);
 		if (i != -1) {
-			world.createAndScheduleBlockTick(pos, this, i);
+			world.scheduleBlockTick(pos, this, i);
 		}
 	}
 

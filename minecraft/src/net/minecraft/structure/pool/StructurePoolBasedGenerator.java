@@ -29,7 +29,6 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.HeightLimitView;
@@ -71,7 +70,11 @@ public class StructurePoolBasedGenerator {
 				Identifier identifier = (Identifier)id.get();
 				Optional<BlockPos> optional = findStartingJigsawPos(structurePoolElement, identifier, pos, blockRotation, structureTemplateManager, chunkRandom);
 				if (optional.isEmpty()) {
-					LOGGER.error("No starting jigsaw {} found in start pool {}", identifier, ((RegistryKey)structurePool.getKey().get()).getValue());
+					LOGGER.error(
+						"No starting jigsaw {} found in start pool {}",
+						identifier,
+						structurePool.getKey().map(registryKey -> registryKey.getValue().toString()).orElse("<unregistered>")
+					);
 					return Optional.empty();
 				}
 

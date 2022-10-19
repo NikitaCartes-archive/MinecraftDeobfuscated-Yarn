@@ -34,9 +34,9 @@ import net.minecraft.client.gl.Uniform;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceFactory;
-import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.PathUtil;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
@@ -53,7 +53,8 @@ import org.slf4j.Logger;
  */
 @Environment(EnvType.CLIENT)
 public class Shader implements GlShader, AutoCloseable {
-	private static final String CORE_DIRECTORY = "shaders/core/";
+	public static final String CORE_DIRECTORY = "shaders";
+	private static final String field_40512 = "shaders/core/";
 	private static final String INCLUDE_DIRECTORY = "shaders/include/";
 	static final Logger LOGGER = LogUtils.getLogger();
 	private static final Uniform DEFAULT_UNIFORM = new Uniform();
@@ -238,13 +239,13 @@ public class Shader implements GlShader, AutoCloseable {
 			InputStream inputStream = resource.getInputStream();
 
 			try {
-				final String string2 = FileNameUtil.getPosixFullPath(string);
+				final String string2 = PathUtil.getPosixFullPath(string);
 				program2 = Program.createFromResource(type, name, inputStream, resource.getResourcePackName(), new GLImportProcessor() {
 					private final Set<String> visitedImports = Sets.<String>newHashSet();
 
 					@Override
 					public String loadImport(boolean inline, String name) {
-						name = FileNameUtil.normalizeToPosix((inline ? string2 : "shaders/include/") + name);
+						name = PathUtil.normalizeToPosix((inline ? string2 : "shaders/include/") + name);
 						if (!this.visitedImports.add(name)) {
 							return null;
 						} else {

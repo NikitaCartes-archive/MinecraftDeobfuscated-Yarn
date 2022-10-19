@@ -23,6 +23,7 @@ import net.minecraft.block.enums.WallMountLocation;
 import net.minecraft.block.enums.WallShape;
 import net.minecraft.block.enums.WireConnection;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.RotationPropertyHelper;
 
 /**
  * Contains all block and fluid state properties that Minecraft uses.
@@ -396,13 +397,12 @@ public class Properties {
 	 * A property that specifies the amount of charges a respawn anchor has.
 	 */
 	public static final IntProperty CHARGES = IntProperty.of("charges", 0, 4);
-	public static final int ROTATION_MAX = 15;
 	/**
 	 * A property that specifies the rotation of a block on a 0 to 15 scale.
 	 * 
 	 * <p>Each rotation is 22.5 degrees.
 	 */
-	public static final IntProperty ROTATION = IntProperty.of("rotation", 0, 15);
+	public static final IntProperty ROTATION = IntProperty.of("rotation", 0, RotationPropertyHelper.getMax());
 	/**
 	 * A property that specifies what part of a bed a block is.
 	 */
@@ -447,4 +447,6 @@ public class Properties {
 	public static final DirectionProperty VERTICAL_DIRECTION = DirectionProperty.of("vertical_direction", Direction.UP, Direction.DOWN);
 	public static final EnumProperty<Thickness> THICKNESS = EnumProperty.of("thickness", Thickness.class);
 	public static final EnumProperty<SculkSensorPhase> SCULK_SENSOR_PHASE = EnumProperty.of("sculk_sensor_phase", SculkSensorPhase.class);
+	public static final IntProperty BOOKS_STORED = IntProperty.of("books_stored", 0, 6);
+	public static final IntProperty LAST_INTERACTION_BOOK_SLOT = IntProperty.of("last_interaction_book_slot", 0, 6);
 }

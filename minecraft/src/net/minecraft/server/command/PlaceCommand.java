@@ -219,7 +219,7 @@ public class PlaceCommand {
 		);
 	}
 
-	public static int executePlaceFeature(ServerCommandSource source, RegistryEntry<ConfiguredFeature<?, ?>> feature, BlockPos pos) throws CommandSyntaxException {
+	public static int executePlaceFeature(ServerCommandSource source, RegistryEntry.Reference<ConfiguredFeature<?, ?>> feature, BlockPos pos) throws CommandSyntaxException {
 		ServerWorld serverWorld = source.getWorld();
 		ConfiguredFeature<?, ?> configuredFeature = feature.value();
 		ChunkPos chunkPos = new ChunkPos(pos);
@@ -227,7 +227,7 @@ public class PlaceCommand {
 		if (!configuredFeature.generate(serverWorld, serverWorld.getChunkManager().getChunkGenerator(), serverWorld.getRandom(), pos)) {
 			throw FEATURE_FAILED_EXCEPTION.create();
 		} else {
-			String string = (String)feature.getKey().map(key -> key.getValue().toString()).orElse("[unregistered]");
+			String string = feature.registryKey().getValue().toString();
 			source.sendFeedback(Text.translatable("commands.place.feature.success", string, pos.getX(), pos.getY(), pos.getZ()), true);
 			return 1;
 		}
@@ -243,7 +243,7 @@ public class PlaceCommand {
 		}
 	}
 
-	public static int executePlaceStructure(ServerCommandSource source, RegistryEntry<Structure> structure, BlockPos pos) throws CommandSyntaxException {
+	public static int executePlaceStructure(ServerCommandSource source, RegistryEntry.Reference<Structure> structure, BlockPos pos) throws CommandSyntaxException {
 		ServerWorld serverWorld = source.getWorld();
 		Structure structure2 = structure.value();
 		ChunkGenerator chunkGenerator = serverWorld.getChunkManager().getChunkGenerator();
@@ -257,7 +257,7 @@ public class PlaceCommand {
 			new ChunkPos(pos),
 			0,
 			serverWorld,
-			registryEntry -> true
+			biome -> true
 		);
 		if (!structureStart.hasChildren()) {
 			throw STRUCTURE_FAILED_EXCEPTION.create();
@@ -277,7 +277,7 @@ public class PlaceCommand {
 							chunkPosx
 						)
 				);
-			String string = (String)structure.getKey().map(key -> key.getValue().toString()).orElse("[unregistered]");
+			String string = structure.registryKey().getValue().toString();
 			source.sendFeedback(Text.translatable("commands.place.structure.success", string, pos.getX(), pos.getY(), pos.getZ()), true);
 			return 1;
 		}

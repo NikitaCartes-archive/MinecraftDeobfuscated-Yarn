@@ -380,6 +380,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 		}
 	}
 
+	@Nullable
 	public StriderEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
 		return EntityType.STRIDER.create(serverWorld);
 	}
@@ -445,21 +446,24 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 			return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 		} else {
 			Random random = world.getRandom();
-			Object var8;
 			if (random.nextInt(30) == 0) {
 				MobEntity mobEntity = EntityType.ZOMBIFIED_PIGLIN.create(world.toServerWorld());
-				var8 = this.initializeRider(world, difficulty, mobEntity, new ZombieEntity.ZombieData(ZombieEntity.shouldBeBaby(random), false));
-				mobEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.WARPED_FUNGUS_ON_A_STICK));
-				this.saddle(null);
+				if (mobEntity != null) {
+					entityData = this.initializeRider(world, difficulty, mobEntity, new ZombieEntity.ZombieData(ZombieEntity.shouldBeBaby(random), false));
+					mobEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.WARPED_FUNGUS_ON_A_STICK));
+					this.saddle(null);
+				}
 			} else if (random.nextInt(10) == 0) {
 				PassiveEntity passiveEntity = EntityType.STRIDER.create(world.toServerWorld());
-				passiveEntity.setBreedingAge(-24000);
-				var8 = this.initializeRider(world, difficulty, passiveEntity, null);
+				if (passiveEntity != null) {
+					passiveEntity.setBreedingAge(-24000);
+					entityData = this.initializeRider(world, difficulty, passiveEntity, null);
+				}
 			} else {
-				var8 = new PassiveEntity.PassiveData(0.5F);
+				entityData = new PassiveEntity.PassiveData(0.5F);
 			}
 
-			return super.initialize(world, difficulty, spawnReason, (EntityData)var8, entityNbt);
+			return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 		}
 	}
 

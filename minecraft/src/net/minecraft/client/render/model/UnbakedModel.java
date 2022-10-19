@@ -1,8 +1,6 @@
 package net.minecraft.client.render.model;
 
-import com.mojang.datafixers.util.Pair;
 import java.util.Collection;
-import java.util.Set;
 import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -15,10 +13,8 @@ import net.minecraft.util.Identifier;
 public interface UnbakedModel {
 	Collection<Identifier> getModelDependencies();
 
-	Collection<SpriteIdentifier> getTextureDependencies(
-		Function<Identifier, UnbakedModel> unbakedModelGetter, Set<Pair<String, String>> unresolvedTextureReferences
-	);
+	void setParents(Function<Identifier, UnbakedModel> modelLoader);
 
 	@Nullable
-	BakedModel bake(ModelLoader loader, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId);
+	BakedModel bake(Baker baker, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId);
 }

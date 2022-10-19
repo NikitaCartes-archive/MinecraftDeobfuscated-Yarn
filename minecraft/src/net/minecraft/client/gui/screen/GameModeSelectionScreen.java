@@ -114,7 +114,7 @@ public class GameModeSelectionScreen extends Screen {
 			Optional<GameModeSelectionScreen.GameModeSelection> optional = GameModeSelectionScreen.GameModeSelection.of(client.interactionManager.getCurrentGameMode());
 			GameModeSelectionScreen.GameModeSelection gameModeSelection = (GameModeSelectionScreen.GameModeSelection)gameMode.get();
 			if (optional.isPresent() && client.player.hasPermissionLevel(2) && gameModeSelection != optional.get()) {
-				client.player.sendCommand(gameModeSelection.getCommand());
+				client.player.networkHandler.sendCommand(gameModeSelection.getCommand());
 			}
 		}
 	}

@@ -55,7 +55,7 @@ public class SculkShriekerBlockEntity extends BlockEntity implements VibrationLi
 	});
 	private static final int SHRIEK_DELAY = 90;
 	private int warningLevel;
-	private VibrationListener vibrationListener = new VibrationListener(new BlockPositionSource(this.pos), 8, this, null, 0.0F, 0);
+	private VibrationListener vibrationListener = new VibrationListener(new BlockPositionSource(this.pos), 8, this);
 
 	public SculkShriekerBlockEntity(BlockPos pos, BlockState state) {
 		super(BlockEntityType.SCULK_SHRIEKER, pos, state);
@@ -97,9 +97,7 @@ public class SculkShriekerBlockEntity extends BlockEntity implements VibrationLi
 
 	@Override
 	public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, GameEvent.Emitter emitter) {
-		return !this.isRemoved()
-			&& !(Boolean)this.getCachedState().get(SculkShriekerBlock.SHRIEKING)
-			&& findResponsiblePlayerFromEntity(emitter.sourceEntity()) != null;
+		return !(Boolean)this.getCachedState().get(SculkShriekerBlock.SHRIEKING) && findResponsiblePlayerFromEntity(emitter.sourceEntity()) != null;
 	}
 
 	@Nullable
@@ -161,7 +159,7 @@ public class SculkShriekerBlockEntity extends BlockEntity implements VibrationLi
 		BlockPos blockPos = this.getPos();
 		BlockState blockState = this.getCachedState();
 		world.setBlockState(blockPos, blockState.with(SculkShriekerBlock.SHRIEKING, Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
-		world.createAndScheduleBlockTick(blockPos, blockState.getBlock(), 90);
+		world.scheduleBlockTick(blockPos, blockState.getBlock(), 90);
 		world.syncWorldEvent(WorldEvents.SCULK_SHRIEKS, blockPos, 0);
 		world.emitGameEvent(GameEvent.SHRIEK, blockPos, GameEvent.Emitter.of(entity));
 	}

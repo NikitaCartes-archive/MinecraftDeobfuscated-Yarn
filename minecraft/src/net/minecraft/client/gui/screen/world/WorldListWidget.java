@@ -3,6 +3,7 @@ package net.minecraft.client.gui.screen.world;
 import com.google.common.collect.ImmutableList;
 import com.google.common.hash.Hashing;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,8 +43,8 @@ import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.world.GeneratorOptionsHolder;
 import net.minecraft.screen.ScreenTexts;
-import net.minecraft.server.SaveLoader;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -52,7 +53,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.crash.CrashReport;
-import net.minecraft.world.gen.GeneratorOptions;
+import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelStorageException;
 import net.minecraft.world.level.storage.LevelSummary;
@@ -536,17 +537,16 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		public void recreate() {
 			this.openReadingWorldScreen();
 
-			try (
-				LevelStorage.Session session = this.client.getLevelStorage().createSession(this.level.getName());
-				SaveLoader saveLoader = this.client.createIntegratedServerLoader().createSaveLoader(session, false);
-			) {
-				GeneratorOptions generatorOptions = saveLoader.saveProperties().getGeneratorOptions();
+			try (LevelStorage.Session session = this.client.getLevelStorage().createSession(this.level.getName())) {
+				Pair<LevelInfo, GeneratorOptionsHolder> pair = this.client.createIntegratedServerLoader().loadForRecreation(session);
+				LevelInfo levelInfo = pair.getFirst();
+				GeneratorOptionsHolder generatorOptionsHolder = pair.getSecond();
 				Path path = CreateWorldScreen.copyDataPack(session.getDirectory(WorldSavePath.DATAPACKS), this.client);
-				if (generatorOptions.isLegacyCustomizedType()) {
+				if (generatorOptionsHolder.generatorOptions().isLegacyCustomizedType()) {
 					this.client
 						.setScreen(
 							new ConfirmScreen(
-								confirmed -> this.client.setScreen((Screen)(confirmed ? CreateWorldScreen.create(this.screen, saveLoader, path) : this.screen)),
+								confirmed -> this.client.setScreen((Screen)(confirmed ? CreateWorldScreen.create(this.screen, levelInfo, generatorOptionsHolder, path) : this.screen)),
 								Text.translatable("selectWorld.recreate.customized.title"),
 								Text.translatable("selectWorld.recreate.customized.text"),
 								ScreenTexts.PROCEED,
@@ -554,10 +554,10 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 							)
 						);
 				} else {
-					this.client.setScreen(CreateWorldScreen.create(this.screen, saveLoader, path));
+					this.client.setScreen(CreateWorldScreen.create(this.screen, levelInfo, generatorOptionsHolder, path));
 				}
-			} catch (Exception var9) {
-				WorldListWidget.LOGGER.error("Unable to recreate world", (Throwable)var9);
+			} catch (Exception var8) {
+				WorldListWidget.LOGGER.error("Unable to recreate world", (Throwable)var8);
 				this.client
 					.setScreen(
 						new NoticeScreen(

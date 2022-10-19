@@ -31,8 +31,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Util;
@@ -42,6 +40,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockLocating;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
@@ -670,7 +669,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 	@Override
 	protected void readCustomDataFromNbt(NbtCompound nbt) {
 		if (nbt.getBoolean("CustomDisplayTile")) {
-			this.setCustomBlock(NbtHelper.toBlockState(nbt.getCompound("DisplayState")));
+			this.setCustomBlock(NbtHelper.toBlockState(this.world.createCommandRegistryWrapper(Registry.BLOCK_KEY), nbt.getCompound("DisplayState")));
 			this.setCustomBlockOffset(nbt.getInt("DisplayOffset"));
 		}
 	}
@@ -827,11 +826,6 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 	public void setCustomBlockPresent(boolean present) {
 		this.getDataTracker().set(CUSTOM_BLOCK_PRESENT, present);
-	}
-
-	@Override
-	public Packet<?> createSpawnPacket() {
-		return new EntitySpawnS2CPacket(this);
 	}
 
 	@Override

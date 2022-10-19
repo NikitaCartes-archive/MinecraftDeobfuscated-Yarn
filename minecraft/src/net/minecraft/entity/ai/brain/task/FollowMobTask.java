@@ -44,7 +44,9 @@ public class FollowMobTask extends Task<LivingEntity> {
 	@Override
 	protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
 		LivingTargetCache livingTargetCache = (LivingTargetCache)entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get();
-		this.target = livingTargetCache.findFirst(this.predicate.and(livingEntity2 -> livingEntity2.squaredDistanceTo(entity) <= (double)this.maxDistanceSquared));
+		this.target = livingTargetCache.findFirst(
+			this.predicate.and(livingEntity2 -> livingEntity2.squaredDistanceTo(entity) <= (double)this.maxDistanceSquared && !entity.hasPassenger(livingEntity2))
+		);
 		return this.target.isPresent();
 	}
 

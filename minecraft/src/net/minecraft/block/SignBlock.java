@@ -11,7 +11,7 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.SignType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RotationPropertyHelper;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
@@ -32,7 +32,7 @@ public class SignBlock extends AbstractSignBlock {
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
 		return this.getDefaultState()
-			.with(ROTATION, Integer.valueOf(MathHelper.floor((double)((180.0F + ctx.getPlayerYaw()) * 16.0F / 360.0F) + 0.5) & 15))
+			.with(ROTATION, Integer.valueOf(RotationPropertyHelper.fromYaw(ctx.getPlayerYaw())))
 			.with(WATERLOGGED, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
 	}
 

@@ -21,8 +21,8 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.TickPriority;
 import net.minecraft.world.World;
+import net.minecraft.world.tick.TickPriority;
 
 public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockEntityProvider {
 	public static final EnumProperty<ComparatorMode> MODE = Properties.COMPARATOR_MODE;
@@ -126,7 +126,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 			int j = blockEntity instanceof ComparatorBlockEntity ? ((ComparatorBlockEntity)blockEntity).getOutputSignal() : 0;
 			if (i != j || (Boolean)state.get(POWERED) != this.hasPower(world, pos, state)) {
 				TickPriority tickPriority = this.isTargetNotAligned(world, pos, state) ? TickPriority.HIGH : TickPriority.NORMAL;
-				world.createAndScheduleBlockTick(pos, this, 2, tickPriority);
+				world.scheduleBlockTick(pos, this, 2, tickPriority);
 			}
 		}
 	}

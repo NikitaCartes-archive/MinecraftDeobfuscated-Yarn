@@ -39,7 +39,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import org.slf4j.Logger;
 
 public class UserCache {
@@ -93,7 +92,7 @@ public class UserCache {
 		repository.findProfilesByNames(new String[]{name}, Agent.MINECRAFT, profileLookupCallback);
 		GameProfile gameProfile = (GameProfile)atomicReference.get();
 		if (!shouldUseRemote() && gameProfile == null) {
-			UUID uUID = DynamicSerializableUuid.getUuidFromProfile(new GameProfile(null, name));
+			UUID uUID = Uuids.getUuidFromProfile(new GameProfile(null, name));
 			return Optional.of(new GameProfile(uUID, name));
 		} else {
 			return Optional.ofNullable(gameProfile);
