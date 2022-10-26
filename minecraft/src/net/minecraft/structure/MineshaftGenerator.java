@@ -11,7 +11,6 @@ import net.minecraft.block.FallingBlock;
 import net.minecraft.block.FenceBlock;
 import net.minecraft.block.RailBlock;
 import net.minecraft.block.WallTorchBlock;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.entity.EntityType;
@@ -359,9 +358,8 @@ public class MineshaftGenerator {
 						if (chunkBox.contains(blockPos) && this.isUnderSeaLevel(world, 1, 0, q, chunkBox)) {
 							this.hasSpawner = true;
 							world.setBlockState(blockPos, Blocks.SPAWNER.getDefaultState(), Block.NOTIFY_LISTENERS);
-							BlockEntity blockEntity = world.getBlockEntity(blockPos);
-							if (blockEntity instanceof MobSpawnerBlockEntity) {
-								((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(EntityType.CAVE_SPIDER);
+							if (world.getBlockEntity(blockPos) instanceof MobSpawnerBlockEntity mobSpawnerBlockEntity) {
+								mobSpawnerBlockEntity.setEntityType(EntityType.CAVE_SPIDER, random);
 							}
 						}
 					}

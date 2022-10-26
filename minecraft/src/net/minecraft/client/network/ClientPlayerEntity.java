@@ -796,7 +796,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		JumpingMount jumpingMount = this.getJumpingMount();
-		if (jumpingMount != null && jumpingMount.getDashCooldown() == 0) {
+		if (jumpingMount != null && jumpingMount.getJumpCooldown() == 0) {
 			if (this.field_3938 < 0) {
 				this.field_3938++;
 				if (this.field_3938 == 0) {

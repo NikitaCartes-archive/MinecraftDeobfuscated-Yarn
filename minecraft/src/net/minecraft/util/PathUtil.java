@@ -23,7 +23,7 @@ public class PathUtil {
 	private static final Pattern FILE_NAME_WITH_COUNT = Pattern.compile("(<name>.*) \\((<count>\\d*)\\)", 66);
 	private static final int MAX_NAME_LENGTH = 255;
 	private static final Pattern RESERVED_WINDOWS_NAMES = Pattern.compile(".*\\.|(?:COM|CLOCK\\$|CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\\..*)?", 2);
-	private static final Pattern VALID_FILE_NAME = Pattern.compile("[._a-z0-9]+");
+	private static final Pattern VALID_FILE_NAME = Pattern.compile("[-._a-z0-9]+");
 
 	/**
 	 * {@return a filename, prefixed with {@code name}, that does not currently
@@ -145,7 +145,7 @@ public class PathUtil {
 		if (i == -1) {
 			return switch (path) {
 				case "", ".", ".." -> DataResult.error("Invalid path '" + path + "'");
-				default -> DataResult.success(List.of(path));
+				default -> !isFileNameValid(path) ? DataResult.error("Invalid path '" + path + "'") : DataResult.success(List.of(path));
 			};
 		} else {
 			List<String> list = new ArrayList();

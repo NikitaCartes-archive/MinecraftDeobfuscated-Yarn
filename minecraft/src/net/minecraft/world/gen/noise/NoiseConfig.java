@@ -114,9 +114,9 @@ public final class NoiseConfig {
 
 		this.noiseRouter = chunkGeneratorSettings.noiseRouter().apply(new LegacyNoiseDensityFunctionVisitor());
 		DensityFunction.DensityFunctionVisitor densityFunctionVisitor = new DensityFunction.DensityFunctionVisitor() {
-			private final Map<DensityFunction, DensityFunction> field_40362 = new HashMap();
+			private final Map<DensityFunction, DensityFunction> unwrapped = new HashMap();
 
-			private DensityFunction method_45512(DensityFunction densityFunction) {
+			private DensityFunction unwrap(DensityFunction densityFunction) {
 				if (densityFunction instanceof DensityFunctionTypes.RegistryEntryHolder registryEntryHolder) {
 					return registryEntryHolder.function().value();
 				} else {
@@ -126,7 +126,7 @@ public final class NoiseConfig {
 
 			@Override
 			public DensityFunction apply(DensityFunction densityFunction) {
-				return (DensityFunction)this.field_40362.computeIfAbsent(densityFunction, this::method_45512);
+				return (DensityFunction)this.unwrapped.computeIfAbsent(densityFunction, this::unwrap);
 			}
 		};
 		this.multiNoiseSampler = new MultiNoiseUtil.MultiNoiseSampler(

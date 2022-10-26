@@ -107,7 +107,9 @@ public class BookScreen extends Screen {
 	}
 
 	protected void addCloseButton() {
-		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, 196, 200, 20, ScreenTexts.DONE, button -> this.client.setScreen(null)));
+		this.addDrawableChild(
+			ButtonWidget.createBuilder(ScreenTexts.DONE, button -> this.client.setScreen(null)).setPositionAndSize(this.width / 2 - 100, 196, 200, 20).build()
+		);
 	}
 
 	protected void addPageButtons() {

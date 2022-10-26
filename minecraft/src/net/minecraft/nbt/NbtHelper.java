@@ -689,7 +689,7 @@ public final class NbtHelper {
 			compound.put("palettes", nbtList3);
 		}
 
-		if (compound.contains("entities", NbtElement.COMPOUND_TYPE)) {
+		if (compound.contains("entities", NbtElement.LIST_TYPE)) {
 			NbtList nbtList3 = compound.getList("entities", NbtElement.COMPOUND_TYPE);
 			NbtList nbtList4 = (NbtList)nbtList3.stream()
 				.map(NbtCompound.class::cast)

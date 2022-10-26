@@ -88,16 +88,13 @@ public class PackScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.doneButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height - 48, 150, 20, ScreenTexts.DONE, button -> this.close()));
+		this.doneButton = this.addDrawableChild(
+			ButtonWidget.createBuilder(ScreenTexts.DONE, button -> this.close()).setPositionAndSize(this.width / 2 + 4, this.height - 48, 150, 20).build()
+		);
 		this.addDrawableChild(
-			new ButtonWidget(
-				this.width / 2 - 154,
-				this.height - 48,
-				150,
-				20,
-				Text.translatable("pack.openFolder"),
-				button -> Util.getOperatingSystem().open(this.file.toUri()),
-				new ButtonWidget.TooltipSupplier() {
+			ButtonWidget.createBuilder(Text.translatable("pack.openFolder"), button -> Util.getOperatingSystem().open(this.file.toUri()))
+				.setPositionAndSize(this.width / 2 - 154, this.height - 48, 150, 20)
+				.setTooltipSupplier(new ButtonWidget.TooltipSupplier() {
 					@Override
 					public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {
 						PackScreen.this.renderTooltip(matrixStack, PackScreen.FOLDER_INFO, i, j);
@@ -107,8 +104,8 @@ public class PackScreen extends Screen {
 					public void supply(Consumer<Text> consumer) {
 						consumer.accept(PackScreen.FOLDER_INFO);
 					}
-				}
-			)
+				})
+				.build()
 		);
 		this.availablePackList = new PackListWidget(this.client, 200, this.height, Text.translatable("pack.available.title"));
 		this.availablePackList.setLeftPos(this.width / 2 - 4 - 200);

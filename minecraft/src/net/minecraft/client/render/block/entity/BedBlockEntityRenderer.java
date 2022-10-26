@@ -24,7 +24,7 @@ import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
@@ -114,11 +114,11 @@ public class BedBlockEntityRenderer implements BlockEntityRenderer<BedBlockEntit
 		boolean isFoot
 	) {
 		matrices.push();
-		matrices.translate(0.0, 0.5625, isFoot ? -1.0 : 0.0);
-		matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0F));
-		matrices.translate(0.5, 0.5, 0.5);
-		matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0F + direction.asRotation()));
-		matrices.translate(-0.5, -0.5, -0.5);
+		matrices.translate(0.0F, 0.5625F, isFoot ? -1.0F : 0.0F);
+		matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0F));
+		matrices.translate(0.5F, 0.5F, 0.5F);
+		matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180.0F + direction.asRotation()));
+		matrices.translate(-0.5F, -0.5F, -0.5F);
 		VertexConsumer vertexConsumer = sprite.getVertexConsumer(vertexConsumers, RenderLayer::getEntitySolid);
 		part.render(matrices, vertexConsumer, light, overlay);
 		matrices.pop();

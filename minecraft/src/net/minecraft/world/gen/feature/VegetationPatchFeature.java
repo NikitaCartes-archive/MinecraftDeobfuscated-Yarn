@@ -104,7 +104,7 @@ public class VegetationPatchFeature extends Feature<VegetationPatchFeatureConfig
 		StructureWorldAccess world, VegetationPatchFeatureConfig config, Predicate<BlockState> replaceable, Random random, BlockPos.Mutable pos, int depth
 	) {
 		for (int i = 0; i < depth; i++) {
-			BlockState blockState = config.groundState.getBlockState(random, pos);
+			BlockState blockState = config.groundState.get(random, pos);
 			BlockState blockState2 = world.getBlockState(pos);
 			if (!blockState.isOf(blockState2.getBlock())) {
 				if (!replaceable.test(blockState2)) {

@@ -484,7 +484,7 @@ public class ChunkBuilder {
 						ChunkBuilder.ChunkData chunkData = new ChunkBuilder.ChunkData();
 						chunkData.occlusionGraph = renderData.chunkOcclusionData;
 						chunkData.blockEntities.addAll(renderData.blockEntities);
-						chunkData.bufferState = renderData.translucencySortingData;
+						chunkData.transparentSortingData = renderData.translucencySortingData;
 						List<CompletableFuture<Void>> list = Lists.<CompletableFuture<Void>>newArrayList();
 						renderData.field_39081.forEach((renderLayer, builtBuffer) -> {
 							list.add(ChunkBuilder.this.scheduleUpload(builtBuffer, BuiltChunk.this.getBuffer(renderLayer)));
@@ -558,7 +558,7 @@ public class ChunkBuilder {
 							}
 
 							matrixStack.push();
-							matrixStack.translate((double)(blockPos3.getX() & 15), (double)(blockPos3.getY() & 15), (double)(blockPos3.getZ() & 15));
+							matrixStack.translate((float)(blockPos3.getX() & 15), (float)(blockPos3.getY() & 15), (float)(blockPos3.getZ() & 15));
 							blockRenderManager.renderBlock(blockState, blockPos3, chunkRendererRegion, matrixStack, bufferBuilder, true, random);
 							matrixStack.pop();
 						}
@@ -568,7 +568,7 @@ public class ChunkBuilder {
 						BufferBuilder bufferBuilder2 = blockBufferBuilderStorage.get(RenderLayer.getTranslucent());
 						if (!bufferBuilder2.isBatchEmpty()) {
 							bufferBuilder2.sortFrom(cameraX - (float)blockPos.getX(), cameraY - (float)blockPos.getY(), cameraZ - (float)blockPos.getZ());
-							renderData.translucencySortingData = bufferBuilder2.popState();
+							renderData.translucencySortingData = bufferBuilder2.getSortingData();
 						}
 					}
 
@@ -611,7 +611,7 @@ public class ChunkBuilder {
 				public final Map<RenderLayer, BufferBuilder.BuiltBuffer> field_39081 = new Reference2ObjectArrayMap<>();
 				public ChunkOcclusionData chunkOcclusionData = new ChunkOcclusionData();
 				@Nullable
-				public BufferBuilder.State translucencySortingData;
+				public BufferBuilder.TransparentSortingData translucencySortingData;
 			}
 		}
 
@@ -643,13 +643,13 @@ public class ChunkBuilder {
 					float f = (float)vec3d.x;
 					float g = (float)vec3d.y;
 					float h = (float)vec3d.z;
-					BufferBuilder.State state = this.data.bufferState;
-					if (state != null && !this.data.isEmpty(RenderLayer.getTranslucent())) {
+					BufferBuilder.TransparentSortingData transparentSortingData = this.data.transparentSortingData;
+					if (transparentSortingData != null && !this.data.isEmpty(RenderLayer.getTranslucent())) {
 						BufferBuilder bufferBuilder = buffers.get(RenderLayer.getTranslucent());
 						BuiltChunk.this.beginBufferBuilding(bufferBuilder);
-						bufferBuilder.restoreState(state);
+						bufferBuilder.beginSortedIndexBuffer(transparentSortingData);
 						bufferBuilder.sortFrom(f - (float)BuiltChunk.this.origin.getX(), g - (float)BuiltChunk.this.origin.getY(), h - (float)BuiltChunk.this.origin.getZ());
-						this.data.bufferState = bufferBuilder.popState();
+						this.data.transparentSortingData = bufferBuilder.getSortingData();
 						BufferBuilder.BuiltBuffer builtBuffer = bufferBuilder.end();
 						if (this.cancelled.get()) {
 							builtBuffer.release();
@@ -714,7 +714,7 @@ public class ChunkBuilder {
 		final List<BlockEntity> blockEntities = Lists.<BlockEntity>newArrayList();
 		ChunkOcclusionData occlusionGraph = new ChunkOcclusionData();
 		@Nullable
-		BufferBuilder.State bufferState;
+		BufferBuilder.TransparentSortingData transparentSortingData;
 
 		public boolean isEmpty() {
 			return this.nonEmptyLayers.isEmpty();

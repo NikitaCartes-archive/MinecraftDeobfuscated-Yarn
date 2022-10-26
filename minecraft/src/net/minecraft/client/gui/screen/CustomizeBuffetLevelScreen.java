@@ -60,11 +60,15 @@ public class CustomizeBuffetLevelScreen extends Screen {
 		this.client.keyboard.setRepeatEvents(true);
 		this.biomeSelectionList = new CustomizeBuffetLevelScreen.BuffetBiomesListWidget();
 		this.addSelectableChild(this.biomeSelectionList);
-		this.confirmButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, ScreenTexts.DONE, button -> {
+		this.confirmButton = this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.DONE, button -> {
 			this.onDone.accept(this.biome);
 			this.client.setScreen(this.parent);
-		}));
-		this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)));
+		}).setPositionAndSize(this.width / 2 - 155, this.height - 28, 150, 20).build());
+		this.addDrawableChild(
+			ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent))
+				.setPositionAndSize(this.width / 2 + 5, this.height - 28, 150, 20)
+				.build()
+		);
 		this.biomeSelectionList
 			.setSelected(
 				(CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem)this.biomeSelectionList

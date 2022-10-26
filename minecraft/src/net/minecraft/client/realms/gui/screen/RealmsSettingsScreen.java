@@ -39,11 +39,15 @@ public class RealmsSettingsScreen extends RealmsScreen {
 		this.client.keyboard.setRepeatEvents(true);
 		int i = this.width / 2 - 106;
 		this.doneButton = this.addDrawableChild(
-			new ButtonWidget(i - 2, row(12), 106, 20, Text.translatable("mco.configure.world.buttons.done"), button -> this.save())
+			ButtonWidget.createBuilder(Text.translatable("mco.configure.world.buttons.done"), button -> this.save()).setPositionAndSize(i - 2, row(12), 106, 20).build()
 		);
-		this.addDrawableChild(new ButtonWidget(this.width / 2 + 2, row(12), 106, 20, ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)));
+		this.addDrawableChild(
+			ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent))
+				.setPositionAndSize(this.width / 2 + 2, row(12), 106, 20)
+				.build()
+		);
 		String string = this.serverData.state == RealmsServer.State.OPEN ? "mco.configure.world.buttons.close" : "mco.configure.world.buttons.open";
-		ButtonWidget buttonWidget = new ButtonWidget(this.width / 2 - 53, row(0), 106, 20, Text.translatable(string), button -> {
+		ButtonWidget buttonWidget = ButtonWidget.createBuilder(Text.translatable(string), button -> {
 			if (this.serverData.state == RealmsServer.State.OPEN) {
 				Text text = Text.translatable("mco.configure.world.close.question.line1");
 				Text text2 = Text.translatable("mco.configure.world.close.question.line2");
@@ -57,7 +61,7 @@ public class RealmsSettingsScreen extends RealmsScreen {
 			} else {
 				this.parent.openTheWorld(false, this);
 			}
-		});
+		}).setPositionAndSize(this.width / 2 - 53, row(0), 106, 20).build();
 		this.addDrawableChild(buttonWidget);
 		this.nameEdit = new TextFieldWidget(this.client.textRenderer, i, row(4), 212, 20, null, Text.translatable("mco.configure.world.name"));
 		this.nameEdit.setMaxLength(32);

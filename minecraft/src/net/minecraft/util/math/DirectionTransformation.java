@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.enums.JigsawOrientation;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
+import org.joml.Matrix3f;
 
 public enum DirectionTransformation implements StringIdentifiable {
 	IDENTITY("identity", AxisTransformation.P123, false, false, false),
@@ -116,11 +117,8 @@ public enum DirectionTransformation implements StringIdentifiable {
 		this.flipY = flipY;
 		this.flipZ = flipZ;
 		this.axisTransformation = axisTransformation;
-		this.matrix = new Matrix3f();
-		this.matrix.a00 = flipX ? -1.0F : 1.0F;
-		this.matrix.a11 = flipY ? -1.0F : 1.0F;
-		this.matrix.a22 = flipZ ? -1.0F : 1.0F;
-		this.matrix.multiply(axisTransformation.getMatrix());
+		this.matrix = new Matrix3f().scaling(flipX ? -1.0F : 1.0F, flipY ? -1.0F : 1.0F, flipZ ? -1.0F : 1.0F);
+		this.matrix.mul(axisTransformation.getMatrix());
 	}
 
 	private BooleanList getAxisFlips() {
@@ -136,7 +134,7 @@ public enum DirectionTransformation implements StringIdentifiable {
 	}
 
 	public Matrix3f getMatrix() {
-		return this.matrix.copy();
+		return new Matrix3f(this.matrix);
 	}
 
 	public String toString() {

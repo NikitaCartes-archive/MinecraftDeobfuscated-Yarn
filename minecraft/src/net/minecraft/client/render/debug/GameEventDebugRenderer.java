@@ -23,12 +23,12 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.PositionSource;
 import net.minecraft.world.event.listener.GameEventListener;
+import org.joml.Vector3f;
 
 @Environment(EnvType.CLIENT)
 public class GameEventDebugRenderer implements DebugRenderer.Renderer {
@@ -68,7 +68,7 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 							double jx = pos.getX() + (double)listener.getRange();
 							double k = pos.getY() + (double)listener.getRange();
 							double l = pos.getZ() + (double)listener.getRange();
-							Vec3f vec3f = new Vec3f(1.0F, 1.0F, 0.0F);
+							Vector3f vector3f = new Vector3f(1.0F, 1.0F, 0.0F);
 							WorldRenderer.drawShapeOutline(
 								matrices,
 								vertexConsumer,
@@ -76,9 +76,9 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 								-cameraX,
 								-cameraY,
 								-cameraZ,
-								vec3f.getX(),
-								vec3f.getY(),
-								vec3f.getZ(),
+								vector3f.x(),
+								vector3f.y(),
+								vector3f.z(),
 								0.35F
 							);
 						}
@@ -94,7 +94,7 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 				listener2.getPos(world)
 					.ifPresent(
 						pos -> {
-							Vec3f vec3f = new Vec3f(1.0F, 1.0F, 0.0F);
+							Vector3f vector3f = new Vector3f(1.0F, 1.0F, 0.0F);
 							WorldRenderer.drawBox(
 								bufferBuilder,
 								pos.getX() - 0.25 - cameraX,
@@ -103,9 +103,9 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 								pos.getX() + 0.25 - cameraX,
 								pos.getY() - cameraY + 1.0,
 								pos.getZ() + 0.25 - cameraZ,
-								vec3f.getX(),
-								vec3f.getY(),
-								vec3f.getZ(),
+								vector3f.x(),
+								vector3f.y(),
+								vector3f.z(),
 								0.35F
 							);
 						}

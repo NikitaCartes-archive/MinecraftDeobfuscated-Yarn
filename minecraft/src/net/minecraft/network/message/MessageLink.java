@@ -1,17 +1,29 @@
 package net.minecraft.network.message;
 
 import com.google.common.primitives.Ints;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.security.SignatureException;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.network.encryption.SignatureUpdatable;
 import net.minecraft.util.Util;
 import net.minecraft.util.Uuids;
+import net.minecraft.util.dynamic.Codecs;
 
 /**
  * Represents a link to the preceding message that a particular message has.
  */
 public record MessageLink(int index, UUID sender, UUID sessionId) {
+	public static final Codec<MessageLink> field_40849 = RecordCodecBuilder.create(
+		instance -> instance.group(
+					Codecs.NONNEGATIVE_INT.fieldOf("index").forGetter(MessageLink::index),
+					Uuids.INT_STREAM_CODEC.fieldOf("sender").forGetter(MessageLink::sender),
+					Uuids.INT_STREAM_CODEC.fieldOf("session_id").forGetter(MessageLink::sessionId)
+				)
+				.apply(instance, MessageLink::new)
+	);
+
 	public static MessageLink of(UUID sender) {
 		return of(sender, Util.NIL_UUID);
 	}

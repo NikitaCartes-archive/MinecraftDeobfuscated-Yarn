@@ -397,11 +397,7 @@ public abstract class LivingEntity extends Entity {
 		}
 
 		if (this.isAlive() && (this.isWet() || this.inPowderSnow)) {
-			if (!this.world.isClient && this.wasOnFire) {
-				this.playExtinguishSound();
-			}
-
-			this.extinguish();
+			this.extinguishWithSound();
 		}
 
 		if (this.hurtTime > 0) {
@@ -570,7 +566,7 @@ public abstract class LivingEntity extends Entity {
 
 	protected void updatePostDeath() {
 		this.deathTime++;
-		if (this.deathTime == 20 && !this.world.isClient()) {
+		if (this.deathTime >= 20 && !this.world.isClient()) {
 			this.world.sendEntityStatus(this, EntityStatuses.ADD_DEATH_PARTICLES);
 			this.remove(Entity.RemovalReason.KILLED);
 		}
@@ -1149,11 +1145,8 @@ public abstract class LivingEntity extends Entity {
 				this.damageShield(amount);
 				g = amount;
 				amount = 0.0F;
-				if (!source.isProjectile()) {
-					Entity entity = source.getSource();
-					if (entity instanceof LivingEntity) {
-						this.takeShieldHit((LivingEntity)entity);
-					}
+				if (!source.isProjectile() && source.getSource() instanceof LivingEntity livingEntity) {
+					this.takeShieldHit(livingEntity);
 				}
 
 				bl = true;
@@ -1194,9 +1187,9 @@ public abstract class LivingEntity extends Entity {
 					this.attackingPlayer = (PlayerEntity)entity2;
 				} else if (entity2 instanceof WolfEntity wolfEntity && wolfEntity.isTamed()) {
 					this.playerHitTimer = 100;
-					LivingEntity livingEntity = wolfEntity.getOwner();
-					if (livingEntity != null && livingEntity.getType() == EntityType.PLAYER) {
-						this.attackingPlayer = (PlayerEntity)livingEntity;
+					LivingEntity livingEntity2 = wolfEntity.getOwner();
+					if (livingEntity2 != null && livingEntity2.getType() == EntityType.PLAYER) {
+						this.attackingPlayer = (PlayerEntity)livingEntity2;
 					} else {
 						this.attackingPlayer = null;
 					}

@@ -33,8 +33,8 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> {
@@ -164,7 +164,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 					vertexConsumerProvider,
 					i
 				);
-				matrixStack.translate(0.0, (double)(9.0F * 1.15F * 0.025F), 0.0);
+				matrixStack.translate(0.0F, 9.0F * 1.15F * 0.025F, 0.0F);
 			}
 		}
 
@@ -202,7 +202,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			float j = (float)abstractClientPlayerEntity.getRoll() + h;
 			float k = MathHelper.clamp(j * j / 100.0F, 0.0F, 1.0F);
 			if (!abstractClientPlayerEntity.isUsingRiptide()) {
-				matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(k * (-90.0F - abstractClientPlayerEntity.getPitch())));
+				matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(k * (-90.0F - abstractClientPlayerEntity.getPitch())));
 			}
 
 			Vec3d vec3d = abstractClientPlayerEntity.getRotationVec(h);
@@ -212,15 +212,15 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			if (d > 0.0 && e > 0.0) {
 				double l = (vec3d2.x * vec3d.x + vec3d2.z * vec3d.z) / Math.sqrt(d * e);
 				double m = vec3d2.x * vec3d.z - vec3d2.z * vec3d.x;
-				matrixStack.multiply(Vec3f.POSITIVE_Y.getRadialQuaternion((float)(Math.signum(m) * Math.acos(l))));
+				matrixStack.multiply(RotationAxis.POSITIVE_Y.rotation((float)(Math.signum(m) * Math.acos(l))));
 			}
 		} else if (i > 0.0F) {
 			super.setupTransforms(abstractClientPlayerEntity, matrixStack, f, g, h);
 			float jx = abstractClientPlayerEntity.isTouchingWater() ? -90.0F - abstractClientPlayerEntity.getPitch() : -90.0F;
 			float kx = MathHelper.lerp(i, 0.0F, jx);
-			matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(kx));
+			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(kx));
 			if (abstractClientPlayerEntity.isInSwimmingPose()) {
-				matrixStack.translate(0.0, -1.0, 0.3F);
+				matrixStack.translate(0.0F, -1.0F, 0.3F);
 			}
 		} else {
 			super.setupTransforms(abstractClientPlayerEntity, matrixStack, f, g, h);

@@ -80,14 +80,14 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 	private static final LootCondition.Builder WITH_SILK_TOUCH_OR_SHEARS = WITH_SHEARS.or(WITH_SILK_TOUCH);
 	private static final LootCondition.Builder WITHOUT_SILK_TOUCH_NOR_SHEARS = WITH_SILK_TOUCH_OR_SHEARS.invert();
 	private final Set<Item> explosionImmuneItems;
-	private final FeatureSet field_40609;
+	private final FeatureSet requiredFeatures;
 	private final Map<Identifier, LootTable.Builder> lootTables = new HashMap();
 	protected static final float[] SAPLING_DROP_CHANCE = new float[]{0.05F, 0.0625F, 0.083333336F, 0.1F};
 	private static final float[] LEAVES_STICK_DROP_CHANCE = new float[]{0.02F, 0.022222223F, 0.025F, 0.033333335F, 0.1F};
 
-	protected BlockLootTableGenerator(Set<Item> explosionImmuneItems, FeatureSet featureSet) {
+	protected BlockLootTableGenerator(Set<Item> explosionImmuneItems, FeatureSet requiredFeatures) {
 		this.explosionImmuneItems = explosionImmuneItems;
-		this.field_40609 = featureSet;
+		this.requiredFeatures = requiredFeatures;
 	}
 
 	protected <T extends LootFunctionConsumingBuilder<T>> T applyExplosionDecay(ItemConvertible drop, LootFunctionConsumingBuilder<T> builder) {
@@ -550,7 +550,7 @@ public abstract class BlockLootTableGenerator implements LootTableGenerator {
 		Set<Identifier> set = new HashSet();
 
 		for (Block block : Registry.BLOCK) {
-			if (block.isEnabled(this.field_40609)) {
+			if (block.isEnabled(this.requiredFeatures)) {
 				Identifier identifier = block.getLootTableId();
 				if (identifier != LootTables.EMPTY && set.add(identifier)) {
 					LootTable.Builder builder = (LootTable.Builder)this.lootTables.remove(identifier);

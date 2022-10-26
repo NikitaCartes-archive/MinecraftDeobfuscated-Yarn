@@ -127,7 +127,7 @@ public class PrepareRamTask<E extends PathAwareEntity> extends Task<E> {
 					if (l - (Long)this.prepareStartTime.get() >= (long)this.prepareTime) {
 						pathAwareEntity.getBrain().remember(MemoryModuleType.RAM_TARGET, this.calculateRamTarget(blockPos, ((PrepareRamTask.Ram)this.ram.get()).getEnd()));
 						serverWorld.playSoundFromEntity(
-							null, pathAwareEntity, (SoundEvent)this.soundFactory.apply(pathAwareEntity), SoundCategory.HOSTILE, 1.0F, pathAwareEntity.getSoundPitch()
+							null, pathAwareEntity, (SoundEvent)this.soundFactory.apply(pathAwareEntity), SoundCategory.NEUTRAL, 1.0F, pathAwareEntity.getSoundPitch()
 						);
 						this.ram = Optional.empty();
 					}

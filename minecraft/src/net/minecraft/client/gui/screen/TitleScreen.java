@@ -42,7 +42,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.gen.WorldPresets;
@@ -147,11 +147,15 @@ public class TitleScreen extends Screen {
 			)
 		);
 		this.addDrawableChild(
-			new ButtonWidget(
-				this.width / 2 - 100, l + 72 + 12, 98, 20, Text.translatable("menu.options"), button -> this.client.setScreen(new OptionsScreen(this, this.client.options))
-			)
+			ButtonWidget.createBuilder(Text.translatable("menu.options"), button -> this.client.setScreen(new OptionsScreen(this, this.client.options)))
+				.setPositionAndSize(this.width / 2 - 100, l + 72 + 12, 98, 20)
+				.build()
 		);
-		this.addDrawableChild(new ButtonWidget(this.width / 2 + 2, l + 72 + 12, 98, 20, Text.translatable("menu.quit"), button -> this.client.scheduleStop()));
+		this.addDrawableChild(
+			ButtonWidget.createBuilder(Text.translatable("menu.quit"), button -> this.client.scheduleStop())
+				.setPositionAndSize(this.width / 2 + 2, l + 72 + 12, 98, 20)
+				.build()
+		);
 		this.addDrawableChild(
 			new TexturedButtonWidget(
 				this.width / 2 + 104,
@@ -191,12 +195,14 @@ public class TitleScreen extends Screen {
 
 	private void initWidgetsNormal(int y, int spacingY) {
 		this.addDrawableChild(
-			new ButtonWidget(this.width / 2 - 100, y, 200, 20, Text.translatable("menu.singleplayer"), button -> this.client.setScreen(new SelectWorldScreen(this)))
+			ButtonWidget.createBuilder(Text.translatable("menu.singleplayer"), button -> this.client.setScreen(new SelectWorldScreen(this)))
+				.setPositionAndSize(this.width / 2 - 100, y, 200, 20)
+				.build()
 		);
 		final Text text = this.getMultiplayerDisabledText();
 		boolean bl = text == null;
 		ButtonWidget.TooltipSupplier tooltipSupplier = text == null
-			? ButtonWidget.EMPTY
+			? ButtonWidget.EMPTY_TOOLTIP
 			: new ButtonWidget.TooltipSupplier() {
 				@Override
 				public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {
@@ -210,12 +216,15 @@ public class TitleScreen extends Screen {
 					consumer.accept(text);
 				}
 			};
-		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, y + spacingY * 1, 200, 20, Text.translatable("menu.multiplayer"), button -> {
+		this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("menu.multiplayer"), button -> {
 			Screen screen = (Screen)(this.client.options.skipMultiplayerWarning ? new MultiplayerScreen(this) : new MultiplayerWarningScreen(this));
 			this.client.setScreen(screen);
-		}, tooltipSupplier)).active = bl;
+		}).setPositionAndSize(this.width / 2 - 100, y + spacingY * 1, 200, 20).setTooltipSupplier(tooltipSupplier).build()).active = bl;
 		this.addDrawableChild(
-				new ButtonWidget(this.width / 2 - 100, y + spacingY * 2, 200, 20, Text.translatable("menu.online"), button -> this.switchToRealms(), tooltipSupplier)
+				ButtonWidget.createBuilder(Text.translatable("menu.online"), button -> this.switchToRealms())
+					.setPositionAndSize(this.width / 2 - 100, y + spacingY * 2, 200, 20)
+					.setTooltipSupplier(tooltipSupplier)
+					.build()
 			)
 			.active = bl;
 	}
@@ -239,53 +248,49 @@ public class TitleScreen extends Screen {
 	private void initWidgetsDemo(int y, int spacingY) {
 		boolean bl = this.canReadDemoWorldData();
 		this.addDrawableChild(
-			new ButtonWidget(
-				this.width / 2 - 100,
-				y,
-				200,
-				20,
-				Text.translatable("menu.playdemo"),
-				button -> {
-					if (bl) {
-						this.client.createIntegratedServerLoader().start(this, "Demo_World");
-					} else {
-						this.client
-							.createIntegratedServerLoader()
-							.createAndStart("Demo_World", MinecraftServer.DEMO_LEVEL_INFO, GeneratorOptions.DEMO_OPTIONS, WorldPresets::createDemoOptions);
+			ButtonWidget.createBuilder(
+					Text.translatable("menu.playdemo"),
+					button -> {
+						if (bl) {
+							this.client.createIntegratedServerLoader().start(this, "Demo_World");
+						} else {
+							this.client
+								.createIntegratedServerLoader()
+								.createAndStart("Demo_World", MinecraftServer.DEMO_LEVEL_INFO, GeneratorOptions.DEMO_OPTIONS, WorldPresets::createDemoOptions);
+						}
 					}
-				}
-			)
+				)
+				.setPositionAndSize(this.width / 2 - 100, y, 200, 20)
+				.build()
 		);
 		this.buttonResetDemo = this.addDrawableChild(
-			new ButtonWidget(
-				this.width / 2 - 100,
-				y + spacingY * 1,
-				200,
-				20,
-				Text.translatable("menu.resetdemo"),
-				button -> {
-					LevelStorage levelStorage = this.client.getLevelStorage();
+			ButtonWidget.createBuilder(
+					Text.translatable("menu.resetdemo"),
+					button -> {
+						LevelStorage levelStorage = this.client.getLevelStorage();
 
-					try (LevelStorage.Session session = levelStorage.createSession("Demo_World")) {
-						LevelSummary levelSummary = session.getLevelSummary();
-						if (levelSummary != null) {
-							this.client
-								.setScreen(
-									new ConfirmScreen(
-										this::onDemoDeletionConfirmed,
-										Text.translatable("selectWorld.deleteQuestion"),
-										Text.translatable("selectWorld.deleteWarning", levelSummary.getDisplayName()),
-										Text.translatable("selectWorld.deleteButton"),
-										ScreenTexts.CANCEL
-									)
-								);
+						try (LevelStorage.Session session = levelStorage.createSession("Demo_World")) {
+							LevelSummary levelSummary = session.getLevelSummary();
+							if (levelSummary != null) {
+								this.client
+									.setScreen(
+										new ConfirmScreen(
+											this::onDemoDeletionConfirmed,
+											Text.translatable("selectWorld.deleteQuestion"),
+											Text.translatable("selectWorld.deleteWarning", levelSummary.getDisplayName()),
+											Text.translatable("selectWorld.deleteButton"),
+											ScreenTexts.CANCEL
+										)
+									);
+							}
+						} catch (IOException var8) {
+							SystemToast.addWorldAccessFailureToast(this.client, "Demo_World");
+							LOGGER.warn("Failed to access demo world", (Throwable)var8);
 						}
-					} catch (IOException var8) {
-						SystemToast.addWorldAccessFailureToast(this.client, "Demo_World");
-						LOGGER.warn("Failed to access demo world", (Throwable)var8);
 					}
-				}
-			)
+				)
+				.setPositionAndSize(this.width / 2 - 100, y + spacingY * 1, 200, 20)
+				.build()
 		);
 		this.buttonResetDemo.active = bl;
 	}
@@ -355,8 +360,8 @@ public class TitleScreen extends Screen {
 
 			if (this.splashText != null) {
 				matrices.push();
-				matrices.translate((double)(this.width / 2 + 90), 70.0, 0.0);
-				matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-20.0F));
+				matrices.translate((float)(this.width / 2 + 90), 70.0F, 0.0F);
+				matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-20.0F));
 				float h = 1.8F - MathHelper.abs(MathHelper.sin((float)(Util.getMeasuringTimeMs() % 1000L) / 1000.0F * (float) (Math.PI * 2)) * 0.1F);
 				h = h * 100.0F / (float)(this.textRenderer.getWidth(this.splashText) + 32);
 				matrices.scale(h, h, h);

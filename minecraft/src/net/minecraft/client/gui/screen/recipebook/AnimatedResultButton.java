@@ -58,11 +58,6 @@ public class AnimatedResultButton extends ClickableWidget {
 		return this.resultCollection;
 	}
 
-	public void setPos(int x, int y) {
-		this.x = x;
-		this.y = y;
-	}
-
 	@Override
 	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		if (!Screen.hasControlDown()) {
@@ -87,24 +82,24 @@ public class AnimatedResultButton extends ClickableWidget {
 		if (bl) {
 			float f = 1.0F + 0.1F * (float)Math.sin((double)(this.bounce / 15.0F * (float) Math.PI));
 			matrixStack.push();
-			matrixStack.translate((double)(this.x + 8), (double)(this.y + 12), 0.0);
+			matrixStack.translate((float)(this.getX() + 8), (float)(this.getY() + 12), 0.0F);
 			matrixStack.scale(f, f, 1.0F);
-			matrixStack.translate((double)(-(this.x + 8)), (double)(-(this.y + 12)), 0.0);
+			matrixStack.translate((float)(-(this.getX() + 8)), (float)(-(this.getY() + 12)), 0.0F);
 			RenderSystem.applyModelViewMatrix();
 			this.bounce -= delta;
 		}
 
-		this.drawTexture(matrices, this.x, this.y, i, j, this.width, this.height);
+		this.drawTexture(matrices, this.getX(), this.getY(), i, j, this.width, this.height);
 		List<Recipe<?>> list = this.getResults();
 		this.currentResultIndex = MathHelper.floor(this.time / 30.0F) % list.size();
 		ItemStack itemStack = ((Recipe)list.get(this.currentResultIndex)).getOutput();
 		int k = 4;
 		if (this.resultCollection.hasSingleOutput() && this.getResults().size() > 1) {
-			minecraftClient.getItemRenderer().renderInGuiWithOverrides(itemStack, this.x + k + 1, this.y + k + 1, 0, 10);
+			minecraftClient.getItemRenderer().renderInGuiWithOverrides(itemStack, this.getX() + k + 1, this.getY() + k + 1, 0, 10);
 			k--;
 		}
 
-		minecraftClient.getItemRenderer().renderInGui(itemStack, this.x + k, this.y + k);
+		minecraftClient.getItemRenderer().renderInGui(itemStack, this.getX() + k, this.getY() + k);
 		if (bl) {
 			matrixStack.pop();
 			RenderSystem.applyModelViewMatrix();

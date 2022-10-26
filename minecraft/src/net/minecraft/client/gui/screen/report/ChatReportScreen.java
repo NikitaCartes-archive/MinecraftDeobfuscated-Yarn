@@ -49,7 +49,7 @@ public class ChatReportScreen extends Screen {
 	private static final Logger field_39577 = LogUtils.getLogger();
 	@Nullable
 	final Screen parent;
-	private final AbuseReportContext reporter;
+	private final AbuseReportContext context;
 	@Nullable
 	private MultilineText reasonDescription;
 	@Nullable
@@ -59,17 +59,25 @@ public class ChatReportScreen extends Screen {
 	@Nullable
 	ChatAbuseReport.ValidationError validationError;
 
-	public ChatReportScreen(Screen parent, AbuseReportContext reporter, UUID reportedPlayerUuid) {
+	private ChatReportScreen(@Nullable Screen parent, AbuseReportContext context, ChatAbuseReport report) {
 		super(Text.translatable("gui.chatReport.title"));
 		this.parent = parent;
-		this.reporter = reporter;
-		this.report = new ChatAbuseReport(reportedPlayerUuid, reporter.sender().getLimits());
+		this.context = context;
+		this.report = report;
+	}
+
+	public ChatReportScreen(@Nullable Screen parent, AbuseReportContext reporter, UUID reportedPlayerUuid) {
+		this(parent, reporter, new ChatAbuseReport(reportedPlayerUuid, reporter.getSender().getLimits()));
+	}
+
+	public ChatReportScreen(@Nullable Screen parent, AbuseReportContext context, ChatAbuseReport.Draft draft) {
+		this(parent, context, new ChatAbuseReport(draft, context.getSender().getLimits()));
 	}
 
 	@Override
 	protected void init() {
 		this.client.keyboard.setRepeatEvents(true);
-		AbuseReportLimits abuseReportLimits = this.reporter.sender().getLimits();
+		AbuseReportLimits abuseReportLimits = this.context.getSender().getLimits();
 		int i = this.width / 2;
 		AbuseReportReason abuseReportReason = this.report.getReason();
 		if (abuseReportReason != null) {
@@ -86,32 +94,16 @@ public class ChatReportScreen extends Screen {
 			text = Text.translatable("gui.chatReport.selected_chat", intSet.size());
 		}
 
-		this.addDrawableChild(
-			new ButtonWidget(
-				this.getWidgetsLeft(),
-				this.getSelectionButtonY(),
-				280,
-				20,
-				text,
-				button -> this.client.setScreen(new ChatSelectionScreen(this, this.reporter, this.report, report -> {
-						this.report = report;
-						this.onChange();
-					}))
-			)
-		);
+		this.addDrawableChild(ButtonWidget.createBuilder(text, button -> this.client.setScreen(new ChatSelectionScreen(this, this.context, this.report, report -> {
+				this.report = report;
+				this.onChange();
+			}))).setPositionAndSize(this.getWidgetsLeft(), this.getSelectionButtonY(), 280, 20).build());
 		Text text2 = Util.mapOrElse(abuseReportReason, AbuseReportReason::getText, SELECT_REASON_TEXT);
 		this.addDrawableChild(
-			new ButtonWidget(
-				this.getWidgetsLeft(),
-				this.getReasonButtonY(),
-				280,
-				20,
-				text2,
-				button -> this.client.setScreen(new AbuseReportReasonScreen(this, this.report.getReason(), reason -> {
-						this.report.setReason(reason);
-						this.onChange();
-					}))
-			)
+			ButtonWidget.createBuilder(text2, button -> this.client.setScreen(new AbuseReportReasonScreen(this, this.report.getReason(), reason -> {
+					this.report.setReason(reason);
+					this.onChange();
+				}))).setPositionAndSize(this.getWidgetsLeft(), this.getReasonButtonY(), 280, 20).build()
 		);
 		this.editBox = this.addDrawableChild(
 			new EditBoxWidget(
@@ -130,17 +122,14 @@ public class ChatReportScreen extends Screen {
 			this.report.setOpinionComments(opinionComments);
 			this.onChange();
 		});
-		this.addDrawableChild(new ButtonWidget(i - 120, this.getBottomButtonsY(), 120, 20, ScreenTexts.BACK, button -> this.close()));
+		this.addDrawableChild(
+			ButtonWidget.createBuilder(ScreenTexts.BACK, button -> this.close()).setPositionAndSize(i - 120, this.getBottomButtonsY(), 120, 20).build()
+		);
 		this.sendButton = this.addDrawableChild(
-			new ButtonWidget(
-				i + 10,
-				this.getBottomButtonsY(),
-				120,
-				20,
-				Text.translatable("gui.chatReport.send"),
-				button -> this.send(),
-				new ChatReportScreen.ValidationErrorTooltipSupplier()
-			)
+			ButtonWidget.createBuilder(Text.translatable("gui.chatReport.send"), button -> this.send())
+				.setPositionAndSize(i + 10, this.getBottomButtonsY(), 120, 20)
+				.setTooltipSupplier(new ChatReportScreen.ValidationErrorTooltipSupplier())
+				.build()
 		);
 		this.onChange();
 	}
@@ -151,8 +140,8 @@ public class ChatReportScreen extends Screen {
 	}
 
 	private void send() {
-		this.report.finalizeReport(this.reporter).ifLeft(report -> {
-			CompletableFuture<?> completableFuture = this.reporter.sender().send(report.id(), report.report());
+		this.report.finalizeReport(this.context).ifLeft(report -> {
+			CompletableFuture<?> completableFuture = this.context.getSender().send(report.id(), report.report());
 			this.client.setScreen(TaskScreen.createRunningScreen(SENDING_TEXT, ScreenTexts.CANCEL, () -> {
 				this.client.setScreen(this);
 				completableFuture.cancel(true);
@@ -174,6 +163,7 @@ public class ChatReportScreen extends Screen {
 	}
 
 	private void onSubmissionFinished() {
+		this.clearDraft();
 		this.client.setScreen(TaskScreen.createResultScreen(REPORT_SENT_TITLE, REPORT_SENT_MESSAGE_TEXT, ScreenTexts.DONE, () -> this.client.setScreen(null)));
 	}
 
@@ -192,6 +182,16 @@ public class ChatReportScreen extends Screen {
 	private void showErrorScreen(Text message) {
 		Text text = message.copy().formatted(Formatting.RED);
 		this.client.setScreen(TaskScreen.createResultScreen(REPORT_ERROR_TITLE, text, ScreenTexts.BACK, () -> this.client.setScreen(this)));
+	}
+
+	void setDraft() {
+		if (this.report.hasContents()) {
+			this.context.setDraft(this.report.getDraft().copy());
+		}
+	}
+
+	void clearDraft() {
+		this.context.setDraft(null);
 	}
 
 	@Override
@@ -218,11 +218,17 @@ public class ChatReportScreen extends Screen {
 
 	@Override
 	public void close() {
-		if (!this.editBox.getText().isEmpty()) {
+		if (this.report.hasContents()) {
 			this.client.setScreen(new ChatReportScreen.DiscardWarningScreen());
 		} else {
 			this.client.setScreen(this.parent);
 		}
+	}
+
+	@Override
+	public void removed() {
+		this.setDraft();
+		super.removed();
 	}
 
 	@Override
@@ -276,6 +282,7 @@ public class ChatReportScreen extends Screen {
 		private static final Text TITLE = Text.translatable("gui.chatReport.discard.title").formatted(Formatting.BOLD);
 		private static final Text MESSAGE = Text.translatable("gui.chatReport.discard.content");
 		private static final Text RETURN_BUTTON_TEXT = Text.translatable("gui.chatReport.discard.return");
+		private static final Text DRAFT_BUTTON_TEXT = Text.translatable("gui.chatReport.discard.draft");
 		private static final Text DISCARD_BUTTON_TEXT = Text.translatable("gui.chatReport.discard.discard");
 
 		protected DiscardWarningScreen() {
@@ -284,10 +291,18 @@ public class ChatReportScreen extends Screen {
 
 		@Override
 		protected void initButtons(int yOffset) {
-			this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, 100 + yOffset, 150, 20, RETURN_BUTTON_TEXT, button -> this.close()));
+			int i = 150;
 			this.addDrawableChild(
-				new ButtonWidget(this.width / 2 + 5, 100 + yOffset, 150, 20, DISCARD_BUTTON_TEXT, button -> this.client.setScreen(ChatReportScreen.this.parent))
+				ButtonWidget.createBuilder(RETURN_BUTTON_TEXT, button -> this.close()).setPositionAndSize(this.width / 2 - 245, 100 + yOffset, 150, 20).build()
 			);
+			this.addDrawableChild(ButtonWidget.createBuilder(DRAFT_BUTTON_TEXT, button -> {
+				ChatReportScreen.this.setDraft();
+				this.client.setScreen(ChatReportScreen.this.parent);
+			}).setPositionAndSize(this.width / 2 - 75, 100 + yOffset, 150, 20).build());
+			this.addDrawableChild(ButtonWidget.createBuilder(DISCARD_BUTTON_TEXT, button -> {
+				ChatReportScreen.this.clearDraft();
+				this.client.setScreen(ChatReportScreen.this.parent);
+			}).setPositionAndSize(this.width / 2 + 95, 100 + yOffset, 150, 20).build());
 		}
 
 		@Override

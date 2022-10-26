@@ -12,8 +12,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.util.GlAllocationUtils;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
 import org.apache.commons.lang3.mutable.MutableInt;
+import org.joml.Vector3f;
 import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 
@@ -35,7 +35,11 @@ import org.slf4j.Logger;
  */
 @Environment(EnvType.CLIENT)
 public class BufferBuilder extends FixedColorVertexConsumer implements BufferVertexConsumer {
-	private static final int MAX_BUFFER_SIZE = 2097152;
+	/**
+	 * An integer a size change of a buffer must be a
+	 * multiple of
+	 */
+	private static final int ROUND_SIZE_CHANGE = 2097152;
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private ByteBuffer buffer;
 	private int builtBufferCount;
@@ -47,11 +51,16 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 	private int currentElementId;
 	private VertexFormat format;
 	private VertexFormat.DrawMode drawMode;
-	private boolean textured;
+	/**
+	 * Whether this builder is aware of the vertex format and can skip checks
+	 * for the current target element while building a vertex in {@link
+	 * #vertex(float, float, float, float, float, float, float, float, float, int, int, float, float, float)}.
+	 */
+	private boolean canSkipElementChecks;
 	private boolean hasOverlay;
 	private boolean building;
 	@Nullable
-	private Vec3f[] sortingPrimitiveCenters;
+	private Vector3f[] sortingPrimitiveCenters;
 	private float sortingCameraX = Float.NaN;
 	private float sortingCameraY = Float.NaN;
 	private float sortingCameraZ = Float.NaN;
@@ -103,19 +112,21 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		}
 	}
 
-	public BufferBuilder.State popState() {
-		return new BufferBuilder.State(this.drawMode, this.vertexCount, this.sortingPrimitiveCenters, this.sortingCameraX, this.sortingCameraY, this.sortingCameraZ);
+	public BufferBuilder.TransparentSortingData getSortingData() {
+		return new BufferBuilder.TransparentSortingData(
+			this.drawMode, this.vertexCount, this.sortingPrimitiveCenters, this.sortingCameraX, this.sortingCameraY, this.sortingCameraZ
+		);
 	}
 
-	public void restoreState(BufferBuilder.State state) {
+	public void beginSortedIndexBuffer(BufferBuilder.TransparentSortingData state) {
 		this.buffer.rewind();
 		this.drawMode = state.drawMode;
 		this.vertexCount = state.vertexCount;
 		this.elementOffset = this.batchOffset;
-		this.sortingPrimitiveCenters = state.sortingPrimitiveCenters;
-		this.sortingCameraX = state.sortingCameraX;
-		this.sortingCameraY = state.sortingCameraY;
-		this.sortingCameraZ = state.sortingCameraZ;
+		this.sortingPrimitiveCenters = state.primitiveCenters;
+		this.sortingCameraX = state.cameraX;
+		this.sortingCameraY = state.cameraY;
+		this.sortingCameraZ = state.cameraZ;
 		this.hasNoVertexBuffer = true;
 	}
 
@@ -137,12 +148,12 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 			this.format = format;
 			boolean bl = format == VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL;
 			boolean bl2 = format == VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL;
-			this.textured = bl || bl2;
+			this.canSkipElementChecks = bl || bl2;
 			this.hasOverlay = bl;
 		}
 	}
 
-	private IntConsumer createIndexWriter(int offset, VertexFormat.IndexType indexType) {
+	private IntConsumer getIndexConsumer(int offset, VertexFormat.IndexType indexType) {
 		MutableInt mutableInt = new MutableInt(offset);
 
 		return switch (indexType) {
@@ -152,13 +163,13 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		};
 	}
 
-	private Vec3f[] buildPrimitiveCenters() {
+	private Vector3f[] buildPrimitiveCenters() {
 		FloatBuffer floatBuffer = this.buffer.asFloatBuffer();
 		int i = this.batchOffset / 4;
 		int j = this.format.getVertexSizeInteger();
 		int k = j * this.drawMode.additionalVertexCount;
 		int l = this.vertexCount / this.drawMode.additionalVertexCount;
-		Vec3f[] vec3fs = new Vec3f[l];
+		Vector3f[] vector3fs = new Vector3f[l];
 
 		for (int m = 0; m < l; m++) {
 			float f = floatBuffer.get(i + m * k + 0);
@@ -170,10 +181,10 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 			float q = (f + n) / 2.0F;
 			float r = (g + o) / 2.0F;
 			float s = (h + p) / 2.0F;
-			vec3fs[m] = new Vec3f(q, r, s);
+			vector3fs[m] = new Vector3f(q, r, s);
 		}
 
-		return vec3fs;
+		return vector3fs;
 	}
 
 	private void writeSortedIndices(VertexFormat.IndexType indexType) {
@@ -181,14 +192,14 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		int[] is = new int[this.sortingPrimitiveCenters.length];
 
 		for (int i = 0; i < this.sortingPrimitiveCenters.length; is[i] = i++) {
-			float f = this.sortingPrimitiveCenters[i].getX() - this.sortingCameraX;
-			float g = this.sortingPrimitiveCenters[i].getY() - this.sortingCameraY;
-			float h = this.sortingPrimitiveCenters[i].getZ() - this.sortingCameraZ;
+			float f = this.sortingPrimitiveCenters[i].x() - this.sortingCameraX;
+			float g = this.sortingPrimitiveCenters[i].y() - this.sortingCameraY;
+			float h = this.sortingPrimitiveCenters[i].z() - this.sortingCameraZ;
 			fs[i] = f * f + g * g + h * h;
 		}
 
 		IntArrays.mergeSort(is, (a, b) -> Floats.compare(fs[b], fs[a]));
-		IntConsumer intConsumer = this.createIndexWriter(this.elementOffset, indexType);
+		IntConsumer intConsumer = this.getIndexConsumer(this.elementOffset, indexType);
 
 		for (int j : is) {
 			intConsumer.accept(j * this.drawMode.additionalVertexCount + 0);
@@ -271,10 +282,10 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		int k = this.batchOffset;
 		this.batchOffset += l;
 		this.builtBufferCount++;
-		BufferBuilder.DrawArrayParameters drawArrayParameters = new BufferBuilder.DrawArrayParameters(
+		BufferBuilder.DrawParameters drawParameters = new BufferBuilder.DrawParameters(
 			this.format, this.vertexCount, i, this.drawMode, indexType, this.hasNoVertexBuffer, bl
 		);
-		return new BufferBuilder.BuiltBuffer(k, drawArrayParameters);
+		return new BufferBuilder.BuiltBuffer(k, drawParameters);
 	}
 
 	private void resetBuilding() {
@@ -365,7 +376,7 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 	) {
 		if (this.colorFixed) {
 			throw new IllegalStateException();
-		} else if (this.textured) {
+		} else if (this.canSkipElementChecks) {
 			this.putFloat(0, x);
 			this.putFloat(4, y);
 			this.putFloat(8, z);
@@ -441,27 +452,27 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 	@Environment(EnvType.CLIENT)
 	public class BuiltBuffer {
 		private final int batchOffset;
-		private final BufferBuilder.DrawArrayParameters parameters;
+		private final BufferBuilder.DrawParameters parameters;
 		private boolean released;
 
-		BuiltBuffer(int batchOffset, BufferBuilder.DrawArrayParameters parameters) {
+		BuiltBuffer(int batchOffset, BufferBuilder.DrawParameters parameters) {
 			this.batchOffset = batchOffset;
 			this.parameters = parameters;
 		}
 
 		public ByteBuffer getVertexBuffer() {
-			int i = this.batchOffset + this.parameters.getVertexBufferPosition();
-			int j = this.batchOffset + this.parameters.getVertexBufferLimit();
+			int i = this.batchOffset + this.parameters.getVertexBufferStart();
+			int j = this.batchOffset + this.parameters.getVertexBufferEnd();
 			return BufferBuilder.this.slice(i, j);
 		}
 
 		public ByteBuffer getIndexBuffer() {
-			int i = this.batchOffset + this.parameters.getIndexBufferPosition();
-			int j = this.batchOffset + this.parameters.getIndexBufferLimit();
+			int i = this.batchOffset + this.parameters.getIndexBufferStart();
+			int j = this.batchOffset + this.parameters.getIndexBufferEnd();
 			return BufferBuilder.this.slice(i, j);
 		}
 
-		public BufferBuilder.DrawArrayParameters getParameters() {
+		public BufferBuilder.DrawParameters getParameters() {
 			return this.parameters;
 		}
 
@@ -480,7 +491,7 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static record DrawArrayParameters(
+	public static record DrawParameters(
 		VertexFormat format,
 		int vertexCount,
 		int indexCount,
@@ -490,52 +501,56 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		boolean sequentialIndex
 	) {
 
-		public int getIndexBufferStart() {
+		public int getVertexBufferSize() {
 			return this.vertexCount * this.format.getVertexSizeByte();
 		}
 
-		public int getVertexBufferPosition() {
+		public int getVertexBufferStart() {
 			return 0;
 		}
 
-		public int getVertexBufferLimit() {
-			return this.getIndexBufferStart();
+		public int getVertexBufferEnd() {
+			return this.getVertexBufferSize();
 		}
 
-		public int getIndexBufferPosition() {
-			return this.indexOnly ? 0 : this.getVertexBufferLimit();
-		}
-
-		public int getIndexBufferLimit() {
-			return this.getIndexBufferPosition() + this.getIndexBufferLength();
-		}
-
-		private int getIndexBufferLength() {
-			return this.sequentialIndex ? 0 : this.indexCount * this.indexType.size;
+		public int getIndexBufferStart() {
+			return this.indexOnly ? 0 : this.getVertexBufferEnd();
 		}
 
 		public int getIndexBufferEnd() {
-			return this.getIndexBufferLimit();
+			return this.getIndexBufferStart() + this.getIndexBufferSize();
+		}
+
+		private int getIndexBufferSize() {
+			return this.sequentialIndex ? 0 : this.indexCount * this.indexType.size;
+		}
+
+		/**
+		 * {@return the total size of the index buffer and the vertex buffer
+		 * combined}
+		 */
+		public int getBufferSize() {
+			return this.getIndexBufferEnd();
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class State {
+	public static class TransparentSortingData {
 		final VertexFormat.DrawMode drawMode;
 		final int vertexCount;
 		@Nullable
-		final Vec3f[] sortingPrimitiveCenters;
-		final float sortingCameraX;
-		final float sortingCameraY;
-		final float sortingCameraZ;
+		final Vector3f[] primitiveCenters;
+		final float cameraX;
+		final float cameraY;
+		final float cameraZ;
 
-		State(VertexFormat.DrawMode drawMode, int vertexCount, @Nullable Vec3f[] currentParameters, float cameraX, float cameraY, float cameraZ) {
+		TransparentSortingData(VertexFormat.DrawMode drawMode, int vertexCount, @Nullable Vector3f[] primitiveCenters, float cameraX, float cameraY, float cameraZ) {
 			this.drawMode = drawMode;
 			this.vertexCount = vertexCount;
-			this.sortingPrimitiveCenters = currentParameters;
-			this.sortingCameraX = cameraX;
-			this.sortingCameraY = cameraY;
-			this.sortingCameraZ = cameraZ;
+			this.primitiveCenters = primitiveCenters;
+			this.cameraX = cameraX;
+			this.cameraY = cameraY;
+			this.cameraZ = cameraZ;
 		}
 	}
 }

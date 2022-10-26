@@ -113,12 +113,18 @@ public class SocialInteractionsScreen extends Screen {
 		int l = this.textRenderer.getWidth(BLOCKING_TEXT) + 40;
 		int m = 64 + 16 * this.getRowCount();
 		int n = (this.width - l) / 2 + 3;
-		this.allTabButton = this.addDrawableChild(new ButtonWidget(j, 45, i, 20, ALL_TAB_TITLE, button -> this.setCurrentTab(SocialInteractionsScreen.Tab.ALL)));
+		this.allTabButton = this.addDrawableChild(
+			ButtonWidget.createBuilder(ALL_TAB_TITLE, button -> this.setCurrentTab(SocialInteractionsScreen.Tab.ALL)).setPositionAndSize(j, 45, i, 20).build()
+		);
 		this.hiddenTabButton = this.addDrawableChild(
-			new ButtonWidget((j + k - i) / 2 + 1, 45, i, 20, HIDDEN_TAB_TITLE, button -> this.setCurrentTab(SocialInteractionsScreen.Tab.HIDDEN))
+			ButtonWidget.createBuilder(HIDDEN_TAB_TITLE, button -> this.setCurrentTab(SocialInteractionsScreen.Tab.HIDDEN))
+				.setPositionAndSize((j + k - i) / 2 + 1, 45, i, 20)
+				.build()
 		);
 		this.blockedTabButton = this.addDrawableChild(
-			new ButtonWidget(k - i + 1, 45, i, 20, BLOCKED_TAB_TITLE, button -> this.setCurrentTab(SocialInteractionsScreen.Tab.BLOCKED))
+			ButtonWidget.createBuilder(BLOCKED_TAB_TITLE, button -> this.setCurrentTab(SocialInteractionsScreen.Tab.BLOCKED))
+				.setPositionAndSize(k - i + 1, 45, i, 20)
+				.build()
 		);
 		String string = this.searchBox != null ? this.searchBox.getText() : "";
 		this.searchBox = new TextFieldWidget(this.textRenderer, this.getSearchBoxX() + 28, 78, 196, 16, SEARCH_TEXT) {
@@ -137,13 +143,13 @@ public class SocialInteractionsScreen extends Screen {
 		this.searchBox.setChangedListener(this::onSearchChange);
 		this.addSelectableChild(this.searchBox);
 		this.addSelectableChild(this.playerList);
-		this.blockingButton = this.addDrawableChild(new ButtonWidget(n, m, l, 20, BLOCKING_TEXT, button -> this.client.setScreen(new ConfirmLinkScreen(confirmed -> {
+		this.blockingButton = this.addDrawableChild(ButtonWidget.createBuilder(BLOCKING_TEXT, button -> this.client.setScreen(new ConfirmLinkScreen(confirmed -> {
 				if (confirmed) {
 					Util.getOperatingSystem().open("https://aka.ms/javablocking");
 				}
 
 				this.client.setScreen(this);
-			}, "https://aka.ms/javablocking", true))));
+			}, "https://aka.ms/javablocking", true))).setPositionAndSize(n, m, l, 20).build());
 		this.initialized = true;
 		this.setCurrentTab(this.currentTab);
 	}
@@ -232,7 +238,7 @@ public class SocialInteractionsScreen extends Screen {
 		}
 
 		if (!this.searchBox.isFocused() && this.searchBox.getText().isEmpty()) {
-			drawTextWithShadow(matrices, this.client.textRenderer, SEARCH_TEXT, this.searchBox.x, this.searchBox.y, -1);
+			drawTextWithShadow(matrices, this.client.textRenderer, SEARCH_TEXT, this.searchBox.getX(), this.searchBox.getY(), -1);
 		} else {
 			this.searchBox.render(matrices, mouseX, mouseY, delta);
 		}

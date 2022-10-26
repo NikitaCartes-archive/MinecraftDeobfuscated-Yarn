@@ -23,8 +23,8 @@ public class ClampedIntProvider extends IntProvider {
 			Function.identity()
 		);
 	private final IntProvider source;
-	private int min;
-	private int max;
+	private final int min;
+	private final int max;
 
 	public static ClampedIntProvider create(IntProvider source, int min, int max) {
 		return new ClampedIntProvider(source, min, max);

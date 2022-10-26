@@ -51,7 +51,7 @@ public class DialogScreen extends Screen {
 		int m = (int)((double)this.width / 2.0 - (double)j / 2.0);
 
 		for (DialogScreen.ChoiceButton choiceButton2 : this.choiceButtons) {
-			this.addDrawableChild(new ButtonWidget(m, l, this.buttonWidth, 20, choiceButton2.message, choiceButton2.pressAction));
+			this.addDrawableChild(ButtonWidget.createBuilder(choiceButton2.message, choiceButton2.pressAction).setPositionAndSize(m, l, this.buttonWidth, 20).build());
 			m += i;
 		}
 	}

@@ -5,10 +5,11 @@ import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
+import net.minecraft.util.math.Vec3d;
 
-public class BadRespawnPointDamageSource extends DamageSource {
-	protected BadRespawnPointDamageSource() {
-		super("badRespawnPoint");
+public class BadRespawnPointDamageSource extends PositionedDamageSource {
+	protected BadRespawnPointDamageSource(Vec3d pos) {
+		super("badRespawnPoint", pos);
 		this.setScaledWithDifficulty();
 		this.setExplosive();
 	}

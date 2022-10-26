@@ -78,10 +78,10 @@ public class OptimizeWorldScreen extends Screen {
 	@Override
 	protected void init() {
 		super.init();
-		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 150, 200, 20, ScreenTexts.CANCEL, button -> {
+		this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> {
 			this.updater.cancel();
 			this.callback.accept(false);
-		}));
+		}).setPositionAndSize(this.width / 2 - 100, this.height / 4 + 150, 200, 20).build());
 	}
 
 	@Override

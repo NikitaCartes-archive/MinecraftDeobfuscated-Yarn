@@ -35,11 +35,11 @@ public abstract class EntityLootTableGenerator implements LootTableGenerator {
 	private static final Set<EntityType<?>> ENTITY_TYPES_IN_MISC_GROUP_TO_CHECK = ImmutableSet.of(
 		EntityType.PLAYER, EntityType.ARMOR_STAND, EntityType.IRON_GOLEM, EntityType.SNOW_GOLEM, EntityType.VILLAGER
 	);
-	private final FeatureSet field_40614;
+	private final FeatureSet requiredFeatures;
 	private final Map<EntityType<?>, Map<Identifier, LootTable.Builder>> lootTables = Maps.<EntityType<?>, Map<Identifier, LootTable.Builder>>newHashMap();
 
-	protected EntityLootTableGenerator(FeatureSet featureSet) {
-		this.field_40614 = featureSet;
+	protected EntityLootTableGenerator(FeatureSet requiredFeatures) {
+		this.requiredFeatures = requiredFeatures;
 	}
 
 	protected static LootTable.Builder createForSheep(ItemConvertible item) {
@@ -57,34 +57,34 @@ public abstract class EntityLootTableGenerator implements LootTableGenerator {
 		Registry.ENTITY_TYPE
 			.streamEntries()
 			.forEach(
-				reference -> {
-					EntityType<?> entityType = (EntityType<?>)reference.value();
-					if (entityType.isEnabled(this.field_40614)) {
-						if (shouldCheck(entityType)) {
-							Map<Identifier, LootTable.Builder> map = (Map<Identifier, LootTable.Builder>)this.lootTables.remove(entityType);
-							Identifier identifier = entityType.getLootTableId();
+				entityType -> {
+					EntityType<?> entityType2 = (EntityType<?>)entityType.value();
+					if (entityType2.isEnabled(this.requiredFeatures)) {
+						if (shouldCheck(entityType2)) {
+							Map<Identifier, LootTable.Builder> map = (Map<Identifier, LootTable.Builder>)this.lootTables.remove(entityType2);
+							Identifier identifier = entityType2.getLootTableId();
 							if (!identifier.equals(LootTables.EMPTY) && (map == null || !map.containsKey(identifier))) {
-								throw new IllegalStateException(String.format(Locale.ROOT, "Missing loottable '%s' for '%s'", identifier, reference.registryKey().getValue()));
+								throw new IllegalStateException(String.format(Locale.ROOT, "Missing loottable '%s' for '%s'", identifier, entityType.registryKey().getValue()));
 							}
 
 							if (map != null) {
-								map.forEach((identifierx, builder) -> {
-									if (!set.add(identifierx)) {
-										throw new IllegalStateException(String.format(Locale.ROOT, "Duplicate loottable '%s' for '%s'", identifierx, reference.registryKey().getValue()));
+								map.forEach((lootTableId, lootTableBuilder) -> {
+									if (!set.add(lootTableId)) {
+										throw new IllegalStateException(String.format(Locale.ROOT, "Duplicate loottable '%s' for '%s'", lootTableId, entityType.registryKey().getValue()));
 									} else {
-										exporter.accept(identifierx, builder);
+										exporter.accept(lootTableId, lootTableBuilder);
 									}
 								});
 							}
 						} else {
-							Map<Identifier, LootTable.Builder> mapx = (Map<Identifier, LootTable.Builder>)this.lootTables.remove(entityType);
+							Map<Identifier, LootTable.Builder> mapx = (Map<Identifier, LootTable.Builder>)this.lootTables.remove(entityType2);
 							if (mapx != null) {
 								throw new IllegalStateException(
 									String.format(
 										Locale.ROOT,
 										"Weird loottables '%s' for '%s', not a LivingEntity so should not have loot",
 										mapx.keySet().stream().map(Identifier::toString).collect(Collectors.joining(",")),
-										reference.registryKey().getValue()
+										entityType.registryKey().getValue()
 									)
 								);
 							}
@@ -119,6 +119,6 @@ public abstract class EntityLootTableGenerator implements LootTableGenerator {
 	}
 
 	protected void register(EntityType<?> entityType, Identifier entityId, LootTable.Builder lootTable) {
-		((Map)this.lootTables.computeIfAbsent(entityType, entityTypex -> new HashMap())).put(entityId, lootTable);
+		((Map)this.lootTables.computeIfAbsent(entityType, type -> new HashMap())).put(entityId, lootTable);
 	}
 }

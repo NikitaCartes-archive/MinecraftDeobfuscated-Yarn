@@ -89,17 +89,8 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 					world.removeBlock(blockPos, false);
 				}
 
-				world.createExplosion(
-					null,
-					DamageSource.badRespawnPoint(),
-					null,
-					(double)pos.getX() + 0.5,
-					(double)pos.getY() + 0.5,
-					(double)pos.getZ() + 0.5,
-					5.0F,
-					true,
-					Explosion.DestructionType.DESTROY
-				);
+				Vec3d vec3d = pos.toCenterPos();
+				world.createExplosion(null, DamageSource.badRespawnPoint(vec3d), null, vec3d, 5.0F, true, Explosion.DestructionType.DESTROY);
 				return ActionResult.SUCCESS;
 			} else if ((Boolean)state.get(OCCUPIED)) {
 				if (!this.wakeVillager(world, pos)) {

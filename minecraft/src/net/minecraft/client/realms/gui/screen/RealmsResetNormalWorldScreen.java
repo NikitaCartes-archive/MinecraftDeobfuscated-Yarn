@@ -49,16 +49,13 @@ public class RealmsResetNormalWorldScreen extends RealmsScreen {
 				.build(this.width / 2 - 102, row(6) - 2, 205, 20, Text.translatable("selectWorld.mapFeatures"), (button, mapFeatures) -> this.mapFeatures = mapFeatures)
 		);
 		this.addDrawableChild(
-			new ButtonWidget(
-				this.width / 2 - 102,
-				row(12),
-				97,
-				20,
-				this.parentTitle,
-				button -> this.callback.accept(new ResetWorldInfo(this.seedEdit.getText(), this.generatorType, this.mapFeatures))
-			)
+			ButtonWidget.createBuilder(
+					this.parentTitle, button -> this.callback.accept(new ResetWorldInfo(this.seedEdit.getText(), this.generatorType, this.mapFeatures))
+				)
+				.setPositionAndSize(this.width / 2 - 102, row(12), 97, 20)
+				.build()
 		);
-		this.addDrawableChild(new ButtonWidget(this.width / 2 + 8, row(12), 97, 20, ScreenTexts.BACK, button -> this.close()));
+		this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.BACK, button -> this.close()).setPositionAndSize(this.width / 2 + 8, row(12), 97, 20).build());
 	}
 
 	@Override

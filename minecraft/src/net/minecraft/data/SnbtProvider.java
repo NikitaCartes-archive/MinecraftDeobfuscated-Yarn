@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.data.dev.NbtProvider;
 import net.minecraft.nbt.NbtCompound;
@@ -25,13 +26,13 @@ public class SnbtProvider implements DataProvider {
 	@Nullable
 	private static final Path DEBUG_OUTPUT_DIRECTORY = null;
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private final DataOutput field_40662;
-	private final Iterable<Path> field_40663;
+	private final DataOutput output;
+	private final Iterable<Path> paths;
 	private final List<SnbtProvider.Tweaker> write = Lists.<SnbtProvider.Tweaker>newArrayList();
 
-	public SnbtProvider(DataOutput generator, Iterable<Path> iterable) {
-		this.field_40662 = generator;
-		this.field_40663 = iterable;
+	public SnbtProvider(DataOutput output, Iterable<Path> paths) {
+		this.output = output;
+		this.paths = paths;
 	}
 
 	public SnbtProvider addWriter(SnbtProvider.Tweaker tweaker) {
@@ -50,34 +51,57 @@ public class SnbtProvider implements DataProvider {
 	}
 
 	@Override
-	public void run(DataWriter writer) throws IOException {
-		Path path = this.field_40662.getPath();
-		List<CompletableFuture<SnbtProvider.CompressedData>> list = Lists.<CompletableFuture<SnbtProvider.CompressedData>>newArrayList();
+	public CompletableFuture<?> run(DataWriter writer) {
+		Path path = this.output.getPath();
+		List<CompletableFuture<?>> list = Lists.<CompletableFuture<?>>newArrayList();
 
-		for (Path path2 : this.field_40663) {
-			Files.walk(path2)
-				.filter(pathx -> pathx.toString().endsWith(".snbt"))
-				.forEach(pathx -> list.add(CompletableFuture.supplyAsync(() -> this.toCompressedNbt(pathx, this.getFileName(path2, pathx)), Util.getMainWorkerExecutor())));
+		for (Path path2 : this.paths) {
+			list.add(
+				CompletableFuture.supplyAsync(
+						() -> {
+							try {
+								Stream<Path> stream = Files.walk(path2);
+
+								CompletableFuture var5x;
+								try {
+									var5x = CompletableFuture.allOf(
+										(CompletableFuture[])stream.filter(pathxx -> pathxx.toString().endsWith(".snbt")).map(pathxx -> CompletableFuture.runAsync(() -> {
+												SnbtProvider.CompressedData compressedData = this.toCompressedNbt(pathxx, this.getFileName(path2, pathxx));
+												this.write(writer, compressedData, path);
+											}, Util.getMainWorkerExecutor())).toArray(CompletableFuture[]::new)
+									);
+								} catch (Throwable var8) {
+									if (stream != null) {
+										try {
+											stream.close();
+										} catch (Throwable var7) {
+											var8.addSuppressed(var7);
+										}
+									}
+
+									throw var8;
+								}
+
+								if (stream != null) {
+									stream.close();
+								}
+
+								return var5x;
+							} catch (Exception var9) {
+								throw new RuntimeException("Failed to read structure input directory, aborting", var9);
+							}
+						},
+						Util.getMainWorkerExecutor()
+					)
+					.thenCompose(future -> future)
+			);
 		}
 
-		boolean bl = false;
-
-		for (CompletableFuture<SnbtProvider.CompressedData> completableFuture : list) {
-			try {
-				this.write(writer, (SnbtProvider.CompressedData)completableFuture.get(), path);
-			} catch (Exception var8) {
-				LOGGER.error("Failed to process structure", (Throwable)var8);
-				bl = true;
-			}
-		}
-
-		if (bl) {
-			throw new IllegalStateException("Failed to convert all structures, aborting");
-		}
+		return Util.combine(list);
 	}
 
 	@Override
-	public String getName() {
+	public final String getName() {
 		return "SNBT -> NBT";
 	}
 

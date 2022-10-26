@@ -58,7 +58,7 @@ public class AttachedToLeavesTreeDecorator extends TreeDecorator {
 					set.add(blockPos5.toImmutable());
 				}
 
-				generator.replace(blockPos2, this.blockProvider.getBlockState(random, blockPos2));
+				generator.replace(blockPos2, this.blockProvider.get(random, blockPos2));
 			}
 		}
 	}

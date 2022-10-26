@@ -206,7 +206,7 @@ public class AttributeCommand {
 	}
 
 	private static EntityAttributeInstance getAttributeInstance(Entity entity, RegistryEntry<EntityAttribute> attribute) throws CommandSyntaxException {
-		EntityAttributeInstance entityAttributeInstance = getLivingEntity(entity).getAttributes().method_45329(attribute);
+		EntityAttributeInstance entityAttributeInstance = getLivingEntity(entity).getAttributes().getCustomInstance(attribute);
 		if (entityAttributeInstance == null) {
 			throw NO_ATTRIBUTE_EXCEPTION.create(entity.getName(), getName(attribute));
 		} else {
@@ -224,7 +224,7 @@ public class AttributeCommand {
 
 	private static LivingEntity getLivingEntityWithAttribute(Entity entity, RegistryEntry<EntityAttribute> attribute) throws CommandSyntaxException {
 		LivingEntity livingEntity = getLivingEntity(entity);
-		if (!livingEntity.getAttributes().method_45331(attribute)) {
+		if (!livingEntity.getAttributes().hasAttribute(attribute)) {
 			throw NO_ATTRIBUTE_EXCEPTION.create(entity.getName(), getName(attribute));
 		} else {
 			return livingEntity;
@@ -248,10 +248,10 @@ public class AttributeCommand {
 	private static int executeModifierValueGet(ServerCommandSource source, Entity target, RegistryEntry<EntityAttribute> attribute, UUID uuid, double multiplier) throws CommandSyntaxException {
 		LivingEntity livingEntity = getLivingEntityWithAttribute(target, attribute);
 		AttributeContainer attributeContainer = livingEntity.getAttributes();
-		if (!attributeContainer.method_45330(attribute, uuid)) {
+		if (!attributeContainer.hasModifierForAttribute(attribute, uuid)) {
 			throw NO_MODIFIER_EXCEPTION.create(target.getName(), getName(attribute), uuid);
 		} else {
-			double d = attributeContainer.method_45332(attribute, uuid);
+			double d = attributeContainer.getModifierValue(attribute, uuid);
 			source.sendFeedback(Text.translatable("commands.attribute.modifier.value.get.success", uuid, getName(attribute), target.getName(), d), false);
 			return (int)(d * multiplier);
 		}

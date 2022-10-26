@@ -85,7 +85,7 @@ public class MemoryModuleType<U> {
 	public static final MemoryModuleType<Unit> IS_PREGNANT = register("is_pregnant", Codec.unit(Unit.INSTANCE));
 	public static final MemoryModuleType<Boolean> IS_PANICKING = register("is_panicking", Codec.BOOL);
 	public static final MemoryModuleType<List<UUID>> UNREACHABLE_TONGUE_TARGETS = register("unreachable_tongue_targets");
-	public static final MemoryModuleType<UUID> ANGRY_AT = register("angry_at", Uuids.CODEC);
+	public static final MemoryModuleType<UUID> ANGRY_AT = register("angry_at", Uuids.INT_STREAM_CODEC);
 	public static final MemoryModuleType<Boolean> UNIVERSAL_ANGER = register("universal_anger", Codec.BOOL);
 	public static final MemoryModuleType<Boolean> ADMIRING_ITEM = register("admiring_item", Codec.BOOL);
 	public static final MemoryModuleType<Integer> TIME_TRYING_TO_REACH_ADMIRE_ITEM = register("time_trying_to_reach_admire_item");
@@ -122,7 +122,7 @@ public class MemoryModuleType<U> {
 	public static final MemoryModuleType<Unit> SONIC_BOOM_COOLDOWN = register("sonic_boom_cooldown", Codec.unit(Unit.INSTANCE));
 	public static final MemoryModuleType<Unit> SONIC_BOOM_SOUND_COOLDOWN = register("sonic_boom_sound_cooldown", Codec.unit(Unit.INSTANCE));
 	public static final MemoryModuleType<Unit> SONIC_BOOM_SOUND_DELAY = register("sonic_boom_sound_delay", Codec.unit(Unit.INSTANCE));
-	public static final MemoryModuleType<UUID> LIKED_PLAYER = register("liked_player", Uuids.CODEC);
+	public static final MemoryModuleType<UUID> LIKED_PLAYER = register("liked_player", Uuids.INT_STREAM_CODEC);
 	public static final MemoryModuleType<GlobalPos> LIKED_NOTEBLOCK = register("liked_noteblock", GlobalPos.CODEC);
 	public static final MemoryModuleType<Integer> LIKED_NOTEBLOCK_COOLDOWN_TICKS = register("liked_noteblock_cooldown_ticks", Codec.INT);
 	public static final MemoryModuleType<Integer> ITEM_PICKUP_COOLDOWN_TICKS = register("item_pickup_cooldown_ticks", Codec.INT);

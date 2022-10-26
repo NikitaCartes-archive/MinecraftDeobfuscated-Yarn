@@ -109,6 +109,14 @@ public class MessageChain {
 	 */
 	@FunctionalInterface
 	public interface Unpacker {
+		/**
+		 * An unpacker used when the session is not initialized yet and the secure profile
+		 * is enforced. This always throws the missing profile key exception.
+		 */
+		MessageChain.Unpacker NOT_INITIALIZED = (signature, body) -> {
+			throw new MessageChain.MessageChainException(Text.translatable("chat.disabled.missingProfileKey"), false);
+		};
+
 		static MessageChain.Unpacker unsigned(UUID uuid) {
 			return (signature, body) -> SignedMessage.ofUnsigned(uuid, body.content());
 		}

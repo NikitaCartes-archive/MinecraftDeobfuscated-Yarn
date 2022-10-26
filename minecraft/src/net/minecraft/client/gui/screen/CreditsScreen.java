@@ -266,7 +266,7 @@ public class CreditsScreen extends Screen {
 		int j = this.height + 50;
 		float f = -this.time;
 		matrices.push();
-		matrices.translate(0.0, (double)f, 0.0);
+		matrices.translate(0.0F, f, 0.0F);
 		RenderSystem.setShaderTexture(0, MINECRAFT_TITLE_TEXTURE);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.enableBlend();
@@ -283,7 +283,7 @@ public class CreditsScreen extends Screen {
 			if (l == this.credits.size() - 1) {
 				float g = (float)k + f - (float)(this.height / 2 - 6);
 				if (g < 0.0F) {
-					matrices.translate(0.0, (double)(-g), 0.0);
+					matrices.translate(0.0F, -g, 0.0F);
 				}
 			}
 

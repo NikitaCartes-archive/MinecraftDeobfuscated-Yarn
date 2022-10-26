@@ -140,7 +140,7 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
 			matrices.push();
-			matrices.translate(0.0, 0.0, 170.0);
+			matrices.translate(0.0F, 0.0F, 170.0F);
 			int i = this.alternativeButtons.size() <= 16 ? 4 : 5;
 			int j = Math.min(this.alternativeButtons.size(), i);
 			int k = MathHelper.ceil((float)this.alternativeButtons.size() / (float)i);
@@ -243,10 +243,10 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 				j += 26;
 			}
 
-			this.drawTexture(matrices, this.x, this.y, i, j, this.width, this.height);
+			this.drawTexture(matrices, this.getX(), this.getY(), i, j, this.width, this.height);
 			MatrixStack matrixStack = RenderSystem.getModelViewStack();
 			matrixStack.push();
-			matrixStack.translate((double)(this.x + 2), (double)(this.y + 2), 125.0);
+			matrixStack.translate((double)(this.getX() + 2), (double)(this.getY() + 2), 125.0);
 
 			for (RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot inputSlot : this.slots) {
 				matrixStack.push();

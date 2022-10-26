@@ -43,12 +43,12 @@ public class ShulkerBoxBlockEntityRenderer implements BlockEntityRenderer<Shulke
 		}
 
 		matrixStack.push();
-		matrixStack.translate(0.5, 0.5, 0.5);
+		matrixStack.translate(0.5F, 0.5F, 0.5F);
 		float g = 0.9995F;
 		matrixStack.scale(0.9995F, 0.9995F, 0.9995F);
 		matrixStack.multiply(direction.getRotationQuaternion());
 		matrixStack.scale(1.0F, -1.0F, -1.0F);
-		matrixStack.translate(0.0, -1.0, 0.0);
+		matrixStack.translate(0.0F, -1.0F, 0.0F);
 		ModelPart modelPart = this.model.getLid();
 		modelPart.setPivot(0.0F, 24.0F - shulkerBoxBlockEntity.getAnimationProgress(f) * 0.5F * 16.0F, 0.0F);
 		modelPart.yaw = 270.0F * shulkerBoxBlockEntity.getAnimationProgress(f) * (float) (Math.PI / 180.0);

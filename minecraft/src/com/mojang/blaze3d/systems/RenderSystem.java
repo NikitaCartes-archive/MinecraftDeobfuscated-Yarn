@@ -31,9 +31,9 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.TimeSupplier;
 import net.minecraft.util.annotation.DeobfuscateClass;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Matrix3f;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3f;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallbackI;
 import org.lwjgl.opengl.GL11;
@@ -54,27 +54,27 @@ public class RenderSystem {
 	private static int MAX_SUPPORTED_TEXTURE_SIZE = -1;
 	private static boolean isInInit;
 	private static double lastDrawTime = Double.MIN_VALUE;
-	private static final RenderSystem.IndexBuffer sharedSequential = new RenderSystem.IndexBuffer(1, 1, IntConsumer::accept);
-	private static final RenderSystem.IndexBuffer sharedSequentialQuad = new RenderSystem.IndexBuffer(4, 6, (indexConsumer, vertexCount) -> {
-		indexConsumer.accept(vertexCount + 0);
-		indexConsumer.accept(vertexCount + 1);
-		indexConsumer.accept(vertexCount + 2);
-		indexConsumer.accept(vertexCount + 2);
-		indexConsumer.accept(vertexCount + 3);
-		indexConsumer.accept(vertexCount + 0);
+	private static final RenderSystem.ShapeIndexBuffer sharedSequential = new RenderSystem.ShapeIndexBuffer(1, 1, IntConsumer::accept);
+	private static final RenderSystem.ShapeIndexBuffer sharedSequentialQuad = new RenderSystem.ShapeIndexBuffer(4, 6, (indexConsumer, firstVertexIndex) -> {
+		indexConsumer.accept(firstVertexIndex + 0);
+		indexConsumer.accept(firstVertexIndex + 1);
+		indexConsumer.accept(firstVertexIndex + 2);
+		indexConsumer.accept(firstVertexIndex + 2);
+		indexConsumer.accept(firstVertexIndex + 3);
+		indexConsumer.accept(firstVertexIndex + 0);
 	});
-	private static final RenderSystem.IndexBuffer sharedSequentialLines = new RenderSystem.IndexBuffer(4, 6, (indexConsumer, vertexCount) -> {
-		indexConsumer.accept(vertexCount + 0);
-		indexConsumer.accept(vertexCount + 1);
-		indexConsumer.accept(vertexCount + 2);
-		indexConsumer.accept(vertexCount + 3);
-		indexConsumer.accept(vertexCount + 2);
-		indexConsumer.accept(vertexCount + 1);
+	private static final RenderSystem.ShapeIndexBuffer sharedSequentialLines = new RenderSystem.ShapeIndexBuffer(4, 6, (indexConsumer, firstVertexIndex) -> {
+		indexConsumer.accept(firstVertexIndex + 0);
+		indexConsumer.accept(firstVertexIndex + 1);
+		indexConsumer.accept(firstVertexIndex + 2);
+		indexConsumer.accept(firstVertexIndex + 3);
+		indexConsumer.accept(firstVertexIndex + 2);
+		indexConsumer.accept(firstVertexIndex + 1);
 	});
-	private static Matrix3f inverseViewRotationMatrix = new Matrix3f();
+	private static Matrix3f inverseViewRotationMatrix = new Matrix3f().zero();
 	private static Matrix4f projectionMatrix = new Matrix4f();
 	private static Matrix4f savedProjectionMatrix = new Matrix4f();
-	private static MatrixStack modelViewStack = new MatrixStack();
+	private static final MatrixStack modelViewStack = new MatrixStack();
 	private static Matrix4f modelViewMatrix = new Matrix4f();
 	private static Matrix4f textureMatrix = new Matrix4f();
 	private static final int[] shaderTextures = new int[12];
@@ -83,7 +83,7 @@ public class RenderSystem {
 	private static float shaderFogEnd = 1.0F;
 	private static final float[] shaderFogColor = new float[]{0.0F, 0.0F, 0.0F, 0.0F};
 	private static FogShape shaderFogShape = FogShape.SPHERE;
-	private static final Vec3f[] shaderLightDirections = new Vec3f[2];
+	private static final Vector3f[] shaderLightDirections = new Vector3f[2];
 	private static float shaderGameTime;
 	private static float shaderLineWidth = 1.0F;
 	private static String apiDescription = "Unknown";
@@ -444,14 +444,14 @@ public class RenderSystem {
 		return shaderFogShape;
 	}
 
-	public static void setShaderLights(Vec3f vec3f, Vec3f vec3f2) {
+	public static void setShaderLights(Vector3f vector3f, Vector3f vector3f2) {
 		assertOnRenderThread();
-		_setShaderLights(vec3f, vec3f2);
+		_setShaderLights(vector3f, vector3f2);
 	}
 
-	public static void _setShaderLights(Vec3f vec3f, Vec3f vec3f2) {
-		shaderLightDirections[0] = vec3f;
-		shaderLightDirections[1] = vec3f2;
+	public static void _setShaderLights(Vector3f vector3f, Vector3f vector3f2) {
+		shaderLightDirections[0] = vector3f;
+		shaderLightDirections[1] = vector3f2;
 	}
 
 	public static void setupShaderLights(Shader shader) {
@@ -559,10 +559,10 @@ public class RenderSystem {
 		GlStateManager._clearDepth(1.0);
 		GlStateManager._enableDepthTest();
 		GlStateManager._depthFunc(515);
-		projectionMatrix.loadIdentity();
-		savedProjectionMatrix.loadIdentity();
-		modelViewMatrix.loadIdentity();
-		textureMatrix.loadIdentity();
+		projectionMatrix.identity();
+		savedProjectionMatrix.identity();
+		modelViewMatrix.identity();
+		textureMatrix.identity();
 		GlStateManager._viewport(x, y, width, height);
 	}
 
@@ -681,19 +681,19 @@ public class RenderSystem {
 		setShaderTexture(1, 0);
 	}
 
-	public static void setupLevelDiffuseLighting(Vec3f vec3f, Vec3f vec3f2, Matrix4f matrix4f) {
+	public static void setupLevelDiffuseLighting(Vector3f vector3f, Vector3f vector3f2, Matrix4f matrix4f) {
 		assertOnRenderThread();
-		GlStateManager.setupLevelDiffuseLighting(vec3f, vec3f2, matrix4f);
+		GlStateManager.setupLevelDiffuseLighting(vector3f, vector3f2, matrix4f);
 	}
 
-	public static void setupGuiFlatDiffuseLighting(Vec3f vec3f, Vec3f vec3f2) {
+	public static void setupGuiFlatDiffuseLighting(Vector3f vector3f, Vector3f vector3f2) {
 		assertOnRenderThread();
-		GlStateManager.setupGuiFlatDiffuseLighting(vec3f, vec3f2);
+		GlStateManager.setupGuiFlatDiffuseLighting(vector3f, vector3f2);
 	}
 
-	public static void setupGui3DDiffuseLighting(Vec3f vec3f, Vec3f vec3f2) {
+	public static void setupGui3DDiffuseLighting(Vector3f vector3f, Vector3f vector3f2) {
 		assertOnRenderThread();
-		GlStateManager.setupGui3DDiffuseLighting(vec3f, vec3f2);
+		GlStateManager.setupGui3DDiffuseLighting(vector3f, vector3f2);
 	}
 
 	public static void beginInitialization() {
@@ -806,7 +806,7 @@ public class RenderSystem {
 	}
 
 	public static void setProjectionMatrix(Matrix4f projectionMatrix) {
-		Matrix4f matrix4f = projectionMatrix.copy();
+		Matrix4f matrix4f = new Matrix4f(projectionMatrix);
 		if (!isOnRenderThread()) {
 			recordRenderCall(() -> projectionMatrix = matrix4f);
 		} else {
@@ -815,7 +815,7 @@ public class RenderSystem {
 	}
 
 	public static void setInverseViewRotationMatrix(Matrix3f inverseViewRotationMatrix) {
-		Matrix3f matrix3f = inverseViewRotationMatrix.copy();
+		Matrix3f matrix3f = new Matrix3f(inverseViewRotationMatrix);
 		if (!isOnRenderThread()) {
 			recordRenderCall(() -> inverseViewRotationMatrix = matrix3f);
 		} else {
@@ -824,7 +824,7 @@ public class RenderSystem {
 	}
 
 	public static void setTextureMatrix(Matrix4f textureMatrix) {
-		Matrix4f matrix4f = textureMatrix.copy();
+		Matrix4f matrix4f = new Matrix4f(textureMatrix);
 		if (!isOnRenderThread()) {
 			recordRenderCall(() -> textureMatrix = matrix4f);
 		} else {
@@ -834,14 +834,14 @@ public class RenderSystem {
 
 	public static void resetTextureMatrix() {
 		if (!isOnRenderThread()) {
-			recordRenderCall(() -> textureMatrix.loadIdentity());
+			recordRenderCall(() -> textureMatrix.identity());
 		} else {
-			textureMatrix.loadIdentity();
+			textureMatrix.identity();
 		}
 	}
 
 	public static void applyModelViewMatrix() {
-		Matrix4f matrix4f = modelViewStack.peek().getPositionMatrix().copy();
+		Matrix4f matrix4f = new Matrix4f(modelViewStack.peek().getPositionMatrix());
 		if (!isOnRenderThread()) {
 			recordRenderCall(() -> modelViewMatrix = matrix4f);
 		} else {
@@ -897,7 +897,7 @@ public class RenderSystem {
 		return textureMatrix;
 	}
 
-	public static RenderSystem.IndexBuffer getSequentialBuffer(VertexFormat.DrawMode drawMode) {
+	public static RenderSystem.ShapeIndexBuffer getSequentialBuffer(VertexFormat.DrawMode drawMode) {
 		assertOnRenderThread();
 
 		return switch (drawMode) {
@@ -921,47 +921,55 @@ public class RenderSystem {
 		return shaderGameTime;
 	}
 
-	static {
-		projectionMatrix.loadIdentity();
-		savedProjectionMatrix.loadIdentity();
-		modelViewMatrix.loadIdentity();
-		textureMatrix.loadIdentity();
-	}
-
+	/**
+	 * An index buffer that holds a pre-made indices for a specific shape. If
+	 * this buffer is not large enough for the required number of indices when
+	 * this buffer is bound, it automatically grows and fills indices using a
+	 * given {@code triangulator}.
+	 */
 	@Environment(EnvType.CLIENT)
-	public static final class IndexBuffer {
-		private final int sizeMultiplier;
-		private final int increment;
-		private final RenderSystem.IndexBuffer.IndexMapper indexMapper;
+	public static final class ShapeIndexBuffer {
+		private final int vertexCountInShape;
+		private final int vertexCountInTriangulated;
+		private final RenderSystem.ShapeIndexBuffer.Triangulator triangulator;
 		private int id;
 		private VertexFormat.IndexType indexType = VertexFormat.IndexType.BYTE;
 		private int size;
 
-		IndexBuffer(int sizeMultiplier, int increment, RenderSystem.IndexBuffer.IndexMapper indexMapper) {
-			this.sizeMultiplier = sizeMultiplier;
-			this.increment = increment;
-			this.indexMapper = indexMapper;
+		/**
+		 * @param vertexCountInShape the number of vertices in a shape
+		 * @param vertexCountInTriangulated the number of vertices in the triangles decomposed from the shape
+		 * @param triangulator a function that decomposes a shape into triangles
+		 */
+		ShapeIndexBuffer(int vertexCountInShape, int vertexCountInTriangulated, RenderSystem.ShapeIndexBuffer.Triangulator triangulator) {
+			this.vertexCountInShape = vertexCountInShape;
+			this.vertexCountInTriangulated = vertexCountInTriangulated;
+			this.triangulator = triangulator;
 		}
 
-		public boolean isSizeLessThanOrEqual(int size) {
-			return size <= this.size;
+		public boolean isLargeEnough(int requiredSize) {
+			return requiredSize <= this.size;
 		}
 
-		public void bindAndGrow(int newSize) {
+		/**
+		 * Binds this buffer as a current index buffer. If necessary, it grows this
+		 * buffer in size and uploads indices to the corresponding buffer in GPU.
+		 */
+		public void bindAndGrow(int requiredSize) {
 			if (this.id == 0) {
 				this.id = GlStateManager._glGenBuffers();
 			}
 
 			GlStateManager._glBindBuffer(GlConst.GL_ELEMENT_ARRAY_BUFFER, this.id);
-			this.grow(newSize);
+			this.grow(requiredSize);
 		}
 
-		private void grow(int newSize) {
-			if (!this.isSizeLessThanOrEqual(newSize)) {
-				newSize = MathHelper.roundUpToMultiple(newSize * 2, this.increment);
-				RenderSystem.LOGGER.debug("Growing IndexBuffer: Old limit {}, new limit {}.", this.size, newSize);
-				VertexFormat.IndexType indexType = VertexFormat.IndexType.smallestFor(newSize);
-				int i = MathHelper.roundUpToMultiple(newSize * indexType.size, 4);
+		private void grow(int requiredSize) {
+			if (!this.isLargeEnough(requiredSize)) {
+				requiredSize = MathHelper.roundUpToMultiple(requiredSize * 2, this.vertexCountInTriangulated);
+				RenderSystem.LOGGER.debug("Growing IndexBuffer: Old limit {}, new limit {}.", this.size, requiredSize);
+				VertexFormat.IndexType indexType = VertexFormat.IndexType.smallestFor(requiredSize);
+				int i = MathHelper.roundUpToMultiple(requiredSize * indexType.size, 4);
 				GlStateManager._glBufferData(GlConst.GL_ELEMENT_ARRAY_BUFFER, (long)i, GlConst.GL_DYNAMIC_DRAW);
 				ByteBuffer byteBuffer = GlStateManager.mapBuffer(GlConst.GL_ELEMENT_ARRAY_BUFFER, GlConst.GL_WRITE_ONLY);
 				if (byteBuffer == null) {
@@ -970,25 +978,25 @@ public class RenderSystem {
 					this.indexType = indexType;
 					it.unimi.dsi.fastutil.ints.IntConsumer intConsumer = this.getIndexConsumer(byteBuffer);
 
-					for (int j = 0; j < newSize; j += this.increment) {
-						this.indexMapper.accept(intConsumer, j * this.sizeMultiplier / this.increment);
+					for (int j = 0; j < requiredSize; j += this.vertexCountInTriangulated) {
+						this.triangulator.accept(intConsumer, j * this.vertexCountInShape / this.vertexCountInTriangulated);
 					}
 
 					GlStateManager._glUnmapBuffer(GlConst.GL_ELEMENT_ARRAY_BUFFER);
-					this.size = newSize;
+					this.size = requiredSize;
 				}
 			}
 		}
 
-		private it.unimi.dsi.fastutil.ints.IntConsumer getIndexConsumer(ByteBuffer indicesBuffer) {
+		private it.unimi.dsi.fastutil.ints.IntConsumer getIndexConsumer(ByteBuffer indexBuffer) {
 			switch (this.indexType) {
 				case BYTE:
-					return index -> indicesBuffer.put((byte)index);
+					return index -> indexBuffer.put((byte)index);
 				case SHORT:
-					return index -> indicesBuffer.putShort((short)index);
+					return index -> indexBuffer.putShort((short)index);
 				case INT:
 				default:
-					return indicesBuffer::putInt;
+					return indexBuffer::putInt;
 			}
 		}
 
@@ -996,9 +1004,24 @@ public class RenderSystem {
 			return this.indexType;
 		}
 
+		/**
+		 * A functional interface that decomposes a shape into triangles.
+		 * 
+		 * <p>The input shape is represented by the index of the first vertex in
+		 * the shape. An output triangle is represented by the indices of the
+		 * vertices in the triangle.
+		 * 
+		 * @see <a href="https://en.wikipedia.org/wiki/Polygon_triangulation">Polygon triangulation - Wikipedia</a>
+		 */
 		@Environment(EnvType.CLIENT)
-		interface IndexMapper {
-			void accept(it.unimi.dsi.fastutil.ints.IntConsumer indexConsumer, int vertexCount);
+		interface Triangulator {
+			/**
+			 * Decomposes a shape into triangles.
+			 * 
+			 * @param indexConsumer the consumer that accepts triangles
+			 * @param firstVertexIndex the index of the first vertex in the input shape
+			 */
+			void accept(it.unimi.dsi.fastutil.ints.IntConsumer indexConsumer, int firstVertexIndex);
 		}
 	}
 }

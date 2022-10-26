@@ -47,13 +47,13 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
+import org.joml.Vector3f;
 
 public class ShulkerEntity extends GolemEntity implements Monster {
 	private static final UUID COVERED_ARMOR_BONUS_ID = UUID.fromString("7E0292F2-9434-48D5-A29F-9583AF7DF27F");
@@ -70,9 +70,9 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	private static final int field_30491 = 8;
 	private static final int field_30492 = 5;
 	private static final float field_30493 = 0.05F;
-	static final Vec3f SOUTH_VECTOR = Util.make(() -> {
+	static final Vector3f SOUTH_VECTOR = Util.make(() -> {
 		Vec3i vec3i = Direction.SOUTH.getVector();
-		return new Vec3f((float)vec3i.getX(), (float)vec3i.getY(), (float)vec3i.getZ());
+		return new Vector3f((float)vec3i.getX(), (float)vec3i.getY(), (float)vec3i.getZ());
 	});
 	private float prevOpenProgress;
 	private float openProgress;
@@ -678,17 +678,16 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		@Override
 		protected Optional<Float> getTargetYaw() {
 			Direction direction = ShulkerEntity.this.getAttachedFace().getOpposite();
-			Vec3f vec3f = ShulkerEntity.SOUTH_VECTOR.copy();
-			vec3f.rotate(direction.getRotationQuaternion());
+			Vector3f vector3f = direction.getRotationQuaternion().transform(new Vector3f(ShulkerEntity.SOUTH_VECTOR));
 			Vec3i vec3i = direction.getVector();
-			Vec3f vec3f2 = new Vec3f((float)vec3i.getX(), (float)vec3i.getY(), (float)vec3i.getZ());
-			vec3f2.cross(vec3f);
+			Vector3f vector3f2 = new Vector3f((float)vec3i.getX(), (float)vec3i.getY(), (float)vec3i.getZ());
+			vector3f2.cross(vector3f);
 			double d = this.x - this.entity.getX();
 			double e = this.y - this.entity.getEyeY();
 			double f = this.z - this.entity.getZ();
-			Vec3f vec3f3 = new Vec3f((float)d, (float)e, (float)f);
-			float g = vec3f2.dot(vec3f3);
-			float h = vec3f.dot(vec3f3);
+			Vector3f vector3f3 = new Vector3f((float)d, (float)e, (float)f);
+			float g = vector3f2.dot(vector3f3);
+			float h = vector3f.dot(vector3f3);
 			return !(Math.abs(g) > 1.0E-5F) && !(Math.abs(h) > 1.0E-5F)
 				? Optional.empty()
 				: Optional.of((float)(MathHelper.atan2((double)(-g), (double)h) * 180.0F / (float)Math.PI));

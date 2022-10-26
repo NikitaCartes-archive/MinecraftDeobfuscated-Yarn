@@ -1,8 +1,8 @@
 package net.minecraft.data.report;
 
 import com.mojang.brigadier.CommandDispatcher;
-import java.io.IOException;
 import java.nio.file.Path;
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.ArgumentHelper;
 import net.minecraft.data.DataOutput;
@@ -14,25 +14,25 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.registry.BuiltinRegistries;
 
 public class CommandSyntaxProvider implements DataProvider {
-	private final DataOutput field_40600;
+	private final DataOutput output;
 
-	public CommandSyntaxProvider(DataOutput generator) {
-		this.field_40600 = generator;
+	public CommandSyntaxProvider(DataOutput output) {
+		this.output = output;
 	}
 
 	@Override
-	public void run(DataWriter writer) throws IOException {
-		Path path = this.field_40600.resolvePath(DataOutput.OutputType.REPORTS).resolve("commands.json");
+	public CompletableFuture<?> run(DataWriter writer) {
+		Path path = this.output.resolvePath(DataOutput.OutputType.REPORTS).resolve("commands.json");
 		CommandDispatcher<ServerCommandSource> commandDispatcher = new CommandManager(
 				CommandManager.RegistrationEnvironment.ALL,
 				new CommandRegistryAccess(BuiltinRegistries.createBuiltinRegistryManager(), FeatureFlags.FEATURE_MANAGER.getFeatureSet())
 			)
 			.getDispatcher();
-		DataProvider.writeToPath(writer, ArgumentHelper.toJson(commandDispatcher, commandDispatcher.getRoot()), path);
+		return DataProvider.writeToPath(writer, ArgumentHelper.toJson(commandDispatcher, commandDispatcher.getRoot()), path);
 	}
 
 	@Override
-	public String getName() {
+	public final String getName() {
 		return "Command Syntax";
 	}
 }

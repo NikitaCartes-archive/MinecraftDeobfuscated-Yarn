@@ -15,7 +15,6 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexFormat;
@@ -26,8 +25,8 @@ import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.SignType;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3f;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
@@ -53,7 +52,11 @@ public abstract class AbstractSignEditScreen extends Screen {
 	@Override
 	protected void init() {
 		this.client.keyboard.setRepeatEvents(true);
-		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120, 200, 20, ScreenTexts.DONE, button -> this.finishEditing()));
+		this.addDrawableChild(
+			ButtonWidget.createBuilder(ScreenTexts.DONE, button -> this.finishEditing())
+				.setPositionAndSize(this.width / 2 - 100, this.height / 4 + 120, 200, 20)
+				.build()
+		);
 		this.blockEntity.setEditable(false);
 		this.selectionManager = new SelectionManager(
 			() -> this.text[this.currentRow],
@@ -129,10 +132,10 @@ public abstract class AbstractSignEditScreen extends Screen {
 
 	protected abstract void renderSignBackground(MatrixStack matrices, VertexConsumerProvider.Immediate vertexConsumers, BlockState state);
 
-	protected abstract Vec3f getTextScale();
+	protected abstract Vector3f getTextScale();
 
 	protected void translateForRender(MatrixStack matrices, BlockState state) {
-		matrices.translate((double)((float)this.width / 2.0F), 90.0, 50.0);
+		matrices.translate((float)this.width / 2.0F, 90.0F, 50.0F);
 	}
 
 	private void renderSign(MatrixStack matrices) {
@@ -148,9 +151,9 @@ public abstract class AbstractSignEditScreen extends Screen {
 	}
 
 	private void renderSignText(MatrixStack matrices, VertexConsumerProvider.Immediate vertexConsumers) {
-		matrices.translate(0.0, 0.0, 4.0);
-		Vec3f vec3f = this.getTextScale();
-		matrices.scale(vec3f.getX(), vec3f.getY(), vec3f.getZ());
+		matrices.translate(0.0F, 0.0F, 4.0F);
+		Vector3f vector3f = this.getTextScale();
+		matrices.scale(vector3f.x(), vector3f.y(), vector3f.z());
 		int i = this.blockEntity.getTextColor().getSignColor();
 		boolean bl = this.ticksSinceOpened / 6 % 2 == 0;
 		int j = this.selectionManager.getSelectionStart();
@@ -169,24 +172,12 @@ public abstract class AbstractSignEditScreen extends Screen {
 				float f = (float)(-this.client.textRenderer.getWidth(string) / 2);
 				this.client
 					.textRenderer
-					.draw(
-						string,
-						f,
-						(float)(n * this.blockEntity.getTextLineHeight() - l),
-						i,
-						false,
-						matrix4f,
-						vertexConsumers,
-						false,
-						0,
-						LightmapTextureManager.MAX_LIGHT_COORDINATE,
-						false
-					);
+					.draw(string, f, (float)(n * this.blockEntity.getTextLineHeight() - l), i, false, matrix4f, vertexConsumers, false, 0, 15728880, false);
 				if (n == this.currentRow && j >= 0 && bl) {
 					int o = this.client.textRenderer.getWidth(string.substring(0, Math.max(Math.min(j, string.length()), 0)));
 					int p = o - this.client.textRenderer.getWidth(string) / 2;
 					if (j >= string.length()) {
-						this.client.textRenderer.draw("_", (float)p, (float)m, i, false, matrix4f, vertexConsumers, false, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE, false);
+						this.client.textRenderer.draw("_", (float)p, (float)m, i, false, matrix4f, vertexConsumers, false, 0, 15728880, false);
 					}
 				}
 			}

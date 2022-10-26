@@ -61,7 +61,7 @@ public abstract class TrunkPlacer {
 
 	protected static void setToDirt(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, BlockPos pos, TreeFeatureConfig config) {
 		if (config.forceDirt || !canGenerate(world, pos)) {
-			replacer.accept(pos, config.dirtProvider.getBlockState(random, pos));
+			replacer.accept(pos, config.dirtProvider.get(random, pos));
 		}
 	}
 
@@ -78,7 +78,7 @@ public abstract class TrunkPlacer {
 		Function<BlockState, BlockState> function
 	) {
 		if (this.canReplace(world, pos)) {
-			replacer.accept(pos, (BlockState)function.apply(config.trunkProvider.getBlockState(random, pos)));
+			replacer.accept(pos, (BlockState)function.apply(config.trunkProvider.get(random, pos)));
 			return true;
 		} else {
 			return false;

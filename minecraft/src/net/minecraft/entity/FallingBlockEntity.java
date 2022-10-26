@@ -239,10 +239,10 @@ public class FallingBlockEntity extends Entity {
 				if (this.block.getBlock() instanceof LandingBlock) {
 					LandingBlock landingBlock = (LandingBlock)this.block.getBlock();
 					predicate = landingBlock.getEntityPredicate();
-					damageSource2 = landingBlock.getDamageSource();
+					damageSource2 = landingBlock.getDamageSource(this);
 				} else {
 					predicate = EntityPredicates.EXCEPT_SPECTATOR;
-					damageSource2 = DamageSource.FALLING_BLOCK;
+					damageSource2 = DamageSource.fallingBlock(this);
 				}
 
 				float f = (float)Math.min(MathHelper.floor((float)i * this.fallHurtAmount), this.fallHurtMax);

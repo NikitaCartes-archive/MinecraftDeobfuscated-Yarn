@@ -172,20 +172,20 @@ public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
 			float f = 1.5F;
 			matrices.push();
 			matrices.scale(0.56666666F, 0.56666666F, 0.56666666F);
-			matrices.translate(0.0, 1.375, 0.125);
+			matrices.translate(0.0F, 1.375F, 0.125F);
 			ImmutableList.of(this.head, this.leftEar, this.rightEar, this.nose)
 				.forEach(part -> part.render(matrices, vertices, light, overlay, red, green, blue, alpha));
 			matrices.pop();
 			matrices.push();
 			matrices.scale(0.4F, 0.4F, 0.4F);
-			matrices.translate(0.0, 2.25, 0.0);
+			matrices.translate(0.0F, 2.25F, 0.0F);
 			ImmutableList.of(this.leftHindLeg, this.rightHindLeg, this.leftHaunch, this.rightHaunch, this.body, this.leftFrontLeg, this.rightFrontLeg, this.tail)
 				.forEach(part -> part.render(matrices, vertices, light, overlay, red, green, blue, alpha));
 			matrices.pop();
 		} else {
 			matrices.push();
 			matrices.scale(0.6F, 0.6F, 0.6F);
-			matrices.translate(0.0, 1.0, 0.0);
+			matrices.translate(0.0F, 1.0F, 0.0F);
 			ImmutableList.of(
 					this.leftHindLeg,
 					this.rightHindLeg,

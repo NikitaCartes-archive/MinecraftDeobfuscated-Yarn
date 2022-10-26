@@ -30,7 +30,7 @@ public class EditBox {
 	private static final int CURSOR_WIDTH = 2;
 	private final TextRenderer textRenderer;
 	private final List<EditBox.Substring> lines = Lists.<EditBox.Substring>newArrayList();
-	private String text = "";
+	private String text;
 	private int cursor;
 	private int selectionEnd;
 	private boolean selecting;
@@ -44,6 +44,7 @@ public class EditBox {
 	public EditBox(TextRenderer textRenderer, int width) {
 		this.textRenderer = textRenderer;
 		this.width = width;
+		this.setText("");
 	}
 
 	/**

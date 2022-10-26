@@ -31,8 +31,8 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 	public static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/widgets.png");
 	protected int width;
 	protected int height;
-	public int x;
-	public int y;
+	private int x;
+	private int y;
 	private Text message;
 	protected boolean hovered;
 	public boolean active = true;
@@ -66,7 +66,7 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		if (this.visible) {
-			this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
+			this.hovered = mouseX >= this.getX() && mouseY >= this.getY() && mouseX < this.getX() + this.width && mouseY < this.getY() + this.height;
 			this.renderButton(matrices, mouseX, mouseY, delta);
 		}
 	}
@@ -89,12 +89,12 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.enableDepthTest();
-		this.drawTexture(matrices, this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height);
-		this.drawTexture(matrices, this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
+		this.drawTexture(matrices, this.getX(), this.getY(), 0, 46 + i * 20, this.width / 2, this.height);
+		this.drawTexture(matrices, this.getX() + this.width / 2, this.getY(), 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
 		this.renderBackground(matrices, minecraftClient, mouseX, mouseY);
 		int j = this.active ? 16777215 : 10526880;
 		drawCenteredText(
-			matrices, textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | MathHelper.ceil(this.alpha * 255.0F) << 24
+			matrices, textRenderer, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, j | MathHelper.ceil(this.alpha * 255.0F) << 24
 		);
 	}
 
@@ -155,10 +155,10 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 	protected boolean clicked(double mouseX, double mouseY) {
 		return this.active
 			&& this.visible
-			&& mouseX >= (double)this.x
-			&& mouseY >= (double)this.y
-			&& mouseX < (double)(this.x + this.width)
-			&& mouseY < (double)(this.y + this.height);
+			&& mouseX >= (double)this.getX()
+			&& mouseY >= (double)this.getY()
+			&& mouseX < (double)(this.getX() + this.width)
+			&& mouseY < (double)(this.getY() + this.height);
 	}
 
 	public boolean isHovered() {
@@ -183,10 +183,10 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		return this.active
 			&& this.visible
-			&& mouseX >= (double)this.x
-			&& mouseY >= (double)this.y
-			&& mouseX < (double)(this.x + this.width)
-			&& mouseY < (double)(this.y + this.height);
+			&& mouseX >= (double)this.getX()
+			&& mouseY >= (double)this.getY()
+			&& mouseX < (double)(this.getX() + this.width)
+			&& mouseY < (double)(this.getY() + this.height);
 	}
 
 	public void renderTooltip(MatrixStack matrices, int mouseX, int mouseY) {
@@ -247,5 +247,26 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 				builder.put(NarrationPart.USAGE, Text.translatable("narration.button.usage.hovered"));
 			}
 		}
+	}
+
+	public int getX() {
+		return this.x;
+	}
+
+	public void setX(int x) {
+		this.x = x;
+	}
+
+	public void setPos(int x, int y) {
+		this.setX(x);
+		this.setY(y);
+	}
+
+	public int getY() {
+		return this.y;
+	}
+
+	public void setY(int y) {
+		this.y = y;
 	}
 }

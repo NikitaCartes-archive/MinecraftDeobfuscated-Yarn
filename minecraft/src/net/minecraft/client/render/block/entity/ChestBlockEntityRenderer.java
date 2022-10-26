@@ -27,7 +27,7 @@ import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
@@ -103,9 +103,9 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & LidOpenable> imple
 			boolean bl2 = chestType != ChestType.SINGLE;
 			matrices.push();
 			float f = ((Direction)blockState.get(ChestBlock.FACING)).asRotation();
-			matrices.translate(0.5, 0.5, 0.5);
-			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-f));
-			matrices.translate(-0.5, -0.5, -0.5);
+			matrices.translate(0.5F, 0.5F, 0.5F);
+			matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-f));
+			matrices.translate(-0.5F, -0.5F, -0.5F);
 			DoubleBlockProperties.PropertySource<? extends ChestBlockEntity> propertySource;
 			if (bl) {
 				propertySource = abstractChestBlock.getBlockEntitySource(blockState, world, entity.getPos(), true);

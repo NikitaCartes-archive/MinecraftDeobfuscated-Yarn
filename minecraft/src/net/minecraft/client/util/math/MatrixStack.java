@@ -6,9 +6,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Matrix3f;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Quaternion;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 
 /**
  * A stack of transformation matrices used to specify how 3D objects are
@@ -30,9 +30,7 @@ import net.minecraft.util.math.Quaternion;
 public class MatrixStack {
 	private final Deque<MatrixStack.Entry> stack = Util.make(Queues.<MatrixStack.Entry>newArrayDeque(), stack -> {
 		Matrix4f matrix4f = new Matrix4f();
-		matrix4f.loadIdentity();
 		Matrix3f matrix3f = new Matrix3f();
-		matrix3f.loadIdentity();
 		stack.add(new MatrixStack.Entry(matrix4f, matrix3f));
 	});
 
@@ -40,8 +38,12 @@ public class MatrixStack {
 	 * Applies the translation transformation to the top entry.
 	 */
 	public void translate(double x, double y, double z) {
+		this.translate((float)x, (float)y, (float)z);
+	}
+
+	public void translate(float x, float y, float z) {
 		MatrixStack.Entry entry = (MatrixStack.Entry)this.stack.getLast();
-		entry.positionMatrix.multiplyByTranslation((float)x, (float)y, (float)z);
+		entry.positionMatrix.translate(x, y, z);
 	}
 
 	/**
@@ -52,29 +54,29 @@ public class MatrixStack {
 	 */
 	public void scale(float x, float y, float z) {
 		MatrixStack.Entry entry = (MatrixStack.Entry)this.stack.getLast();
-		entry.positionMatrix.multiply(Matrix4f.scale(x, y, z));
+		entry.positionMatrix.scale(x, y, z);
 		if (x == y && y == z) {
 			if (x > 0.0F) {
 				return;
 			}
 
-			entry.normalMatrix.multiply(-1.0F);
+			entry.normalMatrix.scale(-1.0F);
 		}
 
 		float f = 1.0F / x;
 		float g = 1.0F / y;
 		float h = 1.0F / z;
 		float i = MathHelper.fastInverseCbrt(f * g * h);
-		entry.normalMatrix.multiply(Matrix3f.scale(i * f, i * g, i * h));
+		entry.normalMatrix.scale(i * f, i * g, i * h);
 	}
 
 	/**
 	 * Applies the rotation transformation to the top entry.
 	 */
-	public void multiply(Quaternion quaternion) {
+	public void multiply(Quaternionf quaternion) {
 		MatrixStack.Entry entry = (MatrixStack.Entry)this.stack.getLast();
-		entry.positionMatrix.multiply(quaternion);
-		entry.normalMatrix.multiply(quaternion);
+		entry.positionMatrix.rotate(quaternion);
+		entry.normalMatrix.rotate(quaternion);
 	}
 
 	/**
@@ -82,7 +84,7 @@ public class MatrixStack {
 	 */
 	public void push() {
 		MatrixStack.Entry entry = (MatrixStack.Entry)this.stack.getLast();
-		this.stack.addLast(new MatrixStack.Entry(entry.positionMatrix.copy(), entry.normalMatrix.copy()));
+		this.stack.addLast(new MatrixStack.Entry(new Matrix4f(entry.positionMatrix), new Matrix3f(entry.normalMatrix)));
 	}
 
 	/**
@@ -111,8 +113,8 @@ public class MatrixStack {
 	 */
 	public void loadIdentity() {
 		MatrixStack.Entry entry = (MatrixStack.Entry)this.stack.getLast();
-		entry.positionMatrix.loadIdentity();
-		entry.normalMatrix.loadIdentity();
+		entry.positionMatrix.identity();
+		entry.normalMatrix.identity();
 	}
 
 	/**
@@ -122,7 +124,7 @@ public class MatrixStack {
 	 * methods.
 	 */
 	public void multiplyPositionMatrix(Matrix4f matrix) {
-		((MatrixStack.Entry)this.stack.getLast()).positionMatrix.multiply(matrix);
+		((MatrixStack.Entry)this.stack.getLast()).positionMatrix.mul(matrix);
 	}
 
 	@Environment(EnvType.CLIENT)

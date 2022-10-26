@@ -28,7 +28,7 @@ public class SlimeEntityRenderer extends MobEntityRenderer<SlimeEntity, SlimeEnt
 	protected void scale(SlimeEntity slimeEntity, MatrixStack matrixStack, float f) {
 		float g = 0.999F;
 		matrixStack.scale(0.999F, 0.999F, 0.999F);
-		matrixStack.translate(0.0, 0.001F, 0.0);
+		matrixStack.translate(0.0F, 0.001F, 0.0F);
 		float h = (float)slimeEntity.getSize();
 		float i = MathHelper.lerp(f, slimeEntity.lastStretch, slimeEntity.stretch) / (h * 0.5F + 1.0F);
 		float j = 1.0F / (i + 1.0F);

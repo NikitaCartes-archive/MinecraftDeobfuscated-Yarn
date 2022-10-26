@@ -170,7 +170,7 @@ public class NbtOps implements DynamicOps<NbtElement> {
 		} else {
 			NbtCompound nbtCompound = new NbtCompound();
 			if (nbtElement instanceof NbtCompound nbtCompound2) {
-				nbtCompound2.getKeys().forEach(string -> nbtCompound.put(string, nbtCompound2.get(string)));
+				nbtCompound2.getKeys().forEach(key -> nbtCompound.put(key, nbtCompound2.get(key)));
 			}
 
 			List<NbtElement> list = Lists.<NbtElement>newArrayList();
@@ -227,21 +227,21 @@ public class NbtOps implements DynamicOps<NbtElement> {
 		return nbtCompound;
 	}
 
-	private static NbtElement method_46232(NbtCompound nbtCompound) {
-		if (nbtCompound.getSize() == 1) {
-			NbtElement nbtElement = nbtCompound.get("");
+	private static NbtElement unpackMarker(NbtCompound nbt) {
+		if (nbt.getSize() == 1) {
+			NbtElement nbtElement = nbt.get("");
 			if (nbtElement != null) {
 				return nbtElement;
 			}
 		}
 
-		return nbtCompound;
+		return nbt;
 	}
 
 	public DataResult<Stream<NbtElement>> getStream(NbtElement nbtElement) {
 		if (nbtElement instanceof NbtList nbtList) {
 			return nbtList.getHeldType() == NbtElement.COMPOUND_TYPE
-				? DataResult.success(nbtList.stream().map(nbtElementx -> method_46232((NbtCompound)nbtElementx)))
+				? DataResult.success(nbtList.stream().map(nbt -> unpackMarker((NbtCompound)nbt)))
 				: DataResult.success(nbtList.stream());
 		} else {
 			return nbtElement instanceof AbstractNbtList<?> abstractNbtList
@@ -253,7 +253,7 @@ public class NbtOps implements DynamicOps<NbtElement> {
 	public DataResult<Consumer<Consumer<NbtElement>>> getList(NbtElement nbtElement) {
 		if (nbtElement instanceof NbtList nbtList) {
 			return nbtList.getHeldType() == NbtElement.COMPOUND_TYPE
-				? DataResult.success(consumer -> nbtList.forEach(nbtElementx -> consumer.accept(method_46232((NbtCompound)nbtElementx))))
+				? DataResult.success(consumer -> nbtList.forEach(nbt -> consumer.accept(unpackMarker((NbtCompound)nbt))))
 				: DataResult.success(nbtList::forEach);
 		} else {
 			return nbtElement instanceof AbstractNbtList<?> abstractNbtList

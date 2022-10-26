@@ -35,9 +35,9 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.SignType;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.RotationPropertyHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class SignBlockEntityRenderer implements BlockEntityRenderer<SignBlockEntity> {
@@ -64,15 +64,15 @@ public class SignBlockEntityRenderer implements BlockEntityRenderer<SignBlockEnt
 		SignType signType = AbstractSignBlock.getSignType(blockState.getBlock());
 		SignBlockEntityRenderer.SignModel signModel = (SignBlockEntityRenderer.SignModel)this.typeToModel.get(signType);
 		if (blockState.getBlock() instanceof SignBlock) {
-			matrixStack.translate(0.5, 0.5, 0.5);
+			matrixStack.translate(0.5F, 0.5F, 0.5F);
 			float h = -RotationPropertyHelper.toDegrees((Integer)blockState.get(SignBlock.ROTATION));
-			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(h));
+			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(h));
 			signModel.stick.visible = true;
 		} else {
-			matrixStack.translate(0.5, 0.5, 0.5);
+			matrixStack.translate(0.5F, 0.5F, 0.5F);
 			float h = -((Direction)blockState.get(WallSignBlock.FACING)).asRotation();
-			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(h));
-			matrixStack.translate(0.0, -0.3125, -0.4375);
+			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(h));
+			matrixStack.translate(0.0F, -0.3125F, -0.4375F);
 			signModel.stick.visible = false;
 		}
 

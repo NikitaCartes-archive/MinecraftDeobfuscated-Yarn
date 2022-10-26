@@ -97,7 +97,7 @@ public class RootSystemFeature extends Feature<RootSystemFeatureConfig> {
 		for (int j = 0; j < config.rootPlacementAttempts; j++) {
 			mutablePos.set(mutablePos, random.nextInt(i) - random.nextInt(i), 0, random.nextInt(i) - random.nextInt(i));
 			if (predicate.test(world.getBlockState(mutablePos))) {
-				world.setBlockState(mutablePos, config.rootStateProvider.getBlockState(random, mutablePos), Block.NOTIFY_LISTENERS);
+				world.setBlockState(mutablePos, config.rootStateProvider.get(random, mutablePos), Block.NOTIFY_LISTENERS);
 			}
 
 			mutablePos.setX(x);
@@ -112,7 +112,7 @@ public class RootSystemFeature extends Feature<RootSystemFeatureConfig> {
 		for (int k = 0; k < config.hangingRootPlacementAttempts; k++) {
 			mutablePos.set(pos, random.nextInt(i) - random.nextInt(i), random.nextInt(j) - random.nextInt(j), random.nextInt(i) - random.nextInt(i));
 			if (world.isAir(mutablePos)) {
-				BlockState blockState = config.hangingRootStateProvider.getBlockState(random, mutablePos);
+				BlockState blockState = config.hangingRootStateProvider.get(random, mutablePos);
 				if (blockState.canPlaceAt(world, mutablePos) && world.getBlockState(mutablePos.up()).isSideSolidFullSquare(world, mutablePos, Direction.DOWN)) {
 					world.setBlockState(mutablePos, blockState, Block.NOTIFY_LISTENERS);
 				}

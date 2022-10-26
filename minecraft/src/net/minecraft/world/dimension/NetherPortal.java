@@ -20,7 +20,7 @@ import net.minecraft.world.BlockLocating;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.WorldAccess;
 
-public class AreaHelper {
+public class NetherPortal {
 	private static final int MIN_WIDTH = 2;
 	public static final int MAX_WIDTH = 21;
 	private static final int field_31826 = 3;
@@ -35,21 +35,21 @@ public class AreaHelper {
 	private int height;
 	private final int width;
 
-	public static Optional<AreaHelper> getNewPortal(WorldAccess world, BlockPos pos, Direction.Axis axis) {
+	public static Optional<NetherPortal> getNewPortal(WorldAccess world, BlockPos pos, Direction.Axis axis) {
 		return getOrEmpty(world, pos, areaHelper -> areaHelper.isValid() && areaHelper.foundPortalBlocks == 0, axis);
 	}
 
-	public static Optional<AreaHelper> getOrEmpty(WorldAccess world, BlockPos pos, Predicate<AreaHelper> validator, Direction.Axis axis) {
-		Optional<AreaHelper> optional = Optional.of(new AreaHelper(world, pos, axis)).filter(validator);
+	public static Optional<NetherPortal> getOrEmpty(WorldAccess world, BlockPos pos, Predicate<NetherPortal> validator, Direction.Axis axis) {
+		Optional<NetherPortal> optional = Optional.of(new NetherPortal(world, pos, axis)).filter(validator);
 		if (optional.isPresent()) {
 			return optional;
 		} else {
 			Direction.Axis axis2 = axis == Direction.Axis.X ? Direction.Axis.Z : Direction.Axis.X;
-			return Optional.of(new AreaHelper(world, pos, axis2)).filter(validator);
+			return Optional.of(new NetherPortal(world, pos, axis2)).filter(validator);
 		}
 	}
 
-	public AreaHelper(WorldAccess world, BlockPos pos, Direction.Axis axis) {
+	public NetherPortal(WorldAccess world, BlockPos pos, Direction.Axis axis) {
 		this.world = world;
 		this.axis = axis;
 		this.negativeDir = axis == Direction.Axis.X ? Direction.WEST : Direction.SOUTH;

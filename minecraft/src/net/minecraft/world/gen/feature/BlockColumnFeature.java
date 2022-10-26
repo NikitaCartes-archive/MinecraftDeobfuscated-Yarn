@@ -47,7 +47,7 @@ public class BlockColumnFeature extends Feature<BlockColumnFeatureConfig> {
 					BlockColumnFeatureConfig.Layer layer = (BlockColumnFeatureConfig.Layer)blockColumnFeatureConfig.layers().get(l);
 
 					for (int n = 0; n < m; n++) {
-						structureWorldAccess.setBlockState(mutable, layer.state().getBlockState(random, mutable), Block.NOTIFY_LISTENERS);
+						structureWorldAccess.setBlockState(mutable, layer.state().get(random, mutable), Block.NOTIFY_LISTENERS);
 						mutable.move(blockColumnFeatureConfig.direction());
 					}
 				}

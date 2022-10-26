@@ -178,7 +178,6 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
-import net.minecraft.network.encryption.ClientPlayerSession;
 import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
@@ -234,7 +233,6 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.profiler.DebugRecorder;
 import net.minecraft.util.profiler.DummyProfiler;
 import net.minecraft.util.profiler.DummyRecorder;
@@ -252,6 +250,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.commons.io.FileUtils;
+import org.joml.Matrix4f;
 import org.lwjgl.util.tinyfd.TinyFileDialogs;
 import org.slf4j.Logger;
 
@@ -645,7 +644,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.window.logOnGlError();
 		this.onResolutionChanged();
 		this.gameRenderer.preloadShaders(this.defaultResourcePack.getFactory());
-		this.profileKeys = new ProfileKeys(this.userApiService, this.session.getProfile().getId(), this.runDirectory.toPath());
+		this.profileKeys = ProfileKeys.create(this.userApiService, this.session, this.runDirectory.toPath());
 		this.realms32BitWarningChecker = new Realms32BitWarningChecker(this);
 		this.narratorManager = new NarratorManager(this);
 		this.messageHandler = new MessageHandler(this);
@@ -1039,7 +1038,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 
 		this.currentScreen = screen;
-		BufferRenderer.unbindAll();
+		BufferRenderer.reset();
 		if (screen != null) {
 			this.mouse.unlockCursor();
 			KeyBinding.unpressAll();
@@ -1508,13 +1507,12 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		ProfilerTiming profilerTiming = (ProfilerTiming)list.remove(0);
 		RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, IS_SYSTEM_MAC);
 		RenderSystem.setShader(GameRenderer::getPositionColorShader);
-		Matrix4f matrix4f = Matrix4f.projectionMatrix(
-			0.0F, (float)this.window.getFramebufferWidth(), 0.0F, (float)this.window.getFramebufferHeight(), 1000.0F, 3000.0F
-		);
+		Matrix4f matrix4f = new Matrix4f()
+			.setOrtho(0.0F, (float)this.window.getFramebufferWidth(), (float)this.window.getFramebufferHeight(), 0.0F, 1000.0F, 3000.0F);
 		RenderSystem.setProjectionMatrix(matrix4f);
 		MatrixStack matrixStack = RenderSystem.getModelViewStack();
 		matrixStack.loadIdentity();
-		matrixStack.translate(0.0, 0.0, -2000.0);
+		matrixStack.translate(0.0F, 0.0F, -2000.0F);
 		RenderSystem.applyModelViewMatrix();
 		RenderSystem.lineWidth(1.0F);
 		RenderSystem.disableTexture();
@@ -2029,7 +2027,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public void startIntegratedServer(String levelName, LevelStorage.Session session, ResourcePackManager dataPackManager, SaveLoader saveLoader) {
-		CompletableFuture<ClientPlayerSession> completableFuture = this.profileKeys.getClientSession();
 		this.disconnect();
 		this.worldGenProgressTracker.set(null);
 
@@ -2048,8 +2045,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			);
 			this.integratedServerRunning = true;
 			this.ensureAbuseReportContext(ReporterEnvironment.ofIntegratedServer());
-		} catch (Throwable var11) {
-			CrashReport crashReport = CrashReport.create(var11, "Starting integrated server");
+		} catch (Throwable var9) {
+			CrashReport crashReport = CrashReport.create(var9, "Starting integrated server");
 			CrashReportSection crashReportSection = crashReport.addElement("Starting integrated server");
 			crashReportSection.add("Level ID", levelName);
 			crashReportSection.add("Level Name", (CrashCallable<String>)(() -> saveLoader.saveProperties().getLevelName()));
@@ -2070,7 +2067,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 			try {
 				Thread.sleep(16L);
-			} catch (InterruptedException var10) {
+			} catch (InterruptedException var8) {
 			}
 
 			if (this.crashReportSupplier != null) {
@@ -2082,15 +2079,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.profiler.pop();
 		SocketAddress socketAddress = this.server.getNetworkIo().bindLocal();
 		ClientConnection clientConnection = ClientConnection.connectLocal(socketAddress);
-		ClientPlayerSession clientPlayerSession = (ClientPlayerSession)completableFuture.join();
-		clientConnection.setPacketListener(new ClientLoginNetworkHandler(clientConnection, this, clientPlayerSession, null, null, status -> {
+		clientConnection.setPacketListener(new ClientLoginNetworkHandler(clientConnection, this, null, null, status -> {
 		}));
 		clientConnection.send(new HandshakeC2SPacket(socketAddress.toString(), 0, NetworkState.LOGIN));
-		clientConnection.send(
-			new LoginHelloC2SPacket(
-				this.getSession().getUsername(), clientPlayerSession.toPublicSession().toSerialized(), Optional.ofNullable(this.getSession().getUuidOrNull())
-			)
-		);
+		clientConnection.send(new LoginHelloC2SPacket(this.getSession().getUsername(), Optional.ofNullable(this.getSession().getUuidOrNull())));
 		this.integratedServerConnection = clientConnection;
 	}
 
@@ -2843,6 +2835,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public void loadBlockList() {
 		this.socialInteractionsManager.loadBlockList();
+		this.getProfileKeys().fetchKeyPair();
 	}
 
 	public Realms32BitWarningChecker getRealms32BitWarningChecker() {

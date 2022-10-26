@@ -16,7 +16,7 @@ public class PressableTextWidget extends ButtonWidget {
 	private final Text hoverText;
 
 	public PressableTextWidget(int x, int y, int width, int height, Text text, ButtonWidget.PressAction onPress, TextRenderer textRenderer) {
-		super(x, y, width, height, text, onPress);
+		super(x, y, width, height, text, onPress, EMPTY_TOOLTIP, DEFAULT_NARRATION_SUPPLIER);
 		this.textRenderer = textRenderer;
 		this.text = text;
 		this.hoverText = Texts.setStyleIfAbsent(text.copy(), Style.EMPTY.withUnderline(true));
@@ -25,6 +25,6 @@ public class PressableTextWidget extends ButtonWidget {
 	@Override
 	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		Text text = this.isHovered() ? this.hoverText : this.text;
-		drawTextWithShadow(matrices, this.textRenderer, text, this.x, this.y, 16777215 | MathHelper.ceil(this.alpha * 255.0F) << 24);
+		drawTextWithShadow(matrices, this.textRenderer, text, this.getX(), this.getY(), 16777215 | MathHelper.ceil(this.alpha * 255.0F) << 24);
 	}
 }

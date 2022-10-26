@@ -168,7 +168,7 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 			nbt.put("Offers", tradeOfferList.toNbt());
 		}
 
-		nbt.put("Inventory", this.inventory.toNbtList());
+		this.writeInventory(nbt);
 	}
 
 	@Override
@@ -178,9 +178,7 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 			this.offers = new TradeOfferList(nbt.getCompound("Offers"));
 		}
 
-		if (nbt.contains("Inventory", NbtElement.COMPOUND_TYPE)) {
-			this.inventory.readNbtList(nbt.getList("Inventory", NbtElement.COMPOUND_TYPE));
-		}
+		this.readInventory(nbt);
 	}
 
 	@Nullable

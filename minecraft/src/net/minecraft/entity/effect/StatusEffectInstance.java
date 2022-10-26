@@ -33,7 +33,7 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 	 */
 	@Nullable
 	private StatusEffectInstance hiddenEffect;
-	private Optional<StatusEffectInstance.FactorCalculationData> factorCalculationData;
+	private final Optional<StatusEffectInstance.FactorCalculationData> factorCalculationData;
 
 	public StatusEffectInstance(StatusEffect type) {
 		this(type, 0, 0);

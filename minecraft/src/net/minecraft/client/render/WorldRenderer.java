@@ -68,7 +68,6 @@ import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.ParticleUtil;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3d;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -107,11 +106,8 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Matrix3f;
-import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
-import net.minecraft.util.math.Vector4f;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.math.random.Random;
@@ -128,6 +124,10 @@ import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.border.WorldBorder;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Vector3d;
+import org.joml.Vector4f;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -1079,8 +1079,8 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 	private void captureFrustum(Matrix4f positionMatrix, Matrix4f matrix4f, double x, double y, double z, Frustum frustum) {
 		this.capturedFrustum = frustum;
-		Matrix4f matrix4f2 = matrix4f.copy();
-		matrix4f2.multiply(positionMatrix);
+		Matrix4f matrix4f2 = new Matrix4f(matrix4f);
+		matrix4f2.mul(positionMatrix);
 		matrix4f2.invert();
 		this.capturedFrustumPosition.x = x;
 		this.capturedFrustumPosition.y = y;
@@ -1095,8 +1095,8 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		this.capturedFrustumOrientation[7] = new Vector4f(-1.0F, 1.0F, 1.0F, 1.0F);
 
 		for (int i = 0; i < 8; i++) {
-			this.capturedFrustumOrientation[i].transform(matrix4f2);
-			this.capturedFrustumOrientation[i].normalizeProjectiveCoordinates();
+			matrix4f2.transform(this.capturedFrustumOrientation[i]);
+			this.capturedFrustumOrientation[i].div(this.capturedFrustumOrientation[i].w());
 		}
 	}
 
@@ -1532,12 +1532,12 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				}
 
 				vertexBuffer.bind();
-				vertexBuffer.drawElements();
+				vertexBuffer.draw();
 			}
 		}
 
 		if (glUniform != null) {
-			glUniform.set(Vec3f.ZERO);
+			glUniform.set(0.0F, 0.0F, 0.0F);
 		}
 
 		shader.unbind();
@@ -1672,9 +1672,9 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			MatrixStack matrixStack2 = RenderSystem.getModelViewStack();
 			matrixStack2.push();
 			matrixStack2.translate(
-				(double)((float)(this.capturedFrustumPosition.x - camera.getPos().x)),
-				(double)((float)(this.capturedFrustumPosition.y - camera.getPos().y)),
-				(double)((float)(this.capturedFrustumPosition.z - camera.getPos().z))
+				(float)(this.capturedFrustumPosition.x - camera.getPos().x),
+				(float)(this.capturedFrustumPosition.y - camera.getPos().y),
+				(float)(this.capturedFrustumPosition.z - camera.getPos().z)
 			);
 			RenderSystem.applyModelViewMatrix();
 			RenderSystem.depthMask(true);
@@ -1727,7 +1727,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 	private void method_22984(VertexConsumer vertexConsumer, int i) {
 		vertexConsumer.vertex(
-				(double)this.capturedFrustumOrientation[i].getX(), (double)this.capturedFrustumOrientation[i].getY(), (double)this.capturedFrustumOrientation[i].getZ()
+				(double)this.capturedFrustumOrientation[i].x(), (double)this.capturedFrustumOrientation[i].y(), (double)this.capturedFrustumOrientation[i].z()
 			)
 			.color(0, 0, 0, 255)
 			.normal(0.0F, 0.0F, -1.0F)
@@ -1737,22 +1737,22 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 	private void method_22985(VertexConsumer vertexConsumer, int i, int j, int k, int l, int m, int n, int o) {
 		float f = 0.25F;
 		vertexConsumer.vertex(
-				(double)this.capturedFrustumOrientation[i].getX(), (double)this.capturedFrustumOrientation[i].getY(), (double)this.capturedFrustumOrientation[i].getZ()
+				(double)this.capturedFrustumOrientation[i].x(), (double)this.capturedFrustumOrientation[i].y(), (double)this.capturedFrustumOrientation[i].z()
 			)
 			.color((float)m, (float)n, (float)o, 0.25F)
 			.next();
 		vertexConsumer.vertex(
-				(double)this.capturedFrustumOrientation[j].getX(), (double)this.capturedFrustumOrientation[j].getY(), (double)this.capturedFrustumOrientation[j].getZ()
+				(double)this.capturedFrustumOrientation[j].x(), (double)this.capturedFrustumOrientation[j].y(), (double)this.capturedFrustumOrientation[j].z()
 			)
 			.color((float)m, (float)n, (float)o, 0.25F)
 			.next();
 		vertexConsumer.vertex(
-				(double)this.capturedFrustumOrientation[k].getX(), (double)this.capturedFrustumOrientation[k].getY(), (double)this.capturedFrustumOrientation[k].getZ()
+				(double)this.capturedFrustumOrientation[k].x(), (double)this.capturedFrustumOrientation[k].y(), (double)this.capturedFrustumOrientation[k].z()
 			)
 			.color((float)m, (float)n, (float)o, 0.25F)
 			.next();
 		vertexConsumer.vertex(
-				(double)this.capturedFrustumOrientation[l].getX(), (double)this.capturedFrustumOrientation[l].getY(), (double)this.capturedFrustumOrientation[l].getZ()
+				(double)this.capturedFrustumOrientation[l].x(), (double)this.capturedFrustumOrientation[l].y(), (double)this.capturedFrustumOrientation[l].z()
 			)
 			.color((float)m, (float)n, (float)o, 0.25F)
 			.next();
@@ -1803,23 +1803,23 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		for (int i = 0; i < 6; i++) {
 			matrices.push();
 			if (i == 1) {
-				matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0F));
+				matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0F));
 			}
 
 			if (i == 2) {
-				matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
+				matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-90.0F));
 			}
 
 			if (i == 3) {
-				matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(180.0F));
+				matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180.0F));
 			}
 
 			if (i == 4) {
-				matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
+				matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90.0F));
 			}
 
 			if (i == 5) {
-				matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-90.0F));
+				matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-90.0F));
 			}
 
 			Matrix4f matrix4f = matrices.peek().getPositionMatrix();
@@ -1866,10 +1866,10 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 						RenderSystem.disableTexture();
 						RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 						matrices.push();
-						matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0F));
+						matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0F));
 						float i = MathHelper.sin(this.world.getSkyAngleRadians(tickDelta)) < 0.0F ? 180.0F : 0.0F;
-						matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(i));
-						matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
+						matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(i));
+						matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90.0F));
 						float j = fs[0];
 						float k = fs[1];
 						float l = fs[2];
@@ -1896,8 +1896,8 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 					matrices.push();
 					float i = 1.0F - this.world.getRainGradient(tickDelta);
 					RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, i);
-					matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
-					matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(this.world.getSkyAngle(tickDelta) * 360.0F));
+					matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-90.0F));
+					matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(this.world.getSkyAngle(tickDelta) * 360.0F));
 					Matrix4f matrix4f2 = matrices.peek().getPositionMatrix();
 					float k = 30.0F;
 					RenderSystem.setShader(GameRenderer::getPositionTexShader);
@@ -1942,7 +1942,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 					double d = this.client.player.getCameraPosVec(tickDelta).y - this.world.getLevelProperties().getSkyDarknessHeight(this.world);
 					if (d < 0.0) {
 						matrices.push();
-						matrices.translate(0.0, 12.0, 0.0);
+						matrices.translate(0.0F, 12.0F, 0.0F);
 						this.darkSkyBuffer.bind();
 						this.darkSkyBuffer.draw(matrices.peek().getPositionMatrix(), projectionMatrix, shader);
 						VertexBuffer.unbind();
@@ -2029,7 +2029,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			BackgroundRenderer.setFogBlack();
 			matrices.push();
 			matrices.scale(12.0F, 1.0F, 12.0F);
-			matrices.translate((double)(-o), (double)p, (double)(-q));
+			matrices.translate(-o, p, -q);
 			if (this.cloudsBuffer != null) {
 				this.cloudsBuffer.bind();
 				int u = this.lastCloudRenderMode == CloudRenderMode.FANCY ? 0 : 1;

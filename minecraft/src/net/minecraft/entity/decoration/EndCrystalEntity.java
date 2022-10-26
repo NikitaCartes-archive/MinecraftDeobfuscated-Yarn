@@ -96,7 +96,8 @@ public class EndCrystalEntity extends Entity {
 			if (!this.isRemoved() && !this.world.isClient) {
 				this.remove(Entity.RemovalReason.KILLED);
 				if (!source.isExplosive()) {
-					this.world.createExplosion(null, this.getX(), this.getY(), this.getZ(), 6.0F, Explosion.DestructionType.DESTROY);
+					DamageSource damageSource = source.getAttacker() != null ? DamageSource.explosion(this, source.getAttacker()) : null;
+					this.world.createExplosion(this, damageSource, null, this.getX(), this.getY(), this.getZ(), 6.0F, false, Explosion.DestructionType.DESTROY);
 				}
 
 				this.crystalDestroyed(source);

@@ -15,8 +15,8 @@ public interface LandingBlock {
 	default void onDestroyedOnLanding(World world, BlockPos pos, FallingBlockEntity fallingBlockEntity) {
 	}
 
-	default DamageSource getDamageSource() {
-		return DamageSource.FALLING_BLOCK;
+	default DamageSource getDamageSource(Entity attacker) {
+		return DamageSource.fallingBlock(attacker);
 	}
 
 	default Predicate<Entity> getEntityPredicate() {

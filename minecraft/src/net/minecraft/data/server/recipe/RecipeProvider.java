@@ -4,12 +4,11 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
-import com.mojang.logging.LogUtils;
-import java.io.IOException;
-import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
@@ -40,10 +39,8 @@ import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import org.slf4j.Logger;
 
 public abstract class RecipeProvider implements DataProvider {
-	private static final Logger LOGGER = LogUtils.getLogger();
 	private final DataOutput.PathResolver recipesPathResolver;
 	private final DataOutput.PathResolver advancementsPathResolver;
 	private static final Map<BlockFamily.Variant, BiFunction<ItemConvertible, ItemConvertible, CraftingRecipeJsonBuilder>> VARIANT_FACTORIES = ImmutableMap.<BlockFamily.Variant, BiFunction<ItemConvertible, ItemConvertible, CraftingRecipeJsonBuilder>>builder()
@@ -75,39 +72,25 @@ public abstract class RecipeProvider implements DataProvider {
 	}
 
 	@Override
-	public void run(DataWriter writer) {
+	public CompletableFuture<?> run(DataWriter writer) {
 		Set<Identifier> set = Sets.<Identifier>newHashSet();
-		this.generate(provider -> {
-			if (!set.add(provider.getRecipeId())) {
-				throw new IllegalStateException("Duplicate recipe " + provider.getRecipeId());
+		List<CompletableFuture<?>> list = new ArrayList();
+		this.generate(jsonProvider -> {
+			if (!set.add(jsonProvider.getRecipeId())) {
+				throw new IllegalStateException("Duplicate recipe " + jsonProvider.getRecipeId());
 			} else {
-				saveRecipe(writer, provider.toJson(), this.recipesPathResolver.resolveJson(provider.getRecipeId()));
-				JsonObject jsonObject = provider.toAdvancementJson();
+				list.add(DataProvider.writeToPath(writer, jsonProvider.toJson(), this.recipesPathResolver.resolveJson(jsonProvider.getRecipeId())));
+				JsonObject jsonObject = jsonProvider.toAdvancementJson();
 				if (jsonObject != null) {
-					saveRecipeAdvancement(writer, jsonObject, this.advancementsPathResolver.resolveJson(provider.getAdvancementId()));
+					list.add(DataProvider.writeToPath(writer, jsonObject, this.advancementsPathResolver.resolveJson(jsonProvider.getAdvancementId())));
 				}
 			}
 		});
+		return CompletableFuture.allOf((CompletableFuture[])list.toArray(CompletableFuture[]::new));
 	}
 
-	protected void saveRecipeAdvancement(DataWriter cache, Identifier advancementId, Advancement.Builder advancementBuilder) {
-		saveRecipeAdvancement(cache, advancementBuilder.toJson(), this.advancementsPathResolver.resolveJson(advancementId));
-	}
-
-	private static void saveRecipe(DataWriter cache, JsonObject json, Path path) {
-		try {
-			DataProvider.writeToPath(cache, json, path);
-		} catch (IOException var4) {
-			LOGGER.error("Couldn't save recipe {}", path, var4);
-		}
-	}
-
-	private static void saveRecipeAdvancement(DataWriter cache, JsonObject json, Path path) {
-		try {
-			DataProvider.writeToPath(cache, json, path);
-		} catch (IOException var4) {
-			LOGGER.error("Couldn't save recipe advancement {}", path, var4);
-		}
+	protected CompletableFuture<?> saveRecipeAdvancement(DataWriter cache, Identifier advancementId, Advancement.Builder advancementBuilder) {
+		return DataProvider.writeToPath(cache, advancementBuilder.toJson(), this.advancementsPathResolver.resolveJson(advancementId));
 	}
 
 	protected abstract void generate(Consumer<RecipeJsonProvider> exporter);
@@ -695,5 +678,10 @@ public abstract class RecipeProvider implements DataProvider {
 
 	protected static String getBlastingItemPath(ItemConvertible item) {
 		return getItemPath(item) + "_from_blasting";
+	}
+
+	@Override
+	public final String getName() {
+		return "Recipes";
 	}
 }

@@ -84,12 +84,12 @@ public class RamImpactTask extends Task<GoatEntity> {
 			float h = livingEntity.blockedByShield(DamageSource.mob(goatEntity)) ? 0.5F : 1.0F;
 			livingEntity.takeKnockback((double)(h * g) * this.strengthMultiplierFactory.applyAsDouble(goatEntity), this.direction.getX(), this.direction.getZ());
 			this.finishRam(serverWorld, goatEntity);
-			serverWorld.playSoundFromEntity(null, goatEntity, (SoundEvent)this.impactSoundFactory.apply(goatEntity), SoundCategory.HOSTILE, 1.0F, 1.0F);
+			serverWorld.playSoundFromEntity(null, goatEntity, (SoundEvent)this.impactSoundFactory.apply(goatEntity), SoundCategory.NEUTRAL, 1.0F, 1.0F);
 		} else if (this.shouldSnapHorn(serverWorld, goatEntity)) {
-			serverWorld.playSoundFromEntity(null, goatEntity, (SoundEvent)this.impactSoundFactory.apply(goatEntity), SoundCategory.HOSTILE, 1.0F, 1.0F);
+			serverWorld.playSoundFromEntity(null, goatEntity, (SoundEvent)this.impactSoundFactory.apply(goatEntity), SoundCategory.NEUTRAL, 1.0F, 1.0F);
 			boolean bl = goatEntity.dropHorn();
 			if (bl) {
-				serverWorld.playSoundFromEntity(null, goatEntity, (SoundEvent)this.hornBreakSoundFactory.apply(goatEntity), SoundCategory.HOSTILE, 1.0F, 1.0F);
+				serverWorld.playSoundFromEntity(null, goatEntity, (SoundEvent)this.hornBreakSoundFactory.apply(goatEntity), SoundCategory.NEUTRAL, 1.0F, 1.0F);
 			}
 
 			this.finishRam(serverWorld, goatEntity);

@@ -112,7 +112,7 @@ public class MangroveRootPlacer extends RootPlacer {
 	@Override
 	protected void placeRoots(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, BlockPos pos, TreeFeatureConfig config) {
 		if (world.testBlockState(pos, state -> state.isIn(this.mangroveRootPlacement.muddyRootsIn()))) {
-			BlockState blockState = this.mangroveRootPlacement.muddyRootsProvider().getBlockState(random, pos);
+			BlockState blockState = this.mangroveRootPlacement.muddyRootsProvider().get(random, pos);
 			replacer.accept(pos, this.applyWaterlogging(world, pos, blockState));
 		} else {
 			super.placeRoots(world, replacer, random, pos, config);

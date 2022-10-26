@@ -1,6 +1,7 @@
 package net.minecraft.network.message;
 
 import com.google.common.primitives.Ints;
+import com.mojang.serialization.Codec;
 import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -13,6 +14,7 @@ import net.minecraft.network.encryption.SignatureUpdatable;
  * A list of messages a client has seen.
  */
 public record LastSeenMessageList(List<MessageSignatureData> entries) {
+	public static final Codec<LastSeenMessageList> CODEC = MessageSignatureData.CODEC.listOf().xmap(LastSeenMessageList::new, LastSeenMessageList::entries);
 	public static LastSeenMessageList EMPTY = new LastSeenMessageList(List.of());
 	public static final int MAX_ENTRIES = 20;
 
@@ -24,8 +26,8 @@ public record LastSeenMessageList(List<MessageSignatureData> entries) {
 		}
 	}
 
-	public LastSeenMessageList.Indexed pack(MessageSignatureData.Packer packer) {
-		return new LastSeenMessageList.Indexed(this.entries.stream().map(signature -> signature.pack(packer)).toList());
+	public LastSeenMessageList.Indexed pack(MessageSignatureStorage storage) {
+		return new LastSeenMessageList.Indexed(this.entries.stream().map(signature -> signature.pack(storage)).toList());
 	}
 
 	/**
@@ -56,11 +58,11 @@ public record LastSeenMessageList(List<MessageSignatureData> entries) {
 			buf.writeCollection(this.buf, MessageSignatureData.Indexed::write);
 		}
 
-		public Optional<LastSeenMessageList> unpack(MessageSignatureData.Unpacker unpacker) {
+		public Optional<LastSeenMessageList> unpack(MessageSignatureStorage storage) {
 			List<MessageSignatureData> list = new ArrayList(this.buf.size());
 
 			for (MessageSignatureData.Indexed indexed : this.buf) {
-				Optional<MessageSignatureData> optional = indexed.getSignature(unpacker);
+				Optional<MessageSignatureData> optional = indexed.getSignature(storage);
 				if (optional.isEmpty()) {
 					return Optional.empty();
 				}

@@ -15,8 +15,8 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends EntityRenderer<T> {
@@ -39,7 +39,7 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 		float h = (((float)(l >> 16 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
 		float j = (((float)(l >> 20 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
 		float k = (((float)(l >> 24 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
-		matrixStack.translate((double)h, (double)j, (double)k);
+		matrixStack.translate(h, j, k);
 		double d = MathHelper.lerp((double)g, abstractMinecartEntity.lastRenderX, abstractMinecartEntity.getX());
 		double e = MathHelper.lerp((double)g, abstractMinecartEntity.lastRenderY, abstractMinecartEntity.getY());
 		double m = MathHelper.lerp((double)g, abstractMinecartEntity.lastRenderZ, abstractMinecartEntity.getZ());
@@ -66,9 +66,9 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 			}
 		}
 
-		matrixStack.translate(0.0, 0.375, 0.0);
-		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F - f));
-		matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-o));
+		matrixStack.translate(0.0F, 0.375F, 0.0F);
+		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F - f));
+		matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-o));
 		float p = (float)abstractMinecartEntity.getDamageWobbleTicks() - g;
 		float q = abstractMinecartEntity.getDamageWobbleStrength() - g;
 		if (q < 0.0F) {
@@ -76,7 +76,7 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 		}
 
 		if (p > 0.0F) {
-			matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(MathHelper.sin(p) * p * q / 10.0F * (float)abstractMinecartEntity.getDamageWobbleSide()));
+			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(MathHelper.sin(p) * p * q / 10.0F * (float)abstractMinecartEntity.getDamageWobbleSide()));
 		}
 
 		int r = abstractMinecartEntity.getBlockOffset();
@@ -85,8 +85,8 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 			matrixStack.push();
 			float s = 0.75F;
 			matrixStack.scale(0.75F, 0.75F, 0.75F);
-			matrixStack.translate(-0.5, (double)((float)(r - 8) / 16.0F), 0.5);
-			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
+			matrixStack.translate(-0.5F, (float)(r - 8) / 16.0F, 0.5F);
+			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90.0F));
 			this.renderBlock(abstractMinecartEntity, g, blockState, matrixStack, vertexConsumerProvider, i);
 			matrixStack.pop();
 		}

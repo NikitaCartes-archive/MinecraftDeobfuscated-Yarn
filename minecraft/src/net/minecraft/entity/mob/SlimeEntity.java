@@ -52,6 +52,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 	public SlimeEntity(EntityType<? extends SlimeEntity> entityType, World world) {
 		super(entityType, world);
+		this.reinitDimensions();
 		this.moveControl = new SlimeEntity.SlimeMoveControl(this);
 	}
 

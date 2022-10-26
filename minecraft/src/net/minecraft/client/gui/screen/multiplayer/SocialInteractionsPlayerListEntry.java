@@ -44,6 +44,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 	private boolean sentMessage;
 	private final boolean canSendReports;
 	private final boolean reportable;
+	private final boolean hasDraftReport;
 	@Nullable
 	private ButtonWidget hideButton;
 	@Nullable
@@ -83,8 +84,9 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 		this.name = name;
 		this.skinTexture = skinTexture;
 		AbuseReportContext abuseReportContext = client.getAbuseReportContext();
-		this.canSendReports = abuseReportContext.sender().canSendReports();
+		this.canSendReports = abuseReportContext.getSender().canSendReports();
 		this.reportable = reportable;
+		this.hasDraftReport = abuseReportContext.draftPlayerUuidEquals(uuid);
 		final Text text = Text.translatable("gui.socialInteractions.narration.hide", name);
 		final Text text2 = Text.translatable("gui.socialInteractions.narration.show", name);
 		this.hideTooltip = client.textRenderer.wrapLines(hideText, 150);
@@ -105,7 +107,11 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 				REPORT_BUTTON_TEXTURE,
 				64,
 				64,
-				button -> client.setScreen(new ChatReportScreen(client.currentScreen, abuseReportContext, uuid)),
+				button -> {
+					if (abuseReportContext.tryShowDraftScreen(client, parent, false)) {
+						client.setScreen(new ChatReportScreen(parent, abuseReportContext, uuid));
+					}
+				},
 				new ButtonWidget.TooltipSupplier() {
 					@Override
 					public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {
@@ -251,18 +257,24 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 
 		if (this.hideButton != null && this.showButton != null && this.reportButton != null) {
 			float f = this.timeCounter;
-			this.hideButton.x = x + (entryWidth - this.hideButton.getWidth() - 4) - 20 - 4;
-			this.hideButton.y = y + (entryHeight - this.hideButton.getHeight()) / 2;
+			this.hideButton.setX(x + (entryWidth - this.hideButton.getWidth() - 4) - 20 - 4);
+			this.hideButton.setY(y + (entryHeight - this.hideButton.getHeight()) / 2);
 			this.hideButton.render(matrices, mouseX, mouseY, tickDelta);
-			this.showButton.x = x + (entryWidth - this.showButton.getWidth() - 4) - 20 - 4;
-			this.showButton.y = y + (entryHeight - this.showButton.getHeight()) / 2;
+			this.showButton.setX(x + (entryWidth - this.showButton.getWidth() - 4) - 20 - 4);
+			this.showButton.setY(y + (entryHeight - this.showButton.getHeight()) / 2);
 			this.showButton.render(matrices, mouseX, mouseY, tickDelta);
-			this.reportButton.x = x + (entryWidth - this.showButton.getWidth() - 4);
-			this.reportButton.y = y + (entryHeight - this.showButton.getHeight()) / 2;
+			this.reportButton.setX(x + (entryWidth - this.showButton.getWidth() - 4));
+			this.reportButton.setY(y + (entryHeight - this.showButton.getHeight()) / 2);
 			this.reportButton.render(matrices, mouseX, mouseY, tickDelta);
 			if (f == this.timeCounter) {
 				this.timeCounter = 0.0F;
 			}
+		}
+
+		if (this.hasDraftReport && this.reportButton != null) {
+			RenderSystem.setShaderTexture(0, ClickableWidget.WIDGETS_TEXTURE);
+			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+			DrawableHelper.drawTexture(matrices, this.reportButton.getX() + 5, this.reportButton.getY() + 1, 182.0F, 24.0F, 15, 15, 256, 256);
 		}
 	}
 

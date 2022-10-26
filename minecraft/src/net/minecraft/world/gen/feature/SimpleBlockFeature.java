@@ -18,7 +18,7 @@ public class SimpleBlockFeature extends Feature<SimpleBlockFeatureConfig> {
 		SimpleBlockFeatureConfig simpleBlockFeatureConfig = context.getConfig();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		BlockPos blockPos = context.getOrigin();
-		BlockState blockState = simpleBlockFeatureConfig.toPlace().getBlockState(context.getRandom(), blockPos);
+		BlockState blockState = simpleBlockFeatureConfig.toPlace().get(context.getRandom(), blockPos);
 		if (blockState.canPlaceAt(structureWorldAccess, blockPos)) {
 			if (blockState.getBlock() instanceof TallPlantBlock) {
 				if (!structureWorldAccess.isAir(blockPos.up())) {

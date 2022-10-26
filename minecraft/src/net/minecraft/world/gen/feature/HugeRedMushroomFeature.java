@@ -29,7 +29,7 @@ public class HugeRedMushroomFeature extends HugeMushroomFeature {
 					if (i >= y || bl5 != bl6) {
 						mutable.set(start, l, i, m);
 						if (!world.getBlockState(mutable).isOpaqueFullCube(world, mutable)) {
-							BlockState blockState = config.capProvider.getBlockState(random, start);
+							BlockState blockState = config.capProvider.get(random, start);
 							if (blockState.contains(MushroomBlock.WEST)
 								&& blockState.contains(MushroomBlock.EAST)
 								&& blockState.contains(MushroomBlock.NORTH)

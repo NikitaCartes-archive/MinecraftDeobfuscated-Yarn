@@ -57,7 +57,7 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock implements Wearabl
 		if (result != null) {
 			SnowGolemEntity snowGolemEntity = EntityType.SNOW_GOLEM.create(world);
 			if (snowGolemEntity != null) {
-				method_45455(world, result, snowGolemEntity, result.translate(0, 2, 0).getBlockPos());
+				spawnEntity(world, result, snowGolemEntity, result.translate(0, 2, 0).getBlockPos());
 			}
 		} else {
 			BlockPattern.Result result2 = this.getIronGolemPattern().searchAround(world, pos);
@@ -65,38 +65,38 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock implements Wearabl
 				IronGolemEntity ironGolemEntity = EntityType.IRON_GOLEM.create(world);
 				if (ironGolemEntity != null) {
 					ironGolemEntity.setPlayerCreated(true);
-					method_45455(world, result2, ironGolemEntity, result2.translate(1, 2, 0).getBlockPos());
+					spawnEntity(world, result2, ironGolemEntity, result2.translate(1, 2, 0).getBlockPos());
 				}
 			}
 		}
 	}
 
-	private static void method_45455(World world, BlockPattern.Result result, Entity entity, BlockPos blockPos) {
-		method_45454(world, result);
-		entity.refreshPositionAndAngles((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.05, (double)blockPos.getZ() + 0.5, 0.0F, 0.0F);
+	private static void spawnEntity(World world, BlockPattern.Result patternResult, Entity entity, BlockPos pos) {
+		breakPatternBlocks(world, patternResult);
+		entity.refreshPositionAndAngles((double)pos.getX() + 0.5, (double)pos.getY() + 0.05, (double)pos.getZ() + 0.5, 0.0F, 0.0F);
 		world.spawnEntity(entity);
 
 		for (ServerPlayerEntity serverPlayerEntity : world.getNonSpectatingEntities(ServerPlayerEntity.class, entity.getBoundingBox().expand(5.0))) {
 			Criteria.SUMMONED_ENTITY.trigger(serverPlayerEntity, entity);
 		}
 
-		method_45456(world, result);
+		updatePatternBlocks(world, patternResult);
 	}
 
-	public static void method_45454(World world, BlockPattern.Result result) {
-		for (int i = 0; i < result.getWidth(); i++) {
-			for (int j = 0; j < result.getHeight(); j++) {
-				CachedBlockPosition cachedBlockPosition = result.translate(i, j, 0);
+	public static void breakPatternBlocks(World world, BlockPattern.Result patternResult) {
+		for (int i = 0; i < patternResult.getWidth(); i++) {
+			for (int j = 0; j < patternResult.getHeight(); j++) {
+				CachedBlockPosition cachedBlockPosition = patternResult.translate(i, j, 0);
 				world.setBlockState(cachedBlockPosition.getBlockPos(), Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
 				world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, cachedBlockPosition.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition.getBlockState()));
 			}
 		}
 	}
 
-	public static void method_45456(World world, BlockPattern.Result result) {
-		for (int i = 0; i < result.getWidth(); i++) {
-			for (int j = 0; j < result.getHeight(); j++) {
-				CachedBlockPosition cachedBlockPosition = result.translate(i, j, 0);
+	public static void updatePatternBlocks(World world, BlockPattern.Result patternResult) {
+		for (int i = 0; i < patternResult.getWidth(); i++) {
+			for (int j = 0; j < patternResult.getHeight(); j++) {
+				CachedBlockPosition cachedBlockPosition = patternResult.translate(i, j, 0);
 				world.updateNeighbors(cachedBlockPosition.getBlockPos(), Blocks.AIR);
 			}
 		}

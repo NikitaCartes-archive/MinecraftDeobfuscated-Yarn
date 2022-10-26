@@ -41,7 +41,7 @@ public abstract class StuckObjectsFeatureRenderer<T extends LivingEntity, M exte
 				float r = MathHelper.lerp(o, cuboid.minX, cuboid.maxX) / 16.0F;
 				float s = MathHelper.lerp(p, cuboid.minY, cuboid.maxY) / 16.0F;
 				float t = MathHelper.lerp(q, cuboid.minZ, cuboid.maxZ) / 16.0F;
-				matrixStack.translate((double)r, (double)s, (double)t);
+				matrixStack.translate(r, s, t);
 				o = -1.0F * (o * 2.0F - 1.0F);
 				p = -1.0F * (p * 2.0F - 1.0F);
 				q = -1.0F * (q * 2.0F - 1.0F);

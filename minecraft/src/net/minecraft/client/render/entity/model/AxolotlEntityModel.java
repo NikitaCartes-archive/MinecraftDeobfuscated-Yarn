@@ -14,7 +14,7 @@ import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.entity.AngledModelEntity;
 import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import org.joml.Vector3f;
 
 /**
  * Represents the model of an {@linkplain AxolotlEntity}.
@@ -165,7 +165,7 @@ public class AxolotlEntityModel<T extends AxolotlEntity & AngledModelEntity> ext
 	}
 
 	private void updateAnglesCache(T axolotl) {
-		Map<String, Vec3f> map = axolotl.getModelAngles();
+		Map<String, Vector3f> map = axolotl.getModelAngles();
 		map.put("body", this.getAngles(this.body));
 		map.put("head", this.getAngles(this.head));
 		map.put("right_hind_leg", this.getAngles(this.rightHindLeg));
@@ -178,12 +178,12 @@ public class AxolotlEntityModel<T extends AxolotlEntity & AngledModelEntity> ext
 		map.put("right_gills", this.getAngles(this.rightGills));
 	}
 
-	private Vec3f getAngles(ModelPart part) {
-		return new Vec3f(part.pitch, part.yaw, part.roll);
+	private Vector3f getAngles(ModelPart part) {
+		return new Vector3f(part.pitch, part.yaw, part.roll);
 	}
 
-	private void setAngles(ModelPart part, Vec3f angles) {
-		part.setAngles(angles.getX(), angles.getY(), angles.getZ());
+	private void setAngles(ModelPart part, Vector3f angles) {
+		part.setAngles(angles.x(), angles.y(), angles.z());
 	}
 
 	/**
@@ -193,7 +193,7 @@ public class AxolotlEntityModel<T extends AxolotlEntity & AngledModelEntity> ext
 		this.body.pivotX = 0.0F;
 		this.head.pivotY = 0.0F;
 		this.body.pivotY = 20.0F;
-		Map<String, Vec3f> map = axolotl.getModelAngles();
+		Map<String, Vector3f> map = axolotl.getModelAngles();
 		if (map.isEmpty()) {
 			this.body.setAngles(headPitch * (float) (Math.PI / 180.0), headYaw * (float) (Math.PI / 180.0), 0.0F);
 			this.head.setAngles(0.0F, 0.0F, 0.0F);
@@ -206,16 +206,16 @@ public class AxolotlEntityModel<T extends AxolotlEntity & AngledModelEntity> ext
 			this.topGills.setAngles(0.0F, 0.0F, 0.0F);
 			this.tail.setAngles(0.0F, 0.0F, 0.0F);
 		} else {
-			this.setAngles(this.body, (Vec3f)map.get("body"));
-			this.setAngles(this.head, (Vec3f)map.get("head"));
-			this.setAngles(this.leftHindLeg, (Vec3f)map.get("left_hind_leg"));
-			this.setAngles(this.rightHindLeg, (Vec3f)map.get("right_hind_leg"));
-			this.setAngles(this.leftFrontLeg, (Vec3f)map.get("left_front_leg"));
-			this.setAngles(this.rightFrontLeg, (Vec3f)map.get("right_front_leg"));
-			this.setAngles(this.leftGills, (Vec3f)map.get("left_gills"));
-			this.setAngles(this.rightGills, (Vec3f)map.get("right_gills"));
-			this.setAngles(this.topGills, (Vec3f)map.get("top_gills"));
-			this.setAngles(this.tail, (Vec3f)map.get("tail"));
+			this.setAngles(this.body, (Vector3f)map.get("body"));
+			this.setAngles(this.head, (Vector3f)map.get("head"));
+			this.setAngles(this.leftHindLeg, (Vector3f)map.get("left_hind_leg"));
+			this.setAngles(this.rightHindLeg, (Vector3f)map.get("right_hind_leg"));
+			this.setAngles(this.leftFrontLeg, (Vector3f)map.get("left_front_leg"));
+			this.setAngles(this.rightFrontLeg, (Vector3f)map.get("right_front_leg"));
+			this.setAngles(this.leftGills, (Vector3f)map.get("left_gills"));
+			this.setAngles(this.rightGills, (Vector3f)map.get("right_gills"));
+			this.setAngles(this.topGills, (Vector3f)map.get("top_gills"));
+			this.setAngles(this.tail, (Vector3f)map.get("tail"));
 		}
 	}
 

@@ -114,7 +114,7 @@ public class TurtleEntityModel<T extends TurtleEntity> extends QuadrupedEntityMo
 		boolean bl = this.plastron.visible;
 		if (bl) {
 			matrices.push();
-			matrices.translate(0.0, -0.08F, 0.0);
+			matrices.translate(0.0F, -0.08F, 0.0F);
 		}
 
 		super.render(matrices, vertices, light, overlay, red, green, blue, alpha);

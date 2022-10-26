@@ -57,7 +57,9 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 	public void init() {
 		this.left_x = this.width / 2 - 150;
 		this.right_x = this.width / 2 + 190;
-		this.addDrawableChild(new ButtonWidget(this.right_x - 80 + 8, row(13) - 5, 70, 20, ScreenTexts.BACK, button -> this.backButtonClicked()));
+		this.addDrawableChild(
+			ButtonWidget.createBuilder(ScreenTexts.BACK, button -> this.backButtonClicked()).setPositionAndSize(this.right_x - 80 + 8, row(13) - 5, 70, 20).build()
+		);
 		if (this.serverData == null) {
 			this.fetchServerData(this.serverId);
 		} else {
@@ -78,37 +80,35 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 			boolean bl = i != this.serverData.activeSlot || this.serverData.worldType == RealmsServer.WorldType.MINIGAME;
 			ButtonWidget buttonWidget;
 			if (bl) {
-				buttonWidget = new ButtonWidget(
-					this.getFramePositionX(i),
-					row(8),
-					80,
-					20,
-					Text.translatable("mco.brokenworld.play"),
-					button -> {
-						if (((RealmsWorldOptions)this.serverData.slots.get(i)).empty) {
-							RealmsResetWorldScreen realmsResetWorldScreen = new RealmsResetWorldScreen(
-								this,
-								this.serverData,
-								Text.translatable("mco.configure.world.switch.slot"),
-								Text.translatable("mco.configure.world.switch.slot.subtitle"),
-								10526880,
-								ScreenTexts.CANCEL,
-								this::play,
-								() -> {
-									this.client.setScreen(this);
-									this.play();
-								}
-							);
-							realmsResetWorldScreen.setSlot(i);
-							realmsResetWorldScreen.setResetTitle(Text.translatable("mco.create.world.reset.title"));
-							this.client.setScreen(realmsResetWorldScreen);
-						} else {
-							this.client.setScreen(new RealmsLongRunningMcoTaskScreen(this.parent, new SwitchSlotTask(this.serverData.id, i, this::play)));
+				buttonWidget = ButtonWidget.createBuilder(
+						Text.translatable("mco.brokenworld.play"),
+						button -> {
+							if (((RealmsWorldOptions)this.serverData.slots.get(i)).empty) {
+								RealmsResetWorldScreen realmsResetWorldScreen = new RealmsResetWorldScreen(
+									this,
+									this.serverData,
+									Text.translatable("mco.configure.world.switch.slot"),
+									Text.translatable("mco.configure.world.switch.slot.subtitle"),
+									10526880,
+									ScreenTexts.CANCEL,
+									this::play,
+									() -> {
+										this.client.setScreen(this);
+										this.play();
+									}
+								);
+								realmsResetWorldScreen.setSlot(i);
+								realmsResetWorldScreen.setResetTitle(Text.translatable("mco.create.world.reset.title"));
+								this.client.setScreen(realmsResetWorldScreen);
+							} else {
+								this.client.setScreen(new RealmsLongRunningMcoTaskScreen(this.parent, new SwitchSlotTask(this.serverData.id, i, this::play)));
+							}
 						}
-					}
-				);
+					)
+					.setPositionAndSize(this.getFramePositionX(i), row(8), 80, 20)
+					.build();
 			} else {
-				buttonWidget = new ButtonWidget(this.getFramePositionX(i), row(8), 80, 20, Text.translatable("mco.brokenworld.download"), button -> {
+				buttonWidget = ButtonWidget.createBuilder(Text.translatable("mco.brokenworld.download"), button -> {
 					Text text = Text.translatable("mco.configure.world.restore.download.question.line1");
 					Text text2 = Text.translatable("mco.configure.world.restore.download.question.line2");
 					this.client.setScreen(new RealmsLongConfirmationScreen(confirmed -> {
@@ -118,7 +118,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 							this.client.setScreen(this);
 						}
 					}, RealmsLongConfirmationScreen.Type.INFO, text, text2, true));
-				});
+				}).setPositionAndSize(this.getFramePositionX(i), row(8), 80, 20).build();
 			}
 
 			if (this.slotsThatHasBeenDownloaded.contains(i)) {
@@ -127,7 +127,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 			}
 
 			this.addDrawableChild(buttonWidget);
-			this.addDrawableChild(new ButtonWidget(this.getFramePositionX(i), row(10), 80, 20, Text.translatable("mco.brokenworld.reset"), button -> {
+			this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("mco.brokenworld.reset"), button -> {
 				RealmsResetWorldScreen realmsResetWorldScreen = new RealmsResetWorldScreen(this, this.serverData, this::play, () -> {
 					this.client.setScreen(this);
 					this.play();
@@ -137,7 +137,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 				}
 
 				this.client.setScreen(realmsResetWorldScreen);
-			}));
+			}).setPositionAndSize(this.getFramePositionX(i), row(10), 80, 20).build());
 		}
 	}
 

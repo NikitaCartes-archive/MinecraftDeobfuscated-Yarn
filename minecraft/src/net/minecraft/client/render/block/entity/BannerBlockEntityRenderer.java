@@ -27,8 +27,8 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.RotationPropertyHelper;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.RegistryEntry;
 
 @Environment(EnvType.CLIENT)
@@ -67,21 +67,21 @@ public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBloc
 		long l;
 		if (bl) {
 			l = 0L;
-			matrixStack.translate(0.5, 0.5, 0.5);
+			matrixStack.translate(0.5F, 0.5F, 0.5F);
 			this.pillar.visible = true;
 		} else {
 			l = bannerBlockEntity.getWorld().getTime();
 			BlockState blockState = bannerBlockEntity.getCachedState();
 			if (blockState.getBlock() instanceof BannerBlock) {
-				matrixStack.translate(0.5, 0.5, 0.5);
+				matrixStack.translate(0.5F, 0.5F, 0.5F);
 				float h = -RotationPropertyHelper.toDegrees((Integer)blockState.get(BannerBlock.ROTATION));
-				matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(h));
+				matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(h));
 				this.pillar.visible = true;
 			} else {
-				matrixStack.translate(0.5, -0.16666667F, 0.5);
+				matrixStack.translate(0.5F, -0.16666667F, 0.5F);
 				float h = -((Direction)blockState.get(WallBannerBlock.FACING)).asRotation();
-				matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(h));
-				matrixStack.translate(0.0, -0.3125, -0.4375);
+				matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(h));
+				matrixStack.translate(0.0F, -0.3125F, -0.4375F);
 				this.pillar.visible = false;
 			}
 		}

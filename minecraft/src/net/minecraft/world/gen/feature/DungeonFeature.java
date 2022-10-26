@@ -7,7 +7,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.entity.EntityType;
@@ -119,9 +118,8 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 			}
 
 			this.setBlockStateIf(structureWorldAccess, blockPos, Blocks.SPAWNER.getDefaultState(), predicate);
-			BlockEntity blockEntity = structureWorldAccess.getBlockEntity(blockPos);
-			if (blockEntity instanceof MobSpawnerBlockEntity) {
-				((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(this.getMobSpawnerEntity(random));
+			if (structureWorldAccess.getBlockEntity(blockPos) instanceof MobSpawnerBlockEntity mobSpawnerBlockEntity) {
+				mobSpawnerBlockEntity.setEntityType(this.getMobSpawnerEntity(random), random);
 			} else {
 				LOGGER.error("Failed to fetch mob spawner entity at ({}, {}, {})", blockPos.getX(), blockPos.getY(), blockPos.getZ());
 			}

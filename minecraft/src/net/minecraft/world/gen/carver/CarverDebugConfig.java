@@ -19,7 +19,7 @@ public class CarverDebugConfig {
 				)
 				.apply(instance, CarverDebugConfig::new)
 	);
-	private boolean debugMode;
+	private final boolean debugMode;
 	private final BlockState airState;
 	private final BlockState waterState;
 	private final BlockState lavaState;

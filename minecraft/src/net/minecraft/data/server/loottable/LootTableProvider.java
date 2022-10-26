@@ -4,11 +4,11 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.mojang.logging.LogUtils;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import net.minecraft.data.DataOutput;
 import net.minecraft.data.DataProvider;
@@ -23,20 +23,18 @@ import org.slf4j.Logger;
 
 public class LootTableProvider implements DataProvider {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private final String name;
 	private final DataOutput.PathResolver pathResolver;
 	private final Set<Identifier> lootTableIds;
 	private final List<LootTableProvider.LootTypeGenerator> lootTypeGenerators;
 
-	public LootTableProvider(String name, DataOutput output, Set<Identifier> lootTableIds, List<LootTableProvider.LootTypeGenerator> lootTableGenerators) {
-		this.name = name;
+	public LootTableProvider(DataOutput output, Set<Identifier> lootTableIds, List<LootTableProvider.LootTypeGenerator> lootTypeGenerators) {
 		this.pathResolver = output.getResolver(DataOutput.OutputType.DATA_PACK, "loot_tables");
-		this.lootTypeGenerators = lootTableGenerators;
+		this.lootTypeGenerators = lootTypeGenerators;
 		this.lootTableIds = lootTableIds;
 	}
 
 	@Override
-	public void run(DataWriter writer) {
+	public CompletableFuture<?> run(DataWriter writer) {
 		Map<Identifier, LootTable> map = Maps.<Identifier, LootTable>newHashMap();
 		this.lootTypeGenerators.forEach(lootTypeGenerator -> ((LootTableGenerator)lootTypeGenerator.provider().get()).accept((id, builder) -> {
 				if (map.put(id, builder.type(lootTypeGenerator.paramSet).build()) != null) {
@@ -55,21 +53,18 @@ public class LootTableProvider implements DataProvider {
 			multimap.forEach((name, message) -> LOGGER.warn("Found validation problem in {}: {}", name, message));
 			throw new IllegalStateException("Failed to validate loot tables, see logs");
 		} else {
-			map.forEach((id, table) -> {
-				Path path = this.pathResolver.resolveJson(id);
-
-				try {
-					DataProvider.writeToPath(writer, LootManager.toJson(table), path);
-				} catch (IOException var6x) {
-					LOGGER.error("Couldn't save loot table {}", path, var6x);
-				}
-			});
+			return CompletableFuture.allOf((CompletableFuture[])map.entrySet().stream().map(entry -> {
+				Identifier identifierx = (Identifier)entry.getKey();
+				LootTable lootTable = (LootTable)entry.getValue();
+				Path path = this.pathResolver.resolveJson(identifierx);
+				return DataProvider.writeToPath(writer, LootManager.toJson(lootTable), path);
+			}).toArray(CompletableFuture[]::new));
 		}
 	}
 
 	@Override
-	public String getName() {
-		return this.name;
+	public final String getName() {
+		return "Loot Tables";
 	}
 
 	public static record LootTypeGenerator(Supplier<LootTableGenerator> provider, LootContextType paramSet) {

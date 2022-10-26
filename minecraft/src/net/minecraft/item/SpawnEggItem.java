@@ -31,7 +31,6 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.MobSpawnerLogic;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
@@ -62,10 +61,9 @@ public class SpawnEggItem extends Item {
 			BlockState blockState = world.getBlockState(blockPos);
 			if (blockState.isOf(Blocks.SPAWNER)) {
 				BlockEntity blockEntity = world.getBlockEntity(blockPos);
-				if (blockEntity instanceof MobSpawnerBlockEntity) {
-					MobSpawnerLogic mobSpawnerLogic = ((MobSpawnerBlockEntity)blockEntity).getLogic();
+				if (blockEntity instanceof MobSpawnerBlockEntity mobSpawnerBlockEntity) {
 					EntityType<?> entityType = this.getEntityType(itemStack.getNbt());
-					mobSpawnerLogic.setEntityId(entityType);
+					mobSpawnerBlockEntity.setEntityType(entityType, world.getRandom());
 					blockEntity.markDirty();
 					world.updateListeners(blockPos, blockState, blockState, Block.NOTIFY_ALL);
 					world.emitGameEvent(context.getPlayer(), GameEvent.BLOCK_CHANGE, blockPos);

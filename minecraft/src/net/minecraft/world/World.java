@@ -44,6 +44,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
@@ -553,6 +554,23 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		@Nullable Entity entity, double x, double y, double z, float power, boolean createFire, Explosion.DestructionType destructionType
 	) {
 		return this.createExplosion(entity, null, null, x, y, z, power, createFire, destructionType);
+	}
+
+	/**
+	 * Creates an explosion.
+	 * 
+	 * @see #createExplosion(Entity, DamageSource, ExplosionBehavior, double, double, double, float, boolean, Explosion.DestructionType)
+	 */
+	public Explosion createExplosion(
+		@Nullable Entity entity,
+		@Nullable DamageSource damageSource,
+		@Nullable ExplosionBehavior behavior,
+		Vec3d pos,
+		float power,
+		boolean createFire,
+		Explosion.DestructionType destructionType
+	) {
+		return this.createExplosion(entity, damageSource, behavior, pos.getX(), pos.getY(), pos.getZ(), power, createFire, destructionType);
 	}
 
 	/**

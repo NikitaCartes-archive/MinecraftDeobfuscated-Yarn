@@ -163,8 +163,8 @@ public class RecipeBookResults {
 							.showAlternativesForResult(
 								this.client,
 								animatedResultButton.getResultCollection(),
-								animatedResultButton.x,
-								animatedResultButton.y,
+								animatedResultButton.getX(),
+								animatedResultButton.getY(),
 								areaLeft + areaWidth / 2,
 								areaTop + 13 + areaHeight / 2,
 								(float)animatedResultButton.getWidth()

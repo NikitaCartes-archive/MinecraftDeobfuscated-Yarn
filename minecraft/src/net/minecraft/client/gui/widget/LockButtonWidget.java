@@ -14,7 +14,7 @@ public class LockButtonWidget extends ButtonWidget {
 	private boolean locked;
 
 	public LockButtonWidget(int x, int y, ButtonWidget.PressAction action) {
-		super(x, y, 20, 20, Text.translatable("narrator.button.difficulty_lock"), action);
+		super(x, y, 20, 20, Text.translatable("narrator.button.difficulty_lock"), action, EMPTY_TOOLTIP, DEFAULT_NARRATION_SUPPLIER);
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class LockButtonWidget extends ButtonWidget {
 			iconLocation = this.locked ? LockButtonWidget.IconLocation.LOCKED : LockButtonWidget.IconLocation.UNLOCKED;
 		}
 
-		this.drawTexture(matrices, this.x, this.y, iconLocation.getU(), iconLocation.getV(), this.width, this.height);
+		this.drawTexture(matrices, this.getX(), this.getY(), iconLocation.getU(), iconLocation.getV(), this.width, this.height);
 	}
 
 	@Environment(EnvType.CLIENT)

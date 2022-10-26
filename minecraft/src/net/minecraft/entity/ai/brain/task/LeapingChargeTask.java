@@ -13,7 +13,7 @@ import net.minecraft.util.math.intprovider.UniformIntProvider;
 public class LeapingChargeTask extends Task<MobEntity> {
 	public static final int RUN_TIME = 100;
 	private final UniformIntProvider cooldownRange;
-	private SoundEvent sound;
+	private final SoundEvent sound;
 
 	public LeapingChargeTask(UniformIntProvider cooldownRange, SoundEvent sound) {
 		super(ImmutableMap.of(MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.LONG_JUMP_MID_JUMP, MemoryModuleState.VALUE_PRESENT), 100);

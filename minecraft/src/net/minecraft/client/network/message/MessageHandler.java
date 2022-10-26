@@ -216,12 +216,12 @@ public class MessageHandler {
 	}
 
 	private void addToChatLog(SignedMessage message, MessageType.Parameters params, GameProfile sender, MessageTrustStatus trustStatus) {
-		ChatLog chatLog = this.client.getAbuseReportContext().chatLog();
+		ChatLog chatLog = this.client.getAbuseReportContext().getChatLog();
 		chatLog.add(ReceivedMessage.of(sender, params.name(), message, trustStatus));
 	}
 
 	private void addToChatLog(Text message, Instant timestamp) {
-		ChatLog chatLog = this.client.getAbuseReportContext().chatLog();
+		ChatLog chatLog = this.client.getAbuseReportContext().getChatLog();
 		chatLog.add(ReceivedMessage.of(message, timestamp));
 	}
 

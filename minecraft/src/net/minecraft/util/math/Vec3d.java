@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import java.util.EnumSet;
 import java.util.List;
 import net.minecraft.util.Util;
+import org.joml.Vector3f;
 
 /**
  * An immutable vector composed of 3 doubles.
@@ -15,14 +16,14 @@ import net.minecraft.util.Util;
  * implementations and can be used as a map key.
  * 
  * @see Vec3i
- * @see Vec3f
+ * @see org.joml.Vector3f
  */
 public class Vec3d implements Position {
 	public static final Codec<Vec3d> CODEC = Codec.DOUBLE
 		.listOf()
 		.comapFlatMap(
-			list -> Util.toArray(list, 3).map(listx -> new Vec3d((Double)listx.get(0), (Double)listx.get(1), (Double)listx.get(2))),
-			vec3d -> List.of(vec3d.getX(), vec3d.getY(), vec3d.getZ())
+			coordinates -> Util.toArray(coordinates, 3).map(coords -> new Vec3d((Double)coords.get(0), (Double)coords.get(1), (Double)coords.get(2))),
+			vec -> List.of(vec.getX(), vec.getY(), vec.getZ())
 		);
 	/**
 	 * The zero vector (0, 0, 0).
@@ -106,8 +107,8 @@ public class Vec3d implements Position {
 	/**
 	 * Copies the given vector.
 	 */
-	public Vec3d(Vec3f vec) {
-		this((double)vec.getX(), (double)vec.getY(), (double)vec.getZ());
+	public Vec3d(Vector3f vec) {
+		this((double)vec.x(), (double)vec.y(), (double)vec.z());
 	}
 
 	/**
@@ -467,5 +468,12 @@ public class Vec3d implements Position {
 	@Override
 	public final double getZ() {
 		return this.z;
+	}
+
+	/**
+	 * {@return a JOML {@link org.joml.Vector3f} representing this vector}
+	 */
+	public Vector3f toVector3f() {
+		return new Vector3f((float)this.x, (float)this.y, (float)this.z);
 	}
 }

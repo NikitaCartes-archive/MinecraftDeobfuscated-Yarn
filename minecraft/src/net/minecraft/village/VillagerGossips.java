@@ -194,7 +194,7 @@ public class VillagerGossips {
 				ops.createMap(
 					ImmutableMap.of(
 						ops.createString("Target"),
-						(T)Uuids.CODEC.encodeStart(ops, this.target).result().orElseThrow(RuntimeException::new),
+						(T)Uuids.INT_STREAM_CODEC.encodeStart(ops, this.target).result().orElseThrow(RuntimeException::new),
 						ops.createString("Type"),
 						ops.createString(this.type.key),
 						ops.createString("Value"),
@@ -208,7 +208,9 @@ public class VillagerGossips {
 			return DataResult.unbox(
 				DataResult.instance()
 					.group(
-						dynamic.get("Target").read(Uuids.CODEC), dynamic.get("Type").asString().map(VillageGossipType::byKey), dynamic.get("Value").read(Codecs.POSITIVE_INT)
+						dynamic.get("Target").read(Uuids.INT_STREAM_CODEC),
+						dynamic.get("Type").asString().map(VillageGossipType::byKey),
+						dynamic.get("Value").read(Codecs.POSITIVE_INT)
 					)
 					.apply(DataResult.instance(), VillagerGossips.GossipEntry::new)
 			);

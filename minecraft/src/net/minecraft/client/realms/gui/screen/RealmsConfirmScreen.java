@@ -24,8 +24,12 @@ public class RealmsConfirmScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		this.addDrawableChild(new ButtonWidget(this.width / 2 - 105, row(9), 100, 20, ScreenTexts.YES, button -> this.callback.accept(true)));
-		this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, row(9), 100, 20, ScreenTexts.NO, button -> this.callback.accept(false)));
+		this.addDrawableChild(
+			ButtonWidget.createBuilder(ScreenTexts.YES, button -> this.callback.accept(true)).setPositionAndSize(this.width / 2 - 105, row(9), 100, 20).build()
+		);
+		this.addDrawableChild(
+			ButtonWidget.createBuilder(ScreenTexts.NO, button -> this.callback.accept(false)).setPositionAndSize(this.width / 2 + 5, row(9), 100, 20).build()
+		);
 	}
 
 	@Override

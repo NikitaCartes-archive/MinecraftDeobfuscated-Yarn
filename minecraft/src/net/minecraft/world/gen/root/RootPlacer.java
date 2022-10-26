@@ -51,12 +51,12 @@ public abstract class RootPlacer {
 
 	protected void placeRoots(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, BlockPos pos, TreeFeatureConfig config) {
 		if (this.canGrowThrough(world, pos)) {
-			replacer.accept(pos, this.applyWaterlogging(world, pos, this.rootProvider.getBlockState(random, pos)));
+			replacer.accept(pos, this.applyWaterlogging(world, pos, this.rootProvider.get(random, pos)));
 			if (this.aboveRootPlacement.isPresent()) {
 				AboveRootPlacement aboveRootPlacement = (AboveRootPlacement)this.aboveRootPlacement.get();
 				BlockPos blockPos = pos.up();
 				if (random.nextFloat() < aboveRootPlacement.aboveRootPlacementChance() && world.testBlockState(blockPos, AbstractBlock.AbstractBlockState::isAir)) {
-					replacer.accept(blockPos, this.applyWaterlogging(world, blockPos, aboveRootPlacement.aboveRootProvider().getBlockState(random, blockPos)));
+					replacer.accept(blockPos, this.applyWaterlogging(world, blockPos, aboveRootPlacement.aboveRootProvider().get(random, blockPos)));
 				}
 			}
 		}

@@ -232,29 +232,30 @@ public class CreateWorldScreen extends Screen {
 					this.cheatsEnabled = cheatsEnabled;
 				})
 		);
-		this.dataPacksButton = this.addDrawableChild(new ButtonWidget(j, 151, 150, 20, Text.translatable("selectWorld.dataPacks"), button -> this.openPackScreen()));
+		this.dataPacksButton = this.addDrawableChild(
+			ButtonWidget.createBuilder(Text.translatable("selectWorld.dataPacks"), button -> this.openPackScreen()).setPositionAndSize(j, 151, 150, 20).build()
+		);
 		this.gameRulesButton = this.addDrawableChild(
-			new ButtonWidget(
-				i,
-				185,
-				150,
-				20,
-				Text.translatable("selectWorld.gameRules"),
-				button -> this.client.setScreen(new EditGameRulesScreen(this.gameRules.copy(), optionalGameRules -> {
-						this.client.setScreen(this);
-						optionalGameRules.ifPresent(gameRules -> this.gameRules = gameRules);
-					}))
-			)
+			ButtonWidget.createBuilder(
+					Text.translatable("selectWorld.gameRules"), button -> this.client.setScreen(new EditGameRulesScreen(this.gameRules.copy(), optionalGameRules -> {
+							this.client.setScreen(this);
+							optionalGameRules.ifPresent(gameRules -> this.gameRules = gameRules);
+						}))
+				)
+				.setPositionAndSize(i, 185, 150, 20)
+				.build()
 		);
 		this.moreOptionsDialog.init(this, this.client, this.textRenderer);
 		this.moreOptionsButton = this.addDrawableChild(
-			new ButtonWidget(j, 185, 150, 20, Text.translatable("selectWorld.moreWorldOptions"), button -> this.toggleMoreOptions())
+			ButtonWidget.createBuilder(Text.translatable("selectWorld.moreWorldOptions"), button -> this.toggleMoreOptions())
+				.setPositionAndSize(j, 185, 150, 20)
+				.build()
 		);
 		this.createLevelButton = this.addDrawableChild(
-			new ButtonWidget(i, this.height - 28, 150, 20, Text.translatable("selectWorld.create"), button -> this.createLevel())
+			ButtonWidget.createBuilder(Text.translatable("selectWorld.create"), button -> this.createLevel()).setPositionAndSize(i, this.height - 28, 150, 20).build()
 		);
 		this.createLevelButton.active = !this.levelName.isEmpty();
-		this.addDrawableChild(new ButtonWidget(j, this.height - 28, 150, 20, ScreenTexts.CANCEL, button -> this.onCloseScreen()));
+		this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> this.onCloseScreen()).setPositionAndSize(j, this.height - 28, 150, 20).build());
 		this.setMoreOptionsOpen();
 		this.setInitialFocus(this.levelNameField);
 		this.tweakDefaultsTo(this.currentMode);

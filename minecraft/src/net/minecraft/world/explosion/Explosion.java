@@ -352,20 +352,28 @@ public class Explosion {
 	public LivingEntity getCausingEntity() {
 		if (this.entity == null) {
 			return null;
-		} else if (this.entity instanceof TntEntity) {
-			return ((TntEntity)this.entity).getCausingEntity();
-		} else if (this.entity instanceof LivingEntity) {
-			return (LivingEntity)this.entity;
+		} else if (this.entity instanceof TntEntity tntEntity) {
+			return tntEntity.getCausingEntity();
 		} else {
-			if (this.entity instanceof ProjectileEntity) {
-				Entity entity = ((ProjectileEntity)this.entity).getOwner();
-				if (entity instanceof LivingEntity) {
-					return (LivingEntity)entity;
+			Entity entity = this.entity;
+			if (entity instanceof LivingEntity) {
+				return (LivingEntity)entity;
+			} else {
+				if (this.entity instanceof ProjectileEntity projectileEntity) {
+					entity = projectileEntity.getOwner();
+					if (entity instanceof LivingEntity) {
+						return (LivingEntity)entity;
+					}
 				}
-			}
 
-			return null;
+				return null;
+			}
 		}
+	}
+
+	@Nullable
+	public Entity getEntity() {
+		return this.entity;
 	}
 
 	public void clearAffectedBlocks() {

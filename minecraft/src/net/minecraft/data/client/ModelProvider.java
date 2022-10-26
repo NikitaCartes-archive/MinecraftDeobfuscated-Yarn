@@ -3,11 +3,11 @@ package net.minecraft.data.client;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonElement;
-import com.mojang.logging.LogUtils;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -19,10 +19,8 @@ import net.minecraft.data.DataWriter;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import org.slf4j.Logger;
 
 public class ModelProvider implements DataProvider {
-	private static final Logger LOGGER = LogUtils.getLogger();
 	private final DataOutput.PathResolver blockstatesPathResolver;
 	private final DataOutput.PathResolver modelsPathResolver;
 
@@ -32,7 +30,7 @@ public class ModelProvider implements DataProvider {
 	}
 
 	@Override
-	public void run(DataWriter writer) {
+	public CompletableFuture<?> run(DataWriter writer) {
 		Map<Block, BlockStateSupplier> map = Maps.<Block, BlockStateSupplier>newHashMap();
 		Consumer<BlockStateSupplier> consumer = blockStateSupplier -> {
 			Block block = blockStateSupplier.getBlock();
@@ -69,25 +67,23 @@ public class ModelProvider implements DataProvider {
 					}
 				}
 			});
-			this.writeJsons(writer, map, block -> this.blockstatesPathResolver.resolveJson(block.getRegistryEntry().registryKey().getValue()));
-			this.writeJsons(writer, map2, this.modelsPathResolver::resolveJson);
+			return CompletableFuture.allOf(
+				this.writeJsons(writer, map, block -> this.blockstatesPathResolver.resolveJson(block.getRegistryEntry().registryKey().getValue())),
+				this.writeJsons(writer, map2, this.modelsPathResolver::resolveJson)
+			);
 		}
 	}
 
-	private <T> void writeJsons(DataWriter cache, Map<T, ? extends Supplier<JsonElement>> models, Function<T, Path> pathGetter) {
-		models.forEach((id, jsonSupplier) -> {
-			Path path = (Path)pathGetter.apply(id);
-
-			try {
-				DataProvider.writeToPath(cache, (JsonElement)jsonSupplier.get(), path);
-			} catch (Exception var6) {
-				LOGGER.error("Couldn't save {}", path, var6);
-			}
-		});
+	private <T> CompletableFuture<?> writeJsons(DataWriter cache, Map<T, ? extends Supplier<JsonElement>> models, Function<T, Path> pathGetter) {
+		return CompletableFuture.allOf((CompletableFuture[])models.entrySet().stream().map(entry -> {
+			Path path = (Path)pathGetter.apply(entry.getKey());
+			JsonElement jsonElement = (JsonElement)((Supplier)entry.getValue()).get();
+			return DataProvider.writeToPath(cache, jsonElement, path);
+		}).toArray(CompletableFuture[]::new));
 	}
 
 	@Override
-	public String getName() {
-		return "Block State Definitions";
+	public final String getName() {
+		return "Model Definitions";
 	}
 }

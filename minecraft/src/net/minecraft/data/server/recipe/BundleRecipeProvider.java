@@ -21,9 +21,4 @@ public class BundleRecipeProvider extends RecipeProvider {
 			.criterion("has_string", conditionsFromItem(Items.STRING))
 			.offerTo(exporter);
 	}
-
-	@Override
-	public String getName() {
-		return "Bundle Recipes";
-	}
 }

@@ -54,7 +54,7 @@ import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.util.math.Matrix4f;
+import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 
@@ -248,7 +248,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 			RenderSystem.disableBlend();
 			RenderSystem.enableTexture();
 			VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-			matrices.translate(0.0, 0.0, 400.0);
+			matrices.translate(0.0F, 0.0F, 400.0F);
 			int s = m;
 
 			for (int t = 0; t < components.size(); t++) {

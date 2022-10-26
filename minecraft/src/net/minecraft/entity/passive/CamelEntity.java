@@ -58,13 +58,14 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 	public static final TrackedData<Boolean> DASHING = DataTracker.registerData(CamelEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	public static final TrackedData<Long> LAST_POSE_TICK = DataTracker.registerData(CamelEntity.class, TrackedDataHandlerRegistry.LONG);
 	public final AnimationState walkingAnimationState = new AnimationState();
+	public final AnimationState sittingTransitionAnimationState = new AnimationState();
 	public final AnimationState sittingAnimationState = new AnimationState();
-	public final AnimationState standingUpAnimationState = new AnimationState();
+	public final AnimationState standingTransitionAnimationState = new AnimationState();
 	public final AnimationState idlingAnimationState = new AnimationState();
 	public final AnimationState dashingAnimationState = new AnimationState();
 	private static final EntityDimensions SITTING_DIMENSIONS = EntityDimensions.changing(EntityType.CAMEL.getWidth(), EntityType.CAMEL.getHeight() - 1.43F);
 	private int dashCooldown = 0;
-	private int field_40138 = 0;
+	private int idleAnimationCooldown = 0;
 
 	public CamelEntity(EntityType<? extends CamelEntity> entityType, World world) {
 		super(entityType, world);
@@ -163,35 +164,43 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 		}
 
 		if (this.world.isClient()) {
-			this.method_45356();
+			this.updateAnimations();
 		}
 	}
 
-	private void method_45356() {
-		if (this.field_40138 <= 0) {
-			this.field_40138 = this.random.nextInt(40) + 80;
+	private void updateAnimations() {
+		if (this.idleAnimationCooldown <= 0) {
+			this.idleAnimationCooldown = this.random.nextInt(40) + 80;
 			this.idlingAnimationState.start(this.age);
 		} else {
-			this.field_40138--;
+			this.idleAnimationCooldown--;
 		}
 
 		switch (this.getPose()) {
 			case STANDING:
+				this.sittingTransitionAnimationState.stop();
 				this.sittingAnimationState.stop();
 				this.dashingAnimationState.setRunning(this.isDashing(), this.age);
-				this.standingUpAnimationState.setRunning(this.isChangingPose(), this.age);
+				this.standingTransitionAnimationState.setRunning(this.isChangingPose(), this.age);
 				this.walkingAnimationState.setRunning((this.onGround || this.hasPrimaryPassenger()) && this.getVelocity().horizontalLengthSquared() > 1.0E-6, this.age);
 				break;
 			case SITTING:
 				this.walkingAnimationState.stop();
-				this.standingUpAnimationState.stop();
+				this.standingTransitionAnimationState.stop();
 				this.dashingAnimationState.stop();
-				this.sittingAnimationState.startIfNotRunning(this.age);
+				if (this.shouldPlaySittingTransitionAnimation()) {
+					this.sittingTransitionAnimationState.startIfNotRunning(this.age);
+					this.sittingAnimationState.stop();
+				} else {
+					this.sittingTransitionAnimationState.stop();
+					this.sittingAnimationState.startIfNotRunning(this.age);
+				}
 				break;
 			default:
 				this.walkingAnimationState.stop();
+				this.sittingTransitionAnimationState.stop();
 				this.sittingAnimationState.stop();
-				this.standingUpAnimationState.stop();
+				this.standingTransitionAnimationState.stop();
 				this.dashingAnimationState.stop();
 		}
 	}
@@ -208,13 +217,13 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 		}
 	}
 
-	boolean isStationary() {
+	public boolean isStationary() {
 		return this.isSitting() || this.isChangingPose();
 	}
 
 	@Override
 	protected float getHorsebackMovementSpeed(LivingEntity passenger) {
-		float f = passenger.isSprinting() && this.getDashCooldown() == 0 ? 0.1F : 0.0F;
+		float f = passenger.isSprinting() && this.getJumpCooldown() == 0 ? 0.1F : 0.0F;
 		return (float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) + f;
 	}
 
@@ -278,7 +287,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 	}
 
 	@Override
-	public int getDashCooldown() {
+	public int getJumpCooldown() {
 		return this.dashCooldown;
 	}
 
@@ -539,6 +548,10 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 			case SITTING -> l < 40L;
 			default -> false;
 		};
+	}
+
+	private boolean shouldPlaySittingTransitionAnimation() {
+		return this.getPose() == EntityPose.SITTING && this.getLastPoseTickDelta() < 40L;
 	}
 
 	public void startSitting() {

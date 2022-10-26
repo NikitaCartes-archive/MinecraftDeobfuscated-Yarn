@@ -1,16 +1,20 @@
 package net.minecraft.network.message;
 
 import com.google.common.primitives.Ints;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.security.SignatureException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.network.encryption.SignatureUpdatable;
 import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
+import net.minecraft.util.dynamic.Codecs;
 
 /**
  * A signed message, consisting of the signature, the signed content,
@@ -22,6 +26,21 @@ import net.minecraft.util.Util;
 public record SignedMessage(
 	MessageLink link, @Nullable MessageSignatureData signature, MessageBody signedBody, @Nullable Text unsignedContent, FilterMask filterMask
 ) {
+	public static final MapCodec<SignedMessage> field_40846 = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(
+					MessageLink.field_40849.fieldOf("link").forGetter(SignedMessage::link),
+					MessageSignatureData.CODEC.optionalFieldOf("signature").forGetter(signedMessage -> Optional.ofNullable(signedMessage.signature)),
+					MessageBody.CODEC.forGetter(SignedMessage::signedBody),
+					Codecs.TEXT.optionalFieldOf("unsigned_content").forGetter(signedMessage -> Optional.ofNullable(signedMessage.unsignedContent)),
+					FilterMask.CODEC.optionalFieldOf("filter_mask", FilterMask.PASS_THROUGH).forGetter(SignedMessage::filterMask)
+				)
+				.apply(
+					instance,
+					(messageLink, optional, messageBody, optional2, filterMask) -> new SignedMessage(
+							messageLink, (MessageSignatureData)optional.orElse(null), messageBody, (Text)optional2.orElse(null), filterMask
+						)
+				)
+	);
 	private static final UUID NIL_UUID = Util.NIL_UUID;
 	public static final Duration SERVERBOUND_TIME_TO_LIVE = Duration.ofMinutes(5L);
 	public static final Duration CLIENTBOUND_TIME_TO_LIVE = SERVERBOUND_TIME_TO_LIVE.plus(Duration.ofMinutes(2L));

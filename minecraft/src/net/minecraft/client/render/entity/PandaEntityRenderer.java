@@ -12,7 +12,7 @@ import net.minecraft.entity.passive.PandaEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
 public class PandaEntityRenderer extends MobEntityRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
@@ -46,42 +46,42 @@ public class PandaEntityRenderer extends MobEntityRenderer<PandaEntity, PandaEnt
 				float m = (float)(90 * i) / 7.0F;
 				float n = (float)(90 * j) / 7.0F;
 				float o = this.getAngle(m, n, j, h, 8.0F);
-				matrixStack.translate(0.0, (double)((l + 0.2F) * (o / 90.0F)), 0.0);
-				matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-o));
+				matrixStack.translate(0.0F, (l + 0.2F) * (o / 90.0F), 0.0F);
+				matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-o));
 			} else if (i < 16) {
 				float m = ((float)i - 8.0F) / 7.0F;
 				float n = 90.0F + 90.0F * m;
 				float p = 90.0F + 90.0F * ((float)j - 8.0F) / 7.0F;
 				float o = this.getAngle(n, p, j, h, 16.0F);
-				matrixStack.translate(0.0, (double)(l + 0.2F + (l - 0.2F) * (o - 90.0F) / 90.0F), 0.0);
-				matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-o));
+				matrixStack.translate(0.0F, l + 0.2F + (l - 0.2F) * (o - 90.0F) / 90.0F, 0.0F);
+				matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-o));
 			} else if ((float)i < 24.0F) {
 				float m = ((float)i - 16.0F) / 7.0F;
 				float n = 180.0F + 90.0F * m;
 				float p = 180.0F + 90.0F * ((float)j - 16.0F) / 7.0F;
 				float o = this.getAngle(n, p, j, h, 24.0F);
-				matrixStack.translate(0.0, (double)(l + l * (270.0F - o) / 90.0F), 0.0);
-				matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-o));
+				matrixStack.translate(0.0F, l + l * (270.0F - o) / 90.0F, 0.0F);
+				matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-o));
 			} else if (i < 32) {
 				float m = ((float)i - 24.0F) / 7.0F;
 				float n = 270.0F + 90.0F * m;
 				float p = 270.0F + 90.0F * ((float)j - 24.0F) / 7.0F;
 				float o = this.getAngle(n, p, j, h, 32.0F);
-				matrixStack.translate(0.0, (double)(l * ((360.0F - o) / 90.0F)), 0.0);
-				matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-o));
+				matrixStack.translate(0.0F, l * ((360.0F - o) / 90.0F), 0.0F);
+				matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-o));
 			}
 		}
 
 		float q = pandaEntity.getSittingAnimationProgress(h);
 		if (q > 0.0F) {
-			matrixStack.translate(0.0, (double)(0.8F * q), 0.0);
-			matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(MathHelper.lerp(q, pandaEntity.getPitch(), pandaEntity.getPitch() + 90.0F)));
-			matrixStack.translate(0.0, (double)(-1.0F * q), 0.0);
+			matrixStack.translate(0.0F, 0.8F * q, 0.0F);
+			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(MathHelper.lerp(q, pandaEntity.getPitch(), pandaEntity.getPitch() + 90.0F)));
+			matrixStack.translate(0.0F, -1.0F * q, 0.0F);
 			if (pandaEntity.isScaredByThunderstorm()) {
 				float r = (float)(Math.cos((double)pandaEntity.age * 1.25) * Math.PI * 0.05F);
-				matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(r));
+				matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(r));
 				if (pandaEntity.isBaby()) {
-					matrixStack.translate(0.0, 0.8F, 0.55F);
+					matrixStack.translate(0.0F, 0.8F, 0.55F);
 				}
 			}
 		}
@@ -89,8 +89,8 @@ public class PandaEntityRenderer extends MobEntityRenderer<PandaEntity, PandaEnt
 		float r = pandaEntity.getLieOnBackAnimationProgress(h);
 		if (r > 0.0F) {
 			float k = pandaEntity.isBaby() ? 0.5F : 1.3F;
-			matrixStack.translate(0.0, (double)(k * r), 0.0);
-			matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(MathHelper.lerp(r, pandaEntity.getPitch(), pandaEntity.getPitch() + 180.0F)));
+			matrixStack.translate(0.0F, k * r, 0.0F);
+			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(MathHelper.lerp(r, pandaEntity.getPitch(), pandaEntity.getPitch() + 180.0F)));
 		}
 	}
 

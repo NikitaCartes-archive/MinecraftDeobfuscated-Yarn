@@ -246,12 +246,13 @@ public class ServerPlayerEntity extends PlayerEntity {
 		public void onPropertyUpdate(ScreenHandler handler, int property, int value) {
 		}
 	};
-	private final PublicPlayerSession session;
+	@Nullable
+	private PublicPlayerSession session;
 	private int screenHandlerSyncId;
 	public int pingMilliseconds;
 	public boolean notInAnyWorld;
 
-	public ServerPlayerEntity(MinecraftServer server, ServerWorld world, GameProfile profile, PublicPlayerSession session) {
+	public ServerPlayerEntity(MinecraftServer server, ServerWorld world, GameProfile profile) {
 		super(world, world.getSpawnPos(), world.getSpawnAngle(), profile);
 		this.textStream = server.createFilterer(this);
 		this.interactionManager = server.getPlayerInteractionManager(this);
@@ -259,7 +260,6 @@ public class ServerPlayerEntity extends PlayerEntity {
 		this.statHandler = server.getPlayerManager().createStatHandler(this);
 		this.advancementTracker = server.getPlayerManager().getAdvancementTracker(this);
 		this.stepHeight = 1.0F;
-		this.session = session;
 		this.moveToSpawn(world);
 	}
 
@@ -1182,6 +1182,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	public void copyFrom(ServerPlayerEntity oldPlayer, boolean alive) {
 		this.sculkShriekerWarningManager = oldPlayer.sculkShriekerWarningManager;
 		this.filterText = oldPlayer.filterText;
+		this.session = oldPlayer.session;
 		this.interactionManager.setGameMode(oldPlayer.interactionManager.getGameMode(), oldPlayer.interactionManager.getPreviousGameMode());
 		this.sendAbilitiesUpdate();
 		if (alive) {
@@ -1712,6 +1713,11 @@ public class ServerPlayerEntity extends PlayerEntity {
 		}
 	}
 
+	public void setSession(PublicPlayerSession session) {
+		this.session = session;
+	}
+
+	@Nullable
 	public PublicPlayerSession getSession() {
 		return this.session;
 	}

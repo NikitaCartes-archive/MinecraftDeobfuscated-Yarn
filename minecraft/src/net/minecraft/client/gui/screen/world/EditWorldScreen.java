@@ -64,116 +64,110 @@ public class EditWorldScreen extends Screen {
 	@Override
 	protected void init() {
 		this.client.keyboard.setRepeatEvents(true);
-		ButtonWidget buttonWidget = this.addDrawableChild(
-			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 0 + 5, 200, 20, Text.translatable("selectWorld.edit.resetIcon"), button -> {
-				this.storageSession.getIconFile().ifPresent(path -> FileUtils.deleteQuietly(path.toFile()));
-				button.active = false;
-			})
-		);
+		ButtonWidget buttonWidget = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("selectWorld.edit.resetIcon"), button -> {
+			this.storageSession.getIconFile().ifPresent(path -> FileUtils.deleteQuietly(path.toFile()));
+			button.active = false;
+		}).setPositionAndSize(this.width / 2 - 100, this.height / 4 + 0 + 5, 200, 20).build());
 		this.addDrawableChild(
-			new ButtonWidget(
-				this.width / 2 - 100,
-				this.height / 4 + 24 + 5,
-				200,
-				20,
-				Text.translatable("selectWorld.edit.openFolder"),
-				button -> Util.getOperatingSystem().open(this.storageSession.getDirectory(WorldSavePath.ROOT).toFile())
-			)
+			ButtonWidget.createBuilder(
+					Text.translatable("selectWorld.edit.openFolder"), button -> Util.getOperatingSystem().open(this.storageSession.getDirectory(WorldSavePath.ROOT).toFile())
+				)
+				.setPositionAndSize(this.width / 2 - 100, this.height / 4 + 24 + 5, 200, 20)
+				.build()
 		);
-		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 48 + 5, 200, 20, Text.translatable("selectWorld.edit.backup"), button -> {
+		this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("selectWorld.edit.backup"), button -> {
 			boolean bl = backupLevel(this.storageSession);
 			this.callback.accept(!bl);
-		}));
+		}).setPositionAndSize(this.width / 2 - 100, this.height / 4 + 48 + 5, 200, 20).build());
+		this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("selectWorld.edit.backupFolder"), button -> {
+			LevelStorage levelStorage = this.client.getLevelStorage();
+			Path path = levelStorage.getBackupsDirectory();
+
+			try {
+				Files.createDirectories(Files.exists(path, new LinkOption[0]) ? path.toRealPath() : path);
+			} catch (IOException var5) {
+				throw new RuntimeException(var5);
+			}
+
+			Util.getOperatingSystem().open(path.toFile());
+		}).setPositionAndSize(this.width / 2 - 100, this.height / 4 + 72 + 5, 200, 20).build());
 		this.addDrawableChild(
-			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 72 + 5, 200, 20, Text.translatable("selectWorld.edit.backupFolder"), button -> {
-				LevelStorage levelStorage = this.client.getLevelStorage();
-				Path path = levelStorage.getBackupsDirectory();
-
-				try {
-					Files.createDirectories(Files.exists(path, new LinkOption[0]) ? path.toRealPath() : path);
-				} catch (IOException var5) {
-					throw new RuntimeException(var5);
-				}
-
-				Util.getOperatingSystem().open(path.toFile());
-			})
-		);
-		this.addDrawableChild(
-			new ButtonWidget(
-				this.width / 2 - 100,
-				this.height / 4 + 96 + 5,
-				200,
-				20,
-				Text.translatable("selectWorld.edit.optimize"),
-				button -> this.client.setScreen(new BackupPromptScreen(this, (backup, eraseCache) -> {
-						if (backup) {
-							backupLevel(this.storageSession);
-						}
-
-						this.client.setScreen(OptimizeWorldScreen.create(this.client, this.callback, this.client.getDataFixer(), this.storageSession, eraseCache));
-					}, Text.translatable("optimizeWorld.confirm.title"), Text.translatable("optimizeWorld.confirm.description"), true))
-			)
-		);
-		this.addDrawableChild(
-			new ButtonWidget(
-				this.width / 2 - 100,
-				this.height / 4 + 120 + 5,
-				200,
-				20,
-				Text.translatable("selectWorld.edit.export_worldgen_settings"),
-				button -> {
-					DataResult<String> dataResult2;
-					try (SaveLoader saveLoader = this.client.createIntegratedServerLoader().createSaveLoader(this.storageSession, false)) {
-						DynamicRegistryManager.Immutable immutable = saveLoader.combinedDynamicRegistries().getCombinedRegistryManager();
-						DynamicOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, immutable);
-						DataResult<JsonElement> dataResult = WorldGenSettings.encode(dynamicOps, saveLoader.saveProperties().getGeneratorOptions(), immutable);
-						dataResult2 = dataResult.flatMap(json -> {
-							Path path = this.storageSession.getDirectory(WorldSavePath.ROOT).resolve("worldgen_settings_export.json");
-
-							try {
-								JsonWriter jsonWriter = GSON.newJsonWriter(Files.newBufferedWriter(path, StandardCharsets.UTF_8));
-
-								try {
-									GSON.toJson(json, jsonWriter);
-								} catch (Throwable var7) {
-									if (jsonWriter != null) {
-										try {
-											jsonWriter.close();
-										} catch (Throwable var6x) {
-											var7.addSuppressed(var6x);
-										}
-									}
-
-									throw var7;
-								}
-
-								if (jsonWriter != null) {
-									jsonWriter.close();
-								}
-							} catch (JsonIOException | IOException var8) {
-								return DataResult.error("Error writing file: " + var8.getMessage());
+			ButtonWidget.createBuilder(
+					Text.translatable("selectWorld.edit.optimize"), button -> this.client.setScreen(new BackupPromptScreen(this, (backup, eraseCache) -> {
+							if (backup) {
+								backupLevel(this.storageSession);
 							}
 
-							return DataResult.success(path.toString());
-						});
-					} catch (Exception var9) {
-						LOGGER.warn("Could not parse level data", (Throwable)var9);
-						dataResult2 = DataResult.error("Could not parse level data: " + var9.getMessage());
-					}
+							this.client.setScreen(OptimizeWorldScreen.create(this.client, this.callback, this.client.getDataFixer(), this.storageSession, eraseCache));
+						}, Text.translatable("optimizeWorld.confirm.title"), Text.translatable("optimizeWorld.confirm.description"), true))
+				)
+				.setPositionAndSize(this.width / 2 - 100, this.height / 4 + 96 + 5, 200, 20)
+				.build()
+		);
+		this.addDrawableChild(
+			ButtonWidget.createBuilder(
+					Text.translatable("selectWorld.edit.export_worldgen_settings"),
+					button -> {
+						DataResult<String> dataResult2;
+						try (SaveLoader saveLoader = this.client.createIntegratedServerLoader().createSaveLoader(this.storageSession, false)) {
+							DynamicRegistryManager.Immutable immutable = saveLoader.combinedDynamicRegistries().getCombinedRegistryManager();
+							DynamicOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, immutable);
+							DataResult<JsonElement> dataResult = WorldGenSettings.encode(dynamicOps, saveLoader.saveProperties().getGeneratorOptions(), immutable);
+							dataResult2 = dataResult.flatMap(json -> {
+								Path path = this.storageSession.getDirectory(WorldSavePath.ROOT).resolve("worldgen_settings_export.json");
 
-					Text text = Text.literal(dataResult2.get().map(Function.identity(), PartialResult::message));
-					Text text2 = Text.translatable(
-						dataResult2.result().isPresent() ? "selectWorld.edit.export_worldgen_settings.success" : "selectWorld.edit.export_worldgen_settings.failure"
-					);
-					dataResult2.error().ifPresent(result -> LOGGER.error("Error exporting world settings: {}", result));
-					this.client.getToastManager().add(SystemToast.create(this.client, SystemToast.Type.WORLD_GEN_SETTINGS_TRANSFER, text2, text));
-				}
-			)
+								try {
+									JsonWriter jsonWriter = GSON.newJsonWriter(Files.newBufferedWriter(path, StandardCharsets.UTF_8));
+
+									try {
+										GSON.toJson(json, jsonWriter);
+									} catch (Throwable var7) {
+										if (jsonWriter != null) {
+											try {
+												jsonWriter.close();
+											} catch (Throwable var6x) {
+												var7.addSuppressed(var6x);
+											}
+										}
+
+										throw var7;
+									}
+
+									if (jsonWriter != null) {
+										jsonWriter.close();
+									}
+								} catch (JsonIOException | IOException var8) {
+									return DataResult.error("Error writing file: " + var8.getMessage());
+								}
+
+								return DataResult.success(path.toString());
+							});
+						} catch (Exception var9) {
+							LOGGER.warn("Could not parse level data", (Throwable)var9);
+							dataResult2 = DataResult.error("Could not parse level data: " + var9.getMessage());
+						}
+
+						Text text = Text.literal(dataResult2.get().map(Function.identity(), PartialResult::message));
+						Text text2 = Text.translatable(
+							dataResult2.result().isPresent() ? "selectWorld.edit.export_worldgen_settings.success" : "selectWorld.edit.export_worldgen_settings.failure"
+						);
+						dataResult2.error().ifPresent(result -> LOGGER.error("Error exporting world settings: {}", result));
+						this.client.getToastManager().add(SystemToast.create(this.client, SystemToast.Type.WORLD_GEN_SETTINGS_TRANSFER, text2, text));
+					}
+				)
+				.setPositionAndSize(this.width / 2 - 100, this.height / 4 + 120 + 5, 200, 20)
+				.build()
 		);
 		this.saveButton = this.addDrawableChild(
-			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 144 + 5, 98, 20, Text.translatable("selectWorld.edit.save"), button -> this.commit())
+			ButtonWidget.createBuilder(Text.translatable("selectWorld.edit.save"), button -> this.commit())
+				.setPositionAndSize(this.width / 2 - 100, this.height / 4 + 144 + 5, 98, 20)
+				.build()
 		);
-		this.addDrawableChild(new ButtonWidget(this.width / 2 + 2, this.height / 4 + 144 + 5, 98, 20, ScreenTexts.CANCEL, button -> this.callback.accept(false)));
+		this.addDrawableChild(
+			ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> this.callback.accept(false))
+				.setPositionAndSize(this.width / 2 + 2, this.height / 4 + 144 + 5, 98, 20)
+				.build()
+		);
 		buttonWidget.active = this.storageSession.getIconFile().filter(path -> Files.isRegularFile(path, new LinkOption[0])).isPresent();
 		LevelSummary levelSummary = this.storageSession.getLevelSummary();
 		String string = levelSummary == null ? "" : levelSummary.getDisplayName();

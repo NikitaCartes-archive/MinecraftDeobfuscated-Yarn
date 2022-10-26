@@ -1,6 +1,7 @@
 package net.minecraft.network.message;
 
 import com.google.common.base.Preconditions;
+import com.mojang.serialization.Codec;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Base64;
@@ -9,11 +10,13 @@ import javax.annotation.Nullable;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.encryption.SignatureUpdatable;
 import net.minecraft.network.encryption.SignatureVerifier;
+import net.minecraft.util.dynamic.Codecs;
 
 /**
  * A message signature data that can be verified.
  */
 public record MessageSignatureData(byte[] data) {
+	public static final Codec<MessageSignatureData> CODEC = Codecs.BASE_64.xmap(MessageSignatureData::new, MessageSignatureData::data);
 	public static final int SIZE = 256;
 
 	public MessageSignatureData(byte[] data) {
@@ -67,8 +70,8 @@ public record MessageSignatureData(byte[] data) {
 		return Base64.getEncoder().encodeToString(this.data);
 	}
 
-	public MessageSignatureData.Indexed pack(MessageSignatureData.Packer packer) {
-		int i = packer.pack(this);
+	public MessageSignatureData.Indexed pack(MessageSignatureStorage storage) {
+		int i = storage.indexOf(this);
 		return i != -1 ? new MessageSignatureData.Indexed(i) : new MessageSignatureData.Indexed(this);
 	}
 
@@ -95,19 +98,8 @@ public record MessageSignatureData(byte[] data) {
 			}
 		}
 
-		public Optional<MessageSignatureData> getSignature(MessageSignatureData.Unpacker unpacker) {
-			return this.fullSignature != null ? Optional.of(this.fullSignature) : Optional.ofNullable(unpacker.unpack(this.id));
+		public Optional<MessageSignatureData> getSignature(MessageSignatureStorage storage) {
+			return this.fullSignature != null ? Optional.of(this.fullSignature) : Optional.ofNullable(storage.get(this.id));
 		}
-	}
-
-	public interface Packer {
-		int MISSING = -1;
-
-		int pack(MessageSignatureData signature);
-	}
-
-	public interface Unpacker {
-		@Nullable
-		MessageSignatureData unpack(int index);
 	}
 }

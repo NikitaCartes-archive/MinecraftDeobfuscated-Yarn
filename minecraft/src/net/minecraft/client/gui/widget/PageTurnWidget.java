@@ -17,7 +17,7 @@ public class PageTurnWidget extends ButtonWidget {
 	private final boolean playPageTurnSound;
 
 	public PageTurnWidget(int x, int y, boolean isNextPageButton, ButtonWidget.PressAction action, boolean playPageTurnSound) {
-		super(x, y, 23, 13, ScreenTexts.EMPTY, action);
+		super(x, y, 23, 13, ScreenTexts.EMPTY, action, EMPTY_TOOLTIP, DEFAULT_NARRATION_SUPPLIER);
 		this.isNextPageButton = isNextPageButton;
 		this.playPageTurnSound = playPageTurnSound;
 	}
@@ -37,7 +37,7 @@ public class PageTurnWidget extends ButtonWidget {
 			j += 13;
 		}
 
-		this.drawTexture(matrices, this.x, this.y, i, j, 23, 13);
+		this.drawTexture(matrices, this.getX(), this.getY(), i, j, 23, 13);
 	}
 
 	@Override

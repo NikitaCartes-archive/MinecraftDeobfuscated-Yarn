@@ -26,6 +26,7 @@ import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerSessionC2SPacket;
 import net.minecraft.network.packet.c2s.play.QueryBlockNbtC2SPacket;
 import net.minecraft.network.packet.c2s.play.QueryEntityNbtC2SPacket;
 import net.minecraft.network.packet.c2s.play.RecipeBookDataC2SPacket;
@@ -145,4 +146,6 @@ public interface ServerPlayPacketListener extends ServerPacketListener {
 	void onUpdateDifficulty(UpdateDifficultyC2SPacket packet);
 
 	void onUpdateDifficultyLock(UpdateDifficultyLockC2SPacket packet);
+
+	void onPlayerSession(PlayerSessionC2SPacket packet);
 }

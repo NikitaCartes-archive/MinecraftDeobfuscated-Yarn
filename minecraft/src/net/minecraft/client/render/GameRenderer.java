@@ -66,14 +66,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Matrix3f;
-import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameMode;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -86,7 +87,6 @@ public class GameRenderer implements AutoCloseable {
 	 * blocks is used to define a rectangular area to be rendered.
 	 * 
 	 * @see Camera#getProjection()
-	 * @see Matrix4f#viewboxMatrix
 	 */
 	public static final float CAMERA_DEPTH = 0.05F;
 	final MinecraftClient client;
@@ -796,7 +796,7 @@ public class GameRenderer implements AutoCloseable {
 			float f = (float)livingEntity.hurtTime - tickDelta;
 			if (livingEntity.isDead()) {
 				float g = Math.min((float)livingEntity.deathTime + tickDelta, 20.0F);
-				matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(40.0F - 8000.0F / (g + 200.0F)));
+				matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(40.0F - 8000.0F / (g + 200.0F)));
 			}
 
 			if (f < 0.0F) {
@@ -806,9 +806,9 @@ public class GameRenderer implements AutoCloseable {
 			f /= (float)livingEntity.maxHurtTime;
 			f = MathHelper.sin(f * f * f * f * (float) Math.PI);
 			float g = livingEntity.knockbackVelocity;
-			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-g));
-			matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-f * 14.0F));
-			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(g));
+			matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-g));
+			matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-f * 14.0F));
+			matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(g));
 		}
 	}
 
@@ -818,9 +818,9 @@ public class GameRenderer implements AutoCloseable {
 			float f = playerEntity.horizontalSpeed - playerEntity.prevHorizontalSpeed;
 			float g = -(playerEntity.horizontalSpeed + f * tickDelta);
 			float h = MathHelper.lerp(tickDelta, playerEntity.prevStrideDistance, playerEntity.strideDistance);
-			matrices.translate((double)(MathHelper.sin(g * (float) Math.PI) * h * 0.5F), (double)(-Math.abs(MathHelper.cos(g * (float) Math.PI) * h)), 0.0);
-			matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(MathHelper.sin(g * (float) Math.PI) * h * 3.0F));
-			matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(Math.abs(MathHelper.cos(g * (float) Math.PI - 0.2F) * h) * 5.0F));
+			matrices.translate(MathHelper.sin(g * (float) Math.PI) * h * 0.5F, -Math.abs(MathHelper.cos(g * (float) Math.PI) * h), 0.0F);
+			matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(MathHelper.sin(g * (float) Math.PI) * h * 3.0F));
+			matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(Math.abs(MathHelper.cos(g * (float) Math.PI - 0.2F) * h) * 5.0F));
 		}
 	}
 
@@ -837,9 +837,7 @@ public class GameRenderer implements AutoCloseable {
 	private void renderHand(MatrixStack matrices, Camera camera, float tickDelta) {
 		if (!this.renderingPanorama) {
 			this.loadProjectionMatrix(this.getBasicProjectionMatrix(this.getFov(camera, tickDelta, false)));
-			MatrixStack.Entry entry = matrices.peek();
-			entry.getPositionMatrix().loadIdentity();
-			entry.getNormalMatrix().loadIdentity();
+			matrices.loadIdentity();
 			matrices.push();
 			this.bobViewWhenHurt(matrices, tickDelta);
 			if (this.client.options.getBobView().getValue()) {
@@ -881,18 +879,22 @@ public class GameRenderer implements AutoCloseable {
 
 	public Matrix4f getBasicProjectionMatrix(double fov) {
 		MatrixStack matrixStack = new MatrixStack();
-		matrixStack.peek().getPositionMatrix().loadIdentity();
+		matrixStack.peek().getPositionMatrix().identity();
 		if (this.zoom != 1.0F) {
-			matrixStack.translate((double)this.zoomX, (double)(-this.zoomY), 0.0);
+			matrixStack.translate(this.zoomX, -this.zoomY, 0.0F);
 			matrixStack.scale(this.zoom, this.zoom, 1.0F);
 		}
 
 		matrixStack.peek()
 			.getPositionMatrix()
-			.multiply(
-				Matrix4f.viewboxMatrix(
-					fov, (float)this.client.getWindow().getFramebufferWidth() / (float)this.client.getWindow().getFramebufferHeight(), 0.05F, this.method_32796()
-				)
+			.mul(
+				new Matrix4f()
+					.setPerspective(
+						(float)(fov * (float) (Math.PI / 180.0)),
+						(float)this.client.getWindow().getFramebufferWidth() / (float)this.client.getWindow().getFramebufferHeight(),
+						0.05F,
+						this.method_32796()
+					)
 			);
 		return matrixStack.peek().getPositionMatrix();
 	}
@@ -939,18 +941,19 @@ public class GameRenderer implements AutoCloseable {
 
 			Window window = this.client.getWindow();
 			RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
-			Matrix4f matrix4f = Matrix4f.projectionMatrix(
-				0.0F,
-				(float)((double)window.getFramebufferWidth() / window.getScaleFactor()),
-				0.0F,
-				(float)((double)window.getFramebufferHeight() / window.getScaleFactor()),
-				1000.0F,
-				3000.0F
-			);
+			Matrix4f matrix4f = new Matrix4f()
+				.setOrtho(
+					0.0F,
+					(float)((double)window.getFramebufferWidth() / window.getScaleFactor()),
+					(float)((double)window.getFramebufferHeight() / window.getScaleFactor()),
+					0.0F,
+					1000.0F,
+					3000.0F
+				);
 			RenderSystem.setProjectionMatrix(matrix4f);
 			MatrixStack matrixStack = RenderSystem.getModelViewStack();
 			matrixStack.loadIdentity();
-			matrixStack.translate(0.0, 0.0, -2000.0);
+			matrixStack.translate(0.0F, 0.0F, -2000.0F);
 			RenderSystem.applyModelViewMatrix();
 			DiffuseLighting.enableGuiDepthLighting();
 			MatrixStack matrixStack2 = new MatrixStack();
@@ -1109,7 +1112,7 @@ public class GameRenderer implements AutoCloseable {
 		this.viewDistance = (float)(this.client.options.getClampedViewDistance() * 16);
 		MatrixStack matrixStack = new MatrixStack();
 		double d = this.getFov(camera, tickDelta, true);
-		matrixStack.peek().getPositionMatrix().multiply(this.getBasicProjectionMatrix(d));
+		matrixStack.multiplyPositionMatrix(this.getBasicProjectionMatrix(d));
 		this.bobViewWhenHurt(matrixStack, tickDelta);
 		if (this.client.options.getBobView().getValue()) {
 			this.bobView(matrixStack, tickDelta);
@@ -1121,11 +1124,11 @@ public class GameRenderer implements AutoCloseable {
 			int i = this.client.player.hasStatusEffect(StatusEffects.NAUSEA) ? 7 : 20;
 			float h = 5.0F / (g * g + 5.0F) - g * 0.04F;
 			h *= h;
-			Vec3f vec3f = new Vec3f(0.0F, MathHelper.SQUARE_ROOT_OF_TWO / 2.0F, MathHelper.SQUARE_ROOT_OF_TWO / 2.0F);
-			matrixStack.multiply(vec3f.getDegreesQuaternion(((float)this.ticks + tickDelta) * (float)i));
+			RotationAxis rotationAxis = RotationAxis.of(new Vector3f(0.0F, MathHelper.SQUARE_ROOT_OF_TWO / 2.0F, MathHelper.SQUARE_ROOT_OF_TWO / 2.0F));
+			matrixStack.multiply(rotationAxis.rotationDegrees(((float)this.ticks + tickDelta) * (float)i));
 			matrixStack.scale(1.0F / h, 1.0F, 1.0F);
 			float j = -((float)this.ticks + tickDelta) * (float)i;
-			matrixStack.multiply(vec3f.getDegreesQuaternion(j));
+			matrixStack.multiply(rotationAxis.rotationDegrees(j));
 		}
 
 		Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
@@ -1137,13 +1140,10 @@ public class GameRenderer implements AutoCloseable {
 			this.client.options.getPerspective().isFrontView(),
 			tickDelta
 		);
-		matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(camera.getPitch()));
-		matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(camera.getYaw() + 180.0F));
-		Matrix3f matrix3f = matrices.peek().getNormalMatrix().copy();
-		if (matrix3f.invert()) {
-			RenderSystem.setInverseViewRotationMatrix(matrix3f);
-		}
-
+		matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(camera.getPitch()));
+		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(camera.getYaw() + 180.0F));
+		Matrix3f matrix3f = new Matrix3f(matrices.peek().getNormalMatrix()).invert();
+		RenderSystem.setInverseViewRotationMatrix(matrix3f);
 		this.client
 			.worldRenderer
 			.setupFrustum(matrices, camera.getPos(), this.getBasicProjectionMatrix(Math.max(d, (double)this.client.options.getFov().getValue().intValue())));
@@ -1190,15 +1190,13 @@ public class GameRenderer implements AutoCloseable {
 			MatrixStack matrixStack = new MatrixStack();
 			matrixStack.push();
 			matrixStack.translate(
-				(double)((float)(scaledWidth / 2) + l * MathHelper.abs(MathHelper.sin(k * 2.0F))),
-				(double)((float)(scaledHeight / 2) + m * MathHelper.abs(MathHelper.sin(k * 2.0F))),
-				-50.0
+				(float)(scaledWidth / 2) + l * MathHelper.abs(MathHelper.sin(k * 2.0F)), (float)(scaledHeight / 2) + m * MathHelper.abs(MathHelper.sin(k * 2.0F)), -50.0F
 			);
 			float n = 50.0F + 175.0F * MathHelper.sin(k);
 			matrixStack.scale(n, -n, n);
-			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(900.0F * MathHelper.abs(MathHelper.sin(k))));
-			matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(6.0F * MathHelper.cos(f * 8.0F)));
-			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(6.0F * MathHelper.cos(f * 8.0F)));
+			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(900.0F * MathHelper.abs(MathHelper.sin(k))));
+			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(6.0F * MathHelper.cos(f * 8.0F)));
+			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(6.0F * MathHelper.cos(f * 8.0F)));
 			VertexConsumerProvider.Immediate immediate = this.buffers.getEntityVertexConsumers();
 			this.client
 				.getItemRenderer()

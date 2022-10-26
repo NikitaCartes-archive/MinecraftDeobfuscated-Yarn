@@ -15,7 +15,6 @@ import net.minecraft.block.PaneBlock;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.block.StairsBlock;
 import net.minecraft.block.WallTorchBlock;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.block.enums.SlabType;
@@ -1035,10 +1034,10 @@ public class StrongholdGenerator {
 			this.fillWithOutline(world, chunkBox, 0, 0, 0, 10, 7, 15, false, random, StrongholdGenerator.STONE_BRICK_RANDOMIZER);
 			this.generateEntrance(world, random, chunkBox, StrongholdGenerator.Piece.EntranceType.GRATES, 4, 1, 0);
 			int i = 6;
-			this.fillWithOutline(world, chunkBox, 1, i, 1, 1, i, 14, false, random, StrongholdGenerator.STONE_BRICK_RANDOMIZER);
-			this.fillWithOutline(world, chunkBox, 9, i, 1, 9, i, 14, false, random, StrongholdGenerator.STONE_BRICK_RANDOMIZER);
-			this.fillWithOutline(world, chunkBox, 2, i, 1, 8, i, 2, false, random, StrongholdGenerator.STONE_BRICK_RANDOMIZER);
-			this.fillWithOutline(world, chunkBox, 2, i, 14, 8, i, 14, false, random, StrongholdGenerator.STONE_BRICK_RANDOMIZER);
+			this.fillWithOutline(world, chunkBox, 1, 6, 1, 1, 6, 14, false, random, StrongholdGenerator.STONE_BRICK_RANDOMIZER);
+			this.fillWithOutline(world, chunkBox, 9, 6, 1, 9, 6, 14, false, random, StrongholdGenerator.STONE_BRICK_RANDOMIZER);
+			this.fillWithOutline(world, chunkBox, 2, 6, 1, 8, 6, 2, false, random, StrongholdGenerator.STONE_BRICK_RANDOMIZER);
+			this.fillWithOutline(world, chunkBox, 2, 6, 14, 8, 6, 14, false, random, StrongholdGenerator.STONE_BRICK_RANDOMIZER);
 			this.fillWithOutline(world, chunkBox, 1, 1, 1, 2, 1, 4, false, random, StrongholdGenerator.STONE_BRICK_RANDOMIZER);
 			this.fillWithOutline(world, chunkBox, 8, 1, 1, 9, 1, 4, false, random, StrongholdGenerator.STONE_BRICK_RANDOMIZER);
 			this.fillWithOutline(world, chunkBox, 1, 1, 1, 1, 1, 3, Blocks.LAVA.getDefaultState(), Blocks.LAVA.getDefaultState(), false);
@@ -1110,9 +1109,8 @@ public class StrongholdGenerator {
 				if (chunkBox.contains(blockPos)) {
 					this.spawnerPlaced = true;
 					world.setBlockState(blockPos, Blocks.SPAWNER.getDefaultState(), Block.NOTIFY_LISTENERS);
-					BlockEntity blockEntity = world.getBlockEntity(blockPos);
-					if (blockEntity instanceof MobSpawnerBlockEntity) {
-						((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(EntityType.SILVERFISH);
+					if (world.getBlockEntity(blockPos) instanceof MobSpawnerBlockEntity mobSpawnerBlockEntity) {
+						mobSpawnerBlockEntity.setEntityType(EntityType.SILVERFISH, random);
 					}
 				}
 			}

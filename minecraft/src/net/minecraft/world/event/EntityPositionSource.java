@@ -9,14 +9,14 @@ import java.util.function.Function;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.dynamic.Codecs;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class EntityPositionSource implements PositionSource {
 	public static final Codec<EntityPositionSource> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codecs.UUID.fieldOf("source_entity").forGetter(EntityPositionSource::getUuid),
+					Uuids.INT_STREAM_CODEC.fieldOf("source_entity").forGetter(EntityPositionSource::getUuid),
 					Codec.FLOAT.fieldOf("y_offset").orElse(0.0F).forGetter(entityPositionSource -> entityPositionSource.yOffset)
 				)
 				.apply(instance, (uuid, yOffset) -> new EntityPositionSource(Either.right(Either.left(uuid)), yOffset))

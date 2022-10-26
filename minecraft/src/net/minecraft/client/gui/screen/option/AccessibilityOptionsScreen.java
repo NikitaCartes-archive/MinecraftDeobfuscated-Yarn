@@ -43,21 +43,18 @@ public class AccessibilityOptionsScreen extends SimpleOptionsScreen {
 	@Override
 	protected void initFooter() {
 		this.addDrawableChild(
-			new ButtonWidget(
-				this.width / 2 - 155,
-				this.height - 27,
-				150,
-				20,
-				Text.translatable("options.accessibility.link"),
-				button -> this.client.setScreen(new ConfirmLinkScreen(openInBrowser -> {
-						if (openInBrowser) {
-							Util.getOperatingSystem().open("https://aka.ms/MinecraftJavaAccessibility");
-						}
+			ButtonWidget.createBuilder(Text.translatable("options.accessibility.link"), button -> this.client.setScreen(new ConfirmLinkScreen(openInBrowser -> {
+					if (openInBrowser) {
+						Util.getOperatingSystem().open("https://aka.ms/MinecraftJavaAccessibility");
+					}
 
-						this.client.setScreen(this);
-					}, "https://aka.ms/MinecraftJavaAccessibility", true))
-			)
+					this.client.setScreen(this);
+				}, "https://aka.ms/MinecraftJavaAccessibility", true))).setPositionAndSize(this.width / 2 - 155, this.height - 27, 150, 20).build()
 		);
-		this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height - 27, 150, 20, ScreenTexts.DONE, button -> this.client.setScreen(this.parent)));
+		this.addDrawableChild(
+			ButtonWidget.createBuilder(ScreenTexts.DONE, button -> this.client.setScreen(this.parent))
+				.setPositionAndSize(this.width / 2 + 5, this.height - 27, 150, 20)
+				.build()
+		);
 	}
 }

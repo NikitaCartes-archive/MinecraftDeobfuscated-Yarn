@@ -15,7 +15,6 @@ import net.minecraft.network.message.MessageVerifier;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
@@ -31,10 +30,11 @@ public class PlayerListEntry {
 	private Text displayName;
 	@Nullable
 	private PublicPlayerSession session;
-	private MessageVerifier messageVerifier = MessageVerifier.UNVERIFIED;
+	private MessageVerifier messageVerifier;
 
-	public PlayerListEntry(GameProfile profile) {
+	public PlayerListEntry(GameProfile profile, boolean secureChatEnforced) {
 		this.profile = profile;
+		this.messageVerifier = getInitialVerifier(secureChatEnforced);
 	}
 
 	public GameProfile getProfile() {
@@ -51,12 +51,21 @@ public class PlayerListEntry {
 	}
 
 	public boolean hasPublicKey() {
-		return this.session != null && this.session.hasPublicKey();
+		return this.session != null;
 	}
 
-	protected void setSession(@Nullable PublicPlayerSession session) {
+	protected void setSession(PublicPlayerSession session) {
 		this.session = session;
-		this.messageVerifier = Util.mapOrElse(session, PublicPlayerSession::createVerifier, MessageVerifier.UNVERIFIED);
+		this.messageVerifier = session.createVerifier();
+	}
+
+	protected void resetSession(boolean secureChatEnforced) {
+		this.session = null;
+		this.messageVerifier = getInitialVerifier(secureChatEnforced);
+	}
+
+	private static MessageVerifier getInitialVerifier(boolean secureChatEnforced) {
+		return secureChatEnforced ? MessageVerifier.UNVERIFIED : MessageVerifier.NO_SIGNATURE;
 	}
 
 	public GameMode getGameMode() {

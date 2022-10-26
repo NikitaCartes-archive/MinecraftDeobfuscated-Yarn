@@ -132,8 +132,9 @@ public class CamelEntityModel<T extends CamelEntity> extends SinglePartEntityMod
 		this.updateVisibleParts(camelEntity);
 		float k = Math.min((float)camelEntity.getVelocity().lengthSquared() * 75.0F, 2.0F);
 		this.updateAnimation(camelEntity.walkingAnimationState, CamelAnimations.WALKING, h, k);
+		this.updateAnimation(camelEntity.sittingTransitionAnimationState, CamelAnimations.SITTING_TRANSITION, h, 1.0F);
 		this.updateAnimation(camelEntity.sittingAnimationState, CamelAnimations.SITTING, h, 1.0F);
-		this.updateAnimation(camelEntity.standingUpAnimationState, CamelAnimations.STANDING_UP, h, 1.0F);
+		this.updateAnimation(camelEntity.standingTransitionAnimationState, CamelAnimations.STANDING_TRANSITION, h, 1.0F);
 		this.updateAnimation(camelEntity.idlingAnimationState, CamelAnimations.IDLING, h, 1.0F);
 		this.updateAnimation(camelEntity.dashingAnimationState, CamelAnimations.DASHING, h, 1.0F);
 	}
@@ -141,9 +142,9 @@ public class CamelEntityModel<T extends CamelEntity> extends SinglePartEntityMod
 	private void setHeadAngles(T entity, float headYaw, float headPitch, float animationProgress) {
 		headYaw = MathHelper.clamp(headYaw, -30.0F, 30.0F);
 		headPitch = MathHelper.clamp(headPitch, -25.0F, 45.0F);
-		if (entity.getDashCooldown() > 0) {
+		if (entity.getJumpCooldown() > 0) {
 			float f = animationProgress - (float)entity.age;
-			float g = 45.0F * ((float)entity.getDashCooldown() - f) / 55.0F;
+			float g = 45.0F * ((float)entity.getJumpCooldown() - f) / 55.0F;
 			headPitch = MathHelper.clamp(headPitch + g, -25.0F, 70.0F);
 		}
 
@@ -171,7 +172,7 @@ public class CamelEntityModel<T extends CamelEntity> extends SinglePartEntityMod
 			float g = 1.1F;
 			matrices.push();
 			matrices.scale(0.45454544F, 0.41322312F, 0.45454544F);
-			matrices.translate(0.0, 2.0625, 0.0);
+			matrices.translate(0.0F, 2.0625F, 0.0F);
 			this.getPart().render(matrices, vertices, light, overlay, red, green, blue, alpha);
 			matrices.pop();
 		} else {

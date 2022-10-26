@@ -16,10 +16,10 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.chunk.Chunk;
+import org.joml.Vector3f;
 
 @Environment(EnvType.CLIENT)
 public class HeightmapDebugRenderer implements DebugRenderer.Renderer {
@@ -50,7 +50,7 @@ public class HeightmapDebugRenderer implements DebugRenderer.Renderer {
 				for (Entry<Heightmap.Type, Heightmap> entry : chunk.getHeightmaps()) {
 					Heightmap.Type type = (Heightmap.Type)entry.getKey();
 					ChunkPos chunkPos = chunk.getPos();
-					Vec3f vec3f = this.getColorForHeightmapType(type);
+					Vector3f vector3f = this.getColorForHeightmapType(type);
 
 					for (int k = 0; k < 16; k++) {
 						for (int l = 0; l < 16; l++) {
@@ -65,9 +65,9 @@ public class HeightmapDebugRenderer implements DebugRenderer.Renderer {
 								(double)((float)m + 0.75F) - cameraX,
 								(double)(f + 0.09375F),
 								(double)((float)n + 0.75F) - cameraZ,
-								vec3f.getX(),
-								vec3f.getY(),
-								vec3f.getZ(),
+								vector3f.x(),
+								vector3f.y(),
+								vector3f.z(),
 								1.0F
 							);
 						}
@@ -80,22 +80,22 @@ public class HeightmapDebugRenderer implements DebugRenderer.Renderer {
 		RenderSystem.enableTexture();
 	}
 
-	private Vec3f getColorForHeightmapType(Heightmap.Type type) {
+	private Vector3f getColorForHeightmapType(Heightmap.Type type) {
 		switch (type) {
 			case WORLD_SURFACE_WG:
-				return new Vec3f(1.0F, 1.0F, 0.0F);
+				return new Vector3f(1.0F, 1.0F, 0.0F);
 			case OCEAN_FLOOR_WG:
-				return new Vec3f(1.0F, 0.0F, 1.0F);
+				return new Vector3f(1.0F, 0.0F, 1.0F);
 			case WORLD_SURFACE:
-				return new Vec3f(0.0F, 0.7F, 0.0F);
+				return new Vector3f(0.0F, 0.7F, 0.0F);
 			case OCEAN_FLOOR:
-				return new Vec3f(0.0F, 0.0F, 0.5F);
+				return new Vector3f(0.0F, 0.0F, 0.5F);
 			case MOTION_BLOCKING:
-				return new Vec3f(0.0F, 0.3F, 0.3F);
+				return new Vector3f(0.0F, 0.3F, 0.3F);
 			case MOTION_BLOCKING_NO_LEAVES:
-				return new Vec3f(0.0F, 0.5F, 0.5F);
+				return new Vector3f(0.0F, 0.5F, 0.5F);
 			default:
-				return new Vec3f(0.0F, 0.0F, 0.0F);
+				return new Vector3f(0.0F, 0.0F, 0.0F);
 		}
 	}
 }

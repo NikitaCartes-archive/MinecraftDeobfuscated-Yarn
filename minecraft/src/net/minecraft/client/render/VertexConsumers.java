@@ -152,37 +152,37 @@ public class VertexConsumers {
 
 		@Override
 		public VertexConsumer vertex(double x, double y, double z) {
-			this.delegate(i -> i.vertex(x, y, z));
+			this.delegate(vertexConsumer -> vertexConsumer.vertex(x, y, z));
 			return this;
 		}
 
 		@Override
 		public VertexConsumer color(int red, int green, int blue, int alpha) {
-			this.delegate(i -> i.color(red, green, blue, alpha));
+			this.delegate(vertexConsumer -> vertexConsumer.color(red, green, blue, alpha));
 			return this;
 		}
 
 		@Override
 		public VertexConsumer texture(float u, float v) {
-			this.delegate(i -> i.texture(u, v));
+			this.delegate(vertexConsumer -> vertexConsumer.texture(u, v));
 			return this;
 		}
 
 		@Override
 		public VertexConsumer overlay(int u, int v) {
-			this.delegate(i -> i.overlay(u, v));
+			this.delegate(vertexConsumer -> vertexConsumer.overlay(u, v));
 			return this;
 		}
 
 		@Override
 		public VertexConsumer light(int u, int v) {
-			this.delegate(i -> i.light(u, v));
+			this.delegate(vertexConsumer -> vertexConsumer.light(u, v));
 			return this;
 		}
 
 		@Override
 		public VertexConsumer normal(float x, float y, float z) {
-			this.delegate(i -> i.normal(x, y, z));
+			this.delegate(vertexConsumer -> vertexConsumer.normal(x, y, z));
 			return this;
 		}
 
@@ -203,7 +203,7 @@ public class VertexConsumers {
 			float normalY,
 			float normalZ
 		) {
-			this.delegate(i -> i.vertex(x, y, z, red, green, blue, alpha, u, v, overlay, light, normalX, normalY, normalZ));
+			this.delegate(vertexConsumer -> vertexConsumer.vertex(x, y, z, red, green, blue, alpha, u, v, overlay, light, normalX, normalY, normalZ));
 		}
 
 		@Override
@@ -213,7 +213,7 @@ public class VertexConsumers {
 
 		@Override
 		public void fixedColor(int red, int green, int blue, int alpha) {
-			this.delegate(i -> i.fixedColor(red, green, blue, alpha));
+			this.delegate(vertexConsumer -> vertexConsumer.fixedColor(red, green, blue, alpha));
 		}
 
 		@Override

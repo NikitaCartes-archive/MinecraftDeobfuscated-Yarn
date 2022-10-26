@@ -24,7 +24,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -88,7 +88,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			Direction direction = livingEntity.getSleepingDirection();
 			if (direction != null) {
 				float n = livingEntity.getEyeHeight(EntityPose.STANDING) - 0.1F;
-				matrixStack.translate((double)((float)(-direction.getOffsetX()) * n), 0.0, (double)((float)(-direction.getOffsetZ()) * n));
+				matrixStack.translate((float)(-direction.getOffsetX()) * n, 0.0F, (float)(-direction.getOffsetZ()) * n);
 			}
 		}
 
@@ -96,7 +96,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		this.setupTransforms(livingEntity, matrixStack, lx, h, g);
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);
 		this.scale(livingEntity, matrixStack, g);
-		matrixStack.translate(0.0, -1.501F, 0.0);
+		matrixStack.translate(0.0F, -1.501F, 0.0F);
 		float n = 0.0F;
 		float o = 0.0F;
 		if (!livingEntity.hasVehicle() && livingEntity.isAlive()) {
@@ -189,7 +189,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		}
 
 		if (!entity.isInPose(EntityPose.SLEEPING)) {
-			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F - bodyYaw));
+			matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F - bodyYaw));
 		}
 
 		if (entity.deathTime > 0) {
@@ -199,19 +199,19 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 				f = 1.0F;
 			}
 
-			matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(f * this.getLyingAngle(entity)));
+			matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(f * this.getLyingAngle(entity)));
 		} else if (entity.isUsingRiptide()) {
-			matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90.0F - entity.getPitch()));
-			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(((float)entity.age + tickDelta) * -75.0F));
+			matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-90.0F - entity.getPitch()));
+			matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(((float)entity.age + tickDelta) * -75.0F));
 		} else if (entity.isInPose(EntityPose.SLEEPING)) {
 			Direction direction = entity.getSleepingDirection();
 			float g = direction != null ? getYaw(direction) : bodyYaw;
-			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(g));
-			matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(this.getLyingAngle(entity)));
-			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(270.0F));
+			matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(g));
+			matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(this.getLyingAngle(entity)));
+			matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(270.0F));
 		} else if (shouldFlipUpsideDown(entity)) {
-			matrices.translate(0.0, (double)(entity.getHeight() + 0.1F), 0.0);
-			matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
+			matrices.translate(0.0F, entity.getHeight() + 0.1F, 0.0F);
+			matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180.0F));
 		}
 	}
 

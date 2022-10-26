@@ -14,7 +14,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.random.Random;
 
 @Environment(EnvType.CLIENT)
@@ -62,18 +62,18 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 		int k = this.getRenderedAmount(itemStack);
 		float h = 0.25F;
 		float l = MathHelper.sin(((float)itemEntity.getItemAge() + g) / 10.0F + itemEntity.uniqueOffset) * 0.1F + 0.1F;
-		float m = bakedModel.getTransformation().getTransformation(ModelTransformation.Mode.GROUND).scale.getY();
-		matrixStack.translate(0.0, (double)(l + 0.25F * m), 0.0);
+		float m = bakedModel.getTransformation().getTransformation(ModelTransformation.Mode.GROUND).scale.y();
+		matrixStack.translate(0.0F, l + 0.25F * m, 0.0F);
 		float n = itemEntity.getRotation(g);
-		matrixStack.multiply(Vec3f.POSITIVE_Y.getRadialQuaternion(n));
-		float o = bakedModel.getTransformation().ground.scale.getX();
-		float p = bakedModel.getTransformation().ground.scale.getY();
-		float q = bakedModel.getTransformation().ground.scale.getZ();
+		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotation(n));
+		float o = bakedModel.getTransformation().ground.scale.x();
+		float p = bakedModel.getTransformation().ground.scale.y();
+		float q = bakedModel.getTransformation().ground.scale.z();
 		if (!bl) {
 			float r = -0.0F * (float)(k - 1) * 0.5F * o;
 			float s = -0.0F * (float)(k - 1) * 0.5F * p;
 			float t = -0.09375F * (float)(k - 1) * 0.5F * q;
-			matrixStack.translate((double)r, (double)s, (double)t);
+			matrixStack.translate(r, s, t);
 		}
 
 		for (int u = 0; u < k; u++) {
@@ -83,11 +83,11 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 					float s = (this.random.nextFloat() * 2.0F - 1.0F) * 0.15F;
 					float t = (this.random.nextFloat() * 2.0F - 1.0F) * 0.15F;
 					float v = (this.random.nextFloat() * 2.0F - 1.0F) * 0.15F;
-					matrixStack.translate((double)s, (double)t, (double)v);
+					matrixStack.translate(s, t, v);
 				} else {
 					float s = (this.random.nextFloat() * 2.0F - 1.0F) * 0.15F * 0.5F;
 					float t = (this.random.nextFloat() * 2.0F - 1.0F) * 0.15F * 0.5F;
-					matrixStack.translate((double)s, (double)t, 0.0);
+					matrixStack.translate(s, t, 0.0F);
 				}
 			}
 
@@ -95,7 +95,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 				.renderItem(itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV, bakedModel);
 			matrixStack.pop();
 			if (!bl) {
-				matrixStack.translate((double)(0.0F * o), (double)(0.0F * p), (double)(0.09375F * q));
+				matrixStack.translate(0.0F * o, 0.0F * p, 0.09375F * q);
 			}
 		}
 

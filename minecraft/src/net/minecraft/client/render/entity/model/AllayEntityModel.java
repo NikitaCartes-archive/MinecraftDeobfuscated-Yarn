@@ -14,7 +14,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.AllayEntity;
 import net.minecraft.util.Arm;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
 public class AllayEntityModel extends SinglePartEntityModel<AllayEntity> implements ModelWithArms {
@@ -133,9 +133,9 @@ public class AllayEntityModel extends SinglePartEntityModel<AllayEntity> impleme
 		float g = 3.0F;
 		this.root.rotate(matrices);
 		this.body.rotate(matrices);
-		matrices.translate(0.0, 0.0625, 0.1875);
-		matrices.multiply(Vec3f.POSITIVE_X.getRadialQuaternion(this.rightArm.pitch));
+		matrices.translate(0.0F, 0.0625F, 0.1875F);
+		matrices.multiply(RotationAxis.POSITIVE_X.rotation(this.rightArm.pitch));
 		matrices.scale(0.7F, 0.7F, 0.7F);
-		matrices.translate(0.0625, 0.0, 0.0);
+		matrices.translate(0.0625F, 0.0F, 0.0F);
 	}
 }

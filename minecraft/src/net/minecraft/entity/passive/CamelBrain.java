@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
+import java.util.function.Predicate;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
@@ -12,6 +13,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.brain.task.BreedTask;
+import net.minecraft.entity.ai.brain.task.ConditionalTask;
 import net.minecraft.entity.ai.brain.task.FollowMobTask;
 import net.minecraft.entity.ai.brain.task.GoTowardsLookTarget;
 import net.minecraft.entity.ai.brain.task.LookAroundTask;
@@ -39,7 +41,7 @@ public class CamelBrain {
 	private static final float field_40154 = 2.5F;
 	private static final float field_40155 = 2.5F;
 	private static final float field_40156 = 1.0F;
-	private static final UniformIntProvider field_40157 = UniformIntProvider.create(5, 16);
+	private static final UniformIntProvider WALK_TOWARD_ADULT_RANGE = UniformIntProvider.create(5, 16);
 	private static final ImmutableList<SensorType<? extends Sensor<? super CamelEntity>>> SENSORS = ImmutableList.of(
 		SensorType.NEAREST_LIVING_ENTITIES, SensorType.HURT_BY, SensorType.CAMEL_TEMPTATIONS, SensorType.NEAREST_ADULT
 	);
@@ -97,17 +99,17 @@ public class CamelBrain {
 			ImmutableList.of(
 				Pair.of(0, new TimeLimitedTask<>(new FollowMobTask(EntityType.PLAYER, 6.0F), UniformIntProvider.create(30, 60))),
 				Pair.of(1, new BreedTask(EntityType.CAMEL, 1.0F)),
-				Pair.of(2, new TemptTask(livingEntity -> 2.5F)),
-				Pair.of(3, new WalkTowardClosestAdultTask<>(field_40157, 2.5F)),
+				Pair.of(2, new TemptTask(entity -> 2.5F)),
+				Pair.of(3, new ConditionalTask<>(Predicate.not(CamelEntity::isStationary), new WalkTowardClosestAdultTask<>(WALK_TOWARD_ADULT_RANGE, 2.5F))),
 				Pair.of(4, new RandomLookAroundTask(UniformIntProvider.create(150, 250), 30.0F, 0.0F, 0.0F)),
 				Pair.of(
 					5,
 					new RandomTask<>(
 						ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT),
 						ImmutableList.of(
-							Pair.of(new StrollTask(2.0F), 1),
-							Pair.of(new GoTowardsLookTarget(2.0F, 3), 1),
-							Pair.of(new CamelBrain.class_7693(20), 1),
+							Pair.of(new ConditionalTask<>(Predicate.not(CamelEntity::isStationary), new StrollTask(2.0F)), 1),
+							Pair.of(new ConditionalTask<>(Predicate.not(CamelEntity::isStationary), new GoTowardsLookTarget(2.0F, 3)), 1),
+							Pair.of(new CamelBrain.SitOrStandTask(20), 1),
 							Pair.of(new WaitTask(30, 60), 1)
 						)
 					)
@@ -139,17 +141,17 @@ public class CamelBrain {
 		}
 	}
 
-	public static class class_7693 extends Task<CamelEntity> {
-		private final int field_40160;
+	public static class SitOrStandTask extends Task<CamelEntity> {
+		private final int lastPoseTickDelta;
 
-		public class_7693(int i) {
+		public SitOrStandTask(int lastPoseSecondsDelta) {
 			super(ImmutableMap.of());
-			this.field_40160 = i * 20;
+			this.lastPoseTickDelta = lastPoseSecondsDelta * 20;
 		}
 
 		protected boolean shouldRun(ServerWorld serverWorld, CamelEntity camelEntity) {
 			return !camelEntity.isTouchingWater()
-				&& camelEntity.getLastPoseTickDelta() >= (long)this.field_40160
+				&& camelEntity.getLastPoseTickDelta() >= (long)this.lastPoseTickDelta
 				&& !camelEntity.isLeashed()
 				&& camelEntity.isOnGround()
 				&& !camelEntity.hasPrimaryPassenger();

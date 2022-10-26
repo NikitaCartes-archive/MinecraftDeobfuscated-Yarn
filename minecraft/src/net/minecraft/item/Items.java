@@ -231,7 +231,7 @@ public class Items {
 	public static final Item MOSS_CARPET = register(Blocks.MOSS_CARPET);
 	public static final Item MOSS_BLOCK = register(Blocks.MOSS_BLOCK);
 	public static final Item HANGING_ROOTS = register(Blocks.HANGING_ROOTS);
-	public static final Item BIG_DRIPLEAF = register(Blocks.BIG_DRIPLEAF);
+	public static final Item BIG_DRIPLEAF = register(Blocks.BIG_DRIPLEAF, Blocks.BIG_DRIPLEAF_STEM);
 	public static final Item SMALL_DRIPLEAF = register(new TallBlockItem(Blocks.SMALL_DRIPLEAF, new Item.Settings()));
 	public static final Item BAMBOO = register(Blocks.BAMBOO);
 	public static final Item OAK_SLAB = register(Blocks.OAK_SLAB);
@@ -1044,7 +1044,7 @@ public class Items {
 	public static final Item BEE_SPAWN_EGG = register("bee_spawn_egg", new SpawnEggItem(EntityType.BEE, 15582019, 4400155, new Item.Settings()));
 	public static final Item BLAZE_SPAWN_EGG = register("blaze_spawn_egg", new SpawnEggItem(EntityType.BLAZE, 16167425, 16775294, new Item.Settings()));
 	public static final Item CAT_SPAWN_EGG = register("cat_spawn_egg", new SpawnEggItem(EntityType.CAT, 15714446, 9794134, new Item.Settings()));
-	public static final Item CAMEL_SPAWN_EGG = register("camel_spawn_egg", new SpawnEggItem(EntityType.CAMEL, 10250778, 14923633, new Item.Settings()));
+	public static final Item CAMEL_SPAWN_EGG = register("camel_spawn_egg", new SpawnEggItem(EntityType.CAMEL, 16565097, 13341495, new Item.Settings()));
 	public static final Item CAVE_SPIDER_SPAWN_EGG = register(
 		"cave_spider_spawn_egg", new SpawnEggItem(EntityType.CAVE_SPIDER, 803406, 11013646, new Item.Settings())
 	);

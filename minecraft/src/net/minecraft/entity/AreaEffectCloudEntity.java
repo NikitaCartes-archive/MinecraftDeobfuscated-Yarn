@@ -38,6 +38,10 @@ public class AreaEffectCloudEntity extends Entity {
 	private static final TrackedData<Boolean> WAITING = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<ParticleEffect> PARTICLE_ID = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.PARTICLE);
 	private static final float MAX_RADIUS = 32.0F;
+	private static final float field_40730 = 0.5F;
+	private static final float field_40731 = 3.0F;
+	public static final float field_40732 = 6.0F;
+	public static final float field_40733 = 0.5F;
 	private Potion potion = Potions.EMPTY;
 	private final List<StatusEffectInstance> effects = Lists.<StatusEffectInstance>newArrayList();
 	private final Map<Entity, Integer> affectedEntities = Maps.<Entity, Integer>newHashMap();
@@ -56,7 +60,6 @@ public class AreaEffectCloudEntity extends Entity {
 	public AreaEffectCloudEntity(EntityType<? extends AreaEffectCloudEntity> entityType, World world) {
 		super(entityType, world);
 		this.noClip = true;
-		this.setRadius(3.0F);
 	}
 
 	public AreaEffectCloudEntity(World world, double x, double y, double z) {
@@ -67,7 +70,7 @@ public class AreaEffectCloudEntity extends Entity {
 	@Override
 	protected void initDataTracker() {
 		this.getDataTracker().startTracking(COLOR, 0);
-		this.getDataTracker().startTracking(RADIUS, 0.5F);
+		this.getDataTracker().startTracking(RADIUS, 3.0F);
 		this.getDataTracker().startTracking(WAITING, false);
 		this.getDataTracker().startTracking(PARTICLE_ID, ParticleTypes.ENTITY_EFFECT);
 	}

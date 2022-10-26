@@ -13,6 +13,7 @@ import net.minecraft.network.encryption.PublicPlayerSession;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Util;
 import net.minecraft.world.GameMode;
 
 public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
@@ -96,8 +97,8 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 			buf.writePropertyMap(entry.profile().getProperties());
 		}),
 		INITIALIZE_CHAT(
-			(serialized, buf) -> serialized.session = PublicPlayerSession.Serialized.fromBuf(buf),
-			(buf, entry) -> PublicPlayerSession.Serialized.write(buf, entry.chatSession())
+			(serialized, buf) -> serialized.session = buf.readNullable(PublicPlayerSession.Serialized::fromBuf),
+			(buf, entry) -> buf.writeNullable(entry.chatSession, PublicPlayerSession.Serialized::write)
 		),
 		UPDATE_GAME_MODE((serialized, buf) -> serialized.gameMode = GameMode.byId(buf.readVarInt()), (buf, entry) -> buf.writeVarInt(entry.gameMode().getId())),
 		UPDATE_LISTED((serialized, buf) -> serialized.listed = buf.readBoolean(), (buf, entry) -> buf.writeBoolean(entry.listed())),
@@ -125,8 +126,15 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public static record Entry(
-		UUID profileId, GameProfile profile, boolean listed, int latency, GameMode gameMode, @Nullable Text displayName, PublicPlayerSession.Serialized chatSession
+		UUID profileId,
+		GameProfile profile,
+		boolean listed,
+		int latency,
+		GameMode gameMode,
+		@Nullable Text displayName,
+		@Nullable PublicPlayerSession.Serialized chatSession
 	) {
+
 		Entry(ServerPlayerEntity player) {
 			this(
 				player.getUuid(),
@@ -135,7 +143,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 				player.pingMilliseconds,
 				player.interactionManager.getGameMode(),
 				player.getPlayerListName(),
-				player.getSession().toSerialized()
+				Util.map(player.getSession(), PublicPlayerSession::toSerialized)
 			);
 		}
 	}
@@ -148,6 +156,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 		GameMode gameMode = GameMode.DEFAULT;
 		@Nullable
 		Text displayName;
+		@Nullable
 		PublicPlayerSession.Serialized session;
 
 		Serialized(UUID profileId) {

@@ -1,10 +1,8 @@
 package net.minecraft.client.gui.hud.spectator;
 
-import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Ordering;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -18,23 +16,21 @@ import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
 public class TeleportSpectatorMenu implements SpectatorMenuCommandGroup, SpectatorMenuCommand {
-	private static final Ordering<PlayerListEntry> ORDERING = Ordering.from(
-		(a, b) -> ComparisonChain.start().compare(a.getProfile().getId(), b.getProfile().getId()).result()
-	);
+	private static final Comparator<PlayerListEntry> ORDERING = Comparator.comparing(a -> a.getProfile().getId());
 	private static final Text TELEPORT_TEXT = Text.translatable("spectatorMenu.teleport");
 	private static final Text PROMPT_TEXT = Text.translatable("spectatorMenu.teleport.prompt");
-	private final List<SpectatorMenuCommand> elements = Lists.<SpectatorMenuCommand>newArrayList();
+	private final List<SpectatorMenuCommand> elements;
 
 	public TeleportSpectatorMenu() {
-		this(ORDERING.<PlayerListEntry>sortedCopy(MinecraftClient.getInstance().getNetworkHandler().getListedPlayerListEntries()));
+		this(MinecraftClient.getInstance().getNetworkHandler().getListedPlayerListEntries());
 	}
 
 	public TeleportSpectatorMenu(Collection<PlayerListEntry> entries) {
-		for (PlayerListEntry playerListEntry : ORDERING.sortedCopy(entries)) {
-			if (playerListEntry.getGameMode() != GameMode.SPECTATOR) {
-				this.elements.add(new TeleportToSpecificPlayerSpectatorCommand(playerListEntry.getProfile()));
-			}
-		}
+		this.elements = entries.stream()
+			.filter(entry -> entry.getGameMode() != GameMode.SPECTATOR)
+			.sorted(ORDERING)
+			.map(entry -> new TeleportToSpecificPlayerSpectatorCommand(entry.getProfile()))
+			.toList();
 	}
 
 	@Override

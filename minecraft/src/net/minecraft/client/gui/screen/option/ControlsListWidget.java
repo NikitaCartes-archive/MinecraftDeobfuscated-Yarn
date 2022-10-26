@@ -15,7 +15,6 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.apache.commons.lang3.ArrayUtils;
@@ -116,23 +115,23 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 		KeyBindingEntry(KeyBinding binding, Text bindingName) {
 			this.binding = binding;
 			this.bindingName = bindingName;
-			this.editButton = new ButtonWidget(0, 0, 75, 20, bindingName, button -> ControlsListWidget.this.parent.selectedKeyBinding = binding) {
-				@Override
-				protected MutableText getNarrationMessage() {
-					return binding.isUnbound()
-						? Text.translatable("narrator.controls.unbound", bindingName)
-						: Text.translatable("narrator.controls.bound", bindingName, super.getNarrationMessage());
-				}
-			};
-			this.resetButton = new ButtonWidget(0, 0, 50, 20, Text.translatable("controls.reset"), button -> {
-				ControlsListWidget.this.client.options.setKeyCode(binding, binding.getDefaultKey());
-				KeyBinding.updateKeysByCode();
-			}) {
-				@Override
-				protected MutableText getNarrationMessage() {
-					return Text.translatable("narrator.controls.reset", bindingName);
-				}
-			};
+			this.editButton = ButtonWidget.createBuilder(bindingName, button -> ControlsListWidget.this.parent.selectedKeyBinding = binding)
+				.setPositionAndSize(0, 0, 75, 20)
+				.setTooltipSupplier(ButtonWidget.EMPTY_TOOLTIP)
+				.setNarrationSupplier(
+					supplier -> binding.isUnbound()
+							? Text.translatable("narrator.controls.unbound", bindingName)
+							: Text.translatable("narrator.controls.bound", bindingName, supplier.get())
+				)
+				.build();
+			this.resetButton = ButtonWidget.createBuilder(Text.translatable("controls.reset"), button -> {
+					ControlsListWidget.this.client.options.setKeyCode(binding, binding.getDefaultKey());
+					KeyBinding.updateKeysByCode();
+				})
+				.setPositionAndSize(0, 0, 50, 20)
+				.setTooltipSupplier(ButtonWidget.EMPTY_TOOLTIP)
+				.setNarrationSupplier(supplier -> Text.translatable("narrator.controls.reset", bindingName))
+				.build();
 		}
 
 		@Override
@@ -140,12 +139,12 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 			boolean bl = ControlsListWidget.this.parent.selectedKeyBinding == this.binding;
 			float var10003 = (float)(x + 90 - ControlsListWidget.this.maxKeyNameLength);
 			ControlsListWidget.this.client.textRenderer.draw(matrices, this.bindingName, var10003, (float)(y + entryHeight / 2 - 9 / 2), 16777215);
-			this.resetButton.x = x + 190;
-			this.resetButton.y = y;
+			this.resetButton.setX(x + 190);
+			this.resetButton.setY(y);
 			this.resetButton.active = !this.binding.isDefault();
 			this.resetButton.render(matrices, mouseX, mouseY, tickDelta);
-			this.editButton.x = x + 105;
-			this.editButton.y = y;
+			this.editButton.setX(x + 105);
+			this.editButton.setY(y);
 			this.editButton.setMessage(this.binding.getBoundKeyLocalizedText());
 			boolean bl2 = false;
 			if (!this.binding.isUnbound()) {

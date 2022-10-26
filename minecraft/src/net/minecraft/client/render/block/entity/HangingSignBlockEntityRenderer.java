@@ -26,9 +26,9 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.SignType;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.RotationPropertyHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class HangingSignBlockEntityRenderer extends SignBlockEntityRenderer {
@@ -63,12 +63,12 @@ public class HangingSignBlockEntityRenderer extends SignBlockEntityRenderer {
 		matrixStack.translate(0.5, 0.9375, 0.5);
 		if (bl2) {
 			float g = -RotationPropertyHelper.toDegrees((Integer)blockState.get(HangingSignBlock.ROTATION));
-			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(g));
+			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(g));
 		} else {
-			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(this.getRotationDegrees(blockState, bl)));
+			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(this.getRotationDegrees(blockState, bl)));
 		}
 
-		matrixStack.translate(0.0, -0.3125, 0.0);
+		matrixStack.translate(0.0F, -0.3125F, 0.0F);
 		hangingSignModel.updateVisibleParts(blockState);
 		float g = 1.0F;
 		this.renderSign(matrixStack, vertexConsumerProvider, i, j, 1.0F, signType, hangingSignModel);

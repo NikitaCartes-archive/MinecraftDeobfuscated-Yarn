@@ -54,11 +54,17 @@ public class ExperimentalWarningScreen extends Screen {
 		super.init();
 		this.message = MultilineText.create(this.textRenderer, MESSAGE, this.width - 50);
 		int i = MathHelper.clamp(this.getTitleY() + 20 + this.getMessageHeight() + 20, this.height / 6 + 96, this.height - 24);
-		this.addDrawableChild(new ButtonWidget(this.width / 2 - 50 - 105, i, 100, 20, ScreenTexts.PROCEED, button -> this.callback.accept(true)));
 		this.addDrawableChild(
-			new ButtonWidget(this.width / 2 - 50, i, 100, 20, DETAILS, button -> this.client.setScreen(new ExperimentalWarningScreen.DetailsScreen()))
+			ButtonWidget.createBuilder(ScreenTexts.PROCEED, button -> this.callback.accept(true)).setPositionAndSize(this.width / 2 - 50 - 105, i, 100, 20).build()
 		);
-		this.addDrawableChild(new ButtonWidget(this.width / 2 - 50 + 105, i, 100, 20, ScreenTexts.BACK, button -> this.callback.accept(false)));
+		this.addDrawableChild(
+			ButtonWidget.createBuilder(DETAILS, button -> this.client.setScreen(new ExperimentalWarningScreen.DetailsScreen()))
+				.setPositionAndSize(this.width / 2 - 50, i, 100, 20)
+				.build()
+		);
+		this.addDrawableChild(
+			ButtonWidget.createBuilder(ScreenTexts.BACK, button -> this.callback.accept(false)).setPositionAndSize(this.width / 2 - 50 + 105, i, 100, 20).build()
+		);
 	}
 
 	@Override
@@ -90,7 +96,9 @@ public class ExperimentalWarningScreen extends Screen {
 		@Override
 		protected void init() {
 			super.init();
-			this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 24, 200, 20, ScreenTexts.BACK, buttonWidget -> this.close()));
+			this.addDrawableChild(
+				ButtonWidget.createBuilder(ScreenTexts.BACK, button -> this.close()).setPositionAndSize(this.width / 2 - 100, this.height / 4 + 120 + 24, 200, 20).build()
+			);
 			this.packList = new ExperimentalWarningScreen.DetailsScreen.PackListWidget(this.client, ExperimentalWarningScreen.this.enabledProfiles);
 			this.addSelectableChild(this.packList);
 		}

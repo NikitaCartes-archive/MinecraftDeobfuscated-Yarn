@@ -69,7 +69,4 @@ public record PlacedFeature(RegistryEntry<ConfiguredFeature<?, ?>> feature, List
 	public String toString() {
 		return "Placed " + this.feature;
 	}
-
-	static record class_6870(int a) {
-	}
 }

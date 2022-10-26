@@ -34,7 +34,7 @@ public class PandaHeldItemFeatureRenderer extends FeatureRenderer<PandaEntity, P
 			}
 
 			matrixStack.push();
-			matrixStack.translate(0.1F, (double)n, (double)m);
+			matrixStack.translate(0.1F, n, m);
 			this.heldItemRenderer.renderItem(pandaEntity, itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i);
 			matrixStack.pop();
 		}

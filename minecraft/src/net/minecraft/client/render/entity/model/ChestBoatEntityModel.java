@@ -29,7 +29,7 @@ public class ChestBoatEntityModel extends BoatEntityModel {
 		return builder;
 	}
 
-	public static TexturedModelData method_45708() {
+	public static TexturedModelData getTexturedModelData() {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
 		BoatEntityModel.addParts(modelPartData);

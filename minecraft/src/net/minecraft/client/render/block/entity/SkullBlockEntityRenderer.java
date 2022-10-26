@@ -84,10 +84,10 @@ public class SkullBlockEntityRenderer implements BlockEntityRenderer<SkullBlockE
 	) {
 		matrices.push();
 		if (direction == null) {
-			matrices.translate(0.5, 0.0, 0.5);
+			matrices.translate(0.5F, 0.0F, 0.5F);
 		} else {
 			float f = 0.25F;
-			matrices.translate((double)(0.5F - (float)direction.getOffsetX() * 0.25F), 0.25, (double)(0.5F - (float)direction.getOffsetZ() * 0.25F));
+			matrices.translate(0.5F - (float)direction.getOffsetX() * 0.25F, 0.25F, 0.5F - (float)direction.getOffsetZ() * 0.25F);
 		}
 
 		matrices.scale(-1.0F, -1.0F, 1.0F);

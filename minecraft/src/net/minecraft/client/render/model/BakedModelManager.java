@@ -257,7 +257,7 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 						"Missing textures in model {}:\n{}",
 						modelId,
 						spriteIds.stream()
-							.sorted(SpriteIdentifier.field_40566)
+							.sorted(SpriteIdentifier.COMPARATOR)
 							.map(spriteIdentifier -> "    " + spriteIdentifier.getAtlasId() + ":" + spriteIdentifier.getTextureId())
 							.collect(Collectors.joining("\n"))
 					)

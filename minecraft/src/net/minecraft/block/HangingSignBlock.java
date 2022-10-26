@@ -112,6 +112,11 @@ public class HangingSignBlock extends AbstractSignBlock {
 	}
 
 	@Override
+	public VoxelShape getSidesShape(BlockState state, BlockView world, BlockPos pos) {
+		return this.getOutlineShape(state, world, pos, ShapeContext.absent());
+	}
+
+	@Override
 	public BlockState getStateForNeighborUpdate(
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {

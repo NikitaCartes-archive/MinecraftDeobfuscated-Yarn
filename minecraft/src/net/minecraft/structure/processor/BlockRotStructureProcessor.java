@@ -23,7 +23,7 @@ public class BlockRotStructureProcessor extends StructureProcessor {
 				)
 				.apply(instance, BlockRotStructureProcessor::new)
 	);
-	private Optional<RegistryEntryList<Block>> rottableBlocks;
+	private final Optional<RegistryEntryList<Block>> rottableBlocks;
 	private final float integrity;
 
 	public BlockRotStructureProcessor(TagKey<Block> rottableBlocks, float integrity) {

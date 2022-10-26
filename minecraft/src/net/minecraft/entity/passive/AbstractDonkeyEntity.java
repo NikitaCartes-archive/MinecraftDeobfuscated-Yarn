@@ -162,7 +162,7 @@ public abstract class AbstractDonkeyEntity extends AbstractHorseEntity {
 				}
 
 				if (!this.hasChest() && itemStack.isOf(Items.CHEST)) {
-					this.method_45374(player, itemStack);
+					this.addChest(player, itemStack);
 					return ActionResult.success(this.world.isClient);
 				}
 			}
@@ -173,11 +173,11 @@ public abstract class AbstractDonkeyEntity extends AbstractHorseEntity {
 		}
 	}
 
-	private void method_45374(PlayerEntity playerEntity, ItemStack itemStack) {
+	private void addChest(PlayerEntity player, ItemStack chest) {
 		this.setHasChest(true);
 		this.playAddChestSound();
-		if (!playerEntity.getAbilities().creativeMode) {
-			itemStack.decrement(1);
+		if (!player.getAbilities().creativeMode) {
+			chest.decrement(1);
 		}
 
 		this.onChestedStatusChanged();

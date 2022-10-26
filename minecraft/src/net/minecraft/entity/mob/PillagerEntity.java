@@ -40,8 +40,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -115,16 +113,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Inven
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		NbtList nbtList = new NbtList();
-
-		for (int i = 0; i < this.inventory.size(); i++) {
-			ItemStack itemStack = this.inventory.getStack(i);
-			if (!itemStack.isEmpty()) {
-				nbtList.add(itemStack.writeNbt(new NbtCompound()));
-			}
-		}
-
-		nbt.put("Inventory", nbtList);
+		this.writeInventory(nbt);
 	}
 
 	@Override
@@ -141,15 +130,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Inven
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
-		NbtList nbtList = nbt.getList("Inventory", NbtElement.COMPOUND_TYPE);
-
-		for (int i = 0; i < nbtList.size(); i++) {
-			ItemStack itemStack = ItemStack.fromNbt(nbtList.getCompound(i));
-			if (!itemStack.isEmpty()) {
-				this.inventory.addStack(itemStack);
-			}
-		}
-
+		this.readInventory(nbt);
 		this.setCanPickUpLoot(true);
 	}
 

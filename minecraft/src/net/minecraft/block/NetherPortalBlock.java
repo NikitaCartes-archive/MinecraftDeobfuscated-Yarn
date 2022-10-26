@@ -20,7 +20,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.dimension.AreaHelper;
+import net.minecraft.world.dimension.NetherPortal;
 
 public class NetherPortalBlock extends Block {
 	public static final EnumProperty<Direction.Axis> AXIS = Properties.HORIZONTAL_AXIS;
@@ -67,7 +67,7 @@ public class NetherPortalBlock extends Block {
 		Direction.Axis axis = direction.getAxis();
 		Direction.Axis axis2 = state.get(AXIS);
 		boolean bl = axis2 != axis && axis.isHorizontal();
-		return !bl && !neighborState.isOf(this) && !new AreaHelper(world, pos, axis2).wasAlreadyValid()
+		return !bl && !neighborState.isOf(this) && !new NetherPortal(world, pos, axis2).wasAlreadyValid()
 			? Blocks.AIR.getDefaultState()
 			: super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
 	}

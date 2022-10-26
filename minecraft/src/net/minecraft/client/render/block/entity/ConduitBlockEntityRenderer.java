@@ -20,7 +20,8 @@ import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 @Environment(EnvType.CLIENT)
 public class ConduitBlockEntityRenderer implements BlockEntityRenderer<ConduitBlockEntity> {
@@ -82,8 +83,8 @@ public class ConduitBlockEntityRenderer implements BlockEntityRenderer<ConduitBl
 			float h = conduitBlockEntity.getRotation(0.0F);
 			VertexConsumer vertexConsumer = BASE_TEXTURE.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntitySolid);
 			matrixStack.push();
-			matrixStack.translate(0.5, 0.5, 0.5);
-			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(h));
+			matrixStack.translate(0.5F, 0.5F, 0.5F);
+			matrixStack.multiply(new Quaternionf().rotationY(h * (float) (Math.PI / 180.0)));
 			this.conduitShell.render(matrixStack, vertexConsumer, i, j);
 			matrixStack.pop();
 		} else {
@@ -91,19 +92,18 @@ public class ConduitBlockEntityRenderer implements BlockEntityRenderer<ConduitBl
 			float k = MathHelper.sin(g * 0.1F) / 2.0F + 0.5F;
 			k = k * k + k;
 			matrixStack.push();
-			matrixStack.translate(0.5, (double)(0.3F + k * 0.2F), 0.5);
-			Vec3f vec3f = new Vec3f(0.5F, 1.0F, 0.5F);
-			vec3f.normalize();
-			matrixStack.multiply(vec3f.getDegreesQuaternion(h));
+			matrixStack.translate(0.5F, 0.3F + k * 0.2F, 0.5F);
+			Vector3f vector3f = new Vector3f(0.5F, 1.0F, 0.5F).normalize();
+			matrixStack.multiply(new Quaternionf().rotationAxis(h * (float) (Math.PI / 180.0), vector3f));
 			this.conduit.render(matrixStack, CAGE_TEXTURE.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityCutoutNoCull), i, j);
 			matrixStack.pop();
 			int l = conduitBlockEntity.ticks / 66 % 3;
 			matrixStack.push();
-			matrixStack.translate(0.5, 0.5, 0.5);
+			matrixStack.translate(0.5F, 0.5F, 0.5F);
 			if (l == 1) {
-				matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0F));
+				matrixStack.multiply(new Quaternionf().rotationX((float) (Math.PI / 2)));
 			} else if (l == 2) {
-				matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
+				matrixStack.multiply(new Quaternionf().rotationZ((float) (Math.PI / 2)));
 			}
 
 			VertexConsumer vertexConsumer2 = (l == 1 ? WIND_VERTICAL_TEXTURE : WIND_TEXTURE)
@@ -111,20 +111,17 @@ public class ConduitBlockEntityRenderer implements BlockEntityRenderer<ConduitBl
 			this.conduitWind.render(matrixStack, vertexConsumer2, i, j);
 			matrixStack.pop();
 			matrixStack.push();
-			matrixStack.translate(0.5, 0.5, 0.5);
+			matrixStack.translate(0.5F, 0.5F, 0.5F);
 			matrixStack.scale(0.875F, 0.875F, 0.875F);
-			matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(180.0F));
-			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
+			matrixStack.multiply(new Quaternionf().rotationXYZ((float) Math.PI, 0.0F, (float) Math.PI));
 			this.conduitWind.render(matrixStack, vertexConsumer2, i, j);
 			matrixStack.pop();
 			Camera camera = this.dispatcher.camera;
 			matrixStack.push();
-			matrixStack.translate(0.5, (double)(0.3F + k * 0.2F), 0.5);
+			matrixStack.translate(0.5F, 0.3F + k * 0.2F, 0.5F);
 			matrixStack.scale(0.5F, 0.5F, 0.5F);
 			float m = -camera.getYaw();
-			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(m));
-			matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(camera.getPitch()));
-			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
+			matrixStack.multiply(new Quaternionf().rotationYXZ(m * (float) (Math.PI / 180.0), camera.getPitch() * (float) (Math.PI / 180.0), (float) Math.PI));
 			float n = 1.3333334F;
 			matrixStack.scale(1.3333334F, 1.3333334F, 1.3333334F);
 			this.conduitEye

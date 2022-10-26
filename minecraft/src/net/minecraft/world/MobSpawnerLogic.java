@@ -16,6 +16,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.collection.DataPool;
+import net.minecraft.util.collection.Weighted;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.random.Random;
@@ -28,7 +29,8 @@ public abstract class MobSpawnerLogic {
 	private static final int field_30951 = 1;
 	private int spawnDelay = 20;
 	private DataPool<MobSpawnerEntry> spawnPotentials = DataPool.empty();
-	private MobSpawnerEntry spawnEntry = new MobSpawnerEntry();
+	@Nullable
+	private MobSpawnerEntry spawnEntry;
 	private double field_9161;
 	private double field_9159;
 	private int minSpawnDelay = 200;
@@ -40,8 +42,8 @@ public abstract class MobSpawnerLogic {
 	private int requiredPlayerRange = 16;
 	private int spawnRange = 4;
 
-	public void setEntityId(EntityType<?> type) {
-		this.spawnEntry.getNbt().putString("id", Registry.ENTITY_TYPE.getId(type).toString());
+	public void setEntityId(EntityType<?> type, @Nullable World world, Random random, BlockPos pos) {
+		this.getSpawnEntry(world, random, pos).getNbt().putString("id", Registry.ENTITY_TYPE.getId(type).toString());
 	}
 
 	private boolean isPlayerInRange(World world, BlockPos pos) {
@@ -77,9 +79,11 @@ public abstract class MobSpawnerLogic {
 				this.spawnDelay--;
 			} else {
 				boolean bl = false;
+				Random random = world.getRandom();
+				MobSpawnerEntry mobSpawnerEntry = this.getSpawnEntry(world, random, pos);
 
 				for (int i = 0; i < this.spawnCount; i++) {
-					NbtCompound nbtCompound = this.spawnEntry.getNbt();
+					NbtCompound nbtCompound = mobSpawnerEntry.getNbt();
 					Optional<EntityType<?>> optional = EntityType.fromNbt(nbtCompound);
 					if (optional.isEmpty()) {
 						this.updateSpawns(world, pos);
@@ -88,18 +92,17 @@ public abstract class MobSpawnerLogic {
 
 					NbtList nbtList = nbtCompound.getList("Pos", NbtElement.DOUBLE_TYPE);
 					int j = nbtList.size();
-					Random random = world.getRandom();
 					double d = j >= 1 ? nbtList.getDouble(0) : (double)pos.getX() + (random.nextDouble() - random.nextDouble()) * (double)this.spawnRange + 0.5;
 					double e = j >= 2 ? nbtList.getDouble(1) : (double)(pos.getY() + random.nextInt(3) - 1);
 					double f = j >= 3 ? nbtList.getDouble(2) : (double)pos.getZ() + (random.nextDouble() - random.nextDouble()) * (double)this.spawnRange + 0.5;
 					if (world.isSpaceEmpty(((EntityType)optional.get()).createSimpleBoundingBox(d, e, f))) {
 						BlockPos blockPos = new BlockPos(d, e, f);
-						if (this.spawnEntry.getCustomSpawnRules().isPresent()) {
+						if (mobSpawnerEntry.getCustomSpawnRules().isPresent()) {
 							if (!((EntityType)optional.get()).getSpawnGroup().isPeaceful() && world.getDifficulty() == Difficulty.PEACEFUL) {
 								continue;
 							}
 
-							MobSpawnerEntry.CustomSpawnRules customSpawnRules = (MobSpawnerEntry.CustomSpawnRules)this.spawnEntry.getCustomSpawnRules().get();
+							MobSpawnerEntry.CustomSpawnRules customSpawnRules = (MobSpawnerEntry.CustomSpawnRules)mobSpawnerEntry.getCustomSpawnRules().get();
 							if (!customSpawnRules.blockLightLimit().contains(world.getLightLevel(LightType.BLOCK, blockPos))
 								|| !customSpawnRules.skyLightLimit().contains(world.getLightLevel(LightType.SKY, blockPos))) {
 								continue;
@@ -130,11 +133,11 @@ public abstract class MobSpawnerLogic {
 
 						entity.refreshPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), random.nextFloat() * 360.0F, 0.0F);
 						if (entity instanceof MobEntity mobEntity) {
-							if (this.spawnEntry.getCustomSpawnRules().isEmpty() && !mobEntity.canSpawn(world, SpawnReason.SPAWNER) || !mobEntity.canSpawn(world)) {
+							if (mobSpawnerEntry.getCustomSpawnRules().isEmpty() && !mobEntity.canSpawn(world, SpawnReason.SPAWNER) || !mobEntity.canSpawn(world)) {
 								continue;
 							}
 
-							if (this.spawnEntry.getNbt().getSize() == 1 && this.spawnEntry.getNbt().contains("id", NbtElement.STRING_TYPE)) {
+							if (mobSpawnerEntry.getNbt().getSize() == 1 && mobSpawnerEntry.getNbt().contains("id", NbtElement.STRING_TYPE)) {
 								((MobEntity)entity).initialize(world, world.getLocalDifficulty(entity.getBlockPos()), SpawnReason.SPAWNER, null, null);
 							}
 						}
@@ -175,36 +178,24 @@ public abstract class MobSpawnerLogic {
 
 	public void readNbt(@Nullable World world, BlockPos pos, NbtCompound nbt) {
 		this.spawnDelay = nbt.getShort("Delay");
-		boolean bl = nbt.contains("SpawnPotentials", NbtElement.LIST_TYPE);
-		boolean bl2 = nbt.contains("SpawnData", NbtElement.COMPOUND_TYPE);
-		if (!bl) {
-			MobSpawnerEntry mobSpawnerEntry;
-			if (bl2) {
-				mobSpawnerEntry = (MobSpawnerEntry)MobSpawnerEntry.CODEC
-					.parse(NbtOps.INSTANCE, nbt.getCompound("SpawnData"))
-					.resultOrPartial(error -> LOGGER.warn("Invalid SpawnData: {}", error))
-					.orElseGet(MobSpawnerEntry::new);
-			} else {
-				mobSpawnerEntry = new MobSpawnerEntry();
-			}
-
-			this.spawnPotentials = DataPool.of(mobSpawnerEntry);
+		boolean bl = nbt.contains("SpawnData", NbtElement.COMPOUND_TYPE);
+		if (bl) {
+			MobSpawnerEntry mobSpawnerEntry = (MobSpawnerEntry)MobSpawnerEntry.CODEC
+				.parse(NbtOps.INSTANCE, nbt.getCompound("SpawnData"))
+				.resultOrPartial(string -> LOGGER.warn("Invalid SpawnData: {}", string))
+				.orElseGet(MobSpawnerEntry::new);
 			this.setSpawnEntry(world, pos, mobSpawnerEntry);
-		} else {
+		}
+
+		boolean bl2 = nbt.contains("SpawnPotentials", NbtElement.LIST_TYPE);
+		if (bl2) {
 			NbtList nbtList = nbt.getList("SpawnPotentials", NbtElement.COMPOUND_TYPE);
 			this.spawnPotentials = (DataPool<MobSpawnerEntry>)MobSpawnerEntry.DATA_POOL_CODEC
 				.parse(NbtOps.INSTANCE, nbtList)
 				.resultOrPartial(error -> LOGGER.warn("Invalid SpawnPotentials list: {}", error))
 				.orElseGet(DataPool::empty);
-			if (bl2) {
-				MobSpawnerEntry mobSpawnerEntry2 = (MobSpawnerEntry)MobSpawnerEntry.CODEC
-					.parse(NbtOps.INSTANCE, nbt.getCompound("SpawnData"))
-					.resultOrPartial(error -> LOGGER.warn("Invalid SpawnData: {}", error))
-					.orElseGet(MobSpawnerEntry::new);
-				this.setSpawnEntry(world, pos, mobSpawnerEntry2);
-			} else {
-				this.spawnPotentials.getOrEmpty(world.getRandom()).ifPresent(spawnPotential -> this.setSpawnEntry(world, pos, (MobSpawnerEntry)spawnPotential.getData()));
-			}
+		} else {
+			this.spawnPotentials = DataPool.of(this.spawnEntry != null ? this.spawnEntry : new MobSpawnerEntry());
 		}
 
 		if (nbt.contains("MinSpawnDelay", NbtElement.NUMBER_TYPE)) {
@@ -233,19 +224,23 @@ public abstract class MobSpawnerLogic {
 		nbt.putShort("MaxNearbyEntities", (short)this.maxNearbyEntities);
 		nbt.putShort("RequiredPlayerRange", (short)this.requiredPlayerRange);
 		nbt.putShort("SpawnRange", (short)this.spawnRange);
-		nbt.put(
-			"SpawnData",
-			(NbtElement)MobSpawnerEntry.CODEC.encodeStart(NbtOps.INSTANCE, this.spawnEntry).result().orElseThrow(() -> new IllegalStateException("Invalid SpawnData"))
-		);
+		if (this.spawnEntry != null) {
+			nbt.put(
+				"SpawnData",
+				(NbtElement)MobSpawnerEntry.CODEC.encodeStart(NbtOps.INSTANCE, this.spawnEntry).result().orElseThrow(() -> new IllegalStateException("Invalid SpawnData"))
+			);
+		}
+
 		nbt.put("SpawnPotentials", (NbtElement)MobSpawnerEntry.DATA_POOL_CODEC.encodeStart(NbtOps.INSTANCE, this.spawnPotentials).result().orElseThrow());
 		return nbt;
 	}
 
 	@Nullable
-	public Entity getRenderedEntity(World world) {
+	public Entity getRenderedEntity(World world, Random random, BlockPos pos) {
 		if (this.renderedEntity == null) {
-			this.renderedEntity = EntityType.loadEntityWithPassengers(this.spawnEntry.getNbt(), world, Function.identity());
-			if (this.spawnEntry.getNbt().getSize() == 1 && this.spawnEntry.getNbt().contains("id", NbtElement.STRING_TYPE) && this.renderedEntity instanceof MobEntity) {
+			NbtCompound nbtCompound = this.getSpawnEntry(world, random, pos).getNbt();
+			this.renderedEntity = EntityType.loadEntityWithPassengers(nbtCompound, world, Function.identity());
+			if (nbtCompound.getSize() == 1 && nbtCompound.contains("id", NbtElement.STRING_TYPE) && this.renderedEntity instanceof MobEntity) {
 			}
 		}
 
@@ -264,8 +259,17 @@ public abstract class MobSpawnerLogic {
 		}
 	}
 
-	public void setSpawnEntry(@Nullable World world, BlockPos pos, MobSpawnerEntry spawnEntry) {
+	protected void setSpawnEntry(@Nullable World world, BlockPos pos, MobSpawnerEntry spawnEntry) {
 		this.spawnEntry = spawnEntry;
+	}
+
+	private MobSpawnerEntry getSpawnEntry(@Nullable World world, Random random, BlockPos pos) {
+		if (this.spawnEntry != null) {
+			return this.spawnEntry;
+		} else {
+			this.setSpawnEntry(world, pos, (MobSpawnerEntry)this.spawnPotentials.getOrEmpty(random).map(Weighted.Present::getData).orElseGet(MobSpawnerEntry::new));
+			return this.spawnEntry;
+		}
 	}
 
 	public abstract void sendStatus(World world, BlockPos pos, int status);

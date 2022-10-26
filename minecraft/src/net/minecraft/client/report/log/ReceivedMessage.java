@@ -1,6 +1,8 @@
 package net.minecraft.client.report.log;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -13,6 +15,7 @@ import net.minecraft.client.network.message.MessageTrustStatus;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.dynamic.Codecs;
 
 /**
  * A message received by the client and stored in {@link ChatLog}.
@@ -70,6 +73,15 @@ public interface ReceivedMessage extends ChatLogEntry {
 	 */
 	@Environment(EnvType.CLIENT)
 	public static record ChatMessage(GameProfile profile, Text displayName, SignedMessage message, MessageTrustStatus trustStatus) implements ReceivedMessage {
+		public static final Codec<ReceivedMessage.ChatMessage> CHAT_MESSAGE_CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codecs.GAME_PROFILE.fieldOf("profile").forGetter(ReceivedMessage.ChatMessage::profile),
+						Codecs.TEXT.fieldOf("display_name").forGetter(ReceivedMessage.ChatMessage::displayName),
+						SignedMessage.field_40846.forGetter(ReceivedMessage.ChatMessage::message),
+						MessageTrustStatus.field_40801.optionalFieldOf("trust_level", MessageTrustStatus.SECURE).forGetter(ReceivedMessage.ChatMessage::trustStatus)
+					)
+					.apply(instance, ReceivedMessage.ChatMessage::new)
+		);
 		private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
 
 		@Override
@@ -118,6 +130,11 @@ public interface ReceivedMessage extends ChatLogEntry {
 		public UUID getSenderUuid() {
 			return this.profile.getId();
 		}
+
+		@Override
+		public ChatLogEntry.Type getType() {
+			return ChatLogEntry.Type.PLAYER;
+		}
 	}
 
 	/**
@@ -125,6 +142,14 @@ public interface ReceivedMessage extends ChatLogEntry {
 	 */
 	@Environment(EnvType.CLIENT)
 	public static record GameMessage(Text message, Instant timestamp) implements ReceivedMessage {
+		public static final Codec<ReceivedMessage.GameMessage> GAME_MESSAGE_CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codecs.TEXT.fieldOf("message").forGetter(ReceivedMessage.GameMessage::message),
+						Codecs.INSTANT.fieldOf("time_stamp").forGetter(ReceivedMessage.GameMessage::timestamp)
+					)
+					.apply(instance, ReceivedMessage.GameMessage::new)
+		);
+
 		@Override
 		public Text getContent() {
 			return this.message;
@@ -133,6 +158,11 @@ public interface ReceivedMessage extends ChatLogEntry {
 		@Override
 		public boolean isSentFrom(UUID uuid) {
 			return false;
+		}
+
+		@Override
+		public ChatLogEntry.Type getType() {
+			return ChatLogEntry.Type.SYSTEM;
 		}
 	}
 }

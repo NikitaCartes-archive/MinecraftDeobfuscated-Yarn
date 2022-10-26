@@ -15,8 +15,8 @@ import net.minecraft.item.map.MapState;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
+import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class MapRenderer implements AutoCloseable {
@@ -117,10 +117,10 @@ public class MapRenderer implements AutoCloseable {
 			for (MapIcon mapIcon : this.state.getIcons()) {
 				if (!hidePlayerIcons || mapIcon.isAlwaysRendered()) {
 					matrices.push();
-					matrices.translate((double)(0.0F + (float)mapIcon.getX() / 2.0F + 64.0F), (double)(0.0F + (float)mapIcon.getZ() / 2.0F + 64.0F), -0.02F);
-					matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion((float)(mapIcon.getRotation() * 360) / 16.0F));
+					matrices.translate(0.0F + (float)mapIcon.getX() / 2.0F + 64.0F, 0.0F + (float)mapIcon.getZ() / 2.0F + 64.0F, -0.02F);
+					matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees((float)(mapIcon.getRotation() * 360) / 16.0F));
 					matrices.scale(4.0F, 4.0F, 3.0F);
-					matrices.translate(-0.125, 0.125, 0.0);
+					matrices.translate(-0.125F, 0.125F, 0.0F);
 					byte b = mapIcon.getTypeId();
 					float g = (float)(b % 16 + 0) / 16.0F;
 					float h = (float)(b / 16 + 0) / 16.0F;
@@ -140,11 +140,9 @@ public class MapRenderer implements AutoCloseable {
 						float o = (float)textRenderer.getWidth(text);
 						float p = MathHelper.clamp(25.0F / o, 0.0F, 6.0F / 9.0F);
 						matrices.push();
-						matrices.translate(
-							(double)(0.0F + (float)mapIcon.getX() / 2.0F + 64.0F - o * p / 2.0F), (double)(0.0F + (float)mapIcon.getZ() / 2.0F + 64.0F + 4.0F), -0.025F
-						);
+						matrices.translate(0.0F + (float)mapIcon.getX() / 2.0F + 64.0F - o * p / 2.0F, 0.0F + (float)mapIcon.getZ() / 2.0F + 64.0F + 4.0F, -0.025F);
 						matrices.scale(p, p, 1.0F);
-						matrices.translate(0.0, 0.0, -0.1F);
+						matrices.translate(0.0F, 0.0F, -0.1F);
 						textRenderer.draw(text, 0.0F, 0.0F, -1, false, matrices.peek().getPositionMatrix(), vertexConsumers, false, Integer.MIN_VALUE, light);
 						matrices.pop();
 					}

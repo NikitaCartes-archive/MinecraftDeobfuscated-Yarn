@@ -18,7 +18,7 @@ import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
 public class TridentRiptideFeatureRenderer<T extends LivingEntity> extends FeatureRenderer<T, PlayerEntityModel<T>> {
@@ -48,10 +48,10 @@ public class TridentRiptideFeatureRenderer<T extends LivingEntity> extends Featu
 			for (int m = 0; m < 3; m++) {
 				matrixStack.push();
 				float n = j * (float)(-(45 + m * 5));
-				matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(n));
+				matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(n));
 				float o = 0.75F * (float)m;
 				matrixStack.scale(o, o, o);
-				matrixStack.translate(0.0, (double)(-0.2F + 0.6F * (float)m), 0.0);
+				matrixStack.translate(0.0F, -0.2F + 0.6F * (float)m, 0.0F);
 				this.aura.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
 				matrixStack.pop();
 			}

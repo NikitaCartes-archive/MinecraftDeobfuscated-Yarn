@@ -10,7 +10,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
 public class VillagerHeldItemFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>> extends FeatureRenderer<T, M> {
@@ -25,8 +25,8 @@ public class VillagerHeldItemFeatureRenderer<T extends LivingEntity, M extends E
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l
 	) {
 		matrixStack.push();
-		matrixStack.translate(0.0, 0.4F, -0.4F);
-		matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(180.0F));
+		matrixStack.translate(0.0F, 0.4F, -0.4F);
+		matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180.0F));
 		ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.MAINHAND);
 		this.heldItemRenderer.renderItem(livingEntity, itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i);
 		matrixStack.pop();

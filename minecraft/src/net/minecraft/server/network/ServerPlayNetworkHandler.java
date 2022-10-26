@@ -9,10 +9,13 @@ import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
@@ -62,6 +65,9 @@ import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketCallbacks;
+import net.minecraft.network.encryption.PlayerPublicKey;
+import net.minecraft.network.encryption.PublicPlayerSession;
+import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.listener.TickablePacketListener;
 import net.minecraft.network.message.AcknowledgmentValidator;
@@ -100,6 +106,7 @@ import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerSessionC2SPacket;
 import net.minecraft.network.packet.c2s.play.QueryBlockNbtC2SPacket;
 import net.minecraft.network.packet.c2s.play.QueryEntityNbtC2SPacket;
 import net.minecraft.network.packet.c2s.play.RecipeBookDataC2SPacket;
@@ -129,6 +136,7 @@ import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.KeepAliveS2CPacket;
 import net.minecraft.network.packet.s2c.play.NbtQueryResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerActionResponseS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.network.packet.s2c.play.ProfilelessChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
@@ -216,10 +224,11 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 	private int movePacketsCount;
 	private int lastTickMovePacketsCount;
 	private final AtomicReference<Instant> lastMessageTimestamp = new AtomicReference(Instant.EPOCH);
-	private final MessageChain.Unpacker messageUnpacker;
+	@Nullable
+	private PublicPlayerSession session;
+	private MessageChain.Unpacker messageUnpacker;
 	private final AcknowledgmentValidator acknowledgmentValidator = new AcknowledgmentValidator(20);
 	private final MessageSignatureStorage signatureStorage = MessageSignatureStorage.create();
-	private final MessageSignatureData.Packer messagePacker = this.signatureStorage.getPacker();
 	private final MessageChainTaskQueue messageChainTaskQueue;
 
 	public ServerPlayNetworkHandler(MinecraftServer server, ClientConnection connection, ServerPlayerEntity player) {
@@ -230,7 +239,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 		player.networkHandler = this;
 		this.lastKeepAliveTime = Util.getMeasuringTimeMs();
 		player.getTextStream().onConnect();
-		this.messageUnpacker = player.getSession().createUnpacker(player.getUuid());
+		this.messageUnpacker = server.shouldEnforceSecureProfile() ? MessageChain.Unpacker.NOT_INITIALIZED : MessageChain.Unpacker.unsigned(player.getUuid());
 		this.messageChainTaskQueue = new MessageChainTaskQueue(server);
 	}
 
@@ -1474,7 +1483,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 				message.link().sender(),
 				message.link().index(),
 				message.signature(),
-				message.signedBody().toSerialized(this.messagePacker),
+				message.signedBody().toSerialized(this.signatureStorage),
 				message.unsignedContent(),
 				message.filterMask(),
 				params.toSerialized(this.player.world.getRegistryManager())
@@ -1758,6 +1767,37 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 		if (this.player.hasPermissionLevel(2) || this.isHost()) {
 			this.server.setDifficultyLocked(packet.isDifficultyLocked());
 		}
+	}
+
+	@Override
+	public void onPlayerSession(PlayerSessionC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		PublicPlayerSession.Serialized serialized = packet.chatSession();
+		PlayerPublicKey.PublicKeyData publicKeyData = this.session != null ? this.session.publicKeyData().data() : null;
+		PlayerPublicKey.PublicKeyData publicKeyData2 = serialized.publicKeyData();
+		if (!Objects.equals(publicKeyData, publicKeyData2)) {
+			if (publicKeyData != null && publicKeyData2.expiresAt().isBefore(publicKeyData.expiresAt())) {
+				this.disconnect(PlayerPublicKey.EXPIRED_PUBLIC_KEY_TEXT);
+			} else {
+				try {
+					SignatureVerifier signatureVerifier = this.server.getServicesSignatureVerifier();
+					this.setSession(serialized.toSession(this.player.getGameProfile(), signatureVerifier, Duration.ZERO));
+				} catch (PlayerPublicKey.PublicKeyException var6) {
+					LOGGER.error("Failed to validate profile key: {}", var6.getMessage());
+					this.disconnect(var6.getMessageText());
+				}
+			}
+		}
+	}
+
+	private void setSession(PublicPlayerSession session) {
+		this.session = session;
+		this.messageUnpacker = session.createUnpacker(this.player.getUuid());
+		this.messageChainTaskQueue.append(executor -> {
+			this.player.setSession(session);
+			this.server.getPlayerManager().sendToAll(new PlayerListS2CPacket(EnumSet.of(PlayerListS2CPacket.Action.INITIALIZE_CHAT), List.of(this.player)));
+			return CompletableFuture.completedFuture(null);
+		});
 	}
 
 	@Override

@@ -1,5 +1,9 @@
 package net.minecraft.client.report.log;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -16,8 +20,33 @@ public class ChatLog {
 	private final ChatLogEntry[] entries;
 	private int currentIndex;
 
-	public ChatLog(int size) {
-		this.entries = new ChatLogEntry[size];
+	public static Codec<ChatLog> createCodec(int maxSize) {
+		return Codec.list(ChatLogEntry.CODEC)
+			.comapFlatMap(
+				entries -> entries.size() > maxSize
+						? DataResult.error("Expected: a buffer of size less than or equal to " + maxSize + " but: " + entries.size() + " is greater than " + maxSize)
+						: DataResult.success(new ChatLog(maxSize, entries)),
+				ChatLog::toList
+			);
+	}
+
+	public ChatLog(int maxSize) {
+		this.entries = new ChatLogEntry[maxSize];
+	}
+
+	private ChatLog(int size, List<ChatLogEntry> entries) {
+		this.entries = (ChatLogEntry[])entries.toArray(ChatLogEntry[]::new);
+		this.currentIndex = entries.size();
+	}
+
+	private List<ChatLogEntry> toList() {
+		List<ChatLogEntry> list = new ArrayList(this.size());
+
+		for (int i = this.getMinIndex(); i <= this.getMaxIndex(); i++) {
+			list.add(this.get(i));
+		}
+
+		return list;
 	}
 
 	/**
@@ -46,5 +75,9 @@ public class ChatLog {
 
 	public int getMaxIndex() {
 		return this.currentIndex - 1;
+	}
+
+	private int size() {
+		return this.getMaxIndex() - this.getMinIndex() + 1;
 	}
 }

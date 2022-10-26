@@ -14,8 +14,8 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
+import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class CubeMapRenderer {
@@ -31,15 +31,14 @@ public class CubeMapRenderer {
 	public void draw(MinecraftClient client, float x, float y, float alpha) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		Matrix4f matrix4f = Matrix4f.viewboxMatrix(
-			85.0, (float)client.getWindow().getFramebufferWidth() / (float)client.getWindow().getFramebufferHeight(), 0.05F, 10.0F
-		);
+		Matrix4f matrix4f = new Matrix4f()
+			.setPerspective(1.4835298F, (float)client.getWindow().getFramebufferWidth() / (float)client.getWindow().getFramebufferHeight(), 0.05F, 10.0F);
 		RenderSystem.backupProjectionMatrix();
 		RenderSystem.setProjectionMatrix(matrix4f);
 		MatrixStack matrixStack = RenderSystem.getModelViewStack();
 		matrixStack.push();
 		matrixStack.loadIdentity();
-		matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(180.0F));
+		matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180.0F));
 		RenderSystem.applyModelViewMatrix();
 		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -54,9 +53,9 @@ public class CubeMapRenderer {
 			float f = ((float)(j % 2) / 2.0F - 0.5F) / 256.0F;
 			float g = ((float)(j / 2) / 2.0F - 0.5F) / 256.0F;
 			float h = 0.0F;
-			matrixStack.translate((double)f, (double)g, 0.0);
-			matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(x));
-			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(y));
+			matrixStack.translate(f, g, 0.0F);
+			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(x));
+			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(y));
 			RenderSystem.applyModelViewMatrix();
 
 			for (int k = 0; k < 6; k++) {

@@ -1,12 +1,20 @@
 package net.minecraft.util.dynamic;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
+import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Decoder;
+import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.MapLike;
@@ -15,7 +23,9 @@ import com.mojang.serialization.Codec.ResultFunction;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Base64;
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -31,11 +41,13 @@ import java.util.function.ToIntFunction;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Stream;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.Uuids;
 import net.minecraft.util.registry.RegistryEntryList;
 import org.apache.commons.lang3.mutable.MutableObject;
+import org.joml.Vector3f;
 
 /**
  * A few extensions for {@link Codec} or {@link DynamicOps}.
@@ -45,7 +57,27 @@ import org.apache.commons.lang3.mutable.MutableObject;
  * {@link #nonEmptyList(Codec)}.
  */
 public class Codecs {
-	public static final Codec<UUID> UUID = Uuids.CODEC;
+	public static final Codec<JsonElement> JSON_ELEMENT = Codec.PASSTHROUGH
+		.xmap(dynamic -> dynamic.convert(JsonOps.INSTANCE).getValue(), element -> new Dynamic<>(JsonOps.INSTANCE, element));
+	public static final Codec<Text> TEXT = JSON_ELEMENT.flatXmap(element -> {
+		try {
+			return DataResult.success(Text.Serializer.fromJson(element));
+		} catch (JsonParseException var2) {
+			return DataResult.error(var2.getMessage());
+		}
+	}, text -> {
+		try {
+			return DataResult.success(Text.Serializer.toJsonTree(text));
+		} catch (IllegalArgumentException var2) {
+			return DataResult.error(var2.getMessage());
+		}
+	});
+	public static final Codec<Vector3f> VECTOR_3F = Codec.FLOAT
+		.listOf()
+		.comapFlatMap(
+			list -> Util.toArray(list, 3).map(listx -> new Vector3f((Float)listx.get(0), (Float)listx.get(1), (Float)listx.get(2))),
+			vec3f -> ImmutableList.of(vec3f.x(), vec3f.y(), vec3f.z())
+		);
 	public static final Codec<Integer> NONNEGATIVE_INT = rangedInt(0, Integer.MAX_VALUE, v -> "Value must be non-negative: " + v);
 	public static final Codec<Integer> POSITIVE_INT = rangedInt(1, Integer.MAX_VALUE, v -> "Value must be positive: " + v);
 	public static final Codec<Float> POSITIVE_FLOAT = rangedFloat(0.0F, Float.MAX_VALUE, v -> "Value must be positive: " + v);
@@ -76,6 +108,47 @@ public class Codecs {
 	public static final Function<OptionalLong, Optional<Long>> OPTIONAL_LONG_TO_OPTIONAL_OF_LONG = optionalLong -> optionalLong.isPresent()
 			? Optional.of(optionalLong.getAsLong())
 			: Optional.empty();
+	public static final Codec<BitSet> BIT_SET = Codec.LONG_STREAM.xmap(stream -> BitSet.valueOf(stream.toArray()), set -> Arrays.stream(set.toLongArray()));
+	private static final Codec<Property> GAME_PROFILE_PROPERTY = RecordCodecBuilder.create(
+		instance -> instance.group(
+					Codec.STRING.fieldOf("name").forGetter(Property::getName),
+					Codec.STRING.fieldOf("value").forGetter(Property::getValue),
+					Codec.STRING.optionalFieldOf("signature").forGetter(property -> Optional.ofNullable(property.getSignature()))
+				)
+				.apply(instance, (key, value, signature) -> new Property(key, value, (String)signature.orElse(null)))
+	);
+	@VisibleForTesting
+	public static final Codec<PropertyMap> GAME_PROFILE_PROPERTY_MAP = Codec.either(
+			Codec.unboundedMap(Codec.STRING, Codec.STRING.listOf()), GAME_PROFILE_PROPERTY.listOf()
+		)
+		.xmap(either -> {
+			PropertyMap propertyMap = new PropertyMap();
+			either.ifLeft(map -> map.forEach((key, values) -> {
+					for (String string : values) {
+						propertyMap.put(key, new Property(key, string));
+					}
+				})).ifRight(properties -> {
+				for (Property property : properties) {
+					propertyMap.put(property.getName(), property);
+				}
+			});
+			return propertyMap;
+		}, properties -> com.mojang.datafixers.util.Either.right(properties.values().stream().toList()));
+	public static final Codec<GameProfile> GAME_PROFILE = RecordCodecBuilder.create(
+		instance -> instance.group(
+					Codec.mapPair(
+							Uuids.CODEC.<Optional>xmap(Optional::of, optional -> (UUID)optional.orElse(null)).optionalFieldOf("id", Optional.empty()),
+							Codec.STRING.<Optional>xmap(Optional::of, optional -> (String)optional.orElse(null)).optionalFieldOf("name", Optional.empty())
+						)
+						.flatXmap(Codecs::createGameProfileFromPair, Codecs::createPairFromGameProfile)
+						.forGetter(Function.identity()),
+					GAME_PROFILE_PROPERTY_MAP.optionalFieldOf("properties", new PropertyMap()).forGetter(GameProfile::getProperties)
+				)
+				.apply(instance, (profile, properties) -> {
+					properties.forEach((key, property) -> profile.getProperties().put(key, property));
+					return profile;
+				})
+	);
 
 	/**
 	 * Returns an exclusive-or codec for {@link Either} instances.
@@ -318,6 +391,18 @@ public class Codecs {
 
 	public static MapCodec<OptionalLong> optionalLong(MapCodec<Optional<Long>> codec) {
 		return codec.xmap(OPTIONAL_OF_LONG_TO_OPTIONAL_LONG, OPTIONAL_LONG_TO_OPTIONAL_OF_LONG);
+	}
+
+	private static DataResult<GameProfile> createGameProfileFromPair(Pair<Optional<UUID>, Optional<String>> pair) {
+		try {
+			return DataResult.success(new GameProfile((UUID)pair.getFirst().orElse(null), (String)pair.getSecond().orElse(null)));
+		} catch (Throwable var2) {
+			return DataResult.error(var2.getMessage());
+		}
+	}
+
+	private static DataResult<Pair<Optional<UUID>, Optional<String>>> createPairFromGameProfile(GameProfile profile) {
+		return DataResult.success(Pair.of(Optional.ofNullable(profile.getId()), Optional.ofNullable(profile.getName())));
 	}
 
 	static final class Either<F, S> implements Codec<com.mojang.datafixers.util.Either<F, S>> {

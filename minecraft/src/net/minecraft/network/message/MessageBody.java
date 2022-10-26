@@ -2,12 +2,16 @@ package net.minecraft.network.message;
 
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.nio.charset.StandardCharsets;
 import java.security.SignatureException;
 import java.time.Instant;
 import java.util.Optional;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.encryption.SignatureUpdatable;
+import net.minecraft.util.dynamic.Codecs;
 
 /**
  * A body of a message, including the content, timestamp, salt used for the digest
@@ -15,6 +19,16 @@ import net.minecraft.network.encryption.SignatureUpdatable;
  * Other bits of information, such as sender, are included directly in the packet.
  */
 public record MessageBody(String content, Instant timestamp, long salt, LastSeenMessageList lastSeenMessages) {
+	public static final MapCodec<MessageBody> CODEC = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(
+					Codec.STRING.fieldOf("content").forGetter(MessageBody::content),
+					Codecs.INSTANT.fieldOf("time_stamp").forGetter(MessageBody::timestamp),
+					Codec.LONG.fieldOf("salt").forGetter(MessageBody::salt),
+					LastSeenMessageList.CODEC.optionalFieldOf("last_seen", LastSeenMessageList.EMPTY).forGetter(MessageBody::lastSeenMessages)
+				)
+				.apply(instance, MessageBody::new)
+	);
+
 	public static MessageBody ofUnsigned(String content) {
 		return new MessageBody(content, Instant.now(), 0L, LastSeenMessageList.EMPTY);
 	}
@@ -28,8 +42,8 @@ public record MessageBody(String content, Instant timestamp, long salt, LastSeen
 		this.lastSeenMessages.updateSignatures(updater);
 	}
 
-	public MessageBody.Serialized toSerialized(MessageSignatureData.Packer packer) {
-		return new MessageBody.Serialized(this.content, this.timestamp, this.salt, this.lastSeenMessages.pack(packer));
+	public MessageBody.Serialized toSerialized(MessageSignatureStorage storage) {
+		return new MessageBody.Serialized(this.content, this.timestamp, this.salt, this.lastSeenMessages.pack(storage));
 	}
 
 	/**
@@ -49,8 +63,8 @@ public record MessageBody(String content, Instant timestamp, long salt, LastSeen
 			this.lastSeen.write(buf);
 		}
 
-		public Optional<MessageBody> toBody(MessageSignatureData.Unpacker unpacker) {
-			return this.lastSeen.unpack(unpacker).map(lastSeenMessages -> new MessageBody(this.content, this.timestamp, this.salt, lastSeenMessages));
+		public Optional<MessageBody> toBody(MessageSignatureStorage storage) {
+			return this.lastSeen.unpack(storage).map(lastSeenMessages -> new MessageBody(this.content, this.timestamp, this.salt, lastSeenMessages));
 		}
 	}
 }

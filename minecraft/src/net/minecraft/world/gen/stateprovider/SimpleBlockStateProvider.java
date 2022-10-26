@@ -22,7 +22,7 @@ public class SimpleBlockStateProvider extends BlockStateProvider {
 	}
 
 	@Override
-	public BlockState getBlockState(Random random, BlockPos pos) {
+	public BlockState get(Random random, BlockPos pos) {
 		return this.state;
 	}
 }

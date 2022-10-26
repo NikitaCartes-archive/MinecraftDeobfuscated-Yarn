@@ -84,7 +84,7 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 		if (command != SpectatorMenu.BLANK_COMMAND) {
 			int i = (int)(height * 255.0F);
 			matrices.push();
-			matrices.translate((double)x, (double)y, 0.0);
+			matrices.translate((float)x, y, 0.0F);
 			float f = command.isEnabled() ? 1.0F : 0.25F;
 			RenderSystem.setShaderColor(f, f, f, height);
 			command.renderIcon(matrices, f, i);

@@ -17,7 +17,7 @@ import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
 public class SnowmanPumpkinFeatureRenderer extends FeatureRenderer<SnowGolemEntity, SnowGolemEntityModel<SnowGolemEntity>> {
@@ -50,15 +50,15 @@ public class SnowmanPumpkinFeatureRenderer extends FeatureRenderer<SnowGolemEnti
 				matrixStack.push();
 				this.getContextModel().getHead().rotate(matrixStack);
 				float m = 0.625F;
-				matrixStack.translate(0.0, -0.34375, 0.0);
-				matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
+				matrixStack.translate(0.0F, -0.34375F, 0.0F);
+				matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F));
 				matrixStack.scale(0.625F, -0.625F, -0.625F);
 				ItemStack itemStack = new ItemStack(Blocks.CARVED_PUMPKIN);
 				if (bl) {
 					BlockState blockState = Blocks.CARVED_PUMPKIN.getDefaultState();
 					BakedModel bakedModel = this.blockRenderManager.getModel(blockState);
 					int n = LivingEntityRenderer.getOverlay(snowGolemEntity, 0.0F);
-					matrixStack.translate(-0.5, -0.5, -0.5);
+					matrixStack.translate(-0.5F, -0.5F, -0.5F);
 					this.blockRenderManager
 						.getModelRenderer()
 						.render(

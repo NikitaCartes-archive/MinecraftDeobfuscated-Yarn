@@ -485,7 +485,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		nbt.put("Inventory", this.inventory.toNbtList());
+		this.writeInventory(nbt);
 		VibrationListener.createCodec(this.listenerCallback)
 			.encodeStart(NbtOps.INSTANCE, this.gameEventHandler.getListener())
 			.resultOrPartial(LOGGER::error)
@@ -497,10 +497,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
-		if (nbt.contains("Inventory", NbtElement.COMPOUND_TYPE)) {
-			this.inventory.readNbtList(nbt.getList("Inventory", NbtElement.COMPOUND_TYPE));
-		}
-
+		this.readInventory(nbt);
 		if (nbt.contains("listener", NbtElement.COMPOUND_TYPE)) {
 			VibrationListener.createCodec(this.listenerCallback)
 				.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("listener")))

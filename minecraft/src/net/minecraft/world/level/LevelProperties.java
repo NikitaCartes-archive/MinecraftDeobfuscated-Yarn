@@ -217,7 +217,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 			WorldBorder.Properties.fromDynamic(dynamic, WorldBorder.DEFAULT_BORDER),
 			dynamic.get("WanderingTraderSpawnDelay").asInt(0),
 			dynamic.get("WanderingTraderSpawnChance").asInt(0),
-			(UUID)dynamic.get("WanderingTraderId").read(Uuids.CODEC).result().orElse(null),
+			(UUID)dynamic.get("WanderingTraderId").read(Uuids.INT_STREAM_CODEC).result().orElse(null),
 			(Set<String>)dynamic.get("ServerBrands")
 				.asStream()
 				.flatMap(dynamicx -> dynamicx.asString().result().stream())

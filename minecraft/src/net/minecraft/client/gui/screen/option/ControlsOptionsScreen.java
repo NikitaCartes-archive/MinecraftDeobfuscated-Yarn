@@ -24,10 +24,14 @@ public class ControlsOptionsScreen extends GameOptionsScreen {
 		int j = i + 160;
 		int k = this.height / 6 - 12;
 		this.addDrawableChild(
-			new ButtonWidget(i, k, 150, 20, Text.translatable("options.mouse_settings"), button -> this.client.setScreen(new MouseOptionsScreen(this, this.gameOptions)))
+			ButtonWidget.createBuilder(Text.translatable("options.mouse_settings"), button -> this.client.setScreen(new MouseOptionsScreen(this, this.gameOptions)))
+				.setPositionAndSize(i, k, 150, 20)
+				.build()
 		);
 		this.addDrawableChild(
-			new ButtonWidget(j, k, 150, 20, Text.translatable("controls.keybinds"), button -> this.client.setScreen(new KeybindsScreen(this, this.gameOptions)))
+			ButtonWidget.createBuilder(Text.translatable("controls.keybinds"), button -> this.client.setScreen(new KeybindsScreen(this, this.gameOptions)))
+				.setPositionAndSize(j, k, 150, 20)
+				.build()
 		);
 		k += 24;
 		this.addDrawableChild(this.gameOptions.getSneakToggled().createButton(this.gameOptions, i, k, 150));
@@ -35,7 +39,9 @@ public class ControlsOptionsScreen extends GameOptionsScreen {
 		k += 24;
 		this.addDrawableChild(this.gameOptions.getAutoJump().createButton(this.gameOptions, i, k, 150));
 		k += 24;
-		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, k, 200, 20, ScreenTexts.DONE, button -> this.client.setScreen(this.parent)));
+		this.addDrawableChild(
+			ButtonWidget.createBuilder(ScreenTexts.DONE, button -> this.client.setScreen(this.parent)).setPositionAndSize(this.width / 2 - 100, k, 200, 20).build()
+		);
 	}
 
 	@Override

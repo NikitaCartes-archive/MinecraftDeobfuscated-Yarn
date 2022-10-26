@@ -10,7 +10,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.passive.FoxEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
 public class FoxHeldItemFeatureRenderer extends FeatureRenderer<FoxEntity, FoxEntityModel<FoxEntity>> {
@@ -30,33 +30,29 @@ public class FoxHeldItemFeatureRenderer extends FeatureRenderer<FoxEntity, FoxEn
 		if (bl2) {
 			float m = 0.75F;
 			matrixStack.scale(0.75F, 0.75F, 0.75F);
-			matrixStack.translate(0.0, 0.5, 0.209375F);
+			matrixStack.translate(0.0F, 0.5F, 0.209375F);
 		}
 
-		matrixStack.translate(
-			(double)(this.getContextModel().head.pivotX / 16.0F),
-			(double)(this.getContextModel().head.pivotY / 16.0F),
-			(double)(this.getContextModel().head.pivotZ / 16.0F)
-		);
+		matrixStack.translate(this.getContextModel().head.pivotX / 16.0F, this.getContextModel().head.pivotY / 16.0F, this.getContextModel().head.pivotZ / 16.0F);
 		float m = foxEntity.getHeadRoll(h);
-		matrixStack.multiply(Vec3f.POSITIVE_Z.getRadialQuaternion(m));
-		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(k));
-		matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(l));
+		matrixStack.multiply(RotationAxis.POSITIVE_Z.rotation(m));
+		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(k));
+		matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(l));
 		if (foxEntity.isBaby()) {
 			if (bl) {
 				matrixStack.translate(0.4F, 0.26F, 0.15F);
 			} else {
-				matrixStack.translate(0.06F, 0.26F, -0.5);
+				matrixStack.translate(0.06F, 0.26F, -0.5F);
 			}
 		} else if (bl) {
 			matrixStack.translate(0.46F, 0.26F, 0.22F);
 		} else {
-			matrixStack.translate(0.06F, 0.27F, -0.5);
+			matrixStack.translate(0.06F, 0.27F, -0.5F);
 		}
 
-		matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0F));
+		matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0F));
 		if (bl) {
-			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
+			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90.0F));
 		}
 
 		ItemStack itemStack = foxEntity.getEquippedStack(EquipmentSlot.MAINHAND);

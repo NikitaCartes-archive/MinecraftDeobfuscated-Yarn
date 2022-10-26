@@ -96,7 +96,7 @@ public class ButtonListWidget extends ElementListWidget<ButtonListWidget.ButtonE
 		@Override
 		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			this.buttons.forEach(button -> {
-				button.y = y;
+				button.setY(y);
 				button.render(matrices, mouseX, mouseY, tickDelta);
 			});
 		}

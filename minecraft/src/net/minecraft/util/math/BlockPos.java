@@ -114,6 +114,15 @@ public class BlockPos extends Vec3i {
 		return i == 0 && j == 0 && k == 0 ? this : new BlockPos(this.getX() + i, this.getY() + j, this.getZ() + k);
 	}
 
+	/**
+	 * {@return the center of this block position}
+	 * 
+	 * @see Vec3d#ofCenter
+	 */
+	public Vec3d toCenterPos() {
+		return Vec3d.ofCenter(this);
+	}
+
 	public BlockPos add(Vec3i vec3i) {
 		return this.add(vec3i.getX(), vec3i.getY(), vec3i.getZ());
 	}

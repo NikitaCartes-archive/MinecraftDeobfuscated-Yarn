@@ -8,8 +8,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.util.math.AffineTransformation;
 import net.minecraft.util.math.DirectionTransformation;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Quaternion;
-import net.minecraft.util.math.Vec3f;
+import org.joml.Quaternionf;
 
 @Environment(EnvType.CLIENT)
 public enum ModelRotation implements ModelBakeSettings {
@@ -32,7 +31,7 @@ public enum ModelRotation implements ModelBakeSettings {
 
 	private static final int MAX_ROTATION = 360;
 	private static final Map<Integer, ModelRotation> BY_INDEX = (Map<Integer, ModelRotation>)Arrays.stream(values())
-		.collect(Collectors.toMap(rotation -> rotation.index, modelRotation -> modelRotation));
+		.collect(Collectors.toMap(rotation -> rotation.index, rotation -> rotation));
 	private final AffineTransformation rotation;
 	private final DirectionTransformation directionTransformation;
 	private final int index;
@@ -43,8 +42,7 @@ public enum ModelRotation implements ModelBakeSettings {
 
 	private ModelRotation(int x, int y) {
 		this.index = getIndex(x, y);
-		Quaternion quaternion = Vec3f.POSITIVE_Y.getDegreesQuaternion((float)(-y));
-		quaternion.hamiltonProduct(Vec3f.POSITIVE_X.getDegreesQuaternion((float)(-x)));
+		Quaternionf quaternionf = new Quaternionf().rotateYXZ((float)(-y) * (float) (Math.PI / 180.0), (float)(-x) * (float) (Math.PI / 180.0), 0.0F);
 		DirectionTransformation directionTransformation = DirectionTransformation.IDENTITY;
 
 		for (int j = 0; j < y; j += 90) {
@@ -55,7 +53,7 @@ public enum ModelRotation implements ModelBakeSettings {
 			directionTransformation = directionTransformation.prepend(DirectionTransformation.ROT_90_X_NEG);
 		}
 
-		this.rotation = new AffineTransformation(null, quaternion, null, null);
+		this.rotation = new AffineTransformation(null, quaternionf, null, null);
 		this.directionTransformation = directionTransformation;
 	}
 

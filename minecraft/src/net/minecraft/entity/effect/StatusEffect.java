@@ -40,8 +40,8 @@ public class StatusEffect {
 		return Registry.STATUS_EFFECT.getRawId(statusEffect);
 	}
 
-	protected StatusEffect(StatusEffectCategory statusEffectCategory, int color) {
-		this.category = statusEffectCategory;
+	protected StatusEffect(StatusEffectCategory category, int color) {
+		this.category = category;
 		this.color = color;
 	}
 
@@ -142,8 +142,8 @@ public class StatusEffect {
 		return this;
 	}
 
-	public StatusEffect setFactorCalculationDataSupplier(Supplier<StatusEffectInstance.FactorCalculationData> supplier) {
-		this.factorCalculationDataSupplier = supplier;
+	public StatusEffect setFactorCalculationDataSupplier(Supplier<StatusEffectInstance.FactorCalculationData> factorCalculationDataSupplier) {
+		this.factorCalculationDataSupplier = factorCalculationDataSupplier;
 		return this;
 	}
 

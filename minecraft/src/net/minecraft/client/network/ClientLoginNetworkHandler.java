@@ -1,6 +1,5 @@
 package net.minecraft.client.network;
 
-import com.google.common.primitives.Longs;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.authlib.exceptions.AuthenticationUnavailableException;
@@ -26,9 +25,7 @@ import net.minecraft.client.util.NetworkUtils;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.PacketCallbacks;
-import net.minecraft.network.encryption.ClientPlayerSession;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
-import net.minecraft.network.encryption.Signer;
 import net.minecraft.network.listener.ClientLoginPacketListener;
 import net.minecraft.network.packet.c2s.login.LoginKeyC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginQueryResponseC2SPacket;
@@ -45,7 +42,6 @@ import org.slf4j.Logger;
 public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final MinecraftClient client;
-	private final ClientPlayerSession session;
 	@Nullable
 	private final ServerInfo serverInfo;
 	@Nullable
@@ -55,16 +51,10 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	private GameProfile profile;
 
 	public ClientLoginNetworkHandler(
-		ClientConnection connection,
-		MinecraftClient client,
-		ClientPlayerSession session,
-		@Nullable ServerInfo serverInfo,
-		@Nullable Screen parentScreen,
-		Consumer<Text> statusConsumer
+		ClientConnection connection, MinecraftClient client, @Nullable ServerInfo serverInfo, @Nullable Screen parentScreen, Consumer<Text> statusConsumer
 	) {
 		this.connection = connection;
 		this.client = client;
-		this.session = session;
 		this.serverInfo = serverInfo;
 		this.parentScreen = parentScreen;
 		this.statusConsumer = statusConsumer;
@@ -83,19 +73,9 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 			cipher = NetworkEncryptionUtils.cipherFromKey(2, secretKey);
 			cipher2 = NetworkEncryptionUtils.cipherFromKey(1, secretKey);
 			byte[] bs = packet.getNonce();
-			Signer signer = this.session.createSigner();
-			if (signer == null) {
-				loginKeyC2SPacket = new LoginKeyC2SPacket(secretKey, publicKey, bs);
-			} else {
-				long l = NetworkEncryptionUtils.SecureRandomUtil.nextLong();
-				byte[] cs = signer.sign(updater -> {
-					updater.update(bs);
-					updater.update(Longs.toByteArray(l));
-				});
-				loginKeyC2SPacket = new LoginKeyC2SPacket(secretKey, publicKey, l, cs);
-			}
-		} catch (Exception var13) {
-			throw new IllegalStateException("Protocol error", var13);
+			loginKeyC2SPacket = new LoginKeyC2SPacket(secretKey, publicKey, bs);
+		} catch (Exception var9) {
+			throw new IllegalStateException("Protocol error", var9);
 		}
 
 		this.statusConsumer.accept(Text.translatable("connect.authorizing"));
@@ -144,9 +124,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 		this.connection.setState(NetworkState.PLAY);
 		this.connection
 			.setPacketListener(
-				new ClientPlayNetworkHandler(
-					this.client, this.parentScreen, this.connection, this.session, this.serverInfo, this.profile, this.client.createTelemetrySender()
-				)
+				new ClientPlayNetworkHandler(this.client, this.parentScreen, this.connection, this.serverInfo, this.profile, this.client.createTelemetrySender())
 			);
 	}
 

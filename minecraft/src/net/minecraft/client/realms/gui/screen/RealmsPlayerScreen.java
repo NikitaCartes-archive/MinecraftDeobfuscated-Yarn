@@ -76,33 +76,28 @@ public class RealmsPlayerScreen extends RealmsScreen {
 		}
 
 		this.addDrawableChild(
-			new ButtonWidget(
-				this.column2_x,
-				row(1),
-				this.column_width + 10,
-				20,
-				Text.translatable("mco.configure.world.buttons.invite"),
-				button -> this.client.setScreen(new RealmsInviteScreen(this.parent, this, this.serverData))
-			)
+			ButtonWidget.createBuilder(
+					Text.translatable("mco.configure.world.buttons.invite"), button -> this.client.setScreen(new RealmsInviteScreen(this.parent, this, this.serverData))
+				)
+				.setPositionAndSize(this.column2_x, row(1), this.column_width + 10, 20)
+				.build()
 		);
 		this.removeButton = this.addDrawableChild(
-			new ButtonWidget(
-				this.column2_x, row(7), this.column_width + 10, 20, Text.translatable("mco.configure.world.invites.remove.tooltip"), button -> this.uninvite(this.player)
-			)
+			ButtonWidget.createBuilder(Text.translatable("mco.configure.world.invites.remove.tooltip"), button -> this.uninvite(this.player))
+				.setPositionAndSize(this.column2_x, row(7), this.column_width + 10, 20)
+				.build()
 		);
-		this.opdeopButton = this.addDrawableChild(
-			new ButtonWidget(this.column2_x, row(9), this.column_width + 10, 20, Text.translatable("mco.configure.world.invites.ops.tooltip"), button -> {
-				if (((PlayerInfo)this.serverData.players.get(this.player)).isOperator()) {
-					this.deop(this.player);
-				} else {
-					this.op(this.player);
-				}
-			})
-		);
+		this.opdeopButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("mco.configure.world.invites.ops.tooltip"), button -> {
+			if (((PlayerInfo)this.serverData.players.get(this.player)).isOperator()) {
+				this.deop(this.player);
+			} else {
+				this.op(this.player);
+			}
+		}).setPositionAndSize(this.column2_x, row(9), this.column_width + 10, 20).build());
 		this.addDrawableChild(
-			new ButtonWidget(
-				this.column2_x + this.column_width / 2 + 2, row(12), this.column_width / 2 + 10 - 2, 20, ScreenTexts.BACK, button -> this.backButtonClicked()
-			)
+			ButtonWidget.createBuilder(ScreenTexts.BACK, button -> this.backButtonClicked())
+				.setPositionAndSize(this.column2_x + this.column_width / 2 + 2, row(12), this.column_width / 2 + 10 - 2, 20)
+				.build()
 		);
 		this.updateButtonStates();
 	}

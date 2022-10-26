@@ -4,7 +4,6 @@ import com.mojang.logging.LogUtils;
 import java.net.InetSocketAddress;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -17,7 +16,6 @@ import net.minecraft.client.realms.gui.screen.DisconnectedRealmsScreen;
 import net.minecraft.client.report.ReporterEnvironment;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
-import net.minecraft.network.encryption.ClientPlayerSession;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.screen.ScreenTexts;
@@ -41,7 +39,6 @@ public class RealmsConnection {
 		minecraftClient.setConnectedToRealms(true);
 		minecraftClient.loadBlockList();
 		minecraftClient.getNarratorManager().narrate(Text.translatable("mco.connect.success"));
-		final CompletableFuture<ClientPlayerSession> completableFuture = minecraftClient.getProfileKeys().getClientSession();
 		final String string = address.getAddress();
 		final int i = address.getPort();
 		(new Thread("Realms-connect-task") {
@@ -59,16 +56,10 @@ public class RealmsConnection {
 							return;
 						}
 
-						ClientPlayerSession clientPlayerSession = (ClientPlayerSession)completableFuture.join();
 						RealmsConnection.this.connection
 							.setPacketListener(
 								new ClientLoginNetworkHandler(
-									RealmsConnection.this.connection,
-									minecraftClient,
-									clientPlayerSession,
-									server.createServerInfo(string),
-									RealmsConnection.this.onlineScreen,
-									status -> {
+									RealmsConnection.this.connection, minecraftClient, server.createServerInfo(string), RealmsConnection.this.onlineScreen, status -> {
 									}
 								)
 							);
@@ -83,7 +74,7 @@ public class RealmsConnection {
 
 						String string = minecraftClient.getSession().getUsername();
 						UUID uUID = minecraftClient.getSession().getUuidOrNull();
-						RealmsConnection.this.connection.send(new LoginHelloC2SPacket(string, clientPlayerSession.toPublicSession().toSerialized(), Optional.ofNullable(uUID)));
+						RealmsConnection.this.connection.send(new LoginHelloC2SPacket(string, Optional.ofNullable(uUID)));
 						minecraftClient.ensureAbuseReportContext(ReporterEnvironment.ofRealm(server));
 					} catch (Exception var5) {
 						minecraftClient.getServerResourcePackProvider().clear();
@@ -92,14 +83,14 @@ public class RealmsConnection {
 						}
 
 						RealmsConnection.LOGGER.error("Couldn't connect to world", (Throwable)var5);
-						String string = var5.toString();
+						String string2 = var5.toString();
 						if (inetSocketAddress != null) {
-							String string2 = inetSocketAddress + ":" + i;
-							string = string.replaceAll(string2, "");
+							String string3 = inetSocketAddress + ":" + i;
+							string2 = string2.replaceAll(string3, "");
 						}
 
 						DisconnectedRealmsScreen disconnectedRealmsScreen = new DisconnectedRealmsScreen(
-							RealmsConnection.this.onlineScreen, ScreenTexts.CONNECT_FAILED, Text.translatable("disconnect.genericReason", string)
+							RealmsConnection.this.onlineScreen, ScreenTexts.CONNECT_FAILED, Text.translatable("disconnect.genericReason", string2)
 						);
 						minecraftClient.execute(() -> minecraftClient.setScreen(disconnectedRealmsScreen));
 					}

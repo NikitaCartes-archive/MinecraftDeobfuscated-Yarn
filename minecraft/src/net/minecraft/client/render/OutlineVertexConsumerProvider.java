@@ -54,8 +54,8 @@ public class OutlineVertexConsumerProvider implements VertexConsumerProvider {
 		private double x;
 		private double y;
 		private double z;
-		private float u;
-		private float v;
+		private float textureU;
+		private float textureV;
 
 		OutlineVertexConsumer(VertexConsumer delegate, int red, int green, int blue, int alpha) {
 			this.delegate = delegate;
@@ -85,8 +85,8 @@ public class OutlineVertexConsumerProvider implements VertexConsumerProvider {
 
 		@Override
 		public VertexConsumer texture(float u, float v) {
-			this.u = u;
-			this.v = v;
+			this.textureU = u;
+			this.textureV = v;
 			return this;
 		}
 
@@ -127,7 +127,11 @@ public class OutlineVertexConsumerProvider implements VertexConsumerProvider {
 
 		@Override
 		public void next() {
-			this.delegate.vertex(this.x, this.y, this.z).color(this.fixedRed, this.fixedGreen, this.fixedBlue, this.fixedAlpha).texture(this.u, this.v).next();
+			this.delegate
+				.vertex(this.x, this.y, this.z)
+				.color(this.fixedRed, this.fixedGreen, this.fixedBlue, this.fixedAlpha)
+				.texture(this.textureU, this.textureV)
+				.next();
 		}
 	}
 }

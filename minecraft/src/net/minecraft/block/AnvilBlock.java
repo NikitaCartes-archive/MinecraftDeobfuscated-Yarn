@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.damage.DamageSource;
@@ -96,8 +97,8 @@ public class AnvilBlock extends FallingBlock {
 	}
 
 	@Override
-	public DamageSource getDamageSource() {
-		return DamageSource.ANVIL;
+	public DamageSource getDamageSource(Entity attacker) {
+		return DamageSource.anvil(attacker);
 	}
 
 	@Nullable

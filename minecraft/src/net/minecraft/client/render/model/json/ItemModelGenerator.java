@@ -12,7 +12,7 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3f;
+import org.joml.Vector3f;
 
 @Environment(EnvType.CLIENT)
 public class ItemModelGenerator {
@@ -49,7 +49,7 @@ public class ItemModelGenerator {
 		map.put(Direction.SOUTH, new ModelElementFace(null, layer, key, new ModelElementTexture(new float[]{0.0F, 0.0F, 16.0F, 16.0F}, 0)));
 		map.put(Direction.NORTH, new ModelElementFace(null, layer, key, new ModelElementTexture(new float[]{16.0F, 0.0F, 0.0F, 16.0F}, 0)));
 		List<ModelElement> list = Lists.<ModelElement>newArrayList();
-		list.add(new ModelElement(new Vec3f(0.0F, 0.0F, 7.5F), new Vec3f(16.0F, 16.0F, 8.5F), map, null, true));
+		list.add(new ModelElement(new Vector3f(0.0F, 0.0F, 7.5F), new Vector3f(16.0F, 16.0F, 8.5F), map, null, true));
 		list.addAll(this.addSubComponents(sprite, key, layer));
 		return list;
 	}
@@ -126,16 +126,16 @@ public class ItemModelGenerator {
 			map.put(side.getDirection(), new ModelElementFace(null, layer, key, new ModelElementTexture(new float[]{l, n, m, o}, 0)));
 			switch (side) {
 				case UP:
-					list.add(new ModelElement(new Vec3f(h, i, 7.5F), new Vec3f(j, i, 8.5F), map, null, true));
+					list.add(new ModelElement(new Vector3f(h, i, 7.5F), new Vector3f(j, i, 8.5F), map, null, true));
 					break;
 				case DOWN:
-					list.add(new ModelElement(new Vec3f(h, k, 7.5F), new Vec3f(j, k, 8.5F), map, null, true));
+					list.add(new ModelElement(new Vector3f(h, k, 7.5F), new Vector3f(j, k, 8.5F), map, null, true));
 					break;
 				case LEFT:
-					list.add(new ModelElement(new Vec3f(h, i, 7.5F), new Vec3f(h, k, 8.5F), map, null, true));
+					list.add(new ModelElement(new Vector3f(h, i, 7.5F), new Vector3f(h, k, 8.5F), map, null, true));
 					break;
 				case RIGHT:
-					list.add(new ModelElement(new Vec3f(j, i, 7.5F), new Vec3f(j, k, 8.5F), map, null, true));
+					list.add(new ModelElement(new Vector3f(j, i, 7.5F), new Vector3f(j, k, 8.5F), map, null, true));
 			}
 		}
 

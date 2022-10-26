@@ -853,7 +853,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		}
 
 		if (crystal == this.connectedCrystal) {
-			this.damagePart(this.head, DamageSource.explosion(playerEntity), 10.0F);
+			this.damagePart(this.head, DamageSource.explosion(crystal, playerEntity), 10.0F);
 		}
 
 		this.phaseManager.getCurrent().crystalDestroyed(crystal, pos, source, playerEntity);

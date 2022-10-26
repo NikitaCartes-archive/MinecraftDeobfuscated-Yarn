@@ -23,6 +23,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.Angriness;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
@@ -36,7 +37,9 @@ public class WardenAngerManager {
 	private int updateTimer = MathHelper.nextBetween(Random.create(), 0, 2);
 	int primeAnger;
 	private static final Codec<Pair<UUID, Integer>> SUSPECT_CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(Codecs.UUID.fieldOf("uuid").forGetter(Pair::getFirst), Codecs.NONNEGATIVE_INT.fieldOf("anger").forGetter(Pair::getSecond))
+		instance -> instance.group(
+					Uuids.INT_STREAM_CODEC.fieldOf("uuid").forGetter(Pair::getFirst), Codecs.NONNEGATIVE_INT.fieldOf("anger").forGetter(Pair::getSecond)
+				)
 				.apply(instance, Pair::of)
 	);
 	private final Predicate<Entity> suspectPredicate;

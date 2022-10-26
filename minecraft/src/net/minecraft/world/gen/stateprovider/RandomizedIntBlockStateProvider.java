@@ -56,8 +56,8 @@ public class RandomizedIntBlockStateProvider extends BlockStateProvider {
 	}
 
 	@Override
-	public BlockState getBlockState(Random random, BlockPos pos) {
-		BlockState blockState = this.source.getBlockState(random, pos);
+	public BlockState get(Random random, BlockPos pos) {
+		BlockState blockState = this.source.get(random, pos);
 		if (this.property == null || !blockState.contains(this.property)) {
 			this.property = getIntPropertyByName(blockState, this.propertyName);
 		}

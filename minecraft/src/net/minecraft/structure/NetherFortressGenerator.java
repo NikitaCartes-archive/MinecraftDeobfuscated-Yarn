@@ -8,7 +8,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FenceBlock;
 import net.minecraft.block.StairsBlock;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.fluid.Fluids;
@@ -412,9 +411,8 @@ public class NetherFortressGenerator {
 				if (chunkBox.contains(blockPos)) {
 					this.hasBlazeSpawner = true;
 					world.setBlockState(blockPos, Blocks.SPAWNER.getDefaultState(), Block.NOTIFY_LISTENERS);
-					BlockEntity blockEntity = world.getBlockEntity(blockPos);
-					if (blockEntity instanceof MobSpawnerBlockEntity) {
-						((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(EntityType.BLAZE);
+					if (world.getBlockEntity(blockPos) instanceof MobSpawnerBlockEntity mobSpawnerBlockEntity) {
+						mobSpawnerBlockEntity.setEntityType(EntityType.BLAZE, random);
 					}
 				}
 			}

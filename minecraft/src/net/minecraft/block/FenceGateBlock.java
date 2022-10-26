@@ -31,6 +31,8 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 	protected static final VoxelShape IN_WALL_X_AXIS_SHAPE = Block.createCuboidShape(6.0, 0.0, 0.0, 10.0, 13.0, 16.0);
 	protected static final VoxelShape Z_AXIS_COLLISION_SHAPE = Block.createCuboidShape(0.0, 0.0, 6.0, 16.0, 24.0, 10.0);
 	protected static final VoxelShape X_AXIS_COLLISION_SHAPE = Block.createCuboidShape(6.0, 0.0, 0.0, 10.0, 24.0, 16.0);
+	protected static final VoxelShape Z_AXIS_SIDES_SHAPE = Block.createCuboidShape(0.0, 5.0, 6.0, 16.0, 24.0, 10.0);
+	protected static final VoxelShape X_AXIS_SIDES_SHAPE = Block.createCuboidShape(6.0, 5.0, 0.0, 10.0, 24.0, 16.0);
 	protected static final VoxelShape Z_AXIS_CULL_SHAPE = VoxelShapes.union(
 		Block.createCuboidShape(0.0, 5.0, 7.0, 2.0, 16.0, 9.0), Block.createCuboidShape(14.0, 5.0, 7.0, 16.0, 16.0, 9.0)
 	);
@@ -43,16 +45,16 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 	protected static final VoxelShape IN_WALL_X_AXIS_CULL_SHAPE = VoxelShapes.union(
 		Block.createCuboidShape(7.0, 2.0, 0.0, 9.0, 13.0, 2.0), Block.createCuboidShape(7.0, 2.0, 14.0, 9.0, 13.0, 16.0)
 	);
-	private final SoundEvent field_40310;
-	private final SoundEvent field_40309;
+	private final SoundEvent closeSound;
+	private final SoundEvent openSound;
 
-	public FenceGateBlock(AbstractBlock.Settings settings, SoundEvent soundEvent, SoundEvent soundEvent2) {
+	public FenceGateBlock(AbstractBlock.Settings settings, SoundEvent closeSound, SoundEvent openSound) {
 		super(settings);
 		this.setDefaultState(
 			this.stateManager.getDefaultState().with(OPEN, Boolean.valueOf(false)).with(POWERED, Boolean.valueOf(false)).with(IN_WALL, Boolean.valueOf(false))
 		);
-		this.field_40310 = soundEvent;
-		this.field_40309 = soundEvent2;
+		this.closeSound = closeSound;
+		this.openSound = openSound;
 	}
 
 	@Override
@@ -74,6 +76,15 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 		} else {
 			boolean bl = this.isWall(neighborState) || this.isWall(world.getBlockState(pos.offset(direction.getOpposite())));
 			return state.with(IN_WALL, Boolean.valueOf(bl));
+		}
+	}
+
+	@Override
+	public VoxelShape getSidesShape(BlockState state, BlockView world, BlockPos pos) {
+		if ((Boolean)state.get(OPEN)) {
+			return VoxelShapes.empty();
+		} else {
+			return ((Direction)state.get(FACING)).getAxis() == Direction.Axis.Z ? Z_AXIS_SIDES_SHAPE : X_AXIS_SIDES_SHAPE;
 		}
 	}
 
@@ -141,7 +152,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 		}
 
 		boolean bl = (Boolean)state.get(OPEN);
-		world.playSound(player, pos, bl ? this.field_40309 : this.field_40310, SoundCategory.BLOCKS, 1.0F, world.getRandom().nextFloat() * 0.1F + 0.9F);
+		world.playSound(player, pos, bl ? this.openSound : this.closeSound, SoundCategory.BLOCKS, 1.0F, world.getRandom().nextFloat() * 0.1F + 0.9F);
 		world.emitGameEvent(player, bl ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
 		return ActionResult.success(world.isClient);
 	}
@@ -153,7 +164,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 			if ((Boolean)state.get(POWERED) != bl) {
 				world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl)).with(OPEN, Boolean.valueOf(bl)), Block.NOTIFY_LISTENERS);
 				if ((Boolean)state.get(OPEN) != bl) {
-					world.playSound(null, pos, bl ? this.field_40309 : this.field_40310, SoundCategory.BLOCKS, 1.0F, world.getRandom().nextFloat() * 0.1F + 0.9F);
+					world.playSound(null, pos, bl ? this.openSound : this.closeSound, SoundCategory.BLOCKS, 1.0F, world.getRandom().nextFloat() * 0.1F + 0.9F);
 					world.emitGameEvent(null, bl ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
 				}
 			}

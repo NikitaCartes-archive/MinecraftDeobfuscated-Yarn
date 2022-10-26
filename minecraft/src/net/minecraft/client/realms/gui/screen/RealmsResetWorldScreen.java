@@ -80,7 +80,11 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		this.addDrawableChild(new ButtonWidget(this.width / 2 - 40, row(14) - 10, 80, 20, this.buttonTitle, button -> this.client.setScreen(this.parent)));
+		this.addDrawableChild(
+			ButtonWidget.createBuilder(this.buttonTitle, button -> this.client.setScreen(this.parent))
+				.setPositionAndSize(this.width / 2 - 40, row(14) - 10, 80, 20)
+				.build()
+		);
 		(new Thread("Realms-reset-world-fetcher") {
 			public void run() {
 				RealmsClient realmsClient = RealmsClient.create();
@@ -270,14 +274,14 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 		private final Identifier image;
 
 		public FrameButton(int x, int y, Text message, Identifier image, ButtonWidget.PressAction onPress) {
-			super(x, y, 60, 72, message, onPress);
+			super(x, y, 60, 72, message, onPress, EMPTY_TOOLTIP, DEFAULT_NARRATION_SUPPLIER);
 			this.image = image;
 		}
 
 		@Override
 		public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 			RealmsResetWorldScreen.this.drawFrame(
-				matrices, this.x, this.y, this.getMessage(), this.image, this.isHovered(), this.isMouseOver((double)mouseX, (double)mouseY)
+				matrices, this.getX(), this.getY(), this.getMessage(), this.image, this.isHovered(), this.isMouseOver((double)mouseX, (double)mouseY)
 			);
 		}
 	}

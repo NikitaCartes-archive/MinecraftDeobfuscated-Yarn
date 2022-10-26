@@ -1,6 +1,8 @@
 package net.minecraft.network.message;
 
+import com.mojang.serialization.Codec;
 import java.util.BitSet;
+import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.HoverEvent;
@@ -8,14 +10,21 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.dynamic.Codecs;
 import org.apache.commons.lang3.StringUtils;
 
 public class FilterMask {
+	public static final Codec<FilterMask> CODEC = StringIdentifiable.createCodec(FilterMask.FilterStatus::values)
+		.dispatch(FilterMask::getStatus, FilterMask.FilterStatus::getCodec);
 	public static final FilterMask FULLY_FILTERED = new FilterMask(new BitSet(0), FilterMask.FilterStatus.FULLY_FILTERED);
 	public static final FilterMask PASS_THROUGH = new FilterMask(new BitSet(0), FilterMask.FilterStatus.PASS_THROUGH);
 	public static final Style FILTERED_STYLE = Style.EMPTY
 		.withColor(Formatting.DARK_GRAY)
 		.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("chat.filtered")));
+	static final Codec<FilterMask> PASS_THROUGH_CODEC = Codec.unit(PASS_THROUGH);
+	static final Codec<FilterMask> FULLY_FILTERED_CODEC = Codec.unit(FULLY_FILTERED);
+	static final Codec<FilterMask> PARTIALLY_FILTERED_CODEC = Codecs.BIT_SET.xmap(FilterMask::new, FilterMask::getMask);
 	private static final char FILTERED = '#';
 	private final BitSet mask;
 	private final FilterMask.FilterStatus status;
@@ -25,8 +34,21 @@ public class FilterMask {
 		this.status = status;
 	}
 
+	private FilterMask(BitSet mask) {
+		this.mask = mask;
+		this.status = FilterMask.FilterStatus.PARTIALLY_FILTERED;
+	}
+
 	public FilterMask(int length) {
 		this(new BitSet(length), FilterMask.FilterStatus.PARTIALLY_FILTERED);
+	}
+
+	private FilterMask.FilterStatus getStatus() {
+		return this.status;
+	}
+
+	private BitSet getMask() {
+		return this.mask;
 	}
 
 	public static FilterMask readMask(PacketByteBuf buf) {
@@ -107,9 +129,42 @@ public class FilterMask {
 		return this.status == FilterMask.FilterStatus.FULLY_FILTERED;
 	}
 
-	static enum FilterStatus {
-		PASS_THROUGH,
-		FULLY_FILTERED,
-		PARTIALLY_FILTERED;
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		} else if (o != null && this.getClass() == o.getClass()) {
+			FilterMask filterMask = (FilterMask)o;
+			return this.mask.equals(filterMask.mask) && this.status == filterMask.status;
+		} else {
+			return false;
+		}
+	}
+
+	public int hashCode() {
+		int i = this.mask.hashCode();
+		return 31 * i + this.status.hashCode();
+	}
+
+	static enum FilterStatus implements StringIdentifiable {
+		PASS_THROUGH("pass_through", () -> FilterMask.PASS_THROUGH_CODEC),
+		FULLY_FILTERED("fully_filtered", () -> FilterMask.FULLY_FILTERED_CODEC),
+		PARTIALLY_FILTERED("partially_filtered", () -> FilterMask.PARTIALLY_FILTERED_CODEC);
+
+		private final String id;
+		private final Supplier<com.mojang.serialization.Codec<FilterMask>> codecSupplier;
+
+		private FilterStatus(String id, Supplier<com.mojang.serialization.Codec<FilterMask>> codecSupplier) {
+			this.id = id;
+			this.codecSupplier = codecSupplier;
+		}
+
+		@Override
+		public String asString() {
+			return this.id;
+		}
+
+		private com.mojang.serialization.Codec<FilterMask> getCodec() {
+			return (com.mojang.serialization.Codec<FilterMask>)this.codecSupplier.get();
+		}
 	}
 }

@@ -121,26 +121,24 @@ public class MoreOptionsDialog implements Drawable {
 		this.presetEntry.ifPresent(this.mapTypeButton::setValue);
 		this.mapTypeButton.visible = false;
 		this.unchangeableMapTypeButton = parent.addDrawableChild(
-			new ButtonWidget(j, 100, 150, 20, ScreenTexts.composeGenericOptionText(Text.translatable("selectWorld.mapType"), CUSTOM_TEXT), button -> {
-			})
+			ButtonWidget.createBuilder(ScreenTexts.composeGenericOptionText(Text.translatable("selectWorld.mapType"), CUSTOM_TEXT), button -> {
+			}).setPositionAndSize(j, 100, 150, 20).build()
 		);
 		this.unchangeableMapTypeButton.active = false;
 		this.unchangeableMapTypeButton.visible = false;
 		this.customizeTypeButton = parent.addDrawableChild(
-			new ButtonWidget(
-				j,
-				120,
-				150,
-				20,
-				Text.translatable("selectWorld.customizeType"),
-				button -> {
-					LevelScreenProvider levelScreenProvider = (LevelScreenProvider)LevelScreenProvider.WORLD_PRESET_TO_SCREEN_PROVIDER
-						.get(this.presetEntry.flatMap(RegistryEntry::getKey));
-					if (levelScreenProvider != null) {
-						client.setScreen(levelScreenProvider.createEditScreen(parent, this.generatorOptionsHolder));
+			ButtonWidget.createBuilder(
+					Text.translatable("selectWorld.customizeType"),
+					button -> {
+						LevelScreenProvider levelScreenProvider = (LevelScreenProvider)LevelScreenProvider.WORLD_PRESET_TO_SCREEN_PROVIDER
+							.get(this.presetEntry.flatMap(RegistryEntry::getKey));
+						if (levelScreenProvider != null) {
+							client.setScreen(levelScreenProvider.createEditScreen(parent, this.generatorOptionsHolder));
+						}
 					}
-				}
-			)
+				)
+				.setPositionAndSize(j, 120, 150, 20)
+				.build()
 		);
 		this.customizeTypeButton.visible = false;
 		this.bonusItemsButton = parent.addDrawableChild(
@@ -156,61 +154,59 @@ public class MoreOptionsDialog implements Drawable {
 		);
 		this.bonusItemsButton.visible = false;
 		this.importSettingsButton = parent.addDrawableChild(
-			new ButtonWidget(
-				i,
-				185,
-				150,
-				20,
-				Text.translatable("selectWorld.import_worldgen_settings"),
-				button -> {
-					String string = TinyFileDialogs.tinyfd_openFileDialog(SELECT_SETTINGS_FILE_TEXT.getString(), null, null, null, false);
-					if (string != null) {
-						DynamicOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, this.generatorOptionsHolder.getCombinedRegistryManager());
+			ButtonWidget.createBuilder(
+					Text.translatable("selectWorld.import_worldgen_settings"),
+					button -> {
+						String string = TinyFileDialogs.tinyfd_openFileDialog(SELECT_SETTINGS_FILE_TEXT.getString(), null, null, null, false);
+						if (string != null) {
+							DynamicOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, this.generatorOptionsHolder.getCombinedRegistryManager());
 
-						DataResult<WorldGenSettings> dataResult;
-						try {
-							BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(string));
-
+							DataResult<WorldGenSettings> dataResult;
 							try {
-								JsonElement jsonElement = JsonParser.parseReader(bufferedReader);
-								dataResult = WorldGenSettings.CODEC.parse(dynamicOps, jsonElement);
-							} catch (Throwable var11) {
-								if (bufferedReader != null) {
-									try {
-										bufferedReader.close();
-									} catch (Throwable var10) {
-										var11.addSuppressed(var10);
+								BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(string));
+
+								try {
+									JsonElement jsonElement = JsonParser.parseReader(bufferedReader);
+									dataResult = WorldGenSettings.CODEC.parse(dynamicOps, jsonElement);
+								} catch (Throwable var11) {
+									if (bufferedReader != null) {
+										try {
+											bufferedReader.close();
+										} catch (Throwable var10) {
+											var11.addSuppressed(var10);
+										}
 									}
+
+									throw var11;
 								}
 
-								throw var11;
+								if (bufferedReader != null) {
+									bufferedReader.close();
+								}
+							} catch (Exception var12) {
+								dataResult = DataResult.error("Failed to parse file: " + var12.getMessage());
 							}
 
-							if (bufferedReader != null) {
-								bufferedReader.close();
+							if (dataResult.error().isPresent()) {
+								Text text = Text.translatable("selectWorld.import_worldgen_settings.failure");
+								String string2 = ((PartialResult)dataResult.error().get()).message();
+								LOGGER.error("Error parsing world settings: {}", string2);
+								Text text2 = Text.literal(string2);
+								client.getToastManager().add(SystemToast.create(client, SystemToast.Type.WORLD_GEN_SETTINGS_TRANSFER, text, text2));
+							} else {
+								Lifecycle lifecycle = dataResult.lifecycle();
+								dataResult.resultOrPartial(LOGGER::error)
+									.ifPresent(
+										worldGenSettings -> IntegratedServerLoader.tryLoad(
+												client, parent, lifecycle, () -> this.importOptions(worldGenSettings.generatorOptions(), worldGenSettings.dimensionOptionsRegistryHolder())
+											)
+									);
 							}
-						} catch (Exception var12) {
-							dataResult = DataResult.error("Failed to parse file: " + var12.getMessage());
-						}
-
-						if (dataResult.error().isPresent()) {
-							Text text = Text.translatable("selectWorld.import_worldgen_settings.failure");
-							String string2 = ((PartialResult)dataResult.error().get()).message();
-							LOGGER.error("Error parsing world settings: {}", string2);
-							Text text2 = Text.literal(string2);
-							client.getToastManager().add(SystemToast.create(client, SystemToast.Type.WORLD_GEN_SETTINGS_TRANSFER, text, text2));
-						} else {
-							Lifecycle lifecycle = dataResult.lifecycle();
-							dataResult.resultOrPartial(LOGGER::error)
-								.ifPresent(
-									worldGenSettings -> IntegratedServerLoader.tryLoad(
-											client, parent, lifecycle, () -> this.importOptions(worldGenSettings.generatorOptions(), worldGenSettings.dimensionOptionsRegistryHolder())
-										)
-								);
 						}
 					}
-				}
-			)
+				)
+				.setPositionAndSize(i, 185, 150, 20)
+				.build()
 		);
 		this.importSettingsButton.visible = false;
 		this.amplifiedInfoText = MultilineText.create(textRenderer, AMPLIFIED_INFO_TEXT, this.mapTypeButton.getWidth());
@@ -248,7 +244,7 @@ public class MoreOptionsDialog implements Drawable {
 
 		this.seedTextField.render(matrices, mouseX, mouseY, delta);
 		if (this.presetEntry.filter(MoreOptionsDialog::isAmplified).isPresent()) {
-			this.amplifiedInfoText.drawWithShadow(matrices, this.mapTypeButton.x + 2, this.mapTypeButton.y + 22, 9, 10526880);
+			this.amplifiedInfoText.drawWithShadow(matrices, this.mapTypeButton.getX() + 2, this.mapTypeButton.getY() + 22, 9, 10526880);
 		}
 	}
 

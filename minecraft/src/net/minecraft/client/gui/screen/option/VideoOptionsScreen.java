@@ -87,13 +87,13 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 		SimpleOption<Integer> simpleOption = new SimpleOption<>(
 			"options.fullscreen.resolution",
 			SimpleOption.emptyTooltip(),
-			(text, value) -> {
+			(prefix, value) -> {
 				if (monitor == null) {
 					return Text.translatable("options.fullscreen.unavailable");
 				} else {
 					return value == -1
-						? GameOptions.getGenericValueText(text, Text.translatable("options.fullscreen.current"))
-						: GameOptions.getGenericValueText(text, Text.literal(monitor.getVideoMode(value).toString()));
+						? GameOptions.getGenericValueText(prefix, Text.translatable("options.fullscreen.current"))
+						: GameOptions.getGenericValueText(prefix, Text.literal(monitor.getVideoMode(value).toString()));
 				}
 			},
 			new SimpleOption.ValidatingIntSliderCallbacks(-1, monitor != null ? monitor.getVideoModeCount() - 1 : -1),
@@ -108,11 +108,11 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 		this.list.addSingleOptionEntry(this.gameOptions.getBiomeBlendRadius());
 		this.list.addAll(getOptions(this.gameOptions));
 		this.addSelectableChild(this.list);
-		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, ScreenTexts.DONE, button -> {
+		this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.DONE, button -> {
 			this.client.options.write();
 			window.applyVideoMode();
 			this.client.setScreen(this.parent);
-		}));
+		}).setPositionAndSize(this.width / 2 - 100, this.height - 27, 200, 20).build());
 	}
 
 	@Override

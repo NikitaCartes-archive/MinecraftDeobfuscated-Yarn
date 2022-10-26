@@ -63,7 +63,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
@@ -260,7 +260,7 @@ public class InGameHud extends DrawableHelper {
 
 				if (l > 8) {
 					matrices.push();
-					matrices.translate((double)(this.scaledWidth / 2), (double)(this.scaledHeight - 68), 0.0);
+					matrices.translate((float)(this.scaledWidth / 2), (float)(this.scaledHeight - 68), 0.0F);
 					RenderSystem.enableBlend();
 					RenderSystem.defaultBlendFunc();
 					int k = 16777215;
@@ -295,7 +295,7 @@ public class InGameHud extends DrawableHelper {
 				lx = MathHelper.clamp(lx, 0, 255);
 				if (lx > 8) {
 					matrices.push();
-					matrices.translate((double)(this.scaledWidth / 2), (double)(this.scaledHeight / 2), 0.0);
+					matrices.translate((float)(this.scaledWidth / 2), (float)(this.scaledHeight / 2), 0.0F);
 					RenderSystem.enableBlend();
 					RenderSystem.defaultBlendFunc();
 					matrices.push();
@@ -375,9 +375,9 @@ public class InGameHud extends DrawableHelper {
 					Camera camera = this.client.gameRenderer.getCamera();
 					MatrixStack matrixStack = RenderSystem.getModelViewStack();
 					matrixStack.push();
-					matrixStack.translate((double)(this.scaledWidth / 2), (double)(this.scaledHeight / 2), (double)this.getZOffset());
-					matrixStack.multiply(Vec3f.NEGATIVE_X.getDegreesQuaternion(camera.getPitch()));
-					matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(camera.getYaw()));
+					matrixStack.translate((float)(this.scaledWidth / 2), (float)(this.scaledHeight / 2), (float)this.getZOffset());
+					matrixStack.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(camera.getPitch()));
+					matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(camera.getYaw()));
 					matrixStack.scale(-1.0F, -1.0F, -1.0F);
 					RenderSystem.applyModelViewMatrix();
 					RenderSystem.renderCrosshair(10);
@@ -560,7 +560,7 @@ public class InGameHud extends DrawableHelper {
 		int j = (int)(f * 183.0F);
 		int k = this.scaledHeight - 32 + 3;
 		this.drawTexture(matrices, x, k, 0, 84, 182, 5);
-		if (mount.getDashCooldown() > 0) {
+		if (mount.getJumpCooldown() > 0) {
 			this.drawTexture(matrices, x, k, 0, 74, 182, 5);
 		} else if (j > 0) {
 			this.drawTexture(matrices, x, k, 0, 89, j, 5);
@@ -1104,9 +1104,9 @@ public class InGameHud extends DrawableHelper {
 			if (f > 0.0F) {
 				float g = 1.0F + f / 5.0F;
 				matrixStack.push();
-				matrixStack.translate((double)(x + 8), (double)(y + 12), 0.0);
+				matrixStack.translate((float)(x + 8), (float)(y + 12), 0.0F);
 				matrixStack.scale(1.0F / g, (g + 1.0F) / 2.0F, 1.0F);
-				matrixStack.translate((double)(-(x + 8)), (double)(-(y + 12)), 0.0);
+				matrixStack.translate((float)(-(x + 8)), (float)(-(y + 12)), 0.0F);
 				RenderSystem.applyModelViewMatrix();
 			}
 

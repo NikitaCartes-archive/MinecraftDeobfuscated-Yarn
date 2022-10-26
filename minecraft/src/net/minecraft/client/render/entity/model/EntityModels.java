@@ -210,9 +210,9 @@ public class EntityModels {
 		builder.put(EntityModelLayers.ZOMBIFIED_PIGLIN_INNER_ARMOR, texturedModelData4);
 		builder.put(EntityModelLayers.ZOMBIFIED_PIGLIN_OUTER_ARMOR, texturedModelData3);
 		TexturedModelData texturedModelData19 = BoatEntityModel.getTexturedModelData();
-		TexturedModelData texturedModelData20 = ChestBoatEntityModel.method_45708();
+		TexturedModelData texturedModelData20 = ChestBoatEntityModel.getTexturedModelData();
 		TexturedModelData texturedModelData21 = RaftEntityModel.getTexturedModelData();
-		TexturedModelData texturedModelData22 = ChestRaftEntityModel.method_45709();
+		TexturedModelData texturedModelData22 = ChestRaftEntityModel.getTexturedModelData();
 
 		for (BoatEntity.Type type : BoatEntity.Type.values()) {
 			if (type == BoatEntity.Type.BAMBOO) {

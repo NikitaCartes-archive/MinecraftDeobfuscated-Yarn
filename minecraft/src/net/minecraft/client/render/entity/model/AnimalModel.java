@@ -60,13 +60,13 @@ public abstract class AnimalModel<E extends Entity> extends EntityModel<E> {
 				matrices.scale(f, f, f);
 			}
 
-			matrices.translate(0.0, (double)(this.childHeadYOffset / 16.0F), (double)(this.childHeadZOffset / 16.0F));
+			matrices.translate(0.0F, this.childHeadYOffset / 16.0F, this.childHeadZOffset / 16.0F);
 			this.getHeadParts().forEach(headPart -> headPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
 			matrices.pop();
 			matrices.push();
 			float f = 1.0F / this.invertedChildBodyScale;
 			matrices.scale(f, f, f);
-			matrices.translate(0.0, (double)(this.childBodyYOffset / 16.0F), 0.0);
+			matrices.translate(0.0F, this.childBodyYOffset / 16.0F, 0.0F);
 			this.getBodyParts().forEach(bodyPart -> bodyPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
 			matrices.pop();
 		} else {

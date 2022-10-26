@@ -48,7 +48,7 @@ public class EntitySelector {
 	private final String playerName;
 	@Nullable
 	private final UUID uuid;
-	private TypeFilter<Entity, ?> entityFilter;
+	private final TypeFilter<Entity, ?> entityFilter;
 	private final boolean usesAt;
 
 	public EntitySelector(
