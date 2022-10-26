@@ -41,7 +41,7 @@ public class AttributeCommand {
     }
 
     private static EntityAttributeInstance getAttributeInstance(Entity entity, RegistryEntry<EntityAttribute> attribute) throws CommandSyntaxException {
-        EntityAttributeInstance entityAttributeInstance = AttributeCommand.getLivingEntity(entity).getAttributes().method_45329(attribute);
+        EntityAttributeInstance entityAttributeInstance = AttributeCommand.getLivingEntity(entity).getAttributes().getCustomInstance(attribute);
         if (entityAttributeInstance == null) {
             throw NO_ATTRIBUTE_EXCEPTION.create(entity.getName(), AttributeCommand.getName(attribute));
         }
@@ -57,7 +57,7 @@ public class AttributeCommand {
 
     private static LivingEntity getLivingEntityWithAttribute(Entity entity, RegistryEntry<EntityAttribute> attribute) throws CommandSyntaxException {
         LivingEntity livingEntity = AttributeCommand.getLivingEntity(entity);
-        if (!livingEntity.getAttributes().method_45331(attribute)) {
+        if (!livingEntity.getAttributes().hasAttribute(attribute)) {
             throw NO_ATTRIBUTE_EXCEPTION.create(entity.getName(), AttributeCommand.getName(attribute));
         }
         return livingEntity;
@@ -80,10 +80,10 @@ public class AttributeCommand {
     private static int executeModifierValueGet(ServerCommandSource source, Entity target, RegistryEntry<EntityAttribute> attribute, UUID uuid, double multiplier) throws CommandSyntaxException {
         LivingEntity livingEntity = AttributeCommand.getLivingEntityWithAttribute(target, attribute);
         AttributeContainer attributeContainer = livingEntity.getAttributes();
-        if (!attributeContainer.method_45330(attribute, uuid)) {
+        if (!attributeContainer.hasModifierForAttribute(attribute, uuid)) {
             throw NO_MODIFIER_EXCEPTION.create(target.getName(), AttributeCommand.getName(attribute), uuid);
         }
-        double d = attributeContainer.method_45332(attribute, uuid);
+        double d = attributeContainer.getModifierValue(attribute, uuid);
         source.sendFeedback(Text.translatable("commands.attribute.modifier.value.get.success", uuid, AttributeCommand.getName(attribute), target.getName(), d), false);
         return (int)(d * multiplier);
     }

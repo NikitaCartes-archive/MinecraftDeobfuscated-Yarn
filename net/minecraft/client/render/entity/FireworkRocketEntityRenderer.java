@@ -15,7 +15,7 @@ import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 
 @Environment(value=EnvType.CLIENT)
 public class FireworkRocketEntityRenderer
@@ -31,11 +31,11 @@ extends EntityRenderer<FireworkRocketEntity> {
     public void render(FireworkRocketEntity fireworkRocketEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         matrixStack.push();
         matrixStack.multiply(this.dispatcher.getRotation());
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
+        matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0f));
         if (fireworkRocketEntity.wasShotAtAngle()) {
-            matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
-            matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
-            matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0f));
+            matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180.0f));
+            matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0f));
+            matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0f));
         }
         this.itemRenderer.renderItem(fireworkRocketEntity.getStack(), ModelTransformation.Mode.GROUND, i, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider, fireworkRocketEntity.getId());
         matrixStack.pop();

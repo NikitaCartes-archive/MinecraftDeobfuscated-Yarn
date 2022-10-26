@@ -754,7 +754,7 @@ extends AbstractClientPlayerEntity {
                 this.setVelocity(this.getVelocity().add(0.0, (float)i * this.getAbilities().getFlySpeed() * 3.0f, 0.0));
             }
         }
-        if ((jumpingMount = this.getJumpingMount()) != null && jumpingMount.getDashCooldown() == 0) {
+        if ((jumpingMount = this.getJumpingMount()) != null && jumpingMount.getJumpCooldown() == 0) {
             if (this.field_3938 < 0) {
                 ++this.field_3938;
                 if (this.field_3938 == 0) {

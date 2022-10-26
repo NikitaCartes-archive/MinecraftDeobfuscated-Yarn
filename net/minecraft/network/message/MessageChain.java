@@ -92,6 +92,10 @@ public class MessageChain {
 
     @FunctionalInterface
     public static interface Unpacker {
+        public static final Unpacker NOT_INITIALIZED = (signature, body) -> {
+            throw new MessageChainException((Text)Text.translatable("chat.disabled.missingProfileKey"), false);
+        };
+
         public static Unpacker unsigned(UUID uuid) {
             return (signature, body) -> SignedMessage.ofUnsigned(uuid, body.content());
         }

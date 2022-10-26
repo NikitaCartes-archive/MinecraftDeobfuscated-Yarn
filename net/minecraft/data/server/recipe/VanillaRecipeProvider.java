@@ -4,6 +4,7 @@
 package net.minecraft.data.server.recipe;
 
 import com.google.common.collect.ImmutableList;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.criterion.ImpossibleCriterion;
@@ -47,9 +48,8 @@ extends RecipeProvider {
     }
 
     @Override
-    public void run(DataWriter writer) {
-        super.run(writer);
-        this.saveRecipeAdvancement(writer, CraftingRecipeJsonBuilder.ROOT, Advancement.Builder.create().criterion("impossible", new ImpossibleCriterion.Conditions()));
+    public CompletableFuture<?> run(DataWriter writer) {
+        return CompletableFuture.allOf(super.run(writer), this.saveRecipeAdvancement(writer, CraftingRecipeJsonBuilder.ROOT, Advancement.Builder.create().criterion("impossible", new ImpossibleCriterion.Conditions())));
     }
 
     @Override
@@ -872,11 +872,6 @@ extends RecipeProvider {
         VanillaRecipeProvider.offerNetheriteUpgradeRecipe(exporter, Items.DIAMOND_PICKAXE, RecipeCategory.TOOLS, Items.NETHERITE_PICKAXE);
         VanillaRecipeProvider.offerNetheriteUpgradeRecipe(exporter, Items.DIAMOND_HOE, RecipeCategory.TOOLS, Items.NETHERITE_HOE);
         VanillaRecipeProvider.offerNetheriteUpgradeRecipe(exporter, Items.DIAMOND_SHOVEL, RecipeCategory.TOOLS, Items.NETHERITE_SHOVEL);
-    }
-
-    @Override
-    public String getName() {
-        return "Vanilla Recipes";
     }
 }
 

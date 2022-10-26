@@ -15,8 +15,8 @@ import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.AxisTransformation;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Matrix3f;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix3f;
 
 public enum DirectionTransformation implements StringIdentifiable
 {
@@ -86,11 +86,8 @@ public enum DirectionTransformation implements StringIdentifiable
         this.flipY = flipY;
         this.flipZ = flipZ;
         this.axisTransformation = axisTransformation;
-        this.matrix = new Matrix3f();
-        this.matrix.a00 = flipX ? -1.0f : 1.0f;
-        this.matrix.a11 = flipY ? -1.0f : 1.0f;
-        this.matrix.a22 = flipZ ? -1.0f : 1.0f;
-        this.matrix.multiply(axisTransformation.getMatrix());
+        this.matrix = new Matrix3f().scaling(flipX ? -1.0f : 1.0f, flipY ? -1.0f : 1.0f, flipZ ? -1.0f : 1.0f);
+        this.matrix.mul(axisTransformation.getMatrix());
     }
 
     private BooleanList getAxisFlips() {
@@ -106,7 +103,7 @@ public enum DirectionTransformation implements StringIdentifiable
     }
 
     public Matrix3f getMatrix() {
-        return this.matrix.copy();
+        return new Matrix3f(this.matrix);
     }
 
     public String toString() {

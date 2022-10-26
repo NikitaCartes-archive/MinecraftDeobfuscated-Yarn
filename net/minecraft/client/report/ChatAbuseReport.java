@@ -30,79 +30,77 @@ import net.minecraft.network.message.MessageLink;
 import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class ChatAbuseReport {
-    private final UUID id;
-    private final Instant timestamp;
-    private final UUID reportedPlayerUuid;
+    private final Draft draft;
     private final AbuseReportLimits limits;
-    private final IntSet selections = new IntOpenHashSet();
-    private String opinionComments = "";
-    @Nullable
-    private AbuseReportReason reason;
 
-    private ChatAbuseReport(UUID id, Instant timestamp, UUID reportedPlayerUuid, AbuseReportLimits limits) {
-        this.id = id;
-        this.timestamp = timestamp;
-        this.reportedPlayerUuid = reportedPlayerUuid;
+    public ChatAbuseReport(Draft draft, AbuseReportLimits limits) {
+        this.draft = draft;
         this.limits = limits;
     }
 
     public ChatAbuseReport(UUID reportedPlayerUuid, AbuseReportLimits limits) {
-        this(UUID.randomUUID(), Instant.now(), reportedPlayerUuid, limits);
+        this.draft = new Draft(UUID.randomUUID(), Instant.now(), reportedPlayerUuid);
+        this.limits = limits;
     }
 
-    public void setOpinionComments(String opinionComments) {
-        this.opinionComments = opinionComments;
-    }
-
-    public void setReason(AbuseReportReason reason) {
-        this.reason = reason;
-    }
-
-    public void toggleMessageSelection(int index) {
-        if (this.selections.contains(index)) {
-            this.selections.remove(index);
-        } else if (this.selections.size() < this.limits.maxReportedMessageCount()) {
-            this.selections.add(index);
-        }
+    public Draft getDraft() {
+        return this.draft;
     }
 
     public UUID getReportedPlayerUuid() {
-        return this.reportedPlayerUuid;
+        return this.draft.reportedPlayerUuid;
     }
 
     public IntSet getSelections() {
-        return this.selections;
+        return this.draft.selections;
     }
 
     public String getOpinionComments() {
-        return this.opinionComments;
+        return this.draft.opinionComments;
+    }
+
+    public void setOpinionComments(String opinionComments) {
+        this.draft.opinionComments = opinionComments;
     }
 
     @Nullable
     public AbuseReportReason getReason() {
-        return this.reason;
+        return this.draft.reason;
+    }
+
+    public void setReason(AbuseReportReason reason) {
+        this.draft.reason = reason;
+    }
+
+    public void toggleMessageSelection(int index) {
+        this.draft.toggleMessageSelection(index, this.limits);
     }
 
     public boolean hasSelectedMessage(int index) {
-        return this.selections.contains(index);
+        return this.draft.selections.contains(index);
+    }
+
+    public boolean hasContents() {
+        return StringUtils.isNotEmpty(this.getOpinionComments()) || !this.getSelections().isEmpty();
     }
 
     @Nullable
     public ValidationError validate() {
-        if (this.selections.isEmpty()) {
+        if (this.draft.selections.isEmpty()) {
             return ValidationError.NO_REPORTED_MESSAGES;
         }
-        if (this.selections.size() > this.limits.maxReportedMessageCount()) {
+        if (this.draft.selections.size() > this.limits.maxReportedMessageCount()) {
             return ValidationError.TOO_MANY_MESSAGES;
         }
-        if (this.reason == null) {
+        if (this.draft.reason == null) {
             return ValidationError.NO_REASON;
         }
-        if (this.opinionComments.length() > this.limits.maxOpinionCommentsLength()) {
+        if (this.draft.opinionComments.length() > this.limits.maxOpinionCommentsLength()) {
             return ValidationError.COMMENTS_TOO_LONG;
         }
         return null;
@@ -113,17 +111,17 @@ public class ChatAbuseReport {
         if (validationError != null) {
             return Either.right(validationError);
         }
-        String string = Objects.requireNonNull(this.reason).getId();
-        ReportEvidence reportEvidence = this.collectEvidence(reporter.chatLog());
-        ReportedEntity reportedEntity = new ReportedEntity(this.reportedPlayerUuid);
-        AbuseReport abuseReport = new AbuseReport(this.opinionComments, string, reportEvidence, reportedEntity, this.timestamp);
-        return Either.left(new ReportWithId(this.id, abuseReport));
+        String string = Objects.requireNonNull(this.draft.reason).getId();
+        ReportEvidence reportEvidence = this.collectEvidence(reporter.getChatLog());
+        ReportedEntity reportedEntity = new ReportedEntity(this.draft.reportedPlayerUuid);
+        AbuseReport abuseReport = new AbuseReport(this.draft.opinionComments, string, reportEvidence, reportedEntity, this.draft.currentTime);
+        return Either.left(new ReportWithId(this.draft.reportId, abuseReport));
     }
 
     private ReportEvidence collectEvidence(ChatLog log) {
         ArrayList list = new ArrayList();
         ContextMessageCollector contextMessageCollector = new ContextMessageCollector(this.limits.leadingContextMessageCount());
-        contextMessageCollector.add(log, this.selections, (index, message) -> list.add(this.toReportChatMessage(message, this.hasSelectedMessage(index))));
+        contextMessageCollector.add(log, this.draft.selections, (index, message) -> list.add(this.toReportChatMessage(message, this.hasSelectedMessage(index))));
         return new ReportEvidence(Lists.reverse(list));
     }
 
@@ -136,11 +134,44 @@ public class ChatAbuseReport {
     }
 
     public ChatAbuseReport copy() {
-        ChatAbuseReport chatAbuseReport = new ChatAbuseReport(this.id, this.timestamp, this.reportedPlayerUuid, this.limits);
-        chatAbuseReport.selections.addAll(this.selections);
-        chatAbuseReport.opinionComments = this.opinionComments;
-        chatAbuseReport.reason = this.reason;
-        return chatAbuseReport;
+        return new ChatAbuseReport(this.draft.copy(), this.limits);
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public class Draft {
+        final UUID reportId;
+        final Instant currentTime;
+        final UUID reportedPlayerUuid;
+        final IntSet selections = new IntOpenHashSet();
+        String opinionComments = "";
+        @Nullable
+        AbuseReportReason reason;
+
+        Draft(UUID reportId, Instant currentTime, UUID reportedPlayerUuid) {
+            this.reportId = reportId;
+            this.currentTime = currentTime;
+            this.reportedPlayerUuid = reportedPlayerUuid;
+        }
+
+        public void toggleMessageSelection(int index, AbuseReportLimits limits) {
+            if (this.selections.contains(index)) {
+                this.selections.remove(index);
+            } else if (this.selections.size() < limits.maxReportedMessageCount()) {
+                this.selections.add(index);
+            }
+        }
+
+        public Draft copy() {
+            Draft draft = new Draft(this.reportId, this.currentTime, this.reportedPlayerUuid);
+            draft.selections.addAll(this.selections);
+            draft.opinionComments = this.opinionComments;
+            draft.reason = this.reason;
+            return draft;
+        }
+
+        public boolean playerUuidEquals(UUID uuid) {
+            return uuid.equals(this.reportedPlayerUuid);
+        }
     }
 
     @Environment(value=EnvType.CLIENT)

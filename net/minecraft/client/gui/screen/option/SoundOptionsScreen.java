@@ -38,10 +38,10 @@ extends GameOptionsScreen {
         this.optionButtons.addSingleOptionEntry(this.gameOptions.getSoundDevice());
         this.optionButtons.addAll(SoundOptionsScreen.getOptions(this.gameOptions));
         this.addSelectableChild(this.optionButtons);
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, ScreenTexts.DONE, button -> {
+        this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.DONE, button -> {
             this.client.options.write();
             this.client.setScreen(this.parent);
-        }));
+        }).setPositionAndSize(this.width / 2 - 100, this.height - 27, 200, 20).build());
     }
 
     private SimpleOption<?>[] getVolumeOptions() {

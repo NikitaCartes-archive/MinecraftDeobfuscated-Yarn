@@ -56,8 +56,8 @@ import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.util.math.Matrix4f;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 
@@ -253,7 +253,7 @@ implements Drawable {
         RenderSystem.disableBlend();
         RenderSystem.enableTexture();
         VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-        matrices.translate(0.0, 0.0, 400.0);
+        matrices.translate(0.0f, 0.0f, 400.0f);
         int s = m;
         for (t = 0; t < components.size(); ++t) {
             tooltipComponent2 = components.get(t);

@@ -11,8 +11,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Position;
 import net.minecraft.util.math.Vec2f;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.Vec3i;
+import org.joml.Vector3f;
 
 /**
  * An immutable vector composed of 3 doubles.
@@ -24,11 +24,11 @@ import net.minecraft.util.math.Vec3i;
  * implementations and can be used as a map key.
  * 
  * @see Vec3i
- * @see Vec3f
+ * @see org.joml.Vector3f
  */
 public class Vec3d
 implements Position {
-    public static final Codec<Vec3d> CODEC = Codec.DOUBLE.listOf().comapFlatMap(list2 -> Util.toArray(list2, 3).map(list -> new Vec3d((Double)list.get(0), (Double)list.get(1), (Double)list.get(2))), vec3d -> List.of(Double.valueOf(vec3d.getX()), Double.valueOf(vec3d.getY()), Double.valueOf(vec3d.getZ())));
+    public static final Codec<Vec3d> CODEC = Codec.DOUBLE.listOf().comapFlatMap(coordinates -> Util.toArray(coordinates, 3).map(coords -> new Vec3d((Double)coords.get(0), (Double)coords.get(1), (Double)coords.get(2))), vec -> List.of(Double.valueOf(vec.getX()), Double.valueOf(vec.getY()), Double.valueOf(vec.getZ())));
     /**
      * The zero vector (0, 0, 0).
      */
@@ -111,8 +111,8 @@ implements Position {
     /**
      * Copies the given vector.
      */
-    public Vec3d(Vec3f vec) {
-        this(vec.getX(), vec.getY(), vec.getZ());
+    public Vec3d(Vector3f vec) {
+        this(vec.x(), vec.y(), vec.z());
     }
 
     /**
@@ -481,6 +481,13 @@ implements Position {
     @Override
     public final double getZ() {
         return this.z;
+    }
+
+    /**
+     * {@return a JOML {@link org.joml.Vector3f} representing this vector}
+     */
+    public Vector3f toVector3f() {
+        return new Vector3f((float)this.x, (float)this.y, (float)this.z);
     }
 }
 

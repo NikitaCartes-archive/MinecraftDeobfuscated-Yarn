@@ -14,8 +14,8 @@ import net.minecraft.world.gen.structure.Structure;
 public abstract class BasicTempleStructure
 extends Structure {
     private final Constructor constructor;
-    private int width;
-    private int height;
+    private final int width;
+    private final int height;
 
     protected BasicTempleStructure(Constructor constructor, int width, int height, Structure.Config config) {
         super(config);

@@ -32,7 +32,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 
 @Environment(value=EnvType.CLIENT)
 public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>>
@@ -71,9 +71,9 @@ extends FeatureRenderer<T, M> {
         if (((LivingEntity)livingEntity).isBaby() && !(livingEntity instanceof VillagerEntity)) {
             m = 2.0f;
             float n = 1.4f;
-            matrixStack.translate(0.0, 0.03125, 0.0);
+            matrixStack.translate(0.0f, 0.03125f, 0.0f);
             matrixStack.scale(0.7f, 0.7f, 0.7f);
-            matrixStack.translate(0.0, 1.0, 0.0);
+            matrixStack.translate(0.0f, 1.0f, 0.0f);
         }
         ((ModelWithHead)this.getContextModel()).getHead().rotate(matrixStack);
         if (item instanceof BlockItem && ((BlockItem)item).getBlock() instanceof AbstractSkullBlock) {
@@ -81,7 +81,7 @@ extends FeatureRenderer<T, M> {
             m = 1.1875f;
             matrixStack.scale(1.1875f, -1.1875f, -1.1875f);
             if (bl) {
-                matrixStack.translate(0.0, 0.0625, 0.0);
+                matrixStack.translate(0.0f, 0.0625f, 0.0f);
             }
             GameProfile gameProfile = null;
             if (itemStack.hasNbt() && (nbtCompound = itemStack.getNbt()).contains("SkullOwner", NbtElement.COMPOUND_TYPE)) {
@@ -101,11 +101,11 @@ extends FeatureRenderer<T, M> {
 
     public static void translate(MatrixStack matrices, boolean villager) {
         float f = 0.625f;
-        matrices.translate(0.0, -0.25, 0.0);
-        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
+        matrices.translate(0.0f, -0.25f, 0.0f);
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0f));
         matrices.scale(0.625f, -0.625f, -0.625f);
         if (villager) {
-            matrices.translate(0.0, 0.1875, 0.0);
+            matrices.translate(0.0f, 0.1875f, 0.0f);
         }
     }
 }

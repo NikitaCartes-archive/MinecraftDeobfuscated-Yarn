@@ -110,19 +110,19 @@ implements Drawable {
         }));
         this.presetEntry.ifPresent(this.mapTypeButton::setValue);
         this.mapTypeButton.visible = false;
-        this.unchangeableMapTypeButton = parent.addDrawableChild(new ButtonWidget(j, 100, 150, 20, ScreenTexts.composeGenericOptionText(Text.translatable("selectWorld.mapType"), CUSTOM_TEXT), button -> {}));
+        this.unchangeableMapTypeButton = parent.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.composeGenericOptionText(Text.translatable("selectWorld.mapType"), CUSTOM_TEXT), button -> {}).setPositionAndSize(j, 100, 150, 20).build());
         this.unchangeableMapTypeButton.active = false;
         this.unchangeableMapTypeButton.visible = false;
-        this.customizeTypeButton = parent.addDrawableChild(new ButtonWidget(j, 120, 150, 20, Text.translatable("selectWorld.customizeType"), button -> {
+        this.customizeTypeButton = parent.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("selectWorld.customizeType"), button -> {
             LevelScreenProvider levelScreenProvider = LevelScreenProvider.WORLD_PRESET_TO_SCREEN_PROVIDER.get(this.presetEntry.flatMap(RegistryEntry::getKey));
             if (levelScreenProvider != null) {
                 client.setScreen(levelScreenProvider.createEditScreen(parent, this.generatorOptionsHolder));
             }
-        }));
+        }).setPositionAndSize(j, 120, 150, 20).build());
         this.customizeTypeButton.visible = false;
         this.bonusItemsButton = parent.addDrawableChild(CyclingButtonWidget.onOffBuilder(this.generatorOptionsHolder.generatorOptions().hasBonusChest() && !parent.hardcore).build(i, 151, 150, 20, Text.translatable("selectWorld.bonusItems"), (button, bonusChest) -> this.apply(generatorOptions -> generatorOptions.withBonusChest((boolean)bonusChest))));
         this.bonusItemsButton.visible = false;
-        this.importSettingsButton = parent.addDrawableChild(new ButtonWidget(i, 185, 150, 20, Text.translatable("selectWorld.import_worldgen_settings"), button -> {
+        this.importSettingsButton = parent.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("selectWorld.import_worldgen_settings"), button -> {
             DataResult<Object> dataResult;
             String string = TinyFileDialogs.tinyfd_openFileDialog(SELECT_SETTINGS_FILE_TEXT.getString(), null, null, null, false);
             if (string == null) {
@@ -145,7 +145,7 @@ implements Drawable {
             }
             Lifecycle lifecycle = dataResult.lifecycle();
             dataResult.resultOrPartial(LOGGER::error).ifPresent(worldGenSettings -> IntegratedServerLoader.tryLoad(client, parent, lifecycle, () -> this.importOptions(worldGenSettings.generatorOptions(), worldGenSettings.dimensionOptionsRegistryHolder())));
-        }));
+        }).setPositionAndSize(i, 185, 150, 20).build());
         this.importSettingsButton.visible = false;
         this.amplifiedInfoText = MultilineText.create(textRenderer, (StringVisitable)AMPLIFIED_INFO_TEXT, this.mapTypeButton.getWidth());
     }
@@ -181,7 +181,7 @@ implements Drawable {
         }
         this.seedTextField.render(matrices, mouseX, mouseY, delta);
         if (this.presetEntry.filter(MoreOptionsDialog::isAmplified).isPresent()) {
-            this.amplifiedInfoText.drawWithShadow(matrices, this.mapTypeButton.x + 2, this.mapTypeButton.y + 22, this.textRenderer.fontHeight, 0xA0A0A0);
+            this.amplifiedInfoText.drawWithShadow(matrices, this.mapTypeButton.getX() + 2, this.mapTypeButton.getY() + 22, this.textRenderer.fontHeight, 0xA0A0A0);
         }
     }
 

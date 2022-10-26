@@ -117,18 +117,18 @@ extends EntityModel<T> {
             matrices.push();
             float g = 0.7f;
             matrices.scale(0.71428573f, 0.64935064f, 0.7936508f);
-            matrices.translate(0.0, 1.3125, 0.22f);
+            matrices.translate(0.0f, 1.3125f, 0.22f);
             this.head.render(matrices, vertices, light, overlay, red, green, blue, alpha);
             matrices.pop();
             matrices.push();
             float h = 1.1f;
             matrices.scale(0.625f, 0.45454544f, 0.45454544f);
-            matrices.translate(0.0, 2.0625, 0.0);
+            matrices.translate(0.0f, 2.0625f, 0.0f);
             this.body.render(matrices, vertices, light, overlay, red, green, blue, alpha);
             matrices.pop();
             matrices.push();
             matrices.scale(0.45454544f, 0.41322312f, 0.45454544f);
-            matrices.translate(0.0, 2.0625, 0.0);
+            matrices.translate(0.0f, 2.0625f, 0.0f);
             ImmutableList.of(this.rightHindLeg, this.leftHindLeg, this.rightFrontLeg, this.leftFrontLeg, this.rightChest, this.leftChest).forEach(part -> part.render(matrices, vertices, light, overlay, red, green, blue, alpha));
             matrices.pop();
         } else {

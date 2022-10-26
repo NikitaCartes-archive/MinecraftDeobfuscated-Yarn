@@ -48,8 +48,8 @@ extends RealmsScreen {
     @Override
     public void init() {
         this.client.keyboard.setRepeatEvents(true);
-        this.createButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 17, 97, 20, Text.translatable("mco.create.world"), button -> this.createWorld()));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height / 4 + 120 + 17, 95, 20, ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)));
+        this.createButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("mco.create.world"), button -> this.createWorld()).setPositionAndSize(this.width / 2 - 100, this.height / 4 + 120 + 17, 97, 20).build());
+        this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)).setPositionAndSize(this.width / 2 + 5, this.height / 4 + 120 + 17, 95, 20).build());
         this.createButton.active = false;
         this.nameBox = new TextFieldWidget(this.client.textRenderer, this.width / 2 - 100, 65, 200, 20, null, Text.translatable("mco.configure.world.name"));
         this.addSelectableChild(this.nameBox);

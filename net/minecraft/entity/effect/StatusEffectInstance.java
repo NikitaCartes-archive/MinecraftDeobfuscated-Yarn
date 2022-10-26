@@ -40,7 +40,7 @@ implements Comparable<StatusEffectInstance> {
      */
     @Nullable
     private StatusEffectInstance hiddenEffect;
-    private Optional<FactorCalculationData> factorCalculationData;
+    private final Optional<FactorCalculationData> factorCalculationData;
 
     public StatusEffectInstance(StatusEffect type) {
         this(type, 0, 0);

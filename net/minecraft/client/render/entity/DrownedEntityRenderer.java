@@ -15,7 +15,7 @@ import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 
 @Environment(value=EnvType.CLIENT)
 public class DrownedEntityRenderer
@@ -37,7 +37,7 @@ extends ZombieBaseEntityRenderer<DrownedEntity, DrownedEntityModel<DrownedEntity
         super.setupTransforms(drownedEntity, matrixStack, f, g, h);
         float i = drownedEntity.getLeaningPitch(h);
         if (i > 0.0f) {
-            matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(MathHelper.lerp(i, drownedEntity.getPitch(), -10.0f - drownedEntity.getPitch())));
+            matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(MathHelper.lerp(i, drownedEntity.getPitch(), -10.0f - drownedEntity.getPitch())));
         }
     }
 }

@@ -66,14 +66,14 @@ extends GameOptionsScreen {
             Optional<VideoMode> optional = window.getVideoMode();
             j = optional.map(monitor::findClosestVideoModeIndex).orElse(-1);
         }
-        SimpleOption<Integer> simpleOption = new SimpleOption<Integer>("options.fullscreen.resolution", SimpleOption.emptyTooltip(), (text, value) -> {
+        SimpleOption<Integer> simpleOption = new SimpleOption<Integer>("options.fullscreen.resolution", SimpleOption.emptyTooltip(), (prefix, value) -> {
             if (monitor == null) {
                 return Text.translatable("options.fullscreen.unavailable");
             }
             if (value == -1) {
-                return GameOptions.getGenericValueText(text, Text.translatable("options.fullscreen.current"));
+                return GameOptions.getGenericValueText(prefix, Text.translatable("options.fullscreen.current"));
             }
-            return GameOptions.getGenericValueText(text, Text.literal(monitor.getVideoMode((int)value).toString()));
+            return GameOptions.getGenericValueText(prefix, Text.literal(monitor.getVideoMode((int)value).toString()));
         }, new SimpleOption.ValidatingIntSliderCallbacks(-1, monitor != null ? monitor.getVideoModeCount() - 1 : -1), j, value -> {
             if (monitor == null) {
                 return;
@@ -84,11 +84,11 @@ extends GameOptionsScreen {
         this.list.addSingleOptionEntry(this.gameOptions.getBiomeBlendRadius());
         this.list.addAll(VideoOptionsScreen.getOptions(this.gameOptions));
         this.addSelectableChild(this.list);
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, ScreenTexts.DONE, button -> {
+        this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.DONE, button -> {
             this.client.options.write();
             window.applyVideoMode();
             this.client.setScreen(this.parent);
-        }));
+        }).setPositionAndSize(this.width / 2 - 100, this.height - 27, 200, 20).build());
     }
 
     @Override

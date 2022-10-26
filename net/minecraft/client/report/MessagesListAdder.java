@@ -11,8 +11,10 @@ import net.minecraft.client.report.ContextMessageCollector;
 import net.minecraft.client.report.log.ChatLog;
 import net.minecraft.client.report.log.ChatLogEntry;
 import net.minecraft.client.report.log.ReceivedMessage;
+import net.minecraft.network.message.MessageLink;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -20,14 +22,16 @@ public class MessagesListAdder {
     private final ChatLog log;
     private final ContextMessageCollector contextMessageCollector;
     private final Predicate<ReceivedMessage.ChatMessage> reportablePredicate;
+    @Nullable
+    private MessageLink link = null;
     private int maxLogIndex;
     private int foldedMessageCount;
     @Nullable
     private SignedMessage lastMessage;
 
     public MessagesListAdder(AbuseReportContext context, Predicate<ReceivedMessage.ChatMessage> reportablePredicate) {
-        this.log = context.chatLog();
-        this.contextMessageCollector = new ContextMessageCollector(context.sender().getLimits().leadingContextMessageCount());
+        this.log = context.getChatLog();
+        this.contextMessageCollector = new ContextMessageCollector(context.getSender().getLimits().leadingContextMessageCount());
         this.reportablePredicate = reportablePredicate;
         this.maxLogIndex = this.log.getMaxIndex();
     }
@@ -39,7 +43,7 @@ public class MessagesListAdder {
             ReceivedMessage.ChatMessage chatMessage;
             int j = this.maxLogIndex--;
             if (!(chatLogEntry instanceof ReceivedMessage.ChatMessage) || (chatMessage = (ReceivedMessage.ChatMessage)chatLogEntry).message().equals(this.lastMessage)) continue;
-            if (this.tryAdd(chatMessage)) {
+            if (this.tryAdd(messages, chatMessage)) {
                 if (this.foldedMessageCount > 0) {
                     messages.addText(Text.translatable("gui.chatSelection.fold", this.foldedMessageCount));
                     this.foldedMessageCount = 0;
@@ -53,11 +57,15 @@ public class MessagesListAdder {
         }
     }
 
-    private boolean tryAdd(ReceivedMessage.ChatMessage message) {
+    private boolean tryAdd(MessagesList messages, ReceivedMessage.ChatMessage message) {
         SignedMessage signedMessage = message.message();
         boolean bl = this.contextMessageCollector.tryLink(signedMessage);
         if (this.reportablePredicate.test(message)) {
             this.contextMessageCollector.add(signedMessage);
+            if (this.link != null && !this.link.linksTo(signedMessage.link())) {
+                messages.addText(Text.translatable("gui.chatSelection.join", message.profile().getName()).formatted(Formatting.YELLOW));
+            }
+            this.link = signedMessage.link();
             return true;
         }
         return bl;

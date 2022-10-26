@@ -12,6 +12,7 @@ import java.nio.ByteOrder;
 import java.security.PublicKey;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.UUID;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
@@ -30,7 +31,6 @@ import net.minecraft.util.dynamic.Codecs;
  * @see PlayerKeyPair
  */
 public record PlayerPublicKey(PublicKeyData data) {
-    public static final Text MISSING_PUBLIC_KEY_TEXT = Text.translatable("multiplayer.disconnect.missing_public_key");
     public static final Text EXPIRED_PUBLIC_KEY_TEXT = Text.translatable("multiplayer.disconnect.expired_public_key");
     private static final Text INVALID_PUBLIC_KEY_SIGNATURE_TEXT = Text.translatable("multiplayer.disconnect.invalid_public_key_signature");
     public static final Duration EXPIRATION_GRACE_PERIOD = Duration.ofHours(8L);
@@ -90,6 +90,15 @@ public record PlayerPublicKey(PublicKeyData data) {
 
         public boolean isExpired(Duration gracePeriod) {
             return this.expiresAt.plus(gracePeriod).isBefore(Instant.now());
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o instanceof PublicKeyData) {
+                PublicKeyData publicKeyData = (PublicKeyData)o;
+                return this.expiresAt.equals(publicKeyData.expiresAt) && this.key.equals(publicKeyData.key) && Arrays.equals(this.keySignature, publicKeyData.keySignature);
+            }
+            return false;
         }
     }
 

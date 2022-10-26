@@ -14,7 +14,7 @@ import net.minecraft.data.server.advancement.StoryTabAdvancementGenerator;
 
 public class VanillaAdvancementProviders {
     public static AdvancementProvider createVanillaProvider(DataOutput output) {
-        return new AdvancementProvider("Vanilla Advancements", output, List.of(new EndTabAdvancementGenerator(), new HusbandryTabAdvancementGenerator(), new AdventureTabAdvancementGenerator(), new NetherTabAdvancementGenerator(), new StoryTabAdvancementGenerator()));
+        return new AdvancementProvider(output, List.of(new EndTabAdvancementGenerator(), new HusbandryTabAdvancementGenerator(), new AdventureTabAdvancementGenerator(), new NetherTabAdvancementGenerator(), new StoryTabAdvancementGenerator()));
     }
 }
 

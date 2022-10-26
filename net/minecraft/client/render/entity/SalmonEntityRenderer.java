@@ -13,7 +13,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.SalmonEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 
 @Environment(value=EnvType.CLIENT)
 public class SalmonEntityRenderer
@@ -39,11 +39,11 @@ extends MobEntityRenderer<SalmonEntity, SalmonEntityModel<SalmonEntity>> {
             j = 1.7f;
         }
         float k = i * 4.3f * MathHelper.sin(j * 0.6f * f);
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(k));
-        matrixStack.translate(0.0, 0.0, -0.4f);
+        matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(k));
+        matrixStack.translate(0.0f, 0.0f, -0.4f);
         if (!salmonEntity.isTouchingWater()) {
-            matrixStack.translate(0.2f, 0.1f, 0.0);
-            matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0f));
+            matrixStack.translate(0.2f, 0.1f, 0.0f);
+            matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90.0f));
         }
     }
 }

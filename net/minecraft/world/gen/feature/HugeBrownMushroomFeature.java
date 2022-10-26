@@ -37,7 +37,7 @@ extends HugeMushroomFeature {
                 boolean bl8 = bl2 || bl6 && j == i - 1;
                 boolean bl9 = bl3 || bl5 && k == 1 - i;
                 boolean bl10 = bl4 || bl5 && k == i - 1;
-                BlockState blockState = config.capProvider.getBlockState(random, start);
+                BlockState blockState = config.capProvider.get(random, start);
                 if (blockState.contains(MushroomBlock.WEST) && blockState.contains(MushroomBlock.EAST) && blockState.contains(MushroomBlock.NORTH) && blockState.contains(MushroomBlock.SOUTH)) {
                     blockState = (BlockState)((BlockState)((BlockState)((BlockState)blockState.with(MushroomBlock.WEST, bl72)).with(MushroomBlock.EAST, bl8)).with(MushroomBlock.NORTH, bl9)).with(MushroomBlock.SOUTH, bl10);
                 }

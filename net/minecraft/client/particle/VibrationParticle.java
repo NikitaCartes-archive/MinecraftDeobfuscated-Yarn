@@ -17,10 +17,10 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.VibrationParticleEffect;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.event.PositionSource;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 @Environment(value=EnvType.CLIENT)
 public class VibrationParticle
@@ -52,46 +52,35 @@ extends SpriteBillboardParticle {
         float f = MathHelper.sin(((float)this.age + tickDelta - (float)Math.PI * 2) * 0.05f) * 2.0f;
         float g = MathHelper.lerp(tickDelta, this.field_28248, this.field_28250);
         float h = MathHelper.lerp(tickDelta, this.field_40508, this.field_40507) + 1.5707964f;
-        this.render(vertexConsumer, camera, tickDelta, rotationQuaternion -> {
-            rotationQuaternion.hamiltonProduct(Vec3f.POSITIVE_Y.getRadialQuaternion(g));
-            rotationQuaternion.hamiltonProduct(Vec3f.POSITIVE_X.getRadialQuaternion(-h));
-            rotationQuaternion.hamiltonProduct(Vec3f.POSITIVE_Y.getRadialQuaternion(f));
-        });
-        this.render(vertexConsumer, camera, tickDelta, rotationQuaternion -> {
-            rotationQuaternion.hamiltonProduct(Vec3f.POSITIVE_Y.getRadialQuaternion((float)(-Math.PI) + g));
-            rotationQuaternion.hamiltonProduct(Vec3f.POSITIVE_X.getRadialQuaternion(h));
-            rotationQuaternion.hamiltonProduct(Vec3f.POSITIVE_Y.getRadialQuaternion(f));
-        });
+        this.render(vertexConsumer, camera, tickDelta, rotationQuaternion -> rotationQuaternion.rotateY(g).rotateX(-h).rotateY(f));
+        this.render(vertexConsumer, camera, tickDelta, rotationQuaternion -> rotationQuaternion.rotateY((float)(-Math.PI) + g).rotateX(h).rotateY(f));
     }
 
-    private void render(VertexConsumer vertexConsumer, Camera camera, float tickDelta, Consumer<Quaternion> transforms) {
+    private void render(VertexConsumer vertexConsumer, Camera camera, float tickDelta, Consumer<Quaternionf> transforms) {
         Vec3d vec3d = camera.getPos();
         float f = (float)(MathHelper.lerp((double)tickDelta, this.prevPosX, this.x) - vec3d.getX());
         float g = (float)(MathHelper.lerp((double)tickDelta, this.prevPosY, this.y) - vec3d.getY());
         float h = (float)(MathHelper.lerp((double)tickDelta, this.prevPosZ, this.z) - vec3d.getZ());
-        Vec3f vec3f = new Vec3f(0.5f, 0.5f, 0.5f);
-        vec3f.normalize();
-        Quaternion quaternion = new Quaternion(vec3f, 0.0f, true);
-        transforms.accept(quaternion);
-        Vec3f vec3f2 = new Vec3f(-1.0f, -1.0f, 0.0f);
-        vec3f2.rotate(quaternion);
-        Vec3f[] vec3fs = new Vec3f[]{new Vec3f(-1.0f, -1.0f, 0.0f), new Vec3f(-1.0f, 1.0f, 0.0f), new Vec3f(1.0f, 1.0f, 0.0f), new Vec3f(1.0f, -1.0f, 0.0f)};
+        Vector3f vector3f = new Vector3f(0.5f, 0.5f, 0.5f).normalize();
+        Quaternionf quaternionf = new Quaternionf().setAngleAxis(0.0f, vector3f.x(), vector3f.y(), vector3f.z());
+        transforms.accept(quaternionf);
+        Vector3f[] vector3fs = new Vector3f[]{new Vector3f(-1.0f, -1.0f, 0.0f), new Vector3f(-1.0f, 1.0f, 0.0f), new Vector3f(1.0f, 1.0f, 0.0f), new Vector3f(1.0f, -1.0f, 0.0f)};
         float i = this.getSize(tickDelta);
         for (int j = 0; j < 4; ++j) {
-            Vec3f vec3f3 = vec3fs[j];
-            vec3f3.rotate(quaternion);
-            vec3f3.scale(i);
-            vec3f3.add(f, g, h);
+            Vector3f vector3f2 = vector3fs[j];
+            vector3f2.rotate(quaternionf);
+            vector3f2.mul(i);
+            vector3f2.add(f, g, h);
         }
         float k = this.getMinU();
         float l = this.getMaxU();
         float m = this.getMinV();
         float n = this.getMaxV();
         int o = this.getBrightness(tickDelta);
-        vertexConsumer.vertex(vec3fs[0].getX(), vec3fs[0].getY(), vec3fs[0].getZ()).texture(l, n).color(this.red, this.green, this.blue, this.alpha).light(o).next();
-        vertexConsumer.vertex(vec3fs[1].getX(), vec3fs[1].getY(), vec3fs[1].getZ()).texture(l, m).color(this.red, this.green, this.blue, this.alpha).light(o).next();
-        vertexConsumer.vertex(vec3fs[2].getX(), vec3fs[2].getY(), vec3fs[2].getZ()).texture(k, m).color(this.red, this.green, this.blue, this.alpha).light(o).next();
-        vertexConsumer.vertex(vec3fs[3].getX(), vec3fs[3].getY(), vec3fs[3].getZ()).texture(k, n).color(this.red, this.green, this.blue, this.alpha).light(o).next();
+        vertexConsumer.vertex(vector3fs[0].x(), vector3fs[0].y(), vector3fs[0].z()).texture(l, n).color(this.red, this.green, this.blue, this.alpha).light(o).next();
+        vertexConsumer.vertex(vector3fs[1].x(), vector3fs[1].y(), vector3fs[1].z()).texture(l, m).color(this.red, this.green, this.blue, this.alpha).light(o).next();
+        vertexConsumer.vertex(vector3fs[2].x(), vector3fs[2].y(), vector3fs[2].z()).texture(k, m).color(this.red, this.green, this.blue, this.alpha).light(o).next();
+        vertexConsumer.vertex(vector3fs[3].x(), vector3fs[3].y(), vector3fs[3].z()).texture(k, n).color(this.red, this.green, this.blue, this.alpha).light(o).next();
     }
 
     @Override

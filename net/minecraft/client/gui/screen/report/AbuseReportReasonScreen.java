@@ -54,20 +54,20 @@ extends Screen {
         ReasonListWidget.ReasonEntry reasonEntry = Util.map(this.reason, this.reasonList::getEntry);
         this.reasonList.setSelected(reasonEntry);
         int i = this.width / 2 - 150 - 5;
-        this.addDrawableChild(new ButtonWidget(i, this.getDoneButtonY(), 150, 20, READ_INFO_TEXT, button -> this.client.setScreen(new ConfirmLinkScreen(confirmed -> {
+        this.addDrawableChild(ButtonWidget.createBuilder(READ_INFO_TEXT, button -> this.client.setScreen(new ConfirmLinkScreen(confirmed -> {
             if (confirmed) {
                 Util.getOperatingSystem().open(ABOUT_JAVA_REPORTING_URL);
             }
             this.client.setScreen(this);
-        }, ABOUT_JAVA_REPORTING_URL, true))));
+        }, ABOUT_JAVA_REPORTING_URL, true))).setPositionAndSize(i, this.getDoneButtonY(), 150, 20).build());
         int j = this.width / 2 + 5;
-        this.addDrawableChild(new ButtonWidget(j, this.getDoneButtonY(), 150, 20, ScreenTexts.DONE, button -> {
+        this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.DONE, button -> {
             ReasonListWidget.ReasonEntry reasonEntry = (ReasonListWidget.ReasonEntry)this.reasonList.getSelectedOrNull();
             if (reasonEntry != null) {
                 this.reasonConsumer.accept(reasonEntry.getReason());
             }
             this.client.setScreen(this.parent);
-        }));
+        }).setPositionAndSize(j, this.getDoneButtonY(), 150, 20).build());
         super.init();
     }
 

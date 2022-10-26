@@ -73,7 +73,7 @@ extends TreeDecorator {
         for (int i = 2; i >= -3; --i) {
             BlockPos blockPos = origin.up(i);
             if (Feature.isSoil(generator.getWorld(), blockPos)) {
-                generator.replace(blockPos, this.provider.getBlockState(generator.getRandom(), origin));
+                generator.replace(blockPos, this.provider.get(generator.getRandom(), origin));
                 break;
             }
             if (!generator.isAir(blockPos) && i < 0) break;

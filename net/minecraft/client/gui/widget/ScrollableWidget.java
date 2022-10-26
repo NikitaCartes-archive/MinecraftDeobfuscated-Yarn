@@ -43,7 +43,7 @@ Element {
             return false;
         }
         boolean bl = this.isWithinBounds(mouseX, mouseY);
-        boolean bl2 = this.overflows() && mouseX >= (double)(this.x + this.width) && mouseX <= (double)(this.x + this.width + 8) && mouseY >= (double)this.y && mouseY < (double)(this.y + this.height);
+        boolean bl2 = this.overflows() && mouseX >= (double)(this.getX() + this.width) && mouseX <= (double)(this.getX() + this.width + 8) && mouseY >= (double)this.getY() && mouseY < (double)(this.getY() + this.height);
         this.setFocused(bl || bl2);
         if (bl2 && button == 0) {
             this.scrollbarDragged = true;
@@ -65,9 +65,9 @@ Element {
         if (!(this.visible && this.isFocused() && this.scrollbarDragged)) {
             return false;
         }
-        if (mouseY < (double)this.y) {
+        if (mouseY < (double)this.getY()) {
             this.setScrollY(0.0);
-        } else if (mouseY > (double)(this.y + this.height)) {
+        } else if (mouseY > (double)(this.getY() + this.height)) {
             this.setScrollY(this.getMaxScrollY());
         } else {
             int i = this.getScrollbarThumbHeight();
@@ -92,7 +92,7 @@ Element {
             return;
         }
         this.drawBox(matrices);
-        ScrollableWidget.enableScissor(this.x + 1, this.y + 1, this.x + this.width - 1, this.y + this.height - 1);
+        ScrollableWidget.enableScissor(this.getX() + 1, this.getY() + 1, this.getX() + this.width - 1, this.getY() + this.height - 1);
         matrices.push();
         matrices.translate(0.0, -this.scrollY, 0.0);
         this.renderContents(matrices, mouseX, mouseY, delta);
@@ -147,15 +147,15 @@ Element {
      */
     private void drawBox(MatrixStack matrices) {
         int i = this.isFocused() ? -1 : -6250336;
-        ScrollableWidget.fill(matrices, this.x, this.y, this.x + this.width, this.y + this.height, i);
-        ScrollableWidget.fill(matrices, this.x + 1, this.y + 1, this.x + this.width - 1, this.y + this.height - 1, -16777216);
+        ScrollableWidget.fill(matrices, this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, i);
+        ScrollableWidget.fill(matrices, this.getX() + 1, this.getY() + 1, this.getX() + this.width - 1, this.getY() + this.height - 1, -16777216);
     }
 
     private void drawScrollbar() {
         int i = this.getScrollbarThumbHeight();
-        int j = this.x + this.width;
-        int k = this.x + this.width + 8;
-        int l = Math.max(this.y, (int)this.scrollY * (this.height - i) / this.getMaxScrollY() + this.y);
+        int j = this.getX() + this.width;
+        int k = this.getX() + this.width + 8;
+        int l = Math.max(this.getY(), (int)this.scrollY * (this.height - i) / this.getMaxScrollY() + this.getY());
         int m = l + i;
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         Tessellator tessellator = Tessellator.getInstance();
@@ -173,11 +173,11 @@ Element {
     }
 
     protected boolean isVisible(int top, int bottom) {
-        return (double)bottom - this.scrollY >= (double)this.y && (double)top - this.scrollY <= (double)(this.y + this.height);
+        return (double)bottom - this.scrollY >= (double)this.getY() && (double)top - this.scrollY <= (double)(this.getY() + this.height);
     }
 
     protected boolean isWithinBounds(double mouseX, double mouseY) {
-        return mouseX >= (double)this.x && mouseX < (double)(this.x + this.width) && mouseY >= (double)this.y && mouseY < (double)(this.y + this.height);
+        return mouseX >= (double)this.getX() && mouseX < (double)(this.getX() + this.width) && mouseY >= (double)this.getY() && mouseY < (double)(this.getY() + this.height);
     }
 
     /**

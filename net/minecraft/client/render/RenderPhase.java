@@ -20,9 +20,8 @@ import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3f;
 import org.apache.commons.lang3.tuple.Triple;
+import org.joml.Matrix4f;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class RenderPhase {
@@ -225,9 +224,8 @@ public abstract class RenderPhase {
         long l = Util.getMeasuringTimeMs() * 8L;
         float f = (float)(l % 110000L) / 110000.0f;
         float g = (float)(l % 30000L) / 30000.0f;
-        Matrix4f matrix4f = Matrix4f.translate(-f, g, 0.0f);
-        matrix4f.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(10.0f));
-        matrix4f.multiply(Matrix4f.scale(scale, scale, scale));
+        Matrix4f matrix4f = new Matrix4f().translation(-f, g, 0.0f);
+        matrix4f.rotateZ(0.17453292f).scale(scale);
         RenderSystem.setTextureMatrix(matrix4f);
     }
 
@@ -484,7 +482,7 @@ public abstract class RenderPhase {
     protected static final class OffsetTexturing
     extends Texturing {
         public OffsetTexturing(float x, float y) {
-            super("offset_texturing", () -> RenderSystem.setTextureMatrix(Matrix4f.translate(x, y, 0.0f)), () -> RenderSystem.resetTextureMatrix());
+            super("offset_texturing", () -> RenderSystem.setTextureMatrix(new Matrix4f().translation(x, y, 0.0f)), () -> RenderSystem.resetTextureMatrix());
         }
     }
 

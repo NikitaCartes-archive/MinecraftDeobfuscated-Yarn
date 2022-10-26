@@ -638,7 +638,7 @@ public final class NbtHelper {
             });
             compound.put("palettes", nbtList3);
         }
-        if (compound.contains("entities", NbtElement.COMPOUND_TYPE)) {
+        if (compound.contains("entities", NbtElement.LIST_TYPE)) {
             nbtList3 = compound.getList("entities", NbtElement.COMPOUND_TYPE);
             nbtList4 = nbtList3.stream().map(NbtCompound.class::cast).sorted(Comparator.comparing(nbt -> nbt.getList("pos", NbtElement.DOUBLE_TYPE), ENTITY_POS_COMPARATOR)).collect(Collectors.toCollection(NbtList::new));
             compound.put("entities", nbtList4);

@@ -21,13 +21,13 @@ import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Quaternion;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.math.Vector4f;
 import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 /**
  * An enum representing 6 cardinal directions in Minecraft.
@@ -115,9 +115,8 @@ public enum Direction implements StringIdentifiable
 
     public static Direction transform(Matrix4f matrix, Direction direction) {
         Vec3i vec3i = direction.getVector();
-        Vector4f vector4f = new Vector4f(vec3i.getX(), vec3i.getY(), vec3i.getZ(), 0.0f);
-        vector4f.transform(matrix);
-        return Direction.getFacing(vector4f.getX(), vector4f.getY(), vector4f.getZ());
+        Vector4f vector4f = matrix.transform(new Vector4f(vec3i.getX(), vec3i.getY(), vec3i.getZ(), 0.0f));
+        return Direction.getFacing(vector4f.x(), vector4f.y(), vector4f.z());
     }
 
     /**
@@ -131,25 +130,15 @@ public enum Direction implements StringIdentifiable
         return Stream.of(ALL);
     }
 
-    public Quaternion getRotationQuaternion() {
-        Quaternion quaternion = Vec3f.POSITIVE_X.getDegreesQuaternion(90.0f);
+    public Quaternionf getRotationQuaternion() {
         return switch (this) {
             default -> throw new IncompatibleClassChangeError();
-            case DOWN -> Vec3f.POSITIVE_X.getDegreesQuaternion(180.0f);
-            case UP -> Quaternion.IDENTITY.copy();
-            case NORTH -> {
-                quaternion.hamiltonProduct(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
-                yield quaternion;
-            }
-            case SOUTH -> quaternion;
-            case WEST -> {
-                quaternion.hamiltonProduct(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0f));
-                yield quaternion;
-            }
-            case EAST -> {
-                quaternion.hamiltonProduct(Vec3f.POSITIVE_Z.getDegreesQuaternion(-90.0f));
-                yield quaternion;
-            }
+            case DOWN -> new Quaternionf().rotationX((float)Math.PI);
+            case UP -> new Quaternionf();
+            case NORTH -> new Quaternionf().rotationXYZ(1.5707964f, 0.0f, (float)Math.PI);
+            case SOUTH -> new Quaternionf().rotationX(1.5707964f);
+            case WEST -> new Quaternionf().rotationXYZ(1.5707964f, 0.0f, 1.5707964f);
+            case EAST -> new Quaternionf().rotationXYZ(1.5707964f, 0.0f, -1.5707964f);
         };
     }
 
@@ -298,8 +287,8 @@ public enum Direction implements StringIdentifiable
         return this.vector.getZ();
     }
 
-    public Vec3f getUnitVector() {
-        return new Vec3f(this.getOffsetX(), this.getOffsetY(), this.getOffsetZ());
+    public Vector3f getUnitVector() {
+        return new Vector3f(this.getOffsetX(), this.getOffsetY(), this.getOffsetZ());
     }
 
     public String getName() {

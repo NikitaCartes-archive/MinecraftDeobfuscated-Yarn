@@ -12,8 +12,7 @@ import net.minecraft.client.render.model.ModelBakeSettings;
 import net.minecraft.util.math.AffineTransformation;
 import net.minecraft.util.math.DirectionTransformation;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Quaternion;
-import net.minecraft.util.math.Vec3f;
+import org.joml.Quaternionf;
 
 @Environment(value=EnvType.CLIENT)
 public enum ModelRotation implements ModelBakeSettings
@@ -48,8 +47,7 @@ public enum ModelRotation implements ModelBakeSettings
     private ModelRotation(int x, int y) {
         int j;
         this.index = ModelRotation.getIndex(x, y);
-        Quaternion quaternion = Vec3f.POSITIVE_Y.getDegreesQuaternion(-y);
-        quaternion.hamiltonProduct(Vec3f.POSITIVE_X.getDegreesQuaternion(-x));
+        Quaternionf quaternionf = new Quaternionf().rotateYXZ((float)(-y) * ((float)Math.PI / 180), (float)(-x) * ((float)Math.PI / 180), 0.0f);
         DirectionTransformation directionTransformation = DirectionTransformation.IDENTITY;
         for (j = 0; j < y; j += 90) {
             directionTransformation = directionTransformation.prepend(DirectionTransformation.ROT_90_Y_NEG);
@@ -57,7 +55,7 @@ public enum ModelRotation implements ModelBakeSettings
         for (j = 0; j < x; j += 90) {
             directionTransformation = directionTransformation.prepend(DirectionTransformation.ROT_90_X_NEG);
         }
-        this.rotation = new AffineTransformation(null, quaternion, null, null);
+        this.rotation = new AffineTransformation(null, quaternionf, null, null);
         this.directionTransformation = directionTransformation;
     }
 
@@ -75,7 +73,7 @@ public enum ModelRotation implements ModelBakeSettings
     }
 
     static {
-        BY_INDEX = Arrays.stream(ModelRotation.values()).collect(Collectors.toMap(rotation -> rotation.index, modelRotation -> modelRotation));
+        BY_INDEX = Arrays.stream(ModelRotation.values()).collect(Collectors.toMap(rotation -> rotation.index, rotation -> rotation));
     }
 }
 

@@ -138,7 +138,7 @@ Element {
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
         matrices.push();
-        matrices.translate(0.0, 0.0, 170.0);
+        matrices.translate(0.0f, 0.0f, 170.0f);
         int i = this.alternativeButtons.size() <= 16 ? 4 : 5;
         int j = Math.min(this.alternativeButtons.size(), i);
         int k = MathHelper.ceil((float)this.alternativeButtons.size() / (float)i);
@@ -249,13 +249,13 @@ Element {
             if (this.isHovered()) {
                 j += 26;
             }
-            this.drawTexture(matrices, this.x, this.y, i, j, this.width, this.height);
+            this.drawTexture(matrices, this.getX(), this.getY(), i, j, this.width, this.height);
             MatrixStack matrixStack = RenderSystem.getModelViewStack();
             matrixStack.push();
-            matrixStack.translate(this.x + 2, this.y + 2, 125.0);
+            matrixStack.translate((double)(this.getX() + 2), (double)(this.getY() + 2), 125.0);
             for (InputSlot inputSlot : this.slots) {
                 matrixStack.push();
-                matrixStack.translate(inputSlot.y, inputSlot.x, 0.0);
+                matrixStack.translate((double)inputSlot.y, (double)inputSlot.x, 0.0);
                 matrixStack.scale(0.375f, 0.375f, 1.0f);
                 matrixStack.translate(-8.0, -8.0, 0.0);
                 RenderSystem.applyModelViewMatrix();

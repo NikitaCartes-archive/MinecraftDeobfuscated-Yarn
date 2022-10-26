@@ -45,7 +45,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -98,7 +97,7 @@ InventoryOwner {
         if (this.cannotHunt) {
             nbt.putBoolean("CannotHunt", true);
         }
-        nbt.put("Inventory", this.inventory.toNbtList());
+        this.writeInventory(nbt);
     }
 
     @Override
@@ -106,9 +105,7 @@ InventoryOwner {
         super.readCustomDataFromNbt(nbt);
         this.setBaby(nbt.getBoolean("IsBaby"));
         this.setCannotHunt(nbt.getBoolean("CannotHunt"));
-        if (nbt.contains("Inventory", NbtElement.COMPOUND_TYPE)) {
-            this.inventory.readNbtList(nbt.getList("Inventory", NbtElement.COMPOUND_TYPE));
-        }
+        this.readInventory(nbt);
     }
 
     @Override

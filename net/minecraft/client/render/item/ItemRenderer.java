@@ -58,6 +58,7 @@ import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixUtil;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
@@ -124,7 +125,7 @@ implements SynchronousResourceReloader {
             }
         }
         model.getTransformation().getTransformation(renderMode).apply(leftHanded, matrices);
-        matrices.translate(-0.5, -0.5, -0.5);
+        matrices.translate(-0.5f, -0.5f, -0.5f);
         if (model.isBuiltin() || stack.isOf(Items.TRIDENT) && !bl) {
             this.builtinModelItemRenderer.render(stack, renderMode, matrices, vertexConsumers, light, overlay);
         } else {
@@ -136,9 +137,9 @@ implements SynchronousResourceReloader {
                 matrices.push();
                 MatrixStack.Entry entry = matrices.peek();
                 if (renderMode == ModelTransformation.Mode.GUI) {
-                    entry.getPositionMatrix().multiply(0.5f);
+                    MatrixUtil.scale(entry.getPositionMatrix(), 0.5f);
                 } else if (renderMode.isFirstPerson()) {
-                    entry.getPositionMatrix().multiply(0.75f);
+                    MatrixUtil.scale(entry.getPositionMatrix(), 0.75f);
                 }
                 vertexConsumer = bl22 ? ItemRenderer.getDirectCompassGlintConsumer(vertexConsumers, renderLayer, entry) : ItemRenderer.getCompassGlintConsumer(vertexConsumers, renderLayer, entry);
                 matrices.pop();
@@ -230,7 +231,7 @@ implements SynchronousResourceReloader {
         MatrixStack matrixStack = RenderSystem.getModelViewStack();
         matrixStack.push();
         matrixStack.translate(x, y, 100.0f + this.zOffset);
-        matrixStack.translate(8.0, 8.0, 0.0);
+        matrixStack.translate(8.0f, 8.0f, 0.0f);
         matrixStack.scale(1.0f, -1.0f, 1.0f);
         matrixStack.scale(16.0f, 16.0f, 16.0f);
         RenderSystem.applyModelViewMatrix();
@@ -327,9 +328,9 @@ implements SynchronousResourceReloader {
         MatrixStack matrixStack = new MatrixStack();
         if (stack.getCount() != 1 || countLabel != null) {
             String string = countLabel == null ? String.valueOf(stack.getCount()) : countLabel;
-            matrixStack.translate(0.0, 0.0, this.zOffset + 200.0f);
+            matrixStack.translate(0.0f, 0.0f, this.zOffset + 200.0f);
             VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-            renderer.draw(string, (float)(x + 19 - 2 - renderer.getWidth(string)), (float)(y + 6 + 3), 0xFFFFFF, true, matrixStack.peek().getPositionMatrix(), (VertexConsumerProvider)immediate, false, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE);
+            renderer.draw(string, (float)(x + 19 - 2 - renderer.getWidth(string)), (float)(y + 6 + 3), 0xFFFFFF, true, matrixStack.peek().getPositionMatrix(), (VertexConsumerProvider)immediate, false, 0, 0xF000F0);
             immediate.draw();
         }
         if (stack.isItemBarVisible()) {

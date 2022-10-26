@@ -17,10 +17,10 @@ import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Matrix3f;
-import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
 
 @Environment(value=EnvType.CLIENT)
 public class BeaconBlockEntityRenderer
@@ -58,7 +58,7 @@ implements BlockEntityRenderer<BeaconBlockEntity> {
         float k = color[1];
         float l = color[2];
         matrices.push();
-        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(f * 2.25f - 45.0f));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(f * 2.25f - 45.0f));
         float m = 0.0f;
         float n = innerRadius;
         float o = innerRadius;

@@ -39,7 +39,6 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.encryption.PublicPlayerSession;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SentMessage;
 import net.minecraft.network.message.SignedMessage;
@@ -369,7 +368,7 @@ public abstract class PlayerManager {
         return null;
     }
 
-    public ServerPlayerEntity createPlayer(GameProfile profile, PublicPlayerSession session) {
+    public ServerPlayerEntity createPlayer(GameProfile profile) {
         UUID uUID = Uuids.getUuidFromProfile(profile);
         ArrayList<ServerPlayerEntity> list = Lists.newArrayList();
         for (int i = 0; i < this.players.size(); ++i) {
@@ -384,7 +383,7 @@ public abstract class PlayerManager {
         for (ServerPlayerEntity serverPlayerEntity3 : list) {
             serverPlayerEntity3.networkHandler.disconnect(Text.translatable("multiplayer.disconnect.duplicate_login"));
         }
-        return new ServerPlayerEntity(this.server, this.server.getOverworld(), profile, session);
+        return new ServerPlayerEntity(this.server, this.server.getOverworld(), profile);
     }
 
     public ServerPlayerEntity respawnPlayer(ServerPlayerEntity player, boolean alive) {
@@ -396,7 +395,7 @@ public abstract class PlayerManager {
         ServerWorld serverWorld = this.server.getWorld(player.getSpawnPointDimension());
         Optional<Object> optional = serverWorld != null && blockPos != null ? PlayerEntity.findRespawnPosition(serverWorld, blockPos, f, bl, alive) : Optional.empty();
         ServerWorld serverWorld2 = serverWorld != null && optional.isPresent() ? serverWorld : this.server.getOverworld();
-        ServerPlayerEntity serverPlayerEntity = new ServerPlayerEntity(this.server, serverWorld2, player.getGameProfile(), player.getSession());
+        ServerPlayerEntity serverPlayerEntity = new ServerPlayerEntity(this.server, serverWorld2, player.getGameProfile());
         serverPlayerEntity.networkHandler = player.networkHandler;
         serverPlayerEntity.copyFrom(player, alive);
         serverPlayerEntity.setId(player.getId());

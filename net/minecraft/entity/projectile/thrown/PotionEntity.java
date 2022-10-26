@@ -42,7 +42,7 @@ extends ThrownItemEntity
 implements FlyingItemEntity {
     public static final double field_30667 = 4.0;
     private static final double field_30668 = 16.0;
-    public static final Predicate<LivingEntity> WATER_HURTS = LivingEntity::hurtByWater;
+    public static final Predicate<LivingEntity> AFFECTED_BY_WATER = entity -> entity.hurtByWater() || entity.isOnFire();
 
     public PotionEntity(EntityType<? extends PotionEntity> entityType, World world) {
         super((EntityType<? extends ThrownItemEntity>)entityType, world);
@@ -115,13 +115,15 @@ implements FlyingItemEntity {
 
     private void applyWater() {
         Box box = this.getBoundingBox().expand(4.0, 2.0, 4.0);
-        List<LivingEntity> list = this.world.getEntitiesByClass(LivingEntity.class, box, WATER_HURTS);
-        if (!list.isEmpty()) {
-            for (LivingEntity livingEntity : list) {
-                double d = this.squaredDistanceTo(livingEntity);
-                if (!(d < 16.0) || !livingEntity.hurtByWater()) continue;
+        List<LivingEntity> list = this.world.getEntitiesByClass(LivingEntity.class, box, AFFECTED_BY_WATER);
+        for (LivingEntity livingEntity : list) {
+            double d = this.squaredDistanceTo(livingEntity);
+            if (!(d < 16.0)) continue;
+            if (livingEntity.hurtByWater()) {
                 livingEntity.damage(DamageSource.magic(this, this.getOwner()), 1.0f);
             }
+            if (!livingEntity.isOnFire() || !livingEntity.isAlive()) continue;
+            livingEntity.extinguishWithSound();
         }
         List<AxolotlEntity> list2 = this.world.getNonSpectatingEntities(AxolotlEntity.class, box);
         for (AxolotlEntity axolotlEntity : list2) {

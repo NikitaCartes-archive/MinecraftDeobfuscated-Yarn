@@ -4,17 +4,18 @@
 package net.minecraft.entity.damage;
 
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.PositionedDamageSource;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
+import net.minecraft.util.math.Vec3d;
 
 public class BadRespawnPointDamageSource
-extends DamageSource {
-    protected BadRespawnPointDamageSource() {
-        super("badRespawnPoint");
+extends PositionedDamageSource {
+    protected BadRespawnPointDamageSource(Vec3d pos) {
+        super("badRespawnPoint", pos);
         this.setScaledWithDifficulty();
         this.setExplosive();
     }

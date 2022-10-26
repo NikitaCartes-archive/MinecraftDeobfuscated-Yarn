@@ -21,8 +21,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
 public class MinecartEntityRenderer<T extends AbstractMinecartEntity>
@@ -71,16 +71,16 @@ extends EntityRenderer<T> {
                 o = (float)(Math.atan(vec3d4.y) * 73.0);
             }
         }
-        matrixStack.translate(0.0, 0.375, 0.0);
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f - f));
-        matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-o));
+        matrixStack.translate(0.0f, 0.375f, 0.0f);
+        matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0f - f));
+        matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-o));
         float p = (float)((AbstractMinecartEntity)abstractMinecartEntity).getDamageWobbleTicks() - g;
         float q = ((AbstractMinecartEntity)abstractMinecartEntity).getDamageWobbleStrength() - g;
         if (q < 0.0f) {
             q = 0.0f;
         }
         if (p > 0.0f) {
-            matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(MathHelper.sin(p) * p * q / 10.0f * (float)((AbstractMinecartEntity)abstractMinecartEntity).getDamageWobbleSide()));
+            matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(MathHelper.sin(p) * p * q / 10.0f * (float)((AbstractMinecartEntity)abstractMinecartEntity).getDamageWobbleSide()));
         }
         int r = ((AbstractMinecartEntity)abstractMinecartEntity).getBlockOffset();
         BlockState blockState = ((AbstractMinecartEntity)abstractMinecartEntity).getContainedBlock();
@@ -88,8 +88,8 @@ extends EntityRenderer<T> {
             matrixStack.push();
             float s = 0.75f;
             matrixStack.scale(0.75f, 0.75f, 0.75f);
-            matrixStack.translate(-0.5, (float)(r - 8) / 16.0f, 0.5);
-            matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(90.0f));
+            matrixStack.translate(-0.5f, (float)(r - 8) / 16.0f, 0.5f);
+            matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90.0f));
             this.renderBlock(abstractMinecartEntity, g, blockState, matrixStack, vertexConsumerProvider, i);
             matrixStack.pop();
         }

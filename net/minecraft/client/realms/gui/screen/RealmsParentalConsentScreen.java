@@ -36,9 +36,9 @@ extends RealmsScreen {
         int i = Math.max(this.textRenderer.getWidth(text), this.textRenderer.getWidth(text2)) + 30;
         MutableText text3 = Text.translatable("mco.account.privacy.info");
         int j = (int)((double)this.textRenderer.getWidth(text3) * 1.2);
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - j / 2, RealmsParentalConsentScreen.row(11), j, 20, text3, button -> Util.getOperatingSystem().open("https://aka.ms/MinecraftGDPR")));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - (i + 5), RealmsParentalConsentScreen.row(13), i, 20, text, button -> Util.getOperatingSystem().open("https://aka.ms/UpdateMojangAccount")));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, RealmsParentalConsentScreen.row(13), i, 20, text2, button -> this.client.setScreen(this.parent)));
+        this.addDrawableChild(ButtonWidget.createBuilder(text3, button -> Util.getOperatingSystem().open("https://aka.ms/MinecraftGDPR")).setPositionAndSize(this.width / 2 - j / 2, RealmsParentalConsentScreen.row(11), j, 20).build());
+        this.addDrawableChild(ButtonWidget.createBuilder(text, button -> Util.getOperatingSystem().open("https://aka.ms/UpdateMojangAccount")).setPositionAndSize(this.width / 2 - (i + 5), RealmsParentalConsentScreen.row(13), i, 20).build());
+        this.addDrawableChild(ButtonWidget.createBuilder(text2, button -> this.client.setScreen(this.parent)).setPositionAndSize(this.width / 2 + 5, RealmsParentalConsentScreen.row(13), i, 20).build());
         this.privacyInfoText = MultilineText.create(this.textRenderer, (StringVisitable)PRIVACY_INFO_TEXT, (int)Math.round((double)this.width * 0.9));
     }
 

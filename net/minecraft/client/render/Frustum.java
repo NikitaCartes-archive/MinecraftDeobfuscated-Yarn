@@ -6,13 +6,15 @@ package net.minecraft.client.render;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vector4f;
+import org.joml.FrustumIntersection;
+import org.joml.Matrix4f;
+import org.joml.Vector4f;
 
 @Environment(value=EnvType.CLIENT)
 public class Frustum {
     public static final int field_34820 = 4;
-    private final Vector4f[] homogeneousCoordinates = new Vector4f[6];
+    private final FrustumIntersection frustumIntersection = new FrustumIntersection();
+    private final Matrix4f field_40824 = new Matrix4f();
     private Vector4f field_34821;
     private double x;
     private double y;
@@ -23,7 +25,8 @@ public class Frustum {
     }
 
     public Frustum(Frustum frustum) {
-        System.arraycopy(frustum.homogeneousCoordinates, 0, this.homogeneousCoordinates, 0, frustum.homogeneousCoordinates.length);
+        this.frustumIntersection.set(frustum.field_40824);
+        this.field_40824.set(frustum.field_40824);
         this.x = frustum.x;
         this.y = frustum.y;
         this.z = frustum.z;
@@ -37,10 +40,10 @@ public class Frustum {
         double g = Math.ceil(this.x / (double)i) * (double)i;
         double h = Math.ceil(this.y / (double)i) * (double)i;
         double j = Math.ceil(this.z / (double)i) * (double)i;
-        while (!this.method_38558((float)(d - this.x), (float)(e - this.y), (float)(f - this.z), (float)(g - this.x), (float)(h - this.y), (float)(j - this.z))) {
-            this.x -= (double)(this.field_34821.getX() * 4.0f);
-            this.y -= (double)(this.field_34821.getY() * 4.0f);
-            this.z -= (double)(this.field_34821.getZ() * 4.0f);
+        while (this.frustumIntersection.intersectAab((float)(d - this.x), (float)(e - this.y), (float)(f - this.z), (float)(g - this.x), (float)(h - this.y), (float)(j - this.z)) != -2) {
+            this.x -= (double)(this.field_34821.x() * 4.0f);
+            this.y -= (double)(this.field_34821.y() * 4.0f);
+            this.z -= (double)(this.field_34821.z() * 4.0f);
         }
         return this;
     }
@@ -52,24 +55,9 @@ public class Frustum {
     }
 
     private void init(Matrix4f positionMatrix, Matrix4f projectionMatrix) {
-        Matrix4f matrix4f = projectionMatrix.copy();
-        matrix4f.multiply(positionMatrix);
-        matrix4f.transpose();
-        this.field_34821 = new Vector4f(0.0f, 0.0f, 1.0f, 0.0f);
-        this.field_34821.transform(matrix4f);
-        this.transform(matrix4f, -1, 0, 0, 0);
-        this.transform(matrix4f, 1, 0, 0, 1);
-        this.transform(matrix4f, 0, -1, 0, 2);
-        this.transform(matrix4f, 0, 1, 0, 3);
-        this.transform(matrix4f, 0, 0, -1, 4);
-        this.transform(matrix4f, 0, 0, 1, 5);
-    }
-
-    private void transform(Matrix4f function, int x, int y, int z, int index) {
-        Vector4f vector4f = new Vector4f(x, y, z, 1.0f);
-        vector4f.transform(function);
-        vector4f.normalize();
-        this.homogeneousCoordinates[index] = vector4f;
+        projectionMatrix.mul(positionMatrix, this.field_40824);
+        this.frustumIntersection.set(this.field_40824);
+        this.field_34821 = this.field_40824.transformTranspose(new Vector4f(0.0f, 0.0f, 1.0f, 0.0f));
     }
 
     public boolean isVisible(Box box) {
@@ -83,61 +71,7 @@ public class Frustum {
         float i = (float)(maxX - this.x);
         float j = (float)(maxY - this.y);
         float k = (float)(maxZ - this.z);
-        return this.isAnyCornerVisible(f, g, h, i, j, k);
-    }
-
-    private boolean isAnyCornerVisible(float x1, float y1, float z1, float x2, float y2, float z2) {
-        for (int i = 0; i < 6; ++i) {
-            Vector4f vector4f = this.homogeneousCoordinates[i];
-            if (vector4f.dotProduct(new Vector4f(x1, y1, z1, 1.0f)) > 0.0f) continue;
-            if (vector4f.dotProduct(new Vector4f(x2, y1, z1, 1.0f)) > 0.0f) continue;
-            if (vector4f.dotProduct(new Vector4f(x1, y2, z1, 1.0f)) > 0.0f) continue;
-            if (vector4f.dotProduct(new Vector4f(x2, y2, z1, 1.0f)) > 0.0f) continue;
-            if (vector4f.dotProduct(new Vector4f(x1, y1, z2, 1.0f)) > 0.0f) continue;
-            if (vector4f.dotProduct(new Vector4f(x2, y1, z2, 1.0f)) > 0.0f) continue;
-            if (vector4f.dotProduct(new Vector4f(x1, y2, z2, 1.0f)) > 0.0f) continue;
-            if (vector4f.dotProduct(new Vector4f(x2, y2, z2, 1.0f)) > 0.0f) continue;
-            return false;
-        }
-        return true;
-    }
-
-    private boolean method_38558(float f, float g, float h, float i, float j, float k) {
-        for (int l = 0; l < 6; ++l) {
-            Vector4f vector4f = this.homogeneousCoordinates[l];
-            Vector4f vector4f2 = new Vector4f(f, g, h, 1.0f);
-            if (vector4f.dotProduct(vector4f2) <= 0.0f) {
-                return false;
-            }
-            Vector4f vector4f3 = new Vector4f(i, g, h, 1.0f);
-            if (vector4f.dotProduct(vector4f3) <= 0.0f) {
-                return false;
-            }
-            Vector4f vector4f4 = new Vector4f(f, j, h, 1.0f);
-            if (vector4f.dotProduct(vector4f4) <= 0.0f) {
-                return false;
-            }
-            Vector4f vector4f5 = new Vector4f(i, j, h, 1.0f);
-            if (vector4f.dotProduct(vector4f5) <= 0.0f) {
-                return false;
-            }
-            Vector4f vector4f6 = new Vector4f(f, g, k, 1.0f);
-            if (vector4f.dotProduct(vector4f6) <= 0.0f) {
-                return false;
-            }
-            Vector4f vector4f7 = new Vector4f(i, g, k, 1.0f);
-            if (vector4f.dotProduct(vector4f7) <= 0.0f) {
-                return false;
-            }
-            Vector4f vector4f8 = new Vector4f(f, j, k, 1.0f);
-            if (vector4f.dotProduct(vector4f8) <= 0.0f) {
-                return false;
-            }
-            Vector4f vector4f9 = new Vector4f(i, j, k, 1.0f);
-            if (!(vector4f.dotProduct(vector4f9) <= 0.0f)) continue;
-            return false;
-        }
-        return true;
+        return this.frustumIntersection.testAab(f, g, h, i, j, k);
     }
 }
 

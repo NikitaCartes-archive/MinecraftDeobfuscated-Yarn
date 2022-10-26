@@ -25,7 +25,7 @@ extends Feature<HugeMushroomFeatureConfig> {
         for (int i = 0; i < height; ++i) {
             mutablePos.set(pos).move(Direction.UP, i);
             if (world.getBlockState(mutablePos).isOpaqueFullCube(world, mutablePos)) continue;
-            this.setBlockState(world, mutablePos, config.stemProvider.getBlockState(random, pos));
+            this.setBlockState(world, mutablePos, config.stemProvider.get(random, pos));
         }
     }
 

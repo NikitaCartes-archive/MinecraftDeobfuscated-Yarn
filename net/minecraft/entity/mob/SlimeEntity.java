@@ -59,6 +59,7 @@ implements Monster {
 
     public SlimeEntity(EntityType<? extends SlimeEntity> entityType, World world) {
         super((EntityType<? extends MobEntity>)entityType, world);
+        this.reinitDimensions();
         this.moveControl = new SlimeMoveControl(this);
     }
 

@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class SpriteIdentifier {
-    public static final Comparator<SpriteIdentifier> field_40566 = Comparator.comparing(SpriteIdentifier::getAtlasId).thenComparing(SpriteIdentifier::getTextureId);
+    public static final Comparator<SpriteIdentifier> COMPARATOR = Comparator.comparing(SpriteIdentifier::getAtlasId).thenComparing(SpriteIdentifier::getTextureId);
     private final Identifier atlas;
     private final Identifier texture;
     @Nullable

@@ -6,18 +6,17 @@ package net.minecraft.client.render;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3f;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 @Environment(value=EnvType.CLIENT)
 public class DiffuseLighting {
-    private static final Vec3f field_24426 = Util.make(new Vec3f(0.2f, 1.0f, -0.7f), Vec3f::normalize);
-    private static final Vec3f field_24427 = Util.make(new Vec3f(-0.2f, 1.0f, 0.7f), Vec3f::normalize);
-    private static final Vec3f field_24428 = Util.make(new Vec3f(0.2f, 1.0f, -0.7f), Vec3f::normalize);
-    private static final Vec3f field_24429 = Util.make(new Vec3f(-0.2f, -1.0f, 0.7f), Vec3f::normalize);
-    private static final Vec3f field_29567 = Util.make(new Vec3f(0.2f, -1.0f, -1.0f), Vec3f::normalize);
-    private static final Vec3f field_29568 = Util.make(new Vec3f(-0.2f, -1.0f, 0.0f), Vec3f::normalize);
+    private static final Vector3f field_24426 = new Vector3f(0.2f, 1.0f, -0.7f).normalize();
+    private static final Vector3f field_24427 = new Vector3f(-0.2f, 1.0f, 0.7f).normalize();
+    private static final Vector3f field_24428 = new Vector3f(0.2f, 1.0f, -0.7f).normalize();
+    private static final Vector3f field_24429 = new Vector3f(-0.2f, -1.0f, 0.7f).normalize();
+    private static final Vector3f field_29567 = new Vector3f(0.2f, -1.0f, -1.0f).normalize();
+    private static final Vector3f field_29568 = new Vector3f(-0.2f, -1.0f, 0.0f).normalize();
 
     public static void enableForLevel(Matrix4f positionMatrix) {
         RenderSystem.setupLevelDiffuseLighting(field_24428, field_24429, positionMatrix);

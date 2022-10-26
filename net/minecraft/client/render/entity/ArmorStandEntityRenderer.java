@@ -19,7 +19,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -42,10 +42,10 @@ extends LivingEntityRenderer<ArmorStandEntity, ArmorStandArmorEntityModel> {
 
     @Override
     protected void setupTransforms(ArmorStandEntity armorStandEntity, MatrixStack matrixStack, float f, float g, float h) {
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f - g));
+        matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0f - g));
         float i = (float)(armorStandEntity.world.getTime() - armorStandEntity.lastHitTime) + h;
         if (i < 5.0f) {
-            matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(MathHelper.sin(i / 1.5f * (float)Math.PI) * 3.0f));
+            matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(MathHelper.sin(i / 1.5f * (float)Math.PI) * 3.0f));
         }
     }
 

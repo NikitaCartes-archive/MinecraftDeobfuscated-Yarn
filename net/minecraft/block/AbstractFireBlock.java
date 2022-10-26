@@ -25,7 +25,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
-import net.minecraft.world.dimension.AreaHelper;
+import net.minecraft.world.dimension.NetherPortal;
 
 public abstract class AbstractFireBlock
 extends Block {
@@ -138,11 +138,11 @@ extends Block {
 
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-        Optional<AreaHelper> optional;
+        Optional<NetherPortal> optional;
         if (oldState.isOf(state.getBlock())) {
             return;
         }
-        if (AbstractFireBlock.isOverworldOrNether(world) && (optional = AreaHelper.getNewPortal(world, pos, Direction.Axis.X)).isPresent()) {
+        if (AbstractFireBlock.isOverworldOrNether(world) && (optional = NetherPortal.getNewPortal(world, pos, Direction.Axis.X)).isPresent()) {
             optional.get().createPortal();
             return;
         }
@@ -190,7 +190,7 @@ extends Block {
             return false;
         }
         Direction.Axis axis = direction.getAxis().isHorizontal() ? direction.rotateYCounterclockwise().getAxis() : Direction.Type.HORIZONTAL.randomAxis(world.random);
-        return AreaHelper.getNewPortal(world, pos, axis).isPresent();
+        return NetherPortal.getNewPortal(world, pos, axis).isPresent();
     }
 }
 

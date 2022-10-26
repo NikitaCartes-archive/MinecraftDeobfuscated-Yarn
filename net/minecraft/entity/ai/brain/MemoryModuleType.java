@@ -92,7 +92,7 @@ public class MemoryModuleType<U> {
     public static final MemoryModuleType<Unit> IS_PREGNANT = MemoryModuleType.register("is_pregnant", Codec.unit(Unit.INSTANCE));
     public static final MemoryModuleType<Boolean> IS_PANICKING = MemoryModuleType.register("is_panicking", Codec.BOOL);
     public static final MemoryModuleType<List<UUID>> UNREACHABLE_TONGUE_TARGETS = MemoryModuleType.register("unreachable_tongue_targets");
-    public static final MemoryModuleType<UUID> ANGRY_AT = MemoryModuleType.register("angry_at", Uuids.CODEC);
+    public static final MemoryModuleType<UUID> ANGRY_AT = MemoryModuleType.register("angry_at", Uuids.INT_STREAM_CODEC);
     public static final MemoryModuleType<Boolean> UNIVERSAL_ANGER = MemoryModuleType.register("universal_anger", Codec.BOOL);
     public static final MemoryModuleType<Boolean> ADMIRING_ITEM = MemoryModuleType.register("admiring_item", Codec.BOOL);
     public static final MemoryModuleType<Integer> TIME_TRYING_TO_REACH_ADMIRE_ITEM = MemoryModuleType.register("time_trying_to_reach_admire_item");
@@ -129,7 +129,7 @@ public class MemoryModuleType<U> {
     public static final MemoryModuleType<Unit> SONIC_BOOM_COOLDOWN = MemoryModuleType.register("sonic_boom_cooldown", Codec.unit(Unit.INSTANCE));
     public static final MemoryModuleType<Unit> SONIC_BOOM_SOUND_COOLDOWN = MemoryModuleType.register("sonic_boom_sound_cooldown", Codec.unit(Unit.INSTANCE));
     public static final MemoryModuleType<Unit> SONIC_BOOM_SOUND_DELAY = MemoryModuleType.register("sonic_boom_sound_delay", Codec.unit(Unit.INSTANCE));
-    public static final MemoryModuleType<UUID> LIKED_PLAYER = MemoryModuleType.register("liked_player", Uuids.CODEC);
+    public static final MemoryModuleType<UUID> LIKED_PLAYER = MemoryModuleType.register("liked_player", Uuids.INT_STREAM_CODEC);
     public static final MemoryModuleType<GlobalPos> LIKED_NOTEBLOCK = MemoryModuleType.register("liked_noteblock", GlobalPos.CODEC);
     public static final MemoryModuleType<Integer> LIKED_NOTEBLOCK_COOLDOWN_TICKS = MemoryModuleType.register("liked_noteblock_cooldown_ticks", Codec.INT);
     public static final MemoryModuleType<Integer> ITEM_PICKUP_COOLDOWN_TICKS = MemoryModuleType.register("item_pickup_cooldown_ticks", Codec.INT);

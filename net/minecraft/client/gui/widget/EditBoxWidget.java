@@ -24,7 +24,7 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.Matrix4f;
+import org.joml.Matrix4f;
 
 /**
  * A widget of {@link EditBox}, a multiline edit box with support for
@@ -146,7 +146,7 @@ extends ScrollableWidget {
     protected void renderContents(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         String string = this.editBox.getText();
         if (string.isEmpty() && !this.isFocused()) {
-            this.textRenderer.drawTrimmed(this.placeholder, this.x + this.getPadding(), this.y + this.getPadding(), this.width - this.getPaddingDoubled(), -857677600);
+            this.textRenderer.drawTrimmed(this.placeholder, this.getX() + this.getPadding(), this.getY() + this.getPadding(), this.width - this.getPaddingDoubled(), -857677600);
             return;
         }
         int i = this.editBox.getCursor();
@@ -154,18 +154,18 @@ extends ScrollableWidget {
         boolean bl2 = i < string.length();
         int j = 0;
         int k = 0;
-        int l = this.y + this.getPadding();
+        int l = this.getY() + this.getPadding();
         for (EditBox.Substring substring : this.editBox.getLines()) {
             boolean bl3 = this.isVisible(l, l + this.textRenderer.fontHeight);
             if (bl && bl2 && i >= substring.beginIndex() && i <= substring.endIndex()) {
                 if (bl3) {
-                    j = this.textRenderer.drawWithShadow(matrices, string.substring(substring.beginIndex(), i), (float)(this.x + this.getPadding()), (float)l, -2039584) - 1;
+                    j = this.textRenderer.drawWithShadow(matrices, string.substring(substring.beginIndex(), i), (float)(this.getX() + this.getPadding()), (float)l, -2039584) - 1;
                     DrawableHelper.fill(matrices, j, l - 1, j + 1, l + 1 + this.textRenderer.fontHeight, -3092272);
                     this.textRenderer.drawWithShadow(matrices, string.substring(i, substring.endIndex()), (float)j, (float)l, -2039584);
                 }
             } else {
                 if (bl3) {
-                    j = this.textRenderer.drawWithShadow(matrices, string.substring(substring.beginIndex(), substring.endIndex()), (float)(this.x + this.getPadding()), (float)l, -2039584) - 1;
+                    j = this.textRenderer.drawWithShadow(matrices, string.substring(substring.beginIndex(), substring.endIndex()), (float)(this.getX() + this.getPadding()), (float)l, -2039584) - 1;
                 }
                 k = l;
             }
@@ -176,8 +176,8 @@ extends ScrollableWidget {
         }
         if (this.editBox.hasSelection()) {
             EditBox.Substring substring2 = this.editBox.getSelection();
-            int m = this.x + this.getPadding();
-            l = this.y + this.getPadding();
+            int m = this.getX() + this.getPadding();
+            l = this.getY() + this.getPadding();
             for (EditBox.Substring substring3 : this.editBox.getLines()) {
                 if (substring2.beginIndex() > substring3.endIndex()) {
                     l += this.textRenderer.fontHeight;
@@ -200,7 +200,7 @@ extends ScrollableWidget {
         if (this.editBox.hasMaxLength()) {
             int i = this.editBox.getMaxLength();
             MutableText text = Text.translatable("gui.multiLineEditBox.character_limit", this.editBox.getText().length(), i);
-            EditBoxWidget.drawTextWithShadow(matrices, this.textRenderer, text, this.x + this.width - this.textRenderer.getWidth(text), this.y + this.height + 4, 0xA0A0A0);
+            EditBoxWidget.drawTextWithShadow(matrices, this.textRenderer, text, this.getX() + this.width - this.textRenderer.getWidth(text), this.getY() + this.height + 4, 0xA0A0A0);
         }
     }
 
@@ -261,8 +261,8 @@ extends ScrollableWidget {
     }
 
     private void moveCursor(double mouseX, double mouseY) {
-        double d = mouseX - (double)this.x - (double)this.getPadding();
-        double e = mouseY - (double)this.y - (double)this.getPadding() + this.getScrollY();
+        double d = mouseX - (double)this.getX() - (double)this.getPadding();
+        double e = mouseY - (double)this.getY() - (double)this.getPadding() + this.getScrollY();
         this.editBox.moveCursor(d, e);
     }
 }

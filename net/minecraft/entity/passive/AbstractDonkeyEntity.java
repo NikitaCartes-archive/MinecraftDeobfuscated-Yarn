@@ -166,18 +166,18 @@ extends AbstractHorseEntity {
                 return ActionResult.success(this.world.isClient);
             }
             if (!this.hasChest() && itemStack.isOf(Items.CHEST)) {
-                this.method_45374(player, itemStack);
+                this.addChest(player, itemStack);
                 return ActionResult.success(this.world.isClient);
             }
         }
         return super.interactMob(player, hand);
     }
 
-    private void method_45374(PlayerEntity playerEntity, ItemStack itemStack) {
+    private void addChest(PlayerEntity player, ItemStack chest) {
         this.setHasChest(true);
         this.playAddChestSound();
-        if (!playerEntity.getAbilities().creativeMode) {
-            itemStack.decrement(1);
+        if (!player.getAbilities().creativeMode) {
+            chest.decrement(1);
         }
         this.onChestedStatusChanged();
     }

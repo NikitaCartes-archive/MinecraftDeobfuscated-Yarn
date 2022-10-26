@@ -71,7 +71,7 @@ extends ElementListWidget<SocialInteractionsPlayerListEntry> {
     }
 
     private void markOfflineMembers(Map<UUID, SocialInteractionsPlayerListEntry> entries, boolean includeOffline) {
-        Collection<GameProfile> collection = SocialInteractionsPlayerListWidget.collectReportableProfiles(this.client.getAbuseReportContext().chatLog());
+        Collection<GameProfile> collection = SocialInteractionsPlayerListWidget.collectReportableProfiles(this.client.getAbuseReportContext().getChatLog());
         for (GameProfile gameProfile : collection) {
             SocialInteractionsPlayerListEntry socialInteractionsPlayerListEntry;
             if (includeOffline) {
@@ -105,12 +105,15 @@ extends ElementListWidget<SocialInteractionsPlayerListEntry> {
                 return 0;
             }
             if (player.getUuid().version() == 2) {
-                return 3;
+                return 4;
             }
-            if (player.hasSentMessage()) {
+            if (this.client.getAbuseReportContext().draftPlayerUuidEquals(player.getUuid())) {
                 return 1;
             }
-            return 2;
+            if (player.hasSentMessage()) {
+                return 2;
+            }
+            return 3;
         }).thenComparing(player -> {
             int i;
             if (!player.getName().isBlank() && ((i = player.getName().codePointAt(0)) == 95 || i >= 97 && i <= 122 || i >= 65 && i <= 90 || i >= 48 && i <= 57)) {

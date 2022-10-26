@@ -61,8 +61,8 @@ extends Screen {
         super.init();
         this.ruleListWidget = new RuleListWidget(this.gameRules);
         this.addSelectableChild(this.ruleListWidget);
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 155 + 160, this.height - 29, 150, 20, ScreenTexts.CANCEL, button -> this.ruleSaver.accept(Optional.empty())));
-        this.doneButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 29, 150, 20, ScreenTexts.DONE, button -> this.ruleSaver.accept(Optional.of(this.gameRules))));
+        this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> this.ruleSaver.accept(Optional.empty())).setPositionAndSize(this.width / 2 - 155 + 160, this.height - 29, 150, 20).build());
+        this.doneButton = this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.DONE, button -> this.ruleSaver.accept(Optional.of(this.gameRules))).setPositionAndSize(this.width / 2 - 155, this.height - 29, 150, 20).build());
     }
 
     @Override
@@ -184,8 +184,8 @@ extends Screen {
         @Override
         public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             this.drawName(matrices, y, x);
-            this.valueWidget.x = x + entryWidth - 44;
-            this.valueWidget.y = y;
+            this.valueWidget.setX(x + entryWidth - 44);
+            this.valueWidget.setY(y);
             this.valueWidget.render(matrices, mouseX, mouseY, tickDelta);
         }
     }
@@ -204,8 +204,8 @@ extends Screen {
         @Override
         public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             this.drawName(matrices, y, x);
-            this.toggleButton.x = x + entryWidth - 45;
-            this.toggleButton.y = y;
+            this.toggleButton.setX(x + entryWidth - 45);
+            this.toggleButton.setY(y);
             this.toggleButton.render(matrices, mouseX, mouseY, tickDelta);
         }
     }

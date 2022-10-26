@@ -81,10 +81,10 @@ implements BlockEntityRenderer<SkullBlockEntity> {
     public static void renderSkull(@Nullable Direction direction, float yaw, float animationProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, SkullBlockEntityModel model, RenderLayer renderLayer) {
         matrices.push();
         if (direction == null) {
-            matrices.translate(0.5, 0.0, 0.5);
+            matrices.translate(0.5f, 0.0f, 0.5f);
         } else {
             float f = 0.25f;
-            matrices.translate(0.5f - (float)direction.getOffsetX() * 0.25f, 0.25, 0.5f - (float)direction.getOffsetZ() * 0.25f);
+            matrices.translate(0.5f - (float)direction.getOffsetX() * 0.25f, 0.25f, 0.5f - (float)direction.getOffsetZ() * 0.25f);
         }
         matrices.scale(-1.0f, -1.0f, 1.0f);
         VertexConsumer vertexConsumer = vertexConsumers.getBuffer(renderLayer);

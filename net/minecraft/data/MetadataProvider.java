@@ -6,9 +6,9 @@ package net.minecraft.data;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.bridge.game.PackType;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import net.minecraft.MinecraftVersion;
 import net.minecraft.data.DataOutput;
@@ -22,13 +22,11 @@ import net.minecraft.text.Text;
 
 public class MetadataProvider
 implements DataProvider {
-    private final String name;
     private final DataOutput output;
     private final Map<String, Supplier<JsonElement>> metadata = new HashMap<String, Supplier<JsonElement>>();
 
-    public MetadataProvider(DataOutput output, String name) {
+    public MetadataProvider(DataOutput output) {
         this.output = output;
-        this.name = name;
     }
 
     public <T> MetadataProvider add(ResourceMetadataSerializer<T> serializer, T metadata) {
@@ -37,19 +35,19 @@ implements DataProvider {
     }
 
     @Override
-    public void run(DataWriter writer) throws IOException {
+    public CompletableFuture<?> run(DataWriter writer) {
         JsonObject jsonObject = new JsonObject();
         this.metadata.forEach((key, jsonSupplier) -> jsonObject.add((String)key, (JsonElement)jsonSupplier.get()));
-        DataProvider.writeToPath(writer, jsonObject, this.output.getPath().resolve("pack.mcmeta"));
+        return DataProvider.writeToPath(writer, jsonObject, this.output.getPath().resolve("pack.mcmeta"));
     }
 
     @Override
-    public String getName() {
-        return this.name;
+    public final String getName() {
+        return "Pack Metadata";
     }
 
-    public static MetadataProvider create(DataOutput output, String packName, Text description, FeatureSet requiredFeatures) {
-        return new MetadataProvider(output, "Pack metadata for " + packName).add(PackResourceMetadata.SERIALIZER, new PackResourceMetadata(description, MinecraftVersion.CURRENT.getPackVersion(PackType.DATA))).add(PackFeatureSetMetadata.SERIALIZER, new PackFeatureSetMetadata(requiredFeatures));
+    public static MetadataProvider create(DataOutput output, Text description, FeatureSet requiredFeatures) {
+        return new MetadataProvider(output).add(PackResourceMetadata.SERIALIZER, new PackResourceMetadata(description, MinecraftVersion.CURRENT.getPackVersion(PackType.DATA))).add(PackFeatureSetMetadata.SERIALIZER, new PackFeatureSetMetadata(requiredFeatures));
     }
 }
 

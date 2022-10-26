@@ -51,7 +51,7 @@ extends MobEntityRenderer<PufferfishEntity, EntityModel<PufferfishEntity>> {
 
     @Override
     protected void setupTransforms(PufferfishEntity pufferfishEntity, MatrixStack matrixStack, float f, float g, float h) {
-        matrixStack.translate(0.0, MathHelper.cos(f * 0.05f) * 0.08f, 0.0);
+        matrixStack.translate(0.0f, MathHelper.cos(f * 0.05f) * 0.08f, 0.0f);
         super.setupTransforms(pufferfishEntity, matrixStack, f, g, h);
     }
 }

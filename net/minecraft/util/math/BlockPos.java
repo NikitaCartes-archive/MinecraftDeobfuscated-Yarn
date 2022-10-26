@@ -129,6 +129,15 @@ extends Vec3i {
         return new BlockPos(this.getX() + i, this.getY() + j, this.getZ() + k);
     }
 
+    /**
+     * {@return the center of this block position}
+     * 
+     * @see Vec3d#ofCenter
+     */
+    public Vec3d toCenterPos() {
+        return Vec3d.ofCenter(this);
+    }
+
     @Override
     public BlockPos add(Vec3i vec3i) {
         return this.add(vec3i.getX(), vec3i.getY(), vec3i.getZ());

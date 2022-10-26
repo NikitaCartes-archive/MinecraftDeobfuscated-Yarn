@@ -34,12 +34,20 @@ extends EntityDamageSource {
 
     @Override
     public Text getDeathMessage(LivingEntity entity) {
+        ItemStack itemStack;
         Text text = this.attacker == null ? this.source.getDisplayName() : this.attacker.getDisplayName();
-        ItemStack itemStack = this.attacker instanceof LivingEntity ? ((LivingEntity)this.attacker).getMainHandStack() : ItemStack.EMPTY;
+        Entity entity2 = this.attacker;
+        if (entity2 instanceof LivingEntity) {
+            LivingEntity livingEntity = (LivingEntity)entity2;
+            itemStack = livingEntity.getMainHandStack();
+        } else {
+            itemStack = ItemStack.EMPTY;
+        }
+        ItemStack itemStack2 = itemStack;
         String string = "death.attack." + this.name;
-        String string2 = string + ".item";
-        if (!itemStack.isEmpty() && itemStack.hasCustomName()) {
-            return Text.translatable(string2, entity.getDisplayName(), text, itemStack.toHoverableText());
+        if (!itemStack2.isEmpty() && itemStack2.hasCustomName()) {
+            String string2 = string + ".item";
+            return Text.translatable(string2, entity.getDisplayName(), text, itemStack2.toHoverableText());
         }
         return Text.translatable(string, entity.getDisplayName(), text);
     }

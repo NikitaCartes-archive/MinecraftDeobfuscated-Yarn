@@ -48,8 +48,8 @@ extends Screen {
     @Override
     protected void init() {
         this.client.keyboard.setRepeatEvents(true);
-        this.doneButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 4 - 150, this.height / 4 + 120 + 12, 150, 20, ScreenTexts.DONE, button -> this.commitAndClose()));
-        this.cancelButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height / 4 + 120 + 12, 150, 20, ScreenTexts.CANCEL, button -> this.close()));
+        this.doneButton = this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.DONE, button -> this.commitAndClose()).setPositionAndSize(this.width / 2 - 4 - 150, this.height / 4 + 120 + 12, 150, 20).build());
+        this.cancelButton = this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> this.close()).setPositionAndSize(this.width / 2 + 4, this.height / 4 + 120 + 12, 150, 20).build());
         boolean bl = this.getCommandExecutor().isTrackingOutput();
         this.toggleTrackingOutputButton = this.addDrawableChild(CyclingButtonWidget.onOffBuilder(Text.literal("O"), Text.literal("X")).initially(bl).omitKeyText().build(this.width / 2 + 150 - 20, this.getTrackOutputButtonHeight(), 20, 20, Text.translatable("advMode.trackOutput"), (button, trackOutput) -> {
             CommandBlockExecutor commandBlockExecutor = this.getCommandExecutor();

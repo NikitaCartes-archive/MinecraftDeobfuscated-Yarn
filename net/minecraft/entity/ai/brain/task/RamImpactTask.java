@@ -85,12 +85,12 @@ extends Task<GoatEntity> {
             float h = livingEntity.blockedByShield(DamageSource.mob(goatEntity)) ? 0.5f : 1.0f;
             livingEntity.takeKnockback((double)(h * g) * this.strengthMultiplierFactory.applyAsDouble(goatEntity), this.direction.getX(), this.direction.getZ());
             this.finishRam(serverWorld, goatEntity);
-            serverWorld.playSoundFromEntity(null, goatEntity, this.impactSoundFactory.apply(goatEntity), SoundCategory.HOSTILE, 1.0f, 1.0f);
+            serverWorld.playSoundFromEntity(null, goatEntity, this.impactSoundFactory.apply(goatEntity), SoundCategory.NEUTRAL, 1.0f, 1.0f);
         } else if (this.shouldSnapHorn(serverWorld, goatEntity)) {
-            serverWorld.playSoundFromEntity(null, goatEntity, this.impactSoundFactory.apply(goatEntity), SoundCategory.HOSTILE, 1.0f, 1.0f);
+            serverWorld.playSoundFromEntity(null, goatEntity, this.impactSoundFactory.apply(goatEntity), SoundCategory.NEUTRAL, 1.0f, 1.0f);
             boolean bl = goatEntity.dropHorn();
             if (bl) {
-                serverWorld.playSoundFromEntity(null, goatEntity, this.hornBreakSoundFactory.apply(goatEntity), SoundCategory.HOSTILE, 1.0f, 1.0f);
+                serverWorld.playSoundFromEntity(null, goatEntity, this.hornBreakSoundFactory.apply(goatEntity), SoundCategory.NEUTRAL, 1.0f, 1.0f);
             }
             this.finishRam(serverWorld, goatEntity);
         } else {

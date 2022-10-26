@@ -43,7 +43,7 @@ extends NoiseBlockStateProvider {
     }
 
     @Override
-    public BlockState getBlockState(Random random, BlockPos pos) {
+    public BlockState get(Random random, BlockPos pos) {
         double d = this.getSlowNoiseValue(pos);
         int i = (int)MathHelper.clampedMap(d, -1.0, 1.0, (double)this.variety.minInclusive().intValue(), (double)(this.variety.maxInclusive() + 1));
         ArrayList<BlockState> list = Lists.newArrayListWithCapacity(i);

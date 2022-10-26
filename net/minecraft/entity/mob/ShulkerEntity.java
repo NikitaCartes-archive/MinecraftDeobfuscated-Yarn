@@ -52,7 +52,6 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
@@ -60,6 +59,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 
 public class ShulkerEntity
 extends GolemEntity
@@ -76,9 +76,9 @@ implements Monster {
     private static final int field_30491 = 8;
     private static final int field_30492 = 5;
     private static final float field_30493 = 0.05f;
-    static final Vec3f SOUTH_VECTOR = Util.make(() -> {
+    static final Vector3f SOUTH_VECTOR = Util.make(() -> {
         Vec3i vec3i = Direction.SOUTH.getVector();
-        return new Vec3f(vec3i.getX(), vec3i.getY(), vec3i.getZ());
+        return new Vector3f(vec3i.getX(), vec3i.getY(), vec3i.getZ());
     });
     private float prevOpenProgress;
     private float openProgress;
@@ -545,17 +545,16 @@ implements Monster {
         @Override
         protected Optional<Float> getTargetYaw() {
             Direction direction = ShulkerEntity.this.getAttachedFace().getOpposite();
-            Vec3f vec3f = SOUTH_VECTOR.copy();
-            vec3f.rotate(direction.getRotationQuaternion());
+            Vector3f vector3f = direction.getRotationQuaternion().transform(new Vector3f(SOUTH_VECTOR));
             Vec3i vec3i = direction.getVector();
-            Vec3f vec3f2 = new Vec3f(vec3i.getX(), vec3i.getY(), vec3i.getZ());
-            vec3f2.cross(vec3f);
+            Vector3f vector3f2 = new Vector3f(vec3i.getX(), vec3i.getY(), vec3i.getZ());
+            vector3f2.cross(vector3f);
             double d = this.x - this.entity.getX();
             double e = this.y - this.entity.getEyeY();
             double f = this.z - this.entity.getZ();
-            Vec3f vec3f3 = new Vec3f((float)d, (float)e, (float)f);
-            float g = vec3f2.dot(vec3f3);
-            float h = vec3f.dot(vec3f3);
+            Vector3f vector3f3 = new Vector3f((float)d, (float)e, (float)f);
+            float g = vector3f2.dot(vector3f3);
+            float h = vector3f.dot(vector3f3);
             return Math.abs(g) > 1.0E-5f || Math.abs(h) > 1.0E-5f ? Optional.of(Float.valueOf((float)(MathHelper.atan2(-g, h) * 57.2957763671875))) : Optional.empty();
         }
 

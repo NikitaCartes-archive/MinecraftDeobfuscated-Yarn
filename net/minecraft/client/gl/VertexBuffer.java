@@ -15,8 +15,8 @@ import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.Shader;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.util.Window;
-import net.minecraft.util.math.Matrix4f;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
 
 /**
  * Stores vertex data on GPU.
@@ -38,9 +38,9 @@ implements AutoCloseable {
     @Nullable
     private VertexFormat vertexFormat;
     @Nullable
-    private RenderSystem.IndexBuffer indexBuffer;
+    private RenderSystem.ShapeIndexBuffer sharedSequentialIndexBuffer;
     private VertexFormat.IndexType indexType;
-    private int vertexCount;
+    private int indexCount;
     private VertexFormat.DrawMode drawMode;
 
     public VertexBuffer() {
@@ -63,18 +63,18 @@ implements AutoCloseable {
         }
         RenderSystem.assertOnRenderThread();
         try {
-            BufferBuilder.DrawArrayParameters drawArrayParameters = buffer.getParameters();
-            this.vertexFormat = this.configureVertexFormat(drawArrayParameters, buffer.getVertexBuffer());
-            this.indexBuffer = this.configureIndexBuffer(drawArrayParameters, buffer.getIndexBuffer());
-            this.vertexCount = drawArrayParameters.indexCount();
-            this.indexType = drawArrayParameters.indexType();
-            this.drawMode = drawArrayParameters.mode();
+            BufferBuilder.DrawParameters drawParameters = buffer.getParameters();
+            this.vertexFormat = this.uploadVertexBuffer(drawParameters, buffer.getVertexBuffer());
+            this.sharedSequentialIndexBuffer = this.uploadIndexBuffer(drawParameters, buffer.getIndexBuffer());
+            this.indexCount = drawParameters.indexCount();
+            this.indexType = drawParameters.indexType();
+            this.drawMode = drawParameters.mode();
         } finally {
             buffer.release();
         }
     }
 
-    private VertexFormat configureVertexFormat(BufferBuilder.DrawArrayParameters parameters, ByteBuffer data) {
+    private VertexFormat uploadVertexBuffer(BufferBuilder.DrawParameters parameters, ByteBuffer vertexBuffer) {
         boolean bl = false;
         if (!parameters.format().equals(this.vertexFormat)) {
             if (this.vertexFormat != null) {
@@ -88,22 +88,22 @@ implements AutoCloseable {
             if (!bl) {
                 GlStateManager._glBindBuffer(GlConst.GL_ARRAY_BUFFER, this.vertexBufferId);
             }
-            RenderSystem.glBufferData(GlConst.GL_ARRAY_BUFFER, data, GlConst.GL_STATIC_DRAW);
+            RenderSystem.glBufferData(GlConst.GL_ARRAY_BUFFER, vertexBuffer, GlConst.GL_STATIC_DRAW);
         }
         return parameters.format();
     }
 
     @Nullable
-    private RenderSystem.IndexBuffer configureIndexBuffer(BufferBuilder.DrawArrayParameters parameters, ByteBuffer data) {
+    private RenderSystem.ShapeIndexBuffer uploadIndexBuffer(BufferBuilder.DrawParameters parameters, ByteBuffer indexBuffer) {
         if (parameters.sequentialIndex()) {
-            RenderSystem.IndexBuffer indexBuffer = RenderSystem.getSequentialBuffer(parameters.mode());
-            if (indexBuffer != this.indexBuffer || !indexBuffer.isSizeLessThanOrEqual(parameters.indexCount())) {
-                indexBuffer.bindAndGrow(parameters.indexCount());
+            RenderSystem.ShapeIndexBuffer shapeIndexBuffer = RenderSystem.getSequentialBuffer(parameters.mode());
+            if (shapeIndexBuffer != this.sharedSequentialIndexBuffer || !shapeIndexBuffer.isLargeEnough(parameters.indexCount())) {
+                shapeIndexBuffer.bindAndGrow(parameters.indexCount());
             }
-            return indexBuffer;
+            return shapeIndexBuffer;
         }
         GlStateManager._glBindBuffer(GlConst.GL_ELEMENT_ARRAY_BUFFER, this.indexBufferId);
-        RenderSystem.glBufferData(GlConst.GL_ELEMENT_ARRAY_BUFFER, data, GlConst.GL_STATIC_DRAW);
+        RenderSystem.glBufferData(GlConst.GL_ELEMENT_ARRAY_BUFFER, indexBuffer, GlConst.GL_STATIC_DRAW);
         return null;
     }
 
@@ -131,13 +131,13 @@ implements AutoCloseable {
      * <p>Unlike {@link #draw(Matrix4f, Matrix4f, Shader)}, the caller of this
      * method must manually bind a shader before calling this method.
      */
-    public void drawElements() {
-        RenderSystem.drawElements(this.drawMode.glMode, this.vertexCount, this.getIndexType().glType);
+    public void draw() {
+        RenderSystem.drawElements(this.drawMode.glMode, this.indexCount, this.getIndexType().glType);
     }
 
     private VertexFormat.IndexType getIndexType() {
-        RenderSystem.IndexBuffer indexBuffer = this.indexBuffer;
-        return indexBuffer != null ? indexBuffer.getIndexType() : this.indexType;
+        RenderSystem.ShapeIndexBuffer shapeIndexBuffer = this.sharedSequentialIndexBuffer;
+        return shapeIndexBuffer != null ? shapeIndexBuffer.getIndexType() : this.indexType;
     }
 
     /**
@@ -148,7 +148,7 @@ implements AutoCloseable {
      */
     public void draw(Matrix4f viewMatrix, Matrix4f projectionMatrix, Shader shader) {
         if (!RenderSystem.isOnRenderThread()) {
-            RenderSystem.recordRenderCall(() -> this.drawInternal(viewMatrix.copy(), projectionMatrix.copy(), shader));
+            RenderSystem.recordRenderCall(() -> this.drawInternal(new Matrix4f(viewMatrix), new Matrix4f(projectionMatrix), shader));
         } else {
             this.drawInternal(viewMatrix, projectionMatrix, shader);
         }
@@ -198,7 +198,7 @@ implements AutoCloseable {
         }
         RenderSystem.setupShaderLights(shader);
         shader.bind();
-        this.drawElements();
+        this.draw();
         shader.unbind();
     }
 

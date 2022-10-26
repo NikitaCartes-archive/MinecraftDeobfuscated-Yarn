@@ -14,37 +14,38 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.math.Quaternion;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.MathHelper;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 @Environment(value=EnvType.CLIENT)
 public class Transformation {
-    public static final Transformation IDENTITY = new Transformation(new Vec3f(), new Vec3f(), new Vec3f(1.0f, 1.0f, 1.0f));
-    public final Vec3f rotation;
-    public final Vec3f translation;
-    public final Vec3f scale;
+    public static final Transformation IDENTITY = new Transformation(new Vector3f(), new Vector3f(), new Vector3f(1.0f, 1.0f, 1.0f));
+    public final Vector3f rotation;
+    public final Vector3f translation;
+    public final Vector3f scale;
 
-    public Transformation(Vec3f rotation, Vec3f translation, Vec3f scale) {
-        this.rotation = rotation.copy();
-        this.translation = translation.copy();
-        this.scale = scale.copy();
+    public Transformation(Vector3f rotation, Vector3f translation, Vector3f scale) {
+        this.rotation = new Vector3f(rotation);
+        this.translation = new Vector3f(translation);
+        this.scale = new Vector3f(scale);
     }
 
     public void apply(boolean leftHanded, MatrixStack matrices) {
         if (this == IDENTITY) {
             return;
         }
-        float f = this.rotation.getX();
-        float g = this.rotation.getY();
-        float h = this.rotation.getZ();
+        float f = this.rotation.x();
+        float g = this.rotation.y();
+        float h = this.rotation.z();
         if (leftHanded) {
             g = -g;
             h = -h;
         }
         int i = leftHanded ? -1 : 1;
-        matrices.translate((float)i * this.translation.getX(), this.translation.getY(), this.translation.getZ());
-        matrices.multiply(new Quaternion(f, g, h, true));
-        matrices.scale(this.scale.getX(), this.scale.getY(), this.scale.getZ());
+        matrices.translate((float)i * this.translation.x(), this.translation.y(), this.translation.z());
+        matrices.multiply(new Quaternionf().rotationXYZ(f * ((float)Math.PI / 180), g * ((float)Math.PI / 180), h * ((float)Math.PI / 180)));
+        matrices.scale(this.scale.x(), this.scale.y(), this.scale.z());
     }
 
     public boolean equals(Object o) {
@@ -68,9 +69,9 @@ public class Transformation {
     @Environment(value=EnvType.CLIENT)
     protected static class Deserializer
     implements JsonDeserializer<Transformation> {
-        private static final Vec3f DEFAULT_ROTATION = new Vec3f(0.0f, 0.0f, 0.0f);
-        private static final Vec3f DEFAULT_TRANSLATION = new Vec3f(0.0f, 0.0f, 0.0f);
-        private static final Vec3f DEFAULT_SCALE = new Vec3f(1.0f, 1.0f, 1.0f);
+        private static final Vector3f DEFAULT_ROTATION = new Vector3f(0.0f, 0.0f, 0.0f);
+        private static final Vector3f DEFAULT_TRANSLATION = new Vector3f(0.0f, 0.0f, 0.0f);
+        private static final Vector3f DEFAULT_SCALE = new Vector3f(1.0f, 1.0f, 1.0f);
         public static final float field_32808 = 5.0f;
         public static final float field_32809 = 4.0f;
 
@@ -80,16 +81,16 @@ public class Transformation {
         @Override
         public Transformation deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
-            Vec3f vec3f = this.parseVector3f(jsonObject, "rotation", DEFAULT_ROTATION);
-            Vec3f vec3f2 = this.parseVector3f(jsonObject, "translation", DEFAULT_TRANSLATION);
-            vec3f2.scale(0.0625f);
-            vec3f2.clamp(-5.0f, 5.0f);
-            Vec3f vec3f3 = this.parseVector3f(jsonObject, "scale", DEFAULT_SCALE);
-            vec3f3.clamp(-4.0f, 4.0f);
-            return new Transformation(vec3f, vec3f2, vec3f3);
+            Vector3f vector3f = this.parseVector3f(jsonObject, "rotation", DEFAULT_ROTATION);
+            Vector3f vector3f2 = this.parseVector3f(jsonObject, "translation", DEFAULT_TRANSLATION);
+            vector3f2.mul(0.0625f);
+            vector3f2.set(MathHelper.clamp(vector3f2.x, -5.0f, 5.0f), MathHelper.clamp(vector3f2.y, -5.0f, 5.0f), MathHelper.clamp(vector3f2.z, -5.0f, 5.0f));
+            Vector3f vector3f3 = this.parseVector3f(jsonObject, "scale", DEFAULT_SCALE);
+            vector3f3.set(MathHelper.clamp(vector3f3.x, -4.0f, 4.0f), MathHelper.clamp(vector3f3.y, -4.0f, 4.0f), MathHelper.clamp(vector3f3.z, -4.0f, 4.0f));
+            return new Transformation(vector3f, vector3f2, vector3f3);
         }
 
-        private Vec3f parseVector3f(JsonObject json, String key, Vec3f fallback) {
+        private Vector3f parseVector3f(JsonObject json, String key, Vector3f fallback) {
             if (!json.has(key)) {
                 return fallback;
             }
@@ -101,7 +102,7 @@ public class Transformation {
             for (int i = 0; i < fs.length; ++i) {
                 fs[i] = JsonHelper.asFloat(jsonArray.get(i), key + "[" + i + "]");
             }
-            return new Vec3f(fs[0], fs[1], fs[2]);
+            return new Vector3f(fs[0], fs[1], fs[2]);
         }
 
         @Override

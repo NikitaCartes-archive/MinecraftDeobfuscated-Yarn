@@ -36,9 +36,9 @@ extends MobEntityRenderer<BatEntity, BatEntityModel> {
     @Override
     protected void setupTransforms(BatEntity batEntity, MatrixStack matrixStack, float f, float g, float h) {
         if (batEntity.isRoosting()) {
-            matrixStack.translate(0.0, -0.1f, 0.0);
+            matrixStack.translate(0.0f, -0.1f, 0.0f);
         } else {
-            matrixStack.translate(0.0, MathHelper.cos(f * 0.3f) * 0.1f, 0.0);
+            matrixStack.translate(0.0f, MathHelper.cos(f * 0.3f) * 0.1f, 0.0f);
         }
         super.setupTransforms(batEntity, matrixStack, f, g, h);
     }

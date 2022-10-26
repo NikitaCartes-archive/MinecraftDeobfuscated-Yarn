@@ -55,13 +55,13 @@ extends EntityModel<E> {
                 f = 1.5f / this.invertedChildHeadScale;
                 matrices.scale(f, f, f);
             }
-            matrices.translate(0.0, this.childHeadYOffset / 16.0f, this.childHeadZOffset / 16.0f);
+            matrices.translate(0.0f, this.childHeadYOffset / 16.0f, this.childHeadZOffset / 16.0f);
             this.getHeadParts().forEach(headPart -> headPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
             matrices.pop();
             matrices.push();
             f = 1.0f / this.invertedChildBodyScale;
             matrices.scale(f, f, f);
-            matrices.translate(0.0, this.childBodyYOffset / 16.0f, 0.0);
+            matrices.translate(0.0f, this.childBodyYOffset / 16.0f, 0.0f);
             this.getBodyParts().forEach(bodyPart -> bodyPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
             matrices.pop();
         } else {

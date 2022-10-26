@@ -20,7 +20,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.MooshroomEntity;
 import net.minecraft.entity.passive.PassiveEntity;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 
 @Environment(value=EnvType.CLIENT)
 public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity>
@@ -47,27 +47,27 @@ extends FeatureRenderer<T, CowEntityModel<T>> {
         int m = LivingEntityRenderer.getOverlay(mooshroomEntity, 0.0f);
         BakedModel bakedModel = this.blockRenderManager.getModel(blockState);
         matrixStack.push();
-        matrixStack.translate(0.2f, -0.35f, 0.5);
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-48.0f));
+        matrixStack.translate(0.2f, -0.35f, 0.5f);
+        matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-48.0f));
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
-        matrixStack.translate(-0.5, -0.5, -0.5);
+        matrixStack.translate(-0.5f, -0.5f, -0.5f);
         this.renderMushroom(matrixStack, vertexConsumerProvider, i, bl, blockState, m, bakedModel);
         matrixStack.pop();
         matrixStack.push();
-        matrixStack.translate(0.2f, -0.35f, 0.5);
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(42.0f));
-        matrixStack.translate(0.1f, 0.0, -0.6f);
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-48.0f));
+        matrixStack.translate(0.2f, -0.35f, 0.5f);
+        matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(42.0f));
+        matrixStack.translate(0.1f, 0.0f, -0.6f);
+        matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-48.0f));
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
-        matrixStack.translate(-0.5, -0.5, -0.5);
+        matrixStack.translate(-0.5f, -0.5f, -0.5f);
         this.renderMushroom(matrixStack, vertexConsumerProvider, i, bl, blockState, m, bakedModel);
         matrixStack.pop();
         matrixStack.push();
         ((CowEntityModel)this.getContextModel()).getHead().rotate(matrixStack);
-        matrixStack.translate(0.0, -0.7f, -0.2f);
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-78.0f));
+        matrixStack.translate(0.0f, -0.7f, -0.2f);
+        matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-78.0f));
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
-        matrixStack.translate(-0.5, -0.5, -0.5);
+        matrixStack.translate(-0.5f, -0.5f, -0.5f);
         this.renderMushroom(matrixStack, vertexConsumerProvider, i, bl, blockState, m, bakedModel);
         matrixStack.pop();
     }

@@ -17,6 +17,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.stream.Stream;
 import net.minecraft.data.DataOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
@@ -34,13 +36,13 @@ implements DataProvider {
     @Nullable
     private static final Path DEBUG_OUTPUT_DIRECTORY = null;
     private static final Logger LOGGER = LogUtils.getLogger();
-    private final DataOutput field_40662;
-    private final Iterable<Path> field_40663;
+    private final DataOutput output;
+    private final Iterable<Path> paths;
     private final List<Tweaker> write = Lists.newArrayList();
 
-    public SnbtProvider(DataOutput generator, Iterable<Path> iterable) {
-        this.field_40662 = generator;
-        this.field_40663 = iterable;
+    public SnbtProvider(DataOutput output, Iterable<Path> paths) {
+        this.output = output;
+        this.paths = paths;
     }
 
     public SnbtProvider addWriter(Tweaker tweaker) {
@@ -57,28 +59,44 @@ implements DataProvider {
     }
 
     @Override
-    public void run(DataWriter writer) throws IOException {
-        Path path2 = this.field_40662.getPath();
-        ArrayList<CompletableFuture> list = Lists.newArrayList();
-        for (Path path22 : this.field_40663) {
-            Files.walk(path22, new FileVisitOption[0]).filter(path -> path.toString().endsWith(".snbt")).forEach(path -> list.add(CompletableFuture.supplyAsync(() -> this.toCompressedNbt((Path)path, this.getFileName(path22, (Path)path)), Util.getMainWorkerExecutor())));
+    public CompletableFuture<?> run(DataWriter writer) {
+        Path path = this.output.getPath();
+        ArrayList<CompletionStage> list = Lists.newArrayList();
+        for (Path path2 : this.paths) {
+            list.add(CompletableFuture.supplyAsync(() -> {
+                CompletableFuture<Void> completableFuture;
+                block8: {
+                    Stream<Path> stream = Files.walk(path2, new FileVisitOption[0]);
+                    try {
+                        completableFuture = CompletableFuture.allOf((CompletableFuture[])stream.filter(path -> path.toString().endsWith(".snbt")).map(path -> CompletableFuture.runAsync(() -> {
+                            CompressedData compressedData = this.toCompressedNbt((Path)path, this.getFileName(path2, (Path)path));
+                            this.write(writer, compressedData, path);
+                        }, Util.getMainWorkerExecutor())).toArray(CompletableFuture[]::new));
+                        if (stream == null) break block8;
+                    } catch (Throwable throwable) {
+                        try {
+                            if (stream != null) {
+                                try {
+                                    stream.close();
+                                } catch (Throwable throwable2) {
+                                    throwable.addSuppressed(throwable2);
+                                }
+                            }
+                            throw throwable;
+                        } catch (Exception exception) {
+                            throw new RuntimeException("Failed to read structure input directory, aborting", exception);
+                        }
+                    }
+                    stream.close();
+                }
+                return completableFuture;
+            }, Util.getMainWorkerExecutor()).thenCompose(future -> future));
         }
-        boolean bl = false;
-        for (CompletableFuture completableFuture : list) {
-            try {
-                this.write(writer, (CompressedData)completableFuture.get(), path2);
-            } catch (Exception exception) {
-                LOGGER.error("Failed to process structure", exception);
-                bl = true;
-            }
-        }
-        if (bl) {
-            throw new IllegalStateException("Failed to convert all structures, aborting");
-        }
+        return Util.combine(list);
     }
 
     @Override
-    public String getName() {
+    public final String getName() {
         return "SNBT -> NBT";
     }
 

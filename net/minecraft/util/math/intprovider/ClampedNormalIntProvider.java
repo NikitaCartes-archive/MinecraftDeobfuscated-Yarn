@@ -22,10 +22,10 @@ extends IntProvider {
         }
         return DataResult.success(provider);
     }, Function.identity());
-    private float mean;
-    private float deviation;
-    private int min;
-    private int max;
+    private final float mean;
+    private final float deviation;
+    private final int min;
+    private final int max;
 
     public static ClampedNormalIntProvider of(float mean, float deviation, int min, int max) {
         return new ClampedNormalIntProvider(mean, deviation, min, max);

@@ -73,7 +73,7 @@ implements VillagerDataContainer {
 
     public ZombieVillagerEntity(EntityType<? extends ZombieVillagerEntity> entityType, World world) {
         super((EntityType<? extends ZombieEntity>)entityType, world);
-        Registry.VILLAGER_PROFESSION.getRandom(this.random).ifPresent(registryEntry -> this.setVillagerData(this.getVillagerData().withProfession((VillagerProfession)registryEntry.value())));
+        Registry.VILLAGER_PROFESSION.getRandom(this.random).ifPresent(profession -> this.setVillagerData(this.getVillagerData().withProfession((VillagerProfession)profession.value())));
     }
 
     @Override
@@ -110,7 +110,7 @@ implements VillagerDataContainer {
         if (nbt.contains("Offers", NbtElement.COMPOUND_TYPE)) {
             this.offerData = nbt.getCompound("Offers");
         }
-        if (nbt.contains("Gossips", NbtElement.COMPOUND_TYPE)) {
+        if (nbt.contains("Gossips", NbtElement.LIST_TYPE)) {
             this.gossipData = nbt.getList("Gossips", NbtElement.COMPOUND_TYPE);
         }
         if (nbt.contains("ConversionTime", NbtElement.NUMBER_TYPE) && nbt.getInt("ConversionTime") > -1) {

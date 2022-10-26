@@ -175,12 +175,12 @@ extends Screen {
         this.addSelectableChild(this.customPresetField);
         this.listWidget = new SuperflatPresetsListWidget(this.parent.parent.moreOptionsDialog.getRegistryManager());
         this.addSelectableChild(this.listWidget);
-        this.selectPresetButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, Text.translatable("createWorld.customize.presets.select"), buttonWidget -> {
+        this.selectPresetButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("createWorld.customize.presets.select"), buttonWidget -> {
             FlatChunkGeneratorConfig flatChunkGeneratorConfig = PresetsScreen.parsePresetString(registry, registry2, this.customPresetField.getText(), this.config);
             this.parent.setConfig(flatChunkGeneratorConfig);
             this.client.setScreen(this.parent);
-        }));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)));
+        }).setPositionAndSize(this.width / 2 - 155, this.height - 28, 150, 20).build());
+        this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)).setPositionAndSize(this.width / 2 + 5, this.height - 28, 150, 20).build());
         this.updateSelectButton(this.listWidget.getSelectedOrNull() != null);
     }
 
@@ -211,7 +211,7 @@ extends Screen {
         this.renderBackground(matrices);
         this.listWidget.render(matrices, mouseX, mouseY, delta);
         matrices.push();
-        matrices.translate(0.0, 0.0, 400.0);
+        matrices.translate(0.0f, 0.0f, 400.0f);
         PresetsScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 0xFFFFFF);
         PresetsScreen.drawTextWithShadow(matrices, this.textRenderer, this.shareText, 50, 30, 0xA0A0A0);
         PresetsScreen.drawTextWithShadow(matrices, this.textRenderer, this.listText, 50, 70, 0xA0A0A0);

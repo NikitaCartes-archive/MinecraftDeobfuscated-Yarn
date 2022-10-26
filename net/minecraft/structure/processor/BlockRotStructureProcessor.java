@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 public class BlockRotStructureProcessor
 extends StructureProcessor {
     public static final Codec<BlockRotStructureProcessor> CODEC = RecordCodecBuilder.create(instance -> instance.group(RegistryCodecs.entryList(Registry.BLOCK_KEY).optionalFieldOf("rottable_blocks").forGetter(processor -> processor.rottableBlocks), ((MapCodec)Codec.floatRange(0.0f, 1.0f).fieldOf("integrity")).forGetter(processor -> Float.valueOf(processor.integrity))).apply((Applicative<BlockRotStructureProcessor, ?>)instance, BlockRotStructureProcessor::new));
-    private Optional<RegistryEntryList<Block>> rottableBlocks;
+    private final Optional<RegistryEntryList<Block>> rottableBlocks;
     private final float integrity;
 
     public BlockRotStructureProcessor(TagKey<Block> rottableBlocks, float integrity) {

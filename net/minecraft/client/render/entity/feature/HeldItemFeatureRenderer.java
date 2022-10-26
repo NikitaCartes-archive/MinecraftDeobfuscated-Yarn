@@ -16,7 +16,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Arm;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 
 @Environment(value=EnvType.CLIENT)
 public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>>
@@ -40,7 +40,7 @@ extends FeatureRenderer<T, M> {
         matrixStack.push();
         if (((EntityModel)this.getContextModel()).child) {
             float m = 0.5f;
-            matrixStack.translate(0.0, 0.75, 0.0);
+            matrixStack.translate(0.0f, 0.75f, 0.0f);
             matrixStack.scale(0.5f, 0.5f, 0.5f);
         }
         this.renderItem((LivingEntity)livingEntity, itemStack2, ModelTransformation.Mode.THIRD_PERSON_RIGHT_HAND, Arm.RIGHT, matrixStack, vertexConsumerProvider, i);
@@ -54,10 +54,10 @@ extends FeatureRenderer<T, M> {
         }
         matrices.push();
         ((ModelWithArms)this.getContextModel()).setArmAngle(arm, matrices);
-        matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90.0f));
-        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-90.0f));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0f));
         boolean bl = arm == Arm.LEFT;
-        matrices.translate((float)(bl ? -1 : 1) / 16.0f, 0.125, -0.625);
+        matrices.translate((float)(bl ? -1 : 1) / 16.0f, 0.125f, -0.625f);
         this.heldItemRenderer.renderItem(entity, stack, transformationMode, bl, matrices, vertexConsumers, light);
         matrices.pop();
     }

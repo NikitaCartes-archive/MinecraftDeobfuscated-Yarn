@@ -11,62 +11,62 @@ import net.minecraft.client.texture.Sprite;
 @Environment(value=EnvType.CLIENT)
 public class SpriteTexturedVertexConsumer
 implements VertexConsumer {
-    private final VertexConsumer parent;
+    private final VertexConsumer delegate;
     private final Sprite sprite;
 
-    public SpriteTexturedVertexConsumer(VertexConsumer parent, Sprite sprite) {
-        this.parent = parent;
+    public SpriteTexturedVertexConsumer(VertexConsumer delegate, Sprite sprite) {
+        this.delegate = delegate;
         this.sprite = sprite;
     }
 
     @Override
     public VertexConsumer vertex(double x, double y, double z) {
-        return this.parent.vertex(x, y, z);
+        return this.delegate.vertex(x, y, z);
     }
 
     @Override
     public VertexConsumer color(int red, int green, int blue, int alpha) {
-        return this.parent.color(red, green, blue, alpha);
+        return this.delegate.color(red, green, blue, alpha);
     }
 
     @Override
     public VertexConsumer texture(float u, float v) {
-        return this.parent.texture(this.sprite.getFrameU(u * 16.0f), this.sprite.getFrameV(v * 16.0f));
+        return this.delegate.texture(this.sprite.getFrameU(u * 16.0f), this.sprite.getFrameV(v * 16.0f));
     }
 
     @Override
     public VertexConsumer overlay(int u, int v) {
-        return this.parent.overlay(u, v);
+        return this.delegate.overlay(u, v);
     }
 
     @Override
     public VertexConsumer light(int u, int v) {
-        return this.parent.light(u, v);
+        return this.delegate.light(u, v);
     }
 
     @Override
     public VertexConsumer normal(float x, float y, float z) {
-        return this.parent.normal(x, y, z);
+        return this.delegate.normal(x, y, z);
     }
 
     @Override
     public void next() {
-        this.parent.next();
+        this.delegate.next();
     }
 
     @Override
     public void fixedColor(int red, int green, int blue, int alpha) {
-        this.parent.fixedColor(red, green, blue, alpha);
+        this.delegate.fixedColor(red, green, blue, alpha);
     }
 
     @Override
     public void unfixColor() {
-        this.parent.unfixColor();
+        this.delegate.unfixColor();
     }
 
     @Override
     public void vertex(float x, float y, float z, float red, float green, float blue, float alpha, float u, float v, int overlay, int light, float normalX, float normalY, float normalZ) {
-        this.parent.vertex(x, y, z, red, green, blue, alpha, this.sprite.getFrameU(u * 16.0f), this.sprite.getFrameV(v * 16.0f), overlay, light, normalX, normalY, normalZ);
+        this.delegate.vertex(x, y, z, red, green, blue, alpha, this.sprite.getFrameU(u * 16.0f), this.sprite.getFrameV(v * 16.0f), overlay, light, normalX, normalY, normalZ);
     }
 }
 

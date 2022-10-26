@@ -41,9 +41,9 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
@@ -439,11 +439,11 @@ public class SoundSystem {
             return;
         }
         Vec3d vec3d = camera.getPos();
-        Vec3f vec3f = camera.getHorizontalPlane();
-        Vec3f vec3f2 = camera.getVerticalPlane();
+        Vector3f vector3f = camera.getHorizontalPlane();
+        Vector3f vector3f2 = camera.getVerticalPlane();
         this.taskQueue.execute(() -> {
             this.listener.setPosition(vec3d);
-            this.listener.setOrientation(vec3f, vec3f2);
+            this.listener.setOrientation(vector3f, vector3f2);
         });
     }
 

@@ -127,27 +127,27 @@ extends Feature<GeodeFeatureConfig> {
                 continue;
             }
             if (s >= e) {
-                this.setBlockStateIf(structureWorldAccess, blockPos3, geodeLayerConfig.fillingProvider.getBlockState(random, blockPos3), predicate);
+                this.setBlockStateIf(structureWorldAccess, blockPos3, geodeLayerConfig.fillingProvider.get(random, blockPos3), predicate);
                 continue;
             }
             if (s >= f) {
                 boolean bl2;
                 boolean bl3 = bl2 = (double)random.nextFloat() < geodeFeatureConfig.useAlternateLayer0Chance;
                 if (bl2) {
-                    this.setBlockStateIf(structureWorldAccess, blockPos3, geodeLayerConfig.alternateInnerLayerProvider.getBlockState(random, blockPos3), predicate);
+                    this.setBlockStateIf(structureWorldAccess, blockPos3, geodeLayerConfig.alternateInnerLayerProvider.get(random, blockPos3), predicate);
                 } else {
-                    this.setBlockStateIf(structureWorldAccess, blockPos3, geodeLayerConfig.innerLayerProvider.getBlockState(random, blockPos3), predicate);
+                    this.setBlockStateIf(structureWorldAccess, blockPos3, geodeLayerConfig.innerLayerProvider.get(random, blockPos3), predicate);
                 }
                 if (geodeFeatureConfig.placementsRequireLayer0Alternate && !bl2 || !((double)random.nextFloat() < geodeFeatureConfig.usePotentialPlacementsChance)) continue;
                 list3.add(blockPos3.toImmutable());
                 continue;
             }
             if (s >= g) {
-                this.setBlockStateIf(structureWorldAccess, blockPos3, geodeLayerConfig.middleLayerProvider.getBlockState(random, blockPos3), predicate);
+                this.setBlockStateIf(structureWorldAccess, blockPos3, geodeLayerConfig.middleLayerProvider.get(random, blockPos3), predicate);
                 continue;
             }
             if (!(s >= h)) continue;
-            this.setBlockStateIf(structureWorldAccess, blockPos3, geodeLayerConfig.outerLayerProvider.getBlockState(random, blockPos3), predicate);
+            this.setBlockStateIf(structureWorldAccess, blockPos3, geodeLayerConfig.outerLayerProvider.get(random, blockPos3), predicate);
         }
         List<BlockState> list4 = geodeLayerConfig.innerBlocks;
         block5: for (BlockPos blockPos2 : list3) {

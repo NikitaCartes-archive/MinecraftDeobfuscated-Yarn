@@ -224,7 +224,7 @@ implements DynamicOps<NbtElement> {
         NbtCompound nbtCompound = new NbtCompound();
         if (nbtElement instanceof NbtCompound) {
             NbtCompound nbtCompound2 = (NbtCompound)nbtElement;
-            nbtCompound2.getKeys().forEach(string -> nbtCompound.put((String)string, nbtCompound2.get((String)string)));
+            nbtCompound2.getKeys().forEach(key -> nbtCompound.put((String)key, nbtCompound2.get((String)key)));
         }
         ArrayList list = Lists.newArrayList();
         mapLike.entries().forEach(pair -> {
@@ -309,25 +309,25 @@ implements DynamicOps<NbtElement> {
         return nbtCompound;
     }
 
-    private static NbtElement method_46232(NbtCompound nbtCompound) {
+    private static NbtElement unpackMarker(NbtCompound nbt) {
         NbtElement nbtElement;
-        if (nbtCompound.getSize() == 1 && (nbtElement = nbtCompound.get(MARKER_KEY)) != null) {
+        if (nbt.getSize() == 1 && (nbtElement = nbt.get(MARKER_KEY)) != null) {
             return nbtElement;
         }
-        return nbtCompound;
+        return nbt;
     }
 
     @Override
-    public DataResult<Stream<NbtElement>> getStream(NbtElement nbtElement2) {
-        if (nbtElement2 instanceof NbtList) {
-            NbtList nbtList = (NbtList)nbtElement2;
+    public DataResult<Stream<NbtElement>> getStream(NbtElement nbtElement) {
+        if (nbtElement instanceof NbtList) {
+            NbtList nbtList = (NbtList)nbtElement;
             if (nbtList.getHeldType() == NbtElement.COMPOUND_TYPE) {
-                return DataResult.success(nbtList.stream().map(nbtElement -> NbtOps.method_46232((NbtCompound)nbtElement)));
+                return DataResult.success(nbtList.stream().map(nbt -> NbtOps.unpackMarker((NbtCompound)nbt)));
             }
             return DataResult.success(nbtList.stream());
         }
-        if (nbtElement2 instanceof AbstractNbtList) {
-            AbstractNbtList abstractNbtList = (AbstractNbtList)nbtElement2;
+        if (nbtElement instanceof AbstractNbtList) {
+            AbstractNbtList abstractNbtList = (AbstractNbtList)nbtElement;
             return DataResult.success(abstractNbtList.stream().map(nbt -> nbt));
         }
         return DataResult.error("Not a list");
@@ -338,7 +338,7 @@ implements DynamicOps<NbtElement> {
         if (nbtElement instanceof NbtList) {
             NbtList nbtList = (NbtList)nbtElement;
             if (nbtList.getHeldType() == NbtElement.COMPOUND_TYPE) {
-                return DataResult.success(consumer -> nbtList.forEach(nbtElement -> consumer.accept(NbtOps.method_46232((NbtCompound)nbtElement))));
+                return DataResult.success(consumer -> nbtList.forEach(nbt -> consumer.accept(NbtOps.unpackMarker((NbtCompound)nbt))));
             }
             return DataResult.success(nbtList::forEach);
         }

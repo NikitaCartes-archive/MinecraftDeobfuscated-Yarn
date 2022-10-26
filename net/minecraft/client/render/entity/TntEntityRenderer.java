@@ -16,7 +16,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 
 @Environment(value=EnvType.CLIENT)
 public class TntEntityRenderer
@@ -32,7 +32,7 @@ extends EntityRenderer<TntEntity> {
     @Override
     public void render(TntEntity tntEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         matrixStack.push();
-        matrixStack.translate(0.0, 0.5, 0.0);
+        matrixStack.translate(0.0f, 0.5f, 0.0f);
         int j = tntEntity.getFuse();
         if ((float)j - g + 1.0f < 10.0f) {
             float h = 1.0f - ((float)j - g + 1.0f) / 10.0f;
@@ -42,9 +42,9 @@ extends EntityRenderer<TntEntity> {
             float k = 1.0f + h * 0.3f;
             matrixStack.scale(k, k, k);
         }
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-90.0f));
-        matrixStack.translate(-0.5, -0.5, 0.5);
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(90.0f));
+        matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-90.0f));
+        matrixStack.translate(-0.5f, -0.5f, 0.5f);
+        matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90.0f));
         TntMinecartEntityRenderer.renderFlashingBlock(this.blockRenderManager, Blocks.TNT.getDefaultState(), matrixStack, vertexConsumerProvider, i, j / 5 % 2 == 0);
         matrixStack.pop();
         super.render(tntEntity, f, g, matrixStack, vertexConsumerProvider, i);

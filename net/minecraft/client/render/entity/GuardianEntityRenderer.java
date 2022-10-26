@@ -22,10 +22,10 @@ import net.minecraft.entity.mob.GuardianEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Matrix3f;
-import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
 
 @Environment(value=EnvType.CLIENT)
 public class GuardianEntityRenderer
@@ -73,7 +73,7 @@ extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
             float k = j * 0.5f % 1.0f;
             float l = guardianEntity.getStandingEyeHeight();
             matrixStack.push();
-            matrixStack.translate(0.0, l, 0.0);
+            matrixStack.translate(0.0f, l, 0.0f);
             Vec3d vec3d = this.fromLerpedPosition(livingEntity, (double)livingEntity.getHeight() * 0.5, g);
             Vec3d vec3d2 = this.fromLerpedPosition(guardianEntity, l, g);
             Vec3d vec3d3 = vec3d.subtract(vec3d2);
@@ -81,8 +81,8 @@ extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
             vec3d3 = vec3d3.normalize();
             float n = (float)Math.acos(vec3d3.y);
             float o = (float)Math.atan2(vec3d3.z, vec3d3.x);
-            matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion((1.5707964f - o) * 57.295776f));
-            matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(n * 57.295776f));
+            matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((1.5707964f - o) * 57.295776f));
+            matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(n * 57.295776f));
             boolean p = true;
             float q = j * 0.05f * -1.5f;
             float r = h * h;

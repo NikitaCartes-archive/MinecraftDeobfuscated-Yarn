@@ -36,12 +36,12 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
-import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 public class CrossbowItem
 extends RangedWeaponItem
@@ -211,11 +211,10 @@ implements Vanishable {
             crossbowUser.shoot(crossbowUser.getTarget(), crossbow, projectileEntity, simulated);
         } else {
             Vec3d vec3d = shooter.getOppositeRotationVector(1.0f);
-            Quaternion quaternion = new Quaternion(new Vec3f(vec3d), simulated, true);
+            Quaternionf quaternionf = new Quaternionf().setAngleAxis((double)simulated, vec3d.x, vec3d.y, vec3d.z);
             Vec3d vec3d2 = shooter.getRotationVec(1.0f);
-            Vec3f vec3f = new Vec3f(vec3d2);
-            vec3f.rotate(quaternion);
-            projectileEntity.setVelocity(vec3f.getX(), vec3f.getY(), vec3f.getZ(), speed, divergence);
+            Vector3f vector3f = vec3d2.toVector3f().rotate(quaternionf);
+            projectileEntity.setVelocity(vector3f.x(), vector3f.y(), vector3f.z(), speed, divergence);
         }
         crossbow.damage(bl ? 3 : 1, shooter, e -> e.sendToolBreakStatus(hand));
         world.spawnEntity(projectileEntity);

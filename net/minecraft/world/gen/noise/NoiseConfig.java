@@ -105,9 +105,9 @@ public final class NoiseConfig {
         }
         this.noiseRouter = chunkGeneratorSettings.noiseRouter().apply(new LegacyNoiseDensityFunctionVisitor());
         DensityFunction.DensityFunctionVisitor densityFunctionVisitor = new DensityFunction.DensityFunctionVisitor(){
-            private final Map<DensityFunction, DensityFunction> field_40362 = new HashMap<DensityFunction, DensityFunction>();
+            private final Map<DensityFunction, DensityFunction> unwrapped = new HashMap<DensityFunction, DensityFunction>();
 
-            private DensityFunction method_45512(DensityFunction densityFunction) {
+            private DensityFunction unwrap(DensityFunction densityFunction) {
                 if (densityFunction instanceof DensityFunctionTypes.RegistryEntryHolder) {
                     DensityFunctionTypes.RegistryEntryHolder registryEntryHolder = (DensityFunctionTypes.RegistryEntryHolder)densityFunction;
                     return registryEntryHolder.function().value();
@@ -121,7 +121,7 @@ public final class NoiseConfig {
 
             @Override
             public DensityFunction apply(DensityFunction densityFunction) {
-                return this.field_40362.computeIfAbsent(densityFunction, this::method_45512);
+                return this.unwrapped.computeIfAbsent(densityFunction, this::unwrap);
             }
         };
         this.multiNoiseSampler = new MultiNoiseUtil.MultiNoiseSampler(this.noiseRouter.temperature().apply(densityFunctionVisitor), this.noiseRouter.vegetation().apply(densityFunctionVisitor), this.noiseRouter.continents().apply(densityFunctionVisitor), this.noiseRouter.erosion().apply(densityFunctionVisitor), this.noiseRouter.depth().apply(densityFunctionVisitor), this.noiseRouter.ridges().apply(densityFunctionVisitor), chunkGeneratorSettings.spawnTarget());

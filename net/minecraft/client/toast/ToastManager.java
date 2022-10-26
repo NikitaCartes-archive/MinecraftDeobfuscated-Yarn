@@ -150,7 +150,7 @@ extends DrawableHelper {
             }
             MatrixStack matrixStack = RenderSystem.getModelViewStack();
             matrixStack.push();
-            matrixStack.translate((float)x - (float)this.instance.getWidth() * this.getDisappearProgress(l), this.topIndex * 32, 800.0);
+            matrixStack.translate((float)x - (float)this.instance.getWidth() * this.getDisappearProgress(l), this.topIndex * 32, 800.0f);
             RenderSystem.applyModelViewMatrix();
             Toast.Visibility visibility = this.instance.draw(matrices, this.field_2245, l - this.showTime);
             matrixStack.pop();

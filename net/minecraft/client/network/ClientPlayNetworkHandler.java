@@ -11,6 +11,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.logging.LogUtils;
 import io.netty.buffer.Unpooled;
+import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
@@ -19,7 +20,6 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -28,6 +28,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.Advancement;
@@ -88,6 +89,7 @@ import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.toast.RecipeToast;
 import net.minecraft.client.toast.SystemToast;
+import net.minecraft.client.util.ProfileKeys;
 import net.minecraft.client.util.TelemetrySender;
 import net.minecraft.client.world.ClientChunkManager;
 import net.minecraft.client.world.ClientWorld;
@@ -130,9 +132,11 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.encryption.ClientPlayerSession;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
+import net.minecraft.network.encryption.PlayerKeyPair;
 import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.encryption.PublicPlayerSession;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.listener.TickablePacketListener;
 import net.minecraft.network.message.ArgumentSignatureDataMap;
 import net.minecraft.network.message.LastSeenMessagesCollector;
 import net.minecraft.network.message.MessageBody;
@@ -150,6 +154,7 @@ import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
 import net.minecraft.network.packet.c2s.play.MessageAcknowledgmentC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayPongC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerSessionC2SPacket;
 import net.minecraft.network.packet.c2s.play.ResourcePackStatusC2SPacket;
 import net.minecraft.network.packet.c2s.play.TeleportConfirmC2SPacket;
 import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
@@ -289,7 +294,6 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.collection.SortedArraySet;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -322,14 +326,15 @@ import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class ClientPlayNetworkHandler
-implements ClientPlayPacketListener {
+implements TickablePacketListener,
+ClientPlayPacketListener {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final Text DISCONNECT_LOST_TEXT = Text.translatable("disconnect.lost");
     private static final Text UNSECURE_SERVER_TOAST_TITLE = Text.translatable("multiplayer.unsecureserver.toast.title");
     private static final Text UNSECURE_SERVER_TOAST_TEXT = Text.translatable("multiplayer.unsecureserver.toast");
     private static final Text INVALID_PACKET_TEXT = Text.translatable("multiplayer.disconnect.invalid_packet");
     private static final Text CHAT_VALIDATION_FAILED_TEXT = Text.translatable("multiplayer.disconnect.chat_validation_failed");
-    private static final int field_40487 = 64;
+    private static final int ACKNOWLEDGMENT_BATCH_SIZE = 64;
     private final ClientConnection connection;
     @Nullable
     private final ServerInfo serverInfo;
@@ -339,7 +344,7 @@ implements ClientPlayPacketListener {
     private ClientWorld world;
     private ClientWorld.Properties worldProperties;
     private final Map<UUID, PlayerListEntry> playerListEntries = Maps.newHashMap();
-    private final SortedArraySet<PlayerListEntry> listedPlayerListEntries = SortedArraySet.create(Comparator.comparing(entry -> entry.getProfile().getName(), String::compareToIgnoreCase));
+    private final Set<PlayerListEntry> listedPlayerListEntries = new ReferenceOpenHashSet<PlayerListEntry>();
     private final ClientAdvancementManager advancementHandler;
     private final ClientCommandSource commandSource;
     private final DataQueryHandler dataQueryHandler = new DataQueryHandler(this);
@@ -353,12 +358,13 @@ implements ClientPlayPacketListener {
     private CombinedDynamicRegistries<ClientDynamicRegistryType> combinedDynamicRegistries = ClientDynamicRegistryType.createCombinedDynamicRegistries();
     private FeatureSet enabledFeatures = FeatureFlags.DEFAULT_ENABLED_FEATURES;
     private final TelemetrySender telemetrySender;
-    private final MessageChain.Packer messagePacker;
-    private final LastSeenMessagesCollector lastSeenMessagesCollector = new LastSeenMessagesCollector(20);
-    private final MessageSignatureStorage signatureStorage = MessageSignatureStorage.create();
-    private final MessageSignatureData.Unpacker unpacker = this.signatureStorage.getUnpacker();
+    @Nullable
+    private ClientPlayerSession session;
+    private MessageChain.Packer messagePacker = MessageChain.Packer.NONE;
+    private LastSeenMessagesCollector lastSeenMessagesCollector = new LastSeenMessagesCollector(20);
+    private MessageSignatureStorage signatureStorage = MessageSignatureStorage.create();
 
-    public ClientPlayNetworkHandler(MinecraftClient client, Screen screen, ClientConnection connection, ClientPlayerSession session, @Nullable ServerInfo serverInfo, GameProfile profile, TelemetrySender telemetrySender) {
+    public ClientPlayNetworkHandler(MinecraftClient client, Screen screen, ClientConnection connection, @Nullable ServerInfo serverInfo, GameProfile profile, TelemetrySender telemetrySender) {
         this.client = client;
         this.loginScreen = screen;
         this.connection = connection;
@@ -367,7 +373,6 @@ implements ClientPlayPacketListener {
         this.advancementHandler = new ClientAdvancementManager(client);
         this.commandSource = new ClientCommandSource(this, client);
         this.telemetrySender = telemetrySender;
-        this.messagePacker = session.createPacker(profile.getId());
     }
 
     public ClientCommandSource getCommandSource() {
@@ -426,6 +431,9 @@ implements ClientPlayPacketListener {
         this.client.options.setServerViewDistance(packet.viewDistance());
         this.client.options.sendClientSettings();
         this.connection.send(new CustomPayloadC2SPacket(CustomPayloadC2SPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString(ClientBrandRetriever.getClientModName())));
+        this.lastSeenMessagesCollector = new LastSeenMessagesCollector(20);
+        this.signatureStorage = MessageSignatureStorage.create();
+        this.client.getProfileKeys().fetchKeyPair().thenAcceptAsync(keyPair -> keyPair.ifPresent(keys -> this.setSession(ClientPlayerSession.create(keys))), (Executor)this.client);
         this.client.getGame().onStartGameSession();
         this.telemetrySender.setGameModeAndSend(packet.gameMode(), packet.hardcore());
     }
@@ -483,8 +491,8 @@ implements ClientPlayPacketListener {
     public void onEntityTrackerUpdate(EntityTrackerUpdateS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         Entity entity = this.world.getEntityById(packet.id());
-        if (entity != null && packet.getTrackedValues() != null) {
-            entity.getDataTracker().writeUpdatedEntries(packet.getTrackedValues());
+        if (entity != null) {
+            entity.getDataTracker().writeUpdatedEntries(packet.trackedValues());
         }
     }
 
@@ -782,7 +790,7 @@ implements ClientPlayPacketListener {
     @Override
     public void onChatMessage(ChatMessageS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
-        Optional<MessageBody> optional = packet.body().toBody(this.unpacker);
+        Optional<MessageBody> optional = packet.body().toBody(this.signatureStorage);
         Optional<MessageType.Parameters> optional2 = packet.serializedParameters().toParameters(this.combinedDynamicRegistries.getCombinedRegistryManager());
         if (optional.isEmpty() || optional2.isEmpty()) {
             this.connection.disconnect(INVALID_PACKET_TEXT);
@@ -790,12 +798,12 @@ implements ClientPlayPacketListener {
         }
         UUID uUID = packet.sender();
         PlayerListEntry playerListEntry = this.getPlayerListEntry(uUID);
-        if (playerListEntry == null || playerListEntry.getSession() == null) {
+        if (playerListEntry == null) {
             this.connection.disconnect(CHAT_VALIDATION_FAILED_TEXT);
             return;
         }
         PublicPlayerSession publicPlayerSession = playerListEntry.getSession();
-        MessageLink messageLink = new MessageLink(packet.index(), uUID, publicPlayerSession.sessionId());
+        MessageLink messageLink = publicPlayerSession != null ? new MessageLink(packet.index(), uUID, publicPlayerSession.sessionId()) : MessageLink.of(uUID);
         SignedMessage signedMessage = new SignedMessage(messageLink, packet.signature(), optional.get(), packet.unsignedContent(), packet.filterMask());
         if (!playerListEntry.getMessageVerifier().isVerified(signedMessage)) {
             this.connection.disconnect(CHAT_VALIDATION_FAILED_TEXT);
@@ -819,7 +827,7 @@ implements ClientPlayPacketListener {
     @Override
     public void onRemoveMessage(RemoveMessageS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
-        Optional<MessageSignatureData> optional = packet.messageSignature().getSignature(this.unpacker);
+        Optional<MessageSignatureData> optional = packet.messageSignature().getSignature(this.signatureStorage);
         if (optional.isEmpty()) {
             this.connection.disconnect(INVALID_PACKET_TEXT);
             return;
@@ -983,7 +991,7 @@ implements ClientPlayPacketListener {
             this.client.getMusicTracker().stop();
         }
         this.client.cameraEntity = clientPlayerEntity2;
-        clientPlayerEntity2.getDataTracker().writeUpdatedEntries(clientPlayerEntity.getDataTracker().getAllEntries());
+        clientPlayerEntity2.getDataTracker().writeUpdatedEntries(clientPlayerEntity.getDataTracker().getChangedEntries());
         if (packet.shouldKeepPlayerAttributes()) {
             clientPlayerEntity2.getAttributes().setFrom(clientPlayerEntity.getAttributes());
         }
@@ -1562,7 +1570,7 @@ implements ClientPlayPacketListener {
         PlayerListEntry playerListEntry;
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         for (PlayerListS2CPacket.Entry entry : packet.getPlayerAdditionEntries()) {
-            playerListEntry = new PlayerListEntry(entry.profile());
+            playerListEntry = new PlayerListEntry(entry.profile(), this.isSecureChatEnforced());
             if (this.playerListEntries.putIfAbsent(entry.profileId(), playerListEntry) != null) continue;
             this.client.getSocialInteractionsManager().setPlayerOnline(playerListEntry);
         }
@@ -1607,24 +1615,23 @@ implements ClientPlayPacketListener {
     }
 
     private void setPublicSession(PlayerListS2CPacket.Entry receivedEntry, PlayerListEntry currentEntry) {
-        boolean bl;
-        PublicPlayerSession publicPlayerSession = this.toSession(receivedEntry.chatSession(), currentEntry.getProfile());
-        boolean bl2 = bl = this.serverInfo != null && this.serverInfo.isSecureChatEnforced();
-        if (bl && !publicPlayerSession.hasPublicKey()) {
-            LOGGER.error("Received unverifiable chat session for player '{}', but Secure Chat is enforced", (Object)currentEntry.getProfile().getName());
-            this.connection.disconnect(INVALID_PACKET_TEXT);
-            return;
+        GameProfile gameProfile = currentEntry.getProfile();
+        PublicPlayerSession.Serialized serialized = receivedEntry.chatSession();
+        if (serialized != null) {
+            try {
+                PublicPlayerSession publicPlayerSession = serialized.toSession(gameProfile, this.client.getServicesSignatureVerifier(), PlayerPublicKey.EXPIRATION_GRACE_PERIOD);
+                currentEntry.setSession(publicPlayerSession);
+            } catch (PlayerPublicKey.PublicKeyException publicKeyException) {
+                LOGGER.error("Failed to validate profile key for player: '{}'", (Object)gameProfile.getName(), (Object)publicKeyException);
+                this.connection.disconnect(publicKeyException.getMessageText());
+            }
+        } else {
+            currentEntry.resetSession(this.isSecureChatEnforced());
         }
-        currentEntry.setSession(publicPlayerSession);
     }
 
-    private PublicPlayerSession toSession(PublicPlayerSession.Serialized serialized, GameProfile profile) {
-        try {
-            return serialized.toSession(profile, this.client.getServicesSignatureVerifier(), PlayerPublicKey.EXPIRATION_GRACE_PERIOD);
-        } catch (PlayerPublicKey.PublicKeyException publicKeyException) {
-            LOGGER.warn("Failed to validate profile key for player: '{}'", (Object)profile.getName(), (Object)publicKeyException);
-            return PublicPlayerSession.MISSING;
-        }
+    private boolean isSecureChatEnforced() {
+        return this.serverInfo != null && this.serverInfo.isSecureChatEnforced();
     }
 
     @Override
@@ -2313,6 +2320,27 @@ implements ClientPlayPacketListener {
 
     private ParseResults<CommandSource> parse(String command) {
         return this.commandDispatcher.parse(command, (CommandSource)this.commandSource);
+    }
+
+    @Override
+    public void tick() {
+        ProfileKeys profileKeys = this.client.getProfileKeys();
+        if (profileKeys.isExpired()) {
+            profileKeys.fetchKeyPair().thenAcceptAsync(keyPair -> keyPair.ifPresent(this::updateKeyPair), (Executor)this.client);
+        }
+    }
+
+    private void updateKeyPair(PlayerKeyPair keyPair) {
+        if (this.session != null && this.session.keyPair().equals(keyPair)) {
+            return;
+        }
+        this.setSession(ClientPlayerSession.create(keyPair));
+    }
+
+    private void setSession(ClientPlayerSession session) {
+        this.session = session;
+        this.messagePacker = session.createPacker(this.profile.getId());
+        this.sendPacket(new PlayerSessionC2SPacket(session.toPublicSession().toSerialized()));
     }
 
     @Nullable

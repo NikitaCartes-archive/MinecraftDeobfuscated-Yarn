@@ -31,7 +31,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -94,13 +94,13 @@ implements FeatureRendererContext<T, M> {
         }
         if (((Entity)livingEntity).isInPose(EntityPose.SLEEPING) && (direction = ((LivingEntity)livingEntity).getSleepingDirection()) != null) {
             n = ((Entity)livingEntity).getEyeHeight(EntityPose.STANDING) - 0.1f;
-            matrixStack.translate((float)(-direction.getOffsetX()) * n, 0.0, (float)(-direction.getOffsetZ()) * n);
+            matrixStack.translate((float)(-direction.getOffsetX()) * n, 0.0f, (float)(-direction.getOffsetZ()) * n);
         }
         float l = this.getAnimationProgress(livingEntity, g);
         this.setupTransforms(livingEntity, matrixStack, l, h, g);
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
         this.scale(livingEntity, matrixStack, g);
-        matrixStack.translate(0.0, -1.501f, 0.0);
+        matrixStack.translate(0.0f, -1.501f, 0.0f);
         n = 0.0f;
         float o = 0.0f;
         if (!((Entity)livingEntity).hasVehicle() && ((LivingEntity)livingEntity).isAlive()) {
@@ -194,26 +194,26 @@ implements FeatureRendererContext<T, M> {
             bodyYaw += (float)(Math.cos((double)((LivingEntity)entity).age * 3.25) * Math.PI * (double)0.4f);
         }
         if (!((Entity)entity).isInPose(EntityPose.SLEEPING)) {
-            matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f - bodyYaw));
+            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0f - bodyYaw));
         }
         if (((LivingEntity)entity).deathTime > 0) {
             float f = ((float)((LivingEntity)entity).deathTime + tickDelta - 1.0f) / 20.0f * 1.6f;
             if ((f = MathHelper.sqrt(f)) > 1.0f) {
                 f = 1.0f;
             }
-            matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(f * this.getLyingAngle(entity)));
+            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(f * this.getLyingAngle(entity)));
         } else if (((LivingEntity)entity).isUsingRiptide()) {
-            matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90.0f - ((Entity)entity).getPitch()));
-            matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(((float)((LivingEntity)entity).age + tickDelta) * -75.0f));
+            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-90.0f - ((Entity)entity).getPitch()));
+            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(((float)((LivingEntity)entity).age + tickDelta) * -75.0f));
         } else if (((Entity)entity).isInPose(EntityPose.SLEEPING)) {
             Direction direction = ((LivingEntity)entity).getSleepingDirection();
             float g = direction != null ? LivingEntityRenderer.getYaw(direction) : bodyYaw;
-            matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(g));
-            matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(this.getLyingAngle(entity)));
-            matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(270.0f));
+            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(g));
+            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(this.getLyingAngle(entity)));
+            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(270.0f));
         } else if (LivingEntityRenderer.shouldFlipUpsideDown(entity)) {
-            matrices.translate(0.0, ((Entity)entity).getHeight() + 0.1f, 0.0);
-            matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
+            matrices.translate(0.0f, ((Entity)entity).getHeight() + 0.1f, 0.0f);
+            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180.0f));
         }
     }
 

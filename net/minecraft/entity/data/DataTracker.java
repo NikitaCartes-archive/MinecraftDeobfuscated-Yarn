@@ -3,7 +3,6 @@
  */
 package net.minecraft.entity.data;
 
-import com.google.common.collect.Lists;
 import com.mojang.logging.LogUtils;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
@@ -32,12 +31,10 @@ import org.slf4j.Logger;
 public class DataTracker {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final Object2IntMap<Class<? extends Entity>> TRACKED_ENTITIES = new Object2IntOpenHashMap<Class<? extends Entity>>();
-    private static final int END_PACKET_WRITE = 255;
     private static final int MAX_DATA_VALUE_ID = 254;
     private final Entity trackedEntity;
     private final Int2ObjectMap<Entry<?>> entries = new Int2ObjectOpenHashMap();
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
-    private boolean empty = true;
     private boolean dirty;
 
     public DataTracker(Entity trackedEntity) {
@@ -93,7 +90,6 @@ public class DataTracker {
         Entry<T> entry = new Entry<T>(key, value);
         this.lock.writeLock().lock();
         this.entries.put(key.getId(), (Entry<?>)entry);
-        this.empty = false;
         this.lock.writeLock().unlock();
     }
 
@@ -131,17 +127,8 @@ public class DataTracker {
         return this.dirty;
     }
 
-    public static void entriesToPacket(@Nullable List<Entry<?>> entries, PacketByteBuf buf) {
-        if (entries != null) {
-            for (Entry<?> entry : entries) {
-                DataTracker.writeEntryToPacket(buf, entry);
-            }
-        }
-        buf.writeByte(255);
-    }
-
     @Nullable
-    public List<Entry<?>> getDirtyEntries() {
+    public List<SerializedEntry<?>> getDirtyEntries() {
         ArrayList list = null;
         if (this.dirty) {
             this.lock.readLock().lock();
@@ -149,9 +136,9 @@ public class DataTracker {
                 if (!entry.isDirty()) continue;
                 entry.setDirty(false);
                 if (list == null) {
-                    list = Lists.newArrayList();
+                    list = new ArrayList();
                 }
-                list.add(entry.copy());
+                list.add(entry.toSerialized());
             }
             this.lock.readLock().unlock();
         }
@@ -160,62 +147,30 @@ public class DataTracker {
     }
 
     @Nullable
-    public List<Entry<?>> getAllEntries() {
+    public List<SerializedEntry<?>> getChangedEntries() {
         ArrayList list = null;
         this.lock.readLock().lock();
         for (Entry entry : this.entries.values()) {
+            if (entry.isUnchanged()) continue;
             if (list == null) {
-                list = Lists.newArrayList();
+                list = new ArrayList();
             }
-            list.add(entry.copy());
+            list.add(entry.toSerialized());
         }
         this.lock.readLock().unlock();
         return list;
     }
 
-    private static <T> void writeEntryToPacket(PacketByteBuf buf, Entry<T> entry) {
-        TrackedData<T> trackedData = entry.getData();
-        int i = TrackedDataHandlerRegistry.getId(trackedData.getType());
-        if (i < 0) {
-            throw new EncoderException("Unknown serializer type " + trackedData.getType());
-        }
-        buf.writeByte(trackedData.getId());
-        buf.writeVarInt(i);
-        trackedData.getType().write(buf, entry.get());
-    }
-
-    @Nullable
-    public static List<Entry<?>> deserializePacket(PacketByteBuf buf) {
-        short i;
-        ArrayList<Entry<?>> list = null;
-        while ((i = buf.readUnsignedByte()) != 255) {
-            int j;
-            TrackedDataHandler<?> trackedDataHandler;
-            if (list == null) {
-                list = Lists.newArrayList();
-            }
-            if ((trackedDataHandler = TrackedDataHandlerRegistry.get(j = buf.readVarInt())) == null) {
-                throw new DecoderException("Unknown serializer type " + j);
-            }
-            list.add(DataTracker.entryFromPacket(buf, i, trackedDataHandler));
-        }
-        return list;
-    }
-
-    private static <T> Entry<T> entryFromPacket(PacketByteBuf buf, int id, TrackedDataHandler<T> handler) {
-        return new Entry<T>(handler.create(id), handler.read(buf));
-    }
-
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public void writeUpdatedEntries(List<Entry<?>> entries) {
+    public void writeUpdatedEntries(List<SerializedEntry<?>> entries) {
         this.lock.writeLock().lock();
         try {
-            for (Entry<?> entry : entries) {
-                Entry entry2 = (Entry)this.entries.get(entry.getData().getId());
-                if (entry2 == null) continue;
-                this.copyToFrom(entry2, entry);
+            for (SerializedEntry<?> serializedEntry : entries) {
+                Entry entry = (Entry)this.entries.get(serializedEntry.id);
+                if (entry == null) continue;
+                this.copyToFrom(entry, serializedEntry);
                 this.trackedEntity.onTrackedDataSet(entry.getData());
             }
         } finally {
@@ -224,15 +179,15 @@ public class DataTracker {
         this.dirty = true;
     }
 
-    private <T> void copyToFrom(Entry<T> to, Entry<?> from) {
-        if (!Objects.equals(from.data.getType(), to.data.getType())) {
+    private <T> void copyToFrom(Entry<T> to, SerializedEntry<?> from) {
+        if (!Objects.equals(from.handler(), to.data.getType())) {
             throw new IllegalStateException(String.format(Locale.ROOT, "Invalid entity data item type for field %d on entity %s: old=%s(%s), new=%s(%s)", to.data.getId(), this.trackedEntity, to.value, to.value.getClass(), from.value, from.value.getClass()));
         }
-        to.set(from.get());
+        to.set(from.value);
     }
 
     public boolean isEmpty() {
-        return this.empty;
+        return this.entries.isEmpty();
     }
 
     public void clearDirty() {
@@ -247,10 +202,12 @@ public class DataTracker {
     public static class Entry<T> {
         final TrackedData<T> data;
         T value;
+        private final T initialValue;
         private boolean dirty;
 
         public Entry(TrackedData<T> data, T value) {
             this.data = data;
+            this.initialValue = value;
             this.value = value;
             this.dirty = true;
         }
@@ -275,8 +232,42 @@ public class DataTracker {
             this.dirty = dirty;
         }
 
-        public Entry<T> copy() {
-            return new Entry<T>(this.data, this.data.getType().copy(this.value));
+        public boolean isUnchanged() {
+            return this.initialValue.equals(this.value);
+        }
+
+        public SerializedEntry<T> toSerialized() {
+            return SerializedEntry.of(this.data, this.value);
+        }
+    }
+
+    public record SerializedEntry<T>(int id, TrackedDataHandler<T> handler, T value) {
+        public static <T> SerializedEntry<T> of(TrackedData<T> data, T value) {
+            TrackedDataHandler<T> trackedDataHandler = data.getType();
+            return new SerializedEntry<T>(data.getId(), trackedDataHandler, trackedDataHandler.copy(value));
+        }
+
+        public void write(PacketByteBuf buf) {
+            int i = TrackedDataHandlerRegistry.getId(this.handler);
+            if (i < 0) {
+                throw new EncoderException("Unknown serializer type " + this.handler);
+            }
+            buf.writeByte(this.id);
+            buf.writeVarInt(i);
+            this.handler.write(buf, this.value);
+        }
+
+        public static SerializedEntry<?> fromBuf(PacketByteBuf buf, int id) {
+            int i = buf.readVarInt();
+            TrackedDataHandler<?> trackedDataHandler = TrackedDataHandlerRegistry.get(i);
+            if (trackedDataHandler == null) {
+                throw new DecoderException("Unknown serializer type " + i);
+            }
+            return SerializedEntry.fromBuf(buf, id, trackedDataHandler);
+        }
+
+        private static <T> SerializedEntry<T> fromBuf(PacketByteBuf buf, int id, TrackedDataHandler<T> handler) {
+            return new SerializedEntry<T>(id, handler, handler.read(buf));
         }
     }
 }

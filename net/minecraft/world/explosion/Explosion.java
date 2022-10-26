@@ -280,20 +280,32 @@ public class Explosion {
 
     @Nullable
     public LivingEntity getCausingEntity() {
+        ProjectileEntity projectileEntity;
         Entity entity;
         if (this.entity == null) {
             return null;
         }
-        if (this.entity instanceof TntEntity) {
-            return ((TntEntity)this.entity).getCausingEntity();
+        Entity entity2 = this.entity;
+        if (entity2 instanceof TntEntity) {
+            TntEntity tntEntity = (TntEntity)entity2;
+            return tntEntity.getCausingEntity();
         }
-        if (this.entity instanceof LivingEntity) {
-            return (LivingEntity)this.entity;
+        entity2 = this.entity;
+        if (entity2 instanceof LivingEntity) {
+            LivingEntity livingEntity = (LivingEntity)entity2;
+            return livingEntity;
         }
-        if (this.entity instanceof ProjectileEntity && (entity = ((ProjectileEntity)this.entity).getOwner()) instanceof LivingEntity) {
-            return (LivingEntity)entity;
+        entity2 = this.entity;
+        if (entity2 instanceof ProjectileEntity && (entity = (projectileEntity = (ProjectileEntity)entity2).getOwner()) instanceof LivingEntity) {
+            LivingEntity livingEntity2 = (LivingEntity)entity;
+            return livingEntity2;
         }
         return null;
+    }
+
+    @Nullable
+    public Entity getEntity() {
+        return this.entity;
     }
 
     public void clearAffectedBlocks() {

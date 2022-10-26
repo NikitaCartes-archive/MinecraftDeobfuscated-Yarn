@@ -755,7 +755,7 @@ implements Monster {
     public void crystalDestroyed(EndCrystalEntity crystal, BlockPos pos, DamageSource source) {
         PlayerEntity playerEntity = source.getAttacker() instanceof PlayerEntity ? (PlayerEntity)source.getAttacker() : this.world.getClosestPlayer(CLOSE_PLAYER_PREDICATE, pos.getX(), pos.getY(), pos.getZ());
         if (crystal == this.connectedCrystal) {
-            this.damagePart(this.head, DamageSource.explosion(playerEntity), 10.0f);
+            this.damagePart(this.head, DamageSource.explosion(crystal, playerEntity), 10.0f);
         }
         this.phaseManager.getCurrent().crystalDestroyed(crystal, pos, source, playerEntity);
     }

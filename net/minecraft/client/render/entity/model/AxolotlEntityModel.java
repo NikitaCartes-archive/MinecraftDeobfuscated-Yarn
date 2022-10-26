@@ -19,7 +19,7 @@ import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import org.joml.Vector3f;
 
 /**
  * Represents the model of an {@linkplain AxolotlEntity}.
@@ -157,7 +157,7 @@ extends AnimalModel<T> {
     }
 
     private void updateAnglesCache(T axolotl) {
-        Map<String, Vec3f> map = ((AxolotlEntity)axolotl).getModelAngles();
+        Map<String, Vector3f> map = ((AxolotlEntity)axolotl).getModelAngles();
         map.put("body", this.getAngles(this.body));
         map.put("head", this.getAngles(this.head));
         map.put("right_hind_leg", this.getAngles(this.rightHindLeg));
@@ -170,12 +170,12 @@ extends AnimalModel<T> {
         map.put("right_gills", this.getAngles(this.rightGills));
     }
 
-    private Vec3f getAngles(ModelPart part) {
-        return new Vec3f(part.pitch, part.yaw, part.roll);
+    private Vector3f getAngles(ModelPart part) {
+        return new Vector3f(part.pitch, part.yaw, part.roll);
     }
 
-    private void setAngles(ModelPart part, Vec3f angles) {
-        part.setAngles(angles.getX(), angles.getY(), angles.getZ());
+    private void setAngles(ModelPart part, Vector3f angles) {
+        part.setAngles(angles.x(), angles.y(), angles.z());
     }
 
     /**
@@ -185,7 +185,7 @@ extends AnimalModel<T> {
         this.body.pivotX = 0.0f;
         this.head.pivotY = 0.0f;
         this.body.pivotY = 20.0f;
-        Map<String, Vec3f> map = ((AxolotlEntity)axolotl).getModelAngles();
+        Map<String, Vector3f> map = ((AxolotlEntity)axolotl).getModelAngles();
         if (map.isEmpty()) {
             this.body.setAngles(headPitch * ((float)Math.PI / 180), headYaw * ((float)Math.PI / 180), 0.0f);
             this.head.setAngles(0.0f, 0.0f, 0.0f);

@@ -176,8 +176,8 @@ extends RealmsScreen {
         if (this.difficulty == Difficulty.PEACEFUL) {
             cyclingButtonWidget3.active = false;
         }
-        this.addDrawableChild(new ButtonWidget(this.column1_x, RealmsSlotOptionsScreen.row(13), this.column2_x, 20, Text.translatable("mco.configure.world.buttons.done"), button -> this.saveSettings()));
-        this.addDrawableChild(new ButtonWidget(i, RealmsSlotOptionsScreen.row(13), this.column2_x, 20, ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)));
+        this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("mco.configure.world.buttons.done"), button -> this.saveSettings()).setPositionAndSize(this.column1_x, RealmsSlotOptionsScreen.row(13), this.column2_x, 20).build());
+        this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)).setPositionAndSize(i, RealmsSlotOptionsScreen.row(13), this.column2_x, 20).build());
         this.addSelectableChild(this.nameEdit);
     }
 

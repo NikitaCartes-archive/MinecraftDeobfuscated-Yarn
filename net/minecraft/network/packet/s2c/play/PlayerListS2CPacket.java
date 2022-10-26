@@ -15,6 +15,7 @@ import net.minecraft.network.encryption.PublicPlayerSession;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Util;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
 
@@ -81,14 +82,19 @@ implements Packet<ClientPlayPacketListener> {
         return MoreObjects.toStringHelper(this).add("actions", this.actions).add("entries", this.entries).toString();
     }
 
-    public record Entry(UUID profileId, GameProfile profile, boolean listed, int latency, GameMode gameMode, @Nullable Text displayName, PublicPlayerSession.Serialized chatSession) {
+    public record Entry(UUID profileId, GameProfile profile, boolean listed, int latency, GameMode gameMode, @Nullable Text displayName, @Nullable PublicPlayerSession.Serialized chatSession) {
         Entry(ServerPlayerEntity player) {
-            this(player.getUuid(), player.getGameProfile(), true, player.pingMilliseconds, player.interactionManager.getGameMode(), player.getPlayerListName(), player.getSession().toSerialized());
+            this(player.getUuid(), player.getGameProfile(), true, player.pingMilliseconds, player.interactionManager.getGameMode(), player.getPlayerListName(), Util.map(player.getSession(), PublicPlayerSession::toSerialized));
         }
 
         @Nullable
         public Text displayName() {
             return this.displayName;
+        }
+
+        @Nullable
+        public PublicPlayerSession.Serialized chatSession() {
+            return this.chatSession;
         }
     }
 
@@ -102,8 +108,8 @@ implements Packet<ClientPlayPacketListener> {
             buf.writePropertyMap(entry.profile().getProperties());
         }),
         INITIALIZE_CHAT((serialized, buf) -> {
-            serialized.session = PublicPlayerSession.Serialized.fromBuf(buf);
-        }, (buf, entry) -> PublicPlayerSession.Serialized.write(buf, entry.chatSession())),
+            serialized.session = (PublicPlayerSession.Serialized)buf.readNullable(PublicPlayerSession.Serialized::fromBuf);
+        }, (buf, entry) -> buf.writeNullable(entry.chatSession, PublicPlayerSession.Serialized::write)),
         UPDATE_GAME_MODE((serialized, buf) -> {
             serialized.gameMode = GameMode.byId(buf.readVarInt());
         }, (buf, entry) -> buf.writeVarInt(entry.gameMode().getId())),
@@ -142,6 +148,7 @@ implements Packet<ClientPlayPacketListener> {
         GameMode gameMode = GameMode.DEFAULT;
         @Nullable
         Text displayName;
+        @Nullable
         PublicPlayerSession.Serialized session;
 
         Serialized(UUID profileId) {

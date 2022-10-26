@@ -7,12 +7,12 @@ import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.JsonOps;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.data.DataOutput;
@@ -41,30 +41,28 @@ implements DataProvider {
     }
 
     @Override
-    public String getName() {
+    public final String getName() {
         return "Tags for " + this.registry.getKey().getValue();
     }
 
     protected abstract void configure();
 
     @Override
-    public void run(DataWriter writer) {
+    public CompletableFuture<?> run(DataWriter writer) {
         this.tagBuilders.clear();
         this.configure();
-        this.tagBuilders.forEach((id, builder) -> {
-            List<TagEntry> list = builder.build();
+        return CompletableFuture.allOf((CompletableFuture[])this.tagBuilders.entrySet().stream().map(entry -> {
+            Identifier identifier = (Identifier)entry.getKey();
+            TagBuilder tagBuilder = (TagBuilder)entry.getValue();
+            List<TagEntry> list = tagBuilder.build();
             List<TagEntry> list2 = list.stream().filter(tag -> !tag.canAdd(this.registry::containsId, this.tagBuilders::containsKey)).toList();
             if (!list2.isEmpty()) {
-                throw new IllegalArgumentException(String.format(Locale.ROOT, "Couldn't define tag %s as it is missing following references: %s", id, list2.stream().map(Objects::toString).collect(Collectors.joining(","))));
+                throw new IllegalArgumentException(String.format(Locale.ROOT, "Couldn't define tag %s as it is missing following references: %s", identifier, list2.stream().map(Objects::toString).collect(Collectors.joining(","))));
             }
             JsonElement jsonElement = TagFile.CODEC.encodeStart(JsonOps.INSTANCE, new TagFile(list, false)).getOrThrow(false, LOGGER::error);
-            Path path = this.pathResolver.resolveJson((Identifier)id);
-            try {
-                DataProvider.writeToPath(writer, jsonElement, path);
-            } catch (IOException iOException) {
-                LOGGER.error("Couldn't save tags to {}", (Object)path, (Object)iOException);
-            }
-        });
+            Path path = this.pathResolver.resolveJson(identifier);
+            return DataProvider.writeToPath(writer, jsonElement, path);
+        }).toArray(CompletableFuture[]::new));
     }
 
     protected ObjectBuilder<T> getOrCreateTagBuilder(TagKey<T> tag) {

@@ -57,7 +57,7 @@ Nameable {
     public static final int SECONDARY_PROPERTY_INDEX = 2;
     public static final int PROPERTY_COUNT = 3;
     private static final int field_31305 = 10;
-    private static final Text field_40328 = Text.translatable("container.beacon");
+    private static final Text CONTAINER_NAME_TEXT = Text.translatable("container.beacon");
     List<BeamSegment> beamSegments = Lists.newArrayList();
     private List<BeamSegment> field_19178 = Lists.newArrayList();
     int level;
@@ -312,7 +312,7 @@ Nameable {
         if (this.customName != null) {
             return this.customName;
         }
-        return field_40328;
+        return CONTAINER_NAME_TEXT;
     }
 
     @Override

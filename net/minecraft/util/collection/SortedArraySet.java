@@ -154,7 +154,7 @@ extends AbstractSet<T> {
 
     @Override
     public Object[] toArray() {
-        return (Object[])this.elements.clone();
+        return Arrays.copyOf(this.elements, this.size, Object[].class);
     }
 
     @Override

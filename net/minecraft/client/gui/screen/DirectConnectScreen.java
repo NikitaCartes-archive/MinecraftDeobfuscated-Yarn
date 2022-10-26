@@ -51,8 +51,8 @@ extends Screen {
     @Override
     protected void init() {
         this.client.keyboard.setRepeatEvents(true);
-        this.selectServerButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96 + 12, 200, 20, Text.translatable("selectServer.select"), button -> this.saveAndClose()));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20, ScreenTexts.CANCEL, button -> this.callback.accept(false)));
+        this.selectServerButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("selectServer.select"), button -> this.saveAndClose()).setPositionAndSize(this.width / 2 - 100, this.height / 4 + 96 + 12, 200, 20).build());
+        this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> this.callback.accept(false)).setPositionAndSize(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20).build());
         this.addressField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 116, 200, 20, Text.translatable("addServer.enterIp"));
         this.addressField.setMaxLength(128);
         this.addressField.setTextFieldFocused(true);

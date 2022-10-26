@@ -30,13 +30,13 @@ extends SimpleOptionsScreen {
 
     @Override
     protected void initFooter() {
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 27, 150, 20, Text.translatable("options.accessibility.link"), button -> this.client.setScreen(new ConfirmLinkScreen(openInBrowser -> {
+        this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("options.accessibility.link"), button -> this.client.setScreen(new ConfirmLinkScreen(openInBrowser -> {
             if (openInBrowser) {
                 Util.getOperatingSystem().open(GUIDE_URL);
             }
             this.client.setScreen(this);
-        }, GUIDE_URL, true))));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height - 27, 150, 20, ScreenTexts.DONE, button -> this.client.setScreen(this.parent)));
+        }, GUIDE_URL, true))).setPositionAndSize(this.width / 2 - 155, this.height - 27, 150, 20).build());
+        this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.DONE, button -> this.client.setScreen(this.parent)).setPositionAndSize(this.width / 2 + 5, this.height - 27, 150, 20).build());
     }
 }
 

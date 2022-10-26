@@ -65,8 +65,8 @@ public interface StringIdentifiable {
     @Deprecated
     public static class Codec<E extends Enum<E>>
     implements com.mojang.serialization.Codec<E> {
-        private com.mojang.serialization.Codec<E> base;
-        private Function<String, E> idToIdentifiable;
+        private final com.mojang.serialization.Codec<E> base;
+        private final Function<String, E> idToIdentifiable;
 
         public Codec(E[] values, Function<String, E> idToIdentifiable) {
             this.base = Codecs.orCompressed(Codecs.idChecked(identifiable -> ((StringIdentifiable)identifiable).asString(), idToIdentifiable), Codecs.rawIdChecked(enum_ -> ((Enum)enum_).ordinal(), ordinal -> ordinal >= 0 && ordinal < values.length ? values[ordinal] : null, -1));

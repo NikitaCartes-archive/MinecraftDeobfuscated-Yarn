@@ -14,7 +14,7 @@ import java.util.function.Function;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.dynamic.Codecs;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.PositionSource;
@@ -22,7 +22,7 @@ import net.minecraft.world.event.PositionSourceType;
 
 public class EntityPositionSource
 implements PositionSource {
-    public static final Codec<EntityPositionSource> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codecs.UUID.fieldOf("source_entity")).forGetter(EntityPositionSource::getUuid), ((MapCodec)Codec.FLOAT.fieldOf("y_offset")).orElse(Float.valueOf(0.0f)).forGetter(entityPositionSource -> Float.valueOf(entityPositionSource.yOffset))).apply((Applicative<EntityPositionSource, ?>)instance, (uuid, yOffset) -> new EntityPositionSource(Either.right(Either.left(uuid)), yOffset.floatValue())));
+    public static final Codec<EntityPositionSource> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Uuids.INT_STREAM_CODEC.fieldOf("source_entity")).forGetter(EntityPositionSource::getUuid), ((MapCodec)Codec.FLOAT.fieldOf("y_offset")).orElse(Float.valueOf(0.0f)).forGetter(entityPositionSource -> Float.valueOf(entityPositionSource.yOffset))).apply((Applicative<EntityPositionSource, ?>)instance, (uuid, yOffset) -> new EntityPositionSource(Either.right(Either.left(uuid)), yOffset.floatValue())));
     private Either<Entity, Either<UUID, Integer>> source;
     final float yOffset;
 

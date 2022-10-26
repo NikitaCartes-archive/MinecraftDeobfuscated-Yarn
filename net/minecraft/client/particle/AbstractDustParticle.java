@@ -26,9 +26,9 @@ extends SpriteBillboardParticle {
         this.velocityY *= (double)0.1f;
         this.velocityZ *= (double)0.1f;
         float f = this.random.nextFloat() * 0.4f + 0.6f;
-        this.red = this.darken(((AbstractDustParticleEffect)parameters).getColor().getX(), f);
-        this.green = this.darken(((AbstractDustParticleEffect)parameters).getColor().getY(), f);
-        this.blue = this.darken(((AbstractDustParticleEffect)parameters).getColor().getZ(), f);
+        this.red = this.darken(((AbstractDustParticleEffect)parameters).getColor().x(), f);
+        this.green = this.darken(((AbstractDustParticleEffect)parameters).getColor().y(), f);
+        this.blue = this.darken(((AbstractDustParticleEffect)parameters).getColor().z(), f);
         this.scale *= 0.75f * ((AbstractDustParticleEffect)parameters).getScale();
         int i = (int)(8.0 / (this.random.nextDouble() * 0.8 + 0.2));
         this.maxAge = (int)Math.max((float)i * ((AbstractDustParticleEffect)parameters).getScale(), 1.0f);

@@ -15,6 +15,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.ClickEvent;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -39,11 +40,12 @@ extends Screen {
     protected void init() {
         this.ticksSinceDeath = 0;
         this.buttons.clear();
-        this.buttons.add(this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 72, 200, 20, this.isHardcore ? Text.translatable("deathScreen.spectate") : Text.translatable("deathScreen.respawn"), button -> {
+        MutableText text = this.isHardcore ? Text.translatable("deathScreen.spectate") : Text.translatable("deathScreen.respawn");
+        this.buttons.add(this.addDrawableChild(ButtonWidget.createBuilder(text, button -> {
             this.client.player.requestRespawn();
             this.client.setScreen(null);
-        })));
-        this.buttons.add(this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96, 200, 20, Text.translatable("deathScreen.titleScreen"), button -> {
+        }).setPositionAndSize(this.width / 2 - 100, this.height / 4 + 72, 200, 20).build()));
+        this.buttons.add(this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("deathScreen.titleScreen"), button -> {
             if (this.isHardcore) {
                 this.quitLevel();
                 return;
@@ -51,7 +53,7 @@ extends Screen {
             ConfirmScreen confirmScreen = new ConfirmScreen(this::onConfirmQuit, Text.translatable("deathScreen.quit.confirm"), ScreenTexts.EMPTY, Text.translatable("deathScreen.titleScreen"), Text.translatable("deathScreen.respawn"));
             this.client.setScreen(confirmScreen);
             confirmScreen.disableButtons(20);
-        })));
+        }).setPositionAndSize(this.width / 2 - 100, this.height / 4 + 96, 200, 20).build()));
         for (ButtonWidget buttonWidget : this.buttons) {
             buttonWidget.active = false;
         }

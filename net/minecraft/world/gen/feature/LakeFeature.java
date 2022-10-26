@@ -64,7 +64,7 @@ extends Feature<Config> {
                 }
             }
         }
-        BlockState blockState = config.fluid().getBlockState(random, blockPos);
+        BlockState blockState = config.fluid().get(random, blockPos);
         for (s = 0; s < 16; ++s) {
             for (t = 0; t < 16; ++t) {
                 for (int u = 0; u < 8; ++u) {
@@ -93,7 +93,7 @@ extends Feature<Config> {
                 }
             }
         }
-        BlockState blockState2 = config.barrier().getBlockState(random, blockPos);
+        BlockState blockState2 = config.barrier().get(random, blockPos);
         if (!blockState2.isAir()) {
             for (t = 0; t < 16; ++t) {
                 for (int u = 0; u < 16; ++u) {

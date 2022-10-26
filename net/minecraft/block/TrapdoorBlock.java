@@ -49,14 +49,14 @@ implements Waterloggable {
     protected static final VoxelShape NORTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 13.0, 16.0, 16.0, 16.0);
     protected static final VoxelShape OPEN_BOTTOM_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 3.0, 16.0);
     protected static final VoxelShape OPEN_TOP_SHAPE = Block.createCuboidShape(0.0, 13.0, 0.0, 16.0, 16.0, 16.0);
-    private final SoundEvent field_40317;
-    private final SoundEvent field_40318;
+    private final SoundEvent closeSound;
+    private final SoundEvent openSound;
 
-    protected TrapdoorBlock(AbstractBlock.Settings settings, SoundEvent soundEvent, SoundEvent soundEvent2) {
+    protected TrapdoorBlock(AbstractBlock.Settings settings, SoundEvent closeSound, SoundEvent openSound) {
         super(settings);
         this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)).with(OPEN, false)).with(HALF, BlockHalf.BOTTOM)).with(POWERED, false)).with(WATERLOGGED, false));
-        this.field_40317 = soundEvent;
-        this.field_40318 = soundEvent2;
+        this.closeSound = closeSound;
+        this.openSound = openSound;
     }
 
     @Override
@@ -110,7 +110,7 @@ implements Waterloggable {
     }
 
     protected void playToggleSound(@Nullable PlayerEntity player, World world, BlockPos pos, boolean open) {
-        world.playSound(player, pos, open ? this.field_40318 : this.field_40317, SoundCategory.BLOCKS, 1.0f, world.getRandom().nextFloat() * 0.1f + 0.9f);
+        world.playSound(player, pos, open ? this.openSound : this.closeSound, SoundCategory.BLOCKS, 1.0f, world.getRandom().nextFloat() * 0.1f + 0.9f);
         world.emitGameEvent((Entity)player, open ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
     }
 

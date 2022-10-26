@@ -90,7 +90,7 @@ extends Feature<VegetationPatchFeatureConfig> {
     protected boolean placeGround(StructureWorldAccess world, VegetationPatchFeatureConfig config, Predicate<BlockState> replaceable, Random random, BlockPos.Mutable pos, int depth) {
         for (int i = 0; i < depth; ++i) {
             BlockState blockState2;
-            BlockState blockState = config.groundState.getBlockState(random, pos);
+            BlockState blockState = config.groundState.get(random, pos);
             if (blockState.isOf((blockState2 = world.getBlockState(pos)).getBlock())) continue;
             if (!replaceable.test(blockState2)) {
                 return i != 0;

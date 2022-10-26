@@ -16,7 +16,6 @@ import net.minecraft.client.font.FontStorage;
 import net.minecraft.client.font.Glyph;
 import net.minecraft.client.font.GlyphRenderer;
 import net.minecraft.client.font.TextHandler;
-import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -32,10 +31,10 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
 import net.minecraft.util.math.AffineTransformation;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 /**
  * Manages the rendering of text.
@@ -48,7 +47,7 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class TextRenderer {
     private static final float Z_INDEX = 0.01f;
-    private static final Vec3f FORWARD_SHIFT = new Vec3f(0.0f, 0.0f, 0.03f);
+    private static final Vector3f FORWARD_SHIFT = new Vector3f(0.0f, 0.0f, 0.03f);
     public static final int ARABIC_SHAPING_LETTERS_SHAPE = 8;
     /**
      * The font height of the text that is rendered by the text renderer.
@@ -133,14 +132,14 @@ public class TextRenderer {
             return 0;
         }
         VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-        int i = this.draw(text, x, y, color, shadow, matrix, immediate, false, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE, mirror);
+        int i = this.draw(text, x, y, color, shadow, matrix, immediate, false, 0, 0xF000F0, mirror);
         immediate.draw();
         return i;
     }
 
     private int draw(OrderedText text, float x, float y, int color, Matrix4f matrix, boolean shadow) {
         VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-        int i = this.draw(text, x, y, color, shadow, matrix, (VertexConsumerProvider)immediate, false, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE);
+        int i = this.draw(text, x, y, color, shadow, matrix, (VertexConsumerProvider)immediate, false, 0, 0xF000F0);
         immediate.draw();
         return i;
     }
@@ -214,10 +213,10 @@ public class TextRenderer {
             text = this.mirror(text);
         }
         color = TextRenderer.tweakTransparency(color);
-        Matrix4f matrix4f = matrix.copy();
+        Matrix4f matrix4f = new Matrix4f(matrix);
         if (shadow) {
             this.drawLayer(text, x, y, color, true, matrix, vertexConsumers, seeThrough, backgroundColor, light);
-            matrix4f.addToLastColumn(FORWARD_SHIFT);
+            matrix4f.translate(FORWARD_SHIFT);
         }
         x = this.drawLayer(text, x, y, color, false, matrix4f, vertexConsumers, seeThrough, backgroundColor, light);
         return (int)x + (shadow ? 1 : 0);
@@ -225,10 +224,10 @@ public class TextRenderer {
 
     private int drawInternal(OrderedText text, float x, float y, int color, boolean shadow, Matrix4f matrix, VertexConsumerProvider vertexConsumerProvider, boolean seeThrough, int backgroundColor, int light) {
         color = TextRenderer.tweakTransparency(color);
-        Matrix4f matrix4f = matrix.copy();
+        Matrix4f matrix4f = new Matrix4f(matrix);
         if (shadow) {
             this.drawLayer(text, x, y, color, true, matrix, vertexConsumerProvider, seeThrough, backgroundColor, light);
-            matrix4f.addToLastColumn(FORWARD_SHIFT);
+            matrix4f.translate(FORWARD_SHIFT);
         }
         x = this.drawLayer(text, x, y, color, false, matrix4f, vertexConsumerProvider, seeThrough, backgroundColor, light);
         return (int)x + (shadow ? 1 : 0);
@@ -416,9 +415,9 @@ public class TextRenderer {
             TextColor textColor = style.getColor();
             if (textColor != null) {
                 int k = textColor.getRgb();
-                g = (float)(k >> 16 & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 0xF)) / 255.0f * this.brightnessMultiplier;
-                h = (float)(k >> 8 & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 0xF)) / 255.0f * this.brightnessMultiplier;
-                l = (float)(k & (LightmapTextureManager.MAX_BLOCK_LIGHT_COORDINATE | 0xF)) / 255.0f * this.brightnessMultiplier;
+                g = (float)(k >> 16 & 0xFF) / 255.0f * this.brightnessMultiplier;
+                h = (float)(k >> 8 & 0xFF) / 255.0f * this.brightnessMultiplier;
+                l = (float)(k & 0xFF) / 255.0f * this.brightnessMultiplier;
             } else {
                 g = this.red;
                 h = this.green;

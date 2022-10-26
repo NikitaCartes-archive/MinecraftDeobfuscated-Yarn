@@ -19,7 +19,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.random.Random;
 
 @Environment(value=EnvType.CLIENT)
@@ -70,13 +70,13 @@ extends EntityRenderer<ItemEntity> {
         int k = this.getRenderedAmount(itemStack);
         float h = 0.25f;
         float l = MathHelper.sin(((float)itemEntity.getItemAge() + g) / 10.0f + itemEntity.uniqueOffset) * 0.1f + 0.1f;
-        float m = bakedModel.getTransformation().getTransformation((ModelTransformation.Mode)ModelTransformation.Mode.GROUND).scale.getY();
-        matrixStack.translate(0.0, l + 0.25f * m, 0.0);
+        float m = bakedModel.getTransformation().getTransformation((ModelTransformation.Mode)ModelTransformation.Mode.GROUND).scale.y();
+        matrixStack.translate(0.0f, l + 0.25f * m, 0.0f);
         float n = itemEntity.getRotation(g);
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getRadialQuaternion(n));
-        float o = bakedModel.getTransformation().ground.scale.getX();
-        float p = bakedModel.getTransformation().ground.scale.getY();
-        float q = bakedModel.getTransformation().ground.scale.getZ();
+        matrixStack.multiply(RotationAxis.POSITIVE_Y.rotation(n));
+        float o = bakedModel.getTransformation().ground.scale.x();
+        float p = bakedModel.getTransformation().ground.scale.y();
+        float q = bakedModel.getTransformation().ground.scale.z();
         if (!bl) {
             float r = -0.0f * (float)(k - 1) * 0.5f * o;
             s = -0.0f * (float)(k - 1) * 0.5f * p;
@@ -94,7 +94,7 @@ extends EntityRenderer<ItemEntity> {
                 } else {
                     s = (this.random.nextFloat() * 2.0f - 1.0f) * 0.15f * 0.5f;
                     t = (this.random.nextFloat() * 2.0f - 1.0f) * 0.15f * 0.5f;
-                    matrixStack.translate(s, t, 0.0);
+                    matrixStack.translate(s, t, 0.0f);
                 }
             }
             this.itemRenderer.renderItem(itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV, bakedModel);

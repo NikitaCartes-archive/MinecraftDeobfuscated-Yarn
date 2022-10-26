@@ -907,6 +907,7 @@ public class GameOptions {
         visitor.accept("showAutosaveIndicator", this.showAutosaveIndicator);
         visitor.accept("allowServerListing", this.allowServerListing);
         visitor.accept("onlyShowSecureChat", this.onlyShowSecureChat);
+        visitor.accept("panoramaScrollSpeed", this.panoramaSpeed);
         for (KeyBinding keyBinding : this.allKeys) {
             String string2;
             String string = keyBinding.getBoundKeyTranslationKey();

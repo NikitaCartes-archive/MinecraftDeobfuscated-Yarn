@@ -220,11 +220,11 @@ public class VillagerGossips {
         }
 
         public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-            return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString(TARGET_KEY), Uuids.CODEC.encodeStart(ops, this.target).result().orElseThrow(RuntimeException::new), ops.createString(TYPE_KEY), ops.createString(this.type.key), ops.createString(VALUE_KEY), ops.createInt(this.value))));
+            return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString(TARGET_KEY), Uuids.INT_STREAM_CODEC.encodeStart(ops, this.target).result().orElseThrow(RuntimeException::new), ops.createString(TYPE_KEY), ops.createString(this.type.key), ops.createString(VALUE_KEY), ops.createInt(this.value))));
         }
 
         public static DataResult<GossipEntry> deserialize(Dynamic<?> dynamic) {
-            return DataResult.unbox(DataResult.instance().group(dynamic.get(TARGET_KEY).read(Uuids.CODEC), dynamic.get(TYPE_KEY).asString().map(VillageGossipType::byKey), dynamic.get(VALUE_KEY).read(Codecs.POSITIVE_INT)).apply(DataResult.instance(), GossipEntry::new));
+            return DataResult.unbox(DataResult.instance().group(dynamic.get(TARGET_KEY).read(Uuids.INT_STREAM_CODEC), dynamic.get(TYPE_KEY).asString().map(VillageGossipType::byKey), dynamic.get(VALUE_KEY).read(Codecs.POSITIVE_INT)).apply(DataResult.instance(), GossipEntry::new));
         }
     }
 }

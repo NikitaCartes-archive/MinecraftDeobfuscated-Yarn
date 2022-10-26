@@ -190,7 +190,7 @@ AutoCloseable {
             multimap.put(id, spriteId);
             return atlasPreparation.getMissingSprite();
         });
-        multimap.asMap().forEach((modelId, spriteIds) -> LOGGER.warn("Missing textures in model {}:\n{}", modelId, (Object)spriteIds.stream().sorted(SpriteIdentifier.field_40566).map(spriteIdentifier -> "    " + spriteIdentifier.getAtlasId() + ":" + spriteIdentifier.getTextureId()).collect(Collectors.joining("\n"))));
+        multimap.asMap().forEach((modelId, spriteIds) -> LOGGER.warn("Missing textures in model {}:\n{}", modelId, (Object)spriteIds.stream().sorted(SpriteIdentifier.COMPARATOR).map(spriteIdentifier -> "    " + spriteIdentifier.getAtlasId() + ":" + spriteIdentifier.getTextureId()).collect(Collectors.joining("\n"))));
         profiler.swap("dispatch");
         Map<Identifier, BakedModel> map = modelLoader.getBakedModelMap();
         BakedModel bakedModel = map.get(ModelLoader.MISSING_ID);

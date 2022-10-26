@@ -15,7 +15,7 @@ import net.minecraft.client.render.entity.model.EvokerFangsEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.mob.EvokerFangsEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 
 @Environment(value=EnvType.CLIENT)
 public class EvokerFangsEntityRenderer
@@ -39,7 +39,7 @@ extends EntityRenderer<EvokerFangsEntity> {
             j *= (1.0f - h) / 0.1f;
         }
         matrixStack.push();
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(90.0f - evokerFangsEntity.getYaw()));
+        matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90.0f - evokerFangsEntity.getYaw()));
         matrixStack.scale(-j, -j, j);
         float k = 0.03125f;
         matrixStack.translate(0.0, -0.626, 0.0);

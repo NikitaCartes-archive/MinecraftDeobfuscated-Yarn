@@ -218,7 +218,7 @@ public class Main {
                 LOGGER.error("Unhandled game exception", throwable2);
             }
         }
-        BufferRenderer.unbindAll();
+        BufferRenderer.reset();
         try {
             minecraftClient.scheduleStop();
             if (thread2 != null) {

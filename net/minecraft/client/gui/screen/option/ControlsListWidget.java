@@ -112,43 +112,33 @@ extends ElementListWidget<Entry> {
         private final ButtonWidget editButton;
         private final ButtonWidget resetButton;
 
-        KeyBindingEntry(final KeyBinding binding, final Text bindingName) {
+        KeyBindingEntry(KeyBinding binding, Text bindingName) {
             this.binding = binding;
             this.bindingName = bindingName;
-            this.editButton = new ButtonWidget(0, 0, 75, 20, bindingName, button -> {
+            this.editButton = ButtonWidget.createBuilder(bindingName, button -> {
                 ControlsListWidget.this.parent.selectedKeyBinding = binding;
-            }){
-
-                @Override
-                protected MutableText getNarrationMessage() {
-                    if (binding.isUnbound()) {
-                        return Text.translatable("narrator.controls.unbound", bindingName);
-                    }
-                    return Text.translatable("narrator.controls.bound", bindingName, super.getNarrationMessage());
+            }).setPositionAndSize(0, 0, 75, 20).setTooltipSupplier(ButtonWidget.EMPTY_TOOLTIP).setNarrationSupplier(supplier -> {
+                if (binding.isUnbound()) {
+                    return Text.translatable("narrator.controls.unbound", bindingName);
                 }
-            };
-            this.resetButton = new ButtonWidget(0, 0, 50, 20, Text.translatable("controls.reset"), button -> {
+                return Text.translatable("narrator.controls.bound", bindingName, supplier.get());
+            }).build();
+            this.resetButton = ButtonWidget.createBuilder(Text.translatable("controls.reset"), button -> {
                 ((ControlsListWidget)ControlsListWidget.this).client.options.setKeyCode(binding, binding.getDefaultKey());
                 KeyBinding.updateKeysByCode();
-            }){
-
-                @Override
-                protected MutableText getNarrationMessage() {
-                    return Text.translatable("narrator.controls.reset", bindingName);
-                }
-            };
+            }).setPositionAndSize(0, 0, 50, 20).setTooltipSupplier(ButtonWidget.EMPTY_TOOLTIP).setNarrationSupplier(supplier -> Text.translatable("narrator.controls.reset", bindingName)).build();
         }
 
         @Override
         public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             boolean bl = ControlsListWidget.this.parent.selectedKeyBinding == this.binding;
             ((ControlsListWidget)ControlsListWidget.this).client.textRenderer.draw(matrices, this.bindingName, (float)(x + 90 - ControlsListWidget.this.maxKeyNameLength), (float)(y + entryHeight / 2 - ((ControlsListWidget)ControlsListWidget.this).client.textRenderer.fontHeight / 2), 0xFFFFFF);
-            this.resetButton.x = x + 190;
-            this.resetButton.y = y;
+            this.resetButton.setX(x + 190);
+            this.resetButton.setY(y);
             this.resetButton.active = !this.binding.isDefault();
             this.resetButton.render(matrices, mouseX, mouseY, tickDelta);
-            this.editButton.x = x + 105;
-            this.editButton.y = y;
+            this.editButton.setX(x + 105);
+            this.editButton.setY(y);
             this.editButton.setMessage(this.binding.getBoundKeyLocalizedText());
             boolean bl2 = false;
             if (!this.binding.isUnbound()) {

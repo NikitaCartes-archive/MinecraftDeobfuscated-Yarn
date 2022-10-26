@@ -61,7 +61,7 @@ implements GameEventListener {
                 int i = livingEntity.getXpToDrop();
                 if (livingEntity.shouldDropXp() && i > 0) {
                     this.spreadManager.spread(new BlockPos(emitterPos.withBias(Direction.UP, 0.5)), i);
-                    this.method_45471(livingEntity);
+                    this.triggerCriteria(livingEntity);
                 }
                 livingEntity.disableExperienceDropping();
                 SculkCatalystBlock.bloom(world, this.pos, this.getCachedState(), world.getRandom());
@@ -71,12 +71,12 @@ implements GameEventListener {
         return false;
     }
 
-    private void method_45471(LivingEntity livingEntity) {
-        LivingEntity livingEntity2 = livingEntity.getAttacker();
-        if (livingEntity2 instanceof ServerPlayerEntity) {
-            ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity2;
-            DamageSource damageSource = livingEntity.getRecentDamageSource() == null ? DamageSource.player(serverPlayerEntity) : livingEntity.getRecentDamageSource();
-            Criteria.KILL_MOB_NEAR_SCULK_CATALYST.trigger(serverPlayerEntity, livingEntity, damageSource);
+    private void triggerCriteria(LivingEntity deadEntity) {
+        LivingEntity livingEntity = deadEntity.getAttacker();
+        if (livingEntity instanceof ServerPlayerEntity) {
+            ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
+            DamageSource damageSource = deadEntity.getRecentDamageSource() == null ? DamageSource.player(serverPlayerEntity) : deadEntity.getRecentDamageSource();
+            Criteria.KILL_MOB_NEAR_SCULK_CATALYST.trigger(serverPlayerEntity, deadEntity, damageSource);
         }
     }
 

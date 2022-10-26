@@ -25,8 +25,7 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Quaternion;
-import net.minecraft.util.math.Vec3f;
+import org.joml.Quaternionf;
 
 @Environment(value=EnvType.CLIENT)
 public class InventoryScreen
@@ -114,16 +113,16 @@ implements RecipeBookProvider {
         float g = (float)Math.atan(mouseY / 40.0f);
         MatrixStack matrixStack = RenderSystem.getModelViewStack();
         matrixStack.push();
-        matrixStack.translate(x, y, 1050.0);
+        matrixStack.translate(x, y, 1050.0f);
         matrixStack.scale(1.0f, 1.0f, -1.0f);
         RenderSystem.applyModelViewMatrix();
         MatrixStack matrixStack2 = new MatrixStack();
-        matrixStack2.translate(0.0, 0.0, 1000.0);
+        matrixStack2.translate(0.0f, 0.0f, 1000.0f);
         matrixStack2.scale(size, size, size);
-        Quaternion quaternion = Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0f);
-        Quaternion quaternion2 = Vec3f.POSITIVE_X.getDegreesQuaternion(g * 20.0f);
-        quaternion.hamiltonProduct(quaternion2);
-        matrixStack2.multiply(quaternion);
+        Quaternionf quaternionf = new Quaternionf().rotateZ((float)Math.PI);
+        Quaternionf quaternionf2 = new Quaternionf().rotateX(g * 20.0f * ((float)Math.PI / 180));
+        quaternionf.mul(quaternionf2);
+        matrixStack2.multiply(quaternionf);
         float h = entity.bodyYaw;
         float i = entity.getYaw();
         float j = entity.getPitch();
@@ -136,8 +135,8 @@ implements RecipeBookProvider {
         entity.prevHeadYaw = entity.getYaw();
         DiffuseLighting.method_34742();
         EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
-        quaternion2.conjugate();
-        entityRenderDispatcher.setRotation(quaternion2);
+        quaternionf2.conjugate();
+        entityRenderDispatcher.setRotation(quaternionf2);
         entityRenderDispatcher.setRenderShadows(false);
         VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
         RenderSystem.runAsFancy(() -> entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 0.0f, 1.0f, matrixStack2, immediate, 0xF000F0));

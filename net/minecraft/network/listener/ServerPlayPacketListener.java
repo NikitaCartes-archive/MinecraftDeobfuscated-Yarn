@@ -30,6 +30,7 @@ import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerSessionC2SPacket;
 import net.minecraft.network.packet.c2s.play.QueryBlockNbtC2SPacket;
 import net.minecraft.network.packet.c2s.play.QueryEntityNbtC2SPacket;
 import net.minecraft.network.packet.c2s.play.RecipeBookDataC2SPacket;
@@ -150,5 +151,7 @@ extends ServerPacketListener {
     public void onUpdateDifficulty(UpdateDifficultyC2SPacket var1);
 
     public void onUpdateDifficultyLock(UpdateDifficultyLockC2SPacket var1);
+
+    public void onPlayerSession(PlayerSessionC2SPacket var1);
 }
 

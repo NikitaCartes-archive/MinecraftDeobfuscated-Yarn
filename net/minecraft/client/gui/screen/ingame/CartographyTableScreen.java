@@ -88,7 +88,7 @@ extends HandledScreen<CartographyTableScreenHandler> {
             this.drawMap(matrices, mapId, mapState, i + 86, j + 16, 0.34f);
             RenderSystem.setShaderTexture(0, TEXTURE);
             matrices.push();
-            matrices.translate(0.0, 0.0, 1.0);
+            matrices.translate(0.0f, 0.0f, 1.0f);
             this.drawTexture(matrices, i + 67, j + 13 + 16, this.backgroundWidth, 132, 50, 66);
             this.drawMap(matrices, mapId, mapState, i + 70, j + 32, 0.34f);
             matrices.pop();
@@ -97,7 +97,7 @@ extends HandledScreen<CartographyTableScreenHandler> {
             this.drawMap(matrices, mapId, mapState, i + 71, j + 17, 0.45f);
             RenderSystem.setShaderTexture(0, TEXTURE);
             matrices.push();
-            matrices.translate(0.0, 0.0, 1.0);
+            matrices.translate(0.0f, 0.0f, 1.0f);
             this.drawTexture(matrices, i + 66, j + 12, 0, this.backgroundHeight, 66, 66);
             matrices.pop();
         } else {
@@ -109,7 +109,7 @@ extends HandledScreen<CartographyTableScreenHandler> {
     private void drawMap(MatrixStack matrices, @Nullable Integer mapId, @Nullable MapState mapState, int x, int y, float scale) {
         if (mapId != null && mapState != null) {
             matrices.push();
-            matrices.translate(x, y, 1.0);
+            matrices.translate(x, y, 1.0f);
             matrices.scale(scale, scale, 1.0f);
             VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
             this.client.gameRenderer.getMapRenderer().draw(matrices, immediate, mapId, mapState, true, LightmapTextureManager.MAX_LIGHT_COORDINATE);

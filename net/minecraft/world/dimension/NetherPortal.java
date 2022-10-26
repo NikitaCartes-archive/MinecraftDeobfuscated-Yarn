@@ -23,7 +23,7 @@ import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
-public class AreaHelper {
+public class NetherPortal {
     private static final int MIN_WIDTH = 2;
     public static final int MAX_WIDTH = 21;
     private static final int field_31826 = 3;
@@ -38,20 +38,20 @@ public class AreaHelper {
     private int height;
     private final int width;
 
-    public static Optional<AreaHelper> getNewPortal(WorldAccess world, BlockPos pos, Direction.Axis axis) {
-        return AreaHelper.getOrEmpty(world, pos, areaHelper -> areaHelper.isValid() && areaHelper.foundPortalBlocks == 0, axis);
+    public static Optional<NetherPortal> getNewPortal(WorldAccess world, BlockPos pos, Direction.Axis axis) {
+        return NetherPortal.getOrEmpty(world, pos, areaHelper -> areaHelper.isValid() && areaHelper.foundPortalBlocks == 0, axis);
     }
 
-    public static Optional<AreaHelper> getOrEmpty(WorldAccess world, BlockPos pos, Predicate<AreaHelper> validator, Direction.Axis axis) {
-        Optional<AreaHelper> optional = Optional.of(new AreaHelper(world, pos, axis)).filter(validator);
+    public static Optional<NetherPortal> getOrEmpty(WorldAccess world, BlockPos pos, Predicate<NetherPortal> validator, Direction.Axis axis) {
+        Optional<NetherPortal> optional = Optional.of(new NetherPortal(world, pos, axis)).filter(validator);
         if (optional.isPresent()) {
             return optional;
         }
         Direction.Axis axis2 = axis == Direction.Axis.X ? Direction.Axis.Z : Direction.Axis.X;
-        return Optional.of(new AreaHelper(world, pos, axis2)).filter(validator);
+        return Optional.of(new NetherPortal(world, pos, axis2)).filter(validator);
     }
 
-    public AreaHelper(WorldAccess world, BlockPos pos, Direction.Axis axis) {
+    public NetherPortal(WorldAccess world, BlockPos pos, Direction.Axis axis) {
         this.world = world;
         this.axis = axis;
         this.negativeDir = axis == Direction.Axis.X ? Direction.WEST : Direction.SOUTH;
@@ -71,7 +71,7 @@ public class AreaHelper {
     @Nullable
     private BlockPos getLowerCorner(BlockPos pos) {
         int i = Math.max(this.world.getBottomY(), pos.getY() - 21);
-        while (pos.getY() > i && AreaHelper.validStateInsidePortal(this.world.getBlockState(pos.down()))) {
+        while (pos.getY() > i && NetherPortal.validStateInsidePortal(this.world.getBlockState(pos.down()))) {
             pos = pos.down();
         }
         Direction direction = this.negativeDir.getOpposite();
@@ -95,7 +95,7 @@ public class AreaHelper {
         for (int i = 0; i <= 21; ++i) {
             mutable.set(pos).move(direction, i);
             BlockState blockState = this.world.getBlockState(mutable);
-            if (!AreaHelper.validStateInsidePortal(blockState)) {
+            if (!NetherPortal.validStateInsidePortal(blockState)) {
                 if (!IS_VALID_FRAME_BLOCK.test(blockState, this.world, mutable)) break;
                 return i;
             }
@@ -136,7 +136,7 @@ public class AreaHelper {
             for (int j = 0; j < this.width; ++j) {
                 pos.set(this.lowerCorner).move(Direction.UP, i).move(this.negativeDir, j);
                 BlockState blockState = this.world.getBlockState(pos);
-                if (!AreaHelper.validStateInsidePortal(blockState)) {
+                if (!NetherPortal.validStateInsidePortal(blockState)) {
                     return i;
                 }
                 if (!blockState.isOf(Blocks.NETHER_PORTAL)) continue;

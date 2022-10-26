@@ -60,7 +60,7 @@ extends RealmsScreen {
 
     @Override
     public void init() {
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height - 52, 200, 20, Text.literal("Ok"), button -> this.client.setScreen(this.parent)));
+        this.addDrawableChild(ButtonWidget.createBuilder(Text.literal("Ok"), button -> this.client.setScreen(this.parent)).setPositionAndSize(this.width / 2 - 100, this.height - 52, 200, 20).build());
         this.description = MultilineText.create(this.textRenderer, (StringVisitable)this.errorMessages.getSecond(), this.width * 3 / 4);
     }
 

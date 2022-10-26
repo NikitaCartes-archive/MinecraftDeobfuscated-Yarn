@@ -38,11 +38,11 @@ public abstract class EntityLootTableGenerator
 implements LootTableGenerator {
     protected static final EntityPredicate.Builder NEEDS_ENTITY_ON_FIRE = EntityPredicate.Builder.create().flags(EntityFlagsPredicate.Builder.create().onFire(true).build());
     private static final Set<EntityType<?>> ENTITY_TYPES_IN_MISC_GROUP_TO_CHECK = ImmutableSet.of(EntityType.PLAYER, EntityType.ARMOR_STAND, EntityType.IRON_GOLEM, EntityType.SNOW_GOLEM, EntityType.VILLAGER);
-    private final FeatureSet field_40614;
+    private final FeatureSet requiredFeatures;
     private final Map<EntityType<?>, Map<Identifier, LootTable.Builder>> lootTables = Maps.newHashMap();
 
-    protected EntityLootTableGenerator(FeatureSet featureSet) {
-        this.field_40614 = featureSet;
+    protected EntityLootTableGenerator(FeatureSet requiredFeatures) {
+        this.requiredFeatures = requiredFeatures;
     }
 
     protected static LootTable.Builder createForSheep(ItemConvertible item) {
@@ -55,29 +55,29 @@ implements LootTableGenerator {
     public void accept(BiConsumer<Identifier, LootTable.Builder> exporter) {
         this.generate();
         HashSet set = Sets.newHashSet();
-        Registry.ENTITY_TYPE.streamEntries().forEach(reference -> {
-            EntityType entityType = (EntityType)reference.value();
-            if (!entityType.isEnabled(this.field_40614)) {
+        Registry.ENTITY_TYPE.streamEntries().forEach(entityType -> {
+            EntityType entityType2 = (EntityType)entityType.value();
+            if (!entityType2.isEnabled(this.requiredFeatures)) {
                 return;
             }
-            if (EntityLootTableGenerator.shouldCheck(entityType)) {
-                Map<Identifier, LootTable.Builder> map = this.lootTables.remove(entityType);
-                Identifier identifier2 = entityType.getLootTableId();
-                if (!(identifier2.equals(LootTables.EMPTY) || map != null && map.containsKey(identifier2))) {
-                    throw new IllegalStateException(String.format(Locale.ROOT, "Missing loottable '%s' for '%s'", identifier2, reference.registryKey().getValue()));
+            if (EntityLootTableGenerator.shouldCheck(entityType2)) {
+                Map<Identifier, LootTable.Builder> map = this.lootTables.remove(entityType2);
+                Identifier identifier = entityType2.getLootTableId();
+                if (!(identifier.equals(LootTables.EMPTY) || map != null && map.containsKey(identifier))) {
+                    throw new IllegalStateException(String.format(Locale.ROOT, "Missing loottable '%s' for '%s'", identifier, entityType.registryKey().getValue()));
                 }
                 if (map != null) {
-                    map.forEach((identifier, builder) -> {
-                        if (!set.add(identifier)) {
-                            throw new IllegalStateException(String.format(Locale.ROOT, "Duplicate loottable '%s' for '%s'", identifier, reference.registryKey().getValue()));
+                    map.forEach((lootTableId, lootTableBuilder) -> {
+                        if (!set.add(lootTableId)) {
+                            throw new IllegalStateException(String.format(Locale.ROOT, "Duplicate loottable '%s' for '%s'", lootTableId, entityType.registryKey().getValue()));
                         }
-                        exporter.accept((Identifier)identifier, (LootTable.Builder)builder);
+                        exporter.accept((Identifier)lootTableId, (LootTable.Builder)lootTableBuilder);
                     });
                 }
             } else {
-                Map<Identifier, LootTable.Builder> map = this.lootTables.remove(entityType);
+                Map<Identifier, LootTable.Builder> map = this.lootTables.remove(entityType2);
                 if (map != null) {
-                    throw new IllegalStateException(String.format(Locale.ROOT, "Weird loottables '%s' for '%s', not a LivingEntity so should not have loot", map.keySet().stream().map(Identifier::toString).collect(Collectors.joining(",")), reference.registryKey().getValue()));
+                    throw new IllegalStateException(String.format(Locale.ROOT, "Weird loottables '%s' for '%s', not a LivingEntity so should not have loot", map.keySet().stream().map(Identifier::toString).collect(Collectors.joining(",")), entityType.registryKey().getValue()));
                 }
             }
         });
@@ -102,8 +102,8 @@ implements LootTableGenerator {
         this.register(entityType, entityType.getLootTableId(), lootTable);
     }
 
-    protected void register(EntityType<?> entityType2, Identifier entityId, LootTable.Builder lootTable) {
-        this.lootTables.computeIfAbsent(entityType2, entityType -> new HashMap()).put(entityId, lootTable);
+    protected void register(EntityType<?> entityType, Identifier entityId, LootTable.Builder lootTable) {
+        this.lootTables.computeIfAbsent(entityType, type -> new HashMap()).put(entityId, lootTable);
     }
 }
 

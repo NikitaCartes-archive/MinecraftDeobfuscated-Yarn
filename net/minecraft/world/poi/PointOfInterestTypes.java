@@ -6,7 +6,6 @@ package net.minecraft.world.poi;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -47,7 +46,6 @@ public class PointOfInterestTypes {
     private static final Set<BlockState> BED_HEADS = ImmutableList.of(Blocks.RED_BED, Blocks.BLACK_BED, Blocks.BLUE_BED, Blocks.BROWN_BED, Blocks.CYAN_BED, Blocks.GRAY_BED, Blocks.GREEN_BED, Blocks.LIGHT_BLUE_BED, Blocks.LIGHT_GRAY_BED, Blocks.LIME_BED, Blocks.MAGENTA_BED, Blocks.ORANGE_BED, new Block[]{Blocks.PINK_BED, Blocks.PURPLE_BED, Blocks.WHITE_BED, Blocks.YELLOW_BED}).stream().flatMap(block -> block.getStateManager().getStates().stream()).filter(blockState -> blockState.get(BedBlock.PART) == BedPart.HEAD).collect(ImmutableSet.toImmutableSet());
     private static final Set<BlockState> CAULDRONS = ImmutableList.of(Blocks.CAULDRON, Blocks.LAVA_CAULDRON, Blocks.WATER_CAULDRON, Blocks.POWDER_SNOW_CAULDRON).stream().flatMap(block -> block.getStateManager().getStates().stream()).collect(ImmutableSet.toImmutableSet());
     private static final Map<BlockState, RegistryEntry<PointOfInterestType>> POI_STATES_TO_TYPE = Maps.newHashMap();
-    protected static final Set<BlockState> POI_STATES = new ObjectOpenHashSet<BlockState>(POI_STATES_TO_TYPE.keySet());
 
     private static Set<BlockState> getStatesOfBlock(Block block) {
         return ImmutableSet.copyOf(block.getStateManager().getStates());
@@ -75,6 +73,10 @@ public class PointOfInterestTypes {
 
     public static Optional<RegistryEntry<PointOfInterestType>> getTypeForState(BlockState state) {
         return Optional.ofNullable(POI_STATES_TO_TYPE.get(state));
+    }
+
+    public static boolean isPointOfInterest(BlockState state) {
+        return POI_STATES_TO_TYPE.containsKey(state);
     }
 
     public static PointOfInterestType registerAndGetDefault(Registry<PointOfInterestType> registry) {

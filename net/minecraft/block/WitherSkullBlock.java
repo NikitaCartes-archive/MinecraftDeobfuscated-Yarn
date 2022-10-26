@@ -66,7 +66,7 @@ extends SkullBlock {
         }
         WitherEntity witherEntity = EntityType.WITHER.create(world);
         if (witherEntity != null) {
-            CarvedPumpkinBlock.method_45454(world, result);
+            CarvedPumpkinBlock.breakPatternBlocks(world, result);
             BlockPos blockPos = result.translate(1, 2, 0).getBlockPos();
             witherEntity.refreshPositionAndAngles((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.55, (double)blockPos.getZ() + 0.5, result.getForwards().getAxis() == Direction.Axis.X ? 0.0f : 90.0f, 0.0f);
             witherEntity.bodyYaw = result.getForwards().getAxis() == Direction.Axis.X ? 0.0f : 90.0f;
@@ -75,7 +75,7 @@ extends SkullBlock {
                 Criteria.SUMMONED_ENTITY.trigger(serverPlayerEntity, witherEntity);
             }
             world.spawnEntity(witherEntity);
-            CarvedPumpkinBlock.method_45456(world, result);
+            CarvedPumpkinBlock.updatePatternBlocks(world, result);
         }
     }
 

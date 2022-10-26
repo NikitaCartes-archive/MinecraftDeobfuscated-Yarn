@@ -66,10 +66,10 @@ extends PressableWidget {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
-        CheckboxWidget.drawTexture(matrices, this.x, this.y, this.isFocused() ? 20.0f : 0.0f, this.checked ? 20.0f : 0.0f, 20, this.height, 64, 64);
+        CheckboxWidget.drawTexture(matrices, this.getX(), this.getY(), this.isFocused() ? 20.0f : 0.0f, this.checked ? 20.0f : 0.0f, 20, this.height, 64, 64);
         this.renderBackground(matrices, minecraftClient, mouseX, mouseY);
         if (this.showMessage) {
-            CheckboxWidget.drawTextWithShadow(matrices, textRenderer, this.getMessage(), this.x + 24, this.y + (this.height - 8) / 2, 0xE0E0E0 | MathHelper.ceil(this.alpha * 255.0f) << 24);
+            CheckboxWidget.drawTextWithShadow(matrices, textRenderer, this.getMessage(), this.getX() + 24, this.getY() + (this.height - 8) / 2, 0xE0E0E0 | MathHelper.ceil(this.alpha * 255.0f) << 24);
         }
     }
 }

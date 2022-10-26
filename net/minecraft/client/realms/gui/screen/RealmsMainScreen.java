@@ -63,7 +63,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
@@ -245,29 +245,29 @@ extends RealmsScreen {
     }
 
     public void addButtons() {
-        this.leaveButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 202, this.height - 32, 90, 20, Text.translatable("mco.selectServer.leave"), button -> this.leaveClicked(this.findServer())));
-        this.configureButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 190, this.height - 32, 90, 20, Text.translatable("mco.selectServer.configure"), button -> this.configureClicked(this.findServer())));
-        this.playButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 93, this.height - 32, 90, 20, Text.translatable("mco.selectServer.play"), button -> this.play(this.findServer(), this)));
-        this.backButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height - 32, 90, 20, ScreenTexts.BACK, button -> {
+        this.leaveButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("mco.selectServer.leave"), button -> this.leaveClicked(this.findServer())).setPositionAndSize(this.width / 2 - 202, this.height - 32, 90, 20).build());
+        this.configureButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("mco.selectServer.configure"), button -> this.configureClicked(this.findServer())).setPositionAndSize(this.width / 2 - 190, this.height - 32, 90, 20).build());
+        this.playButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("mco.selectServer.play"), button -> this.play(this.findServer(), this)).setPositionAndSize(this.width / 2 - 93, this.height - 32, 90, 20).build());
+        this.backButton = this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.BACK, button -> {
             if (!this.justClosedPopup) {
                 this.client.setScreen(this.lastScreen);
             }
-        }));
-        this.renewButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 100, this.height - 32, 90, 20, Text.translatable("mco.selectServer.expiredRenew"), button -> this.onRenew(this.findServer())));
+        }).setPositionAndSize(this.width / 2 + 4, this.height - 32, 90, 20).build());
+        this.renewButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("mco.selectServer.expiredRenew"), button -> this.onRenew(this.findServer())).setPositionAndSize(this.width / 2 + 100, this.height - 32, 90, 20).build());
         this.newsButton = this.addDrawableChild(new NewsButton());
-        this.showPopupButton = this.addDrawableChild(new ButtonWidget(this.width - 90, 6, 80, 20, Text.translatable("mco.selectServer.purchase"), button -> {
+        this.showPopupButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("mco.selectServer.purchase"), button -> {
             this.popupOpenedByUser = !this.popupOpenedByUser;
-        }));
+        }).setPositionAndSize(this.width - 90, 6, 80, 20).build());
         this.pendingInvitesButton = this.addDrawableChild(new PendingInvitesButton());
         this.closeButton = this.addDrawableChild(new CloseButton());
-        this.createTrialButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 52, this.popupY0() + 137 - 20, 98, 20, Text.translatable("mco.selectServer.trial"), button -> {
+        this.createTrialButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("mco.selectServer.trial"), button -> {
             if (!this.trialAvailable || this.createdTrial) {
                 return;
             }
             Util.getOperatingSystem().open("https://aka.ms/startjavarealmstrial");
             this.client.setScreen(this.lastScreen);
-        }));
-        this.buyARealmButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 52, this.popupY0() + 160 - 20, 98, 20, Text.translatable("mco.selectServer.buy"), button -> Util.getOperatingSystem().open("https://aka.ms/BuyJavaRealms")));
+        }).setPositionAndSize(this.width / 2 + 52, this.popupY0() + 137 - 20, 98, 20).build());
+        this.buyARealmButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("mco.selectServer.buy"), button -> Util.getOperatingSystem().open("https://aka.ms/BuyJavaRealms")).setPositionAndSize(this.width / 2 + 52, this.popupY0() + 160 - 20, 98, 20).build());
         this.updateButtonStates(null);
     }
 
@@ -694,7 +694,7 @@ extends RealmsScreen {
             if ((Util.getMeasuringTimeMs() / 800L & 1L) == 1L) {
                 k = 8;
             }
-            DrawableHelper.drawTexture(matrices, this.createTrialButton.x + this.createTrialButton.getWidth() - 8 - 4, this.createTrialButton.y + this.createTrialButton.getHeight() / 2 - 4, 0.0f, k, 8, 8, 8, 16);
+            DrawableHelper.drawTexture(matrices, this.createTrialButton.getX() + this.createTrialButton.getWidth() - 8 - 4, this.createTrialButton.getY() + this.createTrialButton.getHeight() / 2 - 4, 0.0f, k, 8, 8, 8, 16);
         }
     }
 
@@ -987,8 +987,8 @@ extends RealmsScreen {
         String string = "LOCAL!";
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         matrices.push();
-        matrices.translate(this.width / 2 - 25, 20.0, 0.0);
-        matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-20.0f));
+        matrices.translate(this.width / 2 - 25, 20.0f, 0.0f);
+        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-20.0f));
         matrices.scale(1.5f, 1.5f, 1.5f);
         this.textRenderer.draw(matrices, "LOCAL!", 0.0f, 0.0f, 0x7FFF7F);
         matrices.pop();
@@ -998,8 +998,8 @@ extends RealmsScreen {
         String string = "STAGE!";
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         matrices.push();
-        matrices.translate(this.width / 2 - 25, 20.0, 0.0);
-        matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-20.0f));
+        matrices.translate(this.width / 2 - 25, 20.0f, 0.0f);
+        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-20.0f));
         matrices.scale(1.5f, 1.5f, 1.5f);
         this.textRenderer.draw(matrices, "STAGE!", 0.0f, 0.0f, -256);
         matrices.pop();
@@ -1138,12 +1138,12 @@ extends RealmsScreen {
                     realmsMainScreen.hasUnreadNews = false;
                     RealmsPersistence.writeFile(realmsPersistenceData);
                 }
-            });
+            }, EMPTY_TOOLTIP, DEFAULT_NARRATION_SUPPLIER);
         }
 
         @Override
         public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-            RealmsMainScreen.this.renderNews(matrices, mouseX, mouseY, RealmsMainScreen.this.hasUnreadNews, this.x, this.y, this.isHovered(), this.active);
+            RealmsMainScreen.this.renderNews(matrices, mouseX, mouseY, RealmsMainScreen.this.hasUnreadNews, this.getX(), this.getY(), this.isHovered(), this.active);
         }
     }
 
@@ -1151,7 +1151,7 @@ extends RealmsScreen {
     class PendingInvitesButton
     extends ButtonWidget {
         public PendingInvitesButton() {
-            super(RealmsMainScreen.this.width / 2 + 47, 6, 22, 22, ScreenTexts.EMPTY, RealmsMainScreen.this::openPendingInvitesScreen);
+            super(RealmsMainScreen.this.width / 2 + 47, 6, 22, 22, ScreenTexts.EMPTY, RealmsMainScreen.this::openPendingInvitesScreen, EMPTY_TOOLTIP, DEFAULT_NARRATION_SUPPLIER);
         }
 
         public void updatePendingText() {
@@ -1160,7 +1160,7 @@ extends RealmsScreen {
 
         @Override
         public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-            RealmsMainScreen.this.drawInvitationPendingIcon(matrices, mouseX, mouseY, this.x, this.y, this.isHovered(), this.active);
+            RealmsMainScreen.this.drawInvitationPendingIcon(matrices, mouseX, mouseY, this.getX(), this.getY(), this.isHovered(), this.active);
         }
     }
 
@@ -1168,7 +1168,7 @@ extends RealmsScreen {
     class CloseButton
     extends ButtonWidget {
         public CloseButton() {
-            super(RealmsMainScreen.this.popupX0() + 4, RealmsMainScreen.this.popupY0() + 4, 12, 12, Text.translatable("mco.selectServer.close"), button -> RealmsMainScreen.this.onClosePopup());
+            super(RealmsMainScreen.this.popupX0() + 4, RealmsMainScreen.this.popupY0() + 4, 12, 12, Text.translatable("mco.selectServer.close"), button -> RealmsMainScreen.this.onClosePopup(), EMPTY_TOOLTIP, DEFAULT_NARRATION_SUPPLIER);
         }
 
         @Override
@@ -1176,7 +1176,7 @@ extends RealmsScreen {
             RenderSystem.setShaderTexture(0, CROSS_ICON);
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             float f = this.isHovered() ? 12.0f : 0.0f;
-            CloseButton.drawTexture(matrices, this.x, this.y, 0.0f, f, 12, 12, 12, 24);
+            CloseButton.drawTexture(matrices, this.getX(), this.getY(), 0.0f, f, 12, 12, 12, 24);
             if (this.isMouseOver(mouseX, mouseY)) {
                 RealmsMainScreen.this.setTooltips(this.getMessage());
             }

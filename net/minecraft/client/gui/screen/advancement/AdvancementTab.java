@@ -95,12 +95,12 @@ extends DrawableHelper {
             this.initialized = true;
         }
         matrices.push();
-        matrices.translate(0.0, 0.0, 950.0);
+        matrices.translate(0.0f, 0.0f, 950.0f);
         RenderSystem.enableDepthTest();
         RenderSystem.colorMask(false, false, false, false);
         AdvancementTab.fill(matrices, 4680, 2260, -4680, -2260, -16777216);
         RenderSystem.colorMask(true, true, true, true);
-        matrices.translate(0.0, 0.0, -950.0);
+        matrices.translate(0.0f, 0.0f, -950.0f);
         RenderSystem.depthFunc(518);
         AdvancementTab.fill(matrices, 234, 113, 0, 0, -16777216);
         RenderSystem.depthFunc(515);
@@ -124,7 +124,7 @@ extends DrawableHelper {
         this.rootWidget.renderLines(matrices, i, j, false);
         this.rootWidget.renderWidgets(matrices, i, j);
         RenderSystem.depthFunc(518);
-        matrices.translate(0.0, 0.0, -950.0);
+        matrices.translate(0.0f, 0.0f, -950.0f);
         RenderSystem.colorMask(false, false, false, false);
         AdvancementTab.fill(matrices, 4680, 2260, -4680, -2260, -16777216);
         RenderSystem.colorMask(true, true, true, true);
@@ -134,7 +134,7 @@ extends DrawableHelper {
 
     public void drawWidgetTooltip(MatrixStack matrices, int mouseX, int mouseY, int x, int y) {
         matrices.push();
-        matrices.translate(0.0, 0.0, -200.0);
+        matrices.translate(0.0f, 0.0f, -200.0f);
         AdvancementTab.fill(matrices, 0, 0, 234, 113, MathHelper.floor(this.alpha * 255.0f) << 24);
         boolean bl = false;
         int i = MathHelper.floor(this.originX);

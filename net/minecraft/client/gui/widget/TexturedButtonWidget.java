@@ -36,11 +36,11 @@ extends ButtonWidget {
     }
 
     public TexturedButtonWidget(int x, int y, int width, int height, int u, int v, int hoveredVOffset, Identifier texture, int textureWidth, int textureHeight, ButtonWidget.PressAction pressAction, Text text) {
-        this(x, y, width, height, u, v, hoveredVOffset, texture, textureWidth, textureHeight, pressAction, EMPTY, text);
+        this(x, y, width, height, u, v, hoveredVOffset, texture, textureWidth, textureHeight, pressAction, EMPTY_TOOLTIP, text);
     }
 
     public TexturedButtonWidget(int x, int y, int width, int height, int u, int v, int hoveredVOffset, Identifier texture, int textureWidth, int textureHeight, ButtonWidget.PressAction pressAction, ButtonWidget.TooltipSupplier tooltipSupplier, Text text) {
-        super(x, y, width, height, text, pressAction, tooltipSupplier);
+        super(x, y, width, height, text, pressAction, tooltipSupplier, DEFAULT_NARRATION_SUPPLIER);
         this.textureWidth = textureWidth;
         this.textureHeight = textureHeight;
         this.u = u;
@@ -49,9 +49,10 @@ extends ButtonWidget {
         this.texture = texture;
     }
 
+    @Override
     public void setPos(int x, int y) {
-        this.x = x;
-        this.y = y;
+        this.setX(x);
+        this.setY(y);
     }
 
     @Override
@@ -65,7 +66,7 @@ extends ButtonWidget {
             i += this.hoveredVOffset;
         }
         RenderSystem.enableDepthTest();
-        TexturedButtonWidget.drawTexture(matrices, this.x, this.y, this.u, i, this.width, this.height, this.textureWidth, this.textureHeight);
+        TexturedButtonWidget.drawTexture(matrices, this.getX(), this.getY(), this.u, i, this.width, this.height, this.textureWidth, this.textureHeight);
         if (this.hovered) {
             this.renderTooltip(matrices, mouseX, mouseY);
         }

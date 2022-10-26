@@ -124,8 +124,8 @@ import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.border.WorldBorder;
-import net.minecraft.world.dimension.AreaHelper;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.dimension.NetherPortal;
 import net.minecraft.world.entity.EntityChangeListener;
 import net.minecraft.world.entity.EntityLike;
 import net.minecraft.world.event.GameEvent;
@@ -993,6 +993,13 @@ CommandOutput {
         this.playSound(SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.7f, 1.6f + (this.random.nextFloat() - this.random.nextFloat()) * 0.4f);
     }
 
+    public void extinguishWithSound() {
+        if (!this.world.isClient && this.wasOnFire) {
+            this.playExtinguishSound();
+        }
+        this.extinguish();
+    }
+
     /**
      * Adds the effects of this entity when it travels in air, usually to the
      * world the entity is in.
@@ -1509,7 +1516,9 @@ CommandOutput {
     }
 
     void checkWaterState() {
-        if (this.getVehicle() instanceof BoatEntity) {
+        BoatEntity boatEntity;
+        Entity entity = this.getVehicle();
+        if (entity instanceof BoatEntity && !(boatEntity = (BoatEntity)entity).isSubmergedInWater()) {
             this.touchingWater = false;
         } else if (this.updateMovementInFluid(FluidTags.WATER, 0.014)) {
             if (!this.touchingWater && !this.firstUpdate) {
@@ -3573,17 +3582,17 @@ CommandOutput {
                 axis = Direction.Axis.X;
                 vec3d = new Vec3d(0.5, 0.0, 0.0);
             }
-            return AreaHelper.getNetherTeleportTarget(destination, rect, axis, vec3d, this.getDimensions(this.getPose()), this.getVelocity(), this.getYaw(), this.getPitch());
+            return NetherPortal.getNetherTeleportTarget(destination, rect, axis, vec3d, this.getDimensions(this.getPose()), this.getVelocity(), this.getYaw(), this.getPitch());
         }).orElse(null);
     }
 
     /**
      * {@return the entity's position in the portal after teleportation}
      * 
-     * @see net.minecraft.world.dimension.AreaHelper#entityPosInPortal
+     * @see net.minecraft.world.dimension.NetherPortal#entityPosInPortal
      */
     protected Vec3d positionInPortal(Direction.Axis portalAxis, BlockLocating.Rectangle portalRect) {
-        return AreaHelper.entityPosInPortal(portalRect, portalAxis, this.getPos(), this.getDimensions(this.getPose()));
+        return NetherPortal.entityPosInPortal(portalRect, portalAxis, this.getPos(), this.getDimensions(this.getPose()));
     }
 
     /**
@@ -3884,6 +3893,14 @@ CommandOutput {
         if (POSE.equals(data)) {
             this.calculateDimensions();
         }
+    }
+
+    @Deprecated
+    protected void reinitDimensions() {
+        EntityDimensions entityDimensions;
+        EntityPose entityPose = this.getPose();
+        this.dimensions = entityDimensions = this.getDimensions(entityPose);
+        this.standingEyeHeight = this.getEyeHeight(entityPose, entityDimensions);
     }
 
     /**

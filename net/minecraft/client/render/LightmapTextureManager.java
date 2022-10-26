@@ -17,8 +17,8 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.dimension.DimensionType;
+import org.joml.Vector3f;
 
 /**
  * The lightmap texture manager maintains a texture containing the RGBA overlay for each of the 16&times;16 sky and block light combinations.
@@ -119,65 +119,67 @@ implements AutoCloseable {
         float j = this.getDarkness(this.client.player, i, delta) * h;
         float k = this.client.player.getUnderwaterVisibility();
         float l = this.client.player.hasStatusEffect(StatusEffects.NIGHT_VISION) ? GameRenderer.getNightVisionStrength(this.client.player, delta) : (k > 0.0f && this.client.player.hasStatusEffect(StatusEffects.CONDUIT_POWER) ? k : 0.0f);
-        Vec3f vec3f = new Vec3f(f, f, 1.0f);
-        vec3f.lerp(new Vec3f(1.0f, 1.0f, 1.0f), 0.35f);
+        Vector3f vector3f = new Vector3f(f, f, 1.0f).lerp(new Vector3f(1.0f, 1.0f, 1.0f), 0.35f);
         float m = this.flickerIntensity + 1.5f;
-        Vec3f vec3f2 = new Vec3f();
+        Vector3f vector3f2 = new Vector3f();
         for (int n = 0; n < 16; ++n) {
             for (int o = 0; o < 16; ++o) {
                 float v;
-                Vec3f vec3f4;
+                Vector3f vector3f4;
                 float u;
                 float q;
                 float p = LightmapTextureManager.getBrightness(clientWorld.getDimension(), n) * g;
                 float r = q = LightmapTextureManager.getBrightness(clientWorld.getDimension(), o) * m;
                 float s = q * ((q * 0.6f + 0.4f) * 0.6f + 0.4f);
                 float t = q * (q * q * 0.6f + 0.4f);
-                vec3f2.set(r, s, t);
+                vector3f2.set(r, s, t);
                 boolean bl = clientWorld.getDimensionEffects().shouldBrightenLighting();
                 if (bl) {
-                    vec3f2.lerp(new Vec3f(0.99f, 1.12f, 1.0f), 0.25f);
-                    vec3f2.clamp(0.0f, 1.0f);
+                    vector3f2.lerp(new Vector3f(0.99f, 1.12f, 1.0f), 0.25f);
+                    LightmapTextureManager.clamp(vector3f2);
                 } else {
-                    Vec3f vec3f3 = vec3f.copy();
-                    vec3f3.scale(p);
-                    vec3f2.add(vec3f3);
-                    vec3f2.lerp(new Vec3f(0.75f, 0.75f, 0.75f), 0.04f);
+                    Vector3f vector3f3 = new Vector3f(vector3f).mul(p);
+                    vector3f2.add(vector3f3);
+                    vector3f2.lerp(new Vector3f(0.75f, 0.75f, 0.75f), 0.04f);
                     if (this.renderer.getSkyDarkness(delta) > 0.0f) {
                         u = this.renderer.getSkyDarkness(delta);
-                        vec3f4 = vec3f2.copy();
-                        vec3f4.multiplyComponentwise(0.7f, 0.6f, 0.6f);
-                        vec3f2.lerp(vec3f4, u);
+                        vector3f4 = new Vector3f(vector3f2).mul(0.7f, 0.6f, 0.6f);
+                        vector3f2.lerp(vector3f4, u);
                     }
                 }
-                if (l > 0.0f && (v = Math.max(vec3f2.getX(), Math.max(vec3f2.getY(), vec3f2.getZ()))) < 1.0f) {
+                if (l > 0.0f && (v = Math.max(vector3f2.x(), Math.max(vector3f2.y(), vector3f2.z()))) < 1.0f) {
                     u = 1.0f / v;
-                    vec3f4 = vec3f2.copy();
-                    vec3f4.scale(u);
-                    vec3f2.lerp(vec3f4, l);
+                    vector3f4 = new Vector3f(vector3f2).mul(u);
+                    vector3f2.lerp(vector3f4, l);
                 }
                 if (!bl) {
                     if (j > 0.0f) {
-                        vec3f2.add(-j, -j, -j);
+                        vector3f2.add(-j, -j, -j);
                     }
-                    vec3f2.clamp(0.0f, 1.0f);
+                    LightmapTextureManager.clamp(vector3f2);
                 }
                 float v2 = this.client.options.getGamma().getValue().floatValue();
-                Vec3f vec3f5 = vec3f2.copy();
-                vec3f5.modify(this::easeOutQuart);
-                vec3f2.lerp(vec3f5, Math.max(0.0f, v2 - i));
-                vec3f2.lerp(new Vec3f(0.75f, 0.75f, 0.75f), 0.04f);
-                vec3f2.clamp(0.0f, 1.0f);
-                vec3f2.scale(255.0f);
+                Vector3f vector3f5 = new Vector3f(this.easeOutQuart(vector3f2.x), this.easeOutQuart(vector3f2.y), this.easeOutQuart(vector3f2.z));
+                vector3f2.lerp(vector3f5, Math.max(0.0f, v2 - i));
+                vector3f2.lerp(new Vector3f(0.75f, 0.75f, 0.75f), 0.04f);
+                LightmapTextureManager.clamp(vector3f2);
+                vector3f2.mul(255.0f);
                 int w = 255;
-                int x = (int)vec3f2.getX();
-                int y = (int)vec3f2.getY();
-                int z = (int)vec3f2.getZ();
+                int x = (int)vector3f2.x();
+                int y = (int)vector3f2.y();
+                int z = (int)vector3f2.z();
                 this.image.setColor(o, n, 0xFF000000 | z << 16 | y << 8 | x);
             }
         }
         this.texture.upload();
         this.client.getProfiler().pop();
+    }
+
+    /**
+     * Clamps each component of {@code vec} between {@code 0.0f} and {@code 1.0f}.
+     */
+    private static void clamp(Vector3f vec) {
+        vec.set(MathHelper.clamp(vec.x, 0.0f, 1.0f), MathHelper.clamp(vec.y, 0.0f, 1.0f), MathHelper.clamp(vec.z, 0.0f, 1.0f));
     }
 
     /**

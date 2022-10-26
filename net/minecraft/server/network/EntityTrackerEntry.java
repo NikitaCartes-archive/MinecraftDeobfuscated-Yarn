@@ -194,8 +194,13 @@ public class EntityTrackerEntry {
         Packet<ClientPlayPacketListener> packet = this.entity.createSpawnPacket();
         this.lastHeadPitch = MathHelper.floor(this.entity.getHeadYaw() * 256.0f / 360.0f);
         sender.accept(packet);
-        if (!this.entity.getDataTracker().isEmpty()) {
-            sender.accept(new EntityTrackerUpdateS2CPacket(this.entity.getId(), this.entity.getDataTracker(), true));
+        DataTracker dataTracker = this.entity.getDataTracker();
+        if (!dataTracker.isEmpty()) {
+            List<DataTracker.SerializedEntry<?>> list = dataTracker.getChangedEntries();
+            dataTracker.clearDirty();
+            if (list != null) {
+                sender.accept(new EntityTrackerUpdateS2CPacket(this.entity.getId(), list));
+            }
         }
         boolean bl = this.alwaysUpdateVelocity;
         if (this.entity instanceof LivingEntity) {
@@ -212,14 +217,14 @@ public class EntityTrackerEntry {
             sender.accept(new EntityVelocityUpdateS2CPacket(this.entity.getId(), this.velocity));
         }
         if (this.entity instanceof LivingEntity) {
-            ArrayList<Pair<EquipmentSlot, ItemStack>> list = Lists.newArrayList();
+            ArrayList<Pair<EquipmentSlot, ItemStack>> list2 = Lists.newArrayList();
             for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
                 ItemStack itemStack = ((LivingEntity)this.entity).getEquippedStack(equipmentSlot);
                 if (itemStack.isEmpty()) continue;
-                list.add(Pair.of(equipmentSlot, itemStack.copy()));
+                list2.add(Pair.of(equipmentSlot, itemStack.copy()));
             }
-            if (!list.isEmpty()) {
-                sender.accept(new EntityEquipmentUpdateS2CPacket(this.entity.getId(), list));
+            if (!list2.isEmpty()) {
+                sender.accept(new EntityEquipmentUpdateS2CPacket(this.entity.getId(), list2));
             }
         }
         if (this.entity instanceof LivingEntity) {
@@ -244,8 +249,9 @@ public class EntityTrackerEntry {
      */
     private void syncEntityData() {
         DataTracker dataTracker = this.entity.getDataTracker();
-        if (dataTracker.isDirty()) {
-            this.sendSyncPacket(new EntityTrackerUpdateS2CPacket(this.entity.getId(), dataTracker, false));
+        List<DataTracker.SerializedEntry<?>> list = dataTracker.getDirtyEntries();
+        if (list != null) {
+            this.sendSyncPacket(new EntityTrackerUpdateS2CPacket(this.entity.getId(), list));
         }
         if (this.entity instanceof LivingEntity) {
             Set<EntityAttributeInstance> set = ((LivingEntity)this.entity).getAttributes().getTracked();

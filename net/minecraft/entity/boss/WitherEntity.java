@@ -226,7 +226,7 @@ RangedAttackMob {
             this.bossBar.setPercent(1.0f - (float)i2 / 220.0f);
             if (i2 <= 0) {
                 Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) ? Explosion.DestructionType.DESTROY : Explosion.DestructionType.NONE;
-                this.world.createExplosion(this, this.getX(), this.getEyeY(), this.getZ(), 7.0f, false, destructionType);
+                this.world.createExplosion((Entity)this, this.getX(), this.getEyeY(), this.getZ(), 7.0f, false, destructionType);
                 if (!this.isSilent()) {
                     this.world.syncGlobalEvent(WorldEvents.WITHER_SPAWNS, this.getBlockPos(), 0);
                 }

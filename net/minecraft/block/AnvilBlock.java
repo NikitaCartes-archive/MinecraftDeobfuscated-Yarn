@@ -10,6 +10,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.FallingBlock;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.damage.DamageSource;
@@ -107,8 +108,8 @@ extends FallingBlock {
     }
 
     @Override
-    public DamageSource getDamageSource() {
-        return DamageSource.ANVIL;
+    public DamageSource getDamageSource(Entity attacker) {
+        return DamageSource.anvil(attacker);
     }
 
     @Nullable

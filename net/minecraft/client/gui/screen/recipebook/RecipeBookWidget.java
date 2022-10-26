@@ -243,7 +243,7 @@ RecipeDisplayListener {
             return;
         }
         matrices.push();
-        matrices.translate(0.0, 0.0, 100.0);
+        matrices.translate(0.0f, 0.0f, 100.0f);
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, TEXTURE);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);

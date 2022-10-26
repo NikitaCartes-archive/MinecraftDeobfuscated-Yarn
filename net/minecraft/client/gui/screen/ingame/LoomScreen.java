@@ -115,9 +115,9 @@ extends HandledScreen<LoomScreenHandler> {
         if (this.bannerPatterns != null && !this.hasTooManyPatterns) {
             VertexConsumerProvider.Immediate immediate = this.client.getBufferBuilders().getEntityVertexConsumers();
             matrices.push();
-            matrices.translate(i + 139, j + 52, 0.0);
+            matrices.translate(i + 139, j + 52, 0.0f);
             matrices.scale(24.0f, -24.0f, 1.0f);
-            matrices.translate(0.5, 0.5, 0.5);
+            matrices.translate(0.5f, 0.5f, 0.5f);
             float f = 0.6666667f;
             matrices.scale(0.6666667f, -0.6666667f, -0.6666667f);
             this.bannerField.pitch = 0.0f;
@@ -159,10 +159,10 @@ extends HandledScreen<LoomScreenHandler> {
         BlockItem.setBlockEntityNbt(itemStack, BlockEntityType.BANNER, nbtCompound);
         MatrixStack matrixStack = new MatrixStack();
         matrixStack.push();
-        matrixStack.translate((float)x + 0.5f, y + 16, 0.0);
+        matrixStack.translate((float)x + 0.5f, y + 16, 0.0f);
         matrixStack.scale(6.0f, -6.0f, 1.0f);
-        matrixStack.translate(0.5, 0.5, 0.0);
-        matrixStack.translate(0.5, 0.5, 0.5);
+        matrixStack.translate(0.5f, 0.5f, 0.0f);
+        matrixStack.translate(0.5f, 0.5f, 0.5f);
         float f = 0.6666667f;
         matrixStack.scale(0.6666667f, -0.6666667f, -0.6666667f);
         VertexConsumerProvider.Immediate immediate = this.client.getBufferBuilders().getEntityVertexConsumers();

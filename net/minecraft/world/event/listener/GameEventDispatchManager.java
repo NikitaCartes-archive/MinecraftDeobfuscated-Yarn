@@ -22,7 +22,7 @@ import net.minecraft.world.event.listener.GameEventListener;
  * chunk sections.
  */
 public class GameEventDispatchManager {
-    private ServerWorld world;
+    private final ServerWorld world;
 
     public GameEventDispatchManager(ServerWorld world) {
         this.world = world;

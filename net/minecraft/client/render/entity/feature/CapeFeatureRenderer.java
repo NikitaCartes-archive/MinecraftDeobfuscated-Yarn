@@ -19,7 +19,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 
 @Environment(value=EnvType.CLIENT)
 public class CapeFeatureRenderer
@@ -38,7 +38,7 @@ extends FeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractCl
             return;
         }
         matrixStack.push();
-        matrixStack.translate(0.0, 0.0, 0.125);
+        matrixStack.translate(0.0f, 0.0f, 0.125f);
         double d = MathHelper.lerp((double)h, abstractClientPlayerEntity.prevCapeX, abstractClientPlayerEntity.capeX) - MathHelper.lerp((double)h, abstractClientPlayerEntity.prevX, abstractClientPlayerEntity.getX());
         double e = MathHelper.lerp((double)h, abstractClientPlayerEntity.prevCapeY, abstractClientPlayerEntity.capeY) - MathHelper.lerp((double)h, abstractClientPlayerEntity.prevY, abstractClientPlayerEntity.getY());
         double m = MathHelper.lerp((double)h, abstractClientPlayerEntity.prevCapeZ, abstractClientPlayerEntity.capeZ) - MathHelper.lerp((double)h, abstractClientPlayerEntity.prevZ, abstractClientPlayerEntity.getZ());
@@ -59,9 +59,9 @@ extends FeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractCl
         if (abstractClientPlayerEntity.isInSneakingPose()) {
             q += 25.0f;
         }
-        matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(6.0f + r / 2.0f + q));
-        matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(s / 2.0f));
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f - s / 2.0f));
+        matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(6.0f + r / 2.0f + q));
+        matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(s / 2.0f));
+        matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0f - s / 2.0f));
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(abstractClientPlayerEntity.getCapeTexture()));
         ((PlayerEntityModel)this.getContextModel()).renderCape(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
         matrixStack.pop();

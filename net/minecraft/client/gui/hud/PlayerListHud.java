@@ -48,7 +48,7 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class PlayerListHud
 extends DrawableHelper {
-    private static final Comparator<PlayerListEntry> ENTRY_ORDERING = Comparator.comparing(PlayerListEntry::getGameMode, Comparator.comparing(gameMode -> gameMode != GameMode.SPECTATOR)).thenComparing(playerListEntry -> Util.mapOrElse(playerListEntry.getScoreboardTeam(), Team::getName, ""));
+    private static final Comparator<PlayerListEntry> ENTRY_ORDERING = Comparator.comparingInt(playerListEntry -> playerListEntry.getGameMode() == GameMode.SPECTATOR ? 1 : 0).thenComparing(playerListEntry -> Util.mapOrElse(playerListEntry.getScoreboardTeam(), Team::getName, "")).thenComparing(playerListEntry -> playerListEntry.getProfile().getName(), String::compareToIgnoreCase);
     public static final int MAX_ROWS = 20;
     public static final int HEART_OUTLINE_U = 16;
     public static final int BLINKING_HEART_OUTLINE_U = 25;

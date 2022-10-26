@@ -106,7 +106,7 @@ implements ScreenHandlerProvider<T> {
         super.render(matrices, mouseX, mouseY, delta);
         MatrixStack matrixStack = RenderSystem.getModelViewStack();
         matrixStack.push();
-        matrixStack.translate(i, j, 0.0);
+        matrixStack.translate(i, j, 0.0f);
         RenderSystem.applyModelViewMatrix();
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         this.focusedSlot = null;
@@ -174,7 +174,7 @@ implements ScreenHandlerProvider<T> {
 
     private void drawItem(ItemStack stack, int x, int y, String amountText) {
         MatrixStack matrixStack = RenderSystem.getModelViewStack();
-        matrixStack.translate(0.0, 0.0, 32.0);
+        matrixStack.translate(0.0f, 0.0f, 32.0f);
         RenderSystem.applyModelViewMatrix();
         this.setZOffset(200);
         this.itemRenderer.zOffset = 200.0f;

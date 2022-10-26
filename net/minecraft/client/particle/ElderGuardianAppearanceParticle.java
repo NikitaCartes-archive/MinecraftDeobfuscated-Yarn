@@ -22,7 +22,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 
 @Environment(value=EnvType.CLIENT)
 public class ElderGuardianAppearanceParticle
@@ -48,9 +48,9 @@ extends Particle {
         float g = 0.05f + 0.5f * MathHelper.sin(f * (float)Math.PI);
         MatrixStack matrixStack = new MatrixStack();
         matrixStack.multiply(camera.getRotation());
-        matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(150.0f * f - 60.0f));
+        matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(150.0f * f - 60.0f));
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
-        matrixStack.translate(0.0, -1.101f, 1.5);
+        matrixStack.translate(0.0f, -1.101f, 1.5f);
         VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
         VertexConsumer vertexConsumer2 = immediate.getBuffer(this.layer);
         this.model.render(matrixStack, vertexConsumer2, 0xF000F0, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f, g);

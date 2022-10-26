@@ -54,7 +54,7 @@ public class EntitySelector {
     private final String playerName;
     @Nullable
     private final UUID uuid;
-    private TypeFilter<Entity, ?> entityFilter;
+    private final TypeFilter<Entity, ?> entityFilter;
     private final boolean usesAt;
 
     public EntitySelector(int count, boolean includesNonPlayers, boolean localWorldOnly, Predicate<Entity> basePredicate, NumberRange.FloatRange distance, Function<Vec3d, Vec3d> positionOffset, @Nullable Box box, BiConsumer<Vec3d, List<? extends Entity>> sorter, boolean senderOnly, @Nullable String playerName, @Nullable UUID uuid, @Nullable EntityType<?> type, boolean usesAt) {

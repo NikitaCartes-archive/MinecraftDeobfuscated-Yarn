@@ -4,6 +4,7 @@
 package net.minecraft.network.message;
 
 import com.google.common.base.Preconditions;
+import com.mojang.serialization.Codec;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Base64;
@@ -11,12 +12,15 @@ import java.util.Optional;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.encryption.SignatureUpdatable;
 import net.minecraft.network.encryption.SignatureVerifier;
+import net.minecraft.network.message.MessageSignatureStorage;
+import net.minecraft.util.dynamic.Codecs;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * A message signature data that can be verified.
  */
 public record MessageSignatureData(byte[] data) {
+    public static final Codec<MessageSignatureData> CODEC = Codecs.BASE_64.xmap(MessageSignatureData::new, MessageSignatureData::data);
     public static final int SIZE = 256;
 
     public MessageSignatureData {
@@ -72,15 +76,9 @@ public record MessageSignatureData(byte[] data) {
         return Base64.getEncoder().encodeToString(this.data);
     }
 
-    public Indexed pack(Packer packer) {
-        int i = packer.pack(this);
+    public Indexed pack(MessageSignatureStorage storage) {
+        int i = storage.indexOf(this);
         return i != -1 ? new Indexed(i) : new Indexed(this);
-    }
-
-    public static interface Packer {
-        public static final int MISSING = -1;
-
-        public int pack(MessageSignatureData var1);
     }
 
     public record Indexed(int id, @Nullable MessageSignatureData fullSignature) {
@@ -109,22 +107,17 @@ public record MessageSignatureData(byte[] data) {
             }
         }
 
-        public Optional<MessageSignatureData> getSignature(Unpacker unpacker) {
+        public Optional<MessageSignatureData> getSignature(MessageSignatureStorage storage) {
             if (this.fullSignature != null) {
                 return Optional.of(this.fullSignature);
             }
-            return Optional.ofNullable(unpacker.unpack(this.id));
+            return Optional.ofNullable(storage.get(this.id));
         }
 
         @Nullable
         public MessageSignatureData fullSignature() {
             return this.fullSignature;
         }
-    }
-
-    public static interface Unpacker {
-        @Nullable
-        public MessageSignatureData unpack(int var1);
     }
 }
 

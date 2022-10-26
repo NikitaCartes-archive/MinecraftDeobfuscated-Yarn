@@ -4,6 +4,10 @@
 package net.minecraft.client.report.log;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.datafixers.kinds.Applicative;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -17,6 +21,7 @@ import net.minecraft.client.report.log.ChatLogEntry;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.dynamic.Codecs;
 
 /**
  * A message received by the client and stored in {@link ChatLog}.
@@ -73,6 +78,7 @@ extends ChatLogEntry {
     @Environment(value=EnvType.CLIENT)
     public record ChatMessage(GameProfile profile, Text displayName, SignedMessage message, MessageTrustStatus trustStatus) implements ReceivedMessage
     {
+        public static final Codec<ChatMessage> CHAT_MESSAGE_CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codecs.GAME_PROFILE.fieldOf("profile")).forGetter(ChatMessage::profile), ((MapCodec)Codecs.TEXT.fieldOf("display_name")).forGetter(ChatMessage::displayName), SignedMessage.field_40846.forGetter(ChatMessage::message), MessageTrustStatus.field_40801.optionalFieldOf("trust_level", MessageTrustStatus.SECURE).forGetter(ChatMessage::trustStatus)).apply((Applicative<ChatMessage, ?>)instance, ChatMessage::new));
         private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
 
         @Override
@@ -109,11 +115,18 @@ extends ChatLogEntry {
         public UUID getSenderUuid() {
             return this.profile.getId();
         }
+
+        @Override
+        public ChatLogEntry.Type getType() {
+            return ChatLogEntry.Type.PLAYER;
+        }
     }
 
     @Environment(value=EnvType.CLIENT)
     public record GameMessage(Text message, Instant timestamp) implements ReceivedMessage
     {
+        public static final Codec<GameMessage> GAME_MESSAGE_CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codecs.TEXT.fieldOf("message")).forGetter(GameMessage::message), ((MapCodec)Codecs.INSTANT.fieldOf("time_stamp")).forGetter(GameMessage::timestamp)).apply((Applicative<GameMessage, ?>)instance, GameMessage::new));
+
         @Override
         public Text getContent() {
             return this.message;
@@ -122,6 +135,11 @@ extends ChatLogEntry {
         @Override
         public boolean isSentFrom(UUID uuid) {
             return false;
+        }
+
+        @Override
+        public ChatLogEntry.Type getType() {
+            return ChatLogEntry.Type.SYSTEM;
         }
     }
 }

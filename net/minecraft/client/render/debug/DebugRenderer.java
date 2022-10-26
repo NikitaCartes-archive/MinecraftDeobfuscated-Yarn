@@ -13,7 +13,6 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexFormat;
@@ -44,9 +43,9 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.AffineTransformation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
 
 @Environment(value=EnvType.CLIENT)
 public class DebugRenderer {
@@ -201,7 +200,7 @@ public class DebugRenderer {
         MatrixStack matrixStack = RenderSystem.getModelViewStack();
         matrixStack.push();
         matrixStack.translate((float)(x - d), (float)(y - e) + 0.07f, (float)(z - f));
-        matrixStack.multiplyPositionMatrix(new Matrix4f(camera.getRotation()));
+        matrixStack.multiplyPositionMatrix(new Matrix4f().rotation(camera.getRotation()));
         matrixStack.scale(size, -size, size);
         RenderSystem.enableTexture();
         if (visibleThroughObjects) {
@@ -214,7 +213,7 @@ public class DebugRenderer {
         RenderSystem.applyModelViewMatrix();
         float g = center ? (float)(-textRenderer.getWidth(string)) / 2.0f : 0.0f;
         VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-        textRenderer.draw(string, g -= offset / size, 0.0f, color, false, AffineTransformation.identity().getMatrix(), (VertexConsumerProvider)immediate, visibleThroughObjects, 0, LightmapTextureManager.MAX_LIGHT_COORDINATE);
+        textRenderer.draw(string, g -= offset / size, 0.0f, color, false, AffineTransformation.identity().getMatrix(), (VertexConsumerProvider)immediate, visibleThroughObjects, 0, 0xF000F0);
         immediate.draw();
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.enableDepthTest();

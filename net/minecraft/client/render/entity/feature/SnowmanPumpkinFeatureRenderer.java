@@ -22,7 +22,7 @@ import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 
 @Environment(value=EnvType.CLIENT)
 public class SnowmanPumpkinFeatureRenderer
@@ -49,15 +49,15 @@ extends FeatureRenderer<SnowGolemEntity, SnowGolemEntityModel<SnowGolemEntity>> 
         matrixStack.push();
         ((SnowGolemEntityModel)this.getContextModel()).getHead().rotate(matrixStack);
         float m = 0.625f;
-        matrixStack.translate(0.0, -0.34375, 0.0);
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
+        matrixStack.translate(0.0f, -0.34375f, 0.0f);
+        matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0f));
         matrixStack.scale(0.625f, -0.625f, -0.625f);
         ItemStack itemStack = new ItemStack(Blocks.CARVED_PUMPKIN);
         if (bl) {
             BlockState blockState = Blocks.CARVED_PUMPKIN.getDefaultState();
             BakedModel bakedModel = this.blockRenderManager.getModel(blockState);
             int n = LivingEntityRenderer.getOverlay(snowGolemEntity, 0.0f);
-            matrixStack.translate(-0.5, -0.5, -0.5);
+            matrixStack.translate(-0.5f, -0.5f, -0.5f);
             this.blockRenderManager.getModelRenderer().render(matrixStack.peek(), vertexConsumerProvider.getBuffer(RenderLayer.getOutline(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE)), blockState, bakedModel, 0.0f, 0.0f, 0.0f, i, n);
         } else {
             this.itemRenderer.renderItem(snowGolemEntity, itemStack, ModelTransformation.Mode.HEAD, false, matrixStack, vertexConsumerProvider, snowGolemEntity.world, i, LivingEntityRenderer.getOverlay(snowGolemEntity, 0.0f), snowGolemEntity.getId());

@@ -91,7 +91,7 @@ extends QuadrupedEntityModel<T> {
         boolean bl = this.plastron.visible;
         if (bl) {
             matrices.push();
-            matrices.translate(0.0, -0.08f, 0.0);
+            matrices.translate(0.0f, -0.08f, 0.0f);
         }
         super.render(matrices, vertices, light, overlay, red, green, blue, alpha);
         if (bl) {

@@ -14,7 +14,7 @@ import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Matrix4f;
+import org.joml.Matrix4f;
 
 @Environment(value=EnvType.CLIENT)
 public class EndPortalBlockEntityRenderer<T extends EndPortalBlockEntity>

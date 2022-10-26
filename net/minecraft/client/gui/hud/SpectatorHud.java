@@ -88,7 +88,7 @@ implements SpectatorMenuCloseCallback {
         if (command != SpectatorMenu.BLANK_COMMAND) {
             int i = (int)(height * 255.0f);
             matrices.push();
-            matrices.translate(x, y, 0.0);
+            matrices.translate(x, y, 0.0f);
             float f = command.isEnabled() ? 1.0f : 0.25f;
             RenderSystem.setShaderColor(f, f, f, height);
             command.renderIcon(matrices, f, i);

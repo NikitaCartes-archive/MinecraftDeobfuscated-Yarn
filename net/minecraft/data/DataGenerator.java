@@ -4,11 +4,13 @@
 package net.minecraft.data;
 
 import com.google.common.base.Stopwatch;
-import com.google.common.collect.Lists;
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import net.minecraft.Bootstrap;
 import net.minecraft.GameVersion;
@@ -21,8 +23,8 @@ public class DataGenerator {
     private static final Logger LOGGER = LogUtils.getLogger();
     private final Path outputPath;
     private final DataOutput output;
-    private final List<DataProvider> providers = Lists.newArrayList();
-    private final List<DataProvider> runningProviders = Lists.newArrayList();
+    final Set<String> providerNames = new HashSet<String>();
+    final Map<String, DataProvider> runningProviders = new LinkedHashMap<String, DataProvider>();
     private final GameVersion gameVersion;
     private final boolean ignoreCache;
 
@@ -34,43 +36,60 @@ public class DataGenerator {
     }
 
     public void run() throws IOException {
-        DataCache dataCache = new DataCache(this.outputPath, this.providers, this.gameVersion);
+        DataCache dataCache = new DataCache(this.outputPath, this.providerNames, this.gameVersion);
         Stopwatch stopwatch = Stopwatch.createStarted();
         Stopwatch stopwatch2 = Stopwatch.createUnstarted();
-        for (DataProvider dataProvider : this.runningProviders) {
-            if (!this.ignoreCache && !dataCache.isVersionDifferent(dataProvider)) {
-                LOGGER.debug("Generator {} already run for version {}", (Object)dataProvider.getName(), (Object)this.gameVersion.getName());
-                continue;
+        this.runningProviders.forEach((name, provider) -> {
+            if (!this.ignoreCache && !dataCache.isVersionDifferent((String)name)) {
+                LOGGER.debug("Generator {} already run for version {}", name, (Object)this.gameVersion.getName());
+                return;
             }
-            LOGGER.info("Starting provider: {}", (Object)dataProvider.getName());
+            LOGGER.info("Starting provider: {}", name);
             stopwatch2.start();
-            dataProvider.run(dataCache.getOrCreateWriter(dataProvider));
+            dataCache.store(dataCache.run((String)name, provider::run).join());
             stopwatch2.stop();
-            LOGGER.info("{} finished after {} ms", (Object)dataProvider.getName(), (Object)stopwatch2.elapsed(TimeUnit.MILLISECONDS));
+            LOGGER.info("{} finished after {} ms", name, (Object)stopwatch2.elapsed(TimeUnit.MILLISECONDS));
             stopwatch2.reset();
-        }
+        });
         LOGGER.info("All providers took: {} ms", (Object)stopwatch.elapsed(TimeUnit.MILLISECONDS));
         dataCache.write();
     }
 
-    public void addProvider(boolean shouldRun, DataProvider provider) {
-        if (shouldRun) {
-            this.runningProviders.add(provider);
-        }
-        this.providers.add(provider);
+    public Pack createVanillaPack(boolean shouldRun) {
+        return new Pack(shouldRun, "vanilla", this.output);
     }
 
-    public DataOutput getOutput() {
-        return this.output;
-    }
-
-    public DataOutput getOutputFor(String packName) {
+    public Pack createVanillaSubPack(boolean shouldRun, String packName) {
         Path path = this.output.resolvePath(DataOutput.OutputType.DATA_PACK).resolve("minecraft").resolve("datapacks").resolve(packName);
-        return new DataOutput(path);
+        return new Pack(shouldRun, packName, new DataOutput(path));
     }
 
     static {
         Bootstrap.initialize();
+    }
+
+    public class Pack {
+        private final boolean shouldRun;
+        private final String packName;
+        private final DataOutput output;
+
+        Pack(boolean shouldRun, String name, DataOutput output) {
+            this.shouldRun = shouldRun;
+            this.packName = name;
+            this.output = output;
+        }
+
+        public <T extends DataProvider> T addProvider(DataProvider.Factory<T> factory) {
+            T dataProvider = factory.create(this.output);
+            String string = this.packName + "/" + dataProvider.getName();
+            if (!DataGenerator.this.providerNames.add(string)) {
+                throw new IllegalStateException("Duplicate provider: " + string);
+            }
+            if (this.shouldRun) {
+                DataGenerator.this.runningProviders.put(string, (DataProvider)dataProvider);
+            }
+            return dataProvider;
+        }
     }
 }
 

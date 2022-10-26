@@ -137,7 +137,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     private final ServerLightingProvider lightingProvider;
     private final ThreadExecutor<Runnable> mainThreadExecutor;
     private ChunkGenerator chunkGenerator;
-    private NoiseConfig noiseConfig;
+    private final NoiseConfig noiseConfig;
     private final Supplier<PersistentStateManager> persistentStateManagerFactory;
     private final PointOfInterestStorage pointOfInterestStorage;
     final LongSet unloadedChunks = new LongOpenHashSet();

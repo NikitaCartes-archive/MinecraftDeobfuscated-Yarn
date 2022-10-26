@@ -17,15 +17,15 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.SignBlockEntityRenderer;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Vec3f;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 
 @Environment(value=EnvType.CLIENT)
 public class SignEditScreen
 extends AbstractSignEditScreen {
     public static final float BACKGROUND_SCALE = 62.500004f;
     public static final float TEXT_SCALE_MULTIPLIER = 0.9765628f;
-    private static final Vec3f TEXT_SCALE = new Vec3f(0.9765628f, 0.9765628f, 0.9765628f);
+    private static final Vector3f TEXT_SCALE = new Vector3f(0.9765628f, 0.9765628f, 0.9765628f);
     @Nullable
     private SignBlockEntityRenderer.SignModel model;
 
@@ -44,7 +44,7 @@ extends AbstractSignEditScreen {
         super.translateForRender(matrices, state);
         boolean bl = state.getBlock() instanceof SignBlock;
         if (!bl) {
-            matrices.translate(0.0, 35.0, 0.0);
+            matrices.translate(0.0f, 35.0f, 0.0f);
         }
     }
 
@@ -54,7 +54,7 @@ extends AbstractSignEditScreen {
             return;
         }
         boolean bl = state.getBlock() instanceof SignBlock;
-        matrices.translate(0.0, 31.0, 0.0);
+        matrices.translate(0.0f, 31.0f, 0.0f);
         matrices.scale(62.500004f, 62.500004f, -62.500004f);
         SpriteIdentifier spriteIdentifier = TexturedRenderLayers.getSignTextureId(this.signType);
         VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumers, this.model::getLayer);
@@ -63,7 +63,7 @@ extends AbstractSignEditScreen {
     }
 
     @Override
-    protected Vec3f getTextScale() {
+    protected Vector3f getTextScale() {
         return TEXT_SCALE;
     }
 }

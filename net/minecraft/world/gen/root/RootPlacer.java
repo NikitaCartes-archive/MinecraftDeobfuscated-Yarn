@@ -52,12 +52,12 @@ public abstract class RootPlacer {
         if (!this.canGrowThrough(world, pos)) {
             return;
         }
-        replacer.accept(pos, this.applyWaterlogging(world, pos, this.rootProvider.getBlockState(random, pos)));
+        replacer.accept(pos, this.applyWaterlogging(world, pos, this.rootProvider.get(random, pos)));
         if (this.aboveRootPlacement.isPresent()) {
             AboveRootPlacement aboveRootPlacement = this.aboveRootPlacement.get();
             BlockPos blockPos = pos.up();
             if (random.nextFloat() < aboveRootPlacement.aboveRootPlacementChance() && world.testBlockState(blockPos, AbstractBlock.AbstractBlockState::isAir)) {
-                replacer.accept(blockPos, this.applyWaterlogging(world, blockPos, aboveRootPlacement.aboveRootProvider().getBlockState(random, blockPos)));
+                replacer.accept(blockPos, this.applyWaterlogging(world, blockPos, aboveRootPlacement.aboveRootProvider().get(random, blockPos)));
             }
         }
     }

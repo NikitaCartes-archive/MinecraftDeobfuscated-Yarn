@@ -101,12 +101,12 @@ extends RealmsScreen {
     public void init() {
         this.client.keyboard.setRepeatEvents(true);
         this.templateList = new WorldTemplateObjectSelectionList(this.templateList.getValues());
-        this.trailerButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 206, this.height - 32, 100, 20, Text.translatable("mco.template.button.trailer"), button -> this.onTrailer()));
-        this.selectButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height - 32, 100, 20, Text.translatable("mco.template.button.select"), button -> this.selectTemplate()));
+        this.trailerButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("mco.template.button.trailer"), button -> this.onTrailer()).setPositionAndSize(this.width / 2 - 206, this.height - 32, 100, 20).build());
+        this.selectButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("mco.template.button.select"), button -> this.selectTemplate()).setPositionAndSize(this.width / 2 - 100, this.height - 32, 100, 20).build());
         Text text = this.worldType == RealmsServer.WorldType.MINIGAME ? ScreenTexts.CANCEL : ScreenTexts.BACK;
-        ButtonWidget buttonWidget = new ButtonWidget(this.width / 2 + 6, this.height - 32, 100, 20, text, button -> this.close());
+        ButtonWidget buttonWidget = ButtonWidget.createBuilder(text, button -> this.close()).setPositionAndSize(this.width / 2 + 6, this.height - 32, 100, 20).build();
         this.addDrawableChild(buttonWidget);
-        this.publisherButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 112, this.height - 32, 100, 20, Text.translatable("mco.template.button.publisher"), button -> this.onPublish()));
+        this.publisherButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("mco.template.button.publisher"), button -> this.onPublish()).setPositionAndSize(this.width / 2 + 112, this.height - 32, 100, 20).build());
         this.selectButton.active = false;
         this.trailerButton.visible = false;
         this.publisherButton.visible = false;

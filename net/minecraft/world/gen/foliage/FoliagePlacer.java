@@ -93,7 +93,7 @@ public abstract class FoliagePlacer {
 
     protected static void placeFoliageBlock(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, TreeFeatureConfig config, BlockPos pos) {
         if (TreeFeature.canReplace(world, pos)) {
-            BlockState blockState = config.foliageProvider.getBlockState(random, pos);
+            BlockState blockState = config.foliageProvider.get(random, pos);
             if (blockState.contains(Properties.WATERLOGGED)) {
                 blockState = (BlockState)blockState.with(Properties.WATERLOGGED, world.testFluidState(pos, fluidState -> fluidState.isEqualAndStill(Fluids.WATER)));
             }

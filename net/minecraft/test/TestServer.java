@@ -144,6 +144,11 @@ extends MinecraftServer {
     }
 
     @Override
+    public void runTasksTillTickEnd() {
+        this.runTasks();
+    }
+
+    @Override
     public SystemDetails addExtraSystemDetails(SystemDetails details) {
         details.addSection("Type", "Game test server");
         return details;

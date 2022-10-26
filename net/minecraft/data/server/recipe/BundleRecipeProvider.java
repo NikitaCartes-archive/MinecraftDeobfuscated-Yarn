@@ -21,10 +21,5 @@ extends RecipeProvider {
     protected void generate(Consumer<RecipeJsonProvider> exporter) {
         ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, Items.BUNDLE).input(Character.valueOf('#'), Items.RABBIT_HIDE).input(Character.valueOf('-'), Items.STRING).pattern("-#-").pattern("# #").pattern("###").criterion("has_string", BundleRecipeProvider.conditionsFromItem(Items.STRING)).offerTo(exporter);
     }
-
-    @Override
-    public String getName() {
-        return "Bundle Recipes";
-    }
 }
 

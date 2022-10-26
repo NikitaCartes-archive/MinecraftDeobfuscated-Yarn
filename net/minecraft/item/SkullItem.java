@@ -21,8 +21,8 @@ public class SkullItem
 extends VerticallyAttachableBlockItem {
     public static final String SKULL_OWNER_KEY = "SkullOwner";
 
-    public SkullItem(Block block, Block block2, Item.Settings settings) {
-        super(block, block2, settings, Direction.DOWN);
+    public SkullItem(Block block, Block wallBlock, Item.Settings settings) {
+        super(block, wallBlock, settings, Direction.DOWN);
     }
 
     @Override

@@ -19,7 +19,7 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.util.math.Matrix4f;
+import org.joml.Matrix4f;
 
 @Environment(value=EnvType.CLIENT)
 public class PostProcessShader
@@ -85,7 +85,7 @@ implements AutoCloseable {
         bufferBuilder.vertex(f, 0.0, 500.0).next();
         bufferBuilder.vertex(f, g, 500.0).next();
         bufferBuilder.vertex(0.0, g, 500.0).next();
-        BufferRenderer.drawWithoutShader(bufferBuilder.end());
+        BufferRenderer.draw(bufferBuilder.end());
         RenderSystem.depthFunc(515);
         this.program.disable();
         this.output.endWrite();

@@ -30,9 +30,9 @@ public record PredicatedStateProvider(BlockStateProvider fallback, List<Rule> ru
     public BlockState getBlockState(StructureWorldAccess world, Random random, BlockPos pos) {
         for (Rule rule : this.rules) {
             if (!rule.ifTrue().test(world, pos)) continue;
-            return rule.then().getBlockState(random, pos);
+            return rule.then().get(random, pos);
         }
-        return this.fallback.getBlockState(random, pos);
+        return this.fallback.get(random, pos);
     }
 
     public record Rule(BlockPredicate ifTrue, BlockStateProvider then) {

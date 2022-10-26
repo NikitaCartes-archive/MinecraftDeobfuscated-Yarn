@@ -7,8 +7,12 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 
 public interface InventoryOwner {
+    public static final String INVENTORY_KEY = "Inventory";
+
     public SimpleInventory getInventory();
 
     public static void pickUpItem(MobEntity entity, InventoryOwner inventoryOwner, ItemEntity item) {
@@ -29,6 +33,16 @@ public interface InventoryOwner {
                 itemStack.setCount(itemStack2.getCount());
             }
         }
+    }
+
+    default public void readInventory(NbtCompound nbt) {
+        if (nbt.contains(INVENTORY_KEY, NbtElement.LIST_TYPE)) {
+            this.getInventory().readNbtList(nbt.getList(INVENTORY_KEY, NbtElement.COMPOUND_TYPE));
+        }
+    }
+
+    default public void writeInventory(NbtCompound nbt) {
+        nbt.put(INVENTORY_KEY, this.getInventory().toNbtList());
     }
 }
 

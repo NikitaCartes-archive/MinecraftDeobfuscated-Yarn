@@ -12,7 +12,7 @@ import net.minecraft.block.Blocks;
 public class CarverDebugConfig {
     public static final CarverDebugConfig DEFAULT = new CarverDebugConfig(false, Blocks.ACACIA_BUTTON.getDefaultState(), Blocks.CANDLE.getDefaultState(), Blocks.ORANGE_STAINED_GLASS.getDefaultState(), Blocks.GLASS.getDefaultState());
     public static final Codec<CarverDebugConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(Codec.BOOL.optionalFieldOf("debug_mode", false).forGetter(CarverDebugConfig::isDebugMode), BlockState.CODEC.optionalFieldOf("air_state", DEFAULT.getAirState()).forGetter(CarverDebugConfig::getAirState), BlockState.CODEC.optionalFieldOf("water_state", DEFAULT.getAirState()).forGetter(CarverDebugConfig::getWaterState), BlockState.CODEC.optionalFieldOf("lava_state", DEFAULT.getAirState()).forGetter(CarverDebugConfig::getLavaState), BlockState.CODEC.optionalFieldOf("barrier_state", DEFAULT.getAirState()).forGetter(CarverDebugConfig::getBarrierState)).apply((Applicative<CarverDebugConfig, ?>)instance, CarverDebugConfig::new));
-    private boolean debugMode;
+    private final boolean debugMode;
     private final BlockState airState;
     private final BlockState waterState;
     private final BlockState lavaState;

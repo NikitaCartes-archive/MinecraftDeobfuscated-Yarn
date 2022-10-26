@@ -98,7 +98,6 @@ import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.ParticleUtil;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3d;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -137,12 +136,9 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Matrix3f;
-import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.math.Vector4f;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
@@ -159,6 +155,10 @@ import net.minecraft.world.WorldEvents;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.border.WorldBorder;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Vector3d;
+import org.joml.Vector4f;
 import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
@@ -959,8 +959,8 @@ AutoCloseable {
 
     private void captureFrustum(Matrix4f positionMatrix, Matrix4f matrix4f, double x, double y, double z, Frustum frustum) {
         this.capturedFrustum = frustum;
-        Matrix4f matrix4f2 = matrix4f.copy();
-        matrix4f2.multiply(positionMatrix);
+        Matrix4f matrix4f2 = new Matrix4f(matrix4f);
+        matrix4f2.mul(positionMatrix);
         matrix4f2.invert();
         this.capturedFrustumPosition.x = x;
         this.capturedFrustumPosition.y = y;
@@ -974,8 +974,8 @@ AutoCloseable {
         this.capturedFrustumOrientation[6] = new Vector4f(1.0f, 1.0f, 1.0f, 1.0f);
         this.capturedFrustumOrientation[7] = new Vector4f(-1.0f, 1.0f, 1.0f, 1.0f);
         for (int i = 0; i < 8; ++i) {
-            this.capturedFrustumOrientation[i].transform(matrix4f2);
-            this.capturedFrustumOrientation[i].normalizeProjectiveCoordinates();
+            matrix4f2.transform(this.capturedFrustumOrientation[i]);
+            this.capturedFrustumOrientation[i].div(this.capturedFrustumOrientation[i].w());
         }
     }
 
@@ -1342,10 +1342,10 @@ AutoCloseable {
                 glUniform.upload();
             }
             vertexBuffer.bind();
-            vertexBuffer.drawElements();
+            vertexBuffer.draw();
         }
         if (glUniform != null) {
-            glUniform.set(Vec3f.ZERO);
+            glUniform.set(0.0f, 0.0f, 0.0f);
         }
         shader.unbind();
         VertexBuffer.unbind();
@@ -1507,15 +1507,15 @@ AutoCloseable {
     }
 
     private void method_22984(VertexConsumer vertexConsumer, int i) {
-        vertexConsumer.vertex(this.capturedFrustumOrientation[i].getX(), this.capturedFrustumOrientation[i].getY(), this.capturedFrustumOrientation[i].getZ()).color(0, 0, 0, 255).normal(0.0f, 0.0f, -1.0f).next();
+        vertexConsumer.vertex(this.capturedFrustumOrientation[i].x(), this.capturedFrustumOrientation[i].y(), this.capturedFrustumOrientation[i].z()).color(0, 0, 0, 255).normal(0.0f, 0.0f, -1.0f).next();
     }
 
     private void method_22985(VertexConsumer vertexConsumer, int i, int j, int k, int l, int m, int n, int o) {
         float f = 0.25f;
-        vertexConsumer.vertex(this.capturedFrustumOrientation[i].getX(), this.capturedFrustumOrientation[i].getY(), this.capturedFrustumOrientation[i].getZ()).color((float)m, (float)n, (float)o, 0.25f).next();
-        vertexConsumer.vertex(this.capturedFrustumOrientation[j].getX(), this.capturedFrustumOrientation[j].getY(), this.capturedFrustumOrientation[j].getZ()).color((float)m, (float)n, (float)o, 0.25f).next();
-        vertexConsumer.vertex(this.capturedFrustumOrientation[k].getX(), this.capturedFrustumOrientation[k].getY(), this.capturedFrustumOrientation[k].getZ()).color((float)m, (float)n, (float)o, 0.25f).next();
-        vertexConsumer.vertex(this.capturedFrustumOrientation[l].getX(), this.capturedFrustumOrientation[l].getY(), this.capturedFrustumOrientation[l].getZ()).color((float)m, (float)n, (float)o, 0.25f).next();
+        vertexConsumer.vertex(this.capturedFrustumOrientation[i].x(), this.capturedFrustumOrientation[i].y(), this.capturedFrustumOrientation[i].z()).color((float)m, (float)n, (float)o, 0.25f).next();
+        vertexConsumer.vertex(this.capturedFrustumOrientation[j].x(), this.capturedFrustumOrientation[j].y(), this.capturedFrustumOrientation[j].z()).color((float)m, (float)n, (float)o, 0.25f).next();
+        vertexConsumer.vertex(this.capturedFrustumOrientation[k].x(), this.capturedFrustumOrientation[k].y(), this.capturedFrustumOrientation[k].z()).color((float)m, (float)n, (float)o, 0.25f).next();
+        vertexConsumer.vertex(this.capturedFrustumOrientation[l].x(), this.capturedFrustumOrientation[l].y(), this.capturedFrustumOrientation[l].z()).color((float)m, (float)n, (float)o, 0.25f).next();
     }
 
     public void captureFrustum() {
@@ -1561,19 +1561,19 @@ AutoCloseable {
         for (int i = 0; i < 6; ++i) {
             matrices.push();
             if (i == 1) {
-                matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0f));
+                matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0f));
             }
             if (i == 2) {
-                matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90.0f));
+                matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-90.0f));
             }
             if (i == 3) {
-                matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(180.0f));
+                matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180.0f));
             }
             if (i == 4) {
-                matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0f));
+                matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90.0f));
             }
             if (i == 5) {
-                matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-90.0f));
+                matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-90.0f));
             }
             Matrix4f matrix4f = matrices.peek().getPositionMatrix();
             bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
@@ -1632,10 +1632,10 @@ AutoCloseable {
             RenderSystem.disableTexture();
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             matrices.push();
-            matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0f));
+            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0f));
             i = MathHelper.sin(this.world.getSkyAngleRadians(tickDelta)) < 0.0f ? 180.0f : 0.0f;
-            matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(i));
-            matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0f));
+            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(i));
+            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90.0f));
             float j = fs[0];
             k = fs[1];
             float l = fs[2];
@@ -1657,8 +1657,8 @@ AutoCloseable {
         matrices.push();
         i = 1.0f - this.world.getRainGradient(tickDelta);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, i);
-        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-90.0f));
-        matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(this.world.getSkyAngle(tickDelta) * 360.0f));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-90.0f));
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(this.world.getSkyAngle(tickDelta) * 360.0f));
         Matrix4f matrix4f2 = matrices.peek().getPositionMatrix();
         k = 30.0f;
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
@@ -1702,7 +1702,7 @@ AutoCloseable {
         double d = this.client.player.getCameraPosVec((float)tickDelta).y - this.world.getLevelProperties().getSkyDarknessHeight(this.world);
         if (d < 0.0) {
             matrices.push();
-            matrices.translate(0.0, 12.0, 0.0);
+            matrices.translate(0.0f, 12.0f, 0.0f);
             this.darkSkyBuffer.bind();
             this.darkSkyBuffer.draw(matrices.peek().getPositionMatrix(), projectionMatrix, shader);
             VertexBuffer.unbind();

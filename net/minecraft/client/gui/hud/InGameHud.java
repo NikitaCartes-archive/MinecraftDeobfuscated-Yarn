@@ -74,7 +74,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.border.WorldBorder;
@@ -263,7 +263,7 @@ extends DrawableHelper {
                 }
                 if (l > 8) {
                     matrices.push();
-                    matrices.translate(this.scaledWidth / 2, this.scaledHeight - 68, 0.0);
+                    matrices.translate(this.scaledWidth / 2, this.scaledHeight - 68, 0.0f);
                     RenderSystem.enableBlend();
                     RenderSystem.defaultBlendFunc();
                     k = 0xFFFFFF;
@@ -292,7 +292,7 @@ extends DrawableHelper {
                 }
                 if ((l = MathHelper.clamp(l, 0, 255)) > 8) {
                     matrices.push();
-                    matrices.translate(this.scaledWidth / 2, this.scaledHeight / 2, 0.0);
+                    matrices.translate(this.scaledWidth / 2, this.scaledHeight / 2, 0.0f);
                     RenderSystem.enableBlend();
                     RenderSystem.defaultBlendFunc();
                     matrices.push();
@@ -366,8 +366,8 @@ extends DrawableHelper {
             MatrixStack matrixStack = RenderSystem.getModelViewStack();
             matrixStack.push();
             matrixStack.translate(this.scaledWidth / 2, this.scaledHeight / 2, this.getZOffset());
-            matrixStack.multiply(Vec3f.NEGATIVE_X.getDegreesQuaternion(camera.getPitch()));
-            matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(camera.getYaw()));
+            matrixStack.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(camera.getPitch()));
+            matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(camera.getYaw()));
             matrixStack.scale(-1.0f, -1.0f, -1.0f);
             RenderSystem.applyModelViewMatrix();
             RenderSystem.renderCrosshair(10);
@@ -532,7 +532,7 @@ extends DrawableHelper {
         int j = (int)(f * 183.0f);
         int k = this.scaledHeight - 32 + 3;
         this.drawTexture(matrices, x, k, 0, 84, 182, 5);
-        if (mount.getDashCooldown() > 0) {
+        if (mount.getJumpCooldown() > 0) {
             this.drawTexture(matrices, x, k, 0, 74, 182, 5);
         } else if (j > 0) {
             this.drawTexture(matrices, x, k, 0, 89, j, 5);
@@ -1017,9 +1017,9 @@ extends DrawableHelper {
         if (f > 0.0f) {
             float g = 1.0f + f / 5.0f;
             matrixStack.push();
-            matrixStack.translate(x + 8, y + 12, 0.0);
+            matrixStack.translate(x + 8, y + 12, 0.0f);
             matrixStack.scale(1.0f / g, (g + 1.0f) / 2.0f, 1.0f);
-            matrixStack.translate(-(x + 8), -(y + 12), 0.0);
+            matrixStack.translate(-(x + 8), -(y + 12), 0.0f);
             RenderSystem.applyModelViewMatrix();
         }
         this.itemRenderer.renderInGuiWithOverrides(player, stack, x, y, seed);

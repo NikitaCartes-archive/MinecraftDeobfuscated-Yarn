@@ -18,7 +18,7 @@ import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 
 @Environment(value=EnvType.CLIENT)
 public class EnchantingTableBlockEntityRenderer
@@ -34,17 +34,17 @@ implements BlockEntityRenderer<EnchantingTableBlockEntity> {
     public void render(EnchantingTableBlockEntity enchantingTableBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
         float h;
         matrixStack.push();
-        matrixStack.translate(0.5, 0.75, 0.5);
+        matrixStack.translate(0.5f, 0.75f, 0.5f);
         float g = (float)enchantingTableBlockEntity.ticks + f;
-        matrixStack.translate(0.0, 0.1f + MathHelper.sin(g * 0.1f) * 0.01f, 0.0);
+        matrixStack.translate(0.0f, 0.1f + MathHelper.sin(g * 0.1f) * 0.01f, 0.0f);
         for (h = enchantingTableBlockEntity.bookRotation - enchantingTableBlockEntity.lastBookRotation; h >= (float)Math.PI; h -= (float)Math.PI * 2) {
         }
         while (h < (float)(-Math.PI)) {
             h += (float)Math.PI * 2;
         }
         float k = enchantingTableBlockEntity.lastBookRotation + h * f;
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getRadialQuaternion(-k));
-        matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(80.0f));
+        matrixStack.multiply(RotationAxis.POSITIVE_Y.rotation(-k));
+        matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(80.0f));
         float l = MathHelper.lerp(f, enchantingTableBlockEntity.pageAngle, enchantingTableBlockEntity.nextPageAngle);
         float m = MathHelper.fractionalPart(l + 0.25f) * 1.6f - 0.3f;
         float n = MathHelper.fractionalPart(l + 0.75f) * 1.6f - 0.3f;

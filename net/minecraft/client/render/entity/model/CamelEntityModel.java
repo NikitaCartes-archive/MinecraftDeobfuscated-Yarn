@@ -70,8 +70,9 @@ extends SinglePartEntityModel<T> {
         this.updateVisibleParts(camelEntity);
         float k = Math.min((float)((Entity)camelEntity).getVelocity().lengthSquared() * 75.0f, 2.0f);
         this.updateAnimation(((CamelEntity)camelEntity).walkingAnimationState, CamelAnimations.WALKING, h, k);
+        this.updateAnimation(((CamelEntity)camelEntity).sittingTransitionAnimationState, CamelAnimations.SITTING_TRANSITION, h, 1.0f);
         this.updateAnimation(((CamelEntity)camelEntity).sittingAnimationState, CamelAnimations.SITTING, h, 1.0f);
-        this.updateAnimation(((CamelEntity)camelEntity).standingUpAnimationState, CamelAnimations.STANDING_UP, h, 1.0f);
+        this.updateAnimation(((CamelEntity)camelEntity).standingTransitionAnimationState, CamelAnimations.STANDING_TRANSITION, h, 1.0f);
         this.updateAnimation(((CamelEntity)camelEntity).idlingAnimationState, CamelAnimations.IDLING, h, 1.0f);
         this.updateAnimation(((CamelEntity)camelEntity).dashingAnimationState, CamelAnimations.DASHING, h, 1.0f);
     }
@@ -79,9 +80,9 @@ extends SinglePartEntityModel<T> {
     private void setHeadAngles(T entity, float headYaw, float headPitch, float animationProgress) {
         headYaw = MathHelper.clamp(headYaw, -30.0f, 30.0f);
         headPitch = MathHelper.clamp(headPitch, -25.0f, 45.0f);
-        if (((CamelEntity)entity).getDashCooldown() > 0) {
+        if (((CamelEntity)entity).getJumpCooldown() > 0) {
             float f = animationProgress - (float)((CamelEntity)entity).age;
-            float g = 45.0f * ((float)((CamelEntity)entity).getDashCooldown() - f) / 55.0f;
+            float g = 45.0f * ((float)((CamelEntity)entity).getJumpCooldown() - f) / 55.0f;
             headPitch = MathHelper.clamp(headPitch + g, -25.0f, 70.0f);
         }
         this.head.yaw = headYaw * ((float)Math.PI / 180);
@@ -106,7 +107,7 @@ extends SinglePartEntityModel<T> {
             float g = 1.1f;
             matrices.push();
             matrices.scale(0.45454544f, 0.41322312f, 0.45454544f);
-            matrices.translate(0.0, 2.0625, 0.0);
+            matrices.translate(0.0f, 2.0625f, 0.0f);
             this.getPart().render(matrices, vertices, light, overlay, red, green, blue, alpha);
             matrices.pop();
         } else {

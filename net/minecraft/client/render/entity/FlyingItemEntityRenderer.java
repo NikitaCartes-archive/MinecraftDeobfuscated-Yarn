@@ -17,7 +17,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.FlyingItemEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 
 @Environment(value=EnvType.CLIENT)
 public class FlyingItemEntityRenderer<T extends Entity>
@@ -51,7 +51,7 @@ extends EntityRenderer<T> {
         matrices.push();
         matrices.scale(this.scale, this.scale, this.scale);
         matrices.multiply(this.dispatcher.getRotation());
-        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0f));
         this.itemRenderer.renderItem(((FlyingItemEntity)entity).getStack(), ModelTransformation.Mode.GROUND, light, OverlayTexture.DEFAULT_UV, matrices, vertexConsumers, ((Entity)entity).getId());
         matrices.pop();
         super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);

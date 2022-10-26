@@ -117,7 +117,7 @@ extends Task<E> {
                 }
                 if (l - this.prepareStartTime.get() >= (long)this.prepareTime) {
                     ((LivingEntity)pathAwareEntity).getBrain().remember(MemoryModuleType.RAM_TARGET, this.calculateRamTarget(blockPos, this.ram.get().getEnd()));
-                    serverWorld.playSoundFromEntity(null, (Entity)pathAwareEntity, this.soundFactory.apply(pathAwareEntity), SoundCategory.HOSTILE, 1.0f, ((LivingEntity)pathAwareEntity).getSoundPitch());
+                    serverWorld.playSoundFromEntity(null, (Entity)pathAwareEntity, this.soundFactory.apply(pathAwareEntity), SoundCategory.NEUTRAL, 1.0f, ((LivingEntity)pathAwareEntity).getSoundPitch());
                     this.ram = Optional.empty();
                 }
             }

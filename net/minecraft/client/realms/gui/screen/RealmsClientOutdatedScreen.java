@@ -28,7 +28,7 @@ extends RealmsScreen {
 
     @Override
     public void init() {
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, RealmsClientOutdatedScreen.row(12), 200, 20, ScreenTexts.BACK, button -> this.client.setScreen(this.parent)));
+        this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.BACK, button -> this.client.setScreen(this.parent)).setPositionAndSize(this.width / 2 - 100, RealmsClientOutdatedScreen.row(12), 200, 20).build());
     }
 
     @Override

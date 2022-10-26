@@ -6,12 +6,11 @@ package net.minecraft.data.server.recipe;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
-import com.mojang.logging.LogUtils;
-import java.io.IOException;
-import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import net.minecraft.advancement.Advancement;
@@ -49,11 +48,9 @@ import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
 
 public abstract class RecipeProvider
 implements DataProvider {
-    private static final Logger LOGGER = LogUtils.getLogger();
     private final DataOutput.PathResolver recipesPathResolver;
     private final DataOutput.PathResolver advancementsPathResolver;
     private static final Map<BlockFamily.Variant, BiFunction<ItemConvertible, ItemConvertible, CraftingRecipeJsonBuilder>> VARIANT_FACTORIES = ImmutableMap.builder().put(BlockFamily.Variant.BUTTON, (output, input) -> RecipeProvider.createTransmutationRecipe(output, Ingredient.ofItems(input))).put(BlockFamily.Variant.CHISELED, (output, input) -> RecipeProvider.createChiseledBlockRecipe(RecipeCategory.BUILDING_BLOCKS, output, Ingredient.ofItems(input))).put(BlockFamily.Variant.CUT, (itemConvertible, itemConvertible2) -> RecipeProvider.createCutCopperRecipe(RecipeCategory.BUILDING_BLOCKS, itemConvertible, Ingredient.ofItems(itemConvertible2))).put(BlockFamily.Variant.DOOR, (output, input) -> RecipeProvider.createDoorRecipe(output, Ingredient.ofItems(input))).put(BlockFamily.Variant.CUSTOM_FENCE, (output, input) -> RecipeProvider.createFenceRecipe(output, Ingredient.ofItems(input))).put(BlockFamily.Variant.FENCE, (output, input) -> RecipeProvider.createFenceRecipe(output, Ingredient.ofItems(input))).put(BlockFamily.Variant.CUSTOM_FENCE_GATE, (itemConvertible, itemConvertible2) -> RecipeProvider.createFenceGateRecipe(itemConvertible, Ingredient.ofItems(itemConvertible2))).put(BlockFamily.Variant.FENCE_GATE, (output, input) -> RecipeProvider.createFenceGateRecipe(output, Ingredient.ofItems(input))).put(BlockFamily.Variant.SIGN, (output, input) -> RecipeProvider.createSignRecipe(output, Ingredient.ofItems(input))).put(BlockFamily.Variant.SLAB, (output, input) -> RecipeProvider.createSlabRecipe(RecipeCategory.BUILDING_BLOCKS, output, Ingredient.ofItems(input))).put(BlockFamily.Variant.STAIRS, (output, input) -> RecipeProvider.createStairsRecipe(output, Ingredient.ofItems(input))).put(BlockFamily.Variant.PRESSURE_PLATE, (output, input) -> RecipeProvider.createPressurePlateRecipe(RecipeCategory.REDSTONE, output, Ingredient.ofItems(input))).put(BlockFamily.Variant.POLISHED, (output, input) -> RecipeProvider.createCondensingRecipe(RecipeCategory.BUILDING_BLOCKS, output, Ingredient.ofItems(input))).put(BlockFamily.Variant.TRAPDOOR, (output, input) -> RecipeProvider.createTrapdoorRecipe(output, Ingredient.ofItems(input))).put(BlockFamily.Variant.WALL, (output, input) -> RecipeProvider.getWallRecipe(RecipeCategory.DECORATIONS, output, Ingredient.ofItems(input))).build();
@@ -64,38 +61,24 @@ implements DataProvider {
     }
 
     @Override
-    public void run(DataWriter writer) {
+    public CompletableFuture<?> run(DataWriter writer) {
         HashSet set = Sets.newHashSet();
-        this.generate(provider -> {
-            if (!set.add(provider.getRecipeId())) {
-                throw new IllegalStateException("Duplicate recipe " + provider.getRecipeId());
+        ArrayList list = new ArrayList();
+        this.generate(jsonProvider -> {
+            if (!set.add(jsonProvider.getRecipeId())) {
+                throw new IllegalStateException("Duplicate recipe " + jsonProvider.getRecipeId());
             }
-            RecipeProvider.saveRecipe(writer, provider.toJson(), this.recipesPathResolver.resolveJson(provider.getRecipeId()));
-            JsonObject jsonObject = provider.toAdvancementJson();
+            list.add(DataProvider.writeToPath(writer, jsonProvider.toJson(), this.recipesPathResolver.resolveJson(jsonProvider.getRecipeId())));
+            JsonObject jsonObject = jsonProvider.toAdvancementJson();
             if (jsonObject != null) {
-                RecipeProvider.saveRecipeAdvancement(writer, jsonObject, this.advancementsPathResolver.resolveJson(provider.getAdvancementId()));
+                list.add(DataProvider.writeToPath(writer, jsonObject, this.advancementsPathResolver.resolveJson(jsonProvider.getAdvancementId())));
             }
         });
+        return CompletableFuture.allOf((CompletableFuture[])list.toArray(CompletableFuture[]::new));
     }
 
-    protected void saveRecipeAdvancement(DataWriter cache, Identifier advancementId, Advancement.Builder advancementBuilder) {
-        RecipeProvider.saveRecipeAdvancement(cache, advancementBuilder.toJson(), this.advancementsPathResolver.resolveJson(advancementId));
-    }
-
-    private static void saveRecipe(DataWriter cache, JsonObject json, Path path) {
-        try {
-            DataProvider.writeToPath(cache, json, path);
-        } catch (IOException iOException) {
-            LOGGER.error("Couldn't save recipe {}", (Object)path, (Object)iOException);
-        }
-    }
-
-    private static void saveRecipeAdvancement(DataWriter cache, JsonObject json, Path path) {
-        try {
-            DataProvider.writeToPath(cache, json, path);
-        } catch (IOException iOException) {
-            LOGGER.error("Couldn't save recipe advancement {}", (Object)path, (Object)iOException);
-        }
+    protected CompletableFuture<?> saveRecipeAdvancement(DataWriter cache, Identifier advancementId, Advancement.Builder advancementBuilder) {
+        return DataProvider.writeToPath(cache, advancementBuilder.toJson(), this.advancementsPathResolver.resolveJson(advancementId));
     }
 
     protected abstract void generate(Consumer<RecipeJsonProvider> var1);
@@ -426,6 +409,11 @@ implements DataProvider {
 
     protected static String getBlastingItemPath(ItemConvertible item) {
         return RecipeProvider.getItemPath(item) + "_from_blasting";
+    }
+
+    @Override
+    public final String getName() {
+        return "Recipes";
     }
 }
 

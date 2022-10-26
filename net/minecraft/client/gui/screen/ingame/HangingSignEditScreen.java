@@ -13,13 +13,13 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3f;
+import org.joml.Vector3f;
 
 @Environment(value=EnvType.CLIENT)
 public class HangingSignEditScreen
 extends AbstractSignEditScreen {
     public static final float BACKGROUND_SCALE = 4.0f;
-    private static final Vec3f TEXT_SCALE = new Vec3f(1.0f, 1.0f, 1.0f);
+    private static final Vector3f TEXT_SCALE = new Vector3f(1.0f, 1.0f, 1.0f);
     private static final int field_40433 = 16;
     private static final int field_40434 = 16;
     private final Identifier texture;
@@ -31,12 +31,12 @@ extends AbstractSignEditScreen {
 
     @Override
     protected void translateForRender(MatrixStack matrices, BlockState state) {
-        matrices.translate((float)this.width / 2.0f, 125.0, 50.0);
+        matrices.translate((float)this.width / 2.0f, 125.0f, 50.0f);
     }
 
     @Override
     protected void renderSignBackground(MatrixStack matrices, VertexConsumerProvider.Immediate vertexConsumers, BlockState state) {
-        matrices.translate(0.0, -13.0, 0.0);
+        matrices.translate(0.0f, -13.0f, 0.0f);
         RenderSystem.setShaderTexture(0, this.texture);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         matrices.scale(4.0f, 4.0f, 1.0f);
@@ -44,7 +44,7 @@ extends AbstractSignEditScreen {
     }
 
     @Override
-    protected Vec3f getTextScale() {
+    protected Vector3f getTextScale() {
         return TEXT_SCALE;
     }
 }

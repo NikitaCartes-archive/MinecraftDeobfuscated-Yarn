@@ -8,12 +8,14 @@ import java.util.ArrayDeque;
 import java.util.List;
 import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.network.message.SignedMessage;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
 /**
  * Collects message signatures on the server to make a message chain.
  */
 public class MessageSignatureStorage {
+    public static final int MISSING = -1;
     private static final int MAX_ENTRIES = 128;
     private final MessageSignatureData[] signatures;
 
@@ -25,18 +27,17 @@ public class MessageSignatureStorage {
         return new MessageSignatureStorage(128);
     }
 
-    public MessageSignatureData.Packer getPacker() {
-        return signature -> {
-            for (int i = 0; i < this.signatures.length; ++i) {
-                if (!signature.equals(this.signatures[i])) continue;
-                return i;
-            }
-            return -1;
-        };
+    public int indexOf(MessageSignatureData signature) {
+        for (int i = 0; i < this.signatures.length; ++i) {
+            if (!signature.equals(this.signatures[i])) continue;
+            return i;
+        }
+        return -1;
     }
 
-    public MessageSignatureData.Unpacker getUnpacker() {
-        return index -> this.signatures[index];
+    @Nullable
+    public MessageSignatureData get(int index) {
+        return this.signatures[index];
     }
 
     public void add(SignedMessage message) {

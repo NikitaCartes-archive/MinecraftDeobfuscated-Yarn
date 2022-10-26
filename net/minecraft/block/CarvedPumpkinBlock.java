@@ -68,42 +68,42 @@ implements Wearable {
         if (result != null) {
             SnowGolemEntity snowGolemEntity = EntityType.SNOW_GOLEM.create(world);
             if (snowGolemEntity != null) {
-                CarvedPumpkinBlock.method_45455(world, result, snowGolemEntity, result.translate(0, 2, 0).getBlockPos());
+                CarvedPumpkinBlock.spawnEntity(world, result, snowGolemEntity, result.translate(0, 2, 0).getBlockPos());
             }
         } else {
             IronGolemEntity ironGolemEntity;
             BlockPattern.Result result2 = this.getIronGolemPattern().searchAround(world, pos);
             if (result2 != null && (ironGolemEntity = EntityType.IRON_GOLEM.create(world)) != null) {
                 ironGolemEntity.setPlayerCreated(true);
-                CarvedPumpkinBlock.method_45455(world, result2, ironGolemEntity, result2.translate(1, 2, 0).getBlockPos());
+                CarvedPumpkinBlock.spawnEntity(world, result2, ironGolemEntity, result2.translate(1, 2, 0).getBlockPos());
             }
         }
     }
 
-    private static void method_45455(World world, BlockPattern.Result result, Entity entity, BlockPos blockPos) {
-        CarvedPumpkinBlock.method_45454(world, result);
-        entity.refreshPositionAndAngles((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.05, (double)blockPos.getZ() + 0.5, 0.0f, 0.0f);
+    private static void spawnEntity(World world, BlockPattern.Result patternResult, Entity entity, BlockPos pos) {
+        CarvedPumpkinBlock.breakPatternBlocks(world, patternResult);
+        entity.refreshPositionAndAngles((double)pos.getX() + 0.5, (double)pos.getY() + 0.05, (double)pos.getZ() + 0.5, 0.0f, 0.0f);
         world.spawnEntity(entity);
         for (ServerPlayerEntity serverPlayerEntity : world.getNonSpectatingEntities(ServerPlayerEntity.class, entity.getBoundingBox().expand(5.0))) {
             Criteria.SUMMONED_ENTITY.trigger(serverPlayerEntity, entity);
         }
-        CarvedPumpkinBlock.method_45456(world, result);
+        CarvedPumpkinBlock.updatePatternBlocks(world, patternResult);
     }
 
-    public static void method_45454(World world, BlockPattern.Result result) {
-        for (int i = 0; i < result.getWidth(); ++i) {
-            for (int j = 0; j < result.getHeight(); ++j) {
-                CachedBlockPosition cachedBlockPosition = result.translate(i, j, 0);
+    public static void breakPatternBlocks(World world, BlockPattern.Result patternResult) {
+        for (int i = 0; i < patternResult.getWidth(); ++i) {
+            for (int j = 0; j < patternResult.getHeight(); ++j) {
+                CachedBlockPosition cachedBlockPosition = patternResult.translate(i, j, 0);
                 world.setBlockState(cachedBlockPosition.getBlockPos(), Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
                 world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, cachedBlockPosition.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition.getBlockState()));
             }
         }
     }
 
-    public static void method_45456(World world, BlockPattern.Result result) {
-        for (int i = 0; i < result.getWidth(); ++i) {
-            for (int j = 0; j < result.getHeight(); ++j) {
-                CachedBlockPosition cachedBlockPosition = result.translate(i, j, 0);
+    public static void updatePatternBlocks(World world, BlockPattern.Result patternResult) {
+        for (int i = 0; i < patternResult.getWidth(); ++i) {
+            for (int j = 0; j < patternResult.getHeight(); ++j) {
+                CachedBlockPosition cachedBlockPosition = patternResult.translate(i, j, 0);
                 world.updateNeighbors(cachedBlockPosition.getBlockPos(), Blocks.AIR);
             }
         }

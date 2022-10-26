@@ -28,8 +28,8 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Quaternion;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
+import org.joml.Quaternionf;
 
 @Environment(value=EnvType.CLIENT)
 public class BoatEntityRenderer
@@ -62,24 +62,24 @@ extends EntityRenderer<BoatEntity> {
     public void render(BoatEntity boatEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         float k;
         matrixStack.push();
-        matrixStack.translate(0.0, 0.375, 0.0);
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f - f));
+        matrixStack.translate(0.0f, 0.375f, 0.0f);
+        matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0f - f));
         float h = (float)boatEntity.getDamageWobbleTicks() - g;
         float j = boatEntity.getDamageWobbleStrength() - g;
         if (j < 0.0f) {
             j = 0.0f;
         }
         if (h > 0.0f) {
-            matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(MathHelper.sin(h) * h * j / 10.0f * (float)boatEntity.getDamageWobbleSide()));
+            matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(MathHelper.sin(h) * h * j / 10.0f * (float)boatEntity.getDamageWobbleSide()));
         }
         if (!MathHelper.approximatelyEquals(k = boatEntity.interpolateBubbleWobble(g), 0.0f)) {
-            matrixStack.multiply(new Quaternion(new Vec3f(1.0f, 0.0f, 1.0f), boatEntity.interpolateBubbleWobble(g), true));
+            matrixStack.multiply(new Quaternionf().setAngleAxis(boatEntity.interpolateBubbleWobble(g) * ((float)Math.PI / 180), 1.0f, 0.0f, 1.0f));
         }
         Pair<Identifier, CompositeEntityModel<BoatEntity>> pair = this.texturesAndModels.get((Object)boatEntity.getBoatType());
         Identifier identifier = pair.getFirst();
         CompositeEntityModel<BoatEntity> compositeEntityModel = pair.getSecond();
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(90.0f));
+        matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90.0f));
         compositeEntityModel.setAngles(boatEntity, g, 0.0f, -0.1f, 0.0f, 0.0f);
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(compositeEntityModel.getLayer(identifier));
         compositeEntityModel.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f, 1.0f);

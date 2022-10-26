@@ -40,8 +40,8 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
 public class PlayerEntityRenderer
@@ -156,7 +156,7 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
             ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(abstractClientPlayerEntity.getEntityName(), scoreboardObjective);
             super.renderLabelIfPresent(abstractClientPlayerEntity, Text.literal(Integer.toString(scoreboardPlayerScore.getScore())).append(" ").append(scoreboardObjective.getDisplayName()), matrixStack, vertexConsumerProvider, i);
             Objects.requireNonNull(this.getTextRenderer());
-            matrixStack.translate(0.0, 9.0f * 1.15f * 0.025f, 0.0);
+            matrixStack.translate(0.0f, 9.0f * 1.15f * 0.025f, 0.0f);
         }
         super.renderLabelIfPresent(abstractClientPlayerEntity, text, matrixStack, vertexConsumerProvider, i);
         matrixStack.pop();
@@ -191,7 +191,7 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
             float j = (float)abstractClientPlayerEntity.getRoll() + h;
             float k = MathHelper.clamp(j * j / 100.0f, 0.0f, 1.0f);
             if (!abstractClientPlayerEntity.isUsingRiptide()) {
-                matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(k * (-90.0f - abstractClientPlayerEntity.getPitch())));
+                matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(k * (-90.0f - abstractClientPlayerEntity.getPitch())));
             }
             Vec3d vec3d = abstractClientPlayerEntity.getRotationVec(h);
             Vec3d vec3d2 = abstractClientPlayerEntity.getVelocity();
@@ -200,15 +200,15 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
             if (d > 0.0 && e > 0.0) {
                 double l = (vec3d2.x * vec3d.x + vec3d2.z * vec3d.z) / Math.sqrt(d * e);
                 double m = vec3d2.x * vec3d.z - vec3d2.z * vec3d.x;
-                matrixStack.multiply(Vec3f.POSITIVE_Y.getRadialQuaternion((float)(Math.signum(m) * Math.acos(l))));
+                matrixStack.multiply(RotationAxis.POSITIVE_Y.rotation((float)(Math.signum(m) * Math.acos(l))));
             }
         } else if (i > 0.0f) {
             super.setupTransforms(abstractClientPlayerEntity, matrixStack, f, g, h);
             float j = abstractClientPlayerEntity.isTouchingWater() ? -90.0f - abstractClientPlayerEntity.getPitch() : -90.0f;
             float k = MathHelper.lerp(i, 0.0f, j);
-            matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(k));
+            matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(k));
             if (abstractClientPlayerEntity.isInSwimmingPose()) {
-                matrixStack.translate(0.0, -1.0, 0.3f);
+                matrixStack.translate(0.0f, -1.0f, 0.3f);
             }
         } else {
             super.setupTransforms(abstractClientPlayerEntity, matrixStack, f, g, h);

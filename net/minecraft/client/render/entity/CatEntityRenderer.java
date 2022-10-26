@@ -18,7 +18,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 
 @Environment(value=EnvType.CLIENT)
 public class CatEntityRenderer
@@ -45,12 +45,12 @@ extends MobEntityRenderer<CatEntity, CatEntityModel<CatEntity>> {
         float i = catEntity.getSleepAnimation(h);
         if (i > 0.0f) {
             matrixStack.translate(0.4f * i, 0.15f * i, 0.1f * i);
-            matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(MathHelper.lerpAngleDegrees(i, 0.0f, 90.0f)));
+            matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(MathHelper.lerpAngleDegrees(i, 0.0f, 90.0f)));
             BlockPos blockPos = catEntity.getBlockPos();
             List<PlayerEntity> list = catEntity.world.getNonSpectatingEntities(PlayerEntity.class, new Box(blockPos).expand(2.0, 2.0, 2.0));
             for (PlayerEntity playerEntity : list) {
                 if (!playerEntity.isSleeping()) continue;
-                matrixStack.translate(0.15f * i, 0.0, 0.0);
+                matrixStack.translate(0.15f * i, 0.0f, 0.0f);
                 break;
             }
         }

@@ -22,9 +22,9 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Matrix3f;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
 
 @Environment(value=EnvType.CLIENT)
 public class PaintingEntityRenderer
@@ -36,7 +36,7 @@ extends EntityRenderer<PaintingEntity> {
     @Override
     public void render(PaintingEntity paintingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         matrixStack.push();
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f - f));
+        matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0f - f));
         PaintingVariant paintingVariant = paintingEntity.getVariant().value();
         float h = 0.0625f;
         matrixStack.scale(0.0625f, 0.0625f, 0.0625f);

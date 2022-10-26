@@ -8,10 +8,9 @@ import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Encoder;
 import com.mojang.serialization.JsonOps;
-import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.data.DataOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
@@ -26,41 +25,36 @@ import org.slf4j.Logger;
 public class WorldgenProvider
 implements DataProvider {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private final DataOutput field_40665;
+    private final DataOutput output;
 
-    public WorldgenProvider(DataOutput dataOutput) {
-        this.field_40665 = dataOutput;
+    public WorldgenProvider(DataOutput output) {
+        this.output = output;
     }
 
     @Override
-    public void run(DataWriter writer) {
+    public CompletableFuture<?> run(DataWriter writer) {
         DynamicRegistryManager.Immutable dynamicRegistryManager = BuiltinRegistries.createBuiltinRegistryManager();
         RegistryOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, dynamicRegistryManager);
-        RegistryLoader.DYNAMIC_REGISTRIES.forEach(info -> this.writeRegistryEntries(writer, dynamicRegistryManager, (DynamicOps<JsonElement>)dynamicOps, (RegistryLoader.Entry)info));
+        return CompletableFuture.allOf((CompletableFuture[])RegistryLoader.DYNAMIC_REGISTRIES.stream().map(info -> this.writeRegistryEntries(writer, dynamicRegistryManager, (DynamicOps<JsonElement>)dynamicOps, (RegistryLoader.Entry)info)).toArray(CompletableFuture[]::new));
     }
 
-    private <T> void writeRegistryEntries(DataWriter writer, DynamicRegistryManager registryManager, DynamicOps<JsonElement> ops, RegistryLoader.Entry<T> registry) {
+    private <T> CompletableFuture<?> writeRegistryEntries(DataWriter writer, DynamicRegistryManager registryManager, DynamicOps<JsonElement> ops, RegistryLoader.Entry<T> registry) {
         RegistryKey<Registry<T>> registryKey = registry.key();
         Registry<T> registry2 = registryManager.get(registryKey);
-        DataOutput.PathResolver pathResolver = this.field_40665.getResolver(DataOutput.OutputType.DATA_PACK, registryKey.getValue().getPath());
-        for (Map.Entry<RegistryKey<T>, T> entry : registry2.getEntrySet()) {
-            WorldgenProvider.writeToPath(pathResolver.resolveJson(entry.getKey().getValue()), writer, ops, registry.elementCodec(), entry.getValue());
-        }
+        DataOutput.PathResolver pathResolver = this.output.getResolver(DataOutput.OutputType.DATA_PACK, registryKey.getValue().getPath());
+        return CompletableFuture.allOf((CompletableFuture[])registry2.getEntrySet().stream().map(entry -> WorldgenProvider.writeToPath(pathResolver.resolveJson(((RegistryKey)entry.getKey()).getValue()), writer, ops, registry.elementCodec(), entry.getValue())).toArray(CompletableFuture[]::new));
     }
 
-    private static <E> void writeToPath(Path path, DataWriter cache, DynamicOps<JsonElement> json, Encoder<E> encoder, E value) {
-        try {
-            Optional<JsonElement> optional = encoder.encodeStart(json, value).resultOrPartial(error -> LOGGER.error("Couldn't serialize element {}: {}", (Object)path, error));
-            if (optional.isPresent()) {
-                DataProvider.writeToPath(cache, optional.get(), path);
-            }
-        } catch (IOException iOException) {
-            LOGGER.error("Couldn't save element {}", (Object)path, (Object)iOException);
+    private static <E> CompletableFuture<?> writeToPath(Path path, DataWriter cache, DynamicOps<JsonElement> json, Encoder<E> encoder, E value) {
+        Optional<JsonElement> optional = encoder.encodeStart(json, value).resultOrPartial(error -> LOGGER.error("Couldn't serialize element {}: {}", (Object)path, error));
+        if (optional.isPresent()) {
+            return DataProvider.writeToPath(cache, optional.get(), path);
         }
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override
-    public String getName() {
+    public final String getName() {
         return "Worldgen";
     }
 }

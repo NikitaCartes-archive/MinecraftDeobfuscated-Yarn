@@ -52,7 +52,7 @@ extends HeldItemFeatureRenderer<T, M> {
         modelPart.pitch = f;
         HeadFeatureRenderer.translate(matrices, false);
         boolean bl = arm == Arm.LEFT;
-        matrices.translate((bl ? -2.5f : 2.5f) / 16.0f, -0.0625, 0.0);
+        matrices.translate((bl ? -2.5f : 2.5f) / 16.0f, -0.0625f, 0.0f);
         this.playerHeldItemRenderer.renderItem(entity, stack, ModelTransformation.Mode.HEAD, false, matrices, vertexConsumers, light);
         matrices.pop();
     }

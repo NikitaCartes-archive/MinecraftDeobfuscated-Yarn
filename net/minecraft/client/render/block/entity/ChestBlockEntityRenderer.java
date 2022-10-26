@@ -33,7 +33,7 @@ import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.world.World;
 
 @Environment(value=EnvType.CLIENT)
@@ -113,9 +113,9 @@ implements BlockEntityRenderer<T> {
         boolean bl2 = chestType != ChestType.SINGLE;
         matrices.push();
         float f = blockState.get(ChestBlock.FACING).asRotation();
-        matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-f));
-        matrices.translate(-0.5, -0.5, -0.5);
+        matrices.translate(0.5f, 0.5f, 0.5f);
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-f));
+        matrices.translate(-0.5f, -0.5f, -0.5f);
         DoubleBlockProperties.PropertySource<Object> propertySource = bl ? abstractChestBlock.getBlockEntitySource(blockState, world, ((BlockEntity)entity).getPos(), true) : DoubleBlockProperties.PropertyRetriever::getFallback;
         float g = propertySource.apply(ChestBlock.getAnimationProgressRetriever((LidOpenable)entity)).get(tickDelta);
         g = 1.0f - g;

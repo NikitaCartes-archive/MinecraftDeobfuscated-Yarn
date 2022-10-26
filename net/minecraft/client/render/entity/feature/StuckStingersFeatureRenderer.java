@@ -17,9 +17,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Matrix3f;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
 
 @Environment(value=EnvType.CLIENT)
 public class StuckStingersFeatureRenderer<T extends LivingEntity, M extends PlayerEntityModel<T>>
@@ -40,20 +40,20 @@ extends StuckObjectsFeatureRenderer<T, M> {
         float f = MathHelper.sqrt(directionX * directionX + directionZ * directionZ);
         float g = (float)(Math.atan2(directionX, directionZ) * 57.2957763671875);
         float h = (float)(Math.atan2(directionY, f) * 57.2957763671875);
-        matrices.translate(0.0, 0.0, 0.0);
-        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(g - 90.0f));
-        matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(h));
+        matrices.translate(0.0f, 0.0f, 0.0f);
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(g - 90.0f));
+        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(h));
         float i = 0.0f;
         float j = 0.125f;
         float k = 0.0f;
         float l = 0.0625f;
         float m = 0.03125f;
-        matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(45.0f));
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(45.0f));
         matrices.scale(0.03125f, 0.03125f, 0.03125f);
-        matrices.translate(2.5, 0.0, 0.0);
+        matrices.translate(2.5f, 0.0f, 0.0f);
         VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(TEXTURE));
         for (int n = 0; n < 4; ++n) {
-            matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0f));
+            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0f));
             MatrixStack.Entry entry = matrices.peek();
             Matrix4f matrix4f = entry.getPositionMatrix();
             Matrix3f matrix3f = entry.getNormalMatrix();

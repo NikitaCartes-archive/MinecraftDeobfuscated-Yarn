@@ -10,9 +10,9 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 /**
  * A {@link Particle} which renders a camera-facing sprite with a target texture scale.
@@ -34,37 +34,34 @@ extends Particle {
 
     @Override
     public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
-        Quaternion quaternion;
+        Quaternionf quaternionf;
         Vec3d vec3d = camera.getPos();
         float f = (float)(MathHelper.lerp((double)tickDelta, this.prevPosX, this.x) - vec3d.getX());
         float g = (float)(MathHelper.lerp((double)tickDelta, this.prevPosY, this.y) - vec3d.getY());
         float h = (float)(MathHelper.lerp((double)tickDelta, this.prevPosZ, this.z) - vec3d.getZ());
         if (this.angle == 0.0f) {
-            quaternion = camera.getRotation();
+            quaternionf = camera.getRotation();
         } else {
-            quaternion = new Quaternion(camera.getRotation());
-            float i = MathHelper.lerp(tickDelta, this.prevAngle, this.angle);
-            quaternion.hamiltonProduct(Vec3f.POSITIVE_Z.getRadialQuaternion(i));
+            quaternionf = new Quaternionf(camera.getRotation());
+            quaternionf.rotateZ(MathHelper.lerp(tickDelta, this.prevAngle, this.angle));
         }
-        Vec3f vec3f = new Vec3f(-1.0f, -1.0f, 0.0f);
-        vec3f.rotate(quaternion);
-        Vec3f[] vec3fs = new Vec3f[]{new Vec3f(-1.0f, -1.0f, 0.0f), new Vec3f(-1.0f, 1.0f, 0.0f), new Vec3f(1.0f, 1.0f, 0.0f), new Vec3f(1.0f, -1.0f, 0.0f)};
-        float j = this.getSize(tickDelta);
-        for (int k = 0; k < 4; ++k) {
-            Vec3f vec3f2 = vec3fs[k];
-            vec3f2.rotate(quaternion);
-            vec3f2.scale(j);
-            vec3f2.add(f, g, h);
+        Vector3f[] vector3fs = new Vector3f[]{new Vector3f(-1.0f, -1.0f, 0.0f), new Vector3f(-1.0f, 1.0f, 0.0f), new Vector3f(1.0f, 1.0f, 0.0f), new Vector3f(1.0f, -1.0f, 0.0f)};
+        float i = this.getSize(tickDelta);
+        for (int j = 0; j < 4; ++j) {
+            Vector3f vector3f = vector3fs[j];
+            vector3f.rotate(quaternionf);
+            vector3f.mul(i);
+            vector3f.add(f, g, h);
         }
-        float l = this.getMinU();
-        float m = this.getMaxU();
-        float n = this.getMinV();
-        float o = this.getMaxV();
-        int p = this.getBrightness(tickDelta);
-        vertexConsumer.vertex(vec3fs[0].getX(), vec3fs[0].getY(), vec3fs[0].getZ()).texture(m, o).color(this.red, this.green, this.blue, this.alpha).light(p).next();
-        vertexConsumer.vertex(vec3fs[1].getX(), vec3fs[1].getY(), vec3fs[1].getZ()).texture(m, n).color(this.red, this.green, this.blue, this.alpha).light(p).next();
-        vertexConsumer.vertex(vec3fs[2].getX(), vec3fs[2].getY(), vec3fs[2].getZ()).texture(l, n).color(this.red, this.green, this.blue, this.alpha).light(p).next();
-        vertexConsumer.vertex(vec3fs[3].getX(), vec3fs[3].getY(), vec3fs[3].getZ()).texture(l, o).color(this.red, this.green, this.blue, this.alpha).light(p).next();
+        float k = this.getMinU();
+        float l = this.getMaxU();
+        float m = this.getMinV();
+        float n = this.getMaxV();
+        int o = this.getBrightness(tickDelta);
+        vertexConsumer.vertex(vector3fs[0].x(), vector3fs[0].y(), vector3fs[0].z()).texture(l, n).color(this.red, this.green, this.blue, this.alpha).light(o).next();
+        vertexConsumer.vertex(vector3fs[1].x(), vector3fs[1].y(), vector3fs[1].z()).texture(l, m).color(this.red, this.green, this.blue, this.alpha).light(o).next();
+        vertexConsumer.vertex(vector3fs[2].x(), vector3fs[2].y(), vector3fs[2].z()).texture(k, m).color(this.red, this.green, this.blue, this.alpha).light(o).next();
+        vertexConsumer.vertex(vector3fs[3].x(), vector3fs[3].y(), vector3fs[3].z()).texture(k, n).color(this.red, this.green, this.blue, this.alpha).light(o).next();
     }
 
     /**

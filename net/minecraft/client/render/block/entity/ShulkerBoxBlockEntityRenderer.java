@@ -41,12 +41,12 @@ implements BlockEntityRenderer<ShulkerBoxBlockEntity> {
         }
         SpriteIdentifier spriteIdentifier = (dyeColor = shulkerBoxBlockEntity.getColor()) == null ? TexturedRenderLayers.SHULKER_TEXTURE_ID : TexturedRenderLayers.COLORED_SHULKER_BOXES_TEXTURES.get(dyeColor.getId());
         matrixStack.push();
-        matrixStack.translate(0.5, 0.5, 0.5);
+        matrixStack.translate(0.5f, 0.5f, 0.5f);
         float g = 0.9995f;
         matrixStack.scale(0.9995f, 0.9995f, 0.9995f);
         matrixStack.multiply(direction.getRotationQuaternion());
         matrixStack.scale(1.0f, -1.0f, -1.0f);
-        matrixStack.translate(0.0, -1.0, 0.0);
+        matrixStack.translate(0.0f, -1.0f, 0.0f);
         ModelPart modelPart = this.model.getLid();
         modelPart.setPivot(0.0f, 24.0f - shulkerBoxBlockEntity.getAnimationProgress(f) * 0.5f * 16.0f, 0.0f);
         modelPart.yaw = 270.0f * shulkerBoxBlockEntity.getAnimationProgress(f) * ((float)Math.PI / 180);

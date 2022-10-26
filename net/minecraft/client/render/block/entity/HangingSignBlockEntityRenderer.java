@@ -30,9 +30,9 @@ import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.SignType;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.RotationPropertyHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
 public class HangingSignBlockEntityRenderer
@@ -63,11 +63,11 @@ extends SignBlockEntityRenderer {
         matrixStack.translate(0.5, 0.9375, 0.5);
         if (bl2) {
             g = -RotationPropertyHelper.toDegrees(blockState.get(HangingSignBlock.ROTATION));
-            matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(g));
+            matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(g));
         } else {
-            matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(this.getRotationDegrees(blockState, bl)));
+            matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(this.getRotationDegrees(blockState, bl)));
         }
-        matrixStack.translate(0.0, -0.3125, 0.0);
+        matrixStack.translate(0.0f, -0.3125f, 0.0f);
         hangingSignModel.updateVisibleParts(blockState);
         g = 1.0f;
         this.renderSign(matrixStack, vertexConsumerProvider, i, j, 1.0f, signType, hangingSignModel);

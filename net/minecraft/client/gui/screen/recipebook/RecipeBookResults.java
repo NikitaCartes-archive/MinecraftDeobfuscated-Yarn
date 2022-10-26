@@ -159,7 +159,7 @@ public class RecipeBookResults {
                 this.lastClickedRecipe = animatedResultButton.currentRecipe();
                 this.resultCollection = animatedResultButton.getResultCollection();
             } else if (button == 1 && !this.alternatesWidget.isVisible() && !animatedResultButton.hasResults()) {
-                this.alternatesWidget.showAlternativesForResult(this.client, animatedResultButton.getResultCollection(), animatedResultButton.x, animatedResultButton.y, areaLeft + areaWidth / 2, areaTop + 13 + areaHeight / 2, animatedResultButton.getWidth());
+                this.alternatesWidget.showAlternativesForResult(this.client, animatedResultButton.getResultCollection(), animatedResultButton.getX(), animatedResultButton.getY(), areaLeft + areaWidth / 2, areaTop + 13 + areaHeight / 2, animatedResultButton.getWidth());
             }
             return true;
         }

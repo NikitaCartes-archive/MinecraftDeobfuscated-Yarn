@@ -29,7 +29,7 @@ import net.minecraft.world.World;
 public class BarrelBlockEntity
 extends LootableContainerBlockEntity {
     private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(27, ItemStack.EMPTY);
-    private ViewerCountManager stateManager = new ViewerCountManager(){
+    private final ViewerCountManager stateManager = new ViewerCountManager(){
 
         @Override
         protected void onContainerOpen(World world, BlockPos pos, BlockState state) {

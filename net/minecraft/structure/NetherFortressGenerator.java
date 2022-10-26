@@ -420,7 +420,8 @@ public class NetherFortressGenerator {
                 world.setBlockState(blockPos, Blocks.SPAWNER.getDefaultState(), Block.NOTIFY_LISTENERS);
                 BlockEntity blockEntity = world.getBlockEntity(blockPos);
                 if (blockEntity instanceof MobSpawnerBlockEntity) {
-                    ((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(EntityType.BLAZE);
+                    MobSpawnerBlockEntity mobSpawnerBlockEntity = (MobSpawnerBlockEntity)blockEntity;
+                    mobSpawnerBlockEntity.setEntityType(EntityType.BLAZE, random);
                 }
             }
             for (int i = 0; i <= 6; ++i) {

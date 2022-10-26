@@ -511,11 +511,13 @@ implements Angerable {
         private int ticksSinceUnseenTeleport;
         private final TargetPredicate staringPlayerPredicate;
         private final TargetPredicate validTargetPredicate = TargetPredicate.createAttackable().ignoreVisibility();
+        private final Predicate<LivingEntity> angerPredicate;
 
         public TeleportTowardsPlayerGoal(EndermanEntity enderman, @Nullable Predicate<LivingEntity> targetPredicate) {
             super(enderman, PlayerEntity.class, 10, false, false, targetPredicate);
             this.enderman = enderman;
-            this.staringPlayerPredicate = TargetPredicate.createAttackable().setBaseMaxDistance(this.getFollowRange()).setPredicate(playerEntity -> enderman.isPlayerStaring((PlayerEntity)playerEntity));
+            this.angerPredicate = playerEntity -> enderman.isPlayerStaring((PlayerEntity)playerEntity) || enderman.shouldAngerAt((LivingEntity)playerEntity);
+            this.staringPlayerPredicate = TargetPredicate.createAttackable().setBaseMaxDistance(this.getFollowRange()).setPredicate(this.angerPredicate);
         }
 
         @Override
@@ -540,7 +542,7 @@ implements Angerable {
         @Override
         public boolean shouldContinue() {
             if (this.targetPlayer != null) {
-                if (!this.enderman.isPlayerStaring(this.targetPlayer)) {
+                if (!this.angerPredicate.test(this.targetPlayer)) {
                     return false;
                 }
                 this.enderman.lookAtEntity(this.targetPlayer, 10.0f, 10.0f);

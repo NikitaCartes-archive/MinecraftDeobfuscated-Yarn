@@ -37,7 +37,7 @@ extends AbstractNoiseBlockStateProvider {
     }
 
     @Override
-    public BlockState getBlockState(Random random, BlockPos pos) {
+    public BlockState get(Random random, BlockPos pos) {
         return this.getStateFromList(this.states, pos, this.scale);
     }
 

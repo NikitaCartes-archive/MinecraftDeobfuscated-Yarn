@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.network.message;
 
+import com.mojang.serialization.Codec;
 import java.time.Instant;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
@@ -11,14 +12,22 @@ import net.minecraft.client.gui.hud.MessageIndicator;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.StringIdentifiable;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
-public enum MessageTrustStatus {
-    SECURE,
-    MODIFIED,
-    NOT_SECURE;
+public enum MessageTrustStatus implements StringIdentifiable
+{
+    SECURE("secure"),
+    MODIFIED("modified"),
+    NOT_SECURE("not_secure");
 
+    public static final Codec<MessageTrustStatus> field_40801;
+    private final String field_40802;
+
+    private MessageTrustStatus(String string2) {
+        this.field_40802 = string2;
+    }
 
     public static MessageTrustStatus getStatus(SignedMessage message, Text decorated, Instant receptionTimestamp) {
         if (!message.hasSignature() || message.isExpiredOnClient(receptionTimestamp)) {
@@ -65,6 +74,15 @@ public enum MessageTrustStatus {
             case NOT_SECURE -> MessageIndicator.notSecure();
             default -> null;
         };
+    }
+
+    @Override
+    public String asString() {
+        return this.field_40802;
+    }
+
+    static {
+        field_40801 = StringIdentifiable.createCodec(MessageTrustStatus::values);
     }
 }
 

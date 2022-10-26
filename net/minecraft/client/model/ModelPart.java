@@ -13,11 +13,12 @@ import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Matrix3f;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3f;
-import net.minecraft.util.math.Vector4f;
 import net.minecraft.util.math.random.Random;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 @Environment(value=EnvType.CLIENT)
 public final class ModelPart {
@@ -149,14 +150,8 @@ public final class ModelPart {
 
     public void rotate(MatrixStack matrices) {
         matrices.translate(this.pivotX / 16.0f, this.pivotY / 16.0f, this.pivotZ / 16.0f);
-        if (this.roll != 0.0f) {
-            matrices.multiply(Vec3f.POSITIVE_Z.getRadialQuaternion(this.roll));
-        }
-        if (this.yaw != 0.0f) {
-            matrices.multiply(Vec3f.POSITIVE_Y.getRadialQuaternion(this.yaw));
-        }
-        if (this.pitch != 0.0f) {
-            matrices.multiply(Vec3f.POSITIVE_X.getRadialQuaternion(this.pitch));
+        if (this.pitch != 0.0f || this.yaw != 0.0f || this.roll != 0.0f) {
+            matrices.multiply(new Quaternionf().rotationZYX(this.roll, this.yaw, this.pitch));
         }
         if (this.xScale != 1.0f || this.yScale != 1.0f || this.zScale != 1.0f) {
             matrices.scale(this.xScale, this.yScale, this.zScale);
@@ -177,22 +172,22 @@ public final class ModelPart {
         return this.cuboids.isEmpty();
     }
 
-    public void translate(Vec3f vec3f) {
-        this.pivotX += vec3f.getX();
-        this.pivotY += vec3f.getY();
-        this.pivotZ += vec3f.getZ();
+    public void translate(Vector3f vec3f) {
+        this.pivotX += vec3f.x();
+        this.pivotY += vec3f.y();
+        this.pivotZ += vec3f.z();
     }
 
-    public void rotate(Vec3f vec3f) {
-        this.pitch += vec3f.getX();
-        this.yaw += vec3f.getY();
-        this.roll += vec3f.getZ();
+    public void rotate(Vector3f vec3f) {
+        this.pitch += vec3f.x();
+        this.yaw += vec3f.y();
+        this.roll += vec3f.z();
     }
 
-    public void scale(Vec3f vec3f) {
-        this.xScale += vec3f.getX();
-        this.yScale += vec3f.getY();
-        this.zScale += vec3f.getZ();
+    public void scale(Vector3f vec3f) {
+        this.xScale += vec3f.x();
+        this.yScale += vec3f.y();
+        this.zScale += vec3f.z();
     }
 
     public Stream<ModelPart> traverse() {
@@ -266,18 +261,16 @@ public final class ModelPart {
             Matrix4f matrix4f = entry.getPositionMatrix();
             Matrix3f matrix3f = entry.getNormalMatrix();
             for (Quad quad : this.sides) {
-                Vec3f vec3f = quad.direction.copy();
-                vec3f.transform(matrix3f);
-                float f = vec3f.getX();
-                float g = vec3f.getY();
-                float h = vec3f.getZ();
+                Vector3f vector3f = matrix3f.transform(new Vector3f(quad.direction));
+                float f = vector3f.x();
+                float g = vector3f.y();
+                float h = vector3f.z();
                 for (Vertex vertex : quad.vertices) {
-                    float i = vertex.pos.getX() / 16.0f;
-                    float j = vertex.pos.getY() / 16.0f;
-                    float k = vertex.pos.getZ() / 16.0f;
-                    Vector4f vector4f = new Vector4f(i, j, k, 1.0f);
-                    vector4f.transform(matrix4f);
-                    vertexConsumer.vertex(vector4f.getX(), vector4f.getY(), vector4f.getZ(), red, green, blue, alpha, vertex.u, vertex.v, overlay, light, f, g, h);
+                    float i = vertex.pos.x() / 16.0f;
+                    float j = vertex.pos.y() / 16.0f;
+                    float k = vertex.pos.z() / 16.0f;
+                    Vector4f vector4f = matrix4f.transform(new Vector4f(i, j, k, 1.0f));
+                    vertexConsumer.vertex(vector4f.x(), vector4f.y(), vector4f.z(), red, green, blue, alpha, vertex.u, vertex.v, overlay, light, f, g, h);
                 }
             }
         }
@@ -285,19 +278,19 @@ public final class ModelPart {
 
     @Environment(value=EnvType.CLIENT)
     static class Vertex {
-        public final Vec3f pos;
+        public final Vector3f pos;
         public final float u;
         public final float v;
 
         public Vertex(float x, float y, float z, float u, float v) {
-            this(new Vec3f(x, y, z), u, v);
+            this(new Vector3f(x, y, z), u, v);
         }
 
         public Vertex remap(float u, float v) {
             return new Vertex(this.pos, u, v);
         }
 
-        public Vertex(Vec3f pos, float u, float v) {
+        public Vertex(Vector3f pos, float u, float v) {
             this.pos = pos;
             this.u = u;
             this.v = v;
@@ -307,7 +300,7 @@ public final class ModelPart {
     @Environment(value=EnvType.CLIENT)
     static class Quad {
         public final Vertex[] vertices;
-        public final Vec3f direction;
+        public final Vector3f direction;
 
         public Quad(Vertex[] vertices, float u1, float v1, float u2, float v2, float squishU, float squishV, boolean flip, Direction direction) {
             this.vertices = vertices;
@@ -327,7 +320,7 @@ public final class ModelPart {
             }
             this.direction = direction.getUnitVector();
             if (flip) {
-                this.direction.multiplyComponentwise(-1.0f, 1.0f, 1.0f);
+                this.direction.mul(-1.0f, 1.0f, 1.0f);
             }
         }
     }

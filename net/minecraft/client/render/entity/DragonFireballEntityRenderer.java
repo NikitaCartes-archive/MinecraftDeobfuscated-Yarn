@@ -15,9 +15,9 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.projectile.DragonFireballEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Matrix3f;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
 
 @Environment(value=EnvType.CLIENT)
 public class DragonFireballEntityRenderer
@@ -39,7 +39,7 @@ extends EntityRenderer<DragonFireballEntity> {
         matrixStack.push();
         matrixStack.scale(2.0f, 2.0f, 2.0f);
         matrixStack.multiply(this.dispatcher.getRotation());
-        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
+        matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0f));
         MatrixStack.Entry entry = matrixStack.peek();
         Matrix4f matrix4f = entry.getPositionMatrix();
         Matrix3f matrix3f = entry.getNormalMatrix();

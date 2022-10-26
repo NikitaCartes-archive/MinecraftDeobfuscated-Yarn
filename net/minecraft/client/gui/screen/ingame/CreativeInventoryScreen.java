@@ -668,9 +668,10 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
         HotbarStorageEntry hotbarStorageEntry = hotbarStorage.getSavedHotbar(index);
         if (restore) {
             for (int i = 0; i < PlayerInventory.getHotbarSize(); ++i) {
-                ItemStack itemStack = ((ItemStack)hotbarStorageEntry.get(i)).copy();
-                clientPlayerEntity.getInventory().setStack(i, itemStack);
-                client.interactionManager.clickCreativeStack(itemStack, 36 + i);
+                ItemStack itemStack = (ItemStack)hotbarStorageEntry.get(i);
+                ItemStack itemStack2 = itemStack.isItemEnabled(clientPlayerEntity.world.getEnabledFeatures()) ? itemStack.copy() : ItemStack.EMPTY;
+                clientPlayerEntity.getInventory().setStack(i, itemStack2);
+                client.interactionManager.clickCreativeStack(itemStack2, 36 + i);
             }
             clientPlayerEntity.playerScreenHandler.sendContentUpdates();
         } else if (save) {
@@ -846,10 +847,11 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
 
         @Override
         public boolean canTakeItems(PlayerEntity playerEntity) {
-            if (super.canTakeItems(playerEntity) && this.hasStack()) {
-                return this.getStack().getSubNbt(CreativeInventoryScreen.CUSTOM_CREATIVE_LOCK_KEY) == null;
+            ItemStack itemStack = this.getStack();
+            if (super.canTakeItems(playerEntity) && !itemStack.isEmpty()) {
+                return itemStack.isItemEnabled(playerEntity.world.getEnabledFeatures()) && itemStack.getSubNbt(CreativeInventoryScreen.CUSTOM_CREATIVE_LOCK_KEY) == null;
             }
-            return !this.hasStack();
+            return itemStack.isEmpty();
         }
     }
 }

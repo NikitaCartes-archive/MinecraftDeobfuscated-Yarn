@@ -22,8 +22,8 @@ import net.minecraft.item.map.MapState;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
+import org.joml.Matrix4f;
 
 @Environment(value=EnvType.CLIENT)
 public class MapRenderer
@@ -123,9 +123,9 @@ implements AutoCloseable {
                 if (hidePlayerIcons && !mapIcon.isAlwaysRendered()) continue;
                 matrices.push();
                 matrices.translate(0.0f + (float)mapIcon.getX() / 2.0f + 64.0f, 0.0f + (float)mapIcon.getZ() / 2.0f + 64.0f, -0.02f);
-                matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion((float)(mapIcon.getRotation() * 360) / 16.0f));
+                matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees((float)(mapIcon.getRotation() * 360) / 16.0f));
                 matrices.scale(4.0f, 4.0f, 3.0f);
-                matrices.translate(-0.125, 0.125, 0.0);
+                matrices.translate(-0.125f, 0.125f, 0.0f);
                 byte b = mapIcon.getTypeId();
                 float g = (float)(b % 16 + 0) / 16.0f;
                 float h = (float)(b / 16 + 0) / 16.0f;
@@ -149,7 +149,7 @@ implements AutoCloseable {
                     matrices.push();
                     matrices.translate(0.0f + (float)mapIcon.getX() / 2.0f + 64.0f - o * p / 2.0f, 0.0f + (float)mapIcon.getZ() / 2.0f + 64.0f + 4.0f, -0.025f);
                     matrices.scale(p, p, 1.0f);
-                    matrices.translate(0.0, 0.0, -0.1f);
+                    matrices.translate(0.0f, 0.0f, -0.1f);
                     textRenderer.draw(text, 0.0f, 0.0f, -1, false, matrices.peek().getPositionMatrix(), vertexConsumers, false, Integer.MIN_VALUE, light);
                     matrices.pop();
                 }

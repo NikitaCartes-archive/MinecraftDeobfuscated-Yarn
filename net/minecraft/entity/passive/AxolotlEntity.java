@@ -59,13 +59,13 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 import org.slf4j.Logger;
 
 /**
@@ -121,7 +121,7 @@ Bucketable {
     public static final String VARIANT_KEY = "Variant";
     private static final int HYDRATION_BY_POTION = 1800;
     private static final int MAX_REGENERATION_BUFF_DURATION = 2400;
-    private final Map<String, Vec3f> modelAngles = Maps.newHashMap();
+    private final Map<String, Vector3f> modelAngles = Maps.newHashMap();
     private static final int BUFF_DURATION = 100;
 
     public AxolotlEntity(EntityType<? extends AxolotlEntity> entityType, World world) {
@@ -133,7 +133,7 @@ Bucketable {
     }
 
     @Override
-    public Map<String, Vec3f> getModelAngles() {
+    public Map<String, Vector3f> getModelAngles() {
         return this.modelAngles;
     }
 

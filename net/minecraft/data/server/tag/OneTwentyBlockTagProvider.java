@@ -34,10 +34,5 @@ extends AbstractTagProvider<Block> {
         this.getOrCreateTagBuilder(BlockTags.ALL_HANGING_SIGNS).addTag(BlockTags.CEILING_HANGING_SIGNS).addTag(BlockTags.WALL_HANGING_SIGNS);
         this.getOrCreateTagBuilder(BlockTags.AXE_MINEABLE).addTag(BlockTags.ALL_HANGING_SIGNS).add((Block[])new Block[]{Blocks.BAMBOO_MOSAIC, Blocks.CHISELED_BOOKSHELF});
     }
-
-    @Override
-    public String getName() {
-        return super.getName() + "@1.20";
-    }
 }
 

@@ -36,7 +36,7 @@ extends MobEntityRenderer<SlimeEntity, SlimeEntityModel<SlimeEntity>> {
     protected void scale(SlimeEntity slimeEntity, MatrixStack matrixStack, float f) {
         float g = 0.999f;
         matrixStack.scale(0.999f, 0.999f, 0.999f);
-        matrixStack.translate(0.0, 0.001f, 0.0);
+        matrixStack.translate(0.0f, 0.001f, 0.0f);
         float h = slimeEntity.getSize();
         float i = MathHelper.lerp(f, slimeEntity.lastStretch, slimeEntity.stretch) / (h * 0.5f + 1.0f);
         float j = 1.0f / (i + 1.0f);

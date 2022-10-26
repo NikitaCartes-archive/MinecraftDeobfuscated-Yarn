@@ -241,7 +241,7 @@ extends HandledScreen<BeaconScreenHandler> {
         @Override
         protected void renderExtra(MatrixStack matrices) {
             RenderSystem.setShaderTexture(0, this.sprite.getId());
-            EffectButtonWidget.drawSprite(matrices, this.x + 2, this.y + 2, this.getZOffset(), 18, 18, this.sprite);
+            EffectButtonWidget.drawSprite(matrices, this.getX() + 2, this.getY() + 2, this.getZOffset(), 18, 18, this.sprite);
         }
 
         @Override
@@ -294,7 +294,7 @@ extends HandledScreen<BeaconScreenHandler> {
 
         @Override
         protected void renderExtra(MatrixStack matrices) {
-            this.drawTexture(matrices, this.x + 2, this.y + 2, this.u, this.v, 18, 18);
+            this.drawTexture(matrices, this.getX() + 2, this.getY() + 2, this.u, this.v, 18, 18);
         }
 
         @Override
@@ -331,7 +331,7 @@ extends HandledScreen<BeaconScreenHandler> {
             } else if (this.isHovered()) {
                 j += this.width * 3;
             }
-            this.drawTexture(matrices, this.x, this.y, j, 219, this.width, this.height);
+            this.drawTexture(matrices, this.getX(), this.getY(), j, 219, this.width, this.height);
             this.renderExtra(matrices);
         }
 
