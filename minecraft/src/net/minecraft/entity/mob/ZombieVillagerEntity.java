@@ -70,7 +70,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		super(entityType, world);
 		Registry.VILLAGER_PROFESSION
 			.getRandom(this.random)
-			.ifPresent(registryEntry -> this.setVillagerData(this.getVillagerData().withProfession((VillagerProfession)registryEntry.value())));
+			.ifPresent(profession -> this.setVillagerData(this.getVillagerData().withProfession((VillagerProfession)profession.value())));
 	}
 
 	@Override
@@ -115,7 +115,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 			this.offerData = nbt.getCompound("Offers");
 		}
 
-		if (nbt.contains("Gossips", NbtElement.COMPOUND_TYPE)) {
+		if (nbt.contains("Gossips", NbtElement.LIST_TYPE)) {
 			this.gossipData = nbt.getList("Gossips", NbtElement.COMPOUND_TYPE);
 		}
 

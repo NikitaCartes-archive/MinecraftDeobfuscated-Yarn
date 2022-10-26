@@ -9,9 +9,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
+import org.joml.Vector3f;
 
 public interface CrossbowUser extends RangedAttackMob {
 	void setCharging(boolean charging);
@@ -38,24 +37,20 @@ public interface CrossbowUser extends RangedAttackMob {
 		double e = target.getZ() - entity.getZ();
 		double f = Math.sqrt(d * d + e * e);
 		double g = target.getBodyY(0.3333333333333333) - projectile.getY() + f * 0.2F;
-		Vec3f vec3f = this.getProjectileLaunchVelocity(entity, new Vec3d(d, g, e), multishotSpray);
-		projectile.setVelocity((double)vec3f.getX(), (double)vec3f.getY(), (double)vec3f.getZ(), speed, (float)(14 - entity.world.getDifficulty().getId() * 4));
+		Vector3f vector3f = this.getProjectileLaunchVelocity(entity, new Vec3d(d, g, e), multishotSpray);
+		projectile.setVelocity((double)vector3f.x(), (double)vector3f.y(), (double)vector3f.z(), speed, (float)(14 - entity.world.getDifficulty().getId() * 4));
 		entity.playSound(SoundEvents.ITEM_CROSSBOW_SHOOT, 1.0F, 1.0F / (entity.getRandom().nextFloat() * 0.4F + 0.8F));
 	}
 
-	default Vec3f getProjectileLaunchVelocity(LivingEntity entity, Vec3d positionDelta, float multishotSpray) {
-		Vec3d vec3d = positionDelta.normalize();
-		Vec3d vec3d2 = vec3d.crossProduct(new Vec3d(0.0, 1.0, 0.0));
-		if (vec3d2.lengthSquared() <= 1.0E-7) {
-			vec3d2 = vec3d.crossProduct(entity.getOppositeRotationVector(1.0F));
+	default Vector3f getProjectileLaunchVelocity(LivingEntity entity, Vec3d positionDelta, float multishotSpray) {
+		Vector3f vector3f = positionDelta.toVector3f().normalize();
+		Vector3f vector3f2 = vector3f.cross(new Vector3f(0.0F, 1.0F, 0.0F));
+		if ((double)vector3f2.lengthSquared() <= 1.0E-7) {
+			Vec3d vec3d = entity.getOppositeRotationVector(1.0F);
+			vector3f2 = vector3f.cross(vec3d.toVector3f());
 		}
 
-		Quaternion quaternion = new Quaternion(new Vec3f(vec3d2), 90.0F, true);
-		Vec3f vec3f = new Vec3f(vec3d);
-		vec3f.rotate(quaternion);
-		Quaternion quaternion2 = new Quaternion(vec3f, multishotSpray, true);
-		Vec3f vec3f2 = new Vec3f(vec3d);
-		vec3f2.rotate(quaternion2);
-		return vec3f2;
+		Vector3f vector3f3 = new Vector3f(vector3f).rotateAxis((float) (Math.PI / 2), vector3f2.x, vector3f2.y, vector3f2.z);
+		return new Vector3f(vector3f).rotateAxis(multishotSpray * (float) (Math.PI / 180.0), vector3f3.x, vector3f3.y, vector3f3.z);
 	}
 }

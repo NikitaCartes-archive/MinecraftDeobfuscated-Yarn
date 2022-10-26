@@ -36,9 +36,7 @@ public class PistonBlockEntityRenderer implements BlockEntityRenderer<PistonBloc
 			if (!blockState.isAir()) {
 				BlockModelRenderer.enableBrightnessCache();
 				matrixStack.push();
-				matrixStack.translate(
-					(double)pistonBlockEntity.getRenderOffsetX(f), (double)pistonBlockEntity.getRenderOffsetY(f), (double)pistonBlockEntity.getRenderOffsetZ(f)
-				);
+				matrixStack.translate(pistonBlockEntity.getRenderOffsetX(f), pistonBlockEntity.getRenderOffsetY(f), pistonBlockEntity.getRenderOffsetZ(f));
 				if (blockState.isOf(Blocks.PISTON_HEAD) && pistonBlockEntity.getProgress(f) <= 4.0F) {
 					blockState = blockState.with(PistonHeadBlock.SHORT, Boolean.valueOf(pistonBlockEntity.getProgress(f) <= 0.5F));
 					this.renderModel(blockPos, blockState, matrixStack, vertexConsumerProvider, world, false, j);

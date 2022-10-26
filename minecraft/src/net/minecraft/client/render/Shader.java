@@ -53,8 +53,8 @@ import org.slf4j.Logger;
  */
 @Environment(EnvType.CLIENT)
 public class Shader implements GlShader, AutoCloseable {
-	public static final String CORE_DIRECTORY = "shaders";
-	private static final String field_40512 = "shaders/core/";
+	public static final String SHADERS_DIRECTORY = "shaders";
+	private static final String CORE_DIRECTORY = "shaders/core/";
 	private static final String INCLUDE_DIRECTORY = "shaders/include/";
 	static final Logger LOGGER = LogUtils.getLogger();
 	private static final Uniform DEFAULT_UNIFORM = new Uniform();

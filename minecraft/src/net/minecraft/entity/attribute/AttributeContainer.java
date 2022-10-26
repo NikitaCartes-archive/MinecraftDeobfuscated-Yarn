@@ -52,16 +52,16 @@ public class AttributeContainer {
 	}
 
 	@Nullable
-	public EntityAttributeInstance method_45329(RegistryEntry<EntityAttribute> registryEntry) {
-		return this.getCustomInstance(registryEntry.value());
+	public EntityAttributeInstance getCustomInstance(RegistryEntry<EntityAttribute> attribute) {
+		return this.getCustomInstance(attribute.value());
 	}
 
 	public boolean hasAttribute(EntityAttribute attribute) {
 		return this.custom.get(attribute) != null || this.fallback.has(attribute);
 	}
 
-	public boolean method_45331(RegistryEntry<EntityAttribute> registryEntry) {
-		return this.hasAttribute(registryEntry.value());
+	public boolean hasAttribute(RegistryEntry<EntityAttribute> attribute) {
+		return this.hasAttribute(attribute.value());
 	}
 
 	public boolean hasModifierForAttribute(EntityAttribute attribute, UUID uuid) {
@@ -69,8 +69,8 @@ public class AttributeContainer {
 		return entityAttributeInstance != null ? entityAttributeInstance.getModifier(uuid) != null : this.fallback.hasModifier(attribute, uuid);
 	}
 
-	public boolean method_45330(RegistryEntry<EntityAttribute> registryEntry, UUID uUID) {
-		return this.hasModifierForAttribute(registryEntry.value(), uUID);
+	public boolean hasModifierForAttribute(RegistryEntry<EntityAttribute> attribute, UUID uuid) {
+		return this.hasModifierForAttribute(attribute.value(), uuid);
 	}
 
 	public double getValue(EntityAttribute attribute) {
@@ -88,8 +88,8 @@ public class AttributeContainer {
 		return entityAttributeInstance != null ? entityAttributeInstance.getModifier(uuid).getValue() : this.fallback.getModifierValue(attribute, uuid);
 	}
 
-	public double method_45332(RegistryEntry<EntityAttribute> registryEntry, UUID uUID) {
-		return this.getModifierValue(registryEntry.value(), uUID);
+	public double getModifierValue(RegistryEntry<EntityAttribute> attribute, UUID uuid) {
+		return this.getModifierValue(attribute.value(), uuid);
 	}
 
 	public void removeModifiers(Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers) {

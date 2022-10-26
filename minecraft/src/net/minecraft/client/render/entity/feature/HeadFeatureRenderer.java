@@ -27,7 +27,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
 public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T> & ModelWithHead> extends FeatureRenderer<T, M> {
@@ -64,9 +64,9 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 			if (livingEntity.isBaby() && !(livingEntity instanceof VillagerEntity)) {
 				float m = 2.0F;
 				float n = 1.4F;
-				matrixStack.translate(0.0, 0.03125, 0.0);
+				matrixStack.translate(0.0F, 0.03125F, 0.0F);
 				matrixStack.scale(0.7F, 0.7F, 0.7F);
-				matrixStack.translate(0.0, 1.0, 0.0);
+				matrixStack.translate(0.0F, 1.0F, 0.0F);
 			}
 
 			this.getContextModel().getHead().rotate(matrixStack);
@@ -74,7 +74,7 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 				float m = 1.1875F;
 				matrixStack.scale(1.1875F, -1.1875F, -1.1875F);
 				if (bl) {
-					matrixStack.translate(0.0, 0.0625, 0.0);
+					matrixStack.translate(0.0F, 0.0625F, 0.0F);
 				}
 
 				GameProfile gameProfile = null;
@@ -101,11 +101,11 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 
 	public static void translate(MatrixStack matrices, boolean villager) {
 		float f = 0.625F;
-		matrices.translate(0.0, -0.25, 0.0);
-		matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
+		matrices.translate(0.0F, -0.25F, 0.0F);
+		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F));
 		matrices.scale(0.625F, -0.625F, -0.625F);
 		if (villager) {
-			matrices.translate(0.0, 0.1875, 0.0);
+			matrices.translate(0.0F, 0.1875F, 0.0F);
 		}
 	}
 }

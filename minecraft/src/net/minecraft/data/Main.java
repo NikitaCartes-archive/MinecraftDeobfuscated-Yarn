@@ -99,48 +99,45 @@ public class Main {
 		boolean ignoreCache
 	) {
 		DataGenerator dataGenerator = new DataGenerator(output, gameVersion, ignoreCache);
-		DataOutput dataOutput = dataGenerator.getOutput();
-		dataGenerator.addProvider(includeClient || includeServer, new SnbtProvider(dataOutput, inputs).addWriter(new StructureValidatorProvider()));
-		dataGenerator.addProvider(includeClient, new ModelProvider(dataOutput));
-		dataGenerator.addProvider(includeServer, new WorldgenProvider(dataOutput));
-		dataGenerator.addProvider(includeServer, VanillaAdvancementProviders.createVanillaProvider(dataOutput));
-		dataGenerator.addProvider(includeServer, VanillaLootTableProviders.createVanillaProvider(dataOutput));
-		dataGenerator.addProvider(includeServer, new VanillaRecipeProvider(dataOutput));
-		AbstractTagProvider<Block> abstractTagProvider = new VanillaBlockTagProvider(dataOutput);
-		dataGenerator.addProvider(includeServer, abstractTagProvider);
-		dataGenerator.addProvider(includeServer, new VanillaItemTagProvider(dataOutput, abstractTagProvider));
-		dataGenerator.addProvider(includeServer, new BannerPatternTagProvider(dataOutput));
-		dataGenerator.addProvider(includeServer, new BiomeTagProvider(dataOutput));
-		dataGenerator.addProvider(includeServer, new CatVariantTagProvider(dataOutput));
-		dataGenerator.addProvider(includeServer, new EntityTypeTagProvider(dataOutput));
-		dataGenerator.addProvider(includeServer, new FlatLevelGeneratorPresetTagProvider(dataOutput));
-		dataGenerator.addProvider(includeServer, new FluidTagProvider(dataOutput));
-		dataGenerator.addProvider(includeServer, new GameEventTagProvider(dataOutput));
-		dataGenerator.addProvider(includeServer, new InstrumentTagProvider(dataOutput));
-		dataGenerator.addProvider(includeServer, new PaintingVariantTagProvider(dataOutput));
-		dataGenerator.addProvider(includeServer, new PointOfInterestTypeTagProvider(dataOutput));
-		dataGenerator.addProvider(includeServer, new StructureTagProvider(dataOutput));
-		dataGenerator.addProvider(includeServer, new WorldPresetTagProvider(dataOutput));
-		dataGenerator.addProvider(includeDev, new NbtProvider(dataOutput, inputs));
-		dataGenerator.addProvider(includeReports, new BiomeParametersProvider(dataOutput));
-		dataGenerator.addProvider(includeReports, new BlockListProvider(dataOutput));
-		dataGenerator.addProvider(includeReports, new CommandSyntaxProvider(dataOutput));
-		dataGenerator.addProvider(includeReports, new RegistryDumpProvider(dataOutput));
-		DataOutput dataOutput2 = dataGenerator.getOutputFor("bundle");
-		dataGenerator.addProvider(includeServer, new BundleRecipeProvider(dataOutput2));
-		dataGenerator.addProvider(
-			includeServer, MetadataProvider.create(dataOutput2, "bundle", Text.translatable("dataPack.bundle.description"), FeatureSet.of(FeatureFlags.BUNDLE))
-		);
-		DataOutput dataOutput3 = dataGenerator.getOutputFor("update_1_20");
-		dataGenerator.addProvider(includeServer, new OneTwentyRecipeProvider(dataOutput3));
-		OneTwentyBlockTagProvider oneTwentyBlockTagProvider = new OneTwentyBlockTagProvider(dataOutput3);
-		dataGenerator.addProvider(includeServer, oneTwentyBlockTagProvider);
-		dataGenerator.addProvider(includeServer, new OneTwentyItemTagProvider(dataOutput3, oneTwentyBlockTagProvider));
-		dataGenerator.addProvider(includeServer, OneTwentyLootTableProviders.createOneTwentyProvider(dataOutput3));
-		dataGenerator.addProvider(
-			includeServer,
-			MetadataProvider.create(dataOutput3, "update_1_20", Text.translatable("dataPack.update_1_20.description"), FeatureSet.of(FeatureFlags.UPDATE_1_20))
-		);
+		DataGenerator.Pack pack = dataGenerator.createVanillaPack(includeClient || includeServer);
+		pack.addProvider(outputx -> new SnbtProvider(outputx, inputs).addWriter(new StructureValidatorProvider()));
+		pack = dataGenerator.createVanillaPack(includeClient);
+		pack.addProvider(ModelProvider::new);
+		pack = dataGenerator.createVanillaPack(includeServer);
+		pack.addProvider(WorldgenProvider::new);
+		pack.addProvider(VanillaAdvancementProviders::createVanillaProvider);
+		pack.addProvider(VanillaLootTableProviders::createVanillaProvider);
+		pack.addProvider(VanillaRecipeProvider::new);
+		AbstractTagProvider<Block> abstractTagProvider = pack.addProvider(VanillaBlockTagProvider::new);
+		pack.addProvider(outputx -> new VanillaItemTagProvider(outputx, abstractTagProvider));
+		pack.addProvider(BannerPatternTagProvider::new);
+		pack.addProvider(BiomeTagProvider::new);
+		pack.addProvider(CatVariantTagProvider::new);
+		pack.addProvider(EntityTypeTagProvider::new);
+		pack.addProvider(FlatLevelGeneratorPresetTagProvider::new);
+		pack.addProvider(FluidTagProvider::new);
+		pack.addProvider(GameEventTagProvider::new);
+		pack.addProvider(InstrumentTagProvider::new);
+		pack.addProvider(PaintingVariantTagProvider::new);
+		pack.addProvider(PointOfInterestTypeTagProvider::new);
+		pack.addProvider(StructureTagProvider::new);
+		pack.addProvider(WorldPresetTagProvider::new);
+		pack = dataGenerator.createVanillaPack(includeDev);
+		pack.addProvider(outputx -> new NbtProvider(outputx, inputs));
+		pack = dataGenerator.createVanillaPack(includeReports);
+		pack.addProvider(BiomeParametersProvider::new);
+		pack.addProvider(BlockListProvider::new);
+		pack.addProvider(CommandSyntaxProvider::new);
+		pack.addProvider(RegistryDumpProvider::new);
+		pack = dataGenerator.createVanillaSubPack(includeServer, "bundle");
+		pack.addProvider(BundleRecipeProvider::new);
+		pack.addProvider(outputx -> MetadataProvider.create(outputx, Text.translatable("dataPack.bundle.description"), FeatureSet.of(FeatureFlags.BUNDLE)));
+		pack = dataGenerator.createVanillaSubPack(includeServer, "update_1_20");
+		pack.addProvider(OneTwentyRecipeProvider::new);
+		abstractTagProvider = pack.addProvider(OneTwentyBlockTagProvider::new);
+		pack.addProvider(outputx -> new OneTwentyItemTagProvider(outputx, abstractTagProvider));
+		pack.addProvider(OneTwentyLootTableProviders::createOneTwentyProvider);
+		pack.addProvider(outputx -> MetadataProvider.create(outputx, Text.translatable("dataPack.update_1_20.description"), FeatureSet.of(FeatureFlags.UPDATE_1_20)));
 		return dataGenerator;
 	}
 }

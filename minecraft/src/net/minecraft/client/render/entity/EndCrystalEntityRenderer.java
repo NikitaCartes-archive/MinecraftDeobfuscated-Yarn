@@ -20,8 +20,8 @@ import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Quaternion;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
+import org.joml.Quaternionf;
 
 @Environment(EnvType.CLIENT)
 public class EndCrystalEntityRenderer extends EntityRenderer<EndCrystalEntity> {
@@ -59,24 +59,24 @@ public class EndCrystalEntityRenderer extends EntityRenderer<EndCrystalEntity> {
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(END_CRYSTAL);
 		matrixStack.push();
 		matrixStack.scale(2.0F, 2.0F, 2.0F);
-		matrixStack.translate(0.0, -0.5, 0.0);
+		matrixStack.translate(0.0F, -0.5F, 0.0F);
 		int k = OverlayTexture.DEFAULT_UV;
 		if (endCrystalEntity.shouldShowBottom()) {
 			this.bottom.render(matrixStack, vertexConsumer, i, k);
 		}
 
-		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(j));
-		matrixStack.translate(0.0, (double)(1.5F + h / 2.0F), 0.0);
-		matrixStack.multiply(new Quaternion(new Vec3f(SINE_45_DEGREES, 0.0F, SINE_45_DEGREES), 60.0F, true));
+		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(j));
+		matrixStack.translate(0.0F, 1.5F + h / 2.0F, 0.0F);
+		matrixStack.multiply(new Quaternionf().setAngleAxis((float) (Math.PI / 3), SINE_45_DEGREES, 0.0F, SINE_45_DEGREES));
 		this.frame.render(matrixStack, vertexConsumer, i, k);
 		float l = 0.875F;
 		matrixStack.scale(0.875F, 0.875F, 0.875F);
-		matrixStack.multiply(new Quaternion(new Vec3f(SINE_45_DEGREES, 0.0F, SINE_45_DEGREES), 60.0F, true));
-		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(j));
+		matrixStack.multiply(new Quaternionf().setAngleAxis((float) (Math.PI / 3), SINE_45_DEGREES, 0.0F, SINE_45_DEGREES));
+		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(j));
 		this.frame.render(matrixStack, vertexConsumer, i, k);
 		matrixStack.scale(0.875F, 0.875F, 0.875F);
-		matrixStack.multiply(new Quaternion(new Vec3f(SINE_45_DEGREES, 0.0F, SINE_45_DEGREES), 60.0F, true));
-		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(j));
+		matrixStack.multiply(new Quaternionf().setAngleAxis((float) (Math.PI / 3), SINE_45_DEGREES, 0.0F, SINE_45_DEGREES));
+		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(j));
 		this.core.render(matrixStack, vertexConsumer, i, k);
 		matrixStack.pop();
 		matrixStack.pop();
@@ -88,7 +88,7 @@ public class EndCrystalEntityRenderer extends EntityRenderer<EndCrystalEntity> {
 			float p = (float)((double)m - endCrystalEntity.getX());
 			float q = (float)((double)n - endCrystalEntity.getY());
 			float r = (float)((double)o - endCrystalEntity.getZ());
-			matrixStack.translate((double)p, (double)q, (double)r);
+			matrixStack.translate(p, q, r);
 			EnderDragonEntityRenderer.renderCrystalBeam(-p, -q + h, -r, g, endCrystalEntity.endCrystalAge, matrixStack, vertexConsumerProvider, i);
 		}
 

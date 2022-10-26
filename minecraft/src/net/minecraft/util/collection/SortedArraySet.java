@@ -147,7 +147,7 @@ public class SortedArraySet<T> extends AbstractSet<T> {
 	}
 
 	public Object[] toArray() {
-		return this.elements.clone();
+		return Arrays.copyOf(this.elements, this.size, Object[].class);
 	}
 
 	public <U> U[] toArray(U[] array) {

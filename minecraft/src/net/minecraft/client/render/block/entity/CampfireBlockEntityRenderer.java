@@ -11,7 +11,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
 public class CampfireBlockEntityRenderer implements BlockEntityRenderer<CampfireBlockEntity> {
@@ -31,12 +31,12 @@ public class CampfireBlockEntityRenderer implements BlockEntityRenderer<Campfire
 			ItemStack itemStack = defaultedList.get(l);
 			if (itemStack != ItemStack.EMPTY) {
 				matrixStack.push();
-				matrixStack.translate(0.5, 0.44921875, 0.5);
+				matrixStack.translate(0.5F, 0.44921875F, 0.5F);
 				Direction direction2 = Direction.fromHorizontal((l + direction.getHorizontal()) % 4);
 				float g = -direction2.asRotation();
-				matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(g));
-				matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0F));
-				matrixStack.translate(-0.3125, -0.3125, 0.0);
+				matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(g));
+				matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0F));
+				matrixStack.translate(-0.3125F, -0.3125F, 0.0F);
 				matrixStack.scale(0.375F, 0.375F, 0.375F);
 				this.itemRenderer.renderItem(itemStack, ModelTransformation.Mode.FIXED, i, j, matrixStack, vertexConsumerProvider, k + l);
 				matrixStack.pop();

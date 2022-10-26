@@ -44,14 +44,14 @@ import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Matrix3f;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 
 @Environment(EnvType.CLIENT)
 public class EntityRenderDispatcher implements SynchronousResourceReloader {
@@ -61,7 +61,7 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 	public final TextureManager textureManager;
 	private World world;
 	public Camera camera;
-	private Quaternion rotation;
+	private Quaternionf rotation;
 	public Entity targetedEntity;
 	private final ItemRenderer itemRenderer;
 	private final BlockRenderManager blockRenderManager;
@@ -111,7 +111,7 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 		this.targetedEntity = target;
 	}
 
-	public void setRotation(Quaternion rotation) {
+	public void setRotation(Quaternionf rotation) {
 		this.rotation = rotation;
 	}
 
@@ -244,8 +244,8 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 		float h = 0.0F;
 		float i = entity.getHeight() / f;
 		float j = 0.0F;
-		matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-this.camera.getYaw()));
-		matrices.translate(0.0, 0.0, (double)(-0.3F + (float)((int)i) * 0.02F));
+		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-this.camera.getYaw()));
+		matrices.translate(0.0F, 0.0F, -0.3F + (float)((int)i) * 0.02F);
 		float k = 0.0F;
 		int l = 0;
 		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(TexturedRenderLayers.getEntityCutout());
@@ -376,7 +376,7 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 		return this.camera.getPos().squaredDistanceTo(x, y, z);
 	}
 
-	public Quaternion getRotation() {
+	public Quaternionf getRotation() {
 		return this.rotation;
 	}
 

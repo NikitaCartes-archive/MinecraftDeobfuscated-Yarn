@@ -80,15 +80,25 @@ public class StatsScreen extends Screen implements StatsListener {
 
 	public void createButtons() {
 		this.addDrawableChild(
-			new ButtonWidget(this.width / 2 - 120, this.height - 52, 80, 20, Text.translatable("stat.generalButton"), button -> this.selectStatList(this.generalStats))
+			ButtonWidget.createBuilder(Text.translatable("stat.generalButton"), button -> this.selectStatList(this.generalStats))
+				.setPositionAndSize(this.width / 2 - 120, this.height - 52, 80, 20)
+				.build()
 		);
 		ButtonWidget buttonWidget = this.addDrawableChild(
-			new ButtonWidget(this.width / 2 - 40, this.height - 52, 80, 20, Text.translatable("stat.itemsButton"), button -> this.selectStatList(this.itemStats))
+			ButtonWidget.createBuilder(Text.translatable("stat.itemsButton"), button -> this.selectStatList(this.itemStats))
+				.setPositionAndSize(this.width / 2 - 40, this.height - 52, 80, 20)
+				.build()
 		);
 		ButtonWidget buttonWidget2 = this.addDrawableChild(
-			new ButtonWidget(this.width / 2 + 40, this.height - 52, 80, 20, Text.translatable("stat.mobsButton"), button -> this.selectStatList(this.mobStats))
+			ButtonWidget.createBuilder(Text.translatable("stat.mobsButton"), button -> this.selectStatList(this.mobStats))
+				.setPositionAndSize(this.width / 2 + 40, this.height - 52, 80, 20)
+				.build()
 		);
-		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height - 28, 200, 20, ScreenTexts.DONE, button -> this.client.setScreen(this.parent)));
+		this.addDrawableChild(
+			ButtonWidget.createBuilder(ScreenTexts.DONE, button -> this.client.setScreen(this.parent))
+				.setPositionAndSize(this.width / 2 - 100, this.height - 28, 200, 20)
+				.build()
+		);
 		if (this.itemStats.children().isEmpty()) {
 			buttonWidget.active = false;
 		}
@@ -440,7 +450,7 @@ public class StatsScreen extends Screen implements StatsListener {
 				int k = StatsScreen.this.textRenderer.getWidth(text);
 				this.fillGradient(matrices, i - 3, j - 3, i + k + 3, j + 8 + 3, -1073741824, -1073741824);
 				matrices.push();
-				matrices.translate(0.0, 0.0, 400.0);
+				matrices.translate(0.0F, 0.0F, 400.0F);
 				StatsScreen.this.textRenderer.drawWithShadow(matrices, text, (float)i, (float)j, -1);
 				matrices.pop();
 			}

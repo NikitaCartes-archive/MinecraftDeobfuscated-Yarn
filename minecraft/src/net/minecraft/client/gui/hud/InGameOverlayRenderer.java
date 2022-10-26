@@ -22,8 +22,8 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
+import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class InGameOverlayRenderer {
@@ -148,8 +148,8 @@ public class InGameOverlayRenderer {
 			float u = -0.5F;
 			float v = 0.5F;
 			float w = -0.5F;
-			matrices.translate((double)((float)(-(r * 2 - 1)) * 0.24F), -0.3F, 0.0);
-			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion((float)(r * 2 - 1) * 10.0F));
+			matrices.translate((float)(-(r * 2 - 1)) * 0.24F, -0.3F, 0.0F);
+			matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((float)(r * 2 - 1) * 10.0F));
 			Matrix4f matrix4f = matrices.peek().getPositionMatrix();
 			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE);
 			bufferBuilder.vertex(matrix4f, -0.5F, -0.5F, -0.5F).color(1.0F, 1.0F, 1.0F, 0.9F).texture(n, p).next();

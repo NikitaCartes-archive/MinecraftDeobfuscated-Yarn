@@ -19,10 +19,10 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
+import org.joml.Vector3f;
 
 @Environment(EnvType.CLIENT)
 public class BackgroundRenderer {
@@ -97,8 +97,8 @@ public class BackgroundRenderer {
 			blue = (float)vec3d3.getZ();
 			if (viewDistance >= 4) {
 				float f = MathHelper.sin(world.getSkyAngleRadians(tickDelta)) > 0.0F ? -1.0F : 1.0F;
-				Vec3f vec3f = new Vec3f(f, 0.0F, 0.0F);
-				float h = camera.getHorizontalPlane().dot(vec3f);
+				Vector3f vector3f = new Vector3f(f, 0.0F, 0.0F);
+				float h = camera.getHorizontalPlane().dot(vector3f);
 				if (h < 0.0F) {
 					h = 0.0F;
 				}

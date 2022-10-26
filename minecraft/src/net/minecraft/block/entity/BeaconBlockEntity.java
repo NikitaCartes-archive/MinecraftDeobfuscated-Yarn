@@ -49,7 +49,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	public static final int SECONDARY_PROPERTY_INDEX = 2;
 	public static final int PROPERTY_COUNT = 3;
 	private static final int field_31305 = 10;
-	private static final Text field_40328 = Text.translatable("container.beacon");
+	private static final Text CONTAINER_NAME_TEXT = Text.translatable("container.beacon");
 	List<BeaconBlockEntity.BeamSegment> beamSegments = Lists.<BeaconBlockEntity.BeamSegment>newArrayList();
 	private List<BeaconBlockEntity.BeamSegment> field_19178 = Lists.<BeaconBlockEntity.BeamSegment>newArrayList();
 	int level;
@@ -316,7 +316,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 
 	@Override
 	public Text getName() {
-		return this.customName != null ? this.customName : field_40328;
+		return this.customName != null ? this.customName : CONTAINER_NAME_TEXT;
 	}
 
 	@Override

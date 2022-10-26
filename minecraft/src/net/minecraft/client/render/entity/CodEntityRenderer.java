@@ -8,7 +8,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.CodEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
 public class CodEntityRenderer extends MobEntityRenderer<CodEntity, CodEntityModel<CodEntity>> {
@@ -25,10 +25,10 @@ public class CodEntityRenderer extends MobEntityRenderer<CodEntity, CodEntityMod
 	protected void setupTransforms(CodEntity codEntity, MatrixStack matrixStack, float f, float g, float h) {
 		super.setupTransforms(codEntity, matrixStack, f, g, h);
 		float i = 4.3F * MathHelper.sin(0.6F * f);
-		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(i));
+		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(i));
 		if (!codEntity.isTouchingWater()) {
 			matrixStack.translate(0.1F, 0.1F, -0.1F);
-			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
+			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90.0F));
 		}
 	}
 }

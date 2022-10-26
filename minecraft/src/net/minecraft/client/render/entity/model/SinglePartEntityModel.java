@@ -13,11 +13,11 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.AnimationState;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3f;
+import org.joml.Vector3f;
 
 @Environment(EnvType.CLIENT)
 public abstract class SinglePartEntityModel<E extends Entity> extends EntityModel<E> {
-	private static final Vec3f field_39195 = new Vec3f();
+	private static final Vector3f field_39195 = new Vector3f();
 
 	public SinglePartEntityModel() {
 		this(RenderLayer::getEntityCutoutNoCull);

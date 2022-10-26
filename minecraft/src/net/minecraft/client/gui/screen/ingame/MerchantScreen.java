@@ -299,7 +299,7 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 		final int index;
 
 		public WidgetButtonPage(int x, int y, int index, ButtonWidget.PressAction onPress) {
-			super(x, y, 89, 20, ScreenTexts.EMPTY, onPress);
+			super(x, y, 89, 20, ScreenTexts.EMPTY, onPress, EMPTY_TOOLTIP, DEFAULT_NARRATION_SUPPLIER);
 			this.index = index;
 			this.visible = false;
 		}
@@ -311,16 +311,16 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 		@Override
 		public void renderTooltip(MatrixStack matrices, int mouseX, int mouseY) {
 			if (this.hovered && MerchantScreen.this.handler.getRecipes().size() > this.index + MerchantScreen.this.indexStartOffset) {
-				if (mouseX < this.x + 20) {
+				if (mouseX < this.getX() + 20) {
 					ItemStack itemStack = ((TradeOffer)MerchantScreen.this.handler.getRecipes().get(this.index + MerchantScreen.this.indexStartOffset))
 						.getAdjustedFirstBuyItem();
 					MerchantScreen.this.renderTooltip(matrices, itemStack, mouseX, mouseY);
-				} else if (mouseX < this.x + 50 && mouseX > this.x + 30) {
+				} else if (mouseX < this.getX() + 50 && mouseX > this.getX() + 30) {
 					ItemStack itemStack = ((TradeOffer)MerchantScreen.this.handler.getRecipes().get(this.index + MerchantScreen.this.indexStartOffset)).getSecondBuyItem();
 					if (!itemStack.isEmpty()) {
 						MerchantScreen.this.renderTooltip(matrices, itemStack, mouseX, mouseY);
 					}
-				} else if (mouseX > this.x + 65) {
+				} else if (mouseX > this.getX() + 65) {
 					ItemStack itemStack = ((TradeOffer)MerchantScreen.this.handler.getRecipes().get(this.index + MerchantScreen.this.indexStartOffset)).getSellItem();
 					MerchantScreen.this.renderTooltip(matrices, itemStack, mouseX, mouseY);
 				}

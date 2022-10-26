@@ -36,7 +36,7 @@ public class OpenToLanScreen extends Screen {
 			CyclingButtonWidget.onOffBuilder(this.allowCommands)
 				.build(this.width / 2 + 5, 100, 150, 20, ALLOW_COMMANDS_TEXT, (button, allowCommands) -> this.allowCommands = allowCommands)
 		);
-		this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, Text.translatable("lanServer.start"), button -> {
+		this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("lanServer.start"), button -> {
 			this.client.setScreen(null);
 			int i = NetworkUtils.findLocalPort();
 			Text text;
@@ -48,8 +48,12 @@ public class OpenToLanScreen extends Screen {
 
 			this.client.inGameHud.getChatHud().addMessage(text);
 			this.client.updateWindowTitle();
-		}));
-		this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)));
+		}).setPositionAndSize(this.width / 2 - 155, this.height - 28, 150, 20).build());
+		this.addDrawableChild(
+			ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent))
+				.setPositionAndSize(this.width / 2 + 5, this.height - 28, 150, 20)
+				.build()
+		);
 	}
 
 	@Override

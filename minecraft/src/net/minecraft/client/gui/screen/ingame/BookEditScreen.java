@@ -128,27 +128,27 @@ public class BookEditScreen extends Screen {
 	protected void init() {
 		this.invalidatePageContent();
 		this.client.keyboard.setRepeatEvents(true);
-		this.signButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, Text.translatable("book.signButton"), button -> {
+		this.signButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("book.signButton"), button -> {
 			this.signing = true;
 			this.updateButtons();
-		}));
-		this.doneButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, ScreenTexts.DONE, button -> {
+		}).setPositionAndSize(this.width / 2 - 100, 196, 98, 20).build());
+		this.doneButton = this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.DONE, button -> {
 			this.client.setScreen(null);
 			this.finalizeBook(false);
-		}));
-		this.finalizeButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, Text.translatable("book.finalizeButton"), button -> {
+		}).setPositionAndSize(this.width / 2 + 2, 196, 98, 20).build());
+		this.finalizeButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("book.finalizeButton"), button -> {
 			if (this.signing) {
 				this.finalizeBook(true);
 				this.client.setScreen(null);
 			}
-		}));
-		this.cancelButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, ScreenTexts.CANCEL, button -> {
+		}).setPositionAndSize(this.width / 2 - 100, 196, 98, 20).build());
+		this.cancelButton = this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> {
 			if (this.signing) {
 				this.signing = false;
 			}
 
 			this.updateButtons();
-		}));
+		}).setPositionAndSize(this.width / 2 + 2, 196, 98, 20).build());
 		int i = (this.width - 192) / 2;
 		int j = 2;
 		this.nextPageButton = this.addDrawableChild(new PageTurnWidget(i + 116, 159, true, button -> this.openNextPage(), true));

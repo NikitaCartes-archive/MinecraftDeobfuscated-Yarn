@@ -1,8 +1,8 @@
 package net.minecraft.entity;
 
 import java.util.Map;
-import net.minecraft.util.math.Vec3f;
+import org.joml.Vector3f;
 
 public interface AngledModelEntity {
-	Map<String, Vec3f> getModelAngles();
+	Map<String, Vector3f> getModelAngles();
 }

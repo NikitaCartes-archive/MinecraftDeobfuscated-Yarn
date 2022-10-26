@@ -25,9 +25,9 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.random.Random;
+import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
@@ -88,24 +88,21 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 		this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
 		int k = (int)this.client.getWindow().getScaleFactor();
 		RenderSystem.viewport((this.width - 320) / 2 * k, (this.height - 240) / 2 * k, 320 * k, 240 * k);
-		Matrix4f matrix4f = Matrix4f.translate(-0.34F, 0.23F, 0.0F);
-		matrix4f.multiply(Matrix4f.viewboxMatrix(90.0, 1.3333334F, 9.0F, 80.0F));
+		Matrix4f matrix4f = new Matrix4f().translation(-0.34F, 0.23F, 0.0F).perspective((float) (Math.PI / 2), 1.3333334F, 9.0F, 80.0F);
 		RenderSystem.backupProjectionMatrix();
 		RenderSystem.setProjectionMatrix(matrix4f);
 		matrices.push();
-		MatrixStack.Entry entry = matrices.peek();
-		entry.getPositionMatrix().loadIdentity();
-		entry.getNormalMatrix().loadIdentity();
-		matrices.translate(0.0, 3.3F, 1984.0);
+		matrices.loadIdentity();
+		matrices.translate(0.0F, 3.3F, 1984.0F);
 		float f = 5.0F;
 		matrices.scale(5.0F, 5.0F, 5.0F);
-		matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
-		matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(20.0F));
+		matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180.0F));
+		matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(20.0F));
 		float g = MathHelper.lerp(delta, this.pageTurningSpeed, this.nextPageTurningSpeed);
-		matrices.translate((double)((1.0F - g) * 0.2F), (double)((1.0F - g) * 0.1F), (double)((1.0F - g) * 0.25F));
+		matrices.translate((1.0F - g) * 0.2F, (1.0F - g) * 0.1F, (1.0F - g) * 0.25F);
 		float h = -(1.0F - g) * 90.0F - 90.0F;
-		matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(h));
-		matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(180.0F));
+		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(h));
+		matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180.0F));
 		float l = MathHelper.lerp(delta, this.pageAngle, this.nextPageAngle) + 0.25F;
 		float m = MathHelper.lerp(delta, this.pageAngle, this.nextPageAngle) + 0.75F;
 		l = (l - (float)MathHelper.fastFloor((double)l)) * 1.6F - 0.3F;

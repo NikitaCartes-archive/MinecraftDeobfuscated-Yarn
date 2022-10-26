@@ -67,15 +67,15 @@ public interface BufferVertexConsumer extends VertexConsumer {
 
 	@Override
 	default VertexConsumer overlay(int u, int v) {
-		return this.texture((short)u, (short)v, 1);
+		return this.uv((short)u, (short)v, 1);
 	}
 
 	@Override
 	default VertexConsumer light(int u, int v) {
-		return this.texture((short)u, (short)v, 2);
+		return this.uv((short)u, (short)v, 2);
 	}
 
-	default VertexConsumer texture(short u, short v, int index) {
+	default VertexConsumer uv(short u, short v, int index) {
 		VertexFormatElement vertexFormatElement = this.getCurrentElement();
 		if (vertexFormatElement.getType() != VertexFormatElement.Type.UV || vertexFormatElement.getUvIndex() != index) {
 			return this;

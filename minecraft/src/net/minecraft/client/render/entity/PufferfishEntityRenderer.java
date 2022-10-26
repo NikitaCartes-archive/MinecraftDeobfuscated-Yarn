@@ -49,7 +49,7 @@ public class PufferfishEntityRenderer extends MobEntityRenderer<PufferfishEntity
 	}
 
 	protected void setupTransforms(PufferfishEntity pufferfishEntity, MatrixStack matrixStack, float f, float g, float h) {
-		matrixStack.translate(0.0, (double)(MathHelper.cos(f * 0.05F) * 0.08F), 0.0);
+		matrixStack.translate(0.0F, MathHelper.cos(f * 0.05F) * 0.08F, 0.0F);
 		super.setupTransforms(pufferfishEntity, matrixStack, f, g, h);
 	}
 }

@@ -653,7 +653,7 @@ public abstract class ScreenHandler {
 				ItemStack itemStack = slot.getStack();
 				ItemStack itemStack5 = this.getCursorStack();
 				player.onPickupSlotClick(itemStack5, slot.getStack(), clickType);
-				if (!this.method_45409(player, clickType, slot, itemStack, itemStack5)) {
+				if (!this.handleSlotClick(player, clickType, slot, itemStack, itemStack5)) {
 					if (itemStack.isEmpty()) {
 						if (!itemStack5.isEmpty()) {
 							int n = clickType == ClickType.LEFT ? itemStack5.getCount() : 1;
@@ -759,12 +759,12 @@ public abstract class ScreenHandler {
 		}
 	}
 
-	private boolean method_45409(PlayerEntity playerEntity, ClickType clickType, Slot slot, ItemStack itemStack, ItemStack itemStack2) {
-		FeatureSet featureSet = playerEntity.getWorld().getEnabledFeatures();
-		if (itemStack2.isItemEnabled(featureSet) && itemStack2.onStackClicked(slot, clickType, playerEntity)) {
+	private boolean handleSlotClick(PlayerEntity player, ClickType clickType, Slot slot, ItemStack stack, ItemStack cursorStack) {
+		FeatureSet featureSet = player.getWorld().getEnabledFeatures();
+		if (cursorStack.isItemEnabled(featureSet) && cursorStack.onStackClicked(slot, clickType, player)) {
 			return true;
 		} else {
-			return itemStack.isItemEnabled(featureSet) && itemStack.onClicked(itemStack2, slot, clickType, playerEntity, this.getCursorStackReference());
+			return stack.isItemEnabled(featureSet) && stack.onClicked(cursorStack, slot, clickType, player, this.getCursorStackReference());
 		}
 	}
 

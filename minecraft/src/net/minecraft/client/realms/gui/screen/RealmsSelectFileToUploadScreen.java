@@ -74,10 +74,16 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 
 		this.addSelectableChild(this.worldSelectionList);
 		this.uploadButton = this.addDrawableChild(
-			new ButtonWidget(this.width / 2 - 154, this.height - 32, 153, 20, Text.translatable("mco.upload.button.name"), button -> this.upload())
+			ButtonWidget.createBuilder(Text.translatable("mco.upload.button.name"), button -> this.upload())
+				.setPositionAndSize(this.width / 2 - 154, this.height - 32, 153, 20)
+				.build()
 		);
 		this.uploadButton.active = this.selectedWorld >= 0 && this.selectedWorld < this.levelList.size();
-		this.addDrawableChild(new ButtonWidget(this.width / 2 + 6, this.height - 32, 153, 20, ScreenTexts.BACK, button -> this.client.setScreen(this.parent)));
+		this.addDrawableChild(
+			ButtonWidget.createBuilder(ScreenTexts.BACK, button -> this.client.setScreen(this.parent))
+				.setPositionAndSize(this.width / 2 + 6, this.height - 32, 153, 20)
+				.build()
+		);
 		this.addLabel(new RealmsLabel(Text.translatable("mco.upload.select.world.subtitle"), this.width / 2, row(-1), 10526880));
 		if (this.levelList.isEmpty()) {
 			this.addLabel(new RealmsLabel(Text.translatable("mco.upload.select.world.none"), this.width / 2, this.height / 2 - 20, 16777215));

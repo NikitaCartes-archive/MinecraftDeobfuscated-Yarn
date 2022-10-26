@@ -64,9 +64,15 @@ public class AddServerScreen extends Screen {
 				)
 		);
 		this.addButton = this.addDrawableChild(
-			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96 + 18, 200, 20, Text.translatable("addServer.add"), button -> this.addAndClose())
+			ButtonWidget.createBuilder(Text.translatable("addServer.add"), button -> this.addAndClose())
+				.setPositionAndSize(this.width / 2 - 100, this.height / 4 + 96 + 18, 200, 20)
+				.build()
 		);
-		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 18, 200, 20, ScreenTexts.CANCEL, button -> this.callback.accept(false)));
+		this.addDrawableChild(
+			ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> this.callback.accept(false))
+				.setPositionAndSize(this.width / 2 - 100, this.height / 4 + 120 + 18, 200, 20)
+				.build()
+		);
 		this.updateAddButton();
 	}
 

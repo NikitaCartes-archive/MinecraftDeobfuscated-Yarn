@@ -145,7 +145,7 @@ public class ToastManager extends DrawableHelper {
 
 			MatrixStack matrixStack = RenderSystem.getModelViewStack();
 			matrixStack.push();
-			matrixStack.translate((double)((float)x - (float)this.instance.getWidth() * this.getDisappearProgress(l)), (double)(this.topIndex * 32), 800.0);
+			matrixStack.translate((float)x - (float)this.instance.getWidth() * this.getDisappearProgress(l), (float)(this.topIndex * 32), 800.0F);
 			RenderSystem.applyModelViewMatrix();
 			Toast.Visibility visibility = this.instance.draw(matrices, ToastManager.this, l - this.showTime);
 			matrixStack.pop();

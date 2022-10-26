@@ -360,8 +360,8 @@ public class MineshaftGenerator {
 							this.hasSpawner = true;
 							world.setBlockState(blockPos, Blocks.SPAWNER.getDefaultState(), Block.NOTIFY_LISTENERS);
 							BlockEntity blockEntity = world.getBlockEntity(blockPos);
-							if (blockEntity instanceof MobSpawnerBlockEntity) {
-								((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(EntityType.CAVE_SPIDER);
+							if (blockEntity instanceof MobSpawnerBlockEntity mobSpawnerBlockEntity) {
+								mobSpawnerBlockEntity.setEntityType(EntityType.CAVE_SPIDER, random);
 							}
 						}
 					}

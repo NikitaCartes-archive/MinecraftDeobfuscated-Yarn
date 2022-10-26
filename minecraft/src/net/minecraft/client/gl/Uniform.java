@@ -2,10 +2,10 @@ package net.minecraft.client.gl;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.math.Matrix3f;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3f;
-import net.minecraft.util.math.Vector4f;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 /**
  * Defines methods that set a value of a uniform variable. The actual
@@ -46,7 +46,7 @@ public class Uniform {
 	public void set(float[] values) {
 	}
 
-	public void set(Vec3f vector) {
+	public void set(Vector3f vector) {
 	}
 
 	public void set(Vector4f vec) {

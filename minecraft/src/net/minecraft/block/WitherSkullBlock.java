@@ -49,7 +49,7 @@ public class WitherSkullBlock extends SkullBlock {
 				if (result != null) {
 					WitherEntity witherEntity = EntityType.WITHER.create(world);
 					if (witherEntity != null) {
-						CarvedPumpkinBlock.method_45454(world, result);
+						CarvedPumpkinBlock.breakPatternBlocks(world, result);
 						BlockPos blockPos = result.translate(1, 2, 0).getBlockPos();
 						witherEntity.refreshPositionAndAngles(
 							(double)blockPos.getX() + 0.5,
@@ -66,7 +66,7 @@ public class WitherSkullBlock extends SkullBlock {
 						}
 
 						world.spawnEntity(witherEntity);
-						CarvedPumpkinBlock.method_45456(world, result);
+						CarvedPumpkinBlock.updatePatternBlocks(world, result);
 					}
 				}
 			}

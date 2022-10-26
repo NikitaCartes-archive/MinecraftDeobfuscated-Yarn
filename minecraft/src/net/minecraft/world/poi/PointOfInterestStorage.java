@@ -255,7 +255,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	}
 
 	private static boolean shouldScan(ChunkSection chunkSection) {
-		return chunkSection.hasAny(PointOfInterestTypes.POI_STATES::contains);
+		return chunkSection.hasAny(PointOfInterestTypes::isPointOfInterest);
 	}
 
 	private void scanAndPopulate(ChunkSection chunkSection, ChunkSectionPos sectionPos, BiConsumer<BlockPos, RegistryEntry<PointOfInterestType>> populator) {

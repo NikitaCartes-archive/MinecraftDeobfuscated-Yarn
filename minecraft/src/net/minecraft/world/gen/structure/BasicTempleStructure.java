@@ -9,8 +9,8 @@ import net.minecraft.world.Heightmap;
 
 public abstract class BasicTempleStructure extends Structure {
 	private final BasicTempleStructure.Constructor constructor;
-	private int width;
-	private int height;
+	private final int width;
+	private final int height;
 
 	protected BasicTempleStructure(BasicTempleStructure.Constructor constructor, int width, int height, Structure.Config config) {
 		super(config);

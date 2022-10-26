@@ -133,18 +133,18 @@ public class LlamaEntityModel<T extends AbstractDonkeyEntity> extends EntityMode
 			matrices.push();
 			float g = 0.7F;
 			matrices.scale(0.71428573F, 0.64935064F, 0.7936508F);
-			matrices.translate(0.0, 1.3125, 0.22F);
+			matrices.translate(0.0F, 1.3125F, 0.22F);
 			this.head.render(matrices, vertices, light, overlay, red, green, blue, alpha);
 			matrices.pop();
 			matrices.push();
 			float h = 1.1F;
 			matrices.scale(0.625F, 0.45454544F, 0.45454544F);
-			matrices.translate(0.0, 2.0625, 0.0);
+			matrices.translate(0.0F, 2.0625F, 0.0F);
 			this.body.render(matrices, vertices, light, overlay, red, green, blue, alpha);
 			matrices.pop();
 			matrices.push();
 			matrices.scale(0.45454544F, 0.41322312F, 0.45454544F);
-			matrices.translate(0.0, 2.0625, 0.0);
+			matrices.translate(0.0F, 2.0625F, 0.0F);
 			ImmutableList.of(this.rightHindLeg, this.leftHindLeg, this.rightFrontLeg, this.leftFrontLeg, this.rightChest, this.leftChest)
 				.forEach(part -> part.render(matrices, vertices, light, overlay, red, green, blue, alpha));
 			matrices.pop();

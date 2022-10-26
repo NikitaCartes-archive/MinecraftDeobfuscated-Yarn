@@ -14,11 +14,11 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.RaycastContext;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 @Environment(EnvType.CLIENT)
 public class Camera {
@@ -27,12 +27,12 @@ public class Camera {
 	private Entity focusedEntity;
 	private Vec3d pos = Vec3d.ZERO;
 	private final BlockPos.Mutable blockPos = new BlockPos.Mutable();
-	private final Vec3f horizontalPlane = new Vec3f(0.0F, 0.0F, 1.0F);
-	private final Vec3f verticalPlane = new Vec3f(0.0F, 1.0F, 0.0F);
-	private final Vec3f diagonalPlane = new Vec3f(1.0F, 0.0F, 0.0F);
+	private final Vector3f horizontalPlane = new Vector3f(0.0F, 0.0F, 1.0F);
+	private final Vector3f verticalPlane = new Vector3f(0.0F, 1.0F, 0.0F);
+	private final Vector3f diagonalPlane = new Vector3f(1.0F, 0.0F, 0.0F);
 	private float pitch;
 	private float yaw;
-	private final Quaternion rotation = new Quaternion(0.0F, 0.0F, 0.0F, 1.0F);
+	private final Quaternionf rotation = new Quaternionf(0.0F, 0.0F, 0.0F, 1.0F);
 	private boolean thirdPerson;
 	private float cameraY;
 	private float lastCameraY;
@@ -79,9 +79,9 @@ public class Camera {
 			h *= 0.1F;
 			Vec3d vec3d = this.pos.add((double)f, (double)g, (double)h);
 			Vec3d vec3d2 = new Vec3d(
-				this.pos.x - (double)this.horizontalPlane.getX() * desiredCameraDistance + (double)f,
-				this.pos.y - (double)this.horizontalPlane.getY() * desiredCameraDistance + (double)g,
-				this.pos.z - (double)this.horizontalPlane.getZ() * desiredCameraDistance + (double)h
+				this.pos.x - (double)this.horizontalPlane.x() * desiredCameraDistance + (double)f,
+				this.pos.y - (double)this.horizontalPlane.y() * desiredCameraDistance + (double)g,
+				this.pos.z - (double)this.horizontalPlane.z() * desiredCameraDistance + (double)h
 			);
 			HitResult hitResult = this.area
 				.raycast(new RaycastContext(vec3d, vec3d2, RaycastContext.ShapeType.VISUAL, RaycastContext.FluidHandling.NONE, this.focusedEntity));
@@ -97,24 +97,19 @@ public class Camera {
 	}
 
 	protected void moveBy(double x, double y, double z) {
-		double d = (double)this.horizontalPlane.getX() * x + (double)this.verticalPlane.getX() * y + (double)this.diagonalPlane.getX() * z;
-		double e = (double)this.horizontalPlane.getY() * x + (double)this.verticalPlane.getY() * y + (double)this.diagonalPlane.getY() * z;
-		double f = (double)this.horizontalPlane.getZ() * x + (double)this.verticalPlane.getZ() * y + (double)this.diagonalPlane.getZ() * z;
+		double d = (double)this.horizontalPlane.x() * x + (double)this.verticalPlane.x() * y + (double)this.diagonalPlane.x() * z;
+		double e = (double)this.horizontalPlane.y() * x + (double)this.verticalPlane.y() * y + (double)this.diagonalPlane.y() * z;
+		double f = (double)this.horizontalPlane.z() * x + (double)this.verticalPlane.z() * y + (double)this.diagonalPlane.z() * z;
 		this.setPos(new Vec3d(this.pos.x + d, this.pos.y + e, this.pos.z + f));
 	}
 
 	protected void setRotation(float yaw, float pitch) {
 		this.pitch = pitch;
 		this.yaw = yaw;
-		this.rotation.set(0.0F, 0.0F, 0.0F, 1.0F);
-		this.rotation.hamiltonProduct(Vec3f.POSITIVE_Y.getDegreesQuaternion(-yaw));
-		this.rotation.hamiltonProduct(Vec3f.POSITIVE_X.getDegreesQuaternion(pitch));
-		this.horizontalPlane.set(0.0F, 0.0F, 1.0F);
-		this.horizontalPlane.rotate(this.rotation);
-		this.verticalPlane.set(0.0F, 1.0F, 0.0F);
-		this.verticalPlane.rotate(this.rotation);
-		this.diagonalPlane.set(1.0F, 0.0F, 0.0F);
-		this.diagonalPlane.rotate(this.rotation);
+		this.rotation.rotationYXZ(-yaw * (float) (Math.PI / 180.0), pitch * (float) (Math.PI / 180.0), 0.0F);
+		this.horizontalPlane.set(0.0F, 0.0F, 1.0F).rotate(this.rotation);
+		this.verticalPlane.set(0.0F, 1.0F, 0.0F).rotate(this.rotation);
+		this.diagonalPlane.set(1.0F, 0.0F, 0.0F).rotate(this.rotation);
 	}
 
 	protected void setPos(double x, double y, double z) {
@@ -142,7 +137,7 @@ public class Camera {
 		return this.yaw;
 	}
 
-	public Quaternion getRotation() {
+	public Quaternionf getRotation() {
 		return this.rotation;
 	}
 
@@ -162,7 +157,6 @@ public class Camera {
 	 * {@return the field of vision of this camera}
 	 * 
 	 * @see GameRenderer#CAMERA_DEPTH
-	 * @see net.minecraft.util.math.Matrix4f#viewboxMatrix
 	 */
 	public Camera.Projection getProjection() {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
@@ -208,15 +202,15 @@ public class Camera {
 		}
 	}
 
-	public final Vec3f getHorizontalPlane() {
+	public final Vector3f getHorizontalPlane() {
 		return this.horizontalPlane;
 	}
 
-	public final Vec3f getVerticalPlane() {
+	public final Vector3f getVerticalPlane() {
 		return this.verticalPlane;
 	}
 
-	public final Vec3f getDiagonalPlane() {
+	public final Vector3f getDiagonalPlane() {
 		return this.diagonalPlane;
 	}
 

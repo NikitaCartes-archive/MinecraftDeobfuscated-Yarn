@@ -8,7 +8,6 @@ import net.minecraft.loot.context.LootContextTypes;
 public class VanillaLootTableProviders {
 	public static LootTableProvider createVanillaProvider(DataOutput output) {
 		return new LootTableProvider(
-			"Vanilla Loot Tables",
 			output,
 			LootTables.getAll(),
 			List.of(

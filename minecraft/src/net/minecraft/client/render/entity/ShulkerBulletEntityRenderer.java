@@ -13,7 +13,7 @@ import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
 public class ShulkerBulletEntityRenderer extends EntityRenderer<ShulkerBulletEntity> {
@@ -35,10 +35,10 @@ public class ShulkerBulletEntityRenderer extends EntityRenderer<ShulkerBulletEnt
 		float h = MathHelper.lerpAngle(shulkerBulletEntity.prevYaw, shulkerBulletEntity.getYaw(), g);
 		float j = MathHelper.lerp(g, shulkerBulletEntity.prevPitch, shulkerBulletEntity.getPitch());
 		float k = (float)shulkerBulletEntity.age + g;
-		matrixStack.translate(0.0, 0.15F, 0.0);
-		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(MathHelper.sin(k * 0.1F) * 180.0F));
-		matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(MathHelper.cos(k * 0.1F) * 180.0F));
-		matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(MathHelper.sin(k * 0.15F) * 360.0F));
+		matrixStack.translate(0.0F, 0.15F, 0.0F);
+		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(MathHelper.sin(k * 0.1F) * 180.0F));
+		matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(MathHelper.cos(k * 0.1F) * 180.0F));
+		matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(MathHelper.sin(k * 0.15F) * 360.0F));
 		matrixStack.scale(-0.5F, -0.5F, 0.5F);
 		this.model.setAngles(shulkerBulletEntity, 0.0F, 0.0F, 0.0F, h, j);
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(TEXTURE));

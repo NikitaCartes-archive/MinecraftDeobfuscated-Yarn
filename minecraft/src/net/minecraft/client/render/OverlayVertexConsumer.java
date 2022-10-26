@@ -3,16 +3,16 @@ package net.minecraft.client.render;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Matrix3f;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3f;
-import net.minecraft.util.math.Vector4f;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 @Environment(EnvType.CLIENT)
 public class OverlayVertexConsumer extends FixedColorVertexConsumer {
-	private final VertexConsumer vertexConsumer;
-	private final Matrix4f textureMatrix;
-	private final Matrix3f normalMatrix;
+	private final VertexConsumer delegate;
+	private final Matrix4f inverseTextureMatrix;
+	private final Matrix3f inverseNormalMatrix;
 	private float x;
 	private float y;
 	private float z;
@@ -23,12 +23,10 @@ public class OverlayVertexConsumer extends FixedColorVertexConsumer {
 	private float normalY;
 	private float normalZ;
 
-	public OverlayVertexConsumer(VertexConsumer vertexConsumer, Matrix4f textureMatrix, Matrix3f normalMatrix) {
-		this.vertexConsumer = vertexConsumer;
-		this.textureMatrix = textureMatrix.copy();
-		this.textureMatrix.invert();
-		this.normalMatrix = normalMatrix.copy();
-		this.normalMatrix.invert();
+	public OverlayVertexConsumer(VertexConsumer delegate, Matrix4f textureMatrix, Matrix3f normalMatrix) {
+		this.delegate = delegate;
+		this.inverseTextureMatrix = new Matrix4f(textureMatrix).invert();
+		this.inverseNormalMatrix = new Matrix3f(normalMatrix).invert();
 		this.init();
 	}
 
@@ -46,17 +44,15 @@ public class OverlayVertexConsumer extends FixedColorVertexConsumer {
 
 	@Override
 	public void next() {
-		Vec3f vec3f = new Vec3f(this.normalX, this.normalY, this.normalZ);
-		vec3f.transform(this.normalMatrix);
-		Direction direction = Direction.getFacing(vec3f.getX(), vec3f.getY(), vec3f.getZ());
-		Vector4f vector4f = new Vector4f(this.x, this.y, this.z, 1.0F);
-		vector4f.transform(this.textureMatrix);
-		vector4f.rotate(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
-		vector4f.rotate(Vec3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
+		Vector3f vector3f = this.inverseNormalMatrix.transform(new Vector3f(this.normalX, this.normalY, this.normalZ));
+		Direction direction = Direction.getFacing(vector3f.x(), vector3f.y(), vector3f.z());
+		Vector4f vector4f = this.inverseTextureMatrix.transform(new Vector4f(this.x, this.y, this.z, 1.0F));
+		vector4f.rotateY((float) Math.PI);
+		vector4f.rotateX((float) (-Math.PI / 2));
 		vector4f.rotate(direction.getRotationQuaternion());
-		float f = -vector4f.getX();
-		float g = -vector4f.getY();
-		this.vertexConsumer
+		float f = -vector4f.x();
+		float g = -vector4f.y();
+		this.delegate
 			.vertex((double)this.x, (double)this.y, (double)this.z)
 			.color(1.0F, 1.0F, 1.0F, 1.0F)
 			.texture(f, g)

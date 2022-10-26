@@ -33,9 +33,4 @@ public class OneTwentyItemTagProvider extends AbstractItemTagProvider {
 		this.getOrCreateTagBuilder(ItemTags.BOATS).add(Items.BAMBOO_RAFT);
 		this.getOrCreateTagBuilder(ItemTags.BOOKSHELF_BOOKS).add(Items.BOOK, Items.WRITTEN_BOOK, Items.ENCHANTED_BOOK, Items.WRITABLE_BOOK);
 	}
-
-	@Override
-	public String getName() {
-		return super.getName() + "@1.20";
-	}
 }

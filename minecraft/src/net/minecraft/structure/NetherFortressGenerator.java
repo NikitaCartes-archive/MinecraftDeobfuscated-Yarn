@@ -413,8 +413,8 @@ public class NetherFortressGenerator {
 					this.hasBlazeSpawner = true;
 					world.setBlockState(blockPos, Blocks.SPAWNER.getDefaultState(), Block.NOTIFY_LISTENERS);
 					BlockEntity blockEntity = world.getBlockEntity(blockPos);
-					if (blockEntity instanceof MobSpawnerBlockEntity) {
-						((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(EntityType.BLAZE);
+					if (blockEntity instanceof MobSpawnerBlockEntity mobSpawnerBlockEntity) {
+						mobSpawnerBlockEntity.setEntityType(EntityType.BLAZE, random);
 					}
 				}
 			}

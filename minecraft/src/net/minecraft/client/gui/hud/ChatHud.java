@@ -69,7 +69,7 @@ public class ChatHud extends DrawableHelper {
 				int k = MathHelper.ceil((float)this.getWidth() / f);
 				int l = this.client.getWindow().getScaledHeight();
 				matrices.push();
-				matrices.translate(4.0, 0.0, 0.0);
+				matrices.translate(4.0F, 0.0F, 0.0F);
 				matrices.scale(f, f, 1.0F);
 				int m = MathHelper.floor((float)(l - 40) / f);
 				int n = this.getMessageIndex(this.toChatLineX((double)mouseX), this.toChatLineY((double)mouseY));
@@ -95,7 +95,7 @@ public class ChatHud extends DrawableHelper {
 								int x = m - q * o;
 								int y = (int)((double)x + h);
 								matrices.push();
-								matrices.translate(0.0, 0.0, 50.0);
+								matrices.translate(0.0F, 0.0F, 50.0F);
 								fill(matrices, -4, x - o, 0 + k + 4 + 4, x, v << 24);
 								MessageIndicator messageIndicator = visible.indicator();
 								if (messageIndicator != null) {
@@ -109,7 +109,7 @@ public class ChatHud extends DrawableHelper {
 								}
 
 								RenderSystem.enableBlend();
-								matrices.translate(0.0, 0.0, 50.0);
+								matrices.translate(0.0F, 0.0F, 50.0F);
 								this.client.textRenderer.drawWithShadow(matrices, visible.content(), 0.0F, (float)y, 16777215 + (u << 24));
 								RenderSystem.disableBlend();
 								matrices.pop();
@@ -123,10 +123,10 @@ public class ChatHud extends DrawableHelper {
 					int ad = (int)(128.0 * d);
 					int s = (int)(255.0 * e);
 					matrices.push();
-					matrices.translate(0.0, (double)m, 50.0);
+					matrices.translate(0.0F, (float)m, 50.0F);
 					fill(matrices, -2, 0, k + 4, 9, s << 24);
 					RenderSystem.enableBlend();
-					matrices.translate(0.0, 0.0, 50.0);
+					matrices.translate(0.0F, 0.0F, 50.0F);
 					this.client.textRenderer.drawWithShadow(matrices, Text.translatable("chat.queue", ac), 0.0F, 1.0F, 16777215 + (ad << 24));
 					matrices.pop();
 					RenderSystem.disableBlend();

@@ -13,15 +13,14 @@ import net.minecraft.util.Util;
  * 
  * <p>This class is very often used to hold the coordinates. To hold a block position
  * specifically, use {@link BlockPos} instead, which extends {@code Vec3i}. To hold
- * positions for entities and other non-voxels, consider using {@link Vec3f} (that holds
- * values using {@code float}) or {@link Vec3d} (that holds values using {@code double})
- * instead.
+ * positions for entities and other non-voxels, consider using {@link Vec3d} that
+ * holds values using {@code double} instead.
  * 
  * <p>{@code Vec3i} is read-only, but subclasses like {@link BlockPos.Mutable}
  * may be mutable. Make sure to sanitize inputs of {@code Vec3i} if needed,
  * such as calling {@link BlockPos#toImmutable()} or making new copies.
  * 
- * @see Vec3f
+ * @see org.joml.Vector3f
  * @see Vec3d
  * @see BlockPos
  */
@@ -29,8 +28,8 @@ import net.minecraft.util.Util;
 public class Vec3i implements Comparable<Vec3i> {
 	public static final Codec<Vec3i> CODEC = Codec.INT_STREAM
 		.comapFlatMap(
-			intStream -> Util.toArray(intStream, 3).map(is -> new Vec3i(is[0], is[1], is[2])),
-			vec3i -> IntStream.of(new int[]{vec3i.getX(), vec3i.getY(), vec3i.getZ()})
+			stream -> Util.toArray(stream, 3).map(coordinates -> new Vec3i(coordinates[0], coordinates[1], coordinates[2])),
+			vec -> IntStream.of(new int[]{vec.getX(), vec.getY(), vec.getZ()})
 		);
 	public static final Vec3i ZERO = new Vec3i(0, 0, 0);
 	private int x;

@@ -12,7 +12,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.TropicalFishEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
 public class TropicalFishEntityRenderer extends MobEntityRenderer<TropicalFishEntity, TintableCompositeModel<TropicalFishEntity>> {
@@ -41,10 +41,10 @@ public class TropicalFishEntityRenderer extends MobEntityRenderer<TropicalFishEn
 	protected void setupTransforms(TropicalFishEntity tropicalFishEntity, MatrixStack matrixStack, float f, float g, float h) {
 		super.setupTransforms(tropicalFishEntity, matrixStack, f, g, h);
 		float i = 4.3F * MathHelper.sin(0.6F * f);
-		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(i));
+		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(i));
 		if (!tropicalFishEntity.isTouchingWater()) {
-			matrixStack.translate(0.2F, 0.1F, 0.0);
-			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
+			matrixStack.translate(0.2F, 0.1F, 0.0F);
+			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90.0F));
 		}
 	}
 }

@@ -98,7 +98,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		super.render(matrices, mouseX, mouseY, delta);
 		MatrixStack matrixStack = RenderSystem.getModelViewStack();
 		matrixStack.push();
-		matrixStack.translate((double)i, (double)j, 0.0);
+		matrixStack.translate((float)i, (float)j, 0.0F);
 		RenderSystem.applyModelViewMatrix();
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		this.focusedSlot = null;
@@ -174,7 +174,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 
 	private void drawItem(ItemStack stack, int x, int y, String amountText) {
 		MatrixStack matrixStack = RenderSystem.getModelViewStack();
-		matrixStack.translate(0.0, 0.0, 32.0);
+		matrixStack.translate(0.0F, 0.0F, 32.0F);
 		RenderSystem.applyModelViewMatrix();
 		this.setZOffset(200);
 		this.itemRenderer.zOffset = 200.0F;

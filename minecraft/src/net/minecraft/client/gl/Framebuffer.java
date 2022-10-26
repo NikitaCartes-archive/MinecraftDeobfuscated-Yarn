@@ -14,7 +14,7 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.Matrix4f;
+import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public abstract class Framebuffer {
@@ -232,10 +232,10 @@ public abstract class Framebuffer {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		Shader shader = minecraftClient.gameRenderer.blitScreenShader;
 		shader.addSampler("DiffuseSampler", this.colorAttachment);
-		Matrix4f matrix4f = Matrix4f.projectionMatrix((float)width, (float)(-height), 1000.0F, 3000.0F);
+		Matrix4f matrix4f = new Matrix4f().setOrtho(0.0F, (float)width, (float)height, 0.0F, 1000.0F, 3000.0F);
 		RenderSystem.setProjectionMatrix(matrix4f);
 		if (shader.modelViewMat != null) {
-			shader.modelViewMat.set(Matrix4f.translate(0.0F, 0.0F, -2000.0F));
+			shader.modelViewMat.set(new Matrix4f().translation(0.0F, 0.0F, -2000.0F));
 		}
 
 		if (shader.projectionMat != null) {
@@ -254,7 +254,7 @@ public abstract class Framebuffer {
 		bufferBuilder.vertex((double)f, (double)g, 0.0).texture(h, 0.0F).color(255, 255, 255, 255).next();
 		bufferBuilder.vertex((double)f, 0.0, 0.0).texture(h, i).color(255, 255, 255, 255).next();
 		bufferBuilder.vertex(0.0, 0.0, 0.0).texture(0.0F, i).color(255, 255, 255, 255).next();
-		BufferRenderer.drawWithoutShader(bufferBuilder.end());
+		BufferRenderer.draw(bufferBuilder.end());
 		shader.unbind();
 		GlStateManager._depthMask(true);
 		GlStateManager._colorMask(true, true, true, true);

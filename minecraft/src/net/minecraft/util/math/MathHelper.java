@@ -49,9 +49,9 @@ public class MathHelper {
 	private static final double[] ARCSINE_TABLE = new double[257];
 	private static final double[] COSINE_TABLE = new double[257];
 
-	public static float method_45309(float f, float g) {
-		float h = (float)Math.pow(10.0, (double)g);
-		return (float)((int)(f * h)) / h;
+	public static float ceil(float value, float digits) {
+		float f = (float)Math.pow(10.0, (double)digits);
+		return (float)((int)(value * f)) / f;
 	}
 
 	public static float sin(float value) {

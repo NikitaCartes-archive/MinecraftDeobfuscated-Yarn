@@ -224,7 +224,7 @@ public class Main {
 			}
 		}
 
-		BufferRenderer.unbindAll();
+		BufferRenderer.reset();
 
 		try {
 			minecraftClient.scheduleStop();

@@ -55,7 +55,7 @@ public class PlayerHeldItemFeatureRenderer<T extends PlayerEntity, M extends Ent
 		modelPart.pitch = f;
 		HeadFeatureRenderer.translate(matrices, false);
 		boolean bl = arm == Arm.LEFT;
-		matrices.translate((double)((bl ? -2.5F : 2.5F) / 16.0F), -0.0625, 0.0);
+		matrices.translate((bl ? -2.5F : 2.5F) / 16.0F, -0.0625F, 0.0F);
 		this.playerHeldItemRenderer.renderItem(entity, stack, ModelTransformation.Mode.HEAD, false, matrices, vertexConsumers, light);
 		matrices.pop();
 	}

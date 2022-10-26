@@ -60,45 +60,43 @@ public class CustomizeFlatLevelScreen extends Screen {
 		this.layers = new CustomizeFlatLevelScreen.SuperflatLayersListWidget();
 		this.addSelectableChild(this.layers);
 		this.widgetButtonRemoveLayer = this.addDrawableChild(
-			new ButtonWidget(
-				this.width / 2 - 155,
-				this.height - 52,
-				150,
-				20,
-				Text.translatable("createWorld.customize.flat.removeLayer"),
-				button -> {
-					if (this.hasLayerSelected()) {
-						List<FlatChunkGeneratorLayer> list = this.config.getLayers();
-						int i = this.layers.children().indexOf(this.layers.getSelectedOrNull());
-						int j = list.size() - i - 1;
-						list.remove(j);
-						this.layers
-							.setSelected(
-								list.isEmpty()
-									? null
-									: (CustomizeFlatLevelScreen.SuperflatLayersListWidget.SuperflatLayerEntry)this.layers.children().get(Math.min(i, list.size() - 1))
-							);
-						this.config.updateLayerBlocks();
-						this.layers.updateLayers();
-						this.updateRemoveLayerButton();
+			ButtonWidget.createBuilder(
+					Text.translatable("createWorld.customize.flat.removeLayer"),
+					button -> {
+						if (this.hasLayerSelected()) {
+							List<FlatChunkGeneratorLayer> list = this.config.getLayers();
+							int i = this.layers.children().indexOf(this.layers.getSelectedOrNull());
+							int j = list.size() - i - 1;
+							list.remove(j);
+							this.layers
+								.setSelected(
+									list.isEmpty()
+										? null
+										: (CustomizeFlatLevelScreen.SuperflatLayersListWidget.SuperflatLayerEntry)this.layers.children().get(Math.min(i, list.size() - 1))
+								);
+							this.config.updateLayerBlocks();
+							this.layers.updateLayers();
+							this.updateRemoveLayerButton();
+						}
 					}
-				}
-			)
+				)
+				.setPositionAndSize(this.width / 2 - 155, this.height - 52, 150, 20)
+				.build()
 		);
-		this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height - 52, 150, 20, Text.translatable("createWorld.customize.presets"), button -> {
+		this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("createWorld.customize.presets"), button -> {
 			this.client.setScreen(new PresetsScreen(this));
 			this.config.updateLayerBlocks();
 			this.updateRemoveLayerButton();
-		}));
-		this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, ScreenTexts.DONE, button -> {
+		}).setPositionAndSize(this.width / 2 + 5, this.height - 52, 150, 20).build());
+		this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.DONE, button -> {
 			this.configConsumer.accept(this.config);
 			this.client.setScreen(this.parent);
 			this.config.updateLayerBlocks();
-		}));
-		this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, button -> {
+		}).setPositionAndSize(this.width / 2 - 155, this.height - 28, 150, 20).build());
+		this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> {
 			this.client.setScreen(this.parent);
 			this.config.updateLayerBlocks();
-		}));
+		}).setPositionAndSize(this.width / 2 + 5, this.height - 28, 150, 20).build());
 		this.config.updateLayerBlocks();
 		this.updateRemoveLayerButton();
 	}

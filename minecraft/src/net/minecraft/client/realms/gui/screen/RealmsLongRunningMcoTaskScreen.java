@@ -86,7 +86,9 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen implements Erra
 	public void init() {
 		this.task.init();
 		this.cancelButton = this.addDrawableChild(
-			new ButtonWidget(this.width / 2 - 106, row(12), 212, 20, ScreenTexts.CANCEL, button -> this.cancelOrBackButtonClicked())
+			ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> this.cancelOrBackButtonClicked())
+				.setPositionAndSize(this.width / 2 - 106, row(12), 212, 20)
+				.build()
 		);
 	}
 
@@ -119,7 +121,9 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen implements Erra
 				() -> {
 					this.remove(this.cancelButton);
 					this.cancelButton = this.addDrawableChild(
-						new ButtonWidget(this.width / 2 - 106, this.height / 4 + 120 + 12, 200, 20, ScreenTexts.BACK, button -> this.cancelOrBackButtonClicked())
+						ButtonWidget.createBuilder(ScreenTexts.BACK, button -> this.cancelOrBackButtonClicked())
+							.setPositionAndSize(this.width / 2 - 106, this.height / 4 + 120 + 12, 200, 20)
+							.build()
 					);
 				}
 			);

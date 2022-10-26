@@ -30,11 +30,14 @@ public class ProjectileDamageSource extends EntityDamageSource {
 	@Override
 	public Text getDeathMessage(LivingEntity entity) {
 		Text text = this.attacker == null ? this.source.getDisplayName() : this.attacker.getDisplayName();
-		ItemStack itemStack = this.attacker instanceof LivingEntity ? ((LivingEntity)this.attacker).getMainHandStack() : ItemStack.EMPTY;
+		Entity string2 = this.attacker;
+		ItemStack itemStack = string2 instanceof LivingEntity livingEntity ? livingEntity.getMainHandStack() : ItemStack.EMPTY;
 		String string = "death.attack." + this.name;
-		String string2 = string + ".item";
-		return !itemStack.isEmpty() && itemStack.hasCustomName()
-			? Text.translatable(string2, entity.getDisplayName(), text, itemStack.toHoverableText())
-			: Text.translatable(string, entity.getDisplayName(), text);
+		if (!itemStack.isEmpty() && itemStack.hasCustomName()) {
+			String string2x = string + ".item";
+			return Text.translatable(string2x, entity.getDisplayName(), text, itemStack.toHoverableText());
+		} else {
+			return Text.translatable(string, entity.getDisplayName(), text);
+		}
 	}
 }

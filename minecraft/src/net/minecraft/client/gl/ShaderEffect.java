@@ -22,7 +22,7 @@ import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.math.Matrix4f;
+import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class ShaderEffect implements AutoCloseable {
@@ -292,7 +292,7 @@ public class ShaderEffect implements AutoCloseable {
 	}
 
 	private void setupProjectionMatrix() {
-		this.projectionMatrix = Matrix4f.projectionMatrix(0.0F, (float)this.mainTarget.textureWidth, (float)this.mainTarget.textureHeight, 0.0F, 0.1F, 1000.0F);
+		this.projectionMatrix = new Matrix4f().setOrtho(0.0F, (float)this.mainTarget.textureWidth, 0.0F, (float)this.mainTarget.textureHeight, 0.1F, 1000.0F);
 	}
 
 	public void setupDimensions(int targetsWidth, int targetsHeight) {

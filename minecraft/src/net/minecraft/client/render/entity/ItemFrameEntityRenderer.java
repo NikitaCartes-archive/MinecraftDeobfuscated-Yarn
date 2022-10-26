@@ -25,8 +25,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class ItemFrameEntityRenderer<T extends ItemFrameEntity> extends EntityRenderer<T> {
@@ -59,15 +59,15 @@ public class ItemFrameEntityRenderer<T extends ItemFrameEntity> extends EntityRe
 		matrixStack.translate(-vec3d.getX(), -vec3d.getY(), -vec3d.getZ());
 		double d = 0.46875;
 		matrixStack.translate((double)direction.getOffsetX() * 0.46875, (double)direction.getOffsetY() * 0.46875, (double)direction.getOffsetZ() * 0.46875);
-		matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(itemFrameEntity.getPitch()));
-		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F - itemFrameEntity.getYaw()));
+		matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(itemFrameEntity.getPitch()));
+		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F - itemFrameEntity.getYaw()));
 		boolean bl = itemFrameEntity.isInvisible();
 		ItemStack itemStack = itemFrameEntity.getHeldItemStack();
 		if (!bl) {
 			BakedModelManager bakedModelManager = this.blockRenderManager.getModels().getModelManager();
 			ModelIdentifier modelIdentifier = this.getModelId(itemFrameEntity, itemStack);
 			matrixStack.push();
-			matrixStack.translate(-0.5, -0.5, -0.5);
+			matrixStack.translate(-0.5F, -0.5F, -0.5F);
 			this.blockRenderManager
 				.getModelRenderer()
 				.render(
@@ -87,20 +87,20 @@ public class ItemFrameEntityRenderer<T extends ItemFrameEntity> extends EntityRe
 		if (!itemStack.isEmpty()) {
 			OptionalInt optionalInt = itemFrameEntity.getMapId();
 			if (bl) {
-				matrixStack.translate(0.0, 0.0, 0.5);
+				matrixStack.translate(0.0F, 0.0F, 0.5F);
 			} else {
-				matrixStack.translate(0.0, 0.0, 0.4375);
+				matrixStack.translate(0.0F, 0.0F, 0.4375F);
 			}
 
 			int j = optionalInt.isPresent() ? itemFrameEntity.getRotation() % 4 * 2 : itemFrameEntity.getRotation();
-			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion((float)j * 360.0F / 8.0F));
+			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees((float)j * 360.0F / 8.0F));
 			if (optionalInt.isPresent()) {
-				matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
+				matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180.0F));
 				float h = 0.0078125F;
 				matrixStack.scale(0.0078125F, 0.0078125F, 0.0078125F);
-				matrixStack.translate(-64.0, -64.0, 0.0);
+				matrixStack.translate(-64.0F, -64.0F, 0.0F);
 				MapState mapState = FilledMapItem.getMapState(optionalInt.getAsInt(), itemFrameEntity.world);
-				matrixStack.translate(0.0, 0.0, -1.0);
+				matrixStack.translate(0.0F, 0.0F, -1.0F);
 				if (mapState != null) {
 					int k = this.getLight(itemFrameEntity, LightmapTextureManager.MAX_SKY_LIGHT_COORDINATE | 210, i);
 					MinecraftClient.getInstance().gameRenderer.getMapRenderer().draw(matrixStack, vertexConsumerProvider, optionalInt.getAsInt(), mapState, true, k);

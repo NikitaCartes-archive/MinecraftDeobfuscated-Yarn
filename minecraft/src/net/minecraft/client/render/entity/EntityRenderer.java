@@ -13,9 +13,9 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LightType;
+import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public abstract class EntityRenderer<T extends Entity> {
@@ -90,7 +90,7 @@ public abstract class EntityRenderer<T extends Entity> {
 			float f = entity.getHeight() + 0.5F;
 			int i = "deadmau5".equals(text.getString()) ? -10 : 0;
 			matrices.push();
-			matrices.translate(0.0, (double)f, 0.0);
+			matrices.translate(0.0F, f, 0.0F);
 			matrices.multiply(this.dispatcher.getRotation());
 			matrices.scale(-0.025F, -0.025F, 0.025F);
 			Matrix4f matrix4f = matrices.peek().getPositionMatrix();

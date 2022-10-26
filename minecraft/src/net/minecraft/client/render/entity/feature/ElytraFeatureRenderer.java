@@ -51,7 +51,7 @@ public class ElytraFeatureRenderer<T extends LivingEntity, M extends EntityModel
 			}
 
 			matrixStack.push();
-			matrixStack.translate(0.0, 0.0, 0.125);
+			matrixStack.translate(0.0F, 0.0F, 0.125F);
 			this.getContextModel().copyStateTo(this.elytra);
 			this.elytra.setAngles(livingEntity, f, g, j, k, l);
 			VertexConsumer vertexConsumer = ItemRenderer.getArmorGlintConsumer(

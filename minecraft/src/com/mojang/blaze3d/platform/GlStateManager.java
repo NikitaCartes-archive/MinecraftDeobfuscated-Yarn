@@ -12,9 +12,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.Util;
 import net.minecraft.util.annotation.DeobfuscateClass;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Vec3f;
-import net.minecraft.util.math.Vector4f;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
@@ -414,34 +414,23 @@ public class GlStateManager {
 		return GL20.glGetProgramInfoLog(program, maxLength);
 	}
 
-	public static void setupLevelDiffuseLighting(Vec3f vec3f, Vec3f vec3f2, Matrix4f matrix4f) {
+	public static void setupLevelDiffuseLighting(Vector3f vector3f, Vector3f vector3f2, Matrix4f matrix4f) {
 		RenderSystem.assertOnRenderThread();
-		Vector4f vector4f = new Vector4f(vec3f);
-		vector4f.transform(matrix4f);
-		Vector4f vector4f2 = new Vector4f(vec3f2);
-		vector4f2.transform(matrix4f);
-		RenderSystem.setShaderLights(new Vec3f(vector4f), new Vec3f(vector4f2));
+		Vector4f vector4f = matrix4f.transform(new Vector4f(vector3f, 1.0F));
+		Vector4f vector4f2 = matrix4f.transform(new Vector4f(vector3f2, 1.0F));
+		RenderSystem.setShaderLights(new Vector3f(vector4f.x(), vector4f.y(), vector4f.z()), new Vector3f(vector4f2.x(), vector4f2.y(), vector4f2.z()));
 	}
 
-	public static void setupGuiFlatDiffuseLighting(Vec3f vec3f, Vec3f vec3f2) {
+	public static void setupGuiFlatDiffuseLighting(Vector3f vector3f, Vector3f vector3f2) {
 		RenderSystem.assertOnRenderThread();
-		Matrix4f matrix4f = new Matrix4f();
-		matrix4f.loadIdentity();
-		matrix4f.multiply(Matrix4f.scale(1.0F, -1.0F, 1.0F));
-		matrix4f.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-22.5F));
-		matrix4f.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(135.0F));
-		setupLevelDiffuseLighting(vec3f, vec3f2, matrix4f);
+		Matrix4f matrix4f = new Matrix4f().scaling(1.0F, -1.0F, 1.0F).rotateY((float) (-Math.PI / 8)).rotateX((float) (Math.PI * 3.0 / 4.0));
+		setupLevelDiffuseLighting(vector3f, vector3f2, matrix4f);
 	}
 
-	public static void setupGui3DDiffuseLighting(Vec3f vec3f, Vec3f vec3f2) {
+	public static void setupGui3DDiffuseLighting(Vector3f vector3f, Vector3f vector3f2) {
 		RenderSystem.assertOnRenderThread();
-		Matrix4f matrix4f = new Matrix4f();
-		matrix4f.loadIdentity();
-		matrix4f.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(62.0F));
-		matrix4f.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(185.5F));
-		matrix4f.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-22.5F));
-		matrix4f.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(135.0F));
-		setupLevelDiffuseLighting(vec3f, vec3f2, matrix4f);
+		Matrix4f matrix4f = new Matrix4f().rotationYXZ(1.0821041F, 3.2375858F, 0.0F).rotateYXZ((float) (-Math.PI / 8), (float) (Math.PI * 3.0 / 4.0), 0.0F);
+		setupLevelDiffuseLighting(vector3f, vector3f2, matrix4f);
 	}
 
 	public static void _enableCull() {

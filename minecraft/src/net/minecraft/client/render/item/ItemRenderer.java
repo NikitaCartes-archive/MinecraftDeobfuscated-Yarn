@@ -55,6 +55,7 @@ import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.MatrixUtil;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
@@ -131,7 +132,7 @@ public class ItemRenderer implements SynchronousResourceReloader {
 			}
 
 			model.getTransformation().getTransformation(renderMode).apply(leftHanded, matrices);
-			matrices.translate(-0.5, -0.5, -0.5);
+			matrices.translate(-0.5F, -0.5F, -0.5F);
 			if (!model.isBuiltin() && (!stack.isOf(Items.TRIDENT) || bl)) {
 				boolean bl2;
 				if (renderMode != ModelTransformation.Mode.GUI && !renderMode.isFirstPerson() && stack.getItem() instanceof BlockItem) {
@@ -147,9 +148,9 @@ public class ItemRenderer implements SynchronousResourceReloader {
 					matrices.push();
 					MatrixStack.Entry entry = matrices.peek();
 					if (renderMode == ModelTransformation.Mode.GUI) {
-						entry.getPositionMatrix().multiply(0.5F);
+						MatrixUtil.scale(entry.getPositionMatrix(), 0.5F);
 					} else if (renderMode.isFirstPerson()) {
-						entry.getPositionMatrix().multiply(0.75F);
+						MatrixUtil.scale(entry.getPositionMatrix(), 0.75F);
 					}
 
 					if (bl2) {
@@ -276,8 +277,8 @@ public class ItemRenderer implements SynchronousResourceReloader {
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		MatrixStack matrixStack = RenderSystem.getModelViewStack();
 		matrixStack.push();
-		matrixStack.translate((double)x, (double)y, (double)(100.0F + this.zOffset));
-		matrixStack.translate(8.0, 8.0, 0.0);
+		matrixStack.translate((float)x, (float)y, 100.0F + this.zOffset);
+		matrixStack.translate(8.0F, 8.0F, 0.0F);
 		matrixStack.scale(1.0F, -1.0F, 1.0F);
 		matrixStack.scale(16.0F, 16.0F, 16.0F);
 		RenderSystem.applyModelViewMatrix();
@@ -375,7 +376,7 @@ public class ItemRenderer implements SynchronousResourceReloader {
 			MatrixStack matrixStack = new MatrixStack();
 			if (stack.getCount() != 1 || countLabel != null) {
 				String string = countLabel == null ? String.valueOf(stack.getCount()) : countLabel;
-				matrixStack.translate(0.0, 0.0, (double)(this.zOffset + 200.0F));
+				matrixStack.translate(0.0F, 0.0F, this.zOffset + 200.0F);
 				VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
 				renderer.draw(
 					string,
@@ -387,7 +388,7 @@ public class ItemRenderer implements SynchronousResourceReloader {
 					immediate,
 					false,
 					0,
-					LightmapTextureManager.MAX_LIGHT_COORDINATE
+					15728880
 				);
 				immediate.draw();
 			}

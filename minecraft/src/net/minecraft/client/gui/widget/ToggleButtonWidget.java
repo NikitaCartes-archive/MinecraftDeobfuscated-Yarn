@@ -39,11 +39,6 @@ public class ToggleButtonWidget extends ClickableWidget {
 		return this.toggled;
 	}
 
-	public void setPos(int x, int y) {
-		this.x = x;
-		this.y = y;
-	}
-
 	@Override
 	public void appendNarrations(NarrationMessageBuilder builder) {
 		this.appendDefaultNarrations(builder);
@@ -64,7 +59,7 @@ public class ToggleButtonWidget extends ClickableWidget {
 			j += this.hoverVOffset;
 		}
 
-		this.drawTexture(matrices, this.x, this.y, i, j, this.width, this.height);
+		this.drawTexture(matrices, this.getX(), this.getY(), i, j, this.width, this.height);
 		RenderSystem.enableDepthTest();
 	}
 }

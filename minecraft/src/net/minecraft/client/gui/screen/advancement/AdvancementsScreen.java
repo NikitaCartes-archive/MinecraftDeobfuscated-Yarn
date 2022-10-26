@@ -133,7 +133,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 		} else {
 			MatrixStack matrixStack = RenderSystem.getModelViewStack();
 			matrixStack.push();
-			matrixStack.translate((double)(x + 9), (double)(y + 18), 0.0);
+			matrixStack.translate((float)(x + 9), (float)(y + 18), 0.0F);
 			RenderSystem.applyModelViewMatrix();
 			advancementTab.render(matrices);
 			matrixStack.pop();
@@ -173,7 +173,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 		if (this.selectedTab != null) {
 			MatrixStack matrixStack = RenderSystem.getModelViewStack();
 			matrixStack.push();
-			matrixStack.translate((double)(x + 9), (double)(y + 18), 400.0);
+			matrixStack.translate((float)(x + 9), (float)(y + 18), 400.0F);
 			RenderSystem.applyModelViewMatrix();
 			RenderSystem.enableDepthTest();
 			this.selectedTab.drawWidgetTooltip(matrices, mouseX - x - 9, mouseY - y - 18, x, y);

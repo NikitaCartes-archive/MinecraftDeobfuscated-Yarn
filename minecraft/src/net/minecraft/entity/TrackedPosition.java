@@ -1,17 +1,19 @@
 package net.minecraft.entity;
 
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import org.jetbrains.annotations.VisibleForTesting;
 
 public class TrackedPosition {
 	private static final double COORDINATE_SCALE = 4096.0;
 	private Vec3d pos = Vec3d.ZERO;
 
-	private static long pack(double value) {
-		return MathHelper.lfloor(value * 4096.0);
+	@VisibleForTesting
+	static long pack(double value) {
+		return Math.round(value * 4096.0);
 	}
 
-	private static double unpack(long value) {
+	@VisibleForTesting
+	static double unpack(long value) {
 		return (double)value / 4096.0;
 	}
 
@@ -27,15 +29,15 @@ public class TrackedPosition {
 	}
 
 	public long getDeltaX(Vec3d pos) {
-		return pack(pos.x - this.pos.x);
+		return pack(pos.x) - pack(this.pos.x);
 	}
 
 	public long getDeltaY(Vec3d pos) {
-		return pack(pos.y - this.pos.y);
+		return pack(pos.y) - pack(this.pos.y);
 	}
 
 	public long getDeltaZ(Vec3d pos) {
-		return pack(pos.z - this.pos.z);
+		return pack(pos.z) - pack(this.pos.z);
 	}
 
 	public Vec3d subtract(Vec3d pos) {

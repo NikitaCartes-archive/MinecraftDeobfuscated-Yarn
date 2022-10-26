@@ -288,8 +288,8 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 	}
 
 	@Override
-	public DamageSource getDamageSource() {
-		return DamageSource.FALLING_STALACTITE;
+	public DamageSource getDamageSource(Entity attacker) {
+		return DamageSource.fallingStalactite(attacker);
 	}
 
 	@Override

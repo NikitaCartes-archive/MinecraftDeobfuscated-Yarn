@@ -140,17 +140,8 @@ public class RespawnAnchorBlock extends Block {
 					: super.getBlastResistance(explosion, world, pos, blockState, fluidState);
 			}
 		};
-		world.createExplosion(
-			null,
-			DamageSource.badRespawnPoint(),
-			explosionBehavior,
-			(double)explodedPos.getX() + 0.5,
-			(double)explodedPos.getY() + 0.5,
-			(double)explodedPos.getZ() + 0.5,
-			5.0F,
-			true,
-			Explosion.DestructionType.DESTROY
-		);
+		Vec3d vec3d = explodedPos.toCenterPos();
+		world.createExplosion(null, DamageSource.badRespawnPoint(vec3d), explosionBehavior, vec3d, 5.0F, true, Explosion.DestructionType.DESTROY);
 	}
 
 	public static boolean isNether(World world) {

@@ -357,13 +357,16 @@ public class TextFieldWidget extends ClickableWidget implements Drawable, Elemen
 		if (!this.isVisible()) {
 			return false;
 		} else {
-			boolean bl = mouseX >= (double)this.x && mouseX < (double)(this.x + this.width) && mouseY >= (double)this.y && mouseY < (double)(this.y + this.height);
+			boolean bl = mouseX >= (double)this.getX()
+				&& mouseX < (double)(this.getX() + this.width)
+				&& mouseY >= (double)this.getY()
+				&& mouseY < (double)(this.getY() + this.height);
 			if (this.focusUnlocked) {
 				this.setTextFieldFocused(bl);
 			}
 
 			if (this.isFocused() && bl && button == 0) {
-				int i = MathHelper.floor(mouseX) - this.x;
+				int i = MathHelper.floor(mouseX) - this.getX();
 				if (this.drawsBackground) {
 					i -= 4;
 				}
@@ -386,8 +389,8 @@ public class TextFieldWidget extends ClickableWidget implements Drawable, Elemen
 		if (this.isVisible()) {
 			if (this.drawsBackground()) {
 				int i = this.isFocused() ? -1 : -6250336;
-				fill(matrices, this.x - 1, this.y - 1, this.x + this.width + 1, this.y + this.height + 1, i);
-				fill(matrices, this.x, this.y, this.x + this.width, this.y + this.height, -16777216);
+				fill(matrices, this.getX() - 1, this.getY() - 1, this.getX() + this.width + 1, this.getY() + this.height + 1, i);
+				fill(matrices, this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, -16777216);
 			}
 
 			int i = this.editable ? this.editableColor : this.uneditableColor;
@@ -396,8 +399,8 @@ public class TextFieldWidget extends ClickableWidget implements Drawable, Elemen
 			String string = this.textRenderer.trimToWidth(this.text.substring(this.firstCharacterIndex), this.getInnerWidth());
 			boolean bl = j >= 0 && j <= string.length();
 			boolean bl2 = this.isFocused() && this.focusedTicks / 6 % 2 == 0 && bl;
-			int l = this.drawsBackground ? this.x + 4 : this.x;
-			int m = this.drawsBackground ? this.y + (this.height - 8) / 2 : this.y;
+			int l = this.drawsBackground ? this.getX() + 4 : this.getX();
+			int m = this.drawsBackground ? this.getY() + (this.height - 8) / 2 : this.getY();
 			int n = l;
 			if (k > string.length()) {
 				k = string.length();
@@ -453,12 +456,12 @@ public class TextFieldWidget extends ClickableWidget implements Drawable, Elemen
 			y2 = i;
 		}
 
-		if (x2 > this.x + this.width) {
-			x2 = this.x + this.width;
+		if (x2 > this.getX() + this.width) {
+			x2 = this.getX() + this.width;
 		}
 
-		if (x1 > this.x + this.width) {
-			x1 = this.x + this.width;
+		if (x1 > this.getX() + this.width) {
+			x1 = this.getX() + this.width;
 		}
 
 		Tessellator tessellator = Tessellator.getInstance();
@@ -519,10 +522,10 @@ public class TextFieldWidget extends ClickableWidget implements Drawable, Elemen
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
 		return this.visible
-			&& mouseX >= (double)this.x
-			&& mouseX < (double)(this.x + this.width)
-			&& mouseY >= (double)this.y
-			&& mouseY < (double)(this.y + this.height);
+			&& mouseX >= (double)this.getX()
+			&& mouseX < (double)(this.getX() + this.width)
+			&& mouseY >= (double)this.getY()
+			&& mouseY < (double)(this.getY() + this.height);
 	}
 
 	@Override
@@ -586,11 +589,7 @@ public class TextFieldWidget extends ClickableWidget implements Drawable, Elemen
 	}
 
 	public int getCharacterX(int index) {
-		return index > this.text.length() ? this.x : this.x + this.textRenderer.getWidth(this.text.substring(0, index));
-	}
-
-	public void setX(int x) {
-		this.x = x;
+		return index > this.text.length() ? this.getX() : this.getX() + this.textRenderer.getWidth(this.text.substring(0, index));
 	}
 
 	@Override

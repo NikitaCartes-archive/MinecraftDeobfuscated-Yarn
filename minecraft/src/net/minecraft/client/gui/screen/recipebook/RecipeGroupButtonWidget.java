@@ -49,9 +49,9 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 		if (this.bounce > 0.0F) {
 			float f = 1.0F + 0.1F * (float)Math.sin((double)(this.bounce / 15.0F * (float) Math.PI));
 			matrices.push();
-			matrices.translate((double)(this.x + 8), (double)(this.y + 12), 0.0);
+			matrices.translate((float)(this.getX() + 8), (float)(this.getY() + 12), 0.0F);
 			matrices.scale(1.0F, f, 1.0F);
-			matrices.translate((double)(-(this.x + 8)), (double)(-(this.y + 12)), 0.0);
+			matrices.translate((float)(-(this.getX() + 8)), (float)(-(this.getY() + 12)), 0.0F);
 		}
 
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
@@ -68,13 +68,13 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 			j += this.hoverVOffset;
 		}
 
-		int k = this.x;
+		int k = this.getX();
 		if (this.toggled) {
 			k -= 2;
 		}
 
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		this.drawTexture(matrices, k, this.y, i, j, this.width, this.height);
+		this.drawTexture(matrices, k, this.getY(), i, j, this.width, this.height);
 		RenderSystem.enableDepthTest();
 		this.renderIcons(minecraftClient.getItemRenderer());
 		if (this.bounce > 0.0F) {
@@ -87,10 +87,10 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 		List<ItemStack> list = this.category.getIcons();
 		int i = this.toggled ? -2 : 0;
 		if (list.size() == 1) {
-			itemRenderer.renderInGui((ItemStack)list.get(0), this.x + 9 + i, this.y + 5);
+			itemRenderer.renderInGui((ItemStack)list.get(0), this.getX() + 9 + i, this.getY() + 5);
 		} else if (list.size() == 2) {
-			itemRenderer.renderInGui((ItemStack)list.get(0), this.x + 3 + i, this.y + 5);
-			itemRenderer.renderInGui((ItemStack)list.get(1), this.x + 14 + i, this.y + 5);
+			itemRenderer.renderInGui((ItemStack)list.get(0), this.getX() + 3 + i, this.getY() + 5);
+			itemRenderer.renderInGui((ItemStack)list.get(1), this.getX() + 14 + i, this.getY() + 5);
 		}
 	}
 

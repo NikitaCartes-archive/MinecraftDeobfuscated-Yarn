@@ -34,7 +34,7 @@ public class NetherForestVegetationFeature extends Feature<NetherForestVegetatio
 						random.nextInt(netherForestVegetationFeatureConfig.spreadHeight) - random.nextInt(netherForestVegetationFeatureConfig.spreadHeight),
 						random.nextInt(netherForestVegetationFeatureConfig.spreadWidth) - random.nextInt(netherForestVegetationFeatureConfig.spreadWidth)
 					);
-					BlockState blockState2 = netherForestVegetationFeatureConfig.stateProvider.getBlockState(random, blockPos2);
+					BlockState blockState2 = netherForestVegetationFeatureConfig.stateProvider.get(random, blockPos2);
 					if (structureWorldAccess.isAir(blockPos2)
 						&& blockPos2.getY() > structureWorldAccess.getBottomY()
 						&& blockState2.canPlaceAt(structureWorldAccess, blockPos2)) {

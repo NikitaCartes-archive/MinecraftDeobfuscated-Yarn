@@ -67,11 +67,13 @@ public class ChatSelectionScreen extends Screen {
 		this.selectionList = new ChatSelectionScreen.SelectionListWidget(this.client, (this.contextMessage.count() + 1) * 9);
 		this.selectionList.setRenderBackground(false);
 		this.addSelectableChild(this.selectionList);
-		this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 32, 150, 20, ScreenTexts.BACK, button -> this.close()));
-		this.doneButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 155 + 160, this.height - 32, 150, 20, ScreenTexts.DONE, button -> {
+		this.addDrawableChild(
+			ButtonWidget.createBuilder(ScreenTexts.BACK, button -> this.close()).setPositionAndSize(this.width / 2 - 155, this.height - 32, 150, 20).build()
+		);
+		this.doneButton = this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.DONE, button -> {
 			this.newReportConsumer.accept(this.report);
 			this.close();
-		}));
+		}).setPositionAndSize(this.width / 2 - 155 + 160, this.height - 32, 150, 20).build());
 		this.setDoneButtonActivation();
 		this.addMessages();
 		this.selectionList.setScrollAmount((double)this.selectionList.getMaxScroll());
@@ -99,7 +101,7 @@ public class ChatSelectionScreen extends Screen {
 		this.renderBackground(matrices);
 		this.selectionList.render(matrices, mouseX, mouseY, delta);
 		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 16, 16777215);
-		AbuseReportLimits abuseReportLimits = this.reporter.sender().getLimits();
+		AbuseReportLimits abuseReportLimits = this.reporter.getSender().getLimits();
 		int i = this.report.getSelections().size();
 		int j = abuseReportLimits.maxReportedMessageCount();
 		Text text = Text.translatable("gui.chatSelection.selected", i, j);

@@ -29,7 +29,7 @@ public class ChestRaftEntityModel extends RaftEntityModel {
 		return builder;
 	}
 
-	public static TexturedModelData method_45709() {
+	public static TexturedModelData getTexturedModelData() {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
 		RaftEntityModel.addParts(modelPartData);

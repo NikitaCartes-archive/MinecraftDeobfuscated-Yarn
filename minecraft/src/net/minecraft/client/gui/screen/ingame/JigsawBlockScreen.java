@@ -139,12 +139,14 @@ public class JigsawBlockScreen extends Screen {
 			CyclingButtonWidget.onOffBuilder(this.keepJigsaws)
 				.build(this.width / 2 - 50, 180, 100, 20, Text.translatable("jigsaw_block.keep_jigsaws"), (button, keepJigsaws) -> this.keepJigsaws = keepJigsaws)
 		);
-		this.generateButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 54, 180, 100, 20, Text.translatable("jigsaw_block.generate"), button -> {
+		this.generateButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("jigsaw_block.generate"), button -> {
 			this.onDone();
 			this.generate();
-		}));
-		this.doneButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 4 - 150, 210, 150, 20, ScreenTexts.DONE, button -> this.onDone()));
-		this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, 210, 150, 20, ScreenTexts.CANCEL, button -> this.onCancel()));
+		}).setPositionAndSize(this.width / 2 + 54, 180, 100, 20).build());
+		this.doneButton = this.addDrawableChild(
+			ButtonWidget.createBuilder(ScreenTexts.DONE, button -> this.onDone()).setPositionAndSize(this.width / 2 - 4 - 150, 210, 150, 20).build()
+		);
+		this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> this.onCancel()).setPositionAndSize(this.width / 2 + 4, 210, 150, 20).build());
 		this.setInitialFocus(this.poolField);
 		this.updateDoneButtonState();
 	}

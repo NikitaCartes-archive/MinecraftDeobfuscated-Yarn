@@ -6,7 +6,7 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class ModelData {
-	private ModelPartData data = new ModelPartData(ImmutableList.of(), ModelTransform.NONE);
+	private final ModelPartData data = new ModelPartData(ImmutableList.of(), ModelTransform.NONE);
 
 	public ModelPartData getRoot() {
 		return this.data;

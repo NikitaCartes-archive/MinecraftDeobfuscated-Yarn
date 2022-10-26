@@ -35,7 +35,6 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.encryption.PublicPlayerSession;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SentMessage;
 import net.minecraft.network.message.SignedMessage;
@@ -413,7 +412,7 @@ public abstract class PlayerManager {
 		}
 	}
 
-	public ServerPlayerEntity createPlayer(GameProfile profile, PublicPlayerSession session) {
+	public ServerPlayerEntity createPlayer(GameProfile profile) {
 		UUID uUID = Uuids.getUuidFromProfile(profile);
 		List<ServerPlayerEntity> list = Lists.<ServerPlayerEntity>newArrayList();
 
@@ -433,7 +432,7 @@ public abstract class PlayerManager {
 			serverPlayerEntity3.networkHandler.disconnect(Text.translatable("multiplayer.disconnect.duplicate_login"));
 		}
 
-		return new ServerPlayerEntity(this.server, this.server.getOverworld(), profile, session);
+		return new ServerPlayerEntity(this.server, this.server.getOverworld(), profile);
 	}
 
 	public ServerPlayerEntity respawnPlayer(ServerPlayerEntity player, boolean alive) {
@@ -451,7 +450,7 @@ public abstract class PlayerManager {
 		}
 
 		ServerWorld serverWorld2 = serverWorld != null && optional.isPresent() ? serverWorld : this.server.getOverworld();
-		ServerPlayerEntity serverPlayerEntity = new ServerPlayerEntity(this.server, serverWorld2, player.getGameProfile(), player.getSession());
+		ServerPlayerEntity serverPlayerEntity = new ServerPlayerEntity(this.server, serverWorld2, player.getGameProfile());
 		serverPlayerEntity.networkHandler = player.networkHandler;
 		serverPlayerEntity.copyFrom(player, alive);
 		serverPlayerEntity.setId(player.getId());

@@ -159,7 +159,7 @@ public class GameModeSelectionScreen extends Screen {
 		public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 			MinecraftClient minecraftClient = MinecraftClient.getInstance();
 			this.drawBackground(matrices, minecraftClient.getTextureManager());
-			this.gameMode.renderIcon(GameModeSelectionScreen.this.itemRenderer, this.x + 5, this.y + 5);
+			this.gameMode.renderIcon(GameModeSelectionScreen.this.itemRenderer, this.getX() + 5, this.getY() + 5);
 			if (this.selected) {
 				this.drawSelectionBox(matrices, minecraftClient.getTextureManager());
 			}
@@ -183,7 +183,7 @@ public class GameModeSelectionScreen extends Screen {
 			RenderSystem.setShader(GameRenderer::getPositionTexShader);
 			RenderSystem.setShaderTexture(0, GameModeSelectionScreen.TEXTURE);
 			matrices.push();
-			matrices.translate((double)this.x, (double)this.y, 0.0);
+			matrices.translate((float)this.getX(), (float)this.getY(), 0.0F);
 			drawTexture(matrices, 0, 0, 0.0F, 75.0F, 26, 26, 128, 128);
 			matrices.pop();
 		}
@@ -192,7 +192,7 @@ public class GameModeSelectionScreen extends Screen {
 			RenderSystem.setShader(GameRenderer::getPositionTexShader);
 			RenderSystem.setShaderTexture(0, GameModeSelectionScreen.TEXTURE);
 			matrices.push();
-			matrices.translate((double)this.x, (double)this.y, 0.0);
+			matrices.translate((float)this.getX(), (float)this.getY(), 0.0F);
 			drawTexture(matrices, 0, 0, 26.0F, 75.0F, 26, 26, 128, 128);
 			matrices.pop();
 		}

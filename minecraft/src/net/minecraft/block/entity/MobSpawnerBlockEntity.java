@@ -4,10 +4,12 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.MobSpawnerEntry;
 import net.minecraft.world.MobSpawnerLogic;
 import net.minecraft.world.World;
@@ -72,6 +74,10 @@ public class MobSpawnerBlockEntity extends BlockEntity {
 	@Override
 	public boolean copyItemDataRequiresOperator() {
 		return true;
+	}
+
+	public void setEntityType(EntityType<?> entityType, Random random) {
+		this.logic.setEntityId(entityType, this.world, random, this.pos);
 	}
 
 	public MobSpawnerLogic getLogic() {

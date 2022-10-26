@@ -7,7 +7,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.SquidEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 
 @Environment(EnvType.CLIENT)
 public class SquidEntityRenderer<T extends SquidEntity> extends MobEntityRenderer<T, SquidEntityModel<T>> {
@@ -24,11 +24,11 @@ public class SquidEntityRenderer<T extends SquidEntity> extends MobEntityRendere
 	protected void setupTransforms(T squidEntity, MatrixStack matrixStack, float f, float g, float h) {
 		float i = MathHelper.lerp(h, squidEntity.prevTiltAngle, squidEntity.tiltAngle);
 		float j = MathHelper.lerp(h, squidEntity.prevRollAngle, squidEntity.rollAngle);
-		matrixStack.translate(0.0, 0.5, 0.0);
-		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F - g));
-		matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(i));
-		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(j));
-		matrixStack.translate(0.0, -1.2F, 0.0);
+		matrixStack.translate(0.0F, 0.5F, 0.0F);
+		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F - g));
+		matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(i));
+		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(j));
+		matrixStack.translate(0.0F, -1.2F, 0.0F);
 	}
 
 	protected float getAnimationProgress(T squidEntity, float f) {

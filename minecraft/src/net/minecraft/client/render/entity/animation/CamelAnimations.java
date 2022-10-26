@@ -12,7 +12,7 @@ public class CamelAnimations {
 			new Transformation(
 				Transformation.Targets.ROTATE,
 				new Keyframe(0.0F, AnimationHelper.createRotationalVector(0.0F, 0.0F, 2.5F), Transformation.Interpolations.CUBIC),
-				new Keyframe(0.75F, AnimationHelper.createRotationalVector(0.0F, 0.0F, -2.5F), Transformation.Interpolations.CUBIC),
+				new Keyframe(1.0F, AnimationHelper.createRotationalVector(0.0F, 0.0F, -2.5F), Transformation.Interpolations.CUBIC),
 				new Keyframe(1.5F, AnimationHelper.createRotationalVector(0.0F, 0.0F, 2.5F), Transformation.Interpolations.CUBIC)
 			)
 		)
@@ -69,28 +69,30 @@ public class CamelAnimations {
 			"left_hind_leg",
 			new Transformation(
 				Transformation.Targets.ROTATE,
-				new Keyframe(0.0F, AnimationHelper.createRotationalVector(22.5F, 0.0F, 0.0F), Transformation.Interpolations.CUBIC),
-				new Keyframe(0.75F, AnimationHelper.createRotationalVector(-22.5F, 0.0F, 0.0F), Transformation.Interpolations.CUBIC),
-				new Keyframe(1.5F, AnimationHelper.createRotationalVector(22.5F, 0.0F, 0.0F), Transformation.Interpolations.CUBIC)
+				new Keyframe(0.0F, AnimationHelper.createRotationalVector(-20.4F, 0.0F, 0.0F), Transformation.Interpolations.CUBIC),
+				new Keyframe(0.75F, AnimationHelper.createRotationalVector(22.5F, 0.0F, 0.0F), Transformation.Interpolations.CUBIC),
+				new Keyframe(1.375F, AnimationHelper.createRotationalVector(-22.5F, 0.0F, 0.0F), Transformation.Interpolations.LINEAR),
+				new Keyframe(1.5F, AnimationHelper.createRotationalVector(-20.4F, 0.0F, 0.0F), Transformation.Interpolations.LINEAR)
 			)
 		)
 		.addBoneAnimation(
 			"left_hind_leg",
 			new Transformation(
 				Transformation.Targets.TRANSLATE,
-				new Keyframe(0.0F, AnimationHelper.createTranslationalVector(0.0F, 0.0F, 0.0F), Transformation.Interpolations.CUBIC),
-				new Keyframe(0.4583F, AnimationHelper.createTranslationalVector(0.0F, 4.0F, 0.0F), Transformation.Interpolations.CUBIC),
+				new Keyframe(0.0F, AnimationHelper.createTranslationalVector(0.0F, -0.21F, 0.0F), Transformation.Interpolations.CUBIC),
 				new Keyframe(0.75F, AnimationHelper.createTranslationalVector(0.0F, 0.0F, 0.0F), Transformation.Interpolations.CUBIC),
-				new Keyframe(1.5F, AnimationHelper.createTranslationalVector(0.0F, 0.0F, 0.0F), Transformation.Interpolations.CUBIC)
+				new Keyframe(1.0833F, AnimationHelper.createTranslationalVector(0.0F, 4.0F, 0.0F), Transformation.Interpolations.CUBIC),
+				new Keyframe(1.375F, AnimationHelper.createTranslationalVector(0.0F, 0.0F, 0.0F), Transformation.Interpolations.LINEAR),
+				new Keyframe(1.5F, AnimationHelper.createTranslationalVector(0.0F, -0.21F, 0.0F), Transformation.Interpolations.LINEAR)
 			)
 		)
 		.addBoneAnimation(
 			"right_hind_leg",
 			new Transformation(
 				Transformation.Targets.ROTATE,
-				new Keyframe(0.0F, AnimationHelper.createRotationalVector(-22.5F, 0.0F, 0.0F), Transformation.Interpolations.CUBIC),
-				new Keyframe(0.75F, AnimationHelper.createRotationalVector(22.5F, 0.0F, 0.0F), Transformation.Interpolations.CUBIC),
-				new Keyframe(1.5F, AnimationHelper.createRotationalVector(-22.5F, 0.0F, 0.0F), Transformation.Interpolations.CUBIC)
+				new Keyframe(0.0F, AnimationHelper.createRotationalVector(22.5F, 0.0F, 0.0F), Transformation.Interpolations.CUBIC),
+				new Keyframe(0.625F, AnimationHelper.createRotationalVector(-22.5F, 0.0F, 0.0F), Transformation.Interpolations.CUBIC),
+				new Keyframe(1.5F, AnimationHelper.createRotationalVector(22.5F, 0.0F, 0.0F), Transformation.Interpolations.CUBIC)
 			)
 		)
 		.addBoneAnimation(
@@ -98,8 +100,8 @@ public class CamelAnimations {
 			new Transformation(
 				Transformation.Targets.TRANSLATE,
 				new Keyframe(0.0F, AnimationHelper.createTranslationalVector(0.0F, 0.0F, 0.0F), Transformation.Interpolations.CUBIC),
-				new Keyframe(0.75F, AnimationHelper.createTranslationalVector(0.0F, 0.0F, 0.0F), Transformation.Interpolations.CUBIC),
-				new Keyframe(1.2083F, AnimationHelper.createTranslationalVector(0.0F, 4.0F, 0.0F), Transformation.Interpolations.CUBIC),
+				new Keyframe(0.375F, AnimationHelper.createTranslationalVector(0.0F, 4.0F, 0.0F), Transformation.Interpolations.CUBIC),
+				new Keyframe(0.625F, AnimationHelper.createTranslationalVector(0.0F, 0.0F, 0.0F), Transformation.Interpolations.CUBIC),
 				new Keyframe(1.5F, AnimationHelper.createTranslationalVector(0.0F, 0.0F, 0.0F), Transformation.Interpolations.CUBIC)
 			)
 		)
@@ -135,7 +137,7 @@ public class CamelAnimations {
 			)
 		)
 		.build();
-	public static final Animation SITTING = Animation.Builder.create(2.0F)
+	public static final Animation SITTING_TRANSITION = Animation.Builder.create(2.0F)
 		.addBoneAnimation(
 			"body",
 			new Transformation(
@@ -267,7 +269,105 @@ public class CamelAnimations {
 			)
 		)
 		.build();
-	public static final Animation STANDING_UP = Animation.Builder.create(2.6F)
+	public static final Animation SITTING = Animation.Builder.create(1.0F)
+		.addBoneAnimation(
+			"body",
+			new Transformation(
+				Transformation.Targets.ROTATE,
+				new Keyframe(0.0F, AnimationHelper.createRotationalVector(0.0F, 0.0F, 0.0F), Transformation.Interpolations.LINEAR),
+				new Keyframe(1.0F, AnimationHelper.createRotationalVector(0.0F, 0.0F, 0.0F), Transformation.Interpolations.LINEAR)
+			)
+		)
+		.addBoneAnimation(
+			"body",
+			new Transformation(
+				Transformation.Targets.TRANSLATE,
+				new Keyframe(0.0F, AnimationHelper.createTranslationalVector(0.0F, -19.9F, 0.0F), Transformation.Interpolations.LINEAR),
+				new Keyframe(1.0F, AnimationHelper.createTranslationalVector(0.0F, -19.9F, 0.0F), Transformation.Interpolations.LINEAR)
+			)
+		)
+		.addBoneAnimation(
+			"right_front_leg",
+			new Transformation(
+				Transformation.Targets.ROTATE,
+				new Keyframe(0.0F, AnimationHelper.createRotationalVector(-90.0F, 10.0F, 0.0F), Transformation.Interpolations.LINEAR),
+				new Keyframe(1.0F, AnimationHelper.createRotationalVector(-90.0F, 10.0F, 0.0F), Transformation.Interpolations.LINEAR)
+			)
+		)
+		.addBoneAnimation(
+			"right_front_leg",
+			new Transformation(
+				Transformation.Targets.TRANSLATE,
+				new Keyframe(0.0F, AnimationHelper.createTranslationalVector(0.0F, -20.6F, 12.0F), Transformation.Interpolations.LINEAR),
+				new Keyframe(1.0F, AnimationHelper.createTranslationalVector(0.0F, -20.6F, 12.0F), Transformation.Interpolations.LINEAR)
+			)
+		)
+		.addBoneAnimation(
+			"left_front_leg",
+			new Transformation(
+				Transformation.Targets.ROTATE,
+				new Keyframe(0.0F, AnimationHelper.createRotationalVector(-90.0F, -10.0F, 0.0F), Transformation.Interpolations.LINEAR),
+				new Keyframe(1.0F, AnimationHelper.createRotationalVector(-90.0F, -10.0F, 0.0F), Transformation.Interpolations.LINEAR)
+			)
+		)
+		.addBoneAnimation(
+			"left_front_leg",
+			new Transformation(
+				Transformation.Targets.TRANSLATE,
+				new Keyframe(0.0F, AnimationHelper.createTranslationalVector(0.0F, -20.6F, 12.0F), Transformation.Interpolations.LINEAR),
+				new Keyframe(1.0F, AnimationHelper.createTranslationalVector(0.0F, -20.6F, 12.0F), Transformation.Interpolations.LINEAR)
+			)
+		)
+		.addBoneAnimation(
+			"left_hind_leg",
+			new Transformation(
+				Transformation.Targets.ROTATE,
+				new Keyframe(0.0F, AnimationHelper.createRotationalVector(-90.0F, -15.0F, 0.0F), Transformation.Interpolations.LINEAR),
+				new Keyframe(1.0F, AnimationHelper.createRotationalVector(-90.0F, -15.0F, 0.0F), Transformation.Interpolations.LINEAR)
+			)
+		)
+		.addBoneAnimation(
+			"left_hind_leg",
+			new Transformation(
+				Transformation.Targets.TRANSLATE,
+				new Keyframe(0.0F, AnimationHelper.createTranslationalVector(1.0F, -20.5F, 5.0F), Transformation.Interpolations.LINEAR),
+				new Keyframe(1.0F, AnimationHelper.createTranslationalVector(1.0F, -20.5F, 5.0F), Transformation.Interpolations.LINEAR)
+			)
+		)
+		.addBoneAnimation(
+			"right_hind_leg",
+			new Transformation(
+				Transformation.Targets.ROTATE,
+				new Keyframe(0.0F, AnimationHelper.createRotationalVector(-90.0F, 15.0F, 0.0F), Transformation.Interpolations.LINEAR),
+				new Keyframe(1.0F, AnimationHelper.createRotationalVector(-90.0F, 15.0F, 0.0F), Transformation.Interpolations.LINEAR)
+			)
+		)
+		.addBoneAnimation(
+			"right_hind_leg",
+			new Transformation(
+				Transformation.Targets.TRANSLATE,
+				new Keyframe(0.0F, AnimationHelper.createTranslationalVector(-1.0F, -20.5F, 5.0F), Transformation.Interpolations.LINEAR),
+				new Keyframe(1.0F, AnimationHelper.createTranslationalVector(-1.0F, -20.5F, 5.0F), Transformation.Interpolations.LINEAR)
+			)
+		)
+		.addBoneAnimation(
+			"head",
+			new Transformation(
+				Transformation.Targets.ROTATE,
+				new Keyframe(0.0F, AnimationHelper.createRotationalVector(0.0F, 0.0F, 0.0F), Transformation.Interpolations.LINEAR),
+				new Keyframe(1.0F, AnimationHelper.createRotationalVector(0.0F, 0.0F, 0.0F), Transformation.Interpolations.LINEAR)
+			)
+		)
+		.addBoneAnimation(
+			"tail",
+			new Transformation(
+				Transformation.Targets.ROTATE,
+				new Keyframe(0.0F, AnimationHelper.createRotationalVector(50.0F, 0.0F, 0.0F), Transformation.Interpolations.LINEAR),
+				new Keyframe(1.0F, AnimationHelper.createRotationalVector(50.0F, 0.0F, 0.0F), Transformation.Interpolations.LINEAR)
+			)
+		)
+		.build();
+	public static final Animation STANDING_TRANSITION = Animation.Builder.create(2.6F)
 		.addBoneAnimation(
 			"body",
 			new Transformation(

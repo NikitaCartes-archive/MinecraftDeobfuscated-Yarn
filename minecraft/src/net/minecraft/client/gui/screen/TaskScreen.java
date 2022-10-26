@@ -80,7 +80,9 @@ public class TaskScreen extends Screen {
 		int k = this.description != null ? this.description.count() : 1;
 		int l = Math.max(k, 5) * 9;
 		int m = Math.min(120 + l, this.height - 40);
-		this.button = this.addDrawableChild(new ButtonWidget((this.width - 150) / 2, m, 150, 20, this.closeButtonText, buttonWidget -> this.close()));
+		this.button = this.addDrawableChild(
+			ButtonWidget.createBuilder(this.closeButtonText, buttonWidget -> this.close()).setPositionAndSize((this.width - 150) / 2, m, 150, 20).build()
+		);
 	}
 
 	@Override
