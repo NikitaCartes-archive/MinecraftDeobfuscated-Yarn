@@ -33,6 +33,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 public abstract class MobSpawnerLogic {
+    public static final String SPAWN_DATA_KEY = "SpawnData";
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final int field_30951 = 1;
     private int spawnDelay = 20;
@@ -61,7 +62,7 @@ public abstract class MobSpawnerLogic {
     public void clientTick(World world, BlockPos pos) {
         if (!this.isPlayerInRange(world, pos)) {
             this.field_9159 = this.field_9161;
-        } else {
+        } else if (this.renderedEntity != null) {
             Random random = world.getRandom();
             double d = (double)pos.getX() + random.nextDouble();
             double e = (double)pos.getY() + random.nextDouble();
@@ -154,9 +155,9 @@ public abstract class MobSpawnerLogic {
     public void readNbt(@Nullable World world, BlockPos pos, NbtCompound nbt) {
         boolean bl2;
         this.spawnDelay = nbt.getShort("Delay");
-        boolean bl = nbt.contains("SpawnData", NbtElement.COMPOUND_TYPE);
+        boolean bl = nbt.contains(SPAWN_DATA_KEY, NbtElement.COMPOUND_TYPE);
         if (bl) {
-            MobSpawnerEntry mobSpawnerEntry = MobSpawnerEntry.CODEC.parse(NbtOps.INSTANCE, nbt.getCompound("SpawnData")).resultOrPartial(string -> LOGGER.warn("Invalid SpawnData: {}", string)).orElseGet(MobSpawnerEntry::new);
+            MobSpawnerEntry mobSpawnerEntry = MobSpawnerEntry.CODEC.parse(NbtOps.INSTANCE, nbt.getCompound(SPAWN_DATA_KEY)).resultOrPartial(string -> LOGGER.warn("Invalid SpawnData: {}", string)).orElseGet(MobSpawnerEntry::new);
             this.setSpawnEntry(world, pos, mobSpawnerEntry);
         }
         if (bl2 = nbt.contains("SpawnPotentials", NbtElement.LIST_TYPE)) {
@@ -189,7 +190,7 @@ public abstract class MobSpawnerLogic {
         nbt.putShort("RequiredPlayerRange", (short)this.requiredPlayerRange);
         nbt.putShort("SpawnRange", (short)this.spawnRange);
         if (this.spawnEntry != null) {
-            nbt.put("SpawnData", MobSpawnerEntry.CODEC.encodeStart(NbtOps.INSTANCE, this.spawnEntry).result().orElseThrow(() -> new IllegalStateException("Invalid SpawnData")));
+            nbt.put(SPAWN_DATA_KEY, MobSpawnerEntry.CODEC.encodeStart(NbtOps.INSTANCE, this.spawnEntry).result().orElseThrow(() -> new IllegalStateException("Invalid SpawnData")));
         }
         nbt.put("SpawnPotentials", MobSpawnerEntry.DATA_POOL_CODEC.encodeStart(NbtOps.INSTANCE, this.spawnPotentials).result().orElseThrow());
         return nbt;
@@ -199,8 +200,11 @@ public abstract class MobSpawnerLogic {
     public Entity getRenderedEntity(World world, Random random, BlockPos pos) {
         if (this.renderedEntity == null) {
             NbtCompound nbtCompound = this.getSpawnEntry(world, random, pos).getNbt();
+            if (!nbtCompound.contains("id", NbtElement.STRING_TYPE)) {
+                return null;
+            }
             this.renderedEntity = EntityType.loadEntityWithPassengers(nbtCompound, world, Function.identity());
-            if (nbtCompound.getSize() != 1 || !nbtCompound.contains("id", NbtElement.STRING_TYPE) || this.renderedEntity instanceof MobEntity) {
+            if (nbtCompound.getSize() != 1 || this.renderedEntity instanceof MobEntity) {
                 // empty if block
             }
         }

@@ -3,7 +3,11 @@
  */
 package net.minecraft.item;
 
+import com.google.common.collect.Lists;
 import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemStackSet;
@@ -25,6 +29,11 @@ public abstract class ItemGroup {
     private ItemStackSet displayStacks;
     @Nullable
     private ItemStackSet searchTabStacks;
+    @Nullable
+    private DisplayParameters displayParameters;
+    private boolean searchProviderDirty;
+    @Nullable
+    private Consumer<List<ItemStack>> searchProviderReloader;
 
     public ItemGroup(int index, Text displayName) {
         this.index = index;
@@ -49,7 +58,7 @@ public abstract class ItemGroup {
 
     public abstract ItemStack createIcon();
 
-    protected abstract void addItems(FeatureSet var1, Entries var2);
+    protected abstract void addItems(FeatureSet var1, Entries var2, boolean var3);
 
     public String getTexture() {
         return this.texture;
@@ -98,31 +107,49 @@ public abstract class ItemGroup {
         return this.getColumn() == 5;
     }
 
-    private ItemStackSet getStacks(FeatureSet enabledFeatures, boolean search) {
-        if (this.displayStacks == null || this.searchTabStacks == null) {
+    private ItemStackSet getStacks(FeatureSet enabledFeatures, boolean search, boolean hasPermissions) {
+        boolean bl;
+        DisplayParameters displayParameters = new DisplayParameters(enabledFeatures, hasPermissions);
+        boolean bl2 = bl = this.displayStacks == null || this.searchTabStacks == null || !Objects.equals(this.displayParameters, displayParameters);
+        if (bl) {
             EntriesImpl entriesImpl = new EntriesImpl(this, enabledFeatures);
-            this.addItems(enabledFeatures, entriesImpl);
+            this.addItems(enabledFeatures, entriesImpl, hasPermissions);
             this.displayStacks = entriesImpl.getParentTabStacks();
             this.searchTabStacks = entriesImpl.getSearchTabStacks();
+            this.displayParameters = displayParameters;
+        }
+        if (this.searchProviderReloader != null && (bl || this.searchProviderDirty)) {
+            this.searchProviderReloader.accept(Lists.newArrayList(this.searchTabStacks));
+            this.markSearchProviderClean();
         }
         return search ? this.searchTabStacks : this.displayStacks;
     }
 
-    public ItemStackSet getDisplayStacks(FeatureSet enabledFeatures) {
-        return this.getStacks(enabledFeatures, false);
+    public ItemStackSet getDisplayStacks(FeatureSet enabledFeatures, boolean hasPermissions) {
+        return this.getStacks(enabledFeatures, false, hasPermissions);
     }
 
-    public ItemStackSet getSearchTabStacks(FeatureSet enabledFeatures) {
-        return this.getStacks(enabledFeatures, true);
+    public ItemStackSet getSearchTabStacks(FeatureSet enabledFeatures, boolean hasPermissions) {
+        return this.getStacks(enabledFeatures, true, hasPermissions);
     }
 
-    public boolean contains(FeatureSet enabledFeatures, ItemStack stack) {
-        return this.getSearchTabStacks(enabledFeatures).contains(stack);
+    public boolean contains(FeatureSet enabledFeatures, ItemStack stack, boolean hasPermissions) {
+        return this.getSearchTabStacks(enabledFeatures, hasPermissions).contains(stack);
     }
 
-    public void clearStacks() {
-        this.displayStacks = null;
-        this.searchTabStacks = null;
+    public void setSearchProviderReloader(Consumer<List<ItemStack>> searchProviderReloader) {
+        this.searchProviderReloader = searchProviderReloader;
+    }
+
+    public void markSearchProviderDirty() {
+        this.searchProviderDirty = true;
+    }
+
+    private void markSearchProviderClean() {
+        this.searchProviderDirty = false;
+    }
+
+    record DisplayParameters(FeatureSet enabledFeatures, boolean hasPermissions) {
     }
 
     static class EntriesImpl

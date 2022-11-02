@@ -23,6 +23,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class CaveVinesHeadBlock
 extends AbstractPlantStemBlock
@@ -77,7 +78,7 @@ CaveVines {
     }
 
     @Override
-    public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
+    public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean isClient) {
         return state.get(BERRIES) == false;
     }
 

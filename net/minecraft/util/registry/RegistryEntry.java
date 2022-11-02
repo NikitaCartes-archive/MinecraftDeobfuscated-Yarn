@@ -11,7 +11,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntryOwner;
 import net.minecraft.util.registry.RegistryKey;
 import org.jetbrains.annotations.Nullable;
 
@@ -96,27 +96,13 @@ public interface RegistryEntry<T> {
      */
     public Type getType();
 
-    /**
-     * {@return whether the registry for the entry is {@code registry}}
-     * 
-     * <p>This always returns {@code true} for direct entries.
-     */
-    public boolean matchesRegistry(Registry<T> var1);
+    public boolean ownerEquals(RegistryEntryOwner<T> var1);
 
     /**
      * {@return a new direct registry entry of {@code value}}
      */
     public static <T> RegistryEntry<T> of(T value) {
         return new Direct<T>(value);
-    }
-
-    /**
-     * Casts {@code RegistryEntry<? extends T>} to {@code RegistryEntry<T>}.
-     * 
-     * @return the cast value
-     */
-    public static <T> RegistryEntry<T> upcast(RegistryEntry<? extends T> entry) {
-        return entry;
     }
 
     public record Direct<T>(T value) implements RegistryEntry<T>
@@ -167,7 +153,7 @@ public interface RegistryEntry<T> {
         }
 
         @Override
-        public boolean matchesRegistry(Registry<T> registry) {
+        public boolean ownerEquals(RegistryEntryOwner<T> owner) {
             return true;
         }
 
@@ -179,7 +165,7 @@ public interface RegistryEntry<T> {
 
     public static class Reference<T>
     implements RegistryEntry<T> {
-        private final Registry<T> registry;
+        private final RegistryEntryOwner<T> owner;
         private Set<TagKey<T>> tags = Set.of();
         private final Type referenceType;
         @Nullable
@@ -187,25 +173,25 @@ public interface RegistryEntry<T> {
         @Nullable
         private T value;
 
-        private Reference(Type referenceType, Registry<T> registry, @Nullable RegistryKey<T> registryKey, @Nullable T value) {
-            this.registry = registry;
+        private Reference(Type referenceType, RegistryEntryOwner<T> owner, @Nullable RegistryKey<T> registryKey, @Nullable T value) {
+            this.owner = owner;
             this.referenceType = referenceType;
             this.registryKey = registryKey;
             this.value = value;
         }
 
-        public static <T> Reference<T> standAlone(Registry<T> registry, RegistryKey<T> registryKey) {
-            return new Reference<Object>(Type.STAND_ALONE, registry, registryKey, null);
+        public static <T> Reference<T> standAlone(RegistryEntryOwner<T> owner, RegistryKey<T> registryKey) {
+            return new Reference<Object>(Type.STAND_ALONE, owner, registryKey, null);
         }
 
         @Deprecated
-        public static <T> Reference<T> intrusive(Registry<T> registry, @Nullable T value) {
-            return new Reference<T>(Type.INTRUSIVE, registry, null, value);
+        public static <T> Reference<T> intrusive(RegistryEntryOwner<T> owner, @Nullable T value) {
+            return new Reference<T>(Type.INTRUSIVE, owner, null, value);
         }
 
         public RegistryKey<T> registryKey() {
             if (this.registryKey == null) {
-                throw new IllegalStateException("Trying to access unbound value '" + this.value + "' from registry " + this.registry);
+                throw new IllegalStateException("Trying to access unbound value '" + this.value + "' from registry " + this.owner);
             }
             return this.registryKey;
         }
@@ -213,7 +199,7 @@ public interface RegistryEntry<T> {
         @Override
         public T value() {
             if (this.value == null) {
-                throw new IllegalStateException("Trying to access unbound value '" + this.registryKey + "' from registry " + this.registry);
+                throw new IllegalStateException("Trying to access unbound value '" + this.registryKey + "' from registry " + this.owner);
             }
             return this.value;
         }
@@ -239,8 +225,8 @@ public interface RegistryEntry<T> {
         }
 
         @Override
-        public boolean matchesRegistry(Registry<T> registry) {
-            return this.registry == registry;
+        public boolean ownerEquals(RegistryEntryOwner<T> owner) {
+            return this.owner.ownerEquals(owner);
         }
 
         @Override
@@ -261,17 +247,6 @@ public interface RegistryEntry<T> {
         @Override
         public boolean hasKeyAndValue() {
             return this.registryKey != null && this.value != null;
-        }
-
-        void setKeyAndValue(RegistryKey<T> key, T value) {
-            if (this.registryKey != null && key != this.registryKey) {
-                throw new IllegalStateException("Can't change holder key: existing=" + this.registryKey + ", new=" + key);
-            }
-            if (this.referenceType == Type.INTRUSIVE && this.value != value) {
-                throw new IllegalStateException("Can't change holder " + key + " value: existing=" + this.value + ", new=" + value);
-            }
-            this.registryKey = key;
-            this.value = value;
         }
 
         void setRegistryKey(RegistryKey<T> registryKey) {

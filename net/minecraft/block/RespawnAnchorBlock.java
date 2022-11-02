@@ -123,7 +123,7 @@ extends Block {
             }
         };
         Vec3d vec3d = explodedPos.toCenterPos();
-        world.createExplosion(null, DamageSource.badRespawnPoint(vec3d), explosionBehavior, vec3d, 5.0f, true, Explosion.DestructionType.DESTROY);
+        world.createExplosion(null, DamageSource.badRespawnPoint(vec3d), explosionBehavior, vec3d, 5.0f, true, World.ExplosionSourceType.BLOCK);
     }
 
     public static boolean isNether(World world) {

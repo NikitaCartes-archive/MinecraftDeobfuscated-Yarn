@@ -41,6 +41,7 @@ import java.util.stream.Stream;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.SnowBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityInteraction;
 import net.minecraft.entity.EntityType;
@@ -220,7 +221,7 @@ implements StructureWorldAccess {
         EntityChunkDataAccess chunkDataAccess = new EntityChunkDataAccess(this, session.getWorldDirectory(worldKey).resolve("entities"), dataFixer, bl, server);
         this.entityManager = new ServerEntityManager<Entity>(Entity.class, new ServerEntityHandler(), chunkDataAccess);
         this.chunkManager = new ServerChunkManager(this, session, dataFixer, server.getStructureTemplateManager(), workerExecutor, chunkGenerator, server.getPlayerManager().getViewDistance(), server.getPlayerManager().getSimulationDistance(), bl, worldGenerationProgressListener, this.entityManager::updateTrackingStatus, () -> server.getOverworld().getPersistentStateManager());
-        chunkGenerator.computeStructurePlacementsIfNeeded(this.chunkManager.getNoiseConfig());
+        this.chunkManager.getStructurePlacementCalculator().tryCalculate();
         this.portalForcer = new PortalForcer(this);
         this.calculateAmbientDarkness();
         this.initWeatherGradients();
@@ -437,10 +438,20 @@ implements StructureWorldAccess {
                 this.setBlockState(blockPos2, Blocks.ICE.getDefaultState());
             }
             if (bl) {
-                if (biome.canSetSnow(this, blockPos)) {
-                    this.setBlockState(blockPos, Blocks.SNOW.getDefaultState());
+                BlockState blockState;
+                int k = this.getGameRules().getInt(GameRules.SNOW_ACCUMULATION_HEIGHT);
+                if (biome.canSetSnow(this, blockPos) && k > 0) {
+                    blockState = this.getBlockState(blockPos);
+                    if (blockState.isOf(Blocks.SNOW)) {
+                        int l = blockState.get(SnowBlock.LAYERS);
+                        if (l < Math.min(k, 8)) {
+                            this.setBlockState(blockPos, (BlockState)blockState.with(SnowBlock.LAYERS, l + 1));
+                        }
+                    } else {
+                        this.setBlockState(blockPos, Blocks.SNOW.getDefaultState());
+                    }
                 }
-                BlockState blockState = this.getBlockState(blockPos2);
+                blockState = this.getBlockState(blockPos2);
                 Biome.Precipitation precipitation = biome.getPrecipitation();
                 if (precipitation == Biome.Precipitation.RAIN && biome.isCold(blockPos2)) {
                     precipitation = Biome.Precipitation.SNOW;
@@ -452,12 +463,12 @@ implements StructureWorldAccess {
         if (randomTickSpeed > 0) {
             for (ChunkSection chunkSection : chunk.getSectionArray()) {
                 if (!chunkSection.hasRandomTicks()) continue;
-                int k = chunkSection.getYOffset();
+                int m = chunkSection.getYOffset();
                 for (int l = 0; l < randomTickSpeed; ++l) {
                     FluidState fluidState;
-                    BlockPos blockPos3 = this.getRandomPosInChunk(i, k, j, 15);
+                    BlockPos blockPos3 = this.getRandomPosInChunk(i, m, j, 15);
                     profiler.push("randomTick");
-                    BlockState blockState2 = chunkSection.getBlockState(blockPos3.getX() - i, blockPos3.getY() - k, blockPos3.getZ() - j);
+                    BlockState blockState2 = chunkSection.getBlockState(blockPos3.getX() - i, blockPos3.getY() - m, blockPos3.getZ() - j);
                     if (blockState2.hasRandomTicks()) {
                         blockState2.randomTick(this, blockPos3, this.random);
                     }
@@ -869,7 +880,11 @@ implements StructureWorldAccess {
 
     @Override
     public void syncGlobalEvent(int eventId, BlockPos pos, int data) {
-        this.server.getPlayerManager().sendToAll(new WorldEventS2CPacket(eventId, pos, data, true));
+        if (this.getGameRules().getBoolean(GameRules.GLOBAL_SOUND_EVENTS)) {
+            this.server.getPlayerManager().sendToAll(new WorldEventS2CPacket(eventId, pos, data, true));
+        } else {
+            this.syncWorldEvent(null, eventId, pos, data);
+        }
     }
 
     @Override
@@ -948,11 +963,9 @@ implements StructureWorldAccess {
     }
 
     @Override
-    public Explosion createExplosion(@Nullable Entity entity, @Nullable DamageSource damageSource, @Nullable ExplosionBehavior behavior, double x, double y, double z, float power, boolean createFire, Explosion.DestructionType destructionType) {
-        Explosion explosion = new Explosion(this, entity, damageSource, behavior, x, y, z, power, createFire, destructionType);
-        explosion.collectBlocksAndDamageEntities();
-        explosion.affectWorld(false);
-        if (destructionType == Explosion.DestructionType.NONE) {
+    public Explosion createExplosion(@Nullable Entity entity, @Nullable DamageSource damageSource, @Nullable ExplosionBehavior behavior, double x, double y, double z, float power, boolean createFire, World.ExplosionSourceType explosionSourceType) {
+        Explosion explosion = this.createExplosion(entity, damageSource, behavior, x, y, z, power, createFire, explosionSourceType, false);
+        if (!explosion.shouldDestroy()) {
             explosion.clearAffectedBlocks();
         }
         for (ServerPlayerEntity serverPlayerEntity : this.players) {

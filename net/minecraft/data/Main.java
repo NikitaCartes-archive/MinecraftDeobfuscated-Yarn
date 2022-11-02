@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import joptsimple.AbstractOptionSpec;
 import joptsimple.ArgumentAcceptingOptionSpec;
@@ -16,14 +18,16 @@ import joptsimple.OptionSpecBuilder;
 import net.minecraft.GameVersion;
 import net.minecraft.SharedConstants;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.DataOutput;
+import net.minecraft.data.DataProvider;
 import net.minecraft.data.MetadataProvider;
 import net.minecraft.data.SnbtProvider;
 import net.minecraft.data.client.ModelProvider;
 import net.minecraft.data.dev.NbtProvider;
 import net.minecraft.data.report.BlockListProvider;
 import net.minecraft.data.report.CommandSyntaxProvider;
+import net.minecraft.data.report.DynamicRegistriesProvider;
 import net.minecraft.data.report.RegistryDumpProvider;
-import net.minecraft.data.report.WorldgenProvider;
 import net.minecraft.data.server.BiomeParametersProvider;
 import net.minecraft.data.server.advancement.VanillaAdvancementProviders;
 import net.minecraft.data.server.loottable.OneTwentyLootTableProviders;
@@ -53,6 +57,9 @@ import net.minecraft.obfuscate.DontObfuscate;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.text.Text;
+import net.minecraft.util.Util;
+import net.minecraft.util.registry.BuiltinRegistries;
+import net.minecraft.util.registry.RegistryWrapper;
 
 public class Main {
     @DontObfuscate
@@ -84,47 +91,52 @@ public class Main {
         dataGenerator.run();
     }
 
+    private static <T extends DataProvider> DataProvider.Factory<T> toFactory(BiFunction<DataOutput, CompletableFuture<RegistryWrapper.WrapperLookup>, T> baseFactory, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
+        return output -> (DataProvider)baseFactory.apply(output, registryLookupFuture);
+    }
+
     public static DataGenerator create(Path output2, Collection<Path> inputs, boolean includeClient, boolean includeServer, boolean includeDev, boolean includeReports, boolean validate, GameVersion gameVersion, boolean ignoreCache) {
         DataGenerator dataGenerator = new DataGenerator(output2, gameVersion, ignoreCache);
         DataGenerator.Pack pack = dataGenerator.createVanillaPack(includeClient || includeServer);
         pack.addProvider(output -> new SnbtProvider(output, inputs).addWriter(new StructureValidatorProvider()));
-        pack = dataGenerator.createVanillaPack(includeClient);
-        pack.addProvider(ModelProvider::new);
-        pack = dataGenerator.createVanillaPack(includeServer);
-        pack.addProvider(WorldgenProvider::new);
-        pack.addProvider(VanillaAdvancementProviders::createVanillaProvider);
-        pack.addProvider(VanillaLootTableProviders::createVanillaProvider);
-        pack.addProvider(VanillaRecipeProvider::new);
-        AbstractTagProvider abstractTagProvider = pack.addProvider(VanillaBlockTagProvider::new);
-        pack.addProvider(output -> new VanillaItemTagProvider(output, abstractTagProvider));
-        pack.addProvider(BannerPatternTagProvider::new);
-        pack.addProvider(BiomeTagProvider::new);
-        pack.addProvider(CatVariantTagProvider::new);
-        pack.addProvider(EntityTypeTagProvider::new);
-        pack.addProvider(FlatLevelGeneratorPresetTagProvider::new);
-        pack.addProvider(FluidTagProvider::new);
-        pack.addProvider(GameEventTagProvider::new);
-        pack.addProvider(InstrumentTagProvider::new);
-        pack.addProvider(PaintingVariantTagProvider::new);
-        pack.addProvider(PointOfInterestTypeTagProvider::new);
-        pack.addProvider(StructureTagProvider::new);
-        pack.addProvider(WorldPresetTagProvider::new);
-        pack = dataGenerator.createVanillaPack(includeDev);
-        pack.addProvider(output -> new NbtProvider(output, inputs));
-        pack = dataGenerator.createVanillaPack(includeReports);
-        pack.addProvider(BiomeParametersProvider::new);
-        pack.addProvider(BlockListProvider::new);
-        pack.addProvider(CommandSyntaxProvider::new);
-        pack.addProvider(RegistryDumpProvider::new);
-        pack = dataGenerator.createVanillaSubPack(includeServer, "bundle");
-        pack.addProvider(BundleRecipeProvider::new);
-        pack.addProvider(output -> MetadataProvider.create(output, Text.translatable("dataPack.bundle.description"), FeatureSet.of(FeatureFlags.BUNDLE)));
-        pack = dataGenerator.createVanillaSubPack(includeServer, "update_1_20");
-        pack.addProvider(OneTwentyRecipeProvider::new);
-        abstractTagProvider = pack.addProvider(OneTwentyBlockTagProvider::new);
-        pack.addProvider(output -> new OneTwentyItemTagProvider(output, abstractTagProvider));
-        pack.addProvider(OneTwentyLootTableProviders::createOneTwentyProvider);
-        pack.addProvider(output -> MetadataProvider.create(output, Text.translatable("dataPack.update_1_20.description"), FeatureSet.of(FeatureFlags.UPDATE_1_20)));
+        CompletableFuture<RegistryWrapper.WrapperLookup> completableFuture = CompletableFuture.supplyAsync(BuiltinRegistries::createWrapperLookup, Util.getMainWorkerExecutor());
+        DataGenerator.Pack pack2 = dataGenerator.createVanillaPack(includeClient);
+        pack2.addProvider(ModelProvider::new);
+        pack2 = dataGenerator.createVanillaPack(includeServer);
+        pack2.addProvider(Main.toFactory(DynamicRegistriesProvider::new, completableFuture));
+        pack2.addProvider(Main.toFactory(VanillaAdvancementProviders::createVanillaProvider, completableFuture));
+        pack2.addProvider(VanillaLootTableProviders::createVanillaProvider);
+        pack2.addProvider(VanillaRecipeProvider::new);
+        AbstractTagProvider abstractTagProvider = pack2.addProvider(Main.toFactory(VanillaBlockTagProvider::new, completableFuture));
+        pack2.addProvider(output -> new VanillaItemTagProvider(output, completableFuture, abstractTagProvider));
+        pack2.addProvider(Main.toFactory(BannerPatternTagProvider::new, completableFuture));
+        pack2.addProvider(Main.toFactory(BiomeTagProvider::new, completableFuture));
+        pack2.addProvider(Main.toFactory(CatVariantTagProvider::new, completableFuture));
+        pack2.addProvider(Main.toFactory(EntityTypeTagProvider::new, completableFuture));
+        pack2.addProvider(Main.toFactory(FlatLevelGeneratorPresetTagProvider::new, completableFuture));
+        pack2.addProvider(Main.toFactory(FluidTagProvider::new, completableFuture));
+        pack2.addProvider(Main.toFactory(GameEventTagProvider::new, completableFuture));
+        pack2.addProvider(Main.toFactory(InstrumentTagProvider::new, completableFuture));
+        pack2.addProvider(Main.toFactory(PaintingVariantTagProvider::new, completableFuture));
+        pack2.addProvider(Main.toFactory(PointOfInterestTypeTagProvider::new, completableFuture));
+        pack2.addProvider(Main.toFactory(StructureTagProvider::new, completableFuture));
+        pack2.addProvider(Main.toFactory(WorldPresetTagProvider::new, completableFuture));
+        pack2 = dataGenerator.createVanillaPack(includeDev);
+        pack2.addProvider(output -> new NbtProvider(output, inputs));
+        pack2 = dataGenerator.createVanillaPack(includeReports);
+        pack2.addProvider(Main.toFactory(BiomeParametersProvider::new, completableFuture));
+        pack2.addProvider(BlockListProvider::new);
+        pack2.addProvider(Main.toFactory(CommandSyntaxProvider::new, completableFuture));
+        pack2.addProvider(RegistryDumpProvider::new);
+        pack2 = dataGenerator.createVanillaSubPack(includeServer, "bundle");
+        pack2.addProvider(BundleRecipeProvider::new);
+        pack2.addProvider(output -> MetadataProvider.create(output, Text.translatable("dataPack.bundle.description"), FeatureSet.of(FeatureFlags.BUNDLE)));
+        pack2 = dataGenerator.createVanillaSubPack(includeServer, "update_1_20");
+        pack2.addProvider(OneTwentyRecipeProvider::new);
+        abstractTagProvider = pack2.addProvider(Main.toFactory(OneTwentyBlockTagProvider::new, completableFuture));
+        pack2.addProvider(output -> new OneTwentyItemTagProvider(output, completableFuture, abstractTagProvider));
+        pack2.addProvider(OneTwentyLootTableProviders::createOneTwentyProvider);
+        pack2.addProvider(output -> MetadataProvider.create(output, Text.translatable("dataPack.update_1_20.description"), FeatureSet.of(FeatureFlags.UPDATE_1_20)));
         return dataGenerator;
     }
 }

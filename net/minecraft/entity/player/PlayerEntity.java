@@ -132,7 +132,7 @@ extends LivingEntity {
     public static final float field_30648 = 1.5f;
     public static final float field_30649 = 0.6f;
     public static final float field_30650 = 0.6f;
-    public static final float field_30651 = 1.62f;
+    public static final float DEFAULT_EYE_HEIGHT = 1.62f;
     public static final EntityDimensions STANDING_DIMENSIONS = EntityDimensions.changing(0.6f, 1.8f);
     private static final Map<EntityPose, EntityDimensions> POSE_DIMENSIONS = ImmutableMap.builder().put(EntityPose.STANDING, STANDING_DIMENSIONS).put(EntityPose.SLEEPING, SLEEPING_DIMENSIONS).put(EntityPose.FALL_FLYING, EntityDimensions.changing(0.6f, 0.6f)).put(EntityPose.SWIMMING, EntityDimensions.changing(0.6f, 0.6f)).put(EntityPose.SPIN_ATTACK, EntityDimensions.changing(0.6f, 0.6f)).put(EntityPose.CROUCHING, EntityDimensions.changing(0.6f, 1.5f)).put(EntityPose.DYING, EntityDimensions.fixed(0.2f, 0.2f)).build();
     private static final int field_30652 = 25;

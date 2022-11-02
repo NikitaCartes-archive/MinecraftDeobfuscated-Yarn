@@ -3,7 +3,7 @@
  */
 package net.minecraft.block;
 
-import java.util.function.Supplier;
+import java.util.Optional;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -14,7 +14,9 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -26,11 +28,11 @@ extends PlantBlock
 implements Fertilizable {
     protected static final float field_31195 = 3.0f;
     protected static final VoxelShape SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 6.0, 11.0);
-    private final Supplier<RegistryEntry<? extends ConfiguredFeature<?, ?>>> feature;
+    private final RegistryKey<ConfiguredFeature<?, ?>> featureKey;
 
-    public MushroomPlantBlock(AbstractBlock.Settings settings, Supplier<RegistryEntry<? extends ConfiguredFeature<?, ?>>> feature) {
+    public MushroomPlantBlock(AbstractBlock.Settings settings, RegistryKey<ConfiguredFeature<?, ?>> featureKey) {
         super(settings);
-        this.feature = feature;
+        this.featureKey = featureKey;
     }
 
     @Override
@@ -76,8 +78,12 @@ implements Fertilizable {
     }
 
     public boolean trySpawningBigMushroom(ServerWorld world, BlockPos pos, BlockState state, Random random) {
+        Optional<RegistryEntry.Reference<ConfiguredFeature<?, ?>>> optional = world.getRegistryManager().get(Registry.CONFIGURED_FEATURE_KEY).getEntry(this.featureKey);
+        if (optional.isEmpty()) {
+            return false;
+        }
         world.removeBlock(pos, false);
-        if (this.feature.get().value().generate(world, world.getChunkManager().getChunkGenerator(), random, pos)) {
+        if (((ConfiguredFeature)((RegistryEntry)optional.get()).value()).generate(world, world.getChunkManager().getChunkGenerator(), random, pos)) {
             return true;
         }
         world.setBlockState(pos, state, Block.NOTIFY_ALL);
@@ -85,7 +91,7 @@ implements Fertilizable {
     }
 
     @Override
-    public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
+    public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean isClient) {
         return true;
     }
 

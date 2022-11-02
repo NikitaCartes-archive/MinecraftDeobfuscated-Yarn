@@ -3,23 +3,26 @@
  */
 package net.minecraft.data.server.tag;
 
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.data.DataOutput;
-import net.minecraft.data.server.tag.AbstractTagProvider;
+import net.minecraft.data.server.tag.ValueLookupTagProvider;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.tag.FluidTags;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryWrapper;
 
 public class FluidTagProvider
-extends AbstractTagProvider<Fluid> {
-    public FluidTagProvider(DataOutput root) {
-        super(root, Registry.FLUID);
+extends ValueLookupTagProvider<Fluid> {
+    public FluidTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
+        super(output, Registry.FLUID_KEY, registryLookupFuture, fluid -> fluid.getRegistryEntry().registryKey());
     }
 
     @Override
-    protected void configure() {
-        this.getOrCreateTagBuilder(FluidTags.WATER).add((Fluid[])new Fluid[]{Fluids.WATER, Fluids.FLOWING_WATER});
-        this.getOrCreateTagBuilder(FluidTags.LAVA).add((Fluid[])new Fluid[]{Fluids.LAVA, Fluids.FLOWING_LAVA});
+    protected void configure(RegistryWrapper.WrapperLookup lookup) {
+        ((ValueLookupTagProvider.ObjectBuilder)this.getOrCreateTagBuilder((TagKey)FluidTags.WATER)).add(Fluids.WATER, Fluids.FLOWING_WATER);
+        ((ValueLookupTagProvider.ObjectBuilder)this.getOrCreateTagBuilder((TagKey)FluidTags.LAVA)).add(Fluids.LAVA, Fluids.FLOWING_LAVA);
     }
 }
 

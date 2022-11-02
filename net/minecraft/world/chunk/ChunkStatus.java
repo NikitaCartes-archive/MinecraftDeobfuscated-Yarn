@@ -54,7 +54,7 @@ public class ChunkStatus {
     public static final ChunkStatus STRUCTURE_STARTS = ChunkStatus.register("structure_starts", EMPTY, 0, PRE_CARVER_HEIGHTMAPS, ChunkType.PROTOCHUNK, (targetStatus, executor, world, generator, structureTemplateManager, lightingProvider, fullChunkConverter, chunks, chunk, regenerate) -> {
         if (!chunk.getStatus().isAtLeast(targetStatus)) {
             if (world.getServer().getSaveProperties().getGeneratorOptions().shouldGenerateStructures()) {
-                generator.setStructureStarts(world.getRegistryManager(), world.getChunkManager().getNoiseConfig(), world.getStructureAccessor(), chunk, structureTemplateManager, world.getSeed());
+                generator.setStructureStarts(world.getRegistryManager(), world.getChunkManager().getStructurePlacementCalculator(), world.getStructureAccessor(), chunk, structureTemplateManager);
             }
             if (chunk instanceof ProtoChunk) {
                 ProtoChunk protoChunk = (ProtoChunk)chunk;
@@ -80,7 +80,7 @@ public class ChunkStatus {
     public static final ChunkStatus BIOMES = ChunkStatus.register("biomes", STRUCTURE_REFERENCES, 8, PRE_CARVER_HEIGHTMAPS, ChunkType.PROTOCHUNK, (ChunkStatus targetStatus, Executor executor, ServerWorld world, ChunkGenerator generator, StructureTemplateManager structureTemplateManager, ServerLightingProvider lightingProvider, Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> fullChunkConverter, List<Chunk> chunks, Chunk chunk2, boolean regenerate) -> {
         if (regenerate || !chunk2.getStatus().isAtLeast(targetStatus)) {
             ChunkRegion chunkRegion = new ChunkRegion(world, chunks, targetStatus, -1);
-            return generator.populateBiomes(world.getRegistryManager().get(Registry.BIOME_KEY), executor, world.getChunkManager().getNoiseConfig(), Blender.getBlender(chunkRegion), world.getStructureAccessor().forRegion(chunkRegion), chunk2).thenApply(chunk -> {
+            return generator.populateBiomes(executor, world.getChunkManager().getNoiseConfig(), Blender.getBlender(chunkRegion), world.getStructureAccessor().forRegion(chunkRegion), chunk2).thenApply(chunk -> {
                 if (chunk instanceof ProtoChunk) {
                     ((ProtoChunk)chunk).setStatus(targetStatus);
                 }

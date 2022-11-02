@@ -7,11 +7,11 @@ import java.util.Map;
 import java.util.Optional;
 import net.minecraft.structure.StructureSet;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
-import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.util.registry.Registerable;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryEntryLookup;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
@@ -30,6 +30,7 @@ import net.minecraft.world.gen.chunk.DebugChunkGenerator;
 import net.minecraft.world.gen.chunk.FlatChunkGenerator;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
+import net.minecraft.world.gen.feature.PlacedFeature;
 
 public class WorldPresets {
     public static final RegistryKey<WorldPreset> DEFAULT = WorldPresets.of("normal");
@@ -39,8 +40,8 @@ public class WorldPresets {
     public static final RegistryKey<WorldPreset> SINGLE_BIOME_SURFACE = WorldPresets.of("single_biome_surface");
     public static final RegistryKey<WorldPreset> DEBUG_ALL_BLOCK_STATES = WorldPresets.of("debug_all_block_states");
 
-    public static RegistryEntry<WorldPreset> initAndGetDefault(Registry<WorldPreset> registry) {
-        return new Registrar(registry).initAndGetDefault();
+    public static void bootstrap(Registerable<WorldPreset> presetRegisterable) {
+        new Registrar(presetRegisterable).bootstrap();
     }
 
     private static RegistryKey<WorldPreset> of(String id) {
@@ -69,22 +70,29 @@ public class WorldPresets {
     }
 
     static class Registrar {
-        private final Registry<WorldPreset> worldPresetRegistry;
-        private final Registry<DimensionType> dimensionTypeRegistry = BuiltinRegistries.DIMENSION_TYPE;
-        private final Registry<Biome> biomeRegistry = BuiltinRegistries.BIOME;
-        private final Registry<StructureSet> structureSetRegistry = BuiltinRegistries.STRUCTURE_SET;
-        private final Registry<ChunkGeneratorSettings> chunkGeneratorSettingsRegistry = BuiltinRegistries.CHUNK_GENERATOR_SETTINGS;
-        private final Registry<DoublePerlinNoiseSampler.NoiseParameters> noiseParametersRegistry = BuiltinRegistries.NOISE_PARAMETERS;
-        private final RegistryEntry<DimensionType> overworldDimensionType = this.dimensionTypeRegistry.getOrCreateEntry(DimensionTypes.OVERWORLD);
-        private final RegistryEntry<DimensionType> theNetherDimensionType = this.dimensionTypeRegistry.getOrCreateEntry(DimensionTypes.THE_NETHER);
-        private final RegistryEntry<ChunkGeneratorSettings> netherChunkGeneratorSettings = this.chunkGeneratorSettingsRegistry.getOrCreateEntry(ChunkGeneratorSettings.NETHER);
-        private final DimensionOptions netherDimensionOptions = new DimensionOptions(this.theNetherDimensionType, new NoiseChunkGenerator(this.structureSetRegistry, this.noiseParametersRegistry, (BiomeSource)MultiNoiseBiomeSource.Preset.NETHER.getBiomeSource(this.biomeRegistry), this.netherChunkGeneratorSettings));
-        private final RegistryEntry<DimensionType> theEndDimensionType = this.dimensionTypeRegistry.getOrCreateEntry(DimensionTypes.THE_END);
-        private final RegistryEntry<ChunkGeneratorSettings> endChunkGeneratorSettings = this.chunkGeneratorSettingsRegistry.getOrCreateEntry(ChunkGeneratorSettings.END);
-        private final DimensionOptions endDimensionOptions = new DimensionOptions(this.theEndDimensionType, new NoiseChunkGenerator(this.structureSetRegistry, this.noiseParametersRegistry, (BiomeSource)new TheEndBiomeSource(this.biomeRegistry), this.endChunkGeneratorSettings));
+        private final Registerable<WorldPreset> presetRegisterable;
+        private final RegistryEntryLookup<ChunkGeneratorSettings> chunkGeneratorSettingsLookup;
+        private final RegistryEntryLookup<Biome> biomeLookup;
+        private final RegistryEntryLookup<PlacedFeature> featureLookup;
+        private final RegistryEntryLookup<StructureSet> structureSetLookup;
+        private final RegistryEntry<DimensionType> overworldDimensionType;
+        private final DimensionOptions netherDimensionOptions;
+        private final DimensionOptions endDimensionOptions;
 
-        Registrar(Registry<WorldPreset> worldPresetRegistry) {
-            this.worldPresetRegistry = worldPresetRegistry;
+        Registrar(Registerable<WorldPreset> presetRegisterable) {
+            this.presetRegisterable = presetRegisterable;
+            RegistryEntryLookup<DimensionType> registryEntryLookup = presetRegisterable.getRegistryLookup(Registry.DIMENSION_TYPE_KEY);
+            this.chunkGeneratorSettingsLookup = presetRegisterable.getRegistryLookup(Registry.CHUNK_GENERATOR_SETTINGS_KEY);
+            this.biomeLookup = presetRegisterable.getRegistryLookup(Registry.BIOME_KEY);
+            this.featureLookup = presetRegisterable.getRegistryLookup(Registry.PLACED_FEATURE_KEY);
+            this.structureSetLookup = presetRegisterable.getRegistryLookup(Registry.STRUCTURE_SET_KEY);
+            this.overworldDimensionType = registryEntryLookup.getOrThrow(DimensionTypes.OVERWORLD);
+            RegistryEntry.Reference<DimensionType> registryEntry = registryEntryLookup.getOrThrow(DimensionTypes.THE_NETHER);
+            RegistryEntry.Reference<ChunkGeneratorSettings> registryEntry2 = this.chunkGeneratorSettingsLookup.getOrThrow(ChunkGeneratorSettings.NETHER);
+            this.netherDimensionOptions = new DimensionOptions(registryEntry, new NoiseChunkGenerator((BiomeSource)MultiNoiseBiomeSource.Preset.NETHER.getBiomeSource(this.biomeLookup), registryEntry2));
+            RegistryEntry.Reference<DimensionType> registryEntry3 = registryEntryLookup.getOrThrow(DimensionTypes.THE_END);
+            RegistryEntry.Reference<ChunkGeneratorSettings> registryEntry4 = this.chunkGeneratorSettingsLookup.getOrThrow(ChunkGeneratorSettings.END);
+            this.endDimensionOptions = new DimensionOptions(registryEntry3, new NoiseChunkGenerator((BiomeSource)TheEndBiomeSource.createVanilla(this.biomeLookup), registryEntry4));
         }
 
         private DimensionOptions createOverworldOptions(ChunkGenerator chunkGenerator) {
@@ -92,28 +100,29 @@ public class WorldPresets {
         }
 
         private DimensionOptions createOverworldOptions(BiomeSource biomeSource, RegistryEntry<ChunkGeneratorSettings> chunkGeneratorSettings) {
-            return this.createOverworldOptions(new NoiseChunkGenerator(this.structureSetRegistry, this.noiseParametersRegistry, biomeSource, chunkGeneratorSettings));
+            return this.createOverworldOptions(new NoiseChunkGenerator(biomeSource, chunkGeneratorSettings));
         }
 
         private WorldPreset createPreset(DimensionOptions dimensionOptions) {
             return new WorldPreset(Map.of(DimensionOptions.OVERWORLD, dimensionOptions, DimensionOptions.NETHER, this.netherDimensionOptions, DimensionOptions.END, this.endDimensionOptions));
         }
 
-        private RegistryEntry<WorldPreset> register(RegistryKey<WorldPreset> key, DimensionOptions dimensionOptions) {
-            return BuiltinRegistries.add(this.worldPresetRegistry, key, this.createPreset(dimensionOptions));
+        private void register(RegistryKey<WorldPreset> key, DimensionOptions dimensionOptions) {
+            this.presetRegisterable.register(key, this.createPreset(dimensionOptions));
         }
 
-        public RegistryEntry<WorldPreset> initAndGetDefault() {
-            MultiNoiseBiomeSource multiNoiseBiomeSource = MultiNoiseBiomeSource.Preset.OVERWORLD.getBiomeSource(this.biomeRegistry);
-            RegistryEntry.Reference<ChunkGeneratorSettings> registryEntry = this.chunkGeneratorSettingsRegistry.getOrCreateEntry(ChunkGeneratorSettings.OVERWORLD);
+        public void bootstrap() {
+            MultiNoiseBiomeSource multiNoiseBiomeSource = MultiNoiseBiomeSource.Preset.OVERWORLD.getBiomeSource(this.biomeLookup);
+            RegistryEntry.Reference<ChunkGeneratorSettings> registryEntry = this.chunkGeneratorSettingsLookup.getOrThrow(ChunkGeneratorSettings.OVERWORLD);
             this.register(DEFAULT, this.createOverworldOptions(multiNoiseBiomeSource, registryEntry));
-            RegistryEntry.Reference<ChunkGeneratorSettings> registryEntry2 = this.chunkGeneratorSettingsRegistry.getOrCreateEntry(ChunkGeneratorSettings.LARGE_BIOMES);
+            RegistryEntry.Reference<ChunkGeneratorSettings> registryEntry2 = this.chunkGeneratorSettingsLookup.getOrThrow(ChunkGeneratorSettings.LARGE_BIOMES);
             this.register(LARGE_BIOMES, this.createOverworldOptions(multiNoiseBiomeSource, registryEntry2));
-            RegistryEntry.Reference<ChunkGeneratorSettings> registryEntry3 = this.chunkGeneratorSettingsRegistry.getOrCreateEntry(ChunkGeneratorSettings.AMPLIFIED);
+            RegistryEntry.Reference<ChunkGeneratorSettings> registryEntry3 = this.chunkGeneratorSettingsLookup.getOrThrow(ChunkGeneratorSettings.AMPLIFIED);
             this.register(AMPLIFIED, this.createOverworldOptions(multiNoiseBiomeSource, registryEntry3));
-            this.register(SINGLE_BIOME_SURFACE, this.createOverworldOptions(new FixedBiomeSource(this.biomeRegistry.getOrCreateEntry(BiomeKeys.PLAINS)), registryEntry));
-            this.register(FLAT, this.createOverworldOptions(new FlatChunkGenerator(this.structureSetRegistry, FlatChunkGeneratorConfig.getDefaultConfig(this.biomeRegistry, this.structureSetRegistry))));
-            return this.register(DEBUG_ALL_BLOCK_STATES, this.createOverworldOptions(new DebugChunkGenerator(this.structureSetRegistry, this.biomeRegistry)));
+            RegistryEntry.Reference<Biome> reference = this.biomeLookup.getOrThrow(BiomeKeys.PLAINS);
+            this.register(SINGLE_BIOME_SURFACE, this.createOverworldOptions(new FixedBiomeSource(reference), registryEntry));
+            this.register(FLAT, this.createOverworldOptions(new FlatChunkGenerator(FlatChunkGeneratorConfig.getDefaultConfig(this.biomeLookup, this.structureSetLookup, this.featureLookup))));
+            this.register(DEBUG_ALL_BLOCK_STATES, this.createOverworldOptions(new DebugChunkGenerator(reference)));
         }
     }
 }

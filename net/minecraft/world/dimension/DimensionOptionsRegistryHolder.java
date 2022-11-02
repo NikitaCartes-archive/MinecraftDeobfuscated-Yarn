@@ -59,7 +59,7 @@ public record DimensionOptionsRegistryHolder(Registry<DimensionOptions> dimensio
 
     public static Registry<DimensionOptions> createRegistry(Registry<DimensionType> dynamicRegistry, Registry<DimensionOptions> currentRegistry, ChunkGenerator chunkGenerator) {
         DimensionOptions dimensionOptions = currentRegistry.get(DimensionOptions.OVERWORLD);
-        RegistryEntry<DimensionType> registryEntry = dimensionOptions == null ? dynamicRegistry.getOrCreateEntry(DimensionTypes.OVERWORLD) : dimensionOptions.dimensionTypeEntry();
+        RegistryEntry<DimensionType> registryEntry = dimensionOptions == null ? dynamicRegistry.entryOf(DimensionTypes.OVERWORLD) : dimensionOptions.dimensionTypeEntry();
         return DimensionOptionsRegistryHolder.createRegistry(currentRegistry, registryEntry, chunkGenerator);
     }
 

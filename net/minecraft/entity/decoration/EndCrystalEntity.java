@@ -21,7 +21,6 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.Nullable;
 
 public class EndCrystalEntity
@@ -98,7 +97,7 @@ extends Entity {
             this.remove(Entity.RemovalReason.KILLED);
             if (!source.isExplosive()) {
                 DamageSource damageSource = source.getAttacker() != null ? DamageSource.explosion(this, source.getAttacker()) : null;
-                this.world.createExplosion(this, damageSource, null, this.getX(), this.getY(), this.getZ(), 6.0f, false, Explosion.DestructionType.DESTROY);
+                this.world.createExplosion(this, damageSource, null, this.getX(), this.getY(), this.getZ(), 6.0f, false, World.ExplosionSourceType.BLOCK);
             }
             this.crystalDestroyed(source);
         }

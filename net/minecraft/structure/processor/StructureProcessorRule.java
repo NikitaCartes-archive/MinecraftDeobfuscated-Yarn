@@ -18,7 +18,7 @@ import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 
 public class StructureProcessorRule {
-    public static final Codec<StructureProcessorRule> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)RuleTest.TYPE_CODEC.fieldOf("input_predicate")).forGetter(rule -> rule.inputPredicate), ((MapCodec)RuleTest.TYPE_CODEC.fieldOf("location_predicate")).forGetter(rule -> rule.locationPredicate), PosRuleTest.field_25007.optionalFieldOf("position_predicate", AlwaysTruePosRuleTest.INSTANCE).forGetter(rule -> rule.positionPredicate), ((MapCodec)BlockState.CODEC.fieldOf("output_state")).forGetter(rule -> rule.outputState), NbtCompound.CODEC.optionalFieldOf("output_nbt").forGetter(rule -> Optional.ofNullable(rule.outputNbt))).apply((Applicative<StructureProcessorRule, ?>)instance, StructureProcessorRule::new));
+    public static final Codec<StructureProcessorRule> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)RuleTest.TYPE_CODEC.fieldOf("input_predicate")).forGetter(rule -> rule.inputPredicate), ((MapCodec)RuleTest.TYPE_CODEC.fieldOf("location_predicate")).forGetter(rule -> rule.locationPredicate), PosRuleTest.BASE_CODEC.optionalFieldOf("position_predicate", AlwaysTruePosRuleTest.INSTANCE).forGetter(rule -> rule.positionPredicate), ((MapCodec)BlockState.CODEC.fieldOf("output_state")).forGetter(rule -> rule.outputState), NbtCompound.CODEC.optionalFieldOf("output_nbt").forGetter(rule -> Optional.ofNullable(rule.outputNbt))).apply((Applicative<StructureProcessorRule, ?>)instance, StructureProcessorRule::new));
     private final RuleTest inputPredicate;
     private final RuleTest locationPredicate;
     private final PosRuleTest positionPredicate;
@@ -42,8 +42,8 @@ public class StructureProcessorRule {
         this.outputNbt = nbt.orElse(null);
     }
 
-    public boolean test(BlockState input, BlockState location, BlockPos blockPos, BlockPos blockPos2, BlockPos pivot, Random random) {
-        return this.inputPredicate.test(input, random) && this.locationPredicate.test(location, random) && this.positionPredicate.test(blockPos, blockPos2, pivot, random);
+    public boolean test(BlockState input, BlockState currentState, BlockPos originalPos, BlockPos currentPos, BlockPos pivot, Random random) {
+        return this.inputPredicate.test(input, random) && this.locationPredicate.test(currentState, random) && this.positionPredicate.test(originalPos, currentPos, pivot, random);
     }
 
     public BlockState getOutputState() {

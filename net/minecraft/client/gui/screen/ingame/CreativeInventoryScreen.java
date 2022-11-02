@@ -84,6 +84,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
     private boolean lastClickOutsideBounds;
     private final Set<TagKey<Item>> searchResultTags = new HashSet<TagKey<Item>>();
     private final FeatureSet enabledFeatures;
+    private Set<ItemStack> searchDisplayStacks = Set.of();
 
     public CreativeInventoryScreen(PlayerEntity player, FeatureSet enabledFeatures) {
         super(new CreativeScreenHandler(player), player.getInventory(), ScreenTexts.EMPTY);
@@ -327,7 +328,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
         this.searchResultTags.clear();
         String string = this.searchBox.getText();
         if (string.isEmpty()) {
-            ((CreativeScreenHandler)this.handler).itemList.addAll(ItemGroups.SEARCH.getDisplayStacks(this.enabledFeatures));
+            ((CreativeScreenHandler)this.handler).itemList.addAll(this.searchDisplayStacks);
         } else {
             SearchProvider<ItemStack> searchProvider;
             if (string.startsWith("#")) {
@@ -430,8 +431,10 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
                 }
                 ((CreativeScreenHandler)this.handler).itemList.addAll(hotbarStorageEntry);
             }
-        } else if (group != ItemGroups.SEARCH) {
-            ((CreativeScreenHandler)this.handler).itemList.addAll(group.getDisplayStacks(this.enabledFeatures));
+        } else if (group == ItemGroups.SEARCH) {
+            this.searchDisplayStacks = ItemGroups.SEARCH.getDisplayStacks(this.enabledFeatures, this.client.player.isCreativeLevelTwoOp());
+        } else {
+            ((CreativeScreenHandler)this.handler).itemList.addAll(group.getDisplayStacks(this.enabledFeatures, this.client.player.isCreativeLevelTwoOp()));
         }
         if (group == ItemGroups.INVENTORY) {
             PlayerScreenHandler screenHandler = this.client.player.playerScreenHandler;
@@ -558,7 +561,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
             });
             int i = 1;
             for (ItemGroup itemGroup : ItemGroups.GROUPS) {
-                if (itemGroup == ItemGroups.SEARCH || !itemGroup.contains(this.enabledFeatures, stack)) continue;
+                if (itemGroup == ItemGroups.SEARCH || !itemGroup.contains(this.enabledFeatures, stack, this.client.player.isCreativeLevelTwoOp())) continue;
                 list2.add(i++, itemGroup.getDisplayName().copy().formatted(Formatting.BLUE));
             }
             this.renderTooltip(matrices, list2, stack.getTooltipData(), x, y);

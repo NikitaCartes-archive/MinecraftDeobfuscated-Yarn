@@ -24,13 +24,14 @@ import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.RegistryWrapper;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureKeys;
 
 public class EndTabAdvancementGenerator
 implements AdvancementTabGenerator {
     @Override
-    public void accept(Consumer<Advancement> exporter) {
+    public void accept(RegistryWrapper.WrapperLookup lookup, Consumer<Advancement> exporter) {
         Advancement advancement = Advancement.Builder.create().display(Blocks.END_STONE, (Text)Text.translatable("advancements.end.root.title"), (Text)Text.translatable("advancements.end.root.description"), new Identifier("textures/gui/advancements/backgrounds/end.png"), AdvancementFrame.TASK, false, false, false).criterion("entered_end", ChangedDimensionCriterion.Conditions.to(World.END)).build(exporter, "end/root");
         Advancement advancement2 = Advancement.Builder.create().parent(advancement).display(Blocks.DRAGON_HEAD, (Text)Text.translatable("advancements.end.kill_dragon.title"), (Text)Text.translatable("advancements.end.kill_dragon.description"), null, AdvancementFrame.TASK, true, true, false).criterion("killed_dragon", OnKilledCriterion.Conditions.createPlayerKilledEntity(EntityPredicate.Builder.create().type(EntityType.ENDER_DRAGON))).build(exporter, "end/kill_dragon");
         Advancement advancement3 = Advancement.Builder.create().parent(advancement2).display(Items.ENDER_PEARL, (Text)Text.translatable("advancements.end.enter_end_gateway.title"), (Text)Text.translatable("advancements.end.enter_end_gateway.description"), null, AdvancementFrame.TASK, true, true, false).criterion("entered_end_gateway", EnterBlockCriterion.Conditions.block(Blocks.END_GATEWAY)).build(exporter, "end/enter_end_gateway");

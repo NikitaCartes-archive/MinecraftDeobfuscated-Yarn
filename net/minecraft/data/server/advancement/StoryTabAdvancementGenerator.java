@@ -23,13 +23,14 @@ import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.RegistryWrapper;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureKeys;
 
 public class StoryTabAdvancementGenerator
 implements AdvancementTabGenerator {
     @Override
-    public void accept(Consumer<Advancement> exporter) {
+    public void accept(RegistryWrapper.WrapperLookup lookup, Consumer<Advancement> exporter) {
         Advancement advancement = Advancement.Builder.create().display(Blocks.GRASS_BLOCK, (Text)Text.translatable("advancements.story.root.title"), (Text)Text.translatable("advancements.story.root.description"), new Identifier("textures/gui/advancements/backgrounds/stone.png"), AdvancementFrame.TASK, false, false, false).criterion("crafting_table", InventoryChangedCriterion.Conditions.items(Blocks.CRAFTING_TABLE)).build(exporter, "story/root");
         Advancement advancement2 = Advancement.Builder.create().parent(advancement).display(Items.WOODEN_PICKAXE, (Text)Text.translatable("advancements.story.mine_stone.title"), (Text)Text.translatable("advancements.story.mine_stone.description"), null, AdvancementFrame.TASK, true, true, false).criterion("get_stone", InventoryChangedCriterion.Conditions.items(ItemPredicate.Builder.create().tag(ItemTags.STONE_TOOL_MATERIALS).build())).build(exporter, "story/mine_stone");
         Advancement advancement3 = Advancement.Builder.create().parent(advancement2).display(Items.STONE_PICKAXE, (Text)Text.translatable("advancements.story.upgrade_tools.title"), (Text)Text.translatable("advancements.story.upgrade_tools.description"), null, AdvancementFrame.TASK, true, true, false).criterion("stone_pickaxe", InventoryChangedCriterion.Conditions.items(Items.STONE_PICKAXE)).build(exporter, "story/upgrade_tools");

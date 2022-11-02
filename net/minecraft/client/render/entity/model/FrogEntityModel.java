@@ -21,7 +21,7 @@ import net.minecraft.entity.passive.FrogEntity;
 @Environment(value=EnvType.CLIENT)
 public class FrogEntityModel<T extends FrogEntity>
 extends SinglePartEntityModel<T> {
-    private static final float field_39194 = 200.0f;
+    private static final float field_39194 = 9000.0f;
     public static final float field_39193 = 8.0f;
     private final ModelPart root;
     private final ModelPart body;
@@ -72,7 +72,7 @@ extends SinglePartEntityModel<T> {
     @Override
     public void setAngles(T frogEntity, float f, float g, float h, float i, float j) {
         this.getPart().traverse().forEach(ModelPart::resetTransform);
-        float k = Math.min((float)((Entity)frogEntity).getVelocity().lengthSquared() * 200.0f, 8.0f);
+        float k = Math.min((float)((Entity)frogEntity).getVelocity().horizontalLengthSquared() * 9000.0f, 8.0f);
         this.updateAnimation(((FrogEntity)frogEntity).longJumpingAnimationState, FrogAnimations.LONG_JUMPING, h);
         this.updateAnimation(((FrogEntity)frogEntity).croakingAnimationState, FrogAnimations.CROAKING, h);
         this.updateAnimation(((FrogEntity)frogEntity).usingTongueAnimationState, FrogAnimations.USING_TONGUE, h);

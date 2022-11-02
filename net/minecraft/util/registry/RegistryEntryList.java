@@ -14,9 +14,8 @@ import java.util.stream.Stream;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.util.registry.RegistryEntryOwner;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
@@ -68,19 +67,14 @@ extends Iterable<RegistryEntry<T>> {
      */
     public boolean contains(RegistryEntry<T> var1);
 
-    /**
-     * {@return whether the list is of entries from {@code registry}}
-     * 
-     * <p>This always returns {@code true} for direct lists.
-     */
-    public boolean isOf(Registry<T> var1);
+    public boolean ownerEquals(RegistryEntryOwner<T> var1);
 
     public Optional<TagKey<T>> getTagKey();
 
     @Deprecated
     @VisibleForTesting
-    public static <T> Named<T> of(Registry<T> registry, TagKey<T> tagKey) {
-        return new Named<T>(registry, tagKey);
+    public static <T> Named<T> of(RegistryEntryOwner<T> owner, TagKey<T> tagKey) {
+        return new Named<T>(owner, tagKey);
     }
 
     /**
@@ -115,12 +109,12 @@ extends Iterable<RegistryEntry<T>> {
 
     public static class Named<T>
     extends ListBacked<T> {
-        private final Registry<T> registry;
+        private final RegistryEntryOwner<T> owner;
         private final TagKey<T> tag;
         private List<RegistryEntry<T>> entries = List.of();
 
-        Named(Registry<T> registry, TagKey<T> tag) {
-            this.registry = registry;
+        Named(RegistryEntryOwner<T> owner, TagKey<T> tag) {
+            this.owner = owner;
             this.tag = tag;
         }
 
@@ -157,8 +151,8 @@ extends Iterable<RegistryEntry<T>> {
         }
 
         @Override
-        public boolean isOf(Registry<T> registry) {
-            return this.registry == registry;
+        public boolean ownerEquals(RegistryEntryOwner<T> owner) {
+            return this.owner.ownerEquals(owner);
         }
     }
 
@@ -215,7 +209,6 @@ extends Iterable<RegistryEntry<T>> {
         }
 
         @Override
-        @NotNull
         public Iterator<RegistryEntry<T>> iterator() {
             return this.getEntries().iterator();
         }
@@ -236,7 +229,7 @@ extends Iterable<RegistryEntry<T>> {
         }
 
         @Override
-        public boolean isOf(Registry<T> registry) {
+        public boolean ownerEquals(RegistryEntryOwner<T> owner) {
             return true;
         }
     }

@@ -1381,8 +1381,8 @@ extends AnimalEntity {
             return TYPES[id];
         }
 
-        public static Type fromBiome(RegistryEntry<Biome> registryEntry) {
-            return registryEntry.value().getPrecipitation() == Biome.Precipitation.SNOW ? SNOW : RED;
+        public static Type fromBiome(RegistryEntry<Biome> biome) {
+            return biome.value().getPrecipitation() == Biome.Precipitation.SNOW ? SNOW : RED;
         }
 
         static {

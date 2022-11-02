@@ -18,6 +18,7 @@ import com.mojang.brigadier.tree.RootCommandNode;
 import com.mojang.logging.LogUtils;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
@@ -30,7 +31,6 @@ import net.minecraft.command.argument.ArgumentHelper;
 import net.minecraft.command.argument.ArgumentTypes;
 import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.network.packet.s2c.play.CommandTreeS2CPacket;
-import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.command.AdvancementCommand;
 import net.minecraft.server.command.AttributeCommand;
@@ -106,6 +106,7 @@ import net.minecraft.server.dedicated.command.SetIdleTimeoutCommand;
 import net.minecraft.server.dedicated.command.StopCommand;
 import net.minecraft.server.dedicated.command.WhitelistCommand;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.tag.TagKey;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
@@ -115,6 +116,10 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import net.minecraft.util.profiling.jfr.FlightProfiler;
 import net.minecraft.util.registry.BuiltinRegistries;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntryList;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.RegistryWrapper;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -356,9 +361,31 @@ public class CommandManager {
         return CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().createWithContext(parse.getReader());
     }
 
+    public static CommandRegistryAccess createRegistryAccess(final RegistryWrapper.WrapperLookup registryLookup) {
+        return new CommandRegistryAccess(){
+
+            @Override
+            public <T> RegistryWrapper<T> createWrapper(RegistryKey<? extends Registry<T>> registryRef) {
+                final RegistryWrapper.Impl impl = registryLookup.getWrapperOrThrow(registryRef);
+                return new RegistryWrapper.Delegating<T>(impl){
+
+                    @Override
+                    public Optional<RegistryEntryList.Named<T>> getOptional(TagKey<T> tag) {
+                        return Optional.of(this.getOrThrow(tag));
+                    }
+
+                    @Override
+                    public RegistryEntryList.Named<T> getOrThrow(TagKey<T> tag) {
+                        Optional<RegistryEntryList.Named<RegistryEntryList.Named>> optional = impl.getOptional(tag);
+                        return optional.orElseGet(() -> RegistryEntryList.of(impl, tag));
+                    }
+                };
+            }
+        };
+    }
+
     public static void checkMissing() {
-        CommandRegistryAccess commandRegistryAccess = new CommandRegistryAccess(BuiltinRegistries.createBuiltinRegistryManager(), FeatureFlags.FEATURE_MANAGER.getFeatureSet());
-        commandRegistryAccess.setEntryListCreationPolicy(CommandRegistryAccess.EntryListCreationPolicy.RETURN_EMPTY);
+        CommandRegistryAccess commandRegistryAccess = CommandManager.createRegistryAccess(BuiltinRegistries.createWrapperLookup());
         CommandDispatcher<ServerCommandSource> commandDispatcher = new CommandManager(RegistrationEnvironment.ALL, commandRegistryAccess).getDispatcher();
         RootCommandNode<ServerCommandSource> rootCommandNode = commandDispatcher.getRoot();
         commandDispatcher.findAmbiguities((parent, child, sibling, inputs) -> LOGGER.warn("Ambiguity between arguments {} and {} with inputs: {}", commandDispatcher.getPath(child), commandDispatcher.getPath(sibling), inputs));

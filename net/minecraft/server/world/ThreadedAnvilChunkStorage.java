@@ -84,6 +84,7 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.thread.MessageListener;
 import net.minecraft.util.thread.TaskExecutor;
@@ -103,6 +104,7 @@ import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
+import net.minecraft.world.gen.chunk.placement.StructurePlacementCalculator;
 import net.minecraft.world.gen.noise.NoiseConfig;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.poi.PointOfInterestStorage;
@@ -138,6 +140,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     private final ThreadExecutor<Runnable> mainThreadExecutor;
     private ChunkGenerator chunkGenerator;
     private final NoiseConfig noiseConfig;
+    private final StructurePlacementCalculator structurePlacementCalculator;
     private final Supplier<PersistentStateManager> persistentStateManagerFactory;
     private final PointOfInterestStorage pointOfInterestStorage;
     final LongSet unloadedChunks = new LongOpenHashSet();
@@ -165,12 +168,15 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         this.saveDir = path.getFileName().toString();
         this.world = world;
         this.chunkGenerator = chunkGenerator;
+        DynamicRegistryManager dynamicRegistryManager = world.getRegistryManager();
+        long l = world.getSeed();
         if (chunkGenerator instanceof NoiseChunkGenerator) {
             NoiseChunkGenerator noiseChunkGenerator = (NoiseChunkGenerator)chunkGenerator;
-            this.noiseConfig = NoiseConfig.create(noiseChunkGenerator.getSettings().value(), world.getRegistryManager().get(Registry.NOISE_KEY), world.getSeed());
+            this.noiseConfig = NoiseConfig.create(noiseChunkGenerator.getSettings().value(), dynamicRegistryManager.getWrapperOrThrow(Registry.NOISE_KEY), l);
         } else {
-            this.noiseConfig = NoiseConfig.create(ChunkGeneratorSettings.createMissingSettings(), world.getRegistryManager().get(Registry.NOISE_KEY), world.getSeed());
+            this.noiseConfig = NoiseConfig.create(ChunkGeneratorSettings.createMissingSettings(), dynamicRegistryManager.getWrapperOrThrow(Registry.NOISE_KEY), l);
         }
+        this.structurePlacementCalculator = chunkGenerator.createStructurePlacementCalculator(dynamicRegistryManager.getWrapperOrThrow(Registry.STRUCTURE_SET_KEY), this.noiseConfig, l);
         this.mainThreadExecutor = mainThreadExecutor;
         TaskExecutor<Runnable> taskExecutor = TaskExecutor.create(executor, "worldgen");
         MessageListener<Runnable> messageListener = MessageListener.create("main", mainThreadExecutor::send);
@@ -183,12 +189,16 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         this.lightingProvider = new ServerLightingProvider(chunkProvider, this, this.world.getDimension().hasSkyLight(), taskExecutor2, this.chunkTaskPrioritySystem.createExecutor(taskExecutor2, false));
         this.ticketManager = new TicketManager(executor, mainThreadExecutor);
         this.persistentStateManagerFactory = persistentStateManagerFactory;
-        this.pointOfInterestStorage = new PointOfInterestStorage(path.resolve("poi"), dataFixer, dsync, world.getRegistryManager(), world);
+        this.pointOfInterestStorage = new PointOfInterestStorage(path.resolve("poi"), dataFixer, dsync, dynamicRegistryManager, world);
         this.setViewDistance(viewDistance);
     }
 
     protected ChunkGenerator getChunkGenerator() {
         return this.chunkGenerator;
+    }
+
+    protected StructurePlacementCalculator getStructurePlacementCalculator() {
+        return this.structurePlacementCalculator;
     }
 
     protected NoiseConfig getNoiseConfig() {

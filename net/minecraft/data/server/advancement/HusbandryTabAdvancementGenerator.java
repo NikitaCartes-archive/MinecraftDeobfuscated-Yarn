@@ -44,6 +44,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.RegistryWrapper;
 
 public class HusbandryTabAdvancementGenerator
 implements AdvancementTabGenerator {
@@ -55,7 +56,7 @@ implements AdvancementTabGenerator {
     private static final Item[] AXE_ITEMS = new Item[]{Items.WOODEN_AXE, Items.GOLDEN_AXE, Items.STONE_AXE, Items.IRON_AXE, Items.DIAMOND_AXE, Items.NETHERITE_AXE};
 
     @Override
-    public void accept(Consumer<Advancement> exporter) {
+    public void accept(RegistryWrapper.WrapperLookup lookup, Consumer<Advancement> exporter) {
         Advancement advancement = Advancement.Builder.create().display(Blocks.HAY_BLOCK, (Text)Text.translatable("advancements.husbandry.root.title"), (Text)Text.translatable("advancements.husbandry.root.description"), new Identifier("textures/gui/advancements/backgrounds/husbandry.png"), AdvancementFrame.TASK, false, false, false).criterion("consumed_item", ConsumeItemCriterion.Conditions.any()).build(exporter, "husbandry/root");
         Advancement advancement2 = Advancement.Builder.create().parent(advancement).display(Items.WHEAT, (Text)Text.translatable("advancements.husbandry.plant_seed.title"), (Text)Text.translatable("advancements.husbandry.plant_seed.description"), null, AdvancementFrame.TASK, true, true, false).criteriaMerger(CriterionMerger.OR).criterion("wheat", PlacedBlockCriterion.Conditions.block(Blocks.WHEAT)).criterion("pumpkin_stem", PlacedBlockCriterion.Conditions.block(Blocks.PUMPKIN_STEM)).criterion("melon_stem", PlacedBlockCriterion.Conditions.block(Blocks.MELON_STEM)).criterion("beetroots", PlacedBlockCriterion.Conditions.block(Blocks.BEETROOTS)).criterion("nether_wart", PlacedBlockCriterion.Conditions.block(Blocks.NETHER_WART)).build(exporter, "husbandry/plant_seed");
         Advancement advancement3 = Advancement.Builder.create().parent(advancement).display(Items.WHEAT, (Text)Text.translatable("advancements.husbandry.breed_an_animal.title"), (Text)Text.translatable("advancements.husbandry.breed_an_animal.description"), null, AdvancementFrame.TASK, true, true, false).criteriaMerger(CriterionMerger.OR).criterion("bred", BredAnimalsCriterion.Conditions.any()).build(exporter, "husbandry/breed_an_animal");

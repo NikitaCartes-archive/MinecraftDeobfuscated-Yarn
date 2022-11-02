@@ -642,7 +642,8 @@ implements WindowEventHandler {
             this.resourceReloadLogger.finish();
         }), false));
         if (string != null) {
-            resourceReload.whenComplete().thenRunAsync(() -> ConnectScreen.connect(new TitleScreen(), this, new ServerAddress(string, i), null), this);
+            ServerAddress serverAddress = new ServerAddress(string, i);
+            resourceReload.whenComplete().thenRunAsync(() -> ConnectScreen.connect(new TitleScreen(), this, serverAddress, new ServerInfo(I18n.translate("selectServer.defaultName", new Object[0]), serverAddress.toString(), false)), this);
         } else if (this.isMultiplayerBanned()) {
             this.setScreen(Bans.createBanScreen(confirmed -> {
                 if (confirmed) {
@@ -786,6 +787,10 @@ implements WindowEventHandler {
         this.searchManager.put(SearchManager.ITEM_TOOLTIP, stacks -> new TextSearchProvider<ItemStack>(stack -> stack.getTooltip(null, TooltipContext.Default.NORMAL).stream().map(tooltip -> Formatting.strip(tooltip.getString()).trim()).filter(string -> !string.isEmpty()), stack -> Stream.of(Registry.ITEM.getId(stack.getItem())), (List<ItemStack>)stacks));
         this.searchManager.put(SearchManager.ITEM_TAG, stacks -> new IdentifierSearchProvider<ItemStack>(stack -> stack.streamTags().map(TagKey::id), (List<ItemStack>)stacks));
         this.searchManager.put(SearchManager.RECIPE_OUTPUT, resultCollections -> new TextSearchProvider<RecipeResultCollection>(resultCollection -> resultCollection.getAllRecipes().stream().flatMap(recipe -> recipe.getOutput().getTooltip(null, TooltipContext.Default.NORMAL).stream()).map(text -> Formatting.strip(text.getString()).trim()).filter(text -> !text.isEmpty()), resultCollection -> resultCollection.getAllRecipes().stream().map(recipe -> Registry.ITEM.getId(recipe.getOutput().getItem())), (List<RecipeResultCollection>)resultCollections));
+        ItemGroups.SEARCH.setSearchProviderReloader(list -> {
+            this.reloadSearchProvider(SearchManager.ITEM_TOOLTIP, (List)list);
+            this.reloadSearchProvider(SearchManager.ITEM_TAG, (List)list);
+        });
     }
 
     private void handleGlErrorByDisableVsync(int error, long description) {
@@ -890,7 +895,7 @@ implements WindowEventHandler {
                 bl = true;
             }
         }
-        for (ItemStack itemStack : ItemGroups.SEARCH.getDisplayStacks(FeatureFlags.FEATURE_MANAGER.getFeatureSet())) {
+        for (ItemStack itemStack : ItemGroups.SEARCH.getDisplayStacks(FeatureFlags.FEATURE_MANAGER.getFeatureSet(), true)) {
             String string = itemStack.getTranslationKey();
             String string2 = Text.translatable(string).getString();
             if (!string2.toLowerCase(Locale.ROOT).equals(itemStack.getItem().getTranslationKey())) continue;

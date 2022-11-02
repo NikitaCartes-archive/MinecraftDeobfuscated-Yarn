@@ -15,7 +15,6 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.world.World;
-import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.Nullable;
 
 public class TntEntity
@@ -84,7 +83,7 @@ extends Entity {
 
     private void explode() {
         float f = 4.0f;
-        this.world.createExplosion(this, this.getX(), this.getBodyY(0.0625), this.getZ(), 4.0f, Explosion.DestructionType.BREAK);
+        this.world.createExplosion(this, this.getX(), this.getBodyY(0.0625), this.getZ(), 4.0f, World.ExplosionSourceType.TNT);
     }
 
     @Override

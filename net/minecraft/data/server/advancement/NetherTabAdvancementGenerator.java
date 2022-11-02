@@ -49,6 +49,7 @@ import net.minecraft.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.RegistryWrapper;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
@@ -60,7 +61,7 @@ implements AdvancementTabGenerator {
     private static final EntityPredicate.Extended PIGLIN_DISTRACTION_PREDICATE = EntityPredicate.Extended.create(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, EntityPredicate.Builder.create().equipment(EntityEquipmentPredicate.Builder.create().head(ItemPredicate.Builder.create().items(Items.GOLDEN_HELMET).build()).build())).invert().build(), EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, EntityPredicate.Builder.create().equipment(EntityEquipmentPredicate.Builder.create().chest(ItemPredicate.Builder.create().items(Items.GOLDEN_CHESTPLATE).build()).build())).invert().build(), EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, EntityPredicate.Builder.create().equipment(EntityEquipmentPredicate.Builder.create().legs(ItemPredicate.Builder.create().items(Items.GOLDEN_LEGGINGS).build()).build())).invert().build(), EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, EntityPredicate.Builder.create().equipment(EntityEquipmentPredicate.Builder.create().feet(ItemPredicate.Builder.create().items(Items.GOLDEN_BOOTS).build()).build())).invert().build());
 
     @Override
-    public void accept(Consumer<Advancement> exporter) {
+    public void accept(RegistryWrapper.WrapperLookup lookup, Consumer<Advancement> exporter) {
         Advancement advancement = Advancement.Builder.create().display(Blocks.RED_NETHER_BRICKS, (Text)Text.translatable("advancements.nether.root.title"), (Text)Text.translatable("advancements.nether.root.description"), new Identifier("textures/gui/advancements/backgrounds/nether.png"), AdvancementFrame.TASK, false, false, false).criterion("entered_nether", ChangedDimensionCriterion.Conditions.to(World.NETHER)).build(exporter, "nether/root");
         Advancement advancement2 = Advancement.Builder.create().parent(advancement).display(Items.FIRE_CHARGE, (Text)Text.translatable("advancements.nether.return_to_sender.title"), (Text)Text.translatable("advancements.nether.return_to_sender.description"), null, AdvancementFrame.CHALLENGE, true, true, false).rewards(AdvancementRewards.Builder.experience(50)).criterion("killed_ghast", OnKilledCriterion.Conditions.createPlayerKilledEntity(EntityPredicate.Builder.create().type(EntityType.GHAST), DamageSourcePredicate.Builder.create().projectile(true).directEntity(EntityPredicate.Builder.create().type(EntityType.FIREBALL)))).build(exporter, "nether/return_to_sender");
         Advancement advancement3 = Advancement.Builder.create().parent(advancement).display(Blocks.NETHER_BRICKS, (Text)Text.translatable("advancements.nether.find_fortress.title"), (Text)Text.translatable("advancements.nether.find_fortress.description"), null, AdvancementFrame.TASK, true, true, false).criterion("fortress", TickCriterion.Conditions.createLocation(LocationPredicate.feature(StructureKeys.FORTRESS))).build(exporter, "nether/find_fortress");

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
@@ -32,13 +33,16 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryEntryLookup;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.RegistryWrapper;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.FlatLevelGeneratorPreset;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorLayer;
+import net.minecraft.world.gen.feature.PlacedFeature;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
@@ -122,29 +126,25 @@ extends Screen {
         return list;
     }
 
-    public static FlatChunkGeneratorConfig parsePresetString(Registry<Biome> biomeRegistry, Registry<StructureSet> structureSetRegistry, String preset, FlatChunkGeneratorConfig generatorConfig) {
+    public static FlatChunkGeneratorConfig parsePresetString(RegistryEntryLookup<Biome> biomeLookup, RegistryEntryLookup<StructureSet> structureSetLookup, RegistryEntryLookup<PlacedFeature> featureLookup, String preset, FlatChunkGeneratorConfig config) {
+        RegistryEntry.Reference<Biome> reference;
         Iterator<String> iterator = Splitter.on(';').split(preset).iterator();
         if (!iterator.hasNext()) {
-            return FlatChunkGeneratorConfig.getDefaultConfig(biomeRegistry, structureSetRegistry);
+            return FlatChunkGeneratorConfig.getDefaultConfig(biomeLookup, structureSetLookup, featureLookup);
         }
         List<FlatChunkGeneratorLayer> list = PresetsScreen.parsePresetLayersString(iterator.next());
         if (list.isEmpty()) {
-            return FlatChunkGeneratorConfig.getDefaultConfig(biomeRegistry, structureSetRegistry);
+            return FlatChunkGeneratorConfig.getDefaultConfig(biomeLookup, structureSetLookup, featureLookup);
         }
-        FlatChunkGeneratorConfig flatChunkGeneratorConfig = generatorConfig.withLayers(list, generatorConfig.getStructureOverrides());
-        RegistryKey<Biome> registryKey = BIOME_KEY;
+        RegistryEntry<Biome> registryEntry = reference = biomeLookup.getOrThrow(BIOME_KEY);
         if (iterator.hasNext()) {
-            try {
-                Identifier identifier = new Identifier(iterator.next());
-                registryKey = RegistryKey.of(Registry.BIOME_KEY, identifier);
-                biomeRegistry.getOrEmpty(registryKey).orElseThrow(() -> new IllegalArgumentException("Invalid Biome: " + identifier));
-            } catch (Exception exception) {
-                LOGGER.error("Error while parsing flat world string => {}", (Object)exception.getMessage());
-                registryKey = BIOME_KEY;
-            }
+            String string = iterator.next();
+            registryEntry = Optional.ofNullable(Identifier.tryParse(string)).map(biomeId -> RegistryKey.of(Registry.BIOME_KEY, biomeId)).flatMap(biomeLookup::getOptional).orElseGet(() -> {
+                LOGGER.warn("Invalid biome: {}", (Object)string);
+                return reference;
+            });
         }
-        flatChunkGeneratorConfig.setBiome(biomeRegistry.getOrCreateEntry(registryKey));
-        return flatChunkGeneratorConfig;
+        return config.with(list, config.getStructureOverrides(), registryEntry);
     }
 
     static String getGeneratorConfigString(FlatChunkGeneratorConfig config) {
@@ -168,15 +168,16 @@ extends Screen {
         this.customPresetField = new TextFieldWidget(this.textRenderer, 50, 40, this.width - 100, 20, this.shareText);
         this.customPresetField.setMaxLength(1230);
         DynamicRegistryManager dynamicRegistryManager = this.parent.parent.moreOptionsDialog.getRegistryManager();
-        Registry<Biome> registry = dynamicRegistryManager.get(Registry.BIOME_KEY);
-        Registry<StructureSet> registry2 = dynamicRegistryManager.get(Registry.STRUCTURE_SET_KEY);
+        RegistryWrapper.Impl<Biome> registryEntryLookup = dynamicRegistryManager.getWrapperOrThrow(Registry.BIOME_KEY);
+        RegistryWrapper.Impl<StructureSet> registryEntryLookup2 = dynamicRegistryManager.getWrapperOrThrow(Registry.STRUCTURE_SET_KEY);
+        RegistryWrapper.Impl<PlacedFeature> registryEntryLookup3 = dynamicRegistryManager.getWrapperOrThrow(Registry.PLACED_FEATURE_KEY);
         this.customPresetField.setText(PresetsScreen.getGeneratorConfigString(this.parent.getConfig()));
         this.config = this.parent.getConfig();
         this.addSelectableChild(this.customPresetField);
         this.listWidget = new SuperflatPresetsListWidget(this.parent.parent.moreOptionsDialog.getRegistryManager());
         this.addSelectableChild(this.listWidget);
         this.selectPresetButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("createWorld.customize.presets.select"), buttonWidget -> {
-            FlatChunkGeneratorConfig flatChunkGeneratorConfig = PresetsScreen.parsePresetString(registry, registry2, this.customPresetField.getText(), this.config);
+            FlatChunkGeneratorConfig flatChunkGeneratorConfig = PresetsScreen.parsePresetString(registryEntryLookup, registryEntryLookup2, registryEntryLookup3, this.customPresetField.getText(), this.config);
             this.parent.setConfig(flatChunkGeneratorConfig);
             this.client.setScreen(this.parent);
         }).setPositionAndSize(this.width / 2 - 155, this.height - 28, 150, 20).build());

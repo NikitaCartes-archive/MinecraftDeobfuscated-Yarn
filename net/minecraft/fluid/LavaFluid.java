@@ -172,8 +172,8 @@ extends FlowableFluid {
     }
 
     @Override
-    protected boolean isInfinite() {
-        return false;
+    protected boolean isInfinite(World world) {
+        return world.getGameRules().getBoolean(GameRules.LAVA_SOURCE_CONVERSION);
     }
 
     @Override

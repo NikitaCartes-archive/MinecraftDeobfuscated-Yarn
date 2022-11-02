@@ -188,7 +188,7 @@ implements ResourcePackProvider {
     }
 
     public CompletableFuture<Void> loadServerPack(File packZip, ResourcePackSource packSource) {
-        ResourcePackProfile.PackFactory packFactory = name -> new ZipResourcePack(name, packZip);
+        ResourcePackProfile.PackFactory packFactory = name -> new ZipResourcePack(name, packZip, false);
         ResourcePackProfile.Metadata metadata = ResourcePackProfile.loadMetadata(SERVER, packFactory);
         if (metadata == null) {
             return CompletableFuture.failedFuture(new IllegalArgumentException("Invalid pack metadata at " + packZip));

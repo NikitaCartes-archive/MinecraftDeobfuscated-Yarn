@@ -222,8 +222,8 @@ public class EntityModelLayers {
         return EntityModelLayers.create("sign/" + type.getName(), MAIN);
     }
 
-    public static EntityModelLayer createHangingSign(SignType signType) {
-        return EntityModelLayers.create("hanging_sign/" + signType.getName(), MAIN);
+    public static EntityModelLayer createHangingSign(SignType type) {
+        return EntityModelLayers.create("hanging_sign/" + type.getName(), MAIN);
     }
 
     public static Stream<EntityModelLayer> getLayers() {

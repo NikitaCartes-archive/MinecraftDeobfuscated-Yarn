@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 public class DefaultedRegistry<T>
 extends SimpleRegistry<T> {
     private final Identifier defaultId;
-    private RegistryEntry<T> defaultEntry;
+    private RegistryEntry.Reference<T> defaultEntry;
 
     public DefaultedRegistry(String defaultId, RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle, boolean intrusive) {
         super(key, lifecycle, intrusive);
@@ -28,12 +28,12 @@ extends SimpleRegistry<T> {
     }
 
     @Override
-    public RegistryEntry<T> set(int rawId, RegistryKey<T> key, T value, Lifecycle lifecycle) {
-        RegistryEntry<T> registryEntry = super.set(rawId, key, value, lifecycle);
-        if (this.defaultId.equals(key.getValue())) {
-            this.defaultEntry = registryEntry;
+    public RegistryEntry.Reference<T> set(int i, RegistryKey<T> registryKey, T object, Lifecycle lifecycle) {
+        RegistryEntry reference = super.set(i, (RegistryKey)registryKey, (Object)object, lifecycle);
+        if (this.defaultId.equals(registryKey.getValue())) {
+            this.defaultEntry = reference;
         }
-        return registryEntry;
+        return reference;
     }
 
     @Override
@@ -69,7 +69,7 @@ extends SimpleRegistry<T> {
     }
 
     @Override
-    public Optional<RegistryEntry<T>> getRandom(Random random) {
+    public Optional<RegistryEntry.Reference<T>> getRandom(Random random) {
         return super.getRandom(random).or(() -> Optional.of(this.defaultEntry));
     }
 
@@ -78,6 +78,11 @@ extends SimpleRegistry<T> {
      */
     public Identifier getDefaultId() {
         return this.defaultId;
+    }
+
+    @Override
+    public /* synthetic */ RegistryEntry set(int rawId, RegistryKey key, Object value, Lifecycle lifecycle) {
+        return this.set(rawId, key, value, lifecycle);
     }
 }
 

@@ -65,12 +65,8 @@ public class Explosion {
     private final ObjectArrayList<BlockPos> affectedBlocks = new ObjectArrayList();
     private final Map<PlayerEntity, Vec3d> affectedPlayers = Maps.newHashMap();
 
-    public Explosion(World world, @Nullable Entity entity, double x, double y, double z, float power) {
-        this(world, entity, x, y, z, power, false, DestructionType.DESTROY);
-    }
-
     public Explosion(World world, @Nullable Entity entity, double x, double y, double z, float power, List<BlockPos> affectedBlocks) {
-        this(world, entity, x, y, z, power, false, DestructionType.DESTROY, affectedBlocks);
+        this(world, entity, x, y, z, power, false, DestructionType.DESTROY_WITH_DECAY, affectedBlocks);
     }
 
     public Explosion(World world, @Nullable Entity entity, double x, double y, double z, float power, boolean createFire, DestructionType destructionType, List<BlockPos> affectedBlocks) {
@@ -207,11 +203,10 @@ public class Explosion {
      * @param particles whether this explosion should emit explosion or explosion emitter particles around the source of the explosion
      */
     public void affectWorld(boolean particles) {
-        boolean bl;
         if (this.world.isClient) {
             this.world.playSound(this.x, this.y, this.z, SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 4.0f, (1.0f + (this.world.random.nextFloat() - this.world.random.nextFloat()) * 0.2f) * 0.7f, false);
         }
-        boolean bl2 = bl = this.destructionType != DestructionType.NONE;
+        boolean bl = this.shouldDestroy();
         if (particles) {
             if (this.power < 2.0f || !bl) {
                 this.world.addParticle(ParticleTypes.EXPLOSION, this.x, this.y, this.z, 1.0, 0.0, 0.0);
@@ -221,7 +216,7 @@ public class Explosion {
         }
         if (bl) {
             ObjectArrayList objectArrayList = new ObjectArrayList();
-            boolean bl22 = this.getCausingEntity() instanceof PlayerEntity;
+            boolean bl2 = this.getCausingEntity() instanceof PlayerEntity;
             Util.shuffle(this.affectedBlocks, this.world.random);
             for (BlockPos blockPos : this.affectedBlocks) {
                 World world;
@@ -234,10 +229,10 @@ public class Explosion {
                     ServerWorld serverWorld = (ServerWorld)world;
                     BlockEntity blockEntity = blockState.hasBlockEntity() ? this.world.getBlockEntity(blockPos) : null;
                     LootContext.Builder builder = new LootContext.Builder(serverWorld).random(this.world.random).parameter(LootContextParameters.ORIGIN, Vec3d.ofCenter(blockPos)).parameter(LootContextParameters.TOOL, ItemStack.EMPTY).optionalParameter(LootContextParameters.BLOCK_ENTITY, blockEntity).optionalParameter(LootContextParameters.THIS_ENTITY, this.entity);
-                    if (this.destructionType == DestructionType.DESTROY) {
+                    if (this.destructionType == DestructionType.DESTROY_WITH_DECAY) {
                         builder.parameter(LootContextParameters.EXPLOSION_RADIUS, Float.valueOf(this.power));
                     }
-                    blockState.onStacksDropped(serverWorld, blockPos, ItemStack.EMPTY, bl22);
+                    blockState.onStacksDropped(serverWorld, blockPos, ItemStack.EMPTY, bl2);
                     blockState.getDroppedStacks(builder).forEach(stack -> Explosion.tryMergeStack(objectArrayList, stack, blockPos2));
                 }
                 this.world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
@@ -254,6 +249,10 @@ public class Explosion {
                 this.world.setBlockState(blockPos3, AbstractFireBlock.getState(this.world, blockPos3));
             }
         }
+    }
+
+    public boolean shouldDestroy() {
+        return this.destructionType != DestructionType.KEEP;
     }
 
     private static void tryMergeStack(ObjectArrayList<Pair<ItemStack, BlockPos>> stacks, ItemStack stack, BlockPos pos) {
@@ -317,9 +316,9 @@ public class Explosion {
     }
 
     public static enum DestructionType {
-        NONE,
-        BREAK,
-        DESTROY;
+        KEEP,
+        DESTROY,
+        DESTROY_WITH_DECAY;
 
     }
 }

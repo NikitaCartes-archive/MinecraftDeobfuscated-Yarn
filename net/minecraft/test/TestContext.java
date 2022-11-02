@@ -5,6 +5,7 @@ package net.minecraft.test;
 
 import com.mojang.authlib.GameProfile;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -288,8 +289,8 @@ public class TestContext {
         BlockState blockState = this.getBlockState(pos);
         boolean bl = blockState.contains(property);
         if (!bl || !blockState.get(property).equals(value)) {
-            String string = bl ? "was %s".formatted(blockState.get(property)) : "property %s is missing".formatted(property.getName());
-            String string2 = "Expected property %s to be %s, %s".formatted(property.getName(), value, string);
+            String string = bl ? "was " + blockState.get(property) : "property " + property.getName() + " is missing";
+            String string2 = String.format(Locale.ROOT, "Expected property %s to be %s, %s", property.getName(), value, string);
             throw new PositionedException(string2, this.getAbsolutePos(pos), pos, this.test.getTick());
         }
     }

@@ -14,7 +14,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
-import java.util.OptionalLong;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -70,12 +69,18 @@ implements Drawable {
     private ButtonWidget importSettingsButton;
     private GeneratorOptionsHolder generatorOptionsHolder;
     private Optional<RegistryEntry<WorldPreset>> presetEntry;
-    private OptionalLong seed;
+    private long seed;
 
-    public MoreOptionsDialog(GeneratorOptionsHolder generatorOptionsHolder, Optional<RegistryKey<WorldPreset>> presetKey, OptionalLong seed) {
+    public MoreOptionsDialog(GeneratorOptionsHolder generatorOptionsHolder, Optional<RegistryKey<WorldPreset>> presetKey, long seed) {
         this.generatorOptionsHolder = generatorOptionsHolder;
         this.presetEntry = MoreOptionsDialog.createPresetEntry(generatorOptionsHolder, presetKey);
         this.seed = seed;
+    }
+
+    public MoreOptionsDialog(GeneratorOptionsHolder generatorOptionsHolder, Optional<RegistryKey<WorldPreset>> presetKey) {
+        this.generatorOptionsHolder = generatorOptionsHolder;
+        this.presetEntry = MoreOptionsDialog.createPresetEntry(generatorOptionsHolder, presetKey);
+        this.seed = GeneratorOptions.getRandomSeed();
     }
 
     private static Optional<RegistryEntry<WorldPreset>> createPresetEntry(GeneratorOptionsHolder generatorOptionsHolder, Optional<RegistryKey<WorldPreset>> presetKey) {
@@ -86,7 +91,7 @@ implements Drawable {
         this.textRenderer = textRenderer;
         this.parentWidth = parent.width;
         this.seedTextField = new TextFieldWidget(this.textRenderer, this.parentWidth / 2 - 100, 60, 200, 20, Text.translatable("selectWorld.enterSeed"));
-        this.seedTextField.setText(MoreOptionsDialog.seedToString(this.seed));
+        this.seedTextField.setText(Long.toString(this.seed));
         this.seedTextField.setChangedListener(seedText -> {
             this.seed = GeneratorOptions.parseSeed(this.seedTextField.getText());
         });
@@ -120,7 +125,7 @@ implements Drawable {
             }
         }).setPositionAndSize(j, 120, 150, 20).build());
         this.customizeTypeButton.visible = false;
-        this.bonusItemsButton = parent.addDrawableChild(CyclingButtonWidget.onOffBuilder(this.generatorOptionsHolder.generatorOptions().hasBonusChest() && !parent.hardcore).build(i, 151, 150, 20, Text.translatable("selectWorld.bonusItems"), (button, bonusChest) -> this.apply(generatorOptions -> generatorOptions.withBonusChest((boolean)bonusChest))));
+        this.bonusItemsButton = parent.addDrawableChild(CyclingButtonWidget.onOffBuilder(this.generatorOptionsHolder.generatorOptions().hasBonusChest() && !parent.hardcore).build(i, 151, 150, 20, Text.translatable("selectWorld.bonusItems"), (button, bonusChest) -> this.apply(generationOptions -> generationOptions.withBonusChest((boolean)bonusChest))));
         this.bonusItemsButton.visible = false;
         this.importSettingsButton = parent.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("selectWorld.import_worldgen_settings"), button -> {
             DataResult<Object> dataResult;
@@ -166,8 +171,8 @@ implements Drawable {
         this.generatorOptionsHolder = this.generatorOptionsHolder.with(generatorOptions, dimensionsRegistryHolder);
         this.presetEntry = MoreOptionsDialog.createPresetEntry(this.generatorOptionsHolder, WorldPresets.getWorldPreset(dimensionsRegistryHolder.dimensions()));
         this.setMapTypeButtonVisible(true);
-        this.seed = OptionalLong.of(generatorOptions.getSeed());
-        this.seedTextField.setText(MoreOptionsDialog.seedToString(this.seed));
+        this.seed = generatorOptions.getSeed();
+        this.seedTextField.setText(Long.toString(this.seed));
     }
 
     public void tickSeedTextField() {
@@ -197,15 +202,8 @@ implements Drawable {
         this.generatorOptionsHolder = generatorOptionsHolder;
     }
 
-    private static String seedToString(OptionalLong seed) {
-        if (seed.isPresent()) {
-            return Long.toString(seed.getAsLong());
-        }
-        return "";
-    }
-
     public GeneratorOptions getGeneratorOptionsHolder(boolean debug, boolean hardcore) {
-        OptionalLong optionalLong = GeneratorOptions.parseSeed(this.seedTextField.getText());
+        long l = GeneratorOptions.parseSeed(this.seedTextField.getText());
         GeneratorOptions generatorOptions = this.generatorOptionsHolder.generatorOptions();
         if (debug || hardcore) {
             generatorOptions = generatorOptions.withBonusChest(false);
@@ -213,7 +211,7 @@ implements Drawable {
         if (debug) {
             generatorOptions = generatorOptions.withStructures(false);
         }
-        return generatorOptions.withSeed(optionalLong);
+        return generatorOptions.withSeed(l);
     }
 
     public boolean isDebugWorld() {

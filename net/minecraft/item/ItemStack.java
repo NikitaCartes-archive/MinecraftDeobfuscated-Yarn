@@ -30,7 +30,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.item.TooltipData;
-import net.minecraft.command.CommandRegistryWrapper;
 import net.minecraft.command.argument.BlockArgumentParser;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -674,6 +673,12 @@ public final class ItemStack {
         return itemStack;
     }
 
+    public ItemStack copyWithCount(int count) {
+        ItemStack itemStack = this.copy();
+        itemStack.setCount(count);
+        return itemStack;
+    }
+
     /**
      * {@return whether the given item stacks have equivalent NBT data}
      */
@@ -1141,7 +1146,7 @@ public final class ItemStack {
 
     private static Collection<Text> parseBlockTag(String tag) {
         try {
-            return BlockArgumentParser.blockOrTag(CommandRegistryWrapper.of(Registry.BLOCK), tag, true).map(blockResult -> Lists.newArrayList(blockResult.blockState().getBlock().getName().formatted(Formatting.DARK_GRAY)), tagResult -> tagResult.tag().stream().map(registryEntry -> ((Block)registryEntry.value()).getName().formatted(Formatting.DARK_GRAY)).collect(Collectors.toList()));
+            return BlockArgumentParser.blockOrTag(Registry.BLOCK.getReadOnlyWrapper(), tag, true).map(blockResult -> Lists.newArrayList(blockResult.blockState().getBlock().getName().formatted(Formatting.DARK_GRAY)), tagResult -> tagResult.tag().stream().map(registryEntry -> ((Block)registryEntry.value()).getName().formatted(Formatting.DARK_GRAY)).collect(Collectors.toList()));
         } catch (CommandSyntaxException commandSyntaxException) {
             return Lists.newArrayList(Text.literal("missingno").formatted(Formatting.DARK_GRAY));
         }

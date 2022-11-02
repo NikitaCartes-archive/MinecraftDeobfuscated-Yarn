@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 @Environment(value=EnvType.CLIENT)
 public class CloseServerTask
 extends LongRunningTask {
-    private static final Logger field_36354 = LogUtils.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final RealmsServer serverData;
     private final RealmsConfigureWorldScreen configureScreen;
 
@@ -51,7 +51,7 @@ extends LongRunningTask {
                 if (this.aborted()) {
                     return;
                 }
-                field_36354.error("Failed to close server", exception);
+                LOGGER.error("Failed to close server", exception);
                 this.error("Failed to close the server");
             }
         }

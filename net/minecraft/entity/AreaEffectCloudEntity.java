@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.command.CommandRegistryWrapper;
 import net.minecraft.command.argument.ParticleEffectArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
@@ -333,7 +332,7 @@ extends Entity {
         }
         if (nbt.contains("Particle", NbtElement.STRING_TYPE)) {
             try {
-                this.setParticleType(ParticleEffectArgumentType.readParameters(new StringReader(nbt.getString("Particle")), CommandRegistryWrapper.of(Registry.PARTICLE_TYPE)));
+                this.setParticleType(ParticleEffectArgumentType.readParameters(new StringReader(nbt.getString("Particle")), Registry.PARTICLE_TYPE.getReadOnlyWrapper()));
             } catch (CommandSyntaxException commandSyntaxException) {
                 LOGGER.warn("Couldn't load custom particle {}", (Object)nbt.getString("Particle"), (Object)commandSyntaxException);
             }

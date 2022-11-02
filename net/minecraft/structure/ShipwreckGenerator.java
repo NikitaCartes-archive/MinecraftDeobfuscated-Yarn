@@ -35,9 +35,9 @@ public class ShipwreckGenerator {
     private static final Identifier[] REGULAR_TEMPLATES = new Identifier[]{new Identifier("shipwreck/with_mast"), new Identifier("shipwreck/upsidedown_full"), new Identifier("shipwreck/upsidedown_fronthalf"), new Identifier("shipwreck/upsidedown_backhalf"), new Identifier("shipwreck/sideways_full"), new Identifier("shipwreck/sideways_fronthalf"), new Identifier("shipwreck/sideways_backhalf"), new Identifier("shipwreck/rightsideup_full"), new Identifier("shipwreck/rightsideup_fronthalf"), new Identifier("shipwreck/rightsideup_backhalf"), new Identifier("shipwreck/with_mast_degraded"), new Identifier("shipwreck/upsidedown_full_degraded"), new Identifier("shipwreck/upsidedown_fronthalf_degraded"), new Identifier("shipwreck/upsidedown_backhalf_degraded"), new Identifier("shipwreck/sideways_full_degraded"), new Identifier("shipwreck/sideways_fronthalf_degraded"), new Identifier("shipwreck/sideways_backhalf_degraded"), new Identifier("shipwreck/rightsideup_full_degraded"), new Identifier("shipwreck/rightsideup_fronthalf_degraded"), new Identifier("shipwreck/rightsideup_backhalf_degraded")};
     static final Map<String, Identifier> LOOT_TABLES = Map.of("map_chest", LootTables.SHIPWRECK_MAP_CHEST, "treasure_chest", LootTables.SHIPWRECK_TREASURE_CHEST, "supply_chest", LootTables.SHIPWRECK_SUPPLY_CHEST);
 
-    public static void addParts(StructureTemplateManager structureTemplateManager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder holder, Random random, boolean bl) {
-        Identifier identifier = Util.getRandom(bl ? BEACHED_TEMPLATES : REGULAR_TEMPLATES, random);
-        holder.addPiece(new Piece(structureTemplateManager, identifier, pos, rotation, bl));
+    public static void addParts(StructureTemplateManager structureTemplateManager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder holder, Random random, boolean beached) {
+        Identifier identifier = Util.getRandom(beached ? BEACHED_TEMPLATES : REGULAR_TEMPLATES, random);
+        holder.addPiece(new Piece(structureTemplateManager, identifier, pos, rotation, beached));
     }
 
     public static class Piece
@@ -50,7 +50,7 @@ public class ShipwreckGenerator {
         }
 
         public Piece(StructureTemplateManager manager, NbtCompound nbt) {
-            super(StructurePieceType.SHIPWRECK, nbt, manager, identifier -> Piece.createPlacementData(BlockRotation.valueOf(nbt.getString("Rot"))));
+            super(StructurePieceType.SHIPWRECK, nbt, manager, id -> Piece.createPlacementData(BlockRotation.valueOf(nbt.getString("Rot"))));
             this.grounded = nbt.getBoolean("isBeached");
         }
 

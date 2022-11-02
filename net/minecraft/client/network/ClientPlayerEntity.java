@@ -210,6 +210,7 @@ extends AbstractClientPlayerEntity {
             Entity entity = this.getRootVehicle();
             if (entity != this && entity.isLogicalSideForUpdatingMovement()) {
                 this.networkHandler.sendPacket(new VehicleMoveC2SPacket(entity));
+                this.sendSprintingPacket();
             }
         } else {
             this.sendMovementPackets();
@@ -232,53 +233,57 @@ extends AbstractClientPlayerEntity {
     }
 
     private void sendMovementPackets() {
-        boolean bl2;
-        boolean bl = this.isSprinting();
-        if (bl != this.lastSprinting) {
-            ClientCommandC2SPacket.Mode mode = bl ? ClientCommandC2SPacket.Mode.START_SPRINTING : ClientCommandC2SPacket.Mode.STOP_SPRINTING;
+        this.sendSprintingPacket();
+        boolean bl = this.isSneaking();
+        if (bl != this.lastSneaking) {
+            ClientCommandC2SPacket.Mode mode = bl ? ClientCommandC2SPacket.Mode.PRESS_SHIFT_KEY : ClientCommandC2SPacket.Mode.RELEASE_SHIFT_KEY;
             this.networkHandler.sendPacket(new ClientCommandC2SPacket(this, mode));
-            this.lastSprinting = bl;
-        }
-        if ((bl2 = this.isSneaking()) != this.lastSneaking) {
-            ClientCommandC2SPacket.Mode mode2 = bl2 ? ClientCommandC2SPacket.Mode.PRESS_SHIFT_KEY : ClientCommandC2SPacket.Mode.RELEASE_SHIFT_KEY;
-            this.networkHandler.sendPacket(new ClientCommandC2SPacket(this, mode2));
-            this.lastSneaking = bl2;
+            this.lastSneaking = bl;
         }
         if (this.isCamera()) {
-            boolean bl4;
+            boolean bl3;
             double d = this.getX() - this.lastX;
             double e = this.getY() - this.lastBaseY;
             double f = this.getZ() - this.lastZ;
             double g = this.getYaw() - this.lastYaw;
             double h = this.getPitch() - this.lastPitch;
             ++this.ticksSinceLastPositionPacketSent;
-            boolean bl3 = MathHelper.squaredMagnitude(d, e, f) > MathHelper.square(2.0E-4) || this.ticksSinceLastPositionPacketSent >= 20;
-            boolean bl5 = bl4 = g != 0.0 || h != 0.0;
+            boolean bl2 = MathHelper.squaredMagnitude(d, e, f) > MathHelper.square(2.0E-4) || this.ticksSinceLastPositionPacketSent >= 20;
+            boolean bl4 = bl3 = g != 0.0 || h != 0.0;
             if (this.hasVehicle()) {
                 Vec3d vec3d = this.getVelocity();
                 this.networkHandler.sendPacket(new PlayerMoveC2SPacket.Full(vec3d.x, -999.0, vec3d.z, this.getYaw(), this.getPitch(), this.onGround));
-                bl3 = false;
-            } else if (bl3 && bl4) {
+                bl2 = false;
+            } else if (bl2 && bl3) {
                 this.networkHandler.sendPacket(new PlayerMoveC2SPacket.Full(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch(), this.onGround));
-            } else if (bl3) {
+            } else if (bl2) {
                 this.networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(this.getX(), this.getY(), this.getZ(), this.onGround));
-            } else if (bl4) {
+            } else if (bl3) {
                 this.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookAndOnGround(this.getYaw(), this.getPitch(), this.onGround));
             } else if (this.lastOnGround != this.onGround) {
                 this.networkHandler.sendPacket(new PlayerMoveC2SPacket.OnGroundOnly(this.onGround));
             }
-            if (bl3) {
+            if (bl2) {
                 this.lastX = this.getX();
                 this.lastBaseY = this.getY();
                 this.lastZ = this.getZ();
                 this.ticksSinceLastPositionPacketSent = 0;
             }
-            if (bl4) {
+            if (bl3) {
                 this.lastYaw = this.getYaw();
                 this.lastPitch = this.getPitch();
             }
             this.lastOnGround = this.onGround;
             this.autoJumpEnabled = this.client.options.getAutoJump().getValue();
+        }
+    }
+
+    private void sendSprintingPacket() {
+        boolean bl = this.isSprinting();
+        if (bl != this.lastSprinting) {
+            ClientCommandC2SPacket.Mode mode = bl ? ClientCommandC2SPacket.Mode.START_SPRINTING : ClientCommandC2SPacket.Mode.STOP_SPRINTING;
+            this.networkHandler.sendPacket(new ClientCommandC2SPacket(this, mode));
+            this.lastSprinting = bl;
         }
     }
 
@@ -653,7 +658,6 @@ extends AbstractClientPlayerEntity {
         int i;
         ItemStack itemStack;
         boolean bl6;
-        boolean bl5;
         ++this.ticksSinceSprintingChanged;
         if (this.ticksLeftToDoubleTapSprint > 0) {
             --this.ticksLeftToDoubleTapSprint;
@@ -686,7 +690,7 @@ extends AbstractClientPlayerEntity {
         if (bl2) {
             this.ticksLeftToDoubleTapSprint = 0;
         }
-        boolean bl7 = bl5 = (float)this.getHungerManager().getFoodLevel() > 6.0f || this.getAbilities().allowFlying;
+        boolean bl5 = this.canSprint();
         if ((this.onGround || this.isSubmergedInWater() || this.hasVehicle() && this.getVehicle().isOnGround()) && !bl2 && !bl3 && this.isWalking() && !this.isSprinting() && bl5 && !this.isUsingItem() && !this.hasStatusEffect(StatusEffects.BLINDNESS)) {
             if (this.ticksLeftToDoubleTapSprint > 0 || this.client.options.sprintKey.isPressed()) {
                 this.setSprinting(true);
@@ -698,14 +702,14 @@ extends AbstractClientPlayerEntity {
             this.setSprinting(true);
         }
         if (this.isSprinting()) {
-            boolean bl72;
+            boolean bl7;
             bl6 = !this.input.hasForwardMovement() || !bl5;
-            boolean bl8 = bl72 = bl6 || this.horizontalCollision && !this.collidedSoftly || this.isTouchingWater() && !this.isSubmergedInWater();
+            boolean bl8 = bl7 = bl6 || this.horizontalCollision && !this.collidedSoftly || this.isTouchingWater() && !this.isSubmergedInWater();
             if (this.isSwimming()) {
                 if (!this.onGround && !this.input.sneaking && bl6 || !this.isTouchingWater()) {
                     this.setSprinting(false);
                 }
-            } else if (bl72) {
+            } else if (bl7) {
                 this.setSprinting(false);
             }
         }
@@ -985,6 +989,10 @@ extends AbstractClientPlayerEntity {
     private boolean isWalking() {
         double d = 0.8;
         return this.isSubmergedInWater() ? this.input.hasForwardMovement() : (double)this.input.movementForward >= 0.8;
+    }
+
+    private boolean canSprint() {
+        return this.hasVehicle() || (float)this.getHungerManager().getFoodLevel() > 6.0f || this.getAbilities().allowFlying;
     }
 
     /**

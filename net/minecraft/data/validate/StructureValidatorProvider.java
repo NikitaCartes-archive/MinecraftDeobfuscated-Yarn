@@ -4,7 +4,6 @@
 package net.minecraft.data.validate;
 
 import com.mojang.logging.LogUtils;
-import net.minecraft.command.CommandRegistryWrapper;
 import net.minecraft.data.SnbtProvider;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.datafixer.Schemas;
@@ -46,7 +45,7 @@ implements SnbtProvider.Tweaker {
             LOGGER.warn("SNBT Too old, do not forget to update: {} < {}: {}", i, 3200, name);
         }
         NbtCompound nbtCompound = NbtHelper.update(Schemas.getFixer(), DataFixTypes.STRUCTURE, nbt, i);
-        structureTemplate.readNbt(CommandRegistryWrapper.of(Registry.BLOCK), nbtCompound);
+        structureTemplate.readNbt(Registry.BLOCK.getReadOnlyWrapper(), nbtCompound);
         return structureTemplate.writeNbt(new NbtCompound());
     }
 }

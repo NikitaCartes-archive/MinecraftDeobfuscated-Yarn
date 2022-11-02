@@ -18,7 +18,7 @@ extends PosRuleTest {
     }
 
     @Override
-    public boolean test(BlockPos blockPos, BlockPos blockPos2, BlockPos pivot, Random random) {
+    public boolean test(BlockPos originalPos, BlockPos currentPos, BlockPos pivot, Random random) {
         return true;
     }
 

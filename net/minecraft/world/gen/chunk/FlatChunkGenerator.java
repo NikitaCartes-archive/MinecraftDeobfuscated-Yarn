@@ -10,12 +10,14 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.stream.Stream;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.structure.StructureSet;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntryList;
+import net.minecraft.util.registry.RegistryWrapper;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
@@ -28,16 +30,23 @@ import net.minecraft.world.gen.chunk.Blender;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.VerticalBlockSample;
+import net.minecraft.world.gen.chunk.placement.StructurePlacementCalculator;
 import net.minecraft.world.gen.noise.NoiseConfig;
 
 public class FlatChunkGenerator
 extends ChunkGenerator {
-    public static final Codec<FlatChunkGenerator> CODEC = RecordCodecBuilder.create(instance -> FlatChunkGenerator.createStructureSetRegistryGetter(instance).and(((MapCodec)FlatChunkGeneratorConfig.CODEC.fieldOf("settings")).forGetter(FlatChunkGenerator::getConfig)).apply((Applicative<FlatChunkGenerator, ?>)instance, instance.stable(FlatChunkGenerator::new)));
+    public static final Codec<FlatChunkGenerator> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)FlatChunkGeneratorConfig.CODEC.fieldOf("settings")).forGetter(FlatChunkGenerator::getConfig)).apply((Applicative<FlatChunkGenerator, ?>)instance, instance.stable(FlatChunkGenerator::new)));
     private final FlatChunkGeneratorConfig config;
 
-    public FlatChunkGenerator(Registry<StructureSet> structureSetRegistry, FlatChunkGeneratorConfig config) {
-        super(structureSetRegistry, config.getStructureOverrides(), new FixedBiomeSource(config.getBiome()), Util.memoize(config::createGenerationSettings));
+    public FlatChunkGenerator(FlatChunkGeneratorConfig config) {
+        super(new FixedBiomeSource(config.getBiome()), Util.memoize(config::createGenerationSettings));
         this.config = config;
+    }
+
+    @Override
+    public StructurePlacementCalculator createStructurePlacementCalculator(RegistryWrapper<StructureSet> structureSetRegistry, NoiseConfig noiseConfig, long seed) {
+        Stream stream = this.config.getStructureOverrides().map(RegistryEntryList::stream).orElseGet(() -> structureSetRegistry.streamEntries().map(reference -> reference));
+        return StructurePlacementCalculator.create(noiseConfig, seed, this.biomeSource, stream);
     }
 
     @Override

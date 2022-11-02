@@ -1258,11 +1258,12 @@ CommandOutput {
     }
 
     protected void playStepSound(BlockPos pos, BlockState state) {
-        if (state.getMaterial().isLiquid()) {
+        BlockState blockState = this.world.getBlockState(pos.up());
+        boolean bl = blockState.isIn(BlockTags.INSIDE_STEP_SOUND_BLOCKS);
+        if (!bl && state.getMaterial().isLiquid()) {
             return;
         }
-        BlockState blockState = this.world.getBlockState(pos.up());
-        BlockSoundGroup blockSoundGroup = blockState.isIn(BlockTags.INSIDE_STEP_SOUND_BLOCKS) ? blockState.getSoundGroup() : state.getSoundGroup();
+        BlockSoundGroup blockSoundGroup = bl ? blockState.getSoundGroup() : state.getSoundGroup();
         this.playSound(blockSoundGroup.getStepSound(), blockSoundGroup.getVolume() * 0.15f, blockSoundGroup.getPitch());
     }
 
@@ -2519,7 +2520,7 @@ CommandOutput {
         if (passenger.getVehicle() == this) {
             throw new IllegalStateException("Use x.stopRiding(y), not y.removePassenger(x)");
         }
-        this.passengerList = this.passengerList.size() == 1 && this.passengerList.get(0) == passenger ? ImmutableList.of() : this.passengerList.stream().filter(entity2 -> entity2 != passenger).collect(ImmutableList.toImmutableList());
+        this.passengerList = this.passengerList.size() == 1 && this.passengerList.get(0) == passenger ? ImmutableList.of() : this.passengerList.stream().filter(entity -> entity != passenger).collect(ImmutableList.toImmutableList());
         passenger.ridingCooldown = 60;
     }
 

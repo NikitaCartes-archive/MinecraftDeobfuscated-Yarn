@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.RegistryWrapper;
 import org.slf4j.Logger;
 
 /**
@@ -23,11 +24,17 @@ import org.slf4j.Logger;
  * class serves as an immutable implementation of any particular collection
  * or configuration of dynamic registries.
  */
-public interface DynamicRegistryManager {
+public interface DynamicRegistryManager
+extends RegistryWrapper.WrapperLookup {
     public static final Logger LOGGER = LogUtils.getLogger();
     public static final Immutable EMPTY = new ImmutableImpl(Map.of()).toImmutable();
 
     public <E> Optional<Registry<E>> getOptional(RegistryKey<? extends Registry<? extends E>> var1);
+
+    @Override
+    default public <T> Optional<RegistryWrapper.Impl<T>> getOptionalWrapper(RegistryKey<? extends Registry<? extends T>> registryRef) {
+        return this.getOptional(registryRef).map(Registry::getReadOnlyWrapper);
+    }
 
     /**
      * Retrieves a registry from this manager, or throws an exception when the registry

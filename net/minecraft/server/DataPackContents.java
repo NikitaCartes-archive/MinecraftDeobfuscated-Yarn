@@ -41,7 +41,7 @@ import org.slf4j.Logger;
 public class DataPackContents {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final CompletableFuture<Unit> COMPLETED_UNIT = CompletableFuture.completedFuture(Unit.INSTANCE);
-    private final CommandRegistryAccess commandRegistryAccess;
+    private final CommandRegistryAccess.EntryListCreationPolicySettable commandRegistryAccess;
     private final CommandManager commandManager;
     private final RecipeManager recipeManager = new RecipeManager();
     private final TagManagerLoader registryTagManager;
@@ -53,7 +53,7 @@ public class DataPackContents {
 
     public DataPackContents(DynamicRegistryManager.Immutable dynamicRegistryManager, FeatureSet enabledFeatures, CommandManager.RegistrationEnvironment environment, int functionPermissionLevel) {
         this.registryTagManager = new TagManagerLoader(dynamicRegistryManager);
-        this.commandRegistryAccess = new CommandRegistryAccess(dynamicRegistryManager, enabledFeatures);
+        this.commandRegistryAccess = CommandRegistryAccess.of(dynamicRegistryManager, enabledFeatures);
         this.commandManager = new CommandManager(environment, this.commandRegistryAccess);
         this.commandRegistryAccess.setEntryListCreationPolicy(CommandRegistryAccess.EntryListCreationPolicy.CREATE_NEW);
         this.functionLoader = new FunctionLoader(functionPermissionLevel, this.commandManager.getDispatcher());

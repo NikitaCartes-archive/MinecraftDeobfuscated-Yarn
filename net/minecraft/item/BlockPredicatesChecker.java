@@ -8,7 +8,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Objects;
 import net.minecraft.block.Block;
 import net.minecraft.block.pattern.CachedBlockPosition;
-import net.minecraft.command.CommandRegistryWrapper;
 import net.minecraft.command.argument.BlockPredicateArgumentType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -75,7 +74,7 @@ public class BlockPredicatesChecker {
             for (int i = 0; i < nbtList.size(); ++i) {
                 String string = nbtList.getString(i);
                 try {
-                    BlockPredicateArgumentType.BlockPredicate blockPredicate = BlockPredicateArgumentType.parse(CommandRegistryWrapper.of(blockRegistry), new StringReader(string));
+                    BlockPredicateArgumentType.BlockPredicate blockPredicate = BlockPredicateArgumentType.parse(blockRegistry.getReadOnlyWrapper(), new StringReader(string));
                     this.nbtAware |= blockPredicate.hasNbt();
                     if (blockPredicate.test(pos)) {
                         this.lastResult = true;

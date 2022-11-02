@@ -19,7 +19,6 @@ import java.nio.file.attribute.FileAttribute;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.OptionalLong;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.stream.Stream;
@@ -129,11 +128,11 @@ extends Screen {
             return new GeneratorOptionsHolder(generatorOptions.worldGenSettings(), combinedDynamicRegistries, dataPackContents, generatorOptions.dataConfiguration());
         }, Util.getMainWorkerExecutor(), client);
         client.runTasks(completableFuture::isDone);
-        client.setScreen(new CreateWorldScreen(parent, DataConfiguration.SAFE_MODE, new MoreOptionsDialog(completableFuture.join(), Optional.of(WorldPresets.DEFAULT), OptionalLong.empty())));
+        client.setScreen(new CreateWorldScreen(parent, DataConfiguration.SAFE_MODE, new MoreOptionsDialog(completableFuture.join(), Optional.of(WorldPresets.DEFAULT))));
     }
 
     public static CreateWorldScreen create(@Nullable Screen parent, LevelInfo levelInfo, GeneratorOptionsHolder generatorOptionsHolder, @Nullable Path dataPackTempDir) {
-        CreateWorldScreen createWorldScreen = new CreateWorldScreen(parent, generatorOptionsHolder.dataConfiguration(), new MoreOptionsDialog(generatorOptionsHolder, WorldPresets.getWorldPreset(generatorOptionsHolder.selectedDimensions().dimensions()), OptionalLong.of(generatorOptionsHolder.generatorOptions().getSeed())));
+        CreateWorldScreen createWorldScreen = new CreateWorldScreen(parent, generatorOptionsHolder.dataConfiguration(), new MoreOptionsDialog(generatorOptionsHolder, WorldPresets.getWorldPreset(generatorOptionsHolder.selectedDimensions().dimensions()), generatorOptionsHolder.generatorOptions().getSeed()));
         createWorldScreen.levelName = levelInfo.getLevelName();
         createWorldScreen.cheatsEnabled = levelInfo.areCommandsAllowed();
         createWorldScreen.tweakedCheats = true;

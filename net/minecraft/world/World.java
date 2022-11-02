@@ -499,28 +499,28 @@ AutoCloseable {
     /**
      * Creates an explosion without creating fire.
      * 
-     * @see #createExplosion(Entity, DamageSource, ExplosionBehavior, double, double, double, float, boolean, Explosion.DestructionType)
+     * @see #createExplosion(Entity, DamageSource, ExplosionBehavior, double, double, double, float, boolean, World.ExplosionSourceType)
      */
-    public Explosion createExplosion(@Nullable Entity entity, double x, double y, double z, float power, Explosion.DestructionType destructionType) {
-        return this.createExplosion(entity, null, null, x, y, z, power, false, destructionType);
+    public Explosion createExplosion(@Nullable Entity entity, double x, double y, double z, float power, ExplosionSourceType explosionSourceType) {
+        return this.createExplosion(entity, null, null, x, y, z, power, false, explosionSourceType);
     }
 
     /**
      * Creates an explosion.
      * 
-     * @see #createExplosion(Entity, DamageSource, ExplosionBehavior, double, double, double, float, boolean, Explosion.DestructionType)
+     * @see #createExplosion(Entity, DamageSource, ExplosionBehavior, double, double, double, float, boolean, World.ExplosionSourceType)
      */
-    public Explosion createExplosion(@Nullable Entity entity, double x, double y, double z, float power, boolean createFire, Explosion.DestructionType destructionType) {
-        return this.createExplosion(entity, null, null, x, y, z, power, createFire, destructionType);
+    public Explosion createExplosion(@Nullable Entity entity, double x, double y, double z, float power, boolean createFire, ExplosionSourceType explosionSourceType) {
+        return this.createExplosion(entity, null, null, x, y, z, power, createFire, explosionSourceType);
     }
 
     /**
      * Creates an explosion.
      * 
-     * @see #createExplosion(Entity, DamageSource, ExplosionBehavior, double, double, double, float, boolean, Explosion.DestructionType)
+     * @see #createExplosion(Entity, DamageSource, ExplosionBehavior, double, double, double, float, boolean, World.ExplosionSourceType)
      */
-    public Explosion createExplosion(@Nullable Entity entity, @Nullable DamageSource damageSource, @Nullable ExplosionBehavior behavior, Vec3d pos, float power, boolean createFire, Explosion.DestructionType destructionType) {
-        return this.createExplosion(entity, damageSource, behavior, pos.getX(), pos.getY(), pos.getZ(), power, createFire, destructionType);
+    public Explosion createExplosion(@Nullable Entity entity, @Nullable DamageSource damageSource, @Nullable ExplosionBehavior behavior, Vec3d pos, float power, boolean createFire, ExplosionSourceType explosionSourceType) {
+        return this.createExplosion(entity, damageSource, behavior, pos.getX(), pos.getY(), pos.getZ(), power, createFire, explosionSourceType);
     }
 
     /**
@@ -530,14 +530,33 @@ AutoCloseable {
      * @param damageSource the custom damage source, or {@code null} to use the default
      * ({@link DamageSource#explosion(Explosion)})
      * @param entity the entity that exploded (like TNT) or {@code null} to indicate no entity exploded
-     * @param destructionType the destruction type of the explosion
      * @param createFire whether the explosion should create fire
      */
-    public Explosion createExplosion(@Nullable Entity entity, @Nullable DamageSource damageSource, @Nullable ExplosionBehavior behavior, double x, double y, double z, float power, boolean createFire, Explosion.DestructionType destructionType) {
+    public Explosion createExplosion(@Nullable Entity entity, @Nullable DamageSource damageSource, @Nullable ExplosionBehavior behavior, double x, double y, double z, float power, boolean createFire, ExplosionSourceType explosionSourceType) {
+        return this.createExplosion(entity, damageSource, behavior, x, y, z, power, createFire, explosionSourceType, true);
+    }
+
+    public Explosion createExplosion(@Nullable Entity entity, @Nullable DamageSource damageSource, @Nullable ExplosionBehavior behavior, double x, double y, double z, float power, boolean createFire, ExplosionSourceType explosionSourceType, boolean particles) {
+        Explosion.DestructionType destructionType = switch (explosionSourceType) {
+            default -> throw new IncompatibleClassChangeError();
+            case ExplosionSourceType.NONE -> Explosion.DestructionType.KEEP;
+            case ExplosionSourceType.BLOCK -> this.getDestructionType(GameRules.BLOCK_EXPLOSION_DROP_DECAY);
+            case ExplosionSourceType.MOB -> {
+                if (this.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+                    yield this.getDestructionType(GameRules.MOB_EXPLOSION_DROP_DECAY);
+                }
+                yield Explosion.DestructionType.KEEP;
+            }
+            case ExplosionSourceType.TNT -> this.getDestructionType(GameRules.TNT_EXPLOSION_DROP_DECAY);
+        };
         Explosion explosion = new Explosion(this, entity, damageSource, behavior, x, y, z, power, createFire, destructionType);
         explosion.collectBlocksAndDamageEntities();
-        explosion.affectWorld(true);
+        explosion.affectWorld(particles);
         return explosion;
+    }
+
+    private Explosion.DestructionType getDestructionType(GameRules.Key<GameRules.BooleanRule> gameRuleKey) {
+        return this.getGameRules().getBoolean(gameRuleKey) ? Explosion.DestructionType.DESTROY_WITH_DECAY : Explosion.DestructionType.DESTROY;
     }
 
     public abstract String asString();
@@ -1048,6 +1067,14 @@ AutoCloseable {
     @Override
     public /* synthetic */ Chunk getChunk(int chunkX, int chunkZ) {
         return this.getChunk(chunkX, chunkZ);
+    }
+
+    public static enum ExplosionSourceType {
+        NONE,
+        BLOCK,
+        MOB,
+        TNT;
+
     }
 }
 

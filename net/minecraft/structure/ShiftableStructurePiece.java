@@ -67,25 +67,25 @@ extends StructurePiece {
         return true;
     }
 
-    protected boolean adjustToMinHeight(WorldAccess world, int i) {
+    protected boolean adjustToMinHeight(WorldAccess world, int yOffset) {
         if (this.hPos >= 0) {
             return true;
         }
-        int j = world.getTopY();
+        int i = world.getTopY();
         boolean bl = false;
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        for (int k = this.boundingBox.getMinZ(); k <= this.boundingBox.getMaxZ(); ++k) {
-            for (int l = this.boundingBox.getMinX(); l <= this.boundingBox.getMaxX(); ++l) {
-                mutable.set(l, 0, k);
-                j = Math.min(j, world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mutable).getY());
+        for (int j = this.boundingBox.getMinZ(); j <= this.boundingBox.getMaxZ(); ++j) {
+            for (int k = this.boundingBox.getMinX(); k <= this.boundingBox.getMaxX(); ++k) {
+                mutable.set(k, 0, j);
+                i = Math.min(i, world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mutable).getY());
                 bl = true;
             }
         }
         if (!bl) {
             return false;
         }
-        this.hPos = j;
-        this.boundingBox.move(0, this.hPos - this.boundingBox.getMinY() + i, 0);
+        this.hPos = i;
+        this.boundingBox.move(0, this.hPos - this.boundingBox.getMinY() + yOffset, 0);
         return true;
     }
 }

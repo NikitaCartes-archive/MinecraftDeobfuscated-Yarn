@@ -53,6 +53,7 @@ import net.minecraft.world.chunk.ChunkStatusChangeListener;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.chunk.placement.StructurePlacementCalculator;
 import net.minecraft.world.gen.noise.NoiseConfig;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.poi.PointOfInterestStorage;
@@ -378,6 +379,10 @@ extends ChunkManager {
 
     public ChunkGenerator getChunkGenerator() {
         return this.threadedAnvilChunkStorage.getChunkGenerator();
+    }
+
+    public StructurePlacementCalculator getStructurePlacementCalculator() {
+        return this.threadedAnvilChunkStorage.getStructurePlacementCalculator();
     }
 
     public NoiseConfig getNoiseConfig() {

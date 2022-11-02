@@ -78,7 +78,7 @@ extends ChatLogEntry {
     @Environment(value=EnvType.CLIENT)
     public record ChatMessage(GameProfile profile, Text displayName, SignedMessage message, MessageTrustStatus trustStatus) implements ReceivedMessage
     {
-        public static final Codec<ChatMessage> CHAT_MESSAGE_CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codecs.GAME_PROFILE.fieldOf("profile")).forGetter(ChatMessage::profile), ((MapCodec)Codecs.TEXT.fieldOf("display_name")).forGetter(ChatMessage::displayName), SignedMessage.field_40846.forGetter(ChatMessage::message), MessageTrustStatus.field_40801.optionalFieldOf("trust_level", MessageTrustStatus.SECURE).forGetter(ChatMessage::trustStatus)).apply((Applicative<ChatMessage, ?>)instance, ChatMessage::new));
+        public static final Codec<ChatMessage> CHAT_MESSAGE_CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codecs.GAME_PROFILE.fieldOf("profile")).forGetter(ChatMessage::profile), ((MapCodec)Codecs.TEXT.fieldOf("display_name")).forGetter(ChatMessage::displayName), SignedMessage.CODEC.forGetter(ChatMessage::message), MessageTrustStatus.field_40801.optionalFieldOf("trust_level", MessageTrustStatus.SECURE).forGetter(ChatMessage::trustStatus)).apply((Applicative<ChatMessage, ?>)instance, ChatMessage::new));
         private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
 
         @Override

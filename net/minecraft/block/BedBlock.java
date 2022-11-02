@@ -49,7 +49,6 @@ import net.minecraft.world.CollisionView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
-import net.minecraft.world.explosion.Explosion;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -98,7 +97,7 @@ implements BlockEntityProvider {
                 world.removeBlock(blockPos, false);
             }
             Vec3d vec3d = pos.toCenterPos();
-            world.createExplosion(null, DamageSource.badRespawnPoint(vec3d), null, vec3d, 5.0f, true, Explosion.DestructionType.DESTROY);
+            world.createExplosion(null, DamageSource.badRespawnPoint(vec3d), null, vec3d, 5.0f, true, World.ExplosionSourceType.BLOCK);
             return ActionResult.SUCCESS;
         }
         if (state.get(OCCUPIED).booleanValue()) {

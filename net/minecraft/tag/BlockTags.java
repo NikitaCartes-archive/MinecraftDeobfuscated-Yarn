@@ -62,7 +62,6 @@ public final class BlockTags {
     public static final TagKey<Block> COAL_ORES = BlockTags.of("coal_ores");
     public static final TagKey<Block> EMERALD_ORES = BlockTags.of("emerald_ores");
     public static final TagKey<Block> COPPER_ORES = BlockTags.of("copper_ores");
-    public static final TagKey<Block> NON_FLAMMABLE_WOOD = BlockTags.of("non_flammable_wood");
     public static final TagKey<Block> CANDLES = BlockTags.of("candles");
     public static final TagKey<Block> DIRT = BlockTags.of("dirt");
     public static final TagKey<Block> TERRACOTTA = BlockTags.of("terracotta");

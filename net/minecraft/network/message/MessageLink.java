@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
  * Represents a link to the preceding message that a particular message has.
  */
 public record MessageLink(int index, UUID sender, UUID sessionId) {
-    public static final Codec<MessageLink> field_40849 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codecs.NONNEGATIVE_INT.fieldOf("index")).forGetter(MessageLink::index), ((MapCodec)Uuids.INT_STREAM_CODEC.fieldOf("sender")).forGetter(MessageLink::sender), ((MapCodec)Uuids.INT_STREAM_CODEC.fieldOf("session_id")).forGetter(MessageLink::sessionId)).apply((Applicative<MessageLink, ?>)instance, MessageLink::new));
+    public static final Codec<MessageLink> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codecs.NONNEGATIVE_INT.fieldOf("index")).forGetter(MessageLink::index), ((MapCodec)Uuids.INT_STREAM_CODEC.fieldOf("sender")).forGetter(MessageLink::sender), ((MapCodec)Uuids.INT_STREAM_CODEC.fieldOf("session_id")).forGetter(MessageLink::sessionId)).apply((Applicative<MessageLink, ?>)instance, MessageLink::new));
 
     public static MessageLink of(UUID sender) {
         return MessageLink.of(sender, Util.NIL_UUID);

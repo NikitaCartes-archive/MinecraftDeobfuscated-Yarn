@@ -3,21 +3,23 @@
  */
 package net.minecraft.data.server.tag;
 
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.data.DataOutput;
 import net.minecraft.data.server.tag.AbstractTagProvider;
 import net.minecraft.tag.StructureTags;
-import net.minecraft.util.registry.BuiltinRegistries;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryWrapper;
 import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.gen.structure.StructureKeys;
 
 public class StructureTagProvider
 extends AbstractTagProvider<Structure> {
-    public StructureTagProvider(DataOutput dataGenerator) {
-        super(dataGenerator, BuiltinRegistries.STRUCTURE);
+    public StructureTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
+        super(output, Registry.STRUCTURE_KEY, registryLookupFuture);
     }
 
     @Override
-    protected void configure() {
+    protected void configure(RegistryWrapper.WrapperLookup lookup) {
         this.getOrCreateTagBuilder(StructureTags.VILLAGE).add(StructureKeys.VILLAGE_PLAINS).add(StructureKeys.VILLAGE_DESERT).add(StructureKeys.VILLAGE_SAVANNA).add(StructureKeys.VILLAGE_SNOWY).add(StructureKeys.VILLAGE_TAIGA);
         this.getOrCreateTagBuilder(StructureTags.MINESHAFT).add(StructureKeys.MINESHAFT).add(StructureKeys.MINESHAFT_MESA);
         this.getOrCreateTagBuilder(StructureTags.OCEAN_RUIN).add(StructureKeys.OCEAN_RUIN_COLD).add(StructureKeys.OCEAN_RUIN_WARM);

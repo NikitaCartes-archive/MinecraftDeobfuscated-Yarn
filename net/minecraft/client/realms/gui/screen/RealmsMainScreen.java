@@ -104,7 +104,7 @@ extends RealmsScreen {
     private static final Text OPEN_TEXT = Text.translatable("mco.selectServer.open");
     private static final Text CLOSED_TEXT = Text.translatable("mco.selectServer.closed");
     private static final Text LEAVE_TEXT = Text.translatable("mco.selectServer.leave");
-    private static final Text CONFIGURE_TEXT = Text.translatable("mco.selectServer.configure");
+    private static final Text CONFIGURE_TEXT = Text.translatable("mco.selectServer.configureRealm");
     private static final Text NEWS_TEXT = Text.translatable("mco.news");
     static final Text UNINITIALIZED_BUTTON_NARRATION = Text.translatable("gui.narrate.button", UNINITIALIZED_TEXT);
     static final Text TRIAL_NARRATION = ScreenTexts.joinLines(TRIAL_MESSAGE_LINES);
@@ -245,7 +245,7 @@ extends RealmsScreen {
     }
 
     public void addButtons() {
-        this.leaveButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("mco.selectServer.leave"), button -> this.leaveClicked(this.findServer())).setPositionAndSize(this.width / 2 - 202, this.height - 32, 90, 20).build());
+        this.leaveButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("mco.selectServer.leave"), button -> this.leaveClicked(this.findServer())).setPositionAndSize(this.width / 2 - 190, this.height - 32, 90, 20).build());
         this.configureButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("mco.selectServer.configure"), button -> this.configureClicked(this.findServer())).setPositionAndSize(this.width / 2 - 190, this.height - 32, 90, 20).build());
         this.playButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("mco.selectServer.play"), button -> this.play(this.findServer(), this)).setPositionAndSize(this.width / 2 - 93, this.height - 32, 90, 20).build());
         this.backButton = this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.BACK, button -> {

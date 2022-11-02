@@ -10,8 +10,8 @@ import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
-import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.gen.feature.EndSpikeFeature;
 import net.minecraft.world.gen.feature.EndSpikeFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
@@ -68,7 +68,7 @@ public enum EnderDragonSpawnState {
                         for (BlockPos blockPos : BlockPos.iterate(new BlockPos(spike.getCenterX() - 10, spike.getHeight() - 10, spike.getCenterZ() - 10), new BlockPos(spike.getCenterX() + 10, spike.getHeight() + 10, spike.getCenterZ() + 10))) {
                             world.removeBlock(blockPos, false);
                         }
-                        world.createExplosion(null, (float)spike.getCenterX() + 0.5f, spike.getHeight(), (float)spike.getCenterZ() + 0.5f, 5.0f, Explosion.DestructionType.DESTROY);
+                        world.createExplosion(null, (float)spike.getCenterX() + 0.5f, spike.getHeight(), (float)spike.getCenterZ() + 0.5f, 5.0f, World.ExplosionSourceType.BLOCK);
                         EndSpikeFeatureConfig endSpikeFeatureConfig = new EndSpikeFeatureConfig(true, ImmutableList.of(spike), new BlockPos(0, 128, 0));
                         Feature.END_SPIKE.generateIfValid(endSpikeFeatureConfig, world, world.getChunkManager().getChunkGenerator(), Random.create(), new BlockPos(spike.getCenterX(), 45, spike.getCenterZ()));
                     }
@@ -88,7 +88,7 @@ public enum EnderDragonSpawnState {
                 fight.resetEndCrystals();
                 for (EndCrystalEntity endCrystalEntity : crystals) {
                     endCrystalEntity.setBeamTarget(null);
-                    world.createExplosion(endCrystalEntity, endCrystalEntity.getX(), endCrystalEntity.getY(), endCrystalEntity.getZ(), 6.0f, Explosion.DestructionType.NONE);
+                    world.createExplosion(endCrystalEntity, endCrystalEntity.getX(), endCrystalEntity.getY(), endCrystalEntity.getZ(), 6.0f, World.ExplosionSourceType.NONE);
                     endCrystalEntity.discard();
                 }
             } else if (tick >= 80) {

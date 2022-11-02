@@ -61,7 +61,7 @@ extends Screen {
         this.parent = parent;
     }
 
-    public static void connect(Screen screen, MinecraftClient client, ServerAddress address, @Nullable ServerInfo info) {
+    public static void connect(Screen screen, MinecraftClient client, ServerAddress address, ServerInfo info) {
         ConnectScreen connectScreen = new ConnectScreen(screen);
         client.disconnect();
         client.loadBlockList();

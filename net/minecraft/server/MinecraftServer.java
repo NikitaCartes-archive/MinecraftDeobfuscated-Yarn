@@ -56,7 +56,6 @@ import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
-import net.minecraft.command.CommandRegistryWrapper;
 import net.minecraft.command.DataCommandStorage;
 import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.player.PlayerEntity;
@@ -144,6 +143,7 @@ import net.minecraft.util.registry.CombinedDynamicRegistries;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.RegistryWrapper;
 import net.minecraft.util.registry.ServerDynamicRegistryType;
 import net.minecraft.util.thread.ReentrantThreadExecutor;
 import net.minecraft.village.ZombieSiegeManager;
@@ -164,7 +164,6 @@ import net.minecraft.world.border.WorldBorderListener;
 import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.MiscConfiguredFeatures;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.ServerWorldProperties;
@@ -313,8 +312,8 @@ AutoCloseable {
         this.saveHandler = session.createSaveHandler();
         this.dataFixer = dataFixer;
         this.commandFunctionManager = new CommandFunctionManager(this, this.resourceManagerHolder.dataPackContents.getFunctionLoader());
-        CommandRegistryWrapper<Block> commandRegistryWrapper = CommandRegistryWrapper.of(this.combinedDynamicRegistries.getCombinedRegistryManager().get(Registry.BLOCK_KEY)).withFeatureFilter(this.saveProperties.getEnabledFeatures());
-        this.structureTemplateManager = new StructureTemplateManager(saveLoader.resourceManager(), session, dataFixer, commandRegistryWrapper);
+        RegistryWrapper<Block> registryEntryLookup = this.combinedDynamicRegistries.getCombinedRegistryManager().get(Registry.BLOCK_KEY).getReadOnlyWrapper().withFeatureFilter(this.saveProperties.getEnabledFeatures());
+        this.structureTemplateManager = new StructureTemplateManager(saveLoader.resourceManager(), session, dataFixer, registryEntryLookup);
         this.serverThread = serverThread;
         this.workerExecutor = Util.getMainWorkerExecutor();
     }
@@ -439,8 +438,7 @@ AutoCloseable {
             k += m;
         }
         if (bonusChest) {
-            ConfiguredFeature<DefaultFeatureConfig, ?> configuredFeature = MiscConfiguredFeatures.BONUS_CHEST.value();
-            configuredFeature.generate(world, serverChunkManager.getChunkGenerator(), world.random, new BlockPos(worldProperties.getSpawnX(), worldProperties.getSpawnY(), worldProperties.getSpawnZ()));
+            world.getRegistryManager().getOptional(Registry.CONFIGURED_FEATURE_KEY).flatMap(registry -> registry.getEntry(MiscConfiguredFeatures.BONUS_CHEST)).ifPresent(reference -> ((ConfiguredFeature)reference.value()).generate(world, serverChunkManager.getChunkGenerator(), serverWorld.random, new BlockPos(worldProperties.getSpawnX(), worldProperties.getSpawnY(), worldProperties.getSpawnZ())));
         }
     }
 

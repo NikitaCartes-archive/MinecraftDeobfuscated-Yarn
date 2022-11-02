@@ -18,6 +18,7 @@ import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryEntryList;
+import net.minecraft.util.registry.RegistryEntryLookup;
 import net.minecraft.util.registry.RegistryKey;
 
 public class RegistryEntryListCodec<E>
@@ -63,9 +64,9 @@ implements Codec<RegistryEntryList<E>> {
     public <T> DataResult<Pair<RegistryEntryList<E>, T>> decode(DynamicOps<T> ops, T input) {
         RegistryOps registryOps;
         Optional optional;
-        if (ops instanceof RegistryOps && (optional = (registryOps = (RegistryOps)ops).getRegistry(this.registry)).isPresent()) {
-            Registry registry = optional.get();
-            return this.entryListStorageCodec.decode(ops, input).map((? super R pair) -> pair.mapFirst(either -> either.map(registry::getOrCreateEntryList, RegistryEntryList::of)));
+        if (ops instanceof RegistryOps && (optional = (registryOps = (RegistryOps)ops).getEntryLookup(this.registry)).isPresent()) {
+            RegistryEntryLookup registryEntryLookup = optional.get();
+            return this.entryListStorageCodec.decode(ops, input).map((? super R pair) -> pair.mapFirst(either -> either.map(registryEntryLookup::getOrThrow, RegistryEntryList::of)));
         }
         return this.decodeDirect(ops, input);
     }
@@ -74,8 +75,8 @@ implements Codec<RegistryEntryList<E>> {
     public <T> DataResult<T> encode(RegistryEntryList<E> registryEntryList, DynamicOps<T> dynamicOps, T object) {
         RegistryOps registryOps;
         Optional optional;
-        if (dynamicOps instanceof RegistryOps && (optional = (registryOps = (RegistryOps)dynamicOps).getRegistry(this.registry)).isPresent()) {
-            if (!registryEntryList.isOf(optional.get())) {
+        if (dynamicOps instanceof RegistryOps && (optional = (registryOps = (RegistryOps)dynamicOps).getOwner(this.registry)).isPresent()) {
+            if (!registryEntryList.ownerEquals(optional.get())) {
                 return DataResult.error("HolderSet " + registryEntryList + " is not valid in current registry set");
             }
             return this.entryListStorageCodec.encode(registryEntryList.getStorage().mapRight(List::copyOf), dynamicOps, object);

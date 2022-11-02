@@ -90,12 +90,13 @@ import net.minecraft.util.math.floatprovider.FloatProviderType;
 import net.minecraft.util.math.intprovider.IntProviderType;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.DefaultedRegistry;
 import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryEntryList;
+import net.minecraft.util.registry.RegistryEntryOwner;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.RegistryWrapper;
 import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.village.VillagerType;
@@ -433,19 +434,51 @@ IndexedIterable<T> {
     public static final Registry<StructurePoolElementType<?>> STRUCTURE_POOL_ELEMENT = Registry.create(STRUCTURE_POOL_ELEMENT_KEY, registry -> StructurePoolElementType.EMPTY_POOL_ELEMENT);
     public static final RegistryKey<Registry<MessageType>> MESSAGE_TYPE_KEY = Registry.createRegistryKey("chat_type");
     public static final RegistryKey<Registry<CatVariant>> CAT_VARIANT_KEY = Registry.createRegistryKey("cat_variant");
-    public static final Registry<CatVariant> CAT_VARIANT = Registry.create(CAT_VARIANT_KEY, registry -> CatVariant.BLACK);
+    public static final Registry<CatVariant> CAT_VARIANT = Registry.create(CAT_VARIANT_KEY, CatVariant::registerAndGetDefault);
     public static final RegistryKey<Registry<FrogVariant>> FROG_VARIANT_KEY = Registry.createRegistryKey("frog_variant");
     public static final Registry<FrogVariant> FROG_VARIANT = Registry.create(FROG_VARIANT_KEY, registry -> FrogVariant.TEMPERATE);
     public static final RegistryKey<Registry<BannerPattern>> BANNER_PATTERN_KEY = Registry.createRegistryKey("banner_pattern");
-    public static final Registry<BannerPattern> BANNER_PATTERN = Registry.create(BANNER_PATTERN_KEY, BannerPatterns::initAndGetDefault);
+    public static final Registry<BannerPattern> BANNER_PATTERN = Registry.create(BANNER_PATTERN_KEY, BannerPatterns::registerAndGetDefault);
     public static final RegistryKey<Registry<Instrument>> INSTRUMENT_KEY = Registry.createRegistryKey("instrument");
     public static final Registry<Instrument> INSTRUMENT = Registry.create(INSTRUMENT_KEY, Instruments::registerAndGetDefault);
     /**
      * The key representing the type of elements held by this registry. It is also the
      * key of this registry within the root registry.
      */
-    private final RegistryKey<? extends Registry<T>> registryKey;
+    final RegistryKey<? extends Registry<T>> registryKey;
     private final Lifecycle lifecycle;
+    final RegistryWrapper.Impl<T> wrapper = new RegistryWrapper.Impl<T>(){
+
+        @Override
+        public RegistryKey<? extends Registry<? extends T>> getRegistryKey() {
+            return Registry.this.registryKey;
+        }
+
+        @Override
+        public Lifecycle getLifecycle() {
+            return Registry.this.getLifecycle();
+        }
+
+        @Override
+        public Optional<RegistryEntry.Reference<T>> getOptional(RegistryKey<T> key) {
+            return Registry.this.getEntry(key);
+        }
+
+        @Override
+        public Stream<RegistryEntry.Reference<T>> streamEntries() {
+            return Registry.this.streamEntries();
+        }
+
+        @Override
+        public Optional<RegistryEntryList.Named<T>> getOptional(TagKey<T> tag) {
+            return Registry.this.getEntryList(tag);
+        }
+
+        @Override
+        public Stream<RegistryEntryList.Named<T>> streamTags() {
+            return Registry.this.streamTagsAndEntries().map(Pair::getSecond);
+        }
+    };
 
     public static RegistryKey<World> createWorldKey(RegistryKey<DimensionOptions> dimensionOptionsKey) {
         return RegistryKey.of(WORLD_KEY, dimensionOptionsKey.getValue());
@@ -502,9 +535,9 @@ IndexedIterable<T> {
         return registry;
     }
 
-    protected Registry(RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle) {
-        Bootstrap.ensureBootstrapped(() -> "registry " + key);
-        this.registryKey = key;
+    protected Registry(RegistryKey<? extends Registry<T>> registryKey, Lifecycle lifecycle) {
+        Bootstrap.ensureBootstrapped(() -> "registry " + registryKey);
+        this.registryKey = registryKey;
         this.lifecycle = lifecycle;
     }
 
@@ -631,7 +664,7 @@ IndexedIterable<T> {
      * {@return a random registry entry from this registry, or an empty optional if the
      * registry is empty}
      */
-    public abstract Optional<RegistryEntry<T>> getRandom(Random var1);
+    public abstract Optional<RegistryEntry.Reference<T>> getRandom(Random var1);
 
     /**
      * {@return a stream of all values of this registry}
@@ -679,10 +712,6 @@ IndexedIterable<T> {
     }
 
     public abstract Registry<T> freeze();
-
-    public abstract RegistryEntry.Reference<T> getOrCreateEntry(RegistryKey<T> var1);
-
-    public abstract DataResult<RegistryEntry.Reference<T>> getOrCreateEntryDataResult(RegistryKey<T> var1);
 
     public abstract RegistryEntry.Reference<T> createEntry(T var1);
 
@@ -780,8 +809,47 @@ IndexedIterable<T> {
         };
     }
 
+    public RegistryEntryOwner<T> getEntryOwner() {
+        return this.wrapper;
+    }
+
+    /**
+     * {@return a registry wrapper that does not mutate the backing registry under
+     * any circumstances}
+     * 
+     * @see net.minecraft.command.CommandRegistryAccess.EntryListCreationPolicy#FAIL
+     */
+    public RegistryWrapper.Impl<T> getReadOnlyWrapper() {
+        return this.wrapper;
+    }
+
+    /**
+     * {@return a registry wrapper that creates and stores a new registry entry list
+     * when handling an unknown tag key}
+     * 
+     * @see net.minecraft.command.CommandRegistryAccess.EntryListCreationPolicy#CREATE_NEW
+     */
+    public RegistryWrapper.Impl<T> getTagCreatingWrapper() {
+        return new RegistryWrapper.Impl.Delegating<T>(){
+
+            @Override
+            protected RegistryWrapper.Impl<T> getBase() {
+                return Registry.this.wrapper;
+            }
+
+            @Override
+            public Optional<RegistryEntryList.Named<T>> getOptional(TagKey<T> tag) {
+                return Optional.of(this.getOrThrow(tag));
+            }
+
+            @Override
+            public RegistryEntryList.Named<T> getOrThrow(TagKey<T> tag) {
+                return Registry.this.getOrCreateEntryList(tag);
+            }
+        };
+    }
+
     static {
-        BuiltinRegistries.init();
         DEFAULT_ENTRIES.forEach((? super K id, ? super V defaultEntry) -> {
             if (defaultEntry.get() == null) {
                 LOGGER.error("Unable to bootstrap registry '{}'", id);

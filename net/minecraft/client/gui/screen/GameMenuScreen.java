@@ -36,7 +36,7 @@ extends Screen {
     private static final String JAVA_FEEDBACK_URL = "https://aka.ms/javafeedback?ref=game";
     private static final String SNAPSHOT_BUGS_URL = "https://aka.ms/snapshotbugs?ref=game";
     private final boolean showMenu;
-    private ButtonWidget field_40792;
+    private ButtonWidget exitButton;
 
     public GameMenuScreen(boolean showMenu) {
         super(showMenu ? Text.translatable("menu.game") : Text.translatable("menu.paused"));
@@ -91,7 +91,7 @@ extends Screen {
             gridWidget.add(ButtonWidget.createBuilder(Text.translatable("menu.playerReporting"), button -> this.client.setScreen(new SocialInteractionsScreen())).setWidth(98).build(), k, 1, positioner2);
         }
         MutableText text = this.client.isInSingleplayer() ? Text.translatable("menu.returnToMenu") : Text.translatable("menu.disconnect");
-        gridWidget.add(ButtonWidget.createBuilder(text, button -> {
+        this.exitButton = gridWidget.add(ButtonWidget.createBuilder(text, button -> {
             if (this.client.getAbuseReportContext().tryShowDraftScreen(this.client, this, true)) {
                 boolean bl = this.client.isInSingleplayer();
                 boolean bl2 = this.client.isConnectedToRealms();
@@ -131,7 +131,7 @@ extends Screen {
         if (this.showMenu && this.client != null && this.client.getAbuseReportContext().hasDraft()) {
             RenderSystem.setShaderTexture(0, ClickableWidget.WIDGETS_TEXTURE);
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-            this.drawTexture(matrices, this.field_40792.getX() + this.field_40792.getWidth() - 17, this.field_40792.getY() + 3, 182, 24, 15, 15);
+            this.drawTexture(matrices, this.exitButton.getX() + this.exitButton.getWidth() - 17, this.exitButton.getY() + 3, 182, 24, 15, 15);
         }
     }
 }

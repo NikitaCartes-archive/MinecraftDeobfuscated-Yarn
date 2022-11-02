@@ -20,9 +20,8 @@ import net.minecraft.util.math.random.CheckedRandom;
 import net.minecraft.util.math.random.ChunkRandom;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.chunk.placement.StructurePlacementCalculator;
 import net.minecraft.world.gen.chunk.placement.StructurePlacementType;
-import net.minecraft.world.gen.noise.NoiseConfig;
 
 public abstract class StructurePlacement {
     public static final Codec<StructurePlacement> TYPE_CODEC = Registry.STRUCTURE_PLACEMENT.getCodec().dispatch(StructurePlacement::getType, StructurePlacementType::codec);
@@ -65,17 +64,17 @@ public abstract class StructurePlacement {
         return this.exclusionZone;
     }
 
-    public boolean shouldGenerate(ChunkGenerator chunkGenerator, NoiseConfig noiseConfig, long seed, int chunkX, int chunkZ) {
-        if (!this.isStartChunk(chunkGenerator, noiseConfig, seed, chunkX, chunkZ)) {
+    public boolean shouldGenerate(StructurePlacementCalculator calculator, int chunkX, int chunkZ) {
+        if (!this.isStartChunk(calculator, chunkX, chunkZ)) {
             return false;
         }
-        if (this.frequency < 1.0f && !this.frequencyReductionMethod.shouldGenerate(seed, this.salt, chunkX, chunkZ, this.frequency)) {
+        if (this.frequency < 1.0f && !this.frequencyReductionMethod.shouldGenerate(calculator.getStructureSeed(), this.salt, chunkX, chunkZ, this.frequency)) {
             return false;
         }
-        return !this.exclusionZone.isPresent() || !this.exclusionZone.get().shouldExclude(chunkGenerator, noiseConfig, seed, chunkX, chunkZ);
+        return !this.exclusionZone.isPresent() || !this.exclusionZone.get().shouldExclude(calculator, chunkX, chunkZ);
     }
 
-    protected abstract boolean isStartChunk(ChunkGenerator var1, NoiseConfig var2, long var3, int var5, int var6);
+    protected abstract boolean isStartChunk(StructurePlacementCalculator var1, int var2, int var3);
 
     public BlockPos getLocatePos(ChunkPos chunkPos) {
         return new BlockPos(chunkPos.getStartX(), 0, chunkPos.getStartZ()).add(this.getLocateOffset());
@@ -144,8 +143,8 @@ public abstract class StructurePlacement {
     public record ExclusionZone(RegistryEntry<StructureSet> otherSet, int chunkCount) {
         public static final Codec<ExclusionZone> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)RegistryElementCodec.of(Registry.STRUCTURE_SET_KEY, StructureSet.CODEC, false).fieldOf("other_set")).forGetter(ExclusionZone::otherSet), ((MapCodec)Codec.intRange(1, 16).fieldOf("chunk_count")).forGetter(ExclusionZone::chunkCount)).apply((Applicative<ExclusionZone, ?>)instance, ExclusionZone::new));
 
-        boolean shouldExclude(ChunkGenerator chunkGenerator, NoiseConfig noiseConfig, long seed, int x, int z) {
-            return chunkGenerator.shouldStructureGenerateInRange(this.otherSet, noiseConfig, seed, x, z, this.chunkCount);
+        boolean shouldExclude(StructurePlacementCalculator calculator, int centerChunkX, int centerChunkZ) {
+            return calculator.canGenerate(this.otherSet, centerChunkX, centerChunkZ, this.chunkCount);
         }
     }
 

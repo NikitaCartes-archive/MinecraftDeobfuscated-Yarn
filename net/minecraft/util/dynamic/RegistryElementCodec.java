@@ -13,6 +13,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryEntryLookup;
 import net.minecraft.util.registry.RegistryKey;
 
 /**
@@ -50,8 +51,8 @@ implements Codec<RegistryEntry<E>> {
     public <T> DataResult<T> encode(RegistryEntry<E> registryEntry, DynamicOps<T> dynamicOps, T object) {
         RegistryOps registryOps;
         Optional optional;
-        if (dynamicOps instanceof RegistryOps && (optional = (registryOps = (RegistryOps)dynamicOps).getRegistry(this.registryRef)).isPresent()) {
-            if (!registryEntry.matchesRegistry(optional.get())) {
+        if (dynamicOps instanceof RegistryOps && (optional = (registryOps = (RegistryOps)dynamicOps).getOwner(this.registryRef)).isPresent()) {
+            if (!registryEntry.ownerEquals(optional.get())) {
                 return DataResult.error("Element " + registryEntry + " is not valid in current registry set");
             }
             return registryEntry.getKeyOrValue().map(key -> Identifier.CODEC.encode(key.getValue(), dynamicOps, object), value -> this.elementCodec.encode(value, dynamicOps, object));
@@ -63,11 +64,11 @@ implements Codec<RegistryEntry<E>> {
     public <T> DataResult<Pair<RegistryEntry<E>, T>> decode(DynamicOps<T> ops, T input) {
         if (ops instanceof RegistryOps) {
             RegistryOps registryOps = (RegistryOps)ops;
-            Optional optional = registryOps.getRegistry(this.registryRef);
+            Optional optional = registryOps.getEntryLookup(this.registryRef);
             if (optional.isEmpty()) {
                 return DataResult.error("Registry does not exist: " + this.registryRef);
             }
-            Registry registry = optional.get();
+            RegistryEntryLookup registryEntryLookup = optional.get();
             DataResult dataResult = Identifier.CODEC.decode(ops, input);
             if (dataResult.result().isEmpty()) {
                 if (!this.allowInlineDefinitions) {
@@ -77,8 +78,7 @@ implements Codec<RegistryEntry<E>> {
             }
             Pair pair2 = dataResult.result().get();
             RegistryKey registryKey = RegistryKey.of(this.registryRef, (Identifier)pair2.getFirst());
-            DataResult dataResult2 = registry.getOrCreateEntryDataResult(registryKey);
-            return dataResult2.map((? super R entry) -> Pair.of(entry, pair2.getSecond())).setLifecycle(Lifecycle.stable());
+            return registryEntryLookup.getOptional(registryKey).map(DataResult::success).orElseGet(() -> DataResult.error("Failed to get element " + registryKey)).map((? super R reference) -> Pair.of(reference, pair2.getSecond())).setLifecycle(Lifecycle.stable());
         }
         return this.elementCodec.decode(ops, input).map((? super R pair) -> pair.mapFirst(RegistryEntry::of));
     }

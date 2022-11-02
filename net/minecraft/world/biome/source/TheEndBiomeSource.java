@@ -4,13 +4,12 @@
 package net.minecraft.world.biome.source;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryEntryLookup;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.source.BiomeCoords;
@@ -20,15 +19,15 @@ import net.minecraft.world.gen.densityfunction.DensityFunction;
 
 public class TheEndBiomeSource
 extends BiomeSource {
-    public static final Codec<TheEndBiomeSource> CODEC = RecordCodecBuilder.create(instance -> instance.group(RegistryOps.createRegistryCodec(Registry.BIOME_KEY).forGetter(biomeSource -> null)).apply((Applicative<TheEndBiomeSource, ?>)instance, instance.stable(TheEndBiomeSource::new)));
+    public static final Codec<TheEndBiomeSource> CODEC = RecordCodecBuilder.create(instance -> instance.group(RegistryOps.getEntryCodec(BiomeKeys.THE_END), RegistryOps.getEntryCodec(BiomeKeys.END_HIGHLANDS), RegistryOps.getEntryCodec(BiomeKeys.END_MIDLANDS), RegistryOps.getEntryCodec(BiomeKeys.SMALL_END_ISLANDS), RegistryOps.getEntryCodec(BiomeKeys.END_BARRENS)).apply(instance, instance.stable(TheEndBiomeSource::new)));
     private final RegistryEntry<Biome> centerBiome;
     private final RegistryEntry<Biome> highlandsBiome;
     private final RegistryEntry<Biome> midlandsBiome;
     private final RegistryEntry<Biome> smallIslandsBiome;
     private final RegistryEntry<Biome> barrensBiome;
 
-    public TheEndBiomeSource(Registry<Biome> biomeRegistry) {
-        this(biomeRegistry.getOrCreateEntry(BiomeKeys.THE_END), biomeRegistry.getOrCreateEntry(BiomeKeys.END_HIGHLANDS), biomeRegistry.getOrCreateEntry(BiomeKeys.END_MIDLANDS), biomeRegistry.getOrCreateEntry(BiomeKeys.SMALL_END_ISLANDS), biomeRegistry.getOrCreateEntry(BiomeKeys.END_BARRENS));
+    public static TheEndBiomeSource createVanilla(RegistryEntryLookup<Biome> biomeLookup) {
+        return new TheEndBiomeSource(biomeLookup.getOrThrow(BiomeKeys.THE_END), biomeLookup.getOrThrow(BiomeKeys.END_HIGHLANDS), biomeLookup.getOrThrow(BiomeKeys.END_MIDLANDS), biomeLookup.getOrThrow(BiomeKeys.SMALL_END_ISLANDS), biomeLookup.getOrThrow(BiomeKeys.END_BARRENS));
     }
 
     private TheEndBiomeSource(RegistryEntry<Biome> centerBiome, RegistryEntry<Biome> highlandsBiome, RegistryEntry<Biome> midlandsBiome, RegistryEntry<Biome> smallIslandsBiome, RegistryEntry<Biome> barrensBiome) {

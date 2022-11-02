@@ -12,8 +12,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class NetherrackBlock
 extends Block
@@ -23,7 +23,7 @@ implements Fertilizable {
     }
 
     @Override
-    public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
+    public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean isClient) {
         if (!world.getBlockState(pos.up()).isTranslucent(world, pos)) {
             return false;
         }

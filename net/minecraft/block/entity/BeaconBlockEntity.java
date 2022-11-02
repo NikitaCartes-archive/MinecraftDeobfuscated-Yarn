@@ -75,8 +75,8 @@ Nameable {
         public int get(int index) {
             return switch (index) {
                 case 0 -> BeaconBlockEntity.this.level;
-                case 1 -> StatusEffect.method_43257(BeaconBlockEntity.this.primary);
-                case 2 -> StatusEffect.method_43257(BeaconBlockEntity.this.secondary);
+                case 1 -> StatusEffect.getRawIdNullable(BeaconBlockEntity.this.primary);
+                case 2 -> StatusEffect.getRawIdNullable(BeaconBlockEntity.this.secondary);
                 default -> 0;
             };
         }
@@ -274,8 +274,8 @@ Nameable {
     @Override
     protected void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
-        nbt.putInt("Primary", StatusEffect.method_43257(this.primary));
-        nbt.putInt("Secondary", StatusEffect.method_43257(this.secondary));
+        nbt.putInt("Primary", StatusEffect.getRawIdNullable(this.primary));
+        nbt.putInt("Secondary", StatusEffect.getRawIdNullable(this.secondary));
         nbt.putInt("Levels", this.level);
         if (this.customName != null) {
             nbt.putString("CustomName", Text.Serializer.toJson(this.customName));

@@ -13,7 +13,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.random.ChunkRandom;
-import net.minecraft.util.registry.BuiltinRegistries;
+import net.minecraft.util.registry.Registerable;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
@@ -59,38 +59,34 @@ public record ChunkGeneratorSettings(GenerationShapeConfig generationShapeConfig
         return this.usesLegacyRandom ? ChunkRandom.RandomProvider.LEGACY : ChunkRandom.RandomProvider.XOROSHIRO;
     }
 
-    private static RegistryEntry<ChunkGeneratorSettings> register(Registry<ChunkGeneratorSettings> registry, RegistryKey<ChunkGeneratorSettings> key, ChunkGeneratorSettings chunkGeneratorSettings) {
-        return BuiltinRegistries.add(registry, key.getValue(), chunkGeneratorSettings);
+    public static void bootstrap(Registerable<ChunkGeneratorSettings> chunkGenerationSettingsRegisterable) {
+        chunkGenerationSettingsRegisterable.register(OVERWORLD, ChunkGeneratorSettings.createSurfaceSettings(chunkGenerationSettingsRegisterable, false, false));
+        chunkGenerationSettingsRegisterable.register(LARGE_BIOMES, ChunkGeneratorSettings.createSurfaceSettings(chunkGenerationSettingsRegisterable, false, true));
+        chunkGenerationSettingsRegisterable.register(AMPLIFIED, ChunkGeneratorSettings.createSurfaceSettings(chunkGenerationSettingsRegisterable, true, false));
+        chunkGenerationSettingsRegisterable.register(NETHER, ChunkGeneratorSettings.createNetherSettings(chunkGenerationSettingsRegisterable));
+        chunkGenerationSettingsRegisterable.register(END, ChunkGeneratorSettings.createEndSettings(chunkGenerationSettingsRegisterable));
+        chunkGenerationSettingsRegisterable.register(CAVES, ChunkGeneratorSettings.createCavesSettings(chunkGenerationSettingsRegisterable));
+        chunkGenerationSettingsRegisterable.register(FLOATING_ISLANDS, ChunkGeneratorSettings.createFloatingIslandsSettings(chunkGenerationSettingsRegisterable));
     }
 
-    public static RegistryEntry<ChunkGeneratorSettings> initAndGetDefault(Registry<ChunkGeneratorSettings> registry) {
-        ChunkGeneratorSettings.register(registry, OVERWORLD, ChunkGeneratorSettings.createSurfaceSettings(false, false));
-        ChunkGeneratorSettings.register(registry, LARGE_BIOMES, ChunkGeneratorSettings.createSurfaceSettings(false, true));
-        ChunkGeneratorSettings.register(registry, AMPLIFIED, ChunkGeneratorSettings.createSurfaceSettings(true, false));
-        ChunkGeneratorSettings.register(registry, NETHER, ChunkGeneratorSettings.createNetherSettings());
-        ChunkGeneratorSettings.register(registry, END, ChunkGeneratorSettings.createEndSettings());
-        ChunkGeneratorSettings.register(registry, CAVES, ChunkGeneratorSettings.createCavesSettings());
-        return ChunkGeneratorSettings.register(registry, FLOATING_ISLANDS, ChunkGeneratorSettings.createFloatingIslandsSettings());
+    private static ChunkGeneratorSettings createEndSettings(Registerable<?> registerable) {
+        return new ChunkGeneratorSettings(GenerationShapeConfig.END, Blocks.END_STONE.getDefaultState(), Blocks.AIR.getDefaultState(), DensityFunctions.createEndNoiseRouter(registerable.getRegistryLookup(Registry.DENSITY_FUNCTION_KEY)), VanillaSurfaceRules.getEndStoneRule(), List.of(), 0, true, false, false, true);
     }
 
-    private static ChunkGeneratorSettings createEndSettings() {
-        return new ChunkGeneratorSettings(GenerationShapeConfig.END, Blocks.END_STONE.getDefaultState(), Blocks.AIR.getDefaultState(), DensityFunctions.createEndNoiseRouter(BuiltinRegistries.DENSITY_FUNCTION), VanillaSurfaceRules.getEndStoneRule(), List.of(), 0, true, false, false, true);
+    private static ChunkGeneratorSettings createNetherSettings(Registerable<?> registerable) {
+        return new ChunkGeneratorSettings(GenerationShapeConfig.NETHER, Blocks.NETHERRACK.getDefaultState(), Blocks.LAVA.getDefaultState(), DensityFunctions.createNetherNoiseRouter(registerable.getRegistryLookup(Registry.DENSITY_FUNCTION_KEY), registerable.getRegistryLookup(Registry.NOISE_KEY)), VanillaSurfaceRules.createNetherSurfaceRule(), List.of(), 32, false, false, false, true);
     }
 
-    private static ChunkGeneratorSettings createNetherSettings() {
-        return new ChunkGeneratorSettings(GenerationShapeConfig.NETHER, Blocks.NETHERRACK.getDefaultState(), Blocks.LAVA.getDefaultState(), DensityFunctions.createNetherNoiseRouter(BuiltinRegistries.DENSITY_FUNCTION), VanillaSurfaceRules.createNetherSurfaceRule(), List.of(), 32, false, false, false, true);
+    private static ChunkGeneratorSettings createSurfaceSettings(Registerable<?> registerable, boolean amplified, boolean largeBiomes) {
+        return new ChunkGeneratorSettings(GenerationShapeConfig.SURFACE, Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), DensityFunctions.createSurfaceNoiseRouter(registerable.getRegistryLookup(Registry.DENSITY_FUNCTION_KEY), registerable.getRegistryLookup(Registry.NOISE_KEY), largeBiomes, amplified), VanillaSurfaceRules.createOverworldSurfaceRule(), new VanillaBiomeParameters().getSpawnSuitabilityNoises(), 63, false, true, true, false);
     }
 
-    private static ChunkGeneratorSettings createSurfaceSettings(boolean amplified, boolean largeBiomes) {
-        return new ChunkGeneratorSettings(GenerationShapeConfig.SURFACE, Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), DensityFunctions.createSurfaceNoiseRouter(BuiltinRegistries.DENSITY_FUNCTION, largeBiomes, amplified), VanillaSurfaceRules.createOverworldSurfaceRule(), new VanillaBiomeParameters().getSpawnSuitabilityNoises(), 63, false, true, true, false);
+    private static ChunkGeneratorSettings createCavesSettings(Registerable<?> registerable) {
+        return new ChunkGeneratorSettings(GenerationShapeConfig.CAVES, Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), DensityFunctions.createCavesNoiseRouter(registerable.getRegistryLookup(Registry.DENSITY_FUNCTION_KEY), registerable.getRegistryLookup(Registry.NOISE_KEY)), VanillaSurfaceRules.createDefaultRule(false, true, true), List.of(), 32, false, false, false, true);
     }
 
-    private static ChunkGeneratorSettings createCavesSettings() {
-        return new ChunkGeneratorSettings(GenerationShapeConfig.CAVES, Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), DensityFunctions.createCavesNoiseRouter(BuiltinRegistries.DENSITY_FUNCTION), VanillaSurfaceRules.createDefaultRule(false, true, true), List.of(), 32, false, false, false, true);
-    }
-
-    private static ChunkGeneratorSettings createFloatingIslandsSettings() {
-        return new ChunkGeneratorSettings(GenerationShapeConfig.FLOATING_ISLANDS, Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), DensityFunctions.createFloatingIslandsNoiseRouter(BuiltinRegistries.DENSITY_FUNCTION), VanillaSurfaceRules.createDefaultRule(false, false, false), List.of(), -64, false, false, false, true);
+    private static ChunkGeneratorSettings createFloatingIslandsSettings(Registerable<?> registerable) {
+        return new ChunkGeneratorSettings(GenerationShapeConfig.FLOATING_ISLANDS, Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), DensityFunctions.createFloatingIslandsNoiseRouter(registerable.getRegistryLookup(Registry.DENSITY_FUNCTION_KEY), registerable.getRegistryLookup(Registry.NOISE_KEY)), VanillaSurfaceRules.createDefaultRule(false, false, false), List.of(), -64, false, false, false, true);
     }
 
     public static ChunkGeneratorSettings createMissingSettings() {

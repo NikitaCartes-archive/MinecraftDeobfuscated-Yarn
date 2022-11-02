@@ -6,7 +6,6 @@ package net.minecraft.network.packet.s2c.play;
 import java.util.UUID;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -37,24 +36,16 @@ implements Packet<ClientPlayPacketListener> {
     private final byte headYaw;
     private final int entityData;
 
-    public EntitySpawnS2CPacket(LivingEntity entity) {
-        this(entity, 0);
-    }
-
-    public EntitySpawnS2CPacket(LivingEntity entity, int entityTypeId) {
-        this(entity.getId(), entity.getUuid(), entity.getX(), entity.getY(), entity.getZ(), entity.getPitch(), entity.getYaw(), entity.getType(), entityTypeId, entity.getVelocity(), entity.headYaw);
-    }
-
     public EntitySpawnS2CPacket(Entity entity) {
         this(entity, 0);
     }
 
     public EntitySpawnS2CPacket(Entity entity, int entityData) {
-        this(entity.getId(), entity.getUuid(), entity.getX(), entity.getY(), entity.getZ(), entity.getPitch(), entity.getYaw(), entity.getType(), entityData, entity.getVelocity(), 0.0);
+        this(entity.getId(), entity.getUuid(), entity.getX(), entity.getY(), entity.getZ(), entity.getPitch(), entity.getYaw(), entity.getType(), entityData, entity.getVelocity(), entity.getHeadYaw());
     }
 
     public EntitySpawnS2CPacket(Entity entity, int entityTypeId, BlockPos pos) {
-        this(entity.getId(), entity.getUuid(), pos.getX(), pos.getY(), pos.getZ(), entity.getPitch(), entity.getYaw(), entity.getType(), entityTypeId, entity.getVelocity(), 0.0);
+        this(entity.getId(), entity.getUuid(), pos.getX(), pos.getY(), pos.getZ(), entity.getPitch(), entity.getYaw(), entity.getType(), entityTypeId, entity.getVelocity(), entity.getHeadYaw());
     }
 
     public EntitySpawnS2CPacket(int id, UUID uuid, double x, double y, double z, float pitch, float yaw, EntityType<?> entityTypeId, int entityData, Vec3d velocity, double headYaw) {

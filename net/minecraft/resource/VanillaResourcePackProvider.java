@@ -74,7 +74,7 @@ implements ResourcePackProvider {
     protected void forEachProfile(@Nullable Path namespacedPath, BiConsumer<String, Function<String, ResourcePackProfile>> consumer) {
         if (namespacedPath != null && Files.isDirectory(namespacedPath, new LinkOption[0])) {
             try {
-                FileResourcePackProvider.forEachProfile(namespacedPath, (profilePath, factory) -> consumer.accept(VanillaResourcePackProvider.getFileName(profilePath), name -> this.create((String)name, (ResourcePackProfile.PackFactory)factory, this.getProfileName((String)name))));
+                FileResourcePackProvider.forEachProfile(namespacedPath, true, (profilePath, factory) -> consumer.accept(VanillaResourcePackProvider.getFileName(profilePath), name -> this.create((String)name, (ResourcePackProfile.PackFactory)factory, this.getProfileName((String)name))));
             } catch (IOException iOException) {
                 LOGGER.warn("Failed to discover packs in {}", (Object)namespacedPath, (Object)iOException);
             }

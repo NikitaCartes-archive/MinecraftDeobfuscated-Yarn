@@ -13,6 +13,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryEntryLookup;
 import net.minecraft.util.registry.RegistryKey;
 
 public final class RegistryFixedCodec<E>
@@ -31,8 +32,8 @@ implements Codec<RegistryEntry<E>> {
     public <T> DataResult<T> encode(RegistryEntry<E> registryEntry, DynamicOps<T> dynamicOps, T object) {
         RegistryOps registryOps;
         Optional optional;
-        if (dynamicOps instanceof RegistryOps && (optional = (registryOps = (RegistryOps)dynamicOps).getRegistry(this.registry)).isPresent()) {
-            if (!registryEntry.matchesRegistry(optional.get())) {
+        if (dynamicOps instanceof RegistryOps && (optional = (registryOps = (RegistryOps)dynamicOps).getOwner(this.registry)).isPresent()) {
+            if (!registryEntry.ownerEquals(optional.get())) {
                 return DataResult.error("Element " + registryEntry + " is not valid in current registry set");
             }
             return registryEntry.getKeyOrValue().map(registryKey -> Identifier.CODEC.encode(registryKey.getValue(), dynamicOps, object), value -> DataResult.error("Elements from registry " + this.registry + " can't be serialized to a value"));
@@ -44,11 +45,10 @@ implements Codec<RegistryEntry<E>> {
     public <T> DataResult<Pair<RegistryEntry<E>, T>> decode(DynamicOps<T> ops, T input) {
         RegistryOps registryOps;
         Optional optional;
-        if (ops instanceof RegistryOps && (optional = (registryOps = (RegistryOps)ops).getRegistry(this.registry)).isPresent()) {
+        if (ops instanceof RegistryOps && (optional = (registryOps = (RegistryOps)ops).getEntryLookup(this.registry)).isPresent()) {
             return Identifier.CODEC.decode(ops, input).flatMap((? super R pair) -> {
                 Identifier identifier = (Identifier)pair.getFirst();
-                DataResult<RegistryEntry.Reference<Pair>> dataResult = ((Registry)optional.get()).getOrCreateEntryDataResult(RegistryKey.of(this.registry, identifier));
-                return dataResult.map((? super R entry) -> Pair.of(entry, pair.getSecond())).setLifecycle(Lifecycle.stable());
+                return ((RegistryEntryLookup)optional.get()).getOptional(RegistryKey.of(this.registry, identifier)).map(DataResult::success).orElseGet(() -> DataResult.error("Failed to get element " + identifier)).map((? super R reference) -> Pair.of(reference, pair.getSecond())).setLifecycle(Lifecycle.stable());
             });
         }
         return DataResult.error("Can't access registry " + this.registry);

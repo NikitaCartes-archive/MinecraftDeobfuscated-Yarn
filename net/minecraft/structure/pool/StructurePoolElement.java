@@ -20,7 +20,6 @@ import net.minecraft.structure.pool.SinglePoolElement;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElementType;
 import net.minecraft.structure.processor.StructureProcessorList;
-import net.minecraft.structure.processor.StructureProcessorLists;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
@@ -38,6 +37,7 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class StructurePoolElement {
     public static final Codec<StructurePoolElement> CODEC = Registry.STRUCTURE_POOL_ELEMENT.getCodec().dispatch("element_type", StructurePoolElement::getType, StructurePoolElementType::codec);
+    private static final RegistryEntry<StructureProcessorList> EMPTY_PROCESSORS = RegistryEntry.of(new StructureProcessorList(List.of()));
     @Nullable
     private volatile StructurePool.Projection projection;
 
@@ -84,7 +84,7 @@ public abstract class StructurePoolElement {
     }
 
     public static Function<StructurePool.Projection, LegacySinglePoolElement> ofLegacySingle(String id) {
-        return projection -> new LegacySinglePoolElement(Either.left(new Identifier(id)), StructureProcessorLists.EMPTY, (StructurePool.Projection)projection);
+        return projection -> new LegacySinglePoolElement(Either.left(new Identifier(id)), EMPTY_PROCESSORS, (StructurePool.Projection)projection);
     }
 
     public static Function<StructurePool.Projection, LegacySinglePoolElement> ofProcessedLegacySingle(String id, RegistryEntry<StructureProcessorList> processorListEntry) {
@@ -92,7 +92,7 @@ public abstract class StructurePoolElement {
     }
 
     public static Function<StructurePool.Projection, SinglePoolElement> ofSingle(String id) {
-        return projection -> new SinglePoolElement(Either.left(new Identifier(id)), StructureProcessorLists.EMPTY, (StructurePool.Projection)projection);
+        return projection -> new SinglePoolElement(Either.left(new Identifier(id)), EMPTY_PROCESSORS, (StructurePool.Projection)projection);
     }
 
     public static Function<StructurePool.Projection, SinglePoolElement> ofProcessedSingle(String id, RegistryEntry<StructureProcessorList> processorListEntry) {

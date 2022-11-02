@@ -10,7 +10,9 @@ import net.minecraft.block.sapling.SaplingGenerator;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
@@ -30,14 +32,18 @@ extends SaplingGenerator {
     }
 
     @Nullable
-    protected abstract RegistryEntry<? extends ConfiguredFeature<?, ?>> getLargeTreeFeature(Random var1);
+    protected abstract RegistryKey<ConfiguredFeature<?, ?>> getLargeTreeFeature(Random var1);
 
     public boolean generateLargeTree(ServerWorld world, ChunkGenerator chunkGenerator, BlockPos pos, BlockState state, Random random, int x, int z) {
-        RegistryEntry<ConfiguredFeature<?, ?>> registryEntry = this.getLargeTreeFeature(random);
+        RegistryKey<ConfiguredFeature<?, ?>> registryKey = this.getLargeTreeFeature(random);
+        if (registryKey == null) {
+            return false;
+        }
+        RegistryEntry registryEntry = world.getRegistryManager().get(Registry.CONFIGURED_FEATURE_KEY).getEntry(registryKey).orElse(null);
         if (registryEntry == null) {
             return false;
         }
-        ConfiguredFeature<?, ?> configuredFeature = registryEntry.value();
+        ConfiguredFeature configuredFeature = (ConfiguredFeature)registryEntry.value();
         BlockState blockState = Blocks.AIR.getDefaultState();
         world.setBlockState(pos.add(x, 0, z), blockState, Block.NO_REDRAW);
         world.setBlockState(pos.add(x + 1, 0, z), blockState, Block.NO_REDRAW);

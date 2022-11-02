@@ -20,6 +20,7 @@ public final class ItemTags {
     public static final TagKey<Item> WOODEN_STAIRS = ItemTags.of("wooden_stairs");
     public static final TagKey<Item> WOODEN_SLABS = ItemTags.of("wooden_slabs");
     public static final TagKey<Item> WOODEN_FENCES = ItemTags.of("wooden_fences");
+    public static final TagKey<Item> FENCE_GATES = ItemTags.of("fence_gates");
     public static final TagKey<Item> WOODEN_PRESSURE_PLATES = ItemTags.of("wooden_pressure_plates");
     public static final TagKey<Item> WOODEN_TRAPDOORS = ItemTags.of("wooden_trapdoors");
     public static final TagKey<Item> DOORS = ItemTags.of("doors");

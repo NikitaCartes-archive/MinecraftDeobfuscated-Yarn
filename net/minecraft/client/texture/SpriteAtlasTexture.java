@@ -13,6 +13,7 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -91,7 +92,7 @@ implements TextureTickListener {
         try (BufferedWriter writer = Files.newBufferedWriter(path, new OpenOption[0]);){
             for (Map.Entry entry : sprites.entrySet().stream().sorted(Map.Entry.comparingByKey()).toList()) {
                 Sprite sprite = (Sprite)entry.getValue();
-                writer.write(String.format("%s\tx=%d\ty=%d\tw=%d\th=%d%n", entry.getKey(), sprite.getX(), sprite.getY(), sprite.getContents().getWidth(), sprite.getContents().getHeight()));
+                writer.write(String.format(Locale.ROOT, "%s\tx=%d\ty=%d\tw=%d\th=%d%n", entry.getKey(), sprite.getX(), sprite.getY(), sprite.getContents().getWidth(), sprite.getContents().getHeight()));
             }
         } catch (IOException iOException) {
             LOGGER.warn("Failed to write file {}", (Object)path, (Object)iOException);

@@ -15,7 +15,7 @@ import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 
 public class CheckerboardBiomeSource
 extends BiomeSource {
-    public static final Codec<CheckerboardBiomeSource> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Biome.REGISTRY_ENTRY_LIST_CODEC.fieldOf("biomes")).forGetter(checkerboardBiomeSource -> checkerboardBiomeSource.biomeArray), ((MapCodec)Codec.intRange(0, 62).fieldOf("scale")).orElse(2).forGetter(checkerboardBiomeSource -> checkerboardBiomeSource.scale)).apply((Applicative<CheckerboardBiomeSource, ?>)instance, CheckerboardBiomeSource::new));
+    public static final Codec<CheckerboardBiomeSource> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Biome.REGISTRY_ENTRY_LIST_CODEC.fieldOf("biomes")).forGetter(biomeSource -> biomeSource.biomeArray), ((MapCodec)Codec.intRange(0, 62).fieldOf("scale")).orElse(2).forGetter(biomeSource -> biomeSource.scale)).apply((Applicative<CheckerboardBiomeSource, ?>)instance, CheckerboardBiomeSource::new));
     private final RegistryEntryList<Biome> biomeArray;
     private final int gridSize;
     private final int scale;

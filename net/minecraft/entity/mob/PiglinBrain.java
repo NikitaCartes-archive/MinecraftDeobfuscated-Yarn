@@ -213,6 +213,7 @@ public class PiglinBrain {
     }
 
     protected static void loot(PiglinEntity piglin, ItemEntity drop) {
+        boolean bl;
         ItemStack itemStack;
         PiglinBrain.stopWalking(piglin);
         if (drop.getStack().isOf(Items.GOLD_NUGGET)) {
@@ -233,7 +234,7 @@ public class PiglinBrain {
             PiglinBrain.setEatenRecently(piglin);
             return;
         }
-        boolean bl = piglin.tryEquip(itemStack);
+        boolean bl2 = bl = !piglin.tryEquip(itemStack).equals(ItemStack.EMPTY);
         if (bl) {
             return;
         }
@@ -262,15 +263,19 @@ public class PiglinBrain {
         ItemStack itemStack = piglin.getStackInHand(Hand.OFF_HAND);
         piglin.setStackInHand(Hand.OFF_HAND, ItemStack.EMPTY);
         if (piglin.isAdult()) {
-            boolean bl2;
             boolean bl = PiglinBrain.acceptsForBarter(itemStack);
             if (barter && bl) {
                 PiglinBrain.doBarter(piglin, PiglinBrain.getBarteredItem(piglin));
-            } else if (!bl && !(bl2 = piglin.tryEquip(itemStack))) {
-                PiglinBrain.barterItem(piglin, itemStack);
+            } else if (!bl) {
+                boolean bl2;
+                boolean bl3 = bl2 = !piglin.tryEquip(itemStack).isEmpty();
+                if (!bl2) {
+                    PiglinBrain.barterItem(piglin, itemStack);
+                }
             }
         } else {
-            boolean bl = piglin.tryEquip(itemStack);
+            boolean bl;
+            boolean bl4 = bl = !piglin.tryEquip(itemStack).isEmpty();
             if (!bl) {
                 ItemStack itemStack2 = piglin.getMainHandStack();
                 if (PiglinBrain.isGoldenItem(itemStack2)) {

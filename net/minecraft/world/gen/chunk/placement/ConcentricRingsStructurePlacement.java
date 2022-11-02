@@ -16,10 +16,9 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryCodecs;
 import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.placement.StructurePlacement;
+import net.minecraft.world.gen.chunk.placement.StructurePlacementCalculator;
 import net.minecraft.world.gen.chunk.placement.StructurePlacementType;
-import net.minecraft.world.gen.noise.NoiseConfig;
 
 public class ConcentricRingsStructurePlacement
 extends StructurePlacement {
@@ -64,8 +63,8 @@ extends StructurePlacement {
     }
 
     @Override
-    protected boolean isStartChunk(ChunkGenerator chunkGenerator, NoiseConfig noiseConfig, long seed, int chunkX, int chunkZ) {
-        List<ChunkPos> list = chunkGenerator.getConcentricRingsStartChunks(this, noiseConfig);
+    protected boolean isStartChunk(StructurePlacementCalculator calculator, int chunkX, int chunkZ) {
+        List<ChunkPos> list = calculator.getPlacementPositions(this);
         if (list == null) {
             return false;
         }

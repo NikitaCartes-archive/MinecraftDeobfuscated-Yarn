@@ -27,7 +27,6 @@ import net.minecraft.structure.pool.StructurePoolElementType;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.structure.processor.JigsawReplacementStructureProcessor;
 import net.minecraft.structure.processor.StructureProcessorList;
-import net.minecraft.structure.processor.StructureProcessorLists;
 import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
@@ -68,10 +67,6 @@ extends StructurePoolElement {
         super(projection);
         this.location = location;
         this.processors = processors;
-    }
-
-    public SinglePoolElement(StructureTemplate template) {
-        this(Either.right(template), StructureProcessorLists.EMPTY, StructurePool.Projection.RIGID);
     }
 
     @Override

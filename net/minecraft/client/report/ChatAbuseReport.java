@@ -86,7 +86,7 @@ public class ChatAbuseReport {
     }
 
     public boolean hasContents() {
-        return StringUtils.isNotEmpty(this.getOpinionComments()) || !this.getSelections().isEmpty();
+        return StringUtils.isNotEmpty(this.getOpinionComments()) || !this.getSelections().isEmpty() || this.getReason() != null;
     }
 
     @Nullable

@@ -45,6 +45,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import net.minecraft.world.tick.WorldTickScheduler;
@@ -274,7 +275,8 @@ public class StructureTestUtil {
 
     private static void resetBlock(int altitude, BlockPos pos, ServerWorld world) {
         BlockState blockState = null;
-        FlatChunkGeneratorConfig flatChunkGeneratorConfig = FlatChunkGeneratorConfig.getDefaultConfig(world.getRegistryManager().get(Registry.BIOME_KEY), world.getRegistryManager().get(Registry.STRUCTURE_SET_KEY));
+        DynamicRegistryManager dynamicRegistryManager = world.getRegistryManager();
+        FlatChunkGeneratorConfig flatChunkGeneratorConfig = FlatChunkGeneratorConfig.getDefaultConfig(dynamicRegistryManager.getWrapperOrThrow(Registry.BIOME_KEY), dynamicRegistryManager.getWrapperOrThrow(Registry.STRUCTURE_SET_KEY), dynamicRegistryManager.getWrapperOrThrow(Registry.PLACED_FEATURE_KEY));
         List<BlockState> list = flatChunkGeneratorConfig.getLayerBlocks();
         int i = pos.getY() - world.getBottomY();
         if (pos.getY() < altitude && i > 0 && i <= list.size()) {

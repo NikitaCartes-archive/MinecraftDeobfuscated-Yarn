@@ -26,6 +26,7 @@ import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
+import net.minecraft.entity.ai.pathing.AmphibiousSwimNavigation;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -36,7 +37,6 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.passive.AxolotlSwimNavigation;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -437,6 +437,8 @@ extends AnimalEntity {
                 Criteria.BRED_ANIMALS.trigger(serverPlayerEntity, this.animal, this.mate, null);
             }
             this.turtle.setHasEgg(true);
+            this.animal.setBreedingAge(6000);
+            this.mate.setBreedingAge(6000);
             this.animal.resetLoveTicks();
             this.mate.resetLoveTicks();
             Random random = this.animal.getRandom();
@@ -693,7 +695,7 @@ extends AnimalEntity {
     }
 
     static class TurtleSwimNavigation
-    extends AxolotlSwimNavigation {
+    extends AmphibiousSwimNavigation {
         TurtleSwimNavigation(TurtleEntity owner, World world) {
             super(owner, world);
         }

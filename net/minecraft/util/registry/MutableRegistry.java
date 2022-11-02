@@ -6,6 +6,7 @@ package net.minecraft.util.registry;
 import com.mojang.serialization.Lifecycle;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryEntryLookup;
 import net.minecraft.util.registry.RegistryKey;
 
 /**
@@ -22,11 +23,13 @@ extends Registry<T> {
 
     public abstract RegistryEntry<T> set(int var1, RegistryKey<T> var2, T var3, Lifecycle var4);
 
-    public abstract RegistryEntry<T> add(RegistryKey<T> var1, T var2, Lifecycle var3);
+    public abstract RegistryEntry.Reference<T> add(RegistryKey<T> var1, T var2, Lifecycle var3);
 
     /**
      * {@return whether the registry is empty}
      */
     public abstract boolean isEmpty();
+
+    public abstract RegistryEntryLookup<T> createMutableEntryLookup();
 }
 

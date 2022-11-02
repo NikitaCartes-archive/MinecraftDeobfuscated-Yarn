@@ -9,7 +9,9 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
@@ -17,14 +19,18 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class SaplingGenerator {
     @Nullable
-    protected abstract RegistryEntry<? extends ConfiguredFeature<?, ?>> getTreeFeature(Random var1, boolean var2);
+    protected abstract RegistryKey<ConfiguredFeature<?, ?>> getTreeFeature(Random var1, boolean var2);
 
     public boolean generate(ServerWorld world, ChunkGenerator chunkGenerator, BlockPos pos, BlockState state, Random random) {
-        RegistryEntry<ConfiguredFeature<?, ?>> registryEntry = this.getTreeFeature(random, this.areFlowersNearby(world, pos));
+        RegistryKey<ConfiguredFeature<?, ?>> registryKey = this.getTreeFeature(random, this.areFlowersNearby(world, pos));
+        if (registryKey == null) {
+            return false;
+        }
+        RegistryEntry registryEntry = world.getRegistryManager().get(Registry.CONFIGURED_FEATURE_KEY).getEntry(registryKey).orElse(null);
         if (registryEntry == null) {
             return false;
         }
-        ConfiguredFeature<?, ?> configuredFeature = registryEntry.value();
+        ConfiguredFeature configuredFeature = (ConfiguredFeature)registryEntry.value();
         BlockState blockState = world.getFluidState(pos).getBlockState();
         world.setBlockState(pos, blockState, Block.NO_REDRAW);
         if (configuredFeature.generate(world, chunkGenerator, random, pos)) {

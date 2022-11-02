@@ -22,6 +22,7 @@ import net.minecraft.world.BlockLocating;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldView;
 
 public abstract class AbstractPlantBlock
 extends AbstractPlantPartBlock
@@ -55,7 +56,7 @@ implements Fertilizable {
     }
 
     @Override
-    public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
+    public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean isClient) {
         Optional<BlockPos> optional = this.getStemHeadPos(world, pos, state.getBlock());
         return optional.isPresent() && this.getStem().chooseStemState(world.getBlockState(optional.get().offset(this.growthDirection)));
     }

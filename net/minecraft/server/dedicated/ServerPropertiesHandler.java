@@ -25,13 +25,11 @@ import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.AbstractPropertiesHandler;
-import net.minecraft.structure.StructureSet;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
@@ -109,7 +107,7 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
         super(properties);
         String string = this.getString("level-seed", "");
         boolean bl = this.parseBoolean("generate-structures", true);
-        long l = GeneratorOptions.parseSeed(string).orElse(Random.create().nextLong());
+        long l = GeneratorOptions.parseSeed(string);
         this.generatorOptions = new GeneratorOptions(l, bl, false);
         this.worldGenProperties = new WorldGenProperties(this.get("generator-settings", generatorSettings -> JsonHelper.deserialize(!generatorSettings.isEmpty() ? generatorSettings : "{}"), new JsonObject()), this.get("level-type", type -> type.toLowerCase(Locale.ROOT), WorldPresets.DEFAULT.getValue().toString()));
         this.serverResourcePackProperties = ServerPropertiesHandler.getServerResourcePackProperties(this.getString("resource-pack", ""), this.getString("resource-pack-sha1", ""), this.getDeprecatedString("resource-pack-hash"), this.parseBoolean("require-resource-pack", false), this.getString("resource-pack-prompt", ""));
@@ -203,8 +201,7 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
                 RegistryOps<JsonElement> registryOps = RegistryOps.of(JsonOps.INSTANCE, dynamicRegistryManager);
                 Optional optional = FlatChunkGeneratorConfig.CODEC.parse(new Dynamic<JsonObject>(registryOps, this.generatorSettings())).resultOrPartial(field_37276::error);
                 if (optional.isPresent()) {
-                    Registry<StructureSet> registry2 = dynamicRegistryManager.get(Registry.STRUCTURE_SET_KEY);
-                    return dimensionOptionsRegistryHolder.with(dynamicRegistryManager, new FlatChunkGenerator(registry2, (FlatChunkGeneratorConfig)optional.get()));
+                    return dimensionOptionsRegistryHolder.with(dynamicRegistryManager, new FlatChunkGenerator((FlatChunkGeneratorConfig)optional.get()));
                 }
             }
             return dimensionOptionsRegistryHolder;

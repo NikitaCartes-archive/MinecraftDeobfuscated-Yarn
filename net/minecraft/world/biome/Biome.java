@@ -161,7 +161,7 @@ public final class Biome {
         if (this.doesNotSnow(pos)) {
             return false;
         }
-        return pos.getY() >= world.getBottomY() && pos.getY() < world.getTopY() && world.getLightLevel(LightType.BLOCK, pos) < 10 && (blockState = world.getBlockState(pos)).isAir() && Blocks.SNOW.getDefaultState().canPlaceAt(world, pos);
+        return pos.getY() >= world.getBottomY() && pos.getY() < world.getTopY() && world.getLightLevel(LightType.BLOCK, pos) < 10 && ((blockState = world.getBlockState(pos)).isAir() || blockState.isOf(Blocks.SNOW)) && Blocks.SNOW.getDefaultState().canPlaceAt(world, pos);
     }
 
     public GenerationSettings getGenerationSettings() {

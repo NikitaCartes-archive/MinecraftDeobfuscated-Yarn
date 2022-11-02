@@ -117,7 +117,7 @@ extends Fluid {
         return blockState.isSideSolidFullSquare(world, pos, direction);
     }
 
-    protected void tryFlow(WorldAccess world, BlockPos fluidPos, FluidState state) {
+    protected void tryFlow(World world, BlockPos fluidPos, FluidState state) {
         if (state.isEmpty()) {
             return;
         }
@@ -135,7 +135,7 @@ extends Fluid {
         }
     }
 
-    private void method_15744(WorldAccess world, BlockPos pos, FluidState fluidState, BlockState blockState) {
+    private void method_15744(World world, BlockPos pos, FluidState fluidState, BlockState blockState) {
         int i = fluidState.getLevel() - this.getLevelDecreasePerBlock(world);
         if (fluidState.get(FALLING).booleanValue()) {
             i = 7;
@@ -154,7 +154,7 @@ extends Fluid {
         }
     }
 
-    protected FluidState getUpdatedState(WorldView world, BlockPos pos, BlockState state) {
+    protected FluidState getUpdatedState(World world, BlockPos pos, BlockState state) {
         BlockPos blockPos2;
         BlockState blockState3;
         FluidState fluidState3;
@@ -170,7 +170,7 @@ extends Fluid {
             }
             i = Math.max(i, fluidState.getLevel());
         }
-        if (this.isInfinite() && j >= 2) {
+        if (this.isInfinite(world) && j >= 2) {
             BlockState blockState2 = world.getBlockState(pos.down());
             FluidState fluidState2 = blockState2.getFluidState();
             if (blockState2.getMaterial().isSolid() || this.isMatchingAndStill(fluidState2)) {
@@ -224,7 +224,7 @@ extends Fluid {
         return (FluidState)this.getStill().getDefaultState().with(FALLING, falling);
     }
 
-    protected abstract boolean isInfinite();
+    protected abstract boolean isInfinite(World var1);
 
     protected void flow(WorldAccess world, BlockPos pos, BlockState state, Direction direction, FluidState fluidState) {
         if (state.getBlock() instanceof FluidFillable) {
@@ -304,7 +304,7 @@ extends Fluid {
         return i;
     }
 
-    protected Map<Direction, FluidState> getSpread(WorldView world, BlockPos pos, BlockState state) {
+    protected Map<Direction, FluidState> getSpread(World world, BlockPos pos, BlockState state) {
         int i = 1000;
         EnumMap<Direction, FluidState> map = Maps.newEnumMap(Direction.class);
         Short2ObjectOpenHashMap<Pair<BlockState, FluidState>> short2ObjectMap = new Short2ObjectOpenHashMap<Pair<BlockState, FluidState>>();
@@ -412,7 +412,7 @@ extends Fluid {
         if (state.getLevel() == 9 && FlowableFluid.isFluidAboveEqual(state, world, pos)) {
             return VoxelShapes.fullCube();
         }
-        return this.shapeCache.computeIfAbsent(state, fluidState -> VoxelShapes.cuboid(0.0, 0.0, 0.0, 1.0, fluidState.getHeight(world, pos), 1.0));
+        return this.shapeCache.computeIfAbsent(state, state2 -> VoxelShapes.cuboid(0.0, 0.0, 0.0, 1.0, state2.getHeight(world, pos), 1.0));
     }
 }
 

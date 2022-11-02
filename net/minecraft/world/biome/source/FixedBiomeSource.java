@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
 public class FixedBiomeSource
 extends BiomeSource
 implements BiomeAccess.Storage {
-    public static final Codec<FixedBiomeSource> CODEC = ((MapCodec)Biome.REGISTRY_CODEC.fieldOf("biome")).xmap(FixedBiomeSource::new, fixedBiomeSource -> fixedBiomeSource.biome).stable().codec();
+    public static final Codec<FixedBiomeSource> CODEC = ((MapCodec)Biome.REGISTRY_CODEC.fieldOf("biome")).xmap(FixedBiomeSource::new, biomeSource -> biomeSource.biome).stable().codec();
     private final RegistryEntry<Biome> biome;
 
     public FixedBiomeSource(RegistryEntry<Biome> biome) {

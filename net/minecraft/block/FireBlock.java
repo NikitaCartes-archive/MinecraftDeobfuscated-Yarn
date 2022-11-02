@@ -300,7 +300,7 @@ extends AbstractFireBlock {
         fireBlock.registerFlammableBlock(Blocks.DARK_OAK_SLAB, 5, 20);
         fireBlock.registerFlammableBlock(Blocks.MANGROVE_SLAB, 5, 20);
         fireBlock.registerFlammableBlock(Blocks.BAMBOO_SLAB, 5, 20);
-        fireBlock.registerFlammableBlock(Blocks.BAMBOO_MOSAIC_STAIRS, 5, 20);
+        fireBlock.registerFlammableBlock(Blocks.BAMBOO_MOSAIC_SLAB, 5, 20);
         fireBlock.registerFlammableBlock(Blocks.OAK_FENCE_GATE, 5, 20);
         fireBlock.registerFlammableBlock(Blocks.SPRUCE_FENCE_GATE, 5, 20);
         fireBlock.registerFlammableBlock(Blocks.BIRCH_FENCE_GATE, 5, 20);

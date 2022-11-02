@@ -253,7 +253,7 @@ extends SimpleStructurePiece {
         UNDERGROUND("underground"),
         IN_NETHER("in_nether");
 
-        public static final StringIdentifiable.Codec<VerticalPlacement> field_37811;
+        public static final StringIdentifiable.Codec<VerticalPlacement> CODEC;
         private final String id;
 
         private VerticalPlacement(String id) {
@@ -265,7 +265,7 @@ extends SimpleStructurePiece {
         }
 
         public static VerticalPlacement getFromId(String id) {
-            return field_37811.byId(id);
+            return CODEC.byId(id);
         }
 
         @Override
@@ -274,7 +274,7 @@ extends SimpleStructurePiece {
         }
 
         static {
-            field_37811 = StringIdentifiable.createCodec(VerticalPlacement::values);
+            CODEC = StringIdentifiable.createCodec(VerticalPlacement::values);
         }
     }
 
