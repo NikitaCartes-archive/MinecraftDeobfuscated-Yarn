@@ -1,11 +1,13 @@
 package net.minecraft.block;
 
-import java.util.function.Supplier;
+import java.util.Optional;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -15,11 +17,11 @@ import net.minecraft.world.gen.feature.ConfiguredFeature;
 public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 	protected static final float field_31195 = 3.0F;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 6.0, 11.0);
-	private final Supplier<RegistryEntry<? extends ConfiguredFeature<?, ?>>> feature;
+	private final RegistryKey<ConfiguredFeature<?, ?>> featureKey;
 
-	public MushroomPlantBlock(AbstractBlock.Settings settings, Supplier<RegistryEntry<? extends ConfiguredFeature<?, ?>>> feature) {
+	public MushroomPlantBlock(AbstractBlock.Settings settings, RegistryKey<ConfiguredFeature<?, ?>> featureKey) {
 		super(settings);
-		this.feature = feature;
+		this.featureKey = featureKey;
 	}
 
 	@Override
@@ -70,17 +72,24 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 	}
 
 	public boolean trySpawningBigMushroom(ServerWorld world, BlockPos pos, BlockState state, Random random) {
-		world.removeBlock(pos, false);
-		if (((ConfiguredFeature)((RegistryEntry)this.feature.get()).value()).generate(world, world.getChunkManager().getChunkGenerator(), random, pos)) {
-			return true;
-		} else {
-			world.setBlockState(pos, state, Block.NOTIFY_ALL);
+		Optional<? extends RegistryEntry<ConfiguredFeature<?, ?>>> optional = world.getRegistryManager()
+			.get(Registry.CONFIGURED_FEATURE_KEY)
+			.getEntry(this.featureKey);
+		if (optional.isEmpty()) {
 			return false;
+		} else {
+			world.removeBlock(pos, false);
+			if (((ConfiguredFeature)((RegistryEntry)optional.get()).value()).generate(world, world.getChunkManager().getChunkGenerator(), random, pos)) {
+				return true;
+			} else {
+				world.setBlockState(pos, state, Block.NOTIFY_ALL);
+				return false;
+			}
 		}
 	}
 
 	@Override
-	public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
+	public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean isClient) {
 		return true;
 	}
 

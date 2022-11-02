@@ -58,12 +58,12 @@ public class RegistryEntryListCodec<E> implements Codec<RegistryEntryList<E>> {
 	@Override
 	public <T> DataResult<Pair<RegistryEntryList<E>, T>> decode(DynamicOps<T> ops, T input) {
 		if (ops instanceof RegistryOps<T> registryOps) {
-			Optional<? extends Registry<E>> optional = registryOps.getRegistry(this.registry);
+			Optional<RegistryEntryLookup<E>> optional = registryOps.getEntryLookup(this.registry);
 			if (optional.isPresent()) {
-				Registry<E> registry = (Registry<E>)optional.get();
+				RegistryEntryLookup<E> registryEntryLookup = (RegistryEntryLookup<E>)optional.get();
 				return this.entryListStorageCodec
 					.decode(ops, input)
-					.map(pair -> pair.mapFirst(either -> either.map(registry::getOrCreateEntryList, RegistryEntryList::of)));
+					.map(pair -> pair.mapFirst(either -> either.map(registryEntryLookup::getOrThrow, RegistryEntryList::of)));
 			}
 		}
 
@@ -72,9 +72,9 @@ public class RegistryEntryListCodec<E> implements Codec<RegistryEntryList<E>> {
 
 	public <T> DataResult<T> encode(RegistryEntryList<E> registryEntryList, DynamicOps<T> dynamicOps, T object) {
 		if (dynamicOps instanceof RegistryOps<T> registryOps) {
-			Optional<? extends Registry<E>> optional = registryOps.getRegistry(this.registry);
+			Optional<RegistryEntryOwner<E>> optional = registryOps.getOwner(this.registry);
 			if (optional.isPresent()) {
-				if (!registryEntryList.isOf((Registry<E>)optional.get())) {
+				if (!registryEntryList.ownerEquals((RegistryEntryOwner<E>)optional.get())) {
 					return DataResult.error("HolderSet " + registryEntryList + " is not valid in current registry set");
 				}
 

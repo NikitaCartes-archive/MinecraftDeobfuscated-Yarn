@@ -1,140 +1,71 @@
 package net.minecraft.util.registry;
 
-import com.google.common.collect.Maps;
-import com.mojang.logging.LogUtils;
-import com.mojang.serialization.Lifecycle;
-import java.util.Map;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
+import java.util.List;
 import net.minecraft.network.message.MessageType;
-import net.minecraft.structure.StructureSet;
 import net.minecraft.structure.StructureSets;
-import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePools;
-import net.minecraft.structure.processor.StructureProcessorList;
 import net.minecraft.structure.processor.StructureProcessorLists;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
+import net.minecraft.util.Util;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BuiltinBiomes;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.dimension.DimensionTypeRegistrar;
-import net.minecraft.world.gen.FlatLevelGeneratorPreset;
 import net.minecraft.world.gen.FlatLevelGeneratorPresets;
-import net.minecraft.world.gen.WorldPreset;
 import net.minecraft.world.gen.WorldPresets;
-import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.carver.ConfiguredCarvers;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
-import net.minecraft.world.gen.densityfunction.DensityFunction;
 import net.minecraft.world.gen.densityfunction.DensityFunctions;
-import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.ConfiguredFeatures;
 import net.minecraft.world.gen.feature.PlacedFeature;
 import net.minecraft.world.gen.feature.PlacedFeatures;
 import net.minecraft.world.gen.noise.BuiltinNoiseParameters;
-import net.minecraft.world.gen.structure.Structure;
+import net.minecraft.world.gen.placementmodifier.BiomePlacementModifier;
 import net.minecraft.world.gen.structure.Structures;
-import org.slf4j.Logger;
 
-/**
- * Stores a few hardcoded registries with builtin values for data pack-loadable registries.
- * 
- * <p>Note that these registries do not contain the actual entries that the server has,
- * for that you will need to access it from {@link
- * net.minecraft.util.registry.DynamicRegistryManager}.
- */
 public class BuiltinRegistries {
-	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Map<Identifier, Supplier<? extends RegistryEntry<?>>> DEFAULT_VALUE_SUPPLIERS = Maps.<Identifier, Supplier<? extends RegistryEntry<?>>>newLinkedHashMap();
-	private static final MutableRegistry<MutableRegistry<?>> ROOT = new SimpleRegistry<>(RegistryKey.ofRegistry(new Identifier("root")), Lifecycle.experimental());
-	public static final Registry<? extends Registry<?>> REGISTRIES = ROOT;
-	public static final Registry<DimensionType> DIMENSION_TYPE = addRegistry(Registry.DIMENSION_TYPE_KEY, DimensionTypeRegistrar::initAndGetDefault);
-	public static final Registry<ConfiguredCarver<?>> CONFIGURED_CARVER = addRegistry(Registry.CONFIGURED_CARVER_KEY, registryx -> ConfiguredCarvers.CAVE);
-	public static final Registry<ConfiguredFeature<?, ?>> CONFIGURED_FEATURE = addRegistry(
-		Registry.CONFIGURED_FEATURE_KEY, ConfiguredFeatures::getDefaultConfiguredFeature
-	);
-	public static final Registry<PlacedFeature> PLACED_FEATURE = addRegistry(Registry.PLACED_FEATURE_KEY, PlacedFeatures::getDefaultPlacedFeature);
-	public static final Registry<Structure> STRUCTURE = addRegistry(Registry.STRUCTURE_KEY, Structures::getDefault);
-	public static final Registry<StructureSet> STRUCTURE_SET = addRegistry(Registry.STRUCTURE_SET_KEY, StructureSets::initAndGetDefault);
-	public static final Registry<StructureProcessorList> STRUCTURE_PROCESSOR_LIST = addRegistry(
-		Registry.STRUCTURE_PROCESSOR_LIST_KEY, registryx -> StructureProcessorLists.ZOMBIE_PLAINS
-	);
-	public static final Registry<StructurePool> STRUCTURE_POOL = addRegistry(Registry.STRUCTURE_POOL_KEY, StructurePools::initDefaultPools);
-	public static final Registry<Biome> BIOME = addRegistry(Registry.BIOME_KEY, BuiltinBiomes::getDefaultBiome);
-	public static final Registry<DoublePerlinNoiseSampler.NoiseParameters> NOISE_PARAMETERS = addRegistry(Registry.NOISE_KEY, BuiltinNoiseParameters::init);
-	public static final Registry<DensityFunction> DENSITY_FUNCTION = addRegistry(Registry.DENSITY_FUNCTION_KEY, DensityFunctions::initAndGetDefault);
-	public static final Registry<ChunkGeneratorSettings> CHUNK_GENERATOR_SETTINGS = addRegistry(
-		Registry.CHUNK_GENERATOR_SETTINGS_KEY, ChunkGeneratorSettings::initAndGetDefault
-	);
-	public static final Registry<WorldPreset> WORLD_PRESET = addRegistry(Registry.WORLD_PRESET_KEY, WorldPresets::initAndGetDefault);
-	public static final Registry<FlatLevelGeneratorPreset> FLAT_LEVEL_GENERATOR_PRESET = addRegistry(
-		Registry.FLAT_LEVEL_GENERATOR_PRESET_KEY, FlatLevelGeneratorPresets::initAndGetDefault
-	);
-	public static final Registry<MessageType> MESSAGE_TYPE = addRegistry(Registry.MESSAGE_TYPE_KEY, MessageType::initialize);
+	private static final RegistryBuilder REGISTRY_BUILDER = new RegistryBuilder()
+		.addRegistry(Registry.DIMENSION_TYPE_KEY, DimensionTypeRegistrar::bootstrap)
+		.addRegistry(Registry.CONFIGURED_CARVER_KEY, ConfiguredCarvers::bootstrap)
+		.addRegistry(Registry.CONFIGURED_FEATURE_KEY, ConfiguredFeatures::bootstrap)
+		.addRegistry(Registry.PLACED_FEATURE_KEY, PlacedFeatures::getDefaultPlacedFeature)
+		.addRegistry(Registry.STRUCTURE_KEY, Structures::bootstrap)
+		.addRegistry(Registry.STRUCTURE_SET_KEY, StructureSets::bootstrap)
+		.addRegistry(Registry.STRUCTURE_PROCESSOR_LIST_KEY, StructureProcessorLists::bootstrap)
+		.addRegistry(Registry.STRUCTURE_POOL_KEY, StructurePools::bootstrap)
+		.addRegistry(Registry.BIOME_KEY, BuiltinBiomes::bootstrap)
+		.addRegistry(Registry.NOISE_KEY, BuiltinNoiseParameters::init)
+		.addRegistry(Registry.DENSITY_FUNCTION_KEY, DensityFunctions::bootstrap)
+		.addRegistry(Registry.CHUNK_GENERATOR_SETTINGS_KEY, ChunkGeneratorSettings::bootstrap)
+		.addRegistry(Registry.WORLD_PRESET_KEY, WorldPresets::bootstrap)
+		.addRegistry(Registry.FLAT_LEVEL_GENERATOR_PRESET_KEY, FlatLevelGeneratorPresets::bootstrap)
+		.addRegistry(Registry.MESSAGE_TYPE_KEY, MessageType::bootstrap);
 
-	private static <T> Registry<T> addRegistry(RegistryKey<? extends Registry<T>> registryRef, BuiltinRegistries.Initializer<T> initializer) {
-		return addRegistry(registryRef, Lifecycle.stable(), initializer);
-	}
-
-	private static <T> Registry<T> addRegistry(RegistryKey<? extends Registry<T>> registryRef, Lifecycle lifecycle, BuiltinRegistries.Initializer<T> initializer) {
-		return addRegistry(registryRef, new SimpleRegistry<>(registryRef, lifecycle), initializer, lifecycle);
-	}
-
-	private static <T, R extends MutableRegistry<T>> R addRegistry(
-		RegistryKey<? extends Registry<T>> registryRef, R registry, BuiltinRegistries.Initializer<T> initializer, Lifecycle lifecycle
-	) {
-		Identifier identifier = registryRef.getValue();
-		DEFAULT_VALUE_SUPPLIERS.put(identifier, (Supplier)() -> initializer.run(registry));
-		ROOT.add((RegistryKey<MutableRegistry<?>>)registryRef, registry, lifecycle);
-		return registry;
-	}
-
-	public static DynamicRegistryManager.Immutable createBuiltinRegistryManager() {
-		DynamicRegistryManager.Immutable immutable = DynamicRegistryManager.of(Registry.REGISTRIES);
-		DynamicRegistryManager.Immutable immutable2 = DynamicRegistryManager.of(REGISTRIES);
-		return new DynamicRegistryManager.ImmutableImpl(Stream.concat(immutable.streamAllRegistries(), immutable2.streamAllRegistries())).toImmutable();
-	}
-
-	public static <V extends T, T> RegistryEntry<V> addCasted(Registry<T> registry, String id, V value) {
-		return add(registry, new Identifier(id), value);
-	}
-
-	public static <T> RegistryEntry<T> add(Registry<T> registry, String id, T object) {
-		return add(registry, new Identifier(id), object);
-	}
-
-	public static <T> RegistryEntry<T> add(Registry<T> registry, Identifier id, T object) {
-		return add(registry, RegistryKey.of(registry.getKey(), id), object);
-	}
-
-	public static <T> RegistryEntry<T> add(Registry<T> registry, RegistryKey<T> key, T object) {
-		return ((MutableRegistry)registry).add(key, object, Lifecycle.stable());
-	}
-
-	public static void init() {
-	}
-
-	static {
-		DEFAULT_VALUE_SUPPLIERS.forEach((id, supplier) -> {
-			if (supplier.get() == null) {
-				LOGGER.error("Unable to bootstrap registry '{}'", id);
-			}
+	private static void validate(RegistryWrapper.WrapperLookup wrapperLookup) {
+		RegistryEntryLookup<PlacedFeature> registryEntryLookup = wrapperLookup.getWrapperOrThrow(Registry.PLACED_FEATURE_KEY);
+		wrapperLookup.getWrapperOrThrow(Registry.BIOME_KEY).streamEntries().forEach(biome -> {
+			Identifier identifier = biome.registryKey().getValue();
+			List<RegistryEntryList<PlacedFeature>> list = ((Biome)biome.value()).getGenerationSettings().getFeatures();
+			list.stream().flatMap(RegistryEntryList::stream).forEach(placedFeature -> placedFeature.getKeyOrValue().ifLeft(key -> {
+					RegistryEntry.Reference<PlacedFeature> referencex = registryEntryLookup.getOrThrow(key);
+					if (!hasBiomePlacementModifier(referencex.value())) {
+						Util.error("Placed feature " + key.getValue() + " in biome " + identifier + " is missing BiomeFilter.biome()");
+					}
+				}).ifRight(value -> {
+					if (!hasBiomePlacementModifier(value)) {
+						Util.error("Placed inline feature in biome " + biome + " is missing BiomeFilter.biome()");
+					}
+				}));
 		});
-		REGISTRIES.freeze();
-
-		for (Registry<?> registry : REGISTRIES) {
-			registry.freeze();
-		}
-
-		Registry.validate(REGISTRIES);
 	}
 
-	/**
-	 * A functional interface that initializes the registry and returns the default value.
-	 */
-	@FunctionalInterface
-	interface Initializer<T> {
-		RegistryEntry<? extends T> run(Registry<T> registry);
+	private static boolean hasBiomePlacementModifier(PlacedFeature placedFeature) {
+		return placedFeature.placementModifiers().contains(BiomePlacementModifier.of());
+	}
+
+	public static RegistryWrapper.WrapperLookup createWrapperLookup() {
+		DynamicRegistryManager.Immutable immutable = DynamicRegistryManager.of(Registry.REGISTRIES);
+		RegistryWrapper.WrapperLookup wrapperLookup = REGISTRY_BUILDER.createWrapperLookup(immutable);
+		validate(wrapperLookup);
+		return wrapperLookup;
 	}
 }

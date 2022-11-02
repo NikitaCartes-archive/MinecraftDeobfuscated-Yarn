@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.command.CommandRegistryWrapper;
 import net.minecraft.command.argument.ParticleEffectArgumentType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -350,9 +349,7 @@ public class AreaEffectCloudEntity extends Entity {
 
 		if (nbt.contains("Particle", NbtElement.STRING_TYPE)) {
 			try {
-				this.setParticleType(
-					ParticleEffectArgumentType.readParameters(new StringReader(nbt.getString("Particle")), CommandRegistryWrapper.of(Registry.PARTICLE_TYPE))
-				);
+				this.setParticleType(ParticleEffectArgumentType.readParameters(new StringReader(nbt.getString("Particle")), Registry.PARTICLE_TYPE.getReadOnlyWrapper()));
 			} catch (CommandSyntaxException var5) {
 				LOGGER.warn("Couldn't load custom particle {}", nbt.getString("Particle"), var5);
 			}

@@ -37,11 +37,11 @@ public class AxisAlignedLinearPosRuleTest extends PosRuleTest {
 	}
 
 	@Override
-	public boolean test(BlockPos blockPos, BlockPos blockPos2, BlockPos pivot, Random random) {
+	public boolean test(BlockPos originalPos, BlockPos currentPos, BlockPos pivot, Random random) {
 		Direction direction = Direction.get(Direction.AxisDirection.POSITIVE, this.axis);
-		float f = (float)Math.abs((blockPos2.getX() - pivot.getX()) * direction.getOffsetX());
-		float g = (float)Math.abs((blockPos2.getY() - pivot.getY()) * direction.getOffsetY());
-		float h = (float)Math.abs((blockPos2.getZ() - pivot.getZ()) * direction.getOffsetZ());
+		float f = (float)Math.abs((currentPos.getX() - pivot.getX()) * direction.getOffsetX());
+		float g = (float)Math.abs((currentPos.getY() - pivot.getY()) * direction.getOffsetY());
+		float h = (float)Math.abs((currentPos.getZ() - pivot.getZ()) * direction.getOffsetZ());
 		int i = (int)(f + g + h);
 		float j = random.nextFloat();
 		return j <= MathHelper.clampedLerp(this.minChance, this.maxChance, MathHelper.getLerpProgress((float)i, (float)this.minDistance, (float)this.maxDistance));

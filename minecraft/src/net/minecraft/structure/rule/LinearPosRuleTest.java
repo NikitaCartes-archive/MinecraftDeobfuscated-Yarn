@@ -33,8 +33,8 @@ public class LinearPosRuleTest extends PosRuleTest {
 	}
 
 	@Override
-	public boolean test(BlockPos blockPos, BlockPos blockPos2, BlockPos pivot, Random random) {
-		int i = blockPos2.getManhattanDistance(pivot);
+	public boolean test(BlockPos originalPos, BlockPos currentPos, BlockPos pivot, Random random) {
+		int i = currentPos.getManhattanDistance(pivot);
 		float f = random.nextFloat();
 		return f <= MathHelper.clampedLerp(this.minChance, this.maxChance, MathHelper.getLerpProgress((float)i, (float)this.minDistance, (float)this.maxDistance));
 	}

@@ -155,7 +155,7 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 	}
 
 	@Override
-	public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
+	public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean isClient) {
 		BlockState blockState = world.getBlockState(pos.up());
 		return canGrowInto(blockState);
 	}

@@ -17,7 +17,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class CamelEntityModel<T extends CamelEntity> extends SinglePartEntityModel<T> {
-	private static final float field_40458 = 75.0F;
+	private static final float field_40458 = 400.0F;
 	private static final float field_40459 = 2.0F;
 	private static final String SADDLE = "saddle";
 	private static final String BRIDLE = "bridle";
@@ -130,7 +130,7 @@ public class CamelEntityModel<T extends CamelEntity> extends SinglePartEntityMod
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
 		this.setHeadAngles(camelEntity, i, j, h);
 		this.updateVisibleParts(camelEntity);
-		float k = Math.min((float)camelEntity.getVelocity().lengthSquared() * 75.0F, 2.0F);
+		float k = Math.min((float)camelEntity.getVelocity().horizontalLengthSquared() * 400.0F, 2.0F);
 		this.updateAnimation(camelEntity.walkingAnimationState, CamelAnimations.WALKING, h, k);
 		this.updateAnimation(camelEntity.sittingTransitionAnimationState, CamelAnimations.SITTING_TRANSITION, h, 1.0F);
 		this.updateAnimation(camelEntity.sittingAnimationState, CamelAnimations.SITTING, h, 1.0F);

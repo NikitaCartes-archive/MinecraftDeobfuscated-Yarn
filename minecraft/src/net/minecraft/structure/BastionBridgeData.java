@@ -5,81 +5,96 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.structure.pool.StructurePools;
+import net.minecraft.structure.processor.StructureProcessorList;
 import net.minecraft.structure.processor.StructureProcessorLists;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registerable;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryEntryLookup;
 
 public class BastionBridgeData {
-	public static void init() {
-	}
-
-	static {
+	public static void bootstrap(Registerable<StructurePool> poolRegisterable) {
+		RegistryEntryLookup<StructureProcessorList> registryEntryLookup = poolRegisterable.getRegistryLookup(Registry.STRUCTURE_PROCESSOR_LIST_KEY);
+		RegistryEntry<StructureProcessorList> registryEntry = registryEntryLookup.getOrThrow(StructureProcessorLists.ENTRANCE_REPLACEMENT);
+		RegistryEntry<StructureProcessorList> registryEntry2 = registryEntryLookup.getOrThrow(StructureProcessorLists.BASTION_GENERIC_DEGRADATION);
+		RegistryEntry<StructureProcessorList> registryEntry3 = registryEntryLookup.getOrThrow(StructureProcessorLists.BRIDGE);
+		RegistryEntry<StructureProcessorList> registryEntry4 = registryEntryLookup.getOrThrow(StructureProcessorLists.RAMPART_DEGRADATION);
+		RegistryEntryLookup<StructurePool> registryEntryLookup2 = poolRegisterable.getRegistryLookup(Registry.STRUCTURE_POOL_KEY);
+		RegistryEntry<StructurePool> registryEntry5 = registryEntryLookup2.getOrThrow(StructurePools.EMPTY);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/bridge/starting_pieces",
 			new StructurePool(
-				new Identifier("bastion/bridge/starting_pieces"),
-				new Identifier("empty"),
+				registryEntry5,
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/bridge/starting_pieces/entrance", StructureProcessorLists.ENTRANCE_REPLACEMENT), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/bridge/starting_pieces/entrance_face", StructureProcessorLists.BASTION_GENERIC_DEGRADATION), 1)
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/bridge/starting_pieces/entrance", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/bridge/starting_pieces/entrance_face", registryEntry2), 1)
 				),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/bridge/bridge_pieces",
 			new StructurePool(
-				new Identifier("bastion/bridge/bridge_pieces"),
-				new Identifier("empty"),
-				ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedSingle("bastion/bridge/bridge_pieces/bridge", StructureProcessorLists.BRIDGE), 1)),
+				registryEntry5,
+				ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedSingle("bastion/bridge/bridge_pieces/bridge", registryEntry3), 1)),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/bridge/legs",
 			new StructurePool(
-				new Identifier("bastion/bridge/legs"),
-				new Identifier("empty"),
+				registryEntry5,
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/bridge/legs/leg_0", StructureProcessorLists.BASTION_GENERIC_DEGRADATION), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/bridge/legs/leg_1", StructureProcessorLists.BASTION_GENERIC_DEGRADATION), 1)
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/bridge/legs/leg_0", registryEntry2), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/bridge/legs/leg_1", registryEntry2), 1)
 				),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/bridge/walls",
 			new StructurePool(
-				new Identifier("bastion/bridge/walls"),
-				new Identifier("empty"),
+				registryEntry5,
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/bridge/walls/wall_base_0", StructureProcessorLists.RAMPART_DEGRADATION), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/bridge/walls/wall_base_1", StructureProcessorLists.RAMPART_DEGRADATION), 1)
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/bridge/walls/wall_base_0", registryEntry4), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/bridge/walls/wall_base_1", registryEntry4), 1)
 				),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/bridge/ramparts",
 			new StructurePool(
-				new Identifier("bastion/bridge/ramparts"),
-				new Identifier("empty"),
+				registryEntry5,
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/bridge/ramparts/rampart_0", StructureProcessorLists.RAMPART_DEGRADATION), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/bridge/ramparts/rampart_1", StructureProcessorLists.RAMPART_DEGRADATION), 1)
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/bridge/ramparts/rampart_0", registryEntry4), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/bridge/ramparts/rampart_1", registryEntry4), 1)
 				),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/bridge/rampart_plates",
 			new StructurePool(
-				new Identifier("bastion/bridge/rampart_plates"),
-				new Identifier("empty"),
-				ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedSingle("bastion/bridge/rampart_plates/plate_0", StructureProcessorLists.RAMPART_DEGRADATION), 1)),
+				registryEntry5,
+				ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedSingle("bastion/bridge/rampart_plates/plate_0", registryEntry4), 1)),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/bridge/connectors",
 			new StructurePool(
-				new Identifier("bastion/bridge/connectors"),
-				new Identifier("empty"),
+				registryEntry5,
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/bridge/connectors/back_bridge_top", StructureProcessorLists.BASTION_GENERIC_DEGRADATION), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/bridge/connectors/back_bridge_bottom", StructureProcessorLists.BASTION_GENERIC_DEGRADATION), 1)
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/bridge/connectors/back_bridge_top", registryEntry2), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/bridge/connectors/back_bridge_bottom", registryEntry2), 1)
 				),
 				StructurePool.Projection.RIGID
 			)

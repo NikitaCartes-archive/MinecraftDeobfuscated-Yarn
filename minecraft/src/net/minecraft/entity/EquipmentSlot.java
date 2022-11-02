@@ -84,6 +84,10 @@ public enum EquipmentSlot {
 		return this.name;
 	}
 
+	public boolean isArmorSlot() {
+		return this.type == EquipmentSlot.Type.ARMOR;
+	}
+
 	/**
 	 * {@return the slot where {@linkplain #getName the name} is equal to {@code name}}
 	 * If no slot matching the input name is found, this throws {@link IllegalArgumentException}.

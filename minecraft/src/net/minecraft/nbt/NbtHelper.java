@@ -27,7 +27,6 @@ import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.command.CommandRegistryWrapper;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.visitor.NbtOrderedStringFormatter;
@@ -42,6 +41,7 @@ import net.minecraft.util.Uuids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryEntryLookup;
 import net.minecraft.util.registry.RegistryKey;
 import org.slf4j.Logger;
 
@@ -290,12 +290,12 @@ public final class NbtHelper {
 	 * 
 	 * @see #fromBlockState(BlockState)
 	 */
-	public static BlockState toBlockState(CommandRegistryWrapper<Block> blockRegistryWrapper, NbtCompound nbt) {
+	public static BlockState toBlockState(RegistryEntryLookup<Block> blockLookup, NbtCompound nbt) {
 		if (!nbt.contains("Name", NbtElement.STRING_TYPE)) {
 			return Blocks.AIR.getDefaultState();
 		} else {
 			Identifier identifier = new Identifier(nbt.getString("Name"));
-			Optional<? extends RegistryEntry<Block>> optional = blockRegistryWrapper.getEntry(RegistryKey.of(Registry.BLOCK_KEY, identifier));
+			Optional<? extends RegistryEntry<Block>> optional = blockLookup.getOptional(RegistryKey.of(Registry.BLOCK_KEY, identifier));
 			if (optional.isEmpty()) {
 				return Blocks.AIR.getDefaultState();
 			} else {
@@ -333,7 +333,7 @@ public final class NbtHelper {
 	/**
 	 * {@return the serialized block state}
 	 * 
-	 * @see #toBlockState(CommandRegistryWrapper, NbtCompound)
+	 * @see #toBlockState(RegistryEntryLookup, NbtCompound)
 	 */
 	public static NbtCompound fromBlockState(BlockState state) {
 		NbtCompound nbtCompound = new NbtCompound();

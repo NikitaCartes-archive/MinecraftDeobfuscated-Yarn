@@ -1,66 +1,68 @@
 package net.minecraft.command;
 
-import java.util.Optional;
 import net.minecraft.resource.featuretoggle.FeatureSet;
-import net.minecraft.tag.TagKey;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.RegistryWrapper;
 
 /**
- * A class that creates {@link CommandRegistryWrapper} with ability to set a policy on
+ * A class that creates {@link RegistryWrapper} with ability to set a policy on
  * how to handle unrecognized tags.
  * 
  * @apiNote You usually do not need to create your own instance; the command registration
  * callbacks (such as {@link net.minecraft.server.command.CommandManager} constructor)
  * provides an instance with proper configurations.
  */
-public final class CommandRegistryAccess {
-	private final DynamicRegistryManager dynamicRegistryManager;
-	private final FeatureSet enabledFeatures;
-	CommandRegistryAccess.EntryListCreationPolicy entryListCreationPolicy = CommandRegistryAccess.EntryListCreationPolicy.FAIL;
-
-	public CommandRegistryAccess(DynamicRegistryManager dynamicRegistryManager, FeatureSet enabledFeatures) {
-		this.dynamicRegistryManager = dynamicRegistryManager;
-		this.enabledFeatures = enabledFeatures;
-	}
-
-	/**
-	 * Sets the policy on how to handle unrecognized tags.
-	 * 
-	 * <p>See {@link CommandRegistryAccess.EntryListCreationPolicy} for the description of
-	 * each policy.
-	 */
-	public void setEntryListCreationPolicy(CommandRegistryAccess.EntryListCreationPolicy entryListCreationPolicy) {
-		this.entryListCreationPolicy = entryListCreationPolicy;
-	}
-
+public interface CommandRegistryAccess {
 	/**
 	 * Creates a registry wrapper that follows the entry list creation policy.
 	 * 
 	 * @param registryRef the registry key of the registry to wrap
 	 */
-	public <T> CommandRegistryWrapper<T> createWrapper(RegistryKey<? extends Registry<T>> registryRef) {
-		CommandRegistryWrapper.Impl<T> impl = new CommandRegistryWrapper.Impl<T>(this.dynamicRegistryManager.get(registryRef)) {
+	<T> RegistryWrapper<T> createWrapper(RegistryKey<? extends Registry<T>> registryRef);
+
+	static CommandRegistryAccess of(RegistryWrapper.WrapperLookup wrapperLookup, FeatureSet enabledFeatures) {
+		return new CommandRegistryAccess() {
 			@Override
-			public Optional<RegistryEntryList.Named<T>> getEntryList(TagKey<T> tag) {
-				return switch (CommandRegistryAccess.this.entryListCreationPolicy) {
-					case FAIL -> this.registry.getEntryList(tag);
-					case CREATE_NEW -> Optional.of(this.registry.getOrCreateEntryList(tag));
-					case RETURN_EMPTY -> {
-						Optional<RegistryEntryList.Named<T>> optional = this.registry.getEntryList(tag);
-						yield Optional.of((RegistryEntryList.Named)optional.orElseGet(() -> RegistryEntryList.of(this.registry, tag)));
-					}
-				};
+			public <T> RegistryWrapper<T> createWrapper(RegistryKey<? extends Registry<T>> registryRef) {
+				return wrapperLookup.getWrapperOrThrow(registryRef).withFeatureFilter(enabledFeatures);
 			}
 		};
-		return impl.withFeatureFilter(this.enabledFeatures);
+	}
+
+	static CommandRegistryAccess.EntryListCreationPolicySettable of(DynamicRegistryManager registryManager, FeatureSet enabledFeatures) {
+		return new CommandRegistryAccess.EntryListCreationPolicySettable() {
+			CommandRegistryAccess.EntryListCreationPolicy entryListCreationPolicy = CommandRegistryAccess.EntryListCreationPolicy.FAIL;
+
+			@Override
+			public void setEntryListCreationPolicy(CommandRegistryAccess.EntryListCreationPolicy entryListCreationPolicy) {
+				this.entryListCreationPolicy = entryListCreationPolicy;
+			}
+
+			@Override
+			public <T> RegistryWrapper<T> createWrapper(RegistryKey<? extends Registry<T>> registryRef) {
+				Registry<T> registry = registryManager.get(registryRef);
+				final RegistryWrapper.Impl<T> impl = registry.getReadOnlyWrapper();
+				final RegistryWrapper.Impl<T> impl2 = registry.getTagCreatingWrapper();
+				RegistryWrapper.Impl<T> impl3 = new RegistryWrapper.Impl.Delegating<T>() {
+					@Override
+					protected RegistryWrapper.Impl<T> getBase() {
+						return switch (entryListCreationPolicy) {
+							case FAIL -> impl;
+							case CREATE_NEW -> impl2;
+						};
+					}
+				};
+				return impl3.withFeatureFilter(enabledFeatures);
+			}
+		};
 	}
 
 	/**
 	 * A policy on how to handle a {@link net.minecraft.tag.TagKey} that does not resolve
-	 * to an existing tag (unrecognized tag) in {@link CommandRegistryWrapper#getEntryList}.
+	 * to an existing tag (unrecognized tag) in {@link
+	 * net.minecraft.util.registry.RegistryWrapper#getOptional(net.minecraft.tag.TagKey)}.
 	 */
 	public static enum EntryListCreationPolicy {
 		/**
@@ -68,12 +70,12 @@ public final class CommandRegistryAccess {
 		 */
 		CREATE_NEW,
 		/**
-		 * Returns a new, empty {@link net.minecraft.util.registry.RegistryEntryList} every time.
-		 */
-		RETURN_EMPTY,
-		/**
-		 * Returns {@link java.util.Optional#empty()}.
+		 * Throws an exception.
 		 */
 		FAIL;
+	}
+
+	public interface EntryListCreationPolicySettable extends CommandRegistryAccess {
+		void setEntryListCreationPolicy(CommandRegistryAccess.EntryListCreationPolicy entryListCreationPolicy);
 	}
 }

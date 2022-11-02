@@ -9,10 +9,10 @@ import net.minecraft.client.gui.screen.CustomizeFlatLevelScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.world.GeneratorOptionsHolder;
 import net.minecraft.structure.StructureSet;
-import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryEntryLookup;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
@@ -24,6 +24,7 @@ import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.chunk.FlatChunkGenerator;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
+import net.minecraft.world.gen.feature.PlacedFeature;
 
 @Environment(EnvType.CLIENT)
 public interface LevelScreenProvider {
@@ -32,14 +33,15 @@ public interface LevelScreenProvider {
 		(LevelScreenProvider)(parent, generatorOptionsHolder) -> {
 			ChunkGenerator chunkGenerator = generatorOptionsHolder.selectedDimensions().getChunkGenerator();
 			DynamicRegistryManager dynamicRegistryManager = generatorOptionsHolder.getCombinedRegistryManager();
-			Registry<Biome> registry = dynamicRegistryManager.get(Registry.BIOME_KEY);
-			Registry<StructureSet> registry2 = dynamicRegistryManager.get(Registry.STRUCTURE_SET_KEY);
+			RegistryEntryLookup<Biome> registryEntryLookup = dynamicRegistryManager.getWrapperOrThrow(Registry.BIOME_KEY);
+			RegistryEntryLookup<StructureSet> registryEntryLookup2 = dynamicRegistryManager.getWrapperOrThrow(Registry.STRUCTURE_SET_KEY);
+			RegistryEntryLookup<PlacedFeature> registryEntryLookup3 = dynamicRegistryManager.getWrapperOrThrow(Registry.PLACED_FEATURE_KEY);
 			return new CustomizeFlatLevelScreen(
 				parent,
 				config -> parent.moreOptionsDialog.apply(createModifier(config)),
 				chunkGenerator instanceof FlatChunkGenerator
 					? ((FlatChunkGenerator)chunkGenerator).getConfig()
-					: FlatChunkGeneratorConfig.getDefaultConfig(registry, registry2)
+					: FlatChunkGeneratorConfig.getDefaultConfig(registryEntryLookup, registryEntryLookup2, registryEntryLookup3)
 			);
 		},
 		Optional.of(WorldPresets.SINGLE_BIOME_SURFACE),
@@ -52,20 +54,17 @@ public interface LevelScreenProvider {
 
 	private static GeneratorOptionsHolder.RegistryAwareModifier createModifier(FlatChunkGeneratorConfig config) {
 		return (dynamicRegistryManager, dimensionsRegistryHolder) -> {
-			Registry<StructureSet> registry = dynamicRegistryManager.get(Registry.STRUCTURE_SET_KEY);
-			ChunkGenerator chunkGenerator = new FlatChunkGenerator(registry, config);
+			ChunkGenerator chunkGenerator = new FlatChunkGenerator(config);
 			return dimensionsRegistryHolder.with(dynamicRegistryManager, chunkGenerator);
 		};
 	}
 
 	private static GeneratorOptionsHolder.RegistryAwareModifier createModifier(RegistryEntry<Biome> biomeEntry) {
 		return (dynamicRegistryManager, dimensionsRegistryHolder) -> {
-			Registry<StructureSet> registry = dynamicRegistryManager.get(Registry.STRUCTURE_SET_KEY);
-			Registry<ChunkGeneratorSettings> registry2 = dynamicRegistryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY);
-			Registry<DoublePerlinNoiseSampler.NoiseParameters> registry3 = dynamicRegistryManager.get(Registry.NOISE_KEY);
-			RegistryEntry<ChunkGeneratorSettings> registryEntry2 = registry2.getOrCreateEntry(ChunkGeneratorSettings.OVERWORLD);
+			Registry<ChunkGeneratorSettings> registry = dynamicRegistryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY);
+			RegistryEntry<ChunkGeneratorSettings> registryEntry2 = registry.entryOf(ChunkGeneratorSettings.OVERWORLD);
 			BiomeSource biomeSource = new FixedBiomeSource(biomeEntry);
-			ChunkGenerator chunkGenerator = new NoiseChunkGenerator(registry, registry3, biomeSource, registryEntry2);
+			ChunkGenerator chunkGenerator = new NoiseChunkGenerator(biomeSource, registryEntry2);
 			return dimensionsRegistryHolder.with(dynamicRegistryManager, chunkGenerator);
 		};
 	}

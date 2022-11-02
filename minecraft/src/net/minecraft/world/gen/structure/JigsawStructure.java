@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolBasedGenerator;
-import net.minecraft.structure.pool.StructurePools;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -93,7 +92,6 @@ public final class JigsawStructure extends Structure {
 		ChunkPos chunkPos = context.chunkPos();
 		int i = this.startHeight.get(context.random(), new HeightContext(context.chunkGenerator(), context.world()));
 		BlockPos blockPos = new BlockPos(chunkPos.getStartX(), i, chunkPos.getStartZ());
-		StructurePools.method_44111();
 		return StructurePoolBasedGenerator.generate(
 			context, this.startPool, this.startJigsawName, this.size, blockPos, this.useExpansionHack, this.projectStartToHeightmap, this.maxDistanceFromCenter
 		);

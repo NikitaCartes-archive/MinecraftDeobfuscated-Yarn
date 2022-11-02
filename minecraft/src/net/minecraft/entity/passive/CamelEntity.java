@@ -18,6 +18,7 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.control.BodyControl;
+import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -70,7 +71,9 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 	public CamelEntity(EntityType<? extends CamelEntity> entityType, World world) {
 		super(entityType, world);
 		this.stepHeight = 1.5F;
-		this.getNavigation().setCanSwim(true);
+		MobNavigation mobNavigation = (MobNavigation)this.getNavigation();
+		mobNavigation.setCanSwim(true);
+		mobNavigation.setCanWalkOverFences(true);
 	}
 
 	@Override

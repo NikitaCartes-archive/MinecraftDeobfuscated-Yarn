@@ -68,6 +68,7 @@ public abstract class VanillaResourcePackProvider implements ResourcePackProvide
 			try {
 				FileResourcePackProvider.forEachProfile(
 					namespacedPath,
+					true,
 					(profilePath, factory) -> consumer.accept(getFileName(profilePath), (Function)name -> this.create(name, factory, this.getProfileName(name)))
 				);
 			} catch (IOException var4) {

@@ -9,6 +9,8 @@ import java.util.Optional;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryEntryLookup;
+import net.minecraft.util.registry.RegistryEntryOwner;
 import net.minecraft.util.registry.RegistryKey;
 
 /**
@@ -43,9 +45,9 @@ public final class RegistryElementCodec<E> implements Codec<RegistryEntry<E>> {
 
 	public <T> DataResult<T> encode(RegistryEntry<E> registryEntry, DynamicOps<T> dynamicOps, T object) {
 		if (dynamicOps instanceof RegistryOps<?> registryOps) {
-			Optional<? extends Registry<E>> optional = registryOps.getRegistry(this.registryRef);
+			Optional<RegistryEntryOwner<E>> optional = registryOps.getOwner(this.registryRef);
 			if (optional.isPresent()) {
-				if (!registryEntry.matchesRegistry((Registry<E>)optional.get())) {
+				if (!registryEntry.ownerEquals((RegistryEntryOwner<E>)optional.get())) {
 					return DataResult.error("Element " + registryEntry + " is not valid in current registry set");
 				}
 
@@ -60,11 +62,11 @@ public final class RegistryElementCodec<E> implements Codec<RegistryEntry<E>> {
 	@Override
 	public <T> DataResult<Pair<RegistryEntry<E>, T>> decode(DynamicOps<T> ops, T input) {
 		if (ops instanceof RegistryOps<?> registryOps) {
-			Optional<? extends Registry<E>> optional = registryOps.getRegistry(this.registryRef);
+			Optional<RegistryEntryLookup<E>> optional = registryOps.getEntryLookup(this.registryRef);
 			if (optional.isEmpty()) {
 				return DataResult.error("Registry does not exist: " + this.registryRef);
 			} else {
-				Registry<E> registry = (Registry<E>)optional.get();
+				RegistryEntryLookup<E> registryEntryLookup = (RegistryEntryLookup<E>)optional.get();
 				DataResult<Pair<Identifier, T>> dataResult = Identifier.CODEC.decode(ops, input);
 				if (dataResult.result().isEmpty()) {
 					return !this.allowInlineDefinitions
@@ -73,8 +75,11 @@ public final class RegistryElementCodec<E> implements Codec<RegistryEntry<E>> {
 				} else {
 					Pair<Identifier, T> pair = (Pair<Identifier, T>)dataResult.result().get();
 					RegistryKey<E> registryKey = RegistryKey.of(this.registryRef, pair.getFirst());
-					DataResult<? extends RegistryEntry<E>> dataResult2 = registry.getOrCreateEntryDataResult(registryKey);
-					return dataResult2.<Pair<RegistryEntry<E>, T>>map(entry -> Pair.of(entry, pair.getSecond())).setLifecycle(Lifecycle.stable());
+					return ((DataResult)registryEntryLookup.getOptional(registryKey)
+							.map(DataResult::success)
+							.orElseGet(() -> DataResult.error("Failed to get element " + registryKey)))
+						.<Pair<RegistryEntry<E>, T>>map(reference -> Pair.of(reference, pair.getSecond()))
+						.setLifecycle(Lifecycle.stable());
 				}
 			}
 		} else {

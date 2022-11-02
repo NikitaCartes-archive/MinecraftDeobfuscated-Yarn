@@ -18,7 +18,6 @@ import net.minecraft.util.math.EightWayDirection;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.math.random.Xoroshiro128PlusPlusRandom;
-import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
@@ -31,7 +30,7 @@ import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.carver.CarvingMask;
 import net.minecraft.world.gen.densityfunction.DensityFunction;
-import net.minecraft.world.gen.noise.NoiseParametersKeys;
+import net.minecraft.world.gen.noise.BuiltinNoiseParameters;
 import org.apache.commons.lang3.mutable.MutableDouble;
 import org.apache.commons.lang3.mutable.MutableObject;
 
@@ -53,7 +52,7 @@ public class Blender {
 		}
 	};
 	private static final DoublePerlinNoiseSampler OFFSET_NOISE = DoublePerlinNoiseSampler.create(
-		new Xoroshiro128PlusPlusRandom(42L), BuiltinRegistries.NOISE_PARAMETERS.getOrThrow(NoiseParametersKeys.OFFSET)
+		new Xoroshiro128PlusPlusRandom(42L), BuiltinNoiseParameters.OFFSET
 	);
 	private static final int BLENDING_BIOME_DISTANCE_THRESHOLD = BiomeCoords.fromChunk(7) - 1;
 	private static final int BLENDING_CHUNK_DISTANCE_THRESHOLD = BiomeCoords.toChunk(BLENDING_BIOME_DISTANCE_THRESHOLD + 3);

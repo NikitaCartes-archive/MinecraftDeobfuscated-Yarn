@@ -26,8 +26,8 @@ public class DirectoryResourcePack extends AbstractFileResourcePack {
 	private static final Joiner SEPARATOR_JOINER = Joiner.on("/");
 	private final Path root;
 
-	public DirectoryResourcePack(String name, Path root) {
-		super(name);
+	public DirectoryResourcePack(String name, Path root, boolean alwaysStable) {
+		super(name, alwaysStable);
 		this.root = root;
 	}
 

@@ -24,9 +24,9 @@ public class ModelProvider implements DataProvider {
 	private final DataOutput.PathResolver blockstatesPathResolver;
 	private final DataOutput.PathResolver modelsPathResolver;
 
-	public ModelProvider(DataOutput generator) {
-		this.blockstatesPathResolver = generator.getResolver(DataOutput.OutputType.RESOURCE_PACK, "blockstates");
-		this.modelsPathResolver = generator.getResolver(DataOutput.OutputType.RESOURCE_PACK, "models");
+	public ModelProvider(DataOutput output) {
+		this.blockstatesPathResolver = output.getResolver(DataOutput.OutputType.RESOURCE_PACK, "blockstates");
+		this.modelsPathResolver = output.getResolver(DataOutput.OutputType.RESOURCE_PACK, "models");
 	}
 
 	@Override

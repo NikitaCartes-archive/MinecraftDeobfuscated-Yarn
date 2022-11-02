@@ -5,12 +5,15 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.stream.Stream;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.structure.StructureSet;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryEntryList;
+import net.minecraft.util.registry.RegistryWrapper;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
@@ -19,19 +22,28 @@ import net.minecraft.world.biome.source.FixedBiomeSource;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.StructureAccessor;
+import net.minecraft.world.gen.chunk.placement.StructurePlacementCalculator;
 import net.minecraft.world.gen.noise.NoiseConfig;
 
 public class FlatChunkGenerator extends ChunkGenerator {
 	public static final Codec<FlatChunkGenerator> CODEC = RecordCodecBuilder.create(
-		instance -> createStructureSetRegistryGetter(instance)
-				.and(FlatChunkGeneratorConfig.CODEC.fieldOf("settings").forGetter(FlatChunkGenerator::getConfig))
+		instance -> instance.group(FlatChunkGeneratorConfig.CODEC.fieldOf("settings").forGetter(FlatChunkGenerator::getConfig))
 				.apply(instance, instance.stable(FlatChunkGenerator::new))
 	);
 	private final FlatChunkGeneratorConfig config;
 
-	public FlatChunkGenerator(Registry<StructureSet> structureSetRegistry, FlatChunkGeneratorConfig config) {
-		super(structureSetRegistry, config.getStructureOverrides(), new FixedBiomeSource(config.getBiome()), Util.memoize(config::createGenerationSettings));
+	public FlatChunkGenerator(FlatChunkGeneratorConfig config) {
+		super(new FixedBiomeSource(config.getBiome()), Util.memoize(config::createGenerationSettings));
 		this.config = config;
+	}
+
+	@Override
+	public StructurePlacementCalculator createStructurePlacementCalculator(RegistryWrapper<StructureSet> structureSetRegistry, NoiseConfig noiseConfig, long seed) {
+		Stream<RegistryEntry<StructureSet>> stream = (Stream<RegistryEntry<StructureSet>>)this.config
+			.getStructureOverrides()
+			.map(RegistryEntryList::stream)
+			.orElseGet(() -> structureSetRegistry.streamEntries().map(reference -> reference));
+		return StructurePlacementCalculator.create(noiseConfig, seed, this.biomeSource, stream);
 	}
 
 	@Override

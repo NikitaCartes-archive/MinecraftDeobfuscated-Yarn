@@ -40,6 +40,7 @@ public class FileResourcePackProvider implements ResourcePackProvider {
 			Files.createDirectories(this.packsDir);
 			forEachProfile(
 				this.packsDir,
+				false,
 				(path, packFactory) -> {
 					String string = getFileName(path);
 					ResourcePackProfile resourcePackProfile = ResourcePackProfile.create(
@@ -55,26 +56,26 @@ public class FileResourcePackProvider implements ResourcePackProvider {
 		}
 	}
 
-	public static void forEachProfile(Path packsDir, BiConsumer<Path, ResourcePackProfile.PackFactory> consumer) throws IOException {
+	public static void forEachProfile(Path packsDir, boolean alwaysStable, BiConsumer<Path, ResourcePackProfile.PackFactory> consumer) throws IOException {
 		DirectoryStream<Path> directoryStream = Files.newDirectoryStream(packsDir);
 
 		try {
 			for (Path path : directoryStream) {
-				ResourcePackProfile.PackFactory packFactory = getFactory(path);
+				ResourcePackProfile.PackFactory packFactory = getFactory(path, alwaysStable);
 				if (packFactory != null) {
 					consumer.accept(path, packFactory);
 				}
 			}
-		} catch (Throwable var7) {
+		} catch (Throwable var8) {
 			if (directoryStream != null) {
 				try {
 					directoryStream.close();
-				} catch (Throwable var6) {
-					var7.addSuppressed(var6);
+				} catch (Throwable var7) {
+					var8.addSuppressed(var7);
 				}
 			}
 
-			throw var7;
+			throw var8;
 		}
 
 		if (directoryStream != null) {
@@ -83,25 +84,25 @@ public class FileResourcePackProvider implements ResourcePackProvider {
 	}
 
 	@Nullable
-	public static ResourcePackProfile.PackFactory getFactory(Path path) {
+	public static ResourcePackProfile.PackFactory getFactory(Path path, boolean alwaysStable) {
 		BasicFileAttributes basicFileAttributes;
 		try {
 			basicFileAttributes = Files.readAttributes(path, BasicFileAttributes.class);
-		} catch (NoSuchFileException var4) {
+		} catch (NoSuchFileException var5) {
 			return null;
-		} catch (IOException var5) {
-			LOGGER.warn("Failed to read properties of '{}', ignoring", path, var5);
+		} catch (IOException var6) {
+			LOGGER.warn("Failed to read properties of '{}', ignoring", path, var6);
 			return null;
 		}
 
 		if (basicFileAttributes.isDirectory() && Files.isRegularFile(path.resolve("pack.mcmeta"), new LinkOption[0])) {
-			return name -> new DirectoryResourcePack(name, path);
+			return name -> new DirectoryResourcePack(name, path, alwaysStable);
 		} else {
 			if (basicFileAttributes.isRegularFile() && path.getFileName().toString().endsWith(".zip")) {
 				FileSystem fileSystem = path.getFileSystem();
 				if (fileSystem == FileSystems.getDefault() || fileSystem instanceof ResourceFileSystem) {
 					File file = path.toFile();
-					return name -> new ZipResourcePack(name, file);
+					return name -> new ZipResourcePack(name, file, alwaysStable);
 				}
 			}
 

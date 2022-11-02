@@ -1,18 +1,20 @@
 package net.minecraft.data.server.tag;
 
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.data.DataOutput;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryWrapper;
 
-public class VanillaBlockTagProvider extends AbstractTagProvider<Block> {
-	public VanillaBlockTagProvider(DataOutput output) {
-		super(output, Registry.BLOCK);
+public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
+	public VanillaBlockTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
+		super(output, Registry.BLOCK_KEY, registryLookupFuture, block -> block.getRegistryEntry().registryKey());
 	}
 
 	@Override
-	protected void configure() {
+	protected void configure(RegistryWrapper.WrapperLookup lookup) {
 		this.getOrCreateTagBuilder(BlockTags.WOOL)
 			.add(
 				Blocks.WHITE_WOOL,
@@ -657,39 +659,6 @@ public class VanillaBlockTagProvider extends AbstractTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.COPPER_ORES).add(Blocks.COPPER_ORE, Blocks.DEEPSLATE_COPPER_ORE);
 		this.getOrCreateTagBuilder(BlockTags.LAPIS_ORES).add(Blocks.LAPIS_ORE, Blocks.DEEPSLATE_LAPIS_ORE);
 		this.getOrCreateTagBuilder(BlockTags.SOUL_FIRE_BASE_BLOCKS).add(Blocks.SOUL_SAND, Blocks.SOUL_SOIL);
-		this.getOrCreateTagBuilder(BlockTags.NON_FLAMMABLE_WOOD)
-			.add(
-				Blocks.WARPED_STEM,
-				Blocks.STRIPPED_WARPED_STEM,
-				Blocks.WARPED_HYPHAE,
-				Blocks.STRIPPED_WARPED_HYPHAE,
-				Blocks.CRIMSON_STEM,
-				Blocks.STRIPPED_CRIMSON_STEM,
-				Blocks.CRIMSON_HYPHAE,
-				Blocks.STRIPPED_CRIMSON_HYPHAE,
-				Blocks.CRIMSON_PLANKS,
-				Blocks.WARPED_PLANKS,
-				Blocks.CRIMSON_SLAB,
-				Blocks.WARPED_SLAB,
-				Blocks.CRIMSON_PRESSURE_PLATE,
-				Blocks.WARPED_PRESSURE_PLATE,
-				Blocks.CRIMSON_FENCE,
-				Blocks.WARPED_FENCE,
-				Blocks.CRIMSON_TRAPDOOR,
-				Blocks.WARPED_TRAPDOOR,
-				Blocks.CRIMSON_FENCE_GATE,
-				Blocks.WARPED_FENCE_GATE,
-				Blocks.CRIMSON_STAIRS,
-				Blocks.WARPED_STAIRS,
-				Blocks.CRIMSON_BUTTON,
-				Blocks.WARPED_BUTTON,
-				Blocks.CRIMSON_DOOR,
-				Blocks.WARPED_DOOR,
-				Blocks.CRIMSON_SIGN,
-				Blocks.WARPED_SIGN,
-				Blocks.CRIMSON_WALL_SIGN,
-				Blocks.WARPED_WALL_SIGN
-			);
 		this.getOrCreateTagBuilder(BlockTags.STRIDER_WARM_BLOCKS).add(Blocks.LAVA);
 		this.getOrCreateTagBuilder(BlockTags.CAMPFIRES).add(Blocks.CAMPFIRE, Blocks.SOUL_CAMPFIRE);
 		this.getOrCreateTagBuilder(BlockTags.GUARDED_BY_PIGLINS)
@@ -791,7 +760,20 @@ public class VanillaBlockTagProvider extends AbstractTagProvider<Block> {
 			);
 		this.getOrCreateTagBuilder(BlockTags.CRYSTAL_SOUND_BLOCKS).add(Blocks.AMETHYST_BLOCK, Blocks.BUDDING_AMETHYST);
 		this.getOrCreateTagBuilder(BlockTags.CAULDRONS).add(Blocks.CAULDRON, Blocks.WATER_CAULDRON, Blocks.LAVA_CAULDRON, Blocks.POWDER_SNOW_CAULDRON);
-		this.getOrCreateTagBuilder(BlockTags.INSIDE_STEP_SOUND_BLOCKS).add(Blocks.SNOW, Blocks.POWDER_SNOW, Blocks.SCULK_VEIN);
+		this.getOrCreateTagBuilder(BlockTags.INSIDE_STEP_SOUND_BLOCKS)
+			.add(
+				Blocks.SNOW,
+				Blocks.POWDER_SNOW,
+				Blocks.SCULK_VEIN,
+				Blocks.LILY_PAD,
+				Blocks.NETHER_SPROUTS,
+				Blocks.WARPED_ROOTS,
+				Blocks.CRIMSON_ROOTS,
+				Blocks.GLOW_LICHEN,
+				Blocks.SMALL_AMETHYST_BUD,
+				Blocks.MOSS_CARPET
+			)
+			.addTag(BlockTags.WOOL_CARPETS);
 		this.getOrCreateTagBuilder(BlockTags.DRIPSTONE_REPLACEABLE_BLOCKS).addTag(BlockTags.BASE_STONE_OVERWORLD);
 		this.getOrCreateTagBuilder(BlockTags.CAVE_VINES).add(Blocks.CAVE_VINES_PLANT).add(Blocks.CAVE_VINES);
 		this.getOrCreateTagBuilder(BlockTags.MOSS_REPLACEABLE).addTag(BlockTags.BASE_STONE_OVERWORLD).addTag(BlockTags.CAVE_VINES).addTag(BlockTags.DIRT);

@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.command.CommandRegistryWrapper;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.serialize.ArgumentSerializer;
 import net.minecraft.enchantment.Enchantment;
@@ -28,6 +27,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.RegistryWrapper;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.structure.Structure;
 
@@ -43,7 +43,7 @@ public class RegistryEntryArgumentType<T> implements ArgumentType<RegistryEntry.
 		(element, type, expectedType) -> Text.translatable("argument.resource.invalid_type", element, type, expectedType)
 	);
 	final RegistryKey<? extends Registry<T>> registryRef;
-	private final CommandRegistryWrapper<T> registryWrapper;
+	private final RegistryWrapper<T> registryWrapper;
 
 	public RegistryEntryArgumentType(CommandRegistryAccess registryAccess, RegistryKey<? extends Registry<T>> registryRef) {
 		this.registryRef = registryRef;
@@ -101,7 +101,7 @@ public class RegistryEntryArgumentType<T> implements ArgumentType<RegistryEntry.
 		Identifier identifier = Identifier.fromCommandInput(stringReader);
 		RegistryKey<T> registryKey = RegistryKey.of(this.registryRef, identifier);
 		return (RegistryEntry.Reference<T>)this.registryWrapper
-			.getEntry(registryKey)
+			.getOptional(registryKey)
 			.orElseThrow(() -> NOT_FOUND_EXCEPTION.create(identifier, this.registryRef.getValue()));
 	}
 

@@ -94,7 +94,7 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 				d = 5.0;
 			}
 
-			this.world.createExplosion(this, this.getX(), this.getY(), this.getZ(), (float)(4.0 + this.random.nextDouble() * 1.5 * d), Explosion.DestructionType.BREAK);
+			this.world.createExplosion(this, this.getX(), this.getY(), this.getZ(), (float)(4.0 + this.random.nextDouble() * 1.5 * d), World.ExplosionSourceType.TNT);
 			this.discard();
 		}
 	}

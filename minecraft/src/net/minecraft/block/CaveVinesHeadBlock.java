@@ -13,6 +13,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class CaveVinesHeadBlock extends AbstractPlantStemBlock implements Fertilizable, CaveVines {
 	private static final float GROW_CHANCE = 0.11F;
@@ -64,7 +65,7 @@ public class CaveVinesHeadBlock extends AbstractPlantStemBlock implements Fertil
 	}
 
 	@Override
-	public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
+	public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean isClient) {
 		return !(Boolean)state.get(BERRIES);
 	}
 

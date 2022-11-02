@@ -33,6 +33,7 @@ import net.minecraft.world.chunk.ChunkCache;
 
 public class LandPathNodeMaker extends PathNodeMaker {
 	public static final double Y_OFFSET = 0.5;
+	private static final double MIN_STEP_HEIGHT = 1.125;
 	protected float waterPathNodeTypeWeight;
 	private final Long2ObjectMap<PathNodeType> nodeTypes = new Long2ObjectOpenHashMap<>();
 	private final Object2BooleanMap<Box> collidedBoxes = new Object2BooleanOpenHashMap<>();
@@ -245,14 +246,14 @@ public class LandPathNodeMaker extends PathNodeMaker {
 		PathNode pathNode = null;
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 		double d = this.getFeetY(mutable.set(x, y, z));
-		if (d - prevFeetY > 1.125) {
+		if (d - prevFeetY > this.getStepHeight()) {
 			return null;
 		} else {
 			PathNodeType pathNodeType = this.getNodeType(this.entity, x, y, z);
 			float f = this.entity.getPathfindingPenalty(pathNodeType);
 			double e = (double)this.entity.getWidth() / 2.0;
 			if (f >= 0.0F) {
-				pathNode = this.method_43569(x, y, z, pathNodeType, f);
+				pathNode = this.getNodeWith(x, y, z, pathNodeType, f);
 			}
 
 			if (isBlocked(nodeType) && pathNode != null && pathNode.penalty >= 0.0F && !this.isBlocked(pathNode)) {
@@ -262,7 +263,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 			if (pathNodeType != PathNodeType.WALKABLE && (!this.isAmphibious() || pathNodeType != PathNodeType.WATER)) {
 				if ((pathNode == null || pathNode.penalty < 0.0F)
 					&& maxYStep > 0
-					&& pathNodeType != PathNodeType.FENCE
+					&& (pathNodeType != PathNodeType.FENCE || this.canWalkOverFences())
 					&& pathNodeType != PathNodeType.UNPASSABLE_RAIL
 					&& pathNodeType != PathNodeType.TRAPDOOR
 					&& pathNodeType != PathNodeType.POWDER_SNOW) {
@@ -295,7 +296,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 							return pathNode;
 						}
 
-						pathNode = this.method_43569(x, y, z, pathNodeType, this.entity.getPathfindingPenalty(pathNodeType));
+						pathNode = this.getNodeWith(x, y, z, pathNodeType, this.entity.getPathfindingPenalty(pathNodeType));
 					}
 				}
 
@@ -305,27 +306,27 @@ public class LandPathNodeMaker extends PathNodeMaker {
 
 					while (pathNodeType == PathNodeType.OPEN) {
 						if (--y < this.entity.world.getBottomY()) {
-							return this.method_43570(x, j, z);
+							return this.getBlockedNode(x, j, z);
 						}
 
 						if (i++ >= this.entity.getSafeFallDistance()) {
-							return this.method_43570(x, y, z);
+							return this.getBlockedNode(x, y, z);
 						}
 
 						pathNodeType = this.getNodeType(this.entity, x, y, z);
 						f = this.entity.getPathfindingPenalty(pathNodeType);
 						if (pathNodeType != PathNodeType.OPEN && f >= 0.0F) {
-							pathNode = this.method_43569(x, y, z, pathNodeType, f);
+							pathNode = this.getNodeWith(x, y, z, pathNodeType, f);
 							break;
 						}
 
 						if (f < 0.0F) {
-							return this.method_43570(x, y, z);
+							return this.getBlockedNode(x, y, z);
 						}
 					}
 				}
 
-				if (isBlocked(pathNodeType)) {
+				if (isBlocked(pathNodeType) && pathNode == null) {
 					pathNode = this.getNode(x, y, z);
 					if (pathNode != null) {
 						pathNode.visited = true;
@@ -341,20 +342,24 @@ public class LandPathNodeMaker extends PathNodeMaker {
 		}
 	}
 
+	private double getStepHeight() {
+		return Math.max(1.125, (double)this.entity.stepHeight);
+	}
+
 	@Nullable
-	private PathNode method_43569(int i, int j, int k, PathNodeType pathNodeType, float f) {
-		PathNode pathNode = this.getNode(i, j, k);
+	private PathNode getNodeWith(int x, int y, int z, PathNodeType type, float penalty) {
+		PathNode pathNode = this.getNode(x, y, z);
 		if (pathNode != null) {
-			pathNode.type = pathNodeType;
-			pathNode.penalty = Math.max(pathNode.penalty, f);
+			pathNode.type = type;
+			pathNode.penalty = Math.max(pathNode.penalty, penalty);
 		}
 
 		return pathNode;
 	}
 
 	@Nullable
-	private PathNode method_43570(int i, int j, int k) {
-		PathNode pathNode = this.getNode(i, j, k);
+	private PathNode getBlockedNode(int x, int y, int z) {
+		PathNode pathNode = this.getNode(x, y, z);
 		if (pathNode != null) {
 			pathNode.type = PathNodeType.BLOCKED;
 			pathNode.penalty = -1.0F;
@@ -364,7 +369,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 	}
 
 	private boolean checkBoxCollision(Box box) {
-		return this.collidedBoxes.computeIfAbsent(box, (Object2BooleanFunction<? super Box>)(object -> !this.cachedWorld.isSpaceEmpty(this.entity, box)));
+		return this.collidedBoxes.computeIfAbsent(box, (Object2BooleanFunction<? super Box>)(box2 -> !this.cachedWorld.isSpaceEmpty(this.entity, box)));
 	}
 
 	@Override

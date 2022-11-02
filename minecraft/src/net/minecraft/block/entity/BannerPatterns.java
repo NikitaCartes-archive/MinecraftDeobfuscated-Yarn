@@ -51,7 +51,7 @@ public class BannerPatterns {
 		return RegistryKey.of(Registry.BANNER_PATTERN_KEY, new Identifier(id));
 	}
 
-	public static BannerPattern initAndGetDefault(Registry<BannerPattern> registry) {
+	public static BannerPattern registerAndGetDefault(Registry<BannerPattern> registry) {
 		Registry.register(registry, BASE, new BannerPattern("b"));
 		Registry.register(registry, SQUARE_BOTTOM_LEFT, new BannerPattern("bl"));
 		Registry.register(registry, SQUARE_BOTTOM_RIGHT, new BannerPattern("br"));

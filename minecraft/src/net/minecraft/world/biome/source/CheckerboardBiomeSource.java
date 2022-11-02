@@ -10,8 +10,8 @@ import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 public class CheckerboardBiomeSource extends BiomeSource {
 	public static final Codec<CheckerboardBiomeSource> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Biome.REGISTRY_ENTRY_LIST_CODEC.fieldOf("biomes").forGetter(checkerboardBiomeSource -> checkerboardBiomeSource.biomeArray),
-					Codec.intRange(0, 62).fieldOf("scale").orElse(2).forGetter(checkerboardBiomeSource -> checkerboardBiomeSource.scale)
+					Biome.REGISTRY_ENTRY_LIST_CODEC.fieldOf("biomes").forGetter(biomeSource -> biomeSource.biomeArray),
+					Codec.intRange(0, 62).fieldOf("scale").orElse(2).forGetter(biomeSource -> biomeSource.scale)
 				)
 				.apply(instance, CheckerboardBiomeSource::new)
 	);

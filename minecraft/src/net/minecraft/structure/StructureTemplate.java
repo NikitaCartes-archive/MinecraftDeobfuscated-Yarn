@@ -20,7 +20,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidFillable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
-import net.minecraft.command.CommandRegistryWrapper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -46,6 +45,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.util.registry.RegistryEntryLookup;
 import net.minecraft.util.shape.BitSetVoxelSet;
 import net.minecraft.util.shape.VoxelSet;
 import net.minecraft.world.EmptyBlockView;
@@ -649,7 +649,7 @@ public class StructureTemplate {
 		return nbt;
 	}
 
-	public void readNbt(CommandRegistryWrapper<Block> blockRegistryWrapper, NbtCompound nbt) {
+	public void readNbt(RegistryEntryLookup<Block> blockLookup, NbtCompound nbt) {
 		this.blockInfoLists.clear();
 		this.entities.clear();
 		NbtList nbtList = nbt.getList("size", NbtElement.INT_TYPE);
@@ -659,10 +659,10 @@ public class StructureTemplate {
 			NbtList nbtList3 = nbt.getList("palettes", NbtElement.LIST_TYPE);
 
 			for (int i = 0; i < nbtList3.size(); i++) {
-				this.loadPalettedBlockInfo(blockRegistryWrapper, nbtList3.getList(i), nbtList2);
+				this.loadPalettedBlockInfo(blockLookup, nbtList3.getList(i), nbtList2);
 			}
 		} else {
-			this.loadPalettedBlockInfo(blockRegistryWrapper, nbt.getList("palette", NbtElement.COMPOUND_TYPE), nbtList2);
+			this.loadPalettedBlockInfo(blockLookup, nbt.getList("palette", NbtElement.COMPOUND_TYPE), nbtList2);
 		}
 
 		NbtList nbtList3 = nbt.getList("entities", NbtElement.COMPOUND_TYPE);
@@ -680,11 +680,11 @@ public class StructureTemplate {
 		}
 	}
 
-	private void loadPalettedBlockInfo(CommandRegistryWrapper<Block> blockRegistryWrapper, NbtList palette, NbtList blocks) {
+	private void loadPalettedBlockInfo(RegistryEntryLookup<Block> blockLookup, NbtList palette, NbtList blocks) {
 		StructureTemplate.Palette palette2 = new StructureTemplate.Palette();
 
 		for (int i = 0; i < palette.size(); i++) {
-			palette2.set(NbtHelper.toBlockState(blockRegistryWrapper, palette.getCompound(i)), i);
+			palette2.set(NbtHelper.toBlockState(blockLookup, palette.getCompound(i)), i);
 		}
 
 		List<StructureTemplate.StructureBlockInfo> list = Lists.<StructureTemplate.StructureBlockInfo>newArrayList();

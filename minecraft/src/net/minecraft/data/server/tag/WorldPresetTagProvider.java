@@ -1,18 +1,20 @@
 package net.minecraft.data.server.tag;
 
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.data.DataOutput;
 import net.minecraft.tag.WorldPresetTags;
-import net.minecraft.util.registry.BuiltinRegistries;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryWrapper;
 import net.minecraft.world.gen.WorldPreset;
 import net.minecraft.world.gen.WorldPresets;
 
 public class WorldPresetTagProvider extends AbstractTagProvider<WorldPreset> {
-	public WorldPresetTagProvider(DataOutput dataGenerator) {
-		super(dataGenerator, BuiltinRegistries.WORLD_PRESET);
+	public WorldPresetTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
+		super(output, Registry.WORLD_PRESET_KEY, registryLookupFuture);
 	}
 
 	@Override
-	protected void configure() {
+	protected void configure(RegistryWrapper.WrapperLookup lookup) {
 		this.getOrCreateTagBuilder(WorldPresetTags.NORMAL)
 			.add(WorldPresets.DEFAULT)
 			.add(WorldPresets.FLAT)

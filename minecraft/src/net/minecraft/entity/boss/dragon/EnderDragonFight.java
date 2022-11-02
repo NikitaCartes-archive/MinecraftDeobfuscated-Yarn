@@ -46,11 +46,13 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.EndConfiguredFeatures;
 import net.minecraft.world.gen.feature.EndPortalFeature;
 import net.minecraft.world.gen.feature.EndSpikeFeature;
@@ -393,7 +395,11 @@ public class EnderDragonFight {
 
 	private void generateEndGateway(BlockPos pos) {
 		this.world.syncWorldEvent(WorldEvents.END_GATEWAY_SPAWNS, pos, 0);
-		EndConfiguredFeatures.END_GATEWAY_DELAYED.value().generate(this.world, this.world.getChunkManager().getChunkGenerator(), Random.create(), pos);
+		this.world
+			.getRegistryManager()
+			.getOptional(Registry.CONFIGURED_FEATURE_KEY)
+			.flatMap(registry -> registry.getEntry(EndConfiguredFeatures.END_GATEWAY_DELAYED))
+			.ifPresent(reference -> ((ConfiguredFeature)reference.value()).generate(this.world, this.world.getChunkManager().getChunkGenerator(), Random.create(), pos));
 	}
 
 	private void generateEndPortal(boolean previouslyKilled) {

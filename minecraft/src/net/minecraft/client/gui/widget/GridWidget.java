@@ -10,7 +10,7 @@ import net.minecraft.util.math.Divider;
 /**
  * A widget that positions its children in a 2D grid.
  * 
- * @see net.minecraft.util.math.GridBlockLengthIterator
+ * @see net.minecraft.util.math.Divider
  */
 @Environment(EnvType.CLIENT)
 public class GridWidget extends WrapperWidget {

@@ -23,9 +23,11 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.EndConfiguredFeatures;
 import net.minecraft.world.gen.feature.EndGatewayFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
@@ -208,9 +210,16 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 		WorldChunk worldChunk = getChunk(world, vec3d);
 		BlockPos blockPos = findPortalPosition(worldChunk);
 		if (blockPos == null) {
-			blockPos = new BlockPos(vec3d.x + 0.5, 75.0, vec3d.z + 0.5);
-			LOGGER.debug("Failed to find a suitable block to teleport to, spawning an island on {}", blockPos);
-			EndConfiguredFeatures.END_ISLAND.value().generate(world, world.getChunkManager().getChunkGenerator(), Random.create(blockPos.asLong()), blockPos);
+			BlockPos blockPos2 = new BlockPos(vec3d.x + 0.5, 75.0, vec3d.z + 0.5);
+			LOGGER.debug("Failed to find a suitable block to teleport to, spawning an island on {}", blockPos2);
+			world.getRegistryManager()
+				.getOptional(Registry.CONFIGURED_FEATURE_KEY)
+				.flatMap(registry -> registry.getEntry(EndConfiguredFeatures.END_ISLAND))
+				.ifPresent(
+					reference -> ((ConfiguredFeature)reference.value())
+							.generate(world, world.getChunkManager().getChunkGenerator(), Random.create(blockPos2.asLong()), blockPos2)
+				);
+			blockPos = blockPos2;
 		} else {
 			LOGGER.debug("Found suitable block to teleport to: {}", blockPos);
 		}

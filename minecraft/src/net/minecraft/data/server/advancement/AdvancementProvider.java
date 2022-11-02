@@ -12,34 +12,41 @@ import net.minecraft.data.DataOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.RegistryWrapper;
 
 public class AdvancementProvider implements DataProvider {
 	private final DataOutput.PathResolver pathResolver;
 	private final List<AdvancementTabGenerator> tabGenerators;
+	private final CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture;
 
-	public AdvancementProvider(DataOutput output, List<AdvancementTabGenerator> tabGenerators) {
+	public AdvancementProvider(
+		DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture, List<AdvancementTabGenerator> tabGenerators
+	) {
 		this.pathResolver = output.getResolver(DataOutput.OutputType.DATA_PACK, "advancements");
 		this.tabGenerators = tabGenerators;
+		this.registryLookupFuture = registryLookupFuture;
 	}
 
 	@Override
 	public CompletableFuture<?> run(DataWriter writer) {
-		Set<Identifier> set = new HashSet();
-		List<CompletableFuture<?>> list = new ArrayList();
-		Consumer<Advancement> consumer = advancement -> {
-			if (!set.add(advancement.getId())) {
-				throw new IllegalStateException("Duplicate advancement " + advancement.getId());
-			} else {
-				Path path = this.pathResolver.resolveJson(advancement.getId());
-				list.add(DataProvider.writeToPath(writer, advancement.createTask().toJson(), path));
+		return this.registryLookupFuture.thenCompose(lookup -> {
+			Set<Identifier> set = new HashSet();
+			List<CompletableFuture<?>> list = new ArrayList();
+			Consumer<Advancement> consumer = advancement -> {
+				if (!set.add(advancement.getId())) {
+					throw new IllegalStateException("Duplicate advancement " + advancement.getId());
+				} else {
+					Path path = this.pathResolver.resolveJson(advancement.getId());
+					list.add(DataProvider.writeToPath(writer, advancement.createTask().toJson(), path));
+				}
+			};
+
+			for (AdvancementTabGenerator advancementTabGenerator : this.tabGenerators) {
+				advancementTabGenerator.accept(lookup, consumer);
 			}
-		};
 
-		for (AdvancementTabGenerator advancementTabGenerator : this.tabGenerators) {
-			advancementTabGenerator.accept(consumer);
-		}
-
-		return CompletableFuture.allOf((CompletableFuture[])list.toArray(CompletableFuture[]::new));
+			return CompletableFuture.allOf((CompletableFuture[])list.toArray(CompletableFuture[]::new));
+		});
 	}
 
 	@Override

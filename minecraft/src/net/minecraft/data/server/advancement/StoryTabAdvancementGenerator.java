@@ -19,12 +19,13 @@ import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.RegistryWrapper;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureKeys;
 
 public class StoryTabAdvancementGenerator implements AdvancementTabGenerator {
 	@Override
-	public void accept(Consumer<Advancement> exporter) {
+	public void accept(RegistryWrapper.WrapperLookup lookup, Consumer<Advancement> exporter) {
 		Advancement advancement = Advancement.Builder.create()
 			.display(
 				Blocks.GRASS_BLOCK,

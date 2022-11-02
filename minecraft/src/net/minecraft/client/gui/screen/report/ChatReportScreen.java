@@ -293,16 +293,16 @@ public class ChatReportScreen extends Screen {
 		protected void initButtons(int yOffset) {
 			int i = 150;
 			this.addDrawableChild(
-				ButtonWidget.createBuilder(RETURN_BUTTON_TEXT, button -> this.close()).setPositionAndSize(this.width / 2 - 245, 100 + yOffset, 150, 20).build()
+				ButtonWidget.createBuilder(RETURN_BUTTON_TEXT, button -> this.close()).setPositionAndSize(this.width / 2 - 155, 100 + yOffset, 150, 20).build()
 			);
 			this.addDrawableChild(ButtonWidget.createBuilder(DRAFT_BUTTON_TEXT, button -> {
 				ChatReportScreen.this.setDraft();
 				this.client.setScreen(ChatReportScreen.this.parent);
-			}).setPositionAndSize(this.width / 2 - 75, 100 + yOffset, 150, 20).build());
+			}).setPositionAndSize(this.width / 2 + 5, 100 + yOffset, 150, 20).build());
 			this.addDrawableChild(ButtonWidget.createBuilder(DISCARD_BUTTON_TEXT, button -> {
 				ChatReportScreen.this.clearDraft();
 				this.client.setScreen(ChatReportScreen.this.parent);
-			}).setPositionAndSize(this.width / 2 + 95, 100 + yOffset, 150, 20).build());
+			}).setPositionAndSize(this.width / 2 - 75, 130 + yOffset, 150, 20).build());
 		}
 
 		@Override

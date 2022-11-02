@@ -4,11 +4,13 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.BlockView;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.chunk.light.ChunkLightProvider;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.NetherConfiguredFeatures;
 
 public class NyliumBlock extends Block implements Fertilizable {
@@ -31,7 +33,7 @@ public class NyliumBlock extends Block implements Fertilizable {
 	}
 
 	@Override
-	public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
+	public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean isClient) {
 		return world.getBlockState(pos.up()).isAir();
 	}
 
@@ -45,14 +47,26 @@ public class NyliumBlock extends Block implements Fertilizable {
 		BlockState blockState = world.getBlockState(pos);
 		BlockPos blockPos = pos.up();
 		ChunkGenerator chunkGenerator = world.getChunkManager().getChunkGenerator();
+		Registry<ConfiguredFeature<?, ?>> registry = world.getRegistryManager().get(Registry.CONFIGURED_FEATURE_KEY);
 		if (blockState.isOf(Blocks.CRIMSON_NYLIUM)) {
-			NetherConfiguredFeatures.CRIMSON_FOREST_VEGETATION_BONEMEAL.value().generate(world, chunkGenerator, random, blockPos);
+			this.generate(registry, NetherConfiguredFeatures.CRIMSON_FOREST_VEGETATION_BONEMEAL, world, chunkGenerator, random, blockPos);
 		} else if (blockState.isOf(Blocks.WARPED_NYLIUM)) {
-			NetherConfiguredFeatures.WARPED_FOREST_VEGETATION_BONEMEAL.value().generate(world, chunkGenerator, random, blockPos);
-			NetherConfiguredFeatures.NETHER_SPROUTS_BONEMEAL.value().generate(world, chunkGenerator, random, blockPos);
+			this.generate(registry, NetherConfiguredFeatures.WARPED_FOREST_VEGETATION_BONEMEAL, world, chunkGenerator, random, blockPos);
+			this.generate(registry, NetherConfiguredFeatures.NETHER_SPROUTS_BONEMEAL, world, chunkGenerator, random, blockPos);
 			if (random.nextInt(8) == 0) {
-				NetherConfiguredFeatures.TWISTING_VINES_BONEMEAL.value().generate(world, chunkGenerator, random, blockPos);
+				this.generate(registry, NetherConfiguredFeatures.TWISTING_VINES_BONEMEAL, world, chunkGenerator, random, blockPos);
 			}
 		}
+	}
+
+	private void generate(
+		Registry<ConfiguredFeature<?, ?>> registry,
+		RegistryKey<ConfiguredFeature<?, ?>> key,
+		ServerWorld world,
+		ChunkGenerator chunkGenerator,
+		Random random,
+		BlockPos pos
+	) {
+		registry.getEntry(key).ifPresent(entry -> ((ConfiguredFeature)entry.value()).generate(world, chunkGenerator, random, pos));
 	}
 }

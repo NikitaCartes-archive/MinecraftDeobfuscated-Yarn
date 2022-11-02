@@ -6,11 +6,9 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 
 public abstract class PosRuleTest {
-	public static final Codec<PosRuleTest> field_25007 = Registry.POS_RULE_TEST
-		.getCodec()
-		.dispatch("predicate_type", PosRuleTest::getType, PosRuleTestType::codec);
+	public static final Codec<PosRuleTest> BASE_CODEC = Registry.POS_RULE_TEST.getCodec().dispatch("predicate_type", PosRuleTest::getType, PosRuleTestType::codec);
 
-	public abstract boolean test(BlockPos blockPos, BlockPos blockPos2, BlockPos pivot, Random random);
+	public abstract boolean test(BlockPos originalPos, BlockPos currentPos, BlockPos pivot, Random random);
 
 	protected abstract PosRuleTestType<?> getType();
 }

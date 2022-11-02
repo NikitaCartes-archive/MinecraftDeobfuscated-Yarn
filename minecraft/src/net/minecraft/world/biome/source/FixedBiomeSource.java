@@ -17,7 +17,7 @@ import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 public class FixedBiomeSource extends BiomeSource implements BiomeAccess.Storage {
 	public static final Codec<FixedBiomeSource> CODEC = Biome.REGISTRY_CODEC
 		.fieldOf("biome")
-		.<FixedBiomeSource>xmap(FixedBiomeSource::new, fixedBiomeSource -> fixedBiomeSource.biome)
+		.<FixedBiomeSource>xmap(FixedBiomeSource::new, biomeSource -> biomeSource.biome)
 		.stable()
 		.codec();
 	private final RegistryEntry<Biome> biome;

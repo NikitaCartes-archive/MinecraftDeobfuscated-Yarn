@@ -174,7 +174,7 @@ public final class Biome {
 		} else {
 			if (pos.getY() >= world.getBottomY() && pos.getY() < world.getTopY() && world.getLightLevel(LightType.BLOCK, pos) < 10) {
 				BlockState blockState = world.getBlockState(pos);
-				if (blockState.isAir() && Blocks.SNOW.getDefaultState().canPlaceAt(world, pos)) {
+				if ((blockState.isAir() || blockState.isOf(Blocks.SNOW)) && Blocks.SNOW.getDefaultState().canPlaceAt(world, pos)) {
 					return true;
 				}
 			}

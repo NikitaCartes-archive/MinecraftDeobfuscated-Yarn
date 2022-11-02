@@ -1,23 +1,25 @@
 package net.minecraft.data.server.tag;
 
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.data.DataOutput;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryWrapper;
 
-public class OneTwentyBlockTagProvider extends AbstractTagProvider<Block> {
-	public OneTwentyBlockTagProvider(DataOutput output) {
-		super(output, Registry.BLOCK);
+public class OneTwentyBlockTagProvider extends ValueLookupTagProvider<Block> {
+	public OneTwentyBlockTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
+		super(output, Registry.BLOCK_KEY, registryLookupFuture, block -> block.getRegistryEntry().registryKey());
 	}
 
 	@Override
-	protected void configure() {
+	protected void configure(RegistryWrapper.WrapperLookup lookup) {
 		this.getOrCreateTagBuilder(BlockTags.PLANKS).add(Blocks.BAMBOO_PLANKS);
 		this.getOrCreateTagBuilder(BlockTags.WOODEN_BUTTONS).add(Blocks.BAMBOO_BUTTON);
 		this.getOrCreateTagBuilder(BlockTags.WOODEN_DOORS).add(Blocks.BAMBOO_DOOR);
-		this.getOrCreateTagBuilder(BlockTags.WOODEN_STAIRS).add(Blocks.BAMBOO_STAIRS, Blocks.BAMBOO_MOSAIC_STAIRS);
-		this.getOrCreateTagBuilder(BlockTags.WOODEN_SLABS).add(Blocks.BAMBOO_SLAB, Blocks.BAMBOO_MOSAIC_SLAB);
+		this.getOrCreateTagBuilder(BlockTags.WOODEN_STAIRS).add(Blocks.BAMBOO_STAIRS);
+		this.getOrCreateTagBuilder(BlockTags.WOODEN_SLABS).add(Blocks.BAMBOO_SLAB);
 		this.getOrCreateTagBuilder(BlockTags.WOODEN_FENCES).add(Blocks.BAMBOO_FENCE);
 		this.getOrCreateTagBuilder(BlockTags.WOODEN_PRESSURE_PLATES).add(Blocks.BAMBOO_PRESSURE_PLATE);
 		this.getOrCreateTagBuilder(BlockTags.WOODEN_TRAPDOORS).add(Blocks.BAMBOO_TRAPDOOR);
@@ -51,6 +53,9 @@ public class OneTwentyBlockTagProvider extends AbstractTagProvider<Block> {
 				Blocks.BAMBOO_WALL_HANGING_SIGN
 			);
 		this.getOrCreateTagBuilder(BlockTags.ALL_HANGING_SIGNS).addTag(BlockTags.CEILING_HANGING_SIGNS).addTag(BlockTags.WALL_HANGING_SIGNS);
-		this.getOrCreateTagBuilder(BlockTags.AXE_MINEABLE).addTag(BlockTags.ALL_HANGING_SIGNS).add(Blocks.BAMBOO_MOSAIC, Blocks.CHISELED_BOOKSHELF);
+		this.getOrCreateTagBuilder(BlockTags.AXE_MINEABLE)
+			.addTag(BlockTags.ALL_HANGING_SIGNS)
+			.add(Blocks.BAMBOO_MOSAIC, Blocks.BAMBOO_MOSAIC_SLAB, Blocks.BAMBOO_MOSAIC_STAIRS)
+			.add(Blocks.CHISELED_BOOKSHELF);
 	}
 }

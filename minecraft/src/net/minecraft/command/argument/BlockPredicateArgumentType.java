@@ -19,17 +19,17 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.command.CommandRegistryWrapper;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntryList;
+import net.minecraft.util.registry.RegistryWrapper;
 
 public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateArgumentType.BlockPredicate> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("stone", "minecraft:stone", "stone[foo=bar]", "#stone", "#stone[foo=bar]{baz=nbt}");
-	private final CommandRegistryWrapper<Block> registryWrapper;
+	private final RegistryWrapper<Block> registryWrapper;
 
 	public BlockPredicateArgumentType(CommandRegistryAccess commandRegistryAccess) {
 		this.registryWrapper = commandRegistryAccess.createWrapper(Registry.BLOCK_KEY);
@@ -43,7 +43,7 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 		return parse(this.registryWrapper, stringReader);
 	}
 
-	public static BlockPredicateArgumentType.BlockPredicate parse(CommandRegistryWrapper<Block> registryWrapper, StringReader reader) throws CommandSyntaxException {
+	public static BlockPredicateArgumentType.BlockPredicate parse(RegistryWrapper<Block> registryWrapper, StringReader reader) throws CommandSyntaxException {
 		return BlockArgumentParser.blockOrTag(registryWrapper, reader, true)
 			.map(
 				result -> new BlockPredicateArgumentType.StatePredicate(result.blockState(), result.properties().keySet(), result.nbt()),

@@ -6,8 +6,8 @@ import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
-import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.gen.feature.EndSpikeFeature;
 import net.minecraft.world.gen.feature.EndSpikeFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
@@ -68,7 +68,7 @@ public enum EnderDragonSpawnState {
 							(double)spike.getHeight(),
 							(double)((float)spike.getCenterZ() + 0.5F),
 							5.0F,
-							Explosion.DestructionType.DESTROY
+							World.ExplosionSourceType.BLOCK
 						);
 						EndSpikeFeatureConfig endSpikeFeatureConfig = new EndSpikeFeatureConfig(true, ImmutableList.of(spike), new BlockPos(0, 128, 0));
 						Feature.END_SPIKE
@@ -91,7 +91,7 @@ public enum EnderDragonSpawnState {
 
 				for (EndCrystalEntity endCrystalEntity : crystals) {
 					endCrystalEntity.setBeamTarget(null);
-					world.createExplosion(endCrystalEntity, endCrystalEntity.getX(), endCrystalEntity.getY(), endCrystalEntity.getZ(), 6.0F, Explosion.DestructionType.NONE);
+					world.createExplosion(endCrystalEntity, endCrystalEntity.getX(), endCrystalEntity.getY(), endCrystalEntity.getZ(), 6.0F, World.ExplosionSourceType.NONE);
 					endCrystalEntity.discard();
 				}
 			} else if (tick >= 80) {

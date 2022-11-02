@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
-import java.util.OptionalLong;
 import net.minecraft.util.math.random.Random;
 import org.apache.commons.lang3.StringUtils;
 
@@ -29,7 +28,7 @@ public class GeneratorOptions {
 	}
 
 	public static GeneratorOptions createRandom() {
-		return new GeneratorOptions(Random.create().nextLong(), true, false);
+		return new GeneratorOptions(getRandomSeed(), true, false);
 	}
 
 	private GeneratorOptions(long seed, boolean generateStructures, boolean bonusChest, Optional<String> legacyCustomOptions) {
@@ -63,20 +62,24 @@ public class GeneratorOptions {
 		return new GeneratorOptions(this.seed, structures, this.bonusChest, this.legacyCustomOptions);
 	}
 
-	public GeneratorOptions withSeed(OptionalLong seed) {
-		return new GeneratorOptions(seed.orElse(this.seed), this.generateStructures, this.bonusChest, this.legacyCustomOptions);
+	public GeneratorOptions withSeed(long seed) {
+		return new GeneratorOptions(seed, this.generateStructures, this.bonusChest, this.legacyCustomOptions);
 	}
 
-	public static OptionalLong parseSeed(String seed) {
+	public static long parseSeed(String seed) {
 		seed = seed.trim();
 		if (StringUtils.isEmpty(seed)) {
-			return OptionalLong.empty();
+			return getRandomSeed();
 		} else {
 			try {
-				return OptionalLong.of(Long.parseLong(seed));
+				return Long.parseLong(seed);
 			} catch (NumberFormatException var2) {
-				return OptionalLong.of((long)seed.hashCode());
+				return (long)seed.hashCode();
 			}
 		}
+	}
+
+	public static long getRandomSeed() {
+		return Random.create().nextLong();
 	}
 }

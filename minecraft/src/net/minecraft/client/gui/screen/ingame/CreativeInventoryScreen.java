@@ -74,6 +74,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	private boolean lastClickOutsideBounds;
 	private final Set<TagKey<Item>> searchResultTags = new HashSet();
 	private final FeatureSet enabledFeatures;
+	private Set<ItemStack> searchDisplayStacks = Set.of();
 
 	public CreativeInventoryScreen(PlayerEntity player, FeatureSet enabledFeatures) {
 		super(new CreativeInventoryScreen.CreativeScreenHandler(player), player.getInventory(), ScreenTexts.EMPTY);
@@ -334,7 +335,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		this.searchResultTags.clear();
 		String string = this.searchBox.getText();
 		if (string.isEmpty()) {
-			this.handler.itemList.addAll(ItemGroups.SEARCH.getDisplayStacks(this.enabledFeatures));
+			this.handler.itemList.addAll(this.searchDisplayStacks);
 		} else {
 			SearchProvider<ItemStack> searchProvider;
 			if (string.startsWith("#")) {
@@ -446,8 +447,10 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 					this.handler.itemList.addAll(hotbarStorageEntry);
 				}
 			}
-		} else if (group != ItemGroups.SEARCH) {
-			this.handler.itemList.addAll(group.getDisplayStacks(this.enabledFeatures));
+		} else if (group == ItemGroups.SEARCH) {
+			this.searchDisplayStacks = ItemGroups.SEARCH.getDisplayStacks(this.enabledFeatures, this.client.player.isCreativeLevelTwoOp());
+		} else {
+			this.handler.itemList.addAll(group.getDisplayStacks(this.enabledFeatures, this.client.player.isCreativeLevelTwoOp()));
 		}
 
 		if (group == ItemGroups.INVENTORY) {
@@ -602,7 +605,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 			int i = 1;
 
 			for (ItemGroup itemGroup : ItemGroups.GROUPS) {
-				if (itemGroup != ItemGroups.SEARCH && itemGroup.contains(this.enabledFeatures, stack)) {
+				if (itemGroup != ItemGroups.SEARCH && itemGroup.contains(this.enabledFeatures, stack, this.client.player.isCreativeLevelTwoOp())) {
 					list2.add(i++, itemGroup.getDisplayName().copy().formatted(Formatting.BLUE));
 				}
 			}

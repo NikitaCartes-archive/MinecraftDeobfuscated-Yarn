@@ -57,7 +57,7 @@ public class ChunkStatus {
 			if (!chunk.getStatus().isAtLeast(targetStatus)) {
 				if (world.getServer().getSaveProperties().getGeneratorOptions().shouldGenerateStructures()) {
 					generator.setStructureStarts(
-						world.getRegistryManager(), world.getChunkManager().getNoiseConfig(), world.getStructureAccessor(), chunk, structureTemplateManager, world.getSeed()
+						world.getRegistryManager(), world.getChunkManager().getStructurePlacementCalculator(), world.getStructureAccessor(), chunk, structureTemplateManager
 					);
 				}
 
@@ -100,12 +100,7 @@ public class ChunkStatus {
 			} else {
 				ChunkRegion chunkRegion = new ChunkRegion(world, chunks, targetStatus, -1);
 				return generator.populateBiomes(
-						world.getRegistryManager().get(Registry.BIOME_KEY),
-						executor,
-						world.getChunkManager().getNoiseConfig(),
-						Blender.getBlender(chunkRegion),
-						world.getStructureAccessor().forRegion(chunkRegion),
-						chunk
+						executor, world.getChunkManager().getNoiseConfig(), Blender.getBlender(chunkRegion), world.getStructureAccessor().forRegion(chunkRegion), chunk
 					)
 					.thenApply(chunkx -> {
 						if (chunkx instanceof ProtoChunk) {

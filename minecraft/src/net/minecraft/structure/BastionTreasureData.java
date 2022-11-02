@@ -5,247 +5,276 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.structure.pool.StructurePools;
+import net.minecraft.structure.processor.StructureProcessorList;
 import net.minecraft.structure.processor.StructureProcessorLists;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registerable;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryEntryLookup;
 
 public class BastionTreasureData {
-	public static void init() {
-	}
-
-	static {
+	public static void bootstrap(Registerable<StructurePool> poolRegisterable) {
+		RegistryEntryLookup<StructureProcessorList> registryEntryLookup = poolRegisterable.getRegistryLookup(Registry.STRUCTURE_PROCESSOR_LIST_KEY);
+		RegistryEntry<StructureProcessorList> registryEntry = registryEntryLookup.getOrThrow(StructureProcessorLists.TREASURE_ROOMS);
+		RegistryEntry<StructureProcessorList> registryEntry2 = registryEntryLookup.getOrThrow(StructureProcessorLists.HIGH_WALL);
+		RegistryEntry<StructureProcessorList> registryEntry3 = registryEntryLookup.getOrThrow(StructureProcessorLists.BOTTOM_RAMPART);
+		RegistryEntry<StructureProcessorList> registryEntry4 = registryEntryLookup.getOrThrow(StructureProcessorLists.HIGH_RAMPART);
+		RegistryEntry<StructureProcessorList> registryEntry5 = registryEntryLookup.getOrThrow(StructureProcessorLists.ROOF);
+		RegistryEntryLookup<StructurePool> registryEntryLookup2 = poolRegisterable.getRegistryLookup(Registry.STRUCTURE_POOL_KEY);
+		RegistryEntry<StructurePool> registryEntry6 = registryEntryLookup2.getOrThrow(StructurePools.EMPTY);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/treasure/bases",
 			new StructurePool(
-				new Identifier("bastion/treasure/bases"),
-				new Identifier("empty"),
-				ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/bases/lava_basin", StructureProcessorLists.TREASURE_ROOMS), 1)),
+				registryEntry6,
+				ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/bases/lava_basin", registryEntry), 1)),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/treasure/stairs",
 			new StructurePool(
-				new Identifier("bastion/treasure/stairs"),
-				new Identifier("empty"),
-				ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/stairs/lower_stairs", StructureProcessorLists.TREASURE_ROOMS), 1)),
+				registryEntry6,
+				ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/stairs/lower_stairs", registryEntry), 1)),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/treasure/bases/centers",
 			new StructurePool(
-				new Identifier("bastion/treasure/bases/centers"),
-				new Identifier("empty"),
+				registryEntry6,
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/bases/centers/center_0", StructureProcessorLists.TREASURE_ROOMS), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/bases/centers/center_1", StructureProcessorLists.TREASURE_ROOMS), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/bases/centers/center_2", StructureProcessorLists.TREASURE_ROOMS), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/bases/centers/center_3", StructureProcessorLists.TREASURE_ROOMS), 1)
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/bases/centers/center_0", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/bases/centers/center_1", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/bases/centers/center_2", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/bases/centers/center_3", registryEntry), 1)
 				),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/treasure/brains",
 			new StructurePool(
-				new Identifier("bastion/treasure/brains"),
-				new Identifier("empty"),
-				ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/brains/center_brain", StructureProcessorLists.TREASURE_ROOMS), 1)),
+				registryEntry6,
+				ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/brains/center_brain", registryEntry), 1)),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/treasure/walls",
 			new StructurePool(
-				new Identifier("bastion/treasure/walls"),
-				new Identifier("empty"),
+				registryEntry6,
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/lava_wall", StructureProcessorLists.TREASURE_ROOMS), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/entrance_wall", StructureProcessorLists.HIGH_WALL), 1)
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/lava_wall", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/entrance_wall", registryEntry2), 1)
 				),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/treasure/walls/outer",
 			new StructurePool(
-				new Identifier("bastion/treasure/walls/outer"),
-				new Identifier("empty"),
+				registryEntry6,
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/outer/top_corner", StructureProcessorLists.HIGH_WALL), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/outer/mid_corner", StructureProcessorLists.HIGH_WALL), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/outer/bottom_corner", StructureProcessorLists.HIGH_WALL), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/outer/outer_wall", StructureProcessorLists.HIGH_WALL), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/outer/medium_outer_wall", StructureProcessorLists.HIGH_WALL), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/outer/tall_outer_wall", StructureProcessorLists.HIGH_WALL), 1)
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/outer/top_corner", registryEntry2), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/outer/mid_corner", registryEntry2), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/outer/bottom_corner", registryEntry2), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/outer/outer_wall", registryEntry2), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/outer/medium_outer_wall", registryEntry2), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/outer/tall_outer_wall", registryEntry2), 1)
 				),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/treasure/walls/bottom",
 			new StructurePool(
-				new Identifier("bastion/treasure/walls/bottom"),
-				new Identifier("empty"),
+				registryEntry6,
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/bottom/wall_0", StructureProcessorLists.TREASURE_ROOMS), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/bottom/wall_1", StructureProcessorLists.TREASURE_ROOMS), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/bottom/wall_2", StructureProcessorLists.TREASURE_ROOMS), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/bottom/wall_3", StructureProcessorLists.TREASURE_ROOMS), 1)
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/bottom/wall_0", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/bottom/wall_1", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/bottom/wall_2", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/bottom/wall_3", registryEntry), 1)
 				),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/treasure/walls/mid",
 			new StructurePool(
-				new Identifier("bastion/treasure/walls/mid"),
-				new Identifier("empty"),
+				registryEntry6,
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/mid/wall_0", StructureProcessorLists.TREASURE_ROOMS), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/mid/wall_1", StructureProcessorLists.TREASURE_ROOMS), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/mid/wall_2", StructureProcessorLists.TREASURE_ROOMS), 1)
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/mid/wall_0", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/mid/wall_1", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/mid/wall_2", registryEntry), 1)
 				),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/treasure/walls/top",
 			new StructurePool(
-				new Identifier("bastion/treasure/walls/top"),
-				new Identifier("empty"),
+				registryEntry6,
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/top/main_entrance", StructureProcessorLists.TREASURE_ROOMS), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/top/wall_0", StructureProcessorLists.TREASURE_ROOMS), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/top/wall_1", StructureProcessorLists.TREASURE_ROOMS), 1)
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/top/main_entrance", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/top/wall_0", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/walls/top/wall_1", registryEntry), 1)
 				),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/treasure/connectors",
 			new StructurePool(
-				new Identifier("bastion/treasure/connectors"),
-				new Identifier("empty"),
+				registryEntry6,
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/connectors/center_to_wall_middle", StructureProcessorLists.TREASURE_ROOMS), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/connectors/center_to_wall_top", StructureProcessorLists.TREASURE_ROOMS), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/connectors/center_to_wall_top_entrance", StructureProcessorLists.TREASURE_ROOMS), 1)
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/connectors/center_to_wall_middle", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/connectors/center_to_wall_top", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/connectors/center_to_wall_top_entrance", registryEntry), 1)
 				),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/treasure/entrances",
 			new StructurePool(
-				new Identifier("bastion/treasure/entrances"),
-				new Identifier("empty"),
-				ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/entrances/entrance_0", StructureProcessorLists.TREASURE_ROOMS), 1)),
+				registryEntry6,
+				ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/entrances/entrance_0", registryEntry), 1)),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/treasure/ramparts",
 			new StructurePool(
-				new Identifier("bastion/treasure/ramparts"),
-				new Identifier("empty"),
+				registryEntry6,
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/ramparts/mid_wall_main", StructureProcessorLists.TREASURE_ROOMS), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/ramparts/mid_wall_side", StructureProcessorLists.TREASURE_ROOMS), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/ramparts/bottom_wall_0", StructureProcessorLists.BOTTOM_RAMPART), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/ramparts/top_wall", StructureProcessorLists.HIGH_RAMPART), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/ramparts/lava_basin_side", StructureProcessorLists.TREASURE_ROOMS), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/ramparts/lava_basin_main", StructureProcessorLists.TREASURE_ROOMS), 1)
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/ramparts/mid_wall_main", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/ramparts/mid_wall_side", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/ramparts/bottom_wall_0", registryEntry3), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/ramparts/top_wall", registryEntry4), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/ramparts/lava_basin_side", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/ramparts/lava_basin_main", registryEntry), 1)
 				),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/treasure/corners/bottom",
 			new StructurePool(
-				new Identifier("bastion/treasure/corners/bottom"),
-				new Identifier("empty"),
+				registryEntry6,
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/corners/bottom/corner_0", StructureProcessorLists.TREASURE_ROOMS), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/corners/bottom/corner_1", StructureProcessorLists.TREASURE_ROOMS), 1)
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/corners/bottom/corner_0", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/corners/bottom/corner_1", registryEntry), 1)
 				),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/treasure/corners/edges",
 			new StructurePool(
-				new Identifier("bastion/treasure/corners/edges"),
-				new Identifier("empty"),
+				registryEntry6,
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/corners/edges/bottom", StructureProcessorLists.HIGH_WALL), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/corners/edges/middle", StructureProcessorLists.HIGH_WALL), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/corners/edges/top", StructureProcessorLists.HIGH_WALL), 1)
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/corners/edges/bottom", registryEntry2), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/corners/edges/middle", registryEntry2), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/corners/edges/top", registryEntry2), 1)
 				),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/treasure/corners/middle",
 			new StructurePool(
-				new Identifier("bastion/treasure/corners/middle"),
-				new Identifier("empty"),
+				registryEntry6,
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/corners/middle/corner_0", StructureProcessorLists.TREASURE_ROOMS), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/corners/middle/corner_1", StructureProcessorLists.TREASURE_ROOMS), 1)
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/corners/middle/corner_0", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/corners/middle/corner_1", registryEntry), 1)
 				),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/treasure/corners/top",
 			new StructurePool(
-				new Identifier("bastion/treasure/corners/top"),
-				new Identifier("empty"),
+				registryEntry6,
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/corners/top/corner_0", StructureProcessorLists.TREASURE_ROOMS), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/corners/top/corner_1", StructureProcessorLists.TREASURE_ROOMS), 1)
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/corners/top/corner_0", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/corners/top/corner_1", registryEntry), 1)
 				),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/treasure/extensions/large_pool",
 			new StructurePool(
-				new Identifier("bastion/treasure/extensions/large_pool"),
-				new Identifier("empty"),
+				registryEntry6,
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/empty", StructureProcessorLists.TREASURE_ROOMS), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/empty", StructureProcessorLists.TREASURE_ROOMS), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/fire_room", StructureProcessorLists.TREASURE_ROOMS), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/large_bridge_0", StructureProcessorLists.TREASURE_ROOMS), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/large_bridge_1", StructureProcessorLists.TREASURE_ROOMS), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/large_bridge_2", StructureProcessorLists.TREASURE_ROOMS), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/large_bridge_3", StructureProcessorLists.TREASURE_ROOMS), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/roofed_bridge", StructureProcessorLists.TREASURE_ROOMS), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/empty", StructureProcessorLists.TREASURE_ROOMS), 1)
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/empty", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/empty", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/fire_room", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/large_bridge_0", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/large_bridge_1", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/large_bridge_2", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/large_bridge_3", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/roofed_bridge", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/empty", registryEntry), 1)
 				),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/treasure/extensions/small_pool",
 			new StructurePool(
-				new Identifier("bastion/treasure/extensions/small_pool"),
-				new Identifier("empty"),
+				registryEntry6,
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/empty", StructureProcessorLists.TREASURE_ROOMS), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/fire_room", StructureProcessorLists.TREASURE_ROOMS), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/empty", StructureProcessorLists.TREASURE_ROOMS), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/small_bridge_0", StructureProcessorLists.TREASURE_ROOMS), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/small_bridge_1", StructureProcessorLists.TREASURE_ROOMS), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/small_bridge_2", StructureProcessorLists.TREASURE_ROOMS), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/small_bridge_3", StructureProcessorLists.TREASURE_ROOMS), 1)
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/empty", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/fire_room", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/empty", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/small_bridge_0", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/small_bridge_1", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/small_bridge_2", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/small_bridge_3", registryEntry), 1)
 				),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/treasure/extensions/houses",
 			new StructurePool(
-				new Identifier("bastion/treasure/extensions/houses"),
-				new Identifier("empty"),
+				registryEntry6,
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/house_0", StructureProcessorLists.TREASURE_ROOMS), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/house_1", StructureProcessorLists.TREASURE_ROOMS), 1)
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/house_0", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/extensions/house_1", registryEntry), 1)
 				),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/treasure/roofs",
 			new StructurePool(
-				new Identifier("bastion/treasure/roofs"),
-				new Identifier("empty"),
+				registryEntry6,
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/roofs/wall_roof", StructureProcessorLists.ROOF), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/roofs/corner_roof", StructureProcessorLists.ROOF), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/roofs/center_roof", StructureProcessorLists.ROOF), 1)
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/roofs/wall_roof", registryEntry5), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/roofs/corner_roof", registryEntry5), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/roofs/center_roof", registryEntry5), 1)
 				),
 				StructurePool.Projection.RIGID
 			)

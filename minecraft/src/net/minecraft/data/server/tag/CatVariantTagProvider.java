@@ -1,17 +1,19 @@
 package net.minecraft.data.server.tag;
 
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.data.DataOutput;
 import net.minecraft.entity.passive.CatVariant;
 import net.minecraft.tag.CatVariantTags;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryWrapper;
 
 public class CatVariantTagProvider extends AbstractTagProvider<CatVariant> {
-	public CatVariantTagProvider(DataOutput dataGenerator) {
-		super(dataGenerator, Registry.CAT_VARIANT);
+	public CatVariantTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
+		super(output, Registry.CAT_VARIANT_KEY, registryLookupFuture);
 	}
 
 	@Override
-	protected void configure() {
+	protected void configure(RegistryWrapper.WrapperLookup lookup) {
 		this.getOrCreateTagBuilder(CatVariantTags.DEFAULT_SPAWNS)
 			.add(
 				CatVariant.TABBY,

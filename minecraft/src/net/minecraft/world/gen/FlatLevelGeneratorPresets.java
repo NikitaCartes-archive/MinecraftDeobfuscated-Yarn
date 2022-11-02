@@ -11,15 +11,17 @@ import net.minecraft.item.Items;
 import net.minecraft.structure.StructureSet;
 import net.minecraft.structure.StructureSetKeys;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.BuiltinRegistries;
+import net.minecraft.util.registry.Registerable;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryEntryList;
+import net.minecraft.util.registry.RegistryEntryLookup;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorLayer;
+import net.minecraft.world.gen.feature.PlacedFeature;
 
 public class FlatLevelGeneratorPresets {
 	public static final RegistryKey<FlatLevelGeneratorPreset> CLASSIC_FLAT = of("classic_flat");
@@ -32,8 +34,8 @@ public class FlatLevelGeneratorPresets {
 	public static final RegistryKey<FlatLevelGeneratorPreset> REDSTONE_READY = of("redstone_ready");
 	public static final RegistryKey<FlatLevelGeneratorPreset> THE_VOID = of("the_void");
 
-	public static RegistryEntry<FlatLevelGeneratorPreset> initAndGetDefault(Registry<FlatLevelGeneratorPreset> registry) {
-		return new FlatLevelGeneratorPresets.Registrar(registry).initAndGetDefault();
+	public static void bootstrap(Registerable<FlatLevelGeneratorPreset> presetRegisterable) {
+		new FlatLevelGeneratorPresets.Registrar(presetRegisterable).bootstrap();
 	}
 
 	private static RegistryKey<FlatLevelGeneratorPreset> of(String id) {
@@ -41,29 +43,30 @@ public class FlatLevelGeneratorPresets {
 	}
 
 	static class Registrar {
-		private final Registry<FlatLevelGeneratorPreset> flatLevelGeneratorPresetRegistry;
-		private final Registry<Biome> biomeRegistry = BuiltinRegistries.BIOME;
-		private final Registry<StructureSet> structureSetRegistry = BuiltinRegistries.STRUCTURE_SET;
+		private final Registerable<FlatLevelGeneratorPreset> presetRegisterable;
 
-		Registrar(Registry<FlatLevelGeneratorPreset> flatLevelGeneratorPresetRegistry) {
-			this.flatLevelGeneratorPresetRegistry = flatLevelGeneratorPresetRegistry;
+		Registrar(Registerable<FlatLevelGeneratorPreset> presetRegisterable) {
+			this.presetRegisterable = presetRegisterable;
 		}
 
-		private RegistryEntry<FlatLevelGeneratorPreset> createAndRegister(
+		private void createAndRegister(
 			RegistryKey<FlatLevelGeneratorPreset> registryKey,
 			ItemConvertible icon,
 			RegistryKey<Biome> biome,
-			Set<RegistryKey<StructureSet>> structureSets,
+			Set<RegistryKey<StructureSet>> structureSetKeys,
 			boolean hasFeatures,
 			boolean hasLakes,
 			FlatChunkGeneratorLayer... layers
 		) {
+			RegistryEntryLookup<StructureSet> registryEntryLookup = this.presetRegisterable.getRegistryLookup(Registry.STRUCTURE_SET_KEY);
+			RegistryEntryLookup<PlacedFeature> registryEntryLookup2 = this.presetRegisterable.getRegistryLookup(Registry.PLACED_FEATURE_KEY);
+			RegistryEntryLookup<Biome> registryEntryLookup3 = this.presetRegisterable.getRegistryLookup(Registry.BIOME_KEY);
 			RegistryEntryList.Direct<StructureSet> direct = RegistryEntryList.of(
-				(List<? extends RegistryEntry<StructureSet>>)structureSets.stream()
-					.flatMap(structureSet -> this.structureSetRegistry.getEntry(structureSet).stream())
-					.collect(Collectors.toList())
+				(List<? extends RegistryEntry<StructureSet>>)structureSetKeys.stream().map(registryEntryLookup::getOrThrow).collect(Collectors.toList())
 			);
-			FlatChunkGeneratorConfig flatChunkGeneratorConfig = new FlatChunkGeneratorConfig(Optional.of(direct), this.biomeRegistry);
+			FlatChunkGeneratorConfig flatChunkGeneratorConfig = new FlatChunkGeneratorConfig(
+				Optional.of(direct), registryEntryLookup3.getOrThrow(biome), FlatChunkGeneratorConfig.getLavaLakes(registryEntryLookup2)
+			);
 			if (hasFeatures) {
 				flatChunkGeneratorConfig.enableFeatures();
 			}
@@ -76,13 +79,10 @@ public class FlatLevelGeneratorPresets {
 				flatChunkGeneratorConfig.getLayers().add(layers[i]);
 			}
 
-			flatChunkGeneratorConfig.setBiome(this.biomeRegistry.getOrCreateEntry(biome));
-			return BuiltinRegistries.add(
-				this.flatLevelGeneratorPresetRegistry, registryKey, new FlatLevelGeneratorPreset(icon.asItem().getRegistryEntry(), flatChunkGeneratorConfig)
-			);
+			this.presetRegisterable.register(registryKey, new FlatLevelGeneratorPreset(icon.asItem().getRegistryEntry(), flatChunkGeneratorConfig));
 		}
 
-		public RegistryEntry<FlatLevelGeneratorPreset> initAndGetDefault() {
+		public void bootstrap() {
 			this.createAndRegister(
 				FlatLevelGeneratorPresets.CLASSIC_FLAT,
 				Blocks.GRASS_BLOCK,
@@ -181,7 +181,7 @@ public class FlatLevelGeneratorPresets {
 				new FlatChunkGeneratorLayer(3, Blocks.STONE),
 				new FlatChunkGeneratorLayer(1, Blocks.BEDROCK)
 			);
-			return this.createAndRegister(
+			this.createAndRegister(
 				FlatLevelGeneratorPresets.THE_VOID, Blocks.BARRIER, BiomeKeys.THE_VOID, ImmutableSet.of(), true, false, new FlatChunkGeneratorLayer(1, Blocks.AIR)
 			);
 		}

@@ -51,7 +51,6 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
-import net.minecraft.world.explosion.Explosion;
 
 public class WitherEntity extends HostileEntity implements SkinOverlayOwner, RangedAttackMob {
 	private static final TrackedData<Integer> TRACKED_ENTITY_ID_1 = DataTracker.registerData(WitherEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -246,10 +245,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 			int i = this.getInvulnerableTimer() - 1;
 			this.bossBar.setPercent(1.0F - (float)i / 220.0F);
 			if (i <= 0) {
-				Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)
-					? Explosion.DestructionType.DESTROY
-					: Explosion.DestructionType.NONE;
-				this.world.createExplosion(this, this.getX(), this.getEyeY(), this.getZ(), 7.0F, false, destructionType);
+				this.world.createExplosion(this, this.getX(), this.getEyeY(), this.getZ(), 7.0F, false, World.ExplosionSourceType.MOB);
 				if (!this.isSilent()) {
 					this.world.syncGlobalEvent(WorldEvents.WITHER_SPAWNS, this.getBlockPos(), 0);
 				}

@@ -328,7 +328,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 		UNDERGROUND("underground"),
 		IN_NETHER("in_nether");
 
-		public static final StringIdentifiable.Codec<RuinedPortalStructurePiece.VerticalPlacement> field_37811 = StringIdentifiable.createCodec(
+		public static final StringIdentifiable.Codec<RuinedPortalStructurePiece.VerticalPlacement> CODEC = StringIdentifiable.createCodec(
 			RuinedPortalStructurePiece.VerticalPlacement::values
 		);
 		private final String id;
@@ -342,7 +342,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 		}
 
 		public static RuinedPortalStructurePiece.VerticalPlacement getFromId(String id) {
-			return (RuinedPortalStructurePiece.VerticalPlacement)field_37811.byId(id);
+			return (RuinedPortalStructurePiece.VerticalPlacement)CODEC.byId(id);
 		}
 
 		@Override

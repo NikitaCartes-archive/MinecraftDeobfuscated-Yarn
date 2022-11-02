@@ -2,16 +2,16 @@ package net.minecraft.world.gen.feature;
 
 import java.util.List;
 import net.minecraft.block.Block;
-import net.minecraft.util.Util;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.intprovider.WeightedListIntProvider;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.BuiltinRegistries;
+import net.minecraft.util.registry.Registerable;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.YOffset;
 import net.minecraft.world.gen.blockpredicate.BlockPredicate;
@@ -33,29 +33,35 @@ public class PlacedFeatures {
 	public static final PlacementModifier FOUR_ABOVE_AND_BELOW_RANGE = HeightRangePlacementModifier.uniform(YOffset.aboveBottom(4), YOffset.belowTop(4));
 	public static final PlacementModifier BOTTOM_TO_120_RANGE = HeightRangePlacementModifier.uniform(YOffset.getBottom(), YOffset.fixed(256));
 
-	public static RegistryEntry<PlacedFeature> getDefaultPlacedFeature(Registry<PlacedFeature> registry) {
-		List<RegistryEntry<PlacedFeature>> list = List.of(
-			OceanPlacedFeatures.KELP_COLD,
-			UndergroundPlacedFeatures.CAVE_VINES,
-			EndPlacedFeatures.CHORUS_PLANT,
-			MiscPlacedFeatures.BLUE_ICE,
-			NetherPlacedFeatures.BASALT_BLOBS,
-			OrePlacedFeatures.ORE_ANCIENT_DEBRIS_LARGE,
-			TreePlacedFeatures.ACACIA_CHECKED,
-			VegetationPlacedFeatures.BAMBOO_VEGETATION,
-			VillagePlacedFeatures.PILE_HAY
-		);
-		return Util.getRandom(list, Random.create());
+	public static void getDefaultPlacedFeature(Registerable<PlacedFeature> featureRegisterable) {
+		OceanPlacedFeatures.bootstrap(featureRegisterable);
+		UndergroundPlacedFeatures.bootstrap(featureRegisterable);
+		EndPlacedFeatures.bootstrap(featureRegisterable);
+		MiscPlacedFeatures.bootstrap(featureRegisterable);
+		NetherPlacedFeatures.bootstrap(featureRegisterable);
+		OrePlacedFeatures.bootstrap(featureRegisterable);
+		TreePlacedFeatures.bootstrap(featureRegisterable);
+		VegetationPlacedFeatures.bootstrap(featureRegisterable);
+		VillagePlacedFeatures.bootstrap(featureRegisterable);
 	}
 
-	public static RegistryEntry<PlacedFeature> register(
-		String id, RegistryEntry<? extends ConfiguredFeature<?, ?>> registryEntry, List<PlacementModifier> modifiers
+	public static RegistryKey<PlacedFeature> of(String id) {
+		return RegistryKey.of(Registry.PLACED_FEATURE_KEY, new Identifier(id));
+	}
+
+	public static void register(
+		Registerable<PlacedFeature> featureRegisterable,
+		RegistryKey<PlacedFeature> key,
+		RegistryEntry<ConfiguredFeature<?, ?>> entry,
+		List<PlacementModifier> modifiers
 	) {
-		return BuiltinRegistries.add(BuiltinRegistries.PLACED_FEATURE, id, new PlacedFeature(RegistryEntry.upcast(registryEntry), List.copyOf(modifiers)));
+		featureRegisterable.register(key, new PlacedFeature(entry, List.copyOf(modifiers)));
 	}
 
-	public static RegistryEntry<PlacedFeature> register(String id, RegistryEntry<? extends ConfiguredFeature<?, ?>> registryEntry, PlacementModifier... modifiers) {
-		return register(id, registryEntry, List.of(modifiers));
+	public static void register(
+		Registerable<PlacedFeature> featureRegisterable, RegistryKey<PlacedFeature> key, RegistryEntry<ConfiguredFeature<?, ?>> entry, PlacementModifier... modifiers
+	) {
+		register(featureRegisterable, key, entry, List.of(modifiers));
 	}
 
 	public static PlacementModifier createCountExtraModifier(int count, float extraChance, int extraCount) {
@@ -79,8 +85,8 @@ public class PlacedFeatures {
 		return BlockFilterPlacementModifier.of(BlockPredicate.wouldSurvive(block.getDefaultState(), BlockPos.ORIGIN));
 	}
 
-	public static RegistryEntry<PlacedFeature> createEntry(RegistryEntry<? extends ConfiguredFeature<?, ?>> registryEntry, PlacementModifier... modifiers) {
-		return RegistryEntry.of(new PlacedFeature(RegistryEntry.upcast(registryEntry), List.of(modifiers)));
+	public static RegistryEntry<PlacedFeature> createEntry(RegistryEntry<ConfiguredFeature<?, ?>> registryEntry, PlacementModifier... modifiers) {
+		return RegistryEntry.of(new PlacedFeature(registryEntry, List.of(modifiers)));
 	}
 
 	public static <FC extends FeatureConfig, F extends Feature<FC>> RegistryEntry<PlacedFeature> createEntry(

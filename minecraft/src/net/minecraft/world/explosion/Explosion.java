@@ -59,12 +59,8 @@ public class Explosion {
 	private final ObjectArrayList<BlockPos> affectedBlocks = new ObjectArrayList<>();
 	private final Map<PlayerEntity, Vec3d> affectedPlayers = Maps.<PlayerEntity, Vec3d>newHashMap();
 
-	public Explosion(World world, @Nullable Entity entity, double x, double y, double z, float power) {
-		this(world, entity, x, y, z, power, false, Explosion.DestructionType.DESTROY);
-	}
-
 	public Explosion(World world, @Nullable Entity entity, double x, double y, double z, float power, List<BlockPos> affectedBlocks) {
-		this(world, entity, x, y, z, power, false, Explosion.DestructionType.DESTROY, affectedBlocks);
+		this(world, entity, x, y, z, power, false, Explosion.DestructionType.DESTROY_WITH_DECAY, affectedBlocks);
 	}
 
 	public Explosion(
@@ -260,7 +256,7 @@ public class Explosion {
 				);
 		}
 
-		boolean bl = this.destructionType != Explosion.DestructionType.NONE;
+		boolean bl = this.shouldDestroy();
 		if (particles) {
 			if (!(this.power < 2.0F) && bl) {
 				this.world.addParticle(ParticleTypes.EXPLOSION_EMITTER, this.x, this.y, this.z, 1.0, 0.0, 0.0);
@@ -291,7 +287,7 @@ public class Explosion {
 								.parameter(LootContextParameters.TOOL, ItemStack.EMPTY)
 								.optionalParameter(LootContextParameters.BLOCK_ENTITY, blockEntityx)
 								.optionalParameter(LootContextParameters.THIS_ENTITY, this.entity);
-							if (this.destructionType == Explosion.DestructionType.DESTROY) {
+							if (this.destructionType == Explosion.DestructionType.DESTROY_WITH_DECAY) {
 								builder.parameter(LootContextParameters.EXPLOSION_RADIUS, this.power);
 							}
 
@@ -320,6 +316,10 @@ public class Explosion {
 				}
 			}
 		}
+	}
+
+	public boolean shouldDestroy() {
+		return this.destructionType != Explosion.DestructionType.KEEP;
 	}
 
 	private static void tryMergeStack(ObjectArrayList<Pair<ItemStack, BlockPos>> stacks, ItemStack stack, BlockPos pos) {
@@ -385,8 +385,8 @@ public class Explosion {
 	}
 
 	public static enum DestructionType {
-		NONE,
-		BREAK,
-		DESTROY;
+		KEEP,
+		DESTROY,
+		DESTROY_WITH_DECAY;
 	}
 }

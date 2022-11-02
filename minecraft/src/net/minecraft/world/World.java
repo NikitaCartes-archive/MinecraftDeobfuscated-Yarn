@@ -539,27 +539,27 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	/**
 	 * Creates an explosion without creating fire.
 	 * 
-	 * @see #createExplosion(Entity, DamageSource, ExplosionBehavior, double, double, double, float, boolean, Explosion.DestructionType)
+	 * @see #createExplosion(Entity, DamageSource, ExplosionBehavior, double, double, double, float, boolean, World.ExplosionSourceType)
 	 */
-	public Explosion createExplosion(@Nullable Entity entity, double x, double y, double z, float power, Explosion.DestructionType destructionType) {
-		return this.createExplosion(entity, null, null, x, y, z, power, false, destructionType);
+	public Explosion createExplosion(@Nullable Entity entity, double x, double y, double z, float power, World.ExplosionSourceType explosionSourceType) {
+		return this.createExplosion(entity, null, null, x, y, z, power, false, explosionSourceType);
 	}
 
 	/**
 	 * Creates an explosion.
 	 * 
-	 * @see #createExplosion(Entity, DamageSource, ExplosionBehavior, double, double, double, float, boolean, Explosion.DestructionType)
+	 * @see #createExplosion(Entity, DamageSource, ExplosionBehavior, double, double, double, float, boolean, World.ExplosionSourceType)
 	 */
 	public Explosion createExplosion(
-		@Nullable Entity entity, double x, double y, double z, float power, boolean createFire, Explosion.DestructionType destructionType
+		@Nullable Entity entity, double x, double y, double z, float power, boolean createFire, World.ExplosionSourceType explosionSourceType
 	) {
-		return this.createExplosion(entity, null, null, x, y, z, power, createFire, destructionType);
+		return this.createExplosion(entity, null, null, x, y, z, power, createFire, explosionSourceType);
 	}
 
 	/**
 	 * Creates an explosion.
 	 * 
-	 * @see #createExplosion(Entity, DamageSource, ExplosionBehavior, double, double, double, float, boolean, Explosion.DestructionType)
+	 * @see #createExplosion(Entity, DamageSource, ExplosionBehavior, double, double, double, float, boolean, World.ExplosionSourceType)
 	 */
 	public Explosion createExplosion(
 		@Nullable Entity entity,
@@ -568,9 +568,9 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		Vec3d pos,
 		float power,
 		boolean createFire,
-		Explosion.DestructionType destructionType
+		World.ExplosionSourceType explosionSourceType
 	) {
-		return this.createExplosion(entity, damageSource, behavior, pos.getX(), pos.getY(), pos.getZ(), power, createFire, destructionType);
+		return this.createExplosion(entity, damageSource, behavior, pos.getX(), pos.getY(), pos.getZ(), power, createFire, explosionSourceType);
 	}
 
 	/**
@@ -581,7 +581,6 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	 * ({@link DamageSource#explosion(Explosion)})
 	 * @param behavior the explosion behavior, or {@code null} to use the default
 	 * @param createFire whether the explosion should create fire
-	 * @param destructionType the destruction type of the explosion
 	 */
 	public Explosion createExplosion(
 		@Nullable Entity entity,
@@ -592,12 +591,39 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		double z,
 		float power,
 		boolean createFire,
-		Explosion.DestructionType destructionType
+		World.ExplosionSourceType explosionSourceType
 	) {
+		return this.createExplosion(entity, damageSource, behavior, x, y, z, power, createFire, explosionSourceType, true);
+	}
+
+	public Explosion createExplosion(
+		@Nullable Entity entity,
+		@Nullable DamageSource damageSource,
+		@Nullable ExplosionBehavior behavior,
+		double x,
+		double y,
+		double z,
+		float power,
+		boolean createFire,
+		World.ExplosionSourceType explosionSourceType,
+		boolean particles
+	) {
+		Explosion.DestructionType destructionType = switch (explosionSourceType) {
+			case NONE -> Explosion.DestructionType.KEEP;
+			case BLOCK -> this.getDestructionType(GameRules.BLOCK_EXPLOSION_DROP_DECAY);
+			case MOB -> this.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)
+			? this.getDestructionType(GameRules.MOB_EXPLOSION_DROP_DECAY)
+			: Explosion.DestructionType.KEEP;
+			case TNT -> this.getDestructionType(GameRules.TNT_EXPLOSION_DROP_DECAY);
+		};
 		Explosion explosion = new Explosion(this, entity, damageSource, behavior, x, y, z, power, createFire, destructionType);
 		explosion.collectBlocksAndDamageEntities();
-		explosion.affectWorld(true);
+		explosion.affectWorld(particles);
 		return explosion;
+	}
+
+	private Explosion.DestructionType getDestructionType(GameRules.Key<GameRules.BooleanRule> gameRuleKey) {
+		return this.getGameRules().getBoolean(gameRuleKey) ? Explosion.DestructionType.DESTROY_WITH_DECAY : Explosion.DestructionType.DESTROY;
 	}
 
 	public abstract String asString();
@@ -1106,5 +1132,12 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	@Override
 	public long getTickOrder() {
 		return this.tickOrder++;
+	}
+
+	public static enum ExplosionSourceType {
+		NONE,
+		BLOCK,
+		MOB,
+		TNT;
 	}
 }

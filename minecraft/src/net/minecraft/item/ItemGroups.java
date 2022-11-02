@@ -26,7 +26,7 @@ public class ItemGroups {
 		}
 
 		@Override
-		public void addItems(FeatureSet enabledFeatures, ItemGroup.Entries entries) {
+		public void addItems(FeatureSet enabledFeatures, ItemGroup.Entries entries, boolean hasPermissions) {
 			entries.add(Items.OAK_LOG);
 			entries.add(Items.OAK_WOOD);
 			entries.add(Items.STRIPPED_OAK_LOG);
@@ -151,56 +151,56 @@ public class ItemGroups {
 			entries.add(Items.SMOOTH_STONE_SLAB);
 			entries.add(Items.STONE_BRICKS);
 			entries.add(Items.CRACKED_STONE_BRICKS);
-			entries.add(Items.CHISELED_STONE_BRICKS);
 			entries.add(Items.STONE_BRICK_STAIRS);
 			entries.add(Items.STONE_BRICK_SLAB);
 			entries.add(Items.STONE_BRICK_WALL);
+			entries.add(Items.CHISELED_STONE_BRICKS);
 			entries.add(Items.MOSSY_STONE_BRICKS);
 			entries.add(Items.MOSSY_STONE_BRICK_STAIRS);
 			entries.add(Items.MOSSY_STONE_BRICK_SLAB);
 			entries.add(Items.MOSSY_STONE_BRICK_WALL);
 			entries.add(Items.GRANITE);
-			entries.add(Items.POLISHED_GRANITE);
 			entries.add(Items.GRANITE_STAIRS);
-			entries.add(Items.POLISHED_GRANITE_STAIRS);
 			entries.add(Items.GRANITE_SLAB);
-			entries.add(Items.POLISHED_GRANITE_SLAB);
 			entries.add(Items.GRANITE_WALL);
+			entries.add(Items.POLISHED_GRANITE);
+			entries.add(Items.POLISHED_GRANITE_STAIRS);
+			entries.add(Items.POLISHED_GRANITE_SLAB);
 			entries.add(Items.DIORITE);
-			entries.add(Items.POLISHED_DIORITE);
 			entries.add(Items.DIORITE_STAIRS);
-			entries.add(Items.POLISHED_DIORITE_STAIRS);
 			entries.add(Items.DIORITE_SLAB);
-			entries.add(Items.POLISHED_DIORITE_SLAB);
 			entries.add(Items.DIORITE_WALL);
+			entries.add(Items.POLISHED_DIORITE);
+			entries.add(Items.POLISHED_DIORITE_STAIRS);
+			entries.add(Items.POLISHED_DIORITE_SLAB);
 			entries.add(Items.ANDESITE);
-			entries.add(Items.POLISHED_ANDESITE);
 			entries.add(Items.ANDESITE_STAIRS);
-			entries.add(Items.POLISHED_ANDESITE_STAIRS);
 			entries.add(Items.ANDESITE_SLAB);
-			entries.add(Items.POLISHED_ANDESITE_SLAB);
 			entries.add(Items.ANDESITE_WALL);
+			entries.add(Items.POLISHED_ANDESITE);
+			entries.add(Items.POLISHED_ANDESITE_STAIRS);
+			entries.add(Items.POLISHED_ANDESITE_SLAB);
 			entries.add(Items.DEEPSLATE);
 			entries.add(Items.COBBLED_DEEPSLATE);
+			entries.add(Items.COBBLED_DEEPSLATE_STAIRS);
+			entries.add(Items.COBBLED_DEEPSLATE_SLAB);
+			entries.add(Items.COBBLED_DEEPSLATE_WALL);
+			entries.add(Items.CHISELED_DEEPSLATE);
 			entries.add(Items.POLISHED_DEEPSLATE);
+			entries.add(Items.POLISHED_DEEPSLATE_STAIRS);
+			entries.add(Items.POLISHED_DEEPSLATE_SLAB);
+			entries.add(Items.POLISHED_DEEPSLATE_WALL);
 			entries.add(Items.DEEPSLATE_BRICKS);
 			entries.add(Items.CRACKED_DEEPSLATE_BRICKS);
+			entries.add(Items.DEEPSLATE_BRICK_STAIRS);
+			entries.add(Items.DEEPSLATE_BRICK_SLAB);
+			entries.add(Items.DEEPSLATE_BRICK_WALL);
 			entries.add(Items.DEEPSLATE_TILES);
 			entries.add(Items.CRACKED_DEEPSLATE_TILES);
-			entries.add(Items.CHISELED_DEEPSLATE);
-			entries.add(Items.REINFORCED_DEEPSLATE);
-			entries.add(Items.COBBLED_DEEPSLATE_STAIRS);
-			entries.add(Items.POLISHED_DEEPSLATE_STAIRS);
-			entries.add(Items.DEEPSLATE_BRICK_STAIRS);
 			entries.add(Items.DEEPSLATE_TILE_STAIRS);
-			entries.add(Items.COBBLED_DEEPSLATE_SLAB);
-			entries.add(Items.POLISHED_DEEPSLATE_SLAB);
-			entries.add(Items.DEEPSLATE_BRICK_SLAB);
 			entries.add(Items.DEEPSLATE_TILE_SLAB);
-			entries.add(Items.COBBLED_DEEPSLATE_WALL);
-			entries.add(Items.POLISHED_DEEPSLATE_WALL);
-			entries.add(Items.DEEPSLATE_BRICK_WALL);
 			entries.add(Items.DEEPSLATE_TILE_WALL);
+			entries.add(Items.REINFORCED_DEEPSLATE);
 			entries.add(Items.BRICKS);
 			entries.add(Items.BRICK_STAIRS);
 			entries.add(Items.BRICK_SLAB);
@@ -211,53 +211,44 @@ public class ItemGroups {
 			entries.add(Items.MUD_BRICK_SLAB);
 			entries.add(Items.MUD_BRICK_WALL);
 			entries.add(Items.SANDSTONE);
-			entries.add(Items.SMOOTH_SANDSTONE);
-			entries.add(Items.CHISELED_SANDSTONE);
-			entries.add(Items.CUT_SANDSTONE);
 			entries.add(Items.SANDSTONE_STAIRS);
-			entries.add(Items.SMOOTH_SANDSTONE_STAIRS);
 			entries.add(Items.SANDSTONE_SLAB);
-			entries.add(Items.SMOOTH_SANDSTONE_SLAB);
-			entries.add(Items.CUT_SANDSTONE_SLAB);
 			entries.add(Items.SANDSTONE_WALL);
+			entries.add(Items.CHISELED_SANDSTONE);
+			entries.add(Items.SMOOTH_SANDSTONE);
+			entries.add(Items.SMOOTH_SANDSTONE_STAIRS);
+			entries.add(Items.SMOOTH_SANDSTONE_SLAB);
+			entries.add(Items.CUT_SANDSTONE);
+			entries.add(Items.CUT_SANDSTONE_SLAB);
 			entries.add(Items.RED_SANDSTONE);
-			entries.add(Items.SMOOTH_RED_SANDSTONE);
-			entries.add(Items.CHISELED_RED_SANDSTONE);
-			entries.add(Items.CUT_RED_SANDSTONE);
 			entries.add(Items.RED_SANDSTONE_STAIRS);
-			entries.add(Items.SMOOTH_RED_SANDSTONE_STAIRS);
 			entries.add(Items.RED_SANDSTONE_SLAB);
-			entries.add(Items.SMOOTH_RED_SANDSTONE_SLAB);
-			entries.add(Items.CUT_RED_SANDSTONE_SLAB);
 			entries.add(Items.RED_SANDSTONE_WALL);
+			entries.add(Items.CHISELED_RED_SANDSTONE);
+			entries.add(Items.SMOOTH_RED_SANDSTONE);
+			entries.add(Items.SMOOTH_RED_SANDSTONE_STAIRS);
+			entries.add(Items.SMOOTH_RED_SANDSTONE_SLAB);
+			entries.add(Items.CUT_RED_SANDSTONE);
+			entries.add(Items.CUT_RED_SANDSTONE_SLAB);
 			entries.add(Items.SEA_LANTERN);
 			entries.add(Items.PRISMARINE);
-			entries.add(Items.PRISMARINE_BRICKS);
 			entries.add(Items.PRISMARINE_STAIRS);
-			entries.add(Items.PRISMARINE_BRICK_STAIRS);
 			entries.add(Items.PRISMARINE_SLAB);
-			entries.add(Items.PRISMARINE_BRICK_SLAB);
 			entries.add(Items.PRISMARINE_WALL);
+			entries.add(Items.PRISMARINE_BRICKS);
+			entries.add(Items.PRISMARINE_BRICK_STAIRS);
+			entries.add(Items.PRISMARINE_BRICK_SLAB);
 			entries.add(Items.DARK_PRISMARINE);
 			entries.add(Items.DARK_PRISMARINE_STAIRS);
 			entries.add(Items.DARK_PRISMARINE_SLAB);
-			entries.add(Items.QUARTZ_BLOCK);
-			entries.add(Items.CHISELED_QUARTZ_BLOCK);
-			entries.add(Items.QUARTZ_BRICKS);
-			entries.add(Items.QUARTZ_PILLAR);
-			entries.add(Items.QUARTZ_STAIRS);
-			entries.add(Items.QUARTZ_SLAB);
-			entries.add(Items.SMOOTH_QUARTZ);
-			entries.add(Items.SMOOTH_QUARTZ_STAIRS);
-			entries.add(Items.SMOOTH_QUARTZ_SLAB);
 			entries.add(Items.NETHERRACK);
 			entries.add(Items.NETHER_BRICKS);
 			entries.add(Items.CRACKED_NETHER_BRICKS);
-			entries.add(Items.CHISELED_NETHER_BRICKS);
 			entries.add(Items.NETHER_BRICK_STAIRS);
 			entries.add(Items.NETHER_BRICK_SLAB);
 			entries.add(Items.NETHER_BRICK_WALL);
 			entries.add(Items.NETHER_BRICK_FENCE);
+			entries.add(Items.CHISELED_NETHER_BRICKS);
 			entries.add(Items.RED_NETHER_BRICKS);
 			entries.add(Items.RED_NETHER_BRICK_STAIRS);
 			entries.add(Items.RED_NETHER_BRICK_SLAB);
@@ -266,19 +257,19 @@ public class ItemGroups {
 			entries.add(Items.SMOOTH_BASALT);
 			entries.add(Items.POLISHED_BASALT);
 			entries.add(Items.BLACKSTONE);
-			entries.add(Items.POLISHED_BLACKSTONE);
-			entries.add(Items.POLISHED_BLACKSTONE_BRICKS);
-			entries.add(Items.CRACKED_POLISHED_BLACKSTONE_BRICKS);
-			entries.add(Items.CHISELED_POLISHED_BLACKSTONE);
 			entries.add(Items.GILDED_BLACKSTONE);
 			entries.add(Items.BLACKSTONE_STAIRS);
-			entries.add(Items.POLISHED_BLACKSTONE_STAIRS);
-			entries.add(Items.POLISHED_BLACKSTONE_BRICK_STAIRS);
 			entries.add(Items.BLACKSTONE_SLAB);
-			entries.add(Items.POLISHED_BLACKSTONE_SLAB);
-			entries.add(Items.POLISHED_BLACKSTONE_BRICK_SLAB);
 			entries.add(Items.BLACKSTONE_WALL);
+			entries.add(Items.CHISELED_POLISHED_BLACKSTONE);
+			entries.add(Items.POLISHED_BLACKSTONE);
+			entries.add(Items.POLISHED_BLACKSTONE_STAIRS);
+			entries.add(Items.POLISHED_BLACKSTONE_SLAB);
 			entries.add(Items.POLISHED_BLACKSTONE_WALL);
+			entries.add(Items.POLISHED_BLACKSTONE_BRICKS);
+			entries.add(Items.CRACKED_POLISHED_BLACKSTONE_BRICKS);
+			entries.add(Items.POLISHED_BLACKSTONE_BRICK_STAIRS);
+			entries.add(Items.POLISHED_BLACKSTONE_BRICK_SLAB);
 			entries.add(Items.POLISHED_BLACKSTONE_BRICK_WALL);
 			entries.add(Items.END_STONE);
 			entries.add(Items.END_STONE_BRICKS);
@@ -289,15 +280,28 @@ public class ItemGroups {
 			entries.add(Items.PURPUR_PILLAR);
 			entries.add(Items.PURPUR_STAIRS);
 			entries.add(Items.PURPUR_SLAB);
+			entries.add(Items.COAL_BLOCK);
 			entries.add(Items.IRON_BLOCK);
 			entries.add(Items.IRON_BARS);
 			entries.add(Items.IRON_DOOR);
 			entries.add(Items.IRON_TRAPDOOR);
+			entries.add(Items.CHAIN);
 			entries.add(Items.GOLD_BLOCK);
-			entries.add(Items.DIAMOND_BLOCK);
-			entries.add(Items.NETHERITE_BLOCK);
+			entries.add(Items.REDSTONE_BLOCK);
 			entries.add(Items.EMERALD_BLOCK);
 			entries.add(Items.LAPIS_BLOCK);
+			entries.add(Items.DIAMOND_BLOCK);
+			entries.add(Items.NETHERITE_BLOCK);
+			entries.add(Items.QUARTZ_BLOCK);
+			entries.add(Items.QUARTZ_STAIRS);
+			entries.add(Items.QUARTZ_SLAB);
+			entries.add(Items.CHISELED_QUARTZ_BLOCK);
+			entries.add(Items.QUARTZ_BRICKS);
+			entries.add(Items.QUARTZ_PILLAR);
+			entries.add(Items.SMOOTH_QUARTZ);
+			entries.add(Items.SMOOTH_QUARTZ_STAIRS);
+			entries.add(Items.SMOOTH_QUARTZ_SLAB);
+			entries.add(Items.AMETHYST_BLOCK);
 			entries.add(Items.COPPER_BLOCK);
 			entries.add(Items.CUT_COPPER);
 			entries.add(Items.CUT_COPPER_STAIRS);
@@ -330,6 +334,38 @@ public class ItemGroups {
 			entries.add(Items.WAXED_OXIDIZED_CUT_COPPER);
 			entries.add(Items.WAXED_OXIDIZED_CUT_COPPER_STAIRS);
 			entries.add(Items.WAXED_OXIDIZED_CUT_COPPER_SLAB);
+			entries.add(Items.WHITE_WOOL);
+			entries.add(Items.LIGHT_GRAY_WOOL);
+			entries.add(Items.GRAY_WOOL);
+			entries.add(Items.BLACK_WOOL);
+			entries.add(Items.BROWN_WOOL);
+			entries.add(Items.RED_WOOL);
+			entries.add(Items.ORANGE_WOOL);
+			entries.add(Items.YELLOW_WOOL);
+			entries.add(Items.LIME_WOOL);
+			entries.add(Items.GREEN_WOOL);
+			entries.add(Items.CYAN_WOOL);
+			entries.add(Items.LIGHT_BLUE_WOOL);
+			entries.add(Items.BLUE_WOOL);
+			entries.add(Items.PURPLE_WOOL);
+			entries.add(Items.MAGENTA_WOOL);
+			entries.add(Items.PINK_WOOL);
+			entries.add(Items.WHITE_CARPET);
+			entries.add(Items.LIGHT_GRAY_CARPET);
+			entries.add(Items.GRAY_CARPET);
+			entries.add(Items.BLACK_CARPET);
+			entries.add(Items.BROWN_CARPET);
+			entries.add(Items.RED_CARPET);
+			entries.add(Items.ORANGE_CARPET);
+			entries.add(Items.YELLOW_CARPET);
+			entries.add(Items.LIME_CARPET);
+			entries.add(Items.GREEN_CARPET);
+			entries.add(Items.CYAN_CARPET);
+			entries.add(Items.LIGHT_BLUE_CARPET);
+			entries.add(Items.BLUE_CARPET);
+			entries.add(Items.PURPLE_CARPET);
+			entries.add(Items.MAGENTA_CARPET);
+			entries.add(Items.PINK_CARPET);
 			entries.add(Items.TERRACOTTA);
 			entries.add(Items.WHITE_TERRACOTTA);
 			entries.add(Items.LIGHT_GRAY_TERRACOTTA);
@@ -347,22 +383,6 @@ public class ItemGroups {
 			entries.add(Items.PURPLE_TERRACOTTA);
 			entries.add(Items.MAGENTA_TERRACOTTA);
 			entries.add(Items.PINK_TERRACOTTA);
-			entries.add(Items.WHITE_GLAZED_TERRACOTTA);
-			entries.add(Items.LIGHT_GRAY_GLAZED_TERRACOTTA);
-			entries.add(Items.GRAY_GLAZED_TERRACOTTA);
-			entries.add(Items.BLACK_GLAZED_TERRACOTTA);
-			entries.add(Items.BROWN_GLAZED_TERRACOTTA);
-			entries.add(Items.RED_GLAZED_TERRACOTTA);
-			entries.add(Items.ORANGE_GLAZED_TERRACOTTA);
-			entries.add(Items.YELLOW_GLAZED_TERRACOTTA);
-			entries.add(Items.LIME_GLAZED_TERRACOTTA);
-			entries.add(Items.GREEN_GLAZED_TERRACOTTA);
-			entries.add(Items.CYAN_GLAZED_TERRACOTTA);
-			entries.add(Items.LIGHT_BLUE_GLAZED_TERRACOTTA);
-			entries.add(Items.BLUE_GLAZED_TERRACOTTA);
-			entries.add(Items.PURPLE_GLAZED_TERRACOTTA);
-			entries.add(Items.MAGENTA_GLAZED_TERRACOTTA);
-			entries.add(Items.PINK_GLAZED_TERRACOTTA);
 			entries.add(Items.WHITE_CONCRETE);
 			entries.add(Items.LIGHT_GRAY_CONCRETE);
 			entries.add(Items.GRAY_CONCRETE);
@@ -395,6 +415,22 @@ public class ItemGroups {
 			entries.add(Items.PURPLE_CONCRETE_POWDER);
 			entries.add(Items.MAGENTA_CONCRETE_POWDER);
 			entries.add(Items.PINK_CONCRETE_POWDER);
+			entries.add(Items.WHITE_GLAZED_TERRACOTTA);
+			entries.add(Items.LIGHT_GRAY_GLAZED_TERRACOTTA);
+			entries.add(Items.GRAY_GLAZED_TERRACOTTA);
+			entries.add(Items.BLACK_GLAZED_TERRACOTTA);
+			entries.add(Items.BROWN_GLAZED_TERRACOTTA);
+			entries.add(Items.RED_GLAZED_TERRACOTTA);
+			entries.add(Items.ORANGE_GLAZED_TERRACOTTA);
+			entries.add(Items.YELLOW_GLAZED_TERRACOTTA);
+			entries.add(Items.LIME_GLAZED_TERRACOTTA);
+			entries.add(Items.GREEN_GLAZED_TERRACOTTA);
+			entries.add(Items.CYAN_GLAZED_TERRACOTTA);
+			entries.add(Items.LIGHT_BLUE_GLAZED_TERRACOTTA);
+			entries.add(Items.BLUE_GLAZED_TERRACOTTA);
+			entries.add(Items.PURPLE_GLAZED_TERRACOTTA);
+			entries.add(Items.MAGENTA_GLAZED_TERRACOTTA);
+			entries.add(Items.PINK_GLAZED_TERRACOTTA);
 			entries.add(Items.GLASS);
 			entries.add(Items.TINTED_GLASS);
 			entries.add(Items.WHITE_STAINED_GLASS);
@@ -430,38 +466,6 @@ public class ItemGroups {
 			entries.add(Items.PURPLE_STAINED_GLASS_PANE);
 			entries.add(Items.MAGENTA_STAINED_GLASS_PANE);
 			entries.add(Items.PINK_STAINED_GLASS_PANE);
-			entries.add(Items.WHITE_WOOL);
-			entries.add(Items.LIGHT_GRAY_WOOL);
-			entries.add(Items.GRAY_WOOL);
-			entries.add(Items.BLACK_WOOL);
-			entries.add(Items.BROWN_WOOL);
-			entries.add(Items.RED_WOOL);
-			entries.add(Items.ORANGE_WOOL);
-			entries.add(Items.YELLOW_WOOL);
-			entries.add(Items.LIME_WOOL);
-			entries.add(Items.GREEN_WOOL);
-			entries.add(Items.CYAN_WOOL);
-			entries.add(Items.LIGHT_BLUE_WOOL);
-			entries.add(Items.BLUE_WOOL);
-			entries.add(Items.PURPLE_WOOL);
-			entries.add(Items.MAGENTA_WOOL);
-			entries.add(Items.PINK_WOOL);
-			entries.add(Items.WHITE_CARPET);
-			entries.add(Items.LIGHT_GRAY_CARPET);
-			entries.add(Items.GRAY_CARPET);
-			entries.add(Items.BLACK_CARPET);
-			entries.add(Items.BROWN_CARPET);
-			entries.add(Items.RED_CARPET);
-			entries.add(Items.ORANGE_CARPET);
-			entries.add(Items.YELLOW_CARPET);
-			entries.add(Items.LIME_CARPET);
-			entries.add(Items.GREEN_CARPET);
-			entries.add(Items.CYAN_CARPET);
-			entries.add(Items.LIGHT_BLUE_CARPET);
-			entries.add(Items.BLUE_CARPET);
-			entries.add(Items.PURPLE_CARPET);
-			entries.add(Items.MAGENTA_CARPET);
-			entries.add(Items.PINK_CARPET);
 		}
 	};
 	public static final ItemGroup NATURAL = new ItemGroup(1, Text.translatable("itemGroup.natural")) {
@@ -471,8 +475,10 @@ public class ItemGroups {
 		}
 
 		@Override
-		public void addItems(FeatureSet enabledFeatures, ItemGroup.Entries entries) {
+		public void addItems(FeatureSet enabledFeatures, ItemGroup.Entries entries, boolean hasPermissions) {
 			entries.add(Items.GRASS_BLOCK);
+			entries.add(Items.MOSS_BLOCK);
+			entries.add(Items.MOSS_CARPET);
 			entries.add(Items.PODZOL);
 			entries.add(Items.MYCELIUM);
 			entries.add(Items.DIRT);
@@ -497,17 +503,17 @@ public class ItemGroups {
 			entries.add(Items.SNOW_BLOCK);
 			entries.add(Items.SNOW);
 			entries.add(Items.STONE);
+			entries.add(Items.DEEPSLATE);
 			entries.add(Items.GRANITE);
 			entries.add(Items.DIORITE);
 			entries.add(Items.ANDESITE);
-			entries.add(Items.DEEPSLATE);
-			entries.add(Items.SANDSTONE);
-			entries.add(Items.RED_SANDSTONE);
-			entries.add(Items.PRISMARINE);
 			entries.add(Items.CALCITE);
 			entries.add(Items.TUFF);
 			entries.add(Items.DRIPSTONE_BLOCK);
 			entries.add(Items.POINTED_DRIPSTONE);
+			entries.add(Items.SANDSTONE);
+			entries.add(Items.RED_SANDSTONE);
+			entries.add(Items.PRISMARINE);
 			entries.add(Items.MAGMA_BLOCK);
 			entries.add(Items.OBSIDIAN);
 			entries.add(Items.CRYING_OBSIDIAN);
@@ -534,8 +540,6 @@ public class ItemGroups {
 			entries.add(Items.NETHER_GOLD_ORE);
 			entries.add(Items.NETHER_QUARTZ_ORE);
 			entries.add(Items.ANCIENT_DEBRIS);
-			entries.add(Items.COAL_BLOCK);
-			entries.add(Items.REDSTONE_BLOCK);
 			entries.add(Items.RAW_IRON_BLOCK);
 			entries.add(Items.RAW_COPPER_BLOCK);
 			entries.add(Items.RAW_GOLD_BLOCK);
@@ -566,9 +570,9 @@ public class ItemGroups {
 			entries.add(Items.ACACIA_LOG);
 			entries.add(Items.DARK_OAK_LOG);
 			entries.add(Items.MANGROVE_LOG);
+			entries.add(Items.MUSHROOM_STEM);
 			entries.add(Items.CRIMSON_STEM);
 			entries.add(Items.WARPED_STEM);
-			entries.add(Items.MUSHROOM_STEM);
 			entries.add(Items.OAK_LEAVES);
 			entries.add(Items.SPRUCE_LEAVES);
 			entries.add(Items.BIRCH_LEAVES);
@@ -603,12 +607,11 @@ public class ItemGroups {
 			entries.add(Items.SPORE_BLOSSOM);
 			entries.add(Items.BAMBOO);
 			entries.add(Items.SUGAR_CANE);
+			entries.add(Items.CACTUS);
 			entries.add(Items.WITHER_ROSE);
 			entries.add(Items.CRIMSON_ROOTS);
 			entries.add(Items.WARPED_ROOTS);
 			entries.add(Items.NETHER_SPROUTS);
-			entries.add(Items.CHORUS_PLANT);
-			entries.add(Items.CHORUS_FLOWER);
 			entries.add(Items.TALL_GRASS);
 			entries.add(Items.LARGE_FERN);
 			entries.add(Items.SUNFLOWER);
@@ -617,6 +620,8 @@ public class ItemGroups {
 			entries.add(Items.PEONY);
 			entries.add(Items.BIG_DRIPLEAF);
 			entries.add(Items.SMALL_DRIPLEAF);
+			entries.add(Items.CHORUS_PLANT);
+			entries.add(Items.CHORUS_FLOWER);
 			entries.add(Items.WEEPING_VINES);
 			entries.add(Items.TWISTING_VINES);
 			entries.add(Items.VINE);
@@ -667,22 +672,11 @@ public class ItemGroups {
 			entries.add(Items.DEAD_HORN_CORAL_FAN);
 			entries.add(Items.SPONGE);
 			entries.add(Items.WET_SPONGE);
-			entries.add(Items.CACTUS);
 			entries.add(Items.MELON);
 			entries.add(Items.PUMPKIN);
 			entries.add(Items.CARVED_PUMPKIN);
 			entries.add(Items.JACK_O_LANTERN);
-			entries.add(Items.MOSS_BLOCK);
-			entries.add(Items.MOSS_CARPET);
-			entries.add(Items.SCULK);
-			entries.add(Items.SCULK_VEIN);
-			entries.add(Items.SCULK_CATALYST);
-			entries.add(Items.SCULK_SHRIEKER);
-			entries.add(Items.SCULK_SENSOR);
 			entries.add(Items.HAY_BLOCK);
-			entries.add(Items.COBWEB);
-			entries.add(Items.FROGSPAWN);
-			entries.add(Items.TURTLE_EGG);
 			entries.add(Items.BEE_NEST);
 			entries.add(Items.HONEYCOMB_BLOCK);
 			entries.add(Items.SLIME_BLOCK);
@@ -690,14 +684,14 @@ public class ItemGroups {
 			entries.add(Items.OCHRE_FROGLIGHT);
 			entries.add(Items.VERDANT_FROGLIGHT);
 			entries.add(Items.PEARLESCENT_FROGLIGHT);
-			entries.add(Items.END_PORTAL_FRAME);
-			entries.add(Items.INFESTED_STONE);
-			entries.add(Items.INFESTED_COBBLESTONE);
-			entries.add(Items.INFESTED_STONE_BRICKS);
-			entries.add(Items.INFESTED_MOSSY_STONE_BRICKS);
-			entries.add(Items.INFESTED_CRACKED_STONE_BRICKS);
-			entries.add(Items.INFESTED_CHISELED_STONE_BRICKS);
-			entries.add(Items.INFESTED_DEEPSLATE);
+			entries.add(Items.SCULK);
+			entries.add(Items.SCULK_VEIN);
+			entries.add(Items.SCULK_CATALYST);
+			entries.add(Items.SCULK_SHRIEKER);
+			entries.add(Items.SCULK_SENSOR);
+			entries.add(Items.COBWEB);
+			entries.add(Items.FROGSPAWN);
+			entries.add(Items.TURTLE_EGG);
 			entries.add(Items.BEDROCK);
 		}
 	};
@@ -708,7 +702,7 @@ public class ItemGroups {
 		}
 
 		@Override
-		public void addItems(FeatureSet enabledFeatures, ItemGroup.Entries entries) {
+		public void addItems(FeatureSet enabledFeatures, ItemGroup.Entries entries, boolean hasPermissions) {
 			entries.add(Items.TORCH);
 			entries.add(Items.SOUL_TORCH);
 			entries.add(Items.LANTERN);
@@ -743,6 +737,7 @@ public class ItemGroups {
 			entries.add(Items.LODESTONE);
 			entries.add(Items.LADDER);
 			entries.add(Items.SCAFFOLDING);
+			entries.add(Items.BEE_NEST);
 			entries.add(Items.BEEHIVE);
 			entries.add(Items.LIGHTNING_ROD);
 			entries.add(Items.FLOWER_POT);
@@ -753,6 +748,7 @@ public class ItemGroups {
 			entries.add(Items.BOOKSHELF);
 			entries.add(Items.CHISELED_BOOKSHELF);
 			entries.add(Items.LECTERN);
+			entries.add(Items.TINTED_GLASS);
 			entries.add(Items.OAK_SIGN);
 			entries.add(Items.OAK_HANGING_SIGN);
 			entries.add(Items.SPRUCE_SIGN);
@@ -793,6 +789,7 @@ public class ItemGroups {
 			entries.add(Items.PURPLE_SHULKER_BOX);
 			entries.add(Items.MAGENTA_SHULKER_BOX);
 			entries.add(Items.PINK_SHULKER_BOX);
+			entries.add(Items.RESPAWN_ANCHOR);
 			entries.add(Items.WHITE_BED);
 			entries.add(Items.LIGHT_GRAY_BED);
 			entries.add(Items.GRAY_BED);
@@ -809,7 +806,6 @@ public class ItemGroups {
 			entries.add(Items.PURPLE_BED);
 			entries.add(Items.MAGENTA_BED);
 			entries.add(Items.PINK_BED);
-			entries.add(Items.RESPAWN_ANCHOR);
 			entries.add(Items.CANDLE);
 			entries.add(Items.WHITE_CANDLE);
 			entries.add(Items.LIGHT_GRAY_CANDLE);
@@ -851,6 +847,14 @@ public class ItemGroups {
 			entries.add(Items.CREEPER_HEAD);
 			entries.add(Items.DRAGON_HEAD);
 			entries.add(Items.DRAGON_EGG);
+			entries.add(Items.END_PORTAL_FRAME);
+			entries.add(Items.INFESTED_STONE);
+			entries.add(Items.INFESTED_COBBLESTONE);
+			entries.add(Items.INFESTED_STONE_BRICKS);
+			entries.add(Items.INFESTED_MOSSY_STONE_BRICKS);
+			entries.add(Items.INFESTED_CRACKED_STONE_BRICKS);
+			entries.add(Items.INFESTED_CHISELED_STONE_BRICKS);
+			entries.add(Items.INFESTED_DEEPSLATE);
 		}
 	};
 	public static final ItemGroup REDSTONE = new ItemGroup(3, Text.translatable("itemGroup.redstone")) {
@@ -860,7 +864,7 @@ public class ItemGroups {
 		}
 
 		@Override
-		public void addItems(FeatureSet enabledFeatures, ItemGroup.Entries entries) {
+		public void addItems(FeatureSet enabledFeatures, ItemGroup.Entries entries, boolean hasPermissions) {
 			entries.add(Items.REDSTONE);
 			entries.add(Items.REDSTONE_TORCH);
 			entries.add(Items.REDSTONE_ORE);
@@ -876,6 +880,9 @@ public class ItemGroups {
 			entries.add(Items.HOPPER);
 			entries.add(Items.DISPENSER);
 			entries.add(Items.DROPPER);
+			entries.add(Items.CHEST);
+			entries.add(Items.BARREL);
+			entries.add(Items.CAULDRON);
 			entries.add(Items.LECTERN);
 			entries.add(Items.TARGET);
 			entries.add(Items.LEVER);
@@ -892,6 +899,8 @@ public class ItemGroups {
 			entries.add(Items.BIG_DRIPLEAF);
 			entries.add(Items.BELL);
 			entries.add(Items.CHISELED_BOOKSHELF);
+			entries.add(Items.FURNACE);
+			entries.add(Items.COMPOSTER);
 			entries.add(Items.RAIL);
 			entries.add(Items.POWERED_RAIL);
 			entries.add(Items.DETECTOR_RAIL);
@@ -901,6 +910,10 @@ public class ItemGroups {
 			entries.add(Items.FURNACE_MINECART);
 			entries.add(Items.TNT_MINECART);
 			entries.add(Items.HOPPER_MINECART);
+			if (hasPermissions) {
+				entries.add(Items.COMMAND_BLOCK_MINECART);
+			}
+
 			entries.add(Items.OAK_CHEST_BOAT);
 			entries.add(Items.SPRUCE_CHEST_BOAT);
 			entries.add(Items.BIRCH_CHEST_BOAT);
@@ -921,10 +934,6 @@ public class ItemGroups {
 			entries.add(Items.BAMBOO_BUTTON);
 			entries.add(Items.CRIMSON_BUTTON);
 			entries.add(Items.WARPED_BUTTON);
-			entries.add(Items.STONE_PRESSURE_PLATE);
-			entries.add(Items.POLISHED_BLACKSTONE_PRESSURE_PLATE);
-			entries.add(Items.LIGHT_WEIGHTED_PRESSURE_PLATE);
-			entries.add(Items.HEAVY_WEIGHTED_PRESSURE_PLATE);
 			entries.add(Items.OAK_PRESSURE_PLATE);
 			entries.add(Items.SPRUCE_PRESSURE_PLATE);
 			entries.add(Items.BIRCH_PRESSURE_PLATE);
@@ -935,6 +944,10 @@ public class ItemGroups {
 			entries.add(Items.BAMBOO_PRESSURE_PLATE);
 			entries.add(Items.CRIMSON_PRESSURE_PLATE);
 			entries.add(Items.WARPED_PRESSURE_PLATE);
+			entries.add(Items.LIGHT_WEIGHTED_PRESSURE_PLATE);
+			entries.add(Items.HEAVY_WEIGHTED_PRESSURE_PLATE);
+			entries.add(Items.STONE_PRESSURE_PLATE);
+			entries.add(Items.POLISHED_BLACKSTONE_PRESSURE_PLATE);
 			entries.add(Items.IRON_DOOR);
 			entries.add(Items.OAK_DOOR);
 			entries.add(Items.SPRUCE_DOOR);
@@ -967,6 +980,16 @@ public class ItemGroups {
 			entries.add(Items.BAMBOO_FENCE_GATE);
 			entries.add(Items.CRIMSON_FENCE_GATE);
 			entries.add(Items.WARPED_FENCE_GATE);
+			if (hasPermissions) {
+				entries.add(Items.COMMAND_BLOCK);
+				entries.add(Items.CHAIN_COMMAND_BLOCK);
+				entries.add(Items.REPEATING_COMMAND_BLOCK);
+				entries.add(Items.JIGSAW);
+				entries.add(Items.STRUCTURE_VOID);
+				entries.add(Items.BARRIER);
+				entries.add(Items.LIGHT);
+				entries.add(Items.DEBUG_STICK);
+			}
 		}
 	};
 	public static final ItemGroup HOTBAR = new ItemGroup(4, Text.translatable("itemGroup.hotbar")) {
@@ -976,7 +999,7 @@ public class ItemGroups {
 		}
 
 		@Override
-		public void addItems(FeatureSet enabledFeatures, ItemGroup.Entries entries) {
+		public void addItems(FeatureSet enabledFeatures, ItemGroup.Entries entries, boolean hasPermissions) {
 		}
 
 		@Override
@@ -991,12 +1014,12 @@ public class ItemGroups {
 		}
 
 		@Override
-		public void addItems(FeatureSet enabledFeatures, ItemGroup.Entries entries) {
+		public void addItems(FeatureSet enabledFeatures, ItemGroup.Entries entries, boolean hasPermissions) {
 			Set<ItemStack> set = new ItemStackSet();
 
 			for (ItemGroup itemGroup : ItemGroups.GROUPS) {
 				if (itemGroup != this) {
-					set.addAll(itemGroup.getSearchTabStacks(enabledFeatures));
+					set.addAll(itemGroup.getSearchTabStacks(enabledFeatures, hasPermissions));
 				}
 			}
 
@@ -1010,7 +1033,7 @@ public class ItemGroups {
 		}
 
 		@Override
-		public void addItems(FeatureSet enabledFeatures, ItemGroup.Entries entries) {
+		public void addItems(FeatureSet enabledFeatures, ItemGroup.Entries entries, boolean hasPermissions) {
 			entries.add(Items.WOODEN_SHOVEL);
 			entries.add(Items.WOODEN_PICKAXE);
 			entries.add(Items.WOODEN_AXE);
@@ -1117,7 +1140,7 @@ public class ItemGroups {
 		}
 
 		@Override
-		public void addItems(FeatureSet enabledFeatures, ItemGroup.Entries entries) {
+		public void addItems(FeatureSet enabledFeatures, ItemGroup.Entries entries, boolean hasPermissions) {
 			entries.add(Items.WOODEN_SWORD);
 			entries.add(Items.STONE_SWORD);
 			entries.add(Items.IRON_SWORD);
@@ -1174,46 +1197,46 @@ public class ItemGroups {
 		}
 
 		@Override
-		public void addItems(FeatureSet enabledFeatures, ItemGroup.Entries entries) {
+		public void addItems(FeatureSet enabledFeatures, ItemGroup.Entries entries, boolean hasPermissions) {
 			entries.add(Items.APPLE);
-			entries.add(Items.MUSHROOM_STEW);
-			entries.add(Items.BREAD);
-			entries.add(Items.PORKCHOP);
-			entries.add(Items.COOKED_PORKCHOP);
 			entries.add(Items.GOLDEN_APPLE);
 			entries.add(Items.ENCHANTED_GOLDEN_APPLE);
-			entries.add(Items.COD);
-			entries.add(Items.SALMON);
-			entries.add(Items.TROPICAL_FISH);
-			entries.add(Items.PUFFERFISH);
-			entries.add(Items.COOKED_COD);
-			entries.add(Items.COOKED_SALMON);
-			entries.add(Items.CAKE);
-			entries.add(Items.COOKIE);
 			entries.add(Items.MELON_SLICE);
-			entries.add(Items.DRIED_KELP);
-			entries.add(Items.BEEF);
-			entries.add(Items.COOKED_BEEF);
-			entries.add(Items.CHICKEN);
-			entries.add(Items.COOKED_CHICKEN);
+			entries.add(Items.SWEET_BERRIES);
+			entries.add(Items.GLOW_BERRIES);
+			entries.add(Items.CHORUS_FRUIT);
 			entries.add(Items.CARROT);
 			entries.add(Items.GOLDEN_CARROT);
 			entries.add(Items.POTATO);
 			entries.add(Items.BAKED_POTATO);
-			entries.add(Items.PUMPKIN_PIE);
-			entries.add(Items.RABBIT);
-			entries.add(Items.COOKED_RABBIT);
-			entries.add(Items.RABBIT_STEW);
-			entries.add(Items.MUTTON);
-			entries.add(Items.COOKED_MUTTON);
-			entries.add(Items.BEETROOT);
-			entries.add(Items.BEETROOT_SOUP);
-			entries.add(Items.SWEET_BERRIES);
-			entries.add(Items.GLOW_BERRIES);
-			entries.add(Items.CHORUS_FRUIT);
-			entries.add(Items.ROTTEN_FLESH);
 			entries.add(Items.POISONOUS_POTATO);
+			entries.add(Items.BEETROOT);
+			entries.add(Items.DRIED_KELP);
+			entries.add(Items.COD);
+			entries.add(Items.SALMON);
+			entries.add(Items.TROPICAL_FISH);
+			entries.add(Items.PUFFERFISH);
+			entries.add(Items.BEEF);
+			entries.add(Items.PORKCHOP);
+			entries.add(Items.CHICKEN);
+			entries.add(Items.RABBIT);
+			entries.add(Items.MUTTON);
+			entries.add(Items.COOKED_COD);
+			entries.add(Items.COOKED_SALMON);
+			entries.add(Items.COOKED_BEEF);
+			entries.add(Items.COOKED_PORKCHOP);
+			entries.add(Items.COOKED_CHICKEN);
+			entries.add(Items.COOKED_RABBIT);
+			entries.add(Items.COOKED_MUTTON);
+			entries.add(Items.BREAD);
+			entries.add(Items.COOKIE);
+			entries.add(Items.CAKE);
+			entries.add(Items.PUMPKIN_PIE);
+			entries.add(Items.ROTTEN_FLESH);
 			entries.add(Items.SPIDER_EYE);
+			entries.add(Items.MUSHROOM_STEW);
+			entries.add(Items.BEETROOT_SOUP);
+			entries.add(Items.RABBIT_STEW);
 			entries.add(Items.MILK_BUCKET);
 			entries.add(Items.HONEY_BOTTLE);
 			ItemGroups.addPotions(entries, Items.POTION, ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS);
@@ -1245,23 +1268,24 @@ public class ItemGroups {
 		}
 
 		@Override
-		public void addItems(FeatureSet enabledFeatures, ItemGroup.Entries entries) {
+		public void addItems(FeatureSet enabledFeatures, ItemGroup.Entries entries, boolean hasPermissions) {
 			entries.add(Items.COAL);
 			entries.add(Items.CHARCOAL);
 			entries.add(Items.RAW_IRON);
 			entries.add(Items.RAW_COPPER);
 			entries.add(Items.RAW_GOLD);
-			entries.add(Items.DIAMOND);
-			entries.add(Items.AMETHYST_SHARD);
-			entries.add(Items.QUARTZ);
 			entries.add(Items.LAPIS_LAZULI);
 			entries.add(Items.EMERALD);
+			entries.add(Items.DIAMOND);
+			entries.add(Items.ANCIENT_DEBRIS);
+			entries.add(Items.QUARTZ);
+			entries.add(Items.AMETHYST_SHARD);
 			entries.add(Items.IRON_NUGGET);
 			entries.add(Items.GOLD_NUGGET);
-			entries.add(Items.NETHERITE_SCRAP);
 			entries.add(Items.IRON_INGOT);
 			entries.add(Items.COPPER_INGOT);
 			entries.add(Items.GOLD_INGOT);
+			entries.add(Items.NETHERITE_SCRAP);
 			entries.add(Items.NETHERITE_INGOT);
 			entries.add(Items.STICK);
 			entries.add(Items.FLINT);
@@ -1349,7 +1373,7 @@ public class ItemGroups {
 		}
 
 		@Override
-		public void addItems(FeatureSet enabledFeatures, ItemGroup.Entries entries) {
+		public void addItems(FeatureSet enabledFeatures, ItemGroup.Entries entries, boolean hasPermissions) {
 			entries.add(Items.SPAWNER);
 			entries.add(Items.ALLAY_SPAWN_EGG);
 			entries.add(Items.AXOLOTL_SPAWN_EGG);
@@ -1379,6 +1403,7 @@ public class ItemGroups {
 			entries.add(Items.HOGLIN_SPAWN_EGG);
 			entries.add(Items.HORSE_SPAWN_EGG);
 			entries.add(Items.HUSK_SPAWN_EGG);
+			entries.add(Items.IRON_GOLEM_SPAWN_EGG);
 			entries.add(Items.LLAMA_SPAWN_EGG);
 			entries.add(Items.MAGMA_CUBE_SPAWN_EGG);
 			entries.add(Items.MOOSHROOM_SPAWN_EGG);
@@ -1402,6 +1427,7 @@ public class ItemGroups {
 			entries.add(Items.SKELETON_SPAWN_EGG);
 			entries.add(Items.SKELETON_HORSE_SPAWN_EGG);
 			entries.add(Items.SLIME_SPAWN_EGG);
+			entries.add(Items.SNOW_GOLEM_SPAWN_EGG);
 			entries.add(Items.SPIDER_SPAWN_EGG);
 			entries.add(Items.SQUID_SPAWN_EGG);
 			entries.add(Items.STRAY_SPAWN_EGG);
@@ -1432,7 +1458,7 @@ public class ItemGroups {
 		}
 
 		@Override
-		public void addItems(FeatureSet enabledFeatures, ItemGroup.Entries entries) {
+		public void addItems(FeatureSet enabledFeatures, ItemGroup.Entries entries, boolean hasPermissions) {
 		}
 	}).setTexture("inventory.png").setNoScrollbar().hideName();
 	public static final ItemGroup[] GROUPS = asArray(

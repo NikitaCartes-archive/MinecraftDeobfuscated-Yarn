@@ -22,13 +22,11 @@ import net.minecraft.resource.DataPackSettings;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.structure.StructureSet;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
@@ -106,7 +104,7 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 		super(properties);
 		String string = this.getString("level-seed", "");
 		boolean bl = this.parseBoolean("generate-structures", true);
-		long l = GeneratorOptions.parseSeed(string).orElse(Random.create().nextLong());
+		long l = GeneratorOptions.parseSeed(string);
 		this.generatorOptions = new GeneratorOptions(l, bl, false);
 		this.worldGenProperties = new ServerPropertiesHandler.WorldGenProperties(
 			this.get("generator-settings", generatorSettings -> JsonHelper.deserialize(!generatorSettings.isEmpty() ? generatorSettings : "{}"), new JsonObject()),
@@ -222,8 +220,7 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 					.parse(new Dynamic<>(registryOps, this.generatorSettings()))
 					.resultOrPartial(ServerPropertiesHandler.field_37276::error);
 				if (optional.isPresent()) {
-					Registry<StructureSet> registry2 = dynamicRegistryManager.get(Registry.STRUCTURE_SET_KEY);
-					return dimensionOptionsRegistryHolder.with(dynamicRegistryManager, new FlatChunkGenerator(registry2, (FlatChunkGeneratorConfig)optional.get()));
+					return dimensionOptionsRegistryHolder.with(dynamicRegistryManager, new FlatChunkGenerator((FlatChunkGeneratorConfig)optional.get()));
 				}
 			}
 

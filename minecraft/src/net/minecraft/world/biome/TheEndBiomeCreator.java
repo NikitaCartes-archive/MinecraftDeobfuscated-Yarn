@@ -1,12 +1,15 @@
 package net.minecraft.world.biome;
 
 import net.minecraft.sound.BiomeMoodSound;
+import net.minecraft.util.registry.RegistryEntryLookup;
 import net.minecraft.world.gen.GenerationStep;
+import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
 import net.minecraft.world.gen.feature.EndPlacedFeatures;
+import net.minecraft.world.gen.feature.PlacedFeature;
 
 public class TheEndBiomeCreator {
-	private static Biome createEndBiome(GenerationSettings.Builder builder) {
+	private static Biome createEndBiome(GenerationSettings.LookupBackedBuilder builder) {
 		SpawnSettings.Builder builder2 = new SpawnSettings.Builder();
 		DefaultBiomeFeatures.addEndMobs(builder2);
 		return new Biome.Builder()
@@ -19,30 +22,32 @@ public class TheEndBiomeCreator {
 			.build();
 	}
 
-	public static Biome createEndBarrens() {
-		GenerationSettings.Builder builder = new GenerationSettings.Builder();
-		return createEndBiome(builder);
+	public static Biome createEndBarrens(RegistryEntryLookup<PlacedFeature> featureLookup, RegistryEntryLookup<ConfiguredCarver<?>> carverLookup) {
+		GenerationSettings.LookupBackedBuilder lookupBackedBuilder = new GenerationSettings.LookupBackedBuilder(featureLookup, carverLookup);
+		return createEndBiome(lookupBackedBuilder);
 	}
 
-	public static Biome createTheEnd() {
-		GenerationSettings.Builder builder = new GenerationSettings.Builder().feature(GenerationStep.Feature.SURFACE_STRUCTURES, EndPlacedFeatures.END_SPIKE);
-		return createEndBiome(builder);
+	public static Biome createTheEnd(RegistryEntryLookup<PlacedFeature> featureLookup, RegistryEntryLookup<ConfiguredCarver<?>> carverLookup) {
+		GenerationSettings.LookupBackedBuilder lookupBackedBuilder = new GenerationSettings.LookupBackedBuilder(featureLookup, carverLookup)
+			.feature(GenerationStep.Feature.SURFACE_STRUCTURES, EndPlacedFeatures.END_SPIKE);
+		return createEndBiome(lookupBackedBuilder);
 	}
 
-	public static Biome createEndMidlands() {
-		GenerationSettings.Builder builder = new GenerationSettings.Builder();
-		return createEndBiome(builder);
+	public static Biome createEndMidlands(RegistryEntryLookup<PlacedFeature> featureLookup, RegistryEntryLookup<ConfiguredCarver<?>> carverLookup) {
+		GenerationSettings.LookupBackedBuilder lookupBackedBuilder = new GenerationSettings.LookupBackedBuilder(featureLookup, carverLookup);
+		return createEndBiome(lookupBackedBuilder);
 	}
 
-	public static Biome createEndHighlands() {
-		GenerationSettings.Builder builder = new GenerationSettings.Builder()
+	public static Biome createEndHighlands(RegistryEntryLookup<PlacedFeature> featureLookup, RegistryEntryLookup<ConfiguredCarver<?>> carverLookup) {
+		GenerationSettings.LookupBackedBuilder lookupBackedBuilder = new GenerationSettings.LookupBackedBuilder(featureLookup, carverLookup)
 			.feature(GenerationStep.Feature.SURFACE_STRUCTURES, EndPlacedFeatures.END_GATEWAY_RETURN)
 			.feature(GenerationStep.Feature.VEGETAL_DECORATION, EndPlacedFeatures.CHORUS_PLANT);
-		return createEndBiome(builder);
+		return createEndBiome(lookupBackedBuilder);
 	}
 
-	public static Biome createSmallEndIslands() {
-		GenerationSettings.Builder builder = new GenerationSettings.Builder().feature(GenerationStep.Feature.RAW_GENERATION, EndPlacedFeatures.END_ISLAND_DECORATED);
-		return createEndBiome(builder);
+	public static Biome createSmallEndIslands(RegistryEntryLookup<PlacedFeature> featureLookup, RegistryEntryLookup<ConfiguredCarver<?>> carverLookup) {
+		GenerationSettings.LookupBackedBuilder lookupBackedBuilder = new GenerationSettings.LookupBackedBuilder(featureLookup, carverLookup)
+			.feature(GenerationStep.Feature.RAW_GENERATION, EndPlacedFeatures.END_ISLAND_DECORATED);
+		return createEndBiome(lookupBackedBuilder);
 	}
 }

@@ -9,9 +9,9 @@ import net.minecraft.util.math.noise.InterpolatedNoiseSampler;
 import net.minecraft.util.math.random.CheckedRandom;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.math.random.RandomSplitter;
-import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryEntryLookup;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
@@ -21,8 +21,7 @@ import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 
 public final class NoiseConfig {
 	final RandomSplitter randomDeriver;
-	private final long legacyWorldSeed;
-	private final Registry<DoublePerlinNoiseSampler.NoiseParameters> noiseParametersRegistry;
+	private final RegistryEntryLookup<DoublePerlinNoiseSampler.NoiseParameters> noiseParametersRegistry;
 	private final NoiseRouter noiseRouter;
 	private final MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler;
 	private final SurfaceBuilder surfaceBuilder;
@@ -32,25 +31,26 @@ public final class NoiseConfig {
 	private final Map<Identifier, RandomSplitter> randomDerivers;
 
 	public static NoiseConfig create(
-		DynamicRegistryManager dynamicRegistryManager, RegistryKey<ChunkGeneratorSettings> chunkGeneratorSettingsKey, long legacyWorldSeed
+		RegistryEntryLookup.RegistryLookup registryLookup, RegistryKey<ChunkGeneratorSettings> chunkGeneratorSettingsKey, long legacyWorldSeed
 	) {
 		return create(
-			dynamicRegistryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY).getOrThrow(chunkGeneratorSettingsKey),
-			dynamicRegistryManager.get(Registry.NOISE_KEY),
+			registryLookup.getOrThrow(Registry.CHUNK_GENERATOR_SETTINGS_KEY).getOrThrow(chunkGeneratorSettingsKey).value(),
+			registryLookup.getOrThrow(Registry.NOISE_KEY),
 			legacyWorldSeed
 		);
 	}
 
 	public static NoiseConfig create(
-		ChunkGeneratorSettings chunkGeneratorSettings, Registry<DoublePerlinNoiseSampler.NoiseParameters> noiseParametersRegistry, long legacyWorldSeed
+		ChunkGeneratorSettings chunkGeneratorSettings, RegistryEntryLookup<DoublePerlinNoiseSampler.NoiseParameters> noiseParametersLookup, long legacyWorldSeed
 	) {
-		return new NoiseConfig(chunkGeneratorSettings, noiseParametersRegistry, legacyWorldSeed);
+		return new NoiseConfig(chunkGeneratorSettings, noiseParametersLookup, legacyWorldSeed);
 	}
 
-	private NoiseConfig(ChunkGeneratorSettings chunkGeneratorSettings, Registry<DoublePerlinNoiseSampler.NoiseParameters> noiseRegistry, long seed) {
+	private NoiseConfig(
+		ChunkGeneratorSettings chunkGeneratorSettings, RegistryEntryLookup<DoublePerlinNoiseSampler.NoiseParameters> noiseParametersLookup, long seed
+	) {
 		this.randomDeriver = chunkGeneratorSettings.getRandomProvider().create(seed).nextSplitter();
-		this.legacyWorldSeed = seed;
-		this.noiseParametersRegistry = noiseRegistry;
+		this.noiseParametersRegistry = noiseParametersLookup;
 		this.aquiferRandomDeriver = this.randomDeriver.split(new Identifier("aquifer")).nextSplitter();
 		this.oreRandomDeriver = this.randomDeriver.split(new Identifier("ore")).nextSplitter();
 		this.noises = new ConcurrentHashMap();
@@ -147,10 +147,6 @@ public final class NoiseConfig {
 
 	public RandomSplitter getOrCreateRandomDeriver(Identifier id) {
 		return (RandomSplitter)this.randomDerivers.computeIfAbsent(id, id2 -> this.randomDeriver.split(id).nextSplitter());
-	}
-
-	public long getLegacyWorldSeed() {
-		return this.legacyWorldSeed;
 	}
 
 	public NoiseRouter getNoiseRouter() {

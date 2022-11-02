@@ -128,7 +128,8 @@ public class UnicodeTextureFont implements Font {
 	}
 
 	private static Identifier getImageId(String template, int codePoint) {
-		Identifier identifier = new Identifier(String.format(Locale.ROOT, template, String.format("%02x", codePoint / 256)));
+		String string = String.format(Locale.ROOT, "%02x", codePoint / 256);
+		Identifier identifier = new Identifier(String.format(Locale.ROOT, template, string));
 		return identifier.withPrefixedPath("textures/");
 	}
 

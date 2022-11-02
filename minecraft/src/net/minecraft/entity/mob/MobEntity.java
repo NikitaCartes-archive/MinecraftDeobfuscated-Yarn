@@ -576,28 +576,44 @@ public abstract class MobEntity extends LivingEntity {
 
 	protected void loot(ItemEntity item) {
 		ItemStack itemStack = item.getStack();
-		if (this.tryEquip(itemStack)) {
+		ItemStack itemStack2 = this.tryEquip(itemStack.copy());
+		if (!itemStack2.isEmpty()) {
 			this.triggerItemPickedUpByEntityCriteria(item);
-			this.sendPickup(item, itemStack.getCount());
-			item.discard();
+			this.sendPickup(item, itemStack2.getCount());
+			itemStack.decrement(itemStack2.getCount());
+			if (itemStack.isEmpty()) {
+				item.discard();
+			}
 		}
 	}
 
-	public boolean tryEquip(ItemStack equipment) {
-		EquipmentSlot equipmentSlot = getPreferredEquipmentSlot(equipment);
+	public ItemStack tryEquip(ItemStack stack) {
+		EquipmentSlot equipmentSlot = this.getSlotToEquip(stack);
 		ItemStack itemStack = this.getEquippedStack(equipmentSlot);
-		boolean bl = this.prefersNewEquipment(equipment, itemStack);
-		if (bl && this.canPickupItem(equipment)) {
+		boolean bl = this.prefersNewEquipment(stack, itemStack);
+		if (bl && this.canPickupItem(stack)) {
 			double d = (double)this.getDropChance(equipmentSlot);
 			if (!itemStack.isEmpty() && (double)Math.max(this.random.nextFloat() - 0.1F, 0.0F) < d) {
 				this.dropStack(itemStack);
 			}
 
-			this.equipLootStack(equipmentSlot, equipment);
-			return true;
+			if (equipmentSlot.isArmorSlot() && stack.getCount() > 1) {
+				ItemStack itemStack2 = stack.copyWithCount(1);
+				this.equipLootStack(equipmentSlot, itemStack2);
+				return itemStack2;
+			} else {
+				this.equipLootStack(equipmentSlot, stack);
+				return stack;
+			}
 		} else {
-			return false;
+			return ItemStack.EMPTY;
 		}
+	}
+
+	private EquipmentSlot getSlotToEquip(ItemStack stack) {
+		EquipmentSlot equipmentSlot = getPreferredEquipmentSlot(stack);
+		boolean bl = this.getEquippedStack(equipmentSlot).isEmpty();
+		return equipmentSlot.isArmorSlot() && !bl ? EquipmentSlot.MAINHAND : equipmentSlot;
 	}
 
 	protected void equipLootStack(EquipmentSlot slot, ItemStack stack) {

@@ -6,7 +6,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 
 public interface Degradable<T extends Enum<T>> {
-	int field_31056 = 4;
+	int DEGRADING_RANGE = 4;
 
 	Optional<BlockState> getDegradationResult(BlockState state);
 

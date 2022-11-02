@@ -8,117 +8,160 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
-import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.Registerable;
 import net.minecraft.util.registry.RegistryEntryList;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 import net.minecraft.world.gen.stateprovider.WeightedBlockStateProvider;
 
 public class NetherConfiguredFeatures {
-	public static final RegistryEntry<ConfiguredFeature<DeltaFeatureConfig, ?>> DELTA = ConfiguredFeatures.register(
-		"delta",
-		Feature.DELTA_FEATURE,
-		new DeltaFeatureConfig(Blocks.LAVA.getDefaultState(), Blocks.MAGMA_BLOCK.getDefaultState(), UniformIntProvider.create(3, 7), UniformIntProvider.create(0, 2))
-	);
-	public static final RegistryEntry<ConfiguredFeature<BasaltColumnsFeatureConfig, ?>> SMALL_BASALT_COLUMNS = ConfiguredFeatures.register(
-		"small_basalt_columns", Feature.BASALT_COLUMNS, new BasaltColumnsFeatureConfig(ConstantIntProvider.create(1), UniformIntProvider.create(1, 4))
-	);
-	public static final RegistryEntry<ConfiguredFeature<BasaltColumnsFeatureConfig, ?>> SMALL_BASALT_COLUMNS_TEMP = ConfiguredFeatures.register(
-		"large_basalt_columns", Feature.BASALT_COLUMNS, new BasaltColumnsFeatureConfig(UniformIntProvider.create(2, 3), UniformIntProvider.create(5, 10))
-	);
-	public static final RegistryEntry<ConfiguredFeature<ReplaceBlobsFeatureConfig, ?>> BASALT_BLOBS = ConfiguredFeatures.register(
-		"basalt_blobs",
-		Feature.NETHERRACK_REPLACE_BLOBS,
-		new ReplaceBlobsFeatureConfig(Blocks.NETHERRACK.getDefaultState(), Blocks.BASALT.getDefaultState(), UniformIntProvider.create(3, 7))
-	);
-	public static final RegistryEntry<ConfiguredFeature<ReplaceBlobsFeatureConfig, ?>> BLACKSTONE_BLOBS = ConfiguredFeatures.register(
-		"blackstone_blobs",
-		Feature.NETHERRACK_REPLACE_BLOBS,
-		new ReplaceBlobsFeatureConfig(Blocks.NETHERRACK.getDefaultState(), Blocks.BLACKSTONE.getDefaultState(), UniformIntProvider.create(3, 7))
-	);
-	public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> GLOWSTONE_EXTRA = ConfiguredFeatures.register(
-		"glowstone_extra", Feature.GLOWSTONE_BLOB
-	);
-	public static final WeightedBlockStateProvider CRIMSON_FOREST_VEGETATION_PROVIDER = new WeightedBlockStateProvider(
-		DataPool.<BlockState>builder()
-			.add(Blocks.CRIMSON_ROOTS.getDefaultState(), 87)
-			.add(Blocks.CRIMSON_FUNGUS.getDefaultState(), 11)
-			.add(Blocks.WARPED_FUNGUS.getDefaultState(), 1)
-	);
-	public static final RegistryEntry<ConfiguredFeature<NetherForestVegetationFeatureConfig, ?>> CRIMSON_FOREST_VEGETATION = ConfiguredFeatures.register(
-		"crimson_forest_vegetation", Feature.NETHER_FOREST_VEGETATION, new NetherForestVegetationFeatureConfig(CRIMSON_FOREST_VEGETATION_PROVIDER, 8, 4)
-	);
-	public static final RegistryEntry<ConfiguredFeature<NetherForestVegetationFeatureConfig, ?>> CRIMSON_FOREST_VEGETATION_BONEMEAL = ConfiguredFeatures.register(
-		"crimson_forest_vegetation_bonemeal", Feature.NETHER_FOREST_VEGETATION, new NetherForestVegetationFeatureConfig(CRIMSON_FOREST_VEGETATION_PROVIDER, 3, 1)
-	);
-	public static final WeightedBlockStateProvider WARPED_FOREST_VEGETATION_PROVIDER = new WeightedBlockStateProvider(
-		DataPool.<BlockState>builder()
-			.add(Blocks.WARPED_ROOTS.getDefaultState(), 85)
-			.add(Blocks.CRIMSON_ROOTS.getDefaultState(), 1)
-			.add(Blocks.WARPED_FUNGUS.getDefaultState(), 13)
-			.add(Blocks.CRIMSON_FUNGUS.getDefaultState(), 1)
-	);
-	public static final RegistryEntry<ConfiguredFeature<NetherForestVegetationFeatureConfig, ?>> WARPED_FOREST_VEGETATION = ConfiguredFeatures.register(
-		"warped_forest_vegetation", Feature.NETHER_FOREST_VEGETATION, new NetherForestVegetationFeatureConfig(WARPED_FOREST_VEGETATION_PROVIDER, 8, 4)
-	);
-	public static final RegistryEntry<ConfiguredFeature<NetherForestVegetationFeatureConfig, ?>> WARPED_FOREST_VEGETATION_BONEMEAL = ConfiguredFeatures.register(
-		"warped_forest_vegetation_bonemeal", Feature.NETHER_FOREST_VEGETATION, new NetherForestVegetationFeatureConfig(WARPED_FOREST_VEGETATION_PROVIDER, 3, 1)
-	);
-	public static final RegistryEntry<ConfiguredFeature<NetherForestVegetationFeatureConfig, ?>> NETHER_SPROUTS = ConfiguredFeatures.register(
-		"nether_sprouts", Feature.NETHER_FOREST_VEGETATION, new NetherForestVegetationFeatureConfig(BlockStateProvider.of(Blocks.NETHER_SPROUTS), 8, 4)
-	);
-	public static final RegistryEntry<ConfiguredFeature<NetherForestVegetationFeatureConfig, ?>> NETHER_SPROUTS_BONEMEAL = ConfiguredFeatures.register(
-		"nether_sprouts_bonemeal", Feature.NETHER_FOREST_VEGETATION, new NetherForestVegetationFeatureConfig(BlockStateProvider.of(Blocks.NETHER_SPROUTS), 3, 1)
-	);
-	public static final RegistryEntry<ConfiguredFeature<TwistingVinesFeatureConfig, ?>> TWISTING_VINES = ConfiguredFeatures.register(
-		"twisting_vines", Feature.TWISTING_VINES, new TwistingVinesFeatureConfig(8, 4, 8)
-	);
-	public static final RegistryEntry<ConfiguredFeature<TwistingVinesFeatureConfig, ?>> TWISTING_VINES_BONEMEAL = ConfiguredFeatures.register(
-		"twisting_vines_bonemeal", Feature.TWISTING_VINES, new TwistingVinesFeatureConfig(3, 1, 2)
-	);
-	public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> WEEPING_VINES = ConfiguredFeatures.register(
-		"weeping_vines", Feature.WEEPING_VINES
-	);
-	public static final RegistryEntry<ConfiguredFeature<RandomPatchFeatureConfig, ?>> PATCH_CRIMSON_ROOTS = ConfiguredFeatures.register(
-		"patch_crimson_roots",
-		Feature.RANDOM_PATCH,
-		ConfiguredFeatures.createRandomPatchFeatureConfig(Feature.SIMPLE_BLOCK, new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.CRIMSON_ROOTS)))
-	);
-	public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> BASALT_PILLAR = ConfiguredFeatures.register(
-		"basalt_pillar", Feature.BASALT_PILLAR
-	);
-	public static final RegistryEntry<ConfiguredFeature<SpringFeatureConfig, ?>> SPRING_LAVA_NETHER = ConfiguredFeatures.register(
-		"spring_lava_nether",
-		Feature.SPRING_FEATURE,
-		new SpringFeatureConfig(
-			Fluids.LAVA.getDefaultState(),
-			true,
-			4,
-			1,
-			RegistryEntryList.of(Block::getRegistryEntry, Blocks.NETHERRACK, Blocks.SOUL_SAND, Blocks.GRAVEL, Blocks.MAGMA_BLOCK, Blocks.BLACKSTONE)
-		)
-	);
-	public static final RegistryEntry<ConfiguredFeature<SpringFeatureConfig, ?>> SPRING_NETHER_CLOSED = ConfiguredFeatures.register(
-		"spring_nether_closed",
-		Feature.SPRING_FEATURE,
-		new SpringFeatureConfig(Fluids.LAVA.getDefaultState(), false, 5, 0, RegistryEntryList.of(Block::getRegistryEntry, Blocks.NETHERRACK))
-	);
-	public static final RegistryEntry<ConfiguredFeature<SpringFeatureConfig, ?>> SPRING_NETHER_OPEN = ConfiguredFeatures.register(
-		"spring_nether_open",
-		Feature.SPRING_FEATURE,
-		new SpringFeatureConfig(Fluids.LAVA.getDefaultState(), false, 4, 1, RegistryEntryList.of(Block::getRegistryEntry, Blocks.NETHERRACK))
-	);
-	public static final RegistryEntry<ConfiguredFeature<RandomPatchFeatureConfig, ?>> PATCH_FIRE = ConfiguredFeatures.register(
-		"patch_fire",
-		Feature.RANDOM_PATCH,
-		ConfiguredFeatures.createRandomPatchFeatureConfig(
-			Feature.SIMPLE_BLOCK, new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.FIRE)), List.of(Blocks.NETHERRACK)
-		)
-	);
-	public static final RegistryEntry<ConfiguredFeature<RandomPatchFeatureConfig, ?>> PATCH_SOUL_FIRE = ConfiguredFeatures.register(
-		"patch_soul_fire",
-		Feature.RANDOM_PATCH,
-		ConfiguredFeatures.createRandomPatchFeatureConfig(
-			Feature.SIMPLE_BLOCK, new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.SOUL_FIRE)), List.of(Blocks.SOUL_SOIL)
-		)
-	);
+	public static final RegistryKey<ConfiguredFeature<?, ?>> DELTA = ConfiguredFeatures.of("delta");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> SMALL_BASALT_COLUMNS = ConfiguredFeatures.of("small_basalt_columns");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> SMALL_BASALT_COLUMNS_TEMP = ConfiguredFeatures.of("large_basalt_columns");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> BASALT_BLOBS = ConfiguredFeatures.of("basalt_blobs");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> BLACKSTONE_BLOBS = ConfiguredFeatures.of("blackstone_blobs");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> GLOWSTONE_EXTRA = ConfiguredFeatures.of("glowstone_extra");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> CRIMSON_FOREST_VEGETATION = ConfiguredFeatures.of("crimson_forest_vegetation");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> CRIMSON_FOREST_VEGETATION_BONEMEAL = ConfiguredFeatures.of("crimson_forest_vegetation_bonemeal");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> WARPED_FOREST_VEGETATION = ConfiguredFeatures.of("warped_forest_vegetation");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> WARPED_FOREST_VEGETATION_BONEMEAL = ConfiguredFeatures.of("warped_forest_vegetation_bonemeal");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> NETHER_SPROUTS = ConfiguredFeatures.of("nether_sprouts");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> NETHER_SPROUTS_BONEMEAL = ConfiguredFeatures.of("nether_sprouts_bonemeal");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> TWISTING_VINES = ConfiguredFeatures.of("twisting_vines");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> TWISTING_VINES_BONEMEAL = ConfiguredFeatures.of("twisting_vines_bonemeal");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> WEEPING_VINES = ConfiguredFeatures.of("weeping_vines");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> PATCH_CRIMSON_ROOTS = ConfiguredFeatures.of("patch_crimson_roots");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> BASALT_PILLAR = ConfiguredFeatures.of("basalt_pillar");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> SPRING_LAVA_NETHER = ConfiguredFeatures.of("spring_lava_nether");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> SPRING_NETHER_CLOSED = ConfiguredFeatures.of("spring_nether_closed");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> SPRING_NETHER_OPEN = ConfiguredFeatures.of("spring_nether_open");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> PATCH_FIRE = ConfiguredFeatures.of("patch_fire");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> PATCH_SOUL_FIRE = ConfiguredFeatures.of("patch_soul_fire");
+
+	public static void bootstrap(Registerable<ConfiguredFeature<?, ?>> featureRegisterable) {
+		ConfiguredFeatures.register(
+			featureRegisterable,
+			DELTA,
+			Feature.DELTA_FEATURE,
+			new DeltaFeatureConfig(Blocks.LAVA.getDefaultState(), Blocks.MAGMA_BLOCK.getDefaultState(), UniformIntProvider.create(3, 7), UniformIntProvider.create(0, 2))
+		);
+		ConfiguredFeatures.register(
+			featureRegisterable,
+			SMALL_BASALT_COLUMNS,
+			Feature.BASALT_COLUMNS,
+			new BasaltColumnsFeatureConfig(ConstantIntProvider.create(1), UniformIntProvider.create(1, 4))
+		);
+		ConfiguredFeatures.register(
+			featureRegisterable,
+			SMALL_BASALT_COLUMNS_TEMP,
+			Feature.BASALT_COLUMNS,
+			new BasaltColumnsFeatureConfig(UniformIntProvider.create(2, 3), UniformIntProvider.create(5, 10))
+		);
+		ConfiguredFeatures.register(
+			featureRegisterable,
+			BASALT_BLOBS,
+			Feature.NETHERRACK_REPLACE_BLOBS,
+			new ReplaceBlobsFeatureConfig(Blocks.NETHERRACK.getDefaultState(), Blocks.BASALT.getDefaultState(), UniformIntProvider.create(3, 7))
+		);
+		ConfiguredFeatures.register(
+			featureRegisterable,
+			BLACKSTONE_BLOBS,
+			Feature.NETHERRACK_REPLACE_BLOBS,
+			new ReplaceBlobsFeatureConfig(Blocks.NETHERRACK.getDefaultState(), Blocks.BLACKSTONE.getDefaultState(), UniformIntProvider.create(3, 7))
+		);
+		ConfiguredFeatures.register(featureRegisterable, GLOWSTONE_EXTRA, Feature.GLOWSTONE_BLOB);
+		WeightedBlockStateProvider weightedBlockStateProvider = new WeightedBlockStateProvider(
+			DataPool.<BlockState>builder()
+				.add(Blocks.CRIMSON_ROOTS.getDefaultState(), 87)
+				.add(Blocks.CRIMSON_FUNGUS.getDefaultState(), 11)
+				.add(Blocks.WARPED_FUNGUS.getDefaultState(), 1)
+		);
+		ConfiguredFeatures.register(
+			featureRegisterable, CRIMSON_FOREST_VEGETATION, Feature.NETHER_FOREST_VEGETATION, new NetherForestVegetationFeatureConfig(weightedBlockStateProvider, 8, 4)
+		);
+		ConfiguredFeatures.register(
+			featureRegisterable,
+			CRIMSON_FOREST_VEGETATION_BONEMEAL,
+			Feature.NETHER_FOREST_VEGETATION,
+			new NetherForestVegetationFeatureConfig(weightedBlockStateProvider, 3, 1)
+		);
+		WeightedBlockStateProvider weightedBlockStateProvider2 = new WeightedBlockStateProvider(
+			DataPool.<BlockState>builder()
+				.add(Blocks.WARPED_ROOTS.getDefaultState(), 85)
+				.add(Blocks.CRIMSON_ROOTS.getDefaultState(), 1)
+				.add(Blocks.WARPED_FUNGUS.getDefaultState(), 13)
+				.add(Blocks.CRIMSON_FUNGUS.getDefaultState(), 1)
+		);
+		ConfiguredFeatures.register(
+			featureRegisterable, WARPED_FOREST_VEGETATION, Feature.NETHER_FOREST_VEGETATION, new NetherForestVegetationFeatureConfig(weightedBlockStateProvider2, 8, 4)
+		);
+		ConfiguredFeatures.register(
+			featureRegisterable,
+			WARPED_FOREST_VEGETATION_BONEMEAL,
+			Feature.NETHER_FOREST_VEGETATION,
+			new NetherForestVegetationFeatureConfig(weightedBlockStateProvider2, 3, 1)
+		);
+		ConfiguredFeatures.register(
+			featureRegisterable,
+			NETHER_SPROUTS,
+			Feature.NETHER_FOREST_VEGETATION,
+			new NetherForestVegetationFeatureConfig(BlockStateProvider.of(Blocks.NETHER_SPROUTS), 8, 4)
+		);
+		ConfiguredFeatures.register(
+			featureRegisterable,
+			NETHER_SPROUTS_BONEMEAL,
+			Feature.NETHER_FOREST_VEGETATION,
+			new NetherForestVegetationFeatureConfig(BlockStateProvider.of(Blocks.NETHER_SPROUTS), 3, 1)
+		);
+		ConfiguredFeatures.register(featureRegisterable, TWISTING_VINES, Feature.TWISTING_VINES, new TwistingVinesFeatureConfig(8, 4, 8));
+		ConfiguredFeatures.register(featureRegisterable, TWISTING_VINES_BONEMEAL, Feature.TWISTING_VINES, new TwistingVinesFeatureConfig(3, 1, 2));
+		ConfiguredFeatures.register(featureRegisterable, WEEPING_VINES, Feature.WEEPING_VINES);
+		ConfiguredFeatures.register(
+			featureRegisterable,
+			PATCH_CRIMSON_ROOTS,
+			Feature.RANDOM_PATCH,
+			ConfiguredFeatures.createRandomPatchFeatureConfig(Feature.SIMPLE_BLOCK, new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.CRIMSON_ROOTS)))
+		);
+		ConfiguredFeatures.register(featureRegisterable, BASALT_PILLAR, Feature.BASALT_PILLAR);
+		ConfiguredFeatures.register(
+			featureRegisterable,
+			SPRING_LAVA_NETHER,
+			Feature.SPRING_FEATURE,
+			new SpringFeatureConfig(
+				Fluids.LAVA.getDefaultState(),
+				true,
+				4,
+				1,
+				RegistryEntryList.of(Block::getRegistryEntry, Blocks.NETHERRACK, Blocks.SOUL_SAND, Blocks.GRAVEL, Blocks.MAGMA_BLOCK, Blocks.BLACKSTONE)
+			)
+		);
+		ConfiguredFeatures.register(
+			featureRegisterable,
+			SPRING_NETHER_CLOSED,
+			Feature.SPRING_FEATURE,
+			new SpringFeatureConfig(Fluids.LAVA.getDefaultState(), false, 5, 0, RegistryEntryList.of(Block::getRegistryEntry, Blocks.NETHERRACK))
+		);
+		ConfiguredFeatures.register(
+			featureRegisterable,
+			SPRING_NETHER_OPEN,
+			Feature.SPRING_FEATURE,
+			new SpringFeatureConfig(Fluids.LAVA.getDefaultState(), false, 4, 1, RegistryEntryList.of(Block::getRegistryEntry, Blocks.NETHERRACK))
+		);
+		ConfiguredFeatures.register(
+			featureRegisterable,
+			PATCH_FIRE,
+			Feature.RANDOM_PATCH,
+			ConfiguredFeatures.createRandomPatchFeatureConfig(
+				Feature.SIMPLE_BLOCK, new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.FIRE)), List.of(Blocks.NETHERRACK)
+			)
+		);
+		ConfiguredFeatures.register(
+			featureRegisterable,
+			PATCH_SOUL_FIRE,
+			Feature.RANDOM_PATCH,
+			ConfiguredFeatures.createRandomPatchFeatureConfig(
+				Feature.SIMPLE_BLOCK, new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.SOUL_FIRE)), List.of(Blocks.SOUL_SOIL)
+			)
+		);
+	}
 }

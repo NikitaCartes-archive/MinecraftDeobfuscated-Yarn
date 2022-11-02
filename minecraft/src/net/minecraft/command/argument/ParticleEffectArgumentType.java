@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.command.CommandRegistryWrapper;
 import net.minecraft.command.CommandSource;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
@@ -21,11 +20,12 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.RegistryWrapper;
 
 public class ParticleEffectArgumentType implements ArgumentType<ParticleEffect> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "particle with options");
 	public static final DynamicCommandExceptionType UNKNOWN_PARTICLE_EXCEPTION = new DynamicCommandExceptionType(id -> Text.translatable("particle.notFound", id));
-	private final CommandRegistryWrapper<ParticleType<?>> registryWrapper;
+	private final RegistryWrapper<ParticleType<?>> registryWrapper;
 
 	public ParticleEffectArgumentType(CommandRegistryAccess registryAccess) {
 		this.registryWrapper = registryAccess.createWrapper(Registry.PARTICLE_TYPE_KEY);
@@ -48,15 +48,15 @@ public class ParticleEffectArgumentType implements ArgumentType<ParticleEffect> 
 		return EXAMPLES;
 	}
 
-	public static ParticleEffect readParameters(StringReader reader, CommandRegistryWrapper<ParticleType<?>> registryWrapper) throws CommandSyntaxException {
+	public static ParticleEffect readParameters(StringReader reader, RegistryWrapper<ParticleType<?>> registryWrapper) throws CommandSyntaxException {
 		ParticleType<?> particleType = getType(reader, registryWrapper);
 		return readParameters(reader, (ParticleType<ParticleEffect>)particleType);
 	}
 
-	private static ParticleType<?> getType(StringReader reader, CommandRegistryWrapper<ParticleType<?>> registryWrapper) throws CommandSyntaxException {
+	private static ParticleType<?> getType(StringReader reader, RegistryWrapper<ParticleType<?>> registryWrapper) throws CommandSyntaxException {
 		Identifier identifier = Identifier.fromCommandInput(reader);
 		RegistryKey<ParticleType<?>> registryKey = RegistryKey.of(Registry.PARTICLE_TYPE_KEY, identifier);
-		return (ParticleType<?>)((RegistryEntry.Reference)registryWrapper.getEntry(registryKey).orElseThrow(() -> UNKNOWN_PARTICLE_EXCEPTION.create(identifier)))
+		return (ParticleType<?>)((RegistryEntry.Reference)registryWrapper.getOptional(registryKey).orElseThrow(() -> UNKNOWN_PARTICLE_EXCEPTION.create(identifier)))
 			.value();
 	}
 

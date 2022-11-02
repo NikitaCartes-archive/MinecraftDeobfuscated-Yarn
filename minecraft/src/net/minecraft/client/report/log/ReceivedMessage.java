@@ -77,7 +77,7 @@ public interface ReceivedMessage extends ChatLogEntry {
 			instance -> instance.group(
 						Codecs.GAME_PROFILE.fieldOf("profile").forGetter(ReceivedMessage.ChatMessage::profile),
 						Codecs.TEXT.fieldOf("display_name").forGetter(ReceivedMessage.ChatMessage::displayName),
-						SignedMessage.field_40846.forGetter(ReceivedMessage.ChatMessage::message),
+						SignedMessage.CODEC.forGetter(ReceivedMessage.ChatMessage::message),
 						MessageTrustStatus.field_40801.optionalFieldOf("trust_level", MessageTrustStatus.SECURE).forGetter(ReceivedMessage.ChatMessage::trustStatus)
 					)
 					.apply(instance, ReceivedMessage.ChatMessage::new)

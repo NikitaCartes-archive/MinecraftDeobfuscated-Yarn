@@ -8,7 +8,10 @@ import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.function.ToFloatFunction;
 import net.minecraft.util.math.Spline;
 import net.minecraft.util.registry.BuiltinRegistries;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntryLookup;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.RegistryWrapper;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.gen.densityfunction.DensityFunction;
@@ -135,77 +138,83 @@ public final class VanillaBiomeParameters {
 	 * Writes all biome parameters for the overworld to the passed parameter consumer.
 	 */
 	public void writeOverworldBiomeParameters(Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> parameters) {
-		if (!SharedConstants.DEBUG_BIOME_SOURCE) {
+		if (SharedConstants.DEBUG_BIOME_SOURCE) {
+			this.writeDebug(parameters);
+		} else {
 			this.writeOceanBiomes(parameters);
 			this.writeLandBiomes(parameters);
 			this.writeCaveBiomes(parameters);
-		} else {
-			DensityFunctionTypes.Spline.DensityFunctionWrapper densityFunctionWrapper = new DensityFunctionTypes.Spline.DensityFunctionWrapper(
-				BuiltinRegistries.DENSITY_FUNCTION.entryOf(DensityFunctions.CONTINENTS_OVERWORLD)
-			);
-			DensityFunctionTypes.Spline.DensityFunctionWrapper densityFunctionWrapper2 = new DensityFunctionTypes.Spline.DensityFunctionWrapper(
-				BuiltinRegistries.DENSITY_FUNCTION.entryOf(DensityFunctions.EROSION_OVERWORLD)
-			);
-			DensityFunctionTypes.Spline.DensityFunctionWrapper densityFunctionWrapper3 = new DensityFunctionTypes.Spline.DensityFunctionWrapper(
-				BuiltinRegistries.DENSITY_FUNCTION.entryOf(DensityFunctions.RIDGES_FOLDED_OVERWORLD)
-			);
-			parameters.accept(
-				Pair.of(
-					MultiNoiseUtil.createNoiseHypercube(
-						this.defaultParameter,
-						this.defaultParameter,
-						this.defaultParameter,
-						this.defaultParameter,
-						MultiNoiseUtil.ParameterRange.of(0.0F),
-						this.defaultParameter,
-						0.01F
-					),
-					BiomeKeys.PLAINS
-				)
-			);
-			if (VanillaTerrainParametersCreator.createContinentalOffsetSpline(
-				densityFunctionWrapper2, densityFunctionWrapper3, -0.15F, 0.0F, 0.0F, 0.1F, 0.0F, -0.03F, false, false, ToFloatFunction.IDENTITY
-			) instanceof Spline.Implementation<?, ?> implementation) {
-				RegistryKey<Biome> registryKey = BiomeKeys.DESERT;
+		}
+	}
 
-				for (float f : implementation.locations()) {
-					parameters.accept(
-						Pair.of(
-							MultiNoiseUtil.createNoiseHypercube(
-								this.defaultParameter,
-								this.defaultParameter,
-								this.defaultParameter,
-								MultiNoiseUtil.ParameterRange.of(f),
-								MultiNoiseUtil.ParameterRange.of(0.0F),
-								this.defaultParameter,
-								0.0F
-							),
-							registryKey
-						)
-					);
-					registryKey = registryKey == BiomeKeys.DESERT ? BiomeKeys.BADLANDS : BiomeKeys.DESERT;
-				}
+	private void writeDebug(Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> parameters) {
+		RegistryWrapper.WrapperLookup wrapperLookup = BuiltinRegistries.createWrapperLookup();
+		RegistryEntryLookup<DensityFunction> registryEntryLookup = wrapperLookup.getWrapperOrThrow(Registry.DENSITY_FUNCTION_KEY);
+		DensityFunctionTypes.Spline.DensityFunctionWrapper densityFunctionWrapper = new DensityFunctionTypes.Spline.DensityFunctionWrapper(
+			registryEntryLookup.getOrThrow(DensityFunctions.CONTINENTS_OVERWORLD)
+		);
+		DensityFunctionTypes.Spline.DensityFunctionWrapper densityFunctionWrapper2 = new DensityFunctionTypes.Spline.DensityFunctionWrapper(
+			registryEntryLookup.getOrThrow(DensityFunctions.EROSION_OVERWORLD)
+		);
+		DensityFunctionTypes.Spline.DensityFunctionWrapper densityFunctionWrapper3 = new DensityFunctionTypes.Spline.DensityFunctionWrapper(
+			registryEntryLookup.getOrThrow(DensityFunctions.RIDGES_FOLDED_OVERWORLD)
+		);
+		parameters.accept(
+			Pair.of(
+				MultiNoiseUtil.createNoiseHypercube(
+					this.defaultParameter,
+					this.defaultParameter,
+					this.defaultParameter,
+					this.defaultParameter,
+					MultiNoiseUtil.ParameterRange.of(0.0F),
+					this.defaultParameter,
+					0.01F
+				),
+				BiomeKeys.PLAINS
+			)
+		);
+		if (VanillaTerrainParametersCreator.createContinentalOffsetSpline(
+			densityFunctionWrapper2, densityFunctionWrapper3, -0.15F, 0.0F, 0.0F, 0.1F, 0.0F, -0.03F, false, false, ToFloatFunction.IDENTITY
+		) instanceof Spline.Implementation<?, ?> implementation) {
+			RegistryKey<Biome> registryKey = BiomeKeys.DESERT;
+
+			for (float f : implementation.locations()) {
+				parameters.accept(
+					Pair.of(
+						MultiNoiseUtil.createNoiseHypercube(
+							this.defaultParameter,
+							this.defaultParameter,
+							this.defaultParameter,
+							MultiNoiseUtil.ParameterRange.of(f),
+							MultiNoiseUtil.ParameterRange.of(0.0F),
+							this.defaultParameter,
+							0.0F
+						),
+						registryKey
+					)
+				);
+				registryKey = registryKey == BiomeKeys.DESERT ? BiomeKeys.BADLANDS : BiomeKeys.DESERT;
 			}
+		}
 
-			if (VanillaTerrainParametersCreator.createOffsetSpline(densityFunctionWrapper, densityFunctionWrapper2, densityFunctionWrapper3, false) instanceof Spline.Implementation<?, ?> implementation2
-				)
-			 {
-				for (float f : implementation2.locations()) {
-					parameters.accept(
-						Pair.of(
-							MultiNoiseUtil.createNoiseHypercube(
-								this.defaultParameter,
-								this.defaultParameter,
-								MultiNoiseUtil.ParameterRange.of(f),
-								this.defaultParameter,
-								MultiNoiseUtil.ParameterRange.of(0.0F),
-								this.defaultParameter,
-								0.0F
-							),
-							BiomeKeys.SNOWY_TAIGA
-						)
-					);
-				}
+		if (VanillaTerrainParametersCreator.createOffsetSpline(densityFunctionWrapper, densityFunctionWrapper2, densityFunctionWrapper3, false) instanceof Spline.Implementation<?, ?> implementation2
+			)
+		 {
+			for (float f : implementation2.locations()) {
+				parameters.accept(
+					Pair.of(
+						MultiNoiseUtil.createNoiseHypercube(
+							this.defaultParameter,
+							this.defaultParameter,
+							MultiNoiseUtil.ParameterRange.of(f),
+							this.defaultParameter,
+							MultiNoiseUtil.ParameterRange.of(0.0F),
+							this.defaultParameter,
+							0.0F
+						),
+						BiomeKeys.SNOWY_TAIGA
+					)
+				);
 			}
 		}
 	}

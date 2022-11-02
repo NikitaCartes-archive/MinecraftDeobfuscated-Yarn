@@ -20,12 +20,13 @@ import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.RegistryWrapper;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureKeys;
 
 public class EndTabAdvancementGenerator implements AdvancementTabGenerator {
 	@Override
-	public void accept(Consumer<Advancement> exporter) {
+	public void accept(RegistryWrapper.WrapperLookup lookup, Consumer<Advancement> exporter) {
 		Advancement advancement = Advancement.Builder.create()
 			.display(
 				Blocks.END_STONE,

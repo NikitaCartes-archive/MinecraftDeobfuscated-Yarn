@@ -1488,8 +1488,8 @@ public class FoxEntity extends AnimalEntity {
 			return TYPES[id];
 		}
 
-		public static FoxEntity.Type fromBiome(RegistryEntry<Biome> registryEntry) {
-			return registryEntry.value().getPrecipitation() == Biome.Precipitation.SNOW ? SNOW : RED;
+		public static FoxEntity.Type fromBiome(RegistryEntry<Biome> biome) {
+			return biome.value().getPrecipitation() == Biome.Precipitation.SNOW ? SNOW : RED;
 		}
 	}
 

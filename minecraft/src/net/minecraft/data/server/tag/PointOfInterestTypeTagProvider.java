@@ -1,18 +1,20 @@
 package net.minecraft.data.server.tag;
 
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.data.DataOutput;
 import net.minecraft.tag.PointOfInterestTypeTags;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryWrapper;
 import net.minecraft.world.poi.PointOfInterestType;
 import net.minecraft.world.poi.PointOfInterestTypes;
 
 public class PointOfInterestTypeTagProvider extends AbstractTagProvider<PointOfInterestType> {
-	public PointOfInterestTypeTagProvider(DataOutput dataGenerator) {
-		super(dataGenerator, Registry.POINT_OF_INTEREST_TYPE);
+	public PointOfInterestTypeTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
+		super(output, Registry.POINT_OF_INTEREST_TYPE_KEY, registryLookupFuture);
 	}
 
 	@Override
-	protected void configure() {
+	protected void configure(RegistryWrapper.WrapperLookup lookup) {
 		this.getOrCreateTagBuilder(PointOfInterestTypeTags.ACQUIRABLE_JOB_SITE)
 			.add(
 				PointOfInterestTypes.ARMORER,

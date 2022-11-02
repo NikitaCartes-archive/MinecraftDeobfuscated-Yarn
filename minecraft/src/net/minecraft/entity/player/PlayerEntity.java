@@ -123,7 +123,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	public static final float field_30648 = 1.5F;
 	public static final float field_30649 = 0.6F;
 	public static final float field_30650 = 0.6F;
-	public static final float field_30651 = 1.62F;
+	public static final float DEFAULT_EYE_HEIGHT = 1.62F;
 	public static final EntityDimensions STANDING_DIMENSIONS = EntityDimensions.changing(0.6F, 1.8F);
 	private static final Map<EntityPose, EntityDimensions> POSE_DIMENSIONS = ImmutableMap.<EntityPose, EntityDimensions>builder()
 		.put(EntityPose.STANDING, STANDING_DIMENSIONS)

@@ -91,27 +91,13 @@ public interface RegistryEntry<T> {
 	 */
 	RegistryEntry.Type getType();
 
-	/**
-	 * {@return whether the registry for the entry is {@code registry}}
-	 * 
-	 * <p>This always returns {@code true} for direct entries.
-	 */
-	boolean matchesRegistry(Registry<T> registry);
+	boolean ownerEquals(RegistryEntryOwner<T> owner);
 
 	/**
 	 * {@return a new direct registry entry of {@code value}}
 	 */
 	static <T> RegistryEntry<T> of(T value) {
 		return new RegistryEntry.Direct<>(value);
-	}
-
-	/**
-	 * Casts {@code RegistryEntry<? extends T>} to {@code RegistryEntry<T>}.
-	 * 
-	 * @return the cast value
-	 */
-	static <T> RegistryEntry<T> upcast(RegistryEntry<? extends T> entry) {
-		return (RegistryEntry<T>)entry;
 	}
 
 	/**
@@ -167,7 +153,7 @@ public interface RegistryEntry<T> {
 		}
 
 		@Override
-		public boolean matchesRegistry(Registry<T> registry) {
+		public boolean ownerEquals(RegistryEntryOwner<T> owner) {
 			return true;
 		}
 
@@ -202,7 +188,7 @@ public interface RegistryEntry<T> {
 	 * 
 	 * <p>When a reference registry entry is first instantiated, it only has either the key
 	 * or the value (depending on the type). They are later filled when registering the
-	 * entry at {@link #setKeyAndValue}. Attempting to call methods before those fields are filled
+	 * entry. Attempting to call methods before those fields are filled
 	 * can cause a crash. Note that if you are just getting the entry from a registry, this
 	 * should not be a problem.
 	 * 
@@ -210,7 +196,7 @@ public interface RegistryEntry<T> {
 	 * @see Registry#getEntry
 	 */
 	public static class Reference<T> implements RegistryEntry<T> {
-		private final Registry<T> registry;
+		private final RegistryEntryOwner<T> owner;
 		private Set<TagKey<T>> tags = Set.of();
 		private final RegistryEntry.Reference.Type referenceType;
 		@Nullable
@@ -218,8 +204,8 @@ public interface RegistryEntry<T> {
 		@Nullable
 		private T value;
 
-		private Reference(RegistryEntry.Reference.Type referenceType, Registry<T> registry, @Nullable RegistryKey<T> registryKey, @Nullable T value) {
-			this.registry = registry;
+		private Reference(RegistryEntry.Reference.Type referenceType, RegistryEntryOwner<T> owner, @Nullable RegistryKey<T> registryKey, @Nullable T value) {
+			this.owner = owner;
 			this.referenceType = referenceType;
 			this.registryKey = registryKey;
 			this.value = value;
@@ -232,10 +218,10 @@ public interface RegistryEntry<T> {
 		 * {@link Registry#getEntry} instead.
 		 * 
 		 * <p>Callers are responsible for filling the value later by calling {@link
-		 * #setKeyAndValue}.
+		 * #setValue}.
 		 */
-		public static <T> RegistryEntry.Reference<T> standAlone(Registry<T> registry, RegistryKey<T> registryKey) {
-			return new RegistryEntry.Reference<>(RegistryEntry.Reference.Type.STAND_ALONE, registry, registryKey, null);
+		public static <T> RegistryEntry.Reference<T> standAlone(RegistryEntryOwner<T> owner, RegistryKey<T> registryKey) {
+			return new RegistryEntry.Reference<>(RegistryEntry.Reference.Type.STAND_ALONE, owner, registryKey, null);
 		}
 
 		/**
@@ -245,13 +231,13 @@ public interface RegistryEntry<T> {
 		 * {@link Registry#getEntry} instead.
 		 * 
 		 * <p>Callers are responsible for filling the key later by calling {@link
-		 * #setKeyAndValue}.
+		 * #setRegistryKey}.
 		 * 
 		 * @deprecated Intrusive holders exist for legacy reasons only.
 		 */
 		@Deprecated
-		public static <T> RegistryEntry.Reference<T> intrusive(Registry<T> registry, @Nullable T value) {
-			return new RegistryEntry.Reference<>(RegistryEntry.Reference.Type.INTRUSIVE, registry, null, value);
+		public static <T> RegistryEntry.Reference<T> intrusive(RegistryEntryOwner<T> owner, @Nullable T value) {
+			return new RegistryEntry.Reference<>(RegistryEntry.Reference.Type.INTRUSIVE, owner, null, value);
 		}
 
 		/**
@@ -261,7 +247,7 @@ public interface RegistryEntry<T> {
 		 */
 		public RegistryKey<T> registryKey() {
 			if (this.registryKey == null) {
-				throw new IllegalStateException("Trying to access unbound value '" + this.value + "' from registry " + this.registry);
+				throw new IllegalStateException("Trying to access unbound value '" + this.value + "' from registry " + this.owner);
 			} else {
 				return this.registryKey;
 			}
@@ -270,7 +256,7 @@ public interface RegistryEntry<T> {
 		@Override
 		public T value() {
 			if (this.value == null) {
-				throw new IllegalStateException("Trying to access unbound value '" + this.registryKey + "' from registry " + this.registry);
+				throw new IllegalStateException("Trying to access unbound value '" + this.registryKey + "' from registry " + this.owner);
 			} else {
 				return this.value;
 			}
@@ -297,8 +283,8 @@ public interface RegistryEntry<T> {
 		}
 
 		@Override
-		public boolean matchesRegistry(Registry<T> registry) {
-			return this.registry == registry;
+		public boolean ownerEquals(RegistryEntryOwner<T> owner) {
+			return this.owner.ownerEquals(owner);
 		}
 
 		@Override
@@ -319,24 +305,6 @@ public interface RegistryEntry<T> {
 		@Override
 		public boolean hasKeyAndValue() {
 			return this.registryKey != null && this.value != null;
-		}
-
-		/**
-		 * Sets the key and the value of this registry entry. When instantiated, an entry has
-		 * only one of them, and this is called to fill the other value. Pass the current value
-		 * for the parameter corresponding to the already filled field.
-		 * 
-		 * @throws IllegalStateException when trying to change already filled fields
-		 */
-		void setKeyAndValue(RegistryKey<T> key, T value) {
-			if (this.registryKey != null && key != this.registryKey) {
-				throw new IllegalStateException("Can't change holder key: existing=" + this.registryKey + ", new=" + key);
-			} else if (this.referenceType == RegistryEntry.Reference.Type.INTRUSIVE && this.value != value) {
-				throw new IllegalStateException("Can't change holder " + key + " value: existing=" + this.value + ", new=" + value);
-			} else {
-				this.registryKey = key;
-				this.value = value;
-			}
 		}
 
 		void setRegistryKey(RegistryKey<T> registryKey) {

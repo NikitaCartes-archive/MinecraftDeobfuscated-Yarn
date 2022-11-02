@@ -5,8 +5,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class TallFlowerBlock extends TallPlantBlock implements Fertilizable {
 	public TallFlowerBlock(AbstractBlock.Settings settings) {
@@ -19,7 +19,7 @@ public class TallFlowerBlock extends TallPlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
+	public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean isClient) {
 		return true;
 	}
 

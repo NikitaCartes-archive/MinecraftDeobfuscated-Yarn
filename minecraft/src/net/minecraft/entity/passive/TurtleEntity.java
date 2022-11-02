@@ -24,6 +24,7 @@ import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
+import net.minecraft.entity.ai.pathing.AmphibiousSwimNavigation;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -475,6 +476,8 @@ public class TurtleEntity extends AnimalEntity {
 			}
 
 			this.turtle.setHasEgg(true);
+			this.animal.setBreedingAge(6000);
+			this.mate.setBreedingAge(6000);
 			this.animal.resetLoveTicks();
 			this.mate.resetLoveTicks();
 			Random random = this.animal.getRandom();
@@ -623,7 +626,7 @@ public class TurtleEntity extends AnimalEntity {
 		}
 	}
 
-	static class TurtleSwimNavigation extends AxolotlSwimNavigation {
+	static class TurtleSwimNavigation extends AmphibiousSwimNavigation {
 		TurtleSwimNavigation(TurtleEntity owner, World world) {
 			super(owner, world);
 		}

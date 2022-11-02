@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
@@ -91,7 +92,13 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 					Sprite sprite = (Sprite)entry.getValue();
 					writer.write(
 						String.format(
-							"%s\tx=%d\ty=%d\tw=%d\th=%d%n", entry.getKey(), sprite.getX(), sprite.getY(), sprite.getContents().getWidth(), sprite.getContents().getHeight()
+							Locale.ROOT,
+							"%s\tx=%d\ty=%d\tw=%d\th=%d%n",
+							entry.getKey(),
+							sprite.getX(),
+							sprite.getY(),
+							sprite.getContents().getWidth(),
+							sprite.getContents().getHeight()
 						)
 					);
 				}

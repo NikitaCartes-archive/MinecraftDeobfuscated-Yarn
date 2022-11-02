@@ -16,7 +16,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.command.CommandRegistryWrapper;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.serialize.ArgumentSerializer;
 import net.minecraft.network.PacketByteBuf;
@@ -28,6 +27,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.RegistryWrapper;
 
 public class RegistryEntryPredicateArgumentType<T> implements ArgumentType<RegistryEntryPredicateArgumentType.EntryPredicate<T>> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "012", "#skeletons", "#minecraft:skeletons");
@@ -37,7 +37,7 @@ public class RegistryEntryPredicateArgumentType<T> implements ArgumentType<Regis
 	private static final Dynamic3CommandExceptionType WRONG_TYPE_EXCEPTION = new Dynamic3CommandExceptionType(
 		(tag, type, expectedType) -> Text.translatable("argument.resource_tag.invalid_type", tag, type, expectedType)
 	);
-	private final CommandRegistryWrapper<T> registryWrapper;
+	private final RegistryWrapper<T> registryWrapper;
 	final RegistryKey<? extends Registry<T>> registryRef;
 
 	public RegistryEntryPredicateArgumentType(CommandRegistryAccess registryAccess, RegistryKey<? extends Registry<T>> registryRef) {
@@ -74,7 +74,7 @@ public class RegistryEntryPredicateArgumentType<T> implements ArgumentType<Regis
 				Identifier identifier = Identifier.fromCommandInput(stringReader);
 				TagKey<T> tagKey = TagKey.of(this.registryRef, identifier);
 				RegistryEntryList.Named<T> named = (RegistryEntryList.Named<T>)this.registryWrapper
-					.getEntryList(tagKey)
+					.getOptional(tagKey)
 					.orElseThrow(() -> NOT_FOUND_EXCEPTION.create(identifier, this.registryRef.getValue()));
 				return new RegistryEntryPredicateArgumentType.TagBased<>(named);
 			} catch (CommandSyntaxException var6) {
@@ -85,7 +85,7 @@ public class RegistryEntryPredicateArgumentType<T> implements ArgumentType<Regis
 			Identifier identifier2 = Identifier.fromCommandInput(stringReader);
 			RegistryKey<T> registryKey = RegistryKey.of(this.registryRef, identifier2);
 			RegistryEntry.Reference<T> reference = (RegistryEntry.Reference<T>)this.registryWrapper
-				.getEntry(registryKey)
+				.getOptional(registryKey)
 				.orElseThrow(() -> RegistryEntryArgumentType.NOT_FOUND_EXCEPTION.create(identifier2, this.registryRef.getValue()));
 			return new RegistryEntryPredicateArgumentType.EntryBased<>(reference);
 		}
@@ -93,7 +93,7 @@ public class RegistryEntryPredicateArgumentType<T> implements ArgumentType<Regis
 
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-		CommandSource.suggestIdentifiers(this.registryWrapper.streamTags().map(TagKey::id), builder, "#");
+		CommandSource.suggestIdentifiers(this.registryWrapper.streamTagKeys().map(TagKey::id), builder, "#");
 		return CommandSource.suggestIdentifiers(this.registryWrapper.streamKeys().map(RegistryKey::getValue), builder);
 	}
 

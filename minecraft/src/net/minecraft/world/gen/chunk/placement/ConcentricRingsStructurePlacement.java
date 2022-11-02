@@ -15,8 +15,6 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryCodecs;
 import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.noise.NoiseConfig;
 
 public class ConcentricRingsStructurePlacement extends StructurePlacement {
 	public static final Codec<ConcentricRingsStructurePlacement> CODEC = RecordCodecBuilder.create(
@@ -81,8 +79,8 @@ public class ConcentricRingsStructurePlacement extends StructurePlacement {
 	}
 
 	@Override
-	protected boolean isStartChunk(ChunkGenerator chunkGenerator, NoiseConfig noiseConfig, long seed, int chunkX, int chunkZ) {
-		List<ChunkPos> list = chunkGenerator.getConcentricRingsStartChunks(this, noiseConfig);
+	protected boolean isStartChunk(StructurePlacementCalculator calculator, int chunkX, int chunkZ) {
+		List<ChunkPos> list = calculator.getPlacementPositions(this);
 		return list == null ? false : list.contains(new ChunkPos(chunkX, chunkZ));
 	}
 

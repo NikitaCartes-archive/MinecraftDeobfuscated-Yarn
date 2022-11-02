@@ -110,23 +110,18 @@ public class OceanRuinGenerator {
 	}
 
 	public static void addPieces(
-		StructureTemplateManager manager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder holder, Random random, OceanRuinStructure oceanRuinStructure
+		StructureTemplateManager manager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder holder, Random random, OceanRuinStructure structure
 	) {
-		boolean bl = random.nextFloat() <= oceanRuinStructure.largeProbability;
+		boolean bl = random.nextFloat() <= structure.largeProbability;
 		float f = bl ? 0.9F : 0.8F;
-		method_14822(manager, pos, rotation, holder, random, oceanRuinStructure, bl, f);
-		if (bl && random.nextFloat() <= oceanRuinStructure.clusterProbability) {
-			method_14825(manager, random, rotation, pos, oceanRuinStructure, holder);
+		addPieces(manager, pos, rotation, holder, random, structure, bl, f);
+		if (bl && random.nextFloat() <= structure.clusterProbability) {
+			addCluster(manager, random, rotation, pos, structure, holder);
 		}
 	}
 
-	private static void method_14825(
-		StructureTemplateManager manager,
-		Random random,
-		BlockRotation rotation,
-		BlockPos pos,
-		OceanRuinStructure oceanRuinStructure,
-		StructurePiecesHolder structurePiecesHolder
+	private static void addCluster(
+		StructureTemplateManager manager, Random random, BlockRotation rotation, BlockPos pos, OceanRuinStructure structure, StructurePiecesHolder pieces
 	) {
 		BlockPos blockPos = new BlockPos(pos.getX(), 90, pos.getZ());
 		BlockPos blockPos2 = StructureTemplate.transformAround(new BlockPos(15, 0, 15), BlockMirror.NONE, rotation, BlockPos.ORIGIN).add(blockPos);
@@ -143,7 +138,7 @@ public class OceanRuinGenerator {
 				BlockPos blockPos5 = StructureTemplate.transformAround(new BlockPos(5, 0, 6), BlockMirror.NONE, blockRotation, BlockPos.ORIGIN).add(blockPos4);
 				BlockBox blockBox2 = BlockBox.create(blockPos4, blockPos5);
 				if (!blockBox2.intersects(blockBox)) {
-					method_14822(manager, blockPos4, blockRotation, structurePiecesHolder, random, oceanRuinStructure, false, 0.8F);
+					addPieces(manager, blockPos4, blockRotation, pieces, random, structure, false, 0.8F);
 				}
 			}
 		}
@@ -162,30 +157,30 @@ public class OceanRuinGenerator {
 		return list;
 	}
 
-	private static void method_14822(
+	private static void addPieces(
 		StructureTemplateManager manager,
 		BlockPos pos,
 		BlockRotation rotation,
 		StructurePiecesHolder holder,
 		Random random,
-		OceanRuinStructure oceanRuinStructure,
+		OceanRuinStructure structure,
 		boolean large,
 		float integrity
 	) {
-		switch (oceanRuinStructure.biomeTemperature) {
+		switch (structure.biomeTemperature) {
 			case WARM:
 			default:
 				Identifier identifier = large ? getRandomBigWarmRuin(random) : getRandomWarmRuin(random);
-				holder.addPiece(new OceanRuinGenerator.Piece(manager, identifier, pos, rotation, integrity, oceanRuinStructure.biomeTemperature, large));
+				holder.addPiece(new OceanRuinGenerator.Piece(manager, identifier, pos, rotation, integrity, structure.biomeTemperature, large));
 				break;
 			case COLD:
 				Identifier[] identifiers = large ? BIG_BRICK_RUINS : BRICK_RUINS;
 				Identifier[] identifiers2 = large ? BIG_CRACKED_RUINS : CRACKED_RUINS;
 				Identifier[] identifiers3 = large ? BIG_MOSSY_RUINS : MOSSY_RUINS;
 				int i = random.nextInt(identifiers.length);
-				holder.addPiece(new OceanRuinGenerator.Piece(manager, identifiers[i], pos, rotation, integrity, oceanRuinStructure.biomeTemperature, large));
-				holder.addPiece(new OceanRuinGenerator.Piece(manager, identifiers2[i], pos, rotation, 0.7F, oceanRuinStructure.biomeTemperature, large));
-				holder.addPiece(new OceanRuinGenerator.Piece(manager, identifiers3[i], pos, rotation, 0.5F, oceanRuinStructure.biomeTemperature, large));
+				holder.addPiece(new OceanRuinGenerator.Piece(manager, identifiers[i], pos, rotation, integrity, structure.biomeTemperature, large));
+				holder.addPiece(new OceanRuinGenerator.Piece(manager, identifiers2[i], pos, rotation, 0.7F, structure.biomeTemperature, large));
+				holder.addPiece(new OceanRuinGenerator.Piece(manager, identifiers3[i], pos, rotation, 0.5F, structure.biomeTemperature, large));
 		}
 	}
 
@@ -210,7 +205,7 @@ public class OceanRuinGenerator {
 		}
 
 		public Piece(StructureTemplateManager holder, NbtCompound nbt) {
-			super(StructurePieceType.OCEAN_TEMPLE, nbt, holder, identifier -> createPlacementData(BlockRotation.valueOf(nbt.getString("Rot"))));
+			super(StructurePieceType.OCEAN_TEMPLE, nbt, holder, id -> createPlacementData(BlockRotation.valueOf(nbt.getString("Rot"))));
 			this.integrity = nbt.getFloat("Integrity");
 			this.biomeType = OceanRuinStructure.BiomeTemperature.valueOf(nbt.getString("BiomeType"));
 			this.large = nbt.getBoolean("IsLarge");
@@ -282,11 +277,11 @@ public class OceanRuinGenerator {
 					BlockPos.ORIGIN
 				)
 				.add(this.pos);
-			this.pos = new BlockPos(this.pos.getX(), this.method_14829(this.pos, world, blockPos), this.pos.getZ());
+			this.pos = new BlockPos(this.pos.getX(), this.getGenerationY(this.pos, world, blockPos), this.pos.getZ());
 			super.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pivot);
 		}
 
-		private int method_14829(BlockPos start, BlockView world, BlockPos end) {
+		private int getGenerationY(BlockPos start, BlockView world, BlockPos end) {
 			int i = start.getY();
 			int j = 512;
 			int k = i - 1;

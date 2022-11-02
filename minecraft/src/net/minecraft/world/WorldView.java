@@ -3,7 +3,6 @@ package net.minecraft.world;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
-import net.minecraft.command.CommandRegistryWrapper;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
@@ -15,6 +14,7 @@ import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.RegistryWrapper;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.ColorResolver;
 import net.minecraft.world.biome.source.BiomeAccess;
@@ -254,8 +254,8 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 
 	FeatureSet getEnabledFeatures();
 
-	default <T> CommandRegistryWrapper<T> createCommandRegistryWrapper(RegistryKey<? extends Registry<? extends T>> registryRef) {
+	default <T> RegistryWrapper<T> createCommandRegistryWrapper(RegistryKey<? extends Registry<? extends T>> registryRef) {
 		Registry<T> registry = this.getRegistryManager().get(registryRef);
-		return CommandRegistryWrapper.of(registry).withFeatureFilter(this.getEnabledFeatures());
+		return registry.getReadOnlyWrapper().withFeatureFilter(this.getEnabledFeatures());
 	}
 }

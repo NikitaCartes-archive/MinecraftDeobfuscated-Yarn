@@ -7,7 +7,6 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.world.World;
-import net.minecraft.world.explosion.Explosion;
 
 public class TntEntity extends Entity {
 	private static final TrackedData<Integer> FUSE = DataTracker.registerData(TntEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -76,7 +75,7 @@ public class TntEntity extends Entity {
 
 	private void explode() {
 		float f = 4.0F;
-		this.world.createExplosion(this, this.getX(), this.getBodyY(0.0625), this.getZ(), 4.0F, Explosion.DestructionType.BREAK);
+		this.world.createExplosion(this, this.getX(), this.getBodyY(0.0625), this.getZ(), 4.0F, World.ExplosionSourceType.TNT);
 	}
 
 	@Override

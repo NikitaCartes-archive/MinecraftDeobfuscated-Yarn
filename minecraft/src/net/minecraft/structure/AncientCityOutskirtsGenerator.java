@@ -5,177 +5,148 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.structure.pool.StructurePools;
+import net.minecraft.structure.processor.StructureProcessorList;
 import net.minecraft.structure.processor.StructureProcessorLists;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registerable;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryEntryLookup;
+import net.minecraft.world.gen.feature.PlacedFeature;
 import net.minecraft.world.gen.feature.UndergroundPlacedFeatures;
 
 public class AncientCityOutskirtsGenerator {
-	public static void init() {
-	}
-
-	static {
+	public static void bootstrap(Registerable<StructurePool> poolRegisterable) {
+		RegistryEntryLookup<PlacedFeature> registryEntryLookup = poolRegisterable.getRegistryLookup(Registry.PLACED_FEATURE_KEY);
+		RegistryEntry<PlacedFeature> registryEntry = registryEntryLookup.getOrThrow(UndergroundPlacedFeatures.SCULK_PATCH_ANCIENT_CITY);
+		RegistryEntryLookup<StructureProcessorList> registryEntryLookup2 = poolRegisterable.getRegistryLookup(Registry.STRUCTURE_PROCESSOR_LIST_KEY);
+		RegistryEntry<StructureProcessorList> registryEntry2 = registryEntryLookup2.getOrThrow(StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION);
+		RegistryEntry<StructureProcessorList> registryEntry3 = registryEntryLookup2.getOrThrow(StructureProcessorLists.ANCIENT_CITY_WALLS_DEGRADATION);
+		RegistryEntryLookup<StructurePool> registryEntryLookup3 = poolRegisterable.getRegistryLookup(Registry.STRUCTURE_POOL_KEY);
+		RegistryEntry<StructurePool> registryEntry4 = registryEntryLookup3.getOrThrow(StructurePools.EMPTY);
 		StructurePools.register(
+			poolRegisterable,
+			"ancient_city/structures",
 			new StructurePool(
-				new Identifier("ancient_city/structures"),
-				new Identifier("empty"),
+				registryEntry4,
 				ImmutableList.of(
 					Pair.of(StructurePoolElement.ofEmpty(), 7),
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/barracks", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION), 4),
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/chamber_1", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION), 4),
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/chamber_2", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION), 4),
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/chamber_3", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION), 4),
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/sauna_1", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION), 4),
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/small_statue", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION), 4),
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/large_ruin_1", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/tall_ruin_1", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/tall_ruin_2", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/tall_ruin_3", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION), 2),
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/tall_ruin_4", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION), 2),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/barracks", registryEntry2), 4),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/chamber_1", registryEntry2), 4),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/chamber_2", registryEntry2), 4),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/chamber_3", registryEntry2), 4),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/sauna_1", registryEntry2), 4),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/small_statue", registryEntry2), 4),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/large_ruin_1", registryEntry2), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/tall_ruin_1", registryEntry2), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/tall_ruin_2", registryEntry2), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/tall_ruin_3", registryEntry2), 2),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/tall_ruin_4", registryEntry2), 2),
 					Pair.of(
 						StructurePoolElement.ofList(
 							ImmutableList.of(
-								StructurePoolElement.ofProcessedSingle("ancient_city/structures/camp_1", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION),
-								StructurePoolElement.ofProcessedSingle("ancient_city/structures/camp_2", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION),
-								StructurePoolElement.ofProcessedSingle("ancient_city/structures/camp_3", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION)
+								StructurePoolElement.ofProcessedSingle("ancient_city/structures/camp_1", registryEntry2),
+								StructurePoolElement.ofProcessedSingle("ancient_city/structures/camp_2", registryEntry2),
+								StructurePoolElement.ofProcessedSingle("ancient_city/structures/camp_3", registryEntry2)
 							)
 						),
 						1
 					),
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/medium_ruin_1", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/medium_ruin_2", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/small_ruin_1", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/small_ruin_2", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/large_pillar_1", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/medium_pillar_1", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/medium_ruin_1", registryEntry2), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/medium_ruin_2", registryEntry2), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/small_ruin_1", registryEntry2), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/small_ruin_2", registryEntry2), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/large_pillar_1", registryEntry2), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/medium_pillar_1", registryEntry2), 1),
 					Pair.of(StructurePoolElement.ofList(ImmutableList.of(StructurePoolElement.ofSingle("ancient_city/structures/ice_box_1"))), 1)
 				),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"ancient_city/sculk",
 			new StructurePool(
-				new Identifier("ancient_city/sculk"),
-				new Identifier("empty"),
-				ImmutableList.of(Pair.of(StructurePoolElement.ofFeature(UndergroundPlacedFeatures.SCULK_PATCH_ANCIENT_CITY), 6), Pair.of(StructurePoolElement.ofEmpty(), 1)),
+				registryEntry4,
+				ImmutableList.of(Pair.of(StructurePoolElement.ofFeature(registryEntry), 6), Pair.of(StructurePoolElement.ofEmpty(), 1)),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"ancient_city/walls",
 			new StructurePool(
-				new Identifier("ancient_city/walls"),
-				new Identifier("empty"),
+				registryEntry4,
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_corner_wall_1", StructureProcessorLists.ANCIENT_CITY_WALLS_DEGRADATION), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_intersection_wall_1", StructureProcessorLists.ANCIENT_CITY_WALLS_DEGRADATION), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_lshape_wall_1", StructureProcessorLists.ANCIENT_CITY_WALLS_DEGRADATION), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_horizontal_wall_1", StructureProcessorLists.ANCIENT_CITY_WALLS_DEGRADATION), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_horizontal_wall_2", StructureProcessorLists.ANCIENT_CITY_WALLS_DEGRADATION), 1),
-					Pair.of(
-						StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_horizontal_wall_stairs_1", StructureProcessorLists.ANCIENT_CITY_WALLS_DEGRADATION), 1
-					),
-					Pair.of(
-						StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_horizontal_wall_stairs_2", StructureProcessorLists.ANCIENT_CITY_WALLS_DEGRADATION), 1
-					),
-					Pair.of(
-						StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_horizontal_wall_stairs_3", StructureProcessorLists.ANCIENT_CITY_WALLS_DEGRADATION), 1
-					),
-					Pair.of(
-						StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_horizontal_wall_stairs_4", StructureProcessorLists.ANCIENT_CITY_WALLS_DEGRADATION), 4
-					),
-					Pair.of(
-						StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_horizontal_wall_passage_1", StructureProcessorLists.ANCIENT_CITY_WALLS_DEGRADATION), 3
-					),
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/walls/ruined_corner_wall_1", StructureProcessorLists.ANCIENT_CITY_WALLS_DEGRADATION), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/walls/ruined_corner_wall_2", StructureProcessorLists.ANCIENT_CITY_WALLS_DEGRADATION), 1),
-					Pair.of(
-						StructurePoolElement.ofProcessedSingle("ancient_city/walls/ruined_horizontal_wall_stairs_1", StructureProcessorLists.ANCIENT_CITY_WALLS_DEGRADATION), 2
-					),
-					Pair.of(
-						StructurePoolElement.ofProcessedSingle("ancient_city/walls/ruined_horizontal_wall_stairs_2", StructureProcessorLists.ANCIENT_CITY_WALLS_DEGRADATION), 2
-					),
-					Pair.of(
-						StructurePoolElement.ofProcessedSingle("ancient_city/walls/ruined_horizontal_wall_stairs_3", StructureProcessorLists.ANCIENT_CITY_WALLS_DEGRADATION), 3
-					),
-					Pair.of(
-						StructurePoolElement.ofProcessedSingle("ancient_city/walls/ruined_horizontal_wall_stairs_4", StructureProcessorLists.ANCIENT_CITY_WALLS_DEGRADATION), 3
-					)
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_corner_wall_1", registryEntry3), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_intersection_wall_1", registryEntry3), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_lshape_wall_1", registryEntry3), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_horizontal_wall_1", registryEntry3), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_horizontal_wall_2", registryEntry3), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_horizontal_wall_stairs_1", registryEntry3), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_horizontal_wall_stairs_2", registryEntry3), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_horizontal_wall_stairs_3", registryEntry3), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_horizontal_wall_stairs_4", registryEntry3), 4),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_horizontal_wall_passage_1", registryEntry3), 3),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/walls/ruined_corner_wall_1", registryEntry3), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/walls/ruined_corner_wall_2", registryEntry3), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/walls/ruined_horizontal_wall_stairs_1", registryEntry3), 2),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/walls/ruined_horizontal_wall_stairs_2", registryEntry3), 2),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/walls/ruined_horizontal_wall_stairs_3", registryEntry3), 3),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/walls/ruined_horizontal_wall_stairs_4", registryEntry3), 3)
 				),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"ancient_city/walls/no_corners",
 			new StructurePool(
-				new Identifier("ancient_city/walls/no_corners"),
-				new Identifier("empty"),
+				registryEntry4,
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_horizontal_wall_1", StructureProcessorLists.ANCIENT_CITY_WALLS_DEGRADATION), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_horizontal_wall_2", StructureProcessorLists.ANCIENT_CITY_WALLS_DEGRADATION), 1),
-					Pair.of(
-						StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_horizontal_wall_stairs_1", StructureProcessorLists.ANCIENT_CITY_WALLS_DEGRADATION), 1
-					),
-					Pair.of(
-						StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_horizontal_wall_stairs_2", StructureProcessorLists.ANCIENT_CITY_WALLS_DEGRADATION), 1
-					),
-					Pair.of(
-						StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_horizontal_wall_stairs_3", StructureProcessorLists.ANCIENT_CITY_WALLS_DEGRADATION), 1
-					),
-					Pair.of(
-						StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_horizontal_wall_stairs_4", StructureProcessorLists.ANCIENT_CITY_WALLS_DEGRADATION), 1
-					),
-					Pair.of(
-						StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_horizontal_wall_stairs_5", StructureProcessorLists.ANCIENT_CITY_WALLS_DEGRADATION), 1
-					),
-					Pair.of(
-						StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_horizontal_wall_bridge", StructureProcessorLists.ANCIENT_CITY_WALLS_DEGRADATION), 1
-					)
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_horizontal_wall_1", registryEntry3), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_horizontal_wall_2", registryEntry3), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_horizontal_wall_stairs_1", registryEntry3), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_horizontal_wall_stairs_2", registryEntry3), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_horizontal_wall_stairs_3", registryEntry3), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_horizontal_wall_stairs_4", registryEntry3), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_horizontal_wall_stairs_5", registryEntry3), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/walls/intact_horizontal_wall_bridge", registryEntry3), 1)
 				),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"ancient_city/city_center/walls",
 			new StructurePool(
-				new Identifier("ancient_city/city_center/walls"),
-				new Identifier("empty"),
+				registryEntry4,
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/city_center/walls/bottom_1", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/city_center/walls/bottom_2", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION), 1),
-					Pair.of(
-						StructurePoolElement.ofProcessedSingle("ancient_city/city_center/walls/bottom_left_corner", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION), 1
-					),
-					Pair.of(
-						StructurePoolElement.ofProcessedSingle("ancient_city/city_center/walls/bottom_right_corner_1", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION),
-						1
-					),
-					Pair.of(
-						StructurePoolElement.ofProcessedSingle("ancient_city/city_center/walls/bottom_right_corner_2", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION),
-						1
-					),
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/city_center/walls/left", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/city_center/walls/right", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/city_center/walls/top", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION), 1),
-					Pair.of(
-						StructurePoolElement.ofProcessedSingle("ancient_city/city_center/walls/top_right_corner", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION), 1
-					),
-					Pair.of(
-						StructurePoolElement.ofProcessedSingle("ancient_city/city_center/walls/top_left_corner", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION), 1
-					)
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/city_center/walls/bottom_1", registryEntry2), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/city_center/walls/bottom_2", registryEntry2), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/city_center/walls/bottom_left_corner", registryEntry2), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/city_center/walls/bottom_right_corner_1", registryEntry2), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/city_center/walls/bottom_right_corner_2", registryEntry2), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/city_center/walls/left", registryEntry2), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/city_center/walls/right", registryEntry2), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/city_center/walls/top", registryEntry2), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/city_center/walls/top_right_corner", registryEntry2), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/city_center/walls/top_left_corner", registryEntry2), 1)
 				),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"ancient_city/city/entrance",
 			new StructurePool(
-				new Identifier("ancient_city/city/entrance"),
-				new Identifier("empty"),
+				registryEntry4,
 				ImmutableList.of(
-					Pair.of(
-						StructurePoolElement.ofProcessedSingle("ancient_city/city/entrance/entrance_connector", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION), 1
-					),
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/city/entrance/entrance_path_1", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/city/entrance/entrance_path_2", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/city/entrance/entrance_path_3", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/city/entrance/entrance_path_4", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/city/entrance/entrance_path_5", StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION), 1)
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/city/entrance/entrance_connector", registryEntry2), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/city/entrance/entrance_path_1", registryEntry2), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/city/entrance/entrance_path_2", registryEntry2), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/city/entrance/entrance_path_3", registryEntry2), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/city/entrance/entrance_path_4", registryEntry2), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/city/entrance/entrance_path_5", registryEntry2), 1)
 				),
 				StructurePool.Projection.RIGID
 			)

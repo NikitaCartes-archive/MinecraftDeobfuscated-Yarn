@@ -2,28 +2,25 @@ package net.minecraft.world.gen.feature;
 
 import java.util.List;
 import net.minecraft.block.Block;
-import net.minecraft.util.Util;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.BuiltinRegistries;
+import net.minecraft.util.registry.Registerable;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.gen.blockpredicate.BlockPredicate;
 
 public class ConfiguredFeatures {
-	public static RegistryEntry<? extends ConfiguredFeature<?, ?>> getDefaultConfiguredFeature(Registry<ConfiguredFeature<?, ?>> registry) {
-		List<RegistryEntry<? extends ConfiguredFeature<?, ?>>> list = List.of(
-			OceanConfiguredFeatures.KELP,
-			UndergroundConfiguredFeatures.MOSS_PATCH_BONEMEAL,
-			EndConfiguredFeatures.CHORUS_PLANT,
-			MiscConfiguredFeatures.SPRING_LAVA_OVERWORLD,
-			NetherConfiguredFeatures.BASALT_BLOBS,
-			OreConfiguredFeatures.ORE_ANCIENT_DEBRIS_LARGE,
-			PileConfiguredFeatures.PILE_HAY,
-			TreeConfiguredFeatures.AZALEA_TREE,
-			VegetationConfiguredFeatures.TREES_OLD_GROWTH_PINE_TAIGA
-		);
-		return Util.getRandom(list, Random.create());
+	public static void bootstrap(Registerable<ConfiguredFeature<?, ?>> featureRegisterable) {
+		OceanConfiguredFeatures.bootstrap(featureRegisterable);
+		UndergroundConfiguredFeatures.bootstrap(featureRegisterable);
+		EndConfiguredFeatures.bootstrap(featureRegisterable);
+		MiscConfiguredFeatures.bootstrap(featureRegisterable);
+		NetherConfiguredFeatures.bootstrap(featureRegisterable);
+		OreConfiguredFeatures.bootstrap(featureRegisterable);
+		PileConfiguredFeatures.bootstrap(featureRegisterable);
+		TreeConfiguredFeatures.bootstrap(featureRegisterable);
+		VegetationConfiguredFeatures.bootstrap(featureRegisterable);
 	}
 
 	private static BlockPredicate createBlockPredicate(List<Block> validGround) {
@@ -57,11 +54,19 @@ public class ConfiguredFeatures {
 		return createRandomPatchFeatureConfig(feature, config, List.of(), 96);
 	}
 
-	public static RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> register(String id, Feature<DefaultFeatureConfig> feature) {
-		return register(id, feature, FeatureConfig.DEFAULT);
+	public static RegistryKey<ConfiguredFeature<?, ?>> of(String id) {
+		return RegistryKey.of(Registry.CONFIGURED_FEATURE_KEY, new Identifier(id));
 	}
 
-	public static <FC extends FeatureConfig, F extends Feature<FC>> RegistryEntry<ConfiguredFeature<FC, ?>> register(String id, F feature, FC config) {
-		return BuiltinRegistries.addCasted(BuiltinRegistries.CONFIGURED_FEATURE, id, new ConfiguredFeature<>(feature, config));
+	public static void register(
+		Registerable<ConfiguredFeature<?, ?>> registerable, RegistryKey<ConfiguredFeature<?, ?>> key, Feature<DefaultFeatureConfig> feature
+	) {
+		register(registerable, key, feature, FeatureConfig.DEFAULT);
+	}
+
+	public static <FC extends FeatureConfig, F extends Feature<FC>> void register(
+		Registerable<ConfiguredFeature<?, ?>> registerable, RegistryKey<ConfiguredFeature<?, ?>> key, F feature, FC config
+	) {
+		registerable.register(key, new ConfiguredFeature(feature, config));
 	}
 }

@@ -5,7 +5,6 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Lifecycle;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
@@ -89,49 +88,48 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 		}
 	}
 
-	@Override
-	public RegistryEntry<T> set(int rawId, RegistryKey<T> key, T value, Lifecycle lifecycle) {
-		this.assertNotFrozen(key);
-		Validate.notNull(key);
-		Validate.notNull(value);
-		if (this.idToEntry.containsKey(key.getValue())) {
-			Util.throwOrPause((T)(new IllegalStateException("Adding duplicate key '" + key + "' to registry")));
+	public RegistryEntry.Reference<T> set(int i, RegistryKey<T> registryKey, T object, Lifecycle lifecycle) {
+		this.assertNotFrozen(registryKey);
+		Validate.notNull(registryKey);
+		Validate.notNull(object);
+		if (this.idToEntry.containsKey(registryKey.getValue())) {
+			Util.throwOrPause((T)(new IllegalStateException("Adding duplicate key '" + registryKey + "' to registry")));
 		}
 
-		if (this.valueToEntry.containsKey(value)) {
-			Util.throwOrPause((T)(new IllegalStateException("Adding duplicate value '" + value + "' to registry")));
+		if (this.valueToEntry.containsKey(object)) {
+			Util.throwOrPause((T)(new IllegalStateException("Adding duplicate value '" + object + "' to registry")));
 		}
 
 		RegistryEntry.Reference<T> reference;
 		if (this.intrusiveValueToEntry != null) {
-			reference = (RegistryEntry.Reference<T>)this.intrusiveValueToEntry.remove(value);
+			reference = (RegistryEntry.Reference<T>)this.intrusiveValueToEntry.remove(object);
 			if (reference == null) {
-				throw new AssertionError("Missing intrusive holder for " + key + ":" + value);
+				throw new AssertionError("Missing intrusive holder for " + registryKey + ":" + object);
 			}
 
-			reference.setRegistryKey(key);
+			reference.setRegistryKey(registryKey);
 		} else {
-			reference = (RegistryEntry.Reference<T>)this.keyToEntry.computeIfAbsent(key, keyx -> RegistryEntry.Reference.standAlone(this, keyx));
+			reference = (RegistryEntry.Reference<T>)this.keyToEntry.computeIfAbsent(registryKey, key -> RegistryEntry.Reference.standAlone(this.getEntryOwner(), key));
 		}
 
-		this.keyToEntry.put(key, reference);
-		this.idToEntry.put(key.getValue(), reference);
-		this.valueToEntry.put(value, reference);
-		this.rawIdToEntry.size(Math.max(this.rawIdToEntry.size(), rawId + 1));
-		this.rawIdToEntry.set(rawId, reference);
-		this.entryToRawId.put(value, rawId);
-		if (this.nextId <= rawId) {
-			this.nextId = rawId + 1;
+		this.keyToEntry.put(registryKey, reference);
+		this.idToEntry.put(registryKey.getValue(), reference);
+		this.valueToEntry.put(object, reference);
+		this.rawIdToEntry.size(Math.max(this.rawIdToEntry.size(), i + 1));
+		this.rawIdToEntry.set(i, reference);
+		this.entryToRawId.put(object, i);
+		if (this.nextId <= i) {
+			this.nextId = i + 1;
 		}
 
-		this.entryToLifecycle.put(value, lifecycle);
+		this.entryToLifecycle.put(object, lifecycle);
 		this.lifecycle = this.lifecycle.add(lifecycle);
 		this.cachedEntries = null;
 		return reference;
 	}
 
 	@Override
-	public RegistryEntry<T> add(RegistryKey<T> key, T entry, Lifecycle lifecycle) {
+	public RegistryEntry.Reference<T> add(RegistryKey<T> key, T entry, Lifecycle lifecycle) {
 		return this.set(this.nextId, key, entry, lifecycle);
 	}
 
@@ -174,35 +172,15 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 		return Optional.ofNullable((RegistryEntry.Reference)this.keyToEntry.get(key));
 	}
 
-	@Override
-	public RegistryEntry.Reference<T> getOrCreateEntry(RegistryKey<T> key) {
-		return (RegistryEntry.Reference<T>)this.keyToEntry.computeIfAbsent(key, entry -> {
+	RegistryEntry.Reference<T> getOrCreateEntry(RegistryKey<T> key) {
+		return (RegistryEntry.Reference<T>)this.keyToEntry.computeIfAbsent(key, key2 -> {
 			if (this.intrusiveValueToEntry != null) {
 				throw new IllegalStateException("This registry can't create new holders without value");
 			} else {
-				this.assertNotFrozen(entry);
-				return RegistryEntry.Reference.standAlone(this, entry);
+				this.assertNotFrozen(key2);
+				return RegistryEntry.Reference.standAlone(this.getEntryOwner(), key2);
 			}
 		});
-	}
-
-	@Override
-	public DataResult<RegistryEntry.Reference<T>> getOrCreateEntryDataResult(RegistryKey<T> key) {
-		RegistryEntry.Reference<T> reference = (RegistryEntry.Reference<T>)this.keyToEntry.get(key);
-		if (reference == null) {
-			if (this.intrusiveValueToEntry != null) {
-				return DataResult.error("This registry can't create new holders without value (requested key: " + key + ")");
-			}
-
-			if (this.frozen) {
-				return DataResult.error("Registry is already frozen (requested key: " + key + ")");
-			}
-
-			reference = RegistryEntry.Reference.standAlone(this, key);
-			this.keyToEntry.put(key, reference);
-		}
-
-		return DataResult.success(reference);
 	}
 
 	@Override
@@ -280,7 +258,7 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 	}
 
 	private RegistryEntryList.Named<T> createNamedEntryList(TagKey<T> tag) {
-		return new RegistryEntryList.Named<>(this, tag);
+		return new RegistryEntryList.Named<>(this.getEntryOwner(), tag);
 	}
 
 	@Override
@@ -294,8 +272,8 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 	}
 
 	@Override
-	public Optional<RegistryEntry<T>> getRandom(Random random) {
-		return Util.getRandomOrEmpty(this.getEntries(), random).map(RegistryEntry::upcast);
+	public Optional<RegistryEntry.Reference<T>> getRandom(Random random) {
+		return Util.getRandomOrEmpty(this.getEntries(), random);
 	}
 
 	@Override
@@ -344,7 +322,8 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 			throw new IllegalStateException("This registry can't create intrusive holders");
 		} else {
 			this.assertNotFrozen();
-			return (RegistryEntry.Reference<T>)this.intrusiveValueToEntry.computeIfAbsent(value, valuex -> RegistryEntry.Reference.intrusive(this, (T)valuex));
+			return (RegistryEntry.Reference<T>)this.intrusiveValueToEntry
+				.computeIfAbsent(value, valuex -> RegistryEntry.Reference.intrusive(this.getReadOnlyWrapper(), (T)valuex));
 		}
 	}
 
@@ -359,7 +338,7 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 		this.keyToEntry.values().forEach(entry -> map.put(entry, new ArrayList()));
 		tagEntries.forEach((tag, entries) -> {
 			for (RegistryEntry<T> registryEntry : entries) {
-				if (!registryEntry.matchesRegistry(this)) {
+				if (!registryEntry.ownerEquals(this.getReadOnlyWrapper())) {
 					throw new IllegalStateException("Can't create named set " + tag + " containing value " + registryEntry + " from outside registry " + this);
 				}
 
@@ -389,5 +368,31 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 	public void clearTags() {
 		this.tagToEntryList.values().forEach(entryList -> entryList.copyOf(List.of()));
 		this.keyToEntry.values().forEach(entry -> entry.setTags(Set.of()));
+	}
+
+	@Override
+	public RegistryEntryLookup<T> createMutableEntryLookup() {
+		this.assertNotFrozen();
+		return new RegistryEntryLookup<T>() {
+			@Override
+			public Optional<RegistryEntry.Reference<T>> getOptional(RegistryKey<T> key) {
+				return Optional.of(this.getOrThrow(key));
+			}
+
+			@Override
+			public RegistryEntry.Reference<T> getOrThrow(RegistryKey<T> key) {
+				return SimpleRegistry.this.getOrCreateEntry(key);
+			}
+
+			@Override
+			public Optional<RegistryEntryList.Named<T>> getOptional(TagKey<T> tag) {
+				return Optional.of(this.getOrThrow(tag));
+			}
+
+			@Override
+			public RegistryEntryList.Named<T> getOrThrow(TagKey<T> tag) {
+				return SimpleRegistry.this.getOrCreateEntryList(tag);
+			}
+		};
 	}
 }

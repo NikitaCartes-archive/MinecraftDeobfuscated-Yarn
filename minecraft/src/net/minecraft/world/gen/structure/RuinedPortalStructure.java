@@ -248,7 +248,7 @@ public class RuinedPortalStructure extends Structure {
 	) {
 		public static final Codec<RuinedPortalStructure.Setup> field_37814 = RecordCodecBuilder.create(
 			instance -> instance.group(
-						RuinedPortalStructurePiece.VerticalPlacement.field_37811.fieldOf("placement").forGetter(RuinedPortalStructure.Setup::placement),
+						RuinedPortalStructurePiece.VerticalPlacement.CODEC.fieldOf("placement").forGetter(RuinedPortalStructure.Setup::placement),
 						Codec.floatRange(0.0F, 1.0F).fieldOf("air_pocket_probability").forGetter(RuinedPortalStructure.Setup::airPocketProbability),
 						Codec.floatRange(0.0F, 1.0F).fieldOf("mossiness").forGetter(RuinedPortalStructure.Setup::mossiness),
 						Codec.BOOL.fieldOf("overgrown").forGetter(RuinedPortalStructure.Setup::overgrown),

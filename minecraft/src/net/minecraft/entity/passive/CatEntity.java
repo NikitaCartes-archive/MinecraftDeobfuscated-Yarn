@@ -158,7 +158,7 @@ public class CatEntity extends TameableEntity {
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(CAT_VARIANT, CatVariant.BLACK);
+		this.dataTracker.startTracking(CAT_VARIANT, Registry.CAT_VARIANT.getOrThrow(CatVariant.BLACK));
 		this.dataTracker.startTracking(IN_SLEEPING_POSE, false);
 		this.dataTracker.startTracking(HEAD_DOWN, false);
 		this.dataTracker.startTracking(COLLAR_COLOR, DyeColor.RED.getId());
@@ -366,7 +366,7 @@ public class CatEntity extends TameableEntity {
 			.ifPresent(variant -> this.setVariant((CatVariant)variant.value()));
 		ServerWorld serverWorld = world.toServerWorld();
 		if (serverWorld.getStructureAccessor().getStructureContaining(this.getBlockPos(), StructureTags.CATS_SPAWN_AS_BLACK).hasChildren()) {
-			this.setVariant(CatVariant.ALL_BLACK);
+			this.setVariant(Registry.CAT_VARIANT.getOrThrow(CatVariant.ALL_BLACK));
 			this.setPersistent();
 		}
 

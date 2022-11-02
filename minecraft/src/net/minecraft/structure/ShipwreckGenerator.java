@@ -62,10 +62,10 @@ public class ShipwreckGenerator {
 	);
 
 	public static void addParts(
-		StructureTemplateManager structureTemplateManager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder holder, Random random, boolean bl
+		StructureTemplateManager structureTemplateManager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder holder, Random random, boolean beached
 	) {
-		Identifier identifier = Util.getRandom(bl ? BEACHED_TEMPLATES : REGULAR_TEMPLATES, random);
-		holder.addPiece(new ShipwreckGenerator.Piece(structureTemplateManager, identifier, pos, rotation, bl));
+		Identifier identifier = Util.getRandom(beached ? BEACHED_TEMPLATES : REGULAR_TEMPLATES, random);
+		holder.addPiece(new ShipwreckGenerator.Piece(structureTemplateManager, identifier, pos, rotation, beached));
 	}
 
 	public static class Piece extends SimpleStructurePiece {
@@ -77,7 +77,7 @@ public class ShipwreckGenerator {
 		}
 
 		public Piece(StructureTemplateManager manager, NbtCompound nbt) {
-			super(StructurePieceType.SHIPWRECK, nbt, manager, identifier -> createPlacementData(BlockRotation.valueOf(nbt.getString("Rot"))));
+			super(StructurePieceType.SHIPWRECK, nbt, manager, id -> createPlacementData(BlockRotation.valueOf(nbt.getString("Rot"))));
 			this.grounded = nbt.getBoolean("isBeached");
 		}
 

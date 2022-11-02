@@ -2,21 +2,40 @@ package net.minecraft.entity.passive;
 
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 
 public record CatVariant(Identifier texture) {
-	public static final CatVariant TABBY = register("tabby", "textures/entity/cat/tabby.png");
-	public static final CatVariant BLACK = register("black", "textures/entity/cat/black.png");
-	public static final CatVariant RED = register("red", "textures/entity/cat/red.png");
-	public static final CatVariant SIAMESE = register("siamese", "textures/entity/cat/siamese.png");
-	public static final CatVariant BRITISH_SHORTHAIR = register("british_shorthair", "textures/entity/cat/british_shorthair.png");
-	public static final CatVariant CALICO = register("calico", "textures/entity/cat/calico.png");
-	public static final CatVariant PERSIAN = register("persian", "textures/entity/cat/persian.png");
-	public static final CatVariant RAGDOLL = register("ragdoll", "textures/entity/cat/ragdoll.png");
-	public static final CatVariant WHITE = register("white", "textures/entity/cat/white.png");
-	public static final CatVariant JELLIE = register("jellie", "textures/entity/cat/jellie.png");
-	public static final CatVariant ALL_BLACK = register("all_black", "textures/entity/cat/all_black.png");
+	public static final RegistryKey<CatVariant> TABBY = of("tabby");
+	public static final RegistryKey<CatVariant> BLACK = of("black");
+	public static final RegistryKey<CatVariant> RED = of("red");
+	public static final RegistryKey<CatVariant> SIAMESE = of("siamese");
+	public static final RegistryKey<CatVariant> BRITISH_SHORTHAIR = of("british_shorthair");
+	public static final RegistryKey<CatVariant> CALICO = of("calico");
+	public static final RegistryKey<CatVariant> PERSIAN = of("persian");
+	public static final RegistryKey<CatVariant> RAGDOLL = of("ragdoll");
+	public static final RegistryKey<CatVariant> WHITE = of("white");
+	public static final RegistryKey<CatVariant> JELLIE = of("jellie");
+	public static final RegistryKey<CatVariant> ALL_BLACK = of("all_black");
 
-	private static CatVariant register(String id, String textureId) {
-		return Registry.register(Registry.CAT_VARIANT, id, new CatVariant(new Identifier(textureId)));
+	private static RegistryKey<CatVariant> of(String id) {
+		return RegistryKey.of(Registry.CAT_VARIANT_KEY, new Identifier(id));
+	}
+
+	public static CatVariant registerAndGetDefault(Registry<CatVariant> registry) {
+		register(registry, TABBY, "textures/entity/cat/tabby.png");
+		register(registry, BLACK, "textures/entity/cat/black.png");
+		register(registry, RED, "textures/entity/cat/red.png");
+		register(registry, SIAMESE, "textures/entity/cat/siamese.png");
+		register(registry, BRITISH_SHORTHAIR, "textures/entity/cat/british_shorthair.png");
+		register(registry, CALICO, "textures/entity/cat/calico.png");
+		register(registry, PERSIAN, "textures/entity/cat/persian.png");
+		register(registry, RAGDOLL, "textures/entity/cat/ragdoll.png");
+		register(registry, WHITE, "textures/entity/cat/white.png");
+		register(registry, JELLIE, "textures/entity/cat/jellie.png");
+		return register(registry, ALL_BLACK, "textures/entity/cat/all_black.png");
+	}
+
+	private static CatVariant register(Registry<CatVariant> registry, RegistryKey<CatVariant> key, String textureId) {
+		return Registry.register(registry, key, new CatVariant(new Identifier(textureId)));
 	}
 }

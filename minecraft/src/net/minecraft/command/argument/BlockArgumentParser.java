@@ -19,7 +19,6 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.command.CommandRegistryWrapper;
 import net.minecraft.command.CommandSource;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.StringNbtReader;
@@ -32,6 +31,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.RegistryWrapper;
 
 public class BlockArgumentParser {
 	public static final SimpleCommandExceptionType DISALLOWED_TAG_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("argument.block.tag.disallowed"));
@@ -63,7 +63,7 @@ public class BlockArgumentParser {
 	private static final char PROPERTY_SEPARATOR = ',';
 	private static final char TAG_PREFIX = '#';
 	private static final Function<SuggestionsBuilder, CompletableFuture<Suggestions>> SUGGEST_DEFAULT = SuggestionsBuilder::buildFuture;
-	private final CommandRegistryWrapper<Block> registryWrapper;
+	private final RegistryWrapper<Block> registryWrapper;
 	private final StringReader reader;
 	private final boolean allowTag;
 	private final boolean allowSnbt;
@@ -80,18 +80,18 @@ public class BlockArgumentParser {
 	private RegistryEntryList<Block> tagId;
 	private Function<SuggestionsBuilder, CompletableFuture<Suggestions>> suggestions = SUGGEST_DEFAULT;
 
-	private BlockArgumentParser(CommandRegistryWrapper<Block> registryWrapper, StringReader reader, boolean allowTag, boolean allowSnbt) {
+	private BlockArgumentParser(RegistryWrapper<Block> registryWrapper, StringReader reader, boolean allowTag, boolean allowSnbt) {
 		this.registryWrapper = registryWrapper;
 		this.reader = reader;
 		this.allowTag = allowTag;
 		this.allowSnbt = allowSnbt;
 	}
 
-	public static BlockArgumentParser.BlockResult block(CommandRegistryWrapper<Block> registryWrapper, String string, boolean allowSnbt) throws CommandSyntaxException {
+	public static BlockArgumentParser.BlockResult block(RegistryWrapper<Block> registryWrapper, String string, boolean allowSnbt) throws CommandSyntaxException {
 		return block(registryWrapper, new StringReader(string), allowSnbt);
 	}
 
-	public static BlockArgumentParser.BlockResult block(CommandRegistryWrapper<Block> registryWrapper, StringReader reader, boolean allowSnbt) throws CommandSyntaxException {
+	public static BlockArgumentParser.BlockResult block(RegistryWrapper<Block> registryWrapper, StringReader reader, boolean allowSnbt) throws CommandSyntaxException {
 		int i = reader.getCursor();
 
 		try {
@@ -105,13 +105,13 @@ public class BlockArgumentParser {
 	}
 
 	public static Either<BlockArgumentParser.BlockResult, BlockArgumentParser.TagResult> blockOrTag(
-		CommandRegistryWrapper<Block> registryWrapper, String string, boolean allowSnbt
+		RegistryWrapper<Block> registryWrapper, String string, boolean allowSnbt
 	) throws CommandSyntaxException {
 		return blockOrTag(registryWrapper, new StringReader(string), allowSnbt);
 	}
 
 	public static Either<BlockArgumentParser.BlockResult, BlockArgumentParser.TagResult> blockOrTag(
-		CommandRegistryWrapper<Block> registryWrapper, StringReader reader, boolean allowSnbt
+		RegistryWrapper<Block> registryWrapper, StringReader reader, boolean allowSnbt
 	) throws CommandSyntaxException {
 		int i = reader.getCursor();
 
@@ -128,7 +128,7 @@ public class BlockArgumentParser {
 	}
 
 	public static CompletableFuture<Suggestions> getSuggestions(
-		CommandRegistryWrapper<Block> registryWrapper, SuggestionsBuilder builder, boolean allowTag, boolean allowSnbt
+		RegistryWrapper<Block> registryWrapper, SuggestionsBuilder builder, boolean allowTag, boolean allowSnbt
 	) {
 		StringReader stringReader = new StringReader(builder.getInput());
 		stringReader.setCursor(builder.getStart());
@@ -340,7 +340,7 @@ public class BlockArgumentParser {
 	}
 
 	private CompletableFuture<Suggestions> suggestIdentifiers(SuggestionsBuilder builder) {
-		return CommandSource.suggestIdentifiers(this.registryWrapper.streamTags().map(TagKey::id), builder, String.valueOf('#'));
+		return CommandSource.suggestIdentifiers(this.registryWrapper.streamTagKeys().map(TagKey::id), builder, String.valueOf('#'));
 	}
 
 	private CompletableFuture<Suggestions> suggestBlockId(SuggestionsBuilder builder) {
@@ -356,7 +356,7 @@ public class BlockArgumentParser {
 	private void parseBlockId() throws CommandSyntaxException {
 		int i = this.reader.getCursor();
 		this.blockId = Identifier.fromCommandInput(this.reader);
-		Block block = (Block)((RegistryEntry.Reference)this.registryWrapper.getEntry(RegistryKey.of(Registry.BLOCK_KEY, this.blockId)).orElseThrow(() -> {
+		Block block = (Block)((RegistryEntry.Reference)this.registryWrapper.getOptional(RegistryKey.of(Registry.BLOCK_KEY, this.blockId)).orElseThrow(() -> {
 			this.reader.setCursor(i);
 			return INVALID_BLOCK_ID_EXCEPTION.createWithContext(this.reader, this.blockId.toString());
 		})).value();
@@ -372,7 +372,7 @@ public class BlockArgumentParser {
 			this.reader.expect('#');
 			this.suggestions = this::suggestIdentifiers;
 			Identifier identifier = Identifier.fromCommandInput(this.reader);
-			this.tagId = (RegistryEntryList<Block>)this.registryWrapper.getEntryList(TagKey.of(Registry.BLOCK_KEY, identifier)).orElseThrow(() -> {
+			this.tagId = (RegistryEntryList<Block>)this.registryWrapper.getOptional(TagKey.of(Registry.BLOCK_KEY, identifier)).orElseThrow(() -> {
 				this.reader.setCursor(i);
 				return UNKNOWN_BLOCK_TAG_EXCEPTION.createWithContext(this.reader, identifier.toString());
 			});

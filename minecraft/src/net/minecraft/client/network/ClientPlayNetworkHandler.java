@@ -108,7 +108,6 @@ import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.FilledMapItem;
-import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -279,7 +278,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -294,6 +292,7 @@ import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.RegistryWrapper;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
@@ -1358,7 +1357,9 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 	public void onCommandTree(CommandTreeS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		this.commandDispatcher = new CommandDispatcher<>(
-			packet.getCommandTree(new CommandRegistryAccess(this.combinedDynamicRegistries.getCombinedRegistryManager(), this.enabledFeatures))
+			packet.getCommandTree(
+				CommandRegistryAccess.of((RegistryWrapper.WrapperLookup)this.combinedDynamicRegistries.getCombinedRegistryManager(), this.enabledFeatures)
+			)
 		);
 	}
 
@@ -1483,25 +1484,13 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 			Blocks.refreshShapeCache();
 		}
 
-		this.refreshItemGroups();
+		ItemGroups.SEARCH.markSearchProviderDirty();
 	}
 
 	@Override
 	public void onFeatures(FeaturesS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		this.enabledFeatures = FeatureFlags.FEATURE_MANAGER.featureSetOf(packet.features());
-		this.refreshItemGroups();
-	}
-
-	private void refreshItemGroups() {
-		for (ItemGroup itemGroup : ItemGroups.GROUPS) {
-			itemGroup.clearStacks();
-		}
-
-		DefaultedList<ItemStack> defaultedList = DefaultedList.of();
-		defaultedList.addAll(ItemGroups.SEARCH.getDisplayStacks(this.enabledFeatures));
-		this.client.reloadSearchProvider(SearchManager.ITEM_TOOLTIP, defaultedList);
-		this.client.reloadSearchProvider(SearchManager.ITEM_TAG, defaultedList);
 	}
 
 	private <T> void loadTags(RegistryKey<? extends Registry<? extends T>> registryKey, TagPacketSerializer.Serialized serialized) {

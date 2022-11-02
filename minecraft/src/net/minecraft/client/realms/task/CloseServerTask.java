@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class CloseServerTask extends LongRunningTask {
-	private static final Logger field_36354 = LogUtils.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final RealmsServer serverData;
 	private final RealmsConfigureWorldScreen configureScreen;
 
@@ -49,7 +49,7 @@ public class CloseServerTask extends LongRunningTask {
 					return;
 				}
 
-				field_36354.error("Failed to close server", (Throwable)var5);
+				LOGGER.error("Failed to close server", (Throwable)var5);
 				this.error("Failed to close the server");
 			}
 		}

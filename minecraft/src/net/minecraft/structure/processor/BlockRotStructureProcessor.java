@@ -7,7 +7,6 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.StructureTemplate;
-import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
@@ -26,8 +25,8 @@ public class BlockRotStructureProcessor extends StructureProcessor {
 	private final Optional<RegistryEntryList<Block>> rottableBlocks;
 	private final float integrity;
 
-	public BlockRotStructureProcessor(TagKey<Block> rottableBlocks, float integrity) {
-		this(Optional.of(Registry.BLOCK.getOrCreateEntryList(rottableBlocks)), integrity);
+	public BlockRotStructureProcessor(RegistryEntryList<Block> rottableBlocks, float integrity) {
+		this(Optional.of(rottableBlocks), integrity);
 	}
 
 	public BlockRotStructureProcessor(float integrity) {

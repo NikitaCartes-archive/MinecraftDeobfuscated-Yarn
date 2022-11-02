@@ -41,6 +41,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.RegistryWrapper;
 
 public class HusbandryTabAdvancementGenerator implements AdvancementTabGenerator {
 	private static final EntityType<?>[] BREEDABLE_ANIMALS = new EntityType[]{
@@ -115,7 +116,7 @@ public class HusbandryTabAdvancementGenerator implements AdvancementTabGenerator
 	};
 
 	@Override
-	public void accept(Consumer<Advancement> exporter) {
+	public void accept(RegistryWrapper.WrapperLookup lookup, Consumer<Advancement> exporter) {
 		Advancement advancement = Advancement.Builder.create()
 			.display(
 				Blocks.HAY_BLOCK,

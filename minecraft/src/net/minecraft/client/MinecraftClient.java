@@ -542,8 +542,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			} else {
 				this.window.setIcon(this.getDefaultResourceSupplier("icons", "icon_16x16.png"), this.getDefaultResourceSupplier("icons", "icon_32x32.png"));
 			}
-		} catch (IOException var11) {
-			LOGGER.error("Couldn't set icon", (Throwable)var11);
+		} catch (IOException var12) {
+			LOGGER.error("Couldn't set icon", (Throwable)var12);
 		}
 
 		this.window.setFramerateLimit(this.options.getMaxFps().getValue());
@@ -662,7 +662,14 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				this.resourceReloadLogger.finish();
 			}), false));
 		if (string != null) {
-			resourceReload.whenComplete().thenRunAsync(() -> ConnectScreen.connect(new TitleScreen(), this, new ServerAddress(string, i), null), this);
+			ServerAddress serverAddress = new ServerAddress(string, i);
+			resourceReload.whenComplete()
+				.thenRunAsync(
+					() -> ConnectScreen.connect(
+							new TitleScreen(), this, serverAddress, new ServerInfo(I18n.translate("selectServer.defaultName"), serverAddress.toString(), false)
+						),
+					this
+				);
 		} else if (this.isMultiplayerBanned()) {
 			this.setScreen(Bans.createBanScreen(confirmed -> {
 				if (confirmed) {
@@ -837,6 +844,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 						resultCollections
 					)
 			);
+		ItemGroups.SEARCH.setSearchProviderReloader(list -> {
+			this.reloadSearchProvider(SearchManager.ITEM_TOOLTIP, list);
+			this.reloadSearchProvider(SearchManager.ITEM_TAG, list);
+		});
 	}
 
 	private void handleGlErrorByDisableVsync(int error, long description) {
@@ -962,7 +973,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			}
 		}
 
-		for (ItemStack itemStack : ItemGroups.SEARCH.getDisplayStacks(FeatureFlags.FEATURE_MANAGER.getFeatureSet())) {
+		for (ItemStack itemStack : ItemGroups.SEARCH.getDisplayStacks(FeatureFlags.FEATURE_MANAGER.getFeatureSet(), true)) {
 			String string = itemStack.getTranslationKey();
 			String string2 = Text.translatable(string).getString();
 			if (string2.toLowerCase(Locale.ROOT).equals(itemStack.getItem().getTranslationKey())) {

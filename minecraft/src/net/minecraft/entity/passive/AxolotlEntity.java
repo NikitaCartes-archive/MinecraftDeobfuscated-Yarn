@@ -27,6 +27,7 @@ import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.control.AquaticMoveControl;
 import net.minecraft.entity.ai.control.YawAdjustingLookControl;
+import net.minecraft.entity.ai.pathing.AmphibiousSwimNavigation;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -87,9 +88,6 @@ import org.slf4j.Logger;
  * </tr>
  * <tr>
  *   <td>Renderer</td><td>{@link net.minecraft.client.render.entity.AxolotlEntityRenderer}</td>
- * </tr>
- * <tr>
- *   <td>Swim Navigation</td><td>{@link AxolotlSwimNavigation}</td>
  * </tr>
  * <tr>
  *   <td>Variants</td><td>{@link Variant}</td>
@@ -348,7 +346,7 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 
 	@Override
 	protected EntityNavigation createNavigation(World world) {
-		return new AxolotlSwimNavigation(this, world);
+		return new AmphibiousSwimNavigation(this, world);
 	}
 
 	@Override

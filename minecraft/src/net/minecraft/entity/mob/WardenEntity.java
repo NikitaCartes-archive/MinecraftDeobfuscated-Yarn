@@ -125,7 +125,7 @@ public class WardenEntity extends HostileEntity implements VibrationListener.Cal
 
 	@Override
 	public Packet<ClientPlayPacketListener> createSpawnPacket() {
-		return new EntitySpawnS2CPacket((LivingEntity)this, this.isInPose(EntityPose.EMERGING) ? 1 : 0);
+		return new EntitySpawnS2CPacket(this, this.isInPose(EntityPose.EMERGING) ? 1 : 0);
 	}
 
 	@Override

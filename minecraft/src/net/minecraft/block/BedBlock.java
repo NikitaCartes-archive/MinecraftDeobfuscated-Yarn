@@ -38,7 +38,6 @@ import net.minecraft.world.CollisionView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
-import net.minecraft.world.explosion.Explosion;
 import org.apache.commons.lang3.ArrayUtils;
 
 public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvider {
@@ -90,7 +89,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 				}
 
 				Vec3d vec3d = pos.toCenterPos();
-				world.createExplosion(null, DamageSource.badRespawnPoint(vec3d), null, vec3d, 5.0F, true, Explosion.DestructionType.DESTROY);
+				world.createExplosion(null, DamageSource.badRespawnPoint(vec3d), null, vec3d, 5.0F, true, World.ExplosionSourceType.BLOCK);
 				return ActionResult.SUCCESS;
 			} else if ((Boolean)state.get(OCCUPIED)) {
 				if (!this.wakeVillager(world, pos)) {

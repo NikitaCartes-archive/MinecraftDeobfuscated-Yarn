@@ -22,9 +22,9 @@ public final class RegistryFixedCodec<E> implements Codec<RegistryEntry<E>> {
 
 	public <T> DataResult<T> encode(RegistryEntry<E> registryEntry, DynamicOps<T> dynamicOps, T object) {
 		if (dynamicOps instanceof RegistryOps<?> registryOps) {
-			Optional<? extends Registry<E>> optional = registryOps.getRegistry(this.registry);
+			Optional<RegistryEntryOwner<E>> optional = registryOps.getOwner(this.registry);
 			if (optional.isPresent()) {
-				if (!registryEntry.matchesRegistry((Registry<E>)optional.get())) {
+				if (!registryEntry.ownerEquals((RegistryEntryOwner<E>)optional.get())) {
 					return DataResult.error("Element " + registryEntry + " is not valid in current registry set");
 				}
 
@@ -42,13 +42,21 @@ public final class RegistryFixedCodec<E> implements Codec<RegistryEntry<E>> {
 	@Override
 	public <T> DataResult<Pair<RegistryEntry<E>, T>> decode(DynamicOps<T> ops, T input) {
 		if (ops instanceof RegistryOps<?> registryOps) {
-			Optional<? extends Registry<E>> optional = registryOps.getRegistry(this.registry);
+			Optional<RegistryEntryLookup<E>> optional = registryOps.getEntryLookup(this.registry);
 			if (optional.isPresent()) {
-				return Identifier.CODEC.decode(ops, input).flatMap(pair -> {
-					Identifier identifier = (Identifier)pair.getFirst();
-					DataResult<? extends RegistryEntry<E>> dataResult = ((Registry)optional.get()).getOrCreateEntryDataResult(RegistryKey.of(this.registry, identifier));
-					return dataResult.map(entry -> Pair.of(entry, pair.getSecond())).setLifecycle(Lifecycle.stable());
-				});
+				return Identifier.CODEC
+					.decode(ops, input)
+					.flatMap(
+						pair -> {
+							Identifier identifier = (Identifier)pair.getFirst();
+							return ((DataResult)((RegistryEntryLookup)optional.get())
+									.getOptional(RegistryKey.of(this.registry, identifier))
+									.map(DataResult::success)
+									.orElseGet(() -> DataResult.error("Failed to get element " + identifier)))
+								.map(reference -> Pair.of(reference, pair.getSecond()))
+								.setLifecycle(Lifecycle.stable());
+						}
+					);
 			}
 		}
 

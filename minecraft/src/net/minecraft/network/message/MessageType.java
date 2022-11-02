@@ -10,16 +10,14 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Decoration;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.util.registry.Registerable;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 
 /**
  * A message type (also known as "chat type") controls how to display or narrate
- * the chat messages sent to the clients. Message types are registered at
- * {@link net.minecraft.util.registry.BuiltinRegistries#MESSAGE_TYPE}. When
+ * the chat messages sent to the clients. Message types are registered using data packs. When
  * sending a chat message, the registry key of the message type can be passed to indicate
  * which message type should be used.
  * 
@@ -104,26 +102,22 @@ public record MessageType(Decoration chat, Decoration narration) {
 		return RegistryKey.of(Registry.MESSAGE_TYPE_KEY, new Identifier(id));
 	}
 
-	public static RegistryEntry<MessageType> initialize(Registry<MessageType> registry) {
-		BuiltinRegistries.add(registry, CHAT, new MessageType(CHAT_TEXT_DECORATION, Decoration.ofChat("chat.type.text.narrate")));
-		BuiltinRegistries.add(registry, SAY_COMMAND, new MessageType(Decoration.ofChat("chat.type.announcement"), Decoration.ofChat("chat.type.text.narrate")));
-		BuiltinRegistries.add(
-			registry,
-			MSG_COMMAND_INCOMING,
-			new MessageType(Decoration.ofIncomingMessage("commands.message.display.incoming"), Decoration.ofChat("chat.type.text.narrate"))
+	public static void bootstrap(Registerable<MessageType> messageTypeRegisterable) {
+		messageTypeRegisterable.register(CHAT, new MessageType(CHAT_TEXT_DECORATION, Decoration.ofChat("chat.type.text.narrate")));
+		messageTypeRegisterable.register(SAY_COMMAND, new MessageType(Decoration.ofChat("chat.type.announcement"), Decoration.ofChat("chat.type.text.narrate")));
+		messageTypeRegisterable.register(
+			MSG_COMMAND_INCOMING, new MessageType(Decoration.ofIncomingMessage("commands.message.display.incoming"), Decoration.ofChat("chat.type.text.narrate"))
 		);
-		BuiltinRegistries.add(
-			registry,
-			MSG_COMMAND_OUTGOING,
-			new MessageType(Decoration.ofOutgoingMessage("commands.message.display.outgoing"), Decoration.ofChat("chat.type.text.narrate"))
+		messageTypeRegisterable.register(
+			MSG_COMMAND_OUTGOING, new MessageType(Decoration.ofOutgoingMessage("commands.message.display.outgoing"), Decoration.ofChat("chat.type.text.narrate"))
 		);
-		BuiltinRegistries.add(
-			registry, TEAM_MSG_COMMAND_INCOMING, new MessageType(Decoration.ofTeamMessage("chat.type.team.text"), Decoration.ofChat("chat.type.text.narrate"))
+		messageTypeRegisterable.register(
+			TEAM_MSG_COMMAND_INCOMING, new MessageType(Decoration.ofTeamMessage("chat.type.team.text"), Decoration.ofChat("chat.type.text.narrate"))
 		);
-		BuiltinRegistries.add(
-			registry, TEAM_MSG_COMMAND_OUTGOING, new MessageType(Decoration.ofTeamMessage("chat.type.team.sent"), Decoration.ofChat("chat.type.text.narrate"))
+		messageTypeRegisterable.register(
+			TEAM_MSG_COMMAND_OUTGOING, new MessageType(Decoration.ofTeamMessage("chat.type.team.sent"), Decoration.ofChat("chat.type.text.narrate"))
 		);
-		return BuiltinRegistries.add(registry, EMOTE_COMMAND, new MessageType(Decoration.ofChat("chat.type.emote"), Decoration.ofChat("chat.type.emote")));
+		messageTypeRegisterable.register(EMOTE_COMMAND, new MessageType(Decoration.ofChat("chat.type.emote"), Decoration.ofChat("chat.type.emote")));
 	}
 
 	public static MessageType.Parameters params(RegistryKey<MessageType> typeKey, Entity entity) {

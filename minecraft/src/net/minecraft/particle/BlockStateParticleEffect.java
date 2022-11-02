@@ -5,7 +5,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.command.CommandRegistryWrapper;
 import net.minecraft.command.argument.BlockArgumentParser;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.registry.Registry;
@@ -14,7 +13,7 @@ public class BlockStateParticleEffect implements ParticleEffect {
 	public static final ParticleEffect.Factory<BlockStateParticleEffect> PARAMETERS_FACTORY = new ParticleEffect.Factory<BlockStateParticleEffect>() {
 		public BlockStateParticleEffect read(ParticleType<BlockStateParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {
 			stringReader.expect(' ');
-			return new BlockStateParticleEffect(particleType, BlockArgumentParser.block(CommandRegistryWrapper.of(Registry.BLOCK), stringReader, false).blockState());
+			return new BlockStateParticleEffect(particleType, BlockArgumentParser.block(Registry.BLOCK.getReadOnlyWrapper(), stringReader, false).blockState());
 		}
 
 		public BlockStateParticleEffect read(ParticleType<BlockStateParticleEffect> particleType, PacketByteBuf packetByteBuf) {

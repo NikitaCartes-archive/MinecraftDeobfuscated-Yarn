@@ -438,19 +438,50 @@ public abstract class Registry<T> implements Keyable, IndexedIterable<T> {
 	);
 	public static final RegistryKey<Registry<MessageType>> MESSAGE_TYPE_KEY = createRegistryKey("chat_type");
 	public static final RegistryKey<Registry<CatVariant>> CAT_VARIANT_KEY = createRegistryKey("cat_variant");
-	public static final Registry<CatVariant> CAT_VARIANT = create(CAT_VARIANT_KEY, registry -> CatVariant.BLACK);
+	public static final Registry<CatVariant> CAT_VARIANT = create(CAT_VARIANT_KEY, CatVariant::registerAndGetDefault);
 	public static final RegistryKey<Registry<FrogVariant>> FROG_VARIANT_KEY = createRegistryKey("frog_variant");
 	public static final Registry<FrogVariant> FROG_VARIANT = create(FROG_VARIANT_KEY, registry -> FrogVariant.TEMPERATE);
 	public static final RegistryKey<Registry<BannerPattern>> BANNER_PATTERN_KEY = createRegistryKey("banner_pattern");
-	public static final Registry<BannerPattern> BANNER_PATTERN = create(BANNER_PATTERN_KEY, BannerPatterns::initAndGetDefault);
+	public static final Registry<BannerPattern> BANNER_PATTERN = create(BANNER_PATTERN_KEY, BannerPatterns::registerAndGetDefault);
 	public static final RegistryKey<Registry<Instrument>> INSTRUMENT_KEY = createRegistryKey("instrument");
 	public static final Registry<Instrument> INSTRUMENT = create(INSTRUMENT_KEY, Instruments::registerAndGetDefault);
 	/**
 	 * The key representing the type of elements held by this registry. It is also the
 	 * key of this registry within the root registry.
 	 */
-	private final RegistryKey<? extends Registry<T>> registryKey;
+	final RegistryKey<? extends Registry<T>> registryKey;
 	private final Lifecycle lifecycle;
+	final RegistryWrapper.Impl<T> wrapper = new RegistryWrapper.Impl<T>() {
+		@Override
+		public RegistryKey<? extends Registry<? extends T>> getRegistryKey() {
+			return Registry.this.registryKey;
+		}
+
+		@Override
+		public Lifecycle getLifecycle() {
+			return Registry.this.getLifecycle();
+		}
+
+		@Override
+		public Optional<RegistryEntry.Reference<T>> getOptional(RegistryKey<T> key) {
+			return Registry.this.getEntry(key);
+		}
+
+		@Override
+		public Stream<RegistryEntry.Reference<T>> streamEntries() {
+			return Registry.this.streamEntries();
+		}
+
+		@Override
+		public Optional<RegistryEntryList.Named<T>> getOptional(TagKey<T> tag) {
+			return Registry.this.getEntryList(tag);
+		}
+
+		@Override
+		public Stream<RegistryEntryList.Named<T>> streamTags() {
+			return Registry.this.streamTagsAndEntries().map(Pair::getSecond);
+		}
+	};
 
 	public static RegistryKey<World> createWorldKey(RegistryKey<DimensionOptions> dimensionOptionsKey) {
 		return RegistryKey.of(WORLD_KEY, dimensionOptionsKey.getValue());
@@ -516,9 +547,9 @@ public abstract class Registry<T> implements Keyable, IndexedIterable<T> {
 		return registry;
 	}
 
-	protected Registry(RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle) {
-		Bootstrap.ensureBootstrapped(() -> "registry " + key);
-		this.registryKey = key;
+	protected Registry(RegistryKey<? extends Registry<T>> registryKey, Lifecycle lifecycle) {
+		Bootstrap.ensureBootstrapped(() -> "registry " + registryKey);
+		this.registryKey = registryKey;
 		this.lifecycle = lifecycle;
 	}
 
@@ -666,7 +697,7 @@ public abstract class Registry<T> implements Keyable, IndexedIterable<T> {
 	 * {@return a random registry entry from this registry, or an empty optional if the
 	 * registry is empty}
 	 */
-	public abstract Optional<RegistryEntry<T>> getRandom(Random random);
+	public abstract Optional<RegistryEntry.Reference<T>> getRandom(Random random);
 
 	/**
 	 * {@return a stream of all values of this registry}
@@ -714,10 +745,6 @@ public abstract class Registry<T> implements Keyable, IndexedIterable<T> {
 	}
 
 	public abstract Registry<T> freeze();
-
-	public abstract RegistryEntry.Reference<T> getOrCreateEntry(RegistryKey<T> key);
-
-	public abstract DataResult<RegistryEntry.Reference<T>> getOrCreateEntryDataResult(RegistryKey<T> key);
 
 	public abstract RegistryEntry.Reference<T> createEntry(T value);
 
@@ -805,8 +832,46 @@ public abstract class Registry<T> implements Keyable, IndexedIterable<T> {
 		};
 	}
 
+	public RegistryEntryOwner<T> getEntryOwner() {
+		return this.wrapper;
+	}
+
+	/**
+	 * {@return a registry wrapper that does not mutate the backing registry under
+	 * any circumstances}
+	 * 
+	 * @see net.minecraft.command.CommandRegistryAccess.EntryListCreationPolicy#FAIL
+	 */
+	public RegistryWrapper.Impl<T> getReadOnlyWrapper() {
+		return this.wrapper;
+	}
+
+	/**
+	 * {@return a registry wrapper that creates and stores a new registry entry list
+	 * when handling an unknown tag key}
+	 * 
+	 * @see net.minecraft.command.CommandRegistryAccess.EntryListCreationPolicy#CREATE_NEW
+	 */
+	public RegistryWrapper.Impl<T> getTagCreatingWrapper() {
+		return new RegistryWrapper.Impl.Delegating<T>() {
+			@Override
+			protected RegistryWrapper.Impl<T> getBase() {
+				return Registry.this.wrapper;
+			}
+
+			@Override
+			public Optional<RegistryEntryList.Named<T>> getOptional(TagKey<T> tag) {
+				return Optional.of(this.getOrThrow(tag));
+			}
+
+			@Override
+			public RegistryEntryList.Named<T> getOrThrow(TagKey<T> tag) {
+				return Registry.this.getOrCreateEntryList(tag);
+			}
+		};
+	}
+
 	static {
-		BuiltinRegistries.init();
 		DEFAULT_ENTRIES.forEach((id, defaultEntry) -> {
 			if (defaultEntry.get() == null) {
 				LOGGER.error("Unable to bootstrap registry '{}'", id);

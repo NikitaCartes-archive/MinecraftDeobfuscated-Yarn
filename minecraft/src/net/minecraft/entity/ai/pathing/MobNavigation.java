@@ -138,4 +138,8 @@ public class MobNavigation extends EntityNavigation {
 	public void setAvoidSunlight(boolean avoidSunlight) {
 		this.avoidSunlight = avoidSunlight;
 	}
+
+	public void setCanWalkOverFences(boolean canWalkOverFences) {
+		this.nodeMaker.setCanWalkOverFences(canWalkOverFences);
+	}
 }

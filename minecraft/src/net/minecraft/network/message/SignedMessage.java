@@ -26,18 +26,18 @@ import net.minecraft.util.dynamic.Codecs;
 public record SignedMessage(
 	MessageLink link, @Nullable MessageSignatureData signature, MessageBody signedBody, @Nullable Text unsignedContent, FilterMask filterMask
 ) {
-	public static final MapCodec<SignedMessage> field_40846 = RecordCodecBuilder.mapCodec(
+	public static final MapCodec<SignedMessage> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
-					MessageLink.field_40849.fieldOf("link").forGetter(SignedMessage::link),
-					MessageSignatureData.CODEC.optionalFieldOf("signature").forGetter(signedMessage -> Optional.ofNullable(signedMessage.signature)),
+					MessageLink.CODEC.fieldOf("link").forGetter(SignedMessage::link),
+					MessageSignatureData.CODEC.optionalFieldOf("signature").forGetter(message -> Optional.ofNullable(message.signature)),
 					MessageBody.CODEC.forGetter(SignedMessage::signedBody),
-					Codecs.TEXT.optionalFieldOf("unsigned_content").forGetter(signedMessage -> Optional.ofNullable(signedMessage.unsignedContent)),
+					Codecs.TEXT.optionalFieldOf("unsigned_content").forGetter(message -> Optional.ofNullable(message.unsignedContent)),
 					FilterMask.CODEC.optionalFieldOf("filter_mask", FilterMask.PASS_THROUGH).forGetter(SignedMessage::filterMask)
 				)
 				.apply(
 					instance,
-					(messageLink, optional, messageBody, optional2, filterMask) -> new SignedMessage(
-							messageLink, (MessageSignatureData)optional.orElse(null), messageBody, (Text)optional2.orElse(null), filterMask
+					(link, signature, signedBody, unsignedContent, filterMask) -> new SignedMessage(
+							link, (MessageSignatureData)signature.orElse(null), signedBody, (Text)unsignedContent.orElse(null), filterMask
 						)
 				)
 	);

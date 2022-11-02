@@ -8,8 +8,6 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.random.CheckedRandom;
 import net.minecraft.util.math.random.ChunkRandom;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.noise.NoiseConfig;
 
 public class RandomSpreadStructurePlacement extends StructurePlacement {
 	public static final Codec<RandomSpreadStructurePlacement> CODEC = RecordCodecBuilder.mapCodec(
@@ -76,8 +74,8 @@ public class RandomSpreadStructurePlacement extends StructurePlacement {
 	}
 
 	@Override
-	protected boolean isStartChunk(ChunkGenerator chunkGenerator, NoiseConfig noiseConfig, long seed, int chunkX, int chunkZ) {
-		ChunkPos chunkPos = this.getStartChunk(seed, chunkX, chunkZ);
+	protected boolean isStartChunk(StructurePlacementCalculator calculator, int chunkX, int chunkZ) {
+		ChunkPos chunkPos = this.getStartChunk(calculator.getStructureSeed(), chunkX, chunkZ);
 		return chunkPos.x == chunkX && chunkPos.z == chunkZ;
 	}
 

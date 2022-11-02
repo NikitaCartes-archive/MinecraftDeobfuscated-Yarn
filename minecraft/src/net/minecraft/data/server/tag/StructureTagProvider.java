@@ -1,18 +1,20 @@
 package net.minecraft.data.server.tag;
 
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.data.DataOutput;
 import net.minecraft.tag.StructureTags;
-import net.minecraft.util.registry.BuiltinRegistries;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryWrapper;
 import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.gen.structure.StructureKeys;
 
 public class StructureTagProvider extends AbstractTagProvider<Structure> {
-	public StructureTagProvider(DataOutput dataGenerator) {
-		super(dataGenerator, BuiltinRegistries.STRUCTURE);
+	public StructureTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
+		super(output, Registry.STRUCTURE_KEY, registryLookupFuture);
 	}
 
 	@Override
-	protected void configure() {
+	protected void configure(RegistryWrapper.WrapperLookup lookup) {
 		this.getOrCreateTagBuilder(StructureTags.VILLAGE)
 			.add(StructureKeys.VILLAGE_PLAINS)
 			.add(StructureKeys.VILLAGE_DESERT)

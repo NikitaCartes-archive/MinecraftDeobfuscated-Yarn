@@ -69,6 +69,10 @@ public final class ServerAddress {
 		}
 	}
 
+	public String toString() {
+		return this.hostAndPort.toString();
+	}
+
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;

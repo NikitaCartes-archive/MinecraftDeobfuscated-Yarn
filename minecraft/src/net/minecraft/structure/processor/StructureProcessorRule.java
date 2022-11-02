@@ -17,7 +17,7 @@ public class StructureProcessorRule {
 		instance -> instance.group(
 					RuleTest.TYPE_CODEC.fieldOf("input_predicate").forGetter(rule -> rule.inputPredicate),
 					RuleTest.TYPE_CODEC.fieldOf("location_predicate").forGetter(rule -> rule.locationPredicate),
-					PosRuleTest.field_25007.optionalFieldOf("position_predicate", AlwaysTruePosRuleTest.INSTANCE).forGetter(rule -> rule.positionPredicate),
+					PosRuleTest.BASE_CODEC.optionalFieldOf("position_predicate", AlwaysTruePosRuleTest.INSTANCE).forGetter(rule -> rule.positionPredicate),
 					BlockState.CODEC.fieldOf("output_state").forGetter(rule -> rule.outputState),
 					NbtCompound.CODEC.optionalFieldOf("output_nbt").forGetter(rule -> Optional.ofNullable(rule.outputNbt))
 				)
@@ -48,10 +48,10 @@ public class StructureProcessorRule {
 		this.outputNbt = (NbtCompound)nbt.orElse(null);
 	}
 
-	public boolean test(BlockState input, BlockState location, BlockPos blockPos, BlockPos blockPos2, BlockPos pivot, Random random) {
+	public boolean test(BlockState input, BlockState currentState, BlockPos originalPos, BlockPos currentPos, BlockPos pivot, Random random) {
 		return this.inputPredicate.test(input, random)
-			&& this.locationPredicate.test(location, random)
-			&& this.positionPredicate.test(blockPos, blockPos2, pivot, random);
+			&& this.locationPredicate.test(currentState, random)
+			&& this.positionPredicate.test(originalPos, currentPos, pivot, random);
 	}
 
 	public BlockState getOutputState() {

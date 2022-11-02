@@ -10,13 +10,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.command.CommandRegistryWrapper;
 import net.minecraft.item.Item;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryWrapper;
 
 public class ItemStackArgumentType implements ArgumentType<ItemStackArgument> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("stick", "minecraft:stick", "stick{foo=bar}");
-	private final CommandRegistryWrapper<Item> registryWrapper;
+	private final RegistryWrapper<Item> registryWrapper;
 
 	public ItemStackArgumentType(CommandRegistryAccess commandRegistryAccess) {
 		this.registryWrapper = commandRegistryAccess.createWrapper(Registry.ITEM_KEY);

@@ -39,9 +39,12 @@ public class MetadataProvider implements DataProvider {
 		return "Pack Metadata";
 	}
 
-	public static MetadataProvider create(DataOutput output, Text description, FeatureSet requiredFeatures) {
+	public static MetadataProvider create(DataOutput output, Text description) {
 		return new MetadataProvider(output)
-			.add(PackResourceMetadata.SERIALIZER, new PackResourceMetadata(description, MinecraftVersion.CURRENT.getPackVersion(PackType.DATA)))
-			.add(PackFeatureSetMetadata.SERIALIZER, new PackFeatureSetMetadata(requiredFeatures));
+			.add(PackResourceMetadata.SERIALIZER, new PackResourceMetadata(description, MinecraftVersion.CURRENT.getPackVersion(PackType.DATA)));
+	}
+
+	public static MetadataProvider create(DataOutput output, Text description, FeatureSet requiredFeatures) {
+		return create(output, description).add(PackFeatureSetMetadata.SERIALIZER, new PackFeatureSetMetadata(requiredFeatures));
 	}
 }

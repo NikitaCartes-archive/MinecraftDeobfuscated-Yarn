@@ -41,7 +41,9 @@ import net.minecraft.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntryLookup;
 import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.RegistryWrapper;
 import net.minecraft.village.raid.Raid;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
@@ -107,7 +109,7 @@ public class AdventureTabAdvancementGenerator implements AdvancementTabGenerator
 	}
 
 	@Override
-	public void accept(Consumer<Advancement> exporter) {
+	public void accept(RegistryWrapper.WrapperLookup lookup, Consumer<Advancement> exporter) {
 		Advancement advancement = Advancement.Builder.create()
 			.display(
 				Items.MAP,
@@ -137,7 +139,8 @@ public class AdventureTabAdvancementGenerator implements AdvancementTabGenerator
 			)
 			.criterion("slept_in_bed", TickCriterion.Conditions.createSleptInBed())
 			.build(exporter, "adventure/sleep_in_bed");
-		requireListedBiomesVisited(Advancement.Builder.create(), MultiNoiseBiomeSource.Preset.OVERWORLD.stream().toList())
+		RegistryEntryLookup<Biome> registryEntryLookup = lookup.getWrapperOrThrow(Registry.BIOME_KEY);
+		requireListedBiomesVisited(Advancement.Builder.create(), MultiNoiseBiomeSource.Preset.OVERWORLD.stream(registryEntryLookup).toList())
 			.parent(advancement2)
 			.display(
 				Items.DIAMOND_BOOTS,

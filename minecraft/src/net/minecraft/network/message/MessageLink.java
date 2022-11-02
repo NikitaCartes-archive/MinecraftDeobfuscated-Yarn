@@ -15,7 +15,7 @@ import net.minecraft.util.dynamic.Codecs;
  * Represents a link to the preceding message that a particular message has.
  */
 public record MessageLink(int index, UUID sender, UUID sessionId) {
-	public static final Codec<MessageLink> field_40849 = RecordCodecBuilder.create(
+	public static final Codec<MessageLink> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codecs.NONNEGATIVE_INT.fieldOf("index").forGetter(MessageLink::index),
 					Uuids.INT_STREAM_CODEC.fieldOf("sender").forGetter(MessageLink::sender),

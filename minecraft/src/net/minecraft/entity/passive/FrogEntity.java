@@ -25,6 +25,7 @@ import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.control.AquaticMoveControl;
 import net.minecraft.entity.ai.control.LookControl;
 import net.minecraft.entity.ai.pathing.AmphibiousPathNodeMaker;
+import net.minecraft.entity.ai.pathing.AmphibiousSwimNavigation;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.entity.ai.pathing.PathNodeNavigator;
@@ -409,7 +410,7 @@ public class FrogEntity extends AnimalEntity {
 		}
 	}
 
-	static class FrogSwimNavigation extends AxolotlSwimNavigation {
+	static class FrogSwimNavigation extends AmphibiousSwimNavigation {
 		FrogSwimNavigation(FrogEntity frog, World world) {
 			super(frog, world);
 		}
