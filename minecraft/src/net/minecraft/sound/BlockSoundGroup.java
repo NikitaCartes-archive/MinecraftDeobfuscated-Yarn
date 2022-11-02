@@ -25,11 +25,11 @@ public class BlockSoundGroup {
 	public static final BlockSoundGroup LILY_PAD = new BlockSoundGroup(
 		1.0F,
 		1.0F,
-		SoundEvents.BLOCK_GRASS_BREAK,
-		SoundEvents.BLOCK_GRASS_STEP,
+		SoundEvents.BLOCK_BIG_DRIPLEAF_BREAK,
+		SoundEvents.BLOCK_BIG_DRIPLEAF_STEP,
 		SoundEvents.BLOCK_LILY_PAD_PLACE,
-		SoundEvents.BLOCK_GRASS_HIT,
-		SoundEvents.BLOCK_GRASS_FALL
+		SoundEvents.BLOCK_BIG_DRIPLEAF_HIT,
+		SoundEvents.BLOCK_BIG_DRIPLEAF_FALL
 	);
 	public static final BlockSoundGroup STONE = new BlockSoundGroup(
 		1.0F,

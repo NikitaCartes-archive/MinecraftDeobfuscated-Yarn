@@ -10,7 +10,6 @@ import javax.annotation.Nullable;
 import net.minecraft.structure.StructureTemplate;
 import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.structure.processor.StructureProcessorList;
-import net.minecraft.structure.processor.StructureProcessorLists;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
@@ -29,6 +28,7 @@ public abstract class StructurePoolElement {
 	public static final Codec<StructurePoolElement> CODEC = Registry.STRUCTURE_POOL_ELEMENT
 		.getCodec()
 		.dispatch("element_type", StructurePoolElement::getType, StructurePoolElementType::codec);
+	private static final RegistryEntry<StructureProcessorList> EMPTY_PROCESSORS = RegistryEntry.of(new StructureProcessorList(List.of()));
 	@Nullable
 	private volatile StructurePool.Projection projection;
 
@@ -91,7 +91,7 @@ public abstract class StructurePoolElement {
 	}
 
 	public static Function<StructurePool.Projection, LegacySinglePoolElement> ofLegacySingle(String id) {
-		return projection -> new LegacySinglePoolElement(Either.left(new Identifier(id)), StructureProcessorLists.EMPTY, projection);
+		return projection -> new LegacySinglePoolElement(Either.left(new Identifier(id)), EMPTY_PROCESSORS, projection);
 	}
 
 	public static Function<StructurePool.Projection, LegacySinglePoolElement> ofProcessedLegacySingle(
@@ -101,7 +101,7 @@ public abstract class StructurePoolElement {
 	}
 
 	public static Function<StructurePool.Projection, SinglePoolElement> ofSingle(String id) {
-		return projection -> new SinglePoolElement(Either.left(new Identifier(id)), StructureProcessorLists.EMPTY, projection);
+		return projection -> new SinglePoolElement(Either.left(new Identifier(id)), EMPTY_PROCESSORS, projection);
 	}
 
 	public static Function<StructurePool.Projection, SinglePoolElement> ofProcessedSingle(String id, RegistryEntry<StructureProcessorList> processorListEntry) {

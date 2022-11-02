@@ -4,14 +4,11 @@ import java.util.OptionalLong;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
-import net.minecraft.util.registry.BuiltinRegistries;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.Registerable;
 
 public class DimensionTypeRegistrar {
-	public static RegistryEntry<DimensionType> initAndGetDefault(Registry<DimensionType> registry) {
-		BuiltinRegistries.add(
-			registry,
+	public static void bootstrap(Registerable<DimensionType> dimensionTypeRegisterable) {
+		dimensionTypeRegisterable.register(
 			DimensionTypes.OVERWORLD,
 			new DimensionType(
 				OptionalLong.empty(),
@@ -31,8 +28,7 @@ public class DimensionTypeRegistrar {
 				new DimensionType.MonsterSettings(false, true, UniformIntProvider.create(0, 7), 0)
 			)
 		);
-		BuiltinRegistries.add(
-			registry,
+		dimensionTypeRegisterable.register(
 			DimensionTypes.THE_NETHER,
 			new DimensionType(
 				OptionalLong.of(18000L),
@@ -52,8 +48,7 @@ public class DimensionTypeRegistrar {
 				new DimensionType.MonsterSettings(true, false, ConstantIntProvider.create(11), 15)
 			)
 		);
-		BuiltinRegistries.add(
-			registry,
+		dimensionTypeRegisterable.register(
 			DimensionTypes.THE_END,
 			new DimensionType(
 				OptionalLong.of(6000L),
@@ -73,8 +68,7 @@ public class DimensionTypeRegistrar {
 				new DimensionType.MonsterSettings(false, true, UniformIntProvider.create(0, 7), 0)
 			)
 		);
-		return BuiltinRegistries.add(
-			registry,
+		dimensionTypeRegisterable.register(
 			DimensionTypes.OVERWORLD_CAVES,
 			new DimensionType(
 				OptionalLong.empty(),

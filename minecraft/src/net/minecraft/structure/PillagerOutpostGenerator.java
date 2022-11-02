@@ -5,34 +5,39 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.structure.pool.StructurePools;
+import net.minecraft.structure.processor.StructureProcessorList;
 import net.minecraft.structure.processor.StructureProcessorLists;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registerable;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryEntryLookup;
+import net.minecraft.util.registry.RegistryKey;
 
 public class PillagerOutpostGenerator {
-	public static final RegistryEntry<StructurePool> STRUCTURE_POOLS = StructurePools.register(
-		new StructurePool(
-			new Identifier("pillager_outpost/base_plates"),
-			new Identifier("empty"),
-			ImmutableList.of(Pair.of(StructurePoolElement.ofLegacySingle("pillager_outpost/base_plate"), 1)),
-			StructurePool.Projection.RIGID
-		)
-	);
+	public static final RegistryKey<StructurePool> STRUCTURE_POOLS = StructurePools.of("pillager_outpost/base_plates");
 
-	public static void init() {
-	}
-
-	static {
-		StructurePools.register(
+	public static void bootstrap(Registerable<StructurePool> poolRegisterable) {
+		RegistryEntryLookup<StructureProcessorList> registryEntryLookup = poolRegisterable.getRegistryLookup(Registry.STRUCTURE_PROCESSOR_LIST_KEY);
+		RegistryEntry<StructureProcessorList> registryEntry = registryEntryLookup.getOrThrow(StructureProcessorLists.OUTPOST_ROT);
+		RegistryEntryLookup<StructurePool> registryEntryLookup2 = poolRegisterable.getRegistryLookup(Registry.STRUCTURE_POOL_KEY);
+		RegistryEntry<StructurePool> registryEntry2 = registryEntryLookup2.getOrThrow(StructurePools.EMPTY);
+		poolRegisterable.register(
+			STRUCTURE_POOLS,
 			new StructurePool(
-				new Identifier("pillager_outpost/towers"),
-				new Identifier("empty"),
+				registryEntry2, ImmutableList.of(Pair.of(StructurePoolElement.ofLegacySingle("pillager_outpost/base_plate"), 1)), StructurePool.Projection.RIGID
+			)
+		);
+		StructurePools.register(
+			poolRegisterable,
+			"pillager_outpost/towers",
+			new StructurePool(
+				registryEntry2,
 				ImmutableList.of(
 					Pair.of(
 						StructurePoolElement.ofList(
 							ImmutableList.of(
 								StructurePoolElement.ofLegacySingle("pillager_outpost/watchtower"),
-								StructurePoolElement.ofProcessedLegacySingle("pillager_outpost/watchtower_overgrown", StructureProcessorLists.OUTPOST_ROT)
+								StructurePoolElement.ofProcessedLegacySingle("pillager_outpost/watchtower_overgrown", registryEntry)
 							)
 						),
 						1
@@ -42,17 +47,19 @@ public class PillagerOutpostGenerator {
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"pillager_outpost/feature_plates",
 			new StructurePool(
-				new Identifier("pillager_outpost/feature_plates"),
-				new Identifier("empty"),
+				registryEntry2,
 				ImmutableList.of(Pair.of(StructurePoolElement.ofLegacySingle("pillager_outpost/feature_plate"), 1)),
 				StructurePool.Projection.TERRAIN_MATCHING
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"pillager_outpost/features",
 			new StructurePool(
-				new Identifier("pillager_outpost/features"),
-				new Identifier("empty"),
+				registryEntry2,
 				ImmutableList.of(
 					Pair.of(StructurePoolElement.ofLegacySingle("pillager_outpost/feature_cage1"), 1),
 					Pair.of(StructurePoolElement.ofLegacySingle("pillager_outpost/feature_cage2"), 1),

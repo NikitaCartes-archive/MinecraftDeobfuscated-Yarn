@@ -25,6 +25,7 @@ import net.minecraft.world.event.GameEvent;
 import org.slf4j.Logger;
 
 public abstract class MobSpawnerLogic {
+	public static final String SPAWN_DATA_KEY = "SpawnData";
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int field_30951 = 1;
 	private int spawnDelay = 20;
@@ -53,7 +54,7 @@ public abstract class MobSpawnerLogic {
 	public void clientTick(World world, BlockPos pos) {
 		if (!this.isPlayerInRange(world, pos)) {
 			this.field_9159 = this.field_9161;
-		} else {
+		} else if (this.renderedEntity != null) {
 			Random random = world.getRandom();
 			double d = (double)pos.getX() + random.nextDouble();
 			double e = (double)pos.getY() + random.nextDouble();
@@ -239,8 +240,12 @@ public abstract class MobSpawnerLogic {
 	public Entity getRenderedEntity(World world, Random random, BlockPos pos) {
 		if (this.renderedEntity == null) {
 			NbtCompound nbtCompound = this.getSpawnEntry(world, random, pos).getNbt();
+			if (!nbtCompound.contains("id", NbtElement.STRING_TYPE)) {
+				return null;
+			}
+
 			this.renderedEntity = EntityType.loadEntityWithPassengers(nbtCompound, world, Function.identity());
-			if (nbtCompound.getSize() == 1 && nbtCompound.contains("id", NbtElement.STRING_TYPE) && this.renderedEntity instanceof MobEntity) {
+			if (nbtCompound.getSize() == 1 && this.renderedEntity instanceof MobEntity) {
 			}
 		}
 

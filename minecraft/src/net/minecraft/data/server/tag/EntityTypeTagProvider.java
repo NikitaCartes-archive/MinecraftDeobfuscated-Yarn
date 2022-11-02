@@ -1,17 +1,19 @@
 package net.minecraft.data.server.tag;
 
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.data.DataOutput;
 import net.minecraft.entity.EntityType;
 import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryWrapper;
 
-public class EntityTypeTagProvider extends AbstractTagProvider<EntityType<?>> {
-	public EntityTypeTagProvider(DataOutput root) {
-		super(root, Registry.ENTITY_TYPE);
+public class EntityTypeTagProvider extends ValueLookupTagProvider<EntityType<?>> {
+	public EntityTypeTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
+		super(output, Registry.ENTITY_TYPE_KEY, registryLookupFuture, entityType -> entityType.getRegistryEntry().registryKey());
 	}
 
 	@Override
-	protected void configure() {
+	protected void configure(RegistryWrapper.WrapperLookup lookup) {
 		this.getOrCreateTagBuilder(EntityTypeTags.SKELETONS).add(EntityType.SKELETON, EntityType.STRAY, EntityType.WITHER_SKELETON);
 		this.getOrCreateTagBuilder(EntityTypeTags.RAIDERS)
 			.add(EntityType.EVOKER, EntityType.PILLAGER, EntityType.RAVAGER, EntityType.VINDICATOR, EntityType.ILLUSIONER, EntityType.WITCH);

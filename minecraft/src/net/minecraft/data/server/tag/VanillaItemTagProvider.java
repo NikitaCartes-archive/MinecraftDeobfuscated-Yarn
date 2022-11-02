@@ -1,18 +1,22 @@
 package net.minecraft.data.server.tag;
 
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.block.Block;
 import net.minecraft.data.DataOutput;
 import net.minecraft.item.Items;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
+import net.minecraft.util.registry.RegistryWrapper;
 
 public class VanillaItemTagProvider extends AbstractItemTagProvider {
-	public VanillaItemTagProvider(DataOutput dataOutput, AbstractTagProvider<Block> abstractTagProvider) {
-		super(dataOutput, abstractTagProvider);
+	public VanillaItemTagProvider(
+		DataOutput dataOutput, CompletableFuture<RegistryWrapper.WrapperLookup> completableFuture, AbstractTagProvider<Block> abstractTagProvider
+	) {
+		super(dataOutput, completableFuture, abstractTagProvider);
 	}
 
 	@Override
-	protected void configure() {
+	protected void configure(RegistryWrapper.WrapperLookup lookup) {
 		this.copy(BlockTags.WOOL, ItemTags.WOOL);
 		this.copy(BlockTags.PLANKS, ItemTags.PLANKS);
 		this.copy(BlockTags.STRIPPED_LOGS, ItemTags.STRIPPED_LOGS);
@@ -24,6 +28,7 @@ public class VanillaItemTagProvider extends AbstractItemTagProvider {
 		this.copy(BlockTags.WOODEN_STAIRS, ItemTags.WOODEN_STAIRS);
 		this.copy(BlockTags.WOODEN_SLABS, ItemTags.WOODEN_SLABS);
 		this.copy(BlockTags.WOODEN_FENCES, ItemTags.WOODEN_FENCES);
+		this.copy(BlockTags.FENCE_GATES, ItemTags.FENCE_GATES);
 		this.copy(BlockTags.WOODEN_PRESSURE_PLATES, ItemTags.WOODEN_PRESSURE_PLATES);
 		this.copy(BlockTags.DOORS, ItemTags.DOORS);
 		this.copy(BlockTags.SAPLINGS, ItemTags.SAPLINGS);
@@ -185,9 +190,7 @@ public class VanillaItemTagProvider extends AbstractItemTagProvider {
 				Items.CRIMSON_DOOR,
 				Items.WARPED_DOOR,
 				Items.CRIMSON_SIGN,
-				Items.WARPED_SIGN,
-				Items.WARPED_HANGING_SIGN,
-				Items.CRIMSON_HANGING_SIGN
+				Items.WARPED_SIGN
 			);
 		this.getOrCreateTagBuilder(ItemTags.STONE_TOOL_MATERIALS).add(Items.COBBLESTONE, Items.BLACKSTONE, Items.COBBLED_DEEPSLATE);
 		this.getOrCreateTagBuilder(ItemTags.STONE_CRAFTING_MATERIALS).add(Items.COBBLESTONE, Items.BLACKSTONE, Items.COBBLED_DEEPSLATE);

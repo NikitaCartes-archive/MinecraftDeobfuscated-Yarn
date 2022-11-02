@@ -132,11 +132,11 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 		return this.template;
 	}
 
-	public BlockPos method_41625() {
+	public BlockPos getPos() {
 		return this.pos;
 	}
 
-	public StructurePlacementData method_41626() {
+	public StructurePlacementData getPlacementData() {
 		return this.placementData;
 	}
 }

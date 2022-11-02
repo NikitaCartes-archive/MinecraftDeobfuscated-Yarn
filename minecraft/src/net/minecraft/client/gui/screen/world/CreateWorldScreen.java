@@ -15,7 +15,6 @@ import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.OptionalLong;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
@@ -137,9 +136,7 @@ public class CreateWorldScreen extends Screen {
 		client.runTasks(completableFuture::isDone);
 		client.setScreen(
 			new CreateWorldScreen(
-				parent,
-				DataConfiguration.SAFE_MODE,
-				new MoreOptionsDialog((GeneratorOptionsHolder)completableFuture.join(), Optional.of(WorldPresets.DEFAULT), OptionalLong.empty())
+				parent, DataConfiguration.SAFE_MODE, new MoreOptionsDialog((GeneratorOptionsHolder)completableFuture.join(), Optional.of(WorldPresets.DEFAULT))
 			)
 		);
 	}
@@ -153,7 +150,7 @@ public class CreateWorldScreen extends Screen {
 			new MoreOptionsDialog(
 				generatorOptionsHolder,
 				WorldPresets.getWorldPreset(generatorOptionsHolder.selectedDimensions().dimensions()),
-				OptionalLong.of(generatorOptionsHolder.generatorOptions().getSeed())
+				generatorOptionsHolder.generatorOptions().getSeed()
 			)
 		);
 		createWorldScreen.levelName = levelInfo.getLevelName();

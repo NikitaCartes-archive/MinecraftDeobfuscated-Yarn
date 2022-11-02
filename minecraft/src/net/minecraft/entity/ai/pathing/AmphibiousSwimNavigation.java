@@ -1,15 +1,12 @@
-package net.minecraft.entity.passive;
+package net.minecraft.entity.ai.pathing;
 
-import net.minecraft.entity.ai.pathing.AmphibiousPathNodeMaker;
-import net.minecraft.entity.ai.pathing.EntityNavigation;
-import net.minecraft.entity.ai.pathing.PathNodeNavigator;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class AxolotlSwimNavigation extends EntityNavigation {
-	public AxolotlSwimNavigation(MobEntity mobEntity, World world) {
+public class AmphibiousSwimNavigation extends EntityNavigation {
+	public AmphibiousSwimNavigation(MobEntity mobEntity, World world) {
 		super(mobEntity, world);
 	}
 

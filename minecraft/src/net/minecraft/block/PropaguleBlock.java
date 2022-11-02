@@ -114,7 +114,7 @@ public class PropaguleBlock extends SaplingBlock implements Waterloggable {
 	}
 
 	@Override
-	public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
+	public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean isClient) {
 		return !isHanging(state) || !isFullyGrown(state);
 	}
 

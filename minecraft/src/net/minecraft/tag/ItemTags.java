@@ -16,6 +16,7 @@ public final class ItemTags {
 	public static final TagKey<Item> WOODEN_STAIRS = of("wooden_stairs");
 	public static final TagKey<Item> WOODEN_SLABS = of("wooden_slabs");
 	public static final TagKey<Item> WOODEN_FENCES = of("wooden_fences");
+	public static final TagKey<Item> FENCE_GATES = of("fence_gates");
 	public static final TagKey<Item> WOODEN_PRESSURE_PLATES = of("wooden_pressure_plates");
 	public static final TagKey<Item> WOODEN_TRAPDOORS = of("wooden_trapdoors");
 	public static final TagKey<Item> DOORS = of("doors");

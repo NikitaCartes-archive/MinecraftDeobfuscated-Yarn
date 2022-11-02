@@ -327,7 +327,7 @@ public class PiglinBrain {
 		} else if (isFood(itemStack) && !hasAteRecently(piglin)) {
 			setEatenRecently(piglin);
 		} else {
-			boolean bl = piglin.tryEquip(itemStack);
+			boolean bl = !piglin.tryEquip(itemStack).equals(ItemStack.EMPTY);
 			if (!bl) {
 				barterItem(piglin, itemStack);
 			}
@@ -362,13 +362,13 @@ public class PiglinBrain {
 			if (barter && bl) {
 				doBarter(piglin, getBarteredItem(piglin));
 			} else if (!bl) {
-				boolean bl2 = piglin.tryEquip(itemStack);
+				boolean bl2 = !piglin.tryEquip(itemStack).isEmpty();
 				if (!bl2) {
 					barterItem(piglin, itemStack);
 				}
 			}
 		} else {
-			boolean bl = piglin.tryEquip(itemStack);
+			boolean bl = !piglin.tryEquip(itemStack).isEmpty();
 			if (!bl) {
 				ItemStack itemStack2 = piglin.getMainHandStack();
 				if (isGoldenItem(itemStack2)) {

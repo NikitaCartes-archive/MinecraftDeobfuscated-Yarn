@@ -29,7 +29,6 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
-import net.minecraft.command.CommandRegistryWrapper;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -41,6 +40,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.PathUtil;
 import net.minecraft.util.WorldSavePath;
+import net.minecraft.util.registry.RegistryEntryLookup;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -56,16 +56,14 @@ public class StructureTemplateManager {
 	private ResourceManager resourceManager;
 	private final Path generatedPath;
 	private final List<StructureTemplateManager.Provider> providers;
-	private final CommandRegistryWrapper<Block> blockRegistryWrapper;
+	private final RegistryEntryLookup<Block> blockLookup;
 	private static final ResourceFinder NBT_FINDER = new ResourceFinder("structures", ".nbt");
 
-	public StructureTemplateManager(
-		ResourceManager resourceManager, LevelStorage.Session session, DataFixer dataFixer, CommandRegistryWrapper<Block> blockRegistryWrapper
-	) {
+	public StructureTemplateManager(ResourceManager resourceManager, LevelStorage.Session session, DataFixer dataFixer, RegistryEntryLookup<Block> blockLookup) {
 		this.resourceManager = resourceManager;
 		this.dataFixer = dataFixer;
 		this.generatedPath = session.getDirectory(WorldSavePath.GENERATED).normalize();
-		this.blockRegistryWrapper = blockRegistryWrapper;
+		this.blockLookup = blockLookup;
 		Builder<StructureTemplateManager.Provider> builder = ImmutableList.builder();
 		builder.add(new StructureTemplateManager.Provider(this::loadTemplateFromFile, this::streamTemplatesFromFile));
 		if (SharedConstants.isDevelopment) {
@@ -265,7 +263,7 @@ public class StructureTemplateManager {
 		}
 
 		StructureTemplate structureTemplate = new StructureTemplate();
-		structureTemplate.readNbt(this.blockRegistryWrapper, NbtHelper.update(this.dataFixer, DataFixTypes.STRUCTURE, nbt, nbt.getInt("DataVersion")));
+		structureTemplate.readNbt(this.blockLookup, NbtHelper.update(this.dataFixer, DataFixTypes.STRUCTURE, nbt, nbt.getInt("DataVersion")));
 		return structureTemplate;
 	}
 

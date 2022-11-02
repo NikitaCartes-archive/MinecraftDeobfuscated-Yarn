@@ -1,12 +1,14 @@
 package net.minecraft.data.server.tag;
 
 import com.google.common.annotations.VisibleForTesting;
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.data.DataOutput;
 import net.minecraft.tag.GameEventTags;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryWrapper;
 import net.minecraft.world.event.GameEvent;
 
-public class GameEventTagProvider extends AbstractTagProvider<GameEvent> {
+public class GameEventTagProvider extends ValueLookupTagProvider<GameEvent> {
 	@VisibleForTesting
 	static final GameEvent[] BASIC_GAME_EVENTS = new GameEvent[]{
 		GameEvent.BLOCK_ATTACH,
@@ -51,12 +53,12 @@ public class GameEventTagProvider extends AbstractTagProvider<GameEvent> {
 		GameEvent.TELEPORT
 	};
 
-	public GameEventTagProvider(DataOutput root) {
-		super(root, Registry.GAME_EVENT);
+	public GameEventTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
+		super(output, Registry.GAME_EVENT_KEY, registryLookupFuture, gameEvent -> gameEvent.getRegistryEntry().registryKey());
 	}
 
 	@Override
-	protected void configure() {
+	protected void configure(RegistryWrapper.WrapperLookup lookup) {
 		this.getOrCreateTagBuilder(GameEventTags.VIBRATIONS).add(BASIC_GAME_EVENTS).add(GameEvent.FLAP);
 		this.getOrCreateTagBuilder(GameEventTags.SHRIEKER_CAN_LISTEN).add(GameEvent.SCULK_SENSOR_TENDRILS_CLICKING);
 		this.getOrCreateTagBuilder(GameEventTags.WARDEN_CAN_LISTEN).add(BASIC_GAME_EVENTS).add(GameEvent.SHRIEK).addTag(GameEventTags.SHRIEKER_CAN_LISTEN);

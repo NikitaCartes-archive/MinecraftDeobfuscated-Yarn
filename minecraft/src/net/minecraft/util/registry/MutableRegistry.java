@@ -15,10 +15,12 @@ public abstract class MutableRegistry<T> extends Registry<T> {
 
 	public abstract RegistryEntry<T> set(int rawId, RegistryKey<T> key, T value, Lifecycle lifecycle);
 
-	public abstract RegistryEntry<T> add(RegistryKey<T> key, T entry, Lifecycle lifecycle);
+	public abstract RegistryEntry.Reference<T> add(RegistryKey<T> key, T entry, Lifecycle lifecycle);
 
 	/**
 	 * {@return whether the registry is empty}
 	 */
 	public abstract boolean isEmpty();
+
+	public abstract RegistryEntryLookup<T> createMutableEntryLookup();
 }

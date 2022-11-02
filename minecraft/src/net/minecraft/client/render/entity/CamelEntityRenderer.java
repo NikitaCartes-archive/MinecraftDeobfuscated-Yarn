@@ -9,13 +9,13 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class CamelEntityRenderer extends MobEntityRenderer<CamelEntity, CamelEntityModel<CamelEntity>> {
-	private static final Identifier field_40529 = new Identifier("textures/entity/camel/camel.png");
+	private static final Identifier TEXTURE = new Identifier("textures/entity/camel/camel.png");
 
-	public CamelEntityRenderer(EntityRendererFactory.Context context, EntityModelLayer entityModelLayer) {
-		super(context, new CamelEntityModel<>(context.getPart(entityModelLayer)), 0.7F);
+	public CamelEntityRenderer(EntityRendererFactory.Context ctx, EntityModelLayer layer) {
+		super(ctx, new CamelEntityModel<>(ctx.getPart(layer)), 0.7F);
 	}
 
 	public Identifier getTexture(CamelEntity camelEntity) {
-		return field_40529;
+		return TEXTURE;
 	}
 }

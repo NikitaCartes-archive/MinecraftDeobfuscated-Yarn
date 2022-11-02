@@ -20,6 +20,7 @@ public abstract class PathNodeMaker {
 	protected boolean canEnterOpenDoors;
 	protected boolean canOpenDoors;
 	protected boolean canSwim;
+	protected boolean canWalkOverFences;
 
 	public void init(ChunkCache cachedWorld, MobEntity entity) {
 		this.cachedWorld = cachedWorld;
@@ -82,6 +83,10 @@ public abstract class PathNodeMaker {
 		this.canSwim = canSwim;
 	}
 
+	public void setCanWalkOverFences(boolean canWalkOverFences) {
+		this.canWalkOverFences = canWalkOverFences;
+	}
+
 	public boolean canEnterOpenDoors() {
 		return this.canEnterOpenDoors;
 	}
@@ -92,5 +97,9 @@ public abstract class PathNodeMaker {
 
 	public boolean canSwim() {
 		return this.canSwim;
+	}
+
+	public boolean canWalkOverFences() {
+		return this.canWalkOverFences;
 	}
 }

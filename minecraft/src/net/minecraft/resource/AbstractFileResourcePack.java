@@ -15,9 +15,11 @@ import org.slf4j.Logger;
 public abstract class AbstractFileResourcePack implements ResourcePack {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final String name;
+	private final boolean alwaysStable;
 
-	protected AbstractFileResourcePack(String name) {
+	protected AbstractFileResourcePack(String name, boolean alwaysStable) {
 		this.name = name;
+		this.alwaysStable = alwaysStable;
 	}
 
 	@Nullable
@@ -91,5 +93,10 @@ public abstract class AbstractFileResourcePack implements ResourcePack {
 	@Override
 	public String getName() {
 		return this.name;
+	}
+
+	@Override
+	public boolean isAlwaysStable() {
+		return this.alwaysStable;
 	}
 }

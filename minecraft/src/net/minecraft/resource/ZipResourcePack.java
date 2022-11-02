@@ -26,8 +26,8 @@ public class ZipResourcePack extends AbstractFileResourcePack {
 	private ZipFile file;
 	private boolean failedToOpen;
 
-	public ZipResourcePack(String name, File backingZipFile) {
-		super(name);
+	public ZipResourcePack(String name, File backingZipFile, boolean alwaysStable) {
+		super(name, alwaysStable);
 		this.backingZipFile = backingZipFile;
 	}
 

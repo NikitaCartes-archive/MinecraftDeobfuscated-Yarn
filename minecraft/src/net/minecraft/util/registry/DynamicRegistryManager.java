@@ -18,11 +18,16 @@ import org.slf4j.Logger;
  * class serves as an immutable implementation of any particular collection
  * or configuration of dynamic registries.
  */
-public interface DynamicRegistryManager {
+public interface DynamicRegistryManager extends RegistryWrapper.WrapperLookup {
 	Logger LOGGER = LogUtils.getLogger();
 	DynamicRegistryManager.Immutable EMPTY = new DynamicRegistryManager.ImmutableImpl(Map.of()).toImmutable();
 
 	<E> Optional<Registry<E>> getOptional(RegistryKey<? extends Registry<? extends E>> key);
+
+	@Override
+	default <T> Optional<RegistryWrapper.Impl<T>> getOptionalWrapper(RegistryKey<? extends Registry<? extends T>> registryRef) {
+		return this.getOptional(registryRef).map(Registry::getReadOnlyWrapper);
+	}
 
 	/**
 	 * Retrieves a registry from this manager, or throws an exception when the registry

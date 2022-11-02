@@ -1,18 +1,20 @@
 package net.minecraft.data.server.tag;
 
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.data.DataOutput;
 import net.minecraft.item.Instrument;
 import net.minecraft.item.Instruments;
 import net.minecraft.tag.InstrumentTags;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryWrapper;
 
 public class InstrumentTagProvider extends AbstractTagProvider<Instrument> {
-	public InstrumentTagProvider(DataOutput dataGenerator) {
-		super(dataGenerator, Registry.INSTRUMENT);
+	public InstrumentTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
+		super(output, Registry.INSTRUMENT_KEY, registryLookupFuture);
 	}
 
 	@Override
-	protected void configure() {
+	protected void configure(RegistryWrapper.WrapperLookup lookup) {
 		this.getOrCreateTagBuilder(InstrumentTags.REGULAR_GOAT_HORNS)
 			.add(Instruments.PONDER_GOAT_HORN)
 			.add(Instruments.SING_GOAT_HORN)

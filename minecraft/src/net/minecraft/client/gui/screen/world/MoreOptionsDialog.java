@@ -13,7 +13,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
-import java.util.OptionalLong;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -65,12 +64,18 @@ public class MoreOptionsDialog implements Drawable {
 	private ButtonWidget importSettingsButton;
 	private GeneratorOptionsHolder generatorOptionsHolder;
 	private Optional<RegistryEntry<WorldPreset>> presetEntry;
-	private OptionalLong seed;
+	private long seed;
 
-	public MoreOptionsDialog(GeneratorOptionsHolder generatorOptionsHolder, Optional<RegistryKey<WorldPreset>> presetKey, OptionalLong seed) {
+	public MoreOptionsDialog(GeneratorOptionsHolder generatorOptionsHolder, Optional<RegistryKey<WorldPreset>> presetKey, long seed) {
 		this.generatorOptionsHolder = generatorOptionsHolder;
 		this.presetEntry = createPresetEntry(generatorOptionsHolder, presetKey);
 		this.seed = seed;
+	}
+
+	public MoreOptionsDialog(GeneratorOptionsHolder generatorOptionsHolder, Optional<RegistryKey<WorldPreset>> presetKey) {
+		this.generatorOptionsHolder = generatorOptionsHolder;
+		this.presetEntry = createPresetEntry(generatorOptionsHolder, presetKey);
+		this.seed = GeneratorOptions.getRandomSeed();
 	}
 
 	private static Optional<RegistryEntry<WorldPreset>> createPresetEntry(
@@ -83,7 +88,7 @@ public class MoreOptionsDialog implements Drawable {
 		this.textRenderer = textRenderer;
 		this.parentWidth = parent.width;
 		this.seedTextField = new TextFieldWidget(this.textRenderer, this.parentWidth / 2 - 100, 60, 200, 20, Text.translatable("selectWorld.enterSeed"));
-		this.seedTextField.setText(seedToString(this.seed));
+		this.seedTextField.setText(Long.toString(this.seed));
 		this.seedTextField.setChangedListener(seedText -> this.seed = GeneratorOptions.parseSeed(this.seedTextField.getText()));
 		parent.addSelectableChild(this.seedTextField);
 		int i = this.parentWidth / 2 - 155;
@@ -150,7 +155,7 @@ public class MoreOptionsDialog implements Drawable {
 					150,
 					20,
 					Text.translatable("selectWorld.bonusItems"),
-					(button, bonusChest) -> this.apply(generatorOptions -> generatorOptions.withBonusChest(bonusChest))
+					(button, bonusChest) -> this.apply(generationOptions -> generationOptions.withBonusChest(bonusChest))
 				)
 		);
 		this.bonusItemsButton.visible = false;
@@ -229,8 +234,8 @@ public class MoreOptionsDialog implements Drawable {
 		this.generatorOptionsHolder = this.generatorOptionsHolder.with(generatorOptions, dimensionsRegistryHolder);
 		this.presetEntry = createPresetEntry(this.generatorOptionsHolder, WorldPresets.getWorldPreset(dimensionsRegistryHolder.dimensions()));
 		this.setMapTypeButtonVisible(true);
-		this.seed = OptionalLong.of(generatorOptions.getSeed());
-		this.seedTextField.setText(seedToString(this.seed));
+		this.seed = generatorOptions.getSeed();
+		this.seedTextField.setText(Long.toString(this.seed));
 	}
 
 	public void tickSeedTextField() {
@@ -261,12 +266,8 @@ public class MoreOptionsDialog implements Drawable {
 		this.generatorOptionsHolder = generatorOptionsHolder;
 	}
 
-	private static String seedToString(OptionalLong seed) {
-		return seed.isPresent() ? Long.toString(seed.getAsLong()) : "";
-	}
-
 	public GeneratorOptions getGeneratorOptionsHolder(boolean debug, boolean hardcore) {
-		OptionalLong optionalLong = GeneratorOptions.parseSeed(this.seedTextField.getText());
+		long l = GeneratorOptions.parseSeed(this.seedTextField.getText());
 		GeneratorOptions generatorOptions = this.generatorOptionsHolder.generatorOptions();
 		if (debug || hardcore) {
 			generatorOptions = generatorOptions.withBonusChest(false);
@@ -276,7 +277,7 @@ public class MoreOptionsDialog implements Drawable {
 			generatorOptions = generatorOptions.withStructures(false);
 		}
 
-		return generatorOptions.withSeed(optionalLong);
+		return generatorOptions.withSeed(l);
 	}
 
 	public boolean isDebugWorld() {

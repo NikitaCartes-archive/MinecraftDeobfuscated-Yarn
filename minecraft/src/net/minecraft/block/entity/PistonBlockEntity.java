@@ -9,7 +9,6 @@ import net.minecraft.block.PistonBlock;
 import net.minecraft.block.PistonHeadBlock;
 import net.minecraft.block.enums.PistonType;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.command.CommandRegistryWrapper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.nbt.NbtCompound;
@@ -23,6 +22,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntryLookup;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -324,10 +324,10 @@ public class PistonBlockEntity extends BlockEntity {
 	@Override
 	public void readNbt(NbtCompound nbt) {
 		super.readNbt(nbt);
-		CommandRegistryWrapper<Block> commandRegistryWrapper = (CommandRegistryWrapper<Block>)(this.world != null
+		RegistryEntryLookup<Block> registryEntryLookup = (RegistryEntryLookup<Block>)(this.world != null
 			? this.world.createCommandRegistryWrapper(Registry.BLOCK_KEY)
-			: CommandRegistryWrapper.of(Registry.BLOCK));
-		this.pushedBlock = NbtHelper.toBlockState(commandRegistryWrapper, nbt.getCompound("blockState"));
+			: Registry.BLOCK.getReadOnlyWrapper());
+		this.pushedBlock = NbtHelper.toBlockState(registryEntryLookup, nbt.getCompound("blockState"));
 		this.facing = Direction.byId(nbt.getInt("facing"));
 		this.progress = nbt.getFloat("progress");
 		this.lastProgress = this.progress;
@@ -382,7 +382,7 @@ public class PistonBlockEntity extends BlockEntity {
 	@Override
 	public void setWorld(World world) {
 		super.setWorld(world);
-		if (world.createCommandRegistryWrapper(Registry.BLOCK_KEY).getEntry(this.pushedBlock.getBlock().getRegistryEntry().registryKey()).isEmpty()) {
+		if (world.createCommandRegistryWrapper(Registry.BLOCK_KEY).getOptional(this.pushedBlock.getBlock().getRegistryEntry().registryKey()).isEmpty()) {
 			this.pushedBlock = Blocks.AIR.getDefaultState();
 		}
 	}

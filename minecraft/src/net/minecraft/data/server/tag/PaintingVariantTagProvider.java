@@ -1,18 +1,20 @@
 package net.minecraft.data.server.tag;
 
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.data.DataOutput;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.entity.decoration.painting.PaintingVariants;
 import net.minecraft.tag.PaintingVariantTags;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryWrapper;
 
 public class PaintingVariantTagProvider extends AbstractTagProvider<PaintingVariant> {
-	public PaintingVariantTagProvider(DataOutput dataGenerator) {
-		super(dataGenerator, Registry.PAINTING_VARIANT);
+	public PaintingVariantTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
+		super(output, Registry.PAINTING_VARIANT_KEY, registryLookupFuture);
 	}
 
 	@Override
-	protected void configure() {
+	protected void configure(RegistryWrapper.WrapperLookup lookup) {
 		this.getOrCreateTagBuilder(PaintingVariantTags.PLACEABLE)
 			.add(
 				PaintingVariants.KEBAB,

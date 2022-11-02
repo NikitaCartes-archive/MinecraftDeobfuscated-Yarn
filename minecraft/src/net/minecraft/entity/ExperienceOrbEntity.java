@@ -24,7 +24,7 @@ public class ExperienceOrbEntity extends Entity {
 	private static final int DESPAWN_AGE = 6000;
 	private static final int EXPENSIVE_UPDATE_INTERVAL = 20;
 	private static final int field_30057 = 8;
-	private static final int field_30058 = 40;
+	private static final int MERGING_CHANCE_FRACTION = 40;
 	private static final double field_30059 = 0.5;
 	private int orbAge;
 	private int health = 5;

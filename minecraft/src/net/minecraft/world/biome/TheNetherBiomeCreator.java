@@ -7,17 +7,20 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.BiomeAdditionsSound;
 import net.minecraft.sound.BiomeMoodSound;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.registry.RegistryEntryLookup;
 import net.minecraft.world.gen.GenerationStep;
+import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.carver.ConfiguredCarvers;
 import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
 import net.minecraft.world.gen.feature.MiscPlacedFeatures;
 import net.minecraft.world.gen.feature.NetherPlacedFeatures;
 import net.minecraft.world.gen.feature.OrePlacedFeatures;
+import net.minecraft.world.gen.feature.PlacedFeature;
 import net.minecraft.world.gen.feature.TreePlacedFeatures;
 import net.minecraft.world.gen.feature.VegetationPlacedFeatures;
 
 public class TheNetherBiomeCreator {
-	public static Biome createNetherWastes() {
+	public static Biome createNetherWastes(RegistryEntryLookup<PlacedFeature> featureLookup, RegistryEntryLookup<ConfiguredCarver<?>> carverLookup) {
 		SpawnSettings spawnSettings = new SpawnSettings.Builder()
 			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.GHAST, 50, 4, 4))
 			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.ZOMBIFIED_PIGLIN, 100, 4, 4))
@@ -26,11 +29,11 @@ public class TheNetherBiomeCreator {
 			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.PIGLIN, 15, 4, 4))
 			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.STRIDER, 60, 1, 2))
 			.build();
-		GenerationSettings.Builder builder = new GenerationSettings.Builder()
+		GenerationSettings.LookupBackedBuilder lookupBackedBuilder = new GenerationSettings.LookupBackedBuilder(featureLookup, carverLookup)
 			.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.NETHER_CAVE)
 			.feature(GenerationStep.Feature.VEGETAL_DECORATION, MiscPlacedFeatures.SPRING_LAVA);
-		DefaultBiomeFeatures.addDefaultMushrooms(builder);
-		builder.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, NetherPlacedFeatures.SPRING_OPEN)
+		DefaultBiomeFeatures.addDefaultMushrooms(lookupBackedBuilder);
+		lookupBackedBuilder.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, NetherPlacedFeatures.SPRING_OPEN)
 			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, NetherPlacedFeatures.PATCH_FIRE)
 			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, NetherPlacedFeatures.PATCH_SOUL_FIRE)
 			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, NetherPlacedFeatures.GLOWSTONE_EXTRA)
@@ -39,7 +42,7 @@ public class TheNetherBiomeCreator {
 			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, VegetationPlacedFeatures.RED_MUSHROOM_NETHER)
 			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, OrePlacedFeatures.ORE_MAGMA)
 			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, NetherPlacedFeatures.SPRING_CLOSED);
-		DefaultBiomeFeatures.addNetherMineables(builder);
+		DefaultBiomeFeatures.addNetherMineables(lookupBackedBuilder);
 		return new Biome.Builder()
 			.precipitation(Biome.Precipitation.NONE)
 			.temperature(2.0F)
@@ -57,11 +60,11 @@ public class TheNetherBiomeCreator {
 					.build()
 			)
 			.spawnSettings(spawnSettings)
-			.generationSettings(builder.build())
+			.generationSettings(lookupBackedBuilder.build())
 			.build();
 	}
 
-	public static Biome createSoulSandValley() {
+	public static Biome createSoulSandValley(RegistryEntryLookup<PlacedFeature> featureLookup, RegistryEntryLookup<ConfiguredCarver<?>> carverLookup) {
 		double d = 0.7;
 		double e = 0.15;
 		SpawnSettings spawnSettings = new SpawnSettings.Builder()
@@ -74,7 +77,7 @@ public class TheNetherBiomeCreator {
 			.spawnCost(EntityType.ENDERMAN, 0.7, 0.15)
 			.spawnCost(EntityType.STRIDER, 0.7, 0.15)
 			.build();
-		GenerationSettings.Builder builder = new GenerationSettings.Builder()
+		GenerationSettings.LookupBackedBuilder lookupBackedBuilder = new GenerationSettings.LookupBackedBuilder(featureLookup, carverLookup)
 			.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.NETHER_CAVE)
 			.feature(GenerationStep.Feature.VEGETAL_DECORATION, MiscPlacedFeatures.SPRING_LAVA)
 			.feature(GenerationStep.Feature.LOCAL_MODIFICATIONS, NetherPlacedFeatures.BASALT_PILLAR)
@@ -87,7 +90,7 @@ public class TheNetherBiomeCreator {
 			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, OrePlacedFeatures.ORE_MAGMA)
 			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, NetherPlacedFeatures.SPRING_CLOSED)
 			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, OrePlacedFeatures.ORE_SOUL_SAND);
-		DefaultBiomeFeatures.addNetherMineables(builder);
+		DefaultBiomeFeatures.addNetherMineables(lookupBackedBuilder);
 		return new Biome.Builder()
 			.precipitation(Biome.Precipitation.NONE)
 			.temperature(2.0F)
@@ -106,17 +109,17 @@ public class TheNetherBiomeCreator {
 					.build()
 			)
 			.spawnSettings(spawnSettings)
-			.generationSettings(builder.build())
+			.generationSettings(lookupBackedBuilder.build())
 			.build();
 	}
 
-	public static Biome createBasaltDeltas() {
+	public static Biome createBasaltDeltas(RegistryEntryLookup<PlacedFeature> featureLookup, RegistryEntryLookup<ConfiguredCarver<?>> carverLookup) {
 		SpawnSettings spawnSettings = new SpawnSettings.Builder()
 			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.GHAST, 40, 1, 1))
 			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.MAGMA_CUBE, 100, 2, 5))
 			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.STRIDER, 60, 1, 2))
 			.build();
-		GenerationSettings.Builder builder = new GenerationSettings.Builder()
+		GenerationSettings.LookupBackedBuilder lookupBackedBuilder = new GenerationSettings.LookupBackedBuilder(featureLookup, carverLookup)
 			.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.NETHER_CAVE)
 			.feature(GenerationStep.Feature.SURFACE_STRUCTURES, NetherPlacedFeatures.DELTA)
 			.feature(GenerationStep.Feature.SURFACE_STRUCTURES, NetherPlacedFeatures.SMALL_BASALT_COLUMNS)
@@ -134,7 +137,7 @@ public class TheNetherBiomeCreator {
 			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, NetherPlacedFeatures.SPRING_CLOSED_DOUBLE)
 			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, OrePlacedFeatures.ORE_GOLD_DELTAS)
 			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, OrePlacedFeatures.ORE_QUARTZ_DELTAS);
-		DefaultBiomeFeatures.addAncientDebris(builder);
+		DefaultBiomeFeatures.addAncientDebris(lookupBackedBuilder);
 		return new Biome.Builder()
 			.precipitation(Biome.Precipitation.NONE)
 			.temperature(2.0F)
@@ -153,22 +156,22 @@ public class TheNetherBiomeCreator {
 					.build()
 			)
 			.spawnSettings(spawnSettings)
-			.generationSettings(builder.build())
+			.generationSettings(lookupBackedBuilder.build())
 			.build();
 	}
 
-	public static Biome createCrimsonForest() {
+	public static Biome createCrimsonForest(RegistryEntryLookup<PlacedFeature> featureLookup, RegistryEntryLookup<ConfiguredCarver<?>> carverLookup) {
 		SpawnSettings spawnSettings = new SpawnSettings.Builder()
 			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.ZOMBIFIED_PIGLIN, 1, 2, 4))
 			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.HOGLIN, 9, 3, 4))
 			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.PIGLIN, 5, 3, 4))
 			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.STRIDER, 60, 1, 2))
 			.build();
-		GenerationSettings.Builder builder = new GenerationSettings.Builder()
+		GenerationSettings.LookupBackedBuilder lookupBackedBuilder = new GenerationSettings.LookupBackedBuilder(featureLookup, carverLookup)
 			.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.NETHER_CAVE)
 			.feature(GenerationStep.Feature.VEGETAL_DECORATION, MiscPlacedFeatures.SPRING_LAVA);
-		DefaultBiomeFeatures.addDefaultMushrooms(builder);
-		builder.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, NetherPlacedFeatures.SPRING_OPEN)
+		DefaultBiomeFeatures.addDefaultMushrooms(lookupBackedBuilder);
+		lookupBackedBuilder.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, NetherPlacedFeatures.SPRING_OPEN)
 			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, NetherPlacedFeatures.PATCH_FIRE)
 			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, NetherPlacedFeatures.GLOWSTONE_EXTRA)
 			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, NetherPlacedFeatures.GLOWSTONE)
@@ -177,7 +180,7 @@ public class TheNetherBiomeCreator {
 			.feature(GenerationStep.Feature.VEGETAL_DECORATION, NetherPlacedFeatures.WEEPING_VINES)
 			.feature(GenerationStep.Feature.VEGETAL_DECORATION, TreePlacedFeatures.CRIMSON_FUNGI)
 			.feature(GenerationStep.Feature.VEGETAL_DECORATION, NetherPlacedFeatures.CRIMSON_FOREST_VEGETATION);
-		DefaultBiomeFeatures.addNetherMineables(builder);
+		DefaultBiomeFeatures.addNetherMineables(lookupBackedBuilder);
 		return new Biome.Builder()
 			.precipitation(Biome.Precipitation.NONE)
 			.temperature(2.0F)
@@ -196,21 +199,21 @@ public class TheNetherBiomeCreator {
 					.build()
 			)
 			.spawnSettings(spawnSettings)
-			.generationSettings(builder.build())
+			.generationSettings(lookupBackedBuilder.build())
 			.build();
 	}
 
-	public static Biome createWarpedForest() {
+	public static Biome createWarpedForest(RegistryEntryLookup<PlacedFeature> featureLookup, RegistryEntryLookup<ConfiguredCarver<?>> carverLookup) {
 		SpawnSettings spawnSettings = new SpawnSettings.Builder()
 			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.ENDERMAN, 1, 4, 4))
 			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.STRIDER, 60, 1, 2))
 			.spawnCost(EntityType.ENDERMAN, 1.0, 0.12)
 			.build();
-		GenerationSettings.Builder builder = new GenerationSettings.Builder()
+		GenerationSettings.LookupBackedBuilder lookupBackedBuilder = new GenerationSettings.LookupBackedBuilder(featureLookup, carverLookup)
 			.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.NETHER_CAVE)
 			.feature(GenerationStep.Feature.VEGETAL_DECORATION, MiscPlacedFeatures.SPRING_LAVA);
-		DefaultBiomeFeatures.addDefaultMushrooms(builder);
-		builder.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, NetherPlacedFeatures.SPRING_OPEN)
+		DefaultBiomeFeatures.addDefaultMushrooms(lookupBackedBuilder);
+		lookupBackedBuilder.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, NetherPlacedFeatures.SPRING_OPEN)
 			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, NetherPlacedFeatures.PATCH_FIRE)
 			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, NetherPlacedFeatures.PATCH_SOUL_FIRE)
 			.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, NetherPlacedFeatures.GLOWSTONE_EXTRA)
@@ -221,7 +224,7 @@ public class TheNetherBiomeCreator {
 			.feature(GenerationStep.Feature.VEGETAL_DECORATION, NetherPlacedFeatures.WARPED_FOREST_VEGETATION)
 			.feature(GenerationStep.Feature.VEGETAL_DECORATION, NetherPlacedFeatures.NETHER_SPROUTS)
 			.feature(GenerationStep.Feature.VEGETAL_DECORATION, NetherPlacedFeatures.TWISTING_VINES);
-		DefaultBiomeFeatures.addNetherMineables(builder);
+		DefaultBiomeFeatures.addNetherMineables(lookupBackedBuilder);
 		return new Biome.Builder()
 			.precipitation(Biome.Precipitation.NONE)
 			.temperature(2.0F)
@@ -240,7 +243,7 @@ public class TheNetherBiomeCreator {
 					.build()
 			)
 			.spawnSettings(spawnSettings)
-			.generationSettings(builder.build())
+			.generationSettings(lookupBackedBuilder.build())
 			.build();
 	}
 }

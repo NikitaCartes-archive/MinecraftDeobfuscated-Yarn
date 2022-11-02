@@ -10,7 +10,6 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
-import net.minecraft.world.explosion.Explosion;
 
 public class FireballEntity extends AbstractFireballEntity {
 	private int explosionPower = 1;
@@ -29,10 +28,7 @@ public class FireballEntity extends AbstractFireballEntity {
 		super.onCollision(hitResult);
 		if (!this.world.isClient) {
 			boolean bl = this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
-			this.world
-				.createExplosion(
-					this, this.getX(), this.getY(), this.getZ(), (float)this.explosionPower, bl, bl ? Explosion.DestructionType.DESTROY : Explosion.DestructionType.NONE
-				);
+			this.world.createExplosion(this, this.getX(), this.getY(), this.getZ(), (float)this.explosionPower, bl, World.ExplosionSourceType.MOB);
 			this.discard();
 		}
 	}

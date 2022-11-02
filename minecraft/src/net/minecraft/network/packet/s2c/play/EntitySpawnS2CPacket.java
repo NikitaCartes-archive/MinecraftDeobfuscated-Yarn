@@ -3,7 +3,6 @@ package net.minecraft.network.packet.s2c.play;
 import java.util.UUID;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -33,26 +32,6 @@ public class EntitySpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 	private final byte headYaw;
 	private final int entityData;
 
-	public EntitySpawnS2CPacket(LivingEntity entity) {
-		this(entity, 0);
-	}
-
-	public EntitySpawnS2CPacket(LivingEntity entity, int entityTypeId) {
-		this(
-			entity.getId(),
-			entity.getUuid(),
-			entity.getX(),
-			entity.getY(),
-			entity.getZ(),
-			entity.getPitch(),
-			entity.getYaw(),
-			entity.getType(),
-			entityTypeId,
-			entity.getVelocity(),
-			(double)entity.headYaw
-		);
-	}
-
 	public EntitySpawnS2CPacket(Entity entity) {
 		this(entity, 0);
 	}
@@ -69,7 +48,7 @@ public class EntitySpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 			entity.getType(),
 			entityData,
 			entity.getVelocity(),
-			0.0
+			(double)entity.getHeadYaw()
 		);
 	}
 
@@ -85,7 +64,7 @@ public class EntitySpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 			entity.getType(),
 			entityTypeId,
 			entity.getVelocity(),
-			0.0
+			(double)entity.getHeadYaw()
 		);
 	}
 

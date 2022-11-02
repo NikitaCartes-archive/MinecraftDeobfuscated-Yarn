@@ -5,163 +5,183 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.structure.pool.StructurePools;
+import net.minecraft.structure.processor.StructureProcessorList;
 import net.minecraft.structure.processor.StructureProcessorLists;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registerable;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryEntryLookup;
 
 public class BastionUnitsData {
-	public static void init() {
-	}
-
-	static {
+	public static void bootstrap(Registerable<StructurePool> poolRegisterable) {
+		RegistryEntryLookup<StructureProcessorList> registryEntryLookup = poolRegisterable.getRegistryLookup(Registry.STRUCTURE_PROCESSOR_LIST_KEY);
+		RegistryEntry<StructureProcessorList> registryEntry = registryEntryLookup.getOrThrow(StructureProcessorLists.HOUSING);
+		RegistryEntryLookup<StructurePool> registryEntryLookup2 = poolRegisterable.getRegistryLookup(Registry.STRUCTURE_POOL_KEY);
+		RegistryEntry<StructurePool> registryEntry2 = registryEntryLookup2.getOrThrow(StructurePools.EMPTY);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/units/center_pieces",
 			new StructurePool(
-				new Identifier("bastion/units/center_pieces"),
-				new Identifier("empty"),
+				registryEntry2,
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/center_pieces/center_0", StructureProcessorLists.HOUSING), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/center_pieces/center_1", StructureProcessorLists.HOUSING), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/center_pieces/center_2", StructureProcessorLists.HOUSING), 1)
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/center_pieces/center_0", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/center_pieces/center_1", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/center_pieces/center_2", registryEntry), 1)
 				),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/units/pathways",
 			new StructurePool(
-				new Identifier("bastion/units/pathways"),
-				new Identifier("empty"),
+				registryEntry2,
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/pathways/pathway_0", StructureProcessorLists.HOUSING), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/pathways/pathway_wall_0", StructureProcessorLists.HOUSING), 1)
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/pathways/pathway_0", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/pathways/pathway_wall_0", registryEntry), 1)
 				),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/units/walls/wall_bases",
 			new StructurePool(
-				new Identifier("bastion/units/walls/wall_bases"),
-				new Identifier("empty"),
+				registryEntry2,
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/walls/wall_base", StructureProcessorLists.HOUSING), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/walls/connected_wall", StructureProcessorLists.HOUSING), 1)
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/walls/wall_base", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/walls/connected_wall", registryEntry), 1)
 				),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/units/stages/stage_0",
 			new StructurePool(
-				new Identifier("bastion/units/stages/stage_0"),
-				new Identifier("empty"),
+				registryEntry2,
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/stages/stage_0_0", StructureProcessorLists.HOUSING), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/stages/stage_0_1", StructureProcessorLists.HOUSING), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/stages/stage_0_2", StructureProcessorLists.HOUSING), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/stages/stage_0_3", StructureProcessorLists.HOUSING), 1)
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/stages/stage_0_0", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/stages/stage_0_1", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/stages/stage_0_2", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/stages/stage_0_3", registryEntry), 1)
 				),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/units/stages/stage_1",
 			new StructurePool(
-				new Identifier("bastion/units/stages/stage_1"),
-				new Identifier("empty"),
+				registryEntry2,
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/stages/stage_1_0", StructureProcessorLists.HOUSING), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/stages/stage_1_1", StructureProcessorLists.HOUSING), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/stages/stage_1_2", StructureProcessorLists.HOUSING), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/stages/stage_1_3", StructureProcessorLists.HOUSING), 1)
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/stages/stage_1_0", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/stages/stage_1_1", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/stages/stage_1_2", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/stages/stage_1_3", registryEntry), 1)
 				),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/units/stages/rot/stage_1",
 			new StructurePool(
-				new Identifier("bastion/units/stages/rot/stage_1"),
-				new Identifier("empty"),
-				ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/stages/rot/stage_1_0", StructureProcessorLists.HOUSING), 1)),
+				registryEntry2,
+				ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/stages/rot/stage_1_0", registryEntry), 1)),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/units/stages/stage_2",
 			new StructurePool(
-				new Identifier("bastion/units/stages/stage_2"),
-				new Identifier("empty"),
+				registryEntry2,
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/stages/stage_2_0", StructureProcessorLists.HOUSING), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/stages/stage_2_1", StructureProcessorLists.HOUSING), 1)
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/stages/stage_2_0", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/stages/stage_2_1", registryEntry), 1)
 				),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/units/stages/stage_3",
 			new StructurePool(
-				new Identifier("bastion/units/stages/stage_3"),
-				new Identifier("empty"),
+				registryEntry2,
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/stages/stage_3_0", StructureProcessorLists.HOUSING), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/stages/stage_3_1", StructureProcessorLists.HOUSING), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/stages/stage_3_2", StructureProcessorLists.HOUSING), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/stages/stage_3_3", StructureProcessorLists.HOUSING), 1)
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/stages/stage_3_0", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/stages/stage_3_1", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/stages/stage_3_2", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/stages/stage_3_3", registryEntry), 1)
 				),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/units/fillers/stage_0",
 			new StructurePool(
-				new Identifier("bastion/units/fillers/stage_0"),
-				new Identifier("empty"),
-				ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/fillers/stage_0", StructureProcessorLists.HOUSING), 1)),
+				registryEntry2,
+				ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/fillers/stage_0", registryEntry), 1)),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/units/edges",
 			new StructurePool(
-				new Identifier("bastion/units/edges"),
-				new Identifier("empty"),
-				ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/edges/edge_0", StructureProcessorLists.HOUSING), 1)),
+				registryEntry2,
+				ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/edges/edge_0", registryEntry), 1)),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/units/wall_units",
 			new StructurePool(
-				new Identifier("bastion/units/wall_units"),
-				new Identifier("empty"),
-				ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/wall_units/unit_0", StructureProcessorLists.HOUSING), 1)),
+				registryEntry2,
+				ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/wall_units/unit_0", registryEntry), 1)),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/units/edge_wall_units",
 			new StructurePool(
-				new Identifier("bastion/units/edge_wall_units"),
-				new Identifier("empty"),
-				ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/wall_units/edge_0_large", StructureProcessorLists.HOUSING), 1)),
+				registryEntry2,
+				ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/wall_units/edge_0_large", registryEntry), 1)),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/units/ramparts",
 			new StructurePool(
-				new Identifier("bastion/units/ramparts"),
-				new Identifier("empty"),
+				registryEntry2,
 				ImmutableList.of(
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/ramparts/ramparts_0", StructureProcessorLists.HOUSING), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/ramparts/ramparts_1", StructureProcessorLists.HOUSING), 1),
-					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/ramparts/ramparts_2", StructureProcessorLists.HOUSING), 1)
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/ramparts/ramparts_0", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/ramparts/ramparts_1", registryEntry), 1),
+					Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/ramparts/ramparts_2", registryEntry), 1)
 				),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/units/large_ramparts",
 			new StructurePool(
-				new Identifier("bastion/units/large_ramparts"),
-				new Identifier("empty"),
-				ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/ramparts/ramparts_0", StructureProcessorLists.HOUSING), 1)),
+				registryEntry2,
+				ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/ramparts/ramparts_0", registryEntry), 1)),
 				StructurePool.Projection.RIGID
 			)
 		);
 		StructurePools.register(
+			poolRegisterable,
+			"bastion/units/rampart_plates",
 			new StructurePool(
-				new Identifier("bastion/units/rampart_plates"),
-				new Identifier("empty"),
-				ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/rampart_plates/plate_0", StructureProcessorLists.HOUSING), 1)),
+				registryEntry2,
+				ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/rampart_plates/plate_0", registryEntry), 1)),
 				StructurePool.Projection.RIGID
 			)
 		);
