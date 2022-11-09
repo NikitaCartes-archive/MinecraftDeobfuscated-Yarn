@@ -5,8 +5,8 @@ import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public interface CraftingRecipeJsonBuilder {
 	Identifier ROOT = new Identifier("recipes/root");
@@ -34,6 +34,6 @@ public interface CraftingRecipeJsonBuilder {
 	}
 
 	static Identifier getItemId(ItemConvertible item) {
-		return Registry.ITEM.getId(item.asItem());
+		return Registries.ITEM.getId(item.asItem());
 	}
 }

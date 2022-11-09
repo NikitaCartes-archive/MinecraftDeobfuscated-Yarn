@@ -6,14 +6,14 @@ import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.poi.PointOfInterestStorage;
 
-public class WalkTowardJobSiteTask extends Task<VillagerEntity> {
+public class WalkTowardJobSiteTask extends MultiTickTask<VillagerEntity> {
 	private static final int RUN_TIME = 1200;
 	final float speed;
 
@@ -35,18 +35,18 @@ public class WalkTowardJobSiteTask extends Task<VillagerEntity> {
 
 	protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		LookTargetUtil.walkTowards(
-			villagerEntity, ((GlobalPos)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.POTENTIAL_JOB_SITE).get()).getPos(), this.speed, 1
+			villagerEntity, ((GlobalPos)villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.POTENTIAL_JOB_SITE).get()).getPos(), this.speed, 1
 		);
 	}
 
 	protected void finishRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		Optional<GlobalPos> optional = villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
+		Optional<GlobalPos> optional = villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
 		optional.ifPresent(pos -> {
 			BlockPos blockPos = pos.getPos();
 			ServerWorld serverWorld2 = serverWorld.getServer().getWorld(pos.getDimension());
 			if (serverWorld2 != null) {
 				PointOfInterestStorage pointOfInterestStorage = serverWorld2.getPointOfInterestStorage();
-				if (pointOfInterestStorage.test(blockPos, registryEntry -> true)) {
+				if (pointOfInterestStorage.test(blockPos, poiType -> true)) {
 					pointOfInterestStorage.releaseTicket(blockPos);
 				}
 

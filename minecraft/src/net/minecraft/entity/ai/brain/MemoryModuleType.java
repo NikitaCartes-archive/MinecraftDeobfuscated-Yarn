@@ -16,13 +16,14 @@ import net.minecraft.entity.mob.HoglinEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
 import net.minecraft.util.Uuids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 
 /**
  * A memory module type represents a type of data stored in a brain. The memory
@@ -134,7 +135,7 @@ public class MemoryModuleType<U> {
 	}
 
 	public String toString() {
-		return Registry.MEMORY_MODULE_TYPE.getId(this).toString();
+		return Registries.MEMORY_MODULE_TYPE.getId(this).toString();
 	}
 
 	public Optional<Codec<Memory<U>>> getCodec() {
@@ -142,10 +143,10 @@ public class MemoryModuleType<U> {
 	}
 
 	private static <U> MemoryModuleType<U> register(String id, Codec<U> codec) {
-		return Registry.register(Registry.MEMORY_MODULE_TYPE, new Identifier(id), new MemoryModuleType<>(Optional.of(codec)));
+		return Registry.register(Registries.MEMORY_MODULE_TYPE, new Identifier(id), new MemoryModuleType<>(Optional.of(codec)));
 	}
 
 	private static <U> MemoryModuleType<U> register(String id) {
-		return Registry.register(Registry.MEMORY_MODULE_TYPE, new Identifier(id), new MemoryModuleType<>(Optional.empty()));
+		return Registry.register(Registries.MEMORY_MODULE_TYPE, new Identifier(id), new MemoryModuleType<>(Optional.empty()));
 	}
 }

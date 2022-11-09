@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.StructureTemplate;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
@@ -11,7 +12,6 @@ import net.minecraft.structure.processor.StructureProcessorList;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
-import net.minecraft.util.registry.RegistryEntry;
 
 public class LegacySinglePoolElement extends SinglePoolElement {
 	public static final Codec<LegacySinglePoolElement> CODEC = RecordCodecBuilder.create(

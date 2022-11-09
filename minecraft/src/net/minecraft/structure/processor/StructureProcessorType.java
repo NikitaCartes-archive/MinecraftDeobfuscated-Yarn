@@ -2,9 +2,11 @@ package net.minecraft.structure.processor;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
-import net.minecraft.util.dynamic.RegistryElementCodec;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryElementCodec;
+import net.minecraft.registry.entry.RegistryEntry;
 
 public interface StructureProcessorType<P extends StructureProcessor> {
 	StructureProcessorType<BlockIgnoreStructureProcessor> BLOCK_IGNORE = register("block_ignore", BlockIgnoreStructureProcessor.CODEC);
@@ -21,17 +23,17 @@ public interface StructureProcessorType<P extends StructureProcessor> {
 		"lava_submerged_block", LavaSubmergedBlockStructureProcessor.CODEC
 	);
 	StructureProcessorType<ProtectedBlocksStructureProcessor> PROTECTED_BLOCKS = register("protected_blocks", ProtectedBlocksStructureProcessor.CODEC);
-	Codec<StructureProcessor> CODEC = Registry.STRUCTURE_PROCESSOR
+	Codec<StructureProcessor> CODEC = Registries.STRUCTURE_PROCESSOR
 		.getCodec()
 		.dispatch("processor_type", StructureProcessor::getType, StructureProcessorType::codec);
 	Codec<StructureProcessorList> LIST_CODEC = CODEC.listOf().xmap(StructureProcessorList::new, StructureProcessorList::getList);
 	Codec<StructureProcessorList> PROCESSORS_CODEC = Codec.either(LIST_CODEC.fieldOf("processors").codec(), LIST_CODEC)
 		.xmap(either -> either.map(structureProcessorList -> structureProcessorList, structureProcessorList -> structureProcessorList), Either::left);
-	Codec<RegistryEntry<StructureProcessorList>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.STRUCTURE_PROCESSOR_LIST_KEY, PROCESSORS_CODEC);
+	Codec<RegistryEntry<StructureProcessorList>> REGISTRY_CODEC = RegistryElementCodec.of(RegistryKeys.PROCESSOR_LIST_WORLDGEN, PROCESSORS_CODEC);
 
 	Codec<P> codec();
 
 	static <P extends StructureProcessor> StructureProcessorType<P> register(String id, Codec<P> codec) {
-		return Registry.register(Registry.STRUCTURE_PROCESSOR, id, () -> codec);
+		return Registry.register(Registries.STRUCTURE_PROCESSOR, id, () -> codec);
 	}
 }

@@ -89,7 +89,7 @@ import org.apache.commons.lang3.StringUtils;
  * 
  * <h2 id="using">Using Identifier</h2>
  * <p>Identifiers identify several objects in the game. {@link
- * net.minecraft.util.registry.Registry} holds objects, such as blocks and items, that are
+ * net.minecraft.registry.Registry} holds objects, such as blocks and items, that are
  * identified by an identifier. Textures are also identified using an identifier; such
  * an identifier is represented as a file path with an extension, such as {@code
  * minecraft:textures/entity/pig/pig.png}.
@@ -101,7 +101,7 @@ import org.apache.commons.lang3.StringUtils;
  * <h3 id="registrykey">RegistryKey</h3>
  * <p>Identifier is not type-aware; {@code minecraft:tnt} could refer to a TNT block, a TNT
  * item, or a TNT entity. To identify a registered object uniquely, {@link
- * net.minecraft.util.registry.RegistryKey} can be used. A registry key is a combination
+ * net.minecraft.registry.RegistryKey} can be used. A registry key is a combination
  * of the registry's identifier and the object's identifier.
  */
 public class Identifier implements Comparable<Identifier> {

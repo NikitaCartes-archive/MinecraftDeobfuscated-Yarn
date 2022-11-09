@@ -15,11 +15,11 @@ import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.entity.mob.PathAwareEntity;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.PointOfInterestTypeTags;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.PointOfInterestTypeTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.poi.PointOfInterestStorage;
 
 public class MoveThroughVillageGoal extends Goal {

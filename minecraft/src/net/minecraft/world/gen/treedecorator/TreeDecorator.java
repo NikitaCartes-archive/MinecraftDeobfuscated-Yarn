@@ -8,18 +8,18 @@ import java.util.function.BiConsumer;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.registry.Registries;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.TestableWorld;
 
 /**
  * Tree decorators can add additional blocks to trees, such as vines or beehives.
  */
 public abstract class TreeDecorator {
-	public static final Codec<TreeDecorator> TYPE_CODEC = Registry.TREE_DECORATOR_TYPE.getCodec().dispatch(TreeDecorator::getType, TreeDecoratorType::getCodec);
+	public static final Codec<TreeDecorator> TYPE_CODEC = Registries.TREE_DECORATOR_TYPE.getCodec().dispatch(TreeDecorator::getType, TreeDecoratorType::getCodec);
 
 	protected abstract TreeDecoratorType<?> getType();
 

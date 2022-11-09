@@ -3,12 +3,12 @@ package net.minecraft.structure.rule;
 import com.mojang.serialization.Codec;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.tag.TagKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 
 public class TagMatchRuleTest extends RuleTest {
-	public static final Codec<TagMatchRuleTest> CODEC = TagKey.unprefixedCodec(Registry.BLOCK_KEY)
+	public static final Codec<TagMatchRuleTest> CODEC = TagKey.unprefixedCodec(RegistryKeys.BLOCK)
 		.fieldOf("tag")
 		.<TagMatchRuleTest>xmap(TagMatchRuleTest::new, ruleTest -> ruleTest.tag)
 		.codec();

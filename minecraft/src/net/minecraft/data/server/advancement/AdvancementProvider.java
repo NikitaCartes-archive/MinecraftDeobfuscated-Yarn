@@ -11,8 +11,8 @@ import net.minecraft.advancement.Advancement;
 import net.minecraft.data.DataOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.RegistryWrapper;
 
 public class AdvancementProvider implements DataProvider {
 	private final DataOutput.PathResolver pathResolver;

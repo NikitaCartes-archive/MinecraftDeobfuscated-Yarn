@@ -265,7 +265,8 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 
 	@Override
 	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return this.isBaby() ? 0.93F : 1.74F;
+		float f = super.getActiveEyeHeight(pose, dimensions);
+		return this.isBaby() ? f - 0.81F : f;
 	}
 
 	@Override

@@ -3,10 +3,11 @@ package net.minecraft.world.event;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.tag.TagKey;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.event.listener.GameEventListener;
 
 public class GameEvent {
@@ -59,7 +60,7 @@ public class GameEvent {
 	public static final int DEFAULT_RANGE = 16;
 	private final String id;
 	private final int range;
-	private final RegistryEntry.Reference<GameEvent> registryEntry = Registry.GAME_EVENT.createEntry(this);
+	private final RegistryEntry.Reference<GameEvent> registryEntry = Registries.GAME_EVENT.createEntry(this);
 
 	public GameEvent(String id, int range) {
 		this.id = id;
@@ -79,7 +80,7 @@ public class GameEvent {
 	}
 
 	private static GameEvent register(String id, int range) {
-		return Registry.register(Registry.GAME_EVENT, id, new GameEvent(id, range));
+		return Registry.register(Registries.GAME_EVENT, id, new GameEvent(id, range));
 	}
 
 	public String toString() {

@@ -2,8 +2,8 @@ package net.minecraft.world.event;
 
 import com.mojang.serialization.Codec;
 import java.util.Optional;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 /**
@@ -14,9 +14,9 @@ import net.minecraft.world.World;
 public interface PositionSource {
 	/**
 	 * A codec for encoding and decoding any position source whose {@link #getType() type}
-	 * is in the {@link net.minecraft.util.registry.Registry#POSITION_SOURCE_TYPE registry}.
+	 * is in the {@link net.minecraft.registry.Registries#POSITION_SOURCE_TYPE registry}.
 	 */
-	Codec<PositionSource> CODEC = Registry.POSITION_SOURCE_TYPE.getCodec().dispatch(PositionSource::getType, PositionSourceType::getCodec);
+	Codec<PositionSource> CODEC = Registries.POSITION_SOURCE_TYPE.getCodec().dispatch(PositionSource::getType, PositionSourceType::getCodec);
 
 	Optional<Vec3d> getPos(World world);
 

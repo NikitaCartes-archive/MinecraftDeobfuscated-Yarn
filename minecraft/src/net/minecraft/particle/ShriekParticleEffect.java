@@ -7,7 +7,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.util.Locale;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 
 public class ShriekParticleEffect implements ParticleEffect {
 	public static final Codec<ShriekParticleEffect> CODEC = RecordCodecBuilder.create(
@@ -37,7 +37,7 @@ public class ShriekParticleEffect implements ParticleEffect {
 
 	@Override
 	public String asString() {
-		return String.format(Locale.ROOT, "%s %d", Registry.PARTICLE_TYPE.getId(this.getType()), this.delay);
+		return String.format(Locale.ROOT, "%s %d", Registries.PARTICLE_TYPE.getId(this.getType()), this.delay);
 	}
 
 	@Override

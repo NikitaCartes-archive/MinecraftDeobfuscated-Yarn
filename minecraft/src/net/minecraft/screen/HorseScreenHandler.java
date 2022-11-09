@@ -79,14 +79,14 @@ public class HorseScreenHandler extends ScreenHandler {
 	}
 
 	@Override
-	public ItemStack transferSlot(PlayerEntity player, int index) {
+	public ItemStack quickMove(PlayerEntity player, int slot) {
 		ItemStack itemStack = ItemStack.EMPTY;
-		Slot slot = this.slots.get(index);
-		if (slot != null && slot.hasStack()) {
-			ItemStack itemStack2 = slot.getStack();
+		Slot slot2 = this.slots.get(slot);
+		if (slot2 != null && slot2.hasStack()) {
+			ItemStack itemStack2 = slot2.getStack();
 			itemStack = itemStack2.copy();
 			int i = this.inventory.size();
-			if (index < i) {
+			if (slot < i) {
 				if (!this.insertItem(itemStack2, i, this.slots.size(), true)) {
 					return ItemStack.EMPTY;
 				}
@@ -101,11 +101,11 @@ public class HorseScreenHandler extends ScreenHandler {
 			} else if (i <= 2 || !this.insertItem(itemStack2, 2, i, false)) {
 				int k = i + 27;
 				int m = k + 9;
-				if (index >= k && index < m) {
+				if (slot >= k && slot < m) {
 					if (!this.insertItem(itemStack2, i, k, false)) {
 						return ItemStack.EMPTY;
 					}
-				} else if (index >= i && index < k) {
+				} else if (slot >= i && slot < k) {
 					if (!this.insertItem(itemStack2, k, m, false)) {
 						return ItemStack.EMPTY;
 					}
@@ -117,9 +117,9 @@ public class HorseScreenHandler extends ScreenHandler {
 			}
 
 			if (itemStack2.isEmpty()) {
-				slot.setStack(ItemStack.EMPTY);
+				slot2.setStack(ItemStack.EMPTY);
 			} else {
-				slot.markDirty();
+				slot2.markDirty();
 			}
 		}
 

@@ -37,7 +37,7 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 	public RealmsWorldSlotButton(
 		int x, int y, int width, int height, Supplier<RealmsServer> serverDataProvider, Consumer<Text> tooltipSetter, int id, ButtonWidget.PressAction action
 	) {
-		super(x, y, width, height, ScreenTexts.EMPTY, action, EMPTY_TOOLTIP, DEFAULT_NARRATION_SUPPLIER);
+		super(x, y, width, height, ScreenTexts.EMPTY, action, DEFAULT_NARRATION_SUPPLIER);
 		this.serverDataProvider = serverDataProvider;
 		this.slotIndex = id;
 		this.tooltipSetter = tooltipSetter;

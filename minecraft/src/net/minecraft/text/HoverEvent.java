@@ -18,9 +18,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.StringNbtReader;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
 
 public class HoverEvent {
@@ -176,7 +176,7 @@ public class HoverEvent {
 				return null;
 			} else {
 				JsonObject jsonObject = json.getAsJsonObject();
-				EntityType<?> entityType = Registry.ENTITY_TYPE.get(new Identifier(JsonHelper.getString(jsonObject, "type")));
+				EntityType<?> entityType = Registries.ENTITY_TYPE.get(new Identifier(JsonHelper.getString(jsonObject, "type")));
 				UUID uUID = UUID.fromString(JsonHelper.getString(jsonObject, "id"));
 				Text text = Text.Serializer.fromJson(jsonObject.get("name"));
 				return new HoverEvent.EntityContent(entityType, uUID, text);
@@ -188,7 +188,7 @@ public class HoverEvent {
 			try {
 				NbtCompound nbtCompound = StringNbtReader.parse(text.getString());
 				Text text2 = Text.Serializer.fromJson(nbtCompound.getString("name"));
-				EntityType<?> entityType = Registry.ENTITY_TYPE.get(new Identifier(nbtCompound.getString("type")));
+				EntityType<?> entityType = Registries.ENTITY_TYPE.get(new Identifier(nbtCompound.getString("type")));
 				UUID uUID = UUID.fromString(nbtCompound.getString("id"));
 				return new HoverEvent.EntityContent(entityType, uUID, text2);
 			} catch (Exception var5) {
@@ -198,7 +198,7 @@ public class HoverEvent {
 
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.addProperty("type", Registry.ENTITY_TYPE.getId(this.entityType).toString());
+			jsonObject.addProperty("type", Registries.ENTITY_TYPE.getId(this.entityType).toString());
 			jsonObject.addProperty("id", this.uuid.toString());
 			if (this.name != null) {
 				jsonObject.add("name", Text.Serializer.toJsonTree(this.name));
@@ -287,10 +287,10 @@ public class HoverEvent {
 
 		private static HoverEvent.ItemStackContent parse(JsonElement json) {
 			if (json.isJsonPrimitive()) {
-				return new HoverEvent.ItemStackContent(Registry.ITEM.get(new Identifier(json.getAsString())), 1, null);
+				return new HoverEvent.ItemStackContent(Registries.ITEM.get(new Identifier(json.getAsString())), 1, null);
 			} else {
 				JsonObject jsonObject = JsonHelper.asObject(json, "item");
-				Item item = Registry.ITEM.get(new Identifier(JsonHelper.getString(jsonObject, "id")));
+				Item item = Registries.ITEM.get(new Identifier(JsonHelper.getString(jsonObject, "id")));
 				int i = JsonHelper.getInt(jsonObject, "count", 1);
 				if (jsonObject.has("tag")) {
 					String string = JsonHelper.getString(jsonObject, "tag");
@@ -320,7 +320,7 @@ public class HoverEvent {
 
 		private JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.addProperty("id", Registry.ITEM.getId(this.item).toString());
+			jsonObject.addProperty("id", Registries.ITEM.getId(this.item).toString());
 			if (this.count != 1) {
 				jsonObject.addProperty("count", this.count);
 			}

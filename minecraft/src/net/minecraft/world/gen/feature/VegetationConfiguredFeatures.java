@@ -5,18 +5,18 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SweetBerryBushBlock;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.registry.Registerable;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.dynamic.Range;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.intprovider.BiasedToBottomIntProvider;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
-import net.minecraft.util.registry.Registerable;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryEntryList;
-import net.minecraft.util.registry.RegistryEntryLookup;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.gen.ProbabilityConfig;
 import net.minecraft.world.gen.blockpredicate.BlockPredicate;
 import net.minecraft.world.gen.placementmodifier.BlockFilterPlacementModifier;
@@ -76,13 +76,13 @@ public class VegetationConfiguredFeatures {
 	}
 
 	public static void bootstrap(Registerable<ConfiguredFeature<?, ?>> featureRegisterable) {
-		RegistryEntryLookup<ConfiguredFeature<?, ?>> registryEntryLookup = featureRegisterable.getRegistryLookup(Registry.CONFIGURED_FEATURE_KEY);
+		RegistryEntryLookup<ConfiguredFeature<?, ?>> registryEntryLookup = featureRegisterable.getRegistryLookup(RegistryKeys.CONFIGURED_FEATURE_WORLDGEN);
 		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.HUGE_BROWN_MUSHROOM);
 		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry2 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.HUGE_RED_MUSHROOM);
 		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry3 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.FANCY_OAK_BEES_005);
 		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry4 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.OAK_BEES_005);
 		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry5 = registryEntryLookup.getOrThrow(PATCH_GRASS_JUNGLE);
-		RegistryEntryLookup<PlacedFeature> registryEntryLookup2 = featureRegisterable.getRegistryLookup(Registry.PLACED_FEATURE_KEY);
+		RegistryEntryLookup<PlacedFeature> registryEntryLookup2 = featureRegisterable.getRegistryLookup(RegistryKeys.PLACED_FEATURE_WORLDGEN);
 		RegistryEntry<PlacedFeature> registryEntry6 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.DARK_OAK_CHECKED);
 		RegistryEntry<PlacedFeature> registryEntry7 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.BIRCH_CHECKED);
 		RegistryEntry<PlacedFeature> registryEntry8 = registryEntryLookup2.getOrThrow(TreePlacedFeatures.FANCY_OAK_CHECKED);

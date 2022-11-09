@@ -1,11 +1,11 @@
 package net.minecraft.world.gen.feature;
 
 import net.minecraft.block.Blocks;
-import net.minecraft.util.registry.Registerable;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryEntryLookup;
-import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.registry.Registerable;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 
 public class VillagePlacedFeatures {
 	public static final RegistryKey<PlacedFeature> PILE_HAY = PlacedFeatures.of("pile_hay");
@@ -23,7 +23,7 @@ public class VillagePlacedFeatures {
 	public static final RegistryKey<PlacedFeature> PATCH_BERRY_BUSH = PlacedFeatures.of("patch_berry_bush");
 
 	public static void bootstrap(Registerable<PlacedFeature> featureRegisterable) {
-		RegistryEntryLookup<ConfiguredFeature<?, ?>> registryEntryLookup = featureRegisterable.getRegistryLookup(Registry.CONFIGURED_FEATURE_KEY);
+		RegistryEntryLookup<ConfiguredFeature<?, ?>> registryEntryLookup = featureRegisterable.getRegistryLookup(RegistryKeys.CONFIGURED_FEATURE_WORLDGEN);
 		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry = registryEntryLookup.getOrThrow(PileConfiguredFeatures.PILE_HAY);
 		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry2 = registryEntryLookup.getOrThrow(PileConfiguredFeatures.PILE_MELON);
 		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry3 = registryEntryLookup.getOrThrow(PileConfiguredFeatures.PILE_SNOW);

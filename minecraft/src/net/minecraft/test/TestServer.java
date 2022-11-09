@@ -15,6 +15,11 @@ import java.util.function.BooleanSupplier;
 import javax.annotation.Nullable;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.network.encryption.SignatureVerifier;
+import net.minecraft.registry.CombinedDynamicRegistries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.ServerDynamicRegistryType;
+import net.minecraft.registry.SimpleRegistry;
 import net.minecraft.resource.DataConfiguration;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.resource.ResourcePackManager;
@@ -32,10 +37,6 @@ import net.minecraft.util.SystemDetails;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.CombinedDynamicRegistries;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.ServerDynamicRegistryType;
-import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
@@ -84,9 +85,9 @@ public class TestServer extends MinecraftServer {
 						executor -> SaveLoading.load(
 								serverConfig,
 								loadContextSupplierContext -> {
-									Registry<DimensionOptions> registry = new SimpleRegistry(Registry.DIMENSION_KEY, Lifecycle.stable()).freeze();
+									Registry<DimensionOptions> registry = new SimpleRegistry(RegistryKeys.DIMENSION, Lifecycle.stable()).freeze();
 									DimensionOptionsRegistryHolder.DimensionsConfig dimensionsConfig = loadContextSupplierContext.worldGenRegistryManager()
-										.<WorldPreset>get(Registry.WORLD_PRESET_KEY)
+										.<WorldPreset>get(RegistryKeys.WORLD_PRESET_WORLDGEN)
 										.entryOf(WorldPresets.FLAT)
 										.value()
 										.createDimensionsRegistryHolder()

@@ -40,13 +40,13 @@ public class ToggleButtonWidget extends ClickableWidget {
 	}
 
 	@Override
-	public void appendNarrations(NarrationMessageBuilder builder) {
+	public void appendClickableNarrations(NarrationMessageBuilder builder) {
 		this.appendDefaultNarrations(builder);
 	}
 
 	@Override
 	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		RenderSystem.setShaderTexture(0, this.texture);
 		RenderSystem.disableDepthTest();
 		int i = this.u;

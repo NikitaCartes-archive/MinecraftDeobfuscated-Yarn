@@ -119,7 +119,7 @@ public class GLX {
 		GlStateManager._disableTexture();
 		GlStateManager._depthMask(false);
 		GlStateManager._disableCull();
-		RenderSystem.setShader(GameRenderer::getRenderTypeLinesShader);
+		RenderSystem.setShader(GameRenderer::getRenderTypeLinesProgram);
 		Tessellator tessellator = RenderSystem.renderThreadTesselator();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		RenderSystem.lineWidth(4.0F);

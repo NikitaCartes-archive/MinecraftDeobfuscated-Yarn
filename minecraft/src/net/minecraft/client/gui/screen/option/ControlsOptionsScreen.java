@@ -38,6 +38,7 @@ public class ControlsOptionsScreen extends GameOptionsScreen {
 		this.addDrawableChild(this.gameOptions.getSprintToggled().createButton(this.gameOptions, j, k, 150));
 		k += 24;
 		this.addDrawableChild(this.gameOptions.getAutoJump().createButton(this.gameOptions, i, k, 150));
+		this.addDrawableChild(this.gameOptions.getOperatorItemsTab().createButton(this.gameOptions, j, k, 150));
 		k += 24;
 		this.addDrawableChild(
 			ButtonWidget.createBuilder(ScreenTexts.DONE, button -> this.client.setScreen(this.parent)).setPositionAndSize(this.width / 2 - 100, k, 200, 20).build()

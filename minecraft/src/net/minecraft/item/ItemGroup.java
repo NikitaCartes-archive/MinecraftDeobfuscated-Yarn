@@ -3,8 +3,8 @@ package net.minecraft.item;
 import com.google.common.collect.Lists;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.text.Text;
@@ -12,31 +12,35 @@ import net.minecraft.text.Text;
 /**
  * A group of items that the items belong to. This is used by the creative inventory.
  */
-public abstract class ItemGroup {
-	private final int index;
+public class ItemGroup {
 	private final Text displayName;
-	private String texture = "items.png";
-	private boolean scrollbar = true;
-	private boolean renderName = true;
+	String texture = "items.png";
+	boolean scrollbar = true;
+	boolean renderName = true;
+	boolean special = false;
+	private final ItemGroup.Row row;
+	private final int column;
+	private final ItemGroup.Type type;
+	@Nullable
 	private ItemStack icon;
-	@Nullable
-	private ItemStackSet displayStacks;
-	@Nullable
-	private ItemStackSet searchTabStacks;
-	@Nullable
-	private ItemGroup.DisplayParameters displayParameters;
-	private boolean searchProviderDirty;
+	private ItemStackSet displayStacks = new ItemStackSet();
+	private ItemStackSet searchTabStacks = new ItemStackSet();
 	@Nullable
 	private Consumer<List<ItemStack>> searchProviderReloader;
+	private final Supplier<ItemStack> iconSupplier;
+	private final ItemGroup.EntryCollector entryCollector;
 
-	public ItemGroup(int index, Text displayName) {
-		this.index = index;
+	ItemGroup(ItemGroup.Row row, int column, ItemGroup.Type type, Text displayName, Supplier<ItemStack> iconSupplier, ItemGroup.EntryCollector entryCollector) {
+		this.row = row;
+		this.column = column;
 		this.displayName = displayName;
-		this.icon = ItemStack.EMPTY;
+		this.iconSupplier = iconSupplier;
+		this.entryCollector = entryCollector;
+		this.type = type;
 	}
 
-	public int getIndex() {
-		return this.index;
+	public static ItemGroup.Builder create(ItemGroup.Row location, int column) {
+		return new ItemGroup.Builder(location, column);
 	}
 
 	public Text getDisplayName() {
@@ -44,24 +48,15 @@ public abstract class ItemGroup {
 	}
 
 	public ItemStack getIcon() {
-		if (this.icon.isEmpty()) {
-			this.icon = this.createIcon();
+		if (this.icon == null) {
+			this.icon = (ItemStack)this.iconSupplier.get();
 		}
 
 		return this.icon;
 	}
 
-	public abstract ItemStack createIcon();
-
-	protected abstract void addItems(FeatureSet enabledFeatures, ItemGroup.Entries entries, boolean hasPermissions);
-
 	public String getTexture() {
 		return this.texture;
-	}
-
-	public ItemGroup setTexture(String texture) {
-		this.texture = texture;
-		return this;
 	}
 
 	/**
@@ -73,79 +68,135 @@ public abstract class ItemGroup {
 		return this.renderName;
 	}
 
-	/**
-	 * Specifies that when this item group is selected, the name of the item group should not be rendered.
-	 */
-	public ItemGroup hideName() {
-		this.renderName = false;
-		return this;
-	}
-
 	public boolean hasScrollbar() {
 		return this.scrollbar;
 	}
 
-	public ItemGroup setNoScrollbar() {
-		this.scrollbar = false;
-		return this;
-	}
-
 	public int getColumn() {
-		return this.index % 6;
+		return this.column;
 	}
 
-	public boolean isTopRow() {
-		return this.index < 6;
+	public ItemGroup.Row getRow() {
+		return this.row;
+	}
+
+	public boolean hasStacks() {
+		return !this.displayStacks.isEmpty();
+	}
+
+	public boolean shouldDisplay() {
+		return this.type != ItemGroup.Type.CATEGORY || this.hasStacks();
 	}
 
 	public boolean isSpecial() {
-		return this.getColumn() == 5;
+		return this.special;
 	}
 
-	private ItemStackSet getStacks(FeatureSet enabledFeatures, boolean search, boolean hasPermissions) {
-		ItemGroup.DisplayParameters displayParameters = new ItemGroup.DisplayParameters(enabledFeatures, hasPermissions);
-		boolean bl = this.displayStacks == null || this.searchTabStacks == null || !Objects.equals(this.displayParameters, displayParameters);
-		if (bl) {
-			ItemGroup.EntriesImpl entriesImpl = new ItemGroup.EntriesImpl(this, enabledFeatures);
-			this.addItems(enabledFeatures, entriesImpl, hasPermissions);
-			this.displayStacks = entriesImpl.getParentTabStacks();
-			this.searchTabStacks = entriesImpl.getSearchTabStacks();
-			this.displayParameters = displayParameters;
-		}
-
-		if (this.searchProviderReloader != null && (bl || this.searchProviderDirty)) {
-			this.searchProviderReloader.accept(Lists.newArrayList(this.searchTabStacks));
-			this.markSearchProviderClean();
-		}
-
-		return search ? this.searchTabStacks : this.displayStacks;
+	public ItemGroup.Type getType() {
+		return this.type;
 	}
 
-	public ItemStackSet getDisplayStacks(FeatureSet enabledFeatures, boolean hasPermissions) {
-		return this.getStacks(enabledFeatures, false, hasPermissions);
+	public void updateEntries(FeatureSet enabledFeatures, boolean operatorEnabled) {
+		ItemGroup.EntriesImpl entriesImpl = new ItemGroup.EntriesImpl(this, enabledFeatures);
+		this.entryCollector.accept(enabledFeatures, entriesImpl, operatorEnabled);
+		this.displayStacks = entriesImpl.getParentTabStacks();
+		this.searchTabStacks = entriesImpl.getSearchTabStacks();
+		this.reloadSearchProvider();
 	}
 
-	public ItemStackSet getSearchTabStacks(FeatureSet enabledFeatures, boolean hasPermissions) {
-		return this.getStacks(enabledFeatures, true, hasPermissions);
+	public ItemStackSet getDisplayStacks() {
+		return this.displayStacks;
 	}
 
-	public boolean contains(FeatureSet enabledFeatures, ItemStack stack, boolean hasPermissions) {
-		return this.getSearchTabStacks(enabledFeatures, hasPermissions).contains(stack);
+	public ItemStackSet getSearchTabStacks() {
+		return this.searchTabStacks;
+	}
+
+	public boolean contains(ItemStack stack) {
+		return this.searchTabStacks.contains(stack);
 	}
 
 	public void setSearchProviderReloader(Consumer<List<ItemStack>> searchProviderReloader) {
 		this.searchProviderReloader = searchProviderReloader;
 	}
 
-	public void markSearchProviderDirty() {
-		this.searchProviderDirty = true;
+	public void reloadSearchProvider() {
+		if (this.searchProviderReloader != null) {
+			this.searchProviderReloader.accept(Lists.newArrayList(this.searchTabStacks));
+		}
 	}
 
-	private void markSearchProviderClean() {
-		this.searchProviderDirty = false;
-	}
+	public static class Builder {
+		private static final ItemGroup.EntryCollector EMPTY_ENTRIES = (enabledFeatures, entries, operatorEnabled) -> {
+		};
+		private final ItemGroup.Row row;
+		private final int column;
+		private Text displayName = Text.empty();
+		private Supplier<ItemStack> iconSupplier = () -> ItemStack.EMPTY;
+		private ItemGroup.EntryCollector entryCollector = EMPTY_ENTRIES;
+		private boolean scrollbar = true;
+		private boolean renderName = true;
+		private boolean special = false;
+		private ItemGroup.Type type = ItemGroup.Type.CATEGORY;
+		private String texture = "items.png";
 
-	static record DisplayParameters(FeatureSet enabledFeatures, boolean hasPermissions) {
+		public Builder(ItemGroup.Row row, int column) {
+			this.row = row;
+			this.column = column;
+		}
+
+		public ItemGroup.Builder displayName(Text displayName) {
+			this.displayName = displayName;
+			return this;
+		}
+
+		public ItemGroup.Builder icon(Supplier<ItemStack> iconSupplier) {
+			this.iconSupplier = iconSupplier;
+			return this;
+		}
+
+		public ItemGroup.Builder entries(ItemGroup.EntryCollector entryCollector) {
+			this.entryCollector = entryCollector;
+			return this;
+		}
+
+		public ItemGroup.Builder special() {
+			this.special = true;
+			return this;
+		}
+
+		public ItemGroup.Builder noRenderedName() {
+			this.renderName = false;
+			return this;
+		}
+
+		public ItemGroup.Builder noScrollbar() {
+			this.scrollbar = false;
+			return this;
+		}
+
+		protected ItemGroup.Builder type(ItemGroup.Type type) {
+			this.type = type;
+			return this;
+		}
+
+		public ItemGroup.Builder texture(String texture) {
+			this.texture = texture;
+			return this;
+		}
+
+		public ItemGroup build() {
+			if ((this.type == ItemGroup.Type.HOTBAR || this.type == ItemGroup.Type.INVENTORY) && this.entryCollector != EMPTY_ENTRIES) {
+				throw new IllegalStateException("Special tabs can't have display items");
+			} else {
+				ItemGroup itemGroup = new ItemGroup(this.row, this.column, this.type, this.displayName, this.iconSupplier, this.entryCollector);
+				itemGroup.special = this.special;
+				itemGroup.renderName = this.renderName;
+				itemGroup.scrollbar = this.scrollbar;
+				itemGroup.texture = this.texture;
+				return itemGroup;
+			}
+		}
 	}
 
 	protected interface Entries {
@@ -219,9 +270,25 @@ public abstract class ItemGroup {
 		}
 	}
 
+	public interface EntryCollector {
+		void accept(FeatureSet enabledFeatures, ItemGroup.Entries entries, boolean operatorEnabled);
+	}
+
+	public static enum Row {
+		TOP,
+		BOTTOM;
+	}
+
 	protected static enum StackVisibility {
 		PARENT_AND_SEARCH_TABS,
 		PARENT_TAB_ONLY,
 		SEARCH_TAB_ONLY;
+	}
+
+	public static enum Type {
+		CATEGORY,
+		INVENTORY,
+		HOTBAR,
+		SEARCH;
 	}
 }

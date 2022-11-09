@@ -61,6 +61,8 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
@@ -74,8 +76,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.TradeOffers;
@@ -648,27 +648,27 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	private void notifyDeath(Entity killer) {
 		World optional = this.world;
 		if (optional instanceof ServerWorld serverWorld) {
-			Optional<LivingTargetCache> optionalx = this.brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS);
+			Optional<LivingTargetCache> optionalx = this.brain.getOptionalRegisteredMemory(MemoryModuleType.VISIBLE_MOBS);
 			if (!optionalx.isEmpty()) {
 				((LivingTargetCache)optionalx.get())
 					.iterate(InteractionObserver.class::isInstance)
-					.forEach(livingEntity -> serverWorld.handleInteraction(EntityInteraction.VILLAGER_KILLED, killer, (InteractionObserver)livingEntity));
+					.forEach(observer -> serverWorld.handleInteraction(EntityInteraction.VILLAGER_KILLED, killer, (InteractionObserver)observer));
 			}
 		}
 	}
 
-	public void releaseTicketFor(MemoryModuleType<GlobalPos> memoryModuleType) {
+	public void releaseTicketFor(MemoryModuleType<GlobalPos> pos) {
 		if (this.world instanceof ServerWorld) {
 			MinecraftServer minecraftServer = ((ServerWorld)this.world).getServer();
-			this.brain.getOptionalMemory(memoryModuleType).ifPresent(pos -> {
-				ServerWorld serverWorld = minecraftServer.getWorld(pos.getDimension());
+			this.brain.getOptionalRegisteredMemory(pos).ifPresent(posx -> {
+				ServerWorld serverWorld = minecraftServer.getWorld(posx.getDimension());
 				if (serverWorld != null) {
 					PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
-					Optional<RegistryEntry<PointOfInterestType>> optional = pointOfInterestStorage.getType(pos.getPos());
-					BiPredicate<VillagerEntity, RegistryEntry<PointOfInterestType>> biPredicate = (BiPredicate)POINTS_OF_INTEREST.get(memoryModuleType);
+					Optional<RegistryEntry<PointOfInterestType>> optional = pointOfInterestStorage.getType(posx.getPos());
+					BiPredicate<VillagerEntity, RegistryEntry<PointOfInterestType>> biPredicate = (BiPredicate)POINTS_OF_INTEREST.get(pos);
 					if (optional.isPresent() && biPredicate.test(this, (RegistryEntry)optional.get())) {
-						pointOfInterestStorage.releaseTicket(pos.getPos());
-						DebugInfoSender.sendPointOfInterest(serverWorld, pos.getPos());
+						pointOfInterestStorage.releaseTicket(posx.getPos());
+						DebugInfoSender.sendPointOfInterest(serverWorld, posx.getPos());
 					}
 				}
 			});
@@ -735,7 +735,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 
 	@Override
 	protected Text getDefaultName() {
-		return Text.translatable(this.getType().getTranslationKey() + "." + Registry.VILLAGER_PROFESSION.getId(this.getVillagerData().getProfession()).getPath());
+		return Text.translatable(this.getType().getTranslationKey() + "." + Registries.VILLAGER_PROFESSION.getId(this.getVillagerData().getProfession()).getPath());
 	}
 
 	@Override
@@ -959,7 +959,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	}
 
 	private boolean hasRecentlySlept(long worldTime) {
-		Optional<Long> optional = this.brain.getOptionalMemory(MemoryModuleType.LAST_SLEPT);
+		Optional<Long> optional = this.brain.getOptionalRegisteredMemory(MemoryModuleType.LAST_SLEPT);
 		if (optional.isPresent()) {
 			return worldTime - optional.get() < 24000L;
 		} else {

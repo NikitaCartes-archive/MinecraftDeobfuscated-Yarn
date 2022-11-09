@@ -7,10 +7,10 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.command.argument.BlockArgumentParser;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.StructureTemplate;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.WorldView;
 
 public class JigsawReplacementStructureProcessor extends StructureProcessor {
@@ -38,7 +38,7 @@ public class JigsawReplacementStructureProcessor extends StructureProcessor {
 
 			BlockState blockState2;
 			try {
-				BlockArgumentParser.BlockResult blockResult = BlockArgumentParser.block(world.createCommandRegistryWrapper(Registry.BLOCK_KEY), string, true);
+				BlockArgumentParser.BlockResult blockResult = BlockArgumentParser.block(world.createCommandRegistryWrapper(RegistryKeys.BLOCK), string, true);
 				blockState2 = blockResult.blockState();
 			} catch (CommandSyntaxException var11) {
 				throw new RuntimeException(var11);

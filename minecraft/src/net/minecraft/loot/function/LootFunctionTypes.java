@@ -3,10 +3,11 @@ package net.minecraft.loot.function;
 import java.util.function.BiFunction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonSerializer;
 import net.minecraft.util.JsonSerializing;
-import net.minecraft.util.registry.Registry;
 
 public class LootFunctionTypes {
 	public static final BiFunction<ItemStack, LootContext, ItemStack> NOOP = (stack, context) -> stack;
@@ -37,11 +38,11 @@ public class LootFunctionTypes {
 	public static final LootFunctionType SET_INSTRUMENT = register("set_instrument", new SetInstrumentLootFunction.Serializer());
 
 	private static LootFunctionType register(String id, JsonSerializer<? extends LootFunction> jsonSerializer) {
-		return Registry.register(Registry.LOOT_FUNCTION_TYPE, new Identifier(id), new LootFunctionType(jsonSerializer));
+		return Registry.register(Registries.LOOT_FUNCTION_TYPE, new Identifier(id), new LootFunctionType(jsonSerializer));
 	}
 
 	public static Object createGsonSerializer() {
-		return JsonSerializing.<LootFunction, LootFunctionType>createSerializerBuilder(Registry.LOOT_FUNCTION_TYPE, "function", "function", LootFunction::getType)
+		return JsonSerializing.<LootFunction, LootFunctionType>createSerializerBuilder(Registries.LOOT_FUNCTION_TYPE, "function", "function", LootFunction::getType)
 			.build();
 	}
 

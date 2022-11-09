@@ -34,7 +34,7 @@ import net.minecraft.util.math.Vec3d;
  * 
  * @param <E> the task owner, usually a goat
  */
-public class PrepareRamTask<E extends PathAwareEntity> extends Task<E> {
+public class PrepareRamTask<E extends PathAwareEntity> extends MultiTickTask<E> {
 	public static final int RUN_TIME = 160;
 	private final ToIntFunction<E> cooldownFactory;
 	private final int minRamDistance;
@@ -91,8 +91,8 @@ public class PrepareRamTask<E extends PathAwareEntity> extends Task<E> {
 
 	protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
 		Brain<?> brain = pathAwareEntity.getBrain();
-		brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS)
-			.flatMap(livingTargetCache -> livingTargetCache.findFirst(mob -> this.targetPredicate.test(pathAwareEntity, mob)))
+		brain.getOptionalRegisteredMemory(MemoryModuleType.VISIBLE_MOBS)
+			.flatMap(mob -> mob.findFirst(mobx -> this.targetPredicate.test(pathAwareEntity, mobx)))
 			.ifPresent(mob -> this.findRam(pathAwareEntity, mob));
 	}
 

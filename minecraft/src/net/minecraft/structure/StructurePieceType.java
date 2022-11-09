@@ -2,7 +2,8 @@ package net.minecraft.structure;
 
 import java.util.Locale;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 public interface StructurePieceType {
 	StructurePieceType MINESHAFT_CORRIDOR = register(MineshaftGenerator.MineshaftCorridor::new, "MSCorridor");
@@ -65,7 +66,7 @@ public interface StructurePieceType {
 	StructurePiece load(StructureContext context, NbtCompound nbt);
 
 	private static StructurePieceType register(StructurePieceType type, String id) {
-		return Registry.register(Registry.STRUCTURE_PIECE, id.toLowerCase(Locale.ROOT), type);
+		return Registry.register(Registries.STRUCTURE_PIECE, id.toLowerCase(Locale.ROOT), type);
 	}
 
 	private static StructurePieceType register(StructurePieceType.Simple type, String id) {

@@ -2,11 +2,11 @@ package net.minecraft.block;
 
 import java.util.List;
 import java.util.Optional;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
@@ -34,7 +34,7 @@ public class GrassBlock extends SpreadableBlock implements Fertilizable {
 		BlockPos blockPos = pos.up();
 		BlockState blockState = Blocks.GRASS.getDefaultState();
 		Optional<RegistryEntry.Reference<PlacedFeature>> optional = world.getRegistryManager()
-			.get(Registry.PLACED_FEATURE_KEY)
+			.get(RegistryKeys.PLACED_FEATURE_WORLDGEN)
 			.getEntry(VegetationPlacedFeatures.GRASS_BONEMEAL);
 
 		label49:

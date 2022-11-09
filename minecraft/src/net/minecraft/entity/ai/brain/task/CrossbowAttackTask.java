@@ -13,7 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
 
-public class CrossbowAttackTask<E extends MobEntity & CrossbowUser, T extends LivingEntity> extends Task<E> {
+public class CrossbowAttackTask<E extends MobEntity & CrossbowUser, T extends LivingEntity> extends MultiTickTask<E> {
 	private static final int RUN_TIME = 1200;
 	private int chargingCooldown;
 	private CrossbowAttackTask.CrossbowState state = CrossbowAttackTask.CrossbowState.UNCHARGED;
@@ -86,7 +86,7 @@ public class CrossbowAttackTask<E extends MobEntity & CrossbowUser, T extends Li
 	}
 
 	private static LivingEntity getAttackTarget(LivingEntity entity) {
-		return (LivingEntity)entity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).get();
+		return (LivingEntity)entity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET).get();
 	}
 
 	static enum CrossbowState {

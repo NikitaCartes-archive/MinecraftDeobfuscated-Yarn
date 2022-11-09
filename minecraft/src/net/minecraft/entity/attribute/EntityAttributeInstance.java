@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 
 /**
  * A double-valued attribute.
@@ -192,7 +192,7 @@ public class EntityAttributeInstance {
 
 	public NbtCompound toNbt() {
 		NbtCompound nbtCompound = new NbtCompound();
-		nbtCompound.putString("Name", Registry.ATTRIBUTE.getId(this.type).toString());
+		nbtCompound.putString("Name", Registries.ATTRIBUTE.getId(this.type).toString());
 		nbtCompound.putDouble("Base", this.baseValue);
 		if (!this.persistentModifiers.isEmpty()) {
 			NbtList nbtList = new NbtList();

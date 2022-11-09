@@ -3,7 +3,7 @@ package net.minecraft.item;
 import java.util.function.Supplier;
 import net.fabricmc.yarn.constants.MiningLevels;
 import net.minecraft.recipe.Ingredient;
-import net.minecraft.tag.ItemTags;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.util.Lazy;
 
 public enum ToolMaterials implements ToolMaterial {

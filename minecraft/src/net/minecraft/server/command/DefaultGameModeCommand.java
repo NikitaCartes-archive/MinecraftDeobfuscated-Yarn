@@ -1,8 +1,8 @@
 package net.minecraft.server.command;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import net.minecraft.command.argument.GameModeArgumentType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -10,14 +10,14 @@ import net.minecraft.world.GameMode;
 
 public class DefaultGameModeCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-		LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("defaultgamemode")
-			.requires(source -> source.hasPermissionLevel(2));
-
-		for(GameMode gameMode : GameMode.values()) {
-			literalArgumentBuilder.then(CommandManager.literal(gameMode.getName()).executes(context -> execute(context.getSource(), gameMode)));
-		}
-
-		dispatcher.register(literalArgumentBuilder);
+		dispatcher.register(
+			CommandManager.literal("defaultgamemode")
+				.requires(source -> source.hasPermissionLevel(2))
+				.then(
+					CommandManager.argument("gamemode", GameModeArgumentType.gameMode())
+						.executes(commandContext -> execute(commandContext.getSource(), GameModeArgumentType.getGameMode(commandContext, "gamemode")))
+				)
+		);
 	}
 
 	private static int execute(ServerCommandSource source, GameMode defaultGameMode) {

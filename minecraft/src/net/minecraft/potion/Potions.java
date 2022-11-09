@@ -2,7 +2,8 @@ package net.minecraft.potion;
 
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 public class Potions {
 	public static final Potion EMPTY = register("empty", new Potion());
@@ -73,6 +74,6 @@ public class Potions {
 	);
 
 	private static Potion register(String name, Potion potion) {
-		return Registry.register(Registry.POTION, name, potion);
+		return Registry.register(Registries.POTION, name, potion);
 	}
 }

@@ -2,15 +2,15 @@ package net.minecraft.data.server.tag;
 
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.data.DataOutput;
-import net.minecraft.tag.WorldPresetTags;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryWrapper;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.tag.WorldPresetTags;
 import net.minecraft.world.gen.WorldPreset;
 import net.minecraft.world.gen.WorldPresets;
 
 public class WorldPresetTagProvider extends AbstractTagProvider<WorldPreset> {
 	public WorldPresetTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
-		super(output, Registry.WORLD_PRESET_KEY, registryLookupFuture);
+		super(output, RegistryKeys.WORLD_PRESET_WORLDGEN, registryLookupFuture);
 	}
 
 	@Override

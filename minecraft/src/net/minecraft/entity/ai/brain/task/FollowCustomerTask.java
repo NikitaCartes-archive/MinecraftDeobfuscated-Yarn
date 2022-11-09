@@ -10,7 +10,7 @@ import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 
-public class FollowCustomerTask extends Task<VillagerEntity> {
+public class FollowCustomerTask extends MultiTickTask<VillagerEntity> {
 	private final float speed;
 
 	public FollowCustomerTask(float speed) {

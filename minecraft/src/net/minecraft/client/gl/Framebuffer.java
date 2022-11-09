@@ -9,7 +9,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.Shader;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
@@ -230,19 +229,19 @@ public abstract class Framebuffer {
 		}
 
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		Shader shader = minecraftClient.gameRenderer.blitScreenShader;
-		shader.addSampler("DiffuseSampler", this.colorAttachment);
+		ShaderProgram shaderProgram = minecraftClient.gameRenderer.blitScreenProgram;
+		shaderProgram.addSampler("DiffuseSampler", this.colorAttachment);
 		Matrix4f matrix4f = new Matrix4f().setOrtho(0.0F, (float)width, (float)height, 0.0F, 1000.0F, 3000.0F);
 		RenderSystem.setProjectionMatrix(matrix4f);
-		if (shader.modelViewMat != null) {
-			shader.modelViewMat.set(new Matrix4f().translation(0.0F, 0.0F, -2000.0F));
+		if (shaderProgram.modelViewMat != null) {
+			shaderProgram.modelViewMat.set(new Matrix4f().translation(0.0F, 0.0F, -2000.0F));
 		}
 
-		if (shader.projectionMat != null) {
-			shader.projectionMat.set(matrix4f);
+		if (shaderProgram.projectionMat != null) {
+			shaderProgram.projectionMat.set(matrix4f);
 		}
 
-		shader.bind();
+		shaderProgram.bind();
 		float f = (float)width;
 		float g = (float)height;
 		float h = (float)this.viewportWidth / (float)this.textureWidth;
@@ -255,7 +254,7 @@ public abstract class Framebuffer {
 		bufferBuilder.vertex((double)f, 0.0, 0.0).texture(h, i).color(255, 255, 255, 255).next();
 		bufferBuilder.vertex(0.0, 0.0, 0.0).texture(0.0F, i).color(255, 255, 255, 255).next();
 		BufferRenderer.draw(bufferBuilder.end());
-		shader.unbind();
+		shaderProgram.unbind();
 		GlStateManager._depthMask(true);
 		GlStateManager._colorMask(true, true, true, true);
 	}

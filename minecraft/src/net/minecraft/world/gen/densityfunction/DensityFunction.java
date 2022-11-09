@@ -2,16 +2,16 @@ package net.minecraft.world.gen.densityfunction;
 
 import com.mojang.serialization.Codec;
 import javax.annotation.Nullable;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryElementCodec;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.dynamic.CodecHolder;
-import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.gen.chunk.Blender;
 
 public interface DensityFunction {
 	Codec<DensityFunction> CODEC = DensityFunctionTypes.CODEC;
-	Codec<RegistryEntry<DensityFunction>> REGISTRY_ENTRY_CODEC = RegistryElementCodec.of(Registry.DENSITY_FUNCTION_KEY, CODEC);
+	Codec<RegistryEntry<DensityFunction>> REGISTRY_ENTRY_CODEC = RegistryElementCodec.of(RegistryKeys.DENSITY_FUNCTION_WORLDGEN, CODEC);
 	Codec<DensityFunction> FUNCTION_CODEC = REGISTRY_ENTRY_CODEC.xmap(
 		DensityFunctionTypes.RegistryEntryHolder::new,
 		function -> (RegistryEntry)(function instanceof DensityFunctionTypes.RegistryEntryHolder registryEntryHolder

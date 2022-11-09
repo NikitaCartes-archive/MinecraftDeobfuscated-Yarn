@@ -11,7 +11,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.random.Random;
 
-public class RandomLookAroundTask extends Task<MobEntity> {
+public class RandomLookAroundTask extends MultiTickTask<MobEntity> {
 	private final IntProvider cooldown;
 	private final float maxYaw;
 	private final float minPitch;

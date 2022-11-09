@@ -1,15 +1,15 @@
 package net.minecraft.world.biome;
 
-import net.minecraft.util.registry.Registerable;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntryLookup;
+import net.minecraft.registry.Registerable;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.feature.PlacedFeature;
 
 public abstract class BuiltinBiomes {
 	public static void bootstrap(Registerable<Biome> biomeRegisterable) {
-		RegistryEntryLookup<PlacedFeature> registryEntryLookup = biomeRegisterable.getRegistryLookup(Registry.PLACED_FEATURE_KEY);
-		RegistryEntryLookup<ConfiguredCarver<?>> registryEntryLookup2 = biomeRegisterable.getRegistryLookup(Registry.CONFIGURED_CARVER_KEY);
+		RegistryEntryLookup<PlacedFeature> registryEntryLookup = biomeRegisterable.getRegistryLookup(RegistryKeys.PLACED_FEATURE_WORLDGEN);
+		RegistryEntryLookup<ConfiguredCarver<?>> registryEntryLookup2 = biomeRegisterable.getRegistryLookup(RegistryKeys.CONFIGURED_CARVER_WORLDGEN);
 		biomeRegisterable.register(BiomeKeys.THE_VOID, OverworldBiomeCreator.createTheVoid(registryEntryLookup, registryEntryLookup2));
 		biomeRegisterable.register(BiomeKeys.PLAINS, OverworldBiomeCreator.createPlains(registryEntryLookup, registryEntryLookup2, false, false, false));
 		biomeRegisterable.register(BiomeKeys.SUNFLOWER_PLAINS, OverworldBiomeCreator.createPlains(registryEntryLookup, registryEntryLookup2, true, false, false));

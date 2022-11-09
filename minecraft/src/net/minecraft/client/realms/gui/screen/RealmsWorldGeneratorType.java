@@ -2,8 +2,8 @@ package net.minecraft.client.realms.gui.screen;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.text.Text;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.gen.WorldPreset;
 import net.minecraft.world.gen.WorldPresets;
 

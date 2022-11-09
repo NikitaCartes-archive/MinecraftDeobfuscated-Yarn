@@ -11,10 +11,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.registry.Registry;
 
 public class AdvancementDisplay {
 	private final Text title;
@@ -193,7 +193,7 @@ public class AdvancementDisplay {
 
 	private JsonObject iconToJson() {
 		JsonObject jsonObject = new JsonObject();
-		jsonObject.addProperty("item", Registry.ITEM.getId(this.icon.getItem()).toString());
+		jsonObject.addProperty("item", Registries.ITEM.getId(this.icon.getItem()).toString());
 		if (this.icon.hasNbt()) {
 			jsonObject.addProperty("nbt", this.icon.getNbt().toString());
 		}

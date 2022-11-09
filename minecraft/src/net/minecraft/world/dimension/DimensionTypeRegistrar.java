@@ -1,10 +1,10 @@
 package net.minecraft.world.dimension;
 
 import java.util.OptionalLong;
-import net.minecraft.tag.BlockTags;
+import net.minecraft.registry.Registerable;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
-import net.minecraft.util.registry.Registerable;
 
 public class DimensionTypeRegistrar {
 	public static void bootstrap(Registerable<DimensionType> dimensionTypeRegisterable) {

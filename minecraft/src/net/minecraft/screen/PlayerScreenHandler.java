@@ -149,24 +149,24 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingInv
 	}
 
 	@Override
-	public ItemStack transferSlot(PlayerEntity player, int index) {
+	public ItemStack quickMove(PlayerEntity player, int slot) {
 		ItemStack itemStack = ItemStack.EMPTY;
-		Slot slot = this.slots.get(index);
-		if (slot != null && slot.hasStack()) {
-			ItemStack itemStack2 = slot.getStack();
+		Slot slot2 = this.slots.get(slot);
+		if (slot2 != null && slot2.hasStack()) {
+			ItemStack itemStack2 = slot2.getStack();
 			itemStack = itemStack2.copy();
 			EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
-			if (index == 0) {
+			if (slot == 0) {
 				if (!this.insertItem(itemStack2, 9, 45, true)) {
 					return ItemStack.EMPTY;
 				}
 
-				slot.onQuickTransfer(itemStack2, itemStack);
-			} else if (index >= 1 && index < 5) {
+				slot2.onQuickTransfer(itemStack2, itemStack);
+			} else if (slot >= 1 && slot < 5) {
 				if (!this.insertItem(itemStack2, 9, 45, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (index >= 5 && index < 9) {
+			} else if (slot >= 5 && slot < 9) {
 				if (!this.insertItem(itemStack2, 9, 45, false)) {
 					return ItemStack.EMPTY;
 				}
@@ -179,11 +179,11 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingInv
 				if (!this.insertItem(itemStack2, 45, 46, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (index >= 9 && index < 36) {
+			} else if (slot >= 9 && slot < 36) {
 				if (!this.insertItem(itemStack2, 36, 45, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (index >= 36 && index < 45) {
+			} else if (slot >= 36 && slot < 45) {
 				if (!this.insertItem(itemStack2, 9, 36, false)) {
 					return ItemStack.EMPTY;
 				}
@@ -192,17 +192,17 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingInv
 			}
 
 			if (itemStack2.isEmpty()) {
-				slot.setStack(ItemStack.EMPTY);
+				slot2.setStack(ItemStack.EMPTY);
 			} else {
-				slot.markDirty();
+				slot2.markDirty();
 			}
 
 			if (itemStack2.getCount() == itemStack.getCount()) {
 				return ItemStack.EMPTY;
 			}
 
-			slot.onTakeItem(player, itemStack2);
-			if (index == 0) {
+			slot2.onTakeItem(player, itemStack2);
+			if (slot == 0) {
 				player.dropItem(itemStack2, false);
 			}
 		}

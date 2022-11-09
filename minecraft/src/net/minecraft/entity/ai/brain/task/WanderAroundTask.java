@@ -16,7 +16,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
-public class WanderAroundTask extends Task<MobEntity> {
+public class WanderAroundTask extends MultiTickTask<MobEntity> {
 	private static final int MAX_UPDATE_COUNTDOWN = 40;
 	private int pathUpdateCountdownTicks;
 	@Nullable
@@ -50,7 +50,7 @@ public class WanderAroundTask extends Task<MobEntity> {
 			return false;
 		} else {
 			Brain<?> brain = mobEntity.getBrain();
-			WalkTarget walkTarget = (WalkTarget)brain.getOptionalMemory(MemoryModuleType.WALK_TARGET).get();
+			WalkTarget walkTarget = (WalkTarget)brain.getOptionalRegisteredMemory(MemoryModuleType.WALK_TARGET).get();
 			boolean bl = this.hasReached(mobEntity, walkTarget);
 			if (!bl && this.hasFinishedPath(mobEntity, walkTarget, serverWorld.getTime())) {
 				this.lookTargetPos = walkTarget.getLookTarget().getBlockPos();
@@ -68,7 +68,7 @@ public class WanderAroundTask extends Task<MobEntity> {
 
 	protected boolean shouldKeepRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
 		if (this.path != null && this.lookTargetPos != null) {
-			Optional<WalkTarget> optional = mobEntity.getBrain().getOptionalMemory(MemoryModuleType.WALK_TARGET);
+			Optional<WalkTarget> optional = mobEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.WALK_TARGET);
 			EntityNavigation entityNavigation = mobEntity.getNavigation();
 			return !entityNavigation.isIdle() && optional.isPresent() && !this.hasReached(mobEntity, (WalkTarget)optional.get());
 		} else {
@@ -78,7 +78,7 @@ public class WanderAroundTask extends Task<MobEntity> {
 
 	protected void finishRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
 		if (mobEntity.getBrain().hasMemoryModule(MemoryModuleType.WALK_TARGET)
-			&& !this.hasReached(mobEntity, (WalkTarget)mobEntity.getBrain().getOptionalMemory(MemoryModuleType.WALK_TARGET).get())
+			&& !this.hasReached(mobEntity, (WalkTarget)mobEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.WALK_TARGET).get())
 			&& mobEntity.getNavigation().isNearPathStartPos()) {
 			this.pathUpdateCountdownTicks = serverWorld.getRandom().nextInt(40);
 		}
@@ -103,7 +103,7 @@ public class WanderAroundTask extends Task<MobEntity> {
 		}
 
 		if (path != null && this.lookTargetPos != null) {
-			WalkTarget walkTarget = (WalkTarget)brain.getOptionalMemory(MemoryModuleType.WALK_TARGET).get();
+			WalkTarget walkTarget = (WalkTarget)brain.getOptionalRegisteredMemory(MemoryModuleType.WALK_TARGET).get();
 			if (walkTarget.getLookTarget().getBlockPos().getSquaredDistance(this.lookTargetPos) > 4.0
 				&& this.hasFinishedPath(mobEntity, walkTarget, serverWorld.getTime())) {
 				this.lookTargetPos = walkTarget.getLookTarget().getBlockPos();

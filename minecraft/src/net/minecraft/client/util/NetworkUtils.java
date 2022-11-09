@@ -183,4 +183,32 @@ public class NetworkUtils {
 			return 25564;
 		}
 	}
+
+	public static boolean isPortAvailable(int port) {
+		if (port >= 0 && port <= 65535) {
+			try {
+				ServerSocket serverSocket = new ServerSocket(port);
+
+				boolean var2;
+				try {
+					var2 = serverSocket.getLocalPort() == port;
+				} catch (Throwable var5) {
+					try {
+						serverSocket.close();
+					} catch (Throwable var4) {
+						var5.addSuppressed(var4);
+					}
+
+					throw var5;
+				}
+
+				serverSocket.close();
+				return var2;
+			} catch (IOException var6) {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
 }

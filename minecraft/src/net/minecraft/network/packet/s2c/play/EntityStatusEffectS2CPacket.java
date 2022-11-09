@@ -6,7 +6,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 
 public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListener> {
 	private static final short field_39448 = 32767;
@@ -45,7 +45,7 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 
 	public EntityStatusEffectS2CPacket(PacketByteBuf buf) {
 		this.entityId = buf.readVarInt();
-		this.effectId = buf.readRegistryValue(Registry.STATUS_EFFECT);
+		this.effectId = buf.readRegistryValue(Registries.STATUS_EFFECT);
 		this.amplifier = buf.readByte();
 		this.duration = buf.readVarInt();
 		this.flags = buf.readByte();
@@ -55,7 +55,7 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 	@Override
 	public void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.entityId);
-		buf.writeRegistryValue(Registry.STATUS_EFFECT, this.effectId);
+		buf.writeRegistryValue(Registries.STATUS_EFFECT, this.effectId);
 		buf.writeByte(this.amplifier);
 		buf.writeVarInt(this.duration);
 		buf.writeByte(this.flags);

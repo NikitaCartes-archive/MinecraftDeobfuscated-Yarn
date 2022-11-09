@@ -55,7 +55,7 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 		}
 
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		RenderSystem.setShaderTexture(0, this.texture);
 		RenderSystem.disableDepthTest();
 		int i = this.u;

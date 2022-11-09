@@ -2,7 +2,7 @@ package net.minecraft.entity.ai.brain.sensor;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.tag.EntityTypeTags;
+import net.minecraft.registry.tag.EntityTypeTags;
 
 public class AxolotlAttackablesSensor extends NearestVisibleLivingEntitySensor {
 	public static final float TARGET_RANGE = 8.0F;

@@ -7,9 +7,9 @@ import net.minecraft.command.argument.ArgumentHelper;
 import net.minecraft.data.DataOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.util.registry.RegistryWrapper;
 
 public class CommandSyntaxProvider implements DataProvider {
 	private final DataOutput output;

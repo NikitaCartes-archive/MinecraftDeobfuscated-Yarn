@@ -73,7 +73,7 @@ public class LecternScreenHandler extends ScreenHandler {
 	}
 
 	@Override
-	public ItemStack transferSlot(PlayerEntity player, int index) {
+	public ItemStack quickMove(PlayerEntity player, int slot) {
 		return ItemStack.EMPTY;
 	}
 

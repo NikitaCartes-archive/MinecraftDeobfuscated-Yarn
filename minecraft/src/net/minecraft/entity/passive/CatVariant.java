@@ -1,8 +1,9 @@
 package net.minecraft.entity.passive;
 
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 
 public record CatVariant(Identifier texture) {
 	public static final RegistryKey<CatVariant> TABBY = of("tabby");
@@ -18,7 +19,7 @@ public record CatVariant(Identifier texture) {
 	public static final RegistryKey<CatVariant> ALL_BLACK = of("all_black");
 
 	private static RegistryKey<CatVariant> of(String id) {
-		return RegistryKey.of(Registry.CAT_VARIANT_KEY, new Identifier(id));
+		return RegistryKey.of(RegistryKeys.CAT_VARIANT, new Identifier(id));
 	}
 
 	public static CatVariant registerAndGetDefault(Registry<CatVariant> registry) {

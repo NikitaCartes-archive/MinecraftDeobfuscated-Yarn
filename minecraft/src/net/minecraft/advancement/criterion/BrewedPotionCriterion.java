@@ -7,10 +7,10 @@ import net.minecraft.potion.Potion;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.registry.Registry;
 
 public class BrewedPotionCriterion extends AbstractCriterion<BrewedPotionCriterion.Conditions> {
 	static final Identifier ID = new Identifier("brewed_potion");
@@ -26,7 +26,7 @@ public class BrewedPotionCriterion extends AbstractCriterion<BrewedPotionCriteri
 		Potion potion = null;
 		if (jsonObject.has("potion")) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "potion"));
-			potion = (Potion)Registry.POTION.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown potion '" + identifier + "'"));
+			potion = (Potion)Registries.POTION.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown potion '" + identifier + "'"));
 		}
 
 		return new BrewedPotionCriterion.Conditions(extended, potion);
@@ -57,7 +57,7 @@ public class BrewedPotionCriterion extends AbstractCriterion<BrewedPotionCriteri
 		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
 			JsonObject jsonObject = super.toJson(predicateSerializer);
 			if (this.potion != null) {
-				jsonObject.addProperty("potion", Registry.POTION.getId(this.potion).toString());
+				jsonObject.addProperty("potion", Registries.POTION.getId(this.potion).toString());
 			}
 
 			return jsonObject;

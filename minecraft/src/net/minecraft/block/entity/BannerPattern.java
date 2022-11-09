@@ -6,11 +6,11 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 
 public class BannerPattern {
 	final String id;
@@ -30,7 +30,7 @@ public class BannerPattern {
 
 	@Nullable
 	public static RegistryEntry<BannerPattern> byId(String id) {
-		return (RegistryEntry<BannerPattern>)Registry.BANNER_PATTERN
+		return (RegistryEntry<BannerPattern>)Registries.BANNER_PATTERN
 			.streamEntries()
 			.filter(pattern -> ((BannerPattern)pattern.value()).id.equals(id))
 			.findAny()
@@ -41,7 +41,7 @@ public class BannerPattern {
 		private final List<Pair<RegistryEntry<BannerPattern>, DyeColor>> entries = Lists.<Pair<RegistryEntry<BannerPattern>, DyeColor>>newArrayList();
 
 		public BannerPattern.Patterns add(RegistryKey<BannerPattern> pattern, DyeColor color) {
-			return this.add(Registry.BANNER_PATTERN.entryOf(pattern), color);
+			return this.add(Registries.BANNER_PATTERN.entryOf(pattern), color);
 		}
 
 		public BannerPattern.Patterns add(RegistryEntry<BannerPattern> pattern, DyeColor color) {

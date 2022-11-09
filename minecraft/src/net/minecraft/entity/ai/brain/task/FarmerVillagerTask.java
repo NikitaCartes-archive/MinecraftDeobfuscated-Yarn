@@ -25,7 +25,7 @@ import net.minecraft.village.VillagerProfession;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.event.GameEvent;
 
-public class FarmerVillagerTask extends Task<VillagerEntity> {
+public class FarmerVillagerTask extends MultiTickTask<VillagerEntity> {
 	private static final int MAX_RUN_TIME = 200;
 	public static final float WALK_SPEED = 0.5F;
 	@Nullable

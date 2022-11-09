@@ -1,7 +1,8 @@
 package net.minecraft.world.gen.blockpredicate;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 public interface BlockPredicateType<P extends BlockPredicate> {
 	BlockPredicateType<MatchingBlocksBlockPredicate> MATCHING_BLOCKS = register("matching_blocks", MatchingBlocksBlockPredicate.CODEC);
@@ -20,6 +21,6 @@ public interface BlockPredicateType<P extends BlockPredicate> {
 	Codec<P> codec();
 
 	private static <P extends BlockPredicate> BlockPredicateType<P> register(String id, Codec<P> codec) {
-		return Registry.register(Registry.BLOCK_PREDICATE_TYPE, id, () -> codec);
+		return Registry.register(Registries.BLOCK_PREDICATE_TYPE, id, () -> codec);
 	}
 }

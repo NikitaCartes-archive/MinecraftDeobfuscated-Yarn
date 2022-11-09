@@ -2,15 +2,15 @@ package net.minecraft.data.server.tag;
 
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.data.DataOutput;
-import net.minecraft.tag.PointOfInterestTypeTags;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryWrapper;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.tag.PointOfInterestTypeTags;
 import net.minecraft.world.poi.PointOfInterestType;
 import net.minecraft.world.poi.PointOfInterestTypes;
 
 public class PointOfInterestTypeTagProvider extends AbstractTagProvider<PointOfInterestType> {
 	public PointOfInterestTypeTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
-		super(output, Registry.POINT_OF_INTEREST_TYPE_KEY, registryLookupFuture);
+		super(output, RegistryKeys.POINT_OF_INTEREST_TYPE, registryLookupFuture);
 	}
 
 	@Override

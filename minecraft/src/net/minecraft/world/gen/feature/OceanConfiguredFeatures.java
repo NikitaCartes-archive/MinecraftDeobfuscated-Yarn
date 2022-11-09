@@ -1,9 +1,9 @@
 package net.minecraft.world.gen.feature;
 
 import net.minecraft.block.Blocks;
-import net.minecraft.util.registry.Registerable;
-import net.minecraft.util.registry.RegistryEntryList;
-import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.registry.Registerable;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.world.gen.CountConfig;
 import net.minecraft.world.gen.ProbabilityConfig;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;

@@ -29,6 +29,8 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -36,8 +38,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.VillagerData;
 import net.minecraft.village.VillagerDataContainer;
@@ -68,7 +68,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 
 	public ZombieVillagerEntity(EntityType<? extends ZombieVillagerEntity> entityType, World world) {
 		super(entityType, world);
-		Registry.VILLAGER_PROFESSION
+		Registries.VILLAGER_PROFESSION
 			.getRandom(this.random)
 			.ifPresent(profession -> this.setVillagerData(this.getVillagerData().withProfession((VillagerProfession)profession.value())));
 	}

@@ -1,22 +1,22 @@
 package net.minecraft.structure.pool;
 
 import com.google.common.collect.ImmutableList;
+import net.minecraft.registry.Registerable;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.structure.AncientCityGenerator;
 import net.minecraft.structure.BastionRemnantGenerator;
 import net.minecraft.structure.PillagerOutpostGenerator;
 import net.minecraft.structure.VillageGenerator;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registerable;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryEntryLookup;
-import net.minecraft.util.registry.RegistryKey;
 
 public class StructurePools {
 	public static final RegistryKey<StructurePool> EMPTY = of("empty");
 
 	public static RegistryKey<StructurePool> of(String id) {
-		return RegistryKey.of(Registry.STRUCTURE_POOL_KEY, new Identifier(id));
+		return RegistryKey.of(RegistryKeys.TEMPLATE_POOL_WORLDGEN, new Identifier(id));
 	}
 
 	public static void register(Registerable<StructurePool> structurePoolsRegisterable, String id, StructurePool pool) {
@@ -24,7 +24,7 @@ public class StructurePools {
 	}
 
 	public static void bootstrap(Registerable<StructurePool> structurePoolsRegisterable) {
-		RegistryEntryLookup<StructurePool> registryEntryLookup = structurePoolsRegisterable.getRegistryLookup(Registry.STRUCTURE_POOL_KEY);
+		RegistryEntryLookup<StructurePool> registryEntryLookup = structurePoolsRegisterable.getRegistryLookup(RegistryKeys.TEMPLATE_POOL_WORLDGEN);
 		RegistryEntry<StructurePool> registryEntry = registryEntryLookup.getOrThrow(EMPTY);
 		structurePoolsRegisterable.register(EMPTY, new StructurePool(registryEntry, ImmutableList.of(), StructurePool.Projection.RIGID));
 		BastionRemnantGenerator.bootstrap(structurePoolsRegisterable);

@@ -4,9 +4,9 @@ import java.util.concurrent.CompletableFuture;
 import net.minecraft.block.Block;
 import net.minecraft.data.DataOutput;
 import net.minecraft.item.Items;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.ItemTags;
-import net.minecraft.util.registry.RegistryWrapper;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.ItemTags;
 
 public class OneTwentyItemTagProvider extends AbstractItemTagProvider {
 	public OneTwentyItemTagProvider(
@@ -33,6 +33,7 @@ public class OneTwentyItemTagProvider extends AbstractItemTagProvider {
 		this.copy(BlockTags.TRAPDOORS, ItemTags.TRAPDOORS);
 		this.copy(BlockTags.FENCES, ItemTags.FENCES);
 		this.copy(BlockTags.STANDING_SIGNS, ItemTags.SIGNS);
+		this.copy(BlockTags.BAMBOO_BLOCKS, ItemTags.BAMBOO_BLOCKS);
 		this.copy(BlockTags.CEILING_HANGING_SIGNS, ItemTags.HANGING_SIGNS);
 		this.getOrCreateTagBuilder(ItemTags.CHEST_BOATS).add(Items.BAMBOO_CHEST_RAFT);
 		this.getOrCreateTagBuilder(ItemTags.BOATS).add(Items.BAMBOO_RAFT);

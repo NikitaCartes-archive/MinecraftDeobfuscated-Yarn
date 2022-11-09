@@ -10,13 +10,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.MutableRegistry;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryCodecs;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.SimpleRegistry;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.MutableRegistry;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryCodecs;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.SimpleRegistry;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.MultiNoiseBiomeSource;
@@ -31,7 +32,7 @@ import net.minecraft.world.level.LevelProperties;
 public record DimensionOptionsRegistryHolder(Registry<DimensionOptions> dimensions) {
 	public static final MapCodec<DimensionOptionsRegistryHolder> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
-					RegistryCodecs.createKeyedRegistryCodec(Registry.DIMENSION_KEY, Lifecycle.stable(), DimensionOptions.CODEC)
+					RegistryCodecs.createKeyedRegistryCodec(RegistryKeys.DIMENSION, Lifecycle.stable(), DimensionOptions.CODEC)
 						.fieldOf("dimensions")
 						.forGetter(DimensionOptionsRegistryHolder::dimensions)
 				)
@@ -56,7 +57,7 @@ public record DimensionOptionsRegistryHolder(Registry<DimensionOptions> dimensio
 	}
 
 	public DimensionOptionsRegistryHolder with(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator) {
-		Registry<DimensionType> registry = dynamicRegistryManager.get(Registry.DIMENSION_TYPE_KEY);
+		Registry<DimensionType> registry = dynamicRegistryManager.get(RegistryKeys.DIMENSION_TYPE);
 		Registry<DimensionOptions> registry2 = createRegistry(registry, this.dimensions, chunkGenerator);
 		return new DimensionOptionsRegistryHolder(registry2);
 	}
@@ -74,7 +75,7 @@ public record DimensionOptionsRegistryHolder(Registry<DimensionOptions> dimensio
 	public static Registry<DimensionOptions> createRegistry(
 		Registry<DimensionOptions> currentRegistry, RegistryEntry<DimensionType> overworldEntry, ChunkGenerator chunkGenerator
 	) {
-		MutableRegistry<DimensionOptions> mutableRegistry = new SimpleRegistry(Registry.DIMENSION_KEY, Lifecycle.experimental());
+		MutableRegistry<DimensionOptions> mutableRegistry = new SimpleRegistry(RegistryKeys.DIMENSION, Lifecycle.experimental());
 		mutableRegistry.add(DimensionOptions.OVERWORLD, new DimensionOptions(overworldEntry, chunkGenerator), Lifecycle.stable());
 
 		for(java.util.Map.Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : currentRegistry.getEntrySet()) {
@@ -105,7 +106,7 @@ public record DimensionOptionsRegistryHolder(Registry<DimensionOptions> dimensio
 			.getEntrySet()
 			.stream()
 			.map(java.util.Map.Entry::getKey)
-			.map(Registry::createWorldKey)
+			.map(RegistryKeys::toWorldKey)
 			.collect(ImmutableSet.toImmutableSet());
 	}
 
@@ -199,7 +200,7 @@ public record DimensionOptionsRegistryHolder(Registry<DimensionOptions> dimensio
 						.ifPresent(dimensionOptions -> list.add(new Entry(key, dimensionOptions)))
 			);
 		Lifecycle lifecycle = list.size() == VANILLA_KEY_COUNT ? Lifecycle.stable() : Lifecycle.experimental();
-		MutableRegistry<DimensionOptions> mutableRegistry = new SimpleRegistry(Registry.DIMENSION_KEY, lifecycle);
+		MutableRegistry<DimensionOptions> mutableRegistry = new SimpleRegistry(RegistryKeys.DIMENSION, lifecycle);
 		list.forEach(entry -> mutableRegistry.add(entry.key, entry.value, entry.getLifecycle()));
 		Registry<DimensionOptions> registry = mutableRegistry.freeze();
 		LevelProperties.SpecialProperty specialProperty = getSpecialProperty(registry);

@@ -1,6 +1,7 @@
 package net.minecraft.entity.ai.brain;
 
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 public class Activity {
 	public static final Activity CORE = register("core");
@@ -42,7 +43,7 @@ public class Activity {
 	}
 
 	private static Activity register(String id) {
-		return Registry.register(Registry.ACTIVITY, id, new Activity(id));
+		return Registry.register(Registries.ACTIVITY, id, new Activity(id));
 	}
 
 	public boolean equals(Object o) {

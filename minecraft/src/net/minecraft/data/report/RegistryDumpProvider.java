@@ -7,10 +7,11 @@ import java.util.concurrent.CompletableFuture;
 import net.minecraft.data.DataOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
+import net.minecraft.registry.DefaultedRegistry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.DefaultedRegistry;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 
 public class RegistryDumpProvider implements DataProvider {
 	private final DataOutput output;
@@ -22,7 +23,7 @@ public class RegistryDumpProvider implements DataProvider {
 	@Override
 	public CompletableFuture<?> run(DataWriter writer) {
 		JsonObject jsonObject = new JsonObject();
-		Registry.REGISTRIES.streamEntries().forEach(entry -> jsonObject.add(entry.registryKey().getValue().toString(), toJson((Registry)entry.value())));
+		Registries.REGISTRIES.streamEntries().forEach(entry -> jsonObject.add(entry.registryKey().getValue().toString(), toJson((Registry)entry.value())));
 		Path path = this.output.resolvePath(DataOutput.OutputType.REPORTS).resolve("registries.json");
 		return DataProvider.writeToPath(writer, jsonObject, path);
 	}
@@ -34,7 +35,7 @@ public class RegistryDumpProvider implements DataProvider {
 			jsonObject.addProperty("default", identifier.toString());
 		}
 
-		int i = Registry.REGISTRIES.getRawId(registry);
+		int i = Registries.REGISTRIES.getRawId(registry);
 		jsonObject.addProperty("protocol_id", i);
 		JsonObject jsonObject2 = new JsonObject();
 		registry.streamEntries().forEach(entry -> {

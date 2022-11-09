@@ -2,25 +2,25 @@ package net.minecraft.structure;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.registry.Registerable;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.structure.pool.StructurePools;
 import net.minecraft.structure.processor.StructureProcessorList;
 import net.minecraft.structure.processor.StructureProcessorLists;
-import net.minecraft.util.registry.Registerable;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryEntryLookup;
 
 public class BastionTreasureData {
 	public static void bootstrap(Registerable<StructurePool> poolRegisterable) {
-		RegistryEntryLookup<StructureProcessorList> registryEntryLookup = poolRegisterable.getRegistryLookup(Registry.STRUCTURE_PROCESSOR_LIST_KEY);
+		RegistryEntryLookup<StructureProcessorList> registryEntryLookup = poolRegisterable.getRegistryLookup(RegistryKeys.PROCESSOR_LIST_WORLDGEN);
 		RegistryEntry<StructureProcessorList> registryEntry = registryEntryLookup.getOrThrow(StructureProcessorLists.TREASURE_ROOMS);
 		RegistryEntry<StructureProcessorList> registryEntry2 = registryEntryLookup.getOrThrow(StructureProcessorLists.HIGH_WALL);
 		RegistryEntry<StructureProcessorList> registryEntry3 = registryEntryLookup.getOrThrow(StructureProcessorLists.BOTTOM_RAMPART);
 		RegistryEntry<StructureProcessorList> registryEntry4 = registryEntryLookup.getOrThrow(StructureProcessorLists.HIGH_RAMPART);
 		RegistryEntry<StructureProcessorList> registryEntry5 = registryEntryLookup.getOrThrow(StructureProcessorLists.ROOF);
-		RegistryEntryLookup<StructurePool> registryEntryLookup2 = poolRegisterable.getRegistryLookup(Registry.STRUCTURE_POOL_KEY);
+		RegistryEntryLookup<StructurePool> registryEntryLookup2 = poolRegisterable.getRegistryLookup(RegistryKeys.TEMPLATE_POOL_WORLDGEN);
 		RegistryEntry<StructurePool> registryEntry6 = registryEntryLookup2.getOrThrow(StructurePools.EMPTY);
 		StructurePools.register(
 			poolRegisterable,

@@ -10,7 +10,7 @@ import com.google.gson.JsonSyntaxException;
 import java.lang.reflect.Type;
 import java.util.function.Function;
 import javax.annotation.Nullable;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registry;
 
 public class JsonSerializing {
 	public static <E, T extends JsonSerializableType<E>> JsonSerializing.SerializerBuilder<E, T> createSerializerBuilder(

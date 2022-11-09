@@ -18,10 +18,10 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.option.GraphicsMode;
 import net.minecraft.client.option.SimpleOption;
 import net.minecraft.client.render.FogShape;
-import net.minecraft.client.render.Shader;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.texture.AbstractTexture;
@@ -88,7 +88,7 @@ public class RenderSystem {
 	private static float shaderLineWidth = 1.0F;
 	private static String apiDescription = "Unknown";
 	@Nullable
-	private static Shader shader;
+	private static ShaderProgram shader;
 
 	public static void initRenderThread() {
 		if (renderThread == null && gameThread != Thread.currentThread()) {
@@ -454,7 +454,7 @@ public class RenderSystem {
 		shaderLightDirections[1] = vector3f2;
 	}
 
-	public static void setupShaderLights(Shader shader) {
+	public static void setupShaderLights(ShaderProgram shader) {
 		assertOnRenderThread();
 		if (shader.light0Direction != null) {
 			shader.light0Direction.set(shaderLightDirections[0]);
@@ -752,16 +752,23 @@ public class RenderSystem {
 		}
 	}
 
-	public static void setShader(Supplier<Shader> shaderSupplier) {
+	/**
+	 * Sets the {@code RenderSystem}'s global shader program.
+	 * 
+	 * <p>Note that this sets both the vertex shader and the fragment shader
+	 * indirectly through the given shader program. The name of this method is
+	 * not obfuscated and is kept as is.
+	 */
+	public static void setShader(Supplier<ShaderProgram> program) {
 		if (!isOnRenderThread()) {
-			recordRenderCall(() -> shader = (Shader)shaderSupplier.get());
+			recordRenderCall(() -> shader = (ShaderProgram)program.get());
 		} else {
-			shader = (Shader)shaderSupplier.get();
+			shader = (ShaderProgram)program.get();
 		}
 	}
 
 	@Nullable
-	public static Shader getShader() {
+	public static ShaderProgram getShader() {
 		assertOnRenderThread();
 		return shader;
 	}

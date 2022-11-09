@@ -8,7 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 
 @Environment(EnvType.CLIENT)
 public class BlockEntityRendererFactories {
@@ -24,7 +24,7 @@ public class BlockEntityRendererFactories {
 			try {
 				builder.put(type, factory.create(args));
 			} catch (Exception var5) {
-				throw new IllegalStateException("Failed to create model for " + Registry.BLOCK_ENTITY_TYPE.getId(type), var5);
+				throw new IllegalStateException("Failed to create model for " + Registries.BLOCK_ENTITY_TYPE.getId(type), var5);
 			}
 		});
 		return builder.build();

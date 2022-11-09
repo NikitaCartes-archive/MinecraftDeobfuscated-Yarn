@@ -13,10 +13,10 @@ import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.passive.CatVariant;
 import net.minecraft.entity.passive.FrogEntity;
 import net.minecraft.entity.passive.FrogVariant;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 
 public interface TypeSpecificPredicate {
 	TypeSpecificPredicate ANY = new TypeSpecificPredicate() {
@@ -91,10 +91,10 @@ public interface TypeSpecificPredicate {
 		public static final TypeSpecificPredicate.Deserializer PLAYER = PlayerPredicate::fromJson;
 		public static final TypeSpecificPredicate.Deserializer SLIME = SlimePredicate::fromJson;
 		public static final VariantPredicates<CatVariant> CAT = VariantPredicates.create(
-			Registry.CAT_VARIANT, entity -> entity instanceof CatEntity catEntity ? Optional.of(catEntity.getVariant()) : Optional.empty()
+			Registries.CAT_VARIANT, entity -> entity instanceof CatEntity catEntity ? Optional.of(catEntity.getVariant()) : Optional.empty()
 		);
 		public static final VariantPredicates<FrogVariant> FROG = VariantPredicates.create(
-			Registry.FROG_VARIANT, entity -> entity instanceof FrogEntity frogEntity ? Optional.of(frogEntity.getVariant()) : Optional.empty()
+			Registries.FROG_VARIANT, entity -> entity instanceof FrogEntity frogEntity ? Optional.of(frogEntity.getVariant()) : Optional.empty()
 		);
 		public static final BiMap<String, TypeSpecificPredicate.Deserializer> TYPES = ImmutableBiMap.of(
 			"any",

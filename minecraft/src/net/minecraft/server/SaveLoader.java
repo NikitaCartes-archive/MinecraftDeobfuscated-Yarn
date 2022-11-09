@@ -1,8 +1,8 @@
 package net.minecraft.server;
 
+import net.minecraft.registry.CombinedDynamicRegistries;
+import net.minecraft.registry.ServerDynamicRegistryType;
 import net.minecraft.resource.LifecycledResourceManager;
-import net.minecraft.util.registry.CombinedDynamicRegistries;
-import net.minecraft.util.registry.ServerDynamicRegistryType;
 import net.minecraft.world.SaveProperties;
 
 public record SaveLoader(

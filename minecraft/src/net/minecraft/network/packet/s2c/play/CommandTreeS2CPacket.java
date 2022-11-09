@@ -31,8 +31,8 @@ import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
 	private static final byte field_33317 = 3;
@@ -124,7 +124,7 @@ public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
 		if (i == 2) {
 			String string = buf.readString();
 			int j = buf.readVarInt();
-			ArgumentSerializer<?, ?> argumentSerializer = Registry.COMMAND_ARGUMENT_TYPE.get(j);
+			ArgumentSerializer<?, ?> argumentSerializer = Registries.COMMAND_ARGUMENT_TYPE.get(j);
 			if (argumentSerializer == null) {
 				return null;
 			} else {
@@ -234,7 +234,7 @@ public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
 		private static <A extends ArgumentType<?>, T extends ArgumentSerializer.ArgumentTypeProperties<A>> void write(
 			PacketByteBuf buf, ArgumentSerializer<A, T> serializer, ArgumentSerializer.ArgumentTypeProperties<A> properties
 		) {
-			buf.writeVarInt(Registry.COMMAND_ARGUMENT_TYPE.getRawId(serializer));
+			buf.writeVarInt(Registries.COMMAND_ARGUMENT_TYPE.getRawId(serializer));
 			serializer.writePacket((T)properties, buf);
 		}
 	}

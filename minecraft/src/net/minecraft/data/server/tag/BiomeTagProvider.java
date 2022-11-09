@@ -2,17 +2,17 @@ package net.minecraft.data.server.tag;
 
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.data.DataOutput;
-import net.minecraft.tag.BiomeTags;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntryLookup;
-import net.minecraft.util.registry.RegistryWrapper;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.source.MultiNoiseBiomeSource;
 
 public class BiomeTagProvider extends AbstractTagProvider<Biome> {
 	public BiomeTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
-		super(output, Registry.BIOME_KEY, registryLookupFuture);
+		super(output, RegistryKeys.BIOME_WORLDGEN, registryLookupFuture);
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class BiomeTagProvider extends AbstractTagProvider<Biome> {
 			.add(BiomeKeys.DARK_FOREST)
 			.add(BiomeKeys.GROVE);
 		this.getOrCreateTagBuilder(BiomeTags.IS_SAVANNA).add(BiomeKeys.SAVANNA).add(BiomeKeys.SAVANNA_PLATEAU).add(BiomeKeys.WINDSWEPT_SAVANNA);
-		RegistryEntryLookup<Biome> registryEntryLookup = lookup.getWrapperOrThrow(Registry.BIOME_KEY);
+		RegistryEntryLookup<Biome> registryEntryLookup = lookup.getWrapperOrThrow(RegistryKeys.BIOME_WORLDGEN);
 		AbstractTagProvider.ProvidedTagBuilder<Biome> providedTagBuilder = this.getOrCreateTagBuilder(BiomeTags.IS_NETHER);
 		MultiNoiseBiomeSource.Preset.NETHER.stream(registryEntryLookup).forEach(providedTagBuilder::add);
 		AbstractTagProvider.ProvidedTagBuilder<Biome> providedTagBuilder2 = this.getOrCreateTagBuilder(BiomeTags.IS_OVERWORLD);

@@ -306,7 +306,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 				list2 = Collections.emptyList();
 			}
 
-			RenderSystem.setShader(GameRenderer::getPositionTexShader);
+			RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			RenderSystem.setShaderTexture(0, DrawableHelper.GUI_ICONS_TEXTURE);
 			DrawableHelper.drawTexture(matrices, x + entryWidth - 15, y, (float)(k * 10), (float)(176 + l * 8), 10, 8, 256, 256);
@@ -329,15 +329,15 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			int m = mouseX - x;
 			int n = mouseY - y;
 			if (m >= entryWidth - 15 && m <= entryWidth - 5 && n >= 0 && n <= 8) {
-				this.screen.setTooltip(Collections.singletonList(text2));
+				this.screen.setMultiplayerScreenTooltip(Collections.singletonList(text2));
 			} else if (m >= entryWidth - j - 15 - 2 && m <= entryWidth - 15 - 2 && n >= 0 && n <= 8) {
-				this.screen.setTooltip(list2);
+				this.screen.setMultiplayerScreenTooltip(list2);
 			}
 
 			if (this.client.options.getTouchscreen().getValue() || hovered) {
 				RenderSystem.setShaderTexture(0, MultiplayerServerListWidget.SERVER_SELECTION_TEXTURE);
 				DrawableHelper.fill(matrices, x, y, x + 32, y + 32, -1601138544);
-				RenderSystem.setShader(GameRenderer::getPositionTexShader);
+				RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 				int o = mouseX - x;
 				int p = mouseY - y;

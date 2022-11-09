@@ -1,10 +1,10 @@
 package net.minecraft.command;
 
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.resource.featuretoggle.FeatureSet;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.RegistryWrapper;
 
 /**
  * A class that creates {@link RegistryWrapper} with ability to set a policy on
@@ -60,13 +60,13 @@ public interface CommandRegistryAccess {
 	}
 
 	/**
-	 * A policy on how to handle a {@link net.minecraft.tag.TagKey} that does not resolve
+	 * A policy on how to handle a {@link net.minecraft.registry.tag.TagKey} that does not resolve
 	 * to an existing tag (unrecognized tag) in {@link
-	 * net.minecraft.util.registry.RegistryWrapper#getOptional(net.minecraft.tag.TagKey)}.
+	 * net.minecraft.registry.RegistryWrapper#getOptional(net.minecraft.registry.tag.TagKey)}.
 	 */
 	public static enum EntryListCreationPolicy {
 		/**
-		 * Creates a new {@link net.minecraft.util.registry.RegistryEntryList}, stores it and returns it.
+		 * Creates a new {@link net.minecraft.registry.entry.RegistryEntryList}, stores it and returns it.
 		 */
 		CREATE_NEW,
 		/**

@@ -30,23 +30,23 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.InstrumentTags;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.InstrumentTags;
-import net.minecraft.tag.TagKey;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -101,7 +101,7 @@ public class GoatEntity extends AnimalEntity {
 	public ItemStack getGoatHornStack() {
 		Random random = Random.create((long)this.getUuid().hashCode());
 		TagKey<Instrument> tagKey = this.isScreaming() ? InstrumentTags.SCREAMING_GOAT_HORNS : InstrumentTags.REGULAR_GOAT_HORNS;
-		RegistryEntryList<Instrument> registryEntryList = Registry.INSTRUMENT.getOrCreateEntryList(tagKey);
+		RegistryEntryList<Instrument> registryEntryList = Registries.INSTRUMENT.getOrCreateEntryList(tagKey);
 		return GoatHornItem.getStackForInstrument(Items.GOAT_HORN, (RegistryEntry<Instrument>)registryEntryList.getRandom(random).get());
 	}
 

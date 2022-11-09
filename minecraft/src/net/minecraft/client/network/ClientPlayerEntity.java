@@ -67,11 +67,11 @@ import net.minecraft.network.packet.c2s.play.UpdatePlayerAbilitiesC2SPacket;
 import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Recipe;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.StatHandler;
-import net.minecraft.tag.FluidTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Arm;
 import net.minecraft.util.ClickType;
@@ -553,7 +553,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	@Nullable
 	public JumpingMount getJumpingMount() {
 		Entity var2 = this.getVehicle();
-		if (var2 instanceof JumpingMount jumpingMount && jumpingMount.canJump()) {
+		if (var2 instanceof JumpingMount jumpingMount && jumpingMount.canJump(this)) {
 			return jumpingMount;
 		}
 

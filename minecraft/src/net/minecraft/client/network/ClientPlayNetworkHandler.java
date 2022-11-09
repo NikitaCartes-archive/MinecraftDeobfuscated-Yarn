@@ -258,6 +258,16 @@ import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeManager;
+import net.minecraft.registry.CombinedDynamicRegistries;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.TagKey;
+import net.minecraft.registry.tag.TagPacketSerializer;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.scoreboard.AbstractTeam;
@@ -275,8 +285,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.StatHandler;
-import net.minecraft.tag.TagKey;
-import net.minecraft.tag.TagPacketSerializer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
@@ -290,12 +298,6 @@ import net.minecraft.util.math.Position;
 import net.minecraft.util.math.PositionImpl;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.CombinedDynamicRegistries;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.RegistryWrapper;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
@@ -391,7 +393,7 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 		RegistryKey<World> registryKey = packet.dimensionId();
 		RegistryEntry<DimensionType> registryEntry = this.combinedDynamicRegistries
 			.getCombinedRegistryManager()
-			.get(Registry.DIMENSION_TYPE_KEY)
+			.get(RegistryKeys.DIMENSION_TYPE)
 			.entryOf(packet.dimensionType());
 		this.chunkLoadDistance = packet.viewDistance();
 		this.simulationDistance = packet.simulationDistance();
@@ -439,10 +441,13 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 			.send(new CustomPayloadC2SPacket(CustomPayloadC2SPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString(ClientBrandRetriever.getClientModName())));
 		this.lastSeenMessagesCollector = new LastSeenMessagesCollector(20);
 		this.signatureStorage = MessageSignatureStorage.create();
-		this.client
-			.getProfileKeys()
-			.fetchKeyPair()
-			.thenAcceptAsync(keyPair -> keyPair.ifPresent(keys -> this.setSession(ClientPlayerSession.create(keys))), this.client);
+		if (this.connection.isEncrypted()) {
+			this.client
+				.getProfileKeys()
+				.fetchKeyPair()
+				.thenAcceptAsync(keyPair -> keyPair.ifPresent(keys -> this.setSession(ClientPlayerSession.create(keys))), this.client);
+		}
+
 		this.client.getGame().onStartGameSession();
 		this.telemetrySender.setGameModeAndSend(packet.gameMode(), packet.hardcore());
 	}
@@ -450,7 +455,7 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 	@Override
 	public void onEntitySpawn(EntitySpawnS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		EntityType<?> entityType = packet.getEntityTypeId();
+		EntityType<?> entityType = packet.getEntityType();
 		Entity entity = entityType.create(this.world);
 		if (entity != null) {
 			entity.onSpawnPacket(packet);
@@ -1026,7 +1031,7 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 		RegistryKey<World> registryKey = packet.getDimension();
 		RegistryEntry<DimensionType> registryEntry = this.combinedDynamicRegistries
 			.getCombinedRegistryManager()
-			.get(Registry.DIMENSION_TYPE_KEY)
+			.get(RegistryKeys.DIMENSION_TYPE)
 			.entryOf(packet.getDimensionType());
 		ClientPlayerEntity clientPlayerEntity = this.client.player;
 		int i = clientPlayerEntity.getId();
@@ -1141,8 +1146,9 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 			playerEntity.getInventory().setStack(i, itemStack);
 		} else {
 			boolean bl = false;
-			if (this.client.currentScreen instanceof CreativeInventoryScreen creativeInventoryScreen) {
-				bl = creativeInventoryScreen.getSelectedTab() != ItemGroups.INVENTORY.getIndex();
+			Screen var7 = this.client.currentScreen;
+			if (var7 instanceof CreativeInventoryScreen creativeInventoryScreen) {
+				bl = !creativeInventoryScreen.isInventoryTabSelected();
 			}
 
 			if (packet.getSyncId() == 0 && PlayerScreenHandler.isInHotbar(i)) {
@@ -1324,7 +1330,7 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 		MapState mapState = this.client.world.getMapState(string);
 		if (mapState == null) {
 			mapState = MapState.of(packet.getScale(), packet.isLocked(), this.client.world.getRegistryKey());
-			this.client.world.putMapState(string, mapState);
+			this.client.world.method_47437(string, mapState);
 		}
 
 		packet.apply(mapState);
@@ -1490,7 +1496,7 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 			Blocks.refreshShapeCache();
 		}
 
-		ItemGroups.SEARCH.markSearchProviderDirty();
+		ItemGroups.getSearchGroup().reloadSearchProvider();
 	}
 
 	@Override
@@ -1970,7 +1976,7 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 			} else if (CustomPayloadS2CPacket.DEBUG_STRUCTURES.equals(identifier)) {
 				DimensionType dimensionType = (DimensionType)this.combinedDynamicRegistries
 					.getCombinedRegistryManager()
-					.get(Registry.DIMENSION_TYPE_KEY)
+					.get(RegistryKeys.DIMENSION_TYPE)
 					.get(packetByteBuf.readIdentifier());
 				BlockBox blockBox = new BlockBox(
 					packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt()
@@ -2151,12 +2157,12 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 				int ac = packetByteBuf.readInt();
 				this.client.debugRenderer.gameTestDebugRenderer.addMarker(blockPos2, m, string12, ac);
 			} else if (CustomPayloadS2CPacket.DEBUG_GAME_EVENT.equals(identifier)) {
-				GameEvent gameEvent = Registry.GAME_EVENT.get(new Identifier(packetByteBuf.readString()));
+				GameEvent gameEvent = Registries.GAME_EVENT.get(new Identifier(packetByteBuf.readString()));
 				Vec3d vec3d = new Vec3d(packetByteBuf.readDouble(), packetByteBuf.readDouble(), packetByteBuf.readDouble());
 				this.client.debugRenderer.gameEventDebugRenderer.addEvent(gameEvent, vec3d);
 			} else if (CustomPayloadS2CPacket.DEBUG_GAME_EVENT_LISTENERS.equals(identifier)) {
 				Identifier identifier2 = packetByteBuf.readIdentifier();
-				PositionSource positionSource = ((PositionSourceType)Registry.POSITION_SOURCE_TYPE
+				PositionSource positionSource = ((PositionSourceType)Registries.POSITION_SOURCE_TYPE
 						.getOrEmpty(identifier2)
 						.orElseThrow(() -> new IllegalArgumentException("Unknown position source type " + identifier2)))
 					.readFromBuf(packetByteBuf);
@@ -2321,7 +2327,7 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 				for(EntityAttributesS2CPacket.Entry entry : packet.getEntries()) {
 					EntityAttributeInstance entityAttributeInstance = attributeContainer.getCustomInstance(entry.getId());
 					if (entityAttributeInstance == null) {
-						LOGGER.warn("Entity {} does not have attribute {}", entity, Registry.ATTRIBUTE.getId(entry.getId()));
+						LOGGER.warn("Entity {} does not have attribute {}", entity, Registries.ATTRIBUTE.getId(entry.getId()));
 					} else {
 						entityAttributeInstance.setBaseValue(entry.getBaseValue());
 						entityAttributeInstance.clearModifiers();
@@ -2543,9 +2549,11 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 
 	@Override
 	public void tick() {
-		ProfileKeys profileKeys = this.client.getProfileKeys();
-		if (profileKeys.isExpired()) {
-			profileKeys.fetchKeyPair().thenAcceptAsync(keyPair -> keyPair.ifPresent(this::updateKeyPair), this.client);
+		if (this.connection.isEncrypted()) {
+			ProfileKeys profileKeys = this.client.getProfileKeys();
+			if (profileKeys.isExpired()) {
+				profileKeys.fetchKeyPair().thenAcceptAsync(keyPair -> keyPair.ifPresent(this::updateKeyPair), this.client);
+			}
 		}
 	}
 

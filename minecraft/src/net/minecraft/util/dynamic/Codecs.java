@@ -44,11 +44,11 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
+import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.Uuids;
-import net.minecraft.util.registry.RegistryEntryList;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.joml.Vector3f;
 

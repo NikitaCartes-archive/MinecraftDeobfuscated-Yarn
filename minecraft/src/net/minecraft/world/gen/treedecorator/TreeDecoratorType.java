@@ -1,7 +1,8 @@
 package net.minecraft.world.gen.treedecorator;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 public class TreeDecoratorType<P extends TreeDecorator> {
 	public static final TreeDecoratorType<TrunkVineTreeDecorator> TRUNK_VINE = register("trunk_vine", TrunkVineTreeDecorator.CODEC);
@@ -13,7 +14,7 @@ public class TreeDecoratorType<P extends TreeDecorator> {
 	private final Codec<P> codec;
 
 	private static <P extends TreeDecorator> TreeDecoratorType<P> register(String id, Codec<P> codec) {
-		return Registry.register(Registry.TREE_DECORATOR_TYPE, id, new TreeDecoratorType<>(codec));
+		return Registry.register(Registries.TREE_DECORATOR_TYPE, id, new TreeDecoratorType<>(codec));
 	}
 
 	private TreeDecoratorType(Codec<P> codec) {

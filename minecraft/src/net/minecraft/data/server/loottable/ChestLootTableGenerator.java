@@ -23,8 +23,8 @@ import net.minecraft.loot.function.SetStewEffectLootFunction;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
 import net.minecraft.potion.Potions;
-import net.minecraft.tag.InstrumentTags;
-import net.minecraft.tag.StructureTags;
+import net.minecraft.registry.tag.InstrumentTags;
+import net.minecraft.registry.tag.StructureTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 

@@ -1,7 +1,7 @@
 package net.minecraft.world.gen.chunk;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registry;
 
 public class ChunkGenerators {
 	public static Codec<? extends ChunkGenerator> registerAndGetDefault(Registry<Codec<? extends ChunkGenerator>> registry) {

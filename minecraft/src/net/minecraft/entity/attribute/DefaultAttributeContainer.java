@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 
 public class DefaultAttributeContainer {
 	private final Map<EntityAttribute, EntityAttributeInstance> instances;
@@ -18,7 +18,7 @@ public class DefaultAttributeContainer {
 	private EntityAttributeInstance require(EntityAttribute attribute) {
 		EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.instances.get(attribute);
 		if (entityAttributeInstance == null) {
-			throw new IllegalArgumentException("Can't find attribute " + Registry.ATTRIBUTE.getId(attribute));
+			throw new IllegalArgumentException("Can't find attribute " + Registries.ATTRIBUTE.getId(attribute));
 		} else {
 			return entityAttributeInstance;
 		}
@@ -35,7 +35,7 @@ public class DefaultAttributeContainer {
 	public double getModifierValue(EntityAttribute attribute, UUID uuid) {
 		EntityAttributeModifier entityAttributeModifier = this.require(attribute).getModifier(uuid);
 		if (entityAttributeModifier == null) {
-			throw new IllegalArgumentException("Can't find modifier " + uuid + " on attribute " + Registry.ATTRIBUTE.getId(attribute));
+			throw new IllegalArgumentException("Can't find modifier " + uuid + " on attribute " + Registries.ATTRIBUTE.getId(attribute));
 		} else {
 			return entityAttributeModifier.getValue();
 		}
@@ -73,7 +73,7 @@ public class DefaultAttributeContainer {
 		private EntityAttributeInstance checkedAdd(EntityAttribute attribute) {
 			EntityAttributeInstance entityAttributeInstance = new EntityAttributeInstance(attribute, attributex -> {
 				if (this.unmodifiable) {
-					throw new UnsupportedOperationException("Tried to change value for default attribute instance: " + Registry.ATTRIBUTE.getId(attribute));
+					throw new UnsupportedOperationException("Tried to change value for default attribute instance: " + Registries.ATTRIBUTE.getId(attribute));
 				}
 			});
 			this.instances.put(attribute, entityAttributeInstance);

@@ -23,11 +23,11 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.provider.number.LootNumberProvider;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 
 public class SetAttributesLootFunction extends ConditionalLootFunction {
 	final List<SetAttributesLootFunction.Attribute> attributes;
@@ -102,7 +102,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 		public JsonObject serialize(JsonSerializationContext context) {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.addProperty("name", this.name);
-			jsonObject.addProperty("attribute", Registry.ATTRIBUTE.getId(this.attribute).toString());
+			jsonObject.addProperty("attribute", Registries.ATTRIBUTE.getId(this.attribute).toString());
 			jsonObject.addProperty("operation", getName(this.operation));
 			jsonObject.add("amount", context.serialize(this.amount));
 			if (this.id != null) {
@@ -127,7 +127,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 		public static SetAttributesLootFunction.Attribute deserialize(JsonObject json, JsonDeserializationContext context) {
 			String string = JsonHelper.getString(json, "name");
 			Identifier identifier = new Identifier(JsonHelper.getString(json, "attribute"));
-			EntityAttribute entityAttribute = Registry.ATTRIBUTE.get(identifier);
+			EntityAttribute entityAttribute = Registries.ATTRIBUTE.get(identifier);
 			if (entityAttribute == null) {
 				throw new JsonSyntaxException("Unknown attribute: " + identifier);
 			} else {

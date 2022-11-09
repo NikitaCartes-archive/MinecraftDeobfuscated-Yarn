@@ -49,11 +49,11 @@ import net.minecraft.item.ShieldItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.RegistryEntry;
 import org.apache.commons.lang3.StringUtils;
 
 @Environment(EnvType.CLIENT)

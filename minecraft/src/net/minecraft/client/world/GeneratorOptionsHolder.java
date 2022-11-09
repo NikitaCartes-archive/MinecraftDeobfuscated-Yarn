@@ -4,12 +4,13 @@ import java.util.function.BiFunction;
 import java.util.function.UnaryOperator;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.registry.CombinedDynamicRegistries;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.ServerDynamicRegistryType;
 import net.minecraft.resource.DataConfiguration;
 import net.minecraft.server.DataPackContents;
-import net.minecraft.util.registry.CombinedDynamicRegistries;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.ServerDynamicRegistryType;
 import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.dimension.DimensionOptionsRegistryHolder;
 import net.minecraft.world.gen.GeneratorOptions;
@@ -42,7 +43,7 @@ public record GeneratorOptionsHolder(
 	) {
 		this(
 			generatorOptions,
-			combinedDynamicRegistries.get(ServerDynamicRegistryType.DIMENSIONS).get(Registry.DIMENSION_KEY),
+			combinedDynamicRegistries.get(ServerDynamicRegistryType.DIMENSIONS).get(RegistryKeys.DIMENSION),
 			selectedDimensions,
 			combinedDynamicRegistries.with(ServerDynamicRegistryType.DIMENSIONS),
 			dataPackContents,

@@ -15,7 +15,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Util;
 
-public class TemptTask extends Task<PathAwareEntity> {
+public class TemptTask extends MultiTickTask<PathAwareEntity> {
 	public static final int TEMPTATION_COOLDOWN_TICKS = 100;
 	public static final double field_30116 = 2.5;
 	private final Function<LivingEntity, Float> speed;
@@ -40,7 +40,7 @@ public class TemptTask extends Task<PathAwareEntity> {
 	}
 
 	private Optional<PlayerEntity> getTemptingPlayer(PathAwareEntity entity) {
-		return entity.getBrain().getOptionalMemory(MemoryModuleType.TEMPTING_PLAYER);
+		return entity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.TEMPTING_PLAYER);
 	}
 
 	@Override

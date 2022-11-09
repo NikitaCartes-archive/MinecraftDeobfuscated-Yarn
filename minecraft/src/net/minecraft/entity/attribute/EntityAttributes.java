@@ -1,6 +1,7 @@
 package net.minecraft.entity.attribute;
 
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 public class EntityAttributes {
 	public static final EntityAttribute GENERIC_MAX_HEALTH = register(
@@ -44,6 +45,6 @@ public class EntityAttributes {
 	);
 
 	private static EntityAttribute register(String id, EntityAttribute attribute) {
-		return Registry.register(Registry.ATTRIBUTE, id, attribute);
+		return Registry.register(Registries.ATTRIBUTE, id, attribute);
 	}
 }

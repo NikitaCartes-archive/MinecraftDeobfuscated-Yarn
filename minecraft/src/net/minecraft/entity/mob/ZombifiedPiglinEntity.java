@@ -3,6 +3,8 @@ package net.minecraft.entity.mob;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.EntityDimensions;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -51,6 +53,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	private static final int field_30524 = 10;
 	private static final UniformIntProvider ANGER_PASSING_COOLDOWN_RANGE = TimeHelper.betweenSeconds(4, 6);
 	private int angerPassingCooldown;
+	private static final float EYE_HEIGHT = 1.79F;
 
 	public ZombifiedPiglinEntity(EntityType<? extends ZombifiedPiglinEntity> entityType, World world) {
 		super(entityType, world);
@@ -81,6 +84,11 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 			.add(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS, 0.0)
 			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.23F)
 			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 5.0);
+	}
+
+	@Override
+	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
+		return this.isBaby() ? 0.97999996F : 1.79F;
 	}
 
 	@Override

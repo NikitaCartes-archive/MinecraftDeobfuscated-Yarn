@@ -2,16 +2,16 @@ package net.minecraft.world.gen.feature;
 
 import java.util.List;
 import net.minecraft.block.Block;
+import net.minecraft.registry.Registerable;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.intprovider.WeightedListIntProvider;
-import net.minecraft.util.registry.Registerable;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.YOffset;
 import net.minecraft.world.gen.blockpredicate.BlockPredicate;
@@ -33,7 +33,7 @@ public class PlacedFeatures {
 	public static final PlacementModifier FOUR_ABOVE_AND_BELOW_RANGE = HeightRangePlacementModifier.uniform(YOffset.aboveBottom(4), YOffset.belowTop(4));
 	public static final PlacementModifier BOTTOM_TO_120_RANGE = HeightRangePlacementModifier.uniform(YOffset.getBottom(), YOffset.fixed(256));
 
-	public static void getDefaultPlacedFeature(Registerable<PlacedFeature> featureRegisterable) {
+	public static void bootstrap(Registerable<PlacedFeature> featureRegisterable) {
 		OceanPlacedFeatures.bootstrap(featureRegisterable);
 		UndergroundPlacedFeatures.bootstrap(featureRegisterable);
 		EndPlacedFeatures.bootstrap(featureRegisterable);
@@ -46,7 +46,7 @@ public class PlacedFeatures {
 	}
 
 	public static RegistryKey<PlacedFeature> of(String id) {
-		return RegistryKey.of(Registry.PLACED_FEATURE_KEY, new Identifier(id));
+		return RegistryKey.of(RegistryKeys.PLACED_FEATURE_WORLDGEN, new Identifier(id));
 	}
 
 	public static void register(

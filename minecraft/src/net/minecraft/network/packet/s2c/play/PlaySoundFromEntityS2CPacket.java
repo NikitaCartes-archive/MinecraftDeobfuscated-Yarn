@@ -4,9 +4,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.registry.Registries;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.registry.Registry;
 import org.apache.commons.lang3.Validate;
 
 public class PlaySoundFromEntityS2CPacket implements Packet<ClientPlayPacketListener> {
@@ -28,7 +28,7 @@ public class PlaySoundFromEntityS2CPacket implements Packet<ClientPlayPacketList
 	}
 
 	public PlaySoundFromEntityS2CPacket(PacketByteBuf buf) {
-		this.sound = buf.readRegistryValue(Registry.SOUND_EVENT);
+		this.sound = buf.readRegistryValue(Registries.SOUND_EVENT);
 		this.category = buf.readEnumConstant(SoundCategory.class);
 		this.entityId = buf.readVarInt();
 		this.volume = buf.readFloat();
@@ -38,7 +38,7 @@ public class PlaySoundFromEntityS2CPacket implements Packet<ClientPlayPacketList
 
 	@Override
 	public void write(PacketByteBuf buf) {
-		buf.writeRegistryValue(Registry.SOUND_EVENT, this.sound);
+		buf.writeRegistryValue(Registries.SOUND_EVENT, this.sound);
 		buf.writeEnumConstant(this.category);
 		buf.writeVarInt(this.entityId);
 		buf.writeFloat(this.volume);

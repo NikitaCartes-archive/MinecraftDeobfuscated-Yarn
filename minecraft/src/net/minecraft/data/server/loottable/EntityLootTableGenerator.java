@@ -25,10 +25,10 @@ import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.EntityFlagsPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.TypeSpecificPredicate;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 
 public abstract class EntityLootTableGenerator implements LootTableGenerator {
 	protected static final EntityPredicate.Builder NEEDS_ENTITY_ON_FIRE = EntityPredicate.Builder.create()
@@ -55,7 +55,7 @@ public abstract class EntityLootTableGenerator implements LootTableGenerator {
 	public void accept(BiConsumer<Identifier, LootTable.Builder> exporter) {
 		this.generate();
 		Set<Identifier> set = Sets.<Identifier>newHashSet();
-		Registry.ENTITY_TYPE
+		Registries.ENTITY_TYPE
 			.streamEntries()
 			.forEach(
 				entityType -> {

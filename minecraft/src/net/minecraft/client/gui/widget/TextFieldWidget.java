@@ -14,7 +14,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
@@ -32,7 +31,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class TextFieldWidget extends ClickableWidget implements Drawable, Element {
+public class TextFieldWidget extends ClickableWidget implements Drawable {
 	public static final int field_32194 = -1;
 	public static final int field_32195 = 1;
 	private static final int field_32197 = 1;
@@ -66,6 +65,8 @@ public class TextFieldWidget extends ClickableWidget implements Drawable, Elemen
 	private BiFunction<String, Integer, OrderedText> renderTextProvider = (string, firstCharacterIndex) -> OrderedText.styledForwardsVisitedString(
 			string, Style.EMPTY
 		);
+	@Nullable
+	private Text placeholder;
 
 	public TextFieldWidget(TextRenderer textRenderer, int x, int y, int width, int height, Text text) {
 		this(textRenderer, x, y, width, height, null, text);
@@ -424,6 +425,10 @@ public class TextFieldWidget extends ClickableWidget implements Drawable, Elemen
 				this.textRenderer.drawWithShadow(matrices, (OrderedText)this.renderTextProvider.apply(string.substring(j), this.selectionStart), (float)n, (float)m, i);
 			}
 
+			if (this.placeholder != null && string.isEmpty() && !this.isFocused()) {
+				this.textRenderer.drawWithShadow(matrices, this.placeholder, (float)n, (float)m, i);
+			}
+
 			if (!bl3 && this.suggestion != null) {
 				this.textRenderer.drawWithShadow(matrices, this.suggestion, (float)(o - 1), (float)m, -8355712);
 			}
@@ -466,7 +471,7 @@ public class TextFieldWidget extends ClickableWidget implements Drawable, Elemen
 
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		RenderSystem.setShader(GameRenderer::getPositionShader);
+		RenderSystem.setShader(GameRenderer::getPositionProgram);
 		RenderSystem.setShaderColor(0.0F, 0.0F, 1.0F, 1.0F);
 		RenderSystem.disableTexture();
 		RenderSystem.enableColorLogicOp();
@@ -593,7 +598,11 @@ public class TextFieldWidget extends ClickableWidget implements Drawable, Elemen
 	}
 
 	@Override
-	public void appendNarrations(NarrationMessageBuilder builder) {
-		builder.put(NarrationPart.TITLE, Text.translatable("narration.edit_box", this.getText()));
+	public void appendClickableNarrations(NarrationMessageBuilder builder) {
+		builder.put(NarrationPart.TITLE, this.getNarrationMessage());
+	}
+
+	public void setPlaceholder(Text placeholder) {
+		this.placeholder = placeholder;
 	}
 }

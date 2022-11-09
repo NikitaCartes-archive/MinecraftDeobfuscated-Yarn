@@ -30,7 +30,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gl.ShaderEffect;
+import net.minecraft.client.gl.PostEffectProcessor;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
@@ -43,12 +43,15 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.network.ClientConnection;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Property;
-import net.minecraft.tag.TagKey;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.MetricsData;
 import net.minecraft.util.Util;
@@ -60,9 +63,6 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.LightType;
 import net.minecraft.world.LocalDifficulty;
@@ -369,9 +369,9 @@ public class DebugHud extends DrawableHelper {
 				}
 			}
 
-			ShaderEffect shaderEffect = this.client.gameRenderer.getShader();
-			if (shaderEffect != null) {
-				list.add("Shader: " + shaderEffect.getName());
+			PostEffectProcessor postEffectProcessor = this.client.gameRenderer.getPostProcessor();
+			if (postEffectProcessor != null) {
+				list.add("Shader: " + postEffectProcessor.getName());
 			}
 
 			list.add(
@@ -460,7 +460,7 @@ public class DebugHud extends DrawableHelper {
 				BlockState blockState = this.client.world.getBlockState(blockPos);
 				list.add("");
 				list.add(Formatting.UNDERLINE + "Targeted Block: " + blockPos.getX() + ", " + blockPos.getY() + ", " + blockPos.getZ());
-				list.add(String.valueOf(Registry.BLOCK.getId(blockState.getBlock())));
+				list.add(String.valueOf(Registries.BLOCK.getId(blockState.getBlock())));
 
 				for(Entry<Property<?>, Comparable<?>> entry : blockState.getEntries().entrySet()) {
 					list.add(this.propertyToString(entry));
@@ -474,7 +474,7 @@ public class DebugHud extends DrawableHelper {
 				FluidState fluidState = this.client.world.getFluidState(blockPos);
 				list.add("");
 				list.add(Formatting.UNDERLINE + "Targeted Fluid: " + blockPos.getX() + ", " + blockPos.getY() + ", " + blockPos.getZ());
-				list.add(String.valueOf(Registry.FLUID.getId(fluidState.getFluid())));
+				list.add(String.valueOf(Registries.FLUID.getId(fluidState.getFluid())));
 
 				for(Entry<Property<?>, Comparable<?>> entry : fluidState.getEntries().entrySet()) {
 					list.add(this.propertyToString(entry));
@@ -487,7 +487,7 @@ public class DebugHud extends DrawableHelper {
 			if (entity != null) {
 				list.add("");
 				list.add(Formatting.UNDERLINE + "Targeted Entity");
-				list.add(String.valueOf(Registry.ENTITY_TYPE.getId(entity.getType())));
+				list.add(String.valueOf(Registries.ENTITY_TYPE.getId(entity.getType())));
 			}
 
 			return list;
@@ -529,7 +529,7 @@ public class DebugHud extends DrawableHelper {
 
 		int r = this.client.getWindow().getScaledHeight();
 		fill(matrices, x, r - 60, x + n, r, -1873784752);
-		RenderSystem.setShader(GameRenderer::getPositionColorShader);
+		RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
 		RenderSystem.enableBlend();
 		RenderSystem.disableTexture();
@@ -551,7 +551,7 @@ public class DebugHud extends DrawableHelper {
 			++l;
 		}
 
-		BufferRenderer.drawWithShader(bufferBuilder.end());
+		BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
 		RenderSystem.enableTexture();
 		RenderSystem.disableBlend();
 		if (showFps) {

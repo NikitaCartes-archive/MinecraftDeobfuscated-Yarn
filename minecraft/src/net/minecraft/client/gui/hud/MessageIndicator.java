@@ -14,16 +14,22 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public record MessageIndicator(int indicatorColor, @Nullable MessageIndicator.Icon icon, @Nullable Text text, @Nullable String loggedName) {
 	private static final Text SYSTEM_TEXT = Text.translatable("chat.tag.system");
+	private static final Text field_41092 = Text.translatable("chat.tag.system_single_player");
 	private static final Text NOT_SECURE_TEXT = Text.translatable("chat.tag.not_secure");
 	private static final Text MODIFIED_TEXT = Text.translatable("chat.tag.modified");
 	private static final int NOT_SECURE_COLOR = 13684944;
 	private static final int MODIFIED_COLOR = 6316128;
 	private static final MessageIndicator SYSTEM = new MessageIndicator(13684944, null, SYSTEM_TEXT, "System");
+	private static final MessageIndicator field_41093 = new MessageIndicator(13684944, null, field_41092, "System");
 	private static final MessageIndicator NOT_SECURE = new MessageIndicator(13684944, null, NOT_SECURE_TEXT, "Not Secure");
 	static final Identifier CHAT_TAGS_TEXTURE = new Identifier("textures/gui/chat_tags.png");
 
 	public static MessageIndicator system() {
 		return SYSTEM;
+	}
+
+	public static MessageIndicator method_47391() {
+		return field_41093;
 	}
 
 	public static MessageIndicator notSecure() {

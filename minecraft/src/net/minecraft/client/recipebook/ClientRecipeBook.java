@@ -20,7 +20,7 @@ import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.book.CookingRecipeCategory;
 import net.minecraft.recipe.book.RecipeBook;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -113,7 +113,7 @@ public class ClientRecipeBook extends RecipeBook {
 			} else if (recipeType == RecipeType.SMITHING) {
 				return RecipeBookGroup.SMITHING;
 			} else {
-				LOGGER.warn("Unknown recipe category: {}/{}", LogUtils.defer(() -> Registry.RECIPE_TYPE.getId(recipe.getType())), LogUtils.defer(recipe::getId));
+				LOGGER.warn("Unknown recipe category: {}/{}", LogUtils.defer(() -> Registries.RECIPE_TYPE.getId(recipe.getType())), LogUtils.defer(recipe::getId));
 				return RecipeBookGroup.UNKNOWN;
 			}
 		}

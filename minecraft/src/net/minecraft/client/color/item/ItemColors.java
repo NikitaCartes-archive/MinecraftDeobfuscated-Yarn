@@ -18,8 +18,8 @@ import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.potion.PotionUtil;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.collection.IdList;
-import net.minecraft.util.registry.Registry;
 
 @Environment(EnvType.CLIENT)
 public class ItemColors {
@@ -97,7 +97,7 @@ public class ItemColors {
 	}
 
 	public int getColor(ItemStack item, int tintIndex) {
-		ItemColorProvider itemColorProvider = this.providers.get(Registry.ITEM.getRawId(item.getItem()));
+		ItemColorProvider itemColorProvider = this.providers.get(Registries.ITEM.getRawId(item.getItem()));
 		return itemColorProvider == null ? -1 : itemColorProvider.getColor(item, tintIndex);
 	}
 

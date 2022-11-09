@@ -1,9 +1,9 @@
 package net.minecraft.world.biome.source;
 
 import com.google.common.hash.Hashing;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
 
 public class BiomeAccess {

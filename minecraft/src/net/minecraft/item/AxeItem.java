@@ -11,10 +11,10 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.Oxidizable;
 import net.minecraft.block.PillarBlock;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -42,6 +42,7 @@ public class AxeItem extends MiningToolItem {
 		.put(Blocks.CRIMSON_HYPHAE, Blocks.STRIPPED_CRIMSON_HYPHAE)
 		.put(Blocks.MANGROVE_WOOD, Blocks.STRIPPED_MANGROVE_WOOD)
 		.put(Blocks.MANGROVE_LOG, Blocks.STRIPPED_MANGROVE_LOG)
+		.put(Blocks.BAMBOO_BLOCK, Blocks.STRIPPED_BAMBOO_BLOCK)
 		.build();
 
 	protected AxeItem(ToolMaterial material, float attackDamage, float attackSpeed, Item.Settings settings) {

@@ -8,10 +8,10 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import java.io.IOException;
 import javax.annotation.Nullable;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.chase.ChaseClient;
 import net.minecraft.server.chase.ChaseServer;
 import net.minecraft.text.Text;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
 public class ChaseCommand {

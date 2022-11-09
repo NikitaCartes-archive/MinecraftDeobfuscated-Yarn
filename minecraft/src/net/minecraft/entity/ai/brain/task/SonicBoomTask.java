@@ -16,7 +16,7 @@ import net.minecraft.util.Unit;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-public class SonicBoomTask extends Task<WardenEntity> {
+public class SonicBoomTask extends MultiTickTask<WardenEntity> {
 	private static final int HORIZONTAL_RANGE = 15;
 	private static final int VERTICAL_RANGE = 20;
 	private static final double field_38852 = 0.5;
@@ -42,7 +42,7 @@ public class SonicBoomTask extends Task<WardenEntity> {
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, WardenEntity wardenEntity) {
-		return wardenEntity.isInRange((Entity)wardenEntity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).get(), 15.0, 20.0);
+		return wardenEntity.isInRange((Entity)wardenEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET).get(), 15.0, 20.0);
 	}
 
 	protected boolean shouldKeepRunning(ServerWorld serverWorld, WardenEntity wardenEntity, long l) {
@@ -57,12 +57,14 @@ public class SonicBoomTask extends Task<WardenEntity> {
 	}
 
 	protected void keepRunning(ServerWorld serverWorld, WardenEntity wardenEntity, long l) {
-		wardenEntity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).ifPresent(target -> wardenEntity.getLookControl().lookAt(target.getPos()));
+		wardenEntity.getBrain()
+			.getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET)
+			.ifPresent(target -> wardenEntity.getLookControl().lookAt(target.getPos()));
 		if (!wardenEntity.getBrain().hasMemoryModule(MemoryModuleType.SONIC_BOOM_SOUND_DELAY)
 			&& !wardenEntity.getBrain().hasMemoryModule(MemoryModuleType.SONIC_BOOM_SOUND_COOLDOWN)) {
 			wardenEntity.getBrain().remember(MemoryModuleType.SONIC_BOOM_SOUND_COOLDOWN, Unit.INSTANCE, (long)(RUN_TIME - SOUND_DELAY));
 			wardenEntity.getBrain()
-				.getOptionalMemory(MemoryModuleType.ATTACK_TARGET)
+				.getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET)
 				.filter(wardenEntity::isValidTarget)
 				.filter(target -> wardenEntity.isInRange(target, 15.0, 20.0))
 				.ifPresent(target -> {

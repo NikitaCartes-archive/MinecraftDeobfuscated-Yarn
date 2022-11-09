@@ -14,7 +14,7 @@ import java.util.function.IntFunction;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import javax.annotation.Nullable;
-import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.registry.DynamicRegistryManager;
 import org.slf4j.Logger;
 
 public abstract class AbstractPropertiesHandler<T extends AbstractPropertiesHandler<T>> {

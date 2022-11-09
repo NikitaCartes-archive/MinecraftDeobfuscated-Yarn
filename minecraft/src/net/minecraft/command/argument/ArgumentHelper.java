@@ -13,7 +13,7 @@ import com.mojang.logging.LogUtils;
 import java.util.Collection;
 import java.util.Set;
 import net.minecraft.command.argument.serialize.ArgumentSerializer;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 import org.slf4j.Logger;
 
 public class ArgumentHelper {
@@ -55,7 +55,7 @@ public class ArgumentHelper {
 	private static <T extends ArgumentType<?>> void writeArgument(JsonObject json, T argumentType) {
 		ArgumentSerializer.ArgumentTypeProperties<T> argumentTypeProperties = ArgumentTypes.getArgumentTypeProperties(argumentType);
 		json.addProperty("type", "argument");
-		json.addProperty("parser", Registry.COMMAND_ARGUMENT_TYPE.getId(argumentTypeProperties.getSerializer()).toString());
+		json.addProperty("parser", Registries.COMMAND_ARGUMENT_TYPE.getId(argumentTypeProperties.getSerializer()).toString());
 		JsonObject jsonObject = new JsonObject();
 		writeArgumentProperties(jsonObject, argumentTypeProperties);
 		if (jsonObject.size() > 0) {

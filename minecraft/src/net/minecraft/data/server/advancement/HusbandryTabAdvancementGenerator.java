@@ -36,13 +36,13 @@ import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.entity.TypeSpecificPredicate;
 import net.minecraft.predicate.item.EnchantmentPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
-import net.minecraft.tag.BlockTags;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.RegistryWrapper;
 
 public class HusbandryTabAdvancementGenerator implements AdvancementTabGenerator {
 	private static final EntityType<?>[] BREEDABLE_ANIMALS = new EntityType[]{
@@ -254,7 +254,7 @@ public class HusbandryTabAdvancementGenerator implements AdvancementTabGenerator
 			.parent(advancement6)
 			.criteriaMerger(CriterionMerger.OR)
 			.criterion(
-				Registry.ITEM.getId(Items.AXOLOTL_BUCKET).getPath(),
+				Registries.ITEM.getId(Items.AXOLOTL_BUCKET).getPath(),
 				FilledBucketCriterion.Conditions.create(ItemPredicate.Builder.create().items(Items.AXOLOTL_BUCKET).build())
 			)
 			.display(
@@ -359,7 +359,7 @@ public class HusbandryTabAdvancementGenerator implements AdvancementTabGenerator
 		Advancement advancement10 = Advancement.Builder.create()
 			.parent(advancement)
 			.criterion(
-				Registry.ITEM.getId(Items.TADPOLE_BUCKET).getPath(),
+				Registries.ITEM.getId(Items.TADPOLE_BUCKET).getPath(),
 				FilledBucketCriterion.Conditions.create(ItemPredicate.Builder.create().items(Items.TADPOLE_BUCKET).build())
 			)
 			.display(
@@ -503,7 +503,7 @@ public class HusbandryTabAdvancementGenerator implements AdvancementTabGenerator
 	}
 
 	private Advancement.Builder requireAllFrogsOnLeads(Advancement.Builder builder) {
-		Registry.FROG_VARIANT
+		Registries.FROG_VARIANT
 			.streamEntries()
 			.forEach(
 				variant -> builder.criterion(
@@ -521,7 +521,7 @@ public class HusbandryTabAdvancementGenerator implements AdvancementTabGenerator
 
 	private Advancement.Builder requireFoodItemsEaten(Advancement.Builder builder) {
 		for(Item item : FOOD_ITEMS) {
-			builder.criterion(Registry.ITEM.getId(item).getPath(), ConsumeItemCriterion.Conditions.item(item));
+			builder.criterion(Registries.ITEM.getId(item).getPath(), ConsumeItemCriterion.Conditions.item(item));
 		}
 
 		return builder;
@@ -546,7 +546,7 @@ public class HusbandryTabAdvancementGenerator implements AdvancementTabGenerator
 
 	private Advancement.Builder requireListedFishBucketsFilled(Advancement.Builder builder) {
 		for(Item item : FISH_BUCKET_ITEMS) {
-			builder.criterion(Registry.ITEM.getId(item).getPath(), FilledBucketCriterion.Conditions.create(ItemPredicate.Builder.create().items(item).build()));
+			builder.criterion(Registries.ITEM.getId(item).getPath(), FilledBucketCriterion.Conditions.create(ItemPredicate.Builder.create().items(item).build()));
 		}
 
 		return builder;
@@ -555,7 +555,7 @@ public class HusbandryTabAdvancementGenerator implements AdvancementTabGenerator
 	private Advancement.Builder requireListedFishCaught(Advancement.Builder builder) {
 		for(Item item : FISH_ITEMS) {
 			builder.criterion(
-				Registry.ITEM.getId(item).getPath(),
+				Registries.ITEM.getId(item).getPath(),
 				FishingRodHookedCriterion.Conditions.create(ItemPredicate.ANY, EntityPredicate.ANY, ItemPredicate.Builder.create().items(item).build())
 			);
 		}
@@ -564,7 +564,7 @@ public class HusbandryTabAdvancementGenerator implements AdvancementTabGenerator
 	}
 
 	private Advancement.Builder requireAllCatsTamed(Advancement.Builder builder) {
-		Registry.CAT_VARIANT
+		Registries.CAT_VARIANT
 			.getEntrySet()
 			.stream()
 			.sorted(Entry.comparingByKey(Comparator.comparing(RegistryKey::getValue)))

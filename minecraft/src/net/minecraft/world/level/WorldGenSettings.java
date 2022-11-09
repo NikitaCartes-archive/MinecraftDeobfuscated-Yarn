@@ -5,8 +5,8 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.world.dimension.DimensionOptionsRegistryHolder;
 import net.minecraft.world.gen.GeneratorOptions;
 
@@ -26,6 +26,6 @@ public record WorldGenSettings(GeneratorOptions generatorOptions, DimensionOptio
 	}
 
 	public static <T> DataResult<T> encode(DynamicOps<T> registryOps, GeneratorOptions generatorOptions, DynamicRegistryManager dynamicRegistryManager) {
-		return encode(registryOps, generatorOptions, new DimensionOptionsRegistryHolder(dynamicRegistryManager.get(Registry.DIMENSION_KEY)));
+		return encode(registryOps, generatorOptions, new DimensionOptionsRegistryHolder(dynamicRegistryManager.get(RegistryKeys.DIMENSION)));
 	}
 }

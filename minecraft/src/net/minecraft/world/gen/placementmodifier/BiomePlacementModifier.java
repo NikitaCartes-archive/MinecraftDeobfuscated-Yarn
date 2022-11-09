@@ -2,9 +2,9 @@ package net.minecraft.world.gen.placementmodifier;
 
 import com.mojang.serialization.Codec;
 import java.util.function.Supplier;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.feature.FeaturePlacementContext;
 import net.minecraft.world.gen.feature.PlacedFeature;

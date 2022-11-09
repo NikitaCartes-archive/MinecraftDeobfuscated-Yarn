@@ -12,10 +12,10 @@ import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 
 public class BeehiveTreeDecorator extends TreeDecorator {
 	public static final Codec<BeehiveTreeDecorator> CODEC = Codec.floatRange(0.0F, 1.0F)
@@ -61,7 +61,7 @@ public class BeehiveTreeDecorator extends TreeDecorator {
 
 						for(int j = 0; j < ixx; ++j) {
 							NbtCompound nbtCompound = new NbtCompound();
-							nbtCompound.putString("id", Registry.ENTITY_TYPE.getId(EntityType.BEE).toString());
+							nbtCompound.putString("id", Registries.ENTITY_TYPE.getId(EntityType.BEE).toString());
 							blockEntity.addBee(nbtCompound, random.nextInt(599), false);
 						}
 					});

@@ -16,7 +16,7 @@ import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.village.VillagerProfession;
 
-public class GatherItemsVillagerTask extends Task<VillagerEntity> {
+public class GatherItemsVillagerTask extends MultiTickTask<VillagerEntity> {
 	private static final int MAX_RANGE = 5;
 	private static final float WALK_TOGETHER_SPEED = 0.5F;
 	private Set<Item> items = ImmutableSet.of();
@@ -34,13 +34,13 @@ public class GatherItemsVillagerTask extends Task<VillagerEntity> {
 	}
 
 	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		VillagerEntity villagerEntity2 = (VillagerEntity)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).get();
+		VillagerEntity villagerEntity2 = (VillagerEntity)villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.INTERACTION_TARGET).get();
 		LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2, 0.5F);
 		this.items = getGatherableItems(villagerEntity, villagerEntity2);
 	}
 
 	protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		VillagerEntity villagerEntity2 = (VillagerEntity)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).get();
+		VillagerEntity villagerEntity2 = (VillagerEntity)villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.INTERACTION_TARGET).get();
 		if (!(villagerEntity.squaredDistanceTo(villagerEntity2) > 5.0)) {
 			LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2, 0.5F);
 			villagerEntity.talkWithVillager(serverWorld, villagerEntity2, l);
@@ -63,9 +63,9 @@ public class GatherItemsVillagerTask extends Task<VillagerEntity> {
 		villagerEntity.getBrain().forget(MemoryModuleType.INTERACTION_TARGET);
 	}
 
-	private static Set<Item> getGatherableItems(VillagerEntity villagerEntity, VillagerEntity villagerEntity2) {
-		ImmutableSet<Item> immutableSet = villagerEntity2.getVillagerData().getProfession().gatherableItems();
-		ImmutableSet<Item> immutableSet2 = villagerEntity.getVillagerData().getProfession().gatherableItems();
+	private static Set<Item> getGatherableItems(VillagerEntity entity, VillagerEntity target) {
+		ImmutableSet<Item> immutableSet = target.getVillagerData().getProfession().gatherableItems();
+		ImmutableSet<Item> immutableSet2 = entity.getVillagerData().getProfession().gatherableItems();
 		return (Set<Item>)immutableSet.stream().filter(item -> !immutableSet2.contains(item)).collect(Collectors.toSet());
 	}
 

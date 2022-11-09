@@ -35,9 +35,9 @@ import net.minecraft.entity.passive.StriderEntity;
 import net.minecraft.entity.passive.TropicalFishEntity;
 import net.minecraft.entity.passive.TurtleEntity;
 import net.minecraft.entity.passive.WolfEntity;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.ServerWorldAccess;
 
@@ -49,7 +49,7 @@ public class SpawnRestriction {
 	) {
 		SpawnRestriction.Entry entry = (SpawnRestriction.Entry)RESTRICTIONS.put(type, new SpawnRestriction.Entry(heightmapType, location, predicate));
 		if (entry != null) {
-			throw new IllegalStateException("Duplicate registration for type " + Registry.ENTITY_TYPE.getId(type));
+			throw new IllegalStateException("Duplicate registration for type " + Registries.ENTITY_TYPE.getId(type));
 		}
 	}
 

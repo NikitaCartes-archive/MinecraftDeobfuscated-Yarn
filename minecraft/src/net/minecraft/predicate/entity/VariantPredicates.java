@@ -6,11 +6,11 @@ import java.util.Optional;
 import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
+import net.minecraft.registry.Registry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 
 public class VariantPredicates<V> {
 	private static final String VARIANT_KEY = "variant";

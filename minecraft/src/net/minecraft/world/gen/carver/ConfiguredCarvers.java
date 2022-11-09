@@ -2,15 +2,15 @@ package net.minecraft.world.gen.carver;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.tag.BlockTags;
+import net.minecraft.registry.Registerable;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.floatprovider.ConstantFloatProvider;
 import net.minecraft.util.math.floatprovider.TrapezoidFloatProvider;
 import net.minecraft.util.math.floatprovider.UniformFloatProvider;
-import net.minecraft.util.registry.Registerable;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntryLookup;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.gen.YOffset;
 import net.minecraft.world.gen.heightprovider.UniformHeightProvider;
 
@@ -21,11 +21,11 @@ public class ConfiguredCarvers {
 	public static final RegistryKey<ConfiguredCarver<?>> NETHER_CAVE = register("nether_cave");
 
 	private static RegistryKey<ConfiguredCarver<?>> register(String id) {
-		return RegistryKey.of(Registry.CONFIGURED_CARVER_KEY, new Identifier(id));
+		return RegistryKey.of(RegistryKeys.CONFIGURED_CARVER_WORLDGEN, new Identifier(id));
 	}
 
 	public static void bootstrap(Registerable<ConfiguredCarver<?>> carverRegisterable) {
-		RegistryEntryLookup<Block> registryEntryLookup = carverRegisterable.getRegistryLookup(Registry.BLOCK_KEY);
+		RegistryEntryLookup<Block> registryEntryLookup = carverRegisterable.getRegistryLookup(RegistryKeys.BLOCK);
 		carverRegisterable.register(
 			CAVE,
 			Carver.CAVE

@@ -13,6 +13,7 @@ public class OverlayVertexConsumer extends FixedColorVertexConsumer {
 	private final VertexConsumer delegate;
 	private final Matrix4f inverseTextureMatrix;
 	private final Matrix3f inverseNormalMatrix;
+	private final float textureScale;
 	private float x;
 	private float y;
 	private float z;
@@ -23,10 +24,11 @@ public class OverlayVertexConsumer extends FixedColorVertexConsumer {
 	private float normalY;
 	private float normalZ;
 
-	public OverlayVertexConsumer(VertexConsumer delegate, Matrix4f textureMatrix, Matrix3f normalMatrix) {
+	public OverlayVertexConsumer(VertexConsumer delegate, Matrix4f textureMatrix, Matrix3f normalMatrix, float textureScale) {
 		this.delegate = delegate;
 		this.inverseTextureMatrix = new Matrix4f(textureMatrix).invert();
 		this.inverseNormalMatrix = new Matrix3f(normalMatrix).invert();
+		this.textureScale = textureScale;
 		this.init();
 	}
 
@@ -50,8 +52,8 @@ public class OverlayVertexConsumer extends FixedColorVertexConsumer {
 		vector4f.rotateY((float) Math.PI);
 		vector4f.rotateX((float) (-Math.PI / 2));
 		vector4f.rotate(direction.getRotationQuaternion());
-		float f = -vector4f.x();
-		float g = -vector4f.y();
+		float f = -vector4f.x() * this.textureScale;
+		float g = -vector4f.y() * this.textureScale;
 		this.delegate
 			.vertex((double)this.x, (double)this.y, (double)this.z)
 			.color(1.0F, 1.0F, 1.0F, 1.0F)

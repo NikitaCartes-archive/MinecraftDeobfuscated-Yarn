@@ -10,7 +10,7 @@ import net.minecraft.command.argument.BlockPredicateArgumentType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registry;
 
 /**
  * Checks if a block predicate stored inside {@link ItemStack}'s NBT

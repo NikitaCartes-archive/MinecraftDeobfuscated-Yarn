@@ -16,14 +16,14 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.StructureTags;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.StructureTags;
-import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.structure.Structure;
 import org.slf4j.Logger;
 
@@ -174,7 +174,7 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 		private static TagKey<Structure> getDestination(JsonObject json) {
 			if (json.has("destination")) {
 				String string = JsonHelper.getString(json, "destination");
-				return TagKey.of(Registry.STRUCTURE_KEY, new Identifier(string));
+				return TagKey.of(RegistryKeys.STRUCTURE_WORLDGEN, new Identifier(string));
 			} else {
 				return ExplorationMapLootFunction.DEFAULT_DESTINATION;
 			}

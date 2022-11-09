@@ -42,7 +42,6 @@ public class PiglinEntityRenderer extends BipedEntityRenderer<MobEntity, PiglinE
 		return piglinEntityModel;
 	}
 
-	@Override
 	public Identifier getTexture(MobEntity mobEntity) {
 		Identifier identifier = (Identifier)TEXTURES.get(mobEntity.getType());
 		if (identifier == null) {

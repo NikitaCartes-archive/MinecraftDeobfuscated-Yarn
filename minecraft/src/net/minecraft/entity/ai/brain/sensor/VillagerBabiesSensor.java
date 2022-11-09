@@ -30,6 +30,6 @@ public class VillagerBabiesSensor extends Sensor<LivingEntity> {
 	}
 
 	private LivingTargetCache getVisibleMobs(LivingEntity entity) {
-		return (LivingTargetCache)entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(LivingTargetCache.empty());
+		return (LivingTargetCache)entity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.VISIBLE_MOBS).orElse(LivingTargetCache.empty());
 	}
 }

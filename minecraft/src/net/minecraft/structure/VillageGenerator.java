@@ -1,7 +1,7 @@
 package net.minecraft.structure;
 
+import net.minecraft.registry.Registerable;
 import net.minecraft.structure.pool.StructurePool;
-import net.minecraft.util.registry.Registerable;
 
 public class VillageGenerator {
 	public static void bootstrap(Registerable<StructurePool> poolRegisterable) {

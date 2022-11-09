@@ -14,9 +14,8 @@ import net.minecraft.inventory.StackMappingInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.state.property.Properties;
-import net.minecraft.tag.ItemTags;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -103,17 +102,6 @@ public class ChiseledBookshelfBlockEntity extends BlockEntity implements Invento
 		}
 
 		return defaultedList;
-	}
-
-	public BlockEntityUpdateS2CPacket toUpdatePacket() {
-		return BlockEntityUpdateS2CPacket.create(this);
-	}
-
-	@Override
-	public NbtCompound toInitialChunkDataNbt() {
-		NbtCompound nbtCompound = new NbtCompound();
-		Inventories.writeNbt(nbtCompound, getBooksAsList(this.books), true);
-		return nbtCompound;
 	}
 
 	@Override

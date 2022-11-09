@@ -62,7 +62,7 @@ public class Memory<T> {
 						codec.fieldOf("value").forGetter(memory -> memory.value),
 						Codec.LONG.optionalFieldOf("ttl").forGetter(memory -> memory.isTimed() ? Optional.of(memory.expiry) : Optional.empty())
 					)
-					.apply(instance, (object, optional) -> new Memory<>(object, optional.orElse(Long.MAX_VALUE)))
+					.apply(instance, (value, expiry) -> new Memory<>(value, expiry.orElse(Long.MAX_VALUE)))
 		);
 	}
 }

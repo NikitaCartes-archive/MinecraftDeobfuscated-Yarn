@@ -7,9 +7,9 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.book.CookingRecipeCategory;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.registry.Registry;
 
 public class CookingRecipeSerializer<T extends AbstractCookingRecipe> implements RecipeSerializer<T> {
 	private final int cookingTime;
@@ -32,7 +32,7 @@ public class CookingRecipeSerializer<T extends AbstractCookingRecipe> implements
 		String string2 = JsonHelper.getString(jsonObject, "result");
 		Identifier identifier2 = new Identifier(string2);
 		ItemStack itemStack = new ItemStack(
-			(ItemConvertible)Registry.ITEM.getOrEmpty(identifier2).orElseThrow(() -> new IllegalStateException("Item: " + string2 + " does not exist"))
+			(ItemConvertible)Registries.ITEM.getOrEmpty(identifier2).orElseThrow(() -> new IllegalStateException("Item: " + string2 + " does not exist"))
 		);
 		float f = JsonHelper.getFloat(jsonObject, "experience", 0.0F);
 		int i = JsonHelper.getInt(jsonObject, "cookingtime", this.cookingTime);

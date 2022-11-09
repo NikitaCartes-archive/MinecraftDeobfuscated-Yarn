@@ -76,7 +76,7 @@ public class GameModeSelectionScreen extends Screen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		if (!this.checkForClose()) {
-			RenderSystem.setShader(GameRenderer::getPositionTexShader);
+			RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 			matrices.push();
 			RenderSystem.enableBlend();
 			RenderSystem.setShaderTexture(0, TEXTURE);
@@ -166,7 +166,7 @@ public class GameModeSelectionScreen extends Screen {
 		}
 
 		@Override
-		public void appendNarrations(NarrationMessageBuilder builder) {
+		public void appendClickableNarrations(NarrationMessageBuilder builder) {
 			this.appendDefaultNarrations(builder);
 		}
 
@@ -180,7 +180,7 @@ public class GameModeSelectionScreen extends Screen {
 		}
 
 		private void drawBackground(MatrixStack matrices, TextureManager textureManager) {
-			RenderSystem.setShader(GameRenderer::getPositionTexShader);
+			RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 			RenderSystem.setShaderTexture(0, GameModeSelectionScreen.TEXTURE);
 			matrices.push();
 			matrices.translate((float)this.getX(), (float)this.getY(), 0.0F);
@@ -189,7 +189,7 @@ public class GameModeSelectionScreen extends Screen {
 		}
 
 		private void drawSelectionBox(MatrixStack matrices, TextureManager textureManager) {
-			RenderSystem.setShader(GameRenderer::getPositionTexShader);
+			RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 			RenderSystem.setShaderTexture(0, GameModeSelectionScreen.TEXTURE);
 			matrices.push();
 			matrices.translate((float)this.getX(), (float)this.getY(), 0.0F);

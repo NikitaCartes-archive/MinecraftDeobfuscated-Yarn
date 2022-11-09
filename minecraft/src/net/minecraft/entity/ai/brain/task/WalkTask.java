@@ -10,13 +10,13 @@ import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.entity.mob.PathAwareEntity;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
 
-public class WalkTask extends Task<PathAwareEntity> {
+public class WalkTask extends MultiTickTask<PathAwareEntity> {
 	private static final int MIN_RUN_TIME = 100;
 	private static final int MAX_RUN_TIME = 120;
 	private static final int HORIZONTAL_RANGE = 5;

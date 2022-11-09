@@ -3,15 +3,15 @@ package net.minecraft.world.gen.stateprovider;
 import com.mojang.serialization.Codec;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 
 /**
  * A provider for {@linkplain BlockState block states}. Results may be random or based on a block position.
  */
 public abstract class BlockStateProvider {
-	public static final Codec<BlockStateProvider> TYPE_CODEC = Registry.BLOCK_STATE_PROVIDER_TYPE
+	public static final Codec<BlockStateProvider> TYPE_CODEC = Registries.BLOCK_STATE_PROVIDER_TYPE
 		.getCodec()
 		.dispatch(BlockStateProvider::getType, BlockStateProviderType::getCodec);
 

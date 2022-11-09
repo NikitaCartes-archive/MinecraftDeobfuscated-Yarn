@@ -31,12 +31,12 @@ public class Tessellator {
 	}
 
 	/**
-	 * Draws the contents of the buffer builder using the shader specified with
-	 * {@link com.mojang.blaze3d.systems.RenderSystem#setShader
+	 * Draws the contents of the buffer builder using the shader program
+	 * specified with {@link com.mojang.blaze3d.systems.RenderSystem#setShader
 	 * RenderSystem#setShader}.
 	 */
 	public void draw() {
-		BufferRenderer.drawWithShader(this.buffer.end());
+		BufferRenderer.drawWithGlobalProgram(this.buffer.end());
 	}
 
 	public BufferBuilder getBuffer() {

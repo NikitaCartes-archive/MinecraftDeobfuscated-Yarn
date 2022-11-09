@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 public class Schedule {
 	public static final int WORK_TIME = 2000;
@@ -30,7 +31,7 @@ public class Schedule {
 	private final Map<Activity, ScheduleRule> scheduleRules = Maps.<Activity, ScheduleRule>newHashMap();
 
 	protected static ScheduleBuilder register(String id) {
-		Schedule schedule = Registry.register(Registry.SCHEDULE, id, new Schedule());
+		Schedule schedule = Registry.register(Registries.SCHEDULE, id, new Schedule());
 		return new ScheduleBuilder(schedule);
 	}
 
@@ -48,7 +49,7 @@ public class Schedule {
 		return (List<ScheduleRule>)this.scheduleRules
 			.entrySet()
 			.stream()
-			.filter(entry -> entry.getKey() != activity)
+			.filter(rule -> rule.getKey() != activity)
 			.map(Entry::getValue)
 			.collect(Collectors.toList());
 	}
@@ -57,7 +58,7 @@ public class Schedule {
 		return (Activity)this.scheduleRules
 			.entrySet()
 			.stream()
-			.max(Comparator.comparingDouble(entry -> (double)((ScheduleRule)entry.getValue()).getPriority(time)))
+			.max(Comparator.comparingDouble(rule -> (double)((ScheduleRule)rule.getValue()).getPriority(time)))
 			.map(Entry::getKey)
 			.orElse(Activity.IDLE);
 	}

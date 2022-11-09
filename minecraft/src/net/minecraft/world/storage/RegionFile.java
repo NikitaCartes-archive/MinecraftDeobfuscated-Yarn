@@ -25,7 +25,7 @@ public class RegionFile implements AutoCloseable {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int field_31418 = 4096;
 	@VisibleForTesting
-	protected static final int field_31417 = 1024;
+	protected static final int SECTOR_DATA_LIMIT = 1024;
 	private static final int field_31419 = 5;
 	private static final int field_31420 = 0;
 	private static final ByteBuffer ZERO = ByteBuffer.allocateDirect(1);

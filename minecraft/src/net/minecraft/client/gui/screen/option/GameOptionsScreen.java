@@ -1,17 +1,11 @@
 package net.minecraft.client.gui.screen.option;
 
-import com.google.common.collect.ImmutableList;
-import java.util.List;
-import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonListWidget;
-import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.option.GameOptions;
-import net.minecraft.client.util.OrderableTooltip;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
@@ -35,19 +29,10 @@ public class GameOptionsScreen extends Screen {
 		this.client.setScreen(this.parent);
 	}
 
-	public static List<OrderedText> getHoveredButtonTooltip(ButtonListWidget buttonList, int mouseX, int mouseY) {
-		Optional<ClickableWidget> optional = buttonList.getHoveredButton((double)mouseX, (double)mouseY);
-		return (List<OrderedText>)(optional.isPresent() && optional.get() instanceof OrderableTooltip
-			? ((OrderableTooltip)optional.get()).getOrderedTooltip()
-			: ImmutableList.of());
-	}
-
 	protected void render(MatrixStack matrices, ButtonListWidget optionButtons, int mouseX, int mouseY, float tickDelta) {
 		this.renderBackground(matrices);
 		optionButtons.render(matrices, mouseX, mouseY, tickDelta);
 		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 20, 16777215);
 		super.render(matrices, mouseX, mouseY, tickDelta);
-		List<OrderedText> list = getHoveredButtonTooltip(optionButtons, mouseX, mouseY);
-		this.renderOrderedTooltip(matrices, list, mouseX, mouseY);
 	}
 }

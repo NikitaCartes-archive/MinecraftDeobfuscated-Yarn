@@ -7,8 +7,8 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.toast.TutorialToast;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.ItemTags;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 

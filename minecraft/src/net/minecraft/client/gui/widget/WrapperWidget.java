@@ -105,7 +105,7 @@ public abstract class WrapperWidget extends ClickableWidget implements ParentEle
 	}
 
 	@Override
-	public void appendNarrations(NarrationMessageBuilder builder) {
+	public void appendClickableNarrations(NarrationMessageBuilder builder) {
 		Element element = this.getHoveredElement();
 		if (element != null) {
 			if (element instanceof Narratable narratable) {

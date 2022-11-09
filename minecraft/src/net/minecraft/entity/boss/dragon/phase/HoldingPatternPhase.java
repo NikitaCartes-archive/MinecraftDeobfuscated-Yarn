@@ -8,7 +8,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.Heightmap;
@@ -60,15 +59,17 @@ public class HoldingPatternPhase extends AbstractPhase {
 				return;
 			}
 
-			double d = 64.0;
 			PlayerEntity playerEntity = this.dragon
 				.world
 				.getClosestPlayer(PLAYERS_IN_RANGE_PREDICATE, this.dragon, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
+			double d;
 			if (playerEntity != null) {
 				d = blockPos.getSquaredDistance(playerEntity.getPos()) / 512.0;
+			} else {
+				d = 64.0;
 			}
 
-			if (playerEntity != null && (this.dragon.getRandom().nextInt(MathHelper.abs((int)d) + 2) == 0 || this.dragon.getRandom().nextInt(i + 2) == 0)) {
+			if (playerEntity != null && (this.dragon.getRandom().nextInt((int)(d + 2.0)) == 0 || this.dragon.getRandom().nextInt(i + 2) == 0)) {
 				this.strafePlayer(playerEntity);
 				return;
 			}

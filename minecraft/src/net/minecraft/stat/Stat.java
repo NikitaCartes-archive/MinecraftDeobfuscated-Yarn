@@ -2,9 +2,9 @@ package net.minecraft.stat;
 
 import java.util.Objects;
 import javax.annotation.Nullable;
+import net.minecraft.registry.Registries;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class Stat<T> extends ScoreboardCriterion {
 	private final StatFormatter formatter;
@@ -19,7 +19,7 @@ public class Stat<T> extends ScoreboardCriterion {
 	}
 
 	public static <T> String getName(StatType<T> type, T value) {
-		return getName(Registry.STAT_TYPE.getId(type)) + ":" + getName(type.getRegistry().getId(value));
+		return getName(Registries.STAT_TYPE.getId(type)) + ":" + getName(type.getRegistry().getId(value));
 	}
 
 	private static <T> String getName(@Nullable Identifier id) {

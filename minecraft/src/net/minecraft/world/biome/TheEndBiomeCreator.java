@@ -1,7 +1,7 @@
 package net.minecraft.world.biome;
 
+import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.sound.BiomeMoodSound;
-import net.minecraft.util.registry.RegistryEntryLookup;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.feature.DefaultBiomeFeatures;

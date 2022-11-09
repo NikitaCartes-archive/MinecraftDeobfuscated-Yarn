@@ -3,6 +3,8 @@ package net.minecraft.entity.mob;
 import java.util.EnumSet;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityDimensions;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -56,7 +58,12 @@ public class VexEntity extends HostileEntity {
 	}
 
 	@Override
-	public boolean hasWings() {
+	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
+		return dimensions.height - 0.4375F;
+	}
+
+	@Override
+	public boolean isFlappingWings() {
 		return this.age % field_28645 == 0;
 	}
 

@@ -1,7 +1,8 @@
 package net.minecraft.structure.rule;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 public interface PosRuleTestType<P extends PosRuleTest> {
 	PosRuleTestType<AlwaysTruePosRuleTest> ALWAYS_TRUE = register("always_true", AlwaysTruePosRuleTest.CODEC);
@@ -11,6 +12,6 @@ public interface PosRuleTestType<P extends PosRuleTest> {
 	Codec<P> codec();
 
 	static <P extends PosRuleTest> PosRuleTestType<P> register(String id, Codec<P> codec) {
-		return Registry.register(Registry.POS_RULE_TEST, id, () -> codec);
+		return Registry.register(Registries.POS_RULE_TEST, id, () -> codec);
 	}
 }

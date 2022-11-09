@@ -18,6 +18,8 @@ import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.BlockRotationArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.command.argument.RegistryKeyArgumentType;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.StructureStart;
@@ -35,8 +37,6 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.structure.Structure;
@@ -65,7 +65,7 @@ public class PlaceCommand {
 				.then(
 					CommandManager.literal("feature")
 						.then(
-							((RequiredArgumentBuilder)CommandManager.argument("feature", RegistryKeyArgumentType.registryKey(Registry.CONFIGURED_FEATURE_KEY))
+							((RequiredArgumentBuilder)CommandManager.argument("feature", RegistryKeyArgumentType.registryKey(RegistryKeys.CONFIGURED_FEATURE_WORLDGEN))
 									.executes(
 										context -> executePlaceFeature(
 												(ServerCommandSource)context.getSource(),
@@ -88,7 +88,7 @@ public class PlaceCommand {
 				.then(
 					CommandManager.literal("jigsaw")
 						.then(
-							CommandManager.argument("pool", RegistryKeyArgumentType.registryKey(Registry.STRUCTURE_POOL_KEY))
+							CommandManager.argument("pool", RegistryKeyArgumentType.registryKey(RegistryKeys.TEMPLATE_POOL_WORLDGEN))
 								.then(
 									CommandManager.argument("target", IdentifierArgumentType.identifier())
 										.then(
@@ -121,7 +121,7 @@ public class PlaceCommand {
 				.then(
 					CommandManager.literal("structure")
 						.then(
-							CommandManager.argument("structure", RegistryKeyArgumentType.registryKey(Registry.STRUCTURE_KEY))
+							CommandManager.argument("structure", RegistryKeyArgumentType.registryKey(RegistryKeys.STRUCTURE_WORLDGEN))
 								.executes(
 									context -> executePlaceStructure(
 											context.getSource(), RegistryKeyArgumentType.getStructureEntry(context, "structure"), new BlockPos(context.getSource().getPosition())

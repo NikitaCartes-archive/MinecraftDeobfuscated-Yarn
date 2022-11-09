@@ -17,9 +17,9 @@ import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.book.RecipeCategory;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
-import net.minecraft.tag.ItemTags;
 
 public class VanillaRecipeProvider extends RecipeProvider {
 	private static final ImmutableList<ItemConvertible> COAL_ORES = ImmutableList.of(Items.COAL_ORE, Items.DEEPSLATE_COAL_ORE);
@@ -50,15 +50,15 @@ public class VanillaRecipeProvider extends RecipeProvider {
 	@Override
 	protected void generate(Consumer<RecipeJsonProvider> exporter) {
 		generateFamilies(exporter, FeatureSet.of(FeatureFlags.VANILLA));
-		offerPlanksRecipe2(exporter, Blocks.ACACIA_PLANKS, ItemTags.ACACIA_LOGS);
-		offerPlanksRecipe(exporter, Blocks.BIRCH_PLANKS, ItemTags.BIRCH_LOGS);
-		offerPlanksRecipe(exporter, Blocks.CRIMSON_PLANKS, ItemTags.CRIMSON_STEMS);
-		offerPlanksRecipe2(exporter, Blocks.DARK_OAK_PLANKS, ItemTags.DARK_OAK_LOGS);
-		offerPlanksRecipe(exporter, Blocks.JUNGLE_PLANKS, ItemTags.JUNGLE_LOGS);
-		offerPlanksRecipe(exporter, Blocks.OAK_PLANKS, ItemTags.OAK_LOGS);
-		offerPlanksRecipe(exporter, Blocks.SPRUCE_PLANKS, ItemTags.SPRUCE_LOGS);
-		offerPlanksRecipe(exporter, Blocks.WARPED_PLANKS, ItemTags.WARPED_STEMS);
-		offerPlanksRecipe(exporter, Blocks.MANGROVE_PLANKS, ItemTags.MANGROVE_LOGS);
+		offerPlanksRecipe2(exporter, Blocks.ACACIA_PLANKS, ItemTags.ACACIA_LOGS, 4);
+		offerPlanksRecipe(exporter, Blocks.BIRCH_PLANKS, ItemTags.BIRCH_LOGS, 4);
+		offerPlanksRecipe(exporter, Blocks.CRIMSON_PLANKS, ItemTags.CRIMSON_STEMS, 4);
+		offerPlanksRecipe2(exporter, Blocks.DARK_OAK_PLANKS, ItemTags.DARK_OAK_LOGS, 4);
+		offerPlanksRecipe(exporter, Blocks.JUNGLE_PLANKS, ItemTags.JUNGLE_LOGS, 4);
+		offerPlanksRecipe(exporter, Blocks.OAK_PLANKS, ItemTags.OAK_LOGS, 4);
+		offerPlanksRecipe(exporter, Blocks.SPRUCE_PLANKS, ItemTags.SPRUCE_LOGS, 4);
+		offerPlanksRecipe(exporter, Blocks.WARPED_PLANKS, ItemTags.WARPED_STEMS, 4);
+		offerPlanksRecipe(exporter, Blocks.MANGROVE_PLANKS, ItemTags.MANGROVE_LOGS, 4);
 		offerBarkBlockRecipe(exporter, Blocks.ACACIA_WOOD, Blocks.ACACIA_LOG);
 		offerBarkBlockRecipe(exporter, Blocks.BIRCH_WOOD, Blocks.BIRCH_LOG);
 		offerBarkBlockRecipe(exporter, Blocks.DARK_OAK_WOOD, Blocks.DARK_OAK_LOG);
@@ -385,13 +385,7 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.criterion("has_lapis_lazuli", conditionsFromItem(Items.LAPIS_LAZULI))
 			.offerTo(exporter);
 		offerSingleOutputShapelessRecipe(exporter, Items.BLUE_DYE, Blocks.CORNFLOWER, "blue_dye");
-		ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.BLUE_ICE)
-			.input('#', Blocks.PACKED_ICE)
-			.pattern("###")
-			.pattern("###")
-			.pattern("###")
-			.criterion("has_packed_ice", conditionsFromItem(Blocks.PACKED_ICE))
-			.offerTo(exporter);
+		offerCompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.BLUE_ICE, Blocks.PACKED_ICE);
 		ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, Items.BONE_MEAL, 3)
 			.input(Items.BONE)
 			.group("bonemeal")
@@ -538,12 +532,7 @@ public class VanillaRecipeProvider extends RecipeProvider {
 		createChiseledBlockRecipe(RecipeCategory.BUILDING_BLOCKS, Blocks.CHISELED_STONE_BRICKS, Ingredient.ofItems(Blocks.STONE_BRICK_SLAB))
 			.criterion("has_tag", conditionsFromTag(ItemTags.STONE_BRICKS))
 			.offerTo(exporter);
-		ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.CLAY)
-			.input('#', Items.CLAY_BALL)
-			.pattern("##")
-			.pattern("##")
-			.criterion("has_clay_ball", conditionsFromItem(Items.CLAY_BALL))
-			.offerTo(exporter);
+		offer2x2CompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.CLAY, Items.CLAY_BALL);
 		ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, Items.CLOCK)
 			.input('#', Items.GOLD_INGOT)
 			.input('X', Items.REDSTONE)
@@ -872,12 +861,7 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.pattern("###")
 			.criterion("has_glass", conditionsFromItem(Blocks.GLASS))
 			.offerTo(exporter);
-		ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.GLOWSTONE)
-			.input('#', Items.GLOWSTONE_DUST)
-			.pattern("##")
-			.pattern("##")
-			.criterion("has_glowstone_dust", conditionsFromItem(Items.GLOWSTONE_DUST))
-			.offerTo(exporter);
+		offer2x2CompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.GLOWSTONE, Items.GLOWSTONE_DUST);
 		ShapelessRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, Items.GLOW_ITEM_FRAME)
 			.input(Items.ITEM_FRAME)
 			.input(Items.GLOW_INK_SAC)
@@ -992,31 +976,15 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.criterion("has_white_dye", conditionsFromItem(Items.WHITE_DYE))
 			.criterion("has_black_dye", conditionsFromItem(Items.BLACK_DYE))
 			.offerTo(exporter);
-		ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.HAY_BLOCK)
-			.input('#', Items.WHEAT)
-			.pattern("###")
-			.pattern("###")
-			.pattern("###")
-			.criterion("has_wheat", conditionsFromItem(Items.WHEAT))
-			.offerTo(exporter);
+		offerCompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.HAY_BLOCK, Items.WHEAT);
 		offerPressurePlateRecipe(exporter, Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE, Items.IRON_INGOT);
 		ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, Items.HONEY_BOTTLE, 4)
 			.input(Items.HONEY_BLOCK)
 			.input(Items.GLASS_BOTTLE, 4)
 			.criterion("has_honey_block", conditionsFromItem(Blocks.HONEY_BLOCK))
 			.offerTo(exporter);
-		ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, Blocks.HONEY_BLOCK, 1)
-			.input('S', Items.HONEY_BOTTLE)
-			.pattern("SS")
-			.pattern("SS")
-			.criterion("has_honey_bottle", conditionsFromItem(Items.HONEY_BOTTLE))
-			.offerTo(exporter);
-		ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, Blocks.HONEYCOMB_BLOCK)
-			.input('H', Items.HONEYCOMB)
-			.pattern("HH")
-			.pattern("HH")
-			.criterion("has_honeycomb", conditionsFromItem(Items.HONEYCOMB))
-			.offerTo(exporter);
+		offer2x2CompactingRecipe(exporter, RecipeCategory.REDSTONE, Blocks.HONEY_BLOCK, Items.HONEY_BOTTLE);
+		offer2x2CompactingRecipe(exporter, RecipeCategory.DECORATIONS, Blocks.HONEYCOMB_BLOCK, Items.HONEYCOMB);
 		ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, Blocks.HOPPER)
 			.input('C', Blocks.CHEST)
 			.input('I', Items.IRON_INGOT)
@@ -1144,12 +1112,7 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.pattern("  ~")
 			.criterion("has_slime_ball", conditionsFromItem(Items.SLIME_BALL))
 			.offerTo(exporter);
-		ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, Items.LEATHER)
-			.input('#', Items.RABBIT_HIDE)
-			.pattern("##")
-			.pattern("##")
-			.criterion("has_rabbit_hide", conditionsFromItem(Items.RABBIT_HIDE))
-			.offerTo(exporter);
+		offer2x2CompactingRecipe(exporter, RecipeCategory.MISC, Items.LEATHER, Items.RABBIT_HIDE);
 		ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, Items.LEATHER_BOOTS)
 			.input('X', Items.LEATHER)
 			.pattern("X X")
@@ -1271,12 +1234,7 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.criterion("has_pink_dye", conditionsFromItem(Items.PINK_DYE))
 			.criterion("has_purple_dye", conditionsFromItem(Items.PURPLE_DYE))
 			.offerTo(exporter, "magenta_dye_from_purple_and_pink");
-		ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.MAGMA_BLOCK)
-			.input('#', Items.MAGMA_CREAM)
-			.pattern("##")
-			.pattern("##")
-			.criterion("has_magma_cream", conditionsFromItem(Items.MAGMA_CREAM))
-			.offerTo(exporter);
+		offer2x2CompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.MAGMA_BLOCK, Items.MAGMA_CREAM);
 		ShapelessRecipeJsonBuilder.create(RecipeCategory.BREWING, Items.MAGMA_CREAM)
 			.input(Items.BLAZE_POWDER)
 			.input(Items.SLIME_BALL)
@@ -1290,13 +1248,7 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.pattern("###")
 			.criterion("has_compass", conditionsFromItem(Items.COMPASS))
 			.offerTo(exporter);
-		ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.MELON)
-			.input('M', Items.MELON_SLICE)
-			.pattern("MMM")
-			.pattern("MMM")
-			.pattern("MMM")
-			.criterion("has_melon", conditionsFromItem(Items.MELON_SLICE))
-			.offerTo(exporter);
+		offerCompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.MELON, Items.MELON_SLICE, "has_melon");
 		ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, Items.MELON_SEEDS)
 			.input(Items.MELON_SLICE)
 			.criterion("has_melon", conditionsFromItem(Items.MELON_SLICE))
@@ -1341,13 +1293,7 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.criterion("has_red_mushroom", conditionsFromItem(Blocks.RED_MUSHROOM))
 			.offerTo(exporter);
 		offer2x2CompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.NETHER_BRICKS, Items.NETHER_BRICK);
-		ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.NETHER_WART_BLOCK)
-			.input('#', Items.NETHER_WART)
-			.pattern("###")
-			.pattern("###")
-			.pattern("###")
-			.criterion("has_nether_wart", conditionsFromItem(Items.NETHER_WART))
-			.offerTo(exporter);
+		offerCompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.NETHER_WART_BLOCK, Items.NETHER_WART);
 		ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, Blocks.NOTE_BLOCK)
 			.input('#', ItemTags.PLANKS)
 			.input('X', Items.REDSTONE)
@@ -1394,10 +1340,7 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.criterion("has_quartz_block", conditionsFromItem(Blocks.QUARTZ_BLOCK))
 			.criterion("has_quartz_pillar", conditionsFromItem(Blocks.QUARTZ_PILLAR))
 			.offerTo(exporter);
-		ShapelessRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.PACKED_ICE)
-			.input(Blocks.ICE, 9)
-			.criterion("has_ice", conditionsFromItem(Blocks.ICE))
-			.offerTo(exporter);
+		offerCompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.PACKED_ICE, Blocks.ICE);
 		offerShapelessRecipe(exporter, Items.PINK_DYE, Blocks.PEONY, "pink_dye", 2);
 		offerSingleOutputShapelessRecipe(exporter, Items.PINK_DYE, Blocks.PINK_TULIP, "pink_dye");
 		ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, Items.PINK_DYE, 2)
@@ -1418,19 +1361,8 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.criterion("has_redstone", conditionsFromItem(Items.REDSTONE))
 			.offerTo(exporter);
 		offerPolishedStoneRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.POLISHED_BASALT, Blocks.BASALT);
-		ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.PRISMARINE)
-			.input('S', Items.PRISMARINE_SHARD)
-			.pattern("SS")
-			.pattern("SS")
-			.criterion("has_prismarine_shard", conditionsFromItem(Items.PRISMARINE_SHARD))
-			.offerTo(exporter);
-		ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.PRISMARINE_BRICKS)
-			.input('S', Items.PRISMARINE_SHARD)
-			.pattern("SSS")
-			.pattern("SSS")
-			.pattern("SSS")
-			.criterion("has_prismarine_shard", conditionsFromItem(Items.PRISMARINE_SHARD))
-			.offerTo(exporter);
+		offer2x2CompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.PRISMARINE, Items.PRISMARINE_SHARD);
+		offerCompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.PRISMARINE_BRICKS, Items.PRISMARINE_SHARD);
 		ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, Items.PUMPKIN_PIE)
 			.input(Blocks.PUMPKIN)
 			.input(Items.SUGAR)
@@ -1474,12 +1406,7 @@ public class VanillaRecipeProvider extends RecipeProvider {
 		createStairsRecipe(Blocks.PURPUR_STAIRS, Ingredient.ofItems(Blocks.PURPUR_BLOCK, Blocks.PURPUR_PILLAR))
 			.criterion("has_purpur_block", conditionsFromItem(Blocks.PURPUR_BLOCK))
 			.offerTo(exporter);
-		ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.QUARTZ_BLOCK)
-			.input('#', Items.QUARTZ)
-			.pattern("##")
-			.pattern("##")
-			.criterion("has_quartz", conditionsFromItem(Items.QUARTZ))
-			.offerTo(exporter);
+		offer2x2CompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.QUARTZ_BLOCK, Items.QUARTZ);
 		ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.QUARTZ_BRICKS, 4)
 			.input('#', Blocks.QUARTZ_BLOCK)
 			.pattern("##")
@@ -1613,12 +1540,7 @@ public class VanillaRecipeProvider extends RecipeProvider {
 		offerReversibleCompactingRecipes(exporter, RecipeCategory.MISC, Items.SLIME_BALL, RecipeCategory.REDSTONE, Items.SLIME_BLOCK);
 		offerCutCopperRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.CUT_RED_SANDSTONE, Blocks.RED_SANDSTONE);
 		offerCutCopperRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.CUT_SANDSTONE, Blocks.SANDSTONE);
-		ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.SNOW_BLOCK)
-			.input('#', Items.SNOWBALL)
-			.pattern("##")
-			.pattern("##")
-			.criterion("has_snowball", conditionsFromItem(Items.SNOWBALL))
-			.offerTo(exporter);
+		offer2x2CompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.SNOW_BLOCK, Items.SNOWBALL);
 		ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, Blocks.SNOW, 6)
 			.input('#', Blocks.SNOW_BLOCK)
 			.pattern("###")
@@ -2022,12 +1944,7 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.pattern(" S ")
 			.criterion("has_amethyst_shard", conditionsFromItem(Items.AMETHYST_SHARD))
 			.offerTo(exporter);
-		ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.AMETHYST_BLOCK)
-			.input('S', Items.AMETHYST_SHARD)
-			.pattern("SS")
-			.pattern("SS")
-			.criterion("has_amethyst_shard", conditionsFromItem(Items.AMETHYST_SHARD))
-			.offerTo(exporter);
+		offer2x2CompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.AMETHYST_BLOCK, Items.AMETHYST_SHARD);
 		ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, Items.RECOVERY_COMPASS)
 			.input('C', Items.COMPASS)
 			.input('S', Items.ECHO_SHARD)
@@ -2036,13 +1953,7 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.pattern("SSS")
 			.criterion("has_echo_shard", conditionsFromItem(Items.ECHO_SHARD))
 			.offerTo(exporter);
-		ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, Items.MUSIC_DISC_5)
-			.input('S', Items.DISC_FRAGMENT_5)
-			.pattern("SSS")
-			.pattern("SSS")
-			.pattern("SSS")
-			.criterion("has_disc_fragment_5", conditionsFromItem(Items.DISC_FRAGMENT_5))
-			.offerTo(exporter);
+		offerCompactingRecipe(exporter, RecipeCategory.MISC, Items.MUSIC_DISC_5, Items.DISC_FRAGMENT_5);
 		ComplexRecipeJsonBuilder.create(RecipeSerializer.ARMOR_DYE).offerTo(exporter, "armor_dye");
 		ComplexRecipeJsonBuilder.create(RecipeSerializer.BANNER_DUPLICATE).offerTo(exporter, "banner_duplicate");
 		ComplexRecipeJsonBuilder.create(RecipeSerializer.BOOK_CLONING).offerTo(exporter, "book_cloning");

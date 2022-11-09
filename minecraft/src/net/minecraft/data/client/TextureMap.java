@@ -9,8 +9,8 @@ import java.util.stream.Stream;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class TextureMap {
 	private final Map<TextureKey, Identifier> entries = Maps.<TextureKey, Identifier>newHashMap();
@@ -329,22 +329,22 @@ public class TextureMap {
 	}
 
 	public static Identifier getId(Block block) {
-		Identifier identifier = Registry.BLOCK.getId(block);
+		Identifier identifier = Registries.BLOCK.getId(block);
 		return identifier.withPrefixedPath("block/");
 	}
 
 	public static Identifier getSubId(Block block, String suffix) {
-		Identifier identifier = Registry.BLOCK.getId(block);
+		Identifier identifier = Registries.BLOCK.getId(block);
 		return identifier.withPath((UnaryOperator<String>)(path -> "block/" + path + suffix));
 	}
 
 	public static Identifier getId(Item item) {
-		Identifier identifier = Registry.ITEM.getId(item);
+		Identifier identifier = Registries.ITEM.getId(item);
 		return identifier.withPrefixedPath("item/");
 	}
 
 	public static Identifier getSubId(Item item, String suffix) {
-		Identifier identifier = Registry.ITEM.getId(item);
+		Identifier identifier = Registries.ITEM.getId(item);
 		return identifier.withPath((UnaryOperator<String>)(path -> "item/" + path + suffix));
 	}
 }

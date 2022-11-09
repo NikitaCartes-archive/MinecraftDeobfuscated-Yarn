@@ -9,11 +9,11 @@ import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Mu;
 import java.util.List;
 import java.util.Optional;
+import net.minecraft.registry.RegistryCodecs;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryCodecs;
-import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.biome.Biome;
 
 public class ConcentricRingsStructurePlacement extends StructurePlacement {
@@ -35,7 +35,7 @@ public class ConcentricRingsStructurePlacement extends StructurePlacement {
 			Codec.intRange(0, 1023).fieldOf("distance").forGetter(ConcentricRingsStructurePlacement::getDistance),
 			Codec.intRange(0, 1023).fieldOf("spread").forGetter(ConcentricRingsStructurePlacement::getSpread),
 			Codec.intRange(1, 4095).fieldOf("count").forGetter(ConcentricRingsStructurePlacement::getCount),
-			RegistryCodecs.entryList(Registry.BIOME_KEY).fieldOf("preferred_biomes").forGetter(ConcentricRingsStructurePlacement::getPreferredBiomes)
+			RegistryCodecs.entryList(RegistryKeys.BIOME_WORLDGEN).fieldOf("preferred_biomes").forGetter(ConcentricRingsStructurePlacement::getPreferredBiomes)
 		);
 		return new P9<>(p5.t1(), p5.t2(), p5.t3(), p5.t4(), p5.t5(), p4.t1(), p4.t2(), p4.t3(), p4.t4());
 	}

@@ -49,8 +49,6 @@ public class ChatSelectionScreen extends Screen {
 	final ChatAbuseReport report;
 	private final Consumer<ChatAbuseReport> newReportConsumer;
 	private MessagesListAdder listAdder;
-	@Nullable
-	private List<OrderedText> tooltip;
 
 	public ChatSelectionScreen(@Nullable Screen parent, AbuseReportContext reporter, ChatAbuseReport report, Consumer<ChatAbuseReport> newReportConsumer) {
 		super(TITLE);
@@ -108,10 +106,6 @@ public class ChatSelectionScreen extends Screen {
 		drawCenteredText(matrices, this.textRenderer, text, this.width / 2, 16 + 9 * 3 / 2, 10526880);
 		this.contextMessage.drawCenterWithShadow(matrices, this.width / 2, this.selectionList.getContextMessageY());
 		super.render(matrices, mouseX, mouseY, delta);
-		if (this.tooltip != null) {
-			this.renderOrderedTooltip(matrices, this.tooltip, mouseX, mouseY);
-			this.tooltip = null;
-		}
 	}
 
 	@Override
@@ -122,10 +116,6 @@ public class ChatSelectionScreen extends Screen {
 	@Override
 	public Text getNarratedTitle() {
 		return ScreenTexts.joinSentences(super.getNarratedTitle(), CONTEXT_MESSAGE);
-	}
-
-	void setTooltip(@Nullable List<OrderedText> tooltip) {
-		this.tooltip = tooltip;
 	}
 
 	@Environment(EnvType.CLIENT)

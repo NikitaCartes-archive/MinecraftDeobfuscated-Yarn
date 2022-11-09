@@ -2,7 +2,7 @@ package net.minecraft.item;
 
 import java.util.function.Predicate;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.tag.ItemTags;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.util.Hand;
 
 public abstract class RangedWeaponItem extends Item {

@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.util.stream.Stream;
-import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntry;
 
 public class RandomBooleanFeatureConfig implements FeatureConfig {
 	public static final Codec<RandomBooleanFeatureConfig> CODEC = RecordCodecBuilder.create(
