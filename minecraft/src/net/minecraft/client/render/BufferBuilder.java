@@ -31,7 +31,7 @@ import org.slf4j.Logger;
  * <p>For {@link VertexFormat.DrawMode#LINES LINES} and {@link
  * VertexFormat.DrawMode#LINE_STRIP LINE_STRIP} draw modes, this builder
  * duplicates every vertex in a line to produce a quad with zero area. See
- * {@link GameRenderer#getRenderTypeLinesShader}.
+ * {@link GameRenderer#getRenderTypeLinesProgram}.
  */
 @Environment(EnvType.CLIENT)
 public class BufferBuilder extends FixedColorVertexConsumer implements BufferVertexConsumer {

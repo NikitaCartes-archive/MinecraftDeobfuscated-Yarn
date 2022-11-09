@@ -19,10 +19,10 @@ import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.util.TopologicalSorts;
 import net.minecraft.util.Util;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.gen.feature.PlacedFeature;
 import org.apache.commons.lang3.mutable.MutableInt;
 

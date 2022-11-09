@@ -26,11 +26,11 @@ import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryOps;
 import net.minecraft.util.Util;
-import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.HeightLimitView;
 import org.slf4j.Logger;
 

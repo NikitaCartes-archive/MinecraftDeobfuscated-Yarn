@@ -19,6 +19,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.Camera;
+import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourceFactory;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -26,7 +27,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 import org.joml.Vector3f;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
@@ -75,10 +75,10 @@ public class SoundSystem {
 	public void reloadSounds() {
 		UNKNOWN_SOUNDS.clear();
 
-		for (SoundEvent soundEvent : Registry.SOUND_EVENT) {
+		for (SoundEvent soundEvent : Registries.SOUND_EVENT) {
 			Identifier identifier = soundEvent.getId();
 			if (this.loader.get(identifier) == null) {
-				LOGGER.warn("Missing sound for event: {}", Registry.SOUND_EVENT.getId(soundEvent));
+				LOGGER.warn("Missing sound for event: {}", Registries.SOUND_EVENT.getId(soundEvent));
 				UNKNOWN_SOUNDS.add(identifier);
 			}
 		}

@@ -13,20 +13,20 @@ import net.minecraft.loot.LootManager;
 import net.minecraft.loot.condition.LootConditionManager;
 import net.minecraft.loot.function.LootFunctionManager;
 import net.minecraft.recipe.RecipeManager;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.TagKey;
+import net.minecraft.registry.tag.TagManagerLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
 import net.minecraft.resource.SimpleResourceReload;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.function.FunctionLoader;
-import net.minecraft.tag.TagKey;
-import net.minecraft.tag.TagManagerLoader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 import org.slf4j.Logger;
 
 /**

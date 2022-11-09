@@ -1,13 +1,13 @@
 package net.minecraft.block;
 
 import java.util.Optional;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -73,7 +73,7 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 
 	public boolean trySpawningBigMushroom(ServerWorld world, BlockPos pos, BlockState state, Random random) {
 		Optional<? extends RegistryEntry<ConfiguredFeature<?, ?>>> optional = world.getRegistryManager()
-			.get(Registry.CONFIGURED_FEATURE_KEY)
+			.get(RegistryKeys.CONFIGURED_FEATURE_WORLDGEN)
 			.getEntry(this.featureKey);
 		if (optional.isEmpty()) {
 			return false;

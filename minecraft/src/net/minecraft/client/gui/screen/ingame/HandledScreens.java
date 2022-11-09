@@ -9,10 +9,10 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.registry.Registries;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.text.Text;
-import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -26,7 +26,7 @@ public class HandledScreens {
 		} else {
 			HandledScreens.Provider<T, ?> provider = getProvider(type);
 			if (provider == null) {
-				LOGGER.warn("Failed to create screen for menu type: {}", Registry.SCREEN_HANDLER.getId(type));
+				LOGGER.warn("Failed to create screen for menu type: {}", Registries.SCREEN_HANDLER.getId(type));
 			} else {
 				provider.open(title, type, client, id);
 			}
@@ -43,16 +43,16 @@ public class HandledScreens {
 	) {
 		HandledScreens.Provider<?, ?> provider2 = (HandledScreens.Provider<?, ?>)PROVIDERS.put(type, provider);
 		if (provider2 != null) {
-			throw new IllegalStateException("Duplicate registration for " + Registry.SCREEN_HANDLER.getId(type));
+			throw new IllegalStateException("Duplicate registration for " + Registries.SCREEN_HANDLER.getId(type));
 		}
 	}
 
 	public static boolean isMissingScreens() {
 		boolean bl = false;
 
-		for (ScreenHandlerType<?> screenHandlerType : Registry.SCREEN_HANDLER) {
+		for (ScreenHandlerType<?> screenHandlerType : Registries.SCREEN_HANDLER) {
 			if (!PROVIDERS.containsKey(screenHandlerType)) {
-				LOGGER.debug("Menu {} has no matching screen", Registry.SCREEN_HANDLER.getId(screenHandlerType));
+				LOGGER.debug("Menu {} has no matching screen", Registries.SCREEN_HANDLER.getId(screenHandlerType));
 				bl = true;
 			}
 		}

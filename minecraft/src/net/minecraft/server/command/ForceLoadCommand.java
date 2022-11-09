@@ -8,12 +8,12 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.ColumnPosArgumentType;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.ColumnPos;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
 public class ForceLoadCommand {

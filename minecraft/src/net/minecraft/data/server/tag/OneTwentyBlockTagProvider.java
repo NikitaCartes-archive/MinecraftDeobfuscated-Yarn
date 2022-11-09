@@ -4,13 +4,13 @@ import java.util.concurrent.CompletableFuture;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.data.DataOutput;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryWrapper;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.tag.BlockTags;
 
 public class OneTwentyBlockTagProvider extends ValueLookupTagProvider<Block> {
 	public OneTwentyBlockTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
-		super(output, Registry.BLOCK_KEY, registryLookupFuture, block -> block.getRegistryEntry().registryKey());
+		super(output, RegistryKeys.BLOCK, registryLookupFuture, block -> block.getRegistryEntry().registryKey());
 	}
 
 	@Override
@@ -26,6 +26,7 @@ public class OneTwentyBlockTagProvider extends ValueLookupTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.STANDING_SIGNS).add(Blocks.BAMBOO_SIGN);
 		this.getOrCreateTagBuilder(BlockTags.WALL_SIGNS).add(Blocks.BAMBOO_WALL_SIGN);
 		this.getOrCreateTagBuilder(BlockTags.FENCE_GATES).add(Blocks.BAMBOO_FENCE_GATE);
+		this.getOrCreateTagBuilder(BlockTags.BAMBOO_BLOCKS).add(Blocks.BAMBOO_BLOCK, Blocks.STRIPPED_BAMBOO_BLOCK);
 		this.getOrCreateTagBuilder(BlockTags.CEILING_HANGING_SIGNS)
 			.add(
 				Blocks.OAK_HANGING_SIGN,
@@ -56,6 +57,7 @@ public class OneTwentyBlockTagProvider extends ValueLookupTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.AXE_MINEABLE)
 			.addTag(BlockTags.ALL_HANGING_SIGNS)
 			.add(Blocks.BAMBOO_MOSAIC, Blocks.BAMBOO_MOSAIC_SLAB, Blocks.BAMBOO_MOSAIC_STAIRS)
+			.addTag(BlockTags.BAMBOO_BLOCKS)
 			.add(Blocks.CHISELED_BOOKSHELF);
 	}
 }

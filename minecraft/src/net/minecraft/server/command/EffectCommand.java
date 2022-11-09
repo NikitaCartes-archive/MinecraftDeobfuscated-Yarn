@@ -15,9 +15,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 
 public class EffectCommand {
 	private static final SimpleCommandExceptionType GIVE_FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.effect.give.failed"));
@@ -39,7 +39,7 @@ public class EffectCommand {
 							CommandManager.argument("targets", EntityArgumentType.entities())
 								.executes(context -> executeClear(context.getSource(), EntityArgumentType.getEntities(context, "targets")))
 								.then(
-									CommandManager.argument("effect", RegistryEntryArgumentType.registryEntry(registryAccess, Registry.MOB_EFFECT_KEY))
+									CommandManager.argument("effect", RegistryEntryArgumentType.registryEntry(registryAccess, RegistryKeys.STATUS_EFFECT))
 										.executes(
 											context -> executeClear(
 													context.getSource(), EntityArgumentType.getEntities(context, "targets"), RegistryEntryArgumentType.getStatusEffect(context, "effect")
@@ -53,7 +53,7 @@ public class EffectCommand {
 						.then(
 							CommandManager.argument("targets", EntityArgumentType.entities())
 								.then(
-									CommandManager.argument("effect", RegistryEntryArgumentType.registryEntry(registryAccess, Registry.MOB_EFFECT_KEY))
+									CommandManager.argument("effect", RegistryEntryArgumentType.registryEntry(registryAccess, RegistryKeys.STATUS_EFFECT))
 										.executes(
 											context -> executeGive(
 													context.getSource(),

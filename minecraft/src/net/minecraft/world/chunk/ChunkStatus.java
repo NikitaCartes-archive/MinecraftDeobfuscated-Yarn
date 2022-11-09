@@ -12,6 +12,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Function;
 import javax.annotation.Nullable;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.server.world.ServerLightingProvider;
 import net.minecraft.server.world.ServerWorld;
@@ -20,7 +22,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.profiling.jfr.Finishable;
 import net.minecraft.util.profiling.jfr.FlightProfiler;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.GenerationStep;
@@ -311,7 +312,7 @@ public class ChunkStatus {
 		ChunkStatus.GenerationTask task,
 		ChunkStatus.LoadTask loadTask
 	) {
-		return Registry.register(Registry.CHUNK_STATUS, id, new ChunkStatus(id, previous, taskMargin, heightMapTypes, chunkType, task, loadTask));
+		return Registry.register(Registries.CHUNK_STATUS, id, new ChunkStatus(id, previous, taskMargin, heightMapTypes, chunkType, task, loadTask));
 	}
 
 	public static List<ChunkStatus> createOrderedList() {
@@ -417,7 +418,7 @@ public class ChunkStatus {
 	}
 
 	public static ChunkStatus byId(String id) {
-		return Registry.CHUNK_STATUS.get(Identifier.tryParse(id));
+		return Registries.CHUNK_STATUS.get(Identifier.tryParse(id));
 	}
 
 	public EnumSet<Heightmap.Type> getHeightmapTypes() {
@@ -429,7 +430,7 @@ public class ChunkStatus {
 	}
 
 	public String toString() {
-		return Registry.CHUNK_STATUS.getId(this).toString();
+		return Registries.CHUNK_STATUS.getId(this).toString();
 	}
 
 	/**

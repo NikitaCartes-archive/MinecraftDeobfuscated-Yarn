@@ -1,9 +1,10 @@
 package net.minecraft.loot.entry;
 
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonSerializer;
 import net.minecraft.util.JsonSerializing;
-import net.minecraft.util.registry.Registry;
 
 public class LootPoolEntryTypes {
 	public static final LootPoolEntryType EMPTY = register("empty", new EmptyEntry.Serializer());
@@ -16,11 +17,11 @@ public class LootPoolEntryTypes {
 	public static final LootPoolEntryType GROUP = register("group", CombinedEntry.createSerializer(GroupEntry::new));
 
 	private static LootPoolEntryType register(String id, JsonSerializer<? extends LootPoolEntry> jsonSerializer) {
-		return Registry.register(Registry.LOOT_POOL_ENTRY_TYPE, new Identifier(id), new LootPoolEntryType(jsonSerializer));
+		return Registry.register(Registries.LOOT_POOL_ENTRY_TYPE, new Identifier(id), new LootPoolEntryType(jsonSerializer));
 	}
 
 	public static Object createGsonSerializer() {
-		return JsonSerializing.<LootPoolEntry, LootPoolEntryType>createSerializerBuilder(Registry.LOOT_POOL_ENTRY_TYPE, "entry", "type", LootPoolEntry::getType)
+		return JsonSerializing.<LootPoolEntry, LootPoolEntryType>createSerializerBuilder(Registries.LOOT_POOL_ENTRY_TYPE, "entry", "type", LootPoolEntry::getType)
 			.build();
 	}
 }

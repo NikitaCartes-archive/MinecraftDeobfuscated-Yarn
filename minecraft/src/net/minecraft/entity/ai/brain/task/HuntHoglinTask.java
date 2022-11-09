@@ -1,38 +1,40 @@
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableMap;
-import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.mob.AbstractPiglinEntity;
 import net.minecraft.entity.mob.HoglinEntity;
 import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.mob.PiglinEntity;
-import net.minecraft.server.world.ServerWorld;
 
-public class HuntHoglinTask<E extends PiglinEntity> extends Task<E> {
-	public HuntHoglinTask() {
-		super(
-			ImmutableMap.of(
-				MemoryModuleType.NEAREST_VISIBLE_HUNTABLE_HOGLIN,
-				MemoryModuleState.VALUE_PRESENT,
-				MemoryModuleType.ANGRY_AT,
-				MemoryModuleState.VALUE_ABSENT,
-				MemoryModuleType.HUNTED_RECENTLY,
-				MemoryModuleState.VALUE_ABSENT,
-				MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLINS,
-				MemoryModuleState.REGISTERED
-			)
+public class HuntHoglinTask {
+	public static SingleTickTask<PiglinEntity> create() {
+		return TaskTriggerer.task(
+			context -> context.group(
+						context.queryMemoryValue(MemoryModuleType.NEAREST_VISIBLE_HUNTABLE_HOGLIN),
+						context.queryMemoryAbsent(MemoryModuleType.ANGRY_AT),
+						context.queryMemoryAbsent(MemoryModuleType.HUNTED_RECENTLY),
+						context.queryMemoryOptional(MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLINS)
+					)
+					.apply(
+						context,
+						(nearestVisibleHuntableHoglin, angryAt, huntedRecently, nearestVisibleAdultPiglins) -> (world, entity, time) -> {
+								if (!entity.isBaby()
+									&& !context.getOptionalValue(nearestVisibleAdultPiglins).map(piglin -> piglin.stream().anyMatch(HuntHoglinTask::hasHuntedRecently)).isPresent()) {
+									HoglinEntity hoglinEntity = context.getValue(nearestVisibleHuntableHoglin);
+									PiglinBrain.becomeAngryWith(entity, hoglinEntity);
+									PiglinBrain.rememberHunting(entity);
+									PiglinBrain.angerAtCloserTargets(entity, hoglinEntity);
+									context.getOptionalValue(nearestVisibleAdultPiglins).ifPresent(piglin -> piglin.forEach(PiglinBrain::rememberHunting));
+									return true;
+								} else {
+									return false;
+								}
+							}
+					)
 		);
 	}
 
-	protected boolean shouldRun(ServerWorld serverWorld, PiglinEntity piglinEntity) {
-		return !piglinEntity.isBaby() && !PiglinBrain.haveHuntedHoglinsRecently(piglinEntity);
-	}
-
-	protected void run(ServerWorld serverWorld, E piglinEntity, long l) {
-		HoglinEntity hoglinEntity = (HoglinEntity)piglinEntity.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_VISIBLE_HUNTABLE_HOGLIN).get();
-		PiglinBrain.becomeAngryWith(piglinEntity, hoglinEntity);
-		PiglinBrain.rememberHunting(piglinEntity);
-		PiglinBrain.angerAtCloserTargets(piglinEntity, hoglinEntity);
-		PiglinBrain.rememberGroupHunting(piglinEntity);
+	private static boolean hasHuntedRecently(AbstractPiglinEntity piglin) {
+		return piglin.getBrain().hasMemoryModule(MemoryModuleType.HUNTED_RECENTLY);
 	}
 }

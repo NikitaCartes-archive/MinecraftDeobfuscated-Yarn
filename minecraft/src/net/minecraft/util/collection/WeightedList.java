@@ -1,5 +1,6 @@
 package net.minecraft.util.collection;
 
+import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
@@ -7,11 +8,12 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 import net.minecraft.util.math.random.Random;
 
-public class WeightedList<U> {
+public class WeightedList<U> implements Iterable<U> {
 	protected final List<WeightedList.Entry<U>> entries;
 	private final Random random = Random.create();
 
@@ -40,6 +42,10 @@ public class WeightedList<U> {
 
 	public Stream<U> stream() {
 		return this.entries.stream().map(WeightedList.Entry::getElement);
+	}
+
+	public Iterator<U> iterator() {
+		return Iterators.transform(this.entries.iterator(), WeightedList.Entry::getElement);
 	}
 
 	public String toString() {

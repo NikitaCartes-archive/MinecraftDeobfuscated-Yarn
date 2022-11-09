@@ -1,7 +1,7 @@
 package net.minecraft.world.biome.source;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registry;
 
 public class BiomeSources {
 	public static Codec<? extends BiomeSource> registerAndGetDefault(Registry<Codec<? extends BiomeSource>> registry) {

@@ -1,6 +1,7 @@
 package net.minecraft.client.gui.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -9,6 +10,8 @@ import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.Tooltip;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.render.GameRenderer;
@@ -19,6 +22,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -39,6 +43,11 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 	public boolean visible = true;
 	protected float alpha = 1.0F;
 	private boolean focused;
+	@Nullable
+	private Tooltip tooltip;
+	private int tooltipDelay;
+	private long lastHoveredTime;
+	private boolean wasHovered;
 
 	public ClickableWidget(int x, int y, int width, int height, Text message) {
 		this.x = x;
@@ -68,7 +77,36 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 		if (this.visible) {
 			this.hovered = mouseX >= this.getX() && mouseY >= this.getY() && mouseX < this.getX() + this.width && mouseY < this.getY() + this.height;
 			this.renderButton(matrices, mouseX, mouseY, delta);
+			this.applyTooltip();
 		}
+	}
+
+	private void applyTooltip() {
+		if (this.tooltip != null) {
+			boolean bl = this.isHovered();
+			if (bl != this.wasHovered) {
+				if (bl) {
+					this.lastHoveredTime = Util.getMeasuringTimeMs();
+				}
+
+				this.wasHovered = bl;
+			}
+
+			if (bl && Util.getMeasuringTimeMs() - this.lastHoveredTime > (long)this.tooltipDelay) {
+				Screen screen = MinecraftClient.getInstance().currentScreen;
+				if (screen != null) {
+					screen.setTooltip(this.tooltip);
+				}
+			}
+		}
+	}
+
+	public void setTooltip(@Nullable Tooltip tooltip) {
+		this.tooltip = tooltip;
+	}
+
+	public void setTooltipDelay(int delay) {
+		this.tooltipDelay = delay;
 	}
 
 	protected MutableText getNarrationMessage() {
@@ -82,7 +120,7 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		TextRenderer textRenderer = minecraftClient.textRenderer;
-		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
 		int i = this.getYImage(this.isHovered());
@@ -189,9 +227,6 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 			&& mouseY < (double)(this.getY() + this.height);
 	}
 
-	public void renderTooltip(MatrixStack matrices, int mouseX, int mouseY) {
-	}
-
 	public void playDownSound(SoundManager soundManager) {
 		soundManager.play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 	}
@@ -237,6 +272,16 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 			return this.hovered ? Selectable.SelectionType.HOVERED : Selectable.SelectionType.NONE;
 		}
 	}
+
+	@Override
+	public final void appendNarrations(NarrationMessageBuilder builder) {
+		this.appendClickableNarrations(builder);
+		if (this.tooltip != null) {
+			this.tooltip.appendNarrations(builder);
+		}
+	}
+
+	protected abstract void appendClickableNarrations(NarrationMessageBuilder builder);
 
 	protected void appendDefaultNarrations(NarrationMessageBuilder builder) {
 		builder.put(NarrationPart.TITLE, this.getNarrationMessage());

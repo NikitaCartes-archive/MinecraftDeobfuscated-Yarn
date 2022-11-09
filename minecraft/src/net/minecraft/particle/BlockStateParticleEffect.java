@@ -7,13 +7,13 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.command.argument.BlockArgumentParser;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 
 public class BlockStateParticleEffect implements ParticleEffect {
 	public static final ParticleEffect.Factory<BlockStateParticleEffect> PARAMETERS_FACTORY = new ParticleEffect.Factory<BlockStateParticleEffect>() {
 		public BlockStateParticleEffect read(ParticleType<BlockStateParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {
 			stringReader.expect(' ');
-			return new BlockStateParticleEffect(particleType, BlockArgumentParser.block(Registry.BLOCK.getReadOnlyWrapper(), stringReader, false).blockState());
+			return new BlockStateParticleEffect(particleType, BlockArgumentParser.block(Registries.BLOCK.getReadOnlyWrapper(), stringReader, false).blockState());
 		}
 
 		public BlockStateParticleEffect read(ParticleType<BlockStateParticleEffect> particleType, PacketByteBuf packetByteBuf) {
@@ -39,7 +39,7 @@ public class BlockStateParticleEffect implements ParticleEffect {
 
 	@Override
 	public String asString() {
-		return Registry.PARTICLE_TYPE.getId(this.getType()) + " " + BlockArgumentParser.stringifyBlockState(this.blockState);
+		return Registries.PARTICLE_TYPE.getId(this.getType()) + " " + BlockArgumentParser.stringifyBlockState(this.blockState);
 	}
 
 	@Override

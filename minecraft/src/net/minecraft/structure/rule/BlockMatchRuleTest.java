@@ -3,11 +3,11 @@ package net.minecraft.structure.rule;
 import com.mojang.serialization.Codec;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 
 public class BlockMatchRuleTest extends RuleTest {
-	public static final Codec<BlockMatchRuleTest> CODEC = Registry.BLOCK
+	public static final Codec<BlockMatchRuleTest> CODEC = Registries.BLOCK
 		.getCodec()
 		.fieldOf("block")
 		.<BlockMatchRuleTest>xmap(BlockMatchRuleTest::new, ruleTest -> ruleTest.block)

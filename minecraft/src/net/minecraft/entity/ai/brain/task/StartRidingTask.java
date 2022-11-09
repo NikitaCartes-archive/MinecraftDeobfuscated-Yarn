@@ -1,49 +1,36 @@
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableMap;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.brain.MemoryModuleState;
+import net.minecraft.entity.ai.brain.EntityLookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.entity.ai.brain.WalkTarget;
 
-public class StartRidingTask<E extends LivingEntity> extends Task<E> {
+public class StartRidingTask {
 	private static final int COMPLETION_RANGE = 1;
-	private final float speed;
 
-	public StartRidingTask(float speed) {
-		super(
-			ImmutableMap.of(
-				MemoryModuleType.LOOK_TARGET,
-				MemoryModuleState.REGISTERED,
-				MemoryModuleType.WALK_TARGET,
-				MemoryModuleState.VALUE_ABSENT,
-				MemoryModuleType.RIDE_TARGET,
-				MemoryModuleState.VALUE_PRESENT
-			)
+	public static Task<LivingEntity> create(float speed) {
+		return TaskTriggerer.task(
+			context -> context.group(
+						context.queryMemoryOptional(MemoryModuleType.LOOK_TARGET),
+						context.queryMemoryAbsent(MemoryModuleType.WALK_TARGET),
+						context.queryMemoryValue(MemoryModuleType.RIDE_TARGET)
+					)
+					.apply(context, (lookTarget, walkTarget, rideTarget) -> (world, entity, time) -> {
+							if (entity.hasVehicle()) {
+								return false;
+							} else {
+								Entity entity2 = context.getValue(rideTarget);
+								if (entity2.isInRange(entity, 1.0)) {
+									entity.startRiding(entity2);
+								} else {
+									lookTarget.remember(new EntityLookTarget(entity2, true));
+									walkTarget.remember(new WalkTarget(new EntityLookTarget(entity2, false), speed, 1));
+								}
+
+								return true;
+							}
+						})
 		);
-		this.speed = speed;
-	}
-
-	@Override
-	protected boolean shouldRun(ServerWorld world, E entity) {
-		return !entity.hasVehicle();
-	}
-
-	@Override
-	protected void run(ServerWorld world, E entity, long time) {
-		if (this.isRideTargetClose(entity)) {
-			entity.startRiding(this.getRideTarget(entity));
-		} else {
-			LookTargetUtil.walkTowards(entity, this.getRideTarget(entity), this.speed, 1);
-		}
-	}
-
-	private boolean isRideTargetClose(E entity) {
-		return this.getRideTarget(entity).isInRange(entity, 1.0);
-	}
-
-	private Entity getRideTarget(E entity) {
-		return (Entity)entity.getBrain().getOptionalMemory(MemoryModuleType.RIDE_TARGET).get();
 	}
 }

@@ -11,11 +11,11 @@ import java.util.concurrent.CompletableFuture;
 import net.minecraft.data.DataOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryOps;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.dynamic.RegistryOps;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntryLookup;
-import net.minecraft.util.registry.RegistryWrapper;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.MultiNoiseBiomeSource;
 import org.slf4j.Logger;
@@ -34,7 +34,7 @@ public class BiomeParametersProvider implements DataProvider {
 	public CompletableFuture<?> run(DataWriter writer) {
 		return this.registryLookupFuture.thenCompose(lookup -> {
 			DynamicOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, lookup);
-			RegistryEntryLookup<Biome> registryEntryLookup = lookup.getWrapperOrThrow(Registry.BIOME_KEY);
+			RegistryEntryLookup<Biome> registryEntryLookup = lookup.getWrapperOrThrow(RegistryKeys.BIOME_WORLDGEN);
 			return CompletableFuture.allOf((CompletableFuture[])MultiNoiseBiomeSource.Preset.streamPresets().map(preset -> {
 				MultiNoiseBiomeSource multiNoiseBiomeSource = ((MultiNoiseBiomeSource.Preset)preset.getSecond()).getBiomeSource(registryEntryLookup, false);
 				return write(this.resolvePath((Identifier)preset.getFirst()), writer, dynamicOps, MultiNoiseBiomeSource.CODEC, multiNoiseBiomeSource);

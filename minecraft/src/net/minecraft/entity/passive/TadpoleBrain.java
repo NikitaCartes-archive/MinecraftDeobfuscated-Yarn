@@ -10,16 +10,14 @@ import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.ai.brain.task.AquaticStrollTask;
 import net.minecraft.entity.ai.brain.task.CompositeTask;
-import net.minecraft.entity.ai.brain.task.ConditionalTask;
-import net.minecraft.entity.ai.brain.task.FollowMobTask;
-import net.minecraft.entity.ai.brain.task.GoTowardsLookTarget;
+import net.minecraft.entity.ai.brain.task.FollowMobWithIntervalTask;
+import net.minecraft.entity.ai.brain.task.GoTowardsLookTargetTask;
 import net.minecraft.entity.ai.brain.task.LookAroundTask;
+import net.minecraft.entity.ai.brain.task.StrollTask;
+import net.minecraft.entity.ai.brain.task.TaskTriggerer;
 import net.minecraft.entity.ai.brain.task.TemptTask;
 import net.minecraft.entity.ai.brain.task.TemptationCooldownTask;
-import net.minecraft.entity.ai.brain.task.TimeLimitedTask;
-import net.minecraft.entity.ai.brain.task.WaitTask;
 import net.minecraft.entity.ai.brain.task.WalkTask;
 import net.minecraft.entity.ai.brain.task.WanderAroundTask;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
@@ -52,7 +50,7 @@ public class TadpoleBrain {
 		brain.setTaskList(
 			Activity.IDLE,
 			ImmutableList.of(
-				Pair.of(0, new TimeLimitedTask<>(new FollowMobTask(EntityType.PLAYER, 6.0F), UniformIntProvider.create(30, 60))),
+				Pair.of(0, FollowMobWithIntervalTask.follow(EntityType.PLAYER, 6.0F, UniformIntProvider.create(30, 60))),
 				Pair.of(1, new TemptTask(livingEntity -> 1.25F)),
 				Pair.of(
 					2,
@@ -62,9 +60,9 @@ public class TadpoleBrain {
 						CompositeTask.Order.ORDERED,
 						CompositeTask.RunMode.TRY_ALL,
 						ImmutableList.of(
-							Pair.of(new AquaticStrollTask(0.5F), 2),
-							Pair.of(new GoTowardsLookTarget(0.5F, 3), 3),
-							Pair.of(new ConditionalTask<>(Entity::isInsideWaterOrBubbleColumn, new WaitTask(30, 60)), 5)
+							Pair.of(StrollTask.createDynamicRadius(0.5F), 2),
+							Pair.of(GoTowardsLookTargetTask.create(0.5F, 3), 3),
+							Pair.of(TaskTriggerer.predicate(Entity::isInsideWaterOrBubbleColumn), 5)
 						)
 					)
 				)

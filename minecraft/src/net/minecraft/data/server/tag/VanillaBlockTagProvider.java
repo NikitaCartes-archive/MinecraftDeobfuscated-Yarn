@@ -4,13 +4,13 @@ import java.util.concurrent.CompletableFuture;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.data.DataOutput;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryWrapper;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.tag.BlockTags;
 
 public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 	public VanillaBlockTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
-		super(output, Registry.BLOCK_KEY, registryLookupFuture, block -> block.getRegistryEntry().registryKey());
+		super(output, RegistryKeys.BLOCK, registryLookupFuture, block -> block.getRegistryEntry().registryKey());
 	}
 
 	@Override

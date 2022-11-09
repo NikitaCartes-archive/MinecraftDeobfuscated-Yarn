@@ -14,12 +14,12 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.Pool;
 import net.minecraft.util.collection.Weight;
 import net.minecraft.util.collection.Weighted;
-import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
 
 public class SpawnSettings {
@@ -37,7 +37,7 @@ public class SpawnSettings {
 						)
 						.fieldOf("spawners")
 						.forGetter(spawnSettings -> spawnSettings.spawners),
-					Codec.simpleMap(Registry.ENTITY_TYPE.getCodec(), SpawnSettings.SpawnDensity.CODEC, Registry.ENTITY_TYPE)
+					Codec.simpleMap(Registries.ENTITY_TYPE.getCodec(), SpawnSettings.SpawnDensity.CODEC, Registries.ENTITY_TYPE)
 						.fieldOf("spawn_costs")
 						.forGetter(spawnSettings -> spawnSettings.spawnCosts)
 				)
@@ -144,7 +144,7 @@ public class SpawnSettings {
 	public static class SpawnEntry extends Weighted.Absent {
 		public static final Codec<SpawnSettings.SpawnEntry> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Registry.ENTITY_TYPE.getCodec().fieldOf("type").forGetter(spawnEntry -> spawnEntry.type),
+						Registries.ENTITY_TYPE.getCodec().fieldOf("type").forGetter(spawnEntry -> spawnEntry.type),
 						Weight.CODEC.fieldOf("weight").forGetter(Weighted.Absent::getWeight),
 						Codec.INT.fieldOf("minCount").forGetter(spawnEntry -> spawnEntry.minGroupSize),
 						Codec.INT.fieldOf("maxCount").forGetter(spawnEntry -> spawnEntry.maxGroupSize)

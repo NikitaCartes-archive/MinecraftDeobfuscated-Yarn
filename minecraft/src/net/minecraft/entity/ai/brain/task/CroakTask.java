@@ -7,7 +7,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.passive.FrogEntity;
 import net.minecraft.server.world.ServerWorld;
 
-public class CroakTask extends Task<FrogEntity> {
+public class CroakTask extends MultiTickTask<FrogEntity> {
 	private static final int MAX_RUN_TICK = 60;
 	private static final int RUN_TIME = 100;
 	private int runningTicks;

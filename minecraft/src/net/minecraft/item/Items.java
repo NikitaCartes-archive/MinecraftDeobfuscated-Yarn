@@ -7,15 +7,16 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.tag.BannerPatternTags;
+import net.minecraft.registry.tag.InstrumentTags;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.BannerPatternTags;
-import net.minecraft.tag.InstrumentTags;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registry;
 
 public class Items {
 	public static final Item AIR = register(Blocks.AIR, new AirBlockItem(Blocks.AIR, new Item.Settings()));
@@ -135,6 +136,7 @@ public class Items {
 	public static final Item MUDDY_MANGROVE_ROOTS = register(Blocks.MUDDY_MANGROVE_ROOTS);
 	public static final Item CRIMSON_STEM = register(Blocks.CRIMSON_STEM);
 	public static final Item WARPED_STEM = register(Blocks.WARPED_STEM);
+	public static final Item BAMBOO_BLOCK = register(Blocks.BAMBOO_BLOCK);
 	public static final Item STRIPPED_OAK_LOG = register(Blocks.STRIPPED_OAK_LOG);
 	public static final Item STRIPPED_SPRUCE_LOG = register(Blocks.STRIPPED_SPRUCE_LOG);
 	public static final Item STRIPPED_BIRCH_LOG = register(Blocks.STRIPPED_BIRCH_LOG);
@@ -153,6 +155,7 @@ public class Items {
 	public static final Item STRIPPED_MANGROVE_WOOD = register(Blocks.STRIPPED_MANGROVE_WOOD);
 	public static final Item STRIPPED_CRIMSON_HYPHAE = register(Blocks.STRIPPED_CRIMSON_HYPHAE);
 	public static final Item STRIPPED_WARPED_HYPHAE = register(Blocks.STRIPPED_WARPED_HYPHAE);
+	public static final Item STRIPPED_BAMBOO_BLOCK = register(Blocks.STRIPPED_BAMBOO_BLOCK);
 	public static final Item OAK_WOOD = register(Blocks.OAK_WOOD);
 	public static final Item SPRUCE_WOOD = register(Blocks.SPRUCE_WOOD);
 	public static final Item BIRCH_WOOD = register(Blocks.BIRCH_WOOD);
@@ -1425,7 +1428,7 @@ public class Items {
 	}
 
 	protected static Item register(Block block, Item item) {
-		return register(Registry.BLOCK.getId(block), item);
+		return register(Registries.BLOCK.getId(block), item);
 	}
 
 	private static Item register(String id, Item item) {
@@ -1437,6 +1440,6 @@ public class Items {
 			((BlockItem)item).appendBlocks(Item.BLOCK_ITEMS, item);
 		}
 
-		return Registry.register(Registry.ITEM, id, item);
+		return Registry.register(Registries.ITEM, id, item);
 	}
 }

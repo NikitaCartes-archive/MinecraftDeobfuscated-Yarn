@@ -44,6 +44,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.hud.ChatHud;
+import net.minecraft.client.gui.screen.Tooltip;
 import net.minecraft.client.render.ChunkBuilderMode;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.resource.VideoWarningManager;
@@ -64,7 +65,6 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Formatting;
@@ -168,16 +168,11 @@ public class GameOptions {
 	private static final Text FANCY_GRAPHICS_TOOLTIP = Text.translatable("options.graphics.fancy.tooltip");
 	private final SimpleOption<GraphicsMode> graphicsMode = new SimpleOption<>(
 		"options.graphics",
-		clientx -> {
-			List<OrderedText> list = SimpleOption.wrapLines(clientx, FAST_GRAPHICS_TOOLTIP);
-			List<OrderedText> list2 = SimpleOption.wrapLines(clientx, FANCY_GRAPHICS_TOOLTIP);
-			List<OrderedText> list3 = SimpleOption.wrapLines(clientx, FABULOUS_GRAPHICS_TOOLTIP);
-			return graphicsMode -> {
-				return switch (graphicsMode) {
-					case FANCY -> list2;
-					case FAST -> list;
-					case FABULOUS -> list3;
-				};
+		value -> {
+			return switch (value) {
+				case FANCY -> Tooltip.of(FANCY_GRAPHICS_TOOLTIP);
+				case FAST -> Tooltip.of(FAST_GRAPHICS_TOOLTIP);
+				case FABULOUS -> Tooltip.of(FABULOUS_GRAPHICS_TOOLTIP);
 			};
 		},
 		(optionText, value) -> {
@@ -222,16 +217,11 @@ public class GameOptions {
 	private static final Text NEARBY_CHUNK_BUILDER_MODE_TOOLTIP = Text.translatable("options.prioritizeChunkUpdates.nearby.tooltip");
 	private final SimpleOption<ChunkBuilderMode> chunkBuilderMode = new SimpleOption<>(
 		"options.prioritizeChunkUpdates",
-		clientx -> {
-			List<OrderedText> list = SimpleOption.wrapLines(clientx, NONE_CHUNK_BUILDER_MODE_TOOLTIP);
-			List<OrderedText> list2 = SimpleOption.wrapLines(clientx, BY_PLAYER_CHUNK_BUILDER_MODE_TOOLTIP);
-			List<OrderedText> list3 = SimpleOption.wrapLines(clientx, NEARBY_CHUNK_BUILDER_MODE_TOOLTIP);
-			return value -> {
-				return switch (value) {
-					case NONE -> list;
-					case PLAYER_AFFECTED -> list2;
-					case NEARBY -> list3;
-				};
+		value -> {
+			return switch (value) {
+				case NONE -> Tooltip.of(NONE_CHUNK_BUILDER_MODE_TOOLTIP);
+				case PLAYER_AFFECTED -> Tooltip.of(BY_PLAYER_CHUNK_BUILDER_MODE_TOOLTIP);
+				case NEARBY -> Tooltip.of(NEARBY_CHUNK_BUILDER_MODE_TOOLTIP);
 			};
 		},
 		SimpleOption.enumValueText(),
@@ -387,6 +377,7 @@ public class GameOptions {
 	});
 	public int glDebugVerbosity = 1;
 	private final SimpleOption<Boolean> autoJump = SimpleOption.ofBoolean("options.autoJump", true);
+	private final SimpleOption<Boolean> operatorItemsTab = SimpleOption.ofBoolean("options.operatorItemsTab", false);
 	private final SimpleOption<Boolean> autoSuggestions = SimpleOption.ofBoolean("options.autoSuggestCommands", true);
 	private final SimpleOption<Boolean> chatColors = SimpleOption.ofBoolean("options.chat.color", true);
 	private final SimpleOption<Boolean> chatLinks = SimpleOption.ofBoolean("options.chat.links", true);
@@ -420,15 +411,13 @@ public class GameOptions {
 	private final SimpleOption<Boolean> showSubtitles = SimpleOption.ofBoolean("options.showSubtitles", false);
 	private static final Text DIRECTIONAL_AUDIO_ON_TOOLTIP = Text.translatable("options.directionalAudio.on.tooltip");
 	private static final Text DIRECTIONAL_AUDIO_OFF_TOOLTIP = Text.translatable("options.directionalAudio.off.tooltip");
-	private final SimpleOption<Boolean> directionalAudio = SimpleOption.ofBoolean("options.directionalAudio", clientx -> {
-		List<OrderedText> list = SimpleOption.wrapLines(clientx, DIRECTIONAL_AUDIO_ON_TOOLTIP);
-		List<OrderedText> list2 = SimpleOption.wrapLines(clientx, DIRECTIONAL_AUDIO_OFF_TOOLTIP);
-		return value -> value ? list : list2;
-	}, false, value -> {
-		SoundManager soundManager = MinecraftClient.getInstance().getSoundManager();
-		soundManager.reloadSounds();
-		soundManager.play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-	});
+	private final SimpleOption<Boolean> directionalAudio = SimpleOption.ofBoolean(
+		"options.directionalAudio", value -> value ? Tooltip.of(DIRECTIONAL_AUDIO_ON_TOOLTIP) : Tooltip.of(DIRECTIONAL_AUDIO_OFF_TOOLTIP), false, value -> {
+			SoundManager soundManager = MinecraftClient.getInstance().getSoundManager();
+			soundManager.reloadSounds();
+			soundManager.play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+		}
+	);
 	private final SimpleOption<Boolean> backgroundForChatOnly = new SimpleOption<>(
 		"options.accessibility.text_background",
 		SimpleOption.emptyTooltip(),
@@ -900,6 +889,10 @@ public class GameOptions {
 		return this.autoJump;
 	}
 
+	public SimpleOption<Boolean> getOperatorItemsTab() {
+		return this.operatorItemsTab;
+	}
+
 	public SimpleOption<Boolean> getAutoSuggestions() {
 		return this.autoSuggestions;
 	}
@@ -1092,6 +1085,7 @@ public class GameOptions {
 
 	private void accept(GameOptions.Visitor visitor) {
 		visitor.accept("autoJump", this.autoJump);
+		visitor.accept("operatorItemsTab", this.operatorItemsTab);
 		visitor.accept("autoSuggestions", this.autoSuggestions);
 		visitor.accept("chatColors", this.chatColors);
 		visitor.accept("chatLinks", this.chatLinks);

@@ -25,6 +25,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
+import net.minecraft.registry.Registries;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stat;
@@ -34,7 +35,6 @@ import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.registry.Registry;
 
 @Environment(EnvType.CLIENT)
 public class StatsScreen extends Screen implements StatsListener {
@@ -174,7 +174,7 @@ public class StatsScreen extends Screen implements StatsListener {
 
 	void renderIcon(MatrixStack matrices, int x, int y, int u, int v) {
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		RenderSystem.setShaderTexture(0, STATS_ICON_TEXTURE);
 		drawTexture(matrices, x, y, this.getZOffset(), (float)u, (float)v, 18, 18, 128, 128);
 	}
@@ -184,7 +184,7 @@ public class StatsScreen extends Screen implements StatsListener {
 		public EntityStatsListWidget(MinecraftClient client) {
 			super(client, StatsScreen.this.width, StatsScreen.this.height, 32, StatsScreen.this.height - 64, 9 * 4);
 
-			for (EntityType<?> entityType : Registry.ENTITY_TYPE) {
+			for (EntityType<?> entityType : Registries.ENTITY_TYPE) {
 				if (StatsScreen.this.statHandler.getStat(Stats.KILLED.getOrCreateStat(entityType)) > 0
 					|| StatsScreen.this.statHandler.getStat(Stats.KILLED_BY.getOrCreateStat(entityType)) > 0) {
 					this.addEntry(new StatsScreen.EntityStatsListWidget.Entry(entityType));
@@ -308,7 +308,7 @@ public class StatsScreen extends Screen implements StatsListener {
 			this.setRenderHeader(true, 20);
 			Set<Item> set = Sets.newIdentityHashSet();
 
-			for (Item item : Registry.ITEM) {
+			for (Item item : Registries.ITEM) {
 				boolean bl = false;
 
 				for (StatType<Item> statType : this.itemStatTypes) {
@@ -322,7 +322,7 @@ public class StatsScreen extends Screen implements StatsListener {
 				}
 			}
 
-			for (Block block : Registry.BLOCK) {
+			for (Block block : Registries.BLOCK) {
 				boolean bl = false;
 
 				for (StatType<Block> statTypex : this.blockStatTypes) {

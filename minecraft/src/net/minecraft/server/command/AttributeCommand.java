@@ -18,9 +18,9 @@ import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 
 public class AttributeCommand {
 	private static final DynamicCommandExceptionType ENTITY_FAILED_EXCEPTION = new DynamicCommandExceptionType(
@@ -43,7 +43,7 @@ public class AttributeCommand {
 				.then(
 					CommandManager.argument("target", EntityArgumentType.entity())
 						.then(
-							CommandManager.argument("attribute", RegistryEntryArgumentType.registryEntry(registryAccess, Registry.ATTRIBUTE_KEY))
+							CommandManager.argument("attribute", RegistryEntryArgumentType.registryEntry(registryAccess, RegistryKeys.ATTRIBUTE))
 								.then(
 									CommandManager.literal("get")
 										.executes(

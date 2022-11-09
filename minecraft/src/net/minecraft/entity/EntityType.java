@@ -132,13 +132,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.featuretoggle.FeatureFlag;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.resource.featuretoggle.ToggleableFeature;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.TagKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypeFilter;
@@ -147,8 +150,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
@@ -158,7 +159,7 @@ import org.slf4j.Logger;
 public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilter<Entity, T> {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final String ENTITY_TAG_KEY = "EntityTag";
-	private final RegistryEntry.Reference<EntityType<?>> registryEntry = Registry.ENTITY_TYPE.createEntry(this);
+	private final RegistryEntry.Reference<EntityType<?>> registryEntry = Registries.ENTITY_TYPE.createEntry(this);
 	private static final float field_30054 = 1.3964844F;
 	public static final EntityType<AllayEntity> ALLAY = register(
 		"allay", EntityType.Builder.create(AllayEntity::new, SpawnGroup.CREATURE).setDimensions(0.35F, 0.6F).maxTrackingRange(8).trackingTickInterval(2)
@@ -643,15 +644,15 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	private final FeatureSet requiredFeatures;
 
 	private static <T extends Entity> EntityType<T> register(String id, EntityType.Builder<T> type) {
-		return Registry.register(Registry.ENTITY_TYPE, id, type.build(id));
+		return Registry.register(Registries.ENTITY_TYPE, id, type.build(id));
 	}
 
 	public static Identifier getId(EntityType<?> type) {
-		return Registry.ENTITY_TYPE.getId(type);
+		return Registries.ENTITY_TYPE.getId(type);
 	}
 
 	public static Optional<EntityType<?>> get(String id) {
-		return Registry.ENTITY_TYPE.getOrEmpty(Identifier.tryParse(id));
+		return Registries.ENTITY_TYPE.getOrEmpty(Identifier.tryParse(id));
 	}
 
 	public EntityType(
@@ -804,7 +805,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 
 	public String getTranslationKey() {
 		if (this.translationKey == null) {
-			this.translationKey = Util.createTranslationKey("entity", Registry.ENTITY_TYPE.getId(this));
+			this.translationKey = Util.createTranslationKey("entity", Registries.ENTITY_TYPE.getId(this));
 		}
 
 		return this.translationKey;
@@ -829,7 +830,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 
 	public Identifier getLootTableId() {
 		if (this.lootTableId == null) {
-			Identifier identifier = Registry.ENTITY_TYPE.getId(this);
+			Identifier identifier = Registries.ENTITY_TYPE.getId(this);
 			this.lootTableId = identifier.withPrefixedPath("entities/");
 		}
 
@@ -890,7 +891,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	}
 
 	public static Optional<EntityType<?>> fromNbt(NbtCompound nbt) {
-		return Registry.ENTITY_TYPE.getOrEmpty(new Identifier(nbt.getString("id")));
+		return Registries.ENTITY_TYPE.getOrEmpty(new Identifier(nbt.getString("id")));
 	}
 
 	@Nullable

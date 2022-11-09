@@ -7,9 +7,9 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ColorHelper;
@@ -174,7 +174,7 @@ public class BellBlockEntity extends BlockEntity {
 	}
 
 	/**
-	 * Determines whether the given entity is in the {@link net.minecraft.tag.EntityTypeTags#RAIDERS} entity type tag and within 48 blocks of the given position.
+	 * Determines whether the given entity is in the {@link net.minecraft.registry.tag.EntityTypeTags#RAIDERS} entity type tag and within 48 blocks of the given position.
 	 */
 	private static boolean isRaiderEntity(BlockPos pos, LivingEntity entity) {
 		return entity.isAlive() && !entity.isRemoved() && pos.isWithinDistance(entity.getPos(), 48.0) && entity.getType().isIn(EntityTypeTags.RAIDERS);

@@ -45,12 +45,12 @@ import net.minecraft.data.server.tag.VanillaItemTagProvider;
 import net.minecraft.data.server.tag.WorldPresetTagProvider;
 import net.minecraft.data.validate.StructureValidatorProvider;
 import net.minecraft.obfuscate.DontObfuscate;
+import net.minecraft.registry.BuiltinRegistries;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
-import net.minecraft.util.registry.BuiltinRegistries;
-import net.minecraft.util.registry.RegistryWrapper;
 
 public class Main {
 	@DontObfuscate

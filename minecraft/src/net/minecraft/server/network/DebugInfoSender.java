@@ -39,6 +39,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.Identifier;
@@ -49,7 +50,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.village.VillageGossipType;
 import net.minecraft.village.raid.Raid;
 import net.minecraft.world.StructureWorldAccess;
@@ -137,8 +137,8 @@ public class DebugInfoSender {
 		}
 
 		buf.writeOptional(
-			brain.hasMemoryModule(MemoryModuleType.PATH) ? brain.getOptionalMemory(MemoryModuleType.PATH) : Optional.empty(),
-			(packetByteBuf, path) -> path.toBuffer(packetByteBuf)
+			brain.hasMemoryModule(MemoryModuleType.PATH) ? brain.getOptionalRegisteredMemory(MemoryModuleType.PATH) : Optional.empty(),
+			(buf2, path) -> path.toBuffer(buf2)
 		);
 		if (entity instanceof VillagerEntity villagerEntity) {
 			boolean bl = villagerEntity.canSummonGolem(l);
@@ -155,7 +155,7 @@ public class DebugInfoSender {
 		}
 
 		buf.writeCollection(brain.getPossibleActivities(), (buf2, activity) -> buf2.writeString(activity.getId()));
-		Set<String> set = (Set<String>)brain.getRunningTasks().stream().map(Task::toString).collect(Collectors.toSet());
+		Set<String> set = (Set<String>)brain.getRunningTasks().stream().map(Task::getName).collect(Collectors.toSet());
 		buf.writeCollection(set, PacketByteBuf::writeString);
 		buf.writeCollection(listMemories(entity, l), (buf2, memory) -> {
 			String string = StringHelper.truncate(memory, 255, true);
@@ -163,7 +163,7 @@ public class DebugInfoSender {
 		});
 		if (entity instanceof VillagerEntity) {
 			Set<BlockPos> set2 = (Set<BlockPos>)Stream.of(MemoryModuleType.JOB_SITE, MemoryModuleType.HOME, MemoryModuleType.MEETING_POINT)
-				.map(brain::getOptionalMemory)
+				.map(brain::getOptionalRegisteredMemory)
 				.flatMap(Optional::stream)
 				.map(GlobalPos::getPos)
 				.collect(Collectors.toSet());
@@ -174,7 +174,7 @@ public class DebugInfoSender {
 
 		if (entity instanceof VillagerEntity) {
 			Set<BlockPos> set2 = (Set<BlockPos>)Stream.of(MemoryModuleType.POTENTIAL_JOB_SITE)
-				.map(brain::getOptionalMemory)
+				.map(brain::getOptionalRegisteredMemory)
 				.flatMap(Optional::stream)
 				.map(GlobalPos::getPos)
 				.collect(Collectors.toSet());
@@ -219,7 +219,7 @@ public class DebugInfoSender {
 				string = "-";
 			}
 
-			list.add(Registry.MEMORY_MODULE_TYPE.getId(memoryModuleType).getPath() + ": " + string);
+			list.add(Registries.MEMORY_MODULE_TYPE.getId(memoryModuleType).getPath() + ": " + string);
 		}
 
 		list.sort(String::compareTo);

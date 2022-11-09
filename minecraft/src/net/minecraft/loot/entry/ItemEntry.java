@@ -10,9 +10,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.function.LootFunction;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.registry.Registry;
 
 public class ItemEntry extends LeafEntry {
 	final Item item;
@@ -39,7 +39,7 @@ public class ItemEntry extends LeafEntry {
 	public static class Serializer extends LeafEntry.Serializer<ItemEntry> {
 		public void addEntryFields(JsonObject jsonObject, ItemEntry itemEntry, JsonSerializationContext jsonSerializationContext) {
 			super.addEntryFields(jsonObject, itemEntry, jsonSerializationContext);
-			Identifier identifier = Registry.ITEM.getId(itemEntry.item);
+			Identifier identifier = Registries.ITEM.getId(itemEntry.item);
 			if (identifier == null) {
 				throw new IllegalArgumentException("Can't serialize unknown item " + itemEntry.item);
 			} else {

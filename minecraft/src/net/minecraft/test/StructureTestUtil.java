@@ -29,6 +29,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureTemplate;
 import net.minecraft.structure.StructureTemplateManager;
@@ -41,8 +43,6 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -285,9 +285,9 @@ public class StructureTestUtil {
 		BlockState blockState = null;
 		DynamicRegistryManager dynamicRegistryManager = world.getRegistryManager();
 		FlatChunkGeneratorConfig flatChunkGeneratorConfig = FlatChunkGeneratorConfig.getDefaultConfig(
-			dynamicRegistryManager.getWrapperOrThrow(Registry.BIOME_KEY),
-			dynamicRegistryManager.getWrapperOrThrow(Registry.STRUCTURE_SET_KEY),
-			dynamicRegistryManager.getWrapperOrThrow(Registry.PLACED_FEATURE_KEY)
+			dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.BIOME_WORLDGEN),
+			dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.STRUCTURE_SET_WORLDGEN),
+			dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.PLACED_FEATURE_WORLDGEN)
 		);
 		List<BlockState> list = flatChunkGeneratorConfig.getLayerBlocks();
 		int i = pos.getY() - world.getBottomY();

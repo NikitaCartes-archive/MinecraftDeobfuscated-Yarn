@@ -51,6 +51,7 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.SpriteIdentifier;
+import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourceFinder;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -59,7 +60,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.AffineTransformation;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -156,13 +156,13 @@ public class ModelLoader {
 		STATIC_DEFINITIONS.forEach((id, stateManager) -> stateManager.getStates().forEach(state -> this.addModel(BlockModels.getModelId(id, state))));
 		profiler.swap("blocks");
 
-		for (Block block : Registry.BLOCK) {
+		for (Block block : Registries.BLOCK) {
 			block.getStateManager().getStates().forEach(state -> this.addModel(BlockModels.getModelId(state)));
 		}
 
 		profiler.swap("items");
 
-		for (Identifier identifier : Registry.ITEM.getIds()) {
+		for (Identifier identifier : Registries.ITEM.getIds()) {
 			this.addModel(new ModelIdentifier(identifier, "inventory"));
 		}
 
@@ -275,7 +275,7 @@ public class ModelLoader {
 			} else {
 				Identifier identifier = new Identifier(id.getNamespace(), id.getPath());
 				StateManager<Block, BlockState> stateManager = (StateManager<Block, BlockState>)Optional.ofNullable((StateManager)STATIC_DEFINITIONS.get(identifier))
-					.orElseGet(() -> Registry.BLOCK.get(identifier).getStateManager());
+					.orElseGet(() -> Registries.BLOCK.get(identifier).getStateManager());
 				this.variantMapDeserializationContext.setStateFactory(stateManager);
 				List<Property<?>> list = ImmutableList.copyOf(this.blockColors.getProperties(stateManager.getOwner()));
 				ImmutableList<BlockState> immutableList = stateManager.getStates();

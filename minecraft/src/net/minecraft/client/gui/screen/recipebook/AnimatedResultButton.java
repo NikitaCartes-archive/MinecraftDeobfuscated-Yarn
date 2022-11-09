@@ -65,7 +65,7 @@ public class AnimatedResultButton extends ClickableWidget {
 		}
 
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
 		int i = 29;
 		if (!this.resultCollection.hasCraftableRecipes()) {
@@ -135,7 +135,7 @@ public class AnimatedResultButton extends ClickableWidget {
 	}
 
 	@Override
-	public void appendNarrations(NarrationMessageBuilder builder) {
+	public void appendClickableNarrations(NarrationMessageBuilder builder) {
 		ItemStack itemStack = ((Recipe)this.getResults().get(this.currentResultIndex)).getOutput();
 		builder.put(NarrationPart.TITLE, Text.translatable("narration.recipe", itemStack.getName()));
 		if (this.resultCollection.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)).size() > 1) {

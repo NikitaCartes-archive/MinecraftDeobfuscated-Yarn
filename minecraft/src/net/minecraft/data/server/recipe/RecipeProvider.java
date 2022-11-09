@@ -34,11 +34,11 @@ import net.minecraft.recipe.AbstractCookingRecipe;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.book.RecipeCategory;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.featuretoggle.FeatureSet;
-import net.minecraft.tag.ItemTags;
-import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public abstract class RecipeProvider implements DataProvider {
 	private final DataOutput.PathResolver recipesPathResolver;
@@ -173,16 +173,26 @@ public abstract class RecipeProvider implements DataProvider {
 			.offerTo(exporter);
 	}
 
-	protected static void offerPlanksRecipe2(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, TagKey<Item> input) {
-		ShapelessRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, output, 4)
+	protected static void offerCompactingRecipe(
+		Consumer<RecipeJsonProvider> exporter, RecipeCategory category, ItemConvertible output, ItemConvertible input, String criterionName
+	) {
+		ShapelessRecipeJsonBuilder.create(category, output).input(input, 9).criterion(criterionName, conditionsFromItem(input)).offerTo(exporter);
+	}
+
+	protected static void offerCompactingRecipe(Consumer<RecipeJsonProvider> exporter, RecipeCategory category, ItemConvertible output, ItemConvertible input) {
+		offerCompactingRecipe(exporter, category, output, input, hasItem(input));
+	}
+
+	protected static void offerPlanksRecipe2(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, TagKey<Item> input, int count) {
+		ShapelessRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, output, count)
 			.input(input)
 			.group("planks")
 			.criterion("has_log", conditionsFromTag(input))
 			.offerTo(exporter);
 	}
 
-	protected static void offerPlanksRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, TagKey<Item> input) {
-		ShapelessRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, output, 4)
+	protected static void offerPlanksRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, TagKey<Item> input, int count) {
+		ShapelessRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, output, count)
 			.input(input)
 			.group("planks")
 			.criterion("has_logs", conditionsFromTag(input))
@@ -271,11 +281,7 @@ public abstract class RecipeProvider implements DataProvider {
 	}
 
 	protected static void offerHangingSignRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, ItemConvertible input) {
-		offerHangingSignRecipe(exporter, output, input, 6);
-	}
-
-	protected static void offerHangingSignRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, ItemConvertible input, int count) {
-		ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, output, count)
+		ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, output, 6)
 			.group("hanging_sign")
 			.input('#', input)
 			.input('X', Items.CHAIN)
@@ -661,7 +667,7 @@ public abstract class RecipeProvider implements DataProvider {
 	}
 
 	protected static String getItemPath(ItemConvertible item) {
-		return Registry.ITEM.getId(item.asItem()).getPath();
+		return Registries.ITEM.getId(item.asItem()).getPath();
 	}
 
 	protected static String getRecipeName(ItemConvertible item) {

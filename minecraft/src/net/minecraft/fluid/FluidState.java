@@ -7,22 +7,22 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.particle.ParticleEffect;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.state.State;
 import net.minecraft.state.property.Property;
-import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public final class FluidState extends State<Fluid, FluidState> {
-	public static final Codec<FluidState> CODEC = createCodec(Registry.FLUID.getCodec(), Fluid::getDefaultState).stable();
+	public static final Codec<FluidState> CODEC = createCodec(Registries.FLUID.getCodec(), Fluid::getDefaultState).stable();
 	public static final int field_31727 = 9;
 	public static final int field_31728 = 8;
 

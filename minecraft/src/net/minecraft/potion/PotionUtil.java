@@ -16,12 +16,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.Registries;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class PotionUtil {
 	public static final String CUSTOM_POTION_EFFECTS_KEY = "CustomPotionEffects";
@@ -126,7 +126,7 @@ public class PotionUtil {
 	}
 
 	public static ItemStack setPotion(ItemStack stack, Potion potion) {
-		Identifier identifier = Registry.POTION.getId(potion);
+		Identifier identifier = Registries.POTION.getId(potion);
 		if (potion == Potions.EMPTY) {
 			stack.removeSubNbt("Potion");
 		} else {
@@ -153,12 +153,15 @@ public class PotionUtil {
 	}
 
 	public static void buildTooltip(ItemStack stack, List<Text> list, float durationMultiplier) {
-		List<StatusEffectInstance> list2 = getPotionEffects(stack);
-		List<Pair<EntityAttribute, EntityAttributeModifier>> list3 = Lists.<Pair<EntityAttribute, EntityAttributeModifier>>newArrayList();
-		if (list2.isEmpty()) {
+		buildTooltip(getPotionEffects(stack), list, durationMultiplier);
+	}
+
+	public static void buildTooltip(List<StatusEffectInstance> statusEffects, List<Text> list, float durationMultiplier) {
+		List<Pair<EntityAttribute, EntityAttributeModifier>> list2 = Lists.<Pair<EntityAttribute, EntityAttributeModifier>>newArrayList();
+		if (statusEffects.isEmpty()) {
 			list.add(NONE_TEXT);
 		} else {
-			for (StatusEffectInstance statusEffectInstance : list2) {
+			for (StatusEffectInstance statusEffectInstance : statusEffects) {
 				MutableText mutableText = Text.translatable(statusEffectInstance.getTranslationKey());
 				StatusEffect statusEffect = statusEffectInstance.getEffectType();
 				Map<EntityAttribute, EntityAttributeModifier> map = statusEffect.getAttributeModifiers();
@@ -170,7 +173,7 @@ public class PotionUtil {
 							statusEffect.adjustModifierAmount(statusEffectInstance.getAmplifier(), entityAttributeModifier),
 							entityAttributeModifier.getOperation()
 						);
-						list3.add(new Pair<>((EntityAttribute)entry.getKey(), entityAttributeModifier2));
+						list2.add(new Pair<>((EntityAttribute)entry.getKey(), entityAttributeModifier2));
 					}
 				}
 
@@ -186,11 +189,11 @@ public class PotionUtil {
 			}
 		}
 
-		if (!list3.isEmpty()) {
+		if (!list2.isEmpty()) {
 			list.add(ScreenTexts.EMPTY);
 			list.add(Text.translatable("potion.whenDrank").formatted(Formatting.DARK_PURPLE));
 
-			for (Pair<EntityAttribute, EntityAttributeModifier> pair : list3) {
+			for (Pair<EntityAttribute, EntityAttributeModifier> pair : list2) {
 				EntityAttributeModifier entityAttributeModifier3 = pair.getSecond();
 				double d = entityAttributeModifier3.getValue();
 				double e;

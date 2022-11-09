@@ -68,7 +68,7 @@ public class DedicatedServerWatchdog implements Runnable {
 				crashReportSection2.add(
 					"Level stats",
 					(CrashCallable<String>)(() -> (String)Streams.stream(this.server.getWorlds())
-							.map(serverWorld -> serverWorld.getRegistryKey() + ": " + serverWorld.getDebugString())
+							.map(world -> world.getRegistryKey() + ": " + world.getDebugString())
 							.collect(Collectors.joining(",\n")))
 				);
 				Bootstrap.println("Crash report:\n" + crashReport.asString());

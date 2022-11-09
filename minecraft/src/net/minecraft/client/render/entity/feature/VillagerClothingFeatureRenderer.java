@@ -14,12 +14,12 @@ import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.ModelWithHat;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.registry.DefaultedRegistry;
+import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.DefaultedRegistry;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.village.VillagerData;
 import net.minecraft.village.VillagerDataContainer;
 import net.minecraft.village.VillagerProfession;
@@ -53,18 +53,18 @@ public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDa
 			VillagerData villagerData = livingEntity.getVillagerData();
 			VillagerType villagerType = villagerData.getType();
 			VillagerProfession villagerProfession = villagerData.getProfession();
-			VillagerResourceMetadata.HatType hatType = this.getHatType(this.villagerTypeToHat, "type", Registry.VILLAGER_TYPE, villagerType);
-			VillagerResourceMetadata.HatType hatType2 = this.getHatType(this.professionToHat, "profession", Registry.VILLAGER_PROFESSION, villagerProfession);
+			VillagerResourceMetadata.HatType hatType = this.getHatType(this.villagerTypeToHat, "type", Registries.VILLAGER_TYPE, villagerType);
+			VillagerResourceMetadata.HatType hatType2 = this.getHatType(this.professionToHat, "profession", Registries.VILLAGER_PROFESSION, villagerProfession);
 			M entityModel = this.getContextModel();
 			entityModel.setHatVisible(
 				hatType2 == VillagerResourceMetadata.HatType.NONE
 					|| hatType2 == VillagerResourceMetadata.HatType.PARTIAL && hatType != VillagerResourceMetadata.HatType.FULL
 			);
-			Identifier identifier = this.findTexture("type", Registry.VILLAGER_TYPE.getId(villagerType));
+			Identifier identifier = this.findTexture("type", Registries.VILLAGER_TYPE.getId(villagerType));
 			renderModel(entityModel, identifier, matrixStack, vertexConsumerProvider, i, livingEntity, 1.0F, 1.0F, 1.0F);
 			entityModel.setHatVisible(true);
 			if (villagerProfession != VillagerProfession.NONE && !livingEntity.isBaby()) {
-				Identifier identifier2 = this.findTexture("profession", Registry.VILLAGER_PROFESSION.getId(villagerProfession));
+				Identifier identifier2 = this.findTexture("profession", Registries.VILLAGER_PROFESSION.getId(villagerProfession));
 				renderModel(entityModel, identifier2, matrixStack, vertexConsumerProvider, i, livingEntity, 1.0F, 1.0F, 1.0F);
 				if (villagerProfession != VillagerProfession.NITWIT) {
 					Identifier identifier3 = this.findTexture("profession_level", LEVEL_TO_ID.get(MathHelper.clamp(villagerData.getLevel(), 1, LEVEL_TO_ID.size())));
@@ -75,7 +75,7 @@ public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDa
 	}
 
 	private Identifier findTexture(String keyType, Identifier keyId) {
-		return keyId.withPath((UnaryOperator<String>)(string2 -> "textures/entity/" + this.entityType + "/" + keyType + "/" + string2 + ".png"));
+		return keyId.withPath((UnaryOperator<String>)(path -> "textures/entity/" + this.entityType + "/" + keyType + "/" + path + ".png"));
 	}
 
 	public <K> VillagerResourceMetadata.HatType getHatType(

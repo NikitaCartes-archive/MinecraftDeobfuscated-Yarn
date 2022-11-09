@@ -1,42 +1,44 @@
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
 import net.minecraft.entity.EntityStatuses;
-import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.village.VillagerProfession;
 
-public class GoToWorkTask extends Task<VillagerEntity> {
-	public GoToWorkTask() {
-		super(ImmutableMap.of(MemoryModuleType.POTENTIAL_JOB_SITE, MemoryModuleState.VALUE_PRESENT));
-	}
-
-	protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
-		BlockPos blockPos = ((GlobalPos)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.POTENTIAL_JOB_SITE).get()).getPos();
-		return blockPos.isWithinDistance(villagerEntity.getPos(), 2.0) || villagerEntity.isNatural();
-	}
-
-	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		GlobalPos globalPos = (GlobalPos)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.POTENTIAL_JOB_SITE).get();
-		villagerEntity.getBrain().forget(MemoryModuleType.POTENTIAL_JOB_SITE);
-		villagerEntity.getBrain().remember(MemoryModuleType.JOB_SITE, globalPos);
-		serverWorld.sendEntityStatus(villagerEntity, EntityStatuses.ADD_VILLAGER_HAPPY_PARTICLES);
-		if (villagerEntity.getVillagerData().getProfession() == VillagerProfession.NONE) {
-			MinecraftServer minecraftServer = serverWorld.getServer();
-			Optional.ofNullable(minecraftServer.getWorld(globalPos.getDimension()))
-				.flatMap(world -> world.getPointOfInterestStorage().getType(globalPos.getPos()))
-				.flatMap(registryEntry -> Registry.VILLAGER_PROFESSION.stream().filter(profession -> profession.heldWorkstation().test(registryEntry)).findFirst())
-				.ifPresent(profession -> {
-					villagerEntity.setVillagerData(villagerEntity.getVillagerData().withProfession(profession));
-					villagerEntity.reinitializeBrain(serverWorld);
-				});
-		}
+public class GoToWorkTask {
+	public static Task<VillagerEntity> create() {
+		return TaskTriggerer.task(
+			context -> context.group(context.queryMemoryValue(MemoryModuleType.POTENTIAL_JOB_SITE), context.queryMemoryOptional(MemoryModuleType.JOB_SITE))
+					.apply(
+						context,
+						(potentialJobSite, jobSite) -> (world, entity, time) -> {
+								GlobalPos globalPos = context.getValue(potentialJobSite);
+								if (!globalPos.getPos().isWithinDistance(entity.getPos(), 2.0) && !entity.isNatural()) {
+									return false;
+								} else {
+									potentialJobSite.forget();
+									jobSite.remember(globalPos);
+									world.sendEntityStatus(entity, EntityStatuses.ADD_VILLAGER_HAPPY_PARTICLES);
+									if (entity.getVillagerData().getProfession() != VillagerProfession.NONE) {
+										return true;
+									} else {
+										MinecraftServer minecraftServer = world.getServer();
+										Optional.ofNullable(minecraftServer.getWorld(globalPos.getDimension()))
+											.flatMap(jobSiteWorld -> jobSiteWorld.getPointOfInterestStorage().getType(globalPos.getPos()))
+											.flatMap(poiType -> Registries.VILLAGER_PROFESSION.stream().filter(profession -> profession.heldWorkstation().test(poiType)).findFirst())
+											.ifPresent(profession -> {
+												entity.setVillagerData(entity.getVillagerData().withProfession(profession));
+												entity.reinitializeBrain(world);
+											});
+										return true;
+									}
+								}
+							}
+					)
+		);
 	}
 }

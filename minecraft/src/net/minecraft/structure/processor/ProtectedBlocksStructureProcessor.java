@@ -3,17 +3,17 @@ package net.minecraft.structure.processor;
 import com.mojang.serialization.Codec;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.StructureTemplate;
-import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.gen.feature.Feature;
 
 public class ProtectedBlocksStructureProcessor extends StructureProcessor {
 	public final TagKey<Block> protectedBlocksTag;
-	public static final Codec<ProtectedBlocksStructureProcessor> CODEC = TagKey.codec(Registry.BLOCK_KEY)
+	public static final Codec<ProtectedBlocksStructureProcessor> CODEC = TagKey.codec(RegistryKeys.BLOCK)
 		.xmap(ProtectedBlocksStructureProcessor::new, processor -> processor.protectedBlocksTag);
 
 	public ProtectedBlocksStructureProcessor(TagKey<Block> protectedBlocksTag) {

@@ -3,11 +3,11 @@ package net.minecraft.world.poi;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Objects;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryFixedCodec;
 import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryFixedCodec;
 
 public class PointOfInterest {
 	private final BlockPos pos;
@@ -19,7 +19,7 @@ public class PointOfInterest {
 		return RecordCodecBuilder.create(
 			instance -> instance.group(
 						BlockPos.CODEC.fieldOf("pos").forGetter(poi -> poi.pos),
-						RegistryFixedCodec.of(Registry.POINT_OF_INTEREST_TYPE_KEY).fieldOf("type").forGetter(poi -> poi.type),
+						RegistryFixedCodec.of(RegistryKeys.POINT_OF_INTEREST_TYPE).fieldOf("type").forGetter(poi -> poi.type),
 						Codec.INT.fieldOf("free_tickets").orElse(0).forGetter(poi -> poi.freeTickets),
 						RecordCodecBuilder.point(updateListener)
 					)

@@ -8,7 +8,7 @@ import net.minecraft.entity.mob.WardenEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 
-public class EmergeTask<E extends WardenEntity> extends Task<E> {
+public class EmergeTask<E extends WardenEntity> extends MultiTickTask<E> {
 	public EmergeTask(int duration) {
 		super(
 			ImmutableMap.of(

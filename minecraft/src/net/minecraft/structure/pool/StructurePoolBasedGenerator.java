@@ -7,6 +7,11 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.block.JigsawBlock;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.JigsawJunction;
 import net.minecraft.structure.PoolStructurePiece;
@@ -25,10 +30,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.random.ChunkRandom;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.HeightLimitView;
@@ -58,7 +59,7 @@ public class StructurePoolBasedGenerator {
 		StructureTemplateManager structureTemplateManager = context.structureTemplateManager();
 		HeightLimitView heightLimitView = context.world();
 		ChunkRandom chunkRandom = context.random();
-		Registry<StructurePool> registry = dynamicRegistryManager.get(Registry.STRUCTURE_POOL_KEY);
+		Registry<StructurePool> registry = dynamicRegistryManager.get(RegistryKeys.TEMPLATE_POOL_WORLDGEN);
 		BlockRotation blockRotation = BlockRotation.random(chunkRandom);
 		StructurePool structurePool2 = structurePool.value();
 		StructurePoolElement structurePoolElement = structurePool2.getRandomElement(chunkRandom);
@@ -409,7 +410,7 @@ public class StructurePoolBasedGenerator {
 		}
 
 		private static RegistryKey<StructurePool> getPoolKey(StructureTemplate.StructureBlockInfo blockInfo) {
-			return RegistryKey.of(Registry.STRUCTURE_POOL_KEY, new Identifier(blockInfo.nbt.getString("pool")));
+			return RegistryKey.of(RegistryKeys.TEMPLATE_POOL_WORLDGEN, new Identifier(blockInfo.nbt.getString("pool")));
 		}
 	}
 }

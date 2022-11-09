@@ -42,11 +42,16 @@ import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.RecipeManager;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.CubicSampler;
 import net.minecraft.util.CuboidBlockIterator;
@@ -62,10 +67,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.EntityList;
@@ -263,7 +264,7 @@ public class ClientWorld extends World {
 	public void tickEntity(Entity entity) {
 		entity.resetPosition();
 		entity.age++;
-		this.getProfiler().push((Supplier<String>)(() -> Registry.ENTITY_TYPE.getId(entity.getType()).toString()));
+		this.getProfiler().push((Supplier<String>)(() -> Registries.ENTITY_TYPE.getId(entity.getType()).toString()));
 		entity.tick();
 		this.getProfiler().pop();
 
@@ -534,9 +535,12 @@ public class ClientWorld extends World {
 		return (MapState)this.mapStates.get(id);
 	}
 
+	public void method_47437(String string, MapState mapState) {
+		this.mapStates.put(string, mapState);
+	}
+
 	@Override
 	public void putMapState(String id, MapState state) {
-		this.mapStates.put(id, state);
 	}
 
 	@Override
@@ -629,7 +633,7 @@ public class ClientWorld extends World {
 
 	@Override
 	public RegistryEntry<Biome> getGeneratorStoredBiome(int biomeX, int biomeY, int biomeZ) {
-		return this.getRegistryManager().get(Registry.BIOME_KEY).entryOf(BiomeKeys.PLAINS);
+		return this.getRegistryManager().get(RegistryKeys.BIOME_WORLDGEN).entryOf(BiomeKeys.PLAINS);
 	}
 
 	public float getStarBrightness(float tickDelta) {

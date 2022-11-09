@@ -9,7 +9,7 @@ import net.minecraft.entity.mob.WardenEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 
-public class DigTask<E extends WardenEntity> extends Task<E> {
+public class DigTask<E extends WardenEntity> extends MultiTickTask<E> {
 	public DigTask(int duration) {
 		super(ImmutableMap.of(MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT), duration);
 	}

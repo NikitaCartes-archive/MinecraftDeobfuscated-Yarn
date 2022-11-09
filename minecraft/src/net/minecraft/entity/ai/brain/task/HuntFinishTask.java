@@ -1,27 +1,22 @@
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableMap;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.mob.PiglinBrain;
-import net.minecraft.entity.mob.PiglinEntity;
-import net.minecraft.server.world.ServerWorld;
 
-public class HuntFinishTask<E extends PiglinEntity> extends Task<E> {
-	public HuntFinishTask() {
-		super(ImmutableMap.of(MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.HUNTED_RECENTLY, MemoryModuleState.REGISTERED));
-	}
+public class HuntFinishTask {
+	public static Task<LivingEntity> create() {
+		return TaskTriggerer.task(
+			context -> context.group(context.queryMemoryValue(MemoryModuleType.ATTACK_TARGET), context.queryMemoryOptional(MemoryModuleType.HUNTED_RECENTLY))
+					.apply(context, (attackTarget, huntedRecently) -> (world, entity, time) -> {
+							LivingEntity livingEntity = context.getValue(attackTarget);
+							if (livingEntity.getType() == EntityType.HOGLIN && livingEntity.isDead()) {
+								huntedRecently.remember(true, (long)PiglinBrain.HUNT_MEMORY_DURATION.get(entity.world.random));
+							}
 
-	protected void run(ServerWorld serverWorld, E piglinEntity, long l) {
-		if (this.hasKilledHoglin(piglinEntity)) {
-			PiglinBrain.rememberHunting(piglinEntity);
-		}
-	}
-
-	private boolean hasKilledHoglin(E piglin) {
-		LivingEntity livingEntity = (LivingEntity)piglin.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).get();
-		return livingEntity.getType() == EntityType.HOGLIN && livingEntity.isDead();
+							return true;
+						})
+		);
 	}
 }

@@ -1,59 +1,44 @@
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.function.Predicate;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.brain.Brain;
-import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.poi.PointOfInterestType;
 
-public class ForgetCompletedPointOfInterestTask extends Task<LivingEntity> {
+public class ForgetCompletedPointOfInterestTask {
 	private static final int MAX_RANGE = 16;
-	private final MemoryModuleType<GlobalPos> memoryModule;
-	private final Predicate<RegistryEntry<PointOfInterestType>> poiTypePredicate;
 
-	public ForgetCompletedPointOfInterestTask(Predicate<RegistryEntry<PointOfInterestType>> poiTypePredicate, MemoryModuleType<GlobalPos> memoryModule) {
-		super(ImmutableMap.of(memoryModule, MemoryModuleState.VALUE_PRESENT));
-		this.poiTypePredicate = poiTypePredicate;
-		this.memoryModule = memoryModule;
+	public static Task<LivingEntity> create(Predicate<RegistryEntry<PointOfInterestType>> poiTypePredicate, MemoryModuleType<GlobalPos> poiPosModule) {
+		return TaskTriggerer.task(context -> context.group(context.queryMemoryValue(poiPosModule)).apply(context, poiPos -> (world, entity, time) -> {
+					GlobalPos globalPos = context.getValue(poiPos);
+					BlockPos blockPos = globalPos.getPos();
+					if (world.getRegistryKey() == globalPos.getDimension() && blockPos.isWithinDistance(entity.getPos(), 16.0)) {
+						ServerWorld serverWorld = world.getServer().getWorld(globalPos.getDimension());
+						if (serverWorld == null || !serverWorld.getPointOfInterestStorage().test(blockPos, poiTypePredicate)) {
+							poiPos.forget();
+						} else if (isBedOccupiedByOthers(serverWorld, blockPos, entity)) {
+							poiPos.forget();
+							world.getPointOfInterestStorage().releaseTicket(blockPos);
+							DebugInfoSender.sendPointOfInterest(world, blockPos);
+						}
+
+						return true;
+					} else {
+						return false;
+					}
+				}));
 	}
 
-	@Override
-	protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
-		GlobalPos globalPos = (GlobalPos)entity.getBrain().getOptionalMemory(this.memoryModule).get();
-		return world.getRegistryKey() == globalPos.getDimension() && globalPos.getPos().isWithinDistance(entity.getPos(), 16.0);
-	}
-
-	@Override
-	protected void run(ServerWorld world, LivingEntity entity, long time) {
-		Brain<?> brain = entity.getBrain();
-		GlobalPos globalPos = (GlobalPos)brain.getOptionalMemory(this.memoryModule).get();
-		BlockPos blockPos = globalPos.getPos();
-		ServerWorld serverWorld = world.getServer().getWorld(globalPos.getDimension());
-		if (serverWorld == null || this.hasCompletedPointOfInterest(serverWorld, blockPos)) {
-			brain.forget(this.memoryModule);
-		} else if (this.isBedOccupiedByOthers(serverWorld, blockPos, entity)) {
-			brain.forget(this.memoryModule);
-			world.getPointOfInterestStorage().releaseTicket(blockPos);
-			DebugInfoSender.sendPointOfInterest(world, blockPos);
-		}
-	}
-
-	private boolean isBedOccupiedByOthers(ServerWorld world, BlockPos pos, LivingEntity entity) {
+	private static boolean isBedOccupiedByOthers(ServerWorld world, BlockPos pos, LivingEntity entity) {
 		BlockState blockState = world.getBlockState(pos);
 		return blockState.isIn(BlockTags.BEDS) && (Boolean)blockState.get(BedBlock.OCCUPIED) && !entity.isSleeping();
-	}
-
-	private boolean hasCompletedPointOfInterest(ServerWorld world, BlockPos pos) {
-		return !world.getPointOfInterestStorage().test(pos, this.poiTypePredicate);
 	}
 }

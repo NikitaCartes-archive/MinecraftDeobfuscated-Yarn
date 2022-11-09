@@ -23,13 +23,13 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
 import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.slf4j.Logger;
 
@@ -240,7 +240,7 @@ public class RecipeManager extends JsonDataLoader {
 	 */
 	public static Recipe<?> deserialize(Identifier id, JsonObject json) {
 		String string = JsonHelper.getString(json, "type");
-		return ((RecipeSerializer)Registry.RECIPE_SERIALIZER
+		return ((RecipeSerializer)Registries.RECIPE_SERIALIZER
 				.getOrEmpty(new Identifier(string))
 				.orElseThrow(() -> new JsonSyntaxException("Invalid or unsupported recipe type '" + string + "'")))
 			.read(id, json);

@@ -6,19 +6,19 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.PaneBlock;
+import net.minecraft.registry.Registerable;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.structure.rule.AlwaysTrueRuleTest;
 import net.minecraft.structure.rule.AxisAlignedLinearPosRuleTest;
 import net.minecraft.structure.rule.BlockMatchRuleTest;
 import net.minecraft.structure.rule.BlockStateMatchRuleTest;
 import net.minecraft.structure.rule.RandomBlockMatchRuleTest;
 import net.minecraft.structure.rule.TagMatchRuleTest;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registerable;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntryLookup;
-import net.minecraft.util.registry.RegistryKey;
 
 public class StructureProcessorLists {
 	private static final RegistryKey<StructureProcessorList> EMPTY = of("empty");
@@ -59,7 +59,7 @@ public class StructureProcessorLists {
 	public static final RegistryKey<StructureProcessorList> ANCIENT_CITY_WALLS_DEGRADATION = of("ancient_city_walls_degradation");
 
 	private static RegistryKey<StructureProcessorList> of(String id) {
-		return RegistryKey.of(Registry.STRUCTURE_PROCESSOR_LIST_KEY, new Identifier(id));
+		return RegistryKey.of(RegistryKeys.PROCESSOR_LIST_WORLDGEN, new Identifier(id));
 	}
 
 	private static void register(
@@ -69,7 +69,7 @@ public class StructureProcessorLists {
 	}
 
 	public static void bootstrap(Registerable<StructureProcessorList> processorListRegisterable) {
-		RegistryEntryLookup<Block> registryEntryLookup = processorListRegisterable.getRegistryLookup(Registry.BLOCK_KEY);
+		RegistryEntryLookup<Block> registryEntryLookup = processorListRegisterable.getRegistryLookup(RegistryKeys.BLOCK);
 		StructureProcessorRule structureProcessorRule = new StructureProcessorRule(
 			new RandomBlockMatchRuleTest(Blocks.BLACKSTONE, 0.01F), AlwaysTrueRuleTest.INSTANCE, Blocks.GILDED_BLACKSTONE.getDefaultState()
 		);

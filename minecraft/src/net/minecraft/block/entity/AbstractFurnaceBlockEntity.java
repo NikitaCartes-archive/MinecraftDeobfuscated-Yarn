@@ -29,11 +29,13 @@ import net.minecraft.recipe.RecipeManager;
 import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.RecipeUnlocker;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.ItemTags;
-import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
@@ -41,8 +43,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.World;
 
 public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockEntity implements SidedInventory, RecipeUnlocker, RecipeInputProvider {
@@ -121,6 +121,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		addFuel(map, Items.COAL, 1600);
 		addFuel(map, Items.CHARCOAL, 1600);
 		addFuel(map, ItemTags.LOGS, 300);
+		addFuel(map, ItemTags.BAMBOO_BLOCKS, 300);
 		addFuel(map, ItemTags.PLANKS, 300);
 		addFuel(map, Blocks.BAMBOO_MOSAIC, 300);
 		addFuel(map, ItemTags.WOODEN_STAIRS, 300);
@@ -178,14 +179,14 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 
 	/**
 	 * {@return whether the provided {@code item} is in the {@link
-	 * net.minecraft.tag.ItemTags#NON_FLAMMABLE_WOOD non_flammable_wood} tag}
+	 * net.minecraft.registry.tag.ItemTags#NON_FLAMMABLE_WOOD non_flammable_wood} tag}
 	 */
 	private static boolean isNonFlammableWood(Item item) {
 		return item.getRegistryEntry().isIn(ItemTags.NON_FLAMMABLE_WOOD);
 	}
 
 	private static void addFuel(Map<Item, Integer> fuelTimes, TagKey<Item> tag, int fuelTime) {
-		for (RegistryEntry<Item> registryEntry : Registry.ITEM.iterateEntries(tag)) {
+		for (RegistryEntry<Item> registryEntry : Registries.ITEM.iterateEntries(tag)) {
 			if (!isNonFlammableWood(registryEntry.value())) {
 				fuelTimes.put(registryEntry.value(), fuelTime);
 			}

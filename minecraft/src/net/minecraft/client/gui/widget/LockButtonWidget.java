@@ -14,7 +14,7 @@ public class LockButtonWidget extends ButtonWidget {
 	private boolean locked;
 
 	public LockButtonWidget(int x, int y, ButtonWidget.PressAction action) {
-		super(x, y, 20, 20, Text.translatable("narrator.button.difficulty_lock"), action, EMPTY_TOOLTIP, DEFAULT_NARRATION_SUPPLIER);
+		super(x, y, 20, 20, Text.translatable("narrator.button.difficulty_lock"), action, DEFAULT_NARRATION_SUPPLIER);
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class LockButtonWidget extends ButtonWidget {
 
 	@Override
 	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		RenderSystem.setShaderTexture(0, ButtonWidget.WIDGETS_TEXTURE);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		LockButtonWidget.IconLocation iconLocation;

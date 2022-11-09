@@ -6,7 +6,6 @@ import com.google.common.util.concurrent.RateLimiter;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -114,8 +113,6 @@ public class RealmsMainScreen extends RealmsScreen {
 	private ButtonWidget renewButton;
 	private ButtonWidget configureButton;
 	private ButtonWidget leaveButton;
-	@Nullable
-	private List<Text> tooltip;
 	private List<RealmsServer> realmsServers = ImmutableList.of();
 	volatile int pendingInvitesCount;
 	int animTick;
@@ -712,7 +709,6 @@ public class RealmsMainScreen extends RealmsScreen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.hoverState = RealmsMainScreen.HoverState.NONE;
-		this.tooltip = null;
 		this.renderBackground(matrices);
 		this.realmSelectionList.render(matrices, mouseX, mouseY, delta);
 		this.drawRealmsLogo(matrices, this.width / 2 - 50, 7);
@@ -741,10 +737,6 @@ public class RealmsMainScreen extends RealmsScreen {
 		}
 
 		super.render(matrices, mouseX, mouseY, delta);
-		if (this.tooltip != null) {
-			this.renderMousehoverTooltip(matrices, this.tooltip, mouseX, mouseY);
-		}
-
 		if (this.trialAvailable && !this.createdTrial && this.shouldShowPopup()) {
 			RenderSystem.setShaderTexture(0, TRIAL_ICON);
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -770,7 +762,7 @@ public class RealmsMainScreen extends RealmsScreen {
 	}
 
 	private void drawRealmsLogo(MatrixStack matrices, int x, int y) {
-		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		RenderSystem.setShaderTexture(0, REALMS);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		matrices.push();
@@ -938,7 +930,7 @@ public class RealmsMainScreen extends RealmsScreen {
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		DrawableHelper.drawTexture(matrices, x, y, 0.0F, 0.0F, 10, 28, 10, 28);
 		if (mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 27 && mouseY < this.height - 40 && mouseY > 32 && !this.shouldShowPopup()) {
-			this.setTooltips(EXPIRED_TEXT);
+			this.setTooltip(EXPIRED_TEXT);
 		}
 	}
 
@@ -953,11 +945,11 @@ public class RealmsMainScreen extends RealmsScreen {
 
 		if (mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 27 && mouseY < this.height - 40 && mouseY > 32 && !this.shouldShowPopup()) {
 			if (remainingDays <= 0) {
-				this.setTooltips(EXPIRES_SOON_TEXT);
+				this.setTooltip(EXPIRES_SOON_TEXT);
 			} else if (remainingDays == 1) {
-				this.setTooltips(EXPIRES_IN_A_DAY_TEXT);
+				this.setTooltip(EXPIRES_IN_A_DAY_TEXT);
 			} else {
-				this.setTooltips(Text.translatable("mco.selectServer.expires.days", remainingDays));
+				this.setTooltip(Text.translatable("mco.selectServer.expires.days", remainingDays));
 			}
 		}
 	}
@@ -967,7 +959,7 @@ public class RealmsMainScreen extends RealmsScreen {
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		DrawableHelper.drawTexture(matrices, x, y, 0.0F, 0.0F, 10, 28, 10, 28);
 		if (mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 27 && mouseY < this.height - 40 && mouseY > 32 && !this.shouldShowPopup()) {
-			this.setTooltips(OPEN_TEXT);
+			this.setTooltip(OPEN_TEXT);
 		}
 	}
 
@@ -976,7 +968,7 @@ public class RealmsMainScreen extends RealmsScreen {
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		DrawableHelper.drawTexture(matrices, x, y, 0.0F, 0.0F, 10, 28, 10, 28);
 		if (mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 27 && mouseY < this.height - 40 && mouseY > 32 && !this.shouldShowPopup()) {
-			this.setTooltips(CLOSED_TEXT);
+			this.setTooltip(CLOSED_TEXT);
 		}
 	}
 
@@ -991,7 +983,7 @@ public class RealmsMainScreen extends RealmsScreen {
 		float f = bl ? 28.0F : 0.0F;
 		DrawableHelper.drawTexture(matrices, x, y, f, 0.0F, 28, 28, 56, 28);
 		if (bl) {
-			this.setTooltips(LEAVE_TEXT);
+			this.setTooltip(LEAVE_TEXT);
 			this.hoverState = RealmsMainScreen.HoverState.LEAVE;
 		}
 	}
@@ -1007,35 +999,8 @@ public class RealmsMainScreen extends RealmsScreen {
 		float f = bl ? 28.0F : 0.0F;
 		DrawableHelper.drawTexture(matrices, x, y, f, 0.0F, 28, 28, 56, 28);
 		if (bl) {
-			this.setTooltips(CONFIGURE_TEXT);
+			this.setTooltip(CONFIGURE_TEXT);
 			this.hoverState = RealmsMainScreen.HoverState.CONFIGURE;
-		}
-	}
-
-	protected void renderMousehoverTooltip(MatrixStack matrices, List<Text> tooltips, int x, int y) {
-		if (!tooltips.isEmpty()) {
-			int i = 0;
-			int j = 0;
-
-			for (Text text : tooltips) {
-				int k = this.textRenderer.getWidth(text);
-				if (k > j) {
-					j = k;
-				}
-			}
-
-			int l = x - j - 5;
-			int m = y;
-			if (l < 0) {
-				l = x + 12;
-			}
-
-			for (Text text2 : tooltips) {
-				int n = m - (i == 0 ? 3 : 0) + i;
-				this.fillGradient(matrices, l - 3, n, l + j + 3, m + 8 + 3 + i, -1073741824, -1073741824);
-				this.textRenderer.drawWithShadow(matrices, text2, (float)l, (float)(m + i), 16777215);
-				i += 10;
-			}
 		}
 	}
 
@@ -1056,7 +1021,7 @@ public class RealmsMainScreen extends RealmsScreen {
 		float f = bl2 ? 20.0F : 0.0F;
 		DrawableHelper.drawTexture(matrices, x, y, f, 0.0F, 20, 20, 40, 20);
 		if (bl && active) {
-			this.setTooltips(NEWS_TEXT);
+			this.setTooltip(NEWS_TEXT);
 		}
 
 		if (hasUnread && active) {
@@ -1100,10 +1065,6 @@ public class RealmsMainScreen extends RealmsScreen {
 		IMAGES = collection.stream().filter(id -> id.getNamespace().equals("realms")).toList();
 	}
 
-	void setTooltips(Text... tooltips) {
-		this.tooltip = Arrays.asList(tooltips);
-	}
-
 	private void openPendingInvitesScreen(ButtonWidget button) {
 		this.client.setScreen(new RealmsPendingInvitesScreen(this.lastScreen));
 	}
@@ -1118,7 +1079,6 @@ public class RealmsMainScreen extends RealmsScreen {
 				12,
 				Text.translatable("mco.selectServer.close"),
 				button -> RealmsMainScreen.this.onClosePopup(),
-				EMPTY_TOOLTIP,
 				DEFAULT_NARRATION_SUPPLIER
 			);
 		}
@@ -1130,7 +1090,7 @@ public class RealmsMainScreen extends RealmsScreen {
 			float f = this.isHovered() ? 12.0F : 0.0F;
 			drawTexture(matrices, this.getX(), this.getY(), 0.0F, f, 12, 12, 12, 24);
 			if (this.isMouseOver((double)mouseX, (double)mouseY)) {
-				RealmsMainScreen.this.setTooltips(this.getMessage());
+				RealmsMainScreen.this.setTooltip(this.getMessage());
 			}
 		}
 	}
@@ -1168,7 +1128,7 @@ public class RealmsMainScreen extends RealmsScreen {
 						RealmsPersistence.writeFile(realmsPersistenceData);
 					}
 				}
-			}, EMPTY_TOOLTIP, DEFAULT_NARRATION_SUPPLIER);
+			}, DEFAULT_NARRATION_SUPPLIER);
 		}
 
 		@Override
@@ -1180,16 +1140,7 @@ public class RealmsMainScreen extends RealmsScreen {
 	@Environment(EnvType.CLIENT)
 	class PendingInvitesButton extends ButtonWidget {
 		public PendingInvitesButton() {
-			super(
-				RealmsMainScreen.this.width / 2 + 47,
-				6,
-				22,
-				22,
-				ScreenTexts.EMPTY,
-				RealmsMainScreen.this::openPendingInvitesScreen,
-				EMPTY_TOOLTIP,
-				DEFAULT_NARRATION_SUPPLIER
-			);
+			super(RealmsMainScreen.this.width / 2 + 47, 6, 22, 22, ScreenTexts.EMPTY, RealmsMainScreen.this::openPendingInvitesScreen, DEFAULT_NARRATION_SUPPLIER);
 		}
 
 		public void updatePendingText() {
@@ -1354,7 +1305,7 @@ public class RealmsMainScreen extends RealmsScreen {
 						&& mouseY < RealmsMainScreen.this.height - 40
 						&& mouseY > 32
 						&& !RealmsMainScreen.this.shouldShowPopup()) {
-						RealmsMainScreen.this.setTooltips(Text.literal(serverData.serverPing.playerList));
+						RealmsMainScreen.this.setTooltip(Text.literal(serverData.serverPing.playerList));
 					}
 				}
 

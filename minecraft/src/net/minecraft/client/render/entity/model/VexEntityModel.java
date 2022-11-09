@@ -1,7 +1,5 @@
 package net.minecraft.client.render.entity.model;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Dilation;
@@ -11,9 +9,12 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.mob.VexEntity;
 import net.minecraft.util.Arm;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RotationAxis;
 
 /**
  * Represents the model of a {@linkplain VexEntity}.
@@ -55,61 +56,118 @@ import net.minecraft.util.math.MathHelper;
  * </div>
  */
 @Environment(EnvType.CLIENT)
-public class VexEntityModel extends BipedEntityModel<VexEntity> {
-	private final ModelPart leftWing;
+public class VexEntityModel extends SinglePartEntityModel<VexEntity> implements ModelWithArms {
+	private final ModelPart root;
+	private final ModelPart body;
+	private final ModelPart rightArm;
+	private final ModelPart leftArm;
 	private final ModelPart rightWing;
+	private final ModelPart leftWing;
 
-	public VexEntityModel(ModelPart modelPart) {
-		super(modelPart);
-		this.leftLeg.visible = false;
-		this.hat.visible = false;
-		this.rightWing = modelPart.getChild(EntityModelPartNames.RIGHT_WING);
-		this.leftWing = modelPart.getChild(EntityModelPartNames.LEFT_WING);
+	public VexEntityModel(ModelPart root) {
+		super(RenderLayer::getEntityTranslucent);
+		this.root = root.getChild(EntityModelPartNames.ROOT);
+		this.body = this.root.getChild(EntityModelPartNames.BODY);
+		this.rightArm = this.body.getChild(EntityModelPartNames.RIGHT_ARM);
+		this.leftArm = this.body.getChild(EntityModelPartNames.LEFT_ARM);
+		this.rightWing = this.body.getChild(EntityModelPartNames.RIGHT_WING);
+		this.leftWing = this.body.getChild(EntityModelPartNames.LEFT_WING);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
-		ModelData modelData = BipedEntityModel.getModelData(Dilation.NONE, 0.0F);
+		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
-		modelPartData.addChild(
-			EntityModelPartNames.RIGHT_LEG, ModelPartBuilder.create().uv(32, 0).cuboid(-1.0F, -1.0F, -2.0F, 6.0F, 10.0F, 4.0F), ModelTransform.pivot(-1.9F, 12.0F, 0.0F)
+		ModelPartData modelPartData2 = modelPartData.addChild(EntityModelPartNames.ROOT, ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
+		modelPartData2.addChild(
+			EntityModelPartNames.HEAD,
+			ModelPartBuilder.create().uv(0, 0).cuboid(-2.5F, -5.0F, -2.5F, 5.0F, 5.0F, 5.0F, new Dilation(0.0F)),
+			ModelTransform.pivot(0.0F, 20.0F, 0.0F)
 		);
-		modelPartData.addChild(
-			EntityModelPartNames.RIGHT_WING, ModelPartBuilder.create().uv(0, 32).cuboid(-20.0F, 0.0F, 0.0F, 20.0F, 12.0F, 1.0F), ModelTransform.NONE
+		ModelPartData modelPartData3 = modelPartData2.addChild(
+			EntityModelPartNames.BODY,
+			ModelPartBuilder.create()
+				.uv(0, 10)
+				.cuboid(-1.5F, 0.0F, -1.0F, 3.0F, 4.0F, 2.0F, new Dilation(0.0F))
+				.uv(0, 16)
+				.cuboid(-1.5F, 1.0F, -1.0F, 3.0F, 5.0F, 2.0F, new Dilation(-0.2F)),
+			ModelTransform.pivot(0.0F, 20.0F, 0.0F)
 		);
-		modelPartData.addChild(
-			EntityModelPartNames.LEFT_WING, ModelPartBuilder.create().uv(0, 32).mirrored().cuboid(0.0F, 0.0F, 0.0F, 20.0F, 12.0F, 1.0F), ModelTransform.NONE
+		modelPartData3.addChild(
+			EntityModelPartNames.RIGHT_ARM,
+			ModelPartBuilder.create().uv(23, 0).cuboid(-1.25F, -0.5F, -1.0F, 2.0F, 4.0F, 2.0F, new Dilation(-0.1F)),
+			ModelTransform.pivot(-1.75F, 0.25F, 0.0F)
 		);
-		return TexturedModelData.of(modelData, 64, 64);
-	}
-
-	@Override
-	protected Iterable<ModelPart> getBodyParts() {
-		return Iterables.concat(super.getBodyParts(), ImmutableList.of(this.rightWing, this.leftWing));
+		modelPartData3.addChild(
+			EntityModelPartNames.LEFT_ARM,
+			ModelPartBuilder.create().uv(23, 6).cuboid(-0.75F, -0.5F, -1.0F, 2.0F, 4.0F, 2.0F, new Dilation(-0.1F)),
+			ModelTransform.pivot(1.75F, 0.25F, 0.0F)
+		);
+		modelPartData3.addChild(
+			EntityModelPartNames.LEFT_WING,
+			ModelPartBuilder.create().uv(16, 14).mirrored().cuboid(0.0F, 0.0F, 0.0F, 0.0F, 5.0F, 8.0F, new Dilation(0.0F)).mirrored(false),
+			ModelTransform.pivot(0.5F, 1.0F, 1.0F)
+		);
+		modelPartData3.addChild(
+			EntityModelPartNames.RIGHT_WING,
+			ModelPartBuilder.create().uv(16, 14).cuboid(0.0F, 0.0F, 0.0F, 0.0F, 5.0F, 8.0F, new Dilation(0.0F)),
+			ModelTransform.pivot(-0.5F, 1.0F, 1.0F)
+		);
+		return TexturedModelData.of(modelData, 32, 32);
 	}
 
 	public void setAngles(VexEntity vexEntity, float f, float g, float h, float i, float j) {
-		super.setAngles(vexEntity, f, g, h, i, j);
+		this.getPart().traverse().forEach(ModelPart::resetTransform);
+		this.body.pitch = 6.440265F;
+		float k = (float) (Math.PI / 5) + MathHelper.cos(h * 5.5F * (float) (Math.PI / 180.0)) * 0.1F;
 		if (vexEntity.isCharging()) {
-			if (vexEntity.getMainHandStack().isEmpty()) {
-				this.rightArm.pitch = (float) (Math.PI * 3.0 / 2.0);
-				this.leftArm.pitch = (float) (Math.PI * 3.0 / 2.0);
-			} else if (vexEntity.getMainArm() == Arm.RIGHT) {
-				this.rightArm.pitch = 3.7699115F;
-			} else {
-				this.leftArm.pitch = 3.7699115F;
-			}
+			this.body.pitch = 0.0F;
+			this.rightArm.pitch = (float) (Math.PI * 7.0 / 6.0);
+			this.rightArm.yaw = (float) (Math.PI / 12);
+			this.rightArm.roll = -0.47123888F;
+		} else {
+			this.body.pitch = (float) (Math.PI / 20);
+			this.rightArm.pitch = 0.0F;
+			this.rightArm.yaw = 0.0F;
+			this.rightArm.roll = k;
 		}
 
-		this.rightLeg.pitch += (float) (Math.PI / 5);
-		this.rightWing.pivotZ = 2.0F;
-		this.leftWing.pivotZ = 2.0F;
+		this.leftArm.roll = -k;
 		this.rightWing.pivotY = 1.0F;
 		this.leftWing.pivotY = 1.0F;
-		this.rightWing.yaw = 0.47123894F + MathHelper.cos(h * 45.836624F * (float) (Math.PI / 180.0)) * (float) Math.PI * 0.05F;
-		this.leftWing.yaw = -this.rightWing.yaw;
-		this.leftWing.roll = -0.47123894F;
-		this.leftWing.pitch = 0.47123894F;
-		this.rightWing.pitch = 0.47123894F;
-		this.rightWing.roll = 0.47123894F;
+		this.leftWing.yaw = 1.0995574F + MathHelper.cos(h * 45.836624F * (float) (Math.PI / 180.0)) * (float) (Math.PI / 180.0) * 16.2F;
+		this.rightWing.yaw = -this.leftWing.yaw;
+		this.leftWing.pitch = 0.47123888F;
+		this.leftWing.roll = -0.47123888F;
+		this.rightWing.pitch = 0.47123888F;
+		this.rightWing.roll = 0.47123888F;
+	}
+
+	@Override
+	public ModelPart getPart() {
+		return this.root;
+	}
+
+	@Override
+	public void setArmAngle(Arm arm, MatrixStack matrices) {
+		this.method_47434(matrices);
+		this.method_47435(matrices);
+		matrices.scale(0.55F, 0.55F, 0.55F);
+		this.method_47436(matrices);
+	}
+
+	private void method_47434(MatrixStack matrixStack) {
+		matrixStack.translate(
+			(this.body.pivotX + this.rightArm.pivotX) / 16.0F, (this.body.pivotY + this.rightArm.pivotY) / 16.0F, (this.body.pivotZ + this.rightArm.pivotZ) / 16.0F
+		);
+	}
+
+	private void method_47435(MatrixStack matrixStack) {
+		matrixStack.multiply(RotationAxis.POSITIVE_Z.rotation(this.rightArm.roll));
+		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotation(this.rightArm.yaw));
+		matrixStack.multiply(RotationAxis.POSITIVE_X.rotation(this.rightArm.pitch));
+	}
+
+	private void method_47436(MatrixStack matrixStack) {
+		matrixStack.translate(0.046875, -0.15625, 0.078125);
 	}
 }

@@ -30,7 +30,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.World;
 
-public class LongJumpTask<E extends MobEntity> extends Task<E> {
+public class LongJumpTask<E extends MobEntity> extends MultiTickTask<E> {
 	protected static final int MAX_COOLDOWN = 20;
 	private static final int TARGET_RETAIN_TIME = 40;
 	protected static final int PATHING_DISTANCE = 8;
@@ -105,7 +105,7 @@ public class LongJumpTask<E extends MobEntity> extends Task<E> {
 			&& this.cooldown > 0
 			&& !mobEntity.isInsideWaterOrBubbleColumn()
 			&& (this.lastTarget != null || !this.targets.isEmpty());
-		if (!bl && mobEntity.getBrain().getOptionalMemory(MemoryModuleType.LONG_JUMP_MID_JUMP).isEmpty()) {
+		if (!bl && mobEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.LONG_JUMP_MID_JUMP).isEmpty()) {
 			mobEntity.getBrain().remember(MemoryModuleType.LONG_JUMP_COOLING_DOWN, this.cooldownRange.get(serverWorld.random) / 2);
 			mobEntity.getBrain().forget(MemoryModuleType.LOOK_TARGET);
 		}

@@ -12,10 +12,10 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import org.slf4j.Logger;
 
 public class AttributeContainer {
@@ -134,7 +134,7 @@ public class AttributeContainer {
 		for (int i = 0; i < nbt.size(); i++) {
 			NbtCompound nbtCompound = nbt.getCompound(i);
 			String string = nbtCompound.getString("Name");
-			Util.ifPresentOrElse(Registry.ATTRIBUTE.getOrEmpty(Identifier.tryParse(string)), attribute -> {
+			Util.ifPresentOrElse(Registries.ATTRIBUTE.getOrEmpty(Identifier.tryParse(string)), attribute -> {
 				EntityAttributeInstance entityAttributeInstance = this.getCustomInstance(attribute);
 				if (entityAttributeInstance != null) {
 					entityAttributeInstance.readNbt(nbtCompound);

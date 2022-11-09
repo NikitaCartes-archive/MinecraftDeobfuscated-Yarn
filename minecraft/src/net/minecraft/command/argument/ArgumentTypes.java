@@ -18,7 +18,7 @@ import net.minecraft.command.argument.serialize.FloatArgumentSerializer;
 import net.minecraft.command.argument.serialize.IntegerArgumentSerializer;
 import net.minecraft.command.argument.serialize.LongArgumentSerializer;
 import net.minecraft.command.argument.serialize.StringArgumentSerializer;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registry;
 
 public class ArgumentTypes {
 	private static final Map<Class<?>, ArgumentSerializer<?, ?>> CLASS_MAP = Maps.<Class<?>, ArgumentSerializer<?, ?>>newHashMap();
@@ -75,6 +75,7 @@ public class ArgumentTypes {
 		register(registry, "int_range", NumberRangeArgumentType.IntRangeArgumentType.class, ConstantArgumentSerializer.of(NumberRangeArgumentType::intRange));
 		register(registry, "float_range", NumberRangeArgumentType.FloatRangeArgumentType.class, ConstantArgumentSerializer.of(NumberRangeArgumentType::floatRange));
 		register(registry, "dimension", DimensionArgumentType.class, ConstantArgumentSerializer.of(DimensionArgumentType::dimension));
+		register(registry, "gamemode", GameModeArgumentType.class, ConstantArgumentSerializer.of(GameModeArgumentType::gameMode));
 		register(registry, "time", TimeArgumentType.class, ConstantArgumentSerializer.of(TimeArgumentType::time));
 		register(registry, "resource_or_tag", upcast(RegistryEntryPredicateArgumentType.class), new RegistryEntryPredicateArgumentType.Serializer());
 		register(registry, "resource_or_tag_key", upcast(RegistryPredicateArgumentType.class), new RegistryPredicateArgumentType.Serializer());

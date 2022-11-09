@@ -1,7 +1,8 @@
 package net.minecraft.structure.rule;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 public interface RuleTestType<P extends RuleTest> {
 	RuleTestType<AlwaysTrueRuleTest> ALWAYS_TRUE = register("always_true", AlwaysTrueRuleTest.CODEC);
@@ -14,6 +15,6 @@ public interface RuleTestType<P extends RuleTest> {
 	Codec<P> codec();
 
 	static <P extends RuleTest> RuleTestType<P> register(String id, Codec<P> codec) {
-		return Registry.register(Registry.RULE_TEST, id, () -> codec);
+		return Registry.register(Registries.RULE_TEST, id, () -> codec);
 	}
 }

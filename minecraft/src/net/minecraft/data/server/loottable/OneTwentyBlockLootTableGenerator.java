@@ -12,6 +12,8 @@ public class OneTwentyBlockLootTableGenerator extends BlockLootTableGenerator {
 
 	@Override
 	protected void generate() {
+		this.addDrop(Blocks.BAMBOO_BLOCK);
+		this.addDrop(Blocks.STRIPPED_BAMBOO_BLOCK);
 		this.addDrop(Blocks.BAMBOO_PLANKS);
 		this.addDrop(Blocks.BAMBOO_MOSAIC);
 		this.addDrop(Blocks.BAMBOO_STAIRS);

@@ -13,6 +13,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TaskScreen;
+import net.minecraft.client.gui.screen.Tooltip;
 import net.minecraft.client.gui.screen.WarningScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.EditBoxWidget;
@@ -46,7 +47,7 @@ public class ChatReportScreen extends Screen {
 	private static final Text REPORT_SENT_TITLE = Text.translatable("gui.abuseReport.sent.title").formatted(Formatting.BOLD);
 	private static final Text REPORT_ERROR_TITLE = Text.translatable("gui.abuseReport.error.title").formatted(Formatting.BOLD);
 	private static final Text GENERIC_ERROR_TEXT = Text.translatable("gui.abuseReport.send.generic_error");
-	private static final Logger field_39577 = LogUtils.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	@Nullable
 	final Screen parent;
 	private final AbuseReportContext context;
@@ -57,7 +58,7 @@ public class ChatReportScreen extends Screen {
 	private ButtonWidget sendButton;
 	private ChatAbuseReport report;
 	@Nullable
-	ChatAbuseReport.ValidationError validationError;
+	private ChatAbuseReport.ValidationError validationError;
 
 	private ChatReportScreen(@Nullable Screen parent, AbuseReportContext context, ChatAbuseReport report) {
 		super(Text.translatable("gui.chatReport.title"));
@@ -128,7 +129,6 @@ public class ChatReportScreen extends Screen {
 		this.sendButton = this.addDrawableChild(
 			ButtonWidget.createBuilder(Text.translatable("gui.chatReport.send"), button -> this.send())
 				.setPositionAndSize(i + 10, this.getBottomButtonsY(), 120, 20)
-				.setTooltipSupplier(new ChatReportScreen.ValidationErrorTooltipSupplier())
 				.build()
 		);
 		this.onChange();
@@ -137,6 +137,7 @@ public class ChatReportScreen extends Screen {
 	private void onChange() {
 		this.validationError = this.report.validate();
 		this.sendButton.active = this.validationError == null;
+		this.sendButton.setTooltip(Util.map(this.validationError, error -> Tooltip.of(error.message())));
 	}
 
 	private void send() {
@@ -168,7 +169,7 @@ public class ChatReportScreen extends Screen {
 	}
 
 	private void onSubmissionError(Throwable throwable) {
-		field_39577.error("Encountered error while sending abuse report", throwable);
+		LOGGER.error("Encountered error while sending abuse report", throwable);
 		Text text;
 		if (throwable.getCause() instanceof TextifiedException textifiedException) {
 			text = textifiedException.getMessageText();
@@ -318,19 +319,6 @@ public class ChatReportScreen extends Screen {
 		@Override
 		protected void drawTitle(MatrixStack matrices) {
 			drawTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2 - 155, 30, 16777215);
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	class ValidationErrorTooltipSupplier implements ButtonWidget.TooltipSupplier {
-		@Override
-		public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {
-			if (ChatReportScreen.this.validationError != null) {
-				Text text = ChatReportScreen.this.validationError.message();
-				ChatReportScreen.this.renderOrderedTooltip(
-					matrixStack, ChatReportScreen.this.textRenderer.wrapLines(text, Math.max(ChatReportScreen.this.width / 2 - 43, 170)), i, j
-				);
-			}
 		}
 	}
 }

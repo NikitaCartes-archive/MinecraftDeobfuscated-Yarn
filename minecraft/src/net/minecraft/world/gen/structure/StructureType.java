@@ -1,7 +1,8 @@
 package net.minecraft.world.gen.structure;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 public interface StructureType<S extends Structure> {
 	StructureType<BuriedTreasureStructure> BURIED_TREASURE = register("buried_treasure", BuriedTreasureStructure.CODEC);
@@ -24,6 +25,6 @@ public interface StructureType<S extends Structure> {
 	Codec<S> codec();
 
 	private static <S extends Structure> StructureType<S> register(String id, Codec<S> codec) {
-		return Registry.register(Registry.STRUCTURE_TYPE, id, () -> codec);
+		return Registry.register(Registries.STRUCTURE_TYPE, id, () -> codec);
 	}
 }

@@ -20,13 +20,14 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtInt;
 import net.minecraft.nbt.scanner.NbtScanQuery;
 import net.minecraft.nbt.scanner.SelectiveNbtCollector;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -76,8 +77,8 @@ public class StructureLocator {
 		this.biomeSource = biomeSource;
 		this.seed = seed;
 		this.dataFixer = dataFixer;
-		this.biomeRegistry = registryManager.get(Registry.BIOME_KEY);
-		this.structureRegistry = registryManager.get(Registry.STRUCTURE_KEY);
+		this.biomeRegistry = registryManager.get(RegistryKeys.BIOME_WORLDGEN);
+		this.structureRegistry = registryManager.get(RegistryKeys.STRUCTURE_WORLDGEN);
 	}
 
 	public StructurePresence getStructurePresence(ChunkPos pos, Structure type, boolean skipReferencedStructures) {
@@ -176,7 +177,7 @@ public class StructureLocator {
 					return Object2IntMaps.emptyMap();
 				} else {
 					Object2IntMap<Structure> object2IntMap = new Object2IntOpenHashMap<>();
-					Registry<Structure> registry = this.registryManager.get(Registry.STRUCTURE_KEY);
+					Registry<Structure> registry = this.registryManager.get(RegistryKeys.STRUCTURE_WORLDGEN);
 
 					for (String string : nbtCompound2.getKeys()) {
 						Identifier identifier = Identifier.tryParse(string);

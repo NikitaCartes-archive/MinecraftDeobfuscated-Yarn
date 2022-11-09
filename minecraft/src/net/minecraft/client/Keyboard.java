@@ -26,6 +26,7 @@ import net.minecraft.command.argument.BlockArgumentParser;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -40,7 +41,6 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameMode;
 import org.lwjgl.glfw.GLFW;
 
@@ -260,7 +260,7 @@ public class Keyboard {
 					break;
 				case ENTITY:
 					Entity entity = ((EntityHitResult)hitResult).getEntity();
-					Identifier identifier = Registry.ENTITY_TYPE.getId(entity.getType());
+					Identifier identifier = Registries.ENTITY_TYPE.getId(entity.getType());
 					if (hasQueryPermission) {
 						if (queryServer) {
 							this.client.player.networkHandler.getDataQueryHandler().queryEntityNbt(entity.getId(), nbt -> {
@@ -387,7 +387,7 @@ public class Keyboard {
 					}
 				} else {
 					if (key == GLFW.GLFW_KEY_F4 && this.client.gameRenderer != null) {
-						this.client.gameRenderer.toggleShadersEnabled();
+						this.client.gameRenderer.togglePostProcessorEnabled();
 					}
 
 					boolean bl2x = false;

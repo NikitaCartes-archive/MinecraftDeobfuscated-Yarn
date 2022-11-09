@@ -15,9 +15,9 @@ import javax.annotation.Nullable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.registry.RegistryKey;
 
 public class FeatureUpdater {
 	private static final Map<String, String> OLD_TO_NEW = Util.make(Maps.<String, String>newHashMap(), map -> {

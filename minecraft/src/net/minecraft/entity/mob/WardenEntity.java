@@ -22,7 +22,6 @@ import net.minecraft.entity.ai.WardenAngerManager;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.SonicBoomTask;
-import net.minecraft.entity.ai.brain.task.UpdateAttackTargetTask;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
 import net.minecraft.entity.ai.pathing.MobNavigation;
@@ -49,12 +48,12 @@ import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.registry.tag.GameEventTags;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.GameEventTags;
-import net.minecraft.tag.TagKey;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -471,7 +470,7 @@ public class WardenEntity extends HostileEntity implements VibrationListener.Cal
 	public void increaseAngerAt(@Nullable Entity entity, int amount, boolean listening) {
 		if (!this.isAiDisabled() && this.isValidTarget(entity)) {
 			WardenBrain.resetDigCooldown(this);
-			boolean bl = !(this.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).orElse(null) instanceof PlayerEntity);
+			boolean bl = !(this.getBrain().getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET).orElse(null) instanceof PlayerEntity);
 			int i = this.angerManager.increaseAngerAt(entity, amount);
 			if (entity instanceof PlayerEntity && bl && Angriness.getForAnger(i).isAngry()) {
 				this.getBrain().forget(MemoryModuleType.ATTACK_TARGET);
@@ -490,7 +489,7 @@ public class WardenEntity extends HostileEntity implements VibrationListener.Cal
 	@Nullable
 	@Override
 	public LivingEntity getTarget() {
-		return (LivingEntity)this.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).orElse(null);
+		return (LivingEntity)this.getBrain().getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET).orElse(null);
 	}
 
 	@Override
@@ -519,7 +518,7 @@ public class WardenEntity extends HostileEntity implements VibrationListener.Cal
 		if (!this.world.isClient && !this.isAiDisabled() && !this.isDiggingOrEmerging()) {
 			Entity entity = source.getAttacker();
 			this.increaseAngerAt(entity, Angriness.ANGRY.getThreshold() + 20, false);
-			if (this.brain.getOptionalMemory(MemoryModuleType.ATTACK_TARGET).isEmpty()
+			if (this.brain.getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET).isEmpty()
 				&& entity instanceof LivingEntity livingEntity
 				&& (!(source instanceof ProjectileDamageSource) || this.isInRange(livingEntity, 5.0))) {
 				this.updateAttackTarget(livingEntity);
@@ -531,7 +530,8 @@ public class WardenEntity extends HostileEntity implements VibrationListener.Cal
 
 	public void updateAttackTarget(LivingEntity target) {
 		this.getBrain().forget(MemoryModuleType.ROAR_TARGET);
-		UpdateAttackTargetTask.updateAttackTarget(this, target);
+		this.getBrain().remember(MemoryModuleType.ATTACK_TARGET, target);
+		this.getBrain().forget(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
 		SonicBoomTask.cooldown(this, 200);
 	}
 

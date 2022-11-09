@@ -15,7 +15,7 @@ import net.minecraft.world.WorldAccess;
 public interface Waterloggable extends FluidDrainable, FluidFillable {
 	@Override
 	default boolean canFillWithFluid(BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
-		return !(Boolean)state.get(Properties.WATERLOGGED) && fluid == Fluids.WATER;
+		return fluid == Fluids.WATER;
 	}
 
 	@Override

@@ -1,10 +1,8 @@
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.server.world.ServerWorld;
@@ -13,29 +11,23 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Heightmap;
 
-public class SeekSkyTask extends Task<LivingEntity> {
-	private final float speed;
-
-	public SeekSkyTask(float speed) {
-		super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT));
-		this.speed = speed;
-	}
-
-	@Override
-	protected void run(ServerWorld world, LivingEntity entity, long time) {
-		Optional<Vec3d> optional = Optional.ofNullable(this.findNearbySky(world, entity));
-		if (optional.isPresent()) {
-			entity.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(pos -> new WalkTarget(pos, this.speed, 0)));
-		}
-	}
-
-	@Override
-	protected boolean shouldRun(ServerWorld world, LivingEntity entity) {
-		return !world.isSkyVisible(entity.getBlockPos());
+public class SeekSkyTask {
+	public static SingleTickTask<LivingEntity> create(float speed) {
+		return TaskTriggerer.task(
+			context -> context.group(context.queryMemoryAbsent(MemoryModuleType.WALK_TARGET)).apply(context, walkTarget -> (world, entity, time) -> {
+						if (world.isSkyVisible(entity.getBlockPos())) {
+							return false;
+						} else {
+							Optional<Vec3d> optional = Optional.ofNullable(findNearbySky(world, entity));
+							optional.ifPresent(pos -> walkTarget.remember(new WalkTarget(pos, speed, 0)));
+							return true;
+						}
+					})
+		);
 	}
 
 	@Nullable
-	private Vec3d findNearbySky(ServerWorld world, LivingEntity entity) {
+	private static Vec3d findNearbySky(ServerWorld world, LivingEntity entity) {
 		Random random = entity.getRandom();
 		BlockPos blockPos = entity.getBlockPos();
 

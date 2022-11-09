@@ -3,9 +3,9 @@ package net.minecraft.network.packet.s2c.play;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.registry.Registries;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.registry.Registry;
 import org.apache.commons.lang3.Validate;
 
 public class PlaySoundS2CPacket implements Packet<ClientPlayPacketListener> {
@@ -32,7 +32,7 @@ public class PlaySoundS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public PlaySoundS2CPacket(PacketByteBuf buf) {
-		this.sound = buf.readRegistryValue(Registry.SOUND_EVENT);
+		this.sound = buf.readRegistryValue(Registries.SOUND_EVENT);
 		this.category = buf.readEnumConstant(SoundCategory.class);
 		this.fixedX = buf.readInt();
 		this.fixedY = buf.readInt();
@@ -44,7 +44,7 @@ public class PlaySoundS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	@Override
 	public void write(PacketByteBuf buf) {
-		buf.writeRegistryValue(Registry.SOUND_EVENT, this.sound);
+		buf.writeRegistryValue(Registries.SOUND_EVENT, this.sound);
 		buf.writeEnumConstant(this.category);
 		buf.writeInt(this.fixedX);
 		buf.writeInt(this.fixedY);

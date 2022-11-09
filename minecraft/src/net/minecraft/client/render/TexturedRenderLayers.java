@@ -18,11 +18,11 @@ import net.minecraft.block.entity.TrappedChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.SpriteIdentifier;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SignType;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 
 @Environment(EnvType.CLIENT)
 public class TexturedRenderLayers {
@@ -54,11 +54,11 @@ public class TexturedRenderLayers {
 		.collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::createSignTextureId));
 	public static final Map<SignType, SpriteIdentifier> HANGING_SIGN_TYPE_TEXTURES = (Map<SignType, SpriteIdentifier>)SignType.stream()
 		.collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::createHangingSignTextureId));
-	public static final Map<RegistryKey<BannerPattern>, SpriteIdentifier> BANNER_PATTERN_TEXTURES = (Map<RegistryKey<BannerPattern>, SpriteIdentifier>)Registry.BANNER_PATTERN
+	public static final Map<RegistryKey<BannerPattern>, SpriteIdentifier> BANNER_PATTERN_TEXTURES = (Map<RegistryKey<BannerPattern>, SpriteIdentifier>)Registries.BANNER_PATTERN
 		.getKeys()
 		.stream()
 		.collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::createBannerPatternTextureId));
-	public static final Map<RegistryKey<BannerPattern>, SpriteIdentifier> SHIELD_PATTERN_TEXTURES = (Map<RegistryKey<BannerPattern>, SpriteIdentifier>)Registry.BANNER_PATTERN
+	public static final Map<RegistryKey<BannerPattern>, SpriteIdentifier> SHIELD_PATTERN_TEXTURES = (Map<RegistryKey<BannerPattern>, SpriteIdentifier>)Registries.BANNER_PATTERN
 		.getKeys()
 		.stream()
 		.collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::createShieldPatternTextureId));

@@ -9,11 +9,11 @@ import net.minecraft.block.BlockState;
 import net.minecraft.data.DataOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
+import net.minecraft.registry.Registries;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.registry.Registry;
 
 public class BlockListProvider implements DataProvider {
 	private final DataOutput output;
@@ -26,8 +26,8 @@ public class BlockListProvider implements DataProvider {
 	public CompletableFuture<?> run(DataWriter writer) {
 		JsonObject jsonObject = new JsonObject();
 
-		for (Block block : Registry.BLOCK) {
-			Identifier identifier = Registry.BLOCK.getId(block);
+		for (Block block : Registries.BLOCK) {
+			Identifier identifier = Registries.BLOCK.getId(block);
 			JsonObject jsonObject2 = new JsonObject();
 			StateManager<Block, BlockState> stateManager = block.getStateManager();
 			if (!stateManager.getProperties().isEmpty()) {

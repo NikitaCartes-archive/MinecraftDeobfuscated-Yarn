@@ -32,16 +32,16 @@ import net.minecraft.item.map.MapState;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.recipe.BrewingRecipeRegistry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.tag.StructureTags;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.StructureTags;
-import net.minecraft.tag.TagKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.structure.Structure;
 
 public class TradeOffers {
@@ -728,7 +728,10 @@ public class TradeOffers {
 
 		@Override
 		public TradeOffer create(Entity entity, Random random) {
-			List<Enchantment> list = (List<Enchantment>)Registry.ENCHANTMENT.stream().filter(Enchantment::isAvailableForEnchantedBookOffer).collect(Collectors.toList());
+			List<Enchantment> list = (List<Enchantment>)Registries.ENCHANTMENT
+				.stream()
+				.filter(Enchantment::isAvailableForEnchantedBookOffer)
+				.collect(Collectors.toList());
 			Enchantment enchantment = (Enchantment)list.get(random.nextInt(list.size()));
 			int i = MathHelper.nextInt(random, enchantment.getMinLevel(), enchantment.getMaxLevel());
 			ItemStack itemStack = EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(enchantment, i));
@@ -971,7 +974,7 @@ public class TradeOffers {
 		@Override
 		public TradeOffer create(Entity entity, Random random) {
 			ItemStack itemStack = new ItemStack(Items.EMERALD, this.price);
-			List<Potion> list = (List<Potion>)Registry.POTION
+			List<Potion> list = (List<Potion>)Registries.POTION
 				.stream()
 				.filter(potionx -> !potionx.getEffects().isEmpty() && BrewingRecipeRegistry.isBrewable(potionx))
 				.collect(Collectors.toList());
@@ -1010,8 +1013,8 @@ public class TradeOffers {
 		private final int experience;
 
 		public TypeAwareBuyForOneEmeraldFactory(int count, int maxUses, int experience, Map<VillagerType, Item> map) {
-			Registry.VILLAGER_TYPE.stream().filter(villagerType -> !map.containsKey(villagerType)).findAny().ifPresent(villagerType -> {
-				throw new IllegalStateException("Missing trade for villager type: " + Registry.VILLAGER_TYPE.getId(villagerType));
+			Registries.VILLAGER_TYPE.stream().filter(villagerType -> !map.containsKey(villagerType)).findAny().ifPresent(villagerType -> {
+				throw new IllegalStateException("Missing trade for villager type: " + Registries.VILLAGER_TYPE.getId(villagerType));
 			});
 			this.map = map;
 			this.count = count;

@@ -3,13 +3,13 @@ package net.minecraft.data.server.tag;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.data.DataOutput;
 import net.minecraft.entity.EntityType;
-import net.minecraft.tag.EntityTypeTags;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryWrapper;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.tag.EntityTypeTags;
 
 public class EntityTypeTagProvider extends ValueLookupTagProvider<EntityType<?>> {
 	public EntityTypeTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
-		super(output, Registry.ENTITY_TYPE_KEY, registryLookupFuture, entityType -> entityType.getRegistryEntry().registryKey());
+		super(output, RegistryKeys.ENTITY_TYPE, registryLookupFuture, entityType -> entityType.getRegistryEntry().registryKey());
 	}
 
 	@Override

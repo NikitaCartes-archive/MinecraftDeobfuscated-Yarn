@@ -18,10 +18,10 @@ import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.color.world.FoliageColors;
 import net.minecraft.client.color.world.GrassColors;
+import net.minecraft.registry.Registries;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.collection.IdList;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockRenderView;
 import net.minecraft.world.World;
 
@@ -92,7 +92,7 @@ public class BlockColors {
 	 * falls back to its map color.
 	 */
 	public int getParticleColor(BlockState state, World world, BlockPos pos) {
-		BlockColorProvider blockColorProvider = this.providers.get(Registry.BLOCK.getRawId(state.getBlock()));
+		BlockColorProvider blockColorProvider = this.providers.get(Registries.BLOCK.getRawId(state.getBlock()));
 		if (blockColorProvider != null) {
 			return blockColorProvider.getColor(state, null, null, 0);
 		} else {
@@ -102,13 +102,13 @@ public class BlockColors {
 	}
 
 	public int getColor(BlockState state, @Nullable BlockRenderView world, @Nullable BlockPos pos, int tintIndex) {
-		BlockColorProvider blockColorProvider = this.providers.get(Registry.BLOCK.getRawId(state.getBlock()));
+		BlockColorProvider blockColorProvider = this.providers.get(Registries.BLOCK.getRawId(state.getBlock()));
 		return blockColorProvider == null ? -1 : blockColorProvider.getColor(state, world, pos, tintIndex);
 	}
 
 	public void registerColorProvider(BlockColorProvider provider, Block... blocks) {
 		for (Block block : blocks) {
-			this.providers.set(provider, Registry.BLOCK.getRawId(block));
+			this.providers.set(provider, Registries.BLOCK.getRawId(block));
 		}
 	}
 

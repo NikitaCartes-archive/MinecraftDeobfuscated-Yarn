@@ -37,7 +37,7 @@ public class HeightmapDebugRenderer implements DebugRenderer.Renderer {
 		RenderSystem.disableBlend();
 		RenderSystem.disableTexture();
 		RenderSystem.enableDepthTest();
-		RenderSystem.setShader(GameRenderer::getPositionColorShader);
+		RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 		BlockPos blockPos = new BlockPos(cameraX, 0.0, cameraZ);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();

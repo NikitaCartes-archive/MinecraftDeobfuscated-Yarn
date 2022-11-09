@@ -8,16 +8,16 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.tag.TagKey;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.StructureWorldAccess;
 
 public interface BlockPredicate extends BiPredicate<StructureWorldAccess, BlockPos> {
-	Codec<BlockPredicate> BASE_CODEC = Registry.BLOCK_PREDICATE_TYPE.getCodec().dispatch(BlockPredicate::getType, BlockPredicateType::codec);
+	Codec<BlockPredicate> BASE_CODEC = Registries.BLOCK_PREDICATE_TYPE.getCodec().dispatch(BlockPredicate::getType, BlockPredicateType::codec);
 	BlockPredicate IS_AIR = matchingBlocks(Blocks.AIR);
 	BlockPredicate IS_AIR_OR_WATER = matchingBlocks(Blocks.AIR, Blocks.WATER);
 

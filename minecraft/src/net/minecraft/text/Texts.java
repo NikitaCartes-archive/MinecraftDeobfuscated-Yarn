@@ -139,4 +139,16 @@ public class Texts {
 			return true;
 		}
 	}
+
+	public static MutableText bracketedCopyable(String string) {
+		return bracketed(
+			Text.literal(string)
+				.styled(
+					style -> style.withColor(Formatting.GREEN)
+							.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, string))
+							.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("chat.copy.click")))
+							.withInsertion(string)
+				)
+		);
+	}
 }

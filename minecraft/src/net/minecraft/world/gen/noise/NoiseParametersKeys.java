@@ -1,12 +1,12 @@
 package net.minecraft.world.gen.noise;
 
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.math.random.RandomSplitter;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryEntryLookup;
-import net.minecraft.util.registry.RegistryKey;
 
 public class NoiseParametersKeys {
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> TEMPERATURE = of("temperature");
@@ -71,7 +71,7 @@ public class NoiseParametersKeys {
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> NETHER_STATE_SELECTOR = of("nether_state_selector");
 
 	private static RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> of(String id) {
-		return RegistryKey.of(Registry.NOISE_KEY, new Identifier(id));
+		return RegistryKey.of(RegistryKeys.NOISE_WORLDGEN, new Identifier(id));
 	}
 
 	public static DoublePerlinNoiseSampler createNoiseSampler(

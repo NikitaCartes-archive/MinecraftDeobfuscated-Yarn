@@ -1,15 +1,13 @@
 package net.minecraft.recipe;
 
 import net.minecraft.block.Blocks;
-import net.minecraft.block.FlowerBlock;
-import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.block.SuspiciousStewIngredient;
 import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.SuspiciousStewItem;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.tag.ItemTags;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
@@ -47,24 +45,20 @@ public class SuspiciousStewRecipe extends SpecialCraftingRecipe {
 	}
 
 	public ItemStack craft(CraftingInventory craftingInventory) {
-		ItemStack itemStack = ItemStack.EMPTY;
+		ItemStack itemStack = new ItemStack(Items.SUSPICIOUS_STEW, 1);
 
 		for (int i = 0; i < craftingInventory.size(); i++) {
 			ItemStack itemStack2 = craftingInventory.getStack(i);
-			if (!itemStack2.isEmpty() && itemStack2.isIn(ItemTags.SMALL_FLOWERS)) {
-				itemStack = itemStack2;
-				break;
+			if (!itemStack2.isEmpty()) {
+				SuspiciousStewIngredient suspiciousStewIngredient = SuspiciousStewIngredient.of(itemStack2.getItem());
+				if (suspiciousStewIngredient != null) {
+					SuspiciousStewItem.addEffectToStew(itemStack, suspiciousStewIngredient.getEffectInStew(), suspiciousStewIngredient.getEffectInStewDuration());
+					break;
+				}
 			}
 		}
 
-		ItemStack itemStack3 = new ItemStack(Items.SUSPICIOUS_STEW, 1);
-		if (itemStack.getItem() instanceof BlockItem && ((BlockItem)itemStack.getItem()).getBlock() instanceof FlowerBlock) {
-			FlowerBlock flowerBlock = (FlowerBlock)((BlockItem)itemStack.getItem()).getBlock();
-			StatusEffect statusEffect = flowerBlock.getEffectInStew();
-			SuspiciousStewItem.addEffectToStew(itemStack3, statusEffect, flowerBlock.getEffectInStewDuration());
-		}
-
-		return itemStack3;
+		return itemStack;
 	}
 
 	@Override

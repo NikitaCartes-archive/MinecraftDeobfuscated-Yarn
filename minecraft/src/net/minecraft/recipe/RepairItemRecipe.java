@@ -10,8 +10,8 @@ import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class RepairItemRecipe extends SpecialCraftingRecipe {
@@ -72,7 +72,7 @@ public class RepairItemRecipe extends SpecialCraftingRecipe {
 				Map<Enchantment, Integer> map = Maps.<Enchantment, Integer>newHashMap();
 				Map<Enchantment, Integer> map2 = EnchantmentHelper.get(itemStack3);
 				Map<Enchantment, Integer> map3 = EnchantmentHelper.get(itemStack);
-				Registry.ENCHANTMENT.stream().filter(Enchantment::isCursed).forEach(enchantment -> {
+				Registries.ENCHANTMENT.stream().filter(Enchantment::isCursed).forEach(enchantment -> {
 					int ix = Math.max((Integer)map2.getOrDefault(enchantment, 0), (Integer)map3.getOrDefault(enchantment, 0));
 					if (ix > 0) {
 						map.put(enchantment, ix);

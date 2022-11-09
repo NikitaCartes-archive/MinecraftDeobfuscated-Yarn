@@ -112,7 +112,7 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 				DrawableHelper.fill(matrices, x - 1, y - 1, x + entryWidth - 9, y + entryHeight + 1, -8978432);
 			}
 
-			RenderSystem.setShader(GameRenderer::getPositionTexShader);
+			RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 			RenderSystem.setShaderTexture(0, this.pack.getIconId());
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			DrawableHelper.drawTexture(matrices, x, y, 0.0F, 0.0F, 32, 32, 32, 32);
@@ -121,7 +121,7 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 			if (this.isSelectable() && (this.client.options.getTouchscreen().getValue() || hovered)) {
 				RenderSystem.setShaderTexture(0, PackListWidget.RESOURCE_PACKS_TEXTURE);
 				DrawableHelper.fill(matrices, x, y, x + 32, y + 32, -1601138544);
-				RenderSystem.setShader(GameRenderer::getPositionTexShader);
+				RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 				int i = mouseX - x;
 				int j = mouseY - y;

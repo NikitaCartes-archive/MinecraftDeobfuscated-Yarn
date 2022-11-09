@@ -10,11 +10,12 @@ import net.minecraft.loot.LootChoice;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.function.LootFunction;
-import net.minecraft.tag.TagKey;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 
 public class TagEntry extends LeafEntry {
 	final TagKey<Item> name;
@@ -33,14 +34,14 @@ public class TagEntry extends LeafEntry {
 
 	@Override
 	public void generateLoot(Consumer<ItemStack> lootConsumer, LootContext context) {
-		Registry.ITEM.iterateEntries(this.name).forEach(entry -> lootConsumer.accept(new ItemStack(entry)));
+		Registries.ITEM.iterateEntries(this.name).forEach(entry -> lootConsumer.accept(new ItemStack(entry)));
 	}
 
 	private boolean grow(LootContext context, Consumer<LootChoice> lootChoiceExpander) {
 		if (!this.test(context)) {
 			return false;
 		} else {
-			for (final RegistryEntry<Item> registryEntry : Registry.ITEM.iterateEntries(this.name)) {
+			for (final RegistryEntry<Item> registryEntry : Registries.ITEM.iterateEntries(this.name)) {
 				lootChoiceExpander.accept(new LeafEntry.Choice() {
 					@Override
 					public void generateLoot(Consumer<ItemStack> lootConsumer, LootContext context) {
@@ -77,7 +78,7 @@ public class TagEntry extends LeafEntry {
 			JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions
 		) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "name"));
-			TagKey<Item> tagKey = TagKey.of(Registry.ITEM_KEY, identifier);
+			TagKey<Item> tagKey = TagKey.of(RegistryKeys.ITEM, identifier);
 			boolean bl = JsonHelper.getBoolean(jsonObject, "expand");
 			return new TagEntry(tagKey, bl, i, j, lootConditions, lootFunctions);
 		}

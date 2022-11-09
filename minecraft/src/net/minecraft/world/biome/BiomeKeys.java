@@ -1,8 +1,8 @@
 package net.minecraft.world.biome;
 
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 
 public abstract class BiomeKeys {
 	public static final RegistryKey<Biome> THE_VOID = register("the_void");
@@ -70,6 +70,6 @@ public abstract class BiomeKeys {
 	public static final RegistryKey<Biome> END_BARRENS = register("end_barrens");
 
 	private static RegistryKey<Biome> register(String name) {
-		return RegistryKey.of(Registry.BIOME_KEY, new Identifier(name));
+		return RegistryKey.of(RegistryKeys.BIOME_WORLDGEN, new Identifier(name));
 	}
 }

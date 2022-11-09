@@ -91,8 +91,8 @@ public class EditBoxWidget extends ScrollableWidget {
 	}
 
 	@Override
-	public void appendNarrations(NarrationMessageBuilder builder) {
-		builder.put(NarrationPart.TITLE, Text.translatable("narration.edit_box", this.getText()));
+	public void appendClickableNarrations(NarrationMessageBuilder builder) {
+		builder.put(NarrationPart.TITLE, Text.translatable("gui.narrate.editBox", this.getMessage(), this.getText()));
 	}
 
 	@Override
@@ -238,7 +238,7 @@ public class EditBoxWidget extends ScrollableWidget {
 		Matrix4f matrix4f = matrices.peek().getPositionMatrix();
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		RenderSystem.setShader(GameRenderer::getPositionShader);
+		RenderSystem.setShader(GameRenderer::getPositionProgram);
 		RenderSystem.setShaderColor(0.0F, 0.0F, 1.0F, 1.0F);
 		RenderSystem.disableTexture();
 		RenderSystem.enableColorLogicOp();

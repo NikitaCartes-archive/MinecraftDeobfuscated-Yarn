@@ -4,15 +4,15 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.tag.TagKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.registry.Registry;
 
 public class MatchingBlockTagPredicate extends OffsetPredicate {
 	final TagKey<Block> tag;
 	public static final Codec<MatchingBlockTagPredicate> CODEC = RecordCodecBuilder.create(
 		instance -> registerOffsetField(instance)
-				.and(TagKey.unprefixedCodec(Registry.BLOCK_KEY).fieldOf("tag").forGetter(predicate -> predicate.tag))
+				.and(TagKey.unprefixedCodec(RegistryKeys.BLOCK).fieldOf("tag").forGetter(predicate -> predicate.tag))
 				.apply(instance, MatchingBlockTagPredicate::new)
 	);
 

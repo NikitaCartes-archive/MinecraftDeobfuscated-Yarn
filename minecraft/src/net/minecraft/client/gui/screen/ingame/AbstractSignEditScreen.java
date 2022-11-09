@@ -203,7 +203,7 @@ public abstract class AbstractSignEditScreen extends Screen {
 					int v = Math.max(s, t);
 					Tessellator tessellator = Tessellator.getInstance();
 					BufferBuilder bufferBuilder = tessellator.getBuffer();
-					RenderSystem.setShader(GameRenderer::getPositionColorShader);
+					RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 					RenderSystem.disableTexture();
 					RenderSystem.enableColorLogicOp();
 					RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
@@ -212,7 +212,7 @@ public abstract class AbstractSignEditScreen extends Screen {
 					bufferBuilder.vertex(matrix4f, (float)v, (float)(m + this.blockEntity.getTextLineHeight()), 0.0F).color(0, 0, 255, 255).next();
 					bufferBuilder.vertex(matrix4f, (float)v, (float)m, 0.0F).color(0, 0, 255, 255).next();
 					bufferBuilder.vertex(matrix4f, (float)u, (float)m, 0.0F).color(0, 0, 255, 255).next();
-					BufferRenderer.drawWithShader(bufferBuilder.end());
+					BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
 					RenderSystem.disableColorLogicOp();
 					RenderSystem.enableTexture();
 				}

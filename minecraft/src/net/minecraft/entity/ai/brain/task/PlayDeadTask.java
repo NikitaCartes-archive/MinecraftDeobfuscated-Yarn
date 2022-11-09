@@ -9,7 +9,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.server.world.ServerWorld;
 
-public class PlayDeadTask extends Task<AxolotlEntity> {
+public class PlayDeadTask extends MultiTickTask<AxolotlEntity> {
 	public PlayDeadTask() {
 		super(
 			ImmutableMap.of(MemoryModuleType.PLAY_DEAD_TICKS, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.HURT_BY_ENTITY, MemoryModuleState.VALUE_PRESENT), 200

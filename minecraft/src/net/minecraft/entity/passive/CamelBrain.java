@@ -13,18 +13,17 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.brain.task.BreedTask;
-import net.minecraft.entity.ai.brain.task.ConditionalTask;
-import net.minecraft.entity.ai.brain.task.FollowMobTask;
-import net.minecraft.entity.ai.brain.task.GoTowardsLookTarget;
+import net.minecraft.entity.ai.brain.task.FollowMobWithIntervalTask;
+import net.minecraft.entity.ai.brain.task.GoTowardsLookTargetTask;
 import net.minecraft.entity.ai.brain.task.LookAroundTask;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.ai.brain.task.RandomLookAroundTask;
 import net.minecraft.entity.ai.brain.task.RandomTask;
 import net.minecraft.entity.ai.brain.task.StayAboveWaterTask;
 import net.minecraft.entity.ai.brain.task.StrollTask;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.TaskTriggerer;
 import net.minecraft.entity.ai.brain.task.TemptTask;
 import net.minecraft.entity.ai.brain.task.TemptationCooldownTask;
-import net.minecraft.entity.ai.brain.task.TimeLimitedTask;
 import net.minecraft.entity.ai.brain.task.WaitTask;
 import net.minecraft.entity.ai.brain.task.WalkTask;
 import net.minecraft.entity.ai.brain.task.WalkTowardClosestAdultTask;
@@ -97,18 +96,18 @@ public class CamelBrain {
 		brain.setTaskList(
 			Activity.IDLE,
 			ImmutableList.of(
-				Pair.of(0, new TimeLimitedTask<>(new FollowMobTask(EntityType.PLAYER, 6.0F), UniformIntProvider.create(30, 60))),
+				Pair.of(0, FollowMobWithIntervalTask.follow(EntityType.PLAYER, 6.0F, UniformIntProvider.create(30, 60))),
 				Pair.of(1, new BreedTask(EntityType.CAMEL, 1.0F)),
 				Pair.of(2, new TemptTask(entity -> 2.5F)),
-				Pair.of(3, new ConditionalTask<>(Predicate.not(CamelEntity::isStationary), new WalkTowardClosestAdultTask<>(WALK_TOWARD_ADULT_RANGE, 2.5F))),
+				Pair.of(3, TaskTriggerer.runIf(Predicate.not(CamelEntity::isStationary), WalkTowardClosestAdultTask.create(WALK_TOWARD_ADULT_RANGE, 2.5F))),
 				Pair.of(4, new RandomLookAroundTask(UniformIntProvider.create(150, 250), 30.0F, 0.0F, 0.0F)),
 				Pair.of(
 					5,
 					new RandomTask<>(
 						ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT),
 						ImmutableList.of(
-							Pair.of(new ConditionalTask<>(Predicate.not(CamelEntity::isStationary), new StrollTask(2.0F)), 1),
-							Pair.of(new ConditionalTask<>(Predicate.not(CamelEntity::isStationary), new GoTowardsLookTarget(2.0F, 3)), 1),
+							Pair.of(TaskTriggerer.runIf(Predicate.not(CamelEntity::isStationary), StrollTask.create(2.0F)), 1),
+							Pair.of(TaskTriggerer.runIf(Predicate.not(CamelEntity::isStationary), GoTowardsLookTargetTask.create(2.0F, 3)), 1),
 							Pair.of(new CamelBrain.SitOrStandTask(20), 1),
 							Pair.of(new WaitTask(30, 60), 1)
 						)
@@ -141,7 +140,7 @@ public class CamelBrain {
 		}
 	}
 
-	public static class SitOrStandTask extends Task<CamelEntity> {
+	public static class SitOrStandTask extends MultiTickTask<CamelEntity> {
 		private final int lastPoseTickDelta;
 
 		public SitOrStandTask(int lastPoseSecondsDelta) {

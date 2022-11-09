@@ -17,10 +17,12 @@ import net.minecraft.util.Util;
  * Defines settings that should be used when rendering something.
  * 
  * <p>This includes {@linkplain VertexFormat vertex format}, {@linkplain
- * VertexFormat.DrawMode draw mode}, {@linkplain Shader shader}, texture,
+ * VertexFormat.DrawMode draw mode}, {@linkplain
+ * net.minecraft.client.gl.ShaderProgram shader program}, texture,
  * some uniform variables values (such as {@code LineWidth} when using the
- * {@link GameRenderer#getRenderTypeLinesShader rendertype_lines} shader),
- * and some GL state values (such as whether to enable depth testing).
+ * {@link GameRenderer#getRenderTypeLinesProgram rendertype_lines} shader
+ * program), and some GL state values (such as whether to enable depth
+ * testing).
  * 
  * <p>Before drawing something, a render layer setups these states. After
  * drawing something, a render layer resets those states to default.
@@ -40,7 +42,7 @@ public abstract class RenderLayer extends RenderPhase {
 		2097152,
 		true,
 		false,
-		RenderLayer.MultiPhaseParameters.builder().lightmap(ENABLE_LIGHTMAP).shader(SOLID_SHADER).texture(MIPMAP_BLOCK_ATLAS_TEXTURE).build(true)
+		RenderLayer.MultiPhaseParameters.builder().lightmap(ENABLE_LIGHTMAP).program(SOLID_PROGAM).texture(MIPMAP_BLOCK_ATLAS_TEXTURE).build(true)
 	);
 	private static final RenderLayer CUTOUT_MIPPED = of(
 		"cutout_mipped",
@@ -49,7 +51,7 @@ public abstract class RenderLayer extends RenderPhase {
 		131072,
 		true,
 		false,
-		RenderLayer.MultiPhaseParameters.builder().lightmap(ENABLE_LIGHTMAP).shader(CUTOUT_MIPPED_SHADER).texture(MIPMAP_BLOCK_ATLAS_TEXTURE).build(true)
+		RenderLayer.MultiPhaseParameters.builder().lightmap(ENABLE_LIGHTMAP).program(CUTOUT_MIPPED_PROGAM).texture(MIPMAP_BLOCK_ATLAS_TEXTURE).build(true)
 	);
 	private static final RenderLayer CUTOUT = of(
 		"cutout",
@@ -58,10 +60,10 @@ public abstract class RenderLayer extends RenderPhase {
 		131072,
 		true,
 		false,
-		RenderLayer.MultiPhaseParameters.builder().lightmap(ENABLE_LIGHTMAP).shader(CUTOUT_SHADER).texture(BLOCK_ATLAS_TEXTURE).build(true)
+		RenderLayer.MultiPhaseParameters.builder().lightmap(ENABLE_LIGHTMAP).program(CUTOUT_PROGAM).texture(BLOCK_ATLAS_TEXTURE).build(true)
 	);
 	private static final RenderLayer TRANSLUCENT = of(
-		"translucent", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 2097152, true, true, of(TRANSLUCENT_SHADER)
+		"translucent", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 2097152, true, true, of(TRANSLUCENT_PROGAM)
 	);
 	private static final RenderLayer TRANSLUCENT_MOVING_BLOCK = of(
 		"translucent_moving_block", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 262144, false, true, getItemPhaseData()
@@ -73,12 +75,12 @@ public abstract class RenderLayer extends RenderPhase {
 		262144,
 		false,
 		true,
-		of(TRANSLUCENT_NO_CRUMBLING_SHADER)
+		of(TRANSLUCENT_NO_CRUMBLING_PROGAM)
 	);
 	private static final Function<Identifier, RenderLayer> ARMOR_CUTOUT_NO_CULL = Util.memoize(
 		(Function<Identifier, RenderLayer>)(texture -> {
 			RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
-				.shader(ARMOR_CUTOUT_NO_CULL_SHADER)
+				.program(ARMOR_CUTOUT_NO_CULL_PROGAM)
 				.texture(new RenderPhase.Texture(texture, false, false))
 				.transparency(NO_TRANSPARENCY)
 				.cull(DISABLE_CULLING)
@@ -94,7 +96,7 @@ public abstract class RenderLayer extends RenderPhase {
 	private static final Function<Identifier, RenderLayer> ENTITY_SOLID = Util.memoize(
 		(Function<Identifier, RenderLayer>)(texture -> {
 			RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
-				.shader(ENTITY_SOLID_SHADER)
+				.program(ENTITY_SOLID_PROGAM)
 				.texture(new RenderPhase.Texture(texture, false, false))
 				.transparency(NO_TRANSPARENCY)
 				.lightmap(ENABLE_LIGHTMAP)
@@ -106,7 +108,7 @@ public abstract class RenderLayer extends RenderPhase {
 	private static final Function<Identifier, RenderLayer> ENTITY_CUTOUT = Util.memoize(
 		(Function<Identifier, RenderLayer>)(texture -> {
 			RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
-				.shader(ENTITY_CUTOUT_SHADER)
+				.program(ENTITY_CUTOUT_PROGAM)
 				.texture(new RenderPhase.Texture(texture, false, false))
 				.transparency(NO_TRANSPARENCY)
 				.lightmap(ENABLE_LIGHTMAP)
@@ -118,7 +120,7 @@ public abstract class RenderLayer extends RenderPhase {
 	private static final BiFunction<Identifier, Boolean, RenderLayer> ENTITY_CUTOUT_NO_CULL = Util.memoize(
 		(BiFunction<Identifier, Boolean, RenderLayer>)((texture, affectsOutline) -> {
 			RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
-				.shader(ENTITY_CUTOUT_NONULL_SHADER)
+				.program(ENTITY_CUTOUT_NONULL_PROGAM)
 				.texture(new RenderPhase.Texture(texture, false, false))
 				.transparency(NO_TRANSPARENCY)
 				.cull(DISABLE_CULLING)
@@ -133,7 +135,7 @@ public abstract class RenderLayer extends RenderPhase {
 	private static final BiFunction<Identifier, Boolean, RenderLayer> ENTITY_CUTOUT_NO_CULL_Z_OFFSET = Util.memoize(
 		(BiFunction<Identifier, Boolean, RenderLayer>)((texture, affectsOutline) -> {
 			RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
-				.shader(ENTITY_CUTOUT_NONULL_OFFSET_Z_SHADER)
+				.program(ENTITY_CUTOUT_NONULL_OFFSET_Z_PROGAM)
 				.texture(new RenderPhase.Texture(texture, false, false))
 				.transparency(NO_TRANSPARENCY)
 				.cull(DISABLE_CULLING)
@@ -155,7 +157,7 @@ public abstract class RenderLayer extends RenderPhase {
 	private static final Function<Identifier, RenderLayer> ITEM_ENTITY_TRANSLUCENT_CULL = Util.memoize(
 		(Function<Identifier, RenderLayer>)(texture -> {
 			RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
-				.shader(ITEM_ENTITY_TRANSLUCENT_CULL_SHADER)
+				.program(ITEM_ENTITY_TRANSLUCENT_CULL_PROGAM)
 				.texture(new RenderPhase.Texture(texture, false, false))
 				.transparency(TRANSLUCENT_TRANSPARENCY)
 				.target(ITEM_TARGET)
@@ -177,7 +179,7 @@ public abstract class RenderLayer extends RenderPhase {
 	private static final Function<Identifier, RenderLayer> ENTITY_TRANSLUCENT_CULL = Util.memoize(
 		(Function<Identifier, RenderLayer>)(texture -> {
 			RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
-				.shader(ENTITY_TRANSLUCENT_CULL_SHADER)
+				.program(ENTITY_TRANSLUCENT_CULL_PROGAM)
 				.texture(new RenderPhase.Texture(texture, false, false))
 				.transparency(TRANSLUCENT_TRANSPARENCY)
 				.lightmap(ENABLE_LIGHTMAP)
@@ -191,7 +193,7 @@ public abstract class RenderLayer extends RenderPhase {
 	private static final BiFunction<Identifier, Boolean, RenderLayer> ENTITY_TRANSLUCENT = Util.memoize(
 		(BiFunction<Identifier, Boolean, RenderLayer>)((texture, affectsOutline) -> {
 			RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
-				.shader(ENTITY_TRANSLUCENT_SHADER)
+				.program(ENTITY_TRANSLUCENT_PROGAM)
 				.texture(new RenderPhase.Texture(texture, false, false))
 				.transparency(TRANSLUCENT_TRANSPARENCY)
 				.cull(DISABLE_CULLING)
@@ -206,7 +208,7 @@ public abstract class RenderLayer extends RenderPhase {
 	private static final BiFunction<Identifier, Boolean, RenderLayer> ENTITY_TRANSLUCENT_EMISSIVE = Util.memoize(
 		(BiFunction<Identifier, Boolean, RenderLayer>)((texture, affectsOutline) -> {
 			RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
-				.shader(ENTITY_TRANSLUCENT_EMISSIVE_SHADER)
+				.program(ENTITY_TRANSLUCENT_EMISSIVE_PROGAM)
 				.texture(new RenderPhase.Texture(texture, false, false))
 				.transparency(TRANSLUCENT_TRANSPARENCY)
 				.cull(DISABLE_CULLING)
@@ -227,7 +229,7 @@ public abstract class RenderLayer extends RenderPhase {
 	private static final Function<Identifier, RenderLayer> ENTITY_SMOOTH_CUTOUT = Util.memoize(
 		(Function<Identifier, RenderLayer>)(texture -> {
 			RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
-				.shader(ENTITY_SMOOTH_CUTOUT_SHADER)
+				.program(ENTITY_SMOOTH_CUTOUT_PROGAM)
 				.texture(new RenderPhase.Texture(texture, false, false))
 				.cull(DISABLE_CULLING)
 				.lightmap(ENABLE_LIGHTMAP)
@@ -238,7 +240,7 @@ public abstract class RenderLayer extends RenderPhase {
 	private static final BiFunction<Identifier, Boolean, RenderLayer> BEACON_BEAM = Util.memoize(
 		(BiFunction<Identifier, Boolean, RenderLayer>)((texture, affectsOutline) -> {
 			RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
-				.shader(BEACON_BEAM_SHADER)
+				.program(BEACON_BEAM_PROGAM)
 				.texture(new RenderPhase.Texture(texture, false, false))
 				.transparency(affectsOutline ? TRANSLUCENT_TRANSPARENCY : NO_TRANSPARENCY)
 				.writeMaskState(affectsOutline ? COLOR_MASK : ALL_MASK)
@@ -249,7 +251,7 @@ public abstract class RenderLayer extends RenderPhase {
 	private static final Function<Identifier, RenderLayer> ENTITY_DECAL = Util.memoize(
 		(Function<Identifier, RenderLayer>)(texture -> {
 			RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
-				.shader(ENTITY_DECAL_SHADER)
+				.program(ENTITY_DECAL_PROGAM)
 				.texture(new RenderPhase.Texture(texture, false, false))
 				.depthTest(EQUAL_DEPTH_TEST)
 				.cull(DISABLE_CULLING)
@@ -262,7 +264,7 @@ public abstract class RenderLayer extends RenderPhase {
 	private static final Function<Identifier, RenderLayer> ENTITY_NO_OUTLINE = Util.memoize(
 		(Function<Identifier, RenderLayer>)(texture -> {
 			RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
-				.shader(ENTITY_NO_OUTLINE_SHADER)
+				.program(ENTITY_NO_OUTLINE_PROGAM)
 				.texture(new RenderPhase.Texture(texture, false, false))
 				.transparency(TRANSLUCENT_TRANSPARENCY)
 				.cull(DISABLE_CULLING)
@@ -278,7 +280,7 @@ public abstract class RenderLayer extends RenderPhase {
 	private static final Function<Identifier, RenderLayer> ENTITY_SHADOW = Util.memoize(
 		(Function<Identifier, RenderLayer>)(texture -> {
 			RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
-				.shader(ENTITY_SHADOW_SHADER)
+				.program(ENTITY_SHADOW_PROGAM)
 				.texture(new RenderPhase.Texture(texture, false, false))
 				.transparency(TRANSLUCENT_TRANSPARENCY)
 				.cull(ENABLE_CULLING)
@@ -294,7 +296,7 @@ public abstract class RenderLayer extends RenderPhase {
 	private static final Function<Identifier, RenderLayer> ENTITY_ALPHA = Util.memoize(
 		(Function<Identifier, RenderLayer>)(texture -> {
 			RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
-				.shader(ENTITY_ALPHA_SHADER)
+				.program(ENTITY_ALPHA_PROGAM)
 				.texture(new RenderPhase.Texture(texture, false, false))
 				.cull(DISABLE_CULLING)
 				.build(true);
@@ -312,7 +314,7 @@ public abstract class RenderLayer extends RenderPhase {
 				false,
 				true,
 				RenderLayer.MultiPhaseParameters.builder()
-					.shader(EYES_SHADER)
+					.program(EYES_PROGAM)
 					.texture(texture2)
 					.transparency(ADDITIVE_TRANSPARENCY)
 					.writeMaskState(COLOR_MASK)
@@ -325,14 +327,14 @@ public abstract class RenderLayer extends RenderPhase {
 		VertexFormats.POSITION_COLOR_LIGHT,
 		VertexFormat.DrawMode.TRIANGLE_STRIP,
 		256,
-		RenderLayer.MultiPhaseParameters.builder().shader(LEASH_SHADER).texture(NO_TEXTURE).cull(DISABLE_CULLING).lightmap(ENABLE_LIGHTMAP).build(false)
+		RenderLayer.MultiPhaseParameters.builder().program(LEASH_PROGAM).texture(NO_TEXTURE).cull(DISABLE_CULLING).lightmap(ENABLE_LIGHTMAP).build(false)
 	);
 	private static final RenderLayer WATER_MASK = of(
 		"water_mask",
 		VertexFormats.POSITION,
 		VertexFormat.DrawMode.QUADS,
 		256,
-		RenderLayer.MultiPhaseParameters.builder().shader(WATER_MASK_SHADER).texture(NO_TEXTURE).writeMaskState(DEPTH_MASK).build(false)
+		RenderLayer.MultiPhaseParameters.builder().program(WATER_MASK_PROGAM).texture(NO_TEXTURE).writeMaskState(DEPTH_MASK).build(false)
 	);
 	private static final RenderLayer ARMOR_GLINT = of(
 		"armor_glint",
@@ -340,7 +342,7 @@ public abstract class RenderLayer extends RenderPhase {
 		VertexFormat.DrawMode.QUADS,
 		256,
 		RenderLayer.MultiPhaseParameters.builder()
-			.shader(ARMOR_GLINT_SHADER)
+			.program(ARMOR_GLINT_PROGAM)
 			.texture(new RenderPhase.Texture(ItemRenderer.ENCHANTED_ITEM_GLINT, true, false))
 			.writeMaskState(COLOR_MASK)
 			.cull(DISABLE_CULLING)
@@ -356,7 +358,7 @@ public abstract class RenderLayer extends RenderPhase {
 		VertexFormat.DrawMode.QUADS,
 		256,
 		RenderLayer.MultiPhaseParameters.builder()
-			.shader(ARMOR_ENTITY_GLINT_SHADER)
+			.program(ARMOR_ENTITY_GLINT_PROGAM)
 			.texture(new RenderPhase.Texture(ItemRenderer.ENCHANTED_ITEM_GLINT, true, false))
 			.writeMaskState(COLOR_MASK)
 			.cull(DISABLE_CULLING)
@@ -372,7 +374,7 @@ public abstract class RenderLayer extends RenderPhase {
 		VertexFormat.DrawMode.QUADS,
 		256,
 		RenderLayer.MultiPhaseParameters.builder()
-			.shader(TRANSLUCENT_GLINT_SHADER)
+			.program(TRANSLUCENT_GLINT_PROGAM)
 			.texture(new RenderPhase.Texture(ItemRenderer.ENCHANTED_ITEM_GLINT, true, false))
 			.writeMaskState(COLOR_MASK)
 			.cull(DISABLE_CULLING)
@@ -388,7 +390,7 @@ public abstract class RenderLayer extends RenderPhase {
 		VertexFormat.DrawMode.QUADS,
 		256,
 		RenderLayer.MultiPhaseParameters.builder()
-			.shader(GLINT_SHADER)
+			.program(GLINT_PROGAM)
 			.texture(new RenderPhase.Texture(ItemRenderer.ENCHANTED_ITEM_GLINT, true, false))
 			.writeMaskState(COLOR_MASK)
 			.cull(DISABLE_CULLING)
@@ -403,7 +405,7 @@ public abstract class RenderLayer extends RenderPhase {
 		VertexFormat.DrawMode.QUADS,
 		256,
 		RenderLayer.MultiPhaseParameters.builder()
-			.shader(DIRECT_GLINT_SHADER)
+			.program(DIRECT_GLINT_PROGAM)
 			.texture(new RenderPhase.Texture(ItemRenderer.ENCHANTED_ITEM_GLINT, true, false))
 			.writeMaskState(COLOR_MASK)
 			.cull(DISABLE_CULLING)
@@ -418,7 +420,7 @@ public abstract class RenderLayer extends RenderPhase {
 		VertexFormat.DrawMode.QUADS,
 		256,
 		RenderLayer.MultiPhaseParameters.builder()
-			.shader(ENTITY_GLINT_SHADER)
+			.program(ENTITY_GLINT_PROGAM)
 			.texture(new RenderPhase.Texture(ItemRenderer.ENCHANTED_ITEM_GLINT, true, false))
 			.writeMaskState(COLOR_MASK)
 			.cull(DISABLE_CULLING)
@@ -434,7 +436,7 @@ public abstract class RenderLayer extends RenderPhase {
 		VertexFormat.DrawMode.QUADS,
 		256,
 		RenderLayer.MultiPhaseParameters.builder()
-			.shader(DIRECT_ENTITY_GLINT_SHADER)
+			.program(DIRECT_ENTITY_GLINT_PROGAM)
 			.texture(new RenderPhase.Texture(ItemRenderer.ENCHANTED_ITEM_GLINT, true, false))
 			.writeMaskState(COLOR_MASK)
 			.cull(DISABLE_CULLING)
@@ -454,7 +456,7 @@ public abstract class RenderLayer extends RenderPhase {
 				false,
 				true,
 				RenderLayer.MultiPhaseParameters.builder()
-					.shader(CRUMBLING_SHADER)
+					.program(CRUMBLING_PROGAM)
 					.texture(texture2)
 					.transparency(CRUMBLING_TRANSPARENCY)
 					.writeMaskState(COLOR_MASK)
@@ -472,7 +474,7 @@ public abstract class RenderLayer extends RenderPhase {
 				false,
 				true,
 				RenderLayer.MultiPhaseParameters.builder()
-					.shader(TEXT_SHADER)
+					.program(TEXT_PROGAM)
 					.texture(new RenderPhase.Texture(texture, false, false))
 					.transparency(TRANSLUCENT_TRANSPARENCY)
 					.lightmap(ENABLE_LIGHTMAP)
@@ -488,7 +490,7 @@ public abstract class RenderLayer extends RenderPhase {
 				false,
 				true,
 				RenderLayer.MultiPhaseParameters.builder()
-					.shader(TEXT_INTENSITY_SHADER)
+					.program(TEXT_INTENSITY_PROGAM)
 					.texture(new RenderPhase.Texture(texture, false, false))
 					.transparency(TRANSLUCENT_TRANSPARENCY)
 					.lightmap(ENABLE_LIGHTMAP)
@@ -504,7 +506,7 @@ public abstract class RenderLayer extends RenderPhase {
 				false,
 				true,
 				RenderLayer.MultiPhaseParameters.builder()
-					.shader(TEXT_SHADER)
+					.program(TEXT_PROGAM)
 					.texture(new RenderPhase.Texture(texture, false, false))
 					.transparency(TRANSLUCENT_TRANSPARENCY)
 					.lightmap(ENABLE_LIGHTMAP)
@@ -521,7 +523,7 @@ public abstract class RenderLayer extends RenderPhase {
 				false,
 				true,
 				RenderLayer.MultiPhaseParameters.builder()
-					.shader(TEXT_INTENSITY_SHADER)
+					.program(TEXT_INTENSITY_PROGAM)
 					.texture(new RenderPhase.Texture(texture, false, false))
 					.transparency(TRANSLUCENT_TRANSPARENCY)
 					.lightmap(ENABLE_LIGHTMAP)
@@ -538,7 +540,7 @@ public abstract class RenderLayer extends RenderPhase {
 				false,
 				true,
 				RenderLayer.MultiPhaseParameters.builder()
-					.shader(TRANSPARENT_TEXT_SHADER)
+					.program(TRANSPARENT_TEXT_PROGAM)
 					.texture(new RenderPhase.Texture(texture, false, false))
 					.transparency(TRANSLUCENT_TRANSPARENCY)
 					.lightmap(ENABLE_LIGHTMAP)
@@ -556,7 +558,7 @@ public abstract class RenderLayer extends RenderPhase {
 				false,
 				true,
 				RenderLayer.MultiPhaseParameters.builder()
-					.shader(TRANSPARENT_TEXT_INTENSITY_SHADER)
+					.program(TRANSPARENT_TEXT_INTENSITY_PROGAM)
 					.texture(new RenderPhase.Texture(texture, false, false))
 					.transparency(TRANSLUCENT_TRANSPARENCY)
 					.lightmap(ENABLE_LIGHTMAP)
@@ -573,7 +575,7 @@ public abstract class RenderLayer extends RenderPhase {
 		false,
 		true,
 		RenderLayer.MultiPhaseParameters.builder()
-			.shader(LIGHTNING_SHADER)
+			.program(LIGHTNING_PROGAM)
 			.writeMaskState(ALL_MASK)
 			.transparency(LIGHTNING_TRANSPARENCY)
 			.target(WEATHER_TARGET)
@@ -590,7 +592,7 @@ public abstract class RenderLayer extends RenderPhase {
 		false,
 		false,
 		RenderLayer.MultiPhaseParameters.builder()
-			.shader(END_PORTAL_SHADER)
+			.program(END_PORTAL_PROGAM)
 			.texture(
 				RenderPhase.Textures.create()
 					.add(EndPortalBlockEntityRenderer.SKY_TEXTURE, false, false)
@@ -607,7 +609,7 @@ public abstract class RenderLayer extends RenderPhase {
 		false,
 		false,
 		RenderLayer.MultiPhaseParameters.builder()
-			.shader(END_GATEWAY_SHADER)
+			.program(END_GATEWAY_PROGAM)
 			.texture(
 				RenderPhase.Textures.create()
 					.add(EndPortalBlockEntityRenderer.SKY_TEXTURE, false, false)
@@ -622,7 +624,7 @@ public abstract class RenderLayer extends RenderPhase {
 		VertexFormat.DrawMode.LINES,
 		256,
 		RenderLayer.MultiPhaseParameters.builder()
-			.shader(LINES_SHADER)
+			.program(LINES_PROGAM)
 			.lineWidth(new RenderPhase.LineWidth(OptionalDouble.empty()))
 			.layering(VIEW_OFFSET_Z_LAYERING)
 			.transparency(TRANSLUCENT_TRANSPARENCY)
@@ -637,7 +639,7 @@ public abstract class RenderLayer extends RenderPhase {
 		VertexFormat.DrawMode.LINE_STRIP,
 		256,
 		RenderLayer.MultiPhaseParameters.builder()
-			.shader(LINES_SHADER)
+			.program(LINES_PROGAM)
 			.lineWidth(new RenderPhase.LineWidth(OptionalDouble.empty()))
 			.layering(VIEW_OFFSET_Z_LAYERING)
 			.transparency(TRANSLUCENT_TRANSPARENCY)
@@ -666,10 +668,10 @@ public abstract class RenderLayer extends RenderPhase {
 		return CUTOUT;
 	}
 
-	private static RenderLayer.MultiPhaseParameters of(RenderPhase.Shader shader) {
+	private static RenderLayer.MultiPhaseParameters of(RenderPhase.ShaderProgram program) {
 		return RenderLayer.MultiPhaseParameters.builder()
 			.lightmap(ENABLE_LIGHTMAP)
-			.shader(shader)
+			.program(program)
 			.texture(MIPMAP_BLOCK_ATLAS_TEXTURE)
 			.transparency(TRANSLUCENT_TRANSPARENCY)
 			.target(TRANSLUCENT_TARGET)
@@ -683,7 +685,7 @@ public abstract class RenderLayer extends RenderPhase {
 	private static RenderLayer.MultiPhaseParameters getItemPhaseData() {
 		return RenderLayer.MultiPhaseParameters.builder()
 			.lightmap(ENABLE_LIGHTMAP)
-			.shader(TRANSLUCENT_MOVING_BLOCK_SHADER)
+			.program(TRANSLUCENT_MOVING_BLOCK_PROGAM)
 			.texture(MIPMAP_BLOCK_ATLAS_TEXTURE)
 			.transparency(TRANSLUCENT_TRANSPARENCY)
 			.target(ITEM_TARGET)
@@ -787,7 +789,7 @@ public abstract class RenderLayer extends RenderPhase {
 			false,
 			true,
 			RenderLayer.MultiPhaseParameters.builder()
-				.shader(ENERGY_SWIRL_SHADER)
+				.program(ENERGY_SWIRL_PROGAM)
 				.texture(new RenderPhase.Texture(texture, false, false))
 				.texturing(new RenderPhase.OffsetTexturing(x, y))
 				.transparency(ADDITIVE_TRANSPARENCY)
@@ -873,7 +875,7 @@ public abstract class RenderLayer extends RenderPhase {
 	private static RenderLayer.MultiPhaseParameters getTripwirePhaseData() {
 		return RenderLayer.MultiPhaseParameters.builder()
 			.lightmap(ENABLE_LIGHTMAP)
-			.shader(TRIPWIRE_SHADER)
+			.program(TRIPWIRE_PROGAM)
 			.texture(MIPMAP_BLOCK_ATLAS_TEXTURE)
 			.transparency(TRANSLUCENT_TRANSPARENCY)
 			.target(WEATHER_TARGET)
@@ -945,7 +947,7 @@ public abstract class RenderLayer extends RenderPhase {
 
 			BufferBuilder.BuiltBuffer builtBuffer = buffer.end();
 			this.startDrawing();
-			BufferRenderer.drawWithShader(builtBuffer);
+			BufferRenderer.drawWithGlobalProgram(builtBuffer);
 			this.endDrawing();
 		}
 	}
@@ -1000,7 +1002,7 @@ public abstract class RenderLayer extends RenderPhase {
 					VertexFormat.DrawMode.QUADS,
 					256,
 					RenderLayer.MultiPhaseParameters.builder()
-						.shader(OUTLINE_SHADER)
+						.program(OUTLINE_PROGAM)
 						.texture(new RenderPhase.Texture(texture, false, false))
 						.cull(culling)
 						.depthTest(ALWAYS_DEPTH_TEST)
@@ -1061,7 +1063,7 @@ public abstract class RenderLayer extends RenderPhase {
 	@Environment(EnvType.CLIENT)
 	protected static final class MultiPhaseParameters {
 		final RenderPhase.TextureBase texture;
-		private final RenderPhase.Shader shader;
+		private final RenderPhase.ShaderProgram program;
 		private final RenderPhase.Transparency transparency;
 		private final RenderPhase.DepthTest depthTest;
 		final RenderPhase.Cull cull;
@@ -1077,7 +1079,7 @@ public abstract class RenderLayer extends RenderPhase {
 
 		MultiPhaseParameters(
 			RenderPhase.TextureBase texture,
-			RenderPhase.Shader shader,
+			RenderPhase.ShaderProgram program,
 			RenderPhase.Transparency transparency,
 			RenderPhase.DepthTest depthTest,
 			RenderPhase.Cull cull,
@@ -1091,7 +1093,7 @@ public abstract class RenderLayer extends RenderPhase {
 			RenderLayer.OutlineMode outlineMode
 		) {
 			this.texture = texture;
-			this.shader = shader;
+			this.program = program;
 			this.transparency = transparency;
 			this.depthTest = depthTest;
 			this.cull = cull;
@@ -1105,7 +1107,7 @@ public abstract class RenderLayer extends RenderPhase {
 			this.outlineMode = outlineMode;
 			this.phases = ImmutableList.of(
 				this.texture,
-				this.shader,
+				this.program,
 				this.transparency,
 				this.depthTest,
 				this.cull,
@@ -1130,7 +1132,7 @@ public abstract class RenderLayer extends RenderPhase {
 		@Environment(EnvType.CLIENT)
 		public static class Builder {
 			private RenderPhase.TextureBase texture = RenderPhase.NO_TEXTURE;
-			private RenderPhase.Shader shader = RenderPhase.NO_SHADER;
+			private RenderPhase.ShaderProgram program = RenderPhase.NO_PROGRAM;
 			private RenderPhase.Transparency transparency = RenderPhase.NO_TRANSPARENCY;
 			private RenderPhase.DepthTest depthTest = RenderPhase.LEQUAL_DEPTH_TEST;
 			private RenderPhase.Cull cull = RenderPhase.ENABLE_CULLING;
@@ -1150,8 +1152,8 @@ public abstract class RenderLayer extends RenderPhase {
 				return this;
 			}
 
-			public RenderLayer.MultiPhaseParameters.Builder shader(RenderPhase.Shader shader) {
-				this.shader = shader;
+			public RenderLayer.MultiPhaseParameters.Builder program(RenderPhase.ShaderProgram program) {
+				this.program = program;
 				return this;
 			}
 
@@ -1212,7 +1214,7 @@ public abstract class RenderLayer extends RenderPhase {
 			public RenderLayer.MultiPhaseParameters build(RenderLayer.OutlineMode outlineMode) {
 				return new RenderLayer.MultiPhaseParameters(
 					this.texture,
-					this.shader,
+					this.program,
 					this.transparency,
 					this.depthTest,
 					this.cull,

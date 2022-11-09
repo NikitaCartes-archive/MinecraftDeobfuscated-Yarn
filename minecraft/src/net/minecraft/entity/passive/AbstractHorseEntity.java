@@ -907,7 +907,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	}
 
 	@Override
-	public boolean canJump() {
+	public boolean canJump(PlayerEntity player) {
 		return this.isSaddled();
 	}
 

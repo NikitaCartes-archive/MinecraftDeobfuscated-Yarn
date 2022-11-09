@@ -15,15 +15,15 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryOps;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.dynamic.Codecs;
-import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryEntryLookup;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
@@ -134,7 +134,7 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 							.fieldOf("preset")
 							.stable()
 							.forGetter(MultiNoiseBiomeSource.Instance::preset),
-						RegistryOps.getEntryLookupCodec(Registry.BIOME_KEY)
+						RegistryOps.getEntryLookupCodec(RegistryKeys.BIOME_WORLDGEN)
 					)
 					.apply(instance, instance.stable(MultiNoiseBiomeSource.Instance::new))
 		);

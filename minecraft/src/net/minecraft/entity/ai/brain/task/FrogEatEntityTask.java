@@ -18,7 +18,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.Vec3d;
 
-public class FrogEatEntityTask extends Task<FrogEntity> {
+public class FrogEatEntityTask extends MultiTickTask<FrogEntity> {
 	public static final int RUN_TIME = 100;
 	public static final int CATCH_DURATION = 6;
 	public static final int EAT_DURATION = 10;
@@ -52,7 +52,7 @@ public class FrogEatEntityTask extends Task<FrogEntity> {
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, FrogEntity frogEntity) {
-		LivingEntity livingEntity = (LivingEntity)frogEntity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).get();
+		LivingEntity livingEntity = (LivingEntity)frogEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET).get();
 		boolean bl = this.isTargetReachable(frogEntity, livingEntity);
 		if (!bl) {
 			frogEntity.getBrain().forget(MemoryModuleType.ATTACK_TARGET);
@@ -69,7 +69,7 @@ public class FrogEatEntityTask extends Task<FrogEntity> {
 	}
 
 	protected void run(ServerWorld serverWorld, FrogEntity frogEntity, long l) {
-		LivingEntity livingEntity = (LivingEntity)frogEntity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).get();
+		LivingEntity livingEntity = (LivingEntity)frogEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET).get();
 		LookTargetUtil.lookAt(frogEntity, livingEntity);
 		frogEntity.setFrogTarget(livingEntity);
 		frogEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(livingEntity.getPos(), 2.0F, 0));
@@ -98,7 +98,7 @@ public class FrogEatEntityTask extends Task<FrogEntity> {
 	}
 
 	protected void keepRunning(ServerWorld serverWorld, FrogEntity frogEntity, long l) {
-		LivingEntity livingEntity = (LivingEntity)frogEntity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).get();
+		LivingEntity livingEntity = (LivingEntity)frogEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET).get();
 		frogEntity.setFrogTarget(livingEntity);
 		switch (this.phase) {
 			case MOVE_TO_TARGET:
@@ -138,7 +138,7 @@ public class FrogEatEntityTask extends Task<FrogEntity> {
 	}
 
 	private void markTargetAsUnreachable(FrogEntity entity, LivingEntity target) {
-		List<UUID> list = (List<UUID>)entity.getBrain().getOptionalMemory(MemoryModuleType.UNREACHABLE_TONGUE_TARGETS).orElseGet(ArrayList::new);
+		List<UUID> list = (List<UUID>)entity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.UNREACHABLE_TONGUE_TARGETS).orElseGet(ArrayList::new);
 		boolean bl = !list.contains(target.getUuid());
 		if (list.size() == 5 && bl) {
 			list.remove(0);

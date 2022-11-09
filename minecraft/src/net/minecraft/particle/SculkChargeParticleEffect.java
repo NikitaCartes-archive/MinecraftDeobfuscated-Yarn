@@ -6,7 +6,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Locale;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 
 public record SculkChargeParticleEffect(float roll) implements ParticleEffect {
 	public static final Codec<SculkChargeParticleEffect> CODEC = RecordCodecBuilder.create(
@@ -36,6 +36,6 @@ public record SculkChargeParticleEffect(float roll) implements ParticleEffect {
 
 	@Override
 	public String asString() {
-		return String.format(Locale.ROOT, "%s %.2f", Registry.PARTICLE_TYPE.getId(this.getType()), this.roll);
+		return String.format(Locale.ROOT, "%s %.2f", Registries.PARTICLE_TYPE.getId(this.getType()), this.roll);
 	}
 }

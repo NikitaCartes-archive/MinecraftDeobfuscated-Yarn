@@ -5,11 +5,11 @@ import java.net.SocketAddress;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.CombinedDynamicRegistries;
+import net.minecraft.registry.ServerDynamicRegistryType;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.util.registry.CombinedDynamicRegistries;
-import net.minecraft.util.registry.ServerDynamicRegistryType;
 import net.minecraft.world.WorldSaveHandler;
 
 @Environment(EnvType.CLIENT)

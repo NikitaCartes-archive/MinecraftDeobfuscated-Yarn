@@ -4,8 +4,9 @@ import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Map;
 import javax.annotation.Nullable;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.text.Text;
-import net.minecraft.util.registry.Registry;
 
 public class StatType<T> implements Iterable<Stat<T>> {
 	private final Registry<T> registry;
@@ -38,7 +39,7 @@ public class StatType<T> implements Iterable<Stat<T>> {
 	}
 
 	public String getTranslationKey() {
-		return "stat_type." + Registry.STAT_TYPE.getId(this).toString().replace(':', '.');
+		return "stat_type." + Registries.STAT_TYPE.getId(this).toString().replace(':', '.');
 	}
 
 	public Text getName() {

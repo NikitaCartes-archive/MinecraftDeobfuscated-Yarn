@@ -10,11 +10,11 @@ public class ChunkTicketType<T> {
 	private final String name;
 	private final Comparator<T> argumentComparator;
 	private final long expiryTicks;
-	public static final ChunkTicketType<Unit> START = create("start", (unit, unit2) -> 0);
+	public static final ChunkTicketType<Unit> START = create("start", (a, b) -> 0);
 	/**
 	 * Used by the ender dragon to load the central end island during the boss battle.
 	 */
-	public static final ChunkTicketType<Unit> DRAGON = create("dragon", (unit, unit2) -> 0);
+	public static final ChunkTicketType<Unit> DRAGON = create("dragon", (a, b) -> 0);
 	public static final ChunkTicketType<ChunkPos> PLAYER = create("player", Comparator.comparingLong(ChunkPos::toLong));
 	/**
 	 * Used to force load chunks.

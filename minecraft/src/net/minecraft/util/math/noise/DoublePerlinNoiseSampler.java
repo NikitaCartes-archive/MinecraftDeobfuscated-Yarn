@@ -7,11 +7,11 @@ import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import it.unimi.dsi.fastutil.doubles.DoubleListIterator;
 import java.util.List;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryElementCodec;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Util;
-import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 
 public class DoublePerlinNoiseSampler {
 	private static final double DOMAIN_SCALE = 1.0181268882175227;
@@ -101,7 +101,9 @@ public class DoublePerlinNoiseSampler {
 					)
 					.apply(instance, DoublePerlinNoiseSampler.NoiseParameters::new)
 		);
-		public static final Codec<RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters>> REGISTRY_ENTRY_CODEC = RegistryElementCodec.of(Registry.NOISE_KEY, CODEC);
+		public static final Codec<RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters>> REGISTRY_ENTRY_CODEC = RegistryElementCodec.of(
+			RegistryKeys.NOISE_WORLDGEN, CODEC
+		);
 
 		public NoiseParameters(int firstOctave, List<Double> amplitudes) {
 			this(firstOctave, new DoubleArrayList(amplitudes));

@@ -3,9 +3,9 @@ package net.minecraft.world.gen.feature;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.Block;
-import net.minecraft.tag.TagKey;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.world.gen.blockpredicate.BlockPredicate;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 
@@ -15,7 +15,7 @@ public class RootSystemFeatureConfig implements FeatureConfig {
 					PlacedFeature.REGISTRY_CODEC.fieldOf("feature").forGetter(config -> config.feature),
 					Codec.intRange(1, 64).fieldOf("required_vertical_space_for_tree").forGetter(config -> config.requiredVerticalSpaceForTree),
 					Codec.intRange(1, 64).fieldOf("root_radius").forGetter(config -> config.rootRadius),
-					TagKey.codec(Registry.BLOCK_KEY).fieldOf("root_replaceable").forGetter(config -> config.rootReplaceable),
+					TagKey.codec(RegistryKeys.BLOCK).fieldOf("root_replaceable").forGetter(config -> config.rootReplaceable),
 					BlockStateProvider.TYPE_CODEC.fieldOf("root_state_provider").forGetter(config -> config.rootStateProvider),
 					Codec.intRange(1, 256).fieldOf("root_placement_attempts").forGetter(config -> config.rootPlacementAttempts),
 					Codec.intRange(1, 4096).fieldOf("root_column_max_height").forGetter(config -> config.maxRootColumnHeight),

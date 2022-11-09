@@ -2,16 +2,16 @@ package net.minecraft.structure;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.registry.Registerable;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.structure.pool.StructurePools;
 import net.minecraft.structure.processor.StructureProcessorList;
 import net.minecraft.structure.processor.StructureProcessorLists;
-import net.minecraft.util.registry.Registerable;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryEntryLookup;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.gen.feature.PlacedFeature;
 import net.minecraft.world.gen.feature.VillagePlacedFeatures;
 
@@ -20,18 +20,18 @@ public class PlainsVillageData {
 	private static final RegistryKey<StructurePool> TERMINATORS_KEY = StructurePools.of("village/plains/terminators");
 
 	public static void bootstrap(Registerable<StructurePool> poolRegisterable) {
-		RegistryEntryLookup<PlacedFeature> registryEntryLookup = poolRegisterable.getRegistryLookup(Registry.PLACED_FEATURE_KEY);
+		RegistryEntryLookup<PlacedFeature> registryEntryLookup = poolRegisterable.getRegistryLookup(RegistryKeys.PLACED_FEATURE_WORLDGEN);
 		RegistryEntry<PlacedFeature> registryEntry = registryEntryLookup.getOrThrow(VillagePlacedFeatures.OAK);
 		RegistryEntry<PlacedFeature> registryEntry2 = registryEntryLookup.getOrThrow(VillagePlacedFeatures.FLOWER_PLAIN);
 		RegistryEntry<PlacedFeature> registryEntry3 = registryEntryLookup.getOrThrow(VillagePlacedFeatures.PILE_HAY);
-		RegistryEntryLookup<StructureProcessorList> registryEntryLookup2 = poolRegisterable.getRegistryLookup(Registry.STRUCTURE_PROCESSOR_LIST_KEY);
+		RegistryEntryLookup<StructureProcessorList> registryEntryLookup2 = poolRegisterable.getRegistryLookup(RegistryKeys.PROCESSOR_LIST_WORLDGEN);
 		RegistryEntry<StructureProcessorList> registryEntry4 = registryEntryLookup2.getOrThrow(StructureProcessorLists.MOSSIFY_10_PERCENT);
 		RegistryEntry<StructureProcessorList> registryEntry5 = registryEntryLookup2.getOrThrow(StructureProcessorLists.MOSSIFY_20_PERCENT);
 		RegistryEntry<StructureProcessorList> registryEntry6 = registryEntryLookup2.getOrThrow(StructureProcessorLists.MOSSIFY_70_PERCENT);
 		RegistryEntry<StructureProcessorList> registryEntry7 = registryEntryLookup2.getOrThrow(StructureProcessorLists.ZOMBIE_PLAINS);
 		RegistryEntry<StructureProcessorList> registryEntry8 = registryEntryLookup2.getOrThrow(StructureProcessorLists.STREET_PLAINS);
 		RegistryEntry<StructureProcessorList> registryEntry9 = registryEntryLookup2.getOrThrow(StructureProcessorLists.FARM_PLAINS);
-		RegistryEntryLookup<StructurePool> registryEntryLookup3 = poolRegisterable.getRegistryLookup(Registry.STRUCTURE_POOL_KEY);
+		RegistryEntryLookup<StructurePool> registryEntryLookup3 = poolRegisterable.getRegistryLookup(RegistryKeys.TEMPLATE_POOL_WORLDGEN);
 		RegistryEntry<StructurePool> registryEntry10 = registryEntryLookup3.getOrThrow(StructurePools.EMPTY);
 		RegistryEntry<StructurePool> registryEntry11 = registryEntryLookup3.getOrThrow(TERMINATORS_KEY);
 		poolRegisterable.register(

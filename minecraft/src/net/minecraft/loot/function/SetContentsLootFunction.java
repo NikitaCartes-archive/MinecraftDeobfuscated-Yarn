@@ -18,10 +18,10 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.entry.LootPoolEntry;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.registry.Registry;
 
 public class SetContentsLootFunction extends ConditionalLootFunction {
 	final List<LootPoolEntry> entries;
@@ -98,14 +98,14 @@ public class SetContentsLootFunction extends ConditionalLootFunction {
 	public static class Serializer extends ConditionalLootFunction.Serializer<SetContentsLootFunction> {
 		public void toJson(JsonObject jsonObject, SetContentsLootFunction setContentsLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, setContentsLootFunction, jsonSerializationContext);
-			jsonObject.addProperty("type", Registry.BLOCK_ENTITY_TYPE.getId(setContentsLootFunction.type).toString());
+			jsonObject.addProperty("type", Registries.BLOCK_ENTITY_TYPE.getId(setContentsLootFunction.type).toString());
 			jsonObject.add("entries", jsonSerializationContext.serialize(setContentsLootFunction.entries));
 		}
 
 		public SetContentsLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			LootPoolEntry[] lootPoolEntrys = JsonHelper.deserialize(jsonObject, "entries", jsonDeserializationContext, LootPoolEntry[].class);
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "type"));
-			BlockEntityType<?> blockEntityType = (BlockEntityType<?>)Registry.BLOCK_ENTITY_TYPE
+			BlockEntityType<?> blockEntityType = (BlockEntityType<?>)Registries.BLOCK_ENTITY_TYPE
 				.getOrEmpty(identifier)
 				.orElseThrow(() -> new JsonSyntaxException("Unknown block entity type id '" + identifier + "'"));
 			return new SetContentsLootFunction(lootConditions, blockEntityType, Arrays.asList(lootPoolEntrys));

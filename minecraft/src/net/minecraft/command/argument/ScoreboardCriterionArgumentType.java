@@ -13,12 +13,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.command.CommandSource;
+import net.minecraft.registry.Registries;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.StatType;
 import net.minecraft.text.Text;
-import net.minecraft.util.registry.Registry;
 
 public class ScoreboardCriterionArgumentType implements ArgumentType<ScoreboardCriterion> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo.bar.baz", "minecraft:foo");
@@ -55,7 +55,7 @@ public class ScoreboardCriterionArgumentType implements ArgumentType<ScoreboardC
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
 		List<String> list = Lists.<String>newArrayList(ScoreboardCriterion.getAllSimpleCriteria());
 
-		for (StatType<?> statType : Registry.STAT_TYPE) {
+		for (StatType<?> statType : Registries.STAT_TYPE) {
 			for (Object object : statType.getRegistry()) {
 				String string = this.getStatName(statType, object);
 				list.add(string);

@@ -5,11 +5,11 @@ import javax.annotation.Nullable;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
 public class ChangedDimensionCriterion extends AbstractCriterion<ChangedDimensionCriterion.Conditions> {
@@ -23,8 +23,8 @@ public class ChangedDimensionCriterion extends AbstractCriterion<ChangedDimensio
 	public ChangedDimensionCriterion.Conditions conditionsFromJson(
 		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
-		RegistryKey<World> registryKey = jsonObject.has("from") ? RegistryKey.of(Registry.WORLD_KEY, new Identifier(JsonHelper.getString(jsonObject, "from"))) : null;
-		RegistryKey<World> registryKey2 = jsonObject.has("to") ? RegistryKey.of(Registry.WORLD_KEY, new Identifier(JsonHelper.getString(jsonObject, "to"))) : null;
+		RegistryKey<World> registryKey = jsonObject.has("from") ? RegistryKey.of(RegistryKeys.WORLD, new Identifier(JsonHelper.getString(jsonObject, "from"))) : null;
+		RegistryKey<World> registryKey2 = jsonObject.has("to") ? RegistryKey.of(RegistryKeys.WORLD, new Identifier(JsonHelper.getString(jsonObject, "to"))) : null;
 		return new ChangedDimensionCriterion.Conditions(extended, registryKey, registryKey2);
 	}
 

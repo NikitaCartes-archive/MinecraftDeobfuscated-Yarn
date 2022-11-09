@@ -16,17 +16,17 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.passive.GoatEntity;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Position;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 
-public class RamImpactTask extends Task<GoatEntity> {
+public class RamImpactTask extends MultiTickTask<GoatEntity> {
 	public static final int RUN_TIME = 200;
 	public static final float SPEED_STRENGTH_MULTIPLIER = 1.65F;
 	private final Function<GoatEntity, UniformIntProvider> cooldownRangeFactory;
@@ -66,7 +66,7 @@ public class RamImpactTask extends Task<GoatEntity> {
 	protected void run(ServerWorld serverWorld, GoatEntity goatEntity, long l) {
 		BlockPos blockPos = goatEntity.getBlockPos();
 		Brain<?> brain = goatEntity.getBrain();
-		Vec3d vec3d = (Vec3d)brain.getOptionalMemory(MemoryModuleType.RAM_TARGET).get();
+		Vec3d vec3d = (Vec3d)brain.getOptionalRegisteredMemory(MemoryModuleType.RAM_TARGET).get();
 		this.direction = new Vec3d((double)blockPos.getX() - vec3d.getX(), 0.0, (double)blockPos.getZ() - vec3d.getZ()).normalize();
 		brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d, this.speed, 0));
 	}
@@ -94,8 +94,8 @@ public class RamImpactTask extends Task<GoatEntity> {
 
 			this.finishRam(serverWorld, goatEntity);
 		} else {
-			Optional<WalkTarget> optional = brain.getOptionalMemory(MemoryModuleType.WALK_TARGET);
-			Optional<Vec3d> optional2 = brain.getOptionalMemory(MemoryModuleType.RAM_TARGET);
+			Optional<WalkTarget> optional = brain.getOptionalRegisteredMemory(MemoryModuleType.WALK_TARGET);
+			Optional<Vec3d> optional2 = brain.getOptionalRegisteredMemory(MemoryModuleType.RAM_TARGET);
 			boolean bl2 = optional.isEmpty() || optional2.isEmpty() || ((WalkTarget)optional.get()).getLookTarget().getPos().isInRange((Position)optional2.get(), 0.25);
 			if (bl2) {
 				this.finishRam(serverWorld, goatEntity);

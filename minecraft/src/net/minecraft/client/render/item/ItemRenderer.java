@@ -45,9 +45,10 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloader;
-import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
@@ -57,7 +58,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.MatrixUtil;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
@@ -69,6 +69,7 @@ public class ItemRenderer implements SynchronousResourceReloader {
 	public static final int field_32934 = 200;
 	public static final float COMPASS_WITH_GLINT_GUI_MODEL_MULTIPLIER = 0.5F;
 	public static final float COMPASS_WITH_GLINT_FIRST_PERSON_MODEL_MULTIPLIER = 0.75F;
+	public static final float field_41120 = 0.0078125F;
 	private static final ModelIdentifier TRIDENT = ModelIdentifier.ofVanilla("trident", "inventory");
 	public static final ModelIdentifier TRIDENT_IN_HAND = ModelIdentifier.ofVanilla("trident_in_hand", "inventory");
 	private static final ModelIdentifier SPYGLASS = ModelIdentifier.ofVanilla("spyglass", "inventory");
@@ -84,9 +85,9 @@ public class ItemRenderer implements SynchronousResourceReloader {
 		this.models = new ItemModels(bakery);
 		this.builtinModelItemRenderer = builtinModelItemRenderer;
 
-		for (Item item : Registry.ITEM) {
+		for (Item item : Registries.ITEM) {
 			if (!WITHOUT_MODELS.contains(item)) {
-				this.models.putModel(item, new ModelIdentifier(Registry.ITEM.getId(item), "inventory"));
+				this.models.putModel(item, new ModelIdentifier(Registries.ITEM.getId(item), "inventory"));
 			}
 		}
 
@@ -183,13 +184,15 @@ public class ItemRenderer implements SynchronousResourceReloader {
 
 	public static VertexConsumer getCompassGlintConsumer(VertexConsumerProvider provider, RenderLayer layer, MatrixStack.Entry entry) {
 		return VertexConsumers.union(
-			new OverlayVertexConsumer(provider.getBuffer(RenderLayer.getGlint()), entry.getPositionMatrix(), entry.getNormalMatrix()), provider.getBuffer(layer)
+			new OverlayVertexConsumer(provider.getBuffer(RenderLayer.getGlint()), entry.getPositionMatrix(), entry.getNormalMatrix(), 0.0078125F),
+			provider.getBuffer(layer)
 		);
 	}
 
 	public static VertexConsumer getDirectCompassGlintConsumer(VertexConsumerProvider provider, RenderLayer layer, MatrixStack.Entry entry) {
 		return VertexConsumers.union(
-			new OverlayVertexConsumer(provider.getBuffer(RenderLayer.getDirectGlint()), entry.getPositionMatrix(), entry.getNormalMatrix()), provider.getBuffer(layer)
+			new OverlayVertexConsumer(provider.getBuffer(RenderLayer.getDirectGlint()), entry.getPositionMatrix(), entry.getNormalMatrix(), 0.0078125F),
+			provider.getBuffer(layer)
 		);
 	}
 
@@ -427,13 +430,13 @@ public class ItemRenderer implements SynchronousResourceReloader {
 	}
 
 	private void renderGuiQuad(BufferBuilder buffer, int x, int y, int width, int height, int red, int green, int blue, int alpha) {
-		RenderSystem.setShader(GameRenderer::getPositionColorShader);
+		RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 		buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 		buffer.vertex((double)(x + 0), (double)(y + 0), 0.0).color(red, green, blue, alpha).next();
 		buffer.vertex((double)(x + 0), (double)(y + height), 0.0).color(red, green, blue, alpha).next();
 		buffer.vertex((double)(x + width), (double)(y + height), 0.0).color(red, green, blue, alpha).next();
 		buffer.vertex((double)(x + width), (double)(y + 0), 0.0).color(red, green, blue, alpha).next();
-		BufferRenderer.drawWithShader(buffer.end());
+		BufferRenderer.drawWithGlobalProgram(buffer.end());
 	}
 
 	@Override

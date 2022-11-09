@@ -11,24 +11,25 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryCodecs;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryElementCodec;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.structure.StructurePiecesList;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.random.CheckedRandom;
 import net.minecraft.util.math.random.ChunkRandom;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryCodecs;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureSpawns;
@@ -43,8 +44,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.noise.NoiseConfig;
 
 public abstract class Structure {
-	public static final Codec<Structure> STRUCTURE_CODEC = Registry.STRUCTURE_TYPE.getCodec().dispatch(Structure::getType, StructureType::codec);
-	public static final Codec<RegistryEntry<Structure>> ENTRY_CODEC = RegistryElementCodec.of(Registry.STRUCTURE_KEY, STRUCTURE_CODEC);
+	public static final Codec<Structure> STRUCTURE_CODEC = Registries.STRUCTURE_TYPE.getCodec().dispatch(Structure::getType, StructureType::codec);
+	public static final Codec<RegistryEntry<Structure>> ENTRY_CODEC = RegistryElementCodec.of(RegistryKeys.STRUCTURE_WORLDGEN, STRUCTURE_CODEC);
 	protected final Structure.Config config;
 
 	public static <S extends Structure> RecordCodecBuilder<S, Structure.Config> configCodecBuilder(Instance<S> instance) {
@@ -190,7 +191,7 @@ public abstract class Structure {
 	) {
 		public static final MapCodec<Structure.Config> CODEC = RecordCodecBuilder.mapCodec(
 			instance -> instance.group(
-						RegistryCodecs.entryList(Registry.BIOME_KEY).fieldOf("biomes").forGetter(Structure.Config::biomes),
+						RegistryCodecs.entryList(RegistryKeys.BIOME_WORLDGEN).fieldOf("biomes").forGetter(Structure.Config::biomes),
 						Codec.simpleMap(SpawnGroup.CODEC, StructureSpawns.CODEC, StringIdentifiable.toKeyable(SpawnGroup.values()))
 							.fieldOf("spawn_overrides")
 							.forGetter(Structure.Config::spawnOverrides),

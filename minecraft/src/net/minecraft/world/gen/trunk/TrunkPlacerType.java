@@ -1,7 +1,8 @@
 package net.minecraft.world.gen.trunk;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 public class TrunkPlacerType<P extends TrunkPlacer> {
 	public static final TrunkPlacerType<StraightTrunkPlacer> STRAIGHT_TRUNK_PLACER = register("straight_trunk_placer", StraightTrunkPlacer.CODEC);
@@ -17,7 +18,7 @@ public class TrunkPlacerType<P extends TrunkPlacer> {
 	private final Codec<P> codec;
 
 	private static <P extends TrunkPlacer> TrunkPlacerType<P> register(String id, Codec<P> codec) {
-		return Registry.register(Registry.TRUNK_PLACER_TYPE, id, new TrunkPlacerType<>(codec));
+		return Registry.register(Registries.TRUNK_PLACER_TYPE, id, new TrunkPlacerType<>(codec));
 	}
 
 	private TrunkPlacerType(Codec<P> codec) {

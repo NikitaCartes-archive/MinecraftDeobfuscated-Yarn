@@ -1,12 +1,13 @@
 package net.minecraft.resource.featuretoggle;
 
 import java.util.Set;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 
 public interface ToggleableFeature {
 	Set<RegistryKey<? extends Registry<? extends ToggleableFeature>>> FEATURE_ENABLED_REGISTRY_KEYS = Set.of(
-		Registry.ITEM_KEY, Registry.BLOCK_KEY, Registry.ENTITY_TYPE_KEY
+		RegistryKeys.ITEM, RegistryKeys.BLOCK, RegistryKeys.ENTITY_TYPE
 	);
 
 	FeatureSet getRequiredFeatures();

@@ -8,7 +8,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.server.world.ServerWorld;
 
-public class PanicTask extends Task<VillagerEntity> {
+public class PanicTask extends MultiTickTask<VillagerEntity> {
 	public PanicTask() {
 		super(ImmutableMap.of());
 	}

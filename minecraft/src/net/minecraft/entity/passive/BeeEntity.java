@@ -67,16 +67,16 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.registry.tag.PointOfInterestTypeTags;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.ItemTags;
-import net.minecraft.tag.PointOfInterestTypeTags;
-import net.minecraft.tag.TagKey;
 import net.minecraft.util.TimeHelper;
 import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.math.BlockPos;
@@ -493,6 +493,8 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	boolean isHiveValid() {
 		if (!this.hasHive()) {
 			return false;
+		} else if (this.isTooFar(this.hivePos)) {
+			return false;
 		} else {
 			BlockEntity blockEntity = this.world.getBlockEntity(this.hivePos);
 			return blockEntity != null && blockEntity.getType() == BlockEntityType.BEEHIVE;
@@ -626,7 +628,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	}
 
 	@Override
-	public boolean hasWings() {
+	public boolean isFlappingWings() {
 		return this.isInAir() && this.age % field_28638 == 0;
 	}
 

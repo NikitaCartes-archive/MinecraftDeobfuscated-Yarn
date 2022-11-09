@@ -4,12 +4,12 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.scanner.NbtScanner;
+import net.minecraft.util.PathUtil;
 import net.minecraft.util.ThrowableDeliverer;
 import net.minecraft.util.math.ChunkPos;
 
@@ -35,7 +35,7 @@ public final class RegionBasedStorage implements AutoCloseable {
 				this.cachedRegionFiles.removeLast().close();
 			}
 
-			Files.createDirectories(this.directory);
+			PathUtil.createDirectories(this.directory);
 			Path path = this.directory.resolve("r." + pos.getRegionX() + "." + pos.getRegionZ() + ".mca");
 			RegionFile regionFile2 = new RegionFile(path, this.directory, this.dsync);
 			this.cachedRegionFiles.putAndMoveToFirst(l, regionFile2);

@@ -17,18 +17,18 @@ import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.Packet;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.BiomeTags;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.BiomeTags;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -39,6 +39,8 @@ public class FilledMapItem extends NetworkSyncedItem {
 	public static final int field_30908 = 128;
 	private static final int DEFAULT_MAP_COLOR = -12173266;
 	private static final String MAP_KEY = "map";
+	public static final String MAP_SCALE_DIRECTION_KEY = "map_scale_direction";
+	public static final String MAP_TO_LOCK_KEY = "map_to_lock";
 
 	public FilledMapItem(Item.Settings settings) {
 		super(settings);
@@ -103,6 +105,8 @@ public class FilledMapItem extends NetworkSyncedItem {
 
 			MapState.PlayerUpdateTracker playerUpdateTracker = state.getPlayerSyncData((PlayerEntity)entity);
 			playerUpdateTracker.field_131++;
+			BlockPos.Mutable mutable = new BlockPos.Mutable();
+			BlockPos.Mutable mutable2 = new BlockPos.Mutable();
 			boolean bl = false;
 
 			for (int o = l - n + 1; o < l + n; o++) {
@@ -112,23 +116,19 @@ public class FilledMapItem extends NetworkSyncedItem {
 
 					for (int p = m - n - 1; p < m + n; p++) {
 						if (o >= 0 && p >= -1 && o < 128 && p < 128) {
-							int q = o - l;
-							int r = p - m;
-							boolean bl2 = q * q + r * r > (n - 2) * (n - 2);
-							int s = (j / i + o - 64) * i;
-							int t = (k / i + p - 64) * i;
+							int q = MathHelper.square(o - l) + MathHelper.square(p - m);
+							boolean bl2 = q > (n - 2) * (n - 2);
+							int r = (j / i + o - 64) * i;
+							int s = (k / i + p - 64) * i;
 							Multiset<MapColor> multiset = LinkedHashMultiset.create();
-							WorldChunk worldChunk = world.getWorldChunk(new BlockPos(s, 0, t));
+							WorldChunk worldChunk = world.getChunk(ChunkSectionPos.getSectionCoord(r), ChunkSectionPos.getSectionCoord(s));
 							if (!worldChunk.isEmpty()) {
-								ChunkPos chunkPos = worldChunk.getPos();
-								int u = s & 15;
-								int v = t & 15;
-								int w = 0;
+								int t = 0;
 								double e = 0.0;
 								if (world.getDimension().hasCeiling()) {
-									int x = s + t * 231871;
-									x = x * x * 31287121 + x * 11;
-									if ((x >> 20 & 1) == 0) {
+									int u = r + s * 231871;
+									u = u * u * 31287121 + u * 11;
+									if ((u >> 20 & 1) == 0) {
 										multiset.add(Blocks.DIRT.getDefaultState().getMapColor(world, BlockPos.ORIGIN), 10);
 									} else {
 										multiset.add(Blocks.STONE.getDefaultState().getMapColor(world, BlockPos.ORIGIN), 100);
@@ -136,48 +136,46 @@ public class FilledMapItem extends NetworkSyncedItem {
 
 									e = 100.0;
 								} else {
-									BlockPos.Mutable mutable = new BlockPos.Mutable();
-									BlockPos.Mutable mutable2 = new BlockPos.Mutable();
-
-									for (int y = 0; y < i; y++) {
-										for (int z = 0; z < i; z++) {
-											int aa = worldChunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE, y + u, z + v) + 1;
+									for (int u = 0; u < i; u++) {
+										for (int v = 0; v < i; v++) {
+											mutable.set(r + u, 0, s + v);
+											int w = worldChunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE, mutable.getX(), mutable.getZ()) + 1;
 											BlockState blockState;
-											if (aa <= world.getBottomY() + 1) {
+											if (w <= world.getBottomY() + 1) {
 												blockState = Blocks.BEDROCK.getDefaultState();
 											} else {
 												do {
-													mutable.set(chunkPos.getStartX() + y + u, --aa, chunkPos.getStartZ() + z + v);
+													mutable.setY(--w);
 													blockState = worldChunk.getBlockState(mutable);
-												} while (blockState.getMapColor(world, mutable) == MapColor.CLEAR && aa > world.getBottomY());
+												} while (blockState.getMapColor(world, mutable) == MapColor.CLEAR && w > world.getBottomY());
 
-												if (aa > world.getBottomY() && !blockState.getFluidState().isEmpty()) {
-													int ab = aa - 1;
+												if (w > world.getBottomY() && !blockState.getFluidState().isEmpty()) {
+													int x = w - 1;
 													mutable2.set(mutable);
 
 													BlockState blockState2;
 													do {
-														mutable2.setY(ab--);
+														mutable2.setY(x--);
 														blockState2 = worldChunk.getBlockState(mutable2);
-														w++;
-													} while (ab > world.getBottomY() && !blockState2.getFluidState().isEmpty());
+														t++;
+													} while (x > world.getBottomY() && !blockState2.getFluidState().isEmpty());
 
 													blockState = this.getFluidStateIfVisible(world, blockState, mutable);
 												}
 											}
 
-											state.removeBanner(world, chunkPos.getStartX() + y + u, chunkPos.getStartZ() + z + v);
-											e += (double)aa / (double)(i * i);
+											state.removeBanner(world, mutable.getX(), mutable.getZ());
+											e += (double)w / (double)(i * i);
 											multiset.add(blockState.getMapColor(world, mutable));
 										}
 									}
 								}
 
-								w /= i * i;
+								t /= i * i;
 								MapColor mapColor = Iterables.getFirst(Multisets.copyHighestCountFirst(multiset), MapColor.CLEAR);
 								MapColor.Brightness brightness;
 								if (mapColor == MapColor.WATER_BLUE) {
-									double f = (double)w * 0.1 + (double)(o + p & 1) * 0.2;
+									double f = (double)t * 0.1 + (double)(o + p & 1) * 0.2;
 									if (f < 0.5) {
 										brightness = MapColor.Brightness.HIGH;
 									} else if (f > 0.9) {
@@ -197,7 +195,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 								}
 
 								d = e;
-								if (p >= 0 && q * q + r * r < n * n && (!bl2 || (o + p & 1) != 0)) {
+								if (p >= 0 && q < n * n && (!bl2 || (o + p & 1) != 0)) {
 									bl |= state.putColor(o, p, mapColor.getRenderColorByte(brightness));
 								}
 							}
@@ -352,15 +350,30 @@ public class FilledMapItem extends NetworkSyncedItem {
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
 		Integer integer = getMapId(stack);
 		MapState mapState = world == null ? null : getMapState(integer, world);
-		if (mapState != null && mapState.locked) {
+		NbtCompound nbtCompound = stack.getNbt();
+		boolean bl;
+		byte b;
+		if (nbtCompound != null) {
+			bl = nbtCompound.getBoolean("map_to_lock");
+			b = nbtCompound.getByte("map_scale_direction");
+		} else {
+			bl = false;
+			b = 0;
+		}
+
+		if (mapState != null && (mapState.locked || bl)) {
 			tooltip.add(Text.translatable("filled_map.locked", integer).formatted(Formatting.GRAY));
 		}
 
 		if (context.isAdvanced()) {
 			if (mapState != null) {
-				tooltip.add(Text.translatable("filled_map.id", integer).formatted(Formatting.GRAY));
-				tooltip.add(Text.translatable("filled_map.scale", 1 << mapState.scale).formatted(Formatting.GRAY));
-				tooltip.add(Text.translatable("filled_map.level", mapState.scale, 4).formatted(Formatting.GRAY));
+				if (!bl && b == 0) {
+					tooltip.add(Text.translatable("filled_map.id", integer).formatted(Formatting.GRAY));
+				}
+
+				int i = Math.min(mapState.scale + b, 4);
+				tooltip.add(Text.translatable("filled_map.scale", 1 << i).formatted(Formatting.GRAY));
+				tooltip.add(Text.translatable("filled_map.level", i, 4).formatted(Formatting.GRAY));
 			} else {
 				tooltip.add(Text.translatable("filled_map.unknown").formatted(Formatting.GRAY));
 			}

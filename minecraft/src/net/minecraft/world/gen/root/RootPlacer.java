@@ -8,19 +8,19 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.state.property.Properties;
-import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.TreeFeature;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 
 public abstract class RootPlacer {
-	public static final Codec<RootPlacer> TYPE_CODEC = Registry.ROOT_PLACER_TYPE.getCodec().dispatch(RootPlacer::getType, RootPlacerType::getCodec);
+	public static final Codec<RootPlacer> TYPE_CODEC = Registries.ROOT_PLAYER_TYPE.getCodec().dispatch(RootPlacer::getType, RootPlacerType::getCodec);
 	protected final IntProvider trunkOffsetY;
 	protected final BlockStateProvider rootProvider;
 	protected final Optional<AboveRootPlacement> aboveRootPlacement;

@@ -10,7 +10,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 
-public class LeapingChargeTask extends Task<MobEntity> {
+public class LeapingChargeTask extends MultiTickTask<MobEntity> {
 	public static final int RUN_TIME = 100;
 	private final UniformIntProvider cooldownRange;
 	private final SoundEvent sound;

@@ -4,13 +4,13 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import java.util.OptionalInt;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 
 /**
  * In charge of determining the amount of space needed by a tree to generate.
  */
 public abstract class FeatureSize {
-	public static final Codec<FeatureSize> TYPE_CODEC = Registry.FEATURE_SIZE_TYPE.getCodec().dispatch(FeatureSize::getType, FeatureSizeType::getCodec);
+	public static final Codec<FeatureSize> TYPE_CODEC = Registries.FEATURE_SIZE_TYPE.getCodec().dispatch(FeatureSize::getType, FeatureSizeType::getCodec);
 	protected static final int field_31522 = 16;
 	protected final OptionalInt minClippedHeight;
 

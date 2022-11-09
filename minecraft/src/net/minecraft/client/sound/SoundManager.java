@@ -18,6 +18,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.Camera;
+import net.minecraft.registry.Registries;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceFactory;
 import net.minecraft.resource.ResourceManager;
@@ -31,7 +32,6 @@ import net.minecraft.util.math.floatprovider.ConstantFloatProvider;
 import net.minecraft.util.math.floatprovider.MultipliedFloatSupplier;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -118,7 +118,7 @@ public class SoundManager extends SinglePreparationResourceReloader<SoundManager
 		if (SharedConstants.isDevelopment) {
 			for (Identifier identifier : this.sounds.keySet()) {
 				WeightedSoundSet weightedSoundSet = (WeightedSoundSet)this.sounds.get(identifier);
-				if (!Texts.hasTranslation(weightedSoundSet.getSubtitle()) && Registry.SOUND_EVENT.containsId(identifier)) {
+				if (!Texts.hasTranslation(weightedSoundSet.getSubtitle()) && Registries.SOUND_EVENT.containsId(identifier)) {
 					LOGGER.error("Missing subtitle {} for sound event: {}", weightedSoundSet.getSubtitle(), identifier);
 				}
 			}
@@ -126,7 +126,7 @@ public class SoundManager extends SinglePreparationResourceReloader<SoundManager
 
 		if (LOGGER.isDebugEnabled()) {
 			for (Identifier identifierx : this.sounds.keySet()) {
-				if (!Registry.SOUND_EVENT.containsId(identifierx)) {
+				if (!Registries.SOUND_EVENT.containsId(identifierx)) {
 					LOGGER.debug("Not having sound event for: {}", identifierx);
 				}
 			}

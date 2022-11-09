@@ -45,6 +45,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.Registries;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceFinder;
 import net.minecraft.resource.ResourceManager;
@@ -61,7 +62,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import org.slf4j.Logger;
 
@@ -193,13 +193,13 @@ public class ParticleManager implements ResourceReloader {
 	}
 
 	private <T extends ParticleEffect> void registerFactory(ParticleType<T> type, ParticleFactory<T> factory) {
-		this.factories.put(Registry.PARTICLE_TYPE.getRawId(type), factory);
+		this.factories.put(Registries.PARTICLE_TYPE.getRawId(type), factory);
 	}
 
 	private <T extends ParticleEffect> void registerFactory(ParticleType<T> type, ParticleManager.SpriteAwareFactory<T> factory) {
 		ParticleManager.SimpleSpriteProvider simpleSpriteProvider = new ParticleManager.SimpleSpriteProvider();
-		this.spriteAwareFactories.put(Registry.PARTICLE_TYPE.getId(type), simpleSpriteProvider);
-		this.factories.put(Registry.PARTICLE_TYPE.getRawId(type), factory.create(simpleSpriteProvider));
+		this.spriteAwareFactories.put(Registries.PARTICLE_TYPE.getId(type), simpleSpriteProvider);
+		this.factories.put(Registries.PARTICLE_TYPE.getRawId(type), factory.create(simpleSpriteProvider));
 	}
 
 	@Override
@@ -347,7 +347,7 @@ public class ParticleManager implements ResourceReloader {
 
 	@Nullable
 	private <T extends ParticleEffect> Particle createParticle(T parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-		ParticleFactory<T> particleFactory = (ParticleFactory<T>)this.factories.get(Registry.PARTICLE_TYPE.getRawId(parameters.getType()));
+		ParticleFactory<T> particleFactory = (ParticleFactory<T>)this.factories.get(Registries.PARTICLE_TYPE.getRawId(parameters.getType()));
 		return particleFactory == null ? null : particleFactory.createParticle(parameters, this.world, x, y, z, velocityX, velocityY, velocityZ);
 	}
 
@@ -439,7 +439,7 @@ public class ParticleManager implements ResourceReloader {
 		for (ParticleTextureSheet particleTextureSheet : PARTICLE_TEXTURE_SHEETS) {
 			Iterable<Particle> iterable = (Iterable<Particle>)this.particles.get(particleTextureSheet);
 			if (iterable != null) {
-				RenderSystem.setShader(GameRenderer::getParticleShader);
+				RenderSystem.setShader(GameRenderer::getParticleProgram);
 				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 				Tessellator tessellator = Tessellator.getInstance();
 				BufferBuilder bufferBuilder = tessellator.getBuffer();

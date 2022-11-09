@@ -10,14 +10,14 @@ import java.util.Optional;
 import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.registry.RegistryCodecs;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryOps;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.structure.StructureSet;
 import net.minecraft.structure.StructureSetKeys;
-import net.minecraft.util.dynamic.RegistryOps;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryCodecs;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryEntryList;
-import net.minecraft.util.registry.RegistryEntryLookup;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
@@ -35,7 +35,7 @@ public class FlatChunkGeneratorConfig {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final Codec<FlatChunkGeneratorConfig> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						RegistryCodecs.entryList(Registry.STRUCTURE_SET_KEY).optionalFieldOf("structure_overrides").forGetter(config -> config.structureOverrides),
+						RegistryCodecs.entryList(RegistryKeys.STRUCTURE_SET_WORLDGEN).optionalFieldOf("structure_overrides").forGetter(config -> config.structureOverrides),
 						FlatChunkGeneratorLayer.CODEC.listOf().fieldOf("layers").forGetter(FlatChunkGeneratorConfig::getLayers),
 						Codec.BOOL.fieldOf("lakes").orElse(false).forGetter(config -> config.hasLakes),
 						Codec.BOOL.fieldOf("features").orElse(false).forGetter(config -> config.hasFeatures),

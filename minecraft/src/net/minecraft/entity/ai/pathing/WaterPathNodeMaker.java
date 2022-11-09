@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.tag.FluidTags;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;

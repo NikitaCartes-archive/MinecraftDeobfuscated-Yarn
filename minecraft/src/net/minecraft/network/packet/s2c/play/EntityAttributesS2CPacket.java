@@ -9,8 +9,8 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListener> {
 	private final int entityId;
@@ -33,7 +33,7 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 		this.entries = buf.readList(
 			buf2 -> {
 				Identifier identifier = buf2.readIdentifier();
-				EntityAttribute entityAttribute = Registry.ATTRIBUTE.get(identifier);
+				EntityAttribute entityAttribute = Registries.ATTRIBUTE.get(identifier);
 				double d = buf2.readDouble();
 				List<EntityAttributeModifier> list = buf2.readList(
 					modifiers -> new EntityAttributeModifier(
@@ -49,7 +49,7 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 	public void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.entityId);
 		buf.writeCollection(this.entries, (buf2, attribute) -> {
-			buf2.writeIdentifier(Registry.ATTRIBUTE.getId(attribute.getId()));
+			buf2.writeIdentifier(Registries.ATTRIBUTE.getId(attribute.getId()));
 			buf2.writeDouble(attribute.getBaseValue());
 			buf2.writeCollection(attribute.getModifiers(), (buf3, modifier) -> {
 				buf3.writeUuid(modifier.getId());

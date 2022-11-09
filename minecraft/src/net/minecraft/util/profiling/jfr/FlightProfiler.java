@@ -4,8 +4,8 @@ import com.mojang.logging.LogUtils;
 import java.net.SocketAddress;
 import java.nio.file.Path;
 import javax.annotation.Nullable;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import org.slf4j.Logger;
 

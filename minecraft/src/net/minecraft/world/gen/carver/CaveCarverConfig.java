@@ -3,8 +3,8 @@ package net.minecraft.world.gen.carver;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.Block;
+import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.util.math.floatprovider.FloatProvider;
-import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.gen.YOffset;
 import net.minecraft.world.gen.heightprovider.HeightProvider;
 

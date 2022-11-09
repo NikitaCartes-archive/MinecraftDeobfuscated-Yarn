@@ -32,11 +32,11 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
@@ -126,7 +126,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	}
 
 	@Override
-	public boolean hasWings() {
+	public boolean isFlappingWings() {
 		float f = MathHelper.cos(this.wingPosition * (float) (Math.PI * 2));
 		float g = MathHelper.cos(this.prevWingPosition * (float) (Math.PI * 2));
 		return g <= -0.3F && f >= -0.3F;

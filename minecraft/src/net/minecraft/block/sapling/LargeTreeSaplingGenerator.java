@@ -4,12 +4,12 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
@@ -37,7 +37,7 @@ public abstract class LargeTreeSaplingGenerator extends SaplingGenerator {
 			return false;
 		} else {
 			RegistryEntry<ConfiguredFeature<?, ?>> registryEntry = (RegistryEntry<ConfiguredFeature<?, ?>>)world.getRegistryManager()
-				.get(Registry.CONFIGURED_FEATURE_KEY)
+				.get(RegistryKeys.CONFIGURED_FEATURE_WORLDGEN)
 				.getEntry(registryKey)
 				.orElse(null);
 			if (registryEntry == null) {

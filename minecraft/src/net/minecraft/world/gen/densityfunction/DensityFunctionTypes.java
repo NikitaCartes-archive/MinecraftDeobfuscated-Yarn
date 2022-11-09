@@ -10,6 +10,10 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.dynamic.CodecHolder;
@@ -20,14 +24,11 @@ import net.minecraft.util.math.noise.InterpolatedNoiseSampler;
 import net.minecraft.util.math.noise.SimplexNoiseSampler;
 import net.minecraft.util.math.random.CheckedRandom;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.dimension.DimensionType;
 import org.slf4j.Logger;
 
 public final class DensityFunctionTypes {
-	private static final Codec<DensityFunction> DYNAMIC_RANGE = Registry.DENSITY_FUNCTION_TYPE
+	private static final Codec<DensityFunction> DYNAMIC_RANGE = Registries.DENSITY_FUNCTION_TYPE
 		.getCodec()
 		.dispatch(densityFunction -> densityFunction.getCodecHolder().codec(), Function.identity());
 	protected static final double MAX_CONSTANT_VALUE = 1000000.0;

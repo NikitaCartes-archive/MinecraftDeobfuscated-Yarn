@@ -87,6 +87,8 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	private long screenNarrationStartTime = Long.MAX_VALUE;
 	@Nullable
 	private Selectable selected;
+	@Nullable
+	private List<OrderedText> tooltip;
 
 	protected Screen(Text title) {
 		this.title = title;
@@ -98,6 +100,14 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 
 	public Text getNarratedTitle() {
 		return this.getTitle();
+	}
+
+	public final void renderWithTooltip(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		this.render(matrices, mouseX, mouseY, delta);
+		if (this.tooltip != null) {
+			this.renderOrderedTooltip(matrices, this.tooltip, mouseX, mouseY);
+			this.tooltip = null;
+		}
 	}
 
 	@Override
@@ -180,7 +190,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	}
 
 	public List<Text> getTooltipFromItem(ItemStack stack) {
-		return stack.getTooltip(this.client.player, this.client.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL);
+		return stack.getTooltip(this.client.player, this.client.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.BASIC);
 	}
 
 	public void renderTooltip(MatrixStack matrices, Text text, int x, int y) {
@@ -228,7 +238,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 			this.itemRenderer.zOffset = 400.0F;
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferBuilder = tessellator.getBuffer();
-			RenderSystem.setShader(GameRenderer::getPositionColorShader);
+			RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 			Matrix4f matrix4f = matrices.peek().getPositionMatrix();
 			fillGradient(matrix4f, bufferBuilder, l - 3, m - 4, l + i + 3, m - 3, 400, -267386864, -267386864);
@@ -244,7 +254,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 			RenderSystem.disableTexture();
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
-			BufferRenderer.drawWithShader(bufferBuilder.end());
+			BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
 			RenderSystem.disableBlend();
 			RenderSystem.enableTexture();
 			VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
@@ -428,7 +438,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	public void renderBackgroundTexture(int vOffset) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+		RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
 		RenderSystem.setShaderTexture(0, OPTIONS_BACKGROUND_TEXTURE);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = 32.0F;
@@ -639,6 +649,18 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 
 	public void applyNarratorModeChangeDelay() {
 		this.setScreenNarrationDelay(NARRATOR_MODE_CHANGE_DELAY, false);
+	}
+
+	public void setTooltip(List<OrderedText> tooltip) {
+		this.tooltip = tooltip;
+	}
+
+	protected void setTooltip(Text tooltip) {
+		this.setTooltip(Tooltip.wrapLines(this.client, tooltip));
+	}
+
+	public void setTooltip(Tooltip tooltip) {
+		this.setTooltip(tooltip.getLines(this.client));
 	}
 
 	protected static void hide(ClickableWidget... widgets) {

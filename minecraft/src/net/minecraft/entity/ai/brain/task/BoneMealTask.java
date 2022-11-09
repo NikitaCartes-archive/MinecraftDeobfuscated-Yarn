@@ -19,7 +19,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldEvents;
 
-public class BoneMealTask extends Task<VillagerEntity> {
+public class BoneMealTask extends MultiTickTask<VillagerEntity> {
 	private static final int MAX_DURATION = 80;
 	private long startTime;
 	private long lastEndEntityAge;

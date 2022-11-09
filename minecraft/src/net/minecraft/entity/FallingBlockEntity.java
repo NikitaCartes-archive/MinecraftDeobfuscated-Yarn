@@ -26,10 +26,11 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.FluidTags;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -37,7 +38,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
@@ -277,7 +277,7 @@ public class FallingBlockEntity extends Entity {
 
 	@Override
 	protected void readCustomDataFromNbt(NbtCompound nbt) {
-		this.block = NbtHelper.toBlockState(this.world.createCommandRegistryWrapper(Registry.BLOCK_KEY), nbt.getCompound("BlockState"));
+		this.block = NbtHelper.toBlockState(this.world.createCommandRegistryWrapper(RegistryKeys.BLOCK), nbt.getCompound("BlockState"));
 		this.timeFalling = nbt.getInt("Time");
 		if (nbt.contains("HurtEntities", NbtElement.NUMBER_TYPE)) {
 			this.hurtEntities = nbt.getBoolean("HurtEntities");

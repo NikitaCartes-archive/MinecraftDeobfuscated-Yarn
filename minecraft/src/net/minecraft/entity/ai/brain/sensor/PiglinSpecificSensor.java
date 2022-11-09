@@ -22,8 +22,8 @@ import net.minecraft.entity.mob.PiglinBruteEntity;
 import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.entity.mob.WitherSkeletonEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 
 public class PiglinSpecificSensor extends Sensor<LivingEntity> {
@@ -59,7 +59,7 @@ public class PiglinSpecificSensor extends Sensor<LivingEntity> {
 		int i = 0;
 		List<AbstractPiglinEntity> list = Lists.<AbstractPiglinEntity>newArrayList();
 		List<AbstractPiglinEntity> list2 = Lists.<AbstractPiglinEntity>newArrayList();
-		LivingTargetCache livingTargetCache = (LivingTargetCache)brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(LivingTargetCache.empty());
+		LivingTargetCache livingTargetCache = (LivingTargetCache)brain.getOptionalRegisteredMemory(MemoryModuleType.VISIBLE_MOBS).orElse(LivingTargetCache.empty());
 
 		for (LivingEntity livingEntity : livingTargetCache.iterate(livingEntityx -> true)) {
 			if (livingEntity instanceof HoglinEntity) {
@@ -99,7 +99,7 @@ public class PiglinSpecificSensor extends Sensor<LivingEntity> {
 			}
 		}
 
-		for (LivingEntity livingEntity2 : (List)brain.getOptionalMemory(MemoryModuleType.MOBS).orElse(ImmutableList.of())) {
+		for (LivingEntity livingEntity2 : (List)brain.getOptionalRegisteredMemory(MemoryModuleType.MOBS).orElse(ImmutableList.of())) {
 			if (livingEntity2 instanceof AbstractPiglinEntity) {
 				AbstractPiglinEntity abstractPiglinEntity = (AbstractPiglinEntity)livingEntity2;
 				if (abstractPiglinEntity.isAdult()) {

@@ -35,7 +35,7 @@ public class BlockOutlineDebugRenderer implements DebugRenderer.Renderer {
 		RenderSystem.lineWidth(2.0F);
 		RenderSystem.disableTexture();
 		RenderSystem.depthMask(false);
-		RenderSystem.setShader(GameRenderer::getPositionColorShader);
+		RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 		BlockPos blockPos = new BlockPos(cameraX, cameraY, cameraZ);
 
 		for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-6, -6, -6), blockPos.add(6, 6, 6))) {

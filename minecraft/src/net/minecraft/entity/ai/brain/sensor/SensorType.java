@@ -6,8 +6,9 @@ import net.minecraft.entity.passive.AxolotlBrain;
 import net.minecraft.entity.passive.CamelBrain;
 import net.minecraft.entity.passive.FrogBrain;
 import net.minecraft.entity.passive.GoatBrain;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class SensorType<U extends Sensor<?>> {
 	public static final SensorType<DummySensor> DUMMY = register("dummy", DummySensor::new);
@@ -51,6 +52,6 @@ public class SensorType<U extends Sensor<?>> {
 	}
 
 	private static <U extends Sensor<?>> SensorType<U> register(String id, Supplier<U> factory) {
-		return Registry.register(Registry.SENSOR_TYPE, new Identifier(id), new SensorType<>(factory));
+		return Registry.register(Registries.SENSOR_TYPE, new Identifier(id), new SensorType<>(factory));
 	}
 }

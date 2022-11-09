@@ -17,17 +17,16 @@ import net.minecraft.entity.ai.brain.LivingTargetCache;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
-import net.minecraft.entity.ai.brain.task.ConditionalTask;
-import net.minecraft.entity.ai.brain.task.FollowMobTask;
+import net.minecraft.entity.ai.brain.task.FollowMobWithIntervalTask;
 import net.minecraft.entity.ai.brain.task.ForgetAttackTargetTask;
-import net.minecraft.entity.ai.brain.task.GoTowardsLookTarget;
+import net.minecraft.entity.ai.brain.task.GoTowardsLookTargetTask;
 import net.minecraft.entity.ai.brain.task.LookAroundTask;
 import net.minecraft.entity.ai.brain.task.LookTargetUtil;
 import net.minecraft.entity.ai.brain.task.MeleeAttackTask;
 import net.minecraft.entity.ai.brain.task.RandomTask;
 import net.minecraft.entity.ai.brain.task.RangedApproachTask;
 import net.minecraft.entity.ai.brain.task.StrollTask;
-import net.minecraft.entity.ai.brain.task.TimeLimitedTask;
+import net.minecraft.entity.ai.brain.task.TaskTriggerer;
 import net.minecraft.entity.ai.brain.task.UpdateAttackTargetTask;
 import net.minecraft.entity.ai.brain.task.WaitTask;
 import net.minecraft.entity.ai.brain.task.WanderAroundTask;
@@ -107,9 +106,11 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 			Activity.IDLE,
 			10,
 			ImmutableList.of(
-				new UpdateAttackTargetTask<>(ZoglinEntity::getHoglinTarget),
-				new TimeLimitedTask(new FollowMobTask(8.0F), UniformIntProvider.create(30, 60)),
-				new RandomTask(ImmutableList.of(Pair.of(new StrollTask(0.4F), 2), Pair.of(new GoTowardsLookTarget(0.4F, 3), 2), Pair.of(new WaitTask(30, 60), 1)))
+				UpdateAttackTargetTask.create(ZoglinEntity::getHoglinTarget),
+				FollowMobWithIntervalTask.follow(8.0F, UniformIntProvider.create(30, 60)),
+				new RandomTask<>(
+					ImmutableList.of(Pair.of(StrollTask.create(0.4F), 2), Pair.of(GoTowardsLookTargetTask.create(0.4F, 3), 2), Pair.of(new WaitTask(30, 60), 1))
+				)
 			)
 		);
 	}
@@ -119,17 +120,18 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 			Activity.FIGHT,
 			10,
 			ImmutableList.of(
-				new RangedApproachTask(1.0F),
-				new ConditionalTask<>(ZoglinEntity::isAdult, new MeleeAttackTask(40)),
-				new ConditionalTask<>(ZoglinEntity::isBaby, new MeleeAttackTask(15)),
-				new ForgetAttackTargetTask()
+				RangedApproachTask.create(1.0F),
+				TaskTriggerer.runIf(ZoglinEntity::isAdult, MeleeAttackTask.create(40)),
+				TaskTriggerer.runIf(ZoglinEntity::isBaby, MeleeAttackTask.create(15)),
+				ForgetAttackTargetTask.create()
 			),
 			MemoryModuleType.ATTACK_TARGET
 		);
 	}
 
 	private Optional<? extends LivingEntity> getHoglinTarget() {
-		return ((LivingTargetCache)this.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(LivingTargetCache.empty())).findFirst(this::shouldAttack);
+		return ((LivingTargetCache)this.getBrain().getOptionalRegisteredMemory(MemoryModuleType.VISIBLE_MOBS).orElse(LivingTargetCache.empty()))
+			.findFirst(this::shouldAttack);
 	}
 
 	private boolean shouldAttack(LivingEntity entity) {

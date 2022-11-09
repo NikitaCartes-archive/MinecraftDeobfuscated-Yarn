@@ -1,14 +1,14 @@
 package net.minecraft.world.gen.feature;
 
+import net.minecraft.registry.Registerable;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.intprovider.ClampedNormalIntProvider;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
-import net.minecraft.util.registry.Registerable;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryEntryLookup;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.YOffset;
 import net.minecraft.world.gen.blockpredicate.BlockPredicate;
@@ -44,7 +44,7 @@ public class UndergroundPlacedFeatures {
 	public static final RegistryKey<PlacedFeature> SCULK_VEIN = PlacedFeatures.of("sculk_vein");
 
 	public static void bootstrap(Registerable<PlacedFeature> featureRegisterable) {
-		RegistryEntryLookup<ConfiguredFeature<?, ?>> registryEntryLookup = featureRegisterable.getRegistryLookup(Registry.CONFIGURED_FEATURE_KEY);
+		RegistryEntryLookup<ConfiguredFeature<?, ?>> registryEntryLookup = featureRegisterable.getRegistryLookup(RegistryKeys.CONFIGURED_FEATURE_WORLDGEN);
 		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.MONSTER_ROOM);
 		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry2 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.FOSSIL_COAL);
 		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry3 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.FOSSIL_DIAMONDS);

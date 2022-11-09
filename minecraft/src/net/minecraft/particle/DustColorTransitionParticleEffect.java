@@ -6,9 +6,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Locale;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 import org.joml.Vector3f;
 
 public class DustColorTransitionParticleEffect extends AbstractDustParticleEffect {
@@ -66,7 +66,7 @@ public class DustColorTransitionParticleEffect extends AbstractDustParticleEffec
 		return String.format(
 			Locale.ROOT,
 			"%s %.2f %.2f %.2f %.2f %.2f %.2f %.2f",
-			Registry.PARTICLE_TYPE.getId(this.getType()),
+			Registries.PARTICLE_TYPE.getId(this.getType()),
 			this.color.x(),
 			this.color.y(),
 			this.color.z(),

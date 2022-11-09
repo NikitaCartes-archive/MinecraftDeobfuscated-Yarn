@@ -10,15 +10,15 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.poi.PointOfInterestType;
 import net.minecraft.world.poi.PointOfInterestTypes;
 
-public class VillagerBreedTask extends Task<VillagerEntity> {
+public class VillagerBreedTask extends MultiTickTask<VillagerEntity> {
 	private static final int MAX_DISTANCE = 5;
 	private static final float APPROACH_SPEED = 0.5F;
 	private long breedEndTime;
@@ -38,7 +38,7 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 	}
 
 	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		PassiveEntity passiveEntity = (PassiveEntity)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.BREED_TARGET).get();
+		PassiveEntity passiveEntity = (PassiveEntity)villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.BREED_TARGET).get();
 		LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, passiveEntity, 0.5F);
 		serverWorld.sendEntityStatus(passiveEntity, EntityStatuses.ADD_BREEDING_PARTICLES);
 		serverWorld.sendEntityStatus(villagerEntity, EntityStatuses.ADD_BREEDING_PARTICLES);
@@ -47,7 +47,7 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 	}
 
 	protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		VillagerEntity villagerEntity2 = (VillagerEntity)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.BREED_TARGET).get();
+		VillagerEntity villagerEntity2 = (VillagerEntity)villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.BREED_TARGET).get();
 		if (!(villagerEntity.squaredDistanceTo(villagerEntity2) > 5.0)) {
 			LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2, 0.5F);
 			if (l >= this.breedEndTime) {
@@ -83,7 +83,7 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 
 	private boolean isReadyToBreed(VillagerEntity villager) {
 		Brain<VillagerEntity> brain = villager.getBrain();
-		Optional<PassiveEntity> optional = brain.getOptionalMemory(MemoryModuleType.BREED_TARGET)
+		Optional<PassiveEntity> optional = brain.getOptionalRegisteredMemory(MemoryModuleType.BREED_TARGET)
 			.filter(passiveEntity -> passiveEntity.getType() == EntityType.VILLAGER);
 		return !optional.isPresent()
 			? false

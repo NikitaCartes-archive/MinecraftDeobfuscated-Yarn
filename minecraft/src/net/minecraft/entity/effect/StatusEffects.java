@@ -3,9 +3,10 @@ package net.minecraft.entity.effect;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Difficulty;
 
 public class StatusEffects {
@@ -118,6 +119,6 @@ public class StatusEffects {
 	);
 
 	private static StatusEffect register(int rawId, String id, StatusEffect entry) {
-		return Registry.register(Registry.STATUS_EFFECT, rawId, id, entry);
+		return Registry.register(Registries.STATUS_EFFECT, rawId, id, entry);
 	}
 }

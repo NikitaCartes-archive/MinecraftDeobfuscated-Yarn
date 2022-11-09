@@ -9,10 +9,10 @@ import net.minecraft.item.Instrument;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.tag.TagKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.registry.Registry;
 
 public class SetInstrumentLootFunction extends ConditionalLootFunction {
 	final TagKey<Instrument> options;
@@ -48,7 +48,7 @@ public class SetInstrumentLootFunction extends ConditionalLootFunction {
 			if (!string.startsWith("#")) {
 				throw new JsonSyntaxException("Inline tag value not supported: " + string);
 			} else {
-				return new SetInstrumentLootFunction(lootConditions, TagKey.of(Registry.INSTRUMENT_KEY, new Identifier(string.substring(1))));
+				return new SetInstrumentLootFunction(lootConditions, TagKey.of(RegistryKeys.INSTRUMENT, new Identifier(string.substring(1))));
 			}
 		}
 	}

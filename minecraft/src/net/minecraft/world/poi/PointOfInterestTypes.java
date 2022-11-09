@@ -12,11 +12,12 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.BedPart;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 
 public class PointOfInterestTypes {
 	public static final RegistryKey<PointOfInterestType> ARMORER = of("armorer");
@@ -74,7 +75,7 @@ public class PointOfInterestTypes {
 	}
 
 	private static RegistryKey<PointOfInterestType> of(String id) {
-		return RegistryKey.of(Registry.POINT_OF_INTEREST_TYPE_KEY, new Identifier(id));
+		return RegistryKey.of(RegistryKeys.POINT_OF_INTEREST_TYPE, new Identifier(id));
 	}
 
 	private static PointOfInterestType register(

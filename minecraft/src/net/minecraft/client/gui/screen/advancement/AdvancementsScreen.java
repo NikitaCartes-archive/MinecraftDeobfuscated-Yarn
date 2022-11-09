@@ -146,7 +146,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	public void drawWindow(MatrixStack matrices, int x, int y) {
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.enableBlend();
-		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		RenderSystem.setShaderTexture(0, WINDOW_TEXTURE);
 		this.drawTexture(matrices, x, y, 0, 0, 252, 140);
 		if (this.tabs.size() > 1) {

@@ -24,6 +24,8 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.resource.featuretoggle.FeatureFlag;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
@@ -43,8 +45,6 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import org.slf4j.Logger;
@@ -61,7 +61,7 @@ import org.slf4j.Logger;
  * 
  * <p>Items with no custom behavior, like diamonds, can call the constructor of Item
  * directly. If a custom behavior is needed, this should be subclassed. Items also have
- * to be registered in the {@link net.minecraft.util.registry.Registry#ITEM} registry.
+ * to be registered in the {@link net.minecraft.registry.Registries#ITEM} registry.
  * 
  * <p>Many methods of this class are called on both the logical client and logical server,
  * so take caution when using those methods. The logical side can be checked using
@@ -82,7 +82,7 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	public static final int DEFAULT_MAX_COUNT = 64;
 	public static final int DEFAULT_MAX_USE_TIME = 32;
 	public static final int ITEM_BAR_STEPS = 13;
-	private final RegistryEntry.Reference<Item> registryEntry = Registry.ITEM.createEntry(this);
+	private final RegistryEntry.Reference<Item> registryEntry = Registries.ITEM.createEntry(this);
 	private final Rarity rarity;
 	private final int maxCount;
 	private final int maxDamage;
@@ -99,14 +99,14 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * {@return the raw ID of {@code item}, or 0 if passed {@code null}}
 	 */
 	public static int getRawId(Item item) {
-		return item == null ? 0 : Registry.ITEM.getRawId(item);
+		return item == null ? 0 : Registries.ITEM.getRawId(item);
 	}
 
 	/**
 	 * {@return the item from its raw ID}
 	 */
 	public static Item byRawId(int id) {
-		return Registry.ITEM.get(id);
+		return Registries.ITEM.get(id);
 	}
 
 	/**
@@ -425,12 +425,12 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	}
 
 	public String toString() {
-		return Registry.ITEM.getId(this).getPath();
+		return Registries.ITEM.getId(this).getPath();
 	}
 
 	protected String getOrCreateTranslationKey() {
 		if (this.translationKey == null) {
-			this.translationKey = Util.createTranslationKey("item", Registry.ITEM.getId(this));
+			this.translationKey = Util.createTranslationKey("item", Registries.ITEM.getId(this));
 		}
 
 		return this.translationKey;

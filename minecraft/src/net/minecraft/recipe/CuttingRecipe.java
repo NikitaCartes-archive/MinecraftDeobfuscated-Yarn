@@ -4,10 +4,10 @@ import com.google.gson.JsonObject;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.registry.Registry;
 
 /**
  * A recipe that has only one input ingredient. It can be used by any type
@@ -90,7 +90,7 @@ public abstract class CuttingRecipe implements Recipe<Inventory> {
 
 			String string2 = JsonHelper.getString(jsonObject, "result");
 			int i = JsonHelper.getInt(jsonObject, "count");
-			ItemStack itemStack = new ItemStack(Registry.ITEM.get(new Identifier(string2)), i);
+			ItemStack itemStack = new ItemStack(Registries.ITEM.get(new Identifier(string2)), i);
 			return this.recipeFactory.create(identifier, string, ingredient, itemStack);
 		}
 

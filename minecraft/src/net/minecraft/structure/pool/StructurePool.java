@@ -8,6 +8,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
 import java.util.function.Function;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryElementCodec;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.structure.processor.GravityStructureProcessor;
 import net.minecraft.structure.processor.StructureProcessor;
@@ -15,11 +18,8 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.Codecs;
-import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.Heightmap;
 import org.apache.commons.lang3.mutable.MutableObject;
 
@@ -38,7 +38,7 @@ public class StructurePool {
 				.apply(instance, StructurePool::new)
 	);
 	public static final Codec<RegistryEntry<StructurePool>> REGISTRY_CODEC = Util.make(
-		RegistryElementCodec.of(Registry.STRUCTURE_POOL_KEY, CODEC), FALLBACK::setValue
+		RegistryElementCodec.of(RegistryKeys.TEMPLATE_POOL_WORLDGEN, CODEC), FALLBACK::setValue
 	);
 	private final List<Pair<StructurePoolElement, Integer>> elementCounts;
 	private final ObjectArrayList<StructurePoolElement> elements;

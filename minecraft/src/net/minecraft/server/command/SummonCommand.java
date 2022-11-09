@@ -13,12 +13,12 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.World;
 
 public class SummonCommand {
@@ -33,7 +33,7 @@ public class SummonCommand {
 			CommandManager.literal("summon")
 				.requires(source -> source.hasPermissionLevel(2))
 				.then(
-					CommandManager.argument("entity", RegistryEntryArgumentType.registryEntry(registryAccess, Registry.ENTITY_TYPE_KEY))
+					CommandManager.argument("entity", RegistryEntryArgumentType.registryEntry(registryAccess, RegistryKeys.ENTITY_TYPE))
 						.suggests(SuggestionProviders.SUMMONABLE_ENTITIES)
 						.executes(
 							context -> execute(

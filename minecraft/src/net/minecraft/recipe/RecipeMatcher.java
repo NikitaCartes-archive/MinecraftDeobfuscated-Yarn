@@ -13,7 +13,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 
 /**
  * Matching class that matches a recipe to its required resources.
@@ -55,7 +55,7 @@ public class RecipeMatcher {
 	}
 
 	public static int getItemId(ItemStack stack) {
-		return Registry.ITEM.getRawId(stack.getItem());
+		return Registries.ITEM.getRawId(stack.getItem());
 	}
 
 	/**

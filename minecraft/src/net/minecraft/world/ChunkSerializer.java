@@ -26,6 +26,11 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtLongArray;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtShort;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureContext;
 import net.minecraft.structure.StructureStart;
@@ -33,9 +38,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.chunk.BelowZeroRetrogen;
@@ -92,7 +94,7 @@ public class ChunkSerializer {
 		boolean bl2 = world.getDimension().hasSkyLight();
 		ChunkManager chunkManager = world.getChunkManager();
 		LightingProvider lightingProvider = chunkManager.getLightingProvider();
-		Registry<Biome> registry = world.getRegistryManager().get(Registry.BIOME_KEY);
+		Registry<Biome> registry = world.getRegistryManager().get(RegistryKeys.BIOME_WORLDGEN);
 		Codec<ReadableContainer<RegistryEntry<Biome>>> codec = createCodec(registry);
 		boolean bl3 = false;
 
@@ -157,20 +159,20 @@ public class ChunkSerializer {
 		Chunk chunk;
 		if (chunkType == ChunkStatus.ChunkType.LEVELCHUNK) {
 			ChunkTickScheduler<Block> chunkTickScheduler = ChunkTickScheduler.create(
-				nbt.getList("block_ticks", NbtElement.COMPOUND_TYPE), id -> Registry.BLOCK.getOrEmpty(Identifier.tryParse(id)), chunkPos
+				nbt.getList("block_ticks", NbtElement.COMPOUND_TYPE), id -> Registries.BLOCK.getOrEmpty(Identifier.tryParse(id)), chunkPos
 			);
 			ChunkTickScheduler<Fluid> chunkTickScheduler2 = ChunkTickScheduler.create(
-				nbt.getList("fluid_ticks", NbtElement.COMPOUND_TYPE), id -> Registry.FLUID.getOrEmpty(Identifier.tryParse(id)), chunkPos
+				nbt.getList("fluid_ticks", NbtElement.COMPOUND_TYPE), id -> Registries.FLUID.getOrEmpty(Identifier.tryParse(id)), chunkPos
 			);
 			chunk = new WorldChunk(
 				world.toServerWorld(), chunkPos, upgradeData, chunkTickScheduler, chunkTickScheduler2, m, chunkSections, getEntityLoadingCallback(world, nbt), blendingData
 			);
 		} else {
 			SimpleTickScheduler<Block> simpleTickScheduler = SimpleTickScheduler.tick(
-				nbt.getList("block_ticks", NbtElement.COMPOUND_TYPE), id -> Registry.BLOCK.getOrEmpty(Identifier.tryParse(id)), chunkPos
+				nbt.getList("block_ticks", NbtElement.COMPOUND_TYPE), id -> Registries.BLOCK.getOrEmpty(Identifier.tryParse(id)), chunkPos
 			);
 			SimpleTickScheduler<Fluid> simpleTickScheduler2 = SimpleTickScheduler.tick(
-				nbt.getList("fluid_ticks", NbtElement.COMPOUND_TYPE), id -> Registry.FLUID.getOrEmpty(Identifier.tryParse(id)), chunkPos
+				nbt.getList("fluid_ticks", NbtElement.COMPOUND_TYPE), id -> Registries.FLUID.getOrEmpty(Identifier.tryParse(id)), chunkPos
 			);
 			ProtoChunk protoChunk = new ProtoChunk(chunkPos, upgradeData, chunkSections, simpleTickScheduler, simpleTickScheduler2, world, registry, blendingData);
 			chunk = protoChunk;
@@ -314,7 +316,7 @@ public class ChunkSerializer {
 		ChunkSection[] chunkSections = chunk.getSectionArray();
 		NbtList nbtList = new NbtList();
 		LightingProvider lightingProvider = world.getChunkManager().getLightingProvider();
-		Registry<Biome> registry = world.getRegistryManager().get(Registry.BIOME_KEY);
+		Registry<Biome> registry = world.getRegistryManager().get(RegistryKeys.BIOME_WORLDGEN);
 		Codec<ReadableContainer<RegistryEntry<Biome>>> codec = createCodec(registry);
 		boolean bl = chunk.isLightOn();
 
@@ -396,8 +398,8 @@ public class ChunkSerializer {
 
 	private static void serializeTicks(ServerWorld world, NbtCompound nbt, Chunk.TickSchedulers tickSchedulers) {
 		long l = world.getLevelProperties().getTime();
-		nbt.put("block_ticks", tickSchedulers.blocks().toNbt(l, block -> Registry.BLOCK.getId(block).toString()));
-		nbt.put("fluid_ticks", tickSchedulers.fluids().toNbt(l, fluid -> Registry.FLUID.getId(fluid).toString()));
+		nbt.put("block_ticks", tickSchedulers.blocks().toNbt(l, block -> Registries.BLOCK.getId(block).toString()));
+		nbt.put("fluid_ticks", tickSchedulers.fluids().toNbt(l, fluid -> Registries.FLUID.getId(fluid).toString()));
 	}
 
 	public static ChunkStatus.ChunkType getChunkType(@Nullable NbtCompound nbt) {
@@ -440,7 +442,7 @@ public class ChunkSerializer {
 	private static NbtCompound writeStructures(StructureContext context, ChunkPos pos, Map<Structure, StructureStart> starts, Map<Structure, LongSet> references) {
 		NbtCompound nbtCompound = new NbtCompound();
 		NbtCompound nbtCompound2 = new NbtCompound();
-		Registry<Structure> registry = context.registryManager().get(Registry.STRUCTURE_KEY);
+		Registry<Structure> registry = context.registryManager().get(RegistryKeys.STRUCTURE_WORLDGEN);
 
 		for (Entry<Structure, StructureStart> entry : starts.entrySet()) {
 			Identifier identifier = registry.getId((Structure)entry.getKey());
@@ -463,7 +465,7 @@ public class ChunkSerializer {
 
 	private static Map<Structure, StructureStart> readStructureStarts(StructureContext context, NbtCompound nbt, long worldSeed) {
 		Map<Structure, StructureStart> map = Maps.<Structure, StructureStart>newHashMap();
-		Registry<Structure> registry = context.registryManager().get(Registry.STRUCTURE_KEY);
+		Registry<Structure> registry = context.registryManager().get(RegistryKeys.STRUCTURE_WORLDGEN);
 		NbtCompound nbtCompound = nbt.getCompound("starts");
 
 		for (String string : nbtCompound.getKeys()) {
@@ -484,7 +486,7 @@ public class ChunkSerializer {
 
 	private static Map<Structure, LongSet> readStructureReferences(DynamicRegistryManager registryManager, ChunkPos pos, NbtCompound nbt) {
 		Map<Structure, LongSet> map = Maps.<Structure, LongSet>newHashMap();
-		Registry<Structure> registry = registryManager.get(Registry.STRUCTURE_KEY);
+		Registry<Structure> registry = registryManager.get(RegistryKeys.STRUCTURE_WORLDGEN);
 		NbtCompound nbtCompound = nbt.getCompound("References");
 
 		for (String string : nbtCompound.getKeys()) {

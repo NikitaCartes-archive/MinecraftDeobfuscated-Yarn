@@ -14,7 +14,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 
 public final class VoxelShapes {
-	public static final double field_31880 = 1.0E-7;
+	public static final double MIN_SIZE = 1.0E-7;
 	public static final double field_31881 = 1.0E-6;
 	private static final VoxelShape FULL_CUBE = Util.make(() -> {
 		VoxelSet voxelSet = new BitSetVoxelSet(1, 1, 1);

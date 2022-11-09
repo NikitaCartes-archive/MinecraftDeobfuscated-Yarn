@@ -9,11 +9,11 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.Validate;
 

@@ -40,7 +40,12 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 	@Override
 	public void handledScreenTick() {
 		if (this.client.interactionManager.hasCreativeInventory()) {
-			this.client.setScreen(new CreativeInventoryScreen(this.client.player, this.client.player.networkHandler.getEnabledFeatures()));
+			this.client
+				.setScreen(
+					new CreativeInventoryScreen(
+						this.client.player, this.client.player.networkHandler.getEnabledFeatures(), this.client.options.getOperatorItemsTab().getValue()
+					)
+				);
 		} else {
 			this.recipeBook.update();
 		}
@@ -49,7 +54,12 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 	@Override
 	protected void init() {
 		if (this.client.interactionManager.hasCreativeInventory()) {
-			this.client.setScreen(new CreativeInventoryScreen(this.client.player, this.client.player.networkHandler.getEnabledFeatures()));
+			this.client
+				.setScreen(
+					new CreativeInventoryScreen(
+						this.client.player, this.client.player.networkHandler.getEnabledFeatures(), this.client.options.getOperatorItemsTab().getValue()
+					)
+				);
 		} else {
 			super.init();
 			this.narrow = this.width < 379;
@@ -92,7 +102,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 
 	@Override
 	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
 		int i = this.x;

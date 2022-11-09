@@ -27,6 +27,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.Registries;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -34,7 +35,6 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.EightWayDirection;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.EmptyBlockView;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.World;
@@ -79,8 +79,8 @@ public class UpgradeData {
 			}
 		}
 
-		addNeighborTicks(nbt, "neighbor_block_ticks", id -> Registry.BLOCK.getOrEmpty(Identifier.tryParse(id)).or(() -> Optional.of(Blocks.AIR)), this.blockTicks);
-		addNeighborTicks(nbt, "neighbor_fluid_ticks", id -> Registry.FLUID.getOrEmpty(Identifier.tryParse(id)).or(() -> Optional.of(Fluids.EMPTY)), this.fluidTicks);
+		addNeighborTicks(nbt, "neighbor_block_ticks", id -> Registries.BLOCK.getOrEmpty(Identifier.tryParse(id)).or(() -> Optional.of(Blocks.AIR)), this.blockTicks);
+		addNeighborTicks(nbt, "neighbor_fluid_ticks", id -> Registries.FLUID.getOrEmpty(Identifier.tryParse(id)).or(() -> Optional.of(Fluids.EMPTY)), this.fluidTicks);
 	}
 
 	private static <T> void addNeighborTicks(NbtCompound nbt, String key, Function<String, Optional<T>> nameToType, List<Tick<T>> ticks) {
@@ -225,13 +225,13 @@ public class UpgradeData {
 		nbtCompound.putByte("Sides", (byte)ix);
 		if (!this.blockTicks.isEmpty()) {
 			NbtList nbtList = new NbtList();
-			this.blockTicks.forEach(blockTick -> nbtList.add(blockTick.toNbt(block -> Registry.BLOCK.getId(block).toString())));
+			this.blockTicks.forEach(blockTick -> nbtList.add(blockTick.toNbt(block -> Registries.BLOCK.getId(block).toString())));
 			nbtCompound.put("neighbor_block_ticks", nbtList);
 		}
 
 		if (!this.fluidTicks.isEmpty()) {
 			NbtList nbtList = new NbtList();
-			this.fluidTicks.forEach(fluidTick -> nbtList.add(fluidTick.toNbt(fluid -> Registry.FLUID.getId(fluid).toString())));
+			this.fluidTicks.forEach(fluidTick -> nbtList.add(fluidTick.toNbt(fluid -> Registries.FLUID.getId(fluid).toString())));
 			nbtCompound.put("neighbor_fluid_ticks", nbtList);
 		}
 

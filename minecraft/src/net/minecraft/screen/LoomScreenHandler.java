@@ -17,13 +17,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.BannerPatternTags;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.BannerPatternTags;
 import net.minecraft.util.DyeColor;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 
 public class LoomScreenHandler extends ScreenHandler {
 	private static final int field_39120 = -1;
@@ -138,13 +138,13 @@ public class LoomScreenHandler extends ScreenHandler {
 
 	private List<RegistryEntry<BannerPattern>> getPatternsFor(ItemStack stack) {
 		if (stack.isEmpty()) {
-			return (List<RegistryEntry<BannerPattern>>)Registry.BANNER_PATTERN
+			return (List<RegistryEntry<BannerPattern>>)Registries.BANNER_PATTERN
 				.getEntryList(BannerPatternTags.NO_ITEM_REQUIRED)
 				.map(ImmutableList::copyOf)
 				.orElse(ImmutableList.of());
 		} else {
 			return stack.getItem() instanceof BannerPatternItem bannerPatternItem
-				? (List)Registry.BANNER_PATTERN.getEntryList(bannerPatternItem.getPattern()).map(ImmutableList::copyOf).orElse(ImmutableList.of())
+				? (List)Registries.BANNER_PATTERN.getEntryList(bannerPatternItem.getPattern()).map(ImmutableList::copyOf).orElse(ImmutableList.of())
 				: List.of();
 		}
 	}
@@ -219,19 +219,19 @@ public class LoomScreenHandler extends ScreenHandler {
 	}
 
 	@Override
-	public ItemStack transferSlot(PlayerEntity player, int index) {
+	public ItemStack quickMove(PlayerEntity player, int slot) {
 		ItemStack itemStack = ItemStack.EMPTY;
-		Slot slot = this.slots.get(index);
-		if (slot != null && slot.hasStack()) {
-			ItemStack itemStack2 = slot.getStack();
+		Slot slot2 = this.slots.get(slot);
+		if (slot2 != null && slot2.hasStack()) {
+			ItemStack itemStack2 = slot2.getStack();
 			itemStack = itemStack2.copy();
-			if (index == this.outputSlot.id) {
+			if (slot == this.outputSlot.id) {
 				if (!this.insertItem(itemStack2, 4, 40, true)) {
 					return ItemStack.EMPTY;
 				}
 
-				slot.onQuickTransfer(itemStack2, itemStack);
-			} else if (index != this.dyeSlot.id && index != this.bannerSlot.id && index != this.patternSlot.id) {
+				slot2.onQuickTransfer(itemStack2, itemStack);
+			} else if (slot != this.dyeSlot.id && slot != this.bannerSlot.id && slot != this.patternSlot.id) {
 				if (itemStack2.getItem() instanceof BannerItem) {
 					if (!this.insertItem(itemStack2, this.bannerSlot.id, this.bannerSlot.id + 1, false)) {
 						return ItemStack.EMPTY;
@@ -244,11 +244,11 @@ public class LoomScreenHandler extends ScreenHandler {
 					if (!this.insertItem(itemStack2, this.patternSlot.id, this.patternSlot.id + 1, false)) {
 						return ItemStack.EMPTY;
 					}
-				} else if (index >= 4 && index < 31) {
+				} else if (slot >= 4 && slot < 31) {
 					if (!this.insertItem(itemStack2, 31, 40, false)) {
 						return ItemStack.EMPTY;
 					}
-				} else if (index >= 31 && index < 40 && !this.insertItem(itemStack2, 4, 31, false)) {
+				} else if (slot >= 31 && slot < 40 && !this.insertItem(itemStack2, 4, 31, false)) {
 					return ItemStack.EMPTY;
 				}
 			} else if (!this.insertItem(itemStack2, 4, 40, false)) {
@@ -256,16 +256,16 @@ public class LoomScreenHandler extends ScreenHandler {
 			}
 
 			if (itemStack2.isEmpty()) {
-				slot.setStack(ItemStack.EMPTY);
+				slot2.setStack(ItemStack.EMPTY);
 			} else {
-				slot.markDirty();
+				slot2.markDirty();
 			}
 
 			if (itemStack2.getCount() == itemStack.getCount()) {
 				return ItemStack.EMPTY;
 			}
 
-			slot.onTakeItem(player, itemStack2);
+			slot2.onTakeItem(player, itemStack2);
 		}
 
 		return itemStack;

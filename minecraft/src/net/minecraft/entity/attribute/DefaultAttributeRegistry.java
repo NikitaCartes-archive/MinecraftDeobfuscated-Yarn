@@ -73,8 +73,8 @@ import net.minecraft.entity.passive.TurtleEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Util;
-import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
 
 public class DefaultAttributeRegistry {
@@ -171,11 +171,11 @@ public class DefaultAttributeRegistry {
 	}
 
 	public static void checkMissing() {
-		Registry.ENTITY_TYPE
+		Registries.ENTITY_TYPE
 			.stream()
 			.filter(entityType -> entityType.getSpawnGroup() != SpawnGroup.MISC)
 			.filter(entityType -> !hasDefinitionFor(entityType))
-			.map(Registry.ENTITY_TYPE::getId)
+			.map(Registries.ENTITY_TYPE::getId)
 			.forEach(id -> Util.error("Entity " + id + " has no attributes"));
 	}
 }

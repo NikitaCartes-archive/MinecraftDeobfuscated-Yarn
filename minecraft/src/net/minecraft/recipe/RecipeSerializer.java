@@ -2,8 +2,9 @@ package net.minecraft.recipe;
 
 import com.google.gson.JsonObject;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 /**
  * The recipe serializer controls the serialization and deserialization of
@@ -91,6 +92,6 @@ public interface RecipeSerializer<T extends Recipe<?>> {
 	void write(PacketByteBuf buf, T recipe);
 
 	static <S extends RecipeSerializer<T>, T extends Recipe<?>> S register(String id, S serializer) {
-		return Registry.register(Registry.RECIPE_SERIALIZER, id, serializer);
+		return Registry.register(Registries.RECIPE_SERIALIZER, id, serializer);
 	}
 }

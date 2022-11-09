@@ -18,12 +18,13 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 
 public class SetBannerPatternFunction extends ConditionalLootFunction {
 	final List<Pair<RegistryEntry<BannerPattern>, DyeColor>> patterns;
@@ -85,7 +86,7 @@ public class SetBannerPatternFunction extends ConditionalLootFunction {
 		}
 
 		public SetBannerPatternFunction.Builder pattern(RegistryKey<BannerPattern> pattern, DyeColor color) {
-			return this.pattern(Registry.BANNER_PATTERN.entryOf(pattern), color);
+			return this.pattern(Registries.BANNER_PATTERN.entryOf(pattern), color);
 		}
 
 		public SetBannerPatternFunction.Builder pattern(RegistryEntry<BannerPattern> pattern, DyeColor color) {
@@ -123,8 +124,8 @@ public class SetBannerPatternFunction extends ConditionalLootFunction {
 			for (int i = 0; i < jsonArray.size(); i++) {
 				JsonObject jsonObject2 = JsonHelper.asObject(jsonArray.get(i), "pattern[" + i + "]");
 				String string = JsonHelper.getString(jsonObject2, "pattern");
-				Optional<? extends RegistryEntry<BannerPattern>> optional = Registry.BANNER_PATTERN
-					.getEntry(RegistryKey.of(Registry.BANNER_PATTERN_KEY, new Identifier(string)));
+				Optional<? extends RegistryEntry<BannerPattern>> optional = Registries.BANNER_PATTERN
+					.getEntry(RegistryKey.of(RegistryKeys.BANNER_PATTERN, new Identifier(string)));
 				if (optional.isEmpty()) {
 					throw new JsonSyntaxException("Unknown pattern: " + string);
 				}

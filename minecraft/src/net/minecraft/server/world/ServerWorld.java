@@ -73,6 +73,13 @@ import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.recipe.RecipeManager;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.server.MinecraftServer;
@@ -82,7 +89,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.structure.StructureTemplateManager;
-import net.minecraft.tag.TagKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.CsvWriter;
 import net.minecraft.util.ProgressListener;
@@ -100,11 +106,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryEntryList;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.village.raid.Raid;
@@ -478,7 +479,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 			if (bl) {
 				int k = this.getGameRules().getInt(GameRules.SNOW_ACCUMULATION_HEIGHT);
-				if (biome.canSetSnow(this, blockPos) && k > 0) {
+				if (k > 0 && biome.canSetSnow(this, blockPos)) {
 					BlockState blockState = this.getBlockState(blockPos);
 					if (blockState.isOf(Blocks.SNOW)) {
 						int l = (Integer)blockState.get(SnowBlock.LAYERS);
@@ -531,7 +532,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	private Optional<BlockPos> getLightningRodPos(BlockPos pos) {
 		Optional<BlockPos> optional = this.getPointOfInterestStorage()
 			.getNearestPosition(
-				registryEntry -> registryEntry.matchesKey(PointOfInterestTypes.LIGHTNING_ROD),
+				poiType -> poiType.matchesKey(PointOfInterestTypes.LIGHTNING_ROD),
 				posx -> posx.getY() == this.getTopY(Heightmap.Type.WORLD_SURFACE, posx.getX(), posx.getZ()) - 1,
 				pos,
 				128,
@@ -719,7 +720,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		entity.resetPosition();
 		Profiler profiler = this.getProfiler();
 		entity.age++;
-		this.getProfiler().push((Supplier<String>)(() -> Registry.ENTITY_TYPE.getId(entity.getType()).toString()));
+		this.getProfiler().push((Supplier<String>)(() -> Registries.ENTITY_TYPE.getId(entity.getType()).toString()));
 		profiler.visit("tickNonPassenger");
 		entity.tick();
 		this.getProfiler().pop();
@@ -736,7 +737,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			passenger.resetPosition();
 			passenger.age++;
 			Profiler profiler = this.getProfiler();
-			profiler.push((Supplier<String>)(() -> Registry.ENTITY_TYPE.getId(passenger.getType()).toString()));
+			profiler.push((Supplier<String>)(() -> Registries.ENTITY_TYPE.getId(passenger.getType()).toString()));
 			profiler.visit("tickPassenger");
 			passenger.tickRiding();
 			profiler.pop();
@@ -1266,7 +1267,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		if (!this.server.getSaveProperties().getGeneratorOptions().shouldGenerateStructures()) {
 			return null;
 		} else {
-			Optional<RegistryEntryList.Named<Structure>> optional = this.getRegistryManager().get(Registry.STRUCTURE_KEY).getEntryList(structureTag);
+			Optional<RegistryEntryList.Named<Structure>> optional = this.getRegistryManager().get(RegistryKeys.STRUCTURE_WORLDGEN).getEntryList(structureTag);
 			if (optional.isEmpty()) {
 				return null;
 			} else {
@@ -1610,7 +1611,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 				entity.getY(),
 				entity.getZ(),
 				entity.getUuid(),
-				Registry.ENTITY_TYPE.getId(entity.getType()),
+				Registries.ENTITY_TYPE.getId(entity.getType()),
 				entity.isAlive(),
 				text2.getString(),
 				text != null ? text.getString() : null
@@ -1678,7 +1679,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			"players: %s, entities: %s [%s], block_entities: %d [%s], block_ticks: %d, fluid_ticks: %d, chunk_source: %s",
 			this.players.size(),
 			this.entityManager.getDebugString(),
-			getTopFive(this.entityManager.getLookup().iterate(), entity -> Registry.ENTITY_TYPE.getId(entity.getType()).toString()),
+			getTopFive(this.entityManager.getLookup().iterate(), entity -> Registries.ENTITY_TYPE.getId(entity.getType()).toString()),
 			this.blockEntityTickers.size(),
 			getTopFive(this.blockEntityTickers, BlockEntityTickInvoker::getName),
 			this.getBlockTickScheduler().getTickCount(),

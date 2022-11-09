@@ -5,19 +5,19 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
+import net.minecraft.registry.RegistryCodecs;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.StructureTemplate;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryCodecs;
-import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.WorldView;
 
 public class BlockRotStructureProcessor extends StructureProcessor {
 	public static final Codec<BlockRotStructureProcessor> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					RegistryCodecs.entryList(Registry.BLOCK_KEY).optionalFieldOf("rottable_blocks").forGetter(processor -> processor.rottableBlocks),
+					RegistryCodecs.entryList(RegistryKeys.BLOCK).optionalFieldOf("rottable_blocks").forGetter(processor -> processor.rottableBlocks),
 					Codec.floatRange(0.0F, 1.0F).fieldOf("integrity").forGetter(processor -> processor.integrity)
 				)
 				.apply(instance, BlockRotStructureProcessor::new)

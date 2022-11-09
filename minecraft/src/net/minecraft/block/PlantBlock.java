@@ -1,7 +1,7 @@
 package net.minecraft.block;
 
 import net.minecraft.entity.ai.pathing.NavigationType;
-import net.minecraft.tag.BlockTags;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;

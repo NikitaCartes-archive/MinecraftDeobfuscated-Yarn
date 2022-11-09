@@ -733,6 +733,24 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_HANGING_SIGN_HIT,
 		SoundEvents.BLOCK_HANGING_SIGN_FALL
 	);
+	public static final BlockSoundGroup field_41083 = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_NETHER_WOOD_HANGING_SIGN_BREAK,
+		SoundEvents.BLOCK_NETHER_WOOD_HANGING_SIGN_STEP,
+		SoundEvents.BLOCK_NETHER_WOOD_HANGING_SIGN_PLACE,
+		SoundEvents.BLOCK_NETHER_WOOD_HANGING_SIGN_HIT,
+		SoundEvents.BLOCK_NETHER_WOOD_HANGING_SIGN_FALL
+	);
+	public static final BlockSoundGroup field_41084 = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_BAMBOO_WOOD_HANGING_SIGN_BREAK,
+		SoundEvents.BLOCK_BAMBOO_WOOD_HANGING_SIGN_STEP,
+		SoundEvents.BLOCK_BAMBOO_WOOD_HANGING_SIGN_PLACE,
+		SoundEvents.BLOCK_BAMBOO_WOOD_HANGING_SIGN_HIT,
+		SoundEvents.BLOCK_BAMBOO_WOOD_HANGING_SIGN_FALL
+	);
 	public static final BlockSoundGroup BAMBOO_WOOD = new BlockSoundGroup(
 		1.0F,
 		1.0F,
@@ -750,6 +768,15 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_NETHER_WOOD_PLACE,
 		SoundEvents.BLOCK_NETHER_WOOD_HIT,
 		SoundEvents.BLOCK_NETHER_WOOD_FALL
+	);
+	public static final BlockSoundGroup field_41085 = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_CHISELED_BOOKSHELF_BREAK,
+		SoundEvents.BLOCK_CHISELED_BOOKSHELF_STEP,
+		SoundEvents.BLOCK_CHISELED_BOOKSHELF_PLACE,
+		SoundEvents.BLOCK_CHISELED_BOOKSHELF_HIT,
+		SoundEvents.BLOCK_CHISELED_BOOKSHELF_FALL
 	);
 	public final float volume;
 	public final float pitch;

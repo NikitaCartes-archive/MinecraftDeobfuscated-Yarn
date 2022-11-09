@@ -7,12 +7,13 @@ import java.util.function.Predicate;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.TagKey;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ModifiableWorld;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.TestableWorld;
@@ -118,7 +119,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 	private final Codec<ConfiguredFeature<FC, Feature<FC>>> codec;
 
 	private static <C extends FeatureConfig, F extends Feature<C>> F register(String name, F feature) {
-		return Registry.register(Registry.FEATURE, name, feature);
+		return Registry.register(Registries.FEATURE, name, feature);
 	}
 
 	public Feature(Codec<FC> configCodec) {

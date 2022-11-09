@@ -1,10 +1,11 @@
 package net.minecraft.loot.condition;
 
 import java.util.function.Predicate;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonSerializer;
 import net.minecraft.util.JsonSerializing;
-import net.minecraft.util.registry.Registry;
 
 public class LootConditionTypes {
 	public static final LootConditionType INVERTED = register("inverted", new InvertedLootCondition.Serializer());
@@ -28,12 +29,12 @@ public class LootConditionTypes {
 	public static final LootConditionType VALUE_CHECK = register("value_check", new ValueCheckLootCondition.Serializer());
 
 	private static LootConditionType register(String id, JsonSerializer<? extends LootCondition> serializer) {
-		return Registry.register(Registry.LOOT_CONDITION_TYPE, new Identifier(id), new LootConditionType(serializer));
+		return Registry.register(Registries.LOOT_CONDITION_TYPE, new Identifier(id), new LootConditionType(serializer));
 	}
 
 	public static Object createGsonSerializer() {
 		return JsonSerializing.<LootCondition, LootConditionType>createSerializerBuilder(
-				Registry.LOOT_CONDITION_TYPE, "condition", "condition", LootCondition::getType
+				Registries.LOOT_CONDITION_TYPE, "condition", "condition", LootCondition::getType
 			)
 			.build();
 	}

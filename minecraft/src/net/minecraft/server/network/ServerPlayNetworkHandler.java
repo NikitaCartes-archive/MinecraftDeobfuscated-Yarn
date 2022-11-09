@@ -142,6 +142,8 @@ import net.minecraft.network.packet.s2c.play.ProfilelessChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.AnvilScreenHandler;
 import net.minecraft.screen.BeaconScreenHandler;
@@ -171,8 +173,6 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.CommandBlockExecutor;
@@ -706,7 +706,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 			if (this.player.world.getBlockEntity(blockPos) instanceof JigsawBlockEntity jigsawBlockEntity) {
 				jigsawBlockEntity.setName(packet.getName());
 				jigsawBlockEntity.setTarget(packet.getTarget());
-				jigsawBlockEntity.setPool(RegistryKey.of(Registry.STRUCTURE_POOL_KEY, packet.getPool()));
+				jigsawBlockEntity.setPool(RegistryKey.of(RegistryKeys.TEMPLATE_POOL_WORLDGEN, packet.getPool()));
 				jigsawBlockEntity.setFinalState(packet.getFinalState());
 				jigsawBlockEntity.setJoint(packet.getJointType());
 				jigsawBlockEntity.markDirty();
@@ -1435,7 +1435,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 				if (this.player.getVehicle() instanceof JumpingMount) {
 					JumpingMount jumpingMount = (JumpingMount)this.player.getVehicle();
 					int i = packet.getMountJumpHeight();
-					if (jumpingMount.canJump() && i > 0) {
+					if (jumpingMount.canJump(this.player) && i > 0) {
 						jumpingMount.startJumping(i);
 					}
 				}

@@ -4,11 +4,11 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import java.util.function.Function;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 
 public abstract class FloatProvider implements FloatSupplier {
 	private static final Codec<Either<Float, FloatProvider>> FLOAT_CODEC = Codec.either(
-		Codec.FLOAT, Registry.FLOAT_PROVIDER_TYPE.getCodec().dispatch(FloatProvider::getType, FloatProviderType::codec)
+		Codec.FLOAT, Registries.FLOAT_PROIDER_TYPE.getCodec().dispatch(FloatProvider::getType, FloatProviderType::codec)
 	);
 	public static final Codec<FloatProvider> VALUE_CODEC = FLOAT_CODEC.xmap(
 		either -> either.map(ConstantFloatProvider::create, provider -> provider),

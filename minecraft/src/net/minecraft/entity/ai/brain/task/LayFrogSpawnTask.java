@@ -1,55 +1,48 @@
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableMap;
 import net.minecraft.block.Block;
-import net.minecraft.entity.ai.brain.MemoryModuleState;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.passive.FrogEntity;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
-public class LayFrogSpawnTask extends Task<FrogEntity> {
-	private final Block frogSpawn;
-	private final MemoryModuleType<?> triggerMemory;
+public class LayFrogSpawnTask {
+	public static Task<LivingEntity> create(Block frogSpawn) {
+		return TaskTriggerer.task(
+			context -> context.group(
+						context.queryMemoryAbsent(MemoryModuleType.ATTACK_TARGET),
+						context.queryMemoryValue(MemoryModuleType.WALK_TARGET),
+						context.queryMemoryValue(MemoryModuleType.IS_PREGNANT)
+					)
+					.apply(
+						context,
+						(attackTarget, walkTarget, isPregnant) -> (world, entity, time) -> {
+								if (!entity.isTouchingWater() && entity.isOnGround()) {
+									BlockPos blockPos = entity.getBlockPos().down();
 
-	public LayFrogSpawnTask(Block frogSpawn, MemoryModuleType<?> triggerMemory) {
-		super(
-			ImmutableMap.of(
-				MemoryModuleType.ATTACK_TARGET,
-				MemoryModuleState.VALUE_ABSENT,
-				MemoryModuleType.WALK_TARGET,
-				MemoryModuleState.VALUE_PRESENT,
-				MemoryModuleType.IS_PREGNANT,
-				MemoryModuleState.VALUE_PRESENT
-			)
+									for (Direction direction : Direction.Type.HORIZONTAL) {
+										BlockPos blockPos2 = blockPos.offset(direction);
+										if (world.getBlockState(blockPos2).getCollisionShape(world, blockPos2).getFace(Direction.UP).isEmpty()
+											&& world.getFluidState(blockPos2).isOf(Fluids.WATER)) {
+											BlockPos blockPos3 = blockPos2.up();
+											if (world.getBlockState(blockPos3).isAir()) {
+												world.setBlockState(blockPos3, frogSpawn.getDefaultState(), Block.NOTIFY_ALL);
+												world.playSoundFromEntity(null, entity, SoundEvents.ENTITY_FROG_LAY_SPAWN, SoundCategory.BLOCKS, 1.0F, 1.0F);
+												isPregnant.forget();
+												return true;
+											}
+										}
+									}
+
+									return true;
+								} else {
+									return false;
+								}
+							}
+					)
 		);
-		this.frogSpawn = frogSpawn;
-		this.triggerMemory = triggerMemory;
-	}
-
-	protected boolean shouldRun(ServerWorld serverWorld, FrogEntity frogEntity) {
-		return !frogEntity.isTouchingWater() && frogEntity.isOnGround();
-	}
-
-	protected void run(ServerWorld serverWorld, FrogEntity frogEntity, long l) {
-		BlockPos blockPos = frogEntity.getBlockPos().down();
-
-		for (Direction direction : Direction.Type.HORIZONTAL) {
-			BlockPos blockPos2 = blockPos.offset(direction);
-			if (serverWorld.getBlockState(blockPos2).getCollisionShape(serverWorld, blockPos2).getFace(Direction.UP).isEmpty()
-				&& serverWorld.getFluidState(blockPos2).isOf(Fluids.WATER)) {
-				BlockPos blockPos3 = blockPos2.up();
-				if (serverWorld.getBlockState(blockPos3).isAir()) {
-					serverWorld.setBlockState(blockPos3, this.frogSpawn.getDefaultState(), Block.NOTIFY_ALL);
-					serverWorld.playSoundFromEntity(null, frogEntity, SoundEvents.ENTITY_FROG_LAY_SPAWN, SoundCategory.BLOCKS, 1.0F, 1.0F);
-					frogEntity.getBrain().forget(this.triggerMemory);
-					return;
-				}
-			}
-		}
 	}
 }

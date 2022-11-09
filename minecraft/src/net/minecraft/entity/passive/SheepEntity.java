@@ -358,7 +358,7 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 	private static CraftingInventory createDyeMixingCraftingInventory(DyeColor firstColor, DyeColor secondColor) {
 		CraftingInventory craftingInventory = new CraftingInventory(new ScreenHandler(null, -1) {
 			@Override
-			public ItemStack transferSlot(PlayerEntity player, int index) {
+			public ItemStack quickMove(PlayerEntity player, int slot) {
 				return ItemStack.EMPTY;
 			}
 

@@ -44,13 +44,13 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.tag.GameEventTags;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.GameEventTags;
-import net.minecraft.tag.TagKey;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -201,7 +201,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 	@Override
 	public boolean damage(DamageSource source, float amount) {
 		if (source.getAttacker() instanceof PlayerEntity playerEntity) {
-			Optional<UUID> optional = this.getBrain().getOptionalMemory(MemoryModuleType.LIKED_PLAYER);
+			Optional<UUID> optional = this.getBrain().getOptionalRegisteredMemory(MemoryModuleType.LIKED_PLAYER);
 			if (optional.isPresent() && playerEntity.getUuid().equals(optional.get())) {
 				return false;
 			}
@@ -416,7 +416,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 	}
 
 	@Override
-	public boolean hasWings() {
+	public boolean isFlappingWings() {
 		return !this.isOnGround();
 	}
 
@@ -433,7 +433,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 	}
 
 	public boolean isPanicking() {
-		return this.brain.getOptionalMemory(MemoryModuleType.IS_PANICKING).isPresent();
+		return this.brain.getOptionalRegisteredMemory(MemoryModuleType.IS_PANICKING).isPresent();
 	}
 
 	public void setDancing(boolean dancing) {
@@ -633,7 +633,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 			if (AllayEntity.this.isAiDisabled()) {
 				return false;
 			} else {
-				Optional<GlobalPos> optional = AllayEntity.this.getBrain().getOptionalMemory(MemoryModuleType.LIKED_NOTEBLOCK);
+				Optional<GlobalPos> optional = AllayEntity.this.getBrain().getOptionalRegisteredMemory(MemoryModuleType.LIKED_NOTEBLOCK);
 				if (optional.isEmpty()) {
 					return true;
 				} else {

@@ -48,7 +48,7 @@ public class BatEntity extends AmbientEntity {
 	}
 
 	@Override
-	public boolean hasWings() {
+	public boolean isFlappingWings() {
 		return !this.isRoosting() && this.age % field_28637 == 0;
 	}
 

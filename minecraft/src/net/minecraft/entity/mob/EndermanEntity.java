@@ -45,11 +45,12 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.FluidTags;
 import net.minecraft.util.TimeHelper;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -59,7 +60,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
@@ -200,7 +200,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 		super.readCustomDataFromNbt(nbt);
 		BlockState blockState = null;
 		if (nbt.contains("carriedBlockState", NbtElement.COMPOUND_TYPE)) {
-			blockState = NbtHelper.toBlockState(this.world.createCommandRegistryWrapper(Registry.BLOCK_KEY), nbt.getCompound("carriedBlockState"));
+			blockState = NbtHelper.toBlockState(this.world.createCommandRegistryWrapper(RegistryKeys.BLOCK), nbt.getCompound("carriedBlockState"));
 			if (blockState.isAir()) {
 				blockState = null;
 			}

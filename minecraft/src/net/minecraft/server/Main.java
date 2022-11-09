@@ -23,6 +23,10 @@ import net.minecraft.datafixer.Schemas;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.obfuscate.DontObfuscate;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryOps;
 import net.minecraft.resource.DataConfiguration;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.VanillaDataPackProvider;
@@ -37,13 +41,10 @@ import net.minecraft.util.ApiServices;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiling.jfr.FlightProfiler;
 import net.minecraft.util.profiling.jfr.InstanceType;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.dimension.DimensionOptions;
@@ -142,7 +143,7 @@ public class Main {
 						applyExecutor -> SaveLoading.load(
 								serverConfig,
 								context -> {
-									Registry<DimensionOptions> registry = context.dimensionsRegistryManager().get(Registry.DIMENSION_KEY);
+									Registry<DimensionOptions> registry = context.dimensionsRegistryManager().get(RegistryKeys.DIMENSION);
 									DynamicOps<NbtElement> dynamicOps = RegistryOps.of(NbtOps.INSTANCE, context.worldGenRegistryManager());
 									Pair<SaveProperties, DimensionOptionsRegistryHolder.DimensionsConfig> pair = session.readLevelProperties(
 										dynamicOps, context.dataConfiguration(), registry, context.worldGenRegistryManager().getRegistryLifecycle()
@@ -196,7 +197,7 @@ public class Main {
 
 			DynamicRegistryManager.Immutable immutable = saveLoader.combinedDynamicRegistries().getCombinedRegistryManager();
 			if (optionSet.has(optionSpec5)) {
-				forceUpgradeWorld(session, Schemas.getFixer(), optionSet.has(optionSpec6), () -> true, immutable.get(Registry.DIMENSION_KEY));
+				forceUpgradeWorld(session, Schemas.getFixer(), optionSet.has(optionSpec6), () -> true, immutable.get(RegistryKeys.DIMENSION));
 			}
 
 			SaveProperties saveProperties = saveLoader.saveProperties();

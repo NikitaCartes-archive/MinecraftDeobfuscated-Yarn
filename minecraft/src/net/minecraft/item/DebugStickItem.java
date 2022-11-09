@@ -6,6 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
@@ -14,7 +15,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
@@ -58,7 +58,7 @@ public class DebugStickItem extends Item {
 			Block block = state.getBlock();
 			StateManager<Block, BlockState> stateManager = block.getStateManager();
 			Collection<Property<?>> collection = stateManager.getProperties();
-			String string = Registry.BLOCK.getId(block).toString();
+			String string = Registries.BLOCK.getId(block).toString();
 			if (collection.isEmpty()) {
 				sendMessage(player, Text.translatable(this.getTranslationKey() + ".empty", string));
 				return false;

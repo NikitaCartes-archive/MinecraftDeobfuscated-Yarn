@@ -51,7 +51,8 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.GlUniform;
-import net.minecraft.client.gl.ShaderEffect;
+import net.minecraft.client.gl.PostEffectProcessor;
+import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.CloudRenderMode;
@@ -83,6 +84,8 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.particle.SculkChargeParticleEffect;
 import net.minecraft.particle.ShriekParticleEffect;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
@@ -90,7 +93,6 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.FluidTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -112,7 +114,6 @@ import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockRenderView;
@@ -182,7 +183,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 	@Nullable
 	private Framebuffer entityOutlinesFramebuffer;
 	@Nullable
-	private ShaderEffect entityOutlineShader;
+	private PostEffectProcessor entityOutlinePostProcessor;
 	@Nullable
 	private Framebuffer translucentFramebuffer;
 	@Nullable
@@ -194,7 +195,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 	@Nullable
 	private Framebuffer cloudsFramebuffer;
 	@Nullable
-	private ShaderEffect transparencyShader;
+	private PostEffectProcessor transparencyPostProcessor;
 	private double lastCameraChunkUpdateX = Double.MIN_VALUE;
 	private double lastCameraChunkUpdateY = Double.MIN_VALUE;
 	private double lastCameraChunkUpdateZ = Double.MIN_VALUE;
@@ -281,7 +282,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			RenderSystem.depthMask(MinecraftClient.isFabulousGraphicsOrBetter());
 			int m = -1;
 			float g = (float)this.ticks + tickDelta;
-			RenderSystem.setShader(GameRenderer::getParticleShader);
+			RenderSystem.setShader(GameRenderer::getParticleProgram);
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
@@ -463,58 +464,62 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 	}
 
 	public void close() {
-		if (this.entityOutlineShader != null) {
-			this.entityOutlineShader.close();
+		if (this.entityOutlinePostProcessor != null) {
+			this.entityOutlinePostProcessor.close();
 		}
 
-		if (this.transparencyShader != null) {
-			this.transparencyShader.close();
+		if (this.transparencyPostProcessor != null) {
+			this.transparencyPostProcessor.close();
 		}
 	}
 
 	@Override
 	public void reload(ResourceManager manager) {
-		this.loadEntityOutlineShader();
+		this.loadEntityOutlinePostProcessor();
 		if (MinecraftClient.isFabulousGraphicsOrBetter()) {
-			this.loadTransparencyShader();
+			this.loadTransparencyPostProcessor();
 		}
 	}
 
-	public void loadEntityOutlineShader() {
-		if (this.entityOutlineShader != null) {
-			this.entityOutlineShader.close();
+	public void loadEntityOutlinePostProcessor() {
+		if (this.entityOutlinePostProcessor != null) {
+			this.entityOutlinePostProcessor.close();
 		}
 
 		Identifier identifier = new Identifier("shaders/post/entity_outline.json");
 
 		try {
-			this.entityOutlineShader = new ShaderEffect(this.client.getTextureManager(), this.client.getResourceManager(), this.client.getFramebuffer(), identifier);
-			this.entityOutlineShader.setupDimensions(this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight());
-			this.entityOutlinesFramebuffer = this.entityOutlineShader.getSecondaryTarget("final");
+			this.entityOutlinePostProcessor = new PostEffectProcessor(
+				this.client.getTextureManager(), this.client.getResourceManager(), this.client.getFramebuffer(), identifier
+			);
+			this.entityOutlinePostProcessor.setupDimensions(this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight());
+			this.entityOutlinesFramebuffer = this.entityOutlinePostProcessor.getSecondaryTarget("final");
 		} catch (IOException var3) {
 			LOGGER.warn("Failed to load shader: {}", identifier, var3);
-			this.entityOutlineShader = null;
+			this.entityOutlinePostProcessor = null;
 			this.entityOutlinesFramebuffer = null;
 		} catch (JsonSyntaxException var4) {
 			LOGGER.warn("Failed to parse shader: {}", identifier, var4);
-			this.entityOutlineShader = null;
+			this.entityOutlinePostProcessor = null;
 			this.entityOutlinesFramebuffer = null;
 		}
 	}
 
-	private void loadTransparencyShader() {
-		this.resetTransparencyShader();
+	private void loadTransparencyPostProcessor() {
+		this.resetTransparencyPostProcessor();
 		Identifier identifier = new Identifier("shaders/post/transparency.json");
 
 		try {
-			ShaderEffect shaderEffect = new ShaderEffect(this.client.getTextureManager(), this.client.getResourceManager(), this.client.getFramebuffer(), identifier);
-			shaderEffect.setupDimensions(this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight());
-			Framebuffer framebuffer = shaderEffect.getSecondaryTarget("translucent");
-			Framebuffer framebuffer2 = shaderEffect.getSecondaryTarget("itemEntity");
-			Framebuffer framebuffer3 = shaderEffect.getSecondaryTarget("particles");
-			Framebuffer framebuffer4 = shaderEffect.getSecondaryTarget("weather");
-			Framebuffer framebuffer5 = shaderEffect.getSecondaryTarget("clouds");
-			this.transparencyShader = shaderEffect;
+			PostEffectProcessor postEffectProcessor = new PostEffectProcessor(
+				this.client.getTextureManager(), this.client.getResourceManager(), this.client.getFramebuffer(), identifier
+			);
+			postEffectProcessor.setupDimensions(this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight());
+			Framebuffer framebuffer = postEffectProcessor.getSecondaryTarget("translucent");
+			Framebuffer framebuffer2 = postEffectProcessor.getSecondaryTarget("itemEntity");
+			Framebuffer framebuffer3 = postEffectProcessor.getSecondaryTarget("particles");
+			Framebuffer framebuffer4 = postEffectProcessor.getSecondaryTarget("weather");
+			Framebuffer framebuffer5 = postEffectProcessor.getSecondaryTarget("clouds");
+			this.transparencyPostProcessor = postEffectProcessor;
 			this.translucentFramebuffer = framebuffer;
 			this.entityFramebuffer = framebuffer2;
 			this.particlesFramebuffer = framebuffer3;
@@ -523,31 +528,31 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		} catch (Exception var8) {
 			String string = var8 instanceof JsonSyntaxException ? "parse" : "load";
 			String string2 = "Failed to " + string + " shader: " + identifier;
-			WorldRenderer.ShaderException shaderException = new WorldRenderer.ShaderException(string2, var8);
+			WorldRenderer.ProgramInitException programInitException = new WorldRenderer.ProgramInitException(string2, var8);
 			if (this.client.getResourcePackManager().getEnabledNames().size() > 1) {
 				Text text = (Text)this.client.getResourceManager().streamResourcePacks().findFirst().map(resourcePack -> Text.literal(resourcePack.getName())).orElse(null);
 				this.client.options.getGraphicsMode().setValue(GraphicsMode.FANCY);
-				this.client.onResourceReloadFailure(shaderException, text);
+				this.client.onResourceReloadFailure(programInitException, text);
 			} else {
-				CrashReport crashReport = this.client.addDetailsToCrashReport(new CrashReport(string2, shaderException));
+				CrashReport crashReport = this.client.addDetailsToCrashReport(new CrashReport(string2, programInitException));
 				this.client.options.getGraphicsMode().setValue(GraphicsMode.FANCY);
 				this.client.options.write();
-				LOGGER.error(LogUtils.FATAL_MARKER, string2, (Throwable)shaderException);
+				LOGGER.error(LogUtils.FATAL_MARKER, string2, (Throwable)programInitException);
 				this.client.cleanUpAfterCrash();
 				MinecraftClient.printCrashReport(crashReport);
 			}
 		}
 	}
 
-	private void resetTransparencyShader() {
-		if (this.transparencyShader != null) {
-			this.transparencyShader.close();
+	private void resetTransparencyPostProcessor() {
+		if (this.transparencyPostProcessor != null) {
+			this.transparencyPostProcessor.close();
 			this.translucentFramebuffer.delete();
 			this.entityFramebuffer.delete();
 			this.particlesFramebuffer.delete();
 			this.weatherFramebuffer.delete();
 			this.cloudsFramebuffer.delete();
-			this.transparencyShader = null;
+			this.transparencyPostProcessor = null;
 			this.translucentFramebuffer = null;
 			this.entityFramebuffer = null;
 			this.particlesFramebuffer = null;
@@ -570,7 +575,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 	protected boolean canDrawEntityOutlines() {
 		return !this.client.gameRenderer.isRenderingPanorama()
 			&& this.entityOutlinesFramebuffer != null
-			&& this.entityOutlineShader != null
+			&& this.entityOutlinePostProcessor != null
 			&& this.client.player != null;
 	}
 
@@ -605,7 +610,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 	private static BufferBuilder.BuiltBuffer renderSky(BufferBuilder builder, float f) {
 		float g = Math.signum(f) * 512.0F;
 		float h = 512.0F;
-		RenderSystem.setShader(GameRenderer::getPositionShader);
+		RenderSystem.setShader(GameRenderer::getPositionProgram);
 		builder.begin(VertexFormat.DrawMode.TRIANGLE_FAN, VertexFormats.POSITION);
 		builder.vertex(0.0, (double)f, 0.0).next();
 
@@ -622,7 +627,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 	private void renderStars() {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		RenderSystem.setShader(GameRenderer::getPositionShader);
+		RenderSystem.setShader(GameRenderer::getPositionProgram);
 		if (this.starsBuffer != null) {
 			this.starsBuffer.close();
 		}
@@ -709,17 +714,17 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		}
 	}
 
-	public void reloadTransparencyShader() {
+	public void reloadTransparencyPostProcessor() {
 		if (MinecraftClient.isFabulousGraphicsOrBetter()) {
-			this.loadTransparencyShader();
+			this.loadTransparencyPostProcessor();
 		} else {
-			this.resetTransparencyShader();
+			this.resetTransparencyPostProcessor();
 		}
 	}
 
 	public void reload() {
 		if (this.world != null) {
-			this.reloadTransparencyShader();
+			this.reloadTransparencyPostProcessor();
 			this.world.reloadColor();
 			if (this.chunkBuilder == null) {
 				this.chunkBuilder = new ChunkBuilder(this.world, this, Util.getMainWorkerExecutor(), this.client.is64Bit(), this.bufferBuilders.getBlockBufferBuilders());
@@ -762,12 +767,12 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 	public void onResized(int width, int height) {
 		this.scheduleTerrainUpdate();
-		if (this.entityOutlineShader != null) {
-			this.entityOutlineShader.setupDimensions(width, height);
+		if (this.entityOutlinePostProcessor != null) {
+			this.entityOutlinePostProcessor.setupDimensions(width, height);
 		}
 
-		if (this.transparencyShader != null) {
-			this.transparencyShader.setupDimensions(width, height);
+		if (this.transparencyPostProcessor != null) {
+			this.transparencyPostProcessor.setupDimensions(width, height);
 		}
 	}
 
@@ -1157,7 +1162,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		boolean bl3 = this.client.world.getDimensionEffects().useThickFog(MathHelper.floor(d), MathHelper.floor(e))
 			|| this.client.inGameHud.getBossBarHud().shouldThickenFog();
 		profiler.swap("sky");
-		RenderSystem.setShader(GameRenderer::getPositionShader);
+		RenderSystem.setShader(GameRenderer::getPositionProgram);
 		this.renderSky(
 			matrices, positionMatrix, tickDelta, camera, bl3, () -> BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_SKY, g, bl3, tickDelta)
 		);
@@ -1259,7 +1264,8 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 							VertexConsumer vertexConsumer = new OverlayVertexConsumer(
 								this.bufferBuilders.getEffectVertexConsumers().getBuffer((RenderLayer)ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.get(l)),
 								entry.getPositionMatrix(),
-								entry.getNormalMatrix()
+								entry.getNormalMatrix(),
+								1.0F
 							);
 							vertexConsumerProvider2 = renderLayer -> {
 								VertexConsumer vertexConsumer2x = immediate.getBuffer(renderLayer);
@@ -1297,7 +1303,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		immediate.draw(TexturedRenderLayers.getChest());
 		this.bufferBuilders.getOutlineVertexConsumers().draw();
 		if (bl4) {
-			this.entityOutlineShader.render(tickDelta);
+			this.entityOutlinePostProcessor.render(tickDelta);
 			this.client.getFramebuffer().beginWrite(false);
 		}
 
@@ -1318,7 +1324,8 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 					VertexConsumer vertexConsumer2 = new OverlayVertexConsumer(
 						this.bufferBuilders.getEffectVertexConsumers().getBuffer((RenderLayer)ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.get(p)),
 						entry3.getPositionMatrix(),
-						entry3.getNormalMatrix()
+						entry3.getNormalMatrix(),
+						1.0F
 					);
 					this.client.getBlockRenderManager().renderDamage(this.world.getBlockState(blockPos), blockPos, this.world, matrices, vertexConsumer2);
 					matrices.pop();
@@ -1357,7 +1364,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		immediate.draw(RenderLayer.getDirectEntityGlint());
 		immediate.draw(RenderLayer.getWaterMask());
 		this.bufferBuilders.getEffectVertexConsumers().draw();
-		if (this.transparencyShader != null) {
+		if (this.transparencyPostProcessor != null) {
 			immediate.draw(RenderLayer.getLines());
 			immediate.draw();
 			this.translucentFramebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
@@ -1391,7 +1398,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		matrixStack.multiplyPositionMatrix(matrices.peek().getPositionMatrix());
 		RenderSystem.applyModelViewMatrix();
 		if (this.client.options.getCloudRenderModeValue() != CloudRenderMode.OFF) {
-			if (this.transparencyShader != null) {
+			if (this.transparencyPostProcessor != null) {
 				this.cloudsFramebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
 				RenderPhase.CLOUDS_TARGET.startDrawing();
 				profiler.swap("clouds");
@@ -1399,18 +1406,18 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				RenderPhase.CLOUDS_TARGET.endDrawing();
 			} else {
 				profiler.swap("clouds");
-				RenderSystem.setShader(GameRenderer::getPositionTexColorNormalShader);
+				RenderSystem.setShader(GameRenderer::getPositionTexColorNormalProgram);
 				this.renderClouds(matrices, positionMatrix, tickDelta, d, e, f);
 			}
 		}
 
-		if (this.transparencyShader != null) {
+		if (this.transparencyPostProcessor != null) {
 			RenderPhase.WEATHER_TARGET.startDrawing();
 			profiler.swap("weather");
 			this.renderWeather(lightmapTextureManager, tickDelta, d, e, f);
 			this.renderWorldBorder(camera);
 			RenderPhase.WEATHER_TARGET.endDrawing();
-			this.transparencyShader.render(tickDelta);
+			this.transparencyPostProcessor.render(tickDelta);
 			this.client.getFramebuffer().beginWrite(false);
 		} else {
 			RenderSystem.depthMask(false);
@@ -1473,52 +1480,52 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		this.client.getProfiler().swap((Supplier<String>)(() -> "render_" + renderLayer));
 		boolean bl = renderLayer != RenderLayer.getTranslucent();
 		ObjectListIterator<WorldRenderer.ChunkInfo> objectListIterator = this.chunkInfos.listIterator(bl ? 0 : this.chunkInfos.size());
-		Shader shader = RenderSystem.getShader();
+		ShaderProgram shaderProgram = RenderSystem.getShader();
 
 		for (int j = 0; j < 12; j++) {
 			int k = RenderSystem.getShaderTexture(j);
-			shader.addSampler("Sampler" + j, k);
+			shaderProgram.addSampler("Sampler" + j, k);
 		}
 
-		if (shader.modelViewMat != null) {
-			shader.modelViewMat.set(matrices.peek().getPositionMatrix());
+		if (shaderProgram.modelViewMat != null) {
+			shaderProgram.modelViewMat.set(matrices.peek().getPositionMatrix());
 		}
 
-		if (shader.projectionMat != null) {
-			shader.projectionMat.set(positionMatrix);
+		if (shaderProgram.projectionMat != null) {
+			shaderProgram.projectionMat.set(positionMatrix);
 		}
 
-		if (shader.colorModulator != null) {
-			shader.colorModulator.set(RenderSystem.getShaderColor());
+		if (shaderProgram.colorModulator != null) {
+			shaderProgram.colorModulator.set(RenderSystem.getShaderColor());
 		}
 
-		if (shader.fogStart != null) {
-			shader.fogStart.set(RenderSystem.getShaderFogStart());
+		if (shaderProgram.fogStart != null) {
+			shaderProgram.fogStart.set(RenderSystem.getShaderFogStart());
 		}
 
-		if (shader.fogEnd != null) {
-			shader.fogEnd.set(RenderSystem.getShaderFogEnd());
+		if (shaderProgram.fogEnd != null) {
+			shaderProgram.fogEnd.set(RenderSystem.getShaderFogEnd());
 		}
 
-		if (shader.fogColor != null) {
-			shader.fogColor.set(RenderSystem.getShaderFogColor());
+		if (shaderProgram.fogColor != null) {
+			shaderProgram.fogColor.set(RenderSystem.getShaderFogColor());
 		}
 
-		if (shader.fogShape != null) {
-			shader.fogShape.set(RenderSystem.getShaderFogShape().getId());
+		if (shaderProgram.fogShape != null) {
+			shaderProgram.fogShape.set(RenderSystem.getShaderFogShape().getId());
 		}
 
-		if (shader.textureMat != null) {
-			shader.textureMat.set(RenderSystem.getTextureMatrix());
+		if (shaderProgram.textureMat != null) {
+			shaderProgram.textureMat.set(RenderSystem.getTextureMatrix());
 		}
 
-		if (shader.gameTime != null) {
-			shader.gameTime.set(RenderSystem.getShaderGameTime());
+		if (shaderProgram.gameTime != null) {
+			shaderProgram.gameTime.set(RenderSystem.getShaderGameTime());
 		}
 
-		RenderSystem.setupShaderLights(shader);
-		shader.bind();
-		GlUniform glUniform = shader.chunkOffset;
+		RenderSystem.setupShaderLights(shaderProgram);
+		shaderProgram.bind();
+		GlUniform glUniform = shaderProgram.chunkOffset;
 
 		while (bl ? objectListIterator.hasNext() : objectListIterator.hasPrevious()) {
 			WorldRenderer.ChunkInfo chunkInfo2 = bl ? (WorldRenderer.ChunkInfo)objectListIterator.next() : objectListIterator.previous();
@@ -1540,7 +1547,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			glUniform.set(0.0F, 0.0F, 0.0F);
 		}
 
-		shader.unbind();
+		shaderProgram.unbind();
 		VertexBuffer.unbind();
 		this.client.getProfiler().pop();
 		renderLayer.endDrawing();
@@ -1549,7 +1556,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 	private void renderChunkDebugInfo(Camera camera) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		RenderSystem.setShader(GameRenderer::getPositionColorShader);
+		RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 		if (this.client.debugChunkInfo || this.client.debugChunkOcclusion) {
 			double d = camera.getPos().getX();
 			double e = camera.getPos().getY();
@@ -1567,7 +1574,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				matrixStack.push();
 				matrixStack.translate((double)blockPos.getX() - d, (double)blockPos.getY() - e, (double)blockPos.getZ() - f);
 				RenderSystem.applyModelViewMatrix();
-				RenderSystem.setShader(GameRenderer::getRenderTypeLinesShader);
+				RenderSystem.setShader(GameRenderer::getRenderTypeLinesProgram);
 				if (this.client.debugChunkInfo) {
 					bufferBuilder.begin(VertexFormat.DrawMode.LINES, VertexFormats.LINES);
 					RenderSystem.lineWidth(5.0F);
@@ -1596,7 +1603,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 				if (this.client.debugChunkOcclusion && !builtChunk.getData().isEmpty()) {
 					bufferBuilder.begin(VertexFormat.DrawMode.LINES, VertexFormats.LINES);
-					RenderSystem.setShader(GameRenderer::getRenderTypeLinesShader);
+					RenderSystem.setShader(GameRenderer::getRenderTypeLinesProgram);
 					RenderSystem.lineWidth(5.0F);
 					int i = 0;
 
@@ -1619,7 +1626,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 					tessellator.draw();
 					RenderSystem.lineWidth(1.0F);
-					RenderSystem.setShader(GameRenderer::getPositionColorShader);
+					RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 					if (i > 0) {
 						bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 						float g = 0.5F;
@@ -1668,7 +1675,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
 			RenderSystem.lineWidth(5.0F);
-			RenderSystem.setShader(GameRenderer::getPositionColorShader);
+			RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 			MatrixStack matrixStack2 = RenderSystem.getModelViewStack();
 			matrixStack2.push();
 			matrixStack2.translate(
@@ -1687,7 +1694,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			this.method_22985(bufferBuilder, 1, 5, 6, 2, 1, 0, 1);
 			tessellator.draw();
 			RenderSystem.depthMask(false);
-			RenderSystem.setShader(GameRenderer::getRenderTypeLinesShader);
+			RenderSystem.setShader(GameRenderer::getRenderTypeLinesProgram);
 			bufferBuilder.begin(VertexFormat.DrawMode.LINES, VertexFormats.LINES);
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			this.method_22984(bufferBuilder, 0);
@@ -1795,7 +1802,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.depthMask(false);
-		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+		RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
 		RenderSystem.setShaderTexture(0, END_SKY);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
@@ -1854,15 +1861,15 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 					BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
 					RenderSystem.depthMask(false);
 					RenderSystem.setShaderColor(f, g, h, 1.0F);
-					Shader shader = RenderSystem.getShader();
+					ShaderProgram shaderProgram = RenderSystem.getShader();
 					this.lightSkyBuffer.bind();
-					this.lightSkyBuffer.draw(matrices.peek().getPositionMatrix(), projectionMatrix, shader);
+					this.lightSkyBuffer.draw(matrices.peek().getPositionMatrix(), projectionMatrix, shaderProgram);
 					VertexBuffer.unbind();
 					RenderSystem.enableBlend();
 					RenderSystem.defaultBlendFunc();
 					float[] fs = this.world.getDimensionEffects().getFogColorOverride(this.world.getSkyAngle(tickDelta), tickDelta);
 					if (fs != null) {
-						RenderSystem.setShader(GameRenderer::getPositionColorShader);
+						RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 						RenderSystem.disableTexture();
 						RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 						matrices.push();
@@ -1885,7 +1892,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 							bufferBuilder.vertex(matrix4f, p * 120.0F, q * 120.0F, -q * 40.0F * fs[3]).color(fs[0], fs[1], fs[2], 0.0F).next();
 						}
 
-						BufferRenderer.drawWithShader(bufferBuilder.end());
+						BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
 						matrices.pop();
 					}
 
@@ -1900,14 +1907,14 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 					matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(this.world.getSkyAngle(tickDelta) * 360.0F));
 					Matrix4f matrix4f2 = matrices.peek().getPositionMatrix();
 					float k = 30.0F;
-					RenderSystem.setShader(GameRenderer::getPositionTexShader);
+					RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 					RenderSystem.setShaderTexture(0, SUN);
 					bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
 					bufferBuilder.vertex(matrix4f2, -k, 100.0F, -k).texture(0.0F, 0.0F).next();
 					bufferBuilder.vertex(matrix4f2, k, 100.0F, -k).texture(1.0F, 0.0F).next();
 					bufferBuilder.vertex(matrix4f2, k, 100.0F, k).texture(1.0F, 1.0F).next();
 					bufferBuilder.vertex(matrix4f2, -k, 100.0F, k).texture(0.0F, 1.0F).next();
-					BufferRenderer.drawWithShader(bufferBuilder.end());
+					BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
 					k = 20.0F;
 					RenderSystem.setShaderTexture(0, MOON_PHASES);
 					int r = this.world.getMoonPhase();
@@ -1922,14 +1929,14 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 					bufferBuilder.vertex(matrix4f2, k, -100.0F, k).texture(t, q).next();
 					bufferBuilder.vertex(matrix4f2, k, -100.0F, -k).texture(t, o).next();
 					bufferBuilder.vertex(matrix4f2, -k, -100.0F, -k).texture(p, o).next();
-					BufferRenderer.drawWithShader(bufferBuilder.end());
+					BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
 					RenderSystem.disableTexture();
 					float u = this.world.method_23787(tickDelta) * i;
 					if (u > 0.0F) {
 						RenderSystem.setShaderColor(u, u, u, u);
 						BackgroundRenderer.clearFog();
 						this.starsBuffer.bind();
-						this.starsBuffer.draw(matrices.peek().getPositionMatrix(), projectionMatrix, GameRenderer.getPositionShader());
+						this.starsBuffer.draw(matrices.peek().getPositionMatrix(), projectionMatrix, GameRenderer.getPositionProgram());
 						VertexBuffer.unbind();
 						runnable.run();
 					}
@@ -1944,7 +1951,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 						matrices.push();
 						matrices.translate(0.0F, 12.0F, 0.0F);
 						this.darkSkyBuffer.bind();
-						this.darkSkyBuffer.draw(matrices.peek().getPositionMatrix(), projectionMatrix, shader);
+						this.darkSkyBuffer.draw(matrices.peek().getPositionMatrix(), projectionMatrix, shaderProgram);
 						VertexBuffer.unbind();
 						matrices.pop();
 					}
@@ -2024,7 +2031,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				VertexBuffer.unbind();
 			}
 
-			RenderSystem.setShader(GameRenderer::getPositionTexColorNormalShader);
+			RenderSystem.setShader(GameRenderer::getPositionTexColorNormalProgram);
 			RenderSystem.setShaderTexture(0, CLOUDS);
 			BackgroundRenderer.setFogBlack();
 			matrices.push();
@@ -2041,8 +2048,8 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 						RenderSystem.colorMask(true, true, true, true);
 					}
 
-					Shader shader = RenderSystem.getShader();
-					this.cloudsBuffer.draw(matrices.peek().getPositionMatrix(), projectionMatrix, shader);
+					ShaderProgram shaderProgram = RenderSystem.getShader();
+					this.cloudsBuffer.draw(matrices.peek().getPositionMatrix(), projectionMatrix, shaderProgram);
 				}
 
 				VertexBuffer.unbind();
@@ -2075,7 +2082,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		float v = m * 0.8F;
 		float w = n * 0.8F;
 		float aa = o * 0.8F;
-		RenderSystem.setShader(GameRenderer::getPositionTexColorNormalShader);
+		RenderSystem.setShader(GameRenderer::getPositionTexColorNormalProgram);
 		builder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_NORMAL);
 		float ab = (float)Math.floor(y / 4.0) * 4.0F;
 		if (this.lastCloudRenderMode == CloudRenderMode.FANCY) {
@@ -2331,7 +2338,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			float k = (float)(i >> 8 & 0xFF) / 255.0F;
 			float l = (float)(i & 0xFF) / 255.0F;
 			RenderSystem.setShaderColor(j, k, l, (float)e);
-			RenderSystem.setShader(GameRenderer::getPositionTexShader);
+			RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 			RenderSystem.polygonOffset(-3.0F, -3.0F);
 			RenderSystem.enablePolygonOffset();
 			RenderSystem.disableCull();
@@ -2400,7 +2407,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				}
 			}
 
-			BufferRenderer.drawWithShader(bufferBuilder.end());
+			BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
 			RenderSystem.enableCull();
 			RenderSystem.polygonOffset(0.0F, 0.0F);
 			RenderSystem.disablePolygonOffset();
@@ -2709,7 +2716,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		} catch (Throwable var19) {
 			CrashReport crashReport = CrashReport.create(var19, "Exception while adding particle");
 			CrashReportSection crashReportSection = crashReport.addElement("Particle being added");
-			crashReportSection.add("ID", Registry.PARTICLE_TYPE.getId(parameters.getType()));
+			crashReportSection.add("ID", Registries.PARTICLE_TYPE.getId(parameters.getType()));
 			crashReportSection.add("Parameters", parameters.asString());
 			crashReportSection.add("Position", (CrashCallable<String>)(() -> CrashReportSection.createPositionString(this.world, x, y, z)));
 			throw new CrashException(crashReport);
@@ -3410,6 +3417,13 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 	}
 
 	@Environment(EnvType.CLIENT)
+	public static class ProgramInitException extends RuntimeException {
+		public ProgramInitException(String message, Throwable cause) {
+			super(message, cause);
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
 	static class RenderableChunks {
 		public final WorldRenderer.ChunkInfoList chunkInfoList;
 		public final LinkedHashSet<WorldRenderer.ChunkInfo> chunks;
@@ -3417,13 +3431,6 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		public RenderableChunks(int chunkCount) {
 			this.chunkInfoList = new WorldRenderer.ChunkInfoList(chunkCount);
 			this.chunks = new LinkedHashSet(chunkCount);
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static class ShaderException extends RuntimeException {
-		public ShaderException(String message, Throwable cause) {
-			super(message, cause);
 		}
 	}
 }

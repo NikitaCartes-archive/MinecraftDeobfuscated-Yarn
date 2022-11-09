@@ -1,7 +1,8 @@
 package net.minecraft.structure.pool;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 public interface StructurePoolElementType<P extends StructurePoolElement> {
 	StructurePoolElementType<SinglePoolElement> SINGLE_POOL_ELEMENT = register("single_pool_element", SinglePoolElement.CODEC);
@@ -13,6 +14,6 @@ public interface StructurePoolElementType<P extends StructurePoolElement> {
 	Codec<P> codec();
 
 	static <P extends StructurePoolElement> StructurePoolElementType<P> register(String id, Codec<P> codec) {
-		return Registry.register(Registry.STRUCTURE_POOL_ELEMENT, id, () -> codec);
+		return Registry.register(Registries.STRUCTURE_POOL_ELEMENT, id, () -> codec);
 	}
 }

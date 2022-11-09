@@ -6,12 +6,14 @@ import net.minecraft.block.entity.ChiseledBookshelfBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.tag.ItemTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemScatterer;
@@ -61,7 +63,10 @@ public class ChiseledBookshelfBlock extends BlockWithEntity {
 	private static ActionResult tryRemoveBook(World world, BlockPos pos, PlayerEntity player, ChiseledBookshelfBlockEntity blockEntity) {
 		if (!blockEntity.isEmpty()) {
 			ItemStack itemStack = blockEntity.getLastBook();
-			world.playSound(null, pos, SoundEvents.BLOCK_WOOD_PLACE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+			SoundEvent soundEvent = itemStack.isOf(Items.ENCHANTED_BOOK)
+				? SoundEvents.BLOCK_CHISELED_BOOKSHELF_PICKUP_ENCHANTED
+				: SoundEvents.BLOCK_CHISELED_BOOKSHELF_PICKUP;
+			world.playSound(null, pos, soundEvent, SoundCategory.BLOCKS, 1.0F, 1.0F);
 			world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
 			if (!player.getInventory().insertStack(itemStack)) {
 				player.dropItem(itemStack, false);
@@ -72,8 +77,12 @@ public class ChiseledBookshelfBlock extends BlockWithEntity {
 	}
 
 	private static ActionResult tryAddBook(World world, BlockPos pos, PlayerEntity player, ChiseledBookshelfBlockEntity blockEntity, ItemStack stack) {
-		if (blockEntity.addBook(stack.split(1))) {
-			world.playSound(null, pos, SoundEvents.BLOCK_WOOD_PLACE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+		if (!blockEntity.isFull()) {
+			SoundEvent soundEvent = stack.isOf(Items.ENCHANTED_BOOK)
+				? SoundEvents.BLOCK_CHISELED_BOOKSHELF_INSERT_ENCHANTED
+				: SoundEvents.BLOCK_CHISELED_BOOKSHELF_INSERT;
+			blockEntity.addBook(stack.split(1));
+			world.playSound(null, pos, soundEvent, SoundCategory.BLOCKS, 1.0F, 1.0F);
 			if (player.isCreative()) {
 				stack.increment(1);
 			}

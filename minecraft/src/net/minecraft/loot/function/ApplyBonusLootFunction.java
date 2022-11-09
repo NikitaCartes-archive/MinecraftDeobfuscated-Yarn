@@ -15,10 +15,10 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 
 public class ApplyBonusLootFunction extends ConditionalLootFunction {
 	static final Map<Identifier, ApplyBonusLootFunction.FormulaFactory> FACTORIES = Maps.<Identifier, ApplyBonusLootFunction.FormulaFactory>newHashMap();
@@ -160,7 +160,7 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 	public static class Serializer extends ConditionalLootFunction.Serializer<ApplyBonusLootFunction> {
 		public void toJson(JsonObject jsonObject, ApplyBonusLootFunction applyBonusLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, applyBonusLootFunction, jsonSerializationContext);
-			jsonObject.addProperty("enchantment", Registry.ENCHANTMENT.getId(applyBonusLootFunction.enchantment).toString());
+			jsonObject.addProperty("enchantment", Registries.ENCHANTMENT.getId(applyBonusLootFunction.enchantment).toString());
 			jsonObject.addProperty("formula", applyBonusLootFunction.formula.getId().toString());
 			JsonObject jsonObject2 = new JsonObject();
 			applyBonusLootFunction.formula.toJson(jsonObject2, jsonSerializationContext);
@@ -171,7 +171,7 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 
 		public ApplyBonusLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "enchantment"));
-			Enchantment enchantment = (Enchantment)Registry.ENCHANTMENT
+			Enchantment enchantment = (Enchantment)Registries.ENCHANTMENT
 				.getOrEmpty(identifier)
 				.orElseThrow(() -> new JsonParseException("Invalid enchantment id: " + identifier));
 			Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "formula"));

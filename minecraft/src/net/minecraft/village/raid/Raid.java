@@ -84,7 +84,7 @@ public class Raid {
 	private static final Text DEFEAT_TITLE = EVENT_TEXT.copy().append(" - ").append(DEFEAT_SUFFIX_TEXT);
 	private static final int MAX_ACTIVE_TICKS = 48000;
 	public static final int field_30674 = 9216;
-	public static final int field_30675 = 12544;
+	public static final int SQUARED_MAX_RAIDER_DISTANCE = 12544;
 	private final Map<Integer, RaiderEntity> waveToCaptain = Maps.<Integer, RaiderEntity>newHashMap();
 	private final Map<Integer, Set<RaiderEntity>> waveToRaiders = Maps.<Integer, Set<RaiderEntity>>newHashMap();
 	private final Set<UUID> heroesOfTheVillage = Sets.<UUID>newHashSet();

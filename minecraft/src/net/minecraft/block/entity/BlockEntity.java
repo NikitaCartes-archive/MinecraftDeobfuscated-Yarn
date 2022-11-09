@@ -8,11 +8,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.slf4j.Logger;
 
@@ -241,7 +241,7 @@ public abstract class BlockEntity {
 			LOGGER.error("Block entity has invalid type: {}", string);
 			return null;
 		} else {
-			return (BlockEntity)Registry.BLOCK_ENTITY_TYPE.getOrEmpty(identifier).map(type -> {
+			return (BlockEntity)Registries.BLOCK_ENTITY_TYPE.getOrEmpty(identifier).map(type -> {
 				try {
 					return type.instantiate(pos, state);
 				} catch (Throwable var5) {
@@ -366,7 +366,9 @@ public abstract class BlockEntity {
 	}
 
 	public void populateCrashReport(CrashReportSection crashReportSection) {
-		crashReportSection.add("Name", (CrashCallable<String>)(() -> Registry.BLOCK_ENTITY_TYPE.getId(this.getType()) + " // " + this.getClass().getCanonicalName()));
+		crashReportSection.add(
+			"Name", (CrashCallable<String>)(() -> Registries.BLOCK_ENTITY_TYPE.getId(this.getType()) + " // " + this.getClass().getCanonicalName())
+		);
 		if (this.world != null) {
 			CrashReportSection.addBlockInfo(crashReportSection, this.world, this.pos, this.getCachedState());
 			CrashReportSection.addBlockInfo(crashReportSection, this.world, this.pos, this.world.getBlockState(this.pos));

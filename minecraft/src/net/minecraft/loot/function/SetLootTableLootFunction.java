@@ -12,9 +12,9 @@ import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.registry.Registry;
 
 public class SetLootTableLootFunction extends ConditionalLootFunction {
 	final Identifier id;
@@ -80,7 +80,7 @@ public class SetLootTableLootFunction extends ConditionalLootFunction {
 		public void toJson(JsonObject jsonObject, SetLootTableLootFunction setLootTableLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, setLootTableLootFunction, jsonSerializationContext);
 			jsonObject.addProperty("name", setLootTableLootFunction.id.toString());
-			jsonObject.addProperty("type", Registry.BLOCK_ENTITY_TYPE.getId(setLootTableLootFunction.type).toString());
+			jsonObject.addProperty("type", Registries.BLOCK_ENTITY_TYPE.getId(setLootTableLootFunction.type).toString());
 			if (setLootTableLootFunction.seed != 0L) {
 				jsonObject.addProperty("seed", setLootTableLootFunction.seed);
 			}
@@ -90,7 +90,7 @@ public class SetLootTableLootFunction extends ConditionalLootFunction {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "name"));
 			long l = JsonHelper.getLong(jsonObject, "seed", 0L);
 			Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "type"));
-			BlockEntityType<?> blockEntityType = (BlockEntityType<?>)Registry.BLOCK_ENTITY_TYPE
+			BlockEntityType<?> blockEntityType = (BlockEntityType<?>)Registries.BLOCK_ENTITY_TYPE
 				.getOrEmpty(identifier2)
 				.orElseThrow(() -> new JsonSyntaxException("Unknown block entity type id '" + identifier2 + "'"));
 			return new SetLootTableLootFunction(lootConditions, identifier, l, blockEntityType);

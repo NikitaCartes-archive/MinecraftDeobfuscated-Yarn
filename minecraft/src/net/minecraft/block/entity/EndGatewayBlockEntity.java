@@ -14,6 +14,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -23,7 +24,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.WorldChunk;
@@ -213,7 +213,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 			BlockPos blockPos2 = new BlockPos(vec3d.x + 0.5, 75.0, vec3d.z + 0.5);
 			LOGGER.debug("Failed to find a suitable block to teleport to, spawning an island on {}", blockPos2);
 			world.getRegistryManager()
-				.getOptional(Registry.CONFIGURED_FEATURE_KEY)
+				.getOptional(RegistryKeys.CONFIGURED_FEATURE_WORLDGEN)
 				.flatMap(registry -> registry.getEntry(EndConfiguredFeatures.END_ISLAND))
 				.ifPresent(
 					reference -> ((ConfiguredFeature)reference.value())

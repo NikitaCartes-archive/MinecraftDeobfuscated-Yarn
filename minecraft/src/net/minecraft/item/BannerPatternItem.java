@@ -4,7 +4,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.tag.TagKey;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;

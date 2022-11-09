@@ -347,7 +347,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 			this.client.textRenderer.draw(matrices, string, (float)(x + 32 + 3), (float)(y + 1), 16777215);
 			this.client.textRenderer.draw(matrices, string2, (float)(x + 32 + 3), (float)(y + 9 + 3), 8421504);
 			this.client.textRenderer.draw(matrices, text, (float)(x + 32 + 3), (float)(y + 9 + 9 + 3), 8421504);
-			RenderSystem.setShader(GameRenderer::getPositionTexShader);
+			RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			RenderSystem.setShaderTexture(0, this.icon != null ? this.iconLocation : WorldListWidget.UNKNOWN_SERVER_LOCATION);
 			RenderSystem.enableBlend();
@@ -356,7 +356,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 			if (this.client.options.getTouchscreen().getValue() || hovered) {
 				RenderSystem.setShaderTexture(0, WorldListWidget.WORLD_SELECTION_LOCATION);
 				DrawableHelper.fill(matrices, x, y, x + 32, y + 32, -1601138544);
-				RenderSystem.setShader(GameRenderer::getPositionTexShader);
+				RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 				int i = mouseX - x;
 				boolean bl = i < 32;

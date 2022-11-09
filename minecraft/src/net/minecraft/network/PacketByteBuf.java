@@ -53,6 +53,10 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtTagSizeTracker;
 import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.IndexedIterable;
@@ -64,8 +68,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
 /**
@@ -82,7 +84,7 @@ import net.minecraft.world.World;
  *  <td>Codec-based</td><td>{@link #decode(Codec)}</td><td>{@link #encode(Codec, Object)}</td>
  * </tr>
  * <tr>
- *  <td>{@link net.minecraft.util.registry.Registry} value</td><td>{@link #readRegistryValue(IndexedIterable)}</td><td>{@link #writeRegistryValue(IndexedIterable, Object)}</td>
+ *  <td>{@link net.minecraft.registry.Registry} value</td><td>{@link #readRegistryValue(IndexedIterable)}</td><td>{@link #writeRegistryValue(IndexedIterable, Object)}</td>
  * </tr>
  * <tr>
  *  <td>{@link Collection}</td><td>{@link #readCollection(IntFunction, PacketByteBuf.PacketReader)}</td><td>{@link #writeCollection(Collection, PacketByteBuf.PacketWriter)}</td>
@@ -968,7 +970,7 @@ public class PacketByteBuf extends ByteBuf {
 	 * @see #writeGlobalPos(GlobalPos)
 	 */
 	public GlobalPos readGlobalPos() {
-		RegistryKey<World> registryKey = this.readRegistryKey(Registry.WORLD_KEY);
+		RegistryKey<World> registryKey = this.readRegistryKey(RegistryKeys.WORLD);
 		BlockPos blockPos = this.readBlockPos();
 		return GlobalPos.create(registryKey, blockPos);
 	}
@@ -1274,7 +1276,7 @@ public class PacketByteBuf extends ByteBuf {
 		} else {
 			this.writeBoolean(true);
 			Item item = stack.getItem();
-			this.writeRegistryValue(Registry.ITEM, item);
+			this.writeRegistryValue(Registries.ITEM, item);
 			this.writeByte(stack.getCount());
 			NbtCompound nbtCompound = null;
 			if (item.isDamageable() || item.isNbtSynced()) {
@@ -1300,7 +1302,7 @@ public class PacketByteBuf extends ByteBuf {
 		if (!this.readBoolean()) {
 			return ItemStack.EMPTY;
 		} else {
-			Item item = this.readRegistryValue(Registry.ITEM);
+			Item item = this.readRegistryValue(Registries.ITEM);
 			int i = this.readByte();
 			ItemStack itemStack = new ItemStack(item, i);
 			itemStack.setNbt(this.readNbt());

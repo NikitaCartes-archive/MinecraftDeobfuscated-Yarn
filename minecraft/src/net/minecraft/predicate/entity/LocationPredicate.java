@@ -11,12 +11,12 @@ import net.minecraft.predicate.BlockPredicate;
 import net.minecraft.predicate.FluidPredicate;
 import net.minecraft.predicate.LightPredicate;
 import net.minecraft.predicate.NumberRange;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.structure.Structure;
@@ -205,20 +205,20 @@ public class LocationPredicate {
 				? (RegistryKey)Identifier.CODEC
 					.parse(JsonOps.INSTANCE, jsonObject.get("dimension"))
 					.resultOrPartial(LOGGER::error)
-					.map(identifier -> RegistryKey.of(Registry.WORLD_KEY, identifier))
+					.map(identifier -> RegistryKey.of(RegistryKeys.WORLD, identifier))
 					.orElse(null)
 				: null;
 			RegistryKey<Structure> registryKey2 = jsonObject.has("structure")
 				? (RegistryKey)Identifier.CODEC
 					.parse(JsonOps.INSTANCE, jsonObject.get("structure"))
 					.resultOrPartial(LOGGER::error)
-					.map(identifier -> RegistryKey.of(Registry.STRUCTURE_KEY, identifier))
+					.map(identifier -> RegistryKey.of(RegistryKeys.STRUCTURE_WORLDGEN, identifier))
 					.orElse(null)
 				: null;
 			RegistryKey<Biome> registryKey3 = null;
 			if (jsonObject.has("biome")) {
 				Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "biome"));
-				registryKey3 = RegistryKey.of(Registry.BIOME_KEY, identifier);
+				registryKey3 = RegistryKey.of(RegistryKeys.BIOME_WORLDGEN, identifier);
 			}
 
 			Boolean boolean_ = jsonObject.has("smokey") ? jsonObject.get("smokey").getAsBoolean() : null;

@@ -36,14 +36,15 @@ import net.minecraft.predicate.entity.LightningBoltPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.entity.PlayerPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
-import net.minecraft.tag.EntityTypeTags;
-import net.minecraft.tag.ItemTags;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.tag.EntityTypeTags;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntryLookup;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.RegistryWrapper;
 import net.minecraft.village.raid.Raid;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
@@ -139,7 +140,7 @@ public class AdventureTabAdvancementGenerator implements AdvancementTabGenerator
 			)
 			.criterion("slept_in_bed", TickCriterion.Conditions.createSleptInBed())
 			.build(exporter, "adventure/sleep_in_bed");
-		RegistryEntryLookup<Biome> registryEntryLookup = lookup.getWrapperOrThrow(Registry.BIOME_KEY);
+		RegistryEntryLookup<Biome> registryEntryLookup = lookup.getWrapperOrThrow(RegistryKeys.BIOME_WORLDGEN);
 		requireListedBiomesVisited(Advancement.Builder.create(), MultiNoiseBiomeSource.Preset.OVERWORLD.stream(registryEntryLookup).toList())
 			.parent(advancement2)
 			.display(
@@ -595,7 +596,8 @@ public class AdventureTabAdvancementGenerator implements AdvancementTabGenerator
 	private Advancement.Builder requireListedMobsKilled(Advancement.Builder builder) {
 		for (EntityType<?> entityType : MONSTERS) {
 			builder.criterion(
-				Registry.ENTITY_TYPE.getId(entityType).toString(), OnKilledCriterion.Conditions.createPlayerKilledEntity(EntityPredicate.Builder.create().type(entityType))
+				Registries.ENTITY_TYPE.getId(entityType).toString(),
+				OnKilledCriterion.Conditions.createPlayerKilledEntity(EntityPredicate.Builder.create().type(entityType))
 			);
 		}
 

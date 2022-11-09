@@ -15,15 +15,15 @@ import java.util.stream.Collectors;
 import net.minecraft.data.DataOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
-import net.minecraft.tag.TagBuilder;
-import net.minecraft.tag.TagEntry;
-import net.minecraft.tag.TagFile;
-import net.minecraft.tag.TagKey;
-import net.minecraft.tag.TagManagerLoader;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.tag.TagBuilder;
+import net.minecraft.registry.tag.TagEntry;
+import net.minecraft.registry.tag.TagFile;
+import net.minecraft.registry.tag.TagKey;
+import net.minecraft.registry.tag.TagManagerLoader;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.RegistryWrapper;
 import org.slf4j.Logger;
 
 public abstract class AbstractTagProvider<T> implements DataProvider {

@@ -21,6 +21,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
@@ -32,7 +33,6 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
 
 /**
@@ -105,7 +105,7 @@ import org.slf4j.Logger;
  * <p>The screen handler then has to be registered in a registry. Create a new instance of
  * {@link ScreenHandlerType} with the screen handler type factory (which can be a reference
  * to the client-side constructor; i.e. {@code MyScreenHandler::MyScreenHandler})
- * and register it to {@link net.minecraft.util.registry.Registry#SCREEN_HANDLER}.
+ * and register it to {@link net.minecraft.registry.Registries#SCREEN_HANDLER}.
  * 
  * <h3 id="opening">Opening</h3>
  * <p>Most of the screen handlers are associated with a block and opened by using the block.
@@ -127,7 +127,7 @@ import org.slf4j.Logger;
  * <p>Screen handler interaction mainly involves "slot clicks" and "button clicks".
  * A {@linkplain #onSlotClick slot click} is, as mentioned before, an action manipulating
  * the slots' held item stacks. Slot clicks are implemented in this class and
- * {@link #transferSlot}. To manipulate the stacks, get the slot via {@link #getSlot}
+ * {@link #quickMove}. To manipulate the stacks, get the slot via {@link #getSlot}
  * and call methods of it. Screen handlers also provide methods for common operations,
  * such as {@link #insertItem} that inserts a stack to the screen handler's available slots.
  * 
@@ -143,7 +143,7 @@ import org.slf4j.Logger;
  * with an integer.
  * 
  * <p>Subclasses must implement two methods: {@link #canUse(PlayerEntity)} and {@link
- * #transferSlot}. See the documentation of each method for more details.
+ * #quickMove}. See the documentation of each method for more details.
  * 
  * <h3 id="closing">Closing</h3>
  * <p>Since a screen handler handles the client's screen, the screen must be closed at the
@@ -508,19 +508,27 @@ public abstract class ScreenHandler {
 	}
 
 	/**
-	 * Transfers (or "quick-moves") the stack at slot {@code index} to other
-	 * slots of the screen handler that belong to a different inventory.
+	 * Quick-moves the stack at {@code slot} to other
+	 * slots of the screen handler that belong to a different inventory or
+	 * another section of the same inventory. For example, items can be quick-moved
+	 * between a chest's slots and the player inventory or between the main player inventory
+	 * and the hotbar.
 	 * 
 	 * <p>Subclasses should call {@link #insertItem}, and if the insertion was successful,
 	 * clear the slot (if the stack is exhausted) or mark it as dirty. See the vanilla
 	 * subclasses for basic implementation.
 	 * 
+	 * <p>Quick-moving is also known as "shift-clicking" since it's usually triggered
+	 * using <kbd>Shift</kbd>+<kbd>left click</kbd>.
+	 * 
 	 * @return {@link ItemStack#EMPTY} when no stack can be transferred, otherwise
 	 * the original stack
 	 * 
 	 * @see #insertItem
+	 * 
+	 * @param slot the index of the slot to quick-move from
 	 */
-	public abstract ItemStack transferSlot(PlayerEntity player, int index);
+	public abstract ItemStack quickMove(PlayerEntity player, int slot);
 
 	/**
 	 * Performs a slot click. This can behave in many different ways depending mainly on the action type.
@@ -533,7 +541,7 @@ public abstract class ScreenHandler {
 		} catch (Exception var8) {
 			CrashReport crashReport = CrashReport.create(var8, "Container click");
 			CrashReportSection crashReportSection = crashReport.addElement("Click info");
-			crashReportSection.add("Menu Type", (CrashCallable<String>)(() -> this.type != null ? Registry.SCREEN_HANDLER.getId(this.type).toString() : "<no type>"));
+			crashReportSection.add("Menu Type", (CrashCallable<String>)(() -> this.type != null ? Registries.SCREEN_HANDLER.getId(this.type).toString() : "<no type>"));
 			crashReportSection.add("Menu Class", (CrashCallable<String>)(() -> this.getClass().getCanonicalName()));
 			crashReportSection.add("Slot Count", this.slots.size());
 			crashReportSection.add("Slot", slotIndex);
@@ -637,10 +645,10 @@ public abstract class ScreenHandler {
 					return;
 				}
 
-				ItemStack itemStack = this.transferSlot(player, slotIndex);
+				ItemStack itemStack = this.quickMove(player, slotIndex);
 
 				while (!itemStack.isEmpty() && ItemStack.areItemsEqualIgnoreDamage(slot.getStack(), itemStack)) {
-					itemStack = this.transferSlot(player, slotIndex);
+					itemStack = this.quickMove(player, slotIndex);
 				}
 			} else {
 				if (slotIndex < 0) {

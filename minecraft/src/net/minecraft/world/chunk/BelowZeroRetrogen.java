@@ -12,10 +12,10 @@ import java.util.stream.LongStream;
 import javax.annotation.Nullable;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
@@ -25,7 +25,7 @@ public final class BelowZeroRetrogen {
 	private static final BitSet EMPTY_MISSING_BEDROCK_BIT_SET = new BitSet(0);
 	private static final Codec<BitSet> MISSING_BEDROCK_CODEC = Codec.LONG_STREAM
 		.xmap(serializedBedrockBitSet -> BitSet.valueOf(serializedBedrockBitSet.toArray()), bedrockBitSet -> LongStream.of(bedrockBitSet.toLongArray()));
-	private static final Codec<ChunkStatus> STATUS_CODEC = Registry.CHUNK_STATUS
+	private static final Codec<ChunkStatus> STATUS_CODEC = Registries.CHUNK_STATUS
 		.getCodec()
 		.comapFlatMap(status -> status == ChunkStatus.EMPTY ? DataResult.error("target_status cannot be empty") : DataResult.success(status), Function.identity());
 	public static final Codec<BelowZeroRetrogen> CODEC = RecordCodecBuilder.create(

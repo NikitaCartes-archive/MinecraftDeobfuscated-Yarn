@@ -1,43 +1,37 @@
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableMap;
-import java.util.Optional;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.brain.Brain;
-import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
+import org.apache.commons.lang3.mutable.MutableInt;
 
-public class ForgetBellRingTask extends Task<LivingEntity> {
+public class ForgetBellRingTask {
 	private static final int MIN_HEARD_BELL_TIME = 300;
-	private final int distance;
-	private final int maxHiddenTicks;
-	private int hiddenTicks;
 
-	public ForgetBellRingTask(int maxHiddenSeconds, int distance) {
-		super(ImmutableMap.of(MemoryModuleType.HIDING_PLACE, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.HEARD_BELL_TIME, MemoryModuleState.VALUE_PRESENT));
-		this.maxHiddenTicks = maxHiddenSeconds * 20;
-		this.hiddenTicks = 0;
-		this.distance = distance;
-	}
+	public static Task<LivingEntity> create(int maxHiddenSeconds, int distance) {
+		int i = maxHiddenSeconds * 20;
+		MutableInt mutableInt = new MutableInt(0);
+		return TaskTriggerer.task(
+			context -> context.group(context.queryMemoryValue(MemoryModuleType.HIDING_PLACE), context.queryMemoryValue(MemoryModuleType.HEARD_BELL_TIME))
+					.apply(context, (hidingPlace, heardBellTime) -> (world, entity, time) -> {
+							long l = context.<Long>getValue(heardBellTime);
+							boolean bl = l + 300L <= time;
+							if (mutableInt.getValue() <= i && !bl) {
+								BlockPos blockPos = context.<GlobalPos>getValue(hidingPlace).getPos();
+								if (blockPos.isWithinDistance(entity.getBlockPos(), (double)distance)) {
+									mutableInt.increment();
+								}
 
-	@Override
-	protected void run(ServerWorld world, LivingEntity entity, long time) {
-		Brain<?> brain = entity.getBrain();
-		Optional<Long> optional = brain.getOptionalMemory(MemoryModuleType.HEARD_BELL_TIME);
-		boolean bl = (Long)optional.get() + 300L <= time;
-		if (this.hiddenTicks <= this.maxHiddenTicks && !bl) {
-			BlockPos blockPos = ((GlobalPos)brain.getOptionalMemory(MemoryModuleType.HIDING_PLACE).get()).getPos();
-			if (blockPos.isWithinDistance(entity.getBlockPos(), (double)this.distance)) {
-				this.hiddenTicks++;
-			}
-		} else {
-			brain.forget(MemoryModuleType.HEARD_BELL_TIME);
-			brain.forget(MemoryModuleType.HIDING_PLACE);
-			brain.refreshActivities(world.getTimeOfDay(), world.getTime());
-			this.hiddenTicks = 0;
-		}
+								return true;
+							} else {
+								heardBellTime.forget();
+								hidingPlace.forget();
+								entity.getBrain().refreshActivities(world.getTimeOfDay(), world.getTime());
+								mutableInt.setValue(0);
+								return true;
+							}
+						})
+		);
 	}
 }

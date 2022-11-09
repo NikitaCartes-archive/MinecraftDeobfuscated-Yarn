@@ -4,10 +4,10 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.Block;
+import net.minecraft.registry.RegistryCodecs;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.util.math.floatprovider.FloatProvider;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryCodecs;
-import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.gen.ProbabilityConfig;
 import net.minecraft.world.gen.YOffset;
 import net.minecraft.world.gen.heightprovider.HeightProvider;
@@ -20,7 +20,7 @@ public class CarverConfig extends ProbabilityConfig {
 					FloatProvider.VALUE_CODEC.fieldOf("yScale").forGetter(config -> config.yScale),
 					YOffset.OFFSET_CODEC.fieldOf("lava_level").forGetter(config -> config.lavaLevel),
 					CarverDebugConfig.CODEC.optionalFieldOf("debug_settings", CarverDebugConfig.DEFAULT).forGetter(config -> config.debugConfig),
-					RegistryCodecs.entryList(Registry.BLOCK_KEY).fieldOf("replaceable").forGetter(config -> config.replaceable)
+					RegistryCodecs.entryList(RegistryKeys.BLOCK).fieldOf("replaceable").forGetter(config -> config.replaceable)
 				)
 				.apply(instance, CarverConfig::new)
 	);

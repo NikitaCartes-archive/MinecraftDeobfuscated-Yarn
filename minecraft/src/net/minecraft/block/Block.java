@@ -30,12 +30,14 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
@@ -47,8 +49,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -70,12 +70,12 @@ import org.slf4j.Logger;
  * 
  * <p>There is exactly one instance for every type of block. Every stone
  * block for example in a world shares the same block instance. Each block
- * instance is registered under {@link net.minecraft.util.registry.Registry#BLOCK}.
+ * instance is registered under {@link net.minecraft.registry.Registries#BLOCK}.
  * See {@link Blocks} for examples of block instances.
  * 
  * <p>An item corresponding to a block is not automatically created. You
  * may create your own {@link net.minecraft.item.BlockItem} and register it
- * under {@link net.minecraft.util.registry.Registry#ITEM}.
+ * under {@link net.minecraft.registry.Registries#ITEM}.
  * 
  * <p>The translation key for the block name is determined by {@link
  * #getTranslationKey}.
@@ -89,7 +89,7 @@ import org.slf4j.Logger;
  */
 public class Block extends AbstractBlock implements ItemConvertible {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private final RegistryEntry.Reference<Block> registryEntry = Registry.BLOCK.createEntry(this);
+	private final RegistryEntry.Reference<Block> registryEntry = Registries.BLOCK.createEntry(this);
 	public static final IdList<BlockState> STATE_IDS = new IdList<>();
 	private static final LoadingCache<VoxelShape, Boolean> FULL_CUBE_SHAPE_CACHE = CacheBuilder.newBuilder()
 		.maximumSize(512L)
@@ -545,7 +545,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	 */
 	public String getTranslationKey() {
 		if (this.translationKey == null) {
-			this.translationKey = Util.createTranslationKey("block", Registry.BLOCK.getId(this));
+			this.translationKey = Util.createTranslationKey("block", Registries.BLOCK.getId(this));
 		}
 
 		return this.translationKey;
@@ -727,7 +727,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	}
 
 	public String toString() {
-		return "Block{" + Registry.BLOCK.getId(this) + "}";
+		return "Block{" + Registries.BLOCK.getId(this) + "}";
 	}
 
 	/**

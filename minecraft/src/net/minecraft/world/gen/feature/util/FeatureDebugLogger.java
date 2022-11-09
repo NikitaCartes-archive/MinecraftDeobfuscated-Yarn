@@ -10,9 +10,10 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.PlacedFeature;
 import org.apache.commons.lang3.mutable.MutableInt;
@@ -59,7 +60,7 @@ public class FeatureDebugLogger {
 				(world, features) -> {
 					String string = world.getRegistryKey().getValue().toString();
 					boolean bl = world.getServer().isRunning();
-					Registry<PlacedFeature> registry = world.getRegistryManager().get(Registry.PLACED_FEATURE_KEY);
+					Registry<PlacedFeature> registry = world.getRegistryManager().get(RegistryKeys.PLACED_FEATURE_WORLDGEN);
 					String string2 = (bl ? "running" : "dead") + " " + string;
 					Integer integer = features.chunksWithFeatures().getValue();
 					LOGGER.debug(string2 + " total_chunks: " + integer);

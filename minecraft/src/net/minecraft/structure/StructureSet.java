@@ -3,10 +3,10 @@ package net.minecraft.structure;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryElementCodec;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.dynamic.Codecs;
-import net.minecraft.util.dynamic.RegistryElementCodec;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.gen.chunk.placement.StructurePlacement;
 import net.minecraft.world.gen.structure.Structure;
 
@@ -18,7 +18,7 @@ public record StructureSet(List<StructureSet.WeightedEntry> structures, Structur
 				)
 				.apply(instance, StructureSet::new)
 	);
-	public static final Codec<RegistryEntry<StructureSet>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.STRUCTURE_SET_KEY, CODEC);
+	public static final Codec<RegistryEntry<StructureSet>> REGISTRY_CODEC = RegistryElementCodec.of(RegistryKeys.STRUCTURE_SET_WORLDGEN, CODEC);
 
 	public StructureSet(RegistryEntry<Structure> structure, StructurePlacement placement) {
 		this(List.of(new StructureSet.WeightedEntry(structure, 1)), placement);

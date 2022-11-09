@@ -5,13 +5,13 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.registry.Registerable;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryElementCodec;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.random.ChunkRandom;
-import net.minecraft.util.registry.Registerable;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.biome.source.util.VanillaBiomeParameters;
 import net.minecraft.world.gen.densityfunction.DensityFunctions;
@@ -48,15 +48,15 @@ public record ChunkGeneratorSettings(
 				)
 				.apply(instance, ChunkGeneratorSettings::new)
 	);
-	public static final Codec<RegistryEntry<ChunkGeneratorSettings>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, CODEC);
-	public static final RegistryKey<ChunkGeneratorSettings> OVERWORLD = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("overworld"));
-	public static final RegistryKey<ChunkGeneratorSettings> LARGE_BIOMES = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("large_biomes"));
-	public static final RegistryKey<ChunkGeneratorSettings> AMPLIFIED = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("amplified"));
-	public static final RegistryKey<ChunkGeneratorSettings> NETHER = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("nether"));
-	public static final RegistryKey<ChunkGeneratorSettings> END = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("end"));
-	public static final RegistryKey<ChunkGeneratorSettings> CAVES = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("caves"));
+	public static final Codec<RegistryEntry<ChunkGeneratorSettings>> REGISTRY_CODEC = RegistryElementCodec.of(RegistryKeys.NOISE_SETTINGS_WORLDGEN, CODEC);
+	public static final RegistryKey<ChunkGeneratorSettings> OVERWORLD = RegistryKey.of(RegistryKeys.NOISE_SETTINGS_WORLDGEN, new Identifier("overworld"));
+	public static final RegistryKey<ChunkGeneratorSettings> LARGE_BIOMES = RegistryKey.of(RegistryKeys.NOISE_SETTINGS_WORLDGEN, new Identifier("large_biomes"));
+	public static final RegistryKey<ChunkGeneratorSettings> AMPLIFIED = RegistryKey.of(RegistryKeys.NOISE_SETTINGS_WORLDGEN, new Identifier("amplified"));
+	public static final RegistryKey<ChunkGeneratorSettings> NETHER = RegistryKey.of(RegistryKeys.NOISE_SETTINGS_WORLDGEN, new Identifier("nether"));
+	public static final RegistryKey<ChunkGeneratorSettings> END = RegistryKey.of(RegistryKeys.NOISE_SETTINGS_WORLDGEN, new Identifier("end"));
+	public static final RegistryKey<ChunkGeneratorSettings> CAVES = RegistryKey.of(RegistryKeys.NOISE_SETTINGS_WORLDGEN, new Identifier("caves"));
 	public static final RegistryKey<ChunkGeneratorSettings> FLOATING_ISLANDS = RegistryKey.of(
-		Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("floating_islands")
+		RegistryKeys.NOISE_SETTINGS_WORLDGEN, new Identifier("floating_islands")
 	);
 
 	public boolean hasAquifers() {
@@ -82,7 +82,7 @@ public record ChunkGeneratorSettings(
 			GenerationShapeConfig.END,
 			Blocks.END_STONE.getDefaultState(),
 			Blocks.AIR.getDefaultState(),
-			DensityFunctions.createEndNoiseRouter(registerable.getRegistryLookup(Registry.DENSITY_FUNCTION_KEY)),
+			DensityFunctions.createEndNoiseRouter(registerable.getRegistryLookup(RegistryKeys.DENSITY_FUNCTION_WORLDGEN)),
 			VanillaSurfaceRules.getEndStoneRule(),
 			List.of(),
 			0,
@@ -98,7 +98,9 @@ public record ChunkGeneratorSettings(
 			GenerationShapeConfig.NETHER,
 			Blocks.NETHERRACK.getDefaultState(),
 			Blocks.LAVA.getDefaultState(),
-			DensityFunctions.createNetherNoiseRouter(registerable.getRegistryLookup(Registry.DENSITY_FUNCTION_KEY), registerable.getRegistryLookup(Registry.NOISE_KEY)),
+			DensityFunctions.createNetherNoiseRouter(
+				registerable.getRegistryLookup(RegistryKeys.DENSITY_FUNCTION_WORLDGEN), registerable.getRegistryLookup(RegistryKeys.NOISE_WORLDGEN)
+			),
 			VanillaSurfaceRules.createNetherSurfaceRule(),
 			List.of(),
 			32,
@@ -115,7 +117,7 @@ public record ChunkGeneratorSettings(
 			Blocks.STONE.getDefaultState(),
 			Blocks.WATER.getDefaultState(),
 			DensityFunctions.createSurfaceNoiseRouter(
-				registerable.getRegistryLookup(Registry.DENSITY_FUNCTION_KEY), registerable.getRegistryLookup(Registry.NOISE_KEY), largeBiomes, amplified
+				registerable.getRegistryLookup(RegistryKeys.DENSITY_FUNCTION_WORLDGEN), registerable.getRegistryLookup(RegistryKeys.NOISE_WORLDGEN), largeBiomes, amplified
 			),
 			VanillaSurfaceRules.createOverworldSurfaceRule(),
 			new VanillaBiomeParameters().getSpawnSuitabilityNoises(),
@@ -132,7 +134,9 @@ public record ChunkGeneratorSettings(
 			GenerationShapeConfig.CAVES,
 			Blocks.STONE.getDefaultState(),
 			Blocks.WATER.getDefaultState(),
-			DensityFunctions.createCavesNoiseRouter(registerable.getRegistryLookup(Registry.DENSITY_FUNCTION_KEY), registerable.getRegistryLookup(Registry.NOISE_KEY)),
+			DensityFunctions.createCavesNoiseRouter(
+				registerable.getRegistryLookup(RegistryKeys.DENSITY_FUNCTION_WORLDGEN), registerable.getRegistryLookup(RegistryKeys.NOISE_WORLDGEN)
+			),
 			VanillaSurfaceRules.createDefaultRule(false, true, true),
 			List.of(),
 			32,
@@ -149,7 +153,7 @@ public record ChunkGeneratorSettings(
 			Blocks.STONE.getDefaultState(),
 			Blocks.WATER.getDefaultState(),
 			DensityFunctions.createFloatingIslandsNoiseRouter(
-				registerable.getRegistryLookup(Registry.DENSITY_FUNCTION_KEY), registerable.getRegistryLookup(Registry.NOISE_KEY)
+				registerable.getRegistryLookup(RegistryKeys.DENSITY_FUNCTION_WORLDGEN), registerable.getRegistryLookup(RegistryKeys.NOISE_WORLDGEN)
 			),
 			VanillaSurfaceRules.createDefaultRule(false, false, false),
 			List.of(),

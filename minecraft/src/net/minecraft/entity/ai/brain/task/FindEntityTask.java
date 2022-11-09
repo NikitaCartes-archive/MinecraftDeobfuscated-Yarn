@@ -1,96 +1,53 @@
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
 import java.util.function.Predicate;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.EntityLookTarget;
 import net.minecraft.entity.ai.brain.LivingTargetCache;
-import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
-import net.minecraft.server.world.ServerWorld;
 
-public class FindEntityTask<E extends LivingEntity, T extends LivingEntity> extends Task<E> {
-	private final int completionRange;
-	private final float speed;
-	private final EntityType<? extends T> entityType;
-	private final int maxSquaredDistance;
-	private final Predicate<T> predicate;
-	private final Predicate<E> shouldRunPredicate;
-	private final MemoryModuleType<T> targetModule;
+public class FindEntityTask {
+	public static <T extends LivingEntity> Task<LivingEntity> create(
+		EntityType<? extends T> type, int maxDistance, MemoryModuleType<T> targetModule, float speed, int completionRange
+	) {
+		return create(type, maxDistance, entity -> true, entity -> true, targetModule, speed, completionRange);
+	}
 
-	public FindEntityTask(
-		EntityType<? extends T> entityType,
+	public static <E extends LivingEntity, T extends LivingEntity> Task<E> create(
+		EntityType<? extends T> type,
 		int maxDistance,
-		Predicate<E> shouldRunPredicate,
-		Predicate<T> predicate,
+		Predicate<E> entityPredicate,
+		Predicate<T> targetPredicate,
 		MemoryModuleType<T> targetModule,
 		float speed,
 		int completionRange
 	) {
-		super(
-			ImmutableMap.of(
-				MemoryModuleType.LOOK_TARGET,
-				MemoryModuleState.REGISTERED,
-				MemoryModuleType.WALK_TARGET,
-				MemoryModuleState.VALUE_ABSENT,
-				MemoryModuleType.VISIBLE_MOBS,
-				MemoryModuleState.VALUE_PRESENT
-			)
+		int i = maxDistance * maxDistance;
+		Predicate<LivingEntity> predicate = entity -> type.equals(entity.getType()) && targetPredicate.test(entity);
+		return TaskTriggerer.task(
+			context -> context.group(
+						context.queryMemoryOptional(targetModule),
+						context.queryMemoryOptional(MemoryModuleType.LOOK_TARGET),
+						context.queryMemoryAbsent(MemoryModuleType.WALK_TARGET),
+						context.queryMemoryValue(MemoryModuleType.VISIBLE_MOBS)
+					)
+					.apply(context, (targetValue, lookTarget, walkTarget, visibleMobs) -> (world, entity, time) -> {
+							LivingTargetCache livingTargetCache = context.getValue(visibleMobs);
+							if (entityPredicate.test(entity) && livingTargetCache.anyMatch(predicate)) {
+								Optional<LivingEntity> optional = livingTargetCache.findFirst(target -> target.squaredDistanceTo(entity) <= (double)i && predicate.test(target));
+								optional.ifPresent(target -> {
+									targetValue.remember(target);
+									lookTarget.remember(new EntityLookTarget(target, true));
+									walkTarget.remember(new WalkTarget(new EntityLookTarget(target, false), speed, completionRange));
+								});
+								return true;
+							} else {
+								return false;
+							}
+						})
 		);
-		this.entityType = entityType;
-		this.speed = speed;
-		this.maxSquaredDistance = maxDistance * maxDistance;
-		this.completionRange = completionRange;
-		this.predicate = predicate;
-		this.shouldRunPredicate = shouldRunPredicate;
-		this.targetModule = targetModule;
-	}
-
-	public static <T extends LivingEntity> FindEntityTask<LivingEntity, T> create(
-		EntityType<? extends T> entityType, int maxDistance, MemoryModuleType<T> targetModule, float speed, int completionRange
-	) {
-		return new FindEntityTask<>(entityType, maxDistance, entity -> true, entity -> true, targetModule, speed, completionRange);
-	}
-
-	public static <T extends LivingEntity> FindEntityTask<LivingEntity, T> create(
-		EntityType<? extends T> entityType, int maxDistance, Predicate<T> condition, MemoryModuleType<T> moduleType, float speed, int completionRange
-	) {
-		return new FindEntityTask<>(entityType, maxDistance, entity -> true, condition, moduleType, speed, completionRange);
-	}
-
-	@Override
-	protected boolean shouldRun(ServerWorld world, E entity) {
-		return this.shouldRunPredicate.test(entity) && this.anyVisibleTo(entity);
-	}
-
-	private boolean anyVisibleTo(E entity) {
-		LivingTargetCache livingTargetCache = (LivingTargetCache)entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get();
-		return livingTargetCache.anyMatch(this::testPredicate);
-	}
-
-	private boolean testPredicate(LivingEntity entity) {
-		return this.entityType.equals(entity.getType()) && this.predicate.test(entity);
-	}
-
-	@Override
-	protected void run(ServerWorld world, E entity, long time) {
-		Brain<?> brain = entity.getBrain();
-		Optional<LivingTargetCache> optional = brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS);
-		if (!optional.isEmpty()) {
-			LivingTargetCache livingTargetCache = (LivingTargetCache)optional.get();
-			livingTargetCache.findFirst(target -> this.shouldTarget(entity, target)).ifPresent(target -> {
-				brain.remember(this.targetModule, (T)target);
-				brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(target, true));
-				brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityLookTarget(target, false), this.speed, this.completionRange));
-			});
-		}
-	}
-
-	private boolean shouldTarget(E self, LivingEntity target) {
-		return this.entityType.equals(target.getType()) && target.squaredDistanceTo(self) <= (double)this.maxSquaredDistance && this.predicate.test(target);
 	}
 }

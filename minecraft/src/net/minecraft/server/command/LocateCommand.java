@@ -8,6 +8,10 @@ import java.util.Optional;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.RegistryEntryPredicateArgumentType;
 import net.minecraft.command.argument.RegistryPredicateArgumentType;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
@@ -16,9 +20,6 @@ import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.poi.PointOfInterestStorage;
@@ -50,10 +51,10 @@ public class LocateCommand {
 				.then(
 					CommandManager.literal("structure")
 						.then(
-							CommandManager.argument("structure", RegistryPredicateArgumentType.registryPredicate(Registry.STRUCTURE_KEY))
+							CommandManager.argument("structure", RegistryPredicateArgumentType.registryPredicate(RegistryKeys.STRUCTURE_WORLDGEN))
 								.executes(
 									context -> executeLocateStructure(
-											context.getSource(), RegistryPredicateArgumentType.getPredicate(context, "structure", Registry.STRUCTURE_KEY, STRUCTURE_INVALID_EXCEPTION)
+											context.getSource(), RegistryPredicateArgumentType.getPredicate(context, "structure", RegistryKeys.STRUCTURE_WORLDGEN, STRUCTURE_INVALID_EXCEPTION)
 										)
 								)
 						)
@@ -61,19 +62,21 @@ public class LocateCommand {
 				.then(
 					CommandManager.literal("biome")
 						.then(
-							CommandManager.argument("biome", RegistryEntryPredicateArgumentType.registryEntryPredicate(registryAccess, Registry.BIOME_KEY))
+							CommandManager.argument("biome", RegistryEntryPredicateArgumentType.registryEntryPredicate(registryAccess, RegistryKeys.BIOME_WORLDGEN))
 								.executes(
-									context -> executeLocateBiome(context.getSource(), RegistryEntryPredicateArgumentType.getRegistryEntryPredicate(context, "biome", Registry.BIOME_KEY))
+									context -> executeLocateBiome(
+											context.getSource(), RegistryEntryPredicateArgumentType.getRegistryEntryPredicate(context, "biome", RegistryKeys.BIOME_WORLDGEN)
+										)
 								)
 						)
 				)
 				.then(
 					CommandManager.literal("poi")
 						.then(
-							CommandManager.argument("poi", RegistryEntryPredicateArgumentType.registryEntryPredicate(registryAccess, Registry.POINT_OF_INTEREST_TYPE_KEY))
+							CommandManager.argument("poi", RegistryEntryPredicateArgumentType.registryEntryPredicate(registryAccess, RegistryKeys.POINT_OF_INTEREST_TYPE))
 								.executes(
 									context -> executeLocatePoi(
-											context.getSource(), RegistryEntryPredicateArgumentType.getRegistryEntryPredicate(context, "poi", Registry.POINT_OF_INTEREST_TYPE_KEY)
+											context.getSource(), RegistryEntryPredicateArgumentType.getRegistryEntryPredicate(context, "poi", RegistryKeys.POINT_OF_INTEREST_TYPE)
 										)
 								)
 						)
@@ -88,7 +91,7 @@ public class LocateCommand {
 	}
 
 	private static int executeLocateStructure(ServerCommandSource source, RegistryPredicateArgumentType.RegistryPredicate<Structure> predicate) throws CommandSyntaxException {
-		Registry<Structure> registry = source.getWorld().getRegistryManager().get(Registry.STRUCTURE_KEY);
+		Registry<Structure> registry = source.getWorld().getRegistryManager().get(RegistryKeys.STRUCTURE_WORLDGEN);
 		RegistryEntryList<Structure> registryEntryList = (RegistryEntryList<Structure>)getStructureListForPredicate(predicate, registry)
 			.orElseThrow(() -> STRUCTURE_INVALID_EXCEPTION.create(predicate.asString()));
 		BlockPos blockPos = new BlockPos(source.getPosition());

@@ -12,9 +12,9 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtLongArray;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.WorldChunk;
@@ -130,14 +130,14 @@ public class ChunkData {
 		private BlockEntityData(PacketByteBuf buf) {
 			this.localXz = buf.readByte();
 			this.y = buf.readShort();
-			this.type = buf.readRegistryValue(Registry.BLOCK_ENTITY_TYPE);
+			this.type = buf.readRegistryValue(Registries.BLOCK_ENTITY_TYPE);
 			this.nbt = buf.readNbt();
 		}
 
 		void write(PacketByteBuf buf) {
 			buf.writeByte(this.localXz);
 			buf.writeShort(this.y);
-			buf.writeRegistryValue(Registry.BLOCK_ENTITY_TYPE, this.type);
+			buf.writeRegistryValue(Registries.BLOCK_ENTITY_TYPE, this.type);
 			buf.writeNbt(this.nbt);
 		}
 

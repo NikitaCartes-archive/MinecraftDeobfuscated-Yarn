@@ -4,11 +4,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import net.minecraft.data.DataOutput;
-import net.minecraft.tag.TagBuilder;
-import net.minecraft.tag.TagKey;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.RegistryWrapper;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.tag.TagBuilder;
+import net.minecraft.registry.tag.TagKey;
 
 public abstract class ValueLookupTagProvider<T> extends AbstractTagProvider<T> {
 	private final Function<T, RegistryKey<T>> valueToKey;

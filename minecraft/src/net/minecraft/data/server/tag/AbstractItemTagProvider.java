@@ -5,10 +5,10 @@ import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.data.DataOutput;
 import net.minecraft.item.Item;
-import net.minecraft.tag.TagBuilder;
-import net.minecraft.tag.TagKey;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryWrapper;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.tag.TagBuilder;
+import net.minecraft.registry.tag.TagKey;
 
 public abstract class AbstractItemTagProvider extends ValueLookupTagProvider<Item> {
 	private final Function<TagKey<Block>, TagBuilder> blockTags;
@@ -16,7 +16,7 @@ public abstract class AbstractItemTagProvider extends ValueLookupTagProvider<Ite
 	public AbstractItemTagProvider(
 		DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture, AbstractTagProvider<Block> blockTagProvider
 	) {
-		super(output, Registry.ITEM_KEY, registryLookupFuture, item -> item.getRegistryEntry().registryKey());
+		super(output, RegistryKeys.ITEM, registryLookupFuture, item -> item.getRegistryEntry().registryKey());
 		this.blockTags = blockTagProvider::getTagBuilder;
 	}
 

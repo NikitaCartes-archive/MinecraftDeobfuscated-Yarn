@@ -65,6 +65,13 @@ import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.obfuscate.DontObfuscate;
 import net.minecraft.recipe.RecipeManager;
+import net.minecraft.registry.CombinedDynamicRegistries;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.ServerDynamicRegistryType;
 import net.minecraft.resource.DataConfiguration;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.resource.LifecycledResourceManager;
@@ -121,12 +128,6 @@ import net.minecraft.util.profiler.Recorder;
 import net.minecraft.util.profiler.ServerSamplerSource;
 import net.minecraft.util.profiling.jfr.Finishable;
 import net.minecraft.util.profiling.jfr.FlightProfiler;
-import net.minecraft.util.registry.CombinedDynamicRegistries;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntryLookup;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.ServerDynamicRegistryType;
 import net.minecraft.util.thread.ReentrantThreadExecutor;
 import net.minecraft.village.ZombieSiegeManager;
 import net.minecraft.world.Difficulty;
@@ -287,7 +288,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		super("Server");
 		this.combinedDynamicRegistries = saveLoader.combinedDynamicRegistries();
 		this.saveProperties = saveLoader.saveProperties();
-		if (!this.combinedDynamicRegistries.getCombinedRegistryManager().get(Registry.DIMENSION_KEY).contains(DimensionOptions.OVERWORLD)) {
+		if (!this.combinedDynamicRegistries.getCombinedRegistryManager().get(RegistryKeys.DIMENSION).contains(DimensionOptions.OVERWORLD)) {
 			throw new IllegalStateException("Missing Overworld dimension data");
 		} else {
 			this.proxy = proxy;
@@ -306,7 +307,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			this.commandFunctionManager = new CommandFunctionManager(this, this.resourceManagerHolder.dataPackContents.getFunctionLoader());
 			RegistryEntryLookup<Block> registryEntryLookup = this.combinedDynamicRegistries
 				.getCombinedRegistryManager()
-				.get(Registry.BLOCK_KEY)
+				.get(RegistryKeys.BLOCK)
 				.getReadOnlyWrapper()
 				.withFeatureFilter(this.saveProperties.getEnabledFeatures());
 			this.structureTemplateManager = new StructureTemplateManager(saveLoader.resourceManager(), session, dataFixer, registryEntryLookup);
@@ -357,7 +358,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	protected void createWorlds(WorldGenerationProgressListener worldGenerationProgressListener) {
 		ServerWorldProperties serverWorldProperties = this.saveProperties.getMainWorldProperties();
 		boolean bl = this.saveProperties.isDebugWorld();
-		Registry<DimensionOptions> registry = this.combinedDynamicRegistries.getCombinedRegistryManager().get(Registry.DIMENSION_KEY);
+		Registry<DimensionOptions> registry = this.combinedDynamicRegistries.getCombinedRegistryManager().get(RegistryKeys.DIMENSION);
 		GeneratorOptions generatorOptions = this.saveProperties.getGeneratorOptions();
 		long l = generatorOptions.getSeed();
 		long m = BiomeAccess.hashSeed(l);
@@ -402,7 +403,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		for (Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : registry.getEntrySet()) {
 			RegistryKey<DimensionOptions> registryKey = (RegistryKey<DimensionOptions>)entry.getKey();
 			if (registryKey != DimensionOptions.OVERWORLD) {
-				RegistryKey<World> registryKey2 = RegistryKey.of(Registry.WORLD_KEY, registryKey.getValue());
+				RegistryKey<World> registryKey2 = RegistryKey.of(RegistryKeys.WORLD, registryKey.getValue());
 				UnmodifiableLevelProperties unmodifiableLevelProperties = new UnmodifiableLevelProperties(this.saveProperties, serverWorldProperties);
 				ServerWorld serverWorld2 = new ServerWorld(
 					this,
@@ -465,10 +466,10 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 			if (bonusChest) {
 				world.getRegistryManager()
-					.getOptional(Registry.CONFIGURED_FEATURE_KEY)
-					.flatMap(registry -> registry.getEntry(MiscConfiguredFeatures.BONUS_CHEST))
+					.getOptional(RegistryKeys.CONFIGURED_FEATURE_WORLDGEN)
+					.flatMap(featureRegistry -> featureRegistry.getEntry(MiscConfiguredFeatures.BONUS_CHEST))
 					.ifPresent(
-						reference -> ((ConfiguredFeature)reference.value())
+						feature -> ((ConfiguredFeature)feature.value())
 								.generate(
 									world,
 									serverChunkManager.getChunkGenerator(),
@@ -1026,7 +1027,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			(Supplier<String>)(() -> (String)this.dataPackManager
 					.getEnabledProfiles()
 					.stream()
-					.map(resourcePackProfile -> resourcePackProfile.getName() + (resourcePackProfile.getCompatibility().isCompatible() ? "" : " (incompatible)"))
+					.map(profile -> profile.getName() + (profile.getCompatibility().isCompatible() ? "" : " (incompatible)"))
 					.collect(Collectors.joining(", ")))
 		);
 		details.addSection(

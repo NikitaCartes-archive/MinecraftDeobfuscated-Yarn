@@ -27,6 +27,9 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.predicate.NumberRange;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
@@ -34,11 +37,9 @@ import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.server.ServerAdvancementLoader;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.TagKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameMode;
 
 public class EntitySelectorOptions {
@@ -254,11 +255,11 @@ public class EntitySelectorOptions {
 			}, reader -> !reader.selectsTeam(), Text.translatable("argument.entity.options.team.description"));
 			putOption("type", reader -> {
 				reader.setSuggestionProvider((builder, consumer) -> {
-					CommandSource.suggestIdentifiers(Registry.ENTITY_TYPE.getIds(), builder, String.valueOf('!'));
-					CommandSource.suggestIdentifiers(Registry.ENTITY_TYPE.streamTags().map(TagKey::id), builder, "!#");
+					CommandSource.suggestIdentifiers(Registries.ENTITY_TYPE.getIds(), builder, String.valueOf('!'));
+					CommandSource.suggestIdentifiers(Registries.ENTITY_TYPE.streamTags().map(TagKey::id), builder, "!#");
 					if (!reader.excludesEntityType()) {
-						CommandSource.suggestIdentifiers(Registry.ENTITY_TYPE.getIds(), builder);
-						CommandSource.suggestIdentifiers(Registry.ENTITY_TYPE.streamTags().map(TagKey::id), builder, String.valueOf('#'));
+						CommandSource.suggestIdentifiers(Registries.ENTITY_TYPE.getIds(), builder);
+						CommandSource.suggestIdentifiers(Registries.ENTITY_TYPE.streamTags().map(TagKey::id), builder, String.valueOf('#'));
 					}
 
 					return builder.buildFuture();
@@ -274,11 +275,11 @@ public class EntitySelectorOptions {
 					}
 
 					if (reader.readTagCharacter()) {
-						TagKey<EntityType<?>> tagKey = TagKey.of(Registry.ENTITY_TYPE_KEY, Identifier.fromCommandInput(reader.getReader()));
+						TagKey<EntityType<?>> tagKey = TagKey.of(RegistryKeys.ENTITY_TYPE, Identifier.fromCommandInput(reader.getReader()));
 						reader.setPredicate(entity -> entity.getType().isIn(tagKey) != bl);
 					} else {
 						Identifier identifier = Identifier.fromCommandInput(reader.getReader());
-						EntityType<?> entityType = (EntityType<?>)Registry.ENTITY_TYPE.getOrEmpty(identifier).orElseThrow(() -> {
+						EntityType<?> entityType = (EntityType<?>)Registries.ENTITY_TYPE.getOrEmpty(identifier).orElseThrow(() -> {
 							reader.getReader().setCursor(i);
 							return INVALID_TYPE_EXCEPTION.createWithContext(reader.getReader(), identifier.toString());
 						});

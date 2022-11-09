@@ -6,7 +6,6 @@ import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,6 +35,7 @@ import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.registry.Registries;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
@@ -43,7 +43,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -176,7 +175,7 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 								}
 
 								return var2x;
-							} catch (IOException var6) {
+							} catch (Exception var6) {
 								LOGGER.error("Failed to load model {}", entry.getKey(), var6);
 								return null;
 							}
@@ -222,7 +221,7 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 									if (reader != null) {
 										reader.close();
 									}
-								} catch (IOException var10) {
+								} catch (Exception var10) {
 									LOGGER.error("Failed to load blockstate {} from pack {}", entry.getKey(), resource.getResourcePackName(), var10);
 								}
 							}
@@ -267,7 +266,7 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 		BakedModel bakedModel = (BakedModel)map.get(ModelLoader.MISSING_ID);
 		Map<BlockState, BakedModel> map2 = new IdentityHashMap();
 
-		for (Block block : Registry.BLOCK) {
+		for (Block block : Registries.BLOCK) {
 			block.getStateManager().getStates().forEach(state -> {
 				Identifier identifier = state.getBlock().getRegistryEntry().registryKey().getValue();
 				BakedModel bakedModel2 = (BakedModel)map.getOrDefault(BlockModels.getModelId(identifier, state), bakedModel);

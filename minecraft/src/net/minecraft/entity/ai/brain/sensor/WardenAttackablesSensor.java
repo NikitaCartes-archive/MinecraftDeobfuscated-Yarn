@@ -31,7 +31,7 @@ public class WardenAttackablesSensor extends NearestLivingEntitiesSensor<WardenE
 
 	private static Optional<LivingEntity> findNearestTarget(WardenEntity warden, Predicate<LivingEntity> targetPredicate) {
 		return warden.getBrain()
-			.getOptionalMemory(MemoryModuleType.MOBS)
+			.getOptionalRegisteredMemory(MemoryModuleType.MOBS)
 			.stream()
 			.flatMap(Collection::stream)
 			.filter(warden::isValidTarget)

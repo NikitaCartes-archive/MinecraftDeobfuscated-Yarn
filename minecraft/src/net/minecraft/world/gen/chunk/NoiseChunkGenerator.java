@@ -17,6 +17,10 @@ import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -24,9 +28,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.CheckedRandom;
 import net.minecraft.util.math.random.ChunkRandom;
 import net.minecraft.util.math.random.RandomSeed;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
@@ -242,7 +243,13 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		if (!SharedConstants.isOutsideGenerationArea(chunk.getPos())) {
 			HeightContext heightContext = new HeightContext(this, region);
 			this.buildSurface(
-				chunk, heightContext, noiseConfig, structures, region.getBiomeAccess(), region.getRegistryManager().get(Registry.BIOME_KEY), Blender.getBlender(region)
+				chunk,
+				heightContext,
+				noiseConfig,
+				structures,
+				region.getBiomeAccess(),
+				region.getRegistryManager().get(RegistryKeys.BIOME_WORLDGEN),
+				Blender.getBlender(region)
 			);
 		}
 	}

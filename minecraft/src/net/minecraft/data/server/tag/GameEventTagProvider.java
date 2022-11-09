@@ -3,9 +3,9 @@ package net.minecraft.data.server.tag;
 import com.google.common.annotations.VisibleForTesting;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.data.DataOutput;
-import net.minecraft.tag.GameEventTags;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryWrapper;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.tag.GameEventTags;
 import net.minecraft.world.event.GameEvent;
 
 public class GameEventTagProvider extends ValueLookupTagProvider<GameEvent> {
@@ -54,7 +54,7 @@ public class GameEventTagProvider extends ValueLookupTagProvider<GameEvent> {
 	};
 
 	public GameEventTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
-		super(output, Registry.GAME_EVENT_KEY, registryLookupFuture, gameEvent -> gameEvent.getRegistryEntry().registryKey());
+		super(output, RegistryKeys.GAME_EVENT, registryLookupFuture, gameEvent -> gameEvent.getRegistryEntry().registryKey());
 	}
 
 	@Override

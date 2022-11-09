@@ -8,17 +8,18 @@ import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.MultifaceGrowthBlock;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryCodecs;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryCodecs;
-import net.minecraft.util.registry.RegistryEntryList;
 
 public class MultifaceGrowthFeatureConfig implements FeatureConfig {
 	public static final Codec<MultifaceGrowthFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Registry.BLOCK
+					Registries.BLOCK
 						.getCodec()
 						.fieldOf("block")
 						.<Block>flatXmap(MultifaceGrowthFeatureConfig::validateBlock, DataResult::success)
@@ -29,7 +30,7 @@ public class MultifaceGrowthFeatureConfig implements FeatureConfig {
 					Codec.BOOL.fieldOf("can_place_on_ceiling").orElse(false).forGetter(config -> config.placeOnCeiling),
 					Codec.BOOL.fieldOf("can_place_on_wall").orElse(false).forGetter(config -> config.placeOnWalls),
 					Codec.floatRange(0.0F, 1.0F).fieldOf("chance_of_spreading").orElse(0.5F).forGetter(config -> config.spreadChance),
-					RegistryCodecs.entryList(Registry.BLOCK_KEY).fieldOf("can_be_placed_on").forGetter(config -> config.canPlaceOn)
+					RegistryCodecs.entryList(RegistryKeys.BLOCK).fieldOf("can_be_placed_on").forGetter(config -> config.canPlaceOn)
 				)
 				.apply(instance, MultifaceGrowthFeatureConfig::new)
 	);

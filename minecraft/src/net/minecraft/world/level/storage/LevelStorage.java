@@ -48,6 +48,9 @@ import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.scanner.ExclusiveNbtCollector;
 import net.minecraft.nbt.scanner.NbtScanQuery;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.resource.DataConfiguration;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
@@ -57,9 +60,6 @@ import net.minecraft.util.PathUtil;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.crash.CrashMemoryReserve;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSaveHandler;
@@ -98,7 +98,7 @@ public class LevelStorage {
 		this.dataFixer = dataFixer;
 
 		try {
-			Files.createDirectories(Files.exists(savesDirectory, new LinkOption[0]) ? savesDirectory.toRealPath() : savesDirectory);
+			PathUtil.createDirectories(savesDirectory);
 		} catch (IOException var5) {
 			throw new RuntimeException(var5);
 		}
@@ -533,7 +533,7 @@ public class LevelStorage {
 			Path path = LevelStorage.this.getBackupsDirectory();
 
 			try {
-				Files.createDirectories(Files.exists(path, new LinkOption[0]) ? path.toRealPath() : path);
+				PathUtil.createDirectories(path);
 			} catch (IOException var9) {
 				throw new RuntimeException(var9);
 			}

@@ -3,15 +3,15 @@ package net.minecraft.data.server.recipe;
 import com.google.gson.JsonObject;
 import javax.annotation.Nullable;
 import net.minecraft.recipe.RecipeSerializer;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public interface RecipeJsonProvider {
 	void serialize(JsonObject json);
 
 	default JsonObject toJson() {
 		JsonObject jsonObject = new JsonObject();
-		jsonObject.addProperty("type", Registry.RECIPE_SERIALIZER.getId(this.getSerializer()).toString());
+		jsonObject.addProperty("type", Registries.RECIPE_SERIALIZER.getId(this.getSerializer()).toString());
 		this.serialize(jsonObject);
 		return jsonObject;
 	}

@@ -18,7 +18,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.village.raid.Raid;
 
-public class CelebrateRaidWinTask extends Task<VillagerEntity> {
+public class CelebrateRaidWinTask extends MultiTickTask<VillagerEntity> {
 	@Nullable
 	private Raid raid;
 

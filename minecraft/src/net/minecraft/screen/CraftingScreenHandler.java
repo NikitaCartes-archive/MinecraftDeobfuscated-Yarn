@@ -115,22 +115,22 @@ public class CraftingScreenHandler extends AbstractRecipeScreenHandler<CraftingI
 	}
 
 	@Override
-	public ItemStack transferSlot(PlayerEntity player, int index) {
+	public ItemStack quickMove(PlayerEntity player, int slot) {
 		ItemStack itemStack = ItemStack.EMPTY;
-		Slot slot = this.slots.get(index);
-		if (slot != null && slot.hasStack()) {
-			ItemStack itemStack2 = slot.getStack();
+		Slot slot2 = this.slots.get(slot);
+		if (slot2 != null && slot2.hasStack()) {
+			ItemStack itemStack2 = slot2.getStack();
 			itemStack = itemStack2.copy();
-			if (index == 0) {
+			if (slot == 0) {
 				this.context.run((world, pos) -> itemStack2.getItem().onCraft(itemStack2, world, player));
 				if (!this.insertItem(itemStack2, 10, 46, true)) {
 					return ItemStack.EMPTY;
 				}
 
-				slot.onQuickTransfer(itemStack2, itemStack);
-			} else if (index >= 10 && index < 46) {
+				slot2.onQuickTransfer(itemStack2, itemStack);
+			} else if (slot >= 10 && slot < 46) {
 				if (!this.insertItem(itemStack2, 1, 10, false)) {
-					if (index < 37) {
+					if (slot < 37) {
 						if (!this.insertItem(itemStack2, 37, 46, false)) {
 							return ItemStack.EMPTY;
 						}
@@ -143,17 +143,17 @@ public class CraftingScreenHandler extends AbstractRecipeScreenHandler<CraftingI
 			}
 
 			if (itemStack2.isEmpty()) {
-				slot.setStack(ItemStack.EMPTY);
+				slot2.setStack(ItemStack.EMPTY);
 			} else {
-				slot.markDirty();
+				slot2.markDirty();
 			}
 
 			if (itemStack2.getCount() == itemStack.getCount()) {
 				return ItemStack.EMPTY;
 			}
 
-			slot.onTakeItem(player, itemStack2);
-			if (index == 0) {
+			slot2.onTakeItem(player, itemStack2);
+			if (slot == 0) {
 				player.dropItem(itemStack2, false);
 			}
 		}

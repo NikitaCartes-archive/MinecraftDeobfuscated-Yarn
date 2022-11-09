@@ -1,7 +1,8 @@
 package net.minecraft.world.gen.stateprovider;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 public class BlockStateProviderType<P extends BlockStateProvider> {
 	public static final BlockStateProviderType<SimpleBlockStateProvider> SIMPLE_STATE_PROVIDER = register("simple_state_provider", SimpleBlockStateProvider.CODEC);
@@ -24,7 +25,7 @@ public class BlockStateProviderType<P extends BlockStateProvider> {
 	private final Codec<P> codec;
 
 	private static <P extends BlockStateProvider> BlockStateProviderType<P> register(String id, Codec<P> codec) {
-		return Registry.register(Registry.BLOCK_STATE_PROVIDER_TYPE, id, new BlockStateProviderType<>(codec));
+		return Registry.register(Registries.BLOCK_STATE_PROVIDER_TYPE, id, new BlockStateProviderType<>(codec));
 	}
 
 	private BlockStateProviderType(Codec<P> codec) {

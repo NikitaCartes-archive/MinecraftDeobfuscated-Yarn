@@ -4,13 +4,13 @@ import java.util.concurrent.CompletableFuture;
 import net.minecraft.data.DataOutput;
 import net.minecraft.item.Instrument;
 import net.minecraft.item.Instruments;
-import net.minecraft.tag.InstrumentTags;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryWrapper;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.tag.InstrumentTags;
 
 public class InstrumentTagProvider extends AbstractTagProvider<Instrument> {
 	public InstrumentTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
-		super(output, Registry.INSTRUMENT_KEY, registryLookupFuture);
+		super(output, RegistryKeys.INSTRUMENT, registryLookupFuture);
 	}
 
 	@Override

@@ -10,7 +10,7 @@ import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.GlobalPos;
 
-public class VillagerWorkTask extends Task<VillagerEntity> {
+public class VillagerWorkTask extends MultiTickTask<VillagerEntity> {
 	private static final int RUN_TIME = 300;
 	private static final double MAX_DISTANCE = 1.73;
 	private long lastCheckedTime;
@@ -26,7 +26,7 @@ public class VillagerWorkTask extends Task<VillagerEntity> {
 			return false;
 		} else {
 			this.lastCheckedTime = serverWorld.getTime();
-			GlobalPos globalPos = (GlobalPos)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.JOB_SITE).get();
+			GlobalPos globalPos = (GlobalPos)villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.JOB_SITE).get();
 			return globalPos.getDimension() == serverWorld.getRegistryKey() && globalPos.getPos().isWithinDistance(villagerEntity.getPos(), 1.73);
 		}
 	}
@@ -34,7 +34,8 @@ public class VillagerWorkTask extends Task<VillagerEntity> {
 	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		Brain<VillagerEntity> brain = villagerEntity.getBrain();
 		brain.remember(MemoryModuleType.LAST_WORKED_AT_POI, l);
-		brain.getOptionalMemory(MemoryModuleType.JOB_SITE).ifPresent(pos -> brain.remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(pos.getPos())));
+		brain.getOptionalRegisteredMemory(MemoryModuleType.JOB_SITE)
+			.ifPresent(pos -> brain.remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(pos.getPos())));
 		villagerEntity.playWorkSound();
 		this.performAdditionalWork(serverWorld, villagerEntity);
 		if (villagerEntity.shouldRestock()) {
@@ -46,7 +47,7 @@ public class VillagerWorkTask extends Task<VillagerEntity> {
 	}
 
 	protected boolean shouldKeepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		Optional<GlobalPos> optional = villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.JOB_SITE);
+		Optional<GlobalPos> optional = villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.JOB_SITE);
 		if (!optional.isPresent()) {
 			return false;
 		} else {

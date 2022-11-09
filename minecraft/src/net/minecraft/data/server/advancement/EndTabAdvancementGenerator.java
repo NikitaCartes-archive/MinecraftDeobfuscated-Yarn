@@ -18,9 +18,9 @@ import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.DistancePredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.RegistryWrapper;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureKeys;
 

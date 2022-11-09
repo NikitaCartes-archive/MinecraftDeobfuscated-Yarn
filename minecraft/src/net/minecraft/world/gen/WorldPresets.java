@@ -2,14 +2,15 @@ package net.minecraft.world.gen;
 
 import java.util.Map;
 import java.util.Optional;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registerable;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.structure.StructureSet;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registerable;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryEntryLookup;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.source.BiomeSource;
@@ -41,7 +42,7 @@ public class WorldPresets {
 	}
 
 	private static RegistryKey<WorldPreset> of(String id) {
-		return RegistryKey.of(Registry.WORLD_PRESET_KEY, new Identifier(id));
+		return RegistryKey.of(RegistryKeys.WORLD_PRESET_WORLDGEN, new Identifier(id));
 	}
 
 	public static Optional<RegistryKey<WorldPreset>> getWorldPreset(Registry<DimensionOptions> registry) {
@@ -56,11 +57,11 @@ public class WorldPresets {
 	}
 
 	public static DimensionOptionsRegistryHolder createDemoOptions(DynamicRegistryManager dynamicRegistryManager) {
-		return dynamicRegistryManager.get(Registry.WORLD_PRESET_KEY).entryOf(DEFAULT).value().createDimensionsRegistryHolder();
+		return dynamicRegistryManager.get(RegistryKeys.WORLD_PRESET_WORLDGEN).entryOf(DEFAULT).value().createDimensionsRegistryHolder();
 	}
 
 	public static DimensionOptions getDefaultOverworldOptions(DynamicRegistryManager dynamicRegistryManager) {
-		return (DimensionOptions)dynamicRegistryManager.get(Registry.WORLD_PRESET_KEY).entryOf(DEFAULT).value().getOverworld().orElseThrow();
+		return (DimensionOptions)dynamicRegistryManager.get(RegistryKeys.WORLD_PRESET_WORLDGEN).entryOf(DEFAULT).value().getOverworld().orElseThrow();
 	}
 
 	static class Registrar {
@@ -75,11 +76,11 @@ public class WorldPresets {
 
 		Registrar(Registerable<WorldPreset> presetRegisterable) {
 			this.presetRegisterable = presetRegisterable;
-			RegistryEntryLookup<DimensionType> registryEntryLookup = presetRegisterable.getRegistryLookup(Registry.DIMENSION_TYPE_KEY);
-			this.chunkGeneratorSettingsLookup = presetRegisterable.getRegistryLookup(Registry.CHUNK_GENERATOR_SETTINGS_KEY);
-			this.biomeLookup = presetRegisterable.getRegistryLookup(Registry.BIOME_KEY);
-			this.featureLookup = presetRegisterable.getRegistryLookup(Registry.PLACED_FEATURE_KEY);
-			this.structureSetLookup = presetRegisterable.getRegistryLookup(Registry.STRUCTURE_SET_KEY);
+			RegistryEntryLookup<DimensionType> registryEntryLookup = presetRegisterable.getRegistryLookup(RegistryKeys.DIMENSION_TYPE);
+			this.chunkGeneratorSettingsLookup = presetRegisterable.getRegistryLookup(RegistryKeys.NOISE_SETTINGS_WORLDGEN);
+			this.biomeLookup = presetRegisterable.getRegistryLookup(RegistryKeys.BIOME_WORLDGEN);
+			this.featureLookup = presetRegisterable.getRegistryLookup(RegistryKeys.PLACED_FEATURE_WORLDGEN);
+			this.structureSetLookup = presetRegisterable.getRegistryLookup(RegistryKeys.STRUCTURE_SET_WORLDGEN);
 			this.overworldDimensionType = registryEntryLookup.getOrThrow(DimensionTypes.OVERWORLD);
 			RegistryEntry<DimensionType> registryEntry = registryEntryLookup.getOrThrow(DimensionTypes.THE_NETHER);
 			RegistryEntry<ChunkGeneratorSettings> registryEntry2 = this.chunkGeneratorSettingsLookup.getOrThrow(ChunkGeneratorSettings.NETHER);

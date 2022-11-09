@@ -9,9 +9,9 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.predicate.NumberRange;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.registry.Registry;
 
 public class EnchantmentPredicate {
 	public static final EnchantmentPredicate ANY = new EnchantmentPredicate();
@@ -59,7 +59,7 @@ public class EnchantmentPredicate {
 		} else {
 			JsonObject jsonObject = new JsonObject();
 			if (this.enchantment != null) {
-				jsonObject.addProperty("enchantment", Registry.ENCHANTMENT.getId(this.enchantment).toString());
+				jsonObject.addProperty("enchantment", Registries.ENCHANTMENT.getId(this.enchantment).toString());
 			}
 
 			jsonObject.add("levels", this.levels.toJson());
@@ -73,7 +73,7 @@ public class EnchantmentPredicate {
 			Enchantment enchantment = null;
 			if (jsonObject.has("enchantment")) {
 				Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "enchantment"));
-				enchantment = (Enchantment)Registry.ENCHANTMENT
+				enchantment = (Enchantment)Registries.ENCHANTMENT
 					.getOrEmpty(identifier)
 					.orElseThrow(() -> new JsonSyntaxException("Unknown enchantment '" + identifier + "'"));
 			}

@@ -7,8 +7,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.SocketAddress;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
@@ -29,6 +27,8 @@ import jdk.jfr.FlightRecorderListener;
 import jdk.jfr.Recording;
 import jdk.jfr.RecordingState;
 import net.minecraft.SharedConstants;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.util.PathUtil;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.profiling.jfr.event.ChunkGenerationEvent;
@@ -37,7 +37,6 @@ import net.minecraft.util.profiling.jfr.event.PacketReceivedEvent;
 import net.minecraft.util.profiling.jfr.event.PacketSentEvent;
 import net.minecraft.util.profiling.jfr.event.ServerTickTimeEvent;
 import net.minecraft.util.profiling.jfr.event.WorldLoadFinishedEvent;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import org.slf4j.Logger;
 
@@ -152,10 +151,7 @@ public class JfrProfiler implements FlightProfiler {
 					recording.setName(String.format(Locale.ROOT, "%s-%s-%s", instanceType.getName(), SharedConstants.getGameVersion().getName(), string));
 				});
 				Path path = Paths.get(String.format(Locale.ROOT, "debug/%s-%s.jfr", instanceType.getName(), string));
-				if (!Files.exists(path.getParent(), new LinkOption[0])) {
-					Files.createDirectories(path.getParent());
-				}
-
+				PathUtil.createDirectories(path.getParent());
 				this.currentRecording.setDestination(path);
 				this.currentRecording.start();
 				this.addListener();

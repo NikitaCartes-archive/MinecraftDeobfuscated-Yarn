@@ -47,11 +47,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
@@ -365,7 +365,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 	}
 
 	@Override
-	protected boolean hasWings() {
+	protected boolean isFlappingWings() {
 		return this.speed > this.field_28640;
 	}
 

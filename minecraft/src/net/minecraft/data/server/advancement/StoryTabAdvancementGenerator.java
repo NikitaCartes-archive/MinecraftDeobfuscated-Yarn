@@ -16,10 +16,10 @@ import net.minecraft.predicate.DamagePredicate;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
-import net.minecraft.tag.ItemTags;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.RegistryWrapper;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureKeys;
 

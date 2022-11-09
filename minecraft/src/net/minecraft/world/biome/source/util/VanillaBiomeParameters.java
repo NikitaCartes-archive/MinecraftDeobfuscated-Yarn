@@ -4,14 +4,14 @@ import com.mojang.datafixers.util.Pair;
 import java.util.List;
 import java.util.function.Consumer;
 import net.minecraft.SharedConstants;
+import net.minecraft.registry.BuiltinRegistries;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.function.ToFloatFunction;
 import net.minecraft.util.math.Spline;
-import net.minecraft.util.registry.BuiltinRegistries;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntryLookup;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.RegistryWrapper;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.gen.densityfunction.DensityFunction;
@@ -149,7 +149,7 @@ public final class VanillaBiomeParameters {
 
 	private void writeDebug(Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> parameters) {
 		RegistryWrapper.WrapperLookup wrapperLookup = BuiltinRegistries.createWrapperLookup();
-		RegistryEntryLookup<DensityFunction> registryEntryLookup = wrapperLookup.getWrapperOrThrow(Registry.DENSITY_FUNCTION_KEY);
+		RegistryEntryLookup<DensityFunction> registryEntryLookup = wrapperLookup.getWrapperOrThrow(RegistryKeys.DENSITY_FUNCTION_WORLDGEN);
 		DensityFunctionTypes.Spline.DensityFunctionWrapper densityFunctionWrapper = new DensityFunctionTypes.Spline.DensityFunctionWrapper(
 			registryEntryLookup.getOrThrow(DensityFunctions.CONTINENTS_OVERWORLD)
 		);

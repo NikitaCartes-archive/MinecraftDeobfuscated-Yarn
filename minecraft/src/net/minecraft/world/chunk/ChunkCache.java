@@ -10,13 +10,13 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.CollisionView;
@@ -35,7 +35,7 @@ public class ChunkCache implements BlockView, CollisionView {
 
 	public ChunkCache(World world, BlockPos minPos, BlockPos maxPos) {
 		this.world = world;
-		this.plainsEntryGetter = Suppliers.memoize(() -> world.getRegistryManager().get(Registry.BIOME_KEY).entryOf(BiomeKeys.PLAINS));
+		this.plainsEntryGetter = Suppliers.memoize(() -> world.getRegistryManager().get(RegistryKeys.BIOME_WORLDGEN).entryOf(BiomeKeys.PLAINS));
 		this.minX = ChunkSectionPos.getSectionCoord(minPos.getX());
 		this.minZ = ChunkSectionPos.getSectionCoord(minPos.getZ());
 		int i = ChunkSectionPos.getSectionCoord(maxPos.getX());

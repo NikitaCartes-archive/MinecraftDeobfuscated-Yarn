@@ -42,9 +42,9 @@ public class GlUniform extends Uniform implements AutoCloseable {
 	private final FloatBuffer floatData;
 	private final String name;
 	private boolean stateDirty;
-	private final GlShader program;
+	private final ShaderProgramSetupView program;
 
-	public GlUniform(String name, int dataType, int count, GlShader program) {
+	public GlUniform(String name, int dataType, int count, ShaderProgramSetupView program) {
 		this.name = name;
 		this.count = count;
 		this.dataType = dataType;

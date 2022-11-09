@@ -22,10 +22,10 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.provider.number.LootNumberProvider;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 
 public class SetStewEffectLootFunction extends ConditionalLootFunction {
 	final Map<StatusEffect, LootNumberProvider> effects;
@@ -98,7 +98,7 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 
 				for (StatusEffect statusEffect : setStewEffectLootFunction.effects.keySet()) {
 					JsonObject jsonObject2 = new JsonObject();
-					Identifier identifier = Registry.STATUS_EFFECT.getId(statusEffect);
+					Identifier identifier = Registries.STATUS_EFFECT.getId(statusEffect);
 					if (identifier == null) {
 						throw new IllegalArgumentException("Don't know how to serialize mob effect " + statusEffect);
 					}
@@ -117,7 +117,7 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 			if (jsonObject.has("effects")) {
 				for (JsonElement jsonElement : JsonHelper.getArray(jsonObject, "effects")) {
 					String string = JsonHelper.getString(jsonElement.getAsJsonObject(), "type");
-					StatusEffect statusEffect = (StatusEffect)Registry.STATUS_EFFECT
+					StatusEffect statusEffect = (StatusEffect)Registries.STATUS_EFFECT
 						.getOrEmpty(new Identifier(string))
 						.orElseThrow(() -> new JsonSyntaxException("Unknown mob effect '" + string + "'"));
 					LootNumberProvider lootNumberProvider = JsonHelper.deserialize(

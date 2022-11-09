@@ -8,14 +8,18 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.NetherPortalBlock;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockLocating;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.WorldAccess;
@@ -26,6 +30,8 @@ public class NetherPortal {
 	private static final int field_31826 = 3;
 	public static final int field_31824 = 21;
 	private static final AbstractBlock.ContextPredicate IS_VALID_FRAME_BLOCK = (state, world, pos) -> state.isOf(Blocks.OBSIDIAN);
+	private static final float FALLBACK_THRESHOLD = 4.0F;
+	private static final double HEIGHT_STRETCH = 1.0;
 	private final WorldAccess world;
 	private final Direction.Axis axis;
 	private final Direction negativeDir;
@@ -200,27 +206,37 @@ public class NetherPortal {
 	 * <p>The offset, velocity, and angle are modified based on the portal's axis.
 	 */
 	public static TeleportTarget getNetherTeleportTarget(
-		ServerWorld destination,
-		BlockLocating.Rectangle portalRect,
-		Direction.Axis portalAxis,
-		Vec3d offset,
-		EntityDimensions dimensions,
-		Vec3d velocity,
-		float yaw,
-		float pitch
+		ServerWorld destination, BlockLocating.Rectangle portalRect, Direction.Axis portalAxis, Vec3d offset, Entity entity, Vec3d velocity, float yaw, float pitch
 	) {
 		BlockPos blockPos = portalRect.lowerLeft;
 		BlockState blockState = destination.getBlockState(blockPos);
 		Direction.Axis axis = (Direction.Axis)blockState.getOrEmpty(Properties.HORIZONTAL_AXIS).orElse(Direction.Axis.X);
 		double d = (double)portalRect.width;
 		double e = (double)portalRect.height;
+		EntityDimensions entityDimensions = entity.getDimensions(entity.getPose());
 		int i = portalAxis == axis ? 0 : 90;
 		Vec3d vec3d = portalAxis == axis ? velocity : new Vec3d(velocity.z, velocity.y, -velocity.x);
-		double f = (double)dimensions.width / 2.0 + (d - (double)dimensions.width) * offset.getX();
-		double g = (e - (double)dimensions.height) * offset.getY();
+		double f = (double)entityDimensions.width / 2.0 + (d - (double)entityDimensions.width) * offset.getX();
+		double g = (e - (double)entityDimensions.height) * offset.getY();
 		double h = 0.5 + offset.getZ();
 		boolean bl = axis == Direction.Axis.X;
 		Vec3d vec3d2 = new Vec3d((double)blockPos.getX() + (bl ? f : h), (double)blockPos.getY() + g, (double)blockPos.getZ() + (bl ? h : f));
-		return new TeleportTarget(vec3d2, vec3d, yaw + (float)i, pitch);
+		Vec3d vec3d3 = findOpenPosition(vec3d2, destination, entity, entityDimensions);
+		return new TeleportTarget(vec3d3, vec3d, yaw + (float)i, pitch);
+	}
+
+	private static Vec3d findOpenPosition(Vec3d fallback, ServerWorld world, Entity entity, EntityDimensions dimensions) {
+		if (!(dimensions.width > 4.0F) && !(dimensions.height > 4.0F)) {
+			double d = (double)dimensions.height / 2.0;
+			Vec3d vec3d = fallback.add(0.0, d, 0.0);
+			VoxelShape voxelShape = VoxelShapes.cuboid(Box.of(vec3d, (double)dimensions.width, 0.0, (double)dimensions.width).stretch(0.0, 1.0, 0.0).expand(1.0E-6));
+			Optional<Vec3d> optional = world.findClosestCollision(
+				entity, voxelShape, vec3d, (double)dimensions.width, (double)dimensions.height, (double)dimensions.width
+			);
+			Optional<Vec3d> optional2 = optional.map(pos -> pos.subtract(0.0, d, 0.0));
+			return (Vec3d)optional2.orElse(fallback);
+		} else {
+			return fallback;
+		}
 	}
 }

@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import java.util.Queue;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.tag.FluidTags;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;

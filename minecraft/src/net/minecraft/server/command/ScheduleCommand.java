@@ -85,7 +85,7 @@ public class ScheduleCommand {
 			long l = source.getWorld().getTime() + (long)time;
 			Identifier identifier = function.getFirst();
 			Timer<MinecraftServer> timer = source.getServer().getSaveProperties().getMainWorldProperties().getScheduledEvents();
-			function.getSecond().ifLeft(functionx -> {
+			function.getSecond().ifLeft(function2 -> {
 				String string = identifier.toString();
 				if (replace) {
 					timer.remove(string);
@@ -93,7 +93,7 @@ public class ScheduleCommand {
 
 				timer.setEvent(string, l, new FunctionTimerCallback(identifier));
 				source.sendFeedback(Text.translatable("commands.schedule.created.function", identifier, time, l), true);
-			}).ifRight(collection -> {
+			}).ifRight(functions -> {
 				String string = "#" + identifier;
 				if (replace) {
 					timer.remove(string);

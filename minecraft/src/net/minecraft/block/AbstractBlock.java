@@ -31,6 +31,11 @@ import net.minecraft.loot.LootTables;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.featuretoggle.FeatureFlag;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
@@ -41,8 +46,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.state.State;
 import net.minecraft.state.property.Property;
-import net.minecraft.tag.FluidTags;
-import net.minecraft.tag.TagKey;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -55,9 +58,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -1065,7 +1065,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 
 	public final Identifier getLootTableId() {
 		if (this.lootTableId == null) {
-			Identifier identifier = Registry.BLOCK.getId(this.asBlock());
+			Identifier identifier = Registries.BLOCK.getId(this.asBlock());
 			this.lootTableId = identifier.withPrefixedPath("blocks/");
 		}
 
@@ -1580,7 +1580,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 				if (!this.collisionShape.isEmpty() && state.getOffsetType() != AbstractBlock.OffsetType.NONE) {
 					throw new IllegalStateException(
 						String.format(
-							Locale.ROOT, "%s has a collision shape and an offset type, but is not marked as dynamicShape in its properties.", Registry.BLOCK.getId(block)
+							Locale.ROOT, "%s has a collision shape and an offset type, but is not marked as dynamicShape in its properties.", Registries.BLOCK.getId(block)
 						)
 					);
 				} else {

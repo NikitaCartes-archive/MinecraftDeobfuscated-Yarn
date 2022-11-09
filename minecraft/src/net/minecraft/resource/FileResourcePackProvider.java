@@ -16,6 +16,7 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.minecraft.resource.fs.ResourceFileSystem;
 import net.minecraft.text.Text;
+import net.minecraft.util.PathUtil;
 import org.slf4j.Logger;
 
 public class FileResourcePackProvider implements ResourcePackProvider {
@@ -37,7 +38,7 @@ public class FileResourcePackProvider implements ResourcePackProvider {
 	@Override
 	public void register(Consumer<ResourcePackProfile> profileAdder) {
 		try {
-			Files.createDirectories(this.packsDir);
+			PathUtil.createDirectories(this.packsDir);
 			forEachProfile(
 				this.packsDir,
 				false,

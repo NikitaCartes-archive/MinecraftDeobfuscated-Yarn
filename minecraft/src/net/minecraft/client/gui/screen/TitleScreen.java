@@ -8,7 +8,6 @@ import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -199,31 +198,17 @@ public class TitleScreen extends Screen {
 				.setPositionAndSize(this.width / 2 - 100, y, 200, 20)
 				.build()
 		);
-		final Text text = this.getMultiplayerDisabledText();
+		Text text = this.getMultiplayerDisabledText();
 		boolean bl = text == null;
-		ButtonWidget.TooltipSupplier tooltipSupplier = text == null
-			? ButtonWidget.EMPTY_TOOLTIP
-			: new ButtonWidget.TooltipSupplier() {
-				@Override
-				public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {
-					TitleScreen.this.renderOrderedTooltip(
-						matrixStack, TitleScreen.this.client.textRenderer.wrapLines(text, Math.max(TitleScreen.this.width / 2 - 43, 170)), i, j
-					);
-				}
-
-				@Override
-				public void supply(Consumer<Text> consumer) {
-					consumer.accept(text);
-				}
-			};
+		Tooltip tooltip = text != null ? Tooltip.of(text) : null;
 		this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("menu.multiplayer"), button -> {
 			Screen screen = (Screen)(this.client.options.skipMultiplayerWarning ? new MultiplayerScreen(this) : new MultiplayerWarningScreen(this));
 			this.client.setScreen(screen);
-		}).setPositionAndSize(this.width / 2 - 100, y + spacingY * 1, 200, 20).setTooltipSupplier(tooltipSupplier).build()).active = bl;
+		}).setPositionAndSize(this.width / 2 - 100, y + spacingY * 1, 200, 20).setTooltip(tooltip).build()).active = bl;
 		this.addDrawableChild(
 				ButtonWidget.createBuilder(Text.translatable("menu.online"), button -> this.switchToRealms())
 					.setPositionAndSize(this.width / 2 - 100, y + spacingY * 2, 200, 20)
-					.setTooltipSupplier(tooltipSupplier)
+					.setTooltip(tooltip)
 					.build()
 			)
 			.active = bl;
@@ -325,7 +310,7 @@ public class TitleScreen extends Screen {
 		int i = 274;
 		int j = this.width / 2 - 137;
 		int k = 30;
-		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		RenderSystem.setShaderTexture(0, PANORAMA_OVERLAY);
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
@@ -334,7 +319,7 @@ public class TitleScreen extends Screen {
 		float g = this.doBackgroundFade ? MathHelper.clamp(f - 1.0F, 0.0F, 1.0F) : 1.0F;
 		int l = MathHelper.ceil(g * 255.0F) << 24;
 		if ((l & -67108864) != 0) {
-			RenderSystem.setShader(GameRenderer::getPositionTexShader);
+			RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 			RenderSystem.setShaderTexture(0, MINECRAFT_TITLE_TEXTURE);
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, g);
 			if (this.isMinceraft) {

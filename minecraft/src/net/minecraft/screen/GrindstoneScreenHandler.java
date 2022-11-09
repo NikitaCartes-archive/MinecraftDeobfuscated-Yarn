@@ -236,27 +236,27 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 	}
 
 	@Override
-	public ItemStack transferSlot(PlayerEntity player, int index) {
+	public ItemStack quickMove(PlayerEntity player, int slot) {
 		ItemStack itemStack = ItemStack.EMPTY;
-		Slot slot = this.slots.get(index);
-		if (slot != null && slot.hasStack()) {
-			ItemStack itemStack2 = slot.getStack();
+		Slot slot2 = this.slots.get(slot);
+		if (slot2 != null && slot2.hasStack()) {
+			ItemStack itemStack2 = slot2.getStack();
 			itemStack = itemStack2.copy();
 			ItemStack itemStack3 = this.input.getStack(0);
 			ItemStack itemStack4 = this.input.getStack(1);
-			if (index == 2) {
+			if (slot == 2) {
 				if (!this.insertItem(itemStack2, 3, 39, true)) {
 					return ItemStack.EMPTY;
 				}
 
-				slot.onQuickTransfer(itemStack2, itemStack);
-			} else if (index != 0 && index != 1) {
+				slot2.onQuickTransfer(itemStack2, itemStack);
+			} else if (slot != 0 && slot != 1) {
 				if (!itemStack3.isEmpty() && !itemStack4.isEmpty()) {
-					if (index >= 3 && index < 30) {
+					if (slot >= 3 && slot < 30) {
 						if (!this.insertItem(itemStack2, 30, 39, false)) {
 							return ItemStack.EMPTY;
 						}
-					} else if (index >= 30 && index < 39 && !this.insertItem(itemStack2, 3, 30, false)) {
+					} else if (slot >= 30 && slot < 39 && !this.insertItem(itemStack2, 3, 30, false)) {
 						return ItemStack.EMPTY;
 					}
 				} else if (!this.insertItem(itemStack2, 0, 2, false)) {
@@ -267,16 +267,16 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 			}
 
 			if (itemStack2.isEmpty()) {
-				slot.setStack(ItemStack.EMPTY);
+				slot2.setStack(ItemStack.EMPTY);
 			} else {
-				slot.markDirty();
+				slot2.markDirty();
 			}
 
 			if (itemStack2.getCount() == itemStack.getCount()) {
 				return ItemStack.EMPTY;
 			}
 
-			slot.onTakeItem(player, itemStack2);
+			slot2.onTakeItem(player, itemStack2);
 		}
 
 		return itemStack;

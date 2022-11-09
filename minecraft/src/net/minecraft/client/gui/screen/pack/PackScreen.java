@@ -24,6 +24,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
@@ -47,7 +48,7 @@ public class PackScreen extends Screen {
 	static final Logger LOGGER = LogUtils.getLogger();
 	private static final int field_32395 = 200;
 	private static final Text DROP_INFO = Text.translatable("pack.dropInfo").formatted(Formatting.GRAY);
-	static final Text FOLDER_INFO = Text.translatable("pack.folderInfo");
+	private static final Text FOLDER_INFO = Text.translatable("pack.folderInfo");
 	private static final int field_32396 = 20;
 	private static final Identifier UNKNOWN_PACK = new Identifier("textures/misc/unknown_pack.png");
 	private final ResourcePackOrganizer organizer;
@@ -94,17 +95,7 @@ public class PackScreen extends Screen {
 		this.addDrawableChild(
 			ButtonWidget.createBuilder(Text.translatable("pack.openFolder"), button -> Util.getOperatingSystem().open(this.file.toUri()))
 				.setPositionAndSize(this.width / 2 - 154, this.height - 48, 150, 20)
-				.setTooltipSupplier(new ButtonWidget.TooltipSupplier() {
-					@Override
-					public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {
-						PackScreen.this.renderTooltip(matrixStack, PackScreen.FOLDER_INFO, i, j);
-					}
-
-					@Override
-					public void supply(Consumer<Text> consumer) {
-						consumer.accept(PackScreen.FOLDER_INFO);
-					}
-				})
+				.setTooltip(Tooltip.of(FOLDER_INFO))
 				.build()
 		);
 		this.availablePackList = new PackListWidget(this.client, 200, this.height, Text.translatable("pack.available.title"));

@@ -2,8 +2,8 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.dynamic.Codecs;
-import net.minecraft.util.registry.RegistryEntry;
 
 public record RandomPatchFeatureConfig(int tries, int xzSpread, int ySpread, RegistryEntry<PlacedFeature> feature) implements FeatureConfig {
 	public static final Codec<RandomPatchFeatureConfig> CODEC = RecordCodecBuilder.create(

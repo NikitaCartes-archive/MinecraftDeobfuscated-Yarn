@@ -13,12 +13,12 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Nameable;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 
 public class BannerBlockEntity extends BlockEntity implements Nameable {
 	public static final int MAX_PATTERN_COUNT = 6;
@@ -127,7 +127,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 
 	public static List<Pair<RegistryEntry<BannerPattern>, DyeColor>> getPatternsFromNbt(DyeColor baseColor, @Nullable NbtList patternListNbt) {
 		List<Pair<RegistryEntry<BannerPattern>, DyeColor>> list = Lists.<Pair<RegistryEntry<BannerPattern>, DyeColor>>newArrayList();
-		list.add(Pair.of(Registry.BANNER_PATTERN.entryOf(BannerPatterns.BASE), baseColor));
+		list.add(Pair.of(Registries.BANNER_PATTERN.entryOf(BannerPatterns.BASE), baseColor));
 		if (patternListNbt != null) {
 			for (int i = 0; i < patternListNbt.size(); i++) {
 				NbtCompound nbtCompound = patternListNbt.getCompound(i);

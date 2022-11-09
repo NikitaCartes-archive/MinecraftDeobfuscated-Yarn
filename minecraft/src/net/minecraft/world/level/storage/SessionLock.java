@@ -6,11 +6,10 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.file.AccessDeniedException;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import net.minecraft.util.PathUtil;
 
 public class SessionLock implements AutoCloseable {
 	public static final String SESSION_LOCK = "session.lock";
@@ -20,10 +19,7 @@ public class SessionLock implements AutoCloseable {
 
 	public static SessionLock create(Path path) throws IOException {
 		Path path2 = path.resolve("session.lock");
-		if (!Files.isDirectory(path, new LinkOption[0])) {
-			Files.createDirectories(path);
-		}
-
+		PathUtil.createDirectories(path);
 		FileChannel fileChannel = FileChannel.open(path2, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
 
 		try {

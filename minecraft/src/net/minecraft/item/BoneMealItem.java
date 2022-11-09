@@ -7,15 +7,15 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.DeadCoralWallFanBlock;
 import net.minecraft.block.Fertilizable;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.BiomeTags;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.BiomeTags;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
@@ -98,7 +98,7 @@ public class BoneMealItem extends Item {
 					RegistryEntry<Biome> registryEntry = world.getBiome(blockPos2);
 					if (registryEntry.isIn(BiomeTags.PRODUCES_CORALS_FROM_BONEMEAL)) {
 						if (i == 0 && facing != null && facing.getAxis().isHorizontal()) {
-							blockState = (BlockState)Registry.BLOCK
+							blockState = (BlockState)Registries.BLOCK
 								.getEntryList(BlockTags.WALL_CORALS)
 								.flatMap(blocks -> blocks.getRandom(world.random))
 								.map(blockEntry -> ((Block)blockEntry.value()).getDefaultState())
@@ -107,7 +107,7 @@ public class BoneMealItem extends Item {
 								blockState = blockState.with(DeadCoralWallFanBlock.FACING, facing);
 							}
 						} else if (random.nextInt(4) == 0) {
-							blockState = (BlockState)Registry.BLOCK
+							blockState = (BlockState)Registries.BLOCK
 								.getEntryList(BlockTags.UNDERWATER_BONEMEALS)
 								.flatMap(blocks -> blocks.getRandom(world.random))
 								.map(blockEntry -> ((Block)blockEntry.value()).getDefaultState())

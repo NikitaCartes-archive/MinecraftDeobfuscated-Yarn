@@ -16,8 +16,8 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.book.CookingRecipeCategory;
 import net.minecraft.recipe.book.RecipeCategory;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class CookingRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 	private final RecipeCategory category;
@@ -191,7 +191,7 @@ public class CookingRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 
 			json.addProperty("category", this.category.asString());
 			json.add("ingredient", this.input.toJson());
-			json.addProperty("result", Registry.ITEM.getId(this.result).toString());
+			json.addProperty("result", Registries.ITEM.getId(this.result).toString());
 			json.addProperty("experience", this.experience);
 			json.addProperty("cookingtime", this.cookingTime);
 		}

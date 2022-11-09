@@ -20,6 +20,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SentMessage;
 import net.minecraft.network.message.SignedCommandArguments;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -30,9 +34,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.thread.FutureQueue;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
@@ -556,7 +557,7 @@ public class ServerCommandSource implements CommandSource {
 
 	@Override
 	public Collection<Identifier> getSoundIds() {
-		return Registry.SOUND_EVENT.getIds();
+		return Registries.SOUND_EVENT.getIds();
 	}
 
 	@Override

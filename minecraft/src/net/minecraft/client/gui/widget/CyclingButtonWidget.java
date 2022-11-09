@@ -12,15 +12,13 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.option.SimpleOption;
-import net.minecraft.client.util.OrderableTooltip;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class CyclingButtonWidget<T> extends PressableWidget implements OrderableTooltip {
+public class CyclingButtonWidget<T> extends PressableWidget {
 	static final BooleanSupplier HAS_ALT_DOWN = Screen::hasAltDown;
 	private static final List<Boolean> BOOLEAN_VALUES = ImmutableList.of(Boolean.TRUE, Boolean.FALSE);
 	private final Text optionText;
@@ -30,8 +28,8 @@ public class CyclingButtonWidget<T> extends PressableWidget implements Orderable
 	private final Function<T, Text> valueToText;
 	private final Function<CyclingButtonWidget<T>, MutableText> narrationMessageFactory;
 	private final CyclingButtonWidget.UpdateCallback<T> callback;
-	private final SimpleOption.TooltipFactory<T> tooltipFactory;
 	private final boolean optionTextOmitted;
+	private final SimpleOption.TooltipFactory<T> tooltipFactory;
 
 	CyclingButtonWidget(
 		int x,
@@ -57,8 +55,13 @@ public class CyclingButtonWidget<T> extends PressableWidget implements Orderable
 		this.valueToText = valueToText;
 		this.narrationMessageFactory = narrationMessageFactory;
 		this.callback = callback;
-		this.tooltipFactory = tooltipFactory;
 		this.optionTextOmitted = optionTextOmitted;
+		this.tooltipFactory = tooltipFactory;
+		this.refreshTooltip();
+	}
+
+	private void refreshTooltip() {
+		this.setTooltip(this.tooltipFactory.apply(this.value));
 	}
 
 	@Override
@@ -108,6 +111,7 @@ public class CyclingButtonWidget<T> extends PressableWidget implements Orderable
 		Text text = this.composeText(value);
 		this.setMessage(text);
 		this.value = value;
+		this.refreshTooltip();
 	}
 
 	private Text composeText(T value) {
@@ -128,7 +132,7 @@ public class CyclingButtonWidget<T> extends PressableWidget implements Orderable
 	}
 
 	@Override
-	public void appendNarrations(NarrationMessageBuilder builder) {
+	public void appendClickableNarrations(NarrationMessageBuilder builder) {
 		builder.put(NarrationPart.TITLE, this.getNarrationMessage());
 		if (this.active) {
 			T object = this.getValue(1);
@@ -150,11 +154,6 @@ public class CyclingButtonWidget<T> extends PressableWidget implements Orderable
 	 */
 	public MutableText getGenericNarrationMessage() {
 		return getNarrationMessage((Text)(this.optionTextOmitted ? this.composeGenericOptionText(this.value) : this.getMessage()));
-	}
-
-	@Override
-	public List<OrderedText> getOrderedTooltip() {
-		return (List<OrderedText>)this.tooltipFactory.apply(this.value);
 	}
 
 	/**
@@ -211,7 +210,7 @@ public class CyclingButtonWidget<T> extends PressableWidget implements Orderable
 		@Nullable
 		private T value;
 		private final Function<T, Text> valueToText;
-		private SimpleOption.TooltipFactory<T> tooltipFactory = value -> ImmutableList.of();
+		private SimpleOption.TooltipFactory<T> tooltipFactory = value -> null;
 		private Function<CyclingButtonWidget<T>, MutableText> narrationMessageFactory = CyclingButtonWidget::getGenericNarrationMessage;
 		private CyclingButtonWidget.Values<T> values = CyclingButtonWidget.Values.of(ImmutableList.<T>of());
 		private boolean optionTextOmitted;

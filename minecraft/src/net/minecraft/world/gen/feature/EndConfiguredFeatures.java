@@ -1,9 +1,9 @@
 package net.minecraft.world.gen.feature;
 
 import com.google.common.collect.ImmutableList;
+import net.minecraft.registry.Registerable;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.registry.Registerable;
-import net.minecraft.util.registry.RegistryKey;
 
 public class EndConfiguredFeatures {
 	public static final RegistryKey<ConfiguredFeature<?, ?>> END_SPIKE = ConfiguredFeatures.of("end_spike");

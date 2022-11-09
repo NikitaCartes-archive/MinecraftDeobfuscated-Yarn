@@ -2,10 +2,10 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.FluidTags;
 
-public class StayAboveWaterTask extends Task<MobEntity> {
+public class StayAboveWaterTask extends MultiTickTask<MobEntity> {
 	private final float chance;
 
 	public StayAboveWaterTask(float chance) {

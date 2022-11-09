@@ -1,14 +1,14 @@
 package net.minecraft.world.gen.noise;
 
+import net.minecraft.registry.Registerable;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
-import net.minecraft.util.registry.Registerable;
-import net.minecraft.util.registry.RegistryKey;
 
 public class BuiltinNoiseParameters {
 	@Deprecated
 	public static final DoublePerlinNoiseSampler.NoiseParameters OFFSET = new DoublePerlinNoiseSampler.NoiseParameters(-3, 1.0, 1.0, 1.0, 0.0);
 
-	public static void init(Registerable<DoublePerlinNoiseSampler.NoiseParameters> noiseParametersRegisterable) {
+	public static void bootstrap(Registerable<DoublePerlinNoiseSampler.NoiseParameters> noiseParametersRegisterable) {
 		register(
 			noiseParametersRegisterable,
 			0,

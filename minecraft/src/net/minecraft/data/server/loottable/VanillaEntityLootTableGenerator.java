@@ -28,9 +28,9 @@ import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.SlimePredicate;
+import net.minecraft.registry.tag.EntityTypeTags;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
-import net.minecraft.tag.EntityTypeTags;
-import net.minecraft.tag.ItemTags;
 
 public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 	public VanillaEntityLootTableGenerator() {

@@ -5,7 +5,7 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 
 public class UpdateBeaconC2SPacket implements Packet<ServerPlayPacketListener> {
 	private final Optional<StatusEffect> primaryEffectId;
@@ -17,14 +17,14 @@ public class UpdateBeaconC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	public UpdateBeaconC2SPacket(PacketByteBuf buf) {
-		this.primaryEffectId = buf.readOptional(buf2 -> buf2.readRegistryValue(Registry.STATUS_EFFECT));
-		this.secondaryEffectId = buf.readOptional(buf2 -> buf2.readRegistryValue(Registry.STATUS_EFFECT));
+		this.primaryEffectId = buf.readOptional(buf2 -> buf2.readRegistryValue(Registries.STATUS_EFFECT));
+		this.secondaryEffectId = buf.readOptional(buf2 -> buf2.readRegistryValue(Registries.STATUS_EFFECT));
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) {
-		buf.writeOptional(this.primaryEffectId, (buf2, primaryEffectId) -> buf2.writeRegistryValue(Registry.STATUS_EFFECT, primaryEffectId));
-		buf.writeOptional(this.secondaryEffectId, (buf2, secondaryEffectId) -> buf2.writeRegistryValue(Registry.STATUS_EFFECT, secondaryEffectId));
+		buf.writeOptional(this.primaryEffectId, (buf2, primaryEffectId) -> buf2.writeRegistryValue(Registries.STATUS_EFFECT, primaryEffectId));
+		buf.writeOptional(this.secondaryEffectId, (buf2, secondaryEffectId) -> buf2.writeRegistryValue(Registries.STATUS_EFFECT, secondaryEffectId));
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {

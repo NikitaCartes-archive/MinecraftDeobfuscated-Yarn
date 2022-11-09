@@ -182,7 +182,7 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 	public static void drawPathLines(Path path, double cameraX, double cameraY, double cameraZ) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		RenderSystem.setShader(GameRenderer::getPositionColorShader);
+		RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 		bufferBuilder.begin(VertexFormat.DrawMode.LINE_STRIP, VertexFormats.POSITION_COLOR);
 
 		for (int i = 0; i < path.getLength(); i++) {

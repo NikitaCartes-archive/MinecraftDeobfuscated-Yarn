@@ -6,12 +6,13 @@ import com.google.gson.JsonObject;
 import javax.annotation.Nullable;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 
 public class FluidPredicate {
 	public static final FluidPredicate ANY = new FluidPredicate(null, null, StatePredicate.ANY);
@@ -48,13 +49,13 @@ public class FluidPredicate {
 			Fluid fluid = null;
 			if (jsonObject.has("fluid")) {
 				Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "fluid"));
-				fluid = Registry.FLUID.get(identifier);
+				fluid = Registries.FLUID.get(identifier);
 			}
 
 			TagKey<Fluid> tagKey = null;
 			if (jsonObject.has("tag")) {
 				Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "tag"));
-				tagKey = TagKey.of(Registry.FLUID_KEY, identifier2);
+				tagKey = TagKey.of(RegistryKeys.FLUID, identifier2);
 			}
 
 			StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("state"));
@@ -70,7 +71,7 @@ public class FluidPredicate {
 		} else {
 			JsonObject jsonObject = new JsonObject();
 			if (this.fluid != null) {
-				jsonObject.addProperty("fluid", Registry.FLUID.getId(this.fluid).toString());
+				jsonObject.addProperty("fluid", Registries.FLUID.getId(this.fluid).toString());
 			}
 
 			if (this.tag != null) {

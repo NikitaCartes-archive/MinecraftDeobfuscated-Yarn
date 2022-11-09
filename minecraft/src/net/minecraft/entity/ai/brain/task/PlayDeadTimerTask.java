@@ -1,26 +1,24 @@
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableMap;
-import net.minecraft.entity.ai.brain.Brain;
-import net.minecraft.entity.ai.brain.MemoryModuleState;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.passive.AxolotlEntity;
-import net.minecraft.server.world.ServerWorld;
 
-public class PlayDeadTimerTask extends Task<AxolotlEntity> {
-	public PlayDeadTimerTask() {
-		super(ImmutableMap.of(MemoryModuleType.PLAY_DEAD_TICKS, MemoryModuleState.VALUE_PRESENT));
-	}
+public class PlayDeadTimerTask {
+	public static Task<LivingEntity> create() {
+		return TaskTriggerer.task(
+			context -> context.group(context.queryMemoryValue(MemoryModuleType.PLAY_DEAD_TICKS), context.queryMemoryOptional(MemoryModuleType.HURT_BY_ENTITY))
+					.apply(context, (playDeadTicks, hurtByEntity) -> (world, entity, time) -> {
+							int i = context.<Integer>getValue(playDeadTicks);
+							if (i <= 0) {
+								playDeadTicks.forget();
+								hurtByEntity.forget();
+								entity.getBrain().resetPossibleActivities();
+							} else {
+								playDeadTicks.remember(i - 1);
+							}
 
-	protected void run(ServerWorld serverWorld, AxolotlEntity axolotlEntity, long l) {
-		Brain<AxolotlEntity> brain = axolotlEntity.getBrain();
-		int i = (Integer)brain.getOptionalMemory(MemoryModuleType.PLAY_DEAD_TICKS).get();
-		if (i <= 0) {
-			brain.forget(MemoryModuleType.PLAY_DEAD_TICKS);
-			brain.forget(MemoryModuleType.HURT_BY_ENTITY);
-			brain.resetPossibleActivities();
-		} else {
-			brain.remember(MemoryModuleType.PLAY_DEAD_TICKS, i - 1);
-		}
+							return true;
+						})
+		);
 	}
 }

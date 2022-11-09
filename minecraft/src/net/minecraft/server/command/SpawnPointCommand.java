@@ -6,10 +6,10 @@ import java.util.Collections;
 import net.minecraft.command.argument.AngleArgumentType;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
 public class SpawnPointCommand {

@@ -9,7 +9,7 @@ import net.minecraft.entity.mob.WardenEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 
-public class SniffTask<E extends WardenEntity> extends Task<E> {
+public class SniffTask<E extends WardenEntity> extends MultiTickTask<E> {
 	private static final double HORIZONTAL_RADIUS = 6.0;
 	private static final double VERTICAL_RADIUS = 20.0;
 
@@ -49,7 +49,7 @@ public class SniffTask<E extends WardenEntity> extends Task<E> {
 		}
 
 		wardenEntity.getBrain().forget(MemoryModuleType.IS_SNIFFING);
-		wardenEntity.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_ATTACKABLE).filter(wardenEntity::isValidTarget).ifPresent(target -> {
+		wardenEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.NEAREST_ATTACKABLE).filter(wardenEntity::isValidTarget).ifPresent(target -> {
 			if (wardenEntity.isInRange(target, 6.0, 20.0)) {
 				wardenEntity.increaseAngerAt(target);
 			}

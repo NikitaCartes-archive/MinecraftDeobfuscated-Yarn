@@ -3,8 +3,8 @@ package net.minecraft.client.texture;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 @Environment(EnvType.CLIENT)
 public class StatusEffectSpriteManager extends SpriteAtlasHolder {
@@ -13,6 +13,6 @@ public class StatusEffectSpriteManager extends SpriteAtlasHolder {
 	}
 
 	public Sprite getSprite(StatusEffect effect) {
-		return this.getSprite(Registry.STATUS_EFFECT.getId(effect));
+		return this.getSprite(Registries.STATUS_EFFECT.getId(effect));
 	}
 }

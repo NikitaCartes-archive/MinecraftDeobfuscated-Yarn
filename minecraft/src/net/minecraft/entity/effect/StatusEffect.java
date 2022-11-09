@@ -15,9 +15,9 @@ import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
-import net.minecraft.util.registry.Registry;
 
 public class StatusEffect {
 	private final Map<EntityAttribute, EntityAttributeModifier> attributeModifiers = Maps.<EntityAttribute, EntityAttributeModifier>newHashMap();
@@ -29,15 +29,15 @@ public class StatusEffect {
 
 	@Nullable
 	public static StatusEffect byRawId(int rawId) {
-		return Registry.STATUS_EFFECT.get(rawId);
+		return Registries.STATUS_EFFECT.get(rawId);
 	}
 
 	public static int getRawId(StatusEffect type) {
-		return Registry.STATUS_EFFECT.getRawId(type);
+		return Registries.STATUS_EFFECT.getRawId(type);
 	}
 
 	public static int getRawIdNullable(@Nullable StatusEffect type) {
-		return Registry.STATUS_EFFECT.getRawId(type);
+		return Registries.STATUS_EFFECT.getRawId(type);
 	}
 
 	protected StatusEffect(StatusEffectCategory category, int color) {
@@ -114,7 +114,7 @@ public class StatusEffect {
 
 	protected String loadTranslationKey() {
 		if (this.translationKey == null) {
-			this.translationKey = Util.createTranslationKey("effect", Registry.STATUS_EFFECT.getId(this));
+			this.translationKey = Util.createTranslationKey("effect", Registries.STATUS_EFFECT.getId(this));
 		}
 
 		return this.translationKey;

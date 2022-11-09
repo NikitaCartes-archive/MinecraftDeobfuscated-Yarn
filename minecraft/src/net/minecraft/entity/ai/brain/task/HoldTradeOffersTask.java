@@ -16,7 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.village.TradeOffer;
 
-public class HoldTradeOffersTask extends Task<VillagerEntity> {
+public class HoldTradeOffersTask extends MultiTickTask<VillagerEntity> {
 	private static final int RUN_INTERVAL = 900;
 	private static final int OFFER_SHOWING_INTERVAL = 40;
 	@Nullable
@@ -32,10 +32,10 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 
 	public boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
 		Brain<?> brain = villagerEntity.getBrain();
-		if (!brain.getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).isPresent()) {
+		if (!brain.getOptionalRegisteredMemory(MemoryModuleType.INTERACTION_TARGET).isPresent()) {
 			return false;
 		} else {
-			LivingEntity livingEntity = (LivingEntity)brain.getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).get();
+			LivingEntity livingEntity = (LivingEntity)brain.getOptionalRegisteredMemory(MemoryModuleType.INTERACTION_TARGET).get();
 			return livingEntity.getType() == EntityType.PLAYER
 				&& villagerEntity.isAlive()
 				&& livingEntity.isAlive()
@@ -47,7 +47,7 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 	public boolean shouldKeepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		return this.shouldRun(serverWorld, villagerEntity)
 			&& this.ticksLeft > 0
-			&& villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).isPresent();
+			&& villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.INTERACTION_TARGET).isPresent();
 	}
 
 	public void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
@@ -125,7 +125,7 @@ public class HoldTradeOffersTask extends Task<VillagerEntity> {
 
 	private LivingEntity findPotentialCustomer(VillagerEntity villager) {
 		Brain<?> brain = villager.getBrain();
-		LivingEntity livingEntity = (LivingEntity)brain.getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).get();
+		LivingEntity livingEntity = (LivingEntity)brain.getOptionalRegisteredMemory(MemoryModuleType.INTERACTION_TARGET).get();
 		brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(livingEntity, true));
 		return livingEntity;
 	}

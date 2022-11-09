@@ -7,7 +7,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.server.world.ServerWorld;
 
-public class TemptationCooldownTask extends Task<LivingEntity> {
+public class TemptationCooldownTask extends MultiTickTask<LivingEntity> {
 	private final MemoryModuleType<Integer> moduleType;
 
 	public TemptationCooldownTask(MemoryModuleType<Integer> moduleType) {
@@ -16,7 +16,7 @@ public class TemptationCooldownTask extends Task<LivingEntity> {
 	}
 
 	private Optional<Integer> getTemptationCooldownTicks(LivingEntity entity) {
-		return entity.getBrain().getOptionalMemory(this.moduleType);
+		return entity.getBrain().getOptionalRegisteredMemory(this.moduleType);
 	}
 
 	@Override

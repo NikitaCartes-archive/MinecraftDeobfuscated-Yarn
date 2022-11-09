@@ -4,13 +4,13 @@ import java.util.concurrent.CompletableFuture;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.block.entity.BannerPatterns;
 import net.minecraft.data.DataOutput;
-import net.minecraft.tag.BannerPatternTags;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryWrapper;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.tag.BannerPatternTags;
 
 public class BannerPatternTagProvider extends AbstractTagProvider<BannerPattern> {
 	public BannerPatternTagProvider(DataOutput dataGenerator, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
-		super(dataGenerator, Registry.BANNER_PATTERN_KEY, registryLookupFuture);
+		super(dataGenerator, RegistryKeys.BANNER_PATTERN, registryLookupFuture);
 	}
 
 	@Override

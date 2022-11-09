@@ -5,16 +5,16 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.Item;
 import net.minecraft.particle.ParticleEffect;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.state.StateManager;
-import net.minecraft.tag.TagKey;
 import net.minecraft.util.collection.IdList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -24,7 +24,7 @@ public abstract class Fluid {
 	public static final IdList<FluidState> STATE_IDS = new IdList<>();
 	protected final StateManager<Fluid, FluidState> stateManager;
 	private FluidState defaultState;
-	private final RegistryEntry.Reference<Fluid> registryEntry = Registry.FLUID.createEntry(this);
+	private final RegistryEntry.Reference<Fluid> registryEntry = Registries.FLUID.createEntry(this);
 
 	protected Fluid() {
 		StateManager.Builder<Fluid, FluidState> builder = new StateManager.Builder<>(this);

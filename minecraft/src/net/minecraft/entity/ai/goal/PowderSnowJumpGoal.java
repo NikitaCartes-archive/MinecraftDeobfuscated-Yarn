@@ -4,7 +4,7 @@ import java.util.EnumSet;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.tag.EntityTypeTags;
+import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;

@@ -22,11 +22,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
 
 public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
@@ -49,7 +49,7 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 		Enchantment enchantment;
 		if (this.enchantments.isEmpty()) {
 			boolean bl = stack.isOf(Items.BOOK);
-			List<Enchantment> list = (List<Enchantment>)Registry.ENCHANTMENT
+			List<Enchantment> list = (List<Enchantment>)Registries.ENCHANTMENT
 				.stream()
 				.filter(Enchantment::isAvailableForRandomSelection)
 				.filter(enchantmentx -> bl || enchantmentx.isAcceptableItem(stack))
@@ -112,7 +112,7 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 				JsonArray jsonArray = new JsonArray();
 
 				for (Enchantment enchantment : enchantRandomlyLootFunction.enchantments) {
-					Identifier identifier = Registry.ENCHANTMENT.getId(enchantment);
+					Identifier identifier = Registries.ENCHANTMENT.getId(enchantment);
 					if (identifier == null) {
 						throw new IllegalArgumentException("Don't know how to serialize enchantment " + enchantment);
 					}
@@ -129,7 +129,7 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 			if (jsonObject.has("enchantments")) {
 				for (JsonElement jsonElement : JsonHelper.getArray(jsonObject, "enchantments")) {
 					String string = JsonHelper.asString(jsonElement, "enchantment");
-					Enchantment enchantment = (Enchantment)Registry.ENCHANTMENT
+					Enchantment enchantment = (Enchantment)Registries.ENCHANTMENT
 						.getOrEmpty(new Identifier(string))
 						.orElseThrow(() -> new JsonSyntaxException("Unknown enchantment '" + string + "'"));
 					list.add(enchantment);

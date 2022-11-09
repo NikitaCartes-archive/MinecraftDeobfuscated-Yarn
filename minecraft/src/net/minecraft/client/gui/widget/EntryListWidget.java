@@ -199,7 +199,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		int j = i + 6;
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+		RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
 		this.hoveredEntry = this.isMouseOver((double)mouseX, (double)mouseY) ? this.getEntryAtPosition((double)mouseX, (double)mouseY) : null;
 		if (this.renderBackground) {
 			RenderSystem.setShaderTexture(0, DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
@@ -233,7 +233,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 
 		this.renderList(matrices, mouseX, mouseY, delta);
 		if (this.renderHorizontalShadows) {
-			RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+			RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
 			RenderSystem.setShaderTexture(0, DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
 			RenderSystem.enableDepthTest();
 			RenderSystem.depthFunc(519);
@@ -265,7 +265,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 				GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE
 			);
 			RenderSystem.disableTexture();
-			RenderSystem.setShader(GameRenderer::getPositionColorShader);
+			RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 			int n = 4;
 			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 			bufferBuilder.vertex((double)this.left, (double)(this.top + 4), 0.0).color(0, 0, 0, 0).next();
@@ -282,7 +282,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		int o = this.getMaxScroll();
 		if (o > 0) {
 			RenderSystem.disableTexture();
-			RenderSystem.setShader(GameRenderer::getPositionColorShader);
+			RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 			int m = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getMaxPosition());
 			m = MathHelper.clamp(m, 32, this.bottom - this.top - 8);
 			int n = (int)this.getScrollAmount() * (this.bottom - this.top - m) / o + this.top;

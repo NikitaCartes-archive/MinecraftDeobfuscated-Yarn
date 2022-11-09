@@ -11,12 +11,12 @@ import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSupplier;
@@ -40,7 +40,7 @@ public class ReadOnlyChunk extends ProtoChunk {
 			wrapped.getPos(),
 			UpgradeData.NO_UPGRADE_DATA,
 			wrapped.heightLimitView,
-			wrapped.getWorld().getRegistryManager().get(Registry.BIOME_KEY),
+			wrapped.getWorld().getRegistryManager().get(RegistryKeys.BIOME_WORLDGEN),
 			wrapped.getBlendingData()
 		);
 		this.wrapped = wrapped;

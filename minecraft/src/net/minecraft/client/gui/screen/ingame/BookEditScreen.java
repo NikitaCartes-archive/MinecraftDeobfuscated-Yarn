@@ -397,7 +397,7 @@ public class BookEditScreen extends Screen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		this.setFocused(null);
-		RenderSystem.setShader(GameRenderer::getPositionTexShader);
+		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.setShaderTexture(0, BookScreen.BOOK_TEXTURE);
 		int i = (this.width - 192) / 2;
@@ -443,7 +443,7 @@ public class BookEditScreen extends Screen {
 	private void drawSelection(Rect2i[] selectionRectangles) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		RenderSystem.setShader(GameRenderer::getPositionShader);
+		RenderSystem.setShader(GameRenderer::getPositionProgram);
 		RenderSystem.setShaderColor(0.0F, 0.0F, 255.0F, 255.0F);
 		RenderSystem.disableTexture();
 		RenderSystem.enableColorLogicOp();

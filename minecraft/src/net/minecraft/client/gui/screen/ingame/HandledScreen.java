@@ -107,7 +107,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		for (int k = 0; k < this.handler.slots.size(); k++) {
 			Slot slot = this.handler.slots.get(k);
 			if (slot.isEnabled()) {
-				RenderSystem.setShader(GameRenderer::getPositionTexShader);
+				RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 				this.drawSlot(matrices, slot);
 			}
 

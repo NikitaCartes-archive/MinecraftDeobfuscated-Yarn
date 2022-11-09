@@ -34,7 +34,7 @@ public class RecipeToast implements Toast {
 		if (this.recipes.isEmpty()) {
 			return Toast.Visibility.HIDE;
 		} else {
-			RenderSystem.setShader(GameRenderer::getPositionTexShader);
+			RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 			RenderSystem.setShaderTexture(0, TEXTURE);
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			manager.drawTexture(matrices, 0, 0, 0, 32, this.getWidth(), this.getHeight());

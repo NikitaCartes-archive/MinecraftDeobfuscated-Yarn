@@ -14,9 +14,9 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.predicate.NumberRange;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.registry.Registry;
 
 public class EntityEffectPredicate {
 	public static final EntityEffectPredicate EMPTY = new EntityEffectPredicate(Collections.emptyMap());
@@ -74,7 +74,7 @@ public class EntityEffectPredicate {
 
 			for (Entry<String, JsonElement> entry : jsonObject.entrySet()) {
 				Identifier identifier = new Identifier((String)entry.getKey());
-				StatusEffect statusEffect = (StatusEffect)Registry.STATUS_EFFECT
+				StatusEffect statusEffect = (StatusEffect)Registries.STATUS_EFFECT
 					.getOrEmpty(identifier)
 					.orElseThrow(() -> new JsonSyntaxException("Unknown effect '" + identifier + "'"));
 				EntityEffectPredicate.EffectData effectData = EntityEffectPredicate.EffectData.fromJson(
@@ -96,7 +96,7 @@ public class EntityEffectPredicate {
 			JsonObject jsonObject = new JsonObject();
 
 			for (Entry<StatusEffect, EntityEffectPredicate.EffectData> entry : this.effects.entrySet()) {
-				jsonObject.add(Registry.STATUS_EFFECT.getId((StatusEffect)entry.getKey()).toString(), ((EntityEffectPredicate.EffectData)entry.getValue()).toJson());
+				jsonObject.add(Registries.STATUS_EFFECT.getId((StatusEffect)entry.getKey()).toString(), ((EntityEffectPredicate.EffectData)entry.getValue()).toJson());
 			}
 
 			return jsonObject;

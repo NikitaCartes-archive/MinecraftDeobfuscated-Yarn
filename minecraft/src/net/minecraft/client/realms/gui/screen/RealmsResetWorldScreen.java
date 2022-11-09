@@ -274,7 +274,7 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 		private final Identifier image;
 
 		public FrameButton(int x, int y, Text message, Identifier image, ButtonWidget.PressAction onPress) {
-			super(x, y, 60, 72, message, onPress, EMPTY_TOOLTIP, DEFAULT_NARRATION_SUPPLIER);
+			super(x, y, 60, 72, message, onPress, DEFAULT_NARRATION_SUPPLIER);
 			this.image = image;
 		}
 

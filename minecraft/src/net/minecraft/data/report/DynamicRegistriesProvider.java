@@ -11,11 +11,11 @@ import java.util.concurrent.CompletableFuture;
 import net.minecraft.data.DataOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
-import net.minecraft.util.dynamic.RegistryOps;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.RegistryLoader;
-import net.minecraft.util.registry.RegistryWrapper;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryLoader;
+import net.minecraft.registry.RegistryOps;
+import net.minecraft.registry.RegistryWrapper;
 import org.slf4j.Logger;
 
 public class DynamicRegistriesProvider implements DataProvider {

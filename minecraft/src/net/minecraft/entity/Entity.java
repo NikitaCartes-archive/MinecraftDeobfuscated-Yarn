@@ -56,6 +56,11 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.EntityTypeTags;
+import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
@@ -69,10 +74,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.Properties;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.EntityTypeTags;
-import net.minecraft.tag.FluidTags;
-import net.minecraft.tag.TagKey;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -100,7 +101,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockLocating;
@@ -1020,7 +1020,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * any move effect}, from {@link #move(MovementType, Vec3d)}
 	 */
 	protected void addAirTravelEffects() {
-		if (this.hasWings()) {
+		if (this.isFlappingWings()) {
 			this.addFlapEffects();
 			if (this.getMoveEffect().emitsGameEvents()) {
 				this.emitGameEvent(GameEvent.FLAP);
@@ -1319,7 +1319,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * 
 	 * <p>The actual flapping logic should be done in {@link #tick()} instead.
 	 * 
-	 * <p>This is only called when the entity {@linkplain #hasWings() has wings}
+	 * <p>This is only called when the entity {@linkplain #isFlappingWings() is flapping wings}
 	 * and the entity {@linkplain #getMoveEffect() has any move effect}, from
 	 * {@link #addAirTravelEffects()}.
 	 */
@@ -1327,12 +1327,12 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	/**
-	 * {@return whether the entity has wings}
+	 * {@return whether the entity is flapping their wings}
 	 * 
-	 * <p>Entities with wings will call {@link #addFlapEffects} inside
+	 * <p>Entities flapping their wings will call {@link #addFlapEffects} inside
 	 * {@link #addAirTravelEffects}.
 	 */
-	protected boolean hasWings() {
+	protected boolean isFlappingWings() {
 		return false;
 	}
 
@@ -3709,9 +3709,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 								vec3d = new Vec3d(0.5, 0.0, 0.0);
 							}
 
-							return NetherPortal.getNetherTeleportTarget(
-								destination, rect, axis, vec3d, this.getDimensions(this.getPose()), this.getVelocity(), this.getYaw(), this.getPitch()
-							);
+							return NetherPortal.getNetherTeleportTarget(destination, rect, axis, vec3d, this, this.getVelocity(), this.getYaw(), this.getPitch());
 						}
 					)
 					.orElse(null);
@@ -4994,9 +4992,9 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * {@return whether the entity can freeze}
 	 * 
 	 * @implNote Entities cannot be frozen if they are in the {@link
-	 * net.minecraft.tag.EntityTypeTags#FREEZE_IMMUNE_ENTITY_TYPES} tag. In addition to this, {@link
+	 * net.minecraft.registry.tag.EntityTypeTags#FREEZE_IMMUNE_ENTITY_TYPES} tag. In addition to this, {@link
 	 * LivingEntity} cannot be frozen if they are spectator or if they wear an
-	 * item inside {@link net.minecraft.tag.ItemTags#FREEZE_IMMUNE_WEARABLES} tag.
+	 * item inside {@link net.minecraft.registry.tag.ItemTags#FREEZE_IMMUNE_WEARABLES} tag.
 	 */
 	public boolean canFreeze() {
 		return !this.getType().isIn(EntityTypeTags.FREEZE_IMMUNE_ENTITY_TYPES);

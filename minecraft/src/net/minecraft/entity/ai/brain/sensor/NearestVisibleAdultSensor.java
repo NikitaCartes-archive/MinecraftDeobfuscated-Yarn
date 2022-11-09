@@ -16,7 +16,7 @@ public class NearestVisibleAdultSensor extends Sensor<PassiveEntity> {
 
 	protected void sense(ServerWorld serverWorld, PassiveEntity passiveEntity) {
 		passiveEntity.getBrain()
-			.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS)
+			.getOptionalRegisteredMemory(MemoryModuleType.VISIBLE_MOBS)
 			.ifPresent(livingTargetCache -> this.findNearestVisibleAdult(passiveEntity, livingTargetCache));
 	}
 

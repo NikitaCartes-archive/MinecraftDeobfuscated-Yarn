@@ -26,13 +26,13 @@ public class PiglinBruteSpecificSensor extends Sensor<LivingEntity> {
 	protected void sense(ServerWorld world, LivingEntity entity) {
 		Brain<?> brain = entity.getBrain();
 		List<AbstractPiglinEntity> list = Lists.<AbstractPiglinEntity>newArrayList();
-		LivingTargetCache livingTargetCache = (LivingTargetCache)brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(LivingTargetCache.empty());
+		LivingTargetCache livingTargetCache = (LivingTargetCache)brain.getOptionalRegisteredMemory(MemoryModuleType.VISIBLE_MOBS).orElse(LivingTargetCache.empty());
 		Optional<MobEntity> optional = livingTargetCache.findFirst(
 				livingEntityx -> livingEntityx instanceof WitherSkeletonEntity || livingEntityx instanceof WitherEntity
 			)
 			.map(MobEntity.class::cast);
 
-		for (LivingEntity livingEntity : (List)brain.getOptionalMemory(MemoryModuleType.MOBS).orElse(ImmutableList.of())) {
+		for (LivingEntity livingEntity : (List)brain.getOptionalRegisteredMemory(MemoryModuleType.MOBS).orElse(ImmutableList.of())) {
 			if (livingEntity instanceof AbstractPiglinEntity && ((AbstractPiglinEntity)livingEntity).isAdult()) {
 				list.add((AbstractPiglinEntity)livingEntity);
 			}

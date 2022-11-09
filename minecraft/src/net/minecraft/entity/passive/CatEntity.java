@@ -46,13 +46,14 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.CatVariantTags;
+import net.minecraft.registry.tag.StructureTags;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.CatVariantTags;
-import net.minecraft.tag.StructureTags;
-import net.minecraft.tag.TagKey;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
@@ -61,7 +62,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -158,7 +158,7 @@ public class CatEntity extends TameableEntity {
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(CAT_VARIANT, Registry.CAT_VARIANT.getOrThrow(CatVariant.BLACK));
+		this.dataTracker.startTracking(CAT_VARIANT, Registries.CAT_VARIANT.getOrThrow(CatVariant.BLACK));
 		this.dataTracker.startTracking(IN_SLEEPING_POSE, false);
 		this.dataTracker.startTracking(HEAD_DOWN, false);
 		this.dataTracker.startTracking(COLLAR_COLOR, DyeColor.RED.getId());
@@ -167,14 +167,14 @@ public class CatEntity extends TameableEntity {
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		nbt.putString("variant", Registry.CAT_VARIANT.getId(this.getVariant()).toString());
+		nbt.putString("variant", Registries.CAT_VARIANT.getId(this.getVariant()).toString());
 		nbt.putByte("CollarColor", (byte)this.getCollarColor().getId());
 	}
 
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
-		CatVariant catVariant = Registry.CAT_VARIANT.get(Identifier.tryParse(nbt.getString("variant")));
+		CatVariant catVariant = Registries.CAT_VARIANT.get(Identifier.tryParse(nbt.getString("variant")));
 		if (catVariant != null) {
 			this.setVariant(catVariant);
 		}
@@ -360,13 +360,13 @@ public class CatEntity extends TameableEntity {
 		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 		boolean bl = world.getMoonSize() > 0.9F;
 		TagKey<CatVariant> tagKey = bl ? CatVariantTags.FULL_MOON_SPAWNS : CatVariantTags.DEFAULT_SPAWNS;
-		Registry.CAT_VARIANT
+		Registries.CAT_VARIANT
 			.getEntryList(tagKey)
 			.flatMap(list -> list.getRandom(world.getRandom()))
 			.ifPresent(variant -> this.setVariant((CatVariant)variant.value()));
 		ServerWorld serverWorld = world.toServerWorld();
 		if (serverWorld.getStructureAccessor().getStructureContaining(this.getBlockPos(), StructureTags.CATS_SPAWN_AS_BLACK).hasChildren()) {
-			this.setVariant(Registry.CAT_VARIANT.getOrThrow(CatVariant.ALL_BLACK));
+			this.setVariant(Registries.CAT_VARIANT.getOrThrow(CatVariant.ALL_BLACK));
 			this.setPersistent();
 		}
 

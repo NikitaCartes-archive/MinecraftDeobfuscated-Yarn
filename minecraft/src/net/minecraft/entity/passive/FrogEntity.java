@@ -42,23 +42,23 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.BiomeTags;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
-import net.minecraft.tag.BiomeTags;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
@@ -169,13 +169,13 @@ public class FrogEntity extends AnimalEntity {
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		nbt.putString("variant", Registry.FROG_VARIANT.getId(this.getVariant()).toString());
+		nbt.putString("variant", Registries.FROG_VARIANT.getId(this.getVariant()).toString());
 	}
 
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
-		FrogVariant frogVariant = Registry.FROG_VARIANT.get(Identifier.tryParse(nbt.getString("variant")));
+		FrogVariant frogVariant = Registries.FROG_VARIANT.get(Identifier.tryParse(nbt.getString("variant")));
 		if (frogVariant != null) {
 			this.setVariant(frogVariant);
 		}

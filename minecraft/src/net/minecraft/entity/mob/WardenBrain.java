@@ -6,7 +6,6 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Dynamic;
 import java.util.List;
-import java.util.Map;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.BlockPosLookTarget;
@@ -21,7 +20,6 @@ import net.minecraft.entity.ai.brain.task.EmergeTask;
 import net.minecraft.entity.ai.brain.task.FindRoarTargetTask;
 import net.minecraft.entity.ai.brain.task.FollowMobTask;
 import net.minecraft.entity.ai.brain.task.ForgetAttackTargetTask;
-import net.minecraft.entity.ai.brain.task.GoToCelebrateTask;
 import net.minecraft.entity.ai.brain.task.LookAroundTask;
 import net.minecraft.entity.ai.brain.task.LookAtDisturbanceTask;
 import net.minecraft.entity.ai.brain.task.MeleeAttackTask;
@@ -34,10 +32,11 @@ import net.minecraft.entity.ai.brain.task.StartSniffingTask;
 import net.minecraft.entity.ai.brain.task.StayAboveWaterTask;
 import net.minecraft.entity.ai.brain.task.StrollTask;
 import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.TaskTriggerer;
 import net.minecraft.entity.ai.brain.task.WaitTask;
+import net.minecraft.entity.ai.brain.task.WalkTowardsPosTask;
 import net.minecraft.entity.ai.brain.task.WanderAroundTask;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -82,13 +81,15 @@ public class WardenBrain {
 		MemoryModuleType.SONIC_BOOM_SOUND_COOLDOWN,
 		MemoryModuleType.SONIC_BOOM_SOUND_DELAY
 	);
-	private static final Task<WardenEntity> RESET_DIG_COOLDOWN_TASK = new Task<WardenEntity>(
-		ImmutableMap.of(MemoryModuleType.DIG_COOLDOWN, MemoryModuleState.REGISTERED)
-	) {
-		protected void run(ServerWorld serverWorld, WardenEntity wardenEntity, long l) {
-			WardenBrain.resetDigCooldown(wardenEntity);
-		}
-	};
+	private static final Task<WardenEntity> RESET_DIG_COOLDOWN_TASK = TaskTriggerer.task(
+		context -> context.group(context.queryMemoryOptional(MemoryModuleType.DIG_COOLDOWN)).apply(context, digCooldown -> (world, entity, time) -> {
+					if (context.getOptionalValue(digCooldown).isPresent()) {
+						digCooldown.remember(Unit.INSTANCE, 1200L);
+					}
+
+					return true;
+				})
+	);
 
 	public static void updateActivities(WardenEntity warden) {
 		warden.getBrain()
@@ -114,7 +115,7 @@ public class WardenBrain {
 
 	private static void addCoreActivities(Brain<WardenEntity> brain) {
 		brain.setTaskList(
-			Activity.CORE, 0, ImmutableList.of(new StayAboveWaterTask(0.8F), new LookAtDisturbanceTask(), new LookAroundTask(45, 90), new WanderAroundTask())
+			Activity.CORE, 0, ImmutableList.of(new StayAboveWaterTask(0.8F), LookAtDisturbanceTask.create(), new LookAroundTask(45, 90), new WanderAroundTask())
 		);
 	}
 
@@ -137,11 +138,11 @@ public class WardenBrain {
 			Activity.IDLE,
 			10,
 			ImmutableList.of(
-				new FindRoarTargetTask<>(WardenEntity::getPrimeSuspect),
-				new StartSniffingTask(),
-				new RandomTask(
+				FindRoarTargetTask.create(WardenEntity::getPrimeSuspect),
+				StartSniffingTask.create(),
+				new RandomTask<>(
 					ImmutableMap.of(MemoryModuleType.IS_SNIFFING, MemoryModuleState.VALUE_ABSENT),
-					ImmutableList.of(Pair.of(new StrollTask(0.5F), 2), Pair.of(new WaitTask(30, 60), 1))
+					ImmutableList.of(Pair.of(StrollTask.create(0.5F), 2), Pair.of(new WaitTask(30, 60), 1))
 				)
 			)
 		);
@@ -151,14 +152,14 @@ public class WardenBrain {
 		brain.setTaskList(
 			Activity.INVESTIGATE,
 			5,
-			ImmutableList.of(new FindRoarTargetTask<>(WardenEntity::getPrimeSuspect), new GoToCelebrateTask(MemoryModuleType.DISTURBANCE_LOCATION, 2, 0.7F)),
+			ImmutableList.of(FindRoarTargetTask.create(WardenEntity::getPrimeSuspect), WalkTowardsPosTask.create(MemoryModuleType.DISTURBANCE_LOCATION, 2, 0.7F)),
 			MemoryModuleType.DISTURBANCE_LOCATION
 		);
 	}
 
 	private static void addSniffActivities(Brain<WardenEntity> brain) {
 		brain.setTaskList(
-			Activity.SNIFF, 5, ImmutableList.of(new FindRoarTargetTask<>(WardenEntity::getPrimeSuspect), new SniffTask(SNIFF_DURATION)), MemoryModuleType.IS_SNIFFING
+			Activity.SNIFF, 5, ImmutableList.of(FindRoarTargetTask.create(WardenEntity::getPrimeSuspect), new SniffTask<>(SNIFF_DURATION)), MemoryModuleType.IS_SNIFFING
 		);
 	}
 
@@ -172,18 +173,18 @@ public class WardenBrain {
 			10,
 			ImmutableList.of(
 				RESET_DIG_COOLDOWN_TASK,
-				new ForgetAttackTargetTask<>(entity -> !warden.getAngriness().isAngry() || !warden.isValidTarget(entity), WardenBrain::removeDeadSuspect, false),
-				new FollowMobTask(entity -> isTargeting(warden, entity), (float)warden.getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE)),
-				new RangedApproachTask(1.2F),
+				ForgetAttackTargetTask.create(entity -> !warden.getAngriness().isAngry() || !warden.isValidTarget(entity), WardenBrain::removeDeadSuspect, false),
+				FollowMobTask.create(entity -> isTargeting(warden, entity), (float)warden.getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE)),
+				RangedApproachTask.create(1.2F),
 				new SonicBoomTask(),
-				new MeleeAttackTask(18)
+				MeleeAttackTask.create(18)
 			),
 			MemoryModuleType.ATTACK_TARGET
 		);
 	}
 
 	private static boolean isTargeting(WardenEntity warden, LivingEntity entity) {
-		return warden.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).filter(entityx -> entityx == entity).isPresent();
+		return warden.getBrain().getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET).filter(entityx -> entityx == entity).isPresent();
 	}
 
 	private static void removeDeadSuspect(WardenEntity warden, LivingEntity suspect) {
@@ -203,7 +204,7 @@ public class WardenBrain {
 	public static void lookAtDisturbance(WardenEntity warden, BlockPos pos) {
 		if (warden.world.getWorldBorder().contains(pos)
 			&& !warden.getPrimeSuspect().isPresent()
-			&& !warden.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).isPresent()) {
+			&& !warden.getBrain().getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET).isPresent()) {
 			resetDigCooldown(warden);
 			warden.getBrain().remember(MemoryModuleType.SNIFF_COOLDOWN, Unit.INSTANCE, 100L);
 			warden.getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(pos), 100L);

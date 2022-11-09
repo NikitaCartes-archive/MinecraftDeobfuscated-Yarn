@@ -6,12 +6,12 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.toast.TutorialToast;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.stat.Stats;
-import net.minecraft.tag.ItemTags;
-import net.minecraft.tag.TagKey;
 import net.minecraft.text.Text;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 
 @Environment(EnvType.CLIENT)
 public class CraftPlanksTutorialStepHandler implements TutorialStepHandler {
@@ -70,7 +70,7 @@ public class CraftPlanksTutorialStepHandler implements TutorialStepHandler {
 	}
 
 	public static boolean hasCrafted(ClientPlayerEntity player, TagKey<Item> tag) {
-		for (RegistryEntry<Item> registryEntry : Registry.ITEM.iterateEntries(tag)) {
+		for (RegistryEntry<Item> registryEntry : Registries.ITEM.iterateEntries(tag)) {
 			if (player.getStatHandler().getStat(Stats.CRAFTED.getOrCreateStat(registryEntry.value())) > 0) {
 				return true;
 			}

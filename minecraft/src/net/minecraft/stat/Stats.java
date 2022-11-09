@@ -3,19 +3,20 @@ package net.minecraft.stat;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class Stats {
-	public static final StatType<Block> MINED = registerType("mined", Registry.BLOCK);
-	public static final StatType<Item> CRAFTED = registerType("crafted", Registry.ITEM);
-	public static final StatType<Item> USED = registerType("used", Registry.ITEM);
-	public static final StatType<Item> BROKEN = registerType("broken", Registry.ITEM);
-	public static final StatType<Item> PICKED_UP = registerType("picked_up", Registry.ITEM);
-	public static final StatType<Item> DROPPED = registerType("dropped", Registry.ITEM);
-	public static final StatType<EntityType<?>> KILLED = registerType("killed", Registry.ENTITY_TYPE);
-	public static final StatType<EntityType<?>> KILLED_BY = registerType("killed_by", Registry.ENTITY_TYPE);
-	public static final StatType<Identifier> CUSTOM = registerType("custom", Registry.CUSTOM_STAT);
+	public static final StatType<Block> MINED = registerType("mined", Registries.BLOCK);
+	public static final StatType<Item> CRAFTED = registerType("crafted", Registries.ITEM);
+	public static final StatType<Item> USED = registerType("used", Registries.ITEM);
+	public static final StatType<Item> BROKEN = registerType("broken", Registries.ITEM);
+	public static final StatType<Item> PICKED_UP = registerType("picked_up", Registries.ITEM);
+	public static final StatType<Item> DROPPED = registerType("dropped", Registries.ITEM);
+	public static final StatType<EntityType<?>> KILLED = registerType("killed", Registries.ENTITY_TYPE);
+	public static final StatType<EntityType<?>> KILLED_BY = registerType("killed_by", Registries.ENTITY_TYPE);
+	public static final StatType<Identifier> CUSTOM = registerType("custom", Registries.CUSTOM_STAT);
 	public static final Identifier LEAVE_GAME = register("leave_game", StatFormatter.DEFAULT);
 	public static final Identifier PLAY_TIME = register("play_time", StatFormatter.TIME);
 	public static final Identifier TOTAL_WORLD_TIME = register("total_world_time", StatFormatter.TIME);
@@ -94,12 +95,12 @@ public class Stats {
 
 	private static Identifier register(String id, StatFormatter formatter) {
 		Identifier identifier = new Identifier(id);
-		Registry.register(Registry.CUSTOM_STAT, id, identifier);
+		Registry.register(Registries.CUSTOM_STAT, id, identifier);
 		CUSTOM.getOrCreateStat(identifier, formatter);
 		return identifier;
 	}
 
 	private static <T> StatType<T> registerType(String id, Registry<T> registry) {
-		return Registry.register(Registry.STAT_TYPE, id, new StatType<>(registry));
+		return Registry.register(Registries.STAT_TYPE, id, new StatType<>(registry));
 	}
 }

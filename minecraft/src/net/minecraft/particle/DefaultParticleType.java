@@ -3,7 +3,7 @@ package net.minecraft.particle;
 import com.mojang.brigadier.StringReader;
 import com.mojang.serialization.Codec;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 
 public class DefaultParticleType extends ParticleType<DefaultParticleType> implements ParticleEffect {
 	private static final ParticleEffect.Factory<DefaultParticleType> PARAMETER_FACTORY = new ParticleEffect.Factory<DefaultParticleType>() {
@@ -36,6 +36,6 @@ public class DefaultParticleType extends ParticleType<DefaultParticleType> imple
 
 	@Override
 	public String asString() {
-		return Registry.PARTICLE_TYPE.getId(this).toString();
+		return Registries.PARTICLE_TYPE.getId(this).toString();
 	}
 }

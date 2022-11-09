@@ -7,11 +7,11 @@ import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 
-public class JumpInBedTask extends Task<MobEntity> {
+public class JumpInBedTask extends MultiTickTask<MobEntity> {
 	private static final int MAX_TICKS_OUT_OF_BED = 100;
 	private static final int MIN_JUMP_TICKS = 3;
 	private static final int JUMP_TIME_VARIANCE = 6;
@@ -101,7 +101,7 @@ public class JumpInBedTask extends Task<MobEntity> {
 	}
 
 	private Optional<BlockPos> getNearestBed(MobEntity mob) {
-		return mob.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_BED);
+		return mob.getBrain().getOptionalRegisteredMemory(MemoryModuleType.NEAREST_BED);
 	}
 
 	private boolean isBedGoneTooLong(ServerWorld world, MobEntity mob) {

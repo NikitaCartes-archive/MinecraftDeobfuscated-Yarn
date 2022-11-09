@@ -19,15 +19,15 @@ import java.util.function.Supplier;
 import java.util.function.ToDoubleFunction;
 import java.util.function.ToIntFunction;
 import java.util.stream.IntStream;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Tooltip;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.OptionSliderWidget;
-import net.minecraft.client.util.OrderableTooltip;
 import net.minecraft.screen.ScreenTexts;
-import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.TranslatableOption;
 import net.minecraft.util.math.MathHelper;
@@ -109,8 +109,7 @@ public final class SimpleOption<T> {
 	public static final SimpleOption.PotentialValuesBasedCallbacks<Boolean> BOOLEAN = new SimpleOption.PotentialValuesBasedCallbacks<>(
 		ImmutableList.of(Boolean.TRUE, Boolean.FALSE), Codec.BOOL
 	);
-	private static final int TOOLTIP_WIDTH = 200;
-	private final SimpleOption.TooltipFactoryGetter<T> tooltipFactoryGetter;
+	private final SimpleOption.TooltipFactory<T> tooltipFactoryGetter;
 	final Function<T, Text> textGetter;
 	private final SimpleOption.Callbacks<T> callbacks;
 	private final Codec<T> codec;
@@ -137,7 +136,7 @@ public final class SimpleOption<T> {
 	/**
 	 * Creates a boolean option.
 	 */
-	public static SimpleOption<Boolean> ofBoolean(String key, SimpleOption.TooltipFactoryGetter<Boolean> tooltipFactoryGetter, boolean defaultValue) {
+	public static SimpleOption<Boolean> ofBoolean(String key, SimpleOption.TooltipFactory<Boolean> tooltipFactoryGetter, boolean defaultValue) {
 		return ofBoolean(key, tooltipFactoryGetter, defaultValue, value -> {
 		});
 	}
@@ -146,14 +145,14 @@ public final class SimpleOption<T> {
 	 * Creates a boolean option.
 	 */
 	public static SimpleOption<Boolean> ofBoolean(
-		String key, SimpleOption.TooltipFactoryGetter<Boolean> tooltipFactoryGetter, boolean defaultValue, Consumer<Boolean> changeCallback
+		String key, SimpleOption.TooltipFactory<Boolean> tooltipFactoryGetter, boolean defaultValue, Consumer<Boolean> changeCallback
 	) {
 		return new SimpleOption<>(key, tooltipFactoryGetter, (optionText, value) -> value ? ScreenTexts.ON : ScreenTexts.OFF, BOOLEAN, defaultValue, changeCallback);
 	}
 
 	public SimpleOption(
 		String key,
-		SimpleOption.TooltipFactoryGetter<T> tooltipFactoryGetter,
+		SimpleOption.TooltipFactory<T> tooltipFactoryGetter,
 		SimpleOption.ValueTextGetter<T> valueTextGetter,
 		SimpleOption.Callbacks<T> callbacks,
 		T defaultValue,
@@ -164,7 +163,7 @@ public final class SimpleOption<T> {
 
 	public SimpleOption(
 		String key,
-		SimpleOption.TooltipFactoryGetter<T> tooltipFactoryGetter,
+		SimpleOption.TooltipFactory<T> tooltipFactoryGetter,
 		SimpleOption.ValueTextGetter<T> valueTextGetter,
 		SimpleOption.Callbacks<T> callbacks,
 		Codec<T> codec,
@@ -185,19 +184,16 @@ public final class SimpleOption<T> {
 	 * {@return the getter for the {@code tooltipFactoryGetter} parameter of the constructor
 	 * to indicate empty tooltips}
 	 */
-	public static <T> SimpleOption.TooltipFactoryGetter<T> emptyTooltip() {
-		return client -> value -> ImmutableList.of();
+	public static <T> SimpleOption.TooltipFactory<T> emptyTooltip() {
+		return value -> null;
 	}
 
 	/**
 	 * {@return the getter for the {@code tooltipFactoryGetter} parameter of the constructor
 	 * to indicate constant tooltips}
 	 */
-	public static <T> SimpleOption.TooltipFactoryGetter<T> constantTooltip(Text text) {
-		return client -> {
-			List<OrderedText> list = wrapLines(client, text);
-			return value -> list;
-		};
+	public static <T> SimpleOption.TooltipFactory<T> constantTooltip(Text text) {
+		return value -> Tooltip.of(text);
 	}
 
 	/**
@@ -210,13 +206,8 @@ public final class SimpleOption<T> {
 		return (optionText, value) -> value.getText();
 	}
 
-	protected static List<OrderedText> wrapLines(MinecraftClient client, Text text) {
-		return client.textRenderer.wrapLines(text, 200);
-	}
-
 	public ClickableWidget createButton(GameOptions options, int x, int y, int width) {
-		SimpleOption.TooltipFactory<T> tooltipFactory = (SimpleOption.TooltipFactory<T>)this.tooltipFactoryGetter.apply(MinecraftClient.getInstance());
-		return (ClickableWidget)this.callbacks.getButtonCreator(tooltipFactory, options, x, y, width).apply(this);
+		return (ClickableWidget)this.callbacks.getButtonCreator(this.tooltipFactoryGetter, options, x, y, width).apply(this);
 	}
 
 	/**
@@ -505,7 +496,7 @@ public final class SimpleOption<T> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static final class OptionSliderWidgetImpl<N> extends OptionSliderWidget implements OrderableTooltip {
+	static final class OptionSliderWidgetImpl<N> extends OptionSliderWidget {
 		private final SimpleOption<N> option;
 		private final SimpleOption.SliderCallbacks<N> callbacks;
 		private final SimpleOption.TooltipFactory<N> tooltipFactory;
@@ -530,17 +521,13 @@ public final class SimpleOption<T> {
 		@Override
 		protected void updateMessage() {
 			this.setMessage((Text)this.option.textGetter.apply(this.option.getValue()));
+			this.setTooltip(this.tooltipFactory.apply(this.callbacks.toValue(this.value)));
 		}
 
 		@Override
 		protected void applyValue() {
 			this.option.setValue(this.callbacks.toValue(this.value));
 			this.options.write();
-		}
-
-		@Override
-		public List<OrderedText> getOrderedTooltip() {
-			return (List<OrderedText>)this.tooltipFactory.apply(this.callbacks.toValue(this.value));
 		}
 	}
 
@@ -589,11 +576,9 @@ public final class SimpleOption<T> {
 
 	@FunctionalInterface
 	@Environment(EnvType.CLIENT)
-	public interface TooltipFactory<T> extends Function<T, List<OrderedText>> {
-	}
-
-	@Environment(EnvType.CLIENT)
-	public interface TooltipFactoryGetter<T> extends Function<MinecraftClient, SimpleOption.TooltipFactory<T>> {
+	public interface TooltipFactory<T> {
+		@Nullable
+		Tooltip apply(T value);
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -10,15 +10,16 @@ import java.util.Map.Entry;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
-import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.StructureHolder;
 import net.minecraft.world.StructureLocator;
@@ -114,12 +115,12 @@ public class StructureAccessor {
 	}
 
 	public StructureStart getStructureContaining(BlockPos pos, RegistryKey<Structure> structure) {
-		Structure structure2 = this.getRegistryManager().get(Registry.STRUCTURE_KEY).get(structure);
+		Structure structure2 = this.getRegistryManager().get(RegistryKeys.STRUCTURE_WORLDGEN).get(structure);
 		return structure2 == null ? StructureStart.DEFAULT : this.getStructureContaining(pos, structure2);
 	}
 
 	public StructureStart getStructureContaining(BlockPos pos, TagKey<Structure> structureTag) {
-		Registry<Structure> registry = this.getRegistryManager().get(Registry.STRUCTURE_KEY);
+		Registry<Structure> registry = this.getRegistryManager().get(RegistryKeys.STRUCTURE_WORLDGEN);
 
 		for (StructureStart structureStart : this.getStructureStarts(
 			new ChunkPos(pos), structure -> (Boolean)registry.getEntry(registry.getRawId(structure)).map(reference -> reference.isIn(structureTag)).orElse(false)

@@ -11,7 +11,7 @@ import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.server.world.ServerWorld;
 
-public class BreedTask extends Task<AnimalEntity> {
+public class BreedTask extends MultiTickTask<AnimalEntity> {
 	private static final int MAX_RANGE = 3;
 	private static final int MIN_BREED_TIME = 60;
 	private static final int RUN_TIME = 110;
@@ -82,17 +82,17 @@ public class BreedTask extends Task<AnimalEntity> {
 	}
 
 	private AnimalEntity getBreedTarget(AnimalEntity animal) {
-		return (AnimalEntity)animal.getBrain().getOptionalMemory(MemoryModuleType.BREED_TARGET).get();
+		return (AnimalEntity)animal.getBrain().getOptionalRegisteredMemory(MemoryModuleType.BREED_TARGET).get();
 	}
 
 	private boolean hasBreedTarget(AnimalEntity animal) {
 		Brain<?> brain = animal.getBrain();
 		return brain.hasMemoryModule(MemoryModuleType.BREED_TARGET)
-			&& ((PassiveEntity)brain.getOptionalMemory(MemoryModuleType.BREED_TARGET).get()).getType() == this.targetType;
+			&& ((PassiveEntity)brain.getOptionalRegisteredMemory(MemoryModuleType.BREED_TARGET).get()).getType() == this.targetType;
 	}
 
 	private Optional<? extends AnimalEntity> findBreedTarget(AnimalEntity animal) {
-		return ((LivingTargetCache)animal.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get()).findFirst(entity -> {
+		return ((LivingTargetCache)animal.getBrain().getOptionalRegisteredMemory(MemoryModuleType.VISIBLE_MOBS).get()).findFirst(entity -> {
 			if (entity.getType() == this.targetType && entity instanceof AnimalEntity animalEntity2 && animal.canBreedWith(animalEntity2)) {
 				return true;
 			}

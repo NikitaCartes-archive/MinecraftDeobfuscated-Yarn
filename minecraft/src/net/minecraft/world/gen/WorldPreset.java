@@ -6,24 +6,25 @@ import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Map;
 import java.util.Optional;
-import net.minecraft.util.dynamic.RegistryElementCodec;
-import net.minecraft.util.registry.MutableRegistry;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.SimpleRegistry;
+import net.minecraft.registry.MutableRegistry;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.SimpleRegistry;
+import net.minecraft.registry.entry.RegistryElementCodec;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.dimension.DimensionOptionsRegistryHolder;
 
 public class WorldPreset {
 	public static final Codec<WorldPreset> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codec.unboundedMap(RegistryKey.createCodec(Registry.DIMENSION_KEY), DimensionOptions.CODEC).fieldOf("dimensions").forGetter(preset -> preset.dimensions)
+						Codec.unboundedMap(RegistryKey.createCodec(RegistryKeys.DIMENSION), DimensionOptions.CODEC).fieldOf("dimensions").forGetter(preset -> preset.dimensions)
 					)
 					.apply(instance, WorldPreset::new)
 		)
 		.flatXmap(WorldPreset::validate, WorldPreset::validate);
-	public static final Codec<RegistryEntry<WorldPreset>> ENTRY_CODEC = RegistryElementCodec.of(Registry.WORLD_PRESET_KEY, CODEC);
+	public static final Codec<RegistryEntry<WorldPreset>> ENTRY_CODEC = RegistryElementCodec.of(RegistryKeys.WORLD_PRESET_WORLDGEN, CODEC);
 	private final Map<RegistryKey<DimensionOptions>, DimensionOptions> dimensions;
 
 	public WorldPreset(Map<RegistryKey<DimensionOptions>, DimensionOptions> dimensions) {
@@ -31,7 +32,7 @@ public class WorldPreset {
 	}
 
 	private Registry<DimensionOptions> createDimensionOptionsRegistry() {
-		MutableRegistry<DimensionOptions> mutableRegistry = new SimpleRegistry<>(Registry.DIMENSION_KEY, Lifecycle.experimental());
+		MutableRegistry<DimensionOptions> mutableRegistry = new SimpleRegistry<>(RegistryKeys.DIMENSION, Lifecycle.experimental());
 		DimensionOptionsRegistryHolder.streamAll(this.dimensions.keySet().stream()).forEach(registryKey -> {
 			DimensionOptions dimensionOptions = (DimensionOptions)this.dimensions.get(registryKey);
 			if (dimensionOptions != null) {

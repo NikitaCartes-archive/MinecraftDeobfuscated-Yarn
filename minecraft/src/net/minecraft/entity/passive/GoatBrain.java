@@ -10,8 +10,8 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.BreedTask;
-import net.minecraft.entity.ai.brain.task.FollowMobTask;
-import net.minecraft.entity.ai.brain.task.GoTowardsLookTarget;
+import net.minecraft.entity.ai.brain.task.FollowMobWithIntervalTask;
+import net.minecraft.entity.ai.brain.task.GoTowardsLookTargetTask;
 import net.minecraft.entity.ai.brain.task.LeapingChargeTask;
 import net.minecraft.entity.ai.brain.task.LongJumpTask;
 import net.minecraft.entity.ai.brain.task.LookAroundTask;
@@ -22,7 +22,6 @@ import net.minecraft.entity.ai.brain.task.StayAboveWaterTask;
 import net.minecraft.entity.ai.brain.task.StrollTask;
 import net.minecraft.entity.ai.brain.task.TemptTask;
 import net.minecraft.entity.ai.brain.task.TemptationCooldownTask;
-import net.minecraft.entity.ai.brain.task.TimeLimitedTask;
 import net.minecraft.entity.ai.brain.task.WaitTask;
 import net.minecraft.entity.ai.brain.task.WalkTask;
 import net.minecraft.entity.ai.brain.task.WalkTowardClosestAdultTask;
@@ -92,12 +91,15 @@ public class GoatBrain {
 		brain.setTaskList(
 			Activity.IDLE,
 			ImmutableList.of(
-				Pair.of(0, new TimeLimitedTask<>(new FollowMobTask(EntityType.PLAYER, 6.0F), UniformIntProvider.create(30, 60))),
+				Pair.of(0, FollowMobWithIntervalTask.follow(EntityType.PLAYER, 6.0F, UniformIntProvider.create(30, 60))),
 				Pair.of(0, new BreedTask(EntityType.GOAT, 1.0F)),
 				Pair.of(1, new TemptTask(goat -> 1.25F)),
-				Pair.of(2, new WalkTowardClosestAdultTask<>(WALKING_SPEED, 1.25F)),
+				Pair.of(2, WalkTowardClosestAdultTask.create(WALKING_SPEED, 1.25F)),
 				Pair.of(
-					3, new RandomTask<>(ImmutableList.of(Pair.of(new StrollTask(1.0F), 2), Pair.of(new GoTowardsLookTarget(1.0F, 3), 2), Pair.of(new WaitTask(30, 60), 1)))
+					3,
+					new RandomTask<>(
+						ImmutableList.of(Pair.of(StrollTask.create(1.0F), 2), Pair.of(GoTowardsLookTargetTask.create(1.0F, 3), 2), Pair.of(new WaitTask(30, 60), 1))
+					)
 				)
 			),
 			ImmutableSet.of(

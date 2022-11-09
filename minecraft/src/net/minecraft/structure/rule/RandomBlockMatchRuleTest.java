@@ -4,13 +4,13 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 
 public class RandomBlockMatchRuleTest extends RuleTest {
 	public static final Codec<RandomBlockMatchRuleTest> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Registry.BLOCK.getCodec().fieldOf("block").forGetter(ruleTest -> ruleTest.block),
+					Registries.BLOCK.getCodec().fieldOf("block").forGetter(ruleTest -> ruleTest.block),
 					Codec.FLOAT.fieldOf("probability").forGetter(ruleTest -> ruleTest.probability)
 				)
 				.apply(instance, RandomBlockMatchRuleTest::new)

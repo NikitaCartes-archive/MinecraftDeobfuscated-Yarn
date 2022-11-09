@@ -15,9 +15,9 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 
 public class EnchantCommand {
 	private static final DynamicCommandExceptionType FAILED_ENTITY_EXCEPTION = new DynamicCommandExceptionType(
@@ -41,7 +41,7 @@ public class EnchantCommand {
 				.then(
 					CommandManager.argument("targets", EntityArgumentType.entities())
 						.then(
-							CommandManager.argument("enchantment", RegistryEntryArgumentType.registryEntry(registryAccess, Registry.ENCHANTMENT_KEY))
+							CommandManager.argument("enchantment", RegistryEntryArgumentType.registryEntry(registryAccess, RegistryKeys.ENCHANTMENT))
 								.executes(
 									context -> execute(
 											context.getSource(), EntityArgumentType.getEntities(context, "targets"), RegistryEntryArgumentType.getEnchantment(context, "enchantment"), 1

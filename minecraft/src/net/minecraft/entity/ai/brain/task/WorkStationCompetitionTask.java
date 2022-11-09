@@ -1,33 +1,38 @@
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableMap;
-import net.minecraft.entity.ai.brain.MemoryModuleState;
+import java.util.List;
+import java.util.Optional;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.GlobalPos;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.world.poi.PointOfInterestType;
 
-public class WorkStationCompetitionTask extends Task<VillagerEntity> {
-	final VillagerProfession profession;
-
-	public WorkStationCompetitionTask(VillagerProfession profession) {
-		super(ImmutableMap.of(MemoryModuleType.JOB_SITE, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.MOBS, MemoryModuleState.VALUE_PRESENT));
-		this.profession = profession;
-	}
-
-	protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		GlobalPos globalPos = (GlobalPos)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.JOB_SITE).get();
-		serverWorld.getPointOfInterestStorage()
-			.getType(globalPos.getPos())
-			.ifPresent(
-				registryEntry -> LookTargetUtil.streamSeenVillagers(
-							villagerEntity, villagerEntityxx -> this.isUsingWorkStationAt(globalPos, registryEntry, villagerEntityxx)
-						)
-						.reduce(villagerEntity, WorkStationCompetitionTask::keepJobSiteForMoreExperiencedVillager)
-			);
+public class WorkStationCompetitionTask {
+	public static Task<VillagerEntity> create() {
+		return TaskTriggerer.task(
+			context -> context.group(context.queryMemoryValue(MemoryModuleType.JOB_SITE), context.queryMemoryValue(MemoryModuleType.MOBS))
+					.apply(
+						context,
+						(jobSite, mobs) -> (world, entity, time) -> {
+								GlobalPos globalPos = context.getValue(jobSite);
+								world.getPointOfInterestStorage()
+									.getType(globalPos.getPos())
+									.ifPresent(
+										poiType -> context.<List>getValue(mobs)
+												.stream()
+												.filter(mob -> mob instanceof VillagerEntity && mob != entity)
+												.map(villager -> (VillagerEntity)villager)
+												.filter(LivingEntity::isAlive)
+												.filter(villager -> isUsingWorkStationAt(globalPos, poiType, villager))
+												.reduce(entity, WorkStationCompetitionTask::keepJobSiteForMoreExperiencedVillager)
+									);
+								return true;
+							}
+					)
+		);
 	}
 
 	private static VillagerEntity keepJobSiteForMoreExperiencedVillager(VillagerEntity first, VillagerEntity second) {
@@ -45,17 +50,12 @@ public class WorkStationCompetitionTask extends Task<VillagerEntity> {
 		return villagerEntity;
 	}
 
-	private boolean isUsingWorkStationAt(GlobalPos pos, RegistryEntry<PointOfInterestType> poiType, VillagerEntity villager) {
-		return this.hasJobSite(villager)
-			&& pos.equals(villager.getBrain().getOptionalMemory(MemoryModuleType.JOB_SITE).get())
-			&& this.isCompletedWorkStation(poiType, villager.getVillagerData().getProfession());
+	private static boolean isUsingWorkStationAt(GlobalPos pos, RegistryEntry<PointOfInterestType> poiType, VillagerEntity villager) {
+		Optional<GlobalPos> optional = villager.getBrain().getOptionalRegisteredMemory(MemoryModuleType.JOB_SITE);
+		return optional.isPresent() && pos.equals(optional.get()) && isCompletedWorkStation(poiType, villager.getVillagerData().getProfession());
 	}
 
-	private boolean isCompletedWorkStation(RegistryEntry<PointOfInterestType> poiType, VillagerProfession profession) {
+	private static boolean isCompletedWorkStation(RegistryEntry<PointOfInterestType> poiType, VillagerProfession profession) {
 		return profession.heldWorkstation().test(poiType);
-	}
-
-	private boolean hasJobSite(VillagerEntity villager) {
-		return villager.getBrain().getOptionalMemory(MemoryModuleType.JOB_SITE).isPresent();
 	}
 }

@@ -10,11 +10,11 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.EntityType;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.registry.Registry;
 
 public class SuggestionProviders {
 	private static final Map<Identifier, SuggestionProvider<CommandSource>> REGISTRY = Maps.<Identifier, SuggestionProvider<CommandSource>>newHashMap();
@@ -29,7 +29,7 @@ public class SuggestionProviders {
 	public static final SuggestionProvider<ServerCommandSource> SUMMONABLE_ENTITIES = register(
 		new Identifier("summonable_entities"),
 		(context, builder) -> CommandSource.suggestFromIdentifier(
-				Registry.ENTITY_TYPE.stream().filter(entityType -> entityType.isEnabled(context.getSource().getEnabledFeatures()) && entityType.isSummonable()),
+				Registries.ENTITY_TYPE.stream().filter(entityType -> entityType.isEnabled(context.getSource().getEnabledFeatures()) && entityType.isSummonable()),
 				builder,
 				EntityType::getId,
 				entityType -> Text.translatable(Util.createTranslationKey("entity", EntityType.getId(entityType)))

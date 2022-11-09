@@ -26,16 +26,17 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.GeneratorOptionsHolder;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryOps;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.TagKey;
+import net.minecraft.registry.tag.WorldPresetTags;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.integrated.IntegratedServerLoader;
-import net.minecraft.tag.TagKey;
-import net.minecraft.tag.WorldPresetTags;
 import net.minecraft.text.Text;
-import net.minecraft.util.dynamic.RegistryOps;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.dimension.DimensionOptionsRegistryHolder;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.gen.WorldPreset;
@@ -80,7 +81,7 @@ public class MoreOptionsDialog implements Drawable {
 	private static Optional<RegistryEntry<WorldPreset>> createPresetEntry(
 		GeneratorOptionsHolder generatorOptionsHolder, Optional<RegistryKey<WorldPreset>> presetKey
 	) {
-		return presetKey.flatMap(key -> generatorOptionsHolder.getCombinedRegistryManager().get(Registry.WORLD_PRESET_KEY).getEntry(key));
+		return presetKey.flatMap(key -> generatorOptionsHolder.getCombinedRegistryManager().get(RegistryKeys.WORLD_PRESET_WORLDGEN).getEntry(key));
 	}
 
 	public void init(CreateWorldScreen parent, MinecraftClient client, TextRenderer textRenderer) {
@@ -105,7 +106,7 @@ public class MoreOptionsDialog implements Drawable {
 				)
 		);
 		this.mapFeaturesButton.visible = false;
-		Registry<WorldPreset> registry = this.generatorOptionsHolder.getCombinedRegistryManager().get(Registry.WORLD_PRESET_KEY);
+		Registry<WorldPreset> registry = this.generatorOptionsHolder.getCombinedRegistryManager().get(RegistryKeys.WORLD_PRESET_WORLDGEN);
 		List<RegistryEntry<WorldPreset>> list = (List<RegistryEntry<WorldPreset>>)collectPresets(registry, WorldPresetTags.NORMAL)
 			.orElseGet(() -> (List)registry.streamEntries().collect(Collectors.toUnmodifiableList()));
 		List<RegistryEntry<WorldPreset>> list2 = (List<RegistryEntry<WorldPreset>>)collectPresets(registry, WorldPresetTags.EXTENDED).orElse(list);

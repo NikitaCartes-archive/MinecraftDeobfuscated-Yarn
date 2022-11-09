@@ -17,11 +17,11 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Util;
 import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.util.registry.RegistryEntry;
 import org.slf4j.Logger;
 
 public class PointOfInterestSet {

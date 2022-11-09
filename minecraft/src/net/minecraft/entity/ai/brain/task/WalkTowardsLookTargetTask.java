@@ -1,41 +1,32 @@
 package net.minecraft.entity.ai.brain.task;
 
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.LookTarget;
-import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.entity.ai.brain.WalkTarget;
 
-public class WalkTowardsLookTargetTask<E extends LivingEntity> extends Task<E> {
-	private final Function<LivingEntity, Optional<LookTarget>> lookTargetFunction;
-	private final int completionRange;
-	private final int searchRange;
-	private final float speed;
-
-	public WalkTowardsLookTargetTask(Function<LivingEntity, Optional<LookTarget>> lookTargetFunction, int completionRange, int searchRange, float speed) {
-		super(Map.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT));
-		this.lookTargetFunction = lookTargetFunction;
-		this.completionRange = completionRange;
-		this.searchRange = searchRange;
-		this.speed = speed;
-	}
-
-	@Override
-	protected boolean shouldRun(ServerWorld world, E entity) {
-		Optional<LookTarget> optional = (Optional<LookTarget>)this.lookTargetFunction.apply(entity);
-		if (optional.isEmpty()) {
-			return false;
-		} else {
-			LookTarget lookTarget = (LookTarget)optional.get();
-			return !entity.getPos().isInRange(lookTarget.getPos(), (double)this.searchRange);
-		}
-	}
-
-	@Override
-	protected void run(ServerWorld world, E entity, long time) {
-		LookTargetUtil.walkTowards(entity, (LookTarget)((Optional)this.lookTargetFunction.apply(entity)).get(), this.speed, this.completionRange);
+public class WalkTowardsLookTargetTask {
+	public static Task<LivingEntity> create(Function<LivingEntity, Optional<LookTarget>> lookTargetFunction, int completionRange, int searchRange, float speed) {
+		return TaskTriggerer.task(
+			context -> context.group(context.queryMemoryOptional(MemoryModuleType.LOOK_TARGET), context.queryMemoryAbsent(MemoryModuleType.WALK_TARGET))
+					.apply(context, (lookTarget, walkTarget) -> (world, entity, time) -> {
+							Optional<LookTarget> optional = (Optional<LookTarget>)lookTargetFunction.apply(entity);
+							if (optional.isEmpty()) {
+								return false;
+							} else {
+								LookTarget lookTargetx = (LookTarget)optional.get();
+								if (entity.getPos().isInRange(lookTargetx.getPos(), (double)searchRange)) {
+									return false;
+								} else {
+									LookTarget lookTarget2 = (LookTarget)optional.get();
+									lookTarget.remember(lookTarget2);
+									walkTarget.remember(new WalkTarget(lookTarget2, speed, completionRange));
+									return true;
+								}
+							}
+						})
+		);
 	}
 }

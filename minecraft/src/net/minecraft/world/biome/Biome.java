@@ -14,22 +14,22 @@ import net.minecraft.client.color.world.FoliageColors;
 import net.minecraft.client.color.world.GrassColors;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.registry.RegistryCodecs;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryElementCodec;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.sound.BiomeAdditionsSound;
 import net.minecraft.sound.BiomeMoodSound;
 import net.minecraft.sound.MusicSound;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
-import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
 import net.minecraft.util.math.random.CheckedRandom;
 import net.minecraft.util.math.random.ChunkRandom;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryCodecs;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.LightType;
 import net.minecraft.world.WorldView;
 
@@ -47,8 +47,8 @@ public final class Biome {
 		instance -> instance.group(Biome.Weather.CODEC.forGetter(biome -> biome.weather), BiomeEffects.CODEC.fieldOf("effects").forGetter(biome -> biome.effects))
 				.apply(instance, (weather, effects) -> new Biome(weather, effects, GenerationSettings.INSTANCE, SpawnSettings.INSTANCE))
 	);
-	public static final Codec<RegistryEntry<Biome>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.BIOME_KEY, CODEC);
-	public static final Codec<RegistryEntryList<Biome>> REGISTRY_ENTRY_LIST_CODEC = RegistryCodecs.entryList(Registry.BIOME_KEY, CODEC);
+	public static final Codec<RegistryEntry<Biome>> REGISTRY_CODEC = RegistryElementCodec.of(RegistryKeys.BIOME_WORLDGEN, CODEC);
+	public static final Codec<RegistryEntryList<Biome>> REGISTRY_ENTRY_LIST_CODEC = RegistryCodecs.entryList(RegistryKeys.BIOME_WORLDGEN, CODEC);
 	private static final OctaveSimplexNoiseSampler TEMPERATURE_NOISE = new OctaveSimplexNoiseSampler(
 		new ChunkRandom(new CheckedRandom(1234L)), ImmutableList.of(0)
 	);

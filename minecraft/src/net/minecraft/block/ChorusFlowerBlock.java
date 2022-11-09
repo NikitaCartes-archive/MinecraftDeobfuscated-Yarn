@@ -2,11 +2,11 @@ package net.minecraft.block;
 
 import javax.annotation.Nullable;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;

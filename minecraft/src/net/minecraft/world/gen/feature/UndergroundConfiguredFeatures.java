@@ -8,10 +8,16 @@ import net.minecraft.block.CaveVines;
 import net.minecraft.block.CaveVinesHeadBlock;
 import net.minecraft.block.MultifaceGrowthBlock;
 import net.minecraft.block.SmallDripleafBlock;
+import net.minecraft.registry.Registerable;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.state.property.Properties;
 import net.minecraft.structure.processor.StructureProcessorList;
 import net.minecraft.structure.processor.StructureProcessorLists;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.math.Direction;
@@ -22,12 +28,6 @@ import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.math.intprovider.WeightedListIntProvider;
-import net.minecraft.util.registry.Registerable;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryEntryList;
-import net.minecraft.util.registry.RegistryEntryLookup;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.gen.blockpredicate.BlockPredicate;
 import net.minecraft.world.gen.placementmodifier.EnvironmentScanPlacementModifier;
 import net.minecraft.world.gen.placementmodifier.RandomOffsetPlacementModifier;
@@ -97,8 +97,8 @@ public class UndergroundConfiguredFeatures {
 	}
 
 	public static void bootstrap(Registerable<ConfiguredFeature<?, ?>> featureRegisterable) {
-		RegistryEntryLookup<ConfiguredFeature<?, ?>> registryEntryLookup = featureRegisterable.getRegistryLookup(Registry.CONFIGURED_FEATURE_KEY);
-		RegistryEntryLookup<StructureProcessorList> registryEntryLookup2 = featureRegisterable.getRegistryLookup(Registry.STRUCTURE_PROCESSOR_LIST_KEY);
+		RegistryEntryLookup<ConfiguredFeature<?, ?>> registryEntryLookup = featureRegisterable.getRegistryLookup(RegistryKeys.CONFIGURED_FEATURE_WORLDGEN);
+		RegistryEntryLookup<StructureProcessorList> registryEntryLookup2 = featureRegisterable.getRegistryLookup(RegistryKeys.PROCESSOR_LIST_WORLDGEN);
 		ConfiguredFeatures.register(featureRegisterable, MONSTER_ROOM, Feature.MONSTER_ROOM);
 		List<Identifier> list = List.of(
 			new Identifier("fossil/spine_1"),

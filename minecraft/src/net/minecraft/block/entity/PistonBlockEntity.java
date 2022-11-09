@@ -13,6 +13,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
@@ -21,8 +24,6 @@ import net.minecraft.util.math.Boxes;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntryLookup;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -325,8 +326,8 @@ public class PistonBlockEntity extends BlockEntity {
 	public void readNbt(NbtCompound nbt) {
 		super.readNbt(nbt);
 		RegistryEntryLookup<Block> registryEntryLookup = (RegistryEntryLookup<Block>)(this.world != null
-			? this.world.createCommandRegistryWrapper(Registry.BLOCK_KEY)
-			: Registry.BLOCK.getReadOnlyWrapper());
+			? this.world.createCommandRegistryWrapper(RegistryKeys.BLOCK)
+			: Registries.BLOCK.getReadOnlyWrapper());
 		this.pushedBlock = NbtHelper.toBlockState(registryEntryLookup, nbt.getCompound("blockState"));
 		this.facing = Direction.byId(nbt.getInt("facing"));
 		this.progress = nbt.getFloat("progress");
@@ -382,7 +383,7 @@ public class PistonBlockEntity extends BlockEntity {
 	@Override
 	public void setWorld(World world) {
 		super.setWorld(world);
-		if (world.createCommandRegistryWrapper(Registry.BLOCK_KEY).getOptional(this.pushedBlock.getBlock().getRegistryEntry().registryKey()).isEmpty()) {
+		if (world.createCommandRegistryWrapper(RegistryKeys.BLOCK).getOptional(this.pushedBlock.getBlock().getRegistryEntry().registryKey()).isEmpty()) {
 			this.pushedBlock = Blocks.AIR.getDefaultState();
 		}
 	}

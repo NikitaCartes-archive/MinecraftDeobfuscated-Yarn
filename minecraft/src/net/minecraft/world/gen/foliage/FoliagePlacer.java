@@ -7,17 +7,17 @@ import com.mojang.serialization.codecs.RecordCodecBuilder.Mu;
 import java.util.function.BiConsumer;
 import net.minecraft.block.BlockState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.registry.Registries;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.TreeFeature;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
 public abstract class FoliagePlacer {
-	public static final Codec<FoliagePlacer> TYPE_CODEC = Registry.FOLIAGE_PLACER_TYPE.getCodec().dispatch(FoliagePlacer::getType, FoliagePlacerType::getCodec);
+	public static final Codec<FoliagePlacer> TYPE_CODEC = Registries.FOLIAGE_PLACER_TYPE.getCodec().dispatch(FoliagePlacer::getType, FoliagePlacerType::getCodec);
 	protected final IntProvider radius;
 	protected final IntProvider offset;
 

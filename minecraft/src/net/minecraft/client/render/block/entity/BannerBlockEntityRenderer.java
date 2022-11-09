@@ -23,13 +23,13 @@ import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.RotationPropertyHelper;
-import net.minecraft.util.registry.RegistryEntry;
 
 @Environment(EnvType.CLIENT)
 public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBlockEntity> {

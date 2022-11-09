@@ -14,6 +14,11 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.CodecHolder;
 import net.minecraft.util.math.BlockPos;
@@ -23,9 +28,6 @@ import net.minecraft.util.math.VerticalSurfaceType;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.math.random.RandomSplitter;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
@@ -167,7 +169,10 @@ public class MaterialRules {
 
 	static final class BiomeMaterialCondition implements MaterialRules.MaterialCondition {
 		static final CodecHolder<MaterialRules.BiomeMaterialCondition> CODEC = CodecHolder.of(
-			RegistryKey.createCodec(Registry.BIOME_KEY).listOf().fieldOf("biome_is").xmap(MaterialRules::biome, biomeMaterialCondition -> biomeMaterialCondition.biomes)
+			RegistryKey.createCodec(RegistryKeys.BIOME_WORLDGEN)
+				.listOf()
+				.fieldOf("biome_is")
+				.xmap(MaterialRules::biome, biomeMaterialCondition -> biomeMaterialCondition.biomes)
 		);
 		private final List<RegistryKey<Biome>> biomes;
 		final Predicate<RegistryKey<Biome>> predicate;
@@ -366,7 +371,7 @@ public class MaterialRules {
 	}
 
 	public interface MaterialCondition extends Function<MaterialRules.MaterialRuleContext, MaterialRules.BooleanSupplier> {
-		Codec<MaterialRules.MaterialCondition> CODEC = Registry.MATERIAL_CONDITION
+		Codec<MaterialRules.MaterialCondition> CODEC = Registries.MATERIAL_CONDITION
 			.getCodec()
 			.dispatch(materialCondition -> materialCondition.codec().codec(), Function.identity());
 
@@ -388,7 +393,7 @@ public class MaterialRules {
 	}
 
 	public interface MaterialRule extends Function<MaterialRules.MaterialRuleContext, MaterialRules.BlockStateRule> {
-		Codec<MaterialRules.MaterialRule> CODEC = Registry.MATERIAL_RULE.getCodec().dispatch(materialRule -> materialRule.codec().codec(), Function.identity());
+		Codec<MaterialRules.MaterialRule> CODEC = Registries.MATERIAL_RULE.getCodec().dispatch(materialRule -> materialRule.codec().codec(), Function.identity());
 
 		static Codec<? extends MaterialRules.MaterialRule> registerAndGetDefault(Registry<Codec<? extends MaterialRules.MaterialRule>> registry) {
 			MaterialRules.register(registry, "bandlands", MaterialRules.TerracottaBandsMaterialRule.CODEC);
@@ -576,7 +581,7 @@ public class MaterialRules {
 		static final CodecHolder<MaterialRules.NoiseThresholdMaterialCondition> CODEC = CodecHolder.of(
 			RecordCodecBuilder.mapCodec(
 				instance -> instance.group(
-							RegistryKey.createCodec(Registry.NOISE_KEY).fieldOf("noise").forGetter(MaterialRules.NoiseThresholdMaterialCondition::noise),
+							RegistryKey.createCodec(RegistryKeys.NOISE_WORLDGEN).fieldOf("noise").forGetter(MaterialRules.NoiseThresholdMaterialCondition::noise),
 							Codec.DOUBLE.fieldOf("min_threshold").forGetter(MaterialRules.NoiseThresholdMaterialCondition::minThreshold),
 							Codec.DOUBLE.fieldOf("max_threshold").forGetter(MaterialRules.NoiseThresholdMaterialCondition::maxThreshold)
 						)

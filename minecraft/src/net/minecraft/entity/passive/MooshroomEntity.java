@@ -5,7 +5,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.FlowerBlock;
+import net.minecraft.block.SuspiciousStewIngredient;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
@@ -16,8 +16,6 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
@@ -25,12 +23,12 @@ import net.minecraft.item.SuspiciousStewItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.ItemTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -223,9 +221,9 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 	}
 
 	private Optional<Pair<StatusEffect, Integer>> getStewEffectFrom(ItemStack flower) {
-		Item item = flower.getItem();
-		return item instanceof BlockItem && ((BlockItem)item).getBlock() instanceof FlowerBlock flowerBlock
-			? Optional.of(Pair.of(flowerBlock.getEffectInStew(), flowerBlock.getEffectInStewDuration()))
+		SuspiciousStewIngredient suspiciousStewIngredient = SuspiciousStewIngredient.of(flower.getItem());
+		return suspiciousStewIngredient != null
+			? Optional.of(Pair.of(suspiciousStewIngredient.getEffectInStew(), suspiciousStewIngredient.getEffectInStewDuration()))
 			: Optional.empty();
 	}
 

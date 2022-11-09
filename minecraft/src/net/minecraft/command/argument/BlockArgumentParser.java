@@ -22,16 +22,16 @@ import net.minecraft.block.BlockState;
 import net.minecraft.command.CommandSource;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.StringNbtReader;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
-import net.minecraft.tag.TagKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryEntryList;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.RegistryWrapper;
 
 public class BlockArgumentParser {
 	public static final SimpleCommandExceptionType DISALLOWED_TAG_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("argument.block.tag.disallowed"));
@@ -356,7 +356,7 @@ public class BlockArgumentParser {
 	private void parseBlockId() throws CommandSyntaxException {
 		int i = this.reader.getCursor();
 		this.blockId = Identifier.fromCommandInput(this.reader);
-		Block block = (Block)((RegistryEntry.Reference)this.registryWrapper.getOptional(RegistryKey.of(Registry.BLOCK_KEY, this.blockId)).orElseThrow(() -> {
+		Block block = (Block)((RegistryEntry.Reference)this.registryWrapper.getOptional(RegistryKey.of(RegistryKeys.BLOCK, this.blockId)).orElseThrow(() -> {
 			this.reader.setCursor(i);
 			return INVALID_BLOCK_ID_EXCEPTION.createWithContext(this.reader, this.blockId.toString());
 		})).value();
@@ -372,7 +372,7 @@ public class BlockArgumentParser {
 			this.reader.expect('#');
 			this.suggestions = this::suggestIdentifiers;
 			Identifier identifier = Identifier.fromCommandInput(this.reader);
-			this.tagId = (RegistryEntryList<Block>)this.registryWrapper.getOptional(TagKey.of(Registry.BLOCK_KEY, identifier)).orElseThrow(() -> {
+			this.tagId = (RegistryEntryList<Block>)this.registryWrapper.getOptional(TagKey.of(RegistryKeys.BLOCK, identifier)).orElseThrow(() -> {
 				this.reader.setCursor(i);
 				return UNKNOWN_BLOCK_TAG_EXCEPTION.createWithContext(this.reader, identifier.toString());
 			});

@@ -22,6 +22,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class FireworkRocketItem extends Item {
+	public static final byte[] FLIGHT_VALUES = new byte[]{1, 2, 3};
 	public static final String FIREWORKS_KEY = "Fireworks";
 	public static final String EXPLOSION_KEY = "Explosion";
 	public static final String EXPLOSIONS_KEY = "Explosions";
@@ -107,10 +108,14 @@ public class FireworkRocketItem extends Item {
 		}
 	}
 
+	public static void setFlight(ItemStack stack, byte flight) {
+		stack.getOrCreateSubNbt("Fireworks").putByte("Flight", flight);
+	}
+
 	@Override
 	public ItemStack getDefaultStack() {
 		ItemStack itemStack = new ItemStack(this);
-		itemStack.getOrCreateNbt().putByte("Flight", (byte)1);
+		setFlight(itemStack, (byte)1);
 		return itemStack;
 	}
 

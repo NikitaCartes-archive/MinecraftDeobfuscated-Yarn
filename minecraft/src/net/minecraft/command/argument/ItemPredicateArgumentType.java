@@ -17,17 +17,17 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryWrapper;
 
 public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgumentType.ItemStackPredicateArgument> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("stick", "minecraft:stick", "#stick", "#stick{foo=bar}");
 	private final RegistryWrapper<Item> registryWrapper;
 
 	public ItemPredicateArgumentType(CommandRegistryAccess commandRegistryAccess) {
-		this.registryWrapper = commandRegistryAccess.createWrapper(Registry.ITEM_KEY);
+		this.registryWrapper = commandRegistryAccess.createWrapper(RegistryKeys.ITEM);
 	}
 
 	public static ItemPredicateArgumentType itemPredicate(CommandRegistryAccess commandRegistryAccess) {

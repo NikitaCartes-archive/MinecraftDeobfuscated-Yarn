@@ -7,10 +7,10 @@ import com.google.common.collect.ImmutableMap.Builder;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import net.minecraft.registry.Registries;
 import net.minecraft.stat.StatType;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class ScoreboardCriterion {
 	/**
@@ -108,7 +108,7 @@ public class ScoreboardCriterion {
 			int i = name.indexOf(58);
 			return i < 0
 				? Optional.empty()
-				: Registry.STAT_TYPE
+				: Registries.STAT_TYPE
 					.getOrEmpty(Identifier.splitOn(name.substring(0, i), '.'))
 					.flatMap(type -> getOrCreateStatCriterion(type, Identifier.splitOn(name.substring(i + 1), '.')));
 		}

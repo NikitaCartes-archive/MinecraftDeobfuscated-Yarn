@@ -10,7 +10,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.Shader;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.util.Window;
 import org.joml.Matrix4f;
@@ -130,8 +129,9 @@ public class VertexBuffer implements AutoCloseable {
 	 * <p>The caller of this method must {@linkplain #bind bind} this vertex
 	 * buffer before calling this method.
 	 * 
-	 * <p>Unlike {@link #draw(Matrix4f, Matrix4f, Shader)}, the caller of this
-	 * method must manually bind a shader before calling this method.
+	 * <p>Unlike {@link #draw(Matrix4f, Matrix4f, ShaderProgram)}, the caller
+	 * of this method must manually bind a shader program before calling this
+	 * method.
 	 */
 	public void draw() {
 		RenderSystem.drawElements(this.drawMode.glMode, this.indexCount, this.getIndexType().glType);
@@ -143,78 +143,78 @@ public class VertexBuffer implements AutoCloseable {
 	}
 
 	/**
-	 * Draws the contents in this vertex buffer with {@code shader}.
+	 * Draws the contents in this vertex buffer with {@code program}.
 	 * 
 	 * <p>The caller of this method must {@linkplain #bind bind} this vertex
 	 * buffer before calling this method.
 	 */
-	public void draw(Matrix4f viewMatrix, Matrix4f projectionMatrix, Shader shader) {
+	public void draw(Matrix4f viewMatrix, Matrix4f projectionMatrix, ShaderProgram program) {
 		if (!RenderSystem.isOnRenderThread()) {
-			RenderSystem.recordRenderCall(() -> this.drawInternal(new Matrix4f(viewMatrix), new Matrix4f(projectionMatrix), shader));
+			RenderSystem.recordRenderCall(() -> this.drawInternal(new Matrix4f(viewMatrix), new Matrix4f(projectionMatrix), program));
 		} else {
-			this.drawInternal(viewMatrix, projectionMatrix, shader);
+			this.drawInternal(viewMatrix, projectionMatrix, program);
 		}
 	}
 
-	private void drawInternal(Matrix4f viewMatrix, Matrix4f projectionMatrix, Shader shader) {
+	private void drawInternal(Matrix4f viewMatrix, Matrix4f projectionMatrix, ShaderProgram program) {
 		for (int i = 0; i < 12; i++) {
 			int j = RenderSystem.getShaderTexture(i);
-			shader.addSampler("Sampler" + i, j);
+			program.addSampler("Sampler" + i, j);
 		}
 
-		if (shader.modelViewMat != null) {
-			shader.modelViewMat.set(viewMatrix);
+		if (program.modelViewMat != null) {
+			program.modelViewMat.set(viewMatrix);
 		}
 
-		if (shader.projectionMat != null) {
-			shader.projectionMat.set(projectionMatrix);
+		if (program.projectionMat != null) {
+			program.projectionMat.set(projectionMatrix);
 		}
 
-		if (shader.viewRotationMat != null) {
-			shader.viewRotationMat.set(RenderSystem.getInverseViewRotationMatrix());
+		if (program.viewRotationMat != null) {
+			program.viewRotationMat.set(RenderSystem.getInverseViewRotationMatrix());
 		}
 
-		if (shader.colorModulator != null) {
-			shader.colorModulator.set(RenderSystem.getShaderColor());
+		if (program.colorModulator != null) {
+			program.colorModulator.set(RenderSystem.getShaderColor());
 		}
 
-		if (shader.fogStart != null) {
-			shader.fogStart.set(RenderSystem.getShaderFogStart());
+		if (program.fogStart != null) {
+			program.fogStart.set(RenderSystem.getShaderFogStart());
 		}
 
-		if (shader.fogEnd != null) {
-			shader.fogEnd.set(RenderSystem.getShaderFogEnd());
+		if (program.fogEnd != null) {
+			program.fogEnd.set(RenderSystem.getShaderFogEnd());
 		}
 
-		if (shader.fogColor != null) {
-			shader.fogColor.set(RenderSystem.getShaderFogColor());
+		if (program.fogColor != null) {
+			program.fogColor.set(RenderSystem.getShaderFogColor());
 		}
 
-		if (shader.fogShape != null) {
-			shader.fogShape.set(RenderSystem.getShaderFogShape().getId());
+		if (program.fogShape != null) {
+			program.fogShape.set(RenderSystem.getShaderFogShape().getId());
 		}
 
-		if (shader.textureMat != null) {
-			shader.textureMat.set(RenderSystem.getTextureMatrix());
+		if (program.textureMat != null) {
+			program.textureMat.set(RenderSystem.getTextureMatrix());
 		}
 
-		if (shader.gameTime != null) {
-			shader.gameTime.set(RenderSystem.getShaderGameTime());
+		if (program.gameTime != null) {
+			program.gameTime.set(RenderSystem.getShaderGameTime());
 		}
 
-		if (shader.screenSize != null) {
+		if (program.screenSize != null) {
 			Window window = MinecraftClient.getInstance().getWindow();
-			shader.screenSize.set((float)window.getFramebufferWidth(), (float)window.getFramebufferHeight());
+			program.screenSize.set((float)window.getFramebufferWidth(), (float)window.getFramebufferHeight());
 		}
 
-		if (shader.lineWidth != null && (this.drawMode == VertexFormat.DrawMode.LINES || this.drawMode == VertexFormat.DrawMode.LINE_STRIP)) {
-			shader.lineWidth.set(RenderSystem.getShaderLineWidth());
+		if (program.lineWidth != null && (this.drawMode == VertexFormat.DrawMode.LINES || this.drawMode == VertexFormat.DrawMode.LINE_STRIP)) {
+			program.lineWidth.set(RenderSystem.getShaderLineWidth());
 		}
 
-		RenderSystem.setupShaderLights(shader);
-		shader.bind();
+		RenderSystem.setupShaderLights(program);
+		program.bind();
 		this.draw();
-		shader.unbind();
+		program.unbind();
 	}
 
 	public void close() {
