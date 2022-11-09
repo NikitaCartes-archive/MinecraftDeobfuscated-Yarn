@@ -18,6 +18,7 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.Tooltip;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookGhostSlots;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookResults;
@@ -114,9 +115,11 @@ RecipeDisplayListener {
         this.searchField.setVisible(true);
         this.searchField.setEditableColor(0xFFFFFF);
         this.searchField.setText(string);
+        this.searchField.setPlaceholder(SEARCH_HINT_TEXT);
         this.recipesArea.initialize(this.client, i, j);
         this.recipesArea.setGui(this);
         this.toggleCraftableButton = new ToggleButtonWidget(i + 110, j + 12, 26, 16, this.recipeBook.isFilteringCraftable(this.craftingScreenHandler));
+        this.updateTooltip();
         this.setBookButtonTexture();
         this.tabButtons.clear();
         for (RecipeBookGroup recipeBookGroup : RecipeBookGroup.getGroups(this.craftingScreenHandler.getCategory())) {
@@ -131,6 +134,10 @@ RecipeDisplayListener {
         this.currentTab.setToggled(true);
         this.refreshResults(false);
         this.refreshTabButtons();
+    }
+
+    private void updateTooltip() {
+        this.toggleCraftableButton.setTooltip(this.toggleCraftableButton.isToggled() ? Tooltip.of(this.getToggleCraftableButtonText()) : Tooltip.of(TOGGLE_ALL_RECIPES_TEXT));
     }
 
     @Override
@@ -244,17 +251,13 @@ RecipeDisplayListener {
         }
         matrices.push();
         matrices.translate(0.0f, 0.0f, 100.0f);
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderTexture(0, TEXTURE);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         int i = (this.parentWidth - 147) / 2 - this.leftOffset;
         int j = (this.parentHeight - 166) / 2;
         this.drawTexture(matrices, i, j, 1, 1, 147, 166);
-        if (!this.searchField.isFocused() && this.searchField.getText().isEmpty()) {
-            RecipeBookWidget.drawTextWithShadow(matrices, this.client.textRenderer, SEARCH_HINT_TEXT, i + 25, j + 14, -1);
-        } else {
-            this.searchField.render(matrices, mouseX, mouseY, delta);
-        }
+        this.searchField.render(matrices, mouseX, mouseY, delta);
         for (RecipeGroupButtonWidget recipeGroupButtonWidget : this.tabButtons) {
             recipeGroupButtonWidget.render(matrices, mouseX, mouseY, delta);
         }
@@ -263,22 +266,12 @@ RecipeDisplayListener {
         matrices.pop();
     }
 
-    public void drawTooltip(MatrixStack matrices, int x, int y, int mouseX, int mouseY) {
+    public void drawTooltip(MatrixStack matrices, int i, int j, int k, int l) {
         if (!this.isOpen()) {
             return;
         }
-        this.recipesArea.drawTooltip(matrices, mouseX, mouseY);
-        if (this.toggleCraftableButton.isHovered()) {
-            Text text = this.getCraftableButtonText();
-            if (this.client.currentScreen != null) {
-                this.client.currentScreen.renderTooltip(matrices, text, mouseX, mouseY);
-            }
-        }
-        this.drawGhostSlotTooltip(matrices, x, y, mouseX, mouseY);
-    }
-
-    private Text getCraftableButtonText() {
-        return this.toggleCraftableButton.isToggled() ? this.getToggleCraftableButtonText() : TOGGLE_ALL_RECIPES_TEXT;
+        this.recipesArea.drawTooltip(matrices, k, l);
+        this.drawGhostSlotTooltip(matrices, i, j, k, l);
     }
 
     protected Text getToggleCraftableButtonText() {
@@ -329,6 +322,7 @@ RecipeDisplayListener {
         if (this.toggleCraftableButton.mouseClicked(mouseX, mouseY, button)) {
             boolean bl = this.toggleFilteringCraftable();
             this.toggleCraftableButton.setToggled(bl);
+            this.updateTooltip();
             this.sendBookDataPacket();
             this.refreshResults(false);
             return true;

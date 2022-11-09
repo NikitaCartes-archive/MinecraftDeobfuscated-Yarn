@@ -9,10 +9,10 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 
 public class EntitySpawnS2CPacket
 implements Packet<ClientPlayPacketListener> {
@@ -24,7 +24,7 @@ implements Packet<ClientPlayPacketListener> {
     private static final double MAX_ABSOLUTE_VELOCITY = 3.9;
     private final int id;
     private final UUID uuid;
-    private final EntityType<?> entityTypeId;
+    private final EntityType<?> entityType;
     private final double x;
     private final double y;
     private final double z;
@@ -44,11 +44,11 @@ implements Packet<ClientPlayPacketListener> {
         this(entity.getId(), entity.getUuid(), entity.getX(), entity.getY(), entity.getZ(), entity.getPitch(), entity.getYaw(), entity.getType(), entityData, entity.getVelocity(), entity.getHeadYaw());
     }
 
-    public EntitySpawnS2CPacket(Entity entity, int entityTypeId, BlockPos pos) {
-        this(entity.getId(), entity.getUuid(), pos.getX(), pos.getY(), pos.getZ(), entity.getPitch(), entity.getYaw(), entity.getType(), entityTypeId, entity.getVelocity(), entity.getHeadYaw());
+    public EntitySpawnS2CPacket(Entity entity, int entityData, BlockPos pos) {
+        this(entity.getId(), entity.getUuid(), pos.getX(), pos.getY(), pos.getZ(), entity.getPitch(), entity.getYaw(), entity.getType(), entityData, entity.getVelocity(), entity.getHeadYaw());
     }
 
-    public EntitySpawnS2CPacket(int id, UUID uuid, double x, double y, double z, float pitch, float yaw, EntityType<?> entityTypeId, int entityData, Vec3d velocity, double headYaw) {
+    public EntitySpawnS2CPacket(int id, UUID uuid, double x, double y, double z, float pitch, float yaw, EntityType<?> entityType, int entityData, Vec3d velocity, double headYaw) {
         this.id = id;
         this.uuid = uuid;
         this.x = x;
@@ -57,7 +57,7 @@ implements Packet<ClientPlayPacketListener> {
         this.pitch = (byte)MathHelper.floor(pitch * 256.0f / 360.0f);
         this.yaw = (byte)MathHelper.floor(yaw * 256.0f / 360.0f);
         this.headYaw = (byte)MathHelper.floor(headYaw * 256.0 / 360.0);
-        this.entityTypeId = entityTypeId;
+        this.entityType = entityType;
         this.entityData = entityData;
         this.velocityX = (int)(MathHelper.clamp(velocity.x, -3.9, 3.9) * 8000.0);
         this.velocityY = (int)(MathHelper.clamp(velocity.y, -3.9, 3.9) * 8000.0);
@@ -67,7 +67,7 @@ implements Packet<ClientPlayPacketListener> {
     public EntitySpawnS2CPacket(PacketByteBuf buf) {
         this.id = buf.readVarInt();
         this.uuid = buf.readUuid();
-        this.entityTypeId = buf.readRegistryValue(Registry.ENTITY_TYPE);
+        this.entityType = buf.readRegistryValue(Registries.ENTITY_TYPE);
         this.x = buf.readDouble();
         this.y = buf.readDouble();
         this.z = buf.readDouble();
@@ -84,7 +84,7 @@ implements Packet<ClientPlayPacketListener> {
     public void write(PacketByteBuf buf) {
         buf.writeVarInt(this.id);
         buf.writeUuid(this.uuid);
-        buf.writeRegistryValue(Registry.ENTITY_TYPE, this.entityTypeId);
+        buf.writeRegistryValue(Registries.ENTITY_TYPE, this.entityType);
         buf.writeDouble(this.x);
         buf.writeDouble(this.y);
         buf.writeDouble(this.z);
@@ -110,8 +110,8 @@ implements Packet<ClientPlayPacketListener> {
         return this.uuid;
     }
 
-    public EntityType<?> getEntityTypeId() {
-        return this.entityTypeId;
+    public EntityType<?> getEntityType() {
+        return this.entityType;
     }
 
     public double getX() {

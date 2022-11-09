@@ -15,7 +15,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.recipe.Ingredient;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 
 public class BrewingRecipeRegistry {
     public static final int field_30942 = 20;
@@ -177,17 +177,17 @@ public class BrewingRecipeRegistry {
 
     private static void registerItemRecipe(Item input, Item ingredient, Item output) {
         if (!(input instanceof PotionItem)) {
-            throw new IllegalArgumentException("Expected a potion, got: " + Registry.ITEM.getId(input));
+            throw new IllegalArgumentException("Expected a potion, got: " + Registries.ITEM.getId(input));
         }
         if (!(output instanceof PotionItem)) {
-            throw new IllegalArgumentException("Expected a potion, got: " + Registry.ITEM.getId(output));
+            throw new IllegalArgumentException("Expected a potion, got: " + Registries.ITEM.getId(output));
         }
         ITEM_RECIPES.add(new Recipe<Item>(input, Ingredient.ofItems(ingredient), output));
     }
 
     private static void registerPotionType(Item item) {
         if (!(item instanceof PotionItem)) {
-            throw new IllegalArgumentException("Expected a potion, got: " + Registry.ITEM.getId(item));
+            throw new IllegalArgumentException("Expected a potion, got: " + Registries.ITEM.getId(item));
         }
         POTION_TYPES.add(Ingredient.ofItems(item));
     }

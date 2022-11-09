@@ -12,14 +12,14 @@ import net.minecraft.entity.ai.brain.EntityLookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Util;
 
 public class TemptTask
-extends Task<PathAwareEntity> {
+extends MultiTickTask<PathAwareEntity> {
     public static final int TEMPTATION_COOLDOWN_TICKS = 100;
     public static final double field_30116 = 2.5;
     private final Function<LivingEntity, Float> speed;
@@ -44,7 +44,7 @@ extends Task<PathAwareEntity> {
     }
 
     private Optional<PlayerEntity> getTemptingPlayer(PathAwareEntity entity) {
-        return entity.getBrain().getOptionalMemory(MemoryModuleType.TEMPTING_PLAYER);
+        return entity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.TEMPTING_PLAYER);
     }
 
     @Override
@@ -84,8 +84,13 @@ extends Task<PathAwareEntity> {
     }
 
     @Override
-    protected /* synthetic */ boolean shouldKeepRunning(ServerWorld world, LivingEntity entity, long time) {
-        return this.shouldKeepRunning(world, (PathAwareEntity)entity, time);
+    protected /* synthetic */ void finishRunning(ServerWorld world, LivingEntity entity, long time) {
+        this.finishRunning(world, (PathAwareEntity)entity, time);
+    }
+
+    @Override
+    protected /* synthetic */ void keepRunning(ServerWorld world, LivingEntity entity, long time) {
+        this.keepRunning(world, (PathAwareEntity)entity, time);
     }
 
     @Override

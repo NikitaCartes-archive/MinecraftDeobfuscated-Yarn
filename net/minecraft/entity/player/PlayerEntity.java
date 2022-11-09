@@ -80,6 +80,8 @@ import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Recipe;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
@@ -93,7 +95,6 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.Stats;
-import net.minecraft.tag.FluidTags;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -111,7 +112,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.world.CommandBlockExecutor;
 import net.minecraft.world.Difficulty;
@@ -196,7 +196,7 @@ extends LivingEntity {
             return false;
         }
         ItemStack itemStack = this.getMainHandStack();
-        return itemStack.isEmpty() || !itemStack.canDestroy(world.getRegistryManager().get(Registry.BLOCK_KEY), new CachedBlockPosition(world, pos, false));
+        return itemStack.isEmpty() || !itemStack.canDestroy(world.getRegistryManager().get(RegistryKeys.BLOCK), new CachedBlockPosition(world, pos, false));
     }
 
     public static DefaultAttributeContainer.Builder createPlayerAttributes() {
@@ -1618,7 +1618,7 @@ extends LivingEntity {
         }
         BlockPos blockPos = pos.offset(facing.getOpposite());
         CachedBlockPosition cachedBlockPosition = new CachedBlockPosition(this.world, blockPos, false);
-        return stack.canPlaceOn(this.world.getRegistryManager().get(Registry.BLOCK_KEY), cachedBlockPosition);
+        return stack.canPlaceOn(this.world.getRegistryManager().get(RegistryKeys.BLOCK), cachedBlockPosition);
     }
 
     @Override

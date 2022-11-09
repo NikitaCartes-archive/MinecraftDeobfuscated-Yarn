@@ -45,7 +45,7 @@ extends PressableWidget {
     }
 
     @Override
-    public void appendNarrations(NarrationMessageBuilder builder) {
+    public void appendClickableNarrations(NarrationMessageBuilder builder) {
         builder.put(NarrationPart.TITLE, (Text)this.getNarrationMessage());
         if (this.active) {
             if (this.isFocused()) {

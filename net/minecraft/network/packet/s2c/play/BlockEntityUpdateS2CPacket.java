@@ -10,8 +10,8 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockEntityUpdateS2CPacket
@@ -37,14 +37,14 @@ implements Packet<ClientPlayPacketListener> {
 
     public BlockEntityUpdateS2CPacket(PacketByteBuf buf) {
         this.pos = buf.readBlockPos();
-        this.blockEntityType = buf.readRegistryValue(Registry.BLOCK_ENTITY_TYPE);
+        this.blockEntityType = buf.readRegistryValue(Registries.BLOCK_ENTITY_TYPE);
         this.nbt = buf.readNbt();
     }
 
     @Override
     public void write(PacketByteBuf buf) {
         buf.writeBlockPos(this.pos);
-        buf.writeRegistryValue(Registry.BLOCK_ENTITY_TYPE, this.blockEntityType);
+        buf.writeRegistryValue(Registries.BLOCK_ENTITY_TYPE, this.blockEntityType);
         buf.writeNbt(this.nbt);
     }
 

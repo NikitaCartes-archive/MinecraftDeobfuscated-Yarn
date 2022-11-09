@@ -22,7 +22,7 @@ public class WardenSpawnTrackerCommand {
 
     private static int setWarningLevel(ServerCommandSource source, Collection<? extends PlayerEntity> players, int warningCount) {
         for (PlayerEntity playerEntity : players) {
-            playerEntity.getSculkShriekerWarningManager().ifPresent(sculkShriekerWarningManager -> sculkShriekerWarningManager.setWarningLevel(warningCount));
+            playerEntity.getSculkShriekerWarningManager().ifPresent(warningManager -> warningManager.setWarningLevel(warningCount));
         }
         if (players.size() == 1) {
             source.sendFeedback(Text.translatable("commands.warden_spawn_tracker.set.success.single", players.iterator().next().getDisplayName()), true);

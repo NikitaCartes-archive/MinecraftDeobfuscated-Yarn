@@ -23,11 +23,11 @@ import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.BlockArgumentParser;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.state.property.Property;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntryList;
-import net.minecraft.util.registry.RegistryWrapper;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockPredicateArgumentType
@@ -36,7 +36,7 @@ implements ArgumentType<BlockPredicate> {
     private final RegistryWrapper<Block> registryWrapper;
 
     public BlockPredicateArgumentType(CommandRegistryAccess commandRegistryAccess) {
-        this.registryWrapper = commandRegistryAccess.createWrapper(Registry.BLOCK_KEY);
+        this.registryWrapper = commandRegistryAccess.createWrapper(RegistryKeys.BLOCK);
     }
 
     public static BlockPredicateArgumentType blockPredicate(CommandRegistryAccess commandRegistryAccess) {

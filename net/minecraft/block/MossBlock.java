@@ -7,10 +7,10 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Fertilizable;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
@@ -35,7 +35,7 @@ implements Fertilizable {
 
     @Override
     public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-        world.getRegistryManager().getOptional(Registry.CONFIGURED_FEATURE_KEY).flatMap(registry -> registry.getEntry(UndergroundConfiguredFeatures.MOSS_PATCH_BONEMEAL)).ifPresent(reference -> ((ConfiguredFeature)reference.value()).generate(world, world.getChunkManager().getChunkGenerator(), random, pos.up()));
+        world.getRegistryManager().getOptional(RegistryKeys.CONFIGURED_FEATURE_WORLDGEN).flatMap(registry -> registry.getEntry(UndergroundConfiguredFeatures.MOSS_PATCH_BONEMEAL)).ifPresent(reference -> ((ConfiguredFeature)reference.value()).generate(world, world.getChunkManager().getChunkGenerator(), random, pos.up()));
     }
 }
 

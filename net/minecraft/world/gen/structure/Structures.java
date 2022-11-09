@@ -10,6 +10,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.registry.Registerable;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.structure.AncientCityGenerator;
 import net.minecraft.structure.BastionRemnantGenerator;
 import net.minecraft.structure.DesertVillageData;
@@ -20,14 +25,9 @@ import net.minecraft.structure.SavannaVillageData;
 import net.minecraft.structure.SnowyVillageData;
 import net.minecraft.structure.TaigaVillageData;
 import net.minecraft.structure.pool.StructurePool;
-import net.minecraft.tag.BiomeTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.Pool;
 import net.minecraft.util.collection.Weighted;
-import net.minecraft.util.registry.Registerable;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntryList;
-import net.minecraft.util.registry.RegistryEntryLookup;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureSpawns;
 import net.minecraft.world.biome.Biome;
@@ -70,8 +70,8 @@ public class Structures {
     }
 
     public static void bootstrap(Registerable<Structure> structureRegisterable) {
-        RegistryEntryLookup<Biome> registryEntryLookup = structureRegisterable.getRegistryLookup(Registry.BIOME_KEY);
-        RegistryEntryLookup<StructurePool> registryEntryLookup2 = structureRegisterable.getRegistryLookup(Registry.STRUCTURE_POOL_KEY);
+        RegistryEntryLookup<Biome> registryEntryLookup = structureRegisterable.getRegistryLookup(RegistryKeys.BIOME_WORLDGEN);
+        RegistryEntryLookup<StructurePool> registryEntryLookup2 = structureRegisterable.getRegistryLookup(RegistryKeys.TEMPLATE_POOL_WORLDGEN);
         structureRegisterable.register(StructureKeys.PILLAGER_OUTPOST, new JigsawStructure(Structures.createConfig(registryEntryLookup.getOrThrow(BiomeTags.PILLAGER_OUTPOST_HAS_STRUCTURE), Map.of(SpawnGroup.MONSTER, new StructureSpawns(StructureSpawns.BoundingBox.STRUCTURE, Pool.of((Weighted[])new SpawnSettings.SpawnEntry[]{new SpawnSettings.SpawnEntry(EntityType.PILLAGER, 1, 1, 1)}))), GenerationStep.Feature.SURFACE_STRUCTURES, StructureTerrainAdaptation.BEARD_THIN), registryEntryLookup2.getOrThrow(PillagerOutpostGenerator.STRUCTURE_POOLS), 7, ConstantHeightProvider.create(YOffset.fixed(0)), true, Heightmap.Type.WORLD_SURFACE_WG));
         structureRegisterable.register(StructureKeys.MINESHAFT, new MineshaftStructure(Structures.createConfig(registryEntryLookup.getOrThrow(BiomeTags.MINESHAFT_HAS_STRUCTURE), GenerationStep.Feature.UNDERGROUND_STRUCTURES, StructureTerrainAdaptation.NONE), MineshaftStructure.Type.NORMAL));
         structureRegisterable.register(StructureKeys.MINESHAFT_MESA, new MineshaftStructure(Structures.createConfig(registryEntryLookup.getOrThrow(BiomeTags.MINESHAFT_MESA_HAS_STRUCTURE), GenerationStep.Feature.UNDERGROUND_STRUCTURES, StructureTerrainAdaptation.NONE), MineshaftStructure.Type.MESA));

@@ -12,7 +12,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.LookTargetUtil;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
@@ -22,7 +22,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.village.VillagerProfession;
 
 public class GatherItemsVillagerTask
-extends Task<VillagerEntity> {
+extends MultiTickTask<VillagerEntity> {
     private static final int MAX_RANGE = 5;
     private static final float WALK_TOGETHER_SPEED = 0.5f;
     private Set<Item> items = ImmutableSet.of();
@@ -43,14 +43,14 @@ extends Task<VillagerEntity> {
 
     @Override
     protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-        VillagerEntity villagerEntity2 = (VillagerEntity)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).get();
+        VillagerEntity villagerEntity2 = (VillagerEntity)villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.INTERACTION_TARGET).get();
         LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2, 0.5f);
         this.items = GatherItemsVillagerTask.getGatherableItems(villagerEntity, villagerEntity2);
     }
 
     @Override
     protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-        VillagerEntity villagerEntity2 = (VillagerEntity)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).get();
+        VillagerEntity villagerEntity2 = (VillagerEntity)villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.INTERACTION_TARGET).get();
         if (villagerEntity.squaredDistanceTo(villagerEntity2) > 5.0) {
             return;
         }
@@ -72,9 +72,9 @@ extends Task<VillagerEntity> {
         villagerEntity.getBrain().forget(MemoryModuleType.INTERACTION_TARGET);
     }
 
-    private static Set<Item> getGatherableItems(VillagerEntity villagerEntity, VillagerEntity villagerEntity2) {
-        ImmutableSet<Item> immutableSet = villagerEntity2.getVillagerData().getProfession().gatherableItems();
-        ImmutableSet<Item> immutableSet2 = villagerEntity.getVillagerData().getProfession().gatherableItems();
+    private static Set<Item> getGatherableItems(VillagerEntity entity, VillagerEntity target) {
+        ImmutableSet<Item> immutableSet = target.getVillagerData().getProfession().gatherableItems();
+        ImmutableSet<Item> immutableSet2 = entity.getVillagerData().getProfession().gatherableItems();
         return immutableSet.stream().filter(item -> !immutableSet2.contains(item)).collect(Collectors.toSet());
     }
 
@@ -102,18 +102,8 @@ extends Task<VillagerEntity> {
     }
 
     @Override
-    protected /* synthetic */ boolean shouldKeepRunning(ServerWorld world, LivingEntity entity, long time) {
-        return this.shouldKeepRunning(world, (VillagerEntity)entity, time);
-    }
-
-    @Override
     protected /* synthetic */ void finishRunning(ServerWorld world, LivingEntity entity, long time) {
         this.finishRunning(world, (VillagerEntity)entity, time);
-    }
-
-    @Override
-    protected /* synthetic */ void keepRunning(ServerWorld world, LivingEntity entity, long time) {
-        this.keepRunning(world, (VillagerEntity)entity, time);
     }
 
     @Override

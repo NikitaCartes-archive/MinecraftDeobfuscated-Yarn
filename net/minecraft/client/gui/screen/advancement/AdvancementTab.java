@@ -105,7 +105,7 @@ extends DrawableHelper {
         AdvancementTab.fill(matrices, 234, 113, 0, 0, -16777216);
         RenderSystem.depthFunc(515);
         Identifier identifier = this.display.getBackground();
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         if (identifier != null) {
             RenderSystem.setShaderTexture(0, identifier);
         } else {

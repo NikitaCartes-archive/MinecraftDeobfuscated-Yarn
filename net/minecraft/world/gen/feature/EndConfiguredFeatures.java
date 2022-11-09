@@ -5,9 +5,9 @@ package net.minecraft.world.gen.feature;
 
 import com.google.common.collect.ImmutableList;
 import java.util.List;
+import net.minecraft.registry.Registerable;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.registry.Registerable;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.ConfiguredFeatures;
 import net.minecraft.world.gen.feature.EndGatewayFeatureConfig;

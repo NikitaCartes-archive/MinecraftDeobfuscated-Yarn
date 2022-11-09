@@ -4,7 +4,10 @@
 package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
@@ -12,15 +15,15 @@ import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.ai.brain.task.OpenDoorsTask;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
 
 public class SleepTask
-extends Task<LivingEntity> {
+extends MultiTickTask<LivingEntity> {
     public static final int RUN_TIME = 100;
     private long startTime;
 
@@ -35,11 +38,11 @@ extends Task<LivingEntity> {
             return false;
         }
         Brain<?> brain = entity.getBrain();
-        GlobalPos globalPos = brain.getOptionalMemory(MemoryModuleType.HOME).get();
+        GlobalPos globalPos = brain.getOptionalRegisteredMemory(MemoryModuleType.HOME).get();
         if (world.getRegistryKey() != globalPos.getDimension()) {
             return false;
         }
-        Optional<Long> optional = brain.getOptionalMemory(MemoryModuleType.LAST_WOKEN);
+        Optional<Long> optional = brain.getOptionalRegisteredMemory(MemoryModuleType.LAST_WOKEN);
         if (optional.isPresent() && (l = world.getTime() - optional.get()) > 0L && l < 100L) {
             return false;
         }
@@ -49,7 +52,7 @@ extends Task<LivingEntity> {
 
     @Override
     protected boolean shouldKeepRunning(ServerWorld world, LivingEntity entity, long time) {
-        Optional<GlobalPos> optional = entity.getBrain().getOptionalMemory(MemoryModuleType.HOME);
+        Optional<GlobalPos> optional = entity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.HOME);
         if (!optional.isPresent()) {
             return false;
         }
@@ -60,8 +63,13 @@ extends Task<LivingEntity> {
     @Override
     protected void run(ServerWorld world, LivingEntity entity, long time) {
         if (time > this.startTime) {
-            OpenDoorsTask.pathToDoor(world, entity, null, null);
-            entity.sleep(entity.getBrain().getOptionalMemory(MemoryModuleType.HOME).get().getPos());
+            Brain<Collection<Object>> brain = entity.getBrain();
+            if (brain.hasMemoryModule(MemoryModuleType.DOORS_TO_CLOSE)) {
+                Set<GlobalPos> set = brain.getOptionalRegisteredMemory(MemoryModuleType.DOORS_TO_CLOSE).get();
+                Optional<List<LivingEntity>> optional = brain.hasMemoryModule(MemoryModuleType.MOBS) ? brain.getOptionalRegisteredMemory(MemoryModuleType.MOBS) : Optional.empty();
+                OpenDoorsTask.pathToDoor(world, entity, null, null, set, optional);
+            }
+            entity.sleep(entity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.HOME).get().getPos());
         }
     }
 

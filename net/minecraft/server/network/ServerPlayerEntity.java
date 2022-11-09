@@ -92,6 +92,7 @@ import net.minecraft.network.packet.s2c.play.UnloadChunkS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.recipe.Recipe;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
@@ -141,7 +142,6 @@ import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.world.BlockLocating;
 import net.minecraft.world.GameMode;
@@ -348,7 +348,7 @@ extends PlayerEntity {
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-        SculkShriekerWarningManager.CODEC.encodeStart(NbtOps.INSTANCE, this.sculkShriekerWarningManager).resultOrPartial(LOGGER::error).ifPresent(nbtElement -> nbt.put("warden_spawn_tracker", (NbtElement)nbtElement));
+        SculkShriekerWarningManager.CODEC.encodeStart(NbtOps.INSTANCE, this.sculkShriekerWarningManager).resultOrPartial(LOGGER::error).ifPresent(encoded -> nbt.put("warden_spawn_tracker", (NbtElement)encoded));
         this.writeGameModeNbt(nbt);
         nbt.putBoolean("seenCredits", this.seenCredits);
         if (this.enteredNetherPos != null) {
@@ -376,7 +376,7 @@ extends PlayerEntity {
             nbt.putInt("SpawnZ", this.spawnPointPosition.getZ());
             nbt.putBoolean("SpawnForced", this.spawnForced);
             nbt.putFloat("SpawnAngle", this.spawnAngle);
-            Identifier.CODEC.encodeStart(NbtOps.INSTANCE, this.spawnPointDimension.getValue()).resultOrPartial(LOGGER::error).ifPresent(nbtElement -> nbt.put("SpawnDimension", (NbtElement)nbtElement));
+            Identifier.CODEC.encodeStart(NbtOps.INSTANCE, this.spawnPointDimension.getValue()).resultOrPartial(LOGGER::error).ifPresent(encoded -> nbt.put("SpawnDimension", (NbtElement)encoded));
         }
     }
 
@@ -721,9 +721,9 @@ extends PlayerEntity {
             serverWorld.getProfiler().pop();
             serverWorld.getProfiler().push("placing");
             this.setWorld(destination);
-            destination.onPlayerChangeDimension(this);
             this.networkHandler.requestTeleport(teleportTarget.position.x, teleportTarget.position.y, teleportTarget.position.z, teleportTarget.yaw, teleportTarget.pitch);
             this.networkHandler.syncWithPlayerPosition();
+            destination.onPlayerChangeDimension(this);
             serverWorld.getProfiler().pop();
             this.worldChanged(serverWorld);
             this.networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(this.getAbilities()));
@@ -818,7 +818,7 @@ extends PlayerEntity {
             double d = 8.0;
             double e = 5.0;
             Vec3d vec3d = Vec3d.ofBottomCenter(pos);
-            List<HostileEntity> list = this.world.getEntitiesByClass(HostileEntity.class, new Box(vec3d.getX() - 8.0, vec3d.getY() - 5.0, vec3d.getZ() - 8.0, vec3d.getX() + 8.0, vec3d.getY() + 5.0, vec3d.getZ() + 8.0), hostileEntity -> hostileEntity.isAngryAt(this));
+            List<HostileEntity> list = this.world.getEntitiesByClass(HostileEntity.class, new Box(vec3d.getX() - 8.0, vec3d.getY() - 5.0, vec3d.getZ() - 8.0, vec3d.getX() + 8.0, vec3d.getY() + 5.0, vec3d.getZ() + 8.0), entity -> entity.isAngryAt(this));
             if (!list.isEmpty()) {
                 return Either.left(PlayerEntity.SleepFailureReason.NOT_SAFE);
             }

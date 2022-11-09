@@ -9,8 +9,8 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasHolder;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 @Environment(value=EnvType.CLIENT)
 public class StatusEffectSpriteManager
@@ -20,7 +20,7 @@ extends SpriteAtlasHolder {
     }
 
     public Sprite getSprite(StatusEffect effect) {
-        return this.getSprite(Registry.STATUS_EFFECT.getId(effect));
+        return this.getSprite(Registries.STATUS_EFFECT.getId(effect));
     }
 }
 

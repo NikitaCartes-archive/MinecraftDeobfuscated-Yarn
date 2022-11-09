@@ -11,13 +11,13 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.LookTargetUtil;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.server.world.ServerWorld;
 
 public class BreedTask
-extends Task<AnimalEntity> {
+extends MultiTickTask<AnimalEntity> {
     private static final int MAX_RANGE = 3;
     private static final int MIN_BREED_TIME = 60;
     private static final int RUN_TIME = 110;
@@ -78,19 +78,24 @@ extends Task<AnimalEntity> {
     }
 
     private AnimalEntity getBreedTarget(AnimalEntity animal) {
-        return (AnimalEntity)animal.getBrain().getOptionalMemory(MemoryModuleType.BREED_TARGET).get();
+        return (AnimalEntity)animal.getBrain().getOptionalRegisteredMemory(MemoryModuleType.BREED_TARGET).get();
     }
 
     private boolean hasBreedTarget(AnimalEntity animal) {
         Brain<PassiveEntity> brain = animal.getBrain();
-        return brain.hasMemoryModule(MemoryModuleType.BREED_TARGET) && brain.getOptionalMemory(MemoryModuleType.BREED_TARGET).get().getType() == this.targetType;
+        return brain.hasMemoryModule(MemoryModuleType.BREED_TARGET) && brain.getOptionalRegisteredMemory(MemoryModuleType.BREED_TARGET).get().getType() == this.targetType;
     }
 
     private Optional<? extends AnimalEntity> findBreedTarget(AnimalEntity animal) {
-        return animal.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get().findFirst(entity -> {
+        return animal.getBrain().getOptionalRegisteredMemory(MemoryModuleType.VISIBLE_MOBS).get().findFirst(entity -> {
             AnimalEntity animalEntity2;
             return entity.getType() == this.targetType && entity instanceof AnimalEntity && animal.canBreedWith(animalEntity2 = (AnimalEntity)entity);
         }).map(AnimalEntity.class::cast);
+    }
+
+    @Override
+    protected /* synthetic */ boolean shouldKeepRunning(ServerWorld world, LivingEntity entity, long time) {
+        return this.shouldKeepRunning(world, (AnimalEntity)entity, time);
     }
 
     @Override
@@ -99,8 +104,8 @@ extends Task<AnimalEntity> {
     }
 
     @Override
-    protected /* synthetic */ void keepRunning(ServerWorld world, LivingEntity entity, long time) {
-        this.keepRunning(world, (AnimalEntity)entity, time);
+    protected /* synthetic */ void run(ServerWorld world, LivingEntity entity, long time) {
+        this.run(world, (AnimalEntity)entity, time);
     }
 }
 

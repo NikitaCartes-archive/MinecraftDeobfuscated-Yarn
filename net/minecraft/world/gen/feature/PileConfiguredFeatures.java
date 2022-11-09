@@ -4,9 +4,9 @@
 package net.minecraft.world.gen.feature;
 
 import net.minecraft.block.Blocks;
+import net.minecraft.registry.Registerable;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.collection.DataPool;
-import net.minecraft.util.registry.Registerable;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.gen.feature.BlockPileFeatureConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.ConfiguredFeatures;

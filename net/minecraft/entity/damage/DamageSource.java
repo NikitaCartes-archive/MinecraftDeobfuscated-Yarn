@@ -134,7 +134,7 @@ public class DamageSource {
             return new ProjectileDamageSource("explosion.player", explosion, attacker).setScaledWithDifficulty().setExplosive();
         }
         if (explosion != null) {
-            return new EntityDamageSource("explosion.player", explosion).setScaledWithDifficulty().setExplosive();
+            return new EntityDamageSource("explosion", explosion).setScaledWithDifficulty().setExplosive();
         }
         return new DamageSource("explosion").setScaledWithDifficulty().setExplosive();
     }

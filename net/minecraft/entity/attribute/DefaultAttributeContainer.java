@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 import org.jetbrains.annotations.Nullable;
 
 public class DefaultAttributeContainer {
@@ -24,7 +24,7 @@ public class DefaultAttributeContainer {
     private EntityAttributeInstance require(EntityAttribute attribute) {
         EntityAttributeInstance entityAttributeInstance = this.instances.get(attribute);
         if (entityAttributeInstance == null) {
-            throw new IllegalArgumentException("Can't find attribute " + Registry.ATTRIBUTE.getId(attribute));
+            throw new IllegalArgumentException("Can't find attribute " + Registries.ATTRIBUTE.getId(attribute));
         }
         return entityAttributeInstance;
     }
@@ -40,7 +40,7 @@ public class DefaultAttributeContainer {
     public double getModifierValue(EntityAttribute attribute, UUID uuid) {
         EntityAttributeModifier entityAttributeModifier = this.require(attribute).getModifier(uuid);
         if (entityAttributeModifier == null) {
-            throw new IllegalArgumentException("Can't find modifier " + uuid + " on attribute " + Registry.ATTRIBUTE.getId(attribute));
+            throw new IllegalArgumentException("Can't find modifier " + uuid + " on attribute " + Registries.ATTRIBUTE.getId(attribute));
         }
         return entityAttributeModifier.getValue();
     }
@@ -76,7 +76,7 @@ public class DefaultAttributeContainer {
         private EntityAttributeInstance checkedAdd(EntityAttribute attribute2) {
             EntityAttributeInstance entityAttributeInstance = new EntityAttributeInstance(attribute2, attribute -> {
                 if (this.unmodifiable) {
-                    throw new UnsupportedOperationException("Tried to change value for default attribute instance: " + Registry.ATTRIBUTE.getId(attribute2));
+                    throw new UnsupportedOperationException("Tried to change value for default attribute instance: " + Registries.ATTRIBUTE.getId(attribute2));
                 }
             });
             this.instances.put(attribute2, entityAttributeInstance);

@@ -8,12 +8,12 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.server.world.ServerWorld;
 
 public class PanicTask
-extends Task<VillagerEntity> {
+extends MultiTickTask<VillagerEntity> {
     public PanicTask() {
         super(ImmutableMap.of());
     }
@@ -51,16 +51,6 @@ extends Task<VillagerEntity> {
 
     public static boolean wasHurt(LivingEntity entity) {
         return entity.getBrain().hasMemoryModule(MemoryModuleType.HURT_BY);
-    }
-
-    @Override
-    protected /* synthetic */ boolean shouldKeepRunning(ServerWorld world, LivingEntity entity, long time) {
-        return this.shouldKeepRunning(world, (VillagerEntity)entity, time);
-    }
-
-    @Override
-    protected /* synthetic */ void keepRunning(ServerWorld world, LivingEntity entity, long time) {
-        this.keepRunning(world, (VillagerEntity)entity, time);
     }
 
     @Override

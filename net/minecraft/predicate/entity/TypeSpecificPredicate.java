@@ -20,10 +20,10 @@ import net.minecraft.predicate.entity.LightningBoltPredicate;
 import net.minecraft.predicate.entity.PlayerPredicate;
 import net.minecraft.predicate.entity.SlimePredicate;
 import net.minecraft.predicate.entity.VariantPredicates;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public interface TypeSpecificPredicate {
@@ -91,7 +91,7 @@ public interface TypeSpecificPredicate {
         public static final Deserializer FISHING_HOOK = FishingHookPredicate::fromJson;
         public static final Deserializer PLAYER = PlayerPredicate::fromJson;
         public static final Deserializer SLIME = SlimePredicate::fromJson;
-        public static final VariantPredicates<CatVariant> CAT = VariantPredicates.create(Registry.CAT_VARIANT, entity -> {
+        public static final VariantPredicates<CatVariant> CAT = VariantPredicates.create(Registries.CAT_VARIANT, entity -> {
             Optional<Object> optional;
             if (entity instanceof CatEntity) {
                 CatEntity catEntity = (CatEntity)entity;
@@ -101,7 +101,7 @@ public interface TypeSpecificPredicate {
             }
             return optional;
         });
-        public static final VariantPredicates<FrogVariant> FROG = VariantPredicates.create(Registry.FROG_VARIANT, entity -> {
+        public static final VariantPredicates<FrogVariant> FROG = VariantPredicates.create(Registries.FROG_VARIANT, entity -> {
             Optional<Object> optional;
             if (entity instanceof FrogEntity) {
                 FrogEntity frogEntity = (FrogEntity)entity;

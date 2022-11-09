@@ -20,12 +20,12 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.Potions;
+import net.minecraft.registry.Registries;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class PotionUtil {
@@ -126,7 +126,7 @@ public class PotionUtil {
     }
 
     public static ItemStack setPotion(ItemStack stack, Potion potion) {
-        Identifier identifier = Registry.POTION.getId(potion);
+        Identifier identifier = Registries.POTION.getId(potion);
         if (potion == Potions.EMPTY) {
             stack.removeSubNbt(POTION_KEY);
         } else {
@@ -149,12 +149,15 @@ public class PotionUtil {
     }
 
     public static void buildTooltip(ItemStack stack, List<Text> list, float durationMultiplier) {
-        List<StatusEffectInstance> list2 = PotionUtil.getPotionEffects(stack);
-        ArrayList<Pair<EntityAttribute, EntityAttributeModifier>> list3 = Lists.newArrayList();
-        if (list2.isEmpty()) {
+        PotionUtil.buildTooltip(PotionUtil.getPotionEffects(stack), list, durationMultiplier);
+    }
+
+    public static void buildTooltip(List<StatusEffectInstance> statusEffects, List<Text> list, float durationMultiplier) {
+        ArrayList<Pair<EntityAttribute, EntityAttributeModifier>> list2 = Lists.newArrayList();
+        if (statusEffects.isEmpty()) {
             list.add(NONE_TEXT);
         } else {
-            for (StatusEffectInstance statusEffectInstance : list2) {
+            for (StatusEffectInstance statusEffectInstance : statusEffects) {
                 MutableText mutableText = Text.translatable(statusEffectInstance.getTranslationKey());
                 StatusEffect statusEffect = statusEffectInstance.getEffectType();
                 Map<EntityAttribute, EntityAttributeModifier> map = statusEffect.getAttributeModifiers();
@@ -162,7 +165,7 @@ public class PotionUtil {
                     for (Map.Entry<EntityAttribute, EntityAttributeModifier> entry : map.entrySet()) {
                         EntityAttributeModifier entityAttributeModifier = entry.getValue();
                         EntityAttributeModifier entityAttributeModifier2 = new EntityAttributeModifier(entityAttributeModifier.getName(), statusEffect.adjustModifierAmount(statusEffectInstance.getAmplifier(), entityAttributeModifier), entityAttributeModifier.getOperation());
-                        list3.add(new Pair<EntityAttribute, EntityAttributeModifier>(entry.getKey(), entityAttributeModifier2));
+                        list2.add(new Pair<EntityAttribute, EntityAttributeModifier>(entry.getKey(), entityAttributeModifier2));
                     }
                 }
                 if (statusEffectInstance.getAmplifier() > 0) {
@@ -174,10 +177,10 @@ public class PotionUtil {
                 list.add(mutableText.formatted(statusEffect.getCategory().getFormatting()));
             }
         }
-        if (!list3.isEmpty()) {
+        if (!list2.isEmpty()) {
             list.add(ScreenTexts.EMPTY);
             list.add(Text.translatable("potion.whenDrank").formatted(Formatting.DARK_PURPLE));
-            for (Pair pair : list3) {
+            for (Pair pair : list2) {
                 EntityAttributeModifier entityAttributeModifier3 = (EntityAttributeModifier)pair.getSecond();
                 double d = entityAttributeModifier3.getValue();
                 double e = entityAttributeModifier3.getOperation() == EntityAttributeModifier.Operation.MULTIPLY_BASE || entityAttributeModifier3.getOperation() == EntityAttributeModifier.Operation.MULTIPLY_TOTAL ? entityAttributeModifier3.getValue() * 100.0 : entityAttributeModifier3.getValue();

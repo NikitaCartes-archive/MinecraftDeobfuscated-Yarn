@@ -4,7 +4,8 @@
 package net.minecraft.world.gen.placementmodifier;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.world.gen.placementmodifier.BiomePlacementModifier;
 import net.minecraft.world.gen.placementmodifier.BlockFilterPlacementModifier;
 import net.minecraft.world.gen.placementmodifier.CarvingMaskPlacementModifier;
@@ -42,7 +43,7 @@ public interface PlacementModifierType<P extends PlacementModifier> {
     public Codec<P> codec();
 
     private static <P extends PlacementModifier> PlacementModifierType<P> register(String id, Codec<P> codec) {
-        return Registry.register(Registry.PLACEMENT_MODIFIER_TYPE, id, () -> codec);
+        return Registry.register(Registries.PLACEMENT_MODIFIER_TYPE, id, () -> codec);
     }
 }
 

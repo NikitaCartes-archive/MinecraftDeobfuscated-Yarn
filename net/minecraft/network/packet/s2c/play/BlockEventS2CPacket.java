@@ -7,8 +7,8 @@ import net.minecraft.block.Block;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 
 public class BlockEventS2CPacket
 implements Packet<ClientPlayPacketListener> {
@@ -28,7 +28,7 @@ implements Packet<ClientPlayPacketListener> {
         this.pos = buf.readBlockPos();
         this.type = buf.readUnsignedByte();
         this.data = buf.readUnsignedByte();
-        this.block = buf.readRegistryValue(Registry.BLOCK);
+        this.block = buf.readRegistryValue(Registries.BLOCK);
     }
 
     @Override
@@ -36,7 +36,7 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeBlockPos(this.pos);
         buf.writeByte(this.type);
         buf.writeByte(this.data);
-        buf.writeRegistryValue(Registry.BLOCK, this.block);
+        buf.writeRegistryValue(Registries.BLOCK, this.block);
     }
 
     @Override

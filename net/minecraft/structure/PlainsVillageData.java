@@ -5,16 +5,16 @@ package net.minecraft.structure;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.registry.Registerable;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.structure.pool.StructurePools;
 import net.minecraft.structure.processor.StructureProcessorList;
 import net.minecraft.structure.processor.StructureProcessorLists;
-import net.minecraft.util.registry.Registerable;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryEntryLookup;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.gen.feature.PlacedFeature;
 import net.minecraft.world.gen.feature.VillagePlacedFeatures;
 
@@ -23,18 +23,18 @@ public class PlainsVillageData {
     private static final RegistryKey<StructurePool> TERMINATORS_KEY = StructurePools.of("village/plains/terminators");
 
     public static void bootstrap(Registerable<StructurePool> poolRegisterable) {
-        RegistryEntryLookup<PlacedFeature> registryEntryLookup = poolRegisterable.getRegistryLookup(Registry.PLACED_FEATURE_KEY);
+        RegistryEntryLookup<PlacedFeature> registryEntryLookup = poolRegisterable.getRegistryLookup(RegistryKeys.PLACED_FEATURE_WORLDGEN);
         RegistryEntry.Reference<PlacedFeature> registryEntry = registryEntryLookup.getOrThrow(VillagePlacedFeatures.OAK);
         RegistryEntry.Reference<PlacedFeature> registryEntry2 = registryEntryLookup.getOrThrow(VillagePlacedFeatures.FLOWER_PLAIN);
         RegistryEntry.Reference<PlacedFeature> registryEntry3 = registryEntryLookup.getOrThrow(VillagePlacedFeatures.PILE_HAY);
-        RegistryEntryLookup<StructureProcessorList> registryEntryLookup2 = poolRegisterable.getRegistryLookup(Registry.STRUCTURE_PROCESSOR_LIST_KEY);
+        RegistryEntryLookup<StructureProcessorList> registryEntryLookup2 = poolRegisterable.getRegistryLookup(RegistryKeys.PROCESSOR_LIST_WORLDGEN);
         RegistryEntry.Reference<StructureProcessorList> registryEntry4 = registryEntryLookup2.getOrThrow(StructureProcessorLists.MOSSIFY_10_PERCENT);
         RegistryEntry.Reference<StructureProcessorList> registryEntry5 = registryEntryLookup2.getOrThrow(StructureProcessorLists.MOSSIFY_20_PERCENT);
         RegistryEntry.Reference<StructureProcessorList> registryEntry6 = registryEntryLookup2.getOrThrow(StructureProcessorLists.MOSSIFY_70_PERCENT);
         RegistryEntry.Reference<StructureProcessorList> registryEntry7 = registryEntryLookup2.getOrThrow(StructureProcessorLists.ZOMBIE_PLAINS);
         RegistryEntry.Reference<StructureProcessorList> registryEntry8 = registryEntryLookup2.getOrThrow(StructureProcessorLists.STREET_PLAINS);
         RegistryEntry.Reference<StructureProcessorList> registryEntry9 = registryEntryLookup2.getOrThrow(StructureProcessorLists.FARM_PLAINS);
-        RegistryEntryLookup<StructurePool> registryEntryLookup3 = poolRegisterable.getRegistryLookup(Registry.STRUCTURE_POOL_KEY);
+        RegistryEntryLookup<StructurePool> registryEntryLookup3 = poolRegisterable.getRegistryLookup(RegistryKeys.TEMPLATE_POOL_WORLDGEN);
         RegistryEntry.Reference<StructurePool> registryEntry10 = registryEntryLookup3.getOrThrow(StructurePools.EMPTY);
         RegistryEntry.Reference<StructurePool> registryEntry11 = registryEntryLookup3.getOrThrow(TERMINATORS_KEY);
         poolRegisterable.register(TOWN_CENTERS_KEY, new StructurePool(registryEntry10, ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedLegacySingle("village/plains/town_centers/plains_fountain_01", registryEntry5), 50), Pair.of(StructurePoolElement.ofProcessedLegacySingle("village/plains/town_centers/plains_meeting_point_1", registryEntry5), 50), Pair.of(StructurePoolElement.ofLegacySingle("village/plains/town_centers/plains_meeting_point_2"), 50), Pair.of(StructurePoolElement.ofProcessedLegacySingle("village/plains/town_centers/plains_meeting_point_3", registryEntry6), 50), Pair.of(StructurePoolElement.ofProcessedLegacySingle("village/plains/zombie/town_centers/plains_fountain_01", registryEntry7), 1), Pair.of(StructurePoolElement.ofProcessedLegacySingle("village/plains/zombie/town_centers/plains_meeting_point_1", registryEntry7), 1), Pair.of(StructurePoolElement.ofProcessedLegacySingle("village/plains/zombie/town_centers/plains_meeting_point_2", registryEntry7), 1), Pair.of(StructurePoolElement.ofProcessedLegacySingle("village/plains/zombie/town_centers/plains_meeting_point_3", registryEntry7), 1)), StructurePool.Projection.RIGID));

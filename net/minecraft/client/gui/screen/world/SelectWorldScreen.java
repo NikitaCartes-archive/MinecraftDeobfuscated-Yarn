@@ -5,7 +5,6 @@ package net.minecraft.client.gui.screen.world;
 
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
-import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
@@ -16,7 +15,6 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.DataConfiguration;
 import net.minecraft.screen.ScreenTexts;
-import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.PathUtil;
 import net.minecraft.world.Difficulty;
@@ -25,7 +23,6 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.gen.WorldPresets;
 import net.minecraft.world.level.LevelInfo;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
@@ -34,8 +31,6 @@ extends Screen {
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final GeneratorOptions DEBUG_GENERATOR_OPTIONS = new GeneratorOptions("test1".hashCode(), true, false);
     protected final Screen parent;
-    @Nullable
-    private List<OrderedText> tooltip;
     private ButtonWidget deleteButton;
     private ButtonWidget selectButton;
     private ButtonWidget editButton;
@@ -96,18 +91,10 @@ extends Screen {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        this.tooltip = null;
         this.levelList.render(matrices, mouseX, mouseY, delta);
         this.searchBox.render(matrices, mouseX, mouseY, delta);
         SelectWorldScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
-        if (this.tooltip != null) {
-            this.renderOrderedTooltip(matrices, this.tooltip, mouseX, mouseY);
-        }
-    }
-
-    public void setTooltip(List<OrderedText> tooltip) {
-        this.tooltip = tooltip;
     }
 
     public void worldSelected(boolean active) {

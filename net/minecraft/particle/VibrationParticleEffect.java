@@ -14,9 +14,9 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.event.BlockPositionSource;
 import net.minecraft.world.event.PositionSource;
 import net.minecraft.world.event.PositionSourceType;
@@ -77,7 +77,7 @@ implements ParticleEffect {
         double d = vec3d.getX();
         double e = vec3d.getY();
         double f = vec3d.getZ();
-        return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %d", Registry.PARTICLE_TYPE.getId(this.getType()), d, e, f, this.arrivalInTicks);
+        return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %d", Registries.PARTICLE_TYPE.getId(this.getType()), d, e, f, this.arrivalInTicks);
     }
 
     public ParticleType<VibrationParticleEffect> getType() {

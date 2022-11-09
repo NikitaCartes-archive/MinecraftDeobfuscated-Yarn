@@ -23,10 +23,11 @@ import net.minecraft.loot.condition.TableBonusLootCondition;
 import net.minecraft.loot.condition.TimeCheckLootCondition;
 import net.minecraft.loot.condition.ValueCheckLootCondition;
 import net.minecraft.loot.condition.WeatherCheckLootCondition;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonSerializer;
 import net.minecraft.util.JsonSerializing;
-import net.minecraft.util.registry.Registry;
 
 public class LootConditionTypes {
     public static final LootConditionType INVERTED = LootConditionTypes.register("inverted", new InvertedLootCondition.Serializer());
@@ -48,11 +49,11 @@ public class LootConditionTypes {
     public static final LootConditionType VALUE_CHECK = LootConditionTypes.register("value_check", new ValueCheckLootCondition.Serializer());
 
     private static LootConditionType register(String id, JsonSerializer<? extends LootCondition> serializer) {
-        return Registry.register(Registry.LOOT_CONDITION_TYPE, new Identifier(id), new LootConditionType(serializer));
+        return Registry.register(Registries.LOOT_CONDITION_TYPE, new Identifier(id), new LootConditionType(serializer));
     }
 
     public static Object createGsonSerializer() {
-        return JsonSerializing.createSerializerBuilder(Registry.LOOT_CONDITION_TYPE, "condition", "condition", LootCondition::getType).build();
+        return JsonSerializing.createSerializerBuilder(Registries.LOOT_CONDITION_TYPE, "condition", "condition", LootCondition::getType).build();
     }
 
     public static <T> Predicate<T> joinAnd(Predicate<T>[] predicates2) {

@@ -26,8 +26,8 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Map;
 import net.minecraft.item.Item;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
@@ -134,7 +134,7 @@ public class JsonHelper {
     public static Item asItem(JsonElement element, String name) {
         if (element.isJsonPrimitive()) {
             String string = element.getAsString();
-            return Registry.ITEM.getOrEmpty(new Identifier(string)).orElseThrow(() -> new JsonSyntaxException("Expected " + name + " to be an item, was unknown string '" + string + "'"));
+            return (Item)Registries.ITEM.getOrEmpty(new Identifier(string)).orElseThrow(() -> new JsonSyntaxException("Expected " + name + " to be an item, was unknown string '" + string + "'"));
         }
         throw new JsonSyntaxException("Expected " + name + " to be an item, was " + JsonHelper.getType(element));
     }

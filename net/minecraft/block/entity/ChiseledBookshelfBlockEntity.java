@@ -19,10 +19,8 @@ import net.minecraft.inventory.StackMappingInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.Packet;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.state.property.Properties;
-import net.minecraft.tag.ItemTags;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import org.slf4j.Logger;
@@ -101,17 +99,6 @@ implements Inventory {
             defaultedList.set(i, inventory.getStack(i));
         }
         return defaultedList;
-    }
-
-    public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return BlockEntityUpdateS2CPacket.create(this);
-    }
-
-    @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        NbtCompound nbtCompound = new NbtCompound();
-        Inventories.writeNbt(nbtCompound, ChiseledBookshelfBlockEntity.getBooksAsList(this.books), true);
-        return nbtCompound;
     }
 
     @Override
@@ -201,10 +188,6 @@ implements Inventory {
     @Override
     public boolean containsAny(Predicate<ItemStack> predicate) {
         return this.books.getStacks().stream().anyMatch(predicate);
-    }
-
-    public /* synthetic */ Packet toUpdatePacket() {
-        return this.toUpdatePacket();
     }
 }
 

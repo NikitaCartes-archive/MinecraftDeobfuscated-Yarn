@@ -19,7 +19,7 @@ import net.minecraft.entity.ai.brain.EntityLookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
 import net.minecraft.entity.ai.pathing.Path;
@@ -40,7 +40,7 @@ import net.minecraft.util.math.Vec3d;
  * @param <E> the task owner, usually a goat
  */
 public class PrepareRamTask<E extends PathAwareEntity>
-extends Task<E> {
+extends MultiTickTask<E> {
     public static final int RUN_TIME = 160;
     private final ToIntFunction<E> cooldownFactory;
     private final int minRamDistance;
@@ -78,7 +78,7 @@ extends Task<E> {
     @Override
     protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
         Brain<?> brain = pathAwareEntity.getBrain();
-        brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).flatMap(livingTargetCache -> livingTargetCache.findFirst(mob -> this.targetPredicate.test(pathAwareEntity, (LivingEntity)mob))).ifPresent(mob -> this.findRam(pathAwareEntity, (LivingEntity)mob));
+        brain.getOptionalRegisteredMemory(MemoryModuleType.VISIBLE_MOBS).flatMap(mob2 -> mob2.findFirst(mob -> this.targetPredicate.test(pathAwareEntity, (LivingEntity)mob))).ifPresent(mob -> this.findRam(pathAwareEntity, (LivingEntity)mob));
     }
 
     @Override
@@ -170,8 +170,13 @@ extends Task<E> {
     }
 
     @Override
-    protected /* synthetic */ void finishRunning(ServerWorld world, LivingEntity entity, long time) {
-        this.finishRunning(world, (E)((PathAwareEntity)entity), time);
+    protected /* synthetic */ void keepRunning(ServerWorld world, LivingEntity entity, long time) {
+        this.keepRunning(world, (E)((PathAwareEntity)entity), time);
+    }
+
+    @Override
+    protected /* synthetic */ void run(ServerWorld world, LivingEntity entity, long time) {
+        this.run(world, (PathAwareEntity)entity, time);
     }
 
     public static class Ram {

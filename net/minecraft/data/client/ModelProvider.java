@@ -26,8 +26,8 @@ import net.minecraft.data.client.ItemModelGenerator;
 import net.minecraft.data.client.ModelIds;
 import net.minecraft.data.client.SimpleModelSupplier;
 import net.minecraft.item.Item;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class ModelProvider
 implements DataProvider {
@@ -60,11 +60,11 @@ implements DataProvider {
         Consumer<Item> consumer2 = set::add;
         new BlockStateModelGenerator(consumer, biConsumer, consumer2).register();
         new ItemModelGenerator(biConsumer).register();
-        List<Block> list = Registry.BLOCK.stream().filter(block -> !map.containsKey(block)).toList();
+        List<Block> list = Registries.BLOCK.stream().filter(block -> !map.containsKey(block)).toList();
         if (!list.isEmpty()) {
             throw new IllegalStateException("Missing blockstate definitions for: " + list);
         }
-        Registry.BLOCK.forEach(block -> {
+        Registries.BLOCK.forEach(block -> {
             Item item = Item.BLOCK_ITEMS.get(block);
             if (item != null) {
                 if (set.contains(item)) {

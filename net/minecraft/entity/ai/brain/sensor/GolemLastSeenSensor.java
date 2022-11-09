@@ -37,7 +37,7 @@ extends Sensor<LivingEntity> {
     }
 
     public static void senseIronGolem(LivingEntity entity) {
-        Optional<List<LivingEntity>> optional = entity.getBrain().getOptionalMemory(MemoryModuleType.MOBS);
+        Optional<List<LivingEntity>> optional = entity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.MOBS);
         if (!optional.isPresent()) {
             return;
         }

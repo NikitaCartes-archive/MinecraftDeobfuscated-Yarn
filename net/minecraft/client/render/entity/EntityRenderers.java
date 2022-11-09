@@ -117,7 +117,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.GlowSquidEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
@@ -137,7 +137,7 @@ public class EntityRenderers {
             try {
                 builder.put(entityType, factory.create(ctx));
             } catch (Exception exception) {
-                throw new IllegalArgumentException("Failed to create model for " + Registry.ENTITY_TYPE.getId((EntityType<?>)entityType), exception);
+                throw new IllegalArgumentException("Failed to create model for " + Registries.ENTITY_TYPE.getId((EntityType<?>)entityType), exception);
             }
         });
         return builder.build();
@@ -157,9 +157,9 @@ public class EntityRenderers {
 
     public static boolean isMissingRendererFactories() {
         boolean bl = true;
-        for (EntityType entityType : Registry.ENTITY_TYPE) {
+        for (EntityType entityType : Registries.ENTITY_TYPE) {
             if (entityType == EntityType.PLAYER || RENDERER_FACTORIES.containsKey(entityType)) continue;
-            LOGGER.warn("No renderer registered for {}", (Object)Registry.ENTITY_TYPE.getId(entityType));
+            LOGGER.warn("No renderer registered for {}", (Object)Registries.ENTITY_TYPE.getId(entityType));
             bl = false;
         }
         return !bl;

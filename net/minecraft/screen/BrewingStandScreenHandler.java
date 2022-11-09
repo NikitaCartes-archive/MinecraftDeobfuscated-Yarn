@@ -69,29 +69,29 @@ extends ScreenHandler {
     }
 
     @Override
-    public ItemStack transferSlot(PlayerEntity player, int index) {
+    public ItemStack quickMove(PlayerEntity player, int slot) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = (Slot)this.slots.get(index);
-        if (slot != null && slot.hasStack()) {
-            ItemStack itemStack2 = slot.getStack();
+        Slot slot2 = (Slot)this.slots.get(slot);
+        if (slot2 != null && slot2.hasStack()) {
+            ItemStack itemStack2 = slot2.getStack();
             itemStack = itemStack2.copy();
-            if (index >= 0 && index <= 2 || index == 3 || index == 4) {
+            if (slot >= 0 && slot <= 2 || slot == 3 || slot == 4) {
                 if (!this.insertItem(itemStack2, 5, 41, true)) {
                     return ItemStack.EMPTY;
                 }
-                slot.onQuickTransfer(itemStack2, itemStack);
-            } else if (FuelSlot.matches(itemStack) ? this.insertItem(itemStack2, 4, 5, false) || this.ingredientSlot.canInsert(itemStack2) && !this.insertItem(itemStack2, 3, 4, false) : (this.ingredientSlot.canInsert(itemStack2) ? !this.insertItem(itemStack2, 3, 4, false) : (PotionSlot.matches(itemStack) && itemStack.getCount() == 1 ? !this.insertItem(itemStack2, 0, 3, false) : (index >= 5 && index < 32 ? !this.insertItem(itemStack2, 32, 41, false) : (index >= 32 && index < 41 ? !this.insertItem(itemStack2, 5, 32, false) : !this.insertItem(itemStack2, 5, 41, false)))))) {
+                slot2.onQuickTransfer(itemStack2, itemStack);
+            } else if (FuelSlot.matches(itemStack) ? this.insertItem(itemStack2, 4, 5, false) || this.ingredientSlot.canInsert(itemStack2) && !this.insertItem(itemStack2, 3, 4, false) : (this.ingredientSlot.canInsert(itemStack2) ? !this.insertItem(itemStack2, 3, 4, false) : (PotionSlot.matches(itemStack) && itemStack.getCount() == 1 ? !this.insertItem(itemStack2, 0, 3, false) : (slot >= 5 && slot < 32 ? !this.insertItem(itemStack2, 32, 41, false) : (slot >= 32 && slot < 41 ? !this.insertItem(itemStack2, 5, 32, false) : !this.insertItem(itemStack2, 5, 41, false)))))) {
                 return ItemStack.EMPTY;
             }
             if (itemStack2.isEmpty()) {
-                slot.setStack(ItemStack.EMPTY);
+                slot2.setStack(ItemStack.EMPTY);
             } else {
-                slot.markDirty();
+                slot2.markDirty();
             }
             if (itemStack2.getCount() == itemStack.getCount()) {
                 return ItemStack.EMPTY;
             }
-            slot.onTakeItem(player, itemStack2);
+            slot2.onTakeItem(player, itemStack2);
         }
         return itemStack;
     }

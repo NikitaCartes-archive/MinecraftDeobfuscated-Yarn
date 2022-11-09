@@ -4,12 +4,12 @@
 package net.minecraft.world.gen.feature;
 
 import java.util.List;
+import net.minecraft.registry.Registerable;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
-import net.minecraft.util.registry.Registerable;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryEntryLookup;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.gen.YOffset;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.OreConfiguredFeatures;
@@ -76,7 +76,7 @@ public class OrePlacedFeatures {
     }
 
     public static void bootstrap(Registerable<PlacedFeature> featureRegisterable) {
-        RegistryEntryLookup<ConfiguredFeature<?, ?>> registryEntryLookup = featureRegisterable.getRegistryLookup(Registry.CONFIGURED_FEATURE_KEY);
+        RegistryEntryLookup<ConfiguredFeature<?, ?>> registryEntryLookup = featureRegisterable.getRegistryLookup(RegistryKeys.CONFIGURED_FEATURE_WORLDGEN);
         RegistryEntry.Reference<ConfiguredFeature<?, ?>> registryEntry = registryEntryLookup.getOrThrow(OreConfiguredFeatures.ORE_MAGMA);
         RegistryEntry.Reference<ConfiguredFeature<?, ?>> registryEntry2 = registryEntryLookup.getOrThrow(OreConfiguredFeatures.ORE_SOUL_SAND);
         RegistryEntry.Reference<ConfiguredFeature<?, ?>> registryEntry3 = registryEntryLookup.getOrThrow(OreConfiguredFeatures.ORE_NETHER_GOLD);

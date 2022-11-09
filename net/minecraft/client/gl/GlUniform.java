@@ -10,7 +10,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gl.GlShader;
+import net.minecraft.client.gl.ShaderProgramSetupView;
 import net.minecraft.client.gl.Uniform;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
@@ -49,9 +49,9 @@ implements AutoCloseable {
     private final FloatBuffer floatData;
     private final String name;
     private boolean stateDirty;
-    private final GlShader program;
+    private final ShaderProgramSetupView program;
 
-    public GlUniform(String name, int dataType, int count, GlShader program) {
+    public GlUniform(String name, int dataType, int count, ShaderProgramSetupView program) {
         this.name = name;
         this.count = count;
         this.dataType = dataType;

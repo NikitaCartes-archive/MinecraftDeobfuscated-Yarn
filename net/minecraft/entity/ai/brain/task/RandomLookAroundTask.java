@@ -4,10 +4,11 @@
 package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.BlockPosLookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
@@ -16,7 +17,7 @@ import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.random.Random;
 
 public class RandomLookAroundTask
-extends Task<MobEntity> {
+extends MultiTickTask<MobEntity> {
     private final IntProvider cooldown;
     private final float maxYaw;
     private final float minPitch;
@@ -41,6 +42,11 @@ extends Task<MobEntity> {
         Vec3d vec3d = Vec3d.fromPolar(f, g);
         mobEntity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(mobEntity.getEyePos().add(vec3d)));
         mobEntity.getBrain().remember(MemoryModuleType.GAZE_COOLDOWN_TICKS, this.cooldown.get(random));
+    }
+
+    @Override
+    protected /* synthetic */ void run(ServerWorld world, LivingEntity entity, long time) {
+        this.run(world, (MobEntity)entity, time);
     }
 }
 

@@ -35,7 +35,7 @@ extends Sensor<LivingEntity> {
     }
 
     private LivingTargetCache getVisibleMobs(LivingEntity entity) {
-        return entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(LivingTargetCache.empty());
+        return entity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.VISIBLE_MOBS).orElse(LivingTargetCache.empty());
     }
 }
 

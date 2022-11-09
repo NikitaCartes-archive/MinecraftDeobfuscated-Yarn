@@ -28,9 +28,9 @@ import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.book.RecipeCategory;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
-import net.minecraft.tag.ItemTags;
 
 public class VanillaRecipeProvider
 extends RecipeProvider {
@@ -55,15 +55,15 @@ extends RecipeProvider {
     @Override
     protected void generate(Consumer<RecipeJsonProvider> exporter) {
         VanillaRecipeProvider.generateFamilies(exporter, FeatureSet.of(FeatureFlags.VANILLA));
-        VanillaRecipeProvider.offerPlanksRecipe2(exporter, Blocks.ACACIA_PLANKS, ItemTags.ACACIA_LOGS);
-        VanillaRecipeProvider.offerPlanksRecipe(exporter, Blocks.BIRCH_PLANKS, ItemTags.BIRCH_LOGS);
-        VanillaRecipeProvider.offerPlanksRecipe(exporter, Blocks.CRIMSON_PLANKS, ItemTags.CRIMSON_STEMS);
-        VanillaRecipeProvider.offerPlanksRecipe2(exporter, Blocks.DARK_OAK_PLANKS, ItemTags.DARK_OAK_LOGS);
-        VanillaRecipeProvider.offerPlanksRecipe(exporter, Blocks.JUNGLE_PLANKS, ItemTags.JUNGLE_LOGS);
-        VanillaRecipeProvider.offerPlanksRecipe(exporter, Blocks.OAK_PLANKS, ItemTags.OAK_LOGS);
-        VanillaRecipeProvider.offerPlanksRecipe(exporter, Blocks.SPRUCE_PLANKS, ItemTags.SPRUCE_LOGS);
-        VanillaRecipeProvider.offerPlanksRecipe(exporter, Blocks.WARPED_PLANKS, ItemTags.WARPED_STEMS);
-        VanillaRecipeProvider.offerPlanksRecipe(exporter, Blocks.MANGROVE_PLANKS, ItemTags.MANGROVE_LOGS);
+        VanillaRecipeProvider.offerPlanksRecipe2(exporter, Blocks.ACACIA_PLANKS, ItemTags.ACACIA_LOGS, 4);
+        VanillaRecipeProvider.offerPlanksRecipe(exporter, Blocks.BIRCH_PLANKS, ItemTags.BIRCH_LOGS, 4);
+        VanillaRecipeProvider.offerPlanksRecipe(exporter, Blocks.CRIMSON_PLANKS, ItemTags.CRIMSON_STEMS, 4);
+        VanillaRecipeProvider.offerPlanksRecipe2(exporter, Blocks.DARK_OAK_PLANKS, ItemTags.DARK_OAK_LOGS, 4);
+        VanillaRecipeProvider.offerPlanksRecipe(exporter, Blocks.JUNGLE_PLANKS, ItemTags.JUNGLE_LOGS, 4);
+        VanillaRecipeProvider.offerPlanksRecipe(exporter, Blocks.OAK_PLANKS, ItemTags.OAK_LOGS, 4);
+        VanillaRecipeProvider.offerPlanksRecipe(exporter, Blocks.SPRUCE_PLANKS, ItemTags.SPRUCE_LOGS, 4);
+        VanillaRecipeProvider.offerPlanksRecipe(exporter, Blocks.WARPED_PLANKS, ItemTags.WARPED_STEMS, 4);
+        VanillaRecipeProvider.offerPlanksRecipe(exporter, Blocks.MANGROVE_PLANKS, ItemTags.MANGROVE_LOGS, 4);
         VanillaRecipeProvider.offerBarkBlockRecipe(exporter, Blocks.ACACIA_WOOD, Blocks.ACACIA_LOG);
         VanillaRecipeProvider.offerBarkBlockRecipe(exporter, Blocks.BIRCH_WOOD, Blocks.BIRCH_LOG);
         VanillaRecipeProvider.offerBarkBlockRecipe(exporter, Blocks.DARK_OAK_WOOD, Blocks.DARK_OAK_LOG);
@@ -297,7 +297,7 @@ extends RecipeProvider {
         ShapelessRecipeJsonBuilder.create(RecipeCategory.BREWING, Items.BLAZE_POWDER, 2).input(Items.BLAZE_ROD).criterion("has_blaze_rod", VanillaRecipeProvider.conditionsFromItem(Items.BLAZE_ROD)).offerTo(exporter);
         ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, Items.BLUE_DYE).input(Items.LAPIS_LAZULI).group("blue_dye").criterion("has_lapis_lazuli", VanillaRecipeProvider.conditionsFromItem(Items.LAPIS_LAZULI)).offerTo(exporter);
         VanillaRecipeProvider.offerSingleOutputShapelessRecipe(exporter, Items.BLUE_DYE, Blocks.CORNFLOWER, "blue_dye");
-        ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.BLUE_ICE).input(Character.valueOf('#'), Blocks.PACKED_ICE).pattern("###").pattern("###").pattern("###").criterion("has_packed_ice", VanillaRecipeProvider.conditionsFromItem(Blocks.PACKED_ICE)).offerTo(exporter);
+        VanillaRecipeProvider.offerCompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.BLUE_ICE, Blocks.PACKED_ICE);
         ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, Items.BONE_MEAL, 3).input(Items.BONE).group("bonemeal").criterion("has_bone", VanillaRecipeProvider.conditionsFromItem(Items.BONE)).offerTo(exporter);
         VanillaRecipeProvider.offerReversibleCompactingRecipesWithReverseRecipeGroup(exporter, RecipeCategory.MISC, Items.BONE_MEAL, RecipeCategory.BUILDING_BLOCKS, Items.BONE_BLOCK, "bone_meal_from_bone_block", "bonemeal");
         ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, Items.BOOK).input(Items.PAPER, 3).input(Items.LEATHER).criterion("has_paper", VanillaRecipeProvider.conditionsFromItem(Items.PAPER)).offerTo(exporter);
@@ -326,7 +326,7 @@ extends RecipeProvider {
         VanillaRecipeProvider.offerChestBoatRecipe(exporter, Items.MANGROVE_CHEST_BOAT, Items.MANGROVE_BOAT);
         VanillaRecipeProvider.createChiseledBlockRecipe(RecipeCategory.BUILDING_BLOCKS, Blocks.CHISELED_QUARTZ_BLOCK, Ingredient.ofItems(Blocks.QUARTZ_SLAB)).criterion("has_chiseled_quartz_block", VanillaRecipeProvider.conditionsFromItem(Blocks.CHISELED_QUARTZ_BLOCK)).criterion("has_quartz_block", VanillaRecipeProvider.conditionsFromItem(Blocks.QUARTZ_BLOCK)).criterion("has_quartz_pillar", VanillaRecipeProvider.conditionsFromItem(Blocks.QUARTZ_PILLAR)).offerTo(exporter);
         VanillaRecipeProvider.createChiseledBlockRecipe(RecipeCategory.BUILDING_BLOCKS, Blocks.CHISELED_STONE_BRICKS, Ingredient.ofItems(Blocks.STONE_BRICK_SLAB)).criterion("has_tag", VanillaRecipeProvider.conditionsFromTag(ItemTags.STONE_BRICKS)).offerTo(exporter);
-        ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.CLAY).input(Character.valueOf('#'), Items.CLAY_BALL).pattern("##").pattern("##").criterion("has_clay_ball", VanillaRecipeProvider.conditionsFromItem(Items.CLAY_BALL)).offerTo(exporter);
+        VanillaRecipeProvider.offer2x2CompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.CLAY, Items.CLAY_BALL);
         ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, Items.CLOCK).input(Character.valueOf('#'), Items.GOLD_INGOT).input(Character.valueOf('X'), Items.REDSTONE).pattern(" # ").pattern("#X#").pattern(" # ").criterion("has_redstone", VanillaRecipeProvider.conditionsFromItem(Items.REDSTONE)).offerTo(exporter);
         VanillaRecipeProvider.offerReversibleCompactingRecipes(exporter, RecipeCategory.MISC, Items.COAL, RecipeCategory.BUILDING_BLOCKS, Items.COAL_BLOCK);
         ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.COARSE_DIRT, 4).input(Character.valueOf('D'), Blocks.DIRT).input(Character.valueOf('G'), Blocks.GRAVEL).pattern("DG").pattern("GD").criterion("has_gravel", VanillaRecipeProvider.conditionsFromItem(Blocks.GRAVEL)).offerTo(exporter);
@@ -378,7 +378,7 @@ extends RecipeProvider {
         ShapelessRecipeJsonBuilder.create(RecipeCategory.TRANSPORTATION, Items.FURNACE_MINECART).input(Blocks.FURNACE).input(Items.MINECART).criterion("has_minecart", VanillaRecipeProvider.conditionsFromItem(Items.MINECART)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(RecipeCategory.BREWING, Items.GLASS_BOTTLE, 3).input(Character.valueOf('#'), Blocks.GLASS).pattern("# #").pattern(" # ").criterion("has_glass", VanillaRecipeProvider.conditionsFromItem(Blocks.GLASS)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, Blocks.GLASS_PANE, 16).input(Character.valueOf('#'), Blocks.GLASS).pattern("###").pattern("###").criterion("has_glass", VanillaRecipeProvider.conditionsFromItem(Blocks.GLASS)).offerTo(exporter);
-        ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.GLOWSTONE).input(Character.valueOf('#'), Items.GLOWSTONE_DUST).pattern("##").pattern("##").criterion("has_glowstone_dust", VanillaRecipeProvider.conditionsFromItem(Items.GLOWSTONE_DUST)).offerTo(exporter);
+        VanillaRecipeProvider.offer2x2CompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.GLOWSTONE, Items.GLOWSTONE_DUST);
         ShapelessRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, Items.GLOW_ITEM_FRAME).input(Items.ITEM_FRAME).input(Items.GLOW_INK_SAC).criterion("has_item_frame", VanillaRecipeProvider.conditionsFromItem(Items.ITEM_FRAME)).criterion("has_glow_ink_sac", VanillaRecipeProvider.conditionsFromItem(Items.GLOW_INK_SAC)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(RecipeCategory.FOOD, Items.GOLDEN_APPLE).input(Character.valueOf('#'), Items.GOLD_INGOT).input(Character.valueOf('X'), Items.APPLE).pattern("###").pattern("#X#").pattern("###").criterion("has_gold_ingot", VanillaRecipeProvider.conditionsFromItem(Items.GOLD_INGOT)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, Items.GOLDEN_AXE).input(Character.valueOf('#'), Items.STICK).input(Character.valueOf('X'), Items.GOLD_INGOT).pattern("XX").pattern("X#").pattern(" #").criterion("has_gold_ingot", VanillaRecipeProvider.conditionsFromItem(Items.GOLD_INGOT)).offerTo(exporter);
@@ -396,11 +396,11 @@ extends RecipeProvider {
         VanillaRecipeProvider.offerReversibleCompactingRecipesWithCompactingRecipeGroup(exporter, RecipeCategory.MISC, Items.GOLD_NUGGET, RecipeCategory.MISC, Items.GOLD_INGOT, "gold_ingot_from_nuggets", "gold_ingot");
         ShapelessRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.GRANITE).input(Blocks.DIORITE).input(Items.QUARTZ).criterion("has_quartz", VanillaRecipeProvider.conditionsFromItem(Items.QUARTZ)).offerTo(exporter);
         ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, Items.GRAY_DYE, 2).input(Items.BLACK_DYE).input(Items.WHITE_DYE).criterion("has_white_dye", VanillaRecipeProvider.conditionsFromItem(Items.WHITE_DYE)).criterion("has_black_dye", VanillaRecipeProvider.conditionsFromItem(Items.BLACK_DYE)).offerTo(exporter);
-        ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.HAY_BLOCK).input(Character.valueOf('#'), Items.WHEAT).pattern("###").pattern("###").pattern("###").criterion("has_wheat", VanillaRecipeProvider.conditionsFromItem(Items.WHEAT)).offerTo(exporter);
+        VanillaRecipeProvider.offerCompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.HAY_BLOCK, Items.WHEAT);
         VanillaRecipeProvider.offerPressurePlateRecipe(exporter, Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE, Items.IRON_INGOT);
         ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, Items.HONEY_BOTTLE, 4).input(Items.HONEY_BLOCK).input(Items.GLASS_BOTTLE, 4).criterion("has_honey_block", VanillaRecipeProvider.conditionsFromItem(Blocks.HONEY_BLOCK)).offerTo(exporter);
-        ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, Blocks.HONEY_BLOCK, 1).input(Character.valueOf('S'), Items.HONEY_BOTTLE).pattern("SS").pattern("SS").criterion("has_honey_bottle", VanillaRecipeProvider.conditionsFromItem(Items.HONEY_BOTTLE)).offerTo(exporter);
-        ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, Blocks.HONEYCOMB_BLOCK).input(Character.valueOf('H'), Items.HONEYCOMB).pattern("HH").pattern("HH").criterion("has_honeycomb", VanillaRecipeProvider.conditionsFromItem(Items.HONEYCOMB)).offerTo(exporter);
+        VanillaRecipeProvider.offer2x2CompactingRecipe(exporter, RecipeCategory.REDSTONE, Blocks.HONEY_BLOCK, Items.HONEY_BOTTLE);
+        VanillaRecipeProvider.offer2x2CompactingRecipe(exporter, RecipeCategory.DECORATIONS, Blocks.HONEYCOMB_BLOCK, Items.HONEYCOMB);
         ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, Blocks.HOPPER).input(Character.valueOf('C'), Blocks.CHEST).input(Character.valueOf('I'), Items.IRON_INGOT).pattern("I I").pattern("ICI").pattern(" I ").criterion("has_iron_ingot", VanillaRecipeProvider.conditionsFromItem(Items.IRON_INGOT)).offerTo(exporter);
         ShapelessRecipeJsonBuilder.create(RecipeCategory.TRANSPORTATION, Items.HOPPER_MINECART).input(Blocks.HOPPER).input(Items.MINECART).criterion("has_minecart", VanillaRecipeProvider.conditionsFromItem(Items.MINECART)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, Items.IRON_AXE).input(Character.valueOf('#'), Items.STICK).input(Character.valueOf('X'), Items.IRON_INGOT).pattern("XX").pattern("X#").pattern(" #").criterion("has_iron_ingot", VanillaRecipeProvider.conditionsFromItem(Items.IRON_INGOT)).offerTo(exporter);
@@ -422,7 +422,7 @@ extends RecipeProvider {
         ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, Blocks.LADDER, 3).input(Character.valueOf('#'), Items.STICK).pattern("# #").pattern("###").pattern("# #").criterion("has_stick", VanillaRecipeProvider.conditionsFromItem(Items.STICK)).offerTo(exporter);
         VanillaRecipeProvider.offerReversibleCompactingRecipes(exporter, RecipeCategory.MISC, Items.LAPIS_LAZULI, RecipeCategory.BUILDING_BLOCKS, Items.LAPIS_BLOCK);
         ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, Items.LEAD, 2).input(Character.valueOf('~'), Items.STRING).input(Character.valueOf('O'), Items.SLIME_BALL).pattern("~~ ").pattern("~O ").pattern("  ~").criterion("has_slime_ball", VanillaRecipeProvider.conditionsFromItem(Items.SLIME_BALL)).offerTo(exporter);
-        ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, Items.LEATHER).input(Character.valueOf('#'), Items.RABBIT_HIDE).pattern("##").pattern("##").criterion("has_rabbit_hide", VanillaRecipeProvider.conditionsFromItem(Items.RABBIT_HIDE)).offerTo(exporter);
+        VanillaRecipeProvider.offer2x2CompactingRecipe(exporter, RecipeCategory.MISC, Items.LEATHER, Items.RABBIT_HIDE);
         ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, Items.LEATHER_BOOTS).input(Character.valueOf('X'), Items.LEATHER).pattern("X X").pattern("X X").criterion("has_leather", VanillaRecipeProvider.conditionsFromItem(Items.LEATHER)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, Items.LEATHER_CHESTPLATE).input(Character.valueOf('X'), Items.LEATHER).pattern("X X").pattern("XXX").pattern("XXX").criterion("has_leather", VanillaRecipeProvider.conditionsFromItem(Items.LEATHER)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, Items.LEATHER_HELMET).input(Character.valueOf('X'), Items.LEATHER).pattern("XXX").pattern("X X").criterion("has_leather", VanillaRecipeProvider.conditionsFromItem(Items.LEATHER)).offerTo(exporter);
@@ -446,10 +446,10 @@ extends RecipeProvider {
         ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, Items.MAGENTA_DYE, 3).input(Items.BLUE_DYE).input(Items.RED_DYE).input(Items.PINK_DYE).group("magenta_dye").criterion("has_pink_dye", VanillaRecipeProvider.conditionsFromItem(Items.PINK_DYE)).criterion("has_blue_dye", VanillaRecipeProvider.conditionsFromItem(Items.BLUE_DYE)).criterion("has_red_dye", VanillaRecipeProvider.conditionsFromItem(Items.RED_DYE)).offerTo(exporter, "magenta_dye_from_blue_red_pink");
         VanillaRecipeProvider.offerShapelessRecipe(exporter, Items.MAGENTA_DYE, Blocks.LILAC, "magenta_dye", 2);
         ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, Items.MAGENTA_DYE, 2).input(Items.PURPLE_DYE).input(Items.PINK_DYE).group("magenta_dye").criterion("has_pink_dye", VanillaRecipeProvider.conditionsFromItem(Items.PINK_DYE)).criterion("has_purple_dye", VanillaRecipeProvider.conditionsFromItem(Items.PURPLE_DYE)).offerTo(exporter, "magenta_dye_from_purple_and_pink");
-        ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.MAGMA_BLOCK).input(Character.valueOf('#'), Items.MAGMA_CREAM).pattern("##").pattern("##").criterion("has_magma_cream", VanillaRecipeProvider.conditionsFromItem(Items.MAGMA_CREAM)).offerTo(exporter);
+        VanillaRecipeProvider.offer2x2CompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.MAGMA_BLOCK, Items.MAGMA_CREAM);
         ShapelessRecipeJsonBuilder.create(RecipeCategory.BREWING, Items.MAGMA_CREAM).input(Items.BLAZE_POWDER).input(Items.SLIME_BALL).criterion("has_blaze_powder", VanillaRecipeProvider.conditionsFromItem(Items.BLAZE_POWDER)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, Items.MAP).input(Character.valueOf('#'), Items.PAPER).input(Character.valueOf('X'), Items.COMPASS).pattern("###").pattern("#X#").pattern("###").criterion("has_compass", VanillaRecipeProvider.conditionsFromItem(Items.COMPASS)).offerTo(exporter);
-        ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.MELON).input(Character.valueOf('M'), Items.MELON_SLICE).pattern("MMM").pattern("MMM").pattern("MMM").criterion("has_melon", VanillaRecipeProvider.conditionsFromItem(Items.MELON_SLICE)).offerTo(exporter);
+        VanillaRecipeProvider.offerCompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.MELON, Items.MELON_SLICE, "has_melon");
         ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, Items.MELON_SEEDS).input(Items.MELON_SLICE).criterion("has_melon", VanillaRecipeProvider.conditionsFromItem(Items.MELON_SLICE)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(RecipeCategory.TRANSPORTATION, Items.MINECART).input(Character.valueOf('#'), Items.IRON_INGOT).pattern("# #").pattern("###").criterion("has_iron_ingot", VanillaRecipeProvider.conditionsFromItem(Items.IRON_INGOT)).offerTo(exporter);
         ShapelessRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.MOSSY_COBBLESTONE).input(Blocks.COBBLESTONE).input(Blocks.VINE).group("mossy_cobblestone").criterion("has_vine", VanillaRecipeProvider.conditionsFromItem(Blocks.VINE)).offerTo(exporter, VanillaRecipeProvider.convertBetween(Blocks.MOSSY_COBBLESTONE, Blocks.VINE));
@@ -458,7 +458,7 @@ extends RecipeProvider {
         ShapelessRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.MOSSY_STONE_BRICKS).input(Blocks.STONE_BRICKS).input(Blocks.MOSS_BLOCK).group("mossy_stone_bricks").criterion("has_moss_block", VanillaRecipeProvider.conditionsFromItem(Blocks.MOSS_BLOCK)).offerTo(exporter, VanillaRecipeProvider.convertBetween(Blocks.MOSSY_STONE_BRICKS, Blocks.MOSS_BLOCK));
         ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, Items.MUSHROOM_STEW).input(Blocks.BROWN_MUSHROOM).input(Blocks.RED_MUSHROOM).input(Items.BOWL).criterion("has_mushroom_stew", VanillaRecipeProvider.conditionsFromItem(Items.MUSHROOM_STEW)).criterion("has_bowl", VanillaRecipeProvider.conditionsFromItem(Items.BOWL)).criterion("has_brown_mushroom", VanillaRecipeProvider.conditionsFromItem(Blocks.BROWN_MUSHROOM)).criterion("has_red_mushroom", VanillaRecipeProvider.conditionsFromItem(Blocks.RED_MUSHROOM)).offerTo(exporter);
         VanillaRecipeProvider.offer2x2CompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.NETHER_BRICKS, Items.NETHER_BRICK);
-        ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.NETHER_WART_BLOCK).input(Character.valueOf('#'), Items.NETHER_WART).pattern("###").pattern("###").pattern("###").criterion("has_nether_wart", VanillaRecipeProvider.conditionsFromItem(Items.NETHER_WART)).offerTo(exporter);
+        VanillaRecipeProvider.offerCompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.NETHER_WART_BLOCK, Items.NETHER_WART);
         ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, Blocks.NOTE_BLOCK).input(Character.valueOf('#'), ItemTags.PLANKS).input(Character.valueOf('X'), Items.REDSTONE).pattern("###").pattern("#X#").pattern("###").criterion("has_redstone", VanillaRecipeProvider.conditionsFromItem(Items.REDSTONE)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, Blocks.OBSERVER).input(Character.valueOf('Q'), Items.QUARTZ).input(Character.valueOf('R'), Items.REDSTONE).input(Character.valueOf('#'), Blocks.COBBLESTONE).pattern("###").pattern("RRQ").pattern("###").criterion("has_quartz", VanillaRecipeProvider.conditionsFromItem(Items.QUARTZ)).offerTo(exporter);
         VanillaRecipeProvider.offerSingleOutputShapelessRecipe(exporter, Items.ORANGE_DYE, Blocks.ORANGE_TULIP, "orange_dye");
@@ -466,14 +466,14 @@ extends RecipeProvider {
         ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, Items.PAINTING).input(Character.valueOf('#'), Items.STICK).input(Character.valueOf('X'), Ingredient.fromTag(ItemTags.WOOL)).pattern("###").pattern("#X#").pattern("###").criterion("has_wool", VanillaRecipeProvider.conditionsFromTag(ItemTags.WOOL)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, Items.PAPER, 3).input(Character.valueOf('#'), Blocks.SUGAR_CANE).pattern("###").criterion("has_reeds", VanillaRecipeProvider.conditionsFromItem(Blocks.SUGAR_CANE)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.QUARTZ_PILLAR, 2).input(Character.valueOf('#'), Blocks.QUARTZ_BLOCK).pattern("#").pattern("#").criterion("has_chiseled_quartz_block", VanillaRecipeProvider.conditionsFromItem(Blocks.CHISELED_QUARTZ_BLOCK)).criterion("has_quartz_block", VanillaRecipeProvider.conditionsFromItem(Blocks.QUARTZ_BLOCK)).criterion("has_quartz_pillar", VanillaRecipeProvider.conditionsFromItem(Blocks.QUARTZ_PILLAR)).offerTo(exporter);
-        ShapelessRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.PACKED_ICE).input(Blocks.ICE, 9).criterion("has_ice", VanillaRecipeProvider.conditionsFromItem(Blocks.ICE)).offerTo(exporter);
+        VanillaRecipeProvider.offerCompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.PACKED_ICE, Blocks.ICE);
         VanillaRecipeProvider.offerShapelessRecipe(exporter, Items.PINK_DYE, Blocks.PEONY, "pink_dye", 2);
         VanillaRecipeProvider.offerSingleOutputShapelessRecipe(exporter, Items.PINK_DYE, Blocks.PINK_TULIP, "pink_dye");
         ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, Items.PINK_DYE, 2).input(Items.RED_DYE).input(Items.WHITE_DYE).group("pink_dye").criterion("has_white_dye", VanillaRecipeProvider.conditionsFromItem(Items.WHITE_DYE)).criterion("has_red_dye", VanillaRecipeProvider.conditionsFromItem(Items.RED_DYE)).offerTo(exporter, "pink_dye_from_red_white_dye");
         ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, Blocks.PISTON).input(Character.valueOf('R'), Items.REDSTONE).input(Character.valueOf('#'), Blocks.COBBLESTONE).input(Character.valueOf('T'), ItemTags.PLANKS).input(Character.valueOf('X'), Items.IRON_INGOT).pattern("TTT").pattern("#X#").pattern("#R#").criterion("has_redstone", VanillaRecipeProvider.conditionsFromItem(Items.REDSTONE)).offerTo(exporter);
         VanillaRecipeProvider.offerPolishedStoneRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.POLISHED_BASALT, Blocks.BASALT);
-        ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.PRISMARINE).input(Character.valueOf('S'), Items.PRISMARINE_SHARD).pattern("SS").pattern("SS").criterion("has_prismarine_shard", VanillaRecipeProvider.conditionsFromItem(Items.PRISMARINE_SHARD)).offerTo(exporter);
-        ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.PRISMARINE_BRICKS).input(Character.valueOf('S'), Items.PRISMARINE_SHARD).pattern("SSS").pattern("SSS").pattern("SSS").criterion("has_prismarine_shard", VanillaRecipeProvider.conditionsFromItem(Items.PRISMARINE_SHARD)).offerTo(exporter);
+        VanillaRecipeProvider.offer2x2CompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.PRISMARINE, Items.PRISMARINE_SHARD);
+        VanillaRecipeProvider.offerCompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.PRISMARINE_BRICKS, Items.PRISMARINE_SHARD);
         ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, Items.PUMPKIN_PIE).input(Blocks.PUMPKIN).input(Items.SUGAR).input(Items.EGG).criterion("has_carved_pumpkin", VanillaRecipeProvider.conditionsFromItem(Blocks.CARVED_PUMPKIN)).criterion("has_pumpkin", VanillaRecipeProvider.conditionsFromItem(Blocks.PUMPKIN)).offerTo(exporter);
         ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, Items.PUMPKIN_SEEDS, 4).input(Blocks.PUMPKIN).criterion("has_pumpkin", VanillaRecipeProvider.conditionsFromItem(Blocks.PUMPKIN)).offerTo(exporter);
         ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, Items.PURPLE_DYE, 2).input(Items.BLUE_DYE).input(Items.RED_DYE).criterion("has_blue_dye", VanillaRecipeProvider.conditionsFromItem(Items.BLUE_DYE)).criterion("has_red_dye", VanillaRecipeProvider.conditionsFromItem(Items.RED_DYE)).offerTo(exporter);
@@ -482,7 +482,7 @@ extends RecipeProvider {
         ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.PURPUR_PILLAR).input(Character.valueOf('#'), Blocks.PURPUR_SLAB).pattern("#").pattern("#").criterion("has_purpur_block", VanillaRecipeProvider.conditionsFromItem(Blocks.PURPUR_BLOCK)).offerTo(exporter);
         VanillaRecipeProvider.createSlabRecipe(RecipeCategory.BUILDING_BLOCKS, Blocks.PURPUR_SLAB, Ingredient.ofItems(Blocks.PURPUR_BLOCK, Blocks.PURPUR_PILLAR)).criterion("has_purpur_block", VanillaRecipeProvider.conditionsFromItem(Blocks.PURPUR_BLOCK)).offerTo(exporter);
         VanillaRecipeProvider.createStairsRecipe(Blocks.PURPUR_STAIRS, Ingredient.ofItems(Blocks.PURPUR_BLOCK, Blocks.PURPUR_PILLAR)).criterion("has_purpur_block", VanillaRecipeProvider.conditionsFromItem(Blocks.PURPUR_BLOCK)).offerTo(exporter);
-        ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.QUARTZ_BLOCK).input(Character.valueOf('#'), Items.QUARTZ).pattern("##").pattern("##").criterion("has_quartz", VanillaRecipeProvider.conditionsFromItem(Items.QUARTZ)).offerTo(exporter);
+        VanillaRecipeProvider.offer2x2CompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.QUARTZ_BLOCK, Items.QUARTZ);
         ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.QUARTZ_BRICKS, 4).input(Character.valueOf('#'), Blocks.QUARTZ_BLOCK).pattern("##").pattern("##").criterion("has_quartz_block", VanillaRecipeProvider.conditionsFromItem(Blocks.QUARTZ_BLOCK)).offerTo(exporter);
         VanillaRecipeProvider.createSlabRecipe(RecipeCategory.BUILDING_BLOCKS, Blocks.QUARTZ_SLAB, Ingredient.ofItems(Blocks.CHISELED_QUARTZ_BLOCK, Blocks.QUARTZ_BLOCK, Blocks.QUARTZ_PILLAR)).criterion("has_chiseled_quartz_block", VanillaRecipeProvider.conditionsFromItem(Blocks.CHISELED_QUARTZ_BLOCK)).criterion("has_quartz_block", VanillaRecipeProvider.conditionsFromItem(Blocks.QUARTZ_BLOCK)).criterion("has_quartz_pillar", VanillaRecipeProvider.conditionsFromItem(Blocks.QUARTZ_PILLAR)).offerTo(exporter);
         VanillaRecipeProvider.createStairsRecipe(Blocks.QUARTZ_STAIRS, Ingredient.ofItems(Blocks.CHISELED_QUARTZ_BLOCK, Blocks.QUARTZ_BLOCK, Blocks.QUARTZ_PILLAR)).criterion("has_chiseled_quartz_block", VanillaRecipeProvider.conditionsFromItem(Blocks.CHISELED_QUARTZ_BLOCK)).criterion("has_quartz_block", VanillaRecipeProvider.conditionsFromItem(Blocks.QUARTZ_BLOCK)).criterion("has_quartz_pillar", VanillaRecipeProvider.conditionsFromItem(Blocks.QUARTZ_PILLAR)).offerTo(exporter);
@@ -510,7 +510,7 @@ extends RecipeProvider {
         VanillaRecipeProvider.offerReversibleCompactingRecipes(exporter, RecipeCategory.MISC, Items.SLIME_BALL, RecipeCategory.REDSTONE, Items.SLIME_BLOCK);
         VanillaRecipeProvider.offerCutCopperRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.CUT_RED_SANDSTONE, Blocks.RED_SANDSTONE);
         VanillaRecipeProvider.offerCutCopperRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.CUT_SANDSTONE, Blocks.SANDSTONE);
-        ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.SNOW_BLOCK).input(Character.valueOf('#'), Items.SNOWBALL).pattern("##").pattern("##").criterion("has_snowball", VanillaRecipeProvider.conditionsFromItem(Items.SNOWBALL)).offerTo(exporter);
+        VanillaRecipeProvider.offer2x2CompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.SNOW_BLOCK, Items.SNOWBALL);
         ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, Blocks.SNOW, 6).input(Character.valueOf('#'), Blocks.SNOW_BLOCK).pattern("###").criterion("has_snowball", VanillaRecipeProvider.conditionsFromItem(Items.SNOWBALL)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, Blocks.SOUL_CAMPFIRE).input(Character.valueOf('L'), ItemTags.LOGS).input(Character.valueOf('S'), Items.STICK).input(Character.valueOf('#'), ItemTags.SOUL_FIRE_BASE_BLOCKS).pattern(" S ").pattern("S#S").pattern("LLL").criterion("has_stick", VanillaRecipeProvider.conditionsFromItem(Items.STICK)).criterion("has_soul_sand", VanillaRecipeProvider.conditionsFromTag(ItemTags.SOUL_FIRE_BASE_BLOCKS)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(RecipeCategory.BREWING, Items.GLISTERING_MELON_SLICE).input(Character.valueOf('#'), Items.GOLD_NUGGET).input(Character.valueOf('X'), Items.MELON_SLICE).pattern("###").pattern("#X#").pattern("###").criterion("has_melon", VanillaRecipeProvider.conditionsFromItem(Items.MELON_SLICE)).offerTo(exporter);
@@ -575,9 +575,9 @@ extends RecipeProvider {
         ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, Blocks.RESPAWN_ANCHOR).input(Character.valueOf('O'), Blocks.CRYING_OBSIDIAN).input(Character.valueOf('G'), Blocks.GLOWSTONE).pattern("OOO").pattern("GGG").pattern("OOO").criterion("has_obsidian", VanillaRecipeProvider.conditionsFromItem(Blocks.CRYING_OBSIDIAN)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, Blocks.CHAIN).input(Character.valueOf('I'), Items.IRON_INGOT).input(Character.valueOf('N'), Items.IRON_NUGGET).pattern("N").pattern("I").pattern("N").criterion("has_iron_nugget", VanillaRecipeProvider.conditionsFromItem(Items.IRON_NUGGET)).criterion("has_iron_ingot", VanillaRecipeProvider.conditionsFromItem(Items.IRON_INGOT)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.TINTED_GLASS, 2).input(Character.valueOf('G'), Blocks.GLASS).input(Character.valueOf('S'), Items.AMETHYST_SHARD).pattern(" S ").pattern("SGS").pattern(" S ").criterion("has_amethyst_shard", VanillaRecipeProvider.conditionsFromItem(Items.AMETHYST_SHARD)).offerTo(exporter);
-        ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.AMETHYST_BLOCK).input(Character.valueOf('S'), Items.AMETHYST_SHARD).pattern("SS").pattern("SS").criterion("has_amethyst_shard", VanillaRecipeProvider.conditionsFromItem(Items.AMETHYST_SHARD)).offerTo(exporter);
+        VanillaRecipeProvider.offer2x2CompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.AMETHYST_BLOCK, Items.AMETHYST_SHARD);
         ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, Items.RECOVERY_COMPASS).input(Character.valueOf('C'), Items.COMPASS).input(Character.valueOf('S'), Items.ECHO_SHARD).pattern("SSS").pattern("SCS").pattern("SSS").criterion("has_echo_shard", VanillaRecipeProvider.conditionsFromItem(Items.ECHO_SHARD)).offerTo(exporter);
-        ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, Items.MUSIC_DISC_5).input(Character.valueOf('S'), Items.DISC_FRAGMENT_5).pattern("SSS").pattern("SSS").pattern("SSS").criterion("has_disc_fragment_5", VanillaRecipeProvider.conditionsFromItem(Items.DISC_FRAGMENT_5)).offerTo(exporter);
+        VanillaRecipeProvider.offerCompactingRecipe(exporter, RecipeCategory.MISC, Items.MUSIC_DISC_5, Items.DISC_FRAGMENT_5);
         ComplexRecipeJsonBuilder.create(RecipeSerializer.ARMOR_DYE).offerTo(exporter, "armor_dye");
         ComplexRecipeJsonBuilder.create(RecipeSerializer.BANNER_DUPLICATE).offerTo(exporter, "banner_duplicate");
         ComplexRecipeJsonBuilder.create(RecipeSerializer.BOOK_CLONING).offerTo(exporter, "book_cloning");

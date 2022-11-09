@@ -29,18 +29,19 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.GeneratorOptionsHolder;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryOps;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.TagKey;
+import net.minecraft.registry.tag.WorldPresetTags;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.integrated.IntegratedServerLoader;
-import net.minecraft.tag.TagKey;
-import net.minecraft.tag.WorldPresetTags;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
-import net.minecraft.util.dynamic.RegistryOps;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.dimension.DimensionOptionsRegistryHolder;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.gen.WorldPreset;
@@ -84,7 +85,7 @@ implements Drawable {
     }
 
     private static Optional<RegistryEntry<WorldPreset>> createPresetEntry(GeneratorOptionsHolder generatorOptionsHolder, Optional<RegistryKey<WorldPreset>> presetKey) {
-        return presetKey.flatMap(key -> generatorOptionsHolder.getCombinedRegistryManager().get(Registry.WORLD_PRESET_KEY).getEntry((RegistryKey<WorldPreset>)key));
+        return presetKey.flatMap(key -> generatorOptionsHolder.getCombinedRegistryManager().get(RegistryKeys.WORLD_PRESET_WORLDGEN).getEntry((RegistryKey<WorldPreset>)key));
     }
 
     public void init(CreateWorldScreen parent, MinecraftClient client, TextRenderer textRenderer) {
@@ -100,7 +101,7 @@ implements Drawable {
         int j = this.parentWidth / 2 + 5;
         this.mapFeaturesButton = parent.addDrawableChild(CyclingButtonWidget.onOffBuilder(this.generatorOptionsHolder.generatorOptions().shouldGenerateStructures()).narration(button -> ScreenTexts.joinSentences(button.getGenericNarrationMessage(), Text.translatable("selectWorld.mapFeatures.info"))).build(i, 100, 150, 20, Text.translatable("selectWorld.mapFeatures"), (button, structures) -> this.apply(generatorOptions -> generatorOptions.withStructures((boolean)structures))));
         this.mapFeaturesButton.visible = false;
-        Registry<WorldPreset> registry = this.generatorOptionsHolder.getCombinedRegistryManager().get(Registry.WORLD_PRESET_KEY);
+        Registry<WorldPreset> registry = this.generatorOptionsHolder.getCombinedRegistryManager().get(RegistryKeys.WORLD_PRESET_WORLDGEN);
         List list = MoreOptionsDialog.collectPresets(registry, WorldPresetTags.NORMAL).orElseGet(() -> registry.streamEntries().collect(Collectors.toUnmodifiableList()));
         List<RegistryEntry<WorldPreset>> list2 = MoreOptionsDialog.collectPresets(registry, WorldPresetTags.EXTENDED).orElse(list);
         this.mapTypeButton = parent.addDrawableChild(CyclingButtonWidget.builder(MoreOptionsDialog::getText).values(list, list2).narration(button -> {

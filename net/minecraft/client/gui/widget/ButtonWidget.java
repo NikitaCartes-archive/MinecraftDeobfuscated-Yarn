@@ -3,37 +3,33 @@
  */
 package net.minecraft.client.gui.widget;
 
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.screen.Tooltip;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.PressableWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class ButtonWidget
 extends PressableWidget {
-    public static final TooltipSupplier EMPTY_TOOLTIP = (button, matrices, mouseX, mouseY) -> {};
     public static final int DEFAULT_WIDTH_SMALL = 120;
     public static final int DEFAULT_WIDTH = 150;
     public static final int DEFAULT_HEIGHT = 20;
     protected static final NarrationSupplier DEFAULT_NARRATION_SUPPLIER = textSupplier -> (MutableText)textSupplier.get();
     protected final PressAction onPress;
-    protected final TooltipSupplier tooltipSupplier;
     protected final NarrationSupplier narrationSupplier;
 
     public static Builder createBuilder(Text message, PressAction onPress) {
         return new Builder(message, onPress);
     }
 
-    protected ButtonWidget(int x, int y, int width, int height, Text message, PressAction onPress, TooltipSupplier tooltipSupplier, NarrationSupplier narrationSupplier) {
+    protected ButtonWidget(int x, int y, int width, int height, Text message, PressAction onPress, NarrationSupplier narrationSupplier) {
         super(x, y, width, height, message);
         this.onPress = onPress;
-        this.tooltipSupplier = tooltipSupplier;
         this.narrationSupplier = narrationSupplier;
     }
 
@@ -48,29 +44,16 @@ extends PressableWidget {
     }
 
     @Override
-    public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        super.renderButton(matrices, mouseX, mouseY, delta);
-        if (this.isHovered()) {
-            this.renderTooltip(matrices, mouseX, mouseY);
-        }
-    }
-
-    @Override
-    public void renderTooltip(MatrixStack matrices, int mouseX, int mouseY) {
-        this.tooltipSupplier.onTooltip(this, matrices, mouseX, mouseY);
-    }
-
-    @Override
-    public void appendNarrations(NarrationMessageBuilder builder) {
+    public void appendClickableNarrations(NarrationMessageBuilder builder) {
         this.appendDefaultNarrations(builder);
-        this.tooltipSupplier.supply(text -> builder.put(NarrationPart.HINT, (Text)text));
     }
 
     @Environment(value=EnvType.CLIENT)
     public static class Builder {
         private final Text message;
         private final PressAction onPress;
-        private TooltipSupplier tooltipSupplier = EMPTY_TOOLTIP;
+        @Nullable
+        private Tooltip tooltip;
         private int x;
         private int y;
         private int width = 150;
@@ -103,8 +86,8 @@ extends PressableWidget {
             return this.setPosition(x, y).setSize(width, height);
         }
 
-        public Builder setTooltipSupplier(TooltipSupplier tooltipSupplier) {
-            this.tooltipSupplier = tooltipSupplier;
+        public Builder setTooltip(@Nullable Tooltip tooltip) {
+            this.tooltip = tooltip;
             return this;
         }
 
@@ -114,21 +97,15 @@ extends PressableWidget {
         }
 
         public ButtonWidget build() {
-            return new ButtonWidget(this.x, this.y, this.width, this.height, this.message, this.onPress, this.tooltipSupplier, this.narrationSupplier);
+            ButtonWidget buttonWidget = new ButtonWidget(this.x, this.y, this.width, this.height, this.message, this.onPress, this.narrationSupplier);
+            buttonWidget.setTooltip(this.tooltip);
+            return buttonWidget;
         }
     }
 
     @Environment(value=EnvType.CLIENT)
     public static interface PressAction {
         public void onPress(ButtonWidget var1);
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public static interface TooltipSupplier {
-        public void onTooltip(ButtonWidget var1, MatrixStack var2, int var3, int var4);
-
-        default public void supply(Consumer<Text> consumer) {
-        }
     }
 
     @Environment(value=EnvType.CLIENT)

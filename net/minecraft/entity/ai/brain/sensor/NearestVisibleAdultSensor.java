@@ -21,7 +21,7 @@ extends Sensor<PassiveEntity> {
 
     @Override
     protected void sense(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-        passiveEntity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).ifPresent(livingTargetCache -> this.findNearestVisibleAdult(passiveEntity, (LivingTargetCache)livingTargetCache));
+        passiveEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.VISIBLE_MOBS).ifPresent(livingTargetCache -> this.findNearestVisibleAdult(passiveEntity, (LivingTargetCache)livingTargetCache));
     }
 
     private void findNearestVisibleAdult(PassiveEntity entity, LivingTargetCache livingTargetCache) {

@@ -9,14 +9,14 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.mob.WardenBrain;
 import net.minecraft.entity.mob.WardenEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 
 public class SniffTask<E extends WardenEntity>
-extends Task<E> {
+extends MultiTickTask<E> {
     private static final double HORIZONTAL_RADIUS = 6.0;
     private static final double VERTICAL_RADIUS = 20.0;
 
@@ -40,7 +40,7 @@ extends Task<E> {
             ((Entity)wardenEntity).setPose(EntityPose.STANDING);
         }
         ((WardenEntity)wardenEntity).getBrain().forget(MemoryModuleType.IS_SNIFFING);
-        ((WardenEntity)wardenEntity).getBrain().getOptionalMemory(MemoryModuleType.NEAREST_ATTACKABLE).filter(arg_0 -> wardenEntity.isValidTarget(arg_0)).ifPresent(target -> {
+        ((WardenEntity)wardenEntity).getBrain().getOptionalRegisteredMemory(MemoryModuleType.NEAREST_ATTACKABLE).filter(arg_0 -> wardenEntity.isValidTarget(arg_0)).ifPresent(target -> {
             if (wardenEntity.isInRange((Entity)target, 6.0, 20.0)) {
                 wardenEntity.increaseAngerAt((Entity)target);
             }
@@ -51,8 +51,8 @@ extends Task<E> {
     }
 
     @Override
-    protected /* synthetic */ boolean shouldKeepRunning(ServerWorld world, LivingEntity entity, long time) {
-        return this.shouldKeepRunning(world, (E)((WardenEntity)entity), time);
+    protected /* synthetic */ void finishRunning(ServerWorld world, LivingEntity entity, long time) {
+        this.finishRunning(world, (E)((WardenEntity)entity), time);
     }
 
     @Override

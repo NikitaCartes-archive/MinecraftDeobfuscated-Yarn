@@ -12,17 +12,17 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.MushroomBlock;
 import net.minecraft.block.PropaguleBlock;
-import net.minecraft.tag.BlockTags;
+import net.minecraft.registry.Registerable;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
-import net.minecraft.util.registry.Registerable;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntryList;
-import net.minecraft.util.registry.RegistryEntryLookup;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.ConfiguredFeatures;
 import net.minecraft.world.gen.feature.Feature;
@@ -124,7 +124,7 @@ public class TreeConfiguredFeatures {
     }
 
     public static void bootstrap(Registerable<ConfiguredFeature<?, ?>> featureRegisterable) {
-        RegistryEntryLookup<Block> registryEntryLookup = featureRegisterable.getRegistryLookup(Registry.BLOCK_KEY);
+        RegistryEntryLookup<Block> registryEntryLookup = featureRegisterable.getRegistryLookup(RegistryKeys.BLOCK);
         ConfiguredFeatures.register(featureRegisterable, CRIMSON_FUNGUS, Feature.HUGE_FUNGUS, new HugeFungusFeatureConfig(Blocks.CRIMSON_NYLIUM.getDefaultState(), Blocks.CRIMSON_STEM.getDefaultState(), Blocks.NETHER_WART_BLOCK.getDefaultState(), Blocks.SHROOMLIGHT.getDefaultState(), false));
         ConfiguredFeatures.register(featureRegisterable, CRIMSON_FUNGUS_PLANTED, Feature.HUGE_FUNGUS, new HugeFungusFeatureConfig(Blocks.CRIMSON_NYLIUM.getDefaultState(), Blocks.CRIMSON_STEM.getDefaultState(), Blocks.NETHER_WART_BLOCK.getDefaultState(), Blocks.SHROOMLIGHT.getDefaultState(), true));
         ConfiguredFeatures.register(featureRegisterable, WARPED_FUNGUS, Feature.HUGE_FUNGUS, new HugeFungusFeatureConfig(Blocks.WARPED_NYLIUM.getDefaultState(), Blocks.WARPED_STEM.getDefaultState(), Blocks.WARPED_WART_BLOCK.getDefaultState(), Blocks.SHROOMLIGHT.getDefaultState(), false));

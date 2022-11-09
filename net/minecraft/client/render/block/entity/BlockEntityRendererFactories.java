@@ -30,7 +30,7 @@ import net.minecraft.client.render.block.entity.ShulkerBoxBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.SignBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.SkullBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.StructureBlockBlockEntityRenderer;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 
 @Environment(value=EnvType.CLIENT)
 public class BlockEntityRendererFactories {
@@ -46,7 +46,7 @@ public class BlockEntityRendererFactories {
             try {
                 builder.put(type, factory.create(args));
             } catch (Exception exception) {
-                throw new IllegalStateException("Failed to create model for " + Registry.BLOCK_ENTITY_TYPE.getId((BlockEntityType<?>)type), exception);
+                throw new IllegalStateException("Failed to create model for " + Registries.BLOCK_ENTITY_TYPE.getId((BlockEntityType<?>)type), exception);
             }
         });
         return builder.build();

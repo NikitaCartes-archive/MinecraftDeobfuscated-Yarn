@@ -3,9 +3,11 @@
  */
 package net.minecraft.client.gui.hud.spectator;
 
-import com.google.common.collect.Lists;
+import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.systems.RenderSystem;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -16,15 +18,15 @@ import net.minecraft.client.gui.hud.spectator.SpectatorMenu;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenuCommand;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenuCommandGroup;
 import net.minecraft.client.gui.hud.spectator.TeleportSpectatorMenu;
-import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.GameMode;
 
 @Environment(value=EnvType.CLIENT)
 public class TeamTeleportSpectatorMenu
@@ -32,13 +34,15 @@ implements SpectatorMenuCommandGroup,
 SpectatorMenuCommand {
     private static final Text TEAM_TELEPORT_TEXT = Text.translatable("spectatorMenu.team_teleport");
     private static final Text PROMPT_TEXT = Text.translatable("spectatorMenu.team_teleport.prompt");
-    private final List<SpectatorMenuCommand> commands = Lists.newArrayList();
+    private final List<SpectatorMenuCommand> commands;
 
     public TeamTeleportSpectatorMenu() {
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
-        for (Team team : minecraftClient.world.getScoreboard().getTeams()) {
-            this.commands.add(new TeleportToSpecificTeamCommand(team));
-        }
+        this.commands = TeamTeleportSpectatorMenu.getCommands(minecraftClient, minecraftClient.world.getScoreboard());
+    }
+
+    private static List<SpectatorMenuCommand> getCommands(MinecraftClient client, Scoreboard scoreboard) {
+        return scoreboard.getTeams().stream().flatMap(team -> TeleportToSpecificTeamCommand.create(client, team).stream()).toList();
     }
 
     @Override
@@ -69,11 +73,7 @@ SpectatorMenuCommand {
 
     @Override
     public boolean isEnabled() {
-        for (SpectatorMenuCommand spectatorMenuCommand : this.commands) {
-            if (!spectatorMenuCommand.isEnabled()) continue;
-            return true;
-        }
-        return false;
+        return !this.commands.isEmpty();
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -83,21 +83,25 @@ SpectatorMenuCommand {
         private final Identifier skinId;
         private final List<PlayerListEntry> scoreboardEntries;
 
-        public TeleportToSpecificTeamCommand(Team team) {
+        private TeleportToSpecificTeamCommand(Team team, List<PlayerListEntry> scoreboardEntries, Identifier skinId) {
             this.team = team;
-            this.scoreboardEntries = Lists.newArrayList();
+            this.scoreboardEntries = scoreboardEntries;
+            this.skinId = skinId;
+        }
+
+        public static Optional<SpectatorMenuCommand> create(MinecraftClient client, Team team) {
+            ArrayList<PlayerListEntry> list = new ArrayList<PlayerListEntry>();
             for (String string : team.getPlayerList()) {
-                PlayerListEntry playerListEntry = MinecraftClient.getInstance().getNetworkHandler().getPlayerListEntry(string);
-                if (playerListEntry == null) continue;
-                this.scoreboardEntries.add(playerListEntry);
+                PlayerListEntry playerListEntry = client.getNetworkHandler().getPlayerListEntry(string);
+                if (playerListEntry == null || playerListEntry.getGameMode() == GameMode.SPECTATOR) continue;
+                list.add(playerListEntry);
             }
-            if (this.scoreboardEntries.isEmpty()) {
-                this.skinId = DefaultSkinHelper.getTexture();
-            } else {
-                String string2 = this.scoreboardEntries.get(Random.create().nextInt(this.scoreboardEntries.size())).getProfile().getName();
-                this.skinId = AbstractClientPlayerEntity.getSkinId(string2);
-                AbstractClientPlayerEntity.loadSkin(this.skinId, string2);
+            if (list.isEmpty()) {
+                return Optional.empty();
             }
+            GameProfile gameProfile = ((PlayerListEntry)list.get(Random.create().nextInt(list.size()))).getProfile();
+            Identifier identifier = client.getSkinProvider().loadSkin(gameProfile);
+            return Optional.of(new TeleportToSpecificTeamCommand(team, list, identifier));
         }
 
         @Override
@@ -126,7 +130,7 @@ SpectatorMenuCommand {
 
         @Override
         public boolean isEnabled() {
-            return !this.scoreboardEntries.isEmpty();
+            return true;
         }
     }
 }

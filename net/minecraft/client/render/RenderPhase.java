@@ -65,58 +65,58 @@ public abstract class RenderPhase {
         RenderSystem.disableBlend();
         RenderSystem.defaultBlendFunc();
     });
-    protected static final Shader NO_SHADER = new Shader();
-    protected static final Shader BLOCK_SHADER = new Shader(GameRenderer::getBlockShader);
-    protected static final Shader NEW_ENTITY_SHADER = new Shader(GameRenderer::getNewEntityShader);
-    protected static final Shader POSITION_COLOR_LIGHTMAP_SHADER = new Shader(GameRenderer::getPositionColorLightmapShader);
-    protected static final Shader POSITION_SHADER = new Shader(GameRenderer::getPositionShader);
-    protected static final Shader POSITION_COLOR_TEXTURE_SHADER = new Shader(GameRenderer::getPositionColorTexShader);
-    protected static final Shader POSITION_TEXTURE_SHADER = new Shader(GameRenderer::getPositionTexShader);
-    protected static final Shader POSITION_COLOR_TEXTURE_LIGHTMAP_SHADER = new Shader(GameRenderer::getPositionColorTexLightmapShader);
-    protected static final Shader COLOR_SHADER = new Shader(GameRenderer::getPositionColorShader);
-    protected static final Shader SOLID_SHADER = new Shader(GameRenderer::getRenderTypeSolidShader);
-    protected static final Shader CUTOUT_MIPPED_SHADER = new Shader(GameRenderer::getRenderTypeCutoutMippedShader);
-    protected static final Shader CUTOUT_SHADER = new Shader(GameRenderer::getRenderTypeCutoutShader);
-    protected static final Shader TRANSLUCENT_SHADER = new Shader(GameRenderer::getRenderTypeTranslucentShader);
-    protected static final Shader TRANSLUCENT_MOVING_BLOCK_SHADER = new Shader(GameRenderer::getRenderTypeTranslucentMovingBlockShader);
-    protected static final Shader TRANSLUCENT_NO_CRUMBLING_SHADER = new Shader(GameRenderer::getRenderTypeTranslucentNoCrumblingShader);
-    protected static final Shader ARMOR_CUTOUT_NO_CULL_SHADER = new Shader(GameRenderer::getRenderTypeArmorCutoutNoCullShader);
-    protected static final Shader ENTITY_SOLID_SHADER = new Shader(GameRenderer::getRenderTypeEntitySolidShader);
-    protected static final Shader ENTITY_CUTOUT_SHADER = new Shader(GameRenderer::getRenderTypeEntityCutoutShader);
-    protected static final Shader ENTITY_CUTOUT_NONULL_SHADER = new Shader(GameRenderer::getRenderTypeEntityCutoutNoNullShader);
-    protected static final Shader ENTITY_CUTOUT_NONULL_OFFSET_Z_SHADER = new Shader(GameRenderer::getRenderTypeEntityCutoutNoNullZOffsetShader);
-    protected static final Shader ITEM_ENTITY_TRANSLUCENT_CULL_SHADER = new Shader(GameRenderer::getRenderTypeItemEntityTranslucentCullShader);
-    protected static final Shader ENTITY_TRANSLUCENT_CULL_SHADER = new Shader(GameRenderer::getRenderTypeEntityTranslucentCullShader);
-    protected static final Shader ENTITY_TRANSLUCENT_SHADER = new Shader(GameRenderer::getRenderTypeEntityTranslucentShader);
-    protected static final Shader ENTITY_TRANSLUCENT_EMISSIVE_SHADER = new Shader(GameRenderer::getRenderTypeEntityTranslucentEmissiveShader);
-    protected static final Shader ENTITY_SMOOTH_CUTOUT_SHADER = new Shader(GameRenderer::getRenderTypeEntitySmoothCutoutShader);
-    protected static final Shader BEACON_BEAM_SHADER = new Shader(GameRenderer::getRenderTypeBeaconBeamShader);
-    protected static final Shader ENTITY_DECAL_SHADER = new Shader(GameRenderer::getRenderTypeEntityDecalShader);
-    protected static final Shader ENTITY_NO_OUTLINE_SHADER = new Shader(GameRenderer::getRenderTypeEntityNoOutlineShader);
-    protected static final Shader ENTITY_SHADOW_SHADER = new Shader(GameRenderer::getRenderTypeEntityShadowShader);
-    protected static final Shader ENTITY_ALPHA_SHADER = new Shader(GameRenderer::getRenderTypeEntityAlphaShader);
-    protected static final Shader EYES_SHADER = new Shader(GameRenderer::getRenderTypeEyesShader);
-    protected static final Shader ENERGY_SWIRL_SHADER = new Shader(GameRenderer::getRenderTypeEnergySwirlShader);
-    protected static final Shader LEASH_SHADER = new Shader(GameRenderer::getRenderTypeLeashShader);
-    protected static final Shader WATER_MASK_SHADER = new Shader(GameRenderer::getRenderTypeWaterMaskShader);
-    protected static final Shader OUTLINE_SHADER = new Shader(GameRenderer::getRenderTypeOutlineShader);
-    protected static final Shader ARMOR_GLINT_SHADER = new Shader(GameRenderer::getRenderTypeArmorGlintShader);
-    protected static final Shader ARMOR_ENTITY_GLINT_SHADER = new Shader(GameRenderer::getRenderTypeArmorEntityGlintShader);
-    protected static final Shader TRANSLUCENT_GLINT_SHADER = new Shader(GameRenderer::getRenderTypeGlintTranslucentShader);
-    protected static final Shader GLINT_SHADER = new Shader(GameRenderer::getRenderTypeGlintShader);
-    protected static final Shader DIRECT_GLINT_SHADER = new Shader(GameRenderer::getRenderTypeGlintDirectShader);
-    protected static final Shader ENTITY_GLINT_SHADER = new Shader(GameRenderer::getRenderTypeEntityGlintShader);
-    protected static final Shader DIRECT_ENTITY_GLINT_SHADER = new Shader(GameRenderer::getRenderTypeEntityGlintDirectShader);
-    protected static final Shader CRUMBLING_SHADER = new Shader(GameRenderer::getRenderTypeCrumblingShader);
-    protected static final Shader TEXT_SHADER = new Shader(GameRenderer::getRenderTypeTextShader);
-    protected static final Shader TEXT_INTENSITY_SHADER = new Shader(GameRenderer::getRenderTypeTextIntensityShader);
-    protected static final Shader TRANSPARENT_TEXT_SHADER = new Shader(GameRenderer::getRenderTypeTextSeeThroughShader);
-    protected static final Shader TRANSPARENT_TEXT_INTENSITY_SHADER = new Shader(GameRenderer::getRenderTypeTextIntensitySeeThroughShader);
-    protected static final Shader LIGHTNING_SHADER = new Shader(GameRenderer::getRenderTypeLightningShader);
-    protected static final Shader TRIPWIRE_SHADER = new Shader(GameRenderer::getRenderTypeTripwireShader);
-    protected static final Shader END_PORTAL_SHADER = new Shader(GameRenderer::getRenderTypeEndPortalShader);
-    protected static final Shader END_GATEWAY_SHADER = new Shader(GameRenderer::getRenderTypeEndGatewayShader);
-    protected static final Shader LINES_SHADER = new Shader(GameRenderer::getRenderTypeLinesShader);
+    protected static final ShaderProgram NO_PROGRAM = new ShaderProgram();
+    protected static final ShaderProgram BLOCK_PROGAM = new ShaderProgram(GameRenderer::getBlockProgram);
+    protected static final ShaderProgram NEW_ENTITY_PROGAM = new ShaderProgram(GameRenderer::getNewEntityProgram);
+    protected static final ShaderProgram POSITION_COLOR_LIGHTMAP_PROGAM = new ShaderProgram(GameRenderer::getPositionColorLightmapProgram);
+    protected static final ShaderProgram POSITION_PROGAM = new ShaderProgram(GameRenderer::getPositionProgram);
+    protected static final ShaderProgram POSITION_COLOR_TEXTURE_PROGAM = new ShaderProgram(GameRenderer::getPositionColorTexProgram);
+    protected static final ShaderProgram POSITION_TEXTURE_PROGAM = new ShaderProgram(GameRenderer::getPositionTexProgram);
+    protected static final ShaderProgram POSITION_COLOR_TEXTURE_LIGHTMAP_PROGAM = new ShaderProgram(GameRenderer::getPositionColorTexLightmapProgram);
+    protected static final ShaderProgram COLOR_PROGAM = new ShaderProgram(GameRenderer::getPositionColorProgram);
+    protected static final ShaderProgram SOLID_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeSolidProgram);
+    protected static final ShaderProgram CUTOUT_MIPPED_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeCutoutMippedProgram);
+    protected static final ShaderProgram CUTOUT_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeCutoutProgram);
+    protected static final ShaderProgram TRANSLUCENT_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeTranslucentProgram);
+    protected static final ShaderProgram TRANSLUCENT_MOVING_BLOCK_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeTranslucentMovingBlockProgram);
+    protected static final ShaderProgram TRANSLUCENT_NO_CRUMBLING_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeTranslucentNoCrumblingProgram);
+    protected static final ShaderProgram ARMOR_CUTOUT_NO_CULL_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeArmorCutoutNoCullProgram);
+    protected static final ShaderProgram ENTITY_SOLID_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeEntitySolidProgram);
+    protected static final ShaderProgram ENTITY_CUTOUT_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeEntityCutoutProgram);
+    protected static final ShaderProgram ENTITY_CUTOUT_NONULL_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeEntityCutoutNoNullProgram);
+    protected static final ShaderProgram ENTITY_CUTOUT_NONULL_OFFSET_Z_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeEntityCutoutNoNullZOffsetProgram);
+    protected static final ShaderProgram ITEM_ENTITY_TRANSLUCENT_CULL_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeItemEntityTranslucentCullProgram);
+    protected static final ShaderProgram ENTITY_TRANSLUCENT_CULL_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeEntityTranslucentCullProgram);
+    protected static final ShaderProgram ENTITY_TRANSLUCENT_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeEntityTranslucentProgram);
+    protected static final ShaderProgram ENTITY_TRANSLUCENT_EMISSIVE_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeEntityTranslucentEmissiveShader);
+    protected static final ShaderProgram ENTITY_SMOOTH_CUTOUT_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeEntitySmoothCutoutProgram);
+    protected static final ShaderProgram BEACON_BEAM_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeBeaconBeamProgram);
+    protected static final ShaderProgram ENTITY_DECAL_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeEntityDecalProgram);
+    protected static final ShaderProgram ENTITY_NO_OUTLINE_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeEntityNoOutlineProgram);
+    protected static final ShaderProgram ENTITY_SHADOW_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeEntityShadowProgram);
+    protected static final ShaderProgram ENTITY_ALPHA_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeEntityAlphaProgram);
+    protected static final ShaderProgram EYES_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeEyesProgram);
+    protected static final ShaderProgram ENERGY_SWIRL_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeEnergySwirlProgram);
+    protected static final ShaderProgram LEASH_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeLeashProgram);
+    protected static final ShaderProgram WATER_MASK_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeWaterMaskProgram);
+    protected static final ShaderProgram OUTLINE_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeOutlineProgram);
+    protected static final ShaderProgram ARMOR_GLINT_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeArmorGlintProgram);
+    protected static final ShaderProgram ARMOR_ENTITY_GLINT_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeArmorEntityGlintProgram);
+    protected static final ShaderProgram TRANSLUCENT_GLINT_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeGlintTranslucentProgram);
+    protected static final ShaderProgram GLINT_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeGlintProgram);
+    protected static final ShaderProgram DIRECT_GLINT_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeGlintDirectProgram);
+    protected static final ShaderProgram ENTITY_GLINT_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeEntityGlintProgram);
+    protected static final ShaderProgram DIRECT_ENTITY_GLINT_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeEntityGlintDirectProgram);
+    protected static final ShaderProgram CRUMBLING_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeCrumblingShader);
+    protected static final ShaderProgram TEXT_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeTextProgram);
+    protected static final ShaderProgram TEXT_INTENSITY_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeTextIntensityProgram);
+    protected static final ShaderProgram TRANSPARENT_TEXT_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeTextSeeThroughProgram);
+    protected static final ShaderProgram TRANSPARENT_TEXT_INTENSITY_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeTextIntensitySeeThroughProgram);
+    protected static final ShaderProgram LIGHTNING_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeLightningProgram);
+    protected static final ShaderProgram TRIPWIRE_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeTripwireProgram);
+    protected static final ShaderProgram END_PORTAL_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeEndPortalProgram);
+    protected static final ShaderProgram END_GATEWAY_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeEndGatewayProgram);
+    protected static final ShaderProgram LINES_PROGAM = new ShaderProgram(GameRenderer::getRenderTypeLinesProgram);
     protected static final Texture MIPMAP_BLOCK_ATLAS_TEXTURE = new Texture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, false, true);
     protected static final Texture BLOCK_ATLAS_TEXTURE = new Texture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, false, false);
     protected static final TextureBase NO_TEXTURE = new TextureBase();
@@ -238,16 +238,16 @@ public abstract class RenderPhase {
     }
 
     @Environment(value=EnvType.CLIENT)
-    protected static class Shader
+    protected static class ShaderProgram
     extends RenderPhase {
-        private final Optional<Supplier<net.minecraft.client.render.Shader>> supplier;
+        private final Optional<Supplier<net.minecraft.client.gl.ShaderProgram>> supplier;
 
-        public Shader(Supplier<net.minecraft.client.render.Shader> supplier) {
+        public ShaderProgram(Supplier<net.minecraft.client.gl.ShaderProgram> supplier) {
             super("shader", () -> RenderSystem.setShader(supplier), () -> {});
             this.supplier = Optional.of(supplier);
         }
 
-        public Shader() {
+        public ShaderProgram() {
             super("shader", () -> RenderSystem.setShader(() -> null), () -> {});
             this.supplier = Optional.empty();
         }

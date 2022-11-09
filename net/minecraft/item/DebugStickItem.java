@@ -11,6 +11,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
@@ -19,7 +20,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
@@ -61,7 +61,7 @@ extends Item {
         Block block = state.getBlock();
         StateManager<Block, BlockState> stateManager = block.getStateManager();
         Collection<Property<?>> collection = stateManager.getProperties();
-        String string = Registry.BLOCK.getId(block).toString();
+        String string = Registries.BLOCK.getId(block).toString();
         if (collection.isEmpty()) {
             DebugStickItem.sendMessage(player, Text.translatable(this.getTranslationKey() + ".empty", string));
             return false;

@@ -100,7 +100,7 @@ extends HandledScreen<MerchantScreenHandler> {
 
     @Override
     protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.setShaderTexture(0, TEXTURE);
         int i = (this.width - this.backgroundWidth) / 2;
@@ -122,7 +122,7 @@ extends HandledScreen<MerchantScreenHandler> {
     }
 
     private void drawLevelInfo(MatrixStack matrices, int x, int y, TradeOffer tradeOffer) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderTexture(0, TEXTURE);
         int i = ((MerchantScreenHandler)this.handler).getLevelProgress();
         int j = ((MerchantScreenHandler)this.handler).getExperience();
@@ -172,7 +172,7 @@ extends HandledScreen<MerchantScreenHandler> {
             int j = (this.height - this.backgroundHeight) / 2;
             int k = j + 16 + 1;
             int l = i + 5 + 5;
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShader(GameRenderer::getPositionTexProgram);
             RenderSystem.setShaderTexture(0, TEXTURE);
             this.renderScrollbar(matrices, i, j, tradeOfferList);
             int m = 0;
@@ -220,7 +220,7 @@ extends HandledScreen<MerchantScreenHandler> {
 
     private void renderArrow(MatrixStack matrices, TradeOffer tradeOffer, int x, int y) {
         RenderSystem.enableBlend();
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderTexture(0, TEXTURE);
         if (tradeOffer.isDisabled()) {
             MerchantScreen.drawTexture(matrices, x + 5 + 35 + 20, y + 3, this.getZOffset(), 25.0f, 171.0f, 10, 9, 512, 256);
@@ -236,7 +236,7 @@ extends HandledScreen<MerchantScreenHandler> {
         } else {
             this.itemRenderer.renderGuiItemOverlay(this.textRenderer, originalFirstBuyItem, x, y, originalFirstBuyItem.getCount() == 1 ? "1" : null);
             this.itemRenderer.renderGuiItemOverlay(this.textRenderer, adjustedFirstBuyItem, x + 14, y, adjustedFirstBuyItem.getCount() == 1 ? "1" : null);
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShader(GameRenderer::getPositionTexProgram);
             RenderSystem.setShaderTexture(0, TEXTURE);
             this.setZOffset(this.getZOffset() + 300);
             MerchantScreen.drawTexture(matrices, x + 7, y + 12, this.getZOffset(), 0.0f, 176.0f, 9, 2, 512, 256);
@@ -290,7 +290,7 @@ extends HandledScreen<MerchantScreenHandler> {
         final int index;
 
         public WidgetButtonPage(int x, int y, int index, ButtonWidget.PressAction onPress) {
-            super(x, y, 89, 20, ScreenTexts.EMPTY, onPress, EMPTY_TOOLTIP, DEFAULT_NARRATION_SUPPLIER);
+            super(x, y, 89, 20, ScreenTexts.EMPTY, onPress, DEFAULT_NARRATION_SUPPLIER);
             this.index = index;
             this.visible = false;
         }
@@ -299,20 +299,19 @@ extends HandledScreen<MerchantScreenHandler> {
             return this.index;
         }
 
-        @Override
-        public void renderTooltip(MatrixStack matrices, int mouseX, int mouseY) {
+        public void renderTooltip(MatrixStack matrixStack, int i, int j) {
             if (this.hovered && ((MerchantScreenHandler)MerchantScreen.this.handler).getRecipes().size() > this.index + MerchantScreen.this.indexStartOffset) {
-                if (mouseX < this.getX() + 20) {
+                if (i < this.getX() + 20) {
                     ItemStack itemStack = ((TradeOffer)((MerchantScreenHandler)MerchantScreen.this.handler).getRecipes().get(this.index + MerchantScreen.this.indexStartOffset)).getAdjustedFirstBuyItem();
-                    MerchantScreen.this.renderTooltip(matrices, itemStack, mouseX, mouseY);
-                } else if (mouseX < this.getX() + 50 && mouseX > this.getX() + 30) {
+                    MerchantScreen.this.renderTooltip(matrixStack, itemStack, i, j);
+                } else if (i < this.getX() + 50 && i > this.getX() + 30) {
                     ItemStack itemStack = ((TradeOffer)((MerchantScreenHandler)MerchantScreen.this.handler).getRecipes().get(this.index + MerchantScreen.this.indexStartOffset)).getSecondBuyItem();
                     if (!itemStack.isEmpty()) {
-                        MerchantScreen.this.renderTooltip(matrices, itemStack, mouseX, mouseY);
+                        MerchantScreen.this.renderTooltip(matrixStack, itemStack, i, j);
                     }
-                } else if (mouseX > this.getX() + 65) {
+                } else if (i > this.getX() + 65) {
                     ItemStack itemStack = ((TradeOffer)((MerchantScreenHandler)MerchantScreen.this.handler).getRecipes().get(this.index + MerchantScreen.this.indexStartOffset)).getSellItem();
-                    MerchantScreen.this.renderTooltip(matrices, itemStack, mouseX, mouseY);
+                    MerchantScreen.this.renderTooltip(matrixStack, itemStack, i, j);
                 }
             }
         }

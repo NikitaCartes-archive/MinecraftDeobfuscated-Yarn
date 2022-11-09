@@ -8,12 +8,12 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.passive.FrogEntity;
 import net.minecraft.server.world.ServerWorld;
 
 public class CroakTask
-extends Task<FrogEntity> {
+extends MultiTickTask<FrogEntity> {
     private static final int MAX_RUN_TICK = 60;
     private static final int RUN_TIME = 100;
     private int runningTicks;
@@ -52,8 +52,13 @@ extends Task<FrogEntity> {
     }
 
     @Override
-    protected /* synthetic */ boolean shouldKeepRunning(ServerWorld world, LivingEntity entity, long time) {
-        return this.shouldKeepRunning(world, (FrogEntity)entity, time);
+    protected /* synthetic */ void finishRunning(ServerWorld world, LivingEntity entity, long time) {
+        this.finishRunning(world, (FrogEntity)entity, time);
+    }
+
+    @Override
+    protected /* synthetic */ void keepRunning(ServerWorld world, LivingEntity entity, long time) {
+        this.keepRunning(world, (FrogEntity)entity, time);
     }
 
     @Override

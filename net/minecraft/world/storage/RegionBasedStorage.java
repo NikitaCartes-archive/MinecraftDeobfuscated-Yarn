@@ -8,12 +8,11 @@ import java.io.DataInputStream;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.FileAttribute;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.scanner.NbtScanner;
+import net.minecraft.util.PathUtil;
 import net.minecraft.util.ThrowableDeliverer;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.storage.RegionFile;
@@ -41,7 +40,7 @@ implements AutoCloseable {
         if (this.cachedRegionFiles.size() >= 256) {
             this.cachedRegionFiles.removeLast().close();
         }
-        Files.createDirectories(this.directory, new FileAttribute[0]);
+        PathUtil.createDirectories(this.directory);
         Path path = this.directory.resolve("r." + pos.getRegionX() + "." + pos.getRegionZ() + MCA_EXTENSION);
         RegionFile regionFile2 = new RegionFile(path, this.directory, this.dsync);
         this.cachedRegionFiles.putAndMoveToFirst(l, regionFile2);

@@ -5,26 +5,26 @@ package net.minecraft.structure;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.registry.Registerable;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.structure.pool.StructurePools;
 import net.minecraft.structure.processor.StructureProcessorList;
 import net.minecraft.structure.processor.StructureProcessorLists;
-import net.minecraft.util.registry.Registerable;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryEntryLookup;
 import net.minecraft.world.gen.feature.PlacedFeature;
 import net.minecraft.world.gen.feature.UndergroundPlacedFeatures;
 
 public class AncientCityOutskirtsGenerator {
     public static void bootstrap(Registerable<StructurePool> poolRegisterable) {
-        RegistryEntryLookup<PlacedFeature> registryEntryLookup = poolRegisterable.getRegistryLookup(Registry.PLACED_FEATURE_KEY);
+        RegistryEntryLookup<PlacedFeature> registryEntryLookup = poolRegisterable.getRegistryLookup(RegistryKeys.PLACED_FEATURE_WORLDGEN);
         RegistryEntry.Reference<PlacedFeature> registryEntry = registryEntryLookup.getOrThrow(UndergroundPlacedFeatures.SCULK_PATCH_ANCIENT_CITY);
-        RegistryEntryLookup<StructureProcessorList> registryEntryLookup2 = poolRegisterable.getRegistryLookup(Registry.STRUCTURE_PROCESSOR_LIST_KEY);
+        RegistryEntryLookup<StructureProcessorList> registryEntryLookup2 = poolRegisterable.getRegistryLookup(RegistryKeys.PROCESSOR_LIST_WORLDGEN);
         RegistryEntry.Reference<StructureProcessorList> registryEntry2 = registryEntryLookup2.getOrThrow(StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION);
         RegistryEntry.Reference<StructureProcessorList> registryEntry3 = registryEntryLookup2.getOrThrow(StructureProcessorLists.ANCIENT_CITY_WALLS_DEGRADATION);
-        RegistryEntryLookup<StructurePool> registryEntryLookup3 = poolRegisterable.getRegistryLookup(Registry.STRUCTURE_POOL_KEY);
+        RegistryEntryLookup<StructurePool> registryEntryLookup3 = poolRegisterable.getRegistryLookup(RegistryKeys.TEMPLATE_POOL_WORLDGEN);
         RegistryEntry.Reference<StructurePool> registryEntry4 = registryEntryLookup3.getOrThrow(StructurePools.EMPTY);
         StructurePools.register(poolRegisterable, "ancient_city/structures", new StructurePool(registryEntry4, ImmutableList.of(Pair.of(StructurePoolElement.ofEmpty(), 7), Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/barracks", registryEntry2), 4), Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/chamber_1", registryEntry2), 4), Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/chamber_2", registryEntry2), 4), Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/chamber_3", registryEntry2), 4), Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/sauna_1", registryEntry2), 4), Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/small_statue", registryEntry2), 4), Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/large_ruin_1", registryEntry2), 1), Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/tall_ruin_1", registryEntry2), 1), Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/tall_ruin_2", registryEntry2), 1), Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/tall_ruin_3", registryEntry2), 2), Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/tall_ruin_4", registryEntry2), 2), new Pair[]{Pair.of(StructurePoolElement.ofList(ImmutableList.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/camp_1", registryEntry2), StructurePoolElement.ofProcessedSingle("ancient_city/structures/camp_2", registryEntry2), StructurePoolElement.ofProcessedSingle("ancient_city/structures/camp_3", registryEntry2))), 1), Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/medium_ruin_1", registryEntry2), 1), Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/medium_ruin_2", registryEntry2), 1), Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/small_ruin_1", registryEntry2), 1), Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/small_ruin_2", registryEntry2), 1), Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/large_pillar_1", registryEntry2), 1), Pair.of(StructurePoolElement.ofProcessedSingle("ancient_city/structures/medium_pillar_1", registryEntry2), 1), Pair.of(StructurePoolElement.ofList(ImmutableList.of(StructurePoolElement.ofSingle("ancient_city/structures/ice_box_1"))), 1)}), StructurePool.Projection.RIGID));
         StructurePools.register(poolRegisterable, "ancient_city/sculk", new StructurePool(registryEntry4, ImmutableList.of(Pair.of(StructurePoolElement.ofFeature(registryEntry), 6), Pair.of(StructurePoolElement.ofEmpty(), 1)), StructurePool.Projection.RIGID));

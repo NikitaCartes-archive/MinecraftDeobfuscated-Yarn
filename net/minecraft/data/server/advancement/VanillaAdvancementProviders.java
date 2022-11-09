@@ -12,7 +12,7 @@ import net.minecraft.data.server.advancement.EndTabAdvancementGenerator;
 import net.minecraft.data.server.advancement.HusbandryTabAdvancementGenerator;
 import net.minecraft.data.server.advancement.NetherTabAdvancementGenerator;
 import net.minecraft.data.server.advancement.StoryTabAdvancementGenerator;
-import net.minecraft.util.registry.RegistryWrapper;
+import net.minecraft.registry.RegistryWrapper;
 
 public class VanillaAdvancementProviders {
     public static AdvancementProvider createVanillaProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {

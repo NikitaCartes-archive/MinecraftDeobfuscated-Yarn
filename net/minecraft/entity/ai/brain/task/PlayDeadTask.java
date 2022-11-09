@@ -8,14 +8,14 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.server.world.ServerWorld;
 
 public class PlayDeadTask
-extends Task<AxolotlEntity> {
+extends MultiTickTask<AxolotlEntity> {
     public PlayDeadTask() {
         super(ImmutableMap.of(MemoryModuleType.PLAY_DEAD_TICKS, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.HURT_BY_ENTITY, MemoryModuleState.VALUE_PRESENT), 200);
     }
@@ -36,11 +36,6 @@ extends Task<AxolotlEntity> {
         brain.forget(MemoryModuleType.WALK_TARGET);
         brain.forget(MemoryModuleType.LOOK_TARGET);
         axolotlEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 200, 0));
-    }
-
-    @Override
-    protected /* synthetic */ boolean shouldKeepRunning(ServerWorld world, LivingEntity entity, long time) {
-        return this.shouldKeepRunning(world, (AxolotlEntity)entity, time);
     }
 
     @Override

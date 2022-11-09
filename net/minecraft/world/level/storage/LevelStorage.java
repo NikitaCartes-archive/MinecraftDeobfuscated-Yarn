@@ -54,6 +54,9 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.scanner.ExclusiveNbtCollector;
 import net.minecraft.nbt.scanner.NbtScanQuery;
 import net.minecraft.nbt.scanner.NbtScanner;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.resource.DataConfiguration;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
@@ -63,9 +66,6 @@ import net.minecraft.util.PathUtil;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.crash.CrashMemoryReserve;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSaveHandler;
@@ -94,7 +94,7 @@ public class LevelStorage {
     public LevelStorage(Path savesDirectory, Path backupsDirectory, DataFixer dataFixer) {
         this.dataFixer = dataFixer;
         try {
-            Files.createDirectories(Files.exists(savesDirectory, new LinkOption[0]) ? savesDirectory.toRealPath(new LinkOption[0]) : savesDirectory, new FileAttribute[0]);
+            PathUtil.createDirectories(savesDirectory);
         } catch (IOException iOException) {
             throw new RuntimeException(iOException);
         }
@@ -499,7 +499,7 @@ public class LevelStorage {
             String string = LocalDateTime.now().format(TIME_FORMATTER) + "_" + this.directoryName;
             Path path = LevelStorage.this.getBackupsDirectory();
             try {
-                Files.createDirectories(Files.exists(path, new LinkOption[0]) ? path.toRealPath(new LinkOption[0]) : path, new FileAttribute[0]);
+                PathUtil.createDirectories(path);
             } catch (IOException iOException) {
                 throw new RuntimeException(iOException);
             }

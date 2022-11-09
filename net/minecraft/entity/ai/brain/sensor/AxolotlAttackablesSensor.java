@@ -7,7 +7,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.NearestVisibleLivingEntitySensor;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
-import net.minecraft.tag.EntityTypeTags;
+import net.minecraft.registry.tag.EntityTypeTags;
 
 public class AxolotlAttackablesSensor
 extends NearestVisibleLivingEntitySensor {

@@ -42,7 +42,7 @@ implements LookTarget {
         if (!livingEntity.isAlive()) {
             return false;
         }
-        Optional<LivingTargetCache> optional = entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS);
+        Optional<LivingTargetCache> optional = entity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.VISIBLE_MOBS);
         return optional.isPresent() && optional.get().contains(livingEntity);
     }
 

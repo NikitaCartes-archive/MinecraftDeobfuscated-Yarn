@@ -14,7 +14,7 @@ import net.minecraft.entity.ai.brain.LookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.LookTargetUtil;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.passive.AllayBrain;
 import net.minecraft.entity.passive.AllayEntity;
 import net.minecraft.item.ItemStack;
@@ -28,9 +28,9 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class GiveInventoryToLookTargetTask<E extends LivingEntity>
-extends Task<E> {
-    private static final int field_38387 = 3;
-    private static final int field_38388 = 60;
+extends MultiTickTask<E> {
+    private static final int COMPLETION_RANGE = 3;
+    private static final int ITEM_PICKUP_COOLDOWN_TICKS = 60;
     private final Function<LivingEntity, Optional<LookTarget>> lookTargetFunction;
     private final float speed;
 

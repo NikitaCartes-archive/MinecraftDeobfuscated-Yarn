@@ -208,7 +208,7 @@ Selectable {
         int j = i + 6;
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
-        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
         this.hoveredEntry = this.isMouseOver(mouseX, mouseY) ? this.getEntryAtPosition(mouseX, mouseY) : null;
         Object v0 = this.hoveredEntry;
         if (this.renderBackground) {
@@ -229,7 +229,7 @@ Selectable {
         }
         this.renderList(matrices, mouseX, mouseY, delta);
         if (this.renderHorizontalShadows) {
-            RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+            RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
             RenderSystem.setShaderTexture(0, DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
             RenderSystem.enableDepthTest();
             RenderSystem.depthFunc(519);
@@ -250,7 +250,7 @@ Selectable {
             RenderSystem.enableBlend();
             RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE);
             RenderSystem.disableTexture();
-            RenderSystem.setShader(GameRenderer::getPositionColorShader);
+            RenderSystem.setShader(GameRenderer::getPositionColorProgram);
             n = 4;
             bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
             bufferBuilder.vertex(this.left, this.top + 4, 0.0).color(0, 0, 0, 0).next();
@@ -265,7 +265,7 @@ Selectable {
         }
         if ((o = this.getMaxScroll()) > 0) {
             RenderSystem.disableTexture();
-            RenderSystem.setShader(GameRenderer::getPositionColorShader);
+            RenderSystem.setShader(GameRenderer::getPositionColorProgram);
             m = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getMaxPosition());
             m = MathHelper.clamp(m, 32, this.bottom - this.top - 8);
             n = (int)this.getScrollAmount() * (this.bottom - this.top - m) / o + this.top;

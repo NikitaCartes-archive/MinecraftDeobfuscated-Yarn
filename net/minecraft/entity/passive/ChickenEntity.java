@@ -102,7 +102,7 @@ extends AnimalEntity {
     }
 
     @Override
-    protected boolean hasWings() {
+    protected boolean isFlappingWings() {
         return this.speed > this.field_28639;
     }
 

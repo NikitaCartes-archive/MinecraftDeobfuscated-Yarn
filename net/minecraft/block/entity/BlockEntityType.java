@@ -50,10 +50,11 @@ import net.minecraft.block.entity.SmokerBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.block.entity.TrappedChestBlockEntity;
 import net.minecraft.datafixer.TypeReferences;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -64,7 +65,7 @@ import org.slf4j.Logger;
  * represents the type of the placed block entities, like chests or furnaces.
  * 
  * <p>Block entity types are pre-defined and registered in {@link
- * net.minecraft.util.registry.Registry#BLOCK_ENTITY_TYPE}. To create a block
+ * net.minecraft.registry.Registries#BLOCK_ENTITY_TYPE}. To create a block
  * entity type, the {@linkplain BlockEntityType.Builder#create builder} should be used.
  * 
  * <p>Blocks that have corresponding block entities must implement {@link
@@ -126,7 +127,7 @@ public class BlockEntityType<T extends BlockEntity> {
      */
     @Nullable
     public static Identifier getId(BlockEntityType<?> type) {
-        return Registry.BLOCK_ENTITY_TYPE.getId(type);
+        return Registries.BLOCK_ENTITY_TYPE.getId(type);
     }
 
     private static <T extends BlockEntity> BlockEntityType<T> create(String id, Builder<T> builder) {
@@ -134,7 +135,7 @@ public class BlockEntityType<T extends BlockEntity> {
             LOGGER.warn("Block entity type {} requires at least one valid block to be defined!", (Object)id);
         }
         Type<?> type = Util.getChoiceType(TypeReferences.BLOCK_ENTITY, id);
-        return Registry.register(Registry.BLOCK_ENTITY_TYPE, id, builder.build(type));
+        return Registry.register(Registries.BLOCK_ENTITY_TYPE, id, builder.build(type));
     }
 
     public BlockEntityType(BlockEntityFactory<? extends T> factory, Set<Block> blocks, Type<?> type) {

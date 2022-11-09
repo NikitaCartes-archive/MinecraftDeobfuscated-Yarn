@@ -16,6 +16,11 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import net.minecraft.block.BlockState;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.CodecHolder;
 import net.minecraft.util.math.BlockPos;
@@ -25,9 +30,6 @@ import net.minecraft.util.math.VerticalSurfaceType;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.math.random.RandomSplitter;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
@@ -191,7 +193,7 @@ public class MaterialRules {
 
     public static interface MaterialCondition
     extends Function<MaterialRuleContext, BooleanSupplier> {
-        public static final Codec<MaterialCondition> CODEC = Registry.MATERIAL_CONDITION.getCodec().dispatch(materialCondition -> materialCondition.codec().codec(), Function.identity());
+        public static final Codec<MaterialCondition> CODEC = Registries.MATERIAL_CONDITION.getCodec().dispatch(materialCondition -> materialCondition.codec().codec(), Function.identity());
 
         public static Codec<? extends MaterialCondition> registerAndGetDefault(Registry<Codec<? extends MaterialCondition>> registry) {
             MaterialRules.register(registry, "biome", BiomeMaterialCondition.CODEC);
@@ -274,7 +276,7 @@ public class MaterialRules {
 
     static final class BiomeMaterialCondition
     implements MaterialCondition {
-        static final CodecHolder<BiomeMaterialCondition> CODEC = CodecHolder.of(((MapCodec)RegistryKey.createCodec(Registry.BIOME_KEY).listOf().fieldOf("biome_is")).xmap(MaterialRules::biome, biomeMaterialCondition -> biomeMaterialCondition.biomes));
+        static final CodecHolder<BiomeMaterialCondition> CODEC = CodecHolder.of(((MapCodec)RegistryKey.createCodec(RegistryKeys.BIOME_WORLDGEN).listOf().fieldOf("biome_is")).xmap(MaterialRules::biome, biomeMaterialCondition -> biomeMaterialCondition.biomes));
         private final List<RegistryKey<Biome>> biomes;
         final Predicate<RegistryKey<Biome>> predicate;
 
@@ -331,7 +333,7 @@ public class MaterialRules {
 
     record NoiseThresholdMaterialCondition(RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> noise, double minThreshold, double maxThreshold) implements MaterialCondition
     {
-        static final CodecHolder<NoiseThresholdMaterialCondition> CODEC = CodecHolder.of(RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec)RegistryKey.createCodec(Registry.NOISE_KEY).fieldOf("noise")).forGetter(NoiseThresholdMaterialCondition::noise), ((MapCodec)Codec.DOUBLE.fieldOf("min_threshold")).forGetter(NoiseThresholdMaterialCondition::minThreshold), ((MapCodec)Codec.DOUBLE.fieldOf("max_threshold")).forGetter(NoiseThresholdMaterialCondition::maxThreshold)).apply((Applicative<NoiseThresholdMaterialCondition, ?>)instance, NoiseThresholdMaterialCondition::new)));
+        static final CodecHolder<NoiseThresholdMaterialCondition> CODEC = CodecHolder.of(RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec)RegistryKey.createCodec(RegistryKeys.NOISE_WORLDGEN).fieldOf("noise")).forGetter(NoiseThresholdMaterialCondition::noise), ((MapCodec)Codec.DOUBLE.fieldOf("min_threshold")).forGetter(NoiseThresholdMaterialCondition::minThreshold), ((MapCodec)Codec.DOUBLE.fieldOf("max_threshold")).forGetter(NoiseThresholdMaterialCondition::maxThreshold)).apply((Applicative<NoiseThresholdMaterialCondition, ?>)instance, NoiseThresholdMaterialCondition::new)));
 
         @Override
         public CodecHolder<? extends MaterialCondition> codec() {
@@ -531,7 +533,7 @@ public class MaterialRules {
 
     public static interface MaterialRule
     extends Function<MaterialRuleContext, BlockStateRule> {
-        public static final Codec<MaterialRule> CODEC = Registry.MATERIAL_RULE.getCodec().dispatch(materialRule -> materialRule.codec().codec(), Function.identity());
+        public static final Codec<MaterialRule> CODEC = Registries.MATERIAL_RULE.getCodec().dispatch(materialRule -> materialRule.codec().codec(), Function.identity());
 
         public static Codec<? extends MaterialRule> registerAndGetDefault(Registry<Codec<? extends MaterialRule>> registry) {
             MaterialRules.register(registry, "bandlands", TerracottaBandsMaterialRule.CODEC);

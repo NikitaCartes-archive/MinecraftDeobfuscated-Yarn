@@ -4,7 +4,8 @@
 package net.minecraft.world.gen.treedecorator;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.world.gen.treedecorator.AlterGroundTreeDecorator;
 import net.minecraft.world.gen.treedecorator.AttachedToLeavesTreeDecorator;
 import net.minecraft.world.gen.treedecorator.BeehiveTreeDecorator;
@@ -23,7 +24,7 @@ public class TreeDecoratorType<P extends TreeDecorator> {
     private final Codec<P> codec;
 
     private static <P extends TreeDecorator> TreeDecoratorType<P> register(String id, Codec<P> codec) {
-        return Registry.register(Registry.TREE_DECORATOR_TYPE, id, new TreeDecoratorType<P>(codec));
+        return Registry.register(Registries.TREE_DECORATOR_TYPE, id, new TreeDecoratorType<P>(codec));
     }
 
     private TreeDecoratorType(Codec<P> codec) {

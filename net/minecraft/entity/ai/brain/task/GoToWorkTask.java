@@ -3,48 +3,39 @@
  */
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
 import net.minecraft.entity.EntityStatuses;
-import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.TaskTriggerer;
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.world.poi.PointOfInterestType;
 
-public class GoToWorkTask
-extends Task<VillagerEntity> {
-    public GoToWorkTask() {
-        super(ImmutableMap.of(MemoryModuleType.POTENTIAL_JOB_SITE, MemoryModuleState.VALUE_PRESENT));
-    }
-
-    @Override
-    protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
-        BlockPos blockPos = villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.POTENTIAL_JOB_SITE).get().getPos();
-        return blockPos.isWithinDistance(villagerEntity.getPos(), 2.0) || villagerEntity.isNatural();
-    }
-
-    @Override
-    protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-        GlobalPos globalPos = villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.POTENTIAL_JOB_SITE).get();
-        villagerEntity.getBrain().forget(MemoryModuleType.POTENTIAL_JOB_SITE);
-        villagerEntity.getBrain().remember(MemoryModuleType.JOB_SITE, globalPos);
-        serverWorld.sendEntityStatus(villagerEntity, EntityStatuses.ADD_VILLAGER_HAPPY_PARTICLES);
-        if (villagerEntity.getVillagerData().getProfession() != VillagerProfession.NONE) {
-            return;
-        }
-        MinecraftServer minecraftServer = serverWorld.getServer();
-        Optional.ofNullable(minecraftServer.getWorld(globalPos.getDimension())).flatMap(world -> world.getPointOfInterestStorage().getType(globalPos.getPos())).flatMap(registryEntry -> Registry.VILLAGER_PROFESSION.stream().filter(profession -> profession.heldWorkstation().test((RegistryEntry<PointOfInterestType>)registryEntry)).findFirst()).ifPresent(profession -> {
-            villagerEntity.setVillagerData(villagerEntity.getVillagerData().withProfession((VillagerProfession)profession));
-            villagerEntity.reinitializeBrain(serverWorld);
-        });
+public class GoToWorkTask {
+    public static Task<VillagerEntity> create() {
+        return TaskTriggerer.task(context -> context.group(context.queryMemoryValue(MemoryModuleType.POTENTIAL_JOB_SITE), context.queryMemoryOptional(MemoryModuleType.JOB_SITE)).apply(context, (potentialJobSite, jobSite) -> (world, entity, time) -> {
+            GlobalPos globalPos = (GlobalPos)context.getValue(potentialJobSite);
+            if (!globalPos.getPos().isWithinDistance(entity.getPos(), 2.0) && !entity.isNatural()) {
+                return false;
+            }
+            potentialJobSite.forget();
+            jobSite.remember(globalPos);
+            world.sendEntityStatus(entity, EntityStatuses.ADD_VILLAGER_HAPPY_PARTICLES);
+            if (entity.getVillagerData().getProfession() != VillagerProfession.NONE) {
+                return true;
+            }
+            MinecraftServer minecraftServer = world.getServer();
+            Optional.ofNullable(minecraftServer.getWorld(globalPos.getDimension())).flatMap(jobSiteWorld -> jobSiteWorld.getPointOfInterestStorage().getType(globalPos.getPos())).flatMap(poiType -> Registries.VILLAGER_PROFESSION.stream().filter(profession -> profession.heldWorkstation().test((RegistryEntry<PointOfInterestType>)poiType)).findFirst()).ifPresent(profession -> {
+                entity.setVillagerData(entity.getVillagerData().withProfession((VillagerProfession)profession));
+                entity.reinitializeBrain(world);
+            });
+            return true;
+        }));
     }
 }
 

@@ -3,13 +3,13 @@
  */
 package net.minecraft.structure;
 
+import net.minecraft.registry.Registerable;
 import net.minecraft.structure.DesertVillageData;
 import net.minecraft.structure.PlainsVillageData;
 import net.minecraft.structure.SavannaVillageData;
 import net.minecraft.structure.SnowyVillageData;
 import net.minecraft.structure.TaigaVillageData;
 import net.minecraft.structure.pool.StructurePool;
-import net.minecraft.util.registry.Registerable;
 
 public class VillageGenerator {
     public static void bootstrap(Registerable<StructurePool> poolRegisterable) {

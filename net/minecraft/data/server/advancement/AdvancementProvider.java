@@ -14,7 +14,7 @@ import net.minecraft.data.DataOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
 import net.minecraft.data.server.advancement.AdvancementTabGenerator;
-import net.minecraft.util.registry.RegistryWrapper;
+import net.minecraft.registry.RegistryWrapper;
 
 public class AdvancementProvider
 implements DataProvider {

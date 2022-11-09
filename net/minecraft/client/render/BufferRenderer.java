@@ -32,19 +32,19 @@ public class BufferRenderer {
     }
 
     /**
-     * Draws {@code buffer} using the shader specified with {@link
+     * Draws {@code buffer} using the shader program specified with {@link
      * com.mojang.blaze3d.systems.RenderSystem#setShader
      * RenderSystem#setShader}
      */
-    public static void drawWithShader(BufferBuilder.BuiltBuffer buffer) {
+    public static void drawWithGlobalProgram(BufferBuilder.BuiltBuffer buffer) {
         if (!RenderSystem.isOnRenderThreadOrInit()) {
-            RenderSystem.recordRenderCall(() -> BufferRenderer.drawWithShaderInternal(buffer));
+            RenderSystem.recordRenderCall(() -> BufferRenderer.drawWithGlobalProgramInternal(buffer));
         } else {
-            BufferRenderer.drawWithShaderInternal(buffer);
+            BufferRenderer.drawWithGlobalProgramInternal(buffer);
         }
     }
 
-    private static void drawWithShaderInternal(BufferBuilder.BuiltBuffer buffer) {
+    private static void drawWithGlobalProgramInternal(BufferBuilder.BuiltBuffer buffer) {
         VertexBuffer vertexBuffer = BufferRenderer.upload(buffer);
         if (vertexBuffer != null) {
             vertexBuffer.draw(RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader());
@@ -54,10 +54,10 @@ public class BufferRenderer {
     /**
      * Draws {@code buffer}.
      * 
-     * <p>Unlike {@link #drawWithShader}, the shader cannot be specified with
-     * {@link com.mojang.blaze3d.systems.RenderSystem#setShader
+     * <p>Unlike {@link #drawWithGlobalProgram}, the shader program cannot be
+     * specified with {@link com.mojang.blaze3d.systems.RenderSystem#setShader
      * RenderSystem#setShader}. The caller of this method must manually bind a
-     * shader before calling this method.
+     * shader program before calling this method.
      */
     public static void draw(BufferBuilder.BuiltBuffer buffer) {
         VertexBuffer vertexBuffer = BufferRenderer.upload(buffer);

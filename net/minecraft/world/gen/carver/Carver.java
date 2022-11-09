@@ -13,6 +13,9 @@ import net.minecraft.block.Blocks;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -20,8 +23,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.carver.CarverConfig;
@@ -50,7 +51,7 @@ public abstract class Carver<C extends CarverConfig> {
     private final Codec<ConfiguredCarver<C>> codec;
 
     private static <C extends CarverConfig, F extends Carver<C>> F register(String name, F carver) {
-        return (F)Registry.register(Registry.CARVER, name, carver);
+        return (F)Registry.register(Registries.CARVER, name, carver);
     }
 
     public Carver(Codec<C> configCodec) {

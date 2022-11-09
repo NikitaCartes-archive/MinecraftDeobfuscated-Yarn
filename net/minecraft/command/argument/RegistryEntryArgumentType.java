@@ -24,13 +24,14 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.RegistryWrapper;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.structure.Structure;
 
@@ -62,23 +63,23 @@ implements ArgumentType<RegistryEntry.Reference<T>> {
     }
 
     public static RegistryEntry.Reference<EntityAttribute> getEntityAttribute(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-        return RegistryEntryArgumentType.getRegistryEntry(context, name, Registry.ATTRIBUTE_KEY);
+        return RegistryEntryArgumentType.getRegistryEntry(context, name, RegistryKeys.ATTRIBUTE);
     }
 
     public static RegistryEntry.Reference<ConfiguredFeature<?, ?>> getConfiguredFeature(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-        return RegistryEntryArgumentType.getRegistryEntry(context, name, Registry.CONFIGURED_FEATURE_KEY);
+        return RegistryEntryArgumentType.getRegistryEntry(context, name, RegistryKeys.CONFIGURED_FEATURE_WORLDGEN);
     }
 
     public static RegistryEntry.Reference<Structure> getStructure(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-        return RegistryEntryArgumentType.getRegistryEntry(context, name, Registry.STRUCTURE_KEY);
+        return RegistryEntryArgumentType.getRegistryEntry(context, name, RegistryKeys.STRUCTURE_WORLDGEN);
     }
 
     public static RegistryEntry.Reference<EntityType<?>> getEntityType(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-        return RegistryEntryArgumentType.getRegistryEntry(context, name, Registry.ENTITY_TYPE_KEY);
+        return RegistryEntryArgumentType.getRegistryEntry(context, name, RegistryKeys.ENTITY_TYPE);
     }
 
     public static RegistryEntry.Reference<EntityType<?>> getSummonableEntityType(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-        RegistryEntry.Reference<EntityType<?>> reference = RegistryEntryArgumentType.getRegistryEntry(context, name, Registry.ENTITY_TYPE_KEY);
+        RegistryEntry.Reference<EntityType<?>> reference = RegistryEntryArgumentType.getRegistryEntry(context, name, RegistryKeys.ENTITY_TYPE);
         if (!((EntityType)reference.value()).isSummonable()) {
             throw NOT_SUMMONABLE_EXCEPTION.create(reference.registryKey().getValue().toString());
         }
@@ -86,11 +87,11 @@ implements ArgumentType<RegistryEntry.Reference<T>> {
     }
 
     public static RegistryEntry.Reference<StatusEffect> getStatusEffect(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-        return RegistryEntryArgumentType.getRegistryEntry(context, name, Registry.MOB_EFFECT_KEY);
+        return RegistryEntryArgumentType.getRegistryEntry(context, name, RegistryKeys.STATUS_EFFECT);
     }
 
     public static RegistryEntry.Reference<Enchantment> getEnchantment(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-        return RegistryEntryArgumentType.getRegistryEntry(context, name, Registry.ENCHANTMENT_KEY);
+        return RegistryEntryArgumentType.getRegistryEntry(context, name, RegistryKeys.ENCHANTMENT);
     }
 
     @Override

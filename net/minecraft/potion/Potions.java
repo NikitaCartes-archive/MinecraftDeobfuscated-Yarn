@@ -6,7 +6,8 @@ package net.minecraft.potion;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.potion.Potion;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 public class Potions {
     public static final Potion EMPTY = Potions.register("empty", new Potion(new StatusEffectInstance[0]));
@@ -54,7 +55,7 @@ public class Potions {
     public static final Potion LONG_SLOW_FALLING = Potions.register("long_slow_falling", new Potion("slow_falling", new StatusEffectInstance(StatusEffects.SLOW_FALLING, 4800)));
 
     private static Potion register(String name, Potion potion) {
-        return Registry.register(Registry.POTION, name, potion);
+        return Registry.register(Registries.POTION, name, potion);
     }
 }
 

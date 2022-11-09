@@ -30,11 +30,11 @@ import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.loot.provider.number.LootNumberProvider;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class SetAttributesLootFunction
@@ -99,7 +99,7 @@ extends ConditionalLootFunction {
         public JsonObject serialize(JsonSerializationContext context) {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("name", this.name);
-            jsonObject.addProperty("attribute", Registry.ATTRIBUTE.getId(this.attribute).toString());
+            jsonObject.addProperty("attribute", Registries.ATTRIBUTE.getId(this.attribute).toString());
             jsonObject.addProperty("operation", Attribute.getName(this.operation));
             jsonObject.add("amount", context.serialize(this.amount));
             if (this.id != null) {
@@ -121,7 +121,7 @@ extends ConditionalLootFunction {
             EquipmentSlot[] equipmentSlots;
             String string = JsonHelper.getString(json, "name");
             Identifier identifier = new Identifier(JsonHelper.getString(json, "attribute"));
-            EntityAttribute entityAttribute = Registry.ATTRIBUTE.get(identifier);
+            EntityAttribute entityAttribute = Registries.ATTRIBUTE.get(identifier);
             if (entityAttribute == null) {
                 throw new JsonSyntaxException("Unknown attribute: " + identifier);
             }

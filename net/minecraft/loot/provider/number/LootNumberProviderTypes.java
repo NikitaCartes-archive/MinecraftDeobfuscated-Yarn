@@ -9,10 +9,11 @@ import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProviderType;
 import net.minecraft.loot.provider.number.ScoreLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonSerializer;
 import net.minecraft.util.JsonSerializing;
-import net.minecraft.util.registry.Registry;
 
 public class LootNumberProviderTypes {
     public static final LootNumberProviderType CONSTANT = LootNumberProviderTypes.register("constant", new ConstantLootNumberProvider.Serializer());
@@ -21,11 +22,11 @@ public class LootNumberProviderTypes {
     public static final LootNumberProviderType SCORE = LootNumberProviderTypes.register("score", new ScoreLootNumberProvider.Serializer());
 
     private static LootNumberProviderType register(String id, JsonSerializer<? extends LootNumberProvider> jsonSerializer) {
-        return Registry.register(Registry.LOOT_NUMBER_PROVIDER_TYPE, new Identifier(id), new LootNumberProviderType(jsonSerializer));
+        return Registry.register(Registries.LOOT_NUMBER_PROVIDER_TYPE, new Identifier(id), new LootNumberProviderType(jsonSerializer));
     }
 
     public static Object createGsonSerializer() {
-        return JsonSerializing.createSerializerBuilder(Registry.LOOT_NUMBER_PROVIDER_TYPE, "provider", "type", LootNumberProvider::getType).elementSerializer(CONSTANT, new ConstantLootNumberProvider.CustomSerializer()).defaultType(UNIFORM).build();
+        return JsonSerializing.createSerializerBuilder(Registries.LOOT_NUMBER_PROVIDER_TYPE, "provider", "type", LootNumberProvider::getType).elementSerializer(CONSTANT, new ConstantLootNumberProvider.CustomSerializer()).defaultType(UNIFORM).build();
     }
 }
 

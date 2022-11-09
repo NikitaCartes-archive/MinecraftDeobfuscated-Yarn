@@ -69,6 +69,13 @@ import net.minecraft.network.packet.s2c.play.WorldBorderSizeChangedS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderWarningBlocksChangedS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderWarningTimeChangedS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
+import net.minecraft.registry.CombinedDynamicRegistries;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.SerializableRegistries;
+import net.minecraft.registry.ServerDynamicRegistryType;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.TagPacketSerializer;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.ScoreboardObjective;
@@ -90,8 +97,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.ServerStatHandler;
 import net.minecraft.stat.Stats;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.TagPacketSerializer;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -102,9 +107,6 @@ import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.CombinedDynamicRegistries;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.ServerDynamicRegistryType;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProperties;
@@ -137,6 +139,7 @@ public abstract class PlayerManager {
     private final WorldSaveHandler saveHandler;
     private boolean whitelistEnabled;
     private final CombinedDynamicRegistries<ServerDynamicRegistryType> registryManager;
+    private final DynamicRegistryManager.Immutable syncedRegistryManager;
     protected final int maxPlayers;
     private int viewDistance;
     private int simulationDistance;
@@ -147,6 +150,7 @@ public abstract class PlayerManager {
     public PlayerManager(MinecraftServer server, CombinedDynamicRegistries<ServerDynamicRegistryType> registryManager, WorldSaveHandler saveHandler, int maxPlayers) {
         this.server = server;
         this.registryManager = registryManager;
+        this.syncedRegistryManager = new DynamicRegistryManager.ImmutableImpl(SerializableRegistries.streamDynamicEntries(registryManager)).toImmutable();
         this.maxPlayers = maxPlayers;
         this.saveHandler = saveHandler;
     }
@@ -181,7 +185,7 @@ public abstract class PlayerManager {
         GameRules gameRules = serverWorld2.getGameRules();
         boolean bl = gameRules.getBoolean(GameRules.DO_IMMEDIATE_RESPAWN);
         boolean bl2 = gameRules.getBoolean(GameRules.REDUCED_DEBUG_INFO);
-        serverPlayNetworkHandler.sendPacket(new GameJoinS2CPacket(player.getId(), worldProperties.isHardcore(), player.interactionManager.getGameMode(), player.interactionManager.getPreviousGameMode(), this.server.getWorldRegistryKeys(), this.registryManager.getSucceedingRegistryManagers(ServerDynamicRegistryType.WORLDGEN), serverWorld2.getDimensionKey(), serverWorld2.getRegistryKey(), BiomeAccess.hashSeed(serverWorld2.getSeed()), this.getMaxPlayerCount(), this.viewDistance, this.simulationDistance, bl2, !bl, serverWorld2.isDebugWorld(), serverWorld2.isFlat(), player.getLastDeathPos()));
+        serverPlayNetworkHandler.sendPacket(new GameJoinS2CPacket(player.getId(), worldProperties.isHardcore(), player.interactionManager.getGameMode(), player.interactionManager.getPreviousGameMode(), this.server.getWorldRegistryKeys(), this.syncedRegistryManager, serverWorld2.getDimensionKey(), serverWorld2.getRegistryKey(), BiomeAccess.hashSeed(serverWorld2.getSeed()), this.getMaxPlayerCount(), this.viewDistance, this.simulationDistance, bl2, !bl, serverWorld2.isDebugWorld(), serverWorld2.isFlat(), player.getLastDeathPos()));
         serverPlayNetworkHandler.sendPacket(new FeaturesS2CPacket(FeatureFlags.FEATURE_MANAGER.toId(serverWorld2.getEnabledFeatures())));
         serverPlayNetworkHandler.sendPacket(new CustomPayloadS2CPacket(CustomPayloadS2CPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString(this.getServer().getServerModName())));
         serverPlayNetworkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));

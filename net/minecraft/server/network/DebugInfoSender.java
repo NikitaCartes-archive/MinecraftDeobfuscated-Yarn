@@ -41,6 +41,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureStart;
@@ -52,9 +55,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.village.VillageGossipType;
 import net.minecraft.village.raid.Raid;
 import net.minecraft.world.StructureWorldAccess;
@@ -142,7 +142,7 @@ public class DebugInfoSender {
         } else {
             buf.writeString("");
         }
-        buf.writeOptional(brain.hasMemoryModule(MemoryModuleType.PATH) ? brain.getOptionalMemory(MemoryModuleType.PATH) : Optional.empty(), (packetByteBuf, path) -> path.toBuffer((PacketByteBuf)packetByteBuf));
+        buf.writeOptional(brain.hasMemoryModule(MemoryModuleType.PATH) ? brain.getOptionalRegisteredMemory(MemoryModuleType.PATH) : Optional.empty(), (buf2, path) -> path.toBuffer((PacketByteBuf)buf2));
         if (entity instanceof VillagerEntity) {
             VillagerEntity villagerEntity = (VillagerEntity)entity;
             boolean bl = villagerEntity.canSummonGolem(l);
@@ -157,20 +157,20 @@ public class DebugInfoSender {
             buf.writeInt(-1);
         }
         buf.writeCollection(brain.getPossibleActivities(), (buf2, activity) -> buf2.writeString(activity.getId()));
-        Set set = brain.getRunningTasks().stream().map(Task::toString).collect(Collectors.toSet());
+        Set set = brain.getRunningTasks().stream().map(Task::getName).collect(Collectors.toSet());
         buf.writeCollection(set, PacketByteBuf::writeString);
         buf.writeCollection(DebugInfoSender.listMemories(entity, l), (buf2, memory) -> {
             String string = StringHelper.truncate(memory, 255, true);
             buf2.writeString(string);
         });
         if (entity instanceof VillagerEntity) {
-            Set set2 = Stream.of(MemoryModuleType.JOB_SITE, MemoryModuleType.HOME, MemoryModuleType.MEETING_POINT).map(brain::getOptionalMemory).flatMap(Optional::stream).map(GlobalPos::getPos).collect(Collectors.toSet());
+            Set set2 = Stream.of(MemoryModuleType.JOB_SITE, MemoryModuleType.HOME, MemoryModuleType.MEETING_POINT).map(brain::getOptionalRegisteredMemory).flatMap(Optional::stream).map(GlobalPos::getPos).collect(Collectors.toSet());
             buf.writeCollection(set2, PacketByteBuf::writeBlockPos);
         } else {
             buf.writeVarInt(0);
         }
         if (entity instanceof VillagerEntity) {
-            Set set2 = Stream.of(MemoryModuleType.POTENTIAL_JOB_SITE).map(brain::getOptionalMemory).flatMap(Optional::stream).map(GlobalPos::getPos).collect(Collectors.toSet());
+            Set set2 = Stream.of(MemoryModuleType.POTENTIAL_JOB_SITE).map(brain::getOptionalRegisteredMemory).flatMap(Optional::stream).map(GlobalPos::getPos).collect(Collectors.toSet());
             buf.writeCollection(set2, PacketByteBuf::writeBlockPos);
         } else {
             buf.writeVarInt(0);
@@ -207,7 +207,7 @@ public class DebugInfoSender {
             } else {
                 string = "-";
             }
-            list.add(Registry.MEMORY_MODULE_TYPE.getId(memoryModuleType).getPath() + ": " + (String)string);
+            list.add(Registries.MEMORY_MODULE_TYPE.getId(memoryModuleType).getPath() + ": " + (String)string);
         }
         list.sort(String::compareTo);
         return list;

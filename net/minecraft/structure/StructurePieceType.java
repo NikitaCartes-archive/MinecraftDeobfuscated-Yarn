@@ -5,6 +5,8 @@ package net.minecraft.structure;
 
 import java.util.Locale;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.structure.BuriedTreasureGenerator;
 import net.minecraft.structure.DesertTempleGenerator;
 import net.minecraft.structure.EndCityGenerator;
@@ -24,7 +26,6 @@ import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.structure.SwampHutGenerator;
 import net.minecraft.structure.WoodlandMansionGenerator;
-import net.minecraft.util.registry.Registry;
 
 public interface StructurePieceType {
     public static final StructurePieceType MINESHAFT_CORRIDOR = StructurePieceType.register(MineshaftGenerator.MineshaftCorridor::new, "MSCorridor");
@@ -87,7 +88,7 @@ public interface StructurePieceType {
     public StructurePiece load(StructureContext var1, NbtCompound var2);
 
     private static StructurePieceType register(StructurePieceType type, String id) {
-        return Registry.register(Registry.STRUCTURE_PIECE, id.toLowerCase(Locale.ROOT), type);
+        return Registry.register(Registries.STRUCTURE_PIECE, id.toLowerCase(Locale.ROOT), type);
     }
 
     private static StructurePieceType register(Simple type, String id) {

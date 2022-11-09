@@ -5,12 +5,12 @@ package net.minecraft.world.gen.feature;
 
 import java.util.List;
 import net.minecraft.block.Block;
+import net.minecraft.registry.Registerable;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registerable;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.gen.blockpredicate.BlockPredicate;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
@@ -64,7 +64,7 @@ public class ConfiguredFeatures {
     }
 
     public static RegistryKey<ConfiguredFeature<?, ?>> of(String id) {
-        return RegistryKey.of(Registry.CONFIGURED_FEATURE_KEY, new Identifier(id));
+        return RegistryKey.of(RegistryKeys.CONFIGURED_FEATURE_WORLDGEN, new Identifier(id));
     }
 
     public static void register(Registerable<ConfiguredFeature<?, ?>> registerable, RegistryKey<ConfiguredFeature<?, ?>> key, Feature<DefaultFeatureConfig> feature) {

@@ -53,8 +53,8 @@ import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
 import net.minecraft.predicate.StatePredicate;
 import net.minecraft.predicate.item.ItemPredicate;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
-import net.minecraft.tag.ItemTags;
 
 public class VanillaBlockLootTableGenerator
 extends BlockLootTableGenerator {
@@ -99,6 +99,7 @@ extends BlockLootTableGenerator {
         this.addDrop(Blocks.JUNGLE_LOG);
         this.addDrop(Blocks.ACACIA_LOG);
         this.addDrop(Blocks.DARK_OAK_LOG);
+        this.addDrop(Blocks.BAMBOO_BLOCK, VanillaBlockLootTableGenerator.dropsNothing());
         this.addDrop(Blocks.STRIPPED_SPRUCE_LOG);
         this.addDrop(Blocks.STRIPPED_BIRCH_LOG);
         this.addDrop(Blocks.STRIPPED_JUNGLE_LOG);
@@ -108,6 +109,7 @@ extends BlockLootTableGenerator {
         this.addDrop(Blocks.STRIPPED_WARPED_STEM);
         this.addDrop(Blocks.STRIPPED_CRIMSON_STEM);
         this.addDrop(Blocks.STRIPPED_MANGROVE_LOG);
+        this.addDrop(Blocks.STRIPPED_BAMBOO_BLOCK, VanillaBlockLootTableGenerator.dropsNothing());
         this.addDrop(Blocks.OAK_WOOD);
         this.addDrop(Blocks.SPRUCE_WOOD);
         this.addDrop(Blocks.BIRCH_WOOD);

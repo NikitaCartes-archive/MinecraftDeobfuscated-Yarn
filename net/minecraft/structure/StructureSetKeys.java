@@ -3,10 +3,10 @@
  */
 package net.minecraft.structure;
 
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.structure.StructureSet;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 
 public interface StructureSetKeys {
     public static final RegistryKey<StructureSet> VILLAGES = StructureSetKeys.of("villages");
@@ -29,7 +29,7 @@ public interface StructureSetKeys {
     public static final RegistryKey<StructureSet> STRONGHOLDS = StructureSetKeys.of("strongholds");
 
     private static RegistryKey<StructureSet> of(String id) {
-        return RegistryKey.of(Registry.STRUCTURE_SET_KEY, new Identifier(id));
+        return RegistryKey.of(RegistryKeys.STRUCTURE_SET_WORLDGEN, new Identifier(id));
     }
 }
 

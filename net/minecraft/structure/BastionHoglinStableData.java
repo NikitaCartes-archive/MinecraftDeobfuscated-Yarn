@@ -5,22 +5,22 @@ package net.minecraft.structure;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.registry.Registerable;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.structure.pool.StructurePools;
 import net.minecraft.structure.processor.StructureProcessorList;
 import net.minecraft.structure.processor.StructureProcessorLists;
-import net.minecraft.util.registry.Registerable;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryEntryLookup;
 
 public class BastionHoglinStableData {
     public static void bootstrap(Registerable<StructurePool> poolRegisterable) {
-        RegistryEntryLookup<StructureProcessorList> registryEntryLookup = poolRegisterable.getRegistryLookup(Registry.STRUCTURE_PROCESSOR_LIST_KEY);
+        RegistryEntryLookup<StructureProcessorList> registryEntryLookup = poolRegisterable.getRegistryLookup(RegistryKeys.PROCESSOR_LIST_WORLDGEN);
         RegistryEntry.Reference<StructureProcessorList> registryEntry = registryEntryLookup.getOrThrow(StructureProcessorLists.STABLE_DEGRADATION);
         RegistryEntry.Reference<StructureProcessorList> registryEntry2 = registryEntryLookup.getOrThrow(StructureProcessorLists.SIDE_WALL_DEGRADATION);
-        RegistryEntryLookup<StructurePool> registryEntryLookup2 = poolRegisterable.getRegistryLookup(Registry.STRUCTURE_POOL_KEY);
+        RegistryEntryLookup<StructurePool> registryEntryLookup2 = poolRegisterable.getRegistryLookup(RegistryKeys.TEMPLATE_POOL_WORLDGEN);
         RegistryEntry.Reference<StructurePool> registryEntry3 = registryEntryLookup2.getOrThrow(StructurePools.EMPTY);
         StructurePools.register(poolRegisterable, "bastion/hoglin_stable/starting_pieces", new StructurePool(registryEntry3, ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedSingle("bastion/hoglin_stable/starting_pieces/starting_stairs_0", registryEntry), 1), Pair.of(StructurePoolElement.ofProcessedSingle("bastion/hoglin_stable/starting_pieces/starting_stairs_1", registryEntry), 1), Pair.of(StructurePoolElement.ofProcessedSingle("bastion/hoglin_stable/starting_pieces/starting_stairs_2", registryEntry), 1), Pair.of(StructurePoolElement.ofProcessedSingle("bastion/hoglin_stable/starting_pieces/starting_stairs_3", registryEntry), 1), Pair.of(StructurePoolElement.ofProcessedSingle("bastion/hoglin_stable/starting_pieces/starting_stairs_4", registryEntry), 1)), StructurePool.Projection.RIGID));
         StructurePools.register(poolRegisterable, "bastion/hoglin_stable/mirrored_starting_pieces", new StructurePool(registryEntry3, ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedSingle("bastion/hoglin_stable/starting_pieces/stairs_0_mirrored", registryEntry), 1), Pair.of(StructurePoolElement.ofProcessedSingle("bastion/hoglin_stable/starting_pieces/stairs_1_mirrored", registryEntry), 1), Pair.of(StructurePoolElement.ofProcessedSingle("bastion/hoglin_stable/starting_pieces/stairs_2_mirrored", registryEntry), 1), Pair.of(StructurePoolElement.ofProcessedSingle("bastion/hoglin_stable/starting_pieces/stairs_3_mirrored", registryEntry), 1), Pair.of(StructurePoolElement.ofProcessedSingle("bastion/hoglin_stable/starting_pieces/stairs_4_mirrored", registryEntry), 1)), StructurePool.Projection.RIGID));

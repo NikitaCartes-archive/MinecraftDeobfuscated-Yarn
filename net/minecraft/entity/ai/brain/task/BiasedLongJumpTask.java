@@ -12,9 +12,9 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.task.LongJumpTask;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
@@ -59,6 +59,11 @@ extends LongJumpTask<E> {
             return Optional.of(this.unfavoredTargets.remove(0));
         }
         return Optional.empty();
+    }
+
+    @Override
+    protected /* synthetic */ void run(ServerWorld world, LivingEntity entity, long time) {
+        this.run(world, (E)((MobEntity)entity), time);
     }
 }
 

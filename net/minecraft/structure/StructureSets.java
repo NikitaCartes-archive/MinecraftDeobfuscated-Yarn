@@ -5,14 +5,14 @@ package net.minecraft.structure;
 
 import java.util.List;
 import java.util.Optional;
+import net.minecraft.registry.Registerable;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.structure.StructureSet;
 import net.minecraft.structure.StructureSetKeys;
-import net.minecraft.tag.BiomeTags;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.registry.Registerable;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryEntryLookup;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.placement.ConcentricRingsStructurePlacement;
 import net.minecraft.world.gen.chunk.placement.RandomSpreadStructurePlacement;
@@ -23,8 +23,8 @@ import net.minecraft.world.gen.structure.StructureKeys;
 
 public interface StructureSets {
     public static void bootstrap(Registerable<StructureSet> structureSetRegisterable) {
-        RegistryEntryLookup<Structure> registryEntryLookup = structureSetRegisterable.getRegistryLookup(Registry.STRUCTURE_KEY);
-        RegistryEntryLookup<Biome> registryEntryLookup2 = structureSetRegisterable.getRegistryLookup(Registry.BIOME_KEY);
+        RegistryEntryLookup<Structure> registryEntryLookup = structureSetRegisterable.getRegistryLookup(RegistryKeys.STRUCTURE_WORLDGEN);
+        RegistryEntryLookup<Biome> registryEntryLookup2 = structureSetRegisterable.getRegistryLookup(RegistryKeys.BIOME_WORLDGEN);
         RegistryEntry.Reference<StructureSet> reference = structureSetRegisterable.register(StructureSetKeys.VILLAGES, new StructureSet(List.of(StructureSet.createEntry(registryEntryLookup.getOrThrow(StructureKeys.VILLAGE_PLAINS)), StructureSet.createEntry(registryEntryLookup.getOrThrow(StructureKeys.VILLAGE_DESERT)), StructureSet.createEntry(registryEntryLookup.getOrThrow(StructureKeys.VILLAGE_SAVANNA)), StructureSet.createEntry(registryEntryLookup.getOrThrow(StructureKeys.VILLAGE_SNOWY)), StructureSet.createEntry(registryEntryLookup.getOrThrow(StructureKeys.VILLAGE_TAIGA))), (StructurePlacement)new RandomSpreadStructurePlacement(34, 8, SpreadType.LINEAR, 10387312)));
         structureSetRegisterable.register(StructureSetKeys.DESERT_PYRAMIDS, new StructureSet(registryEntryLookup.getOrThrow(StructureKeys.DESERT_PYRAMID), (StructurePlacement)new RandomSpreadStructurePlacement(32, 8, SpreadType.LINEAR, 14357617)));
         structureSetRegisterable.register(StructureSetKeys.IGLOOS, new StructureSet(registryEntryLookup.getOrThrow(StructureKeys.IGLOO), (StructurePlacement)new RandomSpreadStructurePlacement(32, 8, SpreadType.LINEAR, 14357618)));

@@ -26,6 +26,7 @@ import net.minecraft.command.argument.CommandFunctionArgumentType;
 import net.minecraft.command.argument.DimensionArgumentType;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.command.argument.GameModeArgumentType;
 import net.minecraft.command.argument.GameProfileArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.command.argument.ItemPredicateArgumentType;
@@ -63,7 +64,7 @@ import net.minecraft.command.argument.serialize.FloatArgumentSerializer;
 import net.minecraft.command.argument.serialize.IntegerArgumentSerializer;
 import net.minecraft.command.argument.serialize.LongArgumentSerializer;
 import net.minecraft.command.argument.serialize.StringArgumentSerializer;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registry;
 
 public class ArgumentTypes {
     private static final Map<Class<?>, ArgumentSerializer<?, ?>> CLASS_MAP = Maps.newHashMap();
@@ -116,6 +117,7 @@ public class ArgumentTypes {
         ArgumentTypes.register(registry, "int_range", NumberRangeArgumentType.IntRangeArgumentType.class, ConstantArgumentSerializer.of(NumberRangeArgumentType::intRange));
         ArgumentTypes.register(registry, "float_range", NumberRangeArgumentType.FloatRangeArgumentType.class, ConstantArgumentSerializer.of(NumberRangeArgumentType::floatRange));
         ArgumentTypes.register(registry, "dimension", DimensionArgumentType.class, ConstantArgumentSerializer.of(DimensionArgumentType::dimension));
+        ArgumentTypes.register(registry, "gamemode", GameModeArgumentType.class, ConstantArgumentSerializer.of(GameModeArgumentType::gameMode));
         ArgumentTypes.register(registry, "time", TimeArgumentType.class, ConstantArgumentSerializer.of(TimeArgumentType::time));
         ArgumentTypes.register(registry, "resource_or_tag", ArgumentTypes.upcast(RegistryEntryPredicateArgumentType.class), new RegistryEntryPredicateArgumentType.Serializer());
         ArgumentTypes.register(registry, "resource_or_tag_key", ArgumentTypes.upcast(RegistryPredicateArgumentType.class), new RegistryPredicateArgumentType.Serializer());

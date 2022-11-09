@@ -4,7 +4,8 @@
 package net.minecraft.world.gen.structure;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.world.gen.structure.BuriedTreasureStructure;
 import net.minecraft.world.gen.structure.DesertPyramidStructure;
 import net.minecraft.world.gen.structure.EndCityStructure;
@@ -44,7 +45,7 @@ public interface StructureType<S extends Structure> {
     public Codec<S> codec();
 
     private static <S extends Structure> StructureType<S> register(String id, Codec<S> codec) {
-        return Registry.register(Registry.STRUCTURE_TYPE, id, () -> codec);
+        return Registry.register(Registries.STRUCTURE_TYPE, id, () -> codec);
     }
 }
 

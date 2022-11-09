@@ -22,11 +22,11 @@ import net.minecraft.block.enums.ChestType;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.SpriteIdentifier;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SignType;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 
 @Environment(value=EnvType.CLIENT)
 public class TexturedRenderLayers {
@@ -52,8 +52,8 @@ public class TexturedRenderLayers {
     public static final List<SpriteIdentifier> COLORED_SHULKER_BOXES_TEXTURES = Stream.of("white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray", "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black").map(string -> new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, new Identifier("entity/shulker/shulker_" + string))).collect(ImmutableList.toImmutableList());
     public static final Map<SignType, SpriteIdentifier> SIGN_TYPE_TEXTURES = SignType.stream().collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::createSignTextureId));
     public static final Map<SignType, SpriteIdentifier> HANGING_SIGN_TYPE_TEXTURES = SignType.stream().collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::createHangingSignTextureId));
-    public static final Map<RegistryKey<BannerPattern>, SpriteIdentifier> BANNER_PATTERN_TEXTURES = Registry.BANNER_PATTERN.getKeys().stream().collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::createBannerPatternTextureId));
-    public static final Map<RegistryKey<BannerPattern>, SpriteIdentifier> SHIELD_PATTERN_TEXTURES = Registry.BANNER_PATTERN.getKeys().stream().collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::createShieldPatternTextureId));
+    public static final Map<RegistryKey<BannerPattern>, SpriteIdentifier> BANNER_PATTERN_TEXTURES = Registries.BANNER_PATTERN.getKeys().stream().collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::createBannerPatternTextureId));
+    public static final Map<RegistryKey<BannerPattern>, SpriteIdentifier> SHIELD_PATTERN_TEXTURES = Registries.BANNER_PATTERN.getKeys().stream().collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::createShieldPatternTextureId));
     public static final SpriteIdentifier[] BED_TEXTURES = (SpriteIdentifier[])Arrays.stream(DyeColor.values()).sorted(Comparator.comparingInt(DyeColor::getId)).map(dyeColor -> new SpriteIdentifier(BEDS_ATLAS_TEXTURE, new Identifier("entity/bed/" + dyeColor.getName()))).toArray(SpriteIdentifier[]::new);
     public static final SpriteIdentifier TRAPPED = TexturedRenderLayers.getChestTextureId("trapped");
     public static final SpriteIdentifier TRAPPED_LEFT = TexturedRenderLayers.getChestTextureId("trapped_left");

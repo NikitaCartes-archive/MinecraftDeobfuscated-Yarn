@@ -23,6 +23,8 @@ import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.TypeSpecificPredicate;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.server.ServerAdvancementLoader;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.ServerRecipeBook;
@@ -36,7 +38,6 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
 
@@ -132,7 +133,7 @@ implements TypeSpecificPredicate {
             for (JsonElement jsonElement : jsonArray) {
                 JsonObject jsonObject = JsonHelper.asObject(jsonElement, "stats entry");
                 Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "type"));
-                StatType<?> statType = Registry.STAT_TYPE.get(identifier);
+                StatType<?> statType = Registries.STAT_TYPE.get(identifier);
                 if (statType == null) {
                     throw new JsonParseException("Invalid stat type: " + identifier);
                 }
@@ -164,7 +165,7 @@ implements TypeSpecificPredicate {
         Registry<T> registry = type.getRegistry();
         T object = registry.get(id);
         if (object == null) {
-            throw new JsonParseException("Unknown object " + id + " for stat type " + Registry.STAT_TYPE.getId(type));
+            throw new JsonParseException("Unknown object " + id + " for stat type " + Registries.STAT_TYPE.getId(type));
         }
         return type.getOrCreateStat(object);
     }
@@ -185,7 +186,7 @@ implements TypeSpecificPredicate {
             JsonArray jsonArray = new JsonArray();
             this.stats.forEach((stat, intRange) -> {
                 JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("type", Registry.STAT_TYPE.getId(stat.getType()).toString());
+                jsonObject.addProperty("type", Registries.STAT_TYPE.getId(stat.getType()).toString());
                 jsonObject.addProperty("stat", PlayerPredicate.getStatId(stat).toString());
                 jsonObject.add("value", intRange.toJson());
                 jsonArray.add(jsonObject);

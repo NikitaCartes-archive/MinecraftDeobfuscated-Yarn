@@ -30,11 +30,11 @@ import net.minecraft.loot.function.ConditionalLootFunction;
 import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.function.LootFunctionTypes;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
 
 public class EnchantRandomlyLootFunction
@@ -58,7 +58,7 @@ extends ConditionalLootFunction {
         Random random = context.getRandom();
         if (this.enchantments.isEmpty()) {
             boolean bl = stack.isOf(Items.BOOK);
-            List list = Registry.ENCHANTMENT.stream().filter(Enchantment::isAvailableForRandomSelection).filter(enchantment -> bl || enchantment.isAcceptableItem(stack)).collect(Collectors.toList());
+            List list = Registries.ENCHANTMENT.stream().filter(Enchantment::isAvailableForRandomSelection).filter(enchantment -> bl || enchantment.isAcceptableItem(stack)).collect(Collectors.toList());
             if (list.isEmpty()) {
                 LOGGER.warn("Couldn't find a compatible enchantment for {}", (Object)stack);
                 return stack;
@@ -122,7 +122,7 @@ extends ConditionalLootFunction {
             if (!enchantRandomlyLootFunction.enchantments.isEmpty()) {
                 JsonArray jsonArray = new JsonArray();
                 for (Enchantment enchantment : enchantRandomlyLootFunction.enchantments) {
-                    Identifier identifier = Registry.ENCHANTMENT.getId(enchantment);
+                    Identifier identifier = Registries.ENCHANTMENT.getId(enchantment);
                     if (identifier == null) {
                         throw new IllegalArgumentException("Don't know how to serialize enchantment " + enchantment);
                     }
@@ -139,7 +139,7 @@ extends ConditionalLootFunction {
                 JsonArray jsonArray = JsonHelper.getArray(jsonObject, "enchantments");
                 for (JsonElement jsonElement : jsonArray) {
                     String string = JsonHelper.asString(jsonElement, "enchantment");
-                    Enchantment enchantment = Registry.ENCHANTMENT.getOrEmpty(new Identifier(string)).orElseThrow(() -> new JsonSyntaxException("Unknown enchantment '" + string + "'"));
+                    Enchantment enchantment = Registries.ENCHANTMENT.getOrEmpty(new Identifier(string)).orElseThrow(() -> new JsonSyntaxException("Unknown enchantment '" + string + "'"));
                     list.add(enchantment);
                 }
             }

@@ -6,14 +6,20 @@ package net.minecraft.client.gui.screen;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.NetworkUtils;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
+import net.minecraft.server.command.PublishCommand;
+import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.world.GameMode;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class OpenToLanScreen
@@ -21,31 +27,78 @@ extends Screen {
     private static final Text ALLOW_COMMANDS_TEXT = Text.translatable("selectWorld.allowCommands");
     private static final Text GAME_MODE_TEXT = Text.translatable("selectWorld.gameMode");
     private static final Text OTHER_PLAYERS_TEXT = Text.translatable("lanServer.otherPlayers");
+    private static final Text PORT_TEXT = Text.translatable("lanServer.port");
+    private static final Text INVALID_PORT_TEXT = Text.translatable("lanServer.port.invalid");
+    public static final Text UNAVAILABLE_PORT_TEXT = Text.translatable("lanServer.port.unavailable");
+    public static final int field_41107 = 0xFF5555;
     private final Screen parent;
     private GameMode gameMode = GameMode.SURVIVAL;
     private boolean allowCommands;
+    private int port = NetworkUtils.findLocalPort();
+    @Nullable
+    private TextFieldWidget portField;
 
-    public OpenToLanScreen(Screen parent) {
+    public OpenToLanScreen(Screen screen) {
         super(Text.translatable("lanServer.title"));
-        this.parent = parent;
+        this.parent = screen;
     }
 
     @Override
     protected void init() {
+        IntegratedServer integratedServer = this.client.getServer();
+        this.gameMode = integratedServer.getDefaultGameMode();
+        this.allowCommands = integratedServer.getSaveProperties().areCommandsAllowed();
         this.addDrawableChild(CyclingButtonWidget.builder(GameMode::getSimpleTranslatableName).values((GameMode[])new GameMode[]{GameMode.SURVIVAL, GameMode.SPECTATOR, GameMode.CREATIVE, GameMode.ADVENTURE}).initially(this.gameMode).build(this.width / 2 - 155, 100, 150, 20, GAME_MODE_TEXT, (button, gameMode) -> {
             this.gameMode = gameMode;
         }));
         this.addDrawableChild(CyclingButtonWidget.onOffBuilder(this.allowCommands).build(this.width / 2 + 5, 100, 150, 20, ALLOW_COMMANDS_TEXT, (button, allowCommands) -> {
             this.allowCommands = allowCommands;
         }));
-        this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("lanServer.start"), button -> {
+        ButtonWidget buttonWidget = ButtonWidget.createBuilder(Text.translatable("lanServer.start"), button -> {
             this.client.setScreen(null);
-            int i = NetworkUtils.findLocalPort();
-            MutableText text = this.client.getServer().openToLan(this.gameMode, this.allowCommands, i) ? Text.translatable("commands.publish.started", i) : Text.translatable("commands.publish.failed");
+            MutableText text = integratedServer.openToLan(this.gameMode, this.allowCommands, this.port) ? PublishCommand.getStartedText(this.port) : Text.translatable("commands.publish.failed");
             this.client.inGameHud.getChatHud().addMessage(text);
             this.client.updateWindowTitle();
-        }).setPositionAndSize(this.width / 2 - 155, this.height - 28, 150, 20).build());
+        }).setPositionAndSize(this.width / 2 - 155, this.height - 28, 150, 20).build();
+        this.portField = new TextFieldWidget(this.textRenderer, this.width / 2 - 75, 160, 150, 20, Text.translatable("lanServer.port"));
+        this.portField.setChangedListener(string -> {
+            Text text = this.updatePort((String)string);
+            this.portField.setPlaceholder(Text.literal("" + this.port).formatted(Formatting.DARK_GRAY));
+            if (text == null) {
+                this.portField.setEditableColor(0xE0E0E0);
+                this.portField.setTooltip(null);
+                buttonWidget.active = true;
+            } else {
+                this.portField.setEditableColor(0xFF5555);
+                this.portField.setTooltip(Tooltip.of(text));
+                buttonWidget.active = false;
+            }
+        });
+        this.portField.setPlaceholder(Text.literal("" + this.port).formatted(Formatting.DARK_GRAY));
+        this.addDrawableChild(this.portField);
+        this.addDrawableChild(buttonWidget);
         this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)).setPositionAndSize(this.width / 2 + 5, this.height - 28, 150, 20).build());
+    }
+
+    @Nullable
+    private Text updatePort(String portText) {
+        if (portText.isBlank()) {
+            this.port = NetworkUtils.findLocalPort();
+            return null;
+        }
+        try {
+            this.port = Integer.parseInt(portText);
+            if (this.port < 1 || this.port > 65535) {
+                return INVALID_PORT_TEXT;
+            }
+            if (!NetworkUtils.isPortAvailable(this.port)) {
+                return UNAVAILABLE_PORT_TEXT;
+            }
+            return null;
+        } catch (NumberFormatException numberFormatException) {
+            this.port = -1;
+            return INVALID_PORT_TEXT;
+        }
     }
 
     @Override
@@ -53,6 +106,7 @@ extends Screen {
         this.renderBackground(matrices);
         OpenToLanScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 50, 0xFFFFFF);
         OpenToLanScreen.drawCenteredText(matrices, this.textRenderer, OTHER_PLAYERS_TEXT, this.width / 2, 82, 0xFFFFFF);
+        OpenToLanScreen.drawCenteredText(matrices, this.textRenderer, PORT_TEXT, this.width / 2, 142, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
     }
 }

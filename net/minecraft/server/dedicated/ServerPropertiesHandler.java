@@ -19,6 +19,12 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryOps;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.resource.DataConfiguration;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
@@ -28,12 +34,7 @@ import net.minecraft.server.dedicated.AbstractPropertiesHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.dimension.DimensionOptionsRegistryHolder;
@@ -190,9 +191,9 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
         private static final Map<String, RegistryKey<WorldPreset>> LEVEL_TYPE_TO_PRESET_KEY = Map.of("default", WorldPresets.DEFAULT, "largebiomes", WorldPresets.LARGE_BIOMES);
 
         public DimensionOptionsRegistryHolder createDimensionsRegistryHolder(DynamicRegistryManager dynamicRegistryManager) {
-            Registry<WorldPreset> registry = dynamicRegistryManager.get(Registry.WORLD_PRESET_KEY);
+            Registry<WorldPreset> registry = dynamicRegistryManager.get(RegistryKeys.WORLD_PRESET_WORLDGEN);
             RegistryEntry.Reference<WorldPreset> reference = registry.getEntry(WorldPresets.DEFAULT).or(() -> registry.streamEntries().findAny()).orElseThrow(() -> new IllegalStateException("Invalid datapack contents: can't find default preset"));
-            RegistryEntry registryEntry = Optional.ofNullable(Identifier.tryParse(this.levelType)).map(levelTypeId -> RegistryKey.of(Registry.WORLD_PRESET_KEY, levelTypeId)).or(() -> Optional.ofNullable(LEVEL_TYPE_TO_PRESET_KEY.get(this.levelType))).flatMap(registry::getEntry).orElseGet(() -> {
+            RegistryEntry registryEntry = Optional.ofNullable(Identifier.tryParse(this.levelType)).map(levelTypeId -> RegistryKey.of(RegistryKeys.WORLD_PRESET_WORLDGEN, levelTypeId)).or(() -> Optional.ofNullable(LEVEL_TYPE_TO_PRESET_KEY.get(this.levelType))).flatMap(registry::getEntry).orElseGet(() -> {
                 field_37276.warn("Failed to parse level-type {}, defaulting to {}", (Object)this.levelType, (Object)reference.registryKey().getValue());
                 return reference;
             });

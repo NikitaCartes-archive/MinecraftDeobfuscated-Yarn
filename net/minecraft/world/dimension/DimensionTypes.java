@@ -3,9 +3,9 @@
  */
 package net.minecraft.world.dimension;
 
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.dimension.DimensionType;
 
 public class DimensionTypes {
@@ -18,7 +18,7 @@ public class DimensionTypes {
     public static final Identifier THE_END_ID = new Identifier("the_end");
 
     private static RegistryKey<DimensionType> of(String id) {
-        return RegistryKey.of(Registry.DIMENSION_TYPE_KEY, new Identifier(id));
+        return RegistryKey.of(RegistryKeys.DIMENSION_TYPE, new Identifier(id));
     }
 }
 

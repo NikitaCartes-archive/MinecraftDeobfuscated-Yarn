@@ -16,9 +16,9 @@ import net.minecraft.loot.entry.LeafEntry;
 import net.minecraft.loot.entry.LootPoolEntryType;
 import net.minecraft.loot.entry.LootPoolEntryTypes;
 import net.minecraft.loot.function.LootFunction;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.registry.Registry;
 
 public class ItemEntry
 extends LeafEntry {
@@ -48,7 +48,7 @@ extends LeafEntry {
         @Override
         public void addEntryFields(JsonObject jsonObject, ItemEntry itemEntry, JsonSerializationContext jsonSerializationContext) {
             super.addEntryFields(jsonObject, itemEntry, jsonSerializationContext);
-            Identifier identifier = Registry.ITEM.getId(itemEntry.item);
+            Identifier identifier = Registries.ITEM.getId(itemEntry.item);
             if (identifier == null) {
                 throw new IllegalArgumentException("Can't serialize unknown item " + itemEntry.item);
             }

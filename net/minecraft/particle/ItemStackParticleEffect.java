@@ -12,7 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 
 public class ItemStackParticleEffect
 implements ParticleEffect {
@@ -21,7 +21,7 @@ implements ParticleEffect {
         @Override
         public ItemStackParticleEffect read(ParticleType<ItemStackParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {
             stringReader.expect(' ');
-            ItemStringReader.ItemResult itemResult = ItemStringReader.item(Registry.ITEM.getReadOnlyWrapper(), stringReader);
+            ItemStringReader.ItemResult itemResult = ItemStringReader.item(Registries.ITEM.getReadOnlyWrapper(), stringReader);
             ItemStack itemStack = new ItemStackArgument(itemResult.item(), itemResult.nbt()).createStack(1, false);
             return new ItemStackParticleEffect(particleType, itemStack);
         }
@@ -60,7 +60,7 @@ implements ParticleEffect {
 
     @Override
     public String asString() {
-        return Registry.PARTICLE_TYPE.getId(this.getType()) + " " + new ItemStackArgument(this.stack.getRegistryEntry(), this.stack.getNbt()).asString();
+        return Registries.PARTICLE_TYPE.getId(this.getType()) + " " + new ItemStackArgument(this.stack.getRegistryEntry(), this.stack.getNbt()).asString();
     }
 
     public ParticleType<ItemStackParticleEffect> getType() {

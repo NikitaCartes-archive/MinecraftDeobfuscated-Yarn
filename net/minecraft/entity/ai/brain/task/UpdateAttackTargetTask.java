@@ -3,56 +3,37 @@
  */
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.TaskTriggerer;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.server.world.ServerWorld;
 
-public class UpdateAttackTargetTask<E extends MobEntity>
-extends Task<E> {
-    private final Predicate<E> startCondition;
-    private final Function<E, Optional<? extends LivingEntity>> targetGetter;
-
-    public UpdateAttackTargetTask(Predicate<E> startCondition, Function<E, Optional<? extends LivingEntity>> targetGetter) {
-        this(startCondition, targetGetter, 60);
+public class UpdateAttackTargetTask {
+    public static <E extends MobEntity> Task<E> create(Function<E, Optional<? extends LivingEntity>> targetGetter) {
+        return UpdateAttackTargetTask.create(entity -> true, targetGetter);
     }
 
-    public UpdateAttackTargetTask(Predicate<E> startCondition, Function<E, Optional<? extends LivingEntity>> targetGetter, int duration) {
-        super(ImmutableMap.of(MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleState.REGISTERED), duration);
-        this.startCondition = startCondition;
-        this.targetGetter = targetGetter;
-    }
-
-    public UpdateAttackTargetTask(Function<E, Optional<? extends LivingEntity>> targetGetter) {
-        this((E entity) -> true, targetGetter);
-    }
-
-    @Override
-    protected boolean shouldRun(ServerWorld serverWorld, E mobEntity) {
-        if (!this.startCondition.test(mobEntity)) {
-            return false;
-        }
-        Optional<? extends LivingEntity> optional = this.targetGetter.apply(mobEntity);
-        if (optional.isPresent()) {
-            return ((LivingEntity)mobEntity).canTarget(optional.get());
-        }
-        return false;
-    }
-
-    @Override
-    protected void run(ServerWorld serverWorld, E mobEntity, long l) {
-        this.targetGetter.apply(mobEntity).ifPresent(target -> UpdateAttackTargetTask.updateAttackTarget(mobEntity, target));
-    }
-
-    public static <E extends MobEntity> void updateAttackTarget(E entity, LivingEntity target) {
-        entity.getBrain().remember(MemoryModuleType.ATTACK_TARGET, target);
-        entity.getBrain().forget(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
+    public static <E extends MobEntity> Task<E> create(Predicate<E> startCondition, Function<E, Optional<? extends LivingEntity>> targetGetter) {
+        return TaskTriggerer.task(context -> context.group(context.queryMemoryAbsent(MemoryModuleType.ATTACK_TARGET), context.queryMemoryOptional(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE)).apply(context, (attackTarget, cantReachWalkTargetSince) -> (world, entity, time) -> {
+            if (!startCondition.test(entity)) {
+                return false;
+            }
+            Optional optional = (Optional)targetGetter.apply(entity);
+            if (optional.isEmpty()) {
+                return false;
+            }
+            LivingEntity livingEntity = (LivingEntity)optional.get();
+            if (!entity.canTarget(livingEntity)) {
+                return false;
+            }
+            attackTarget.remember(livingEntity);
+            cantReachWalkTargetSince.forget();
+            return true;
+        }));
     }
 }
 

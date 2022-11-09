@@ -4,6 +4,8 @@
 package net.minecraft.structure.rule;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.structure.rule.AlwaysTrueRuleTest;
 import net.minecraft.structure.rule.BlockMatchRuleTest;
 import net.minecraft.structure.rule.BlockStateMatchRuleTest;
@@ -11,7 +13,6 @@ import net.minecraft.structure.rule.RandomBlockMatchRuleTest;
 import net.minecraft.structure.rule.RandomBlockStateMatchRuleTest;
 import net.minecraft.structure.rule.RuleTest;
 import net.minecraft.structure.rule.TagMatchRuleTest;
-import net.minecraft.util.registry.Registry;
 
 public interface RuleTestType<P extends RuleTest> {
     public static final RuleTestType<AlwaysTrueRuleTest> ALWAYS_TRUE = RuleTestType.register("always_true", AlwaysTrueRuleTest.CODEC);
@@ -24,7 +25,7 @@ public interface RuleTestType<P extends RuleTest> {
     public Codec<P> codec();
 
     public static <P extends RuleTest> RuleTestType<P> register(String id, Codec<P> codec) {
-        return Registry.register(Registry.RULE_TEST, id, () -> codec);
+        return Registry.register(Registries.RULE_TEST, id, () -> codec);
     }
 }
 

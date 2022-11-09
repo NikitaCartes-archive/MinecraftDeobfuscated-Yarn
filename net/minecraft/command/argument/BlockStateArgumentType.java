@@ -16,9 +16,9 @@ import net.minecraft.block.Block;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.BlockArgumentParser;
 import net.minecraft.command.argument.BlockStateArgument;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryWrapper;
 
 public class BlockStateArgumentType
 implements ArgumentType<BlockStateArgument> {
@@ -26,7 +26,7 @@ implements ArgumentType<BlockStateArgument> {
     private final RegistryWrapper<Block> registryWrapper;
 
     public BlockStateArgumentType(CommandRegistryAccess commandRegistryAccess) {
-        this.registryWrapper = commandRegistryAccess.createWrapper(Registry.BLOCK_KEY);
+        this.registryWrapper = commandRegistryAccess.createWrapper(RegistryKeys.BLOCK);
     }
 
     public static BlockStateArgumentType blockState(CommandRegistryAccess commandRegistryAccess) {

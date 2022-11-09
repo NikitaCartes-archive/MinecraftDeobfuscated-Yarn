@@ -24,6 +24,13 @@ import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.world.GeneratorOptionsHolder;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.registry.CombinedDynamicRegistries;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryOps;
+import net.minecraft.registry.ServerDynamicRegistryType;
+import net.minecraft.registry.SimpleRegistry;
 import net.minecraft.resource.DataConfiguration;
 import net.minecraft.resource.LifecycledResourceManager;
 import net.minecraft.resource.ResourcePackManager;
@@ -37,12 +44,6 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.dynamic.RegistryOps;
-import net.minecraft.util.registry.CombinedDynamicRegistries;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.ServerDynamicRegistryType;
-import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.dimension.DimensionOptionsRegistryHolder;
@@ -78,7 +79,7 @@ public class IntegratedServerLoader {
         try {
             SaveLoading.DataPacks dataPacks = new SaveLoading.DataPacks(resourcePackManager, dataConfiguration, false, false);
             SaveLoader saveLoader = this.load(dataPacks, context -> {
-                DimensionOptionsRegistryHolder.DimensionsConfig dimensionsConfig = ((DimensionOptionsRegistryHolder)dimensionsRegistrySupplier.apply(context.worldGenRegistryManager())).toConfig(context.dimensionsRegistryManager().get(Registry.DIMENSION_KEY));
+                DimensionOptionsRegistryHolder.DimensionsConfig dimensionsConfig = ((DimensionOptionsRegistryHolder)dimensionsRegistrySupplier.apply(context.worldGenRegistryManager())).toConfig(context.dimensionsRegistryManager().get(RegistryKeys.DIMENSION));
                 return new SaveLoading.LoadContext<LevelProperties>(new LevelProperties(levelInfo, dynamicRegistryManager, dimensionsConfig.specialWorldProperty(), dimensionsConfig.getLifecycle()), dimensionsConfig.toDynamicRegistryManager());
             }, SaveLoader::new);
             this.client.startIntegratedServer(levelName, session, resourcePackManager, saveLoader);
@@ -110,7 +111,7 @@ public class IntegratedServerLoader {
         SaveLoading.DataPacks dataPacks = this.createDataPackConfig(session, safeMode, dataPackManager);
         return this.load(dataPacks, context -> {
             RegistryOps<NbtElement> dynamicOps = RegistryOps.of(NbtOps.INSTANCE, context.worldGenRegistryManager());
-            Registry<DimensionOptions> registry = context.dimensionsRegistryManager().get(Registry.DIMENSION_KEY);
+            Registry<DimensionOptions> registry = context.dimensionsRegistryManager().get(RegistryKeys.DIMENSION);
             Pair<SaveProperties, DimensionOptionsRegistryHolder.DimensionsConfig> pair = session.readLevelProperties(dynamicOps, context.dataConfiguration(), registry, context.worldGenRegistryManager().getRegistryLifecycle());
             if (pair == null) {
                 throw new IllegalStateException("Failed to load world");
@@ -127,7 +128,7 @@ public class IntegratedServerLoader {
         SaveLoading.DataPacks dataPacks = this.createDataPackConfig(session, false, resourcePackManager);
         return this.load(dataPacks, context -> {
             RegistryOps<NbtElement> dynamicOps = RegistryOps.of(NbtOps.INSTANCE, context.worldGenRegistryManager());
-            Registry<DimensionOptions> registry = new SimpleRegistry<DimensionOptions>(Registry.DIMENSION_KEY, Lifecycle.stable()).freeze();
+            Registry<DimensionOptions> registry = new SimpleRegistry<DimensionOptions>(RegistryKeys.DIMENSION, Lifecycle.stable()).freeze();
             Pair<SaveProperties, DimensionOptionsRegistryHolder.DimensionsConfig> pair = session.readLevelProperties(dynamicOps, context.dataConfiguration(), registry, context.worldGenRegistryManager().getRegistryLifecycle());
             if (pair == null) {
                 throw new IllegalStateException("Failed to load world");

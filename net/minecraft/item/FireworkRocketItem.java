@@ -31,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class FireworkRocketItem
 extends Item {
+    public static final byte[] FLIGHT_VALUES = new byte[]{1, 2, 3};
     public static final String FIREWORKS_KEY = "Fireworks";
     public static final String EXPLOSION_KEY = "Explosion";
     public static final String EXPLOSIONS_KEY = "Explosions";
@@ -101,10 +102,14 @@ extends Item {
         }
     }
 
+    public static void setFlight(ItemStack stack, byte flight) {
+        stack.getOrCreateSubNbt(FIREWORKS_KEY).putByte(FLIGHT_KEY, flight);
+    }
+
     @Override
     public ItemStack getDefaultStack() {
         ItemStack itemStack = new ItemStack(this);
-        itemStack.getOrCreateNbt().putByte(FLIGHT_KEY, (byte)1);
+        FireworkRocketItem.setFlight(itemStack, (byte)1);
         return itemStack;
     }
 

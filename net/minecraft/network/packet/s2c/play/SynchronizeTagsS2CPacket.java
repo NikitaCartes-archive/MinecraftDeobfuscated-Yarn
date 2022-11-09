@@ -7,9 +7,9 @@ import java.util.Map;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.tag.TagPacketSerializer;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.tag.TagPacketSerializer;
 
 public class SynchronizeTagsS2CPacket
 implements Packet<ClientPlayPacketListener> {

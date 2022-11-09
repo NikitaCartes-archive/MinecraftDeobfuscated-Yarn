@@ -46,7 +46,7 @@ extends Screen {
     private final Set<AbstractRuleWidget> invalidRuleWidgets = Sets.newHashSet();
     private ButtonWidget doneButton;
     @Nullable
-    private List<OrderedText> tooltip;
+    private List<OrderedText> field_24297;
     private final GameRules gameRules;
 
     public EditGameRulesScreen(GameRules gameRules, Consumer<Optional<GameRules>> ruleSaveConsumer) {
@@ -77,17 +77,10 @@ extends Screen {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        this.tooltip = null;
+        this.field_24297 = null;
         this.ruleListWidget.render(matrices, mouseX, mouseY, delta);
         EditGameRulesScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 20, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
-        if (this.tooltip != null) {
-            this.renderOrderedTooltip(matrices, this.tooltip, mouseX, mouseY);
-        }
-    }
-
-    void setTooltip(@Nullable List<OrderedText> tooltip) {
-        this.tooltip = tooltip;
     }
 
     private void updateDoneButton() {

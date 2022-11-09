@@ -12,6 +12,10 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolBasedGenerator;
@@ -19,9 +23,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 
 public class JigsawBlockEntity
 extends BlockEntity {
@@ -32,7 +33,7 @@ extends BlockEntity {
     public static final String FINAL_STATE_KEY = "final_state";
     private Identifier name = new Identifier("empty");
     private Identifier target = new Identifier("empty");
-    private RegistryKey<StructurePool> pool = RegistryKey.of(Registry.STRUCTURE_POOL_KEY, new Identifier("empty"));
+    private RegistryKey<StructurePool> pool = RegistryKey.of(RegistryKeys.TEMPLATE_POOL_WORLDGEN, new Identifier("empty"));
     private Joint joint = Joint.ROLLABLE;
     private String finalState = "minecraft:air";
 
@@ -95,7 +96,7 @@ extends BlockEntity {
         super.readNbt(nbt);
         this.name = new Identifier(nbt.getString(NAME_KEY));
         this.target = new Identifier(nbt.getString(TARGET_KEY));
-        this.pool = RegistryKey.of(Registry.STRUCTURE_POOL_KEY, new Identifier(nbt.getString(POOL_KEY)));
+        this.pool = RegistryKey.of(RegistryKeys.TEMPLATE_POOL_WORLDGEN, new Identifier(nbt.getString(POOL_KEY)));
         this.finalState = nbt.getString(FINAL_STATE_KEY);
         this.joint = Joint.byName(nbt.getString(JOINT_KEY)).orElseGet(() -> JigsawBlock.getFacing(this.getCachedState()).getAxis().isHorizontal() ? Joint.ALIGNED : Joint.ROLLABLE);
     }
@@ -111,7 +112,7 @@ extends BlockEntity {
 
     public void generate(ServerWorld world, int maxDepth, boolean keepJigsaws) {
         BlockPos blockPos = this.getPos().offset(this.getCachedState().get(JigsawBlock.ORIENTATION).getFacing());
-        Registry<StructurePool> registry = world.getRegistryManager().get(Registry.STRUCTURE_POOL_KEY);
+        Registry<StructurePool> registry = world.getRegistryManager().get(RegistryKeys.TEMPLATE_POOL_WORLDGEN);
         RegistryEntry.Reference<StructurePool> registryEntry = registry.entryOf(this.pool);
         StructurePoolBasedGenerator.generate(world, registryEntry, this.target, maxDepth, blockPos, keepJigsaws);
     }

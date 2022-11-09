@@ -4,7 +4,8 @@
 package net.minecraft.world.gen.heightprovider;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.world.gen.heightprovider.BiasedToBottomHeightProvider;
 import net.minecraft.world.gen.heightprovider.ConstantHeightProvider;
 import net.minecraft.world.gen.heightprovider.HeightProvider;
@@ -24,7 +25,7 @@ public interface HeightProviderType<P extends HeightProvider> {
     public Codec<P> codec();
 
     private static <P extends HeightProvider> HeightProviderType<P> register(String id, Codec<P> codec) {
-        return Registry.register(Registry.HEIGHT_PROVIDER_TYPE, id, () -> codec);
+        return Registry.register(Registries.HEIGHT_PROVIDER_TYPE, id, () -> codec);
     }
 }
 

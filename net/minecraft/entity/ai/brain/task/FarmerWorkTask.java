@@ -27,7 +27,7 @@ extends VillagerWorkTask {
 
     @Override
     protected void performAdditionalWork(ServerWorld world, VillagerEntity entity) {
-        Optional<GlobalPos> optional = entity.getBrain().getOptionalMemory(MemoryModuleType.JOB_SITE);
+        Optional<GlobalPos> optional = entity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.JOB_SITE);
         if (!optional.isPresent()) {
             return;
         }

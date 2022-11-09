@@ -30,6 +30,9 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.recipe.RecipeManager;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ChunkHolder;
@@ -49,9 +52,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
@@ -80,10 +80,10 @@ import org.jetbrains.annotations.Nullable;
 public abstract class World
 implements WorldAccess,
 AutoCloseable {
-    public static final Codec<RegistryKey<World>> CODEC = RegistryKey.createCodec(Registry.WORLD_KEY);
-    public static final RegistryKey<World> OVERWORLD = RegistryKey.of(Registry.WORLD_KEY, new Identifier("overworld"));
-    public static final RegistryKey<World> NETHER = RegistryKey.of(Registry.WORLD_KEY, new Identifier("the_nether"));
-    public static final RegistryKey<World> END = RegistryKey.of(Registry.WORLD_KEY, new Identifier("the_end"));
+    public static final Codec<RegistryKey<World>> CODEC = RegistryKey.createCodec(RegistryKeys.WORLD);
+    public static final RegistryKey<World> OVERWORLD = RegistryKey.of(RegistryKeys.WORLD, new Identifier("overworld"));
+    public static final RegistryKey<World> NETHER = RegistryKey.of(RegistryKeys.WORLD, new Identifier("the_nether"));
+    public static final RegistryKey<World> END = RegistryKey.of(RegistryKeys.WORLD, new Identifier("the_end"));
     public static final int HORIZONTAL_LIMIT = 30000000;
     public static final int MAX_UPDATE_DEPTH = 512;
     public static final int field_30967 = 32;

@@ -83,14 +83,14 @@ extends ScreenHandler {
     }
 
     @Override
-    public ItemStack transferSlot(PlayerEntity player, int index) {
+    public ItemStack quickMove(PlayerEntity player, int slot) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = (Slot)this.slots.get(index);
-        if (slot != null && slot.hasStack()) {
-            ItemStack itemStack2 = slot.getStack();
+        Slot slot2 = (Slot)this.slots.get(slot);
+        if (slot2 != null && slot2.hasStack()) {
+            ItemStack itemStack2 = slot2.getStack();
             itemStack = itemStack2.copy();
             int i = this.inventory.size();
-            if (index < i) {
+            if (slot < i) {
                 if (!this.insertItem(itemStack2, i, this.slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
@@ -107,15 +107,15 @@ extends ScreenHandler {
                 int j = i;
                 int l = k = j + 27;
                 int m = l + 9;
-                if (index >= l && index < m ? !this.insertItem(itemStack2, j, k, false) : (index >= j && index < k ? !this.insertItem(itemStack2, l, m, false) : !this.insertItem(itemStack2, l, k, false))) {
+                if (slot >= l && slot < m ? !this.insertItem(itemStack2, j, k, false) : (slot >= j && slot < k ? !this.insertItem(itemStack2, l, m, false) : !this.insertItem(itemStack2, l, k, false))) {
                     return ItemStack.EMPTY;
                 }
                 return ItemStack.EMPTY;
             }
             if (itemStack2.isEmpty()) {
-                slot.setStack(ItemStack.EMPTY);
+                slot2.setStack(ItemStack.EMPTY);
             } else {
-                slot.markDirty();
+                slot2.markDirty();
             }
         }
         return itemStack;

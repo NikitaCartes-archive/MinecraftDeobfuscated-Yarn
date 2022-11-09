@@ -1,0 +1,182 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.registry;
+
+import com.mojang.serialization.Codec;
+import net.minecraft.block.Block;
+import net.minecraft.block.entity.BannerPattern;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.command.argument.serialize.ArgumentSerializer;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.brain.Activity;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.brain.Schedule;
+import net.minecraft.entity.ai.brain.sensor.SensorType;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.decoration.painting.PaintingVariant;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.passive.CatVariant;
+import net.minecraft.entity.passive.FrogVariant;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.item.Instrument;
+import net.minecraft.item.Item;
+import net.minecraft.loot.condition.LootConditionType;
+import net.minecraft.loot.entry.LootPoolEntryType;
+import net.minecraft.loot.function.LootFunctionType;
+import net.minecraft.loot.provider.nbt.LootNbtProviderType;
+import net.minecraft.loot.provider.number.LootNumberProviderType;
+import net.minecraft.loot.provider.score.LootScoreProviderType;
+import net.minecraft.network.message.MessageType;
+import net.minecraft.particle.ParticleType;
+import net.minecraft.potion.Potion;
+import net.minecraft.recipe.RecipeSerializer;
+import net.minecraft.recipe.RecipeType;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.stat.StatType;
+import net.minecraft.structure.StructurePieceType;
+import net.minecraft.structure.StructureSet;
+import net.minecraft.structure.pool.StructurePool;
+import net.minecraft.structure.pool.StructurePoolElementType;
+import net.minecraft.structure.processor.StructureProcessorList;
+import net.minecraft.structure.processor.StructureProcessorType;
+import net.minecraft.structure.rule.PosRuleTestType;
+import net.minecraft.structure.rule.RuleTestType;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.floatprovider.FloatProviderType;
+import net.minecraft.util.math.intprovider.IntProviderType;
+import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
+import net.minecraft.village.VillagerProfession;
+import net.minecraft.village.VillagerType;
+import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.source.BiomeSource;
+import net.minecraft.world.chunk.ChunkStatus;
+import net.minecraft.world.dimension.DimensionOptions;
+import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.event.PositionSourceType;
+import net.minecraft.world.gen.FlatLevelGeneratorPreset;
+import net.minecraft.world.gen.WorldPreset;
+import net.minecraft.world.gen.blockpredicate.BlockPredicateType;
+import net.minecraft.world.gen.carver.Carver;
+import net.minecraft.world.gen.carver.ConfiguredCarver;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
+import net.minecraft.world.gen.chunk.placement.StructurePlacementType;
+import net.minecraft.world.gen.densityfunction.DensityFunction;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.PlacedFeature;
+import net.minecraft.world.gen.feature.size.FeatureSizeType;
+import net.minecraft.world.gen.foliage.FoliagePlacerType;
+import net.minecraft.world.gen.heightprovider.HeightProviderType;
+import net.minecraft.world.gen.placementmodifier.PlacementModifierType;
+import net.minecraft.world.gen.root.RootPlacerType;
+import net.minecraft.world.gen.stateprovider.BlockStateProviderType;
+import net.minecraft.world.gen.structure.Structure;
+import net.minecraft.world.gen.structure.StructureType;
+import net.minecraft.world.gen.surfacebuilder.MaterialRules;
+import net.minecraft.world.gen.treedecorator.TreeDecoratorType;
+import net.minecraft.world.gen.trunk.TrunkPlacerType;
+import net.minecraft.world.poi.PointOfInterestType;
+
+public class RegistryKeys {
+    public static final RegistryKey<Registry<Activity>> ACTIVITY = RegistryKeys.of("activity");
+    public static final RegistryKey<Registry<EntityAttribute>> ATTRIBUTE = RegistryKeys.of("attribute");
+    public static final RegistryKey<Registry<BannerPattern>> BANNER_PATTERN = RegistryKeys.of("banner_pattern");
+    public static final RegistryKey<Registry<Codec<? extends BiomeSource>>> BIOME_SOURCE = RegistryKeys.of("worldgen/biome_source");
+    public static final RegistryKey<Registry<Block>> BLOCK = RegistryKeys.of("block");
+    public static final RegistryKey<Registry<BlockEntityType<?>>> BLOCK_ENTITY_TYPE = RegistryKeys.of("block_entity_type");
+    public static final RegistryKey<Registry<BlockPredicateType<?>>> BLOCK_PREDICATE_TYPE = RegistryKeys.of("block_predicate_type");
+    public static final RegistryKey<Registry<BlockStateProviderType<?>>> BLOCK_STATE_PROVIDER_TYPE = RegistryKeys.of("worldgen/block_state_provider_type");
+    public static final RegistryKey<Registry<Carver<?>>> CARVER = RegistryKeys.of("worldgen/carver");
+    public static final RegistryKey<Registry<CatVariant>> CAT_VARIANT = RegistryKeys.of("cat_variant");
+    public static final RegistryKey<Registry<Codec<? extends ChunkGenerator>>> CHUNK_GENERATOR = RegistryKeys.of("worldgen/chunk_generator");
+    public static final RegistryKey<Registry<ChunkStatus>> CHUNK_STATUS = RegistryKeys.of("chunk_status");
+    public static final RegistryKey<Registry<ArgumentSerializer<?, ?>>> COMMAND_ARGUMENT_TYPE = RegistryKeys.of("command_argument_type");
+    public static final RegistryKey<Registry<Identifier>> CUSTOM_STAT = RegistryKeys.of("custom_stat");
+    public static final RegistryKey<Registry<Codec<? extends DensityFunction>>> DENSITY_FUNCTION_TYPE = RegistryKeys.of("worldgen/density_function_type");
+    public static final RegistryKey<Registry<Enchantment>> ENCHANTMENT = RegistryKeys.of("enchantment");
+    public static final RegistryKey<Registry<EntityType<?>>> ENTITY_TYPE = RegistryKeys.of("entity_type");
+    public static final RegistryKey<Registry<Feature<?>>> FEATURE = RegistryKeys.of("worldgen/feature");
+    public static final RegistryKey<Registry<FeatureSizeType<?>>> FEATURE_SIZE_TYPE = RegistryKeys.of("worldgen/feature_size_type");
+    public static final RegistryKey<Registry<FloatProviderType<?>>> FLOAT_PROVIDER_TYPE = RegistryKeys.of("float_provider_type");
+    public static final RegistryKey<Registry<Fluid>> FLUID = RegistryKeys.of("fluid");
+    public static final RegistryKey<Registry<FoliagePlacerType<?>>> FOLIAGE_PLACER_TYPE = RegistryKeys.of("worldgen/foliage_placer_type");
+    public static final RegistryKey<Registry<FrogVariant>> FROG_VARIANT = RegistryKeys.of("frog_variant");
+    public static final RegistryKey<Registry<GameEvent>> GAME_EVENT = RegistryKeys.of("game_event");
+    public static final RegistryKey<Registry<HeightProviderType<?>>> HEIGHT_PROVIDER_TYPE = RegistryKeys.of("height_provider_type");
+    public static final RegistryKey<Registry<Instrument>> INSTRUMENT = RegistryKeys.of("instrument");
+    public static final RegistryKey<Registry<IntProviderType<?>>> INT_PROVIDER_TYPE = RegistryKeys.of("int_provider_type");
+    public static final RegistryKey<Registry<Item>> ITEM = RegistryKeys.of("item");
+    public static final RegistryKey<Registry<LootConditionType>> LOOT_CONDITION_TYPE = RegistryKeys.of("loot_condition_type");
+    public static final RegistryKey<Registry<LootFunctionType>> LOOT_FUNCTION_TYPE = RegistryKeys.of("loot_function_type");
+    public static final RegistryKey<Registry<LootNbtProviderType>> LOOT_NBT_PROVIDER_TYPE = RegistryKeys.of("loot_nbt_provider_type");
+    public static final RegistryKey<Registry<LootNumberProviderType>> LOOT_NUMBER_PROVIDER_TYPE = RegistryKeys.of("loot_number_provider_type");
+    public static final RegistryKey<Registry<LootPoolEntryType>> LOOT_POOL_ENTRY_TYPE = RegistryKeys.of("loot_pool_entry_type");
+    public static final RegistryKey<Registry<LootScoreProviderType>> LOOT_SCORE_PROVIDER_TYPE = RegistryKeys.of("loot_score_provider_type");
+    public static final RegistryKey<Registry<Codec<? extends MaterialRules.MaterialCondition>>> MATERIAL_CONDITION = RegistryKeys.of("worldgen/material_condition");
+    public static final RegistryKey<Registry<Codec<? extends MaterialRules.MaterialRule>>> MATERIAL_RULE = RegistryKeys.of("worldgen/material_rule");
+    public static final RegistryKey<Registry<MemoryModuleType<?>>> MEMORY_MODULE_TYPE = RegistryKeys.of("memory_module_type");
+    public static final RegistryKey<Registry<ScreenHandlerType<?>>> SCREEN_HANDLER = RegistryKeys.of("menu");
+    public static final RegistryKey<Registry<StatusEffect>> STATUS_EFFECT = RegistryKeys.of("mob_effect");
+    public static final RegistryKey<Registry<PaintingVariant>> PAINTING_VARIANT = RegistryKeys.of("painting_variant");
+    public static final RegistryKey<Registry<ParticleType<?>>> PARTICLE_TYPE = RegistryKeys.of("particle_type");
+    public static final RegistryKey<Registry<PlacementModifierType<?>>> PLACEMENT_MODIFIER_TYPE = RegistryKeys.of("worldgen/placement_modifier_type");
+    public static final RegistryKey<Registry<PointOfInterestType>> POINT_OF_INTEREST_TYPE = RegistryKeys.of("point_of_interest_type");
+    public static final RegistryKey<Registry<PositionSourceType<?>>> POSITION_SOURCE_TYPE = RegistryKeys.of("position_source_type");
+    public static final RegistryKey<Registry<PosRuleTestType<?>>> POS_RULE_TEST = RegistryKeys.of("pos_rule_test");
+    public static final RegistryKey<Registry<Potion>> POTION = RegistryKeys.of("potion");
+    public static final RegistryKey<Registry<RecipeSerializer<?>>> RECIPE_SERIALIZER = RegistryKeys.of("recipe_serializer");
+    public static final RegistryKey<Registry<RecipeType<?>>> RECIPE_TYPE = RegistryKeys.of("recipe_type");
+    public static final RegistryKey<Registry<RootPlacerType<?>>> ROOT_PLAYER_TYPE = RegistryKeys.of("worldgen/root_placer_type");
+    public static final RegistryKey<Registry<RuleTestType<?>>> RULE_TEST = RegistryKeys.of("rule_test");
+    public static final RegistryKey<Registry<Schedule>> SCHEDULE = RegistryKeys.of("schedule");
+    public static final RegistryKey<Registry<SensorType<?>>> SENSOR_TYPE = RegistryKeys.of("sensor_type");
+    public static final RegistryKey<Registry<SoundEvent>> SOUND_EVENT = RegistryKeys.of("sound_event");
+    public static final RegistryKey<Registry<StatType<?>>> STAT_TYPE = RegistryKeys.of("stat_type");
+    public static final RegistryKey<Registry<StructurePieceType>> STRUCTURE_PIECE = RegistryKeys.of("worldgen/structure_piece");
+    public static final RegistryKey<Registry<StructurePlacementType<?>>> STRUCTURE_PLACEMENT = RegistryKeys.of("worldgen/structure_placement");
+    public static final RegistryKey<Registry<StructurePoolElementType<?>>> STRUCTURE_POOL_ELEMENT = RegistryKeys.of("worldgen/structure_pool_element");
+    public static final RegistryKey<Registry<StructureProcessorType<?>>> STRUCTURE_PROCESSOR = RegistryKeys.of("worldgen/structure_processor");
+    public static final RegistryKey<Registry<StructureType<?>>> STRUCTURE_TYPE = RegistryKeys.of("worldgen/structure_type");
+    public static final RegistryKey<Registry<TreeDecoratorType<?>>> TREE_DECORATOR_TYPE = RegistryKeys.of("worldgen/tree_decorator_type");
+    public static final RegistryKey<Registry<TrunkPlacerType<?>>> TRUNK_PLACER_TYPE = RegistryKeys.of("worldgen/trunk_placer_type");
+    public static final RegistryKey<Registry<VillagerProfession>> VILLAGER_PROFESSION = RegistryKeys.of("villager_profession");
+    public static final RegistryKey<Registry<VillagerType>> VILLAGER_TYPE = RegistryKeys.of("villager_type");
+    public static final RegistryKey<Registry<Biome>> BIOME_WORLDGEN = RegistryKeys.of("worldgen/biome");
+    public static final RegistryKey<Registry<MessageType>> CHAT_TYPE = RegistryKeys.of("chat_type");
+    public static final RegistryKey<Registry<ConfiguredCarver<?>>> CONFIGURED_CARVER_WORLDGEN = RegistryKeys.of("worldgen/configured_carver");
+    public static final RegistryKey<Registry<ConfiguredFeature<?, ?>>> CONFIGURED_FEATURE_WORLDGEN = RegistryKeys.of("worldgen/configured_feature");
+    public static final RegistryKey<Registry<DensityFunction>> DENSITY_FUNCTION_WORLDGEN = RegistryKeys.of("worldgen/density_function");
+    public static final RegistryKey<Registry<DimensionType>> DIMENSION_TYPE = RegistryKeys.of("dimension_type");
+    public static final RegistryKey<Registry<FlatLevelGeneratorPreset>> FLAT_LEVEL_GENERATOR_PRESET_WORLDGEN = RegistryKeys.of("worldgen/flat_level_generator_preset");
+    public static final RegistryKey<Registry<ChunkGeneratorSettings>> NOISE_SETTINGS_WORLDGEN = RegistryKeys.of("worldgen/noise_settings");
+    public static final RegistryKey<Registry<DoublePerlinNoiseSampler.NoiseParameters>> NOISE_WORLDGEN = RegistryKeys.of("worldgen/noise");
+    public static final RegistryKey<Registry<PlacedFeature>> PLACED_FEATURE_WORLDGEN = RegistryKeys.of("worldgen/placed_feature");
+    public static final RegistryKey<Registry<Structure>> STRUCTURE_WORLDGEN = RegistryKeys.of("worldgen/structure");
+    public static final RegistryKey<Registry<StructureProcessorList>> PROCESSOR_LIST_WORLDGEN = RegistryKeys.of("worldgen/processor_list");
+    public static final RegistryKey<Registry<StructureSet>> STRUCTURE_SET_WORLDGEN = RegistryKeys.of("worldgen/structure_set");
+    public static final RegistryKey<Registry<StructurePool>> TEMPLATE_POOL_WORLDGEN = RegistryKeys.of("worldgen/template_pool");
+    public static final RegistryKey<Registry<WorldPreset>> WORLD_PRESET_WORLDGEN = RegistryKeys.of("worldgen/world_preset");
+    public static final RegistryKey<Registry<World>> WORLD = RegistryKeys.of("dimension");
+    public static final RegistryKey<Registry<DimensionOptions>> DIMENSION = RegistryKeys.of("dimension");
+
+    public static RegistryKey<World> toWorldKey(RegistryKey<DimensionOptions> key) {
+        return RegistryKey.of(WORLD, key.getValue());
+    }
+
+    public static RegistryKey<DimensionOptions> toDimensionKey(RegistryKey<World> key) {
+        return RegistryKey.of(DIMENSION, key.getValue());
+    }
+
+    private static <T> RegistryKey<Registry<T>> of(String id) {
+        return RegistryKey.ofRegistry(new Identifier(id));
+    }
+}
+

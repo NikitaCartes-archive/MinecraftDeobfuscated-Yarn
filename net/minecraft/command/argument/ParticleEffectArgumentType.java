@@ -17,12 +17,12 @@ import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.RegistryWrapper;
 
 public class ParticleEffectArgumentType
 implements ArgumentType<ParticleEffect> {
@@ -31,7 +31,7 @@ implements ArgumentType<ParticleEffect> {
     private final RegistryWrapper<ParticleType<?>> registryWrapper;
 
     public ParticleEffectArgumentType(CommandRegistryAccess registryAccess) {
-        this.registryWrapper = registryAccess.createWrapper(Registry.PARTICLE_TYPE_KEY);
+        this.registryWrapper = registryAccess.createWrapper(RegistryKeys.PARTICLE_TYPE);
     }
 
     public static ParticleEffectArgumentType particleEffect(CommandRegistryAccess registryAccess) {
@@ -59,7 +59,7 @@ implements ArgumentType<ParticleEffect> {
 
     private static ParticleType<?> getType(StringReader reader, RegistryWrapper<ParticleType<?>> registryWrapper) throws CommandSyntaxException {
         Identifier identifier = Identifier.fromCommandInput(reader);
-        RegistryKey<ParticleType<?>> registryKey = RegistryKey.of(Registry.PARTICLE_TYPE_KEY, identifier);
+        RegistryKey<ParticleType<?>> registryKey = RegistryKey.of(RegistryKeys.PARTICLE_TYPE, identifier);
         return registryWrapper.getOptional(registryKey).orElseThrow(() -> UNKNOWN_PARTICLE_EXCEPTION.create(identifier)).value();
     }
 

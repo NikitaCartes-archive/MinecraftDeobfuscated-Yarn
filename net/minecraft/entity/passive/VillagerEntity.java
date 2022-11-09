@@ -64,6 +64,8 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
@@ -77,8 +79,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.TradeOffers;
@@ -564,26 +564,26 @@ VillagerDataContainer {
             return;
         }
         ServerWorld serverWorld = (ServerWorld)world;
-        Optional<LivingTargetCache> optional = this.brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS);
+        Optional<LivingTargetCache> optional = this.brain.getOptionalRegisteredMemory(MemoryModuleType.VISIBLE_MOBS);
         if (optional.isEmpty()) {
             return;
         }
-        optional.get().iterate(InteractionObserver.class::isInstance).forEach(livingEntity -> serverWorld.handleInteraction(EntityInteraction.VILLAGER_KILLED, killer, (InteractionObserver)((Object)livingEntity)));
+        optional.get().iterate(InteractionObserver.class::isInstance).forEach(observer -> serverWorld.handleInteraction(EntityInteraction.VILLAGER_KILLED, killer, (InteractionObserver)((Object)observer)));
     }
 
-    public void releaseTicketFor(MemoryModuleType<GlobalPos> memoryModuleType) {
+    public void releaseTicketFor(MemoryModuleType<GlobalPos> pos2) {
         if (!(this.world instanceof ServerWorld)) {
             return;
         }
         MinecraftServer minecraftServer = ((ServerWorld)this.world).getServer();
-        this.brain.getOptionalMemory(memoryModuleType).ifPresent(pos -> {
+        this.brain.getOptionalRegisteredMemory(pos2).ifPresent(pos -> {
             ServerWorld serverWorld = minecraftServer.getWorld(pos.getDimension());
             if (serverWorld == null) {
                 return;
             }
             PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
             Optional<RegistryEntry<PointOfInterestType>> optional = pointOfInterestStorage.getType(pos.getPos());
-            BiPredicate<VillagerEntity, RegistryEntry<PointOfInterestType>> biPredicate = POINTS_OF_INTEREST.get(memoryModuleType);
+            BiPredicate<VillagerEntity, RegistryEntry<PointOfInterestType>> biPredicate = POINTS_OF_INTEREST.get(pos2);
             if (optional.isPresent() && biPredicate.test(this, optional.get())) {
                 pointOfInterestStorage.releaseTicket(pos.getPos());
                 DebugInfoSender.sendPointOfInterest(serverWorld, pos.getPos());
@@ -647,7 +647,7 @@ VillagerDataContainer {
 
     @Override
     protected Text getDefaultName() {
-        return Text.translatable(this.getType().getTranslationKey() + "." + Registry.VILLAGER_PROFESSION.getId(this.getVillagerData().getProfession()).getPath());
+        return Text.translatable(this.getType().getTranslationKey() + "." + Registries.VILLAGER_PROFESSION.getId(this.getVillagerData().getProfession()).getPath());
     }
 
     @Override
@@ -861,7 +861,7 @@ VillagerDataContainer {
     }
 
     private boolean hasRecentlySlept(long worldTime) {
-        Optional<Long> optional = this.brain.getOptionalMemory(MemoryModuleType.LAST_SLEPT);
+        Optional<Long> optional = this.brain.getOptionalRegisteredMemory(MemoryModuleType.LAST_SLEPT);
         if (optional.isPresent()) {
             return worldTime - optional.get() < 24000L;
         }

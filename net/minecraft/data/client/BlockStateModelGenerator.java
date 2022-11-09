@@ -231,6 +231,14 @@ public class BlockStateModelGenerator {
         return BlockStateVariantMap.create(Properties.AXIS).register(Direction.Axis.Y, BlockStateVariant.create()).register(Direction.Axis.Z, BlockStateVariant.create().put(VariantSettings.X, VariantSettings.Rotation.R90)).register(Direction.Axis.X, BlockStateVariant.create().put(VariantSettings.X, VariantSettings.Rotation.R90).put(VariantSettings.Y, VariantSettings.Rotation.R90));
     }
 
+    static BlockStateSupplier createUvLockedColumnBlockState(Block block, TextureMap textureMap, BiConsumer<Identifier, Supplier<JsonElement>> modelCollector) {
+        Identifier identifier = Models.CUBE_COLUMN_UV_LOCKED_X.upload(block, textureMap, modelCollector);
+        Identifier identifier2 = Models.CUBE_COLUMN_UV_LOCKED_Y.upload(block, textureMap, modelCollector);
+        Identifier identifier3 = Models.CUBE_COLUMN_UV_LOCKED_Z.upload(block, textureMap, modelCollector);
+        Identifier identifier4 = Models.CUBE_COLUMN.upload(block, textureMap, modelCollector);
+        return VariantsBlockStateSupplier.create(block, BlockStateVariant.create().put(VariantSettings.MODEL, identifier4)).coordinate(BlockStateVariantMap.create(Properties.AXIS).register(Direction.Axis.X, BlockStateVariant.create().put(VariantSettings.MODEL, identifier)).register(Direction.Axis.Y, BlockStateVariant.create().put(VariantSettings.MODEL, identifier2)).register(Direction.Axis.Z, BlockStateVariant.create().put(VariantSettings.MODEL, identifier3)));
+    }
+
     static BlockStateSupplier createAxisRotatedBlockState(Block block, Identifier modelId) {
         return VariantsBlockStateSupplier.create(block, BlockStateVariant.create().put(VariantSettings.MODEL, modelId)).coordinate(BlockStateModelGenerator.createAxisRotatedVariantMap());
     }
@@ -1741,6 +1749,8 @@ public class BlockStateModelGenerator {
         this.registerHangingSign(Blocks.STRIPPED_WARPED_STEM, Blocks.WARPED_HANGING_SIGN, Blocks.WARPED_WALL_HANGING_SIGN);
         this.registerFlowerPotPlant(Blocks.WARPED_FUNGUS, Blocks.POTTED_WARPED_FUNGUS, TintType.NOT_TINTED);
         this.registerRoots(Blocks.WARPED_ROOTS, Blocks.POTTED_WARPED_ROOTS);
+        this.registerLog(Blocks.BAMBOO_BLOCK).bamboo(Blocks.BAMBOO_BLOCK);
+        this.registerLog(Blocks.STRIPPED_BAMBOO_BLOCK).bamboo(Blocks.STRIPPED_BAMBOO_BLOCK);
         this.registerHangingSign(Blocks.BAMBOO_PLANKS, Blocks.BAMBOO_HANGING_SIGN, Blocks.BAMBOO_WALL_HANGING_SIGN);
         this.registerTintableCrossBlockState(Blocks.NETHER_SPROUTS, TintType.NOT_TINTED);
         this.registerItemModel(Items.NETHER_SPROUTS);
@@ -2003,6 +2013,11 @@ public class BlockStateModelGenerator {
             Identifier identifier = Models.CUBE_COLUMN.upload(logBlock, this.textures, BlockStateModelGenerator.this.modelCollector);
             Identifier identifier2 = Models.CUBE_COLUMN_HORIZONTAL.upload(logBlock, this.textures, BlockStateModelGenerator.this.modelCollector);
             BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createAxisRotatedBlockState(logBlock, identifier, identifier2));
+            return this;
+        }
+
+        public LogTexturePool bamboo(Block bambooBlock) {
+            BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createUvLockedColumnBlockState(bambooBlock, this.textures, BlockStateModelGenerator.this.modelCollector));
             return this;
         }
     }

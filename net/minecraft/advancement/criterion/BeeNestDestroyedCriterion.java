@@ -15,10 +15,10 @@ import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class BeeNestDestroyedCriterion
@@ -42,7 +42,7 @@ extends AbstractCriterion<Conditions> {
     private static Block getBlock(JsonObject root) {
         if (root.has("block")) {
             Identifier identifier = new Identifier(JsonHelper.getString(root, "block"));
-            return Registry.BLOCK.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown block type '" + identifier + "'"));
+            return (Block)Registries.BLOCK.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown block type '" + identifier + "'"));
         }
         return null;
     }
@@ -88,7 +88,7 @@ extends AbstractCriterion<Conditions> {
         public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
             JsonObject jsonObject = super.toJson(predicateSerializer);
             if (this.block != null) {
-                jsonObject.addProperty("block", Registry.BLOCK.getId(this.block).toString());
+                jsonObject.addProperty("block", Registries.BLOCK.getId(this.block).toString());
             }
             jsonObject.add("item", this.item.toJson());
             jsonObject.add("num_bees_inside", this.beeCount.toJson());

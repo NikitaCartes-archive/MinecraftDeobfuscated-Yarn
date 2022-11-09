@@ -9,14 +9,14 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.registry.Registries;
 import net.minecraft.structure.rule.RuleTest;
 import net.minecraft.structure.rule.RuleTestType;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 
 public class RandomBlockMatchRuleTest
 extends RuleTest {
-    public static final Codec<RandomBlockMatchRuleTest> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Registry.BLOCK.getCodec().fieldOf("block")).forGetter(ruleTest -> ruleTest.block), ((MapCodec)Codec.FLOAT.fieldOf("probability")).forGetter(ruleTest -> Float.valueOf(ruleTest.probability))).apply((Applicative<RandomBlockMatchRuleTest, ?>)instance, RandomBlockMatchRuleTest::new));
+    public static final Codec<RandomBlockMatchRuleTest> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Registries.BLOCK.getCodec().fieldOf("block")).forGetter(ruleTest -> ruleTest.block), ((MapCodec)Codec.FLOAT.fieldOf("probability")).forGetter(ruleTest -> Float.valueOf(ruleTest.probability))).apply((Applicative<RandomBlockMatchRuleTest, ?>)instance, RandomBlockMatchRuleTest::new));
     private final Block block;
     private final float probability;
 

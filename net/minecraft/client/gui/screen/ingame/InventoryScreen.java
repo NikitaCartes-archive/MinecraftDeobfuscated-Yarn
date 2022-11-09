@@ -48,7 +48,7 @@ implements RecipeBookProvider {
     @Override
     public void handledScreenTick() {
         if (this.client.interactionManager.hasCreativeInventory()) {
-            this.client.setScreen(new CreativeInventoryScreen(this.client.player, this.client.player.networkHandler.getEnabledFeatures()));
+            this.client.setScreen(new CreativeInventoryScreen(this.client.player, this.client.player.networkHandler.getEnabledFeatures(), this.client.options.getOperatorItemsTab().getValue()));
             return;
         }
         this.recipeBook.update();
@@ -57,7 +57,7 @@ implements RecipeBookProvider {
     @Override
     protected void init() {
         if (this.client.interactionManager.hasCreativeInventory()) {
-            this.client.setScreen(new CreativeInventoryScreen(this.client.player, this.client.player.networkHandler.getEnabledFeatures()));
+            this.client.setScreen(new CreativeInventoryScreen(this.client.player, this.client.player.networkHandler.getEnabledFeatures(), this.client.options.getOperatorItemsTab().getValue()));
             return;
         }
         super.init();
@@ -99,7 +99,7 @@ implements RecipeBookProvider {
 
     @Override
     protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
         int i = this.x;

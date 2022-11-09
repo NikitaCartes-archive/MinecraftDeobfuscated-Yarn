@@ -14,6 +14,7 @@ import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.entity.model.PiglinEntityModel;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.AbstractPiglinEntity;
@@ -56,6 +57,11 @@ extends BipedEntityRenderer<MobEntity, PiglinEntityModel<MobEntity>> {
     @Override
     protected /* synthetic */ boolean isShaking(LivingEntity entity) {
         return this.isShaking((MobEntity)entity);
+    }
+
+    @Override
+    public /* synthetic */ Identifier getTexture(Entity entity) {
+        return this.getTexture((MobEntity)entity);
     }
 }
 

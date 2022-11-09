@@ -15,6 +15,7 @@ import java.util.function.Function;
 import net.minecraft.entity.Entity;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
@@ -146,6 +147,10 @@ public class Texts {
             return Language.getInstance().hasTranslation(string);
         }
         return true;
+    }
+
+    public static MutableText bracketedCopyable(String string) {
+        return Texts.bracketed(Text.literal(string).styled(style -> style.withColor(Formatting.GREEN).withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, string)).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("chat.copy.click"))).withInsertion(string)));
     }
 }
 

@@ -9,11 +9,11 @@ import java.util.Optional;
 import java.util.function.Function;
 import net.minecraft.entity.Entity;
 import net.minecraft.predicate.entity.TypeSpecificPredicate;
+import net.minecraft.registry.Registry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class VariantPredicates<V> {

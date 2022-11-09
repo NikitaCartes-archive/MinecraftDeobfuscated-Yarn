@@ -13,60 +13,81 @@ import java.util.stream.Stream;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.collection.WeightedList;
 
 public class CompositeTask<E extends LivingEntity>
-extends Task<E> {
+implements Task<E> {
+    private final Map<MemoryModuleType<?>, MemoryModuleState> requiredMemoryState;
     private final Set<MemoryModuleType<?>> memoriesToForgetWhenStopped;
     private final Order order;
     private final RunMode runMode;
     private final WeightedList<Task<? super E>> tasks = new WeightedList();
+    private MultiTickTask.Status status = MultiTickTask.Status.STOPPED;
 
-    public CompositeTask(Map<MemoryModuleType<?>, MemoryModuleState> requiredMemoryState, Set<MemoryModuleType<?>> memoriesToForgetWhenStopped, Order order, RunMode runMode, List<Pair<Task<? super E>, Integer>> tasks) {
-        super(requiredMemoryState);
+    public CompositeTask(Map<MemoryModuleType<?>, MemoryModuleState> requiredMemoryState, Set<MemoryModuleType<?>> memoriesToForgetWhenStopped, Order order, RunMode runMode, List<Pair<? extends Task<? super E>, Integer>> tasks) {
+        this.requiredMemoryState = requiredMemoryState;
         this.memoriesToForgetWhenStopped = memoriesToForgetWhenStopped;
         this.order = order;
         this.runMode = runMode;
-        tasks.forEach(pair -> this.tasks.add((Task)pair.getFirst(), (Integer)pair.getSecond()));
+        tasks.forEach(task -> this.tasks.add((Task)task.getFirst(), (Integer)task.getSecond()));
     }
 
     @Override
-    protected boolean shouldKeepRunning(ServerWorld world, E entity, long time) {
-        return this.tasks.stream().filter(task -> task.getStatus() == Task.Status.RUNNING).anyMatch(task -> task.shouldKeepRunning(world, entity, time));
+    public MultiTickTask.Status getStatus() {
+        return this.status;
+    }
+
+    private boolean shouldStart(E entity) {
+        for (Map.Entry<MemoryModuleType<?>, MemoryModuleState> entry : this.requiredMemoryState.entrySet()) {
+            MemoryModuleType<?> memoryModuleType = entry.getKey();
+            MemoryModuleState memoryModuleState = entry.getValue();
+            if (((LivingEntity)entity).getBrain().isMemoryInState(memoryModuleType, memoryModuleState)) continue;
+            return false;
+        }
+        return true;
     }
 
     @Override
-    protected boolean isTimeLimitExceeded(long time) {
+    public final boolean tryStarting(ServerWorld world, E entity, long time) {
+        if (this.shouldStart(entity)) {
+            this.status = MultiTickTask.Status.RUNNING;
+            this.order.apply(this.tasks);
+            this.runMode.run(this.tasks.stream(), world, entity, time);
+            return true;
+        }
         return false;
     }
 
     @Override
-    protected void run(ServerWorld world, E entity, long time) {
-        this.order.apply(this.tasks);
-        this.runMode.run(this.tasks.stream(), world, entity, time);
+    public final void tick(ServerWorld world, E entity, long time) {
+        this.tasks.stream().filter(task -> task.getStatus() == MultiTickTask.Status.RUNNING).forEach(task -> task.tick(world, entity, time));
+        if (this.tasks.stream().noneMatch(task -> task.getStatus() == MultiTickTask.Status.RUNNING)) {
+            this.stop(world, entity, time);
+        }
     }
 
     @Override
-    protected void keepRunning(ServerWorld world, E entity, long time) {
-        this.tasks.stream().filter(task -> task.getStatus() == Task.Status.RUNNING).forEach(task -> task.tick(world, entity, time));
-    }
-
-    @Override
-    protected void finishRunning(ServerWorld world, E entity, long time) {
-        this.tasks.stream().filter(task -> task.getStatus() == Task.Status.RUNNING).forEach(task -> task.stop(world, entity, time));
+    public final void stop(ServerWorld world, E entity, long time) {
+        this.status = MultiTickTask.Status.STOPPED;
+        this.tasks.stream().filter(task -> task.getStatus() == MultiTickTask.Status.RUNNING).forEach(task -> task.stop(world, entity, time));
         this.memoriesToForgetWhenStopped.forEach(((LivingEntity)entity).getBrain()::forget);
     }
 
     @Override
+    public String getName() {
+        return this.getClass().getSimpleName();
+    }
+
     public String toString() {
-        Set set = this.tasks.stream().filter(task -> task.getStatus() == Task.Status.RUNNING).collect(Collectors.toSet());
+        Set set = this.tasks.stream().filter(task -> task.getStatus() == MultiTickTask.Status.RUNNING).collect(Collectors.toSet());
         return "(" + this.getClass().getSimpleName() + "): " + set;
     }
 
     public static enum Order {
-        ORDERED(weightedList -> {}),
+        ORDERED(list -> {}),
         SHUFFLED(WeightedList::shuffle);
 
         private final Consumer<WeightedList<?>> listModifier;
@@ -88,7 +109,7 @@ extends Task<E> {
 
             @Override
             public <E extends LivingEntity> void run(Stream<Task<? super E>> tasks, ServerWorld world, E entity, long time) {
-                tasks.filter(task -> task.getStatus() == Task.Status.STOPPED).filter(task -> task.tryStarting(world, entity, time)).findFirst();
+                tasks.filter(task -> task.getStatus() == MultiTickTask.Status.STOPPED).filter(task -> task.tryStarting(world, entity, time)).findFirst();
             }
         }
         ,
@@ -96,7 +117,7 @@ extends Task<E> {
 
             @Override
             public <E extends LivingEntity> void run(Stream<Task<? super E>> tasks, ServerWorld world, E entity, long time) {
-                tasks.filter(task -> task.getStatus() == Task.Status.STOPPED).forEach(task -> task.tryStarting(world, entity, time));
+                tasks.filter(task -> task.getStatus() == MultiTickTask.Status.STOPPED).forEach(task -> task.tryStarting(world, entity, time));
             }
         };
 

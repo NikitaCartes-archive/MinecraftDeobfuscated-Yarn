@@ -42,11 +42,11 @@ import net.minecraft.recipe.AbstractCookingRecipe;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.book.RecipeCategory;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.featuretoggle.FeatureSet;
-import net.minecraft.tag.ItemTags;
-import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class RecipeProvider
@@ -117,12 +117,20 @@ implements DataProvider {
         ShapedRecipeJsonBuilder.create(category, output, 1).input(Character.valueOf('#'), input).pattern("##").pattern("##").criterion(RecipeProvider.hasItem(input), RecipeProvider.conditionsFromItem(input)).offerTo(exporter);
     }
 
-    protected static void offerPlanksRecipe2(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, TagKey<Item> input) {
-        ShapelessRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, output, 4).input(input).group("planks").criterion("has_log", RecipeProvider.conditionsFromTag(input)).offerTo(exporter);
+    protected static void offerCompactingRecipe(Consumer<RecipeJsonProvider> exporter, RecipeCategory category, ItemConvertible output, ItemConvertible input, String criterionName) {
+        ShapelessRecipeJsonBuilder.create(category, output).input(input, 9).criterion(criterionName, RecipeProvider.conditionsFromItem(input)).offerTo(exporter);
     }
 
-    protected static void offerPlanksRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, TagKey<Item> input) {
-        ShapelessRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, output, 4).input(input).group("planks").criterion("has_logs", RecipeProvider.conditionsFromTag(input)).offerTo(exporter);
+    protected static void offerCompactingRecipe(Consumer<RecipeJsonProvider> exporter, RecipeCategory category, ItemConvertible output, ItemConvertible input) {
+        RecipeProvider.offerCompactingRecipe(exporter, category, output, input, RecipeProvider.hasItem(input));
+    }
+
+    protected static void offerPlanksRecipe2(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, TagKey<Item> input, int count) {
+        ShapelessRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, output, count).input(input).group("planks").criterion("has_log", RecipeProvider.conditionsFromTag(input)).offerTo(exporter);
+    }
+
+    protected static void offerPlanksRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, TagKey<Item> input, int count) {
+        ShapelessRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, output, count).input(input).group("planks").criterion("has_logs", RecipeProvider.conditionsFromTag(input)).offerTo(exporter);
     }
 
     protected static void offerBarkBlockRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, ItemConvertible input) {
@@ -184,11 +192,7 @@ implements DataProvider {
     }
 
     protected static void offerHangingSignRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, ItemConvertible input) {
-        RecipeProvider.offerHangingSignRecipe(exporter, output, input, 6);
-    }
-
-    protected static void offerHangingSignRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, ItemConvertible input, int count) {
-        ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, output, count).group("hanging_sign").input(Character.valueOf('#'), input).input(Character.valueOf('X'), Items.CHAIN).pattern("X X").pattern("###").pattern("###").criterion("has_stripped_logs", RecipeProvider.conditionsFromTag(ItemTags.STRIPPED_LOGS)).offerTo(exporter);
+        ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, output, 6).group("hanging_sign").input(Character.valueOf('#'), input).input(Character.valueOf('X'), Items.CHAIN).pattern("X X").pattern("###").pattern("###").criterion("has_stripped_logs", RecipeProvider.conditionsFromTag(ItemTags.STRIPPED_LOGS)).offerTo(exporter);
     }
 
     protected static void offerWoolDyeingRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, ItemConvertible input) {
@@ -392,7 +396,7 @@ implements DataProvider {
     }
 
     protected static String getItemPath(ItemConvertible item) {
-        return Registry.ITEM.getId(item.asItem()).getPath();
+        return Registries.ITEM.getId(item.asItem()).getPath();
     }
 
     protected static String getRecipeName(ItemConvertible item) {

@@ -16,8 +16,8 @@ import net.minecraft.item.Item;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.book.RecipeCategory;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class SmithingRecipeJsonBuilder {
@@ -86,7 +86,7 @@ public class SmithingRecipeJsonBuilder {
             json.add("base", this.base.toJson());
             json.add("addition", this.addition.toJson());
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("item", Registry.ITEM.getId(this.result).toString());
+            jsonObject.addProperty("item", Registries.ITEM.getId(this.result).toString());
             json.add("result", jsonObject);
         }
 

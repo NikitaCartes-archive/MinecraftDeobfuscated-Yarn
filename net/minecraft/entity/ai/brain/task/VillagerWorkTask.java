@@ -10,13 +10,13 @@ import net.minecraft.entity.ai.brain.BlockPosLookTarget;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.GlobalPos;
 
 public class VillagerWorkTask
-extends Task<VillagerEntity> {
+extends MultiTickTask<VillagerEntity> {
     private static final int RUN_TIME = 300;
     private static final double MAX_DISTANCE = 1.73;
     private long lastCheckedTime;
@@ -34,7 +34,7 @@ extends Task<VillagerEntity> {
             return false;
         }
         this.lastCheckedTime = serverWorld.getTime();
-        GlobalPos globalPos = villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.JOB_SITE).get();
+        GlobalPos globalPos = villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.JOB_SITE).get();
         return globalPos.getDimension() == serverWorld.getRegistryKey() && globalPos.getPos().isWithinDistance(villagerEntity.getPos(), 1.73);
     }
 
@@ -42,7 +42,7 @@ extends Task<VillagerEntity> {
     protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         Brain<VillagerEntity> brain = villagerEntity.getBrain();
         brain.remember(MemoryModuleType.LAST_WORKED_AT_POI, l);
-        brain.getOptionalMemory(MemoryModuleType.JOB_SITE).ifPresent(pos -> brain.remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(pos.getPos())));
+        brain.getOptionalRegisteredMemory(MemoryModuleType.JOB_SITE).ifPresent(pos -> brain.remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(pos.getPos())));
         villagerEntity.playWorkSound();
         this.performAdditionalWork(serverWorld, villagerEntity);
         if (villagerEntity.shouldRestock()) {
@@ -55,7 +55,7 @@ extends Task<VillagerEntity> {
 
     @Override
     protected boolean shouldKeepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-        Optional<GlobalPos> optional = villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.JOB_SITE);
+        Optional<GlobalPos> optional = villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.JOB_SITE);
         if (!optional.isPresent()) {
             return false;
         }
@@ -66,6 +66,16 @@ extends Task<VillagerEntity> {
     @Override
     protected /* synthetic */ boolean shouldRun(ServerWorld world, LivingEntity entity) {
         return this.shouldRun(world, (VillagerEntity)entity);
+    }
+
+    @Override
+    protected /* synthetic */ boolean shouldKeepRunning(ServerWorld world, LivingEntity entity, long time) {
+        return this.shouldKeepRunning(world, (VillagerEntity)entity, time);
+    }
+
+    @Override
+    protected /* synthetic */ void run(ServerWorld world, LivingEntity entity, long time) {
+        this.run(world, (VillagerEntity)entity, time);
     }
 }
 

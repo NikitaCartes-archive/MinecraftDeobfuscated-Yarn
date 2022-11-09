@@ -33,10 +33,11 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.Schedule;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.annotation.Debug;
-import net.minecraft.util.registry.Registry;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -84,35 +85,35 @@ public class Brain<E extends LivingEntity> {
         mutableObject.setValue(new MapCodec<Brain<E>>(){
 
             @Override
-            public <T> Stream<T> keys(DynamicOps<T> dynamicOps) {
-                return memoryModules.stream().flatMap((? super T memoryModuleType) -> memoryModuleType.getCodec().map((? super T codec) -> Registry.MEMORY_MODULE_TYPE.getId((MemoryModuleType<?>)memoryModuleType)).stream()).map((? super T identifier) -> dynamicOps.createString(identifier.toString()));
+            public <T> Stream<T> keys(DynamicOps<T> ops) {
+                return memoryModules.stream().flatMap((? super T memoryType) -> memoryType.getCodec().map((? super T codec) -> Registries.MEMORY_MODULE_TYPE.getId((MemoryModuleType<?>)memoryType)).stream()).map((? super T id) -> ops.createString(id.toString()));
             }
 
             @Override
-            public <T> DataResult<Brain<E>> decode(DynamicOps<T> dynamicOps, MapLike<T> mapLike) {
+            public <T> DataResult<Brain<E>> decode(DynamicOps<T> ops, MapLike<T> map) {
                 MutableObject mutableObject2 = new MutableObject(DataResult.success(ImmutableList.builder()));
-                mapLike.entries().forEach(pair -> {
-                    DataResult dataResult = Registry.MEMORY_MODULE_TYPE.getCodec().parse(dynamicOps, pair.getFirst());
-                    DataResult dataResult2 = dataResult.flatMap((? super R memoryModuleType) -> this.method_28320((MemoryModuleType)memoryModuleType, dynamicOps, (Object)pair.getSecond()));
+                map.entries().forEach(pair -> {
+                    DataResult dataResult = Registries.MEMORY_MODULE_TYPE.getCodec().parse(ops, pair.getFirst());
+                    DataResult dataResult2 = dataResult.flatMap((? super R memoryType) -> this.parse((MemoryModuleType)memoryType, ops, (Object)pair.getSecond()));
                     mutableObject2.setValue(((DataResult)mutableObject2.getValue()).apply2(ImmutableList.Builder::add, dataResult2));
                 });
                 ImmutableList immutableList = mutableObject2.getValue().resultOrPartial(LOGGER::error).map(ImmutableList.Builder::build).orElseGet(ImmutableList::of);
                 return DataResult.success(new Brain(memoryModules, sensors, immutableList, mutableObject::getValue));
             }
 
-            private <T, U> DataResult<MemoryEntry<U>> method_28320(MemoryModuleType<U> memoryModuleType, DynamicOps<T> dynamicOps, T object) {
-                return memoryModuleType.getCodec().map(DataResult::success).orElseGet(() -> DataResult.error("No codec for memory: " + memoryModuleType)).flatMap((? super R codec) -> codec.parse(dynamicOps, object)).map((? super R memory) -> new MemoryEntry(memoryModuleType, Optional.of(memory)));
+            private <T, U> DataResult<MemoryEntry<U>> parse(MemoryModuleType<U> memoryType, DynamicOps<T> ops, T value) {
+                return memoryType.getCodec().map(DataResult::success).orElseGet(() -> DataResult.error("No codec for memory: " + memoryType)).flatMap((? super R codec) -> codec.parse(ops, value)).map((? super R data) -> new MemoryEntry(memoryType, Optional.of(data)));
             }
 
             @Override
             public <T> RecordBuilder<T> encode(Brain<E> brain, DynamicOps<T> dynamicOps, RecordBuilder<T> recordBuilder) {
-                brain.streamMemories().forEach(memoryEntry -> memoryEntry.serialize(dynamicOps, recordBuilder));
+                brain.streamMemories().forEach(entry -> entry.serialize(dynamicOps, recordBuilder));
                 return recordBuilder;
             }
 
             @Override
-            public /* synthetic */ RecordBuilder encode(Object object, DynamicOps dynamicOps, RecordBuilder recordBuilder) {
-                return this.encode((Brain)object, dynamicOps, recordBuilder);
+            public /* synthetic */ RecordBuilder encode(Object brain, DynamicOps ops, RecordBuilder recordBuilder) {
+                return this.encode((Brain)brain, ops, recordBuilder);
             }
         }.fieldOf("memories").codec());
         return (Codec)mutableObject.getValue();
@@ -156,8 +157,8 @@ public class Brain<E extends LivingEntity> {
         this.remember(type, Optional.ofNullable(value));
     }
 
-    public <U> void remember(MemoryModuleType<U> type, U value, long startTime) {
-        this.setMemory(type, Optional.of(Memory.timed(value, startTime)));
+    public <U> void remember(MemoryModuleType<U> type, U value, long expiry) {
+        this.setMemory(type, Optional.of(Memory.timed(value, expiry)));
     }
 
     public <U> void remember(MemoryModuleType<U> type, Optional<? extends U> value) {
@@ -174,7 +175,7 @@ public class Brain<E extends LivingEntity> {
         }
     }
 
-    public <U> Optional<U> getOptionalMemory(MemoryModuleType<U> type) {
+    public <U> Optional<U> getOptionalRegisteredMemory(MemoryModuleType<U> type) {
         Optional<Memory<?>> optional = this.memories.get(type);
         if (optional == null) {
             throw new IllegalStateException("Unregistered memory fetched: " + type);
@@ -182,7 +183,16 @@ public class Brain<E extends LivingEntity> {
         return optional.map(Memory::getValue);
     }
 
-    public <U> long getMemory(MemoryModuleType<U> type) {
+    @Nullable
+    public <U> Optional<U> getOptionalMemory(MemoryModuleType<U> type) {
+        Optional<Memory<?>> optional = this.memories.get(type);
+        if (optional == null) {
+            return null;
+        }
+        return optional.map(Memory::getValue);
+    }
+
+    public <U> long getMemoryExpiry(MemoryModuleType<U> type) {
         Optional<Memory<?>> optional = this.memories.get(type);
         return optional.map(Memory::getExpiry).orElse(0L);
     }
@@ -197,7 +207,7 @@ public class Brain<E extends LivingEntity> {
         if (!this.hasMemoryModule(type)) {
             return false;
         }
-        return this.getOptionalMemory(type).filter(object2 -> object2.equals(value)).isPresent();
+        return this.getOptionalRegisteredMemory(type).filter(memoryValue -> memoryValue.equals(value)).isPresent();
     }
 
     public boolean isMemoryInState(MemoryModuleType<?> type, MemoryModuleState state) {
@@ -233,7 +243,7 @@ public class Brain<E extends LivingEntity> {
         for (Map<Activity, Set<Task<E>>> map : this.tasks.values()) {
             for (Set<Task<E>> set : map.values()) {
                 for (Task<E> task : set) {
-                    if (task.getStatus() != Task.Status.RUNNING) continue;
+                    if (task.getStatus() != MultiTickTask.Status.RUNNING) continue;
                     list.add(task);
                 }
             }
@@ -321,13 +331,13 @@ public class Brain<E extends LivingEntity> {
         this.setTaskList(activity, indexedTasks, requiredMemories, Sets.newHashSet());
     }
 
-    public void setTaskList(Activity activity2, ImmutableList<? extends Pair<Integer, ? extends Task<? super E>>> indexedTasks, Set<Pair<MemoryModuleType<?>, MemoryModuleState>> requiredMemories, Set<MemoryModuleType<?>> forgettingMemories) {
-        this.requiredActivityMemories.put(activity2, requiredMemories);
+    public void setTaskList(Activity activity, ImmutableList<? extends Pair<Integer, ? extends Task<? super E>>> indexedTasks, Set<Pair<MemoryModuleType<?>, MemoryModuleState>> requiredMemories, Set<MemoryModuleType<?>> forgettingMemories) {
+        this.requiredActivityMemories.put(activity, requiredMemories);
         if (!forgettingMemories.isEmpty()) {
-            this.forgettingActivityMemories.put(activity2, forgettingMemories);
+            this.forgettingActivityMemories.put(activity, forgettingMemories);
         }
         for (Pair pair : indexedTasks) {
-            this.tasks.computeIfAbsent((Integer)pair.getFirst(), integer -> Maps.newHashMap()).computeIfAbsent(activity2, activity -> Sets.newLinkedHashSet()).add((Task)pair.getSecond());
+            this.tasks.computeIfAbsent((Integer)pair.getFirst(), index -> Maps.newHashMap()).computeIfAbsent(activity, activity2 -> Sets.newLinkedHashSet()).add((Task)pair.getSecond());
         }
     }
 
@@ -389,7 +399,7 @@ public class Brain<E extends LivingEntity> {
                 if (!this.possibleActivities.contains(activity)) continue;
                 Set<Task<E>> set = entry.getValue();
                 for (Task<E> task : set) {
-                    if (task.getStatus() != Task.Status.STOPPED) continue;
+                    if (task.getStatus() != MultiTickTask.Status.STOPPED) continue;
                     task.tryStarting(world, entity, l);
                 }
             }
@@ -466,7 +476,7 @@ public class Brain<E extends LivingEntity> {
         }
 
         public <T> void serialize(DynamicOps<T> ops, RecordBuilder<T> builder) {
-            this.type.getCodec().ifPresent(codec -> this.data.ifPresent(memory -> builder.add(Registry.MEMORY_MODULE_TYPE.getCodec().encodeStart(ops, this.type), codec.encodeStart(ops, memory))));
+            this.type.getCodec().ifPresent(codec -> this.data.ifPresent(data -> builder.add(Registries.MEMORY_MODULE_TYPE.getCodec().encodeStart(ops, this.type), codec.encodeStart(ops, data))));
         }
     }
 }

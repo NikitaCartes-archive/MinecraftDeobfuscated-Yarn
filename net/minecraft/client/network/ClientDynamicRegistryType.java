@@ -6,9 +6,9 @@ package net.minecraft.client.network;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.registry.CombinedDynamicRegistries;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.CombinedDynamicRegistries;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registries;
 
 @Environment(value=EnvType.CLIENT)
 public enum ClientDynamicRegistryType {
@@ -24,7 +24,7 @@ public enum ClientDynamicRegistryType {
 
     static {
         VALUES = List.of(ClientDynamicRegistryType.values());
-        STATIC_REGISTRY_MANAGER = DynamicRegistryManager.of(Registry.REGISTRIES);
+        STATIC_REGISTRY_MANAGER = DynamicRegistryManager.of(Registries.REGISTRIES);
     }
 }
 

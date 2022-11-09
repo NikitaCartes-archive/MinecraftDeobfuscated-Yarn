@@ -8,8 +8,8 @@ import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.data.server.recipe.RecipeJsonProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public interface CraftingRecipeJsonBuilder {
@@ -37,7 +37,7 @@ public interface CraftingRecipeJsonBuilder {
     }
 
     public static Identifier getItemId(ItemConvertible item) {
-        return Registry.ITEM.getId(item.asItem());
+        return Registries.ITEM.getId(item.asItem());
     }
 }
 

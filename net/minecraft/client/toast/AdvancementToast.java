@@ -31,7 +31,7 @@ implements Toast {
 
     @Override
     public Toast.Visibility draw(MatrixStack matrices, ToastManager manager, long startTime) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderTexture(0, TEXTURE);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         AdvancementDisplay advancementDisplay = this.advancement.getDisplay();

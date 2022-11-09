@@ -110,5 +110,15 @@ extends LivingEntityRenderer<T, M> {
         vertexConsumer.vertex(positionMatrix, u - k, v + j, w + l).color(r, s, t, 1.0f).light(p).next();
         vertexConsumer.vertex(positionMatrix, u + k, v + i - j, w - l).color(r, s, t, 1.0f).light(p).next();
     }
+
+    @Override
+    protected /* synthetic */ boolean hasLabel(LivingEntity livingEntity) {
+        return this.hasLabel((T)((MobEntity)livingEntity));
+    }
+
+    @Override
+    protected /* synthetic */ boolean hasLabel(Entity entity) {
+        return this.hasLabel((T)((MobEntity)entity));
+    }
 }
 

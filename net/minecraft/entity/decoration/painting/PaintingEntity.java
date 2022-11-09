@@ -20,16 +20,17 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.PaintingVariantTags;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.PaintingVariantTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -40,7 +41,7 @@ extends AbstractDecorationEntity {
     private static final RegistryKey<PaintingVariant> DEFAULT_VARIANT = PaintingVariants.KEBAB;
 
     private static RegistryEntry<PaintingVariant> getDefaultVariant() {
-        return Registry.PAINTING_VARIANT.entryOf(DEFAULT_VARIANT);
+        return Registries.PAINTING_VARIANT.entryOf(DEFAULT_VARIANT);
     }
 
     public PaintingEntity(EntityType<? extends PaintingEntity> entityType, World world) {
@@ -70,7 +71,7 @@ extends AbstractDecorationEntity {
     public static Optional<PaintingEntity> placePainting(World world, BlockPos pos, Direction facing) {
         PaintingEntity paintingEntity = new PaintingEntity(world, pos);
         ArrayList<RegistryEntry> list = new ArrayList<RegistryEntry>();
-        Registry.PAINTING_VARIANT.iterateEntries(PaintingVariantTags.PLACEABLE).forEach(list::add);
+        Registries.PAINTING_VARIANT.iterateEntries(PaintingVariantTags.PLACEABLE).forEach(list::add);
         if (list.isEmpty()) {
             return Optional.empty();
         }
@@ -116,7 +117,7 @@ extends AbstractDecorationEntity {
 
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
-        RegistryEntry registryEntry = Optional.ofNullable(Identifier.tryParse(nbt.getString("variant"))).map(identifier -> RegistryKey.of(Registry.PAINTING_VARIANT_KEY, identifier)).flatMap(Registry.PAINTING_VARIANT::getEntry).map(reference -> reference).orElseGet(PaintingEntity::getDefaultVariant);
+        RegistryEntry registryEntry = Optional.ofNullable(Identifier.tryParse(nbt.getString("variant"))).map(identifier -> RegistryKey.of(RegistryKeys.PAINTING_VARIANT, identifier)).flatMap(Registries.PAINTING_VARIANT::getEntry).map(reference -> reference).orElseGet(PaintingEntity::getDefaultVariant);
         this.setVariant(registryEntry);
         this.facing = Direction.fromHorizontal(nbt.getByte("facing"));
         super.readCustomDataFromNbt(nbt);

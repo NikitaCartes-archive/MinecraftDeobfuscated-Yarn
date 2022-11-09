@@ -14,7 +14,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 
 public record SculkChargeParticleEffect(float roll) implements ParticleEffect
 {
@@ -55,7 +55,7 @@ public record SculkChargeParticleEffect(float roll) implements ParticleEffect
 
     @Override
     public String asString() {
-        return String.format(Locale.ROOT, "%s %.2f", Registry.PARTICLE_TYPE.getId(this.getType()), Float.valueOf(this.roll));
+        return String.format(Locale.ROOT, "%s %.2f", Registries.PARTICLE_TYPE.getId(this.getType()), Float.valueOf(this.roll));
     }
 }
 

@@ -71,6 +71,13 @@ import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.obfuscate.DontObfuscate;
 import net.minecraft.recipe.RecipeManager;
+import net.minecraft.registry.CombinedDynamicRegistries;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.ServerDynamicRegistryType;
 import net.minecraft.resource.DataConfiguration;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.resource.LifecycledResourceManager;
@@ -139,12 +146,6 @@ import net.minecraft.util.profiler.Recorder;
 import net.minecraft.util.profiler.ServerSamplerSource;
 import net.minecraft.util.profiling.jfr.Finishable;
 import net.minecraft.util.profiling.jfr.FlightProfiler;
-import net.minecraft.util.registry.CombinedDynamicRegistries;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.RegistryWrapper;
-import net.minecraft.util.registry.ServerDynamicRegistryType;
 import net.minecraft.util.thread.ReentrantThreadExecutor;
 import net.minecraft.village.ZombieSiegeManager;
 import net.minecraft.world.Difficulty;
@@ -296,7 +297,7 @@ AutoCloseable {
         super("Server");
         this.combinedDynamicRegistries = saveLoader.combinedDynamicRegistries();
         this.saveProperties = saveLoader.saveProperties();
-        if (!this.combinedDynamicRegistries.getCombinedRegistryManager().get(Registry.DIMENSION_KEY).contains(DimensionOptions.OVERWORLD)) {
+        if (!this.combinedDynamicRegistries.getCombinedRegistryManager().get(RegistryKeys.DIMENSION).contains(DimensionOptions.OVERWORLD)) {
             throw new IllegalStateException("Missing Overworld dimension data");
         }
         this.proxy = proxy;
@@ -312,7 +313,7 @@ AutoCloseable {
         this.saveHandler = session.createSaveHandler();
         this.dataFixer = dataFixer;
         this.commandFunctionManager = new CommandFunctionManager(this, this.resourceManagerHolder.dataPackContents.getFunctionLoader());
-        RegistryWrapper<Block> registryEntryLookup = this.combinedDynamicRegistries.getCombinedRegistryManager().get(Registry.BLOCK_KEY).getReadOnlyWrapper().withFeatureFilter(this.saveProperties.getEnabledFeatures());
+        RegistryWrapper<Block> registryEntryLookup = this.combinedDynamicRegistries.getCombinedRegistryManager().get(RegistryKeys.BLOCK).getReadOnlyWrapper().withFeatureFilter(this.saveProperties.getEnabledFeatures());
         this.structureTemplateManager = new StructureTemplateManager(saveLoader.resourceManager(), session, dataFixer, registryEntryLookup);
         this.serverThread = serverThread;
         this.workerExecutor = Util.getMainWorkerExecutor();
@@ -359,7 +360,7 @@ AutoCloseable {
     protected void createWorlds(WorldGenerationProgressListener worldGenerationProgressListener) {
         ServerWorldProperties serverWorldProperties = this.saveProperties.getMainWorldProperties();
         boolean bl = this.saveProperties.isDebugWorld();
-        Registry<DimensionOptions> registry = this.combinedDynamicRegistries.getCombinedRegistryManager().get(Registry.DIMENSION_KEY);
+        Registry<DimensionOptions> registry = this.combinedDynamicRegistries.getCombinedRegistryManager().get(RegistryKeys.DIMENSION);
         GeneratorOptions generatorOptions = this.saveProperties.getGeneratorOptions();
         long l = generatorOptions.getSeed();
         long m = BiomeAccess.hashSeed(l);
@@ -396,7 +397,7 @@ AutoCloseable {
         for (Map.Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : registry.getEntrySet()) {
             RegistryKey<DimensionOptions> registryKey = entry.getKey();
             if (registryKey == DimensionOptions.OVERWORLD) continue;
-            RegistryKey<World> registryKey2 = RegistryKey.of(Registry.WORLD_KEY, registryKey.getValue());
+            RegistryKey<World> registryKey2 = RegistryKey.of(RegistryKeys.WORLD, registryKey.getValue());
             UnmodifiableLevelProperties unmodifiableLevelProperties = new UnmodifiableLevelProperties(this.saveProperties, serverWorldProperties);
             ServerWorld serverWorld2 = new ServerWorld(this, this.workerExecutor, this.session, unmodifiableLevelProperties, registryKey2, entry.getValue(), worldGenerationProgressListener, bl, m, ImmutableList.of(), false);
             worldBorder.addListener(new WorldBorderListener.WorldBorderSyncer(serverWorld2.getWorldBorder()));
@@ -438,7 +439,7 @@ AutoCloseable {
             k += m;
         }
         if (bonusChest) {
-            world.getRegistryManager().getOptional(Registry.CONFIGURED_FEATURE_KEY).flatMap(registry -> registry.getEntry(MiscConfiguredFeatures.BONUS_CHEST)).ifPresent(reference -> ((ConfiguredFeature)reference.value()).generate(world, serverChunkManager.getChunkGenerator(), serverWorld.random, new BlockPos(worldProperties.getSpawnX(), worldProperties.getSpawnY(), worldProperties.getSpawnZ())));
+            world.getRegistryManager().getOptional(RegistryKeys.CONFIGURED_FEATURE_WORLDGEN).flatMap(featureRegistry -> featureRegistry.getEntry(MiscConfiguredFeatures.BONUS_CHEST)).ifPresent(feature -> ((ConfiguredFeature)feature.value()).generate(world, serverChunkManager.getChunkGenerator(), serverWorld.random, new BlockPos(worldProperties.getSpawnX(), worldProperties.getSpawnY(), worldProperties.getSpawnZ())));
         }
     }
 
@@ -930,7 +931,7 @@ AutoCloseable {
         if (this.playerManager != null) {
             details.addSection("Player Count", () -> this.playerManager.getCurrentPlayerCount() + " / " + this.playerManager.getMaxPlayerCount() + "; " + this.playerManager.getPlayerList());
         }
-        details.addSection("Data Packs", () -> this.dataPackManager.getEnabledProfiles().stream().map(resourcePackProfile -> resourcePackProfile.getName() + (resourcePackProfile.getCompatibility().isCompatible() ? "" : " (incompatible)")).collect(Collectors.joining(", ")));
+        details.addSection("Data Packs", () -> this.dataPackManager.getEnabledProfiles().stream().map(profile -> profile.getName() + (profile.getCompatibility().isCompatible() ? "" : " (incompatible)")).collect(Collectors.joining(", ")));
         details.addSection("Enabled Feature Flags", () -> FeatureFlags.FEATURE_MANAGER.toId(this.saveProperties.getEnabledFeatures()).stream().map(Identifier::toString).collect(Collectors.joining(", ")));
         details.addSection("World Generation", () -> this.saveProperties.getLifecycle().toString());
         if (this.serverId != null) {

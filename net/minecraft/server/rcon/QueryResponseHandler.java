@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 
 public class QueryResponseHandler
 extends RconBase {
-    private static final Logger field_23963 = LogUtils.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final String GAME_TYPE = "SMP";
     private static final String GAME_ID = "MINECRAFT";
     private static final long CLEAN_UP_THRESHOLD = 30000L;
@@ -65,7 +65,7 @@ extends RconBase {
                 InetAddress inetAddress = InetAddress.getLocalHost();
                 this.ip = inetAddress.getHostAddress();
             } catch (UnknownHostException unknownHostException) {
-                field_23963.warn("Unable to determine local host IP, please set server-ip in server.properties", unknownHostException);
+                LOGGER.warn("Unable to determine local host IP, please set server-ip in server.properties", unknownHostException);
             }
         } else {
             this.ip = this.hostname;
@@ -78,7 +78,7 @@ extends RconBase {
     public static QueryResponseHandler create(DedicatedServer server) {
         int i = server.getProperties().queryPort;
         if (0 >= i || 65535 < i) {
-            field_23963.warn("Invalid query port {} found in server.properties (queries disabled)", (Object)i);
+            LOGGER.warn("Invalid query port {} found in server.properties (queries disabled)", (Object)i);
             return null;
         }
         QueryResponseHandler queryResponseHandler = new QueryResponseHandler(server, i);
@@ -96,26 +96,26 @@ extends RconBase {
         byte[] bs = packet.getData();
         int i = packet.getLength();
         SocketAddress socketAddress = packet.getSocketAddress();
-        field_23963.debug("Packet len {} [{}]", (Object)i, (Object)socketAddress);
+        LOGGER.debug("Packet len {} [{}]", (Object)i, (Object)socketAddress);
         if (3 > i || -2 != bs[0] || -3 != bs[1]) {
-            field_23963.debug("Invalid packet [{}]", (Object)socketAddress);
+            LOGGER.debug("Invalid packet [{}]", (Object)socketAddress);
             return false;
         }
-        field_23963.debug("Packet '{}' [{}]", (Object)BufferHelper.toHex(bs[2]), (Object)socketAddress);
+        LOGGER.debug("Packet '{}' [{}]", (Object)BufferHelper.toHex(bs[2]), (Object)socketAddress);
         switch (bs[2]) {
             case 9: {
                 this.createQuery(packet);
-                field_23963.debug("Challenge [{}]", (Object)socketAddress);
+                LOGGER.debug("Challenge [{}]", (Object)socketAddress);
                 return true;
             }
             case 0: {
                 if (!this.isValidQuery(packet).booleanValue()) {
-                    field_23963.debug("Invalid challenge [{}]", (Object)socketAddress);
+                    LOGGER.debug("Invalid challenge [{}]", (Object)socketAddress);
                     return false;
                 }
                 if (15 == i) {
                     this.reply(this.createRulesReply(packet), packet);
-                    field_23963.debug("Rules [{}]", (Object)socketAddress);
+                    LOGGER.debug("Rules [{}]", (Object)socketAddress);
                     break;
                 }
                 DataStreamHelper dataStreamHelper = new DataStreamHelper(1460);
@@ -129,7 +129,7 @@ extends RconBase {
                 dataStreamHelper.writeShort((short)this.port);
                 dataStreamHelper.writeBytes(this.ip);
                 this.reply(dataStreamHelper.bytes(), packet);
-                field_23963.debug("Status [{}]", (Object)socketAddress);
+                LOGGER.debug("Status [{}]", (Object)socketAddress);
             }
         }
         return true;
@@ -218,7 +218,7 @@ extends RconBase {
 
     @Override
     public void run() {
-        field_23963.info("Query running on {}:{}", (Object)this.hostname, (Object)this.queryPort);
+        LOGGER.info("Query running on {}:{}", (Object)this.hostname, (Object)this.queryPort);
         this.lastQueryTime = Util.getMeasuringTimeMs();
         DatagramPacket datagramPacket = new DatagramPacket(this.packetBuffer, this.packetBuffer.length);
         try {
@@ -235,7 +235,7 @@ extends RconBase {
                 }
             }
         } finally {
-            field_23963.debug("closeSocket: {}:{}", (Object)this.hostname, (Object)this.queryPort);
+            LOGGER.debug("closeSocket: {}:{}", (Object)this.hostname, (Object)this.queryPort);
             this.socket.close();
         }
     }
@@ -255,9 +255,9 @@ extends RconBase {
         if (!this.running) {
             return;
         }
-        field_23963.warn("Unexpected exception", e);
+        LOGGER.warn("Unexpected exception", e);
         if (!this.initialize()) {
-            field_23963.error("Failed to recover from exception, shutting down!");
+            LOGGER.error("Failed to recover from exception, shutting down!");
             this.running = false;
         }
     }
@@ -268,7 +268,7 @@ extends RconBase {
             this.socket.setSoTimeout(500);
             return true;
         } catch (Exception exception) {
-            field_23963.warn("Unable to initialise query system on {}:{}", this.hostname, this.queryPort, exception);
+            LOGGER.warn("Unable to initialise query system on {}:{}", this.hostname, this.queryPort, exception);
             return false;
         }
     }

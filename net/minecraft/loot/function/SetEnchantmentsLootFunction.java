@@ -30,9 +30,9 @@ import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.loot.provider.number.LootNumberProvider;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.registry.Registry;
 
 public class SetEnchantmentsLootFunction
 extends ConditionalLootFunction {
@@ -89,7 +89,7 @@ extends ConditionalLootFunction {
             super.toJson(jsonObject, setEnchantmentsLootFunction, jsonSerializationContext);
             JsonObject jsonObject2 = new JsonObject();
             setEnchantmentsLootFunction.enchantments.forEach((enchantment, numberProvider) -> {
-                Identifier identifier = Registry.ENCHANTMENT.getId((Enchantment)enchantment);
+                Identifier identifier = Registries.ENCHANTMENT.getId((Enchantment)enchantment);
                 if (identifier == null) {
                     throw new IllegalArgumentException("Don't know how to serialize enchantment " + enchantment);
                 }
@@ -107,7 +107,7 @@ extends ConditionalLootFunction {
                 for (Map.Entry<String, JsonElement> entry : jsonObject2.entrySet()) {
                     String string = entry.getKey();
                     JsonElement jsonElement = entry.getValue();
-                    Enchantment enchantment = Registry.ENCHANTMENT.getOrEmpty(new Identifier(string)).orElseThrow(() -> new JsonSyntaxException("Unknown enchantment '" + string + "'"));
+                    Enchantment enchantment = Registries.ENCHANTMENT.getOrEmpty(new Identifier(string)).orElseThrow(() -> new JsonSyntaxException("Unknown enchantment '" + string + "'"));
                     LootNumberProvider lootNumberProvider = (LootNumberProvider)jsonDeserializationContext.deserialize(jsonElement, (Type)((Object)LootNumberProvider.class));
                     map.put(enchantment, lootNumberProvider);
                 }

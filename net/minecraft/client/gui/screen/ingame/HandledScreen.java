@@ -114,7 +114,7 @@ implements ScreenHandlerProvider<T> {
         for (int k = 0; k < ((ScreenHandler)this.handler).slots.size(); ++k) {
             Slot slot = ((ScreenHandler)this.handler).slots.get(k);
             if (slot.isEnabled()) {
-                RenderSystem.setShader(GameRenderer::getPositionTexShader);
+                RenderSystem.setShader(GameRenderer::getPositionTexProgram);
                 this.drawSlot(matrices, slot);
             }
             if (!this.isPointOverSlot(slot, mouseX, mouseY) || !slot.isEnabled()) continue;

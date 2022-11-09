@@ -100,15 +100,16 @@ import net.minecraft.item.TridentItem;
 import net.minecraft.item.VerticallyAttachableBlockItem;
 import net.minecraft.item.WritableBookItem;
 import net.minecraft.item.WrittenBookItem;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.tag.BannerPatternTags;
+import net.minecraft.registry.tag.InstrumentTags;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.BannerPatternTags;
-import net.minecraft.tag.InstrumentTags;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registry;
 
 public class Items {
     public static final Item AIR = Items.register(Blocks.AIR, (Item)new AirBlockItem(Blocks.AIR, new Item.Settings()));
@@ -228,6 +229,7 @@ public class Items {
     public static final Item MUDDY_MANGROVE_ROOTS = Items.register(Blocks.MUDDY_MANGROVE_ROOTS);
     public static final Item CRIMSON_STEM = Items.register(Blocks.CRIMSON_STEM);
     public static final Item WARPED_STEM = Items.register(Blocks.WARPED_STEM);
+    public static final Item BAMBOO_BLOCK = Items.register(Blocks.BAMBOO_BLOCK);
     public static final Item STRIPPED_OAK_LOG = Items.register(Blocks.STRIPPED_OAK_LOG);
     public static final Item STRIPPED_SPRUCE_LOG = Items.register(Blocks.STRIPPED_SPRUCE_LOG);
     public static final Item STRIPPED_BIRCH_LOG = Items.register(Blocks.STRIPPED_BIRCH_LOG);
@@ -246,6 +248,7 @@ public class Items {
     public static final Item STRIPPED_MANGROVE_WOOD = Items.register(Blocks.STRIPPED_MANGROVE_WOOD);
     public static final Item STRIPPED_CRIMSON_HYPHAE = Items.register(Blocks.STRIPPED_CRIMSON_HYPHAE);
     public static final Item STRIPPED_WARPED_HYPHAE = Items.register(Blocks.STRIPPED_WARPED_HYPHAE);
+    public static final Item STRIPPED_BAMBOO_BLOCK = Items.register(Blocks.STRIPPED_BAMBOO_BLOCK);
     public static final Item OAK_WOOD = Items.register(Blocks.OAK_WOOD);
     public static final Item SPRUCE_WOOD = Items.register(Blocks.SPRUCE_WOOD);
     public static final Item BIRCH_WOOD = Items.register(Blocks.BIRCH_WOOD);
@@ -1312,7 +1315,7 @@ public class Items {
     }
 
     protected static Item register(Block block, Item item) {
-        return Items.register(Registry.BLOCK.getId(block), item);
+        return Items.register(Registries.BLOCK.getId(block), item);
     }
 
     private static Item register(String id, Item item) {
@@ -1323,7 +1326,7 @@ public class Items {
         if (item instanceof BlockItem) {
             ((BlockItem)item).appendBlocks(Item.BLOCK_ITEMS, item);
         }
-        return Registry.register(Registry.ITEM, id, item);
+        return Registry.register(Registries.ITEM, id, item);
     }
 }
 

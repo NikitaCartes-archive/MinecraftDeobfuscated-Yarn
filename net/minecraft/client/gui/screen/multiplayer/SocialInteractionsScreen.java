@@ -68,8 +68,6 @@ extends Screen {
     private Text serverLabel;
     private int playerCount;
     private boolean initialized;
-    @Nullable
-    private Runnable onRendered;
 
     public SocialInteractionsScreen() {
         super(Text.translatable("gui.socialInteractions.title"));
@@ -139,6 +137,7 @@ extends Screen {
         this.searchBox.setVisible(true);
         this.searchBox.setEditableColor(0xFFFFFF);
         this.searchBox.setText(string);
+        this.searchBox.setPlaceholder(SEARCH_TEXT);
         this.searchBox.setChangedListener(this::onSearchChange);
         this.addSelectableChild(this.searchBox);
         this.addSelectableChild(this.playerList);
@@ -227,16 +226,9 @@ extends Screen {
         } else if (this.currentTab == Tab.BLOCKED) {
             SocialInteractionsScreen.drawCenteredText(matrices, this.client.textRenderer, EMPTY_BLOCKED_TEXT, this.width / 2, (78 + this.getPlayerListBottom()) / 2, -1);
         }
-        if (!this.searchBox.isFocused() && this.searchBox.getText().isEmpty()) {
-            SocialInteractionsScreen.drawTextWithShadow(matrices, this.client.textRenderer, SEARCH_TEXT, this.searchBox.getX(), this.searchBox.getY(), -1);
-        } else {
-            this.searchBox.render(matrices, mouseX, mouseY, delta);
-        }
+        this.searchBox.render(matrices, mouseX, mouseY, delta);
         this.blockingButton.visible = this.currentTab == Tab.BLOCKED;
         super.render(matrices, mouseX, mouseY, delta);
-        if (this.onRendered != null) {
-            this.onRendered.run();
-        }
     }
 
     @Override
@@ -290,10 +282,6 @@ extends Screen {
 
     public void setPlayerOffline(UUID uuid) {
         this.playerList.setPlayerOffline(uuid);
-    }
-
-    public void setOnRendered(@Nullable Runnable onRendered) {
-        this.onRendered = onRendered;
     }
 
     @Environment(value=EnvType.CLIENT)

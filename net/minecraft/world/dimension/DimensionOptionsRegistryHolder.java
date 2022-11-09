@@ -14,13 +14,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.MutableRegistry;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryCodecs;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.SimpleRegistry;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryCodecs;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.SimpleRegistry;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.MultiNoiseBiomeSource;
@@ -36,7 +36,7 @@ import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
 import net.minecraft.world.level.LevelProperties;
 
 public record DimensionOptionsRegistryHolder(Registry<DimensionOptions> dimensions) {
-    public static final MapCodec<DimensionOptionsRegistryHolder> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec)RegistryCodecs.createKeyedRegistryCodec(Registry.DIMENSION_KEY, Lifecycle.stable(), DimensionOptions.CODEC).fieldOf("dimensions")).forGetter(DimensionOptionsRegistryHolder::dimensions)).apply((Applicative<DimensionOptionsRegistryHolder, ?>)instance, instance.stable(DimensionOptionsRegistryHolder::new)));
+    public static final MapCodec<DimensionOptionsRegistryHolder> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec)RegistryCodecs.createKeyedRegistryCodec(RegistryKeys.DIMENSION, Lifecycle.stable(), DimensionOptions.CODEC).fieldOf("dimensions")).forGetter(DimensionOptionsRegistryHolder::dimensions)).apply((Applicative<DimensionOptionsRegistryHolder, ?>)instance, instance.stable(DimensionOptionsRegistryHolder::new)));
     private static final Set<RegistryKey<DimensionOptions>> VANILLA_KEYS = ImmutableSet.of(DimensionOptions.OVERWORLD, DimensionOptions.NETHER, DimensionOptions.END);
     private static final int VANILLA_KEY_COUNT = VANILLA_KEYS.size();
 
@@ -52,7 +52,7 @@ public record DimensionOptionsRegistryHolder(Registry<DimensionOptions> dimensio
     }
 
     public DimensionOptionsRegistryHolder with(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator) {
-        Registry<DimensionType> registry = dynamicRegistryManager.get(Registry.DIMENSION_TYPE_KEY);
+        Registry<DimensionType> registry = dynamicRegistryManager.get(RegistryKeys.DIMENSION_TYPE);
         Registry<DimensionOptions> registry2 = DimensionOptionsRegistryHolder.createRegistry(registry, this.dimensions, chunkGenerator);
         return new DimensionOptionsRegistryHolder(registry2);
     }
@@ -64,14 +64,14 @@ public record DimensionOptionsRegistryHolder(Registry<DimensionOptions> dimensio
     }
 
     public static Registry<DimensionOptions> createRegistry(Registry<DimensionOptions> currentRegistry, RegistryEntry<DimensionType> overworldEntry, ChunkGenerator chunkGenerator) {
-        SimpleRegistry<DimensionOptions> mutableRegistry = new SimpleRegistry<DimensionOptions>(Registry.DIMENSION_KEY, Lifecycle.experimental());
-        ((MutableRegistry)mutableRegistry).add(DimensionOptions.OVERWORLD, new DimensionOptions(overworldEntry, chunkGenerator), Lifecycle.stable());
+        SimpleRegistry<DimensionOptions> mutableRegistry = new SimpleRegistry<DimensionOptions>(RegistryKeys.DIMENSION, Lifecycle.experimental());
+        mutableRegistry.add(DimensionOptions.OVERWORLD, new DimensionOptions(overworldEntry, chunkGenerator), Lifecycle.stable());
         for (Map.Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : currentRegistry.getEntrySet()) {
             RegistryKey<DimensionOptions> registryKey = entry.getKey();
             if (registryKey == DimensionOptions.OVERWORLD) continue;
-            ((MutableRegistry)mutableRegistry).add(registryKey, entry.getValue(), currentRegistry.getEntryLifecycle(entry.getValue()));
+            mutableRegistry.add(registryKey, entry.getValue(), currentRegistry.getEntryLifecycle(entry.getValue()));
         }
-        return ((Registry)mutableRegistry).freeze();
+        return mutableRegistry.freeze();
     }
 
     public ChunkGenerator getChunkGenerator() {
@@ -87,7 +87,7 @@ public record DimensionOptionsRegistryHolder(Registry<DimensionOptions> dimensio
     }
 
     public ImmutableSet<RegistryKey<World>> getWorldKeys() {
-        return this.dimensions().getEntrySet().stream().map(Map.Entry::getKey).map(Registry::createWorldKey).collect(ImmutableSet.toImmutableSet());
+        return this.dimensions().getEntrySet().stream().map(Map.Entry::getKey).map(RegistryKeys::toWorldKey).collect(ImmutableSet.toImmutableSet());
     }
 
     public boolean isDebug() {
@@ -157,9 +157,9 @@ public record DimensionOptionsRegistryHolder(Registry<DimensionOptions> dimensio
         ArrayList list = new ArrayList();
         DimensionOptionsRegistryHolder.streamAll(stream).forEach(key -> existingRegistry.getOrEmpty((RegistryKey<DimensionOptions>)key).or(() -> this.dimensions.getOrEmpty((RegistryKey<DimensionOptions>)key)).ifPresent(dimensionOptions -> list.add(new Entry((RegistryKey<DimensionOptions>)key, (DimensionOptions)dimensionOptions))));
         Lifecycle lifecycle = list.size() == VANILLA_KEY_COUNT ? Lifecycle.stable() : Lifecycle.experimental();
-        SimpleRegistry<DimensionOptions> mutableRegistry = new SimpleRegistry<DimensionOptions>(Registry.DIMENSION_KEY, lifecycle);
+        SimpleRegistry<DimensionOptions> mutableRegistry = new SimpleRegistry<DimensionOptions>(RegistryKeys.DIMENSION, lifecycle);
         list.forEach(entry -> mutableRegistry.add(entry.key, entry.value, entry.getLifecycle()));
-        Registry<DimensionOptions> registry = ((Registry)mutableRegistry).freeze();
+        Registry<DimensionOptions> registry = mutableRegistry.freeze();
         LevelProperties.SpecialProperty specialProperty = DimensionOptionsRegistryHolder.getSpecialProperty(registry);
         return new DimensionsConfig(registry.freeze(), specialProperty);
     }

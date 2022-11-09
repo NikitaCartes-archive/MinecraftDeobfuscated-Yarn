@@ -29,7 +29,7 @@ import net.minecraft.util.shape.VoxelSet;
 import net.minecraft.util.shape.VoxelShape;
 
 public final class VoxelShapes {
-    public static final double field_31880 = 1.0E-7;
+    public static final double MIN_SIZE = 1.0E-7;
     public static final double field_31881 = 1.0E-6;
     private static final VoxelShape FULL_CUBE = Util.make(() -> {
         BitSetVoxelSet voxelSet = new BitSetVoxelSet(1, 1, 1);

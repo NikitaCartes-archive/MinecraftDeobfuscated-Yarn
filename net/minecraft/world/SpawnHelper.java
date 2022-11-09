@@ -23,10 +23,13 @@ import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.BiomeTags;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.BiomeTags;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.FluidTags;
 import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.collection.Pool;
 import net.minecraft.util.math.BlockPos;
@@ -37,8 +40,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.ServerWorldAccess;
@@ -206,7 +207,7 @@ public final class SpawnHelper {
                 MobEntity mobEntity = (MobEntity)obj;
                 return mobEntity;
             }
-            LOGGER.warn("Can't spawn entity of type: {}", (Object)Registry.ENTITY_TYPE.getId(type));
+            LOGGER.warn("Can't spawn entity of type: {}", (Object)Registries.ENTITY_TYPE.getId(type));
         } catch (Exception exception) {
             LOGGER.warn("Failed to create mob", exception);
         }
@@ -243,7 +244,7 @@ public final class SpawnHelper {
         if (spawnGroup != SpawnGroup.MONSTER || !world.getBlockState(pos.down()).isOf(Blocks.NETHER_BRICKS)) {
             return false;
         }
-        Structure structure = structureAccessor.getRegistryManager().get(Registry.STRUCTURE_KEY).get(StructureKeys.FORTRESS);
+        Structure structure = structureAccessor.getRegistryManager().get(RegistryKeys.STRUCTURE_WORLDGEN).get(StructureKeys.FORTRESS);
         if (structure == null) {
             return false;
         }

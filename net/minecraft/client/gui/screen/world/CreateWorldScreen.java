@@ -43,6 +43,10 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.GeneratorOptionsHolder;
+import net.minecraft.registry.CombinedDynamicRegistries;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryOps;
+import net.minecraft.registry.ServerDynamicRegistryType;
 import net.minecraft.resource.DataConfiguration;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.resource.ResourcePackManager;
@@ -58,10 +62,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.PathUtil;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
-import net.minecraft.util.dynamic.RegistryOps;
-import net.minecraft.util.registry.CombinedDynamicRegistries;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.ServerDynamicRegistryType;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
@@ -444,10 +444,10 @@ extends Screen {
         this.client.send(() -> this.client.setScreen(new MessageScreen(Text.translatable("dataPack.validation.working"))));
         SaveLoading.ServerConfig serverConfig = CreateWorldScreen.createServerConfig(dataPackManager, dataConfiguration);
         ((CompletableFuture)SaveLoading.load(serverConfig, context -> {
-            if (context.worldGenRegistryManager().get(Registry.WORLD_PRESET_KEY).size() == 0) {
+            if (context.worldGenRegistryManager().get(RegistryKeys.WORLD_PRESET_WORLDGEN).size() == 0) {
                 throw new IllegalStateException("Needs at least one world preset to continue");
             }
-            if (context.worldGenRegistryManager().get(Registry.BIOME_KEY).size() == 0) {
+            if (context.worldGenRegistryManager().get(RegistryKeys.BIOME_WORLDGEN).size() == 0) {
                 throw new IllegalStateException("Needs at least one biome continue");
             }
             GeneratorOptionsHolder generatorOptionsHolder = this.moreOptionsDialog.getGeneratorOptionsHolder();
@@ -524,7 +524,7 @@ extends Screen {
             Stream<Path> stream = Files.walk(this.dataPackTempDir, new FileVisitOption[0]);
             try {
                 Path path2 = session.getDirectory(WorldSavePath.DATAPACKS);
-                Files.createDirectories(path2, new FileAttribute[0]);
+                PathUtil.createDirectories(path2);
                 stream.filter(path -> !path.equals(this.dataPackTempDir)).forEach(path -> CreateWorldScreen.copyDataPack(this.dataPackTempDir, path2, path));
                 optional = Optional.of(session);
                 if (stream == null) break block12;

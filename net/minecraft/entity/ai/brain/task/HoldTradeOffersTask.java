@@ -13,7 +13,7 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.EntityLookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
@@ -21,7 +21,7 @@ import net.minecraft.village.TradeOffer;
 import org.jetbrains.annotations.Nullable;
 
 public class HoldTradeOffersTask
-extends Task<VillagerEntity> {
+extends MultiTickTask<VillagerEntity> {
     private static final int RUN_INTERVAL = 900;
     private static final int OFFER_SHOWING_INTERVAL = 40;
     @Nullable
@@ -38,16 +38,16 @@ extends Task<VillagerEntity> {
     @Override
     public boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
         Brain<VillagerEntity> brain = villagerEntity.getBrain();
-        if (!brain.getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).isPresent()) {
+        if (!brain.getOptionalRegisteredMemory(MemoryModuleType.INTERACTION_TARGET).isPresent()) {
             return false;
         }
-        LivingEntity livingEntity = brain.getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).get();
+        LivingEntity livingEntity = brain.getOptionalRegisteredMemory(MemoryModuleType.INTERACTION_TARGET).get();
         return livingEntity.getType() == EntityType.PLAYER && villagerEntity.isAlive() && livingEntity.isAlive() && !villagerEntity.isBaby() && villagerEntity.squaredDistanceTo(livingEntity) <= 17.0;
     }
 
     @Override
     public boolean shouldKeepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-        return this.shouldRun(serverWorld, villagerEntity) && this.ticksLeft > 0 && villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).isPresent();
+        return this.shouldRun(serverWorld, villagerEntity) && this.ticksLeft > 0 && villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.INTERACTION_TARGET).isPresent();
     }
 
     @Override
@@ -124,7 +124,7 @@ extends Task<VillagerEntity> {
 
     private LivingEntity findPotentialCustomer(VillagerEntity villager) {
         Brain<VillagerEntity> brain = villager.getBrain();
-        LivingEntity livingEntity = brain.getOptionalMemory(MemoryModuleType.INTERACTION_TARGET).get();
+        LivingEntity livingEntity = brain.getOptionalRegisteredMemory(MemoryModuleType.INTERACTION_TARGET).get();
         brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(livingEntity, true));
         return livingEntity;
     }
@@ -141,18 +141,8 @@ extends Task<VillagerEntity> {
     }
 
     @Override
-    public /* synthetic */ boolean shouldKeepRunning(ServerWorld world, LivingEntity entity, long time) {
-        return this.shouldKeepRunning(world, (VillagerEntity)entity, time);
-    }
-
-    @Override
     public /* synthetic */ void finishRunning(ServerWorld world, LivingEntity entity, long time) {
         this.finishRunning(world, (VillagerEntity)entity, time);
-    }
-
-    @Override
-    public /* synthetic */ void keepRunning(ServerWorld world, LivingEntity entity, long time) {
-        this.keepRunning(world, (VillagerEntity)entity, time);
     }
 
     @Override

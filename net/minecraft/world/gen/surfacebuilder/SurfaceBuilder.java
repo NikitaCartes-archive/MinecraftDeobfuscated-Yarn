@@ -9,6 +9,9 @@ import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -16,8 +19,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.math.random.RandomSplitter;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
@@ -168,7 +169,7 @@ public class SurfaceBuilder {
 
     @Deprecated
     public Optional<BlockState> applyMaterialRule(MaterialRules.MaterialRule rule, CarverContext context, Function<BlockPos, RegistryEntry<Biome>> posToBiome, Chunk chunk, ChunkNoiseSampler chunkNoiseSampler, BlockPos pos, boolean hasFluid) {
-        MaterialRules.MaterialRuleContext materialRuleContext = new MaterialRules.MaterialRuleContext(this, context.getNoiseConfig(), chunk, chunkNoiseSampler, posToBiome, context.getRegistryManager().get(Registry.BIOME_KEY), context);
+        MaterialRules.MaterialRuleContext materialRuleContext = new MaterialRules.MaterialRuleContext(this, context.getNoiseConfig(), chunk, chunkNoiseSampler, posToBiome, context.getRegistryManager().get(RegistryKeys.BIOME_WORLDGEN), context);
         MaterialRules.BlockStateRule blockStateRule = (MaterialRules.BlockStateRule)rule.apply(materialRuleContext);
         int i = pos.getX();
         int j = pos.getY();

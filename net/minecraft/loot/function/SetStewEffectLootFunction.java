@@ -29,10 +29,10 @@ import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.loot.provider.number.LootNumberProvider;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 
 public class SetStewEffectLootFunction
 extends ConditionalLootFunction {
@@ -108,7 +108,7 @@ extends ConditionalLootFunction {
                 JsonArray jsonArray = new JsonArray();
                 for (StatusEffect statusEffect : setStewEffectLootFunction.effects.keySet()) {
                     JsonObject jsonObject2 = new JsonObject();
-                    Identifier identifier = Registry.STATUS_EFFECT.getId(statusEffect);
+                    Identifier identifier = Registries.STATUS_EFFECT.getId(statusEffect);
                     if (identifier == null) {
                         throw new IllegalArgumentException("Don't know how to serialize mob effect " + statusEffect);
                     }
@@ -127,7 +127,7 @@ extends ConditionalLootFunction {
                 JsonArray jsonArray = JsonHelper.getArray(jsonObject, "effects");
                 for (JsonElement jsonElement : jsonArray) {
                     String string = JsonHelper.getString(jsonElement.getAsJsonObject(), "type");
-                    StatusEffect statusEffect = Registry.STATUS_EFFECT.getOrEmpty(new Identifier(string)).orElseThrow(() -> new JsonSyntaxException("Unknown mob effect '" + string + "'"));
+                    StatusEffect statusEffect = Registries.STATUS_EFFECT.getOrEmpty(new Identifier(string)).orElseThrow(() -> new JsonSyntaxException("Unknown mob effect '" + string + "'"));
                     LootNumberProvider lootNumberProvider = JsonHelper.deserialize(jsonElement.getAsJsonObject(), "duration", jsonDeserializationContext, LootNumberProvider.class);
                     map.put(statusEffect, lootNumberProvider);
                 }

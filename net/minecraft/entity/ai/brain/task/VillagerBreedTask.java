@@ -12,20 +12,20 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.LookTargetUtil;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.poi.PointOfInterestType;
 import net.minecraft.world.poi.PointOfInterestTypes;
 
 public class VillagerBreedTask
-extends Task<VillagerEntity> {
+extends MultiTickTask<VillagerEntity> {
     private static final int MAX_DISTANCE = 5;
     private static final float APPROACH_SPEED = 0.5f;
     private long breedEndTime;
@@ -46,7 +46,7 @@ extends Task<VillagerEntity> {
 
     @Override
     protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-        PassiveEntity passiveEntity = villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.BREED_TARGET).get();
+        PassiveEntity passiveEntity = villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.BREED_TARGET).get();
         LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, passiveEntity, 0.5f);
         serverWorld.sendEntityStatus(passiveEntity, EntityStatuses.ADD_BREEDING_PARTICLES);
         serverWorld.sendEntityStatus(villagerEntity, EntityStatuses.ADD_BREEDING_PARTICLES);
@@ -56,7 +56,7 @@ extends Task<VillagerEntity> {
 
     @Override
     protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-        VillagerEntity villagerEntity2 = (VillagerEntity)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.BREED_TARGET).get();
+        VillagerEntity villagerEntity2 = (VillagerEntity)villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.BREED_TARGET).get();
         if (villagerEntity.squaredDistanceTo(villagerEntity2) > 5.0) {
             return;
         }
@@ -94,7 +94,7 @@ extends Task<VillagerEntity> {
 
     private boolean isReadyToBreed(VillagerEntity villager) {
         Brain<VillagerEntity> brain = villager.getBrain();
-        Optional<PassiveEntity> optional = brain.getOptionalMemory(MemoryModuleType.BREED_TARGET).filter(passiveEntity -> passiveEntity.getType() == EntityType.VILLAGER);
+        Optional<PassiveEntity> optional = brain.getOptionalRegisteredMemory(MemoryModuleType.BREED_TARGET).filter(passiveEntity -> passiveEntity.getType() == EntityType.VILLAGER);
         if (!optional.isPresent()) {
             return false;
         }
@@ -130,18 +130,8 @@ extends Task<VillagerEntity> {
     }
 
     @Override
-    protected /* synthetic */ boolean shouldKeepRunning(ServerWorld world, LivingEntity entity, long time) {
-        return this.shouldKeepRunning(world, (VillagerEntity)entity, time);
-    }
-
-    @Override
     protected /* synthetic */ void finishRunning(ServerWorld world, LivingEntity entity, long time) {
         this.finishRunning(world, (VillagerEntity)entity, time);
-    }
-
-    @Override
-    protected /* synthetic */ void keepRunning(ServerWorld world, LivingEntity entity, long time) {
-        this.keepRunning(world, (VillagerEntity)entity, time);
     }
 
     @Override

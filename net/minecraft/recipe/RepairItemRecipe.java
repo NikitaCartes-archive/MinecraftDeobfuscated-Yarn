@@ -16,8 +16,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialCraftingRecipe;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class RepairItemRecipe
@@ -67,7 +67,7 @@ extends SpecialCraftingRecipe {
             HashMap<Enchantment, Integer> map = Maps.newHashMap();
             Map<Enchantment, Integer> map2 = EnchantmentHelper.get(itemStack3);
             Map<Enchantment, Integer> map3 = EnchantmentHelper.get(itemStack);
-            Registry.ENCHANTMENT.stream().filter(Enchantment::isCursed).forEach(enchantment -> {
+            Registries.ENCHANTMENT.stream().filter(Enchantment::isCursed).forEach(enchantment -> {
                 int i = Math.max(map2.getOrDefault(enchantment, 0), map3.getOrDefault(enchantment, 0));
                 if (i > 0) {
                     map.put((Enchantment)enchantment, i);

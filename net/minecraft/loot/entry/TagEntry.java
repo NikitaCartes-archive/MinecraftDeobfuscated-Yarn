@@ -16,11 +16,12 @@ import net.minecraft.loot.entry.LeafEntry;
 import net.minecraft.loot.entry.LootPoolEntryType;
 import net.minecraft.loot.entry.LootPoolEntryTypes;
 import net.minecraft.loot.function.LootFunction;
-import net.minecraft.tag.TagKey;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 
 public class TagEntry
 extends LeafEntry {
@@ -40,12 +41,12 @@ extends LeafEntry {
 
     @Override
     public void generateLoot(Consumer<ItemStack> lootConsumer, LootContext context) {
-        Registry.ITEM.iterateEntries(this.name).forEach(entry -> lootConsumer.accept(new ItemStack((RegistryEntry<Item>)entry)));
+        Registries.ITEM.iterateEntries(this.name).forEach(entry -> lootConsumer.accept(new ItemStack((RegistryEntry<Item>)entry)));
     }
 
     private boolean grow(LootContext context, Consumer<LootChoice> lootChoiceExpander) {
         if (this.test(context)) {
-            for (final RegistryEntry<Item> registryEntry : Registry.ITEM.iterateEntries(this.name)) {
+            for (final RegistryEntry<Item> registryEntry : Registries.ITEM.iterateEntries(this.name)) {
                 lootChoiceExpander.accept(new LeafEntry.Choice(){
 
                     @Override
@@ -87,7 +88,7 @@ extends LeafEntry {
         @Override
         protected TagEntry fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
             Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "name"));
-            TagKey<Item> tagKey = TagKey.of(Registry.ITEM_KEY, identifier);
+            TagKey<Item> tagKey = TagKey.of(RegistryKeys.ITEM, identifier);
             boolean bl = JsonHelper.getBoolean(jsonObject, "expand");
             return new TagEntry(tagKey, bl, i, j, lootConditions, lootFunctions);
         }

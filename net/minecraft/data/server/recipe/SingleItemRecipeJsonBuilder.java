@@ -17,8 +17,8 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.book.RecipeCategory;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class SingleItemRecipeJsonBuilder
@@ -116,7 +116,7 @@ implements CraftingRecipeJsonBuilder {
                 json.addProperty("group", this.group);
             }
             json.add("ingredient", this.input.toJson());
-            json.addProperty("result", Registry.ITEM.getId(this.output).toString());
+            json.addProperty("result", Registries.ITEM.getId(this.output).toString());
             json.addProperty("count", this.count);
         }
 

@@ -35,7 +35,7 @@ implements DebugRenderer.Renderer {
         int j;
         int i;
         RenderSystem.enableDepthTest();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         Entity entity = this.client.gameRenderer.getCamera().getFocusedEntity();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();

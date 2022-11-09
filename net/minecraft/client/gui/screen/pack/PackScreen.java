@@ -27,6 +27,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.Tooltip;
 import net.minecraft.client.gui.screen.pack.PackListWidget;
 import net.minecraft.client.gui.screen.pack.ResourcePackOrganizer;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -54,7 +55,7 @@ extends Screen {
     static final Logger LOGGER = LogUtils.getLogger();
     private static final int field_32395 = 200;
     private static final Text DROP_INFO = Text.translatable("pack.dropInfo").formatted(Formatting.GRAY);
-    static final Text FOLDER_INFO = Text.translatable("pack.folderInfo");
+    private static final Text FOLDER_INFO = Text.translatable("pack.folderInfo");
     private static final int field_32396 = 20;
     private static final Identifier UNKNOWN_PACK = new Identifier("textures/misc/unknown_pack.png");
     private final ResourcePackOrganizer organizer;
@@ -97,18 +98,7 @@ extends Screen {
     @Override
     protected void init() {
         this.doneButton = this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.DONE, button -> this.close()).setPositionAndSize(this.width / 2 + 4, this.height - 48, 150, 20).build());
-        this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("pack.openFolder"), button -> Util.getOperatingSystem().open(this.file.toUri())).setPositionAndSize(this.width / 2 - 154, this.height - 48, 150, 20).setTooltipSupplier(new ButtonWidget.TooltipSupplier(){
-
-            @Override
-            public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {
-                PackScreen.this.renderTooltip(matrixStack, FOLDER_INFO, i, j);
-            }
-
-            @Override
-            public void supply(Consumer<Text> consumer) {
-                consumer.accept(FOLDER_INFO);
-            }
-        }).build());
+        this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("pack.openFolder"), button -> Util.getOperatingSystem().open(this.file.toUri())).setPositionAndSize(this.width / 2 - 154, this.height - 48, 150, 20).setTooltip(Tooltip.of(FOLDER_INFO)).build());
         this.availablePackList = new PackListWidget(this.client, 200, this.height, Text.translatable("pack.available.title"));
         this.availablePackList.setLeftPos(this.width / 2 - 4 - 200);
         this.addSelectableChild(this.availablePackList);

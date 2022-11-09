@@ -17,6 +17,7 @@ import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
 import net.minecraft.screen.Property;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
@@ -29,7 +30,6 @@ import net.minecraft.stat.Stats;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 
 public class EnchantmentScreenHandler
 extends ScreenHandler {
@@ -125,7 +125,7 @@ extends ScreenHandler {
                         List<EnchantmentLevelEntry> list;
                         if (this.enchantmentPower[j] <= 0 || (list = this.generateEnchantments(itemStack, j, this.enchantmentPower[j])) == null || list.isEmpty()) continue;
                         EnchantmentLevelEntry enchantmentLevelEntry = list.get(this.random.nextInt(list.size()));
-                        this.enchantmentId[j] = Registry.ENCHANTMENT.getRawId(enchantmentLevelEntry.enchantment);
+                        this.enchantmentId[j] = Registries.ENCHANTMENT.getRawId(enchantmentLevelEntry.enchantment);
                         this.enchantmentLevel[j] = enchantmentLevelEntry.level;
                     }
                     this.sendContentUpdates();
@@ -223,17 +223,17 @@ extends ScreenHandler {
     }
 
     @Override
-    public ItemStack transferSlot(PlayerEntity player, int index) {
+    public ItemStack quickMove(PlayerEntity player, int slot) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = (Slot)this.slots.get(index);
-        if (slot != null && slot.hasStack()) {
-            ItemStack itemStack2 = slot.getStack();
+        Slot slot2 = (Slot)this.slots.get(slot);
+        if (slot2 != null && slot2.hasStack()) {
+            ItemStack itemStack2 = slot2.getStack();
             itemStack = itemStack2.copy();
-            if (index == 0) {
+            if (slot == 0) {
                 if (!this.insertItem(itemStack2, 2, 38, true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (index == 1) {
+            } else if (slot == 1) {
                 if (!this.insertItem(itemStack2, 2, 38, true)) {
                     return ItemStack.EMPTY;
                 }
@@ -250,14 +250,14 @@ extends ScreenHandler {
                 return ItemStack.EMPTY;
             }
             if (itemStack2.isEmpty()) {
-                slot.setStack(ItemStack.EMPTY);
+                slot2.setStack(ItemStack.EMPTY);
             } else {
-                slot.markDirty();
+                slot2.markDirty();
             }
             if (itemStack2.getCount() == itemStack.getCount()) {
                 return ItemStack.EMPTY;
             }
-            slot.onTakeItem(player, itemStack2);
+            slot2.onTakeItem(player, itemStack2);
         }
         return itemStack;
     }

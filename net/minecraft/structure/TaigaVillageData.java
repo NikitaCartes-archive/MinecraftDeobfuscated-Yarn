@@ -5,16 +5,16 @@ package net.minecraft.structure;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
+import net.minecraft.registry.Registerable;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.structure.pool.StructurePools;
 import net.minecraft.structure.processor.StructureProcessorList;
 import net.minecraft.structure.processor.StructureProcessorLists;
-import net.minecraft.util.registry.Registerable;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryEntryLookup;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.gen.feature.PlacedFeature;
 import net.minecraft.world.gen.feature.VillagePlacedFeatures;
 
@@ -23,18 +23,18 @@ public class TaigaVillageData {
     private static final RegistryKey<StructurePool> TERMINATORS_KEY = StructurePools.of("village/taiga/terminators");
 
     public static void bootstrap(Registerable<StructurePool> poolRegisterable) {
-        RegistryEntryLookup<PlacedFeature> registryEntryLookup = poolRegisterable.getRegistryLookup(Registry.PLACED_FEATURE_KEY);
+        RegistryEntryLookup<PlacedFeature> registryEntryLookup = poolRegisterable.getRegistryLookup(RegistryKeys.PLACED_FEATURE_WORLDGEN);
         RegistryEntry.Reference<PlacedFeature> registryEntry = registryEntryLookup.getOrThrow(VillagePlacedFeatures.SPRUCE);
         RegistryEntry.Reference<PlacedFeature> registryEntry2 = registryEntryLookup.getOrThrow(VillagePlacedFeatures.PINE);
         RegistryEntry.Reference<PlacedFeature> registryEntry3 = registryEntryLookup.getOrThrow(VillagePlacedFeatures.PILE_PUMPKIN);
         RegistryEntry.Reference<PlacedFeature> registryEntry4 = registryEntryLookup.getOrThrow(VillagePlacedFeatures.PATCH_TAIGA_GRASS);
         RegistryEntry.Reference<PlacedFeature> registryEntry5 = registryEntryLookup.getOrThrow(VillagePlacedFeatures.PATCH_BERRY_BUSH);
-        RegistryEntryLookup<StructureProcessorList> registryEntryLookup2 = poolRegisterable.getRegistryLookup(Registry.STRUCTURE_PROCESSOR_LIST_KEY);
+        RegistryEntryLookup<StructureProcessorList> registryEntryLookup2 = poolRegisterable.getRegistryLookup(RegistryKeys.PROCESSOR_LIST_WORLDGEN);
         RegistryEntry.Reference<StructureProcessorList> registryEntry6 = registryEntryLookup2.getOrThrow(StructureProcessorLists.MOSSIFY_10_PERCENT);
         RegistryEntry.Reference<StructureProcessorList> registryEntry7 = registryEntryLookup2.getOrThrow(StructureProcessorLists.ZOMBIE_TAIGA);
         RegistryEntry.Reference<StructureProcessorList> registryEntry8 = registryEntryLookup2.getOrThrow(StructureProcessorLists.STREET_SNOWY_OR_TAIGA);
         RegistryEntry.Reference<StructureProcessorList> registryEntry9 = registryEntryLookup2.getOrThrow(StructureProcessorLists.FARM_TAIGA);
-        RegistryEntryLookup<StructurePool> registryEntryLookup3 = poolRegisterable.getRegistryLookup(Registry.STRUCTURE_POOL_KEY);
+        RegistryEntryLookup<StructurePool> registryEntryLookup3 = poolRegisterable.getRegistryLookup(RegistryKeys.TEMPLATE_POOL_WORLDGEN);
         RegistryEntry.Reference<StructurePool> registryEntry10 = registryEntryLookup3.getOrThrow(StructurePools.EMPTY);
         RegistryEntry.Reference<StructurePool> registryEntry11 = registryEntryLookup3.getOrThrow(TERMINATORS_KEY);
         poolRegisterable.register(TOWN_CENTERS_KEY, new StructurePool(registryEntry10, ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedLegacySingle("village/taiga/town_centers/taiga_meeting_point_1", registryEntry6), 49), Pair.of(StructurePoolElement.ofProcessedLegacySingle("village/taiga/town_centers/taiga_meeting_point_2", registryEntry6), 49), Pair.of(StructurePoolElement.ofProcessedLegacySingle("village/taiga/zombie/town_centers/taiga_meeting_point_1", registryEntry7), 1), Pair.of(StructurePoolElement.ofProcessedLegacySingle("village/taiga/zombie/town_centers/taiga_meeting_point_2", registryEntry7), 1)), StructurePool.Projection.RIGID));

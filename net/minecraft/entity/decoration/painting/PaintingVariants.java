@@ -4,9 +4,10 @@
 package net.minecraft.entity.decoration.painting;
 
 import net.minecraft.entity.decoration.painting.PaintingVariant;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 
 public class PaintingVariants {
     public static final RegistryKey<PaintingVariant> KEBAB = PaintingVariants.of("kebab");
@@ -74,7 +75,7 @@ public class PaintingVariants {
     }
 
     private static RegistryKey<PaintingVariant> of(String id) {
-        return RegistryKey.of(Registry.PAINTING_VARIANT_KEY, new Identifier(id));
+        return RegistryKey.of(RegistryKeys.PAINTING_VARIANT, new Identifier(id));
     }
 }
 

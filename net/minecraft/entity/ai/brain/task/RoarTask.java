@@ -10,7 +10,7 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.LookTargetUtil;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.mob.WardenBrain;
 import net.minecraft.entity.mob.WardenEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -18,7 +18,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Unit;
 
 public class RoarTask
-extends Task<WardenEntity> {
+extends MultiTickTask<WardenEntity> {
     private static final int SOUND_DELAY = 25;
     private static final int ANGER_INCREASE = 20;
 
@@ -31,7 +31,7 @@ extends Task<WardenEntity> {
         Brain<WardenEntity> brain = wardenEntity.getBrain();
         brain.remember(MemoryModuleType.ROAR_SOUND_DELAY, Unit.INSTANCE, 25L);
         brain.forget(MemoryModuleType.WALK_TARGET);
-        LivingEntity livingEntity = wardenEntity.getBrain().getOptionalMemory(MemoryModuleType.ROAR_TARGET).get();
+        LivingEntity livingEntity = wardenEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.ROAR_TARGET).get();
         LookTargetUtil.lookAt(wardenEntity, livingEntity);
         wardenEntity.setPose(EntityPose.ROARING);
         wardenEntity.increaseAngerAt(livingEntity, 20, false);
@@ -56,8 +56,13 @@ extends Task<WardenEntity> {
         if (wardenEntity.isInPose(EntityPose.ROARING)) {
             wardenEntity.setPose(EntityPose.STANDING);
         }
-        wardenEntity.getBrain().getOptionalMemory(MemoryModuleType.ROAR_TARGET).ifPresent(wardenEntity::updateAttackTarget);
+        wardenEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.ROAR_TARGET).ifPresent(wardenEntity::updateAttackTarget);
         wardenEntity.getBrain().forget(MemoryModuleType.ROAR_TARGET);
+    }
+
+    @Override
+    protected /* synthetic */ boolean shouldKeepRunning(ServerWorld world, LivingEntity entity, long time) {
+        return this.shouldKeepRunning(world, (WardenEntity)entity, time);
     }
 
     @Override
@@ -66,8 +71,8 @@ extends Task<WardenEntity> {
     }
 
     @Override
-    protected /* synthetic */ void keepRunning(ServerWorld world, LivingEntity entity, long time) {
-        this.keepRunning(world, (WardenEntity)entity, time);
+    protected /* synthetic */ void run(ServerWorld world, LivingEntity entity, long time) {
+        this.run(world, (WardenEntity)entity, time);
     }
 }
 

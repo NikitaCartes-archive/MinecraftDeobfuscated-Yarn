@@ -4,7 +4,7 @@
 package net.minecraft.world.biome.source;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registry;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.CheckerboardBiomeSource;
 import net.minecraft.world.biome.source.FixedBiomeSource;

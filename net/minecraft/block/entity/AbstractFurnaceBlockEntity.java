@@ -35,11 +35,13 @@ import net.minecraft.recipe.RecipeManager;
 import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.RecipeUnlocker;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.ItemTags;
-import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
@@ -47,8 +49,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -139,6 +139,7 @@ RecipeInputProvider {
         AbstractFurnaceBlockEntity.addFuel(map, Items.COAL, 1600);
         AbstractFurnaceBlockEntity.addFuel(map, Items.CHARCOAL, 1600);
         AbstractFurnaceBlockEntity.addFuel(map, ItemTags.LOGS, 300);
+        AbstractFurnaceBlockEntity.addFuel(map, ItemTags.BAMBOO_BLOCKS, 300);
         AbstractFurnaceBlockEntity.addFuel(map, ItemTags.PLANKS, 300);
         AbstractFurnaceBlockEntity.addFuel(map, Blocks.BAMBOO_MOSAIC, 300);
         AbstractFurnaceBlockEntity.addFuel(map, ItemTags.WOODEN_STAIRS, 300);
@@ -196,14 +197,14 @@ RecipeInputProvider {
 
     /**
      * {@return whether the provided {@code item} is in the {@link
-     * net.minecraft.tag.ItemTags#NON_FLAMMABLE_WOOD non_flammable_wood} tag}
+     * net.minecraft.registry.tag.ItemTags#NON_FLAMMABLE_WOOD non_flammable_wood} tag}
      */
     private static boolean isNonFlammableWood(Item item) {
         return item.getRegistryEntry().isIn(ItemTags.NON_FLAMMABLE_WOOD);
     }
 
     private static void addFuel(Map<Item, Integer> fuelTimes, TagKey<Item> tag, int fuelTime) {
-        for (RegistryEntry<Item> registryEntry : Registry.ITEM.iterateEntries(tag)) {
+        for (RegistryEntry<Item> registryEntry : Registries.ITEM.iterateEntries(tag)) {
             if (AbstractFurnaceBlockEntity.isNonFlammableWood(registryEntry.value())) continue;
             fuelTimes.put(registryEntry.value(), fuelTime);
         }

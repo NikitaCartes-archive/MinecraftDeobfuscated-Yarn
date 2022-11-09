@@ -159,29 +159,29 @@ extends ScreenHandler {
     }
 
     @Override
-    public ItemStack transferSlot(PlayerEntity player, int index) {
+    public ItemStack quickMove(PlayerEntity player, int slot) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = (Slot)this.slots.get(index);
-        if (slot != null && slot.hasStack()) {
-            ItemStack itemStack2 = slot.getStack();
+        Slot slot2 = (Slot)this.slots.get(slot);
+        if (slot2 != null && slot2.hasStack()) {
+            ItemStack itemStack2 = slot2.getStack();
             itemStack = itemStack2.copy();
-            if (index == 2) {
+            if (slot == 2) {
                 itemStack2.getItem().onCraft(itemStack2, player.world, player);
                 if (!this.insertItem(itemStack2, 3, 39, true)) {
                     return ItemStack.EMPTY;
                 }
-                slot.onQuickTransfer(itemStack2, itemStack);
-            } else if (index == 1 || index == 0 ? !this.insertItem(itemStack2, 3, 39, false) : (itemStack2.isOf(Items.FILLED_MAP) ? !this.insertItem(itemStack2, 0, 1, false) : (itemStack2.isOf(Items.PAPER) || itemStack2.isOf(Items.MAP) || itemStack2.isOf(Items.GLASS_PANE) ? !this.insertItem(itemStack2, 1, 2, false) : (index >= 3 && index < 30 ? !this.insertItem(itemStack2, 30, 39, false) : index >= 30 && index < 39 && !this.insertItem(itemStack2, 3, 30, false))))) {
+                slot2.onQuickTransfer(itemStack2, itemStack);
+            } else if (slot == 1 || slot == 0 ? !this.insertItem(itemStack2, 3, 39, false) : (itemStack2.isOf(Items.FILLED_MAP) ? !this.insertItem(itemStack2, 0, 1, false) : (itemStack2.isOf(Items.PAPER) || itemStack2.isOf(Items.MAP) || itemStack2.isOf(Items.GLASS_PANE) ? !this.insertItem(itemStack2, 1, 2, false) : (slot >= 3 && slot < 30 ? !this.insertItem(itemStack2, 30, 39, false) : slot >= 30 && slot < 39 && !this.insertItem(itemStack2, 3, 30, false))))) {
                 return ItemStack.EMPTY;
             }
             if (itemStack2.isEmpty()) {
-                slot.setStack(ItemStack.EMPTY);
+                slot2.setStack(ItemStack.EMPTY);
             }
-            slot.markDirty();
+            slot2.markDirty();
             if (itemStack2.getCount() == itemStack.getCount()) {
                 return ItemStack.EMPTY;
             }
-            slot.onTakeItem(player, itemStack2);
+            slot2.onTakeItem(player, itemStack2);
             this.sendContentUpdates();
         }
         return itemStack;

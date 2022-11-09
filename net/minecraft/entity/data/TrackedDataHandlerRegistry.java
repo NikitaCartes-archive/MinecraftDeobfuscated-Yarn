@@ -18,14 +18,14 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import net.minecraft.util.collection.Int2ObjectBiMap;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.EulerAngle;
 import net.minecraft.util.math.GlobalPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.village.VillagerData;
 import org.jetbrains.annotations.Nullable;
 
@@ -90,13 +90,13 @@ public class TrackedDataHandlerRegistry {
 
         @Override
         public void write(PacketByteBuf packetByteBuf, ParticleEffect particleEffect) {
-            packetByteBuf.writeRegistryValue(Registry.PARTICLE_TYPE, particleEffect.getType());
+            packetByteBuf.writeRegistryValue(Registries.PARTICLE_TYPE, particleEffect.getType());
             particleEffect.write(packetByteBuf);
         }
 
         @Override
         public ParticleEffect read(PacketByteBuf packetByteBuf) {
-            return this.read(packetByteBuf, packetByteBuf.readRegistryValue(Registry.PARTICLE_TYPE));
+            return this.read(packetByteBuf, packetByteBuf.readRegistryValue(Registries.PARTICLE_TYPE));
         }
 
         private <T extends ParticleEffect> T read(PacketByteBuf buf, ParticleType<T> type) {
@@ -158,14 +158,14 @@ public class TrackedDataHandlerRegistry {
 
         @Override
         public void write(PacketByteBuf packetByteBuf, VillagerData villagerData) {
-            packetByteBuf.writeRegistryValue(Registry.VILLAGER_TYPE, villagerData.getType());
-            packetByteBuf.writeRegistryValue(Registry.VILLAGER_PROFESSION, villagerData.getProfession());
+            packetByteBuf.writeRegistryValue(Registries.VILLAGER_TYPE, villagerData.getType());
+            packetByteBuf.writeRegistryValue(Registries.VILLAGER_PROFESSION, villagerData.getProfession());
             packetByteBuf.writeVarInt(villagerData.getLevel());
         }
 
         @Override
         public VillagerData read(PacketByteBuf packetByteBuf) {
-            return new VillagerData(packetByteBuf.readRegistryValue(Registry.VILLAGER_TYPE), packetByteBuf.readRegistryValue(Registry.VILLAGER_PROFESSION), packetByteBuf.readVarInt());
+            return new VillagerData(packetByteBuf.readRegistryValue(Registries.VILLAGER_TYPE), packetByteBuf.readRegistryValue(Registries.VILLAGER_PROFESSION), packetByteBuf.readVarInt());
         }
 
         @Override
@@ -192,9 +192,9 @@ public class TrackedDataHandlerRegistry {
         }
     };
     public static final TrackedDataHandler<EntityPose> ENTITY_POSE = TrackedDataHandler.ofEnum(EntityPose.class);
-    public static final TrackedDataHandler<CatVariant> CAT_VARIANT = TrackedDataHandler.of(Registry.CAT_VARIANT);
-    public static final TrackedDataHandler<FrogVariant> FROG_VARIANT = TrackedDataHandler.of(Registry.FROG_VARIANT);
-    public static final TrackedDataHandler<RegistryEntry<PaintingVariant>> PAINTING_VARIANT = TrackedDataHandler.of(Registry.PAINTING_VARIANT.getIndexedEntries());
+    public static final TrackedDataHandler<CatVariant> CAT_VARIANT = TrackedDataHandler.of(Registries.CAT_VARIANT);
+    public static final TrackedDataHandler<FrogVariant> FROG_VARIANT = TrackedDataHandler.of(Registries.FROG_VARIANT);
+    public static final TrackedDataHandler<RegistryEntry<PaintingVariant>> PAINTING_VARIANT = TrackedDataHandler.of(Registries.PAINTING_VARIANT.getIndexedEntries());
 
     public static void register(TrackedDataHandler<?> handler) {
         DATA_HANDLERS.add(handler);

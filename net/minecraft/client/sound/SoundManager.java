@@ -30,6 +30,7 @@ import net.minecraft.client.sound.SoundInstanceListener;
 import net.minecraft.client.sound.SoundSystem;
 import net.minecraft.client.sound.TickableSoundInstance;
 import net.minecraft.client.sound.WeightedSoundSet;
+import net.minecraft.registry.Registries;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceFactory;
 import net.minecraft.resource.ResourceManager;
@@ -43,7 +44,6 @@ import net.minecraft.util.math.floatprovider.ConstantFloatProvider;
 import net.minecraft.util.math.floatprovider.MultipliedFloatSupplier;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -104,13 +104,13 @@ extends SinglePreparationResourceReloader<SoundList> {
         if (SharedConstants.isDevelopment) {
             for (Identifier identifier : this.sounds.keySet()) {
                 WeightedSoundSet weightedSoundSet = this.sounds.get(identifier);
-                if (Texts.hasTranslation(weightedSoundSet.getSubtitle()) || !Registry.SOUND_EVENT.containsId(identifier)) continue;
+                if (Texts.hasTranslation(weightedSoundSet.getSubtitle()) || !Registries.SOUND_EVENT.containsId(identifier)) continue;
                 LOGGER.error("Missing subtitle {} for sound event: {}", (Object)weightedSoundSet.getSubtitle(), (Object)identifier);
             }
         }
         if (LOGGER.isDebugEnabled()) {
             for (Identifier identifier : this.sounds.keySet()) {
-                if (Registry.SOUND_EVENT.containsId(identifier)) continue;
+                if (Registries.SOUND_EVENT.containsId(identifier)) continue;
                 LOGGER.debug("Not having sound event for: {}", (Object)identifier);
             }
         }

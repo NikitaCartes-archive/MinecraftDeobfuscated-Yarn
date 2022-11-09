@@ -24,11 +24,11 @@ import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.registry.Registries;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.registry.Registry;
 
 public class CopyStateFunction
 extends ConditionalLootFunction {
@@ -115,7 +115,7 @@ extends ConditionalLootFunction {
         @Override
         public void toJson(JsonObject jsonObject, CopyStateFunction copyStateFunction, JsonSerializationContext jsonSerializationContext) {
             super.toJson(jsonObject, copyStateFunction, jsonSerializationContext);
-            jsonObject.addProperty("block", Registry.BLOCK.getId(copyStateFunction.block).toString());
+            jsonObject.addProperty("block", Registries.BLOCK.getId(copyStateFunction.block).toString());
             JsonArray jsonArray = new JsonArray();
             copyStateFunction.properties.forEach(property -> jsonArray.add(property.getName()));
             jsonObject.add("properties", jsonArray);
@@ -124,7 +124,7 @@ extends ConditionalLootFunction {
         @Override
         public CopyStateFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
             Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "block"));
-            Block block = Registry.BLOCK.getOrEmpty(identifier).orElseThrow(() -> new IllegalArgumentException("Can't find block " + identifier));
+            Block block = (Block)Registries.BLOCK.getOrEmpty(identifier).orElseThrow(() -> new IllegalArgumentException("Can't find block " + identifier));
             StateManager<Block, BlockState> stateManager = block.getStateManager();
             HashSet<Property<?>> set = Sets.newHashSet();
             JsonArray jsonArray = JsonHelper.getArray(jsonObject, "properties", null);

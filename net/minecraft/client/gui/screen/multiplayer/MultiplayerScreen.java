@@ -41,7 +41,7 @@ extends Screen {
     private ButtonWidget buttonJoin;
     private ButtonWidget buttonDelete;
     @Nullable
-    private List<Text> tooltip;
+    private List<Text> multiplayerScreenTooltip;
     private ServerInfo selectedEntry;
     private LanServerQueryManager.LanServerEntryList lanServers;
     @Nullable
@@ -208,13 +208,13 @@ extends Screen {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        this.tooltip = null;
+        this.multiplayerScreenTooltip = null;
         this.renderBackground(matrices);
         this.serverListWidget.render(matrices, mouseX, mouseY, delta);
         MultiplayerScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 20, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
-        if (this.tooltip != null) {
-            this.renderTooltip(matrices, this.tooltip, mouseX, mouseY);
+        if (this.multiplayerScreenTooltip != null) {
+            this.renderTooltip(matrices, this.multiplayerScreenTooltip, mouseX, mouseY);
         }
     }
 
@@ -255,8 +255,8 @@ extends Screen {
         return this.serverListPinger;
     }
 
-    public void setTooltip(List<Text> tooltip) {
-        this.tooltip = tooltip;
+    public void setMultiplayerScreenTooltip(List<Text> tooltip) {
+        this.multiplayerScreenTooltip = tooltip;
     }
 
     public ServerList getServerList() {

@@ -16,9 +16,9 @@ import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 import org.joml.Vector3f;
 
 public class DustColorTransitionParticleEffect
@@ -80,7 +80,7 @@ extends AbstractDustParticleEffect {
 
     @Override
     public String asString() {
-        return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f %.2f %.2f %.2f", Registry.PARTICLE_TYPE.getId(this.getType()), Float.valueOf(this.color.x()), Float.valueOf(this.color.y()), Float.valueOf(this.color.z()), Float.valueOf(this.scale), Float.valueOf(this.toColor.x()), Float.valueOf(this.toColor.y()), Float.valueOf(this.toColor.z()));
+        return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f %.2f %.2f %.2f", Registries.PARTICLE_TYPE.getId(this.getType()), Float.valueOf(this.color.x()), Float.valueOf(this.color.y()), Float.valueOf(this.color.z()), Float.valueOf(this.scale), Float.valueOf(this.toColor.x()), Float.valueOf(this.toColor.y()), Float.valueOf(this.toColor.z()));
     }
 
     public ParticleType<DustColorTransitionParticleEffect> getType() {

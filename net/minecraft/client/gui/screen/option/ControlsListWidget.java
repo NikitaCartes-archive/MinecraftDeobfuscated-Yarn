@@ -117,7 +117,7 @@ extends ElementListWidget<Entry> {
             this.bindingName = bindingName;
             this.editButton = ButtonWidget.createBuilder(bindingName, button -> {
                 ControlsListWidget.this.parent.selectedKeyBinding = binding;
-            }).setPositionAndSize(0, 0, 75, 20).setTooltipSupplier(ButtonWidget.EMPTY_TOOLTIP).setNarrationSupplier(supplier -> {
+            }).setPositionAndSize(0, 0, 75, 20).setNarrationSupplier(supplier -> {
                 if (binding.isUnbound()) {
                     return Text.translatable("narrator.controls.unbound", bindingName);
                 }
@@ -126,7 +126,7 @@ extends ElementListWidget<Entry> {
             this.resetButton = ButtonWidget.createBuilder(Text.translatable("controls.reset"), button -> {
                 ((ControlsListWidget)ControlsListWidget.this).client.options.setKeyCode(binding, binding.getDefaultKey());
                 KeyBinding.updateKeysByCode();
-            }).setPositionAndSize(0, 0, 50, 20).setTooltipSupplier(ButtonWidget.EMPTY_TOOLTIP).setNarrationSupplier(supplier -> Text.translatable("narrator.controls.reset", bindingName)).build();
+            }).setPositionAndSize(0, 0, 50, 20).setNarrationSupplier(supplier -> Text.translatable("narrator.controls.reset", bindingName)).build();
         }
 
         @Override

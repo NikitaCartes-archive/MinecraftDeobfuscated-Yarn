@@ -10,10 +10,10 @@ import net.minecraft.data.server.tag.AbstractItemTagProvider;
 import net.minecraft.data.server.tag.AbstractTagProvider;
 import net.minecraft.data.server.tag.ValueLookupTagProvider;
 import net.minecraft.item.Items;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.ItemTags;
-import net.minecraft.tag.TagKey;
-import net.minecraft.util.registry.RegistryWrapper;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.registry.tag.TagKey;
 
 public class VanillaItemTagProvider
 extends AbstractItemTagProvider {
@@ -49,7 +49,6 @@ extends AbstractItemTagProvider {
         this.copy(BlockTags.WARPED_STEMS, ItemTags.WARPED_STEMS);
         this.copy(BlockTags.WART_BLOCKS, ItemTags.WART_BLOCKS);
         this.copy(BlockTags.LOGS_THAT_BURN, ItemTags.LOGS_THAT_BURN);
-        this.copy(BlockTags.OVERWORLD_NATURAL_LOGS, ItemTags.OVERWORLD_NATURAL_LOGS);
         this.copy(BlockTags.LOGS, ItemTags.LOGS);
         this.copy(BlockTags.SAND, ItemTags.SAND);
         this.copy(BlockTags.SLABS, ItemTags.SLABS);

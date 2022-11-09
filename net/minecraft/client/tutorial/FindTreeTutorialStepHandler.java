@@ -14,14 +14,14 @@ import net.minecraft.client.tutorial.TutorialStep;
 import net.minecraft.client.tutorial.TutorialStepHandler;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.stat.Stats;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 
 @Environment(value=EnvType.CLIENT)
 public class FindTreeTutorialStepHandler
@@ -83,7 +83,7 @@ implements TutorialStepHandler {
     }
 
     public static boolean hasBrokenTreeBlocks(ClientPlayerEntity player) {
-        for (RegistryEntry<Block> registryEntry : Registry.BLOCK.iterateEntries(BlockTags.COMPLETES_FIND_TREE_TUTORIAL)) {
+        for (RegistryEntry<Block> registryEntry : Registries.BLOCK.iterateEntries(BlockTags.COMPLETES_FIND_TREE_TUTORIAL)) {
             Block block = registryEntry.value();
             if (player.getStatHandler().getStat(Stats.MINED.getOrCreateStat(block)) <= 0) continue;
             return true;

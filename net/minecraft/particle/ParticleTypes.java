@@ -15,7 +15,8 @@ import net.minecraft.particle.ParticleType;
 import net.minecraft.particle.SculkChargeParticleEffect;
 import net.minecraft.particle.ShriekParticleEffect;
 import net.minecraft.particle.VibrationParticleEffect;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 public class ParticleTypes {
     public static final DefaultParticleType AMBIENT_ENTITY_EFFECT = ParticleTypes.register("ambient_entity_effect", false);
@@ -111,14 +112,14 @@ public class ParticleTypes {
     public static final DefaultParticleType ELECTRIC_SPARK = ParticleTypes.register("electric_spark", true);
     public static final DefaultParticleType SCRAPE = ParticleTypes.register("scrape", true);
     public static final ParticleType<ShriekParticleEffect> SHRIEK = ParticleTypes.register("shriek", false, ShriekParticleEffect.FACTORY, type -> ShriekParticleEffect.CODEC);
-    public static final Codec<ParticleEffect> TYPE_CODEC = Registry.PARTICLE_TYPE.getCodec().dispatch("type", ParticleEffect::getType, ParticleType::getCodec);
+    public static final Codec<ParticleEffect> TYPE_CODEC = Registries.PARTICLE_TYPE.getCodec().dispatch("type", ParticleEffect::getType, ParticleType::getCodec);
 
     private static DefaultParticleType register(String name, boolean alwaysShow) {
-        return Registry.register(Registry.PARTICLE_TYPE, name, new DefaultParticleType(alwaysShow));
+        return Registry.register(Registries.PARTICLE_TYPE, name, new DefaultParticleType(alwaysShow));
     }
 
     private static <T extends ParticleEffect> ParticleType<T> register(String name, boolean alwaysShow, ParticleEffect.Factory<T> factory, final Function<ParticleType<T>, Codec<T>> codecGetter) {
-        return Registry.register(Registry.PARTICLE_TYPE, name, new ParticleType<T>(alwaysShow, factory){
+        return Registry.register(Registries.PARTICLE_TYPE, name, new ParticleType<T>(alwaysShow, factory){
 
             @Override
             public Codec<T> getCodec() {

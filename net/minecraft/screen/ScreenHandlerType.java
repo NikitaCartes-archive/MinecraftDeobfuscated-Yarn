@@ -4,6 +4,8 @@
 package net.minecraft.screen;
 
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.screen.AnvilScreenHandler;
 import net.minecraft.screen.BeaconScreenHandler;
 import net.minecraft.screen.BlastFurnaceScreenHandler;
@@ -24,13 +26,12 @@ import net.minecraft.screen.ShulkerBoxScreenHandler;
 import net.minecraft.screen.SmithingScreenHandler;
 import net.minecraft.screen.SmokerScreenHandler;
 import net.minecraft.screen.StonecutterScreenHandler;
-import net.minecraft.util.registry.Registry;
 
 /**
  * Screen handler type is used to create screen handlers on the client.
  * It is a holder object holding a factory (usually a reference to the constructor).
  * They are registered in the registry under {@link
- * net.minecraft.util.registry.Registry#SCREEN_HANDLER}.
+ * net.minecraft.registry.Registries#SCREEN_HANDLER}.
  * 
  * <p>Technically speaking, screen handlers do not have to register screen handler
  * types. However, such screen handlers are practically useless as they cannot be
@@ -69,7 +70,7 @@ public class ScreenHandlerType<T extends ScreenHandler> {
     private final Factory<T> factory;
 
     private static <T extends ScreenHandler> ScreenHandlerType<T> register(String id, Factory<T> factory) {
-        return Registry.register(Registry.SCREEN_HANDLER, id, new ScreenHandlerType<T>(factory));
+        return Registry.register(Registries.SCREEN_HANDLER, id, new ScreenHandlerType<T>(factory));
     }
 
     private ScreenHandlerType(Factory<T> factory) {

@@ -10,12 +10,12 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.DeadCoralWallFanBlock;
 import net.minecraft.block.SeaPickleBlock;
-import net.minecraft.tag.BlockTags;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
@@ -33,7 +33,7 @@ extends Feature<DefaultFeatureConfig> {
         Random random = context.getRandom();
         StructureWorldAccess structureWorldAccess = context.getWorld();
         BlockPos blockPos = context.getOrigin();
-        Optional<Block> optional = Registry.BLOCK.getEntryList(BlockTags.CORAL_BLOCKS).flatMap(blocks -> blocks.getRandom(random)).map(RegistryEntry::value);
+        Optional<Block> optional = Registries.BLOCK.getEntryList(BlockTags.CORAL_BLOCKS).flatMap(blocks -> blocks.getRandom(random)).map(RegistryEntry::value);
         if (optional.isEmpty()) {
             return false;
         }
@@ -50,14 +50,14 @@ extends Feature<DefaultFeatureConfig> {
         }
         world.setBlockState(pos, state, Block.NOTIFY_ALL);
         if (random.nextFloat() < 0.25f) {
-            Registry.BLOCK.getEntryList(BlockTags.CORALS).flatMap(blocks -> blocks.getRandom(random)).map(RegistryEntry::value).ifPresent(block -> world.setBlockState(blockPos, block.getDefaultState(), Block.NOTIFY_LISTENERS));
+            Registries.BLOCK.getEntryList(BlockTags.CORALS).flatMap(blocks -> blocks.getRandom(random)).map(RegistryEntry::value).ifPresent(block -> world.setBlockState(blockPos, block.getDefaultState(), Block.NOTIFY_LISTENERS));
         } else if (random.nextFloat() < 0.05f) {
             world.setBlockState(blockPos, (BlockState)Blocks.SEA_PICKLE.getDefaultState().with(SeaPickleBlock.PICKLES, random.nextInt(4) + 1), Block.NOTIFY_LISTENERS);
         }
         for (Direction direction : Direction.Type.HORIZONTAL) {
             BlockPos blockPos2;
             if (!(random.nextFloat() < 0.2f) || !world.getBlockState(blockPos2 = pos.offset(direction)).isOf(Blocks.WATER)) continue;
-            Registry.BLOCK.getEntryList(BlockTags.WALL_CORALS).flatMap(blocks -> blocks.getRandom(random)).map(RegistryEntry::value).ifPresent(block -> {
+            Registries.BLOCK.getEntryList(BlockTags.WALL_CORALS).flatMap(blocks -> blocks.getRandom(random)).map(RegistryEntry::value).ifPresent(block -> {
                 BlockState blockState = block.getDefaultState();
                 if (blockState.contains(DeadCoralWallFanBlock.FACING)) {
                     blockState = (BlockState)blockState.with(DeadCoralWallFanBlock.FACING, direction);

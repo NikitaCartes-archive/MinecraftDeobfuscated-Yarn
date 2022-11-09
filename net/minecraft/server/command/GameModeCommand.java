@@ -5,10 +5,12 @@ package net.minecraft.server.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import java.util.Collection;
 import java.util.Collections;
 import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.command.argument.GameModeArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -21,11 +23,7 @@ public class GameModeCommand {
     public static final int REQUIRED_PERMISSION_LEVEL = 2;
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder literalArgumentBuilder = (LiteralArgumentBuilder)CommandManager.literal("gamemode").requires(source -> source.hasPermissionLevel(2));
-        for (GameMode gameMode : GameMode.values()) {
-            literalArgumentBuilder.then(((LiteralArgumentBuilder)CommandManager.literal(gameMode.getName()).executes(context -> GameModeCommand.execute(context, Collections.singleton(((ServerCommandSource)context.getSource()).getPlayerOrThrow()), gameMode))).then(CommandManager.argument("target", EntityArgumentType.players()).executes(context -> GameModeCommand.execute(context, EntityArgumentType.getPlayers(context, "target"), gameMode))));
-        }
-        dispatcher.register(literalArgumentBuilder);
+        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("gamemode").requires(source -> source.hasPermissionLevel(2))).then(((RequiredArgumentBuilder)CommandManager.argument("gamemode", GameModeArgumentType.gameMode()).executes(commandContext -> GameModeCommand.execute(commandContext, Collections.singleton(((ServerCommandSource)commandContext.getSource()).getPlayerOrThrow()), GameModeArgumentType.getGameMode(commandContext, "gamemode")))).then(CommandManager.argument("target", EntityArgumentType.players()).executes(commandContext -> GameModeCommand.execute(commandContext, EntityArgumentType.getPlayers(commandContext, "target"), GameModeArgumentType.getGameMode(commandContext, "gamemode"))))));
     }
 
     private static void sendFeedback(ServerCommandSource source, ServerPlayerEntity player, GameMode gameMode) {

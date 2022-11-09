@@ -28,12 +28,13 @@ import net.minecraft.SharedConstants;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionOptions;
@@ -65,7 +66,7 @@ public class WorldUpdater {
 
     public WorldUpdater(LevelStorage.Session session, DataFixer dataFixer, Registry<DimensionOptions> dimensionOptionsRegistry, boolean eraseCache) {
         this.dimensionOptionsRegistry = dimensionOptionsRegistry;
-        this.worldKeys = dimensionOptionsRegistry.getKeys().stream().map(Registry::createWorldKey).collect(Collectors.toUnmodifiableSet());
+        this.worldKeys = dimensionOptionsRegistry.getKeys().stream().map(RegistryKeys::toWorldKey).collect(Collectors.toUnmodifiableSet());
         this.eraseCache = eraseCache;
         this.dataFixer = dataFixer;
         this.session = session;
@@ -124,7 +125,7 @@ public class WorldUpdater {
                         if (nbtCompound != null) {
                             boolean bl3;
                             int i = VersionedChunkStorage.getDataVersion(nbtCompound);
-                            ChunkGenerator chunkGenerator = this.dimensionOptionsRegistry.getOrThrow(Registry.createDimensionOptionsKey(registryKey3)).chunkGenerator();
+                            ChunkGenerator chunkGenerator = this.dimensionOptionsRegistry.getOrThrow(RegistryKeys.toDimensionKey(registryKey3)).chunkGenerator();
                             NbtCompound nbtCompound2 = versionedChunkStorage.updateChunkNbt(registryKey3, () -> this.persistentStateManager, nbtCompound, chunkGenerator.getCodecKey());
                             ChunkPos chunkPos2 = new ChunkPos(nbtCompound2.getInt("xPos"), nbtCompound2.getInt("zPos"));
                             if (!chunkPos2.equals(chunkPos)) {

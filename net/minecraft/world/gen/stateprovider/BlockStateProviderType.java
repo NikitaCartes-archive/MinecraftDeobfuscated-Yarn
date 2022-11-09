@@ -4,7 +4,8 @@
 package net.minecraft.world.gen.stateprovider;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 import net.minecraft.world.gen.stateprovider.DualNoiseBlockStateProvider;
 import net.minecraft.world.gen.stateprovider.NoiseBlockStateProvider;
@@ -25,7 +26,7 @@ public class BlockStateProviderType<P extends BlockStateProvider> {
     private final Codec<P> codec;
 
     private static <P extends BlockStateProvider> BlockStateProviderType<P> register(String id, Codec<P> codec) {
-        return Registry.register(Registry.BLOCK_STATE_PROVIDER_TYPE, id, new BlockStateProviderType<P>(codec));
+        return Registry.register(Registries.BLOCK_STATE_PROVIDER_TYPE, id, new BlockStateProviderType<P>(codec));
     }
 
     private BlockStateProviderType(Codec<P> codec) {

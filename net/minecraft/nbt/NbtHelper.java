@@ -43,6 +43,11 @@ import net.minecraft.nbt.NbtTypes;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.nbt.visitor.NbtOrderedStringFormatter;
 import net.minecraft.nbt.visitor.NbtTextFormatter;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.state.State;
 import net.minecraft.state.StateManager;
 import net.minecraft.text.Text;
@@ -50,10 +55,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.StringHelper;
 import net.minecraft.util.Uuids;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryEntryLookup;
-import net.minecraft.util.registry.RegistryKey;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -282,7 +283,7 @@ public final class NbtHelper {
             return Blocks.AIR.getDefaultState();
         }
         Identifier identifier = new Identifier(nbt.getString("Name"));
-        Optional<RegistryEntry.Reference<Block>> optional = blockLookup.getOptional(RegistryKey.of(Registry.BLOCK_KEY, identifier));
+        Optional<RegistryEntry.Reference<Block>> optional = blockLookup.getOptional(RegistryKey.of(RegistryKeys.BLOCK, identifier));
         if (optional.isEmpty()) {
             return Blocks.AIR.getDefaultState();
         }
@@ -316,7 +317,7 @@ public final class NbtHelper {
      */
     public static NbtCompound fromBlockState(BlockState state) {
         NbtCompound nbtCompound = new NbtCompound();
-        nbtCompound.putString("Name", Registry.BLOCK.getId(state.getBlock()).toString());
+        nbtCompound.putString("Name", Registries.BLOCK.getId(state.getBlock()).toString());
         ImmutableMap<net.minecraft.state.property.Property<?>, Comparable<?>> immutableMap = state.getEntries();
         if (!immutableMap.isEmpty()) {
             NbtCompound nbtCompound2 = new NbtCompound();
@@ -334,7 +335,7 @@ public final class NbtHelper {
      */
     public static NbtCompound fromFluidState(FluidState state) {
         NbtCompound nbtCompound = new NbtCompound();
-        nbtCompound.putString("Name", Registry.FLUID.getId(state.getFluid()).toString());
+        nbtCompound.putString("Name", Registries.FLUID.getId(state.getFluid()).toString());
         ImmutableMap<net.minecraft.state.property.Property<?>, Comparable<?>> immutableMap = state.getEntries();
         if (!immutableMap.isEmpty()) {
             NbtCompound nbtCompound2 = new NbtCompound();

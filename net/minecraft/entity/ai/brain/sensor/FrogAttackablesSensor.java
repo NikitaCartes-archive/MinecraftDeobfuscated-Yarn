@@ -24,7 +24,7 @@ extends NearestVisibleLivingEntitySensor {
     }
 
     private boolean isTargetUnreachable(LivingEntity entity, LivingEntity target) {
-        List list = entity.getBrain().getOptionalMemory(MemoryModuleType.UNREACHABLE_TONGUE_TARGETS).orElseGet(ArrayList::new);
+        List list = entity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.UNREACHABLE_TONGUE_TARGETS).orElseGet(ArrayList::new);
         return list.contains(target.getUuid());
     }
 

@@ -7,7 +7,7 @@ import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.village.VillagerType;
 
@@ -15,7 +15,7 @@ public class VillagerData {
     public static final int MIN_LEVEL = 1;
     public static final int MAX_LEVEL = 5;
     private static final int[] LEVEL_BASE_EXPERIENCE = new int[]{0, 10, 70, 150, 250};
-    public static final Codec<VillagerData> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Registry.VILLAGER_TYPE.getCodec().fieldOf("type")).orElseGet(() -> VillagerType.PLAINS).forGetter(villagerData -> villagerData.type), ((MapCodec)Registry.VILLAGER_PROFESSION.getCodec().fieldOf("profession")).orElseGet(() -> VillagerProfession.NONE).forGetter(villagerData -> villagerData.profession), ((MapCodec)Codec.INT.fieldOf("level")).orElse(1).forGetter(villagerData -> villagerData.level)).apply((Applicative<VillagerData, ?>)instance, VillagerData::new));
+    public static final Codec<VillagerData> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Registries.VILLAGER_TYPE.getCodec().fieldOf("type")).orElseGet(() -> VillagerType.PLAINS).forGetter(villagerData -> villagerData.type), ((MapCodec)Registries.VILLAGER_PROFESSION.getCodec().fieldOf("profession")).orElseGet(() -> VillagerProfession.NONE).forGetter(villagerData -> villagerData.profession), ((MapCodec)Codec.INT.fieldOf("level")).orElse(1).forGetter(villagerData -> villagerData.level)).apply((Applicative<VillagerData, ?>)instance, VillagerData::new));
     private final VillagerType type;
     private final VillagerProfession profession;
     private final int level;

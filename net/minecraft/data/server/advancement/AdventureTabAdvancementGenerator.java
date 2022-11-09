@@ -40,13 +40,14 @@ import net.minecraft.predicate.entity.LightningBoltPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.entity.PlayerPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
-import net.minecraft.tag.EntityTypeTags;
-import net.minecraft.tag.ItemTags;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.tag.EntityTypeTags;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.RegistryWrapper;
 import net.minecraft.village.raid.Raid;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
@@ -72,7 +73,7 @@ implements AdvancementTabGenerator {
     public void accept(RegistryWrapper.WrapperLookup lookup, Consumer<Advancement> exporter) {
         Advancement advancement = Advancement.Builder.create().display(Items.MAP, (Text)Text.translatable("advancements.adventure.root.title"), (Text)Text.translatable("advancements.adventure.root.description"), new Identifier("textures/gui/advancements/backgrounds/adventure.png"), AdvancementFrame.TASK, false, false, false).criteriaMerger(CriterionMerger.OR).criterion("killed_something", OnKilledCriterion.Conditions.createPlayerKilledEntity()).criterion("killed_by_something", OnKilledCriterion.Conditions.createEntityKilledPlayer()).build(exporter, "adventure/root");
         Advancement advancement2 = Advancement.Builder.create().parent(advancement).display(Blocks.RED_BED, (Text)Text.translatable("advancements.adventure.sleep_in_bed.title"), (Text)Text.translatable("advancements.adventure.sleep_in_bed.description"), null, AdvancementFrame.TASK, true, true, false).criterion("slept_in_bed", TickCriterion.Conditions.createSleptInBed()).build(exporter, "adventure/sleep_in_bed");
-        RegistryWrapper.Impl<Biome> registryEntryLookup = lookup.getWrapperOrThrow(Registry.BIOME_KEY);
+        RegistryWrapper.Impl<Biome> registryEntryLookup = lookup.getWrapperOrThrow(RegistryKeys.BIOME_WORLDGEN);
         AdventureTabAdvancementGenerator.requireListedBiomesVisited(Advancement.Builder.create(), MultiNoiseBiomeSource.Preset.OVERWORLD.stream(registryEntryLookup).toList()).parent(advancement2).display(Items.DIAMOND_BOOTS, (Text)Text.translatable("advancements.adventure.adventuring_time.title"), (Text)Text.translatable("advancements.adventure.adventuring_time.description"), null, AdvancementFrame.CHALLENGE, true, true, false).rewards(AdvancementRewards.Builder.experience(500)).build(exporter, "adventure/adventuring_time");
         Advancement advancement3 = Advancement.Builder.create().parent(advancement).display(Items.EMERALD, (Text)Text.translatable("advancements.adventure.trade.title"), (Text)Text.translatable("advancements.adventure.trade.description"), null, AdvancementFrame.TASK, true, true, false).criterion("traded", VillagerTradeCriterion.Conditions.any()).build(exporter, "adventure/trade");
         Advancement.Builder.create().parent(advancement3).display(Items.EMERALD, (Text)Text.translatable("advancements.adventure.trade_at_world_height.title"), (Text)Text.translatable("advancements.adventure.trade_at_world_height.description"), null, AdvancementFrame.TASK, true, true, false).criterion("trade_at_world_height", VillagerTradeCriterion.Conditions.create(EntityPredicate.Builder.create().location(LocationPredicate.y(NumberRange.FloatRange.atLeast(319.0))))).build(exporter, "adventure/trade_at_world_height");
@@ -105,7 +106,7 @@ implements AdvancementTabGenerator {
 
     private Advancement.Builder requireListedMobsKilled(Advancement.Builder builder) {
         for (EntityType<?> entityType : MONSTERS) {
-            builder.criterion(Registry.ENTITY_TYPE.getId(entityType).toString(), OnKilledCriterion.Conditions.createPlayerKilledEntity(EntityPredicate.Builder.create().type(entityType)));
+            builder.criterion(Registries.ENTITY_TYPE.getId(entityType).toString(), OnKilledCriterion.Conditions.createPlayerKilledEntity(EntityPredicate.Builder.create().type(entityType)));
         }
         return builder;
     }

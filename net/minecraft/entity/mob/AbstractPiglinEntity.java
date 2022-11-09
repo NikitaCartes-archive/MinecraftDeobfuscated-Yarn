@@ -3,6 +3,8 @@
  */
 package net.minecraft.entity.mob;
 
+import net.minecraft.entity.EntityDimensions;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.NavigationConditions;
@@ -29,6 +31,7 @@ public abstract class AbstractPiglinEntity
 extends HostileEntity {
     protected static final TrackedData<Boolean> IMMUNE_TO_ZOMBIFICATION = DataTracker.registerData(AbstractPiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     protected static final int TIME_TO_ZOMBIFY = 300;
+    protected static final float EYE_HEIGHT = 1.79f;
     protected int timeInOverworld;
 
     public AbstractPiglinEntity(EntityType<? extends AbstractPiglinEntity> entityType, World world) {
@@ -43,6 +46,11 @@ extends HostileEntity {
         if (NavigationConditions.hasMobNavigation(this)) {
             ((MobNavigation)this.getNavigation()).setCanPathThroughDoors(true);
         }
+    }
+
+    @Override
+    protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
+        return 1.79f;
     }
 
     protected abstract boolean canHunt();
@@ -112,7 +120,7 @@ extends HostileEntity {
     @Override
     @Nullable
     public LivingEntity getTarget() {
-        return this.brain.getOptionalMemory(MemoryModuleType.ATTACK_TARGET).orElse(null);
+        return this.brain.getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET).orElse(null);
     }
 
     protected boolean isHoldingTool() {

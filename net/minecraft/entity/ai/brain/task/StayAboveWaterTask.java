@@ -5,13 +5,13 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.FluidTags;
 
 public class StayAboveWaterTask
-extends Task<MobEntity> {
+extends MultiTickTask<MobEntity> {
     private final float chance;
 
     public StayAboveWaterTask(float chance) {
@@ -34,11 +34,6 @@ extends Task<MobEntity> {
         if (mobEntity.getRandom().nextFloat() < this.chance) {
             mobEntity.getJumpControl().setActive();
         }
-    }
-
-    @Override
-    protected /* synthetic */ boolean shouldKeepRunning(ServerWorld world, LivingEntity entity, long time) {
-        return this.shouldKeepRunning(world, (MobEntity)entity, time);
     }
 
     @Override

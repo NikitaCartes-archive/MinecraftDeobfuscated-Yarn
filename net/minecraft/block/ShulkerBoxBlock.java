@@ -3,7 +3,9 @@
  */
 package net.minecraft.block;
 
+import com.google.common.collect.Maps;
 import java.util.List;
+import java.util.Map;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -46,6 +48,7 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -59,6 +62,21 @@ import org.jetbrains.annotations.Nullable;
 
 public class ShulkerBoxBlock
 extends BlockWithEntity {
+    private static final float field_41075 = 1.0f;
+    private static final VoxelShape UP_SHAPE = Block.createCuboidShape(0.0, 15.0, 0.0, 16.0, 16.0, 16.0);
+    private static final VoxelShape DOWN_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 1.0, 16.0);
+    private static final VoxelShape WEST_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 1.0, 16.0, 16.0);
+    private static final VoxelShape EAST_SHAPE = Block.createCuboidShape(15.0, 0.0, 0.0, 16.0, 16.0, 16.0);
+    private static final VoxelShape NORTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 1.0);
+    private static final VoxelShape SOUTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 15.0, 16.0, 16.0, 16.0);
+    private static final Map<Direction, VoxelShape> SIDES_SHAPES = Util.make(Maps.newEnumMap(Direction.class), map -> {
+        map.put(Direction.NORTH, NORTH_SHAPE);
+        map.put(Direction.EAST, EAST_SHAPE);
+        map.put(Direction.SOUTH, SOUTH_SHAPE);
+        map.put(Direction.WEST, WEST_SHAPE);
+        map.put(Direction.UP, UP_SHAPE);
+        map.put(Direction.DOWN, DOWN_SHAPE);
+    });
     public static final EnumProperty<Direction> FACING = FacingBlock.FACING;
     public static final Identifier CONTENTS = new Identifier("contents");
     @Nullable
@@ -212,6 +230,16 @@ extends BlockWithEntity {
     @Override
     public PistonBehavior getPistonBehavior(BlockState state) {
         return PistonBehavior.DESTROY;
+    }
+
+    @Override
+    public VoxelShape getSidesShape(BlockState state, BlockView world, BlockPos pos) {
+        ShulkerBoxBlockEntity shulkerBoxBlockEntity;
+        BlockEntity blockEntity = world.getBlockEntity(pos);
+        if (blockEntity instanceof ShulkerBoxBlockEntity && !(shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity).suffocates()) {
+            return SIDES_SHAPES.get(state.get(FACING).getOpposite());
+        }
+        return VoxelShapes.fullCube();
     }
 
     @Override

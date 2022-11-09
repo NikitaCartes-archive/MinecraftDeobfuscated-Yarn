@@ -10,8 +10,8 @@ import net.minecraft.datafixer.Schemas;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.registry.Registries;
 import net.minecraft.structure.StructureTemplate;
-import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
 
 public class StructureValidatorProvider
@@ -45,7 +45,7 @@ implements SnbtProvider.Tweaker {
             LOGGER.warn("SNBT Too old, do not forget to update: {} < {}: {}", i, 3200, name);
         }
         NbtCompound nbtCompound = NbtHelper.update(Schemas.getFixer(), DataFixTypes.STRUCTURE, nbt, i);
-        structureTemplate.readNbt(Registry.BLOCK.getReadOnlyWrapper(), nbtCompound);
+        structureTemplate.readNbt(Registries.BLOCK.getReadOnlyWrapper(), nbtCompound);
         return structureTemplate.writeNbt(new NbtCompound());
     }
 }

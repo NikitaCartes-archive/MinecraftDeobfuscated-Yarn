@@ -849,7 +849,7 @@ Saddleable {
     }
 
     @Override
-    public boolean canJump() {
+    public boolean canJump(PlayerEntity player) {
         return this.isSaddled();
     }
 

@@ -4,7 +4,8 @@
 package net.minecraft.world.gen.foliage;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.world.gen.foliage.AcaciaFoliagePlacer;
 import net.minecraft.world.gen.foliage.BlobFoliagePlacer;
 import net.minecraft.world.gen.foliage.BushFoliagePlacer;
@@ -31,7 +32,7 @@ public class FoliagePlacerType<P extends FoliagePlacer> {
     private final Codec<P> codec;
 
     private static <P extends FoliagePlacer> FoliagePlacerType<P> register(String id, Codec<P> codec) {
-        return Registry.register(Registry.FOLIAGE_PLACER_TYPE, id, new FoliagePlacerType<P>(codec));
+        return Registry.register(Registries.FOLIAGE_PLACER_TYPE, id, new FoliagePlacerType<P>(codec));
     }
 
     private FoliagePlacerType(Codec<P> codec) {

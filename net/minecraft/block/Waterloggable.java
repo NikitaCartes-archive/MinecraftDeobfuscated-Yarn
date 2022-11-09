@@ -24,7 +24,7 @@ extends FluidDrainable,
 FluidFillable {
     @Override
     default public boolean canFillWithFluid(BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
-        return state.get(Properties.WATERLOGGED) == false && fluid == Fluids.WATER;
+        return fluid == Fluids.WATER;
     }
 
     @Override

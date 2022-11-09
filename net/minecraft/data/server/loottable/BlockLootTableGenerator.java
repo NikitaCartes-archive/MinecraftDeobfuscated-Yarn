@@ -69,13 +69,13 @@ import net.minecraft.predicate.StatePredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.item.EnchantmentPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
+import net.minecraft.registry.Registries;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registry;
 
 public abstract class BlockLootTableGenerator
 implements LootTableGenerator {
@@ -264,12 +264,12 @@ implements LootTableGenerator {
     public void accept(BiConsumer<Identifier, LootTable.Builder> exporter) {
         this.generate();
         HashSet<Identifier> set = new HashSet<Identifier>();
-        for (Block block : Registry.BLOCK) {
+        for (Block block : Registries.BLOCK) {
             Identifier identifier;
             if (!block.isEnabled(this.requiredFeatures) || (identifier = block.getLootTableId()) == LootTables.EMPTY || !set.add(identifier)) continue;
             LootTable.Builder builder = this.lootTables.remove(identifier);
             if (builder == null) {
-                throw new IllegalStateException(String.format(Locale.ROOT, "Missing loottable '%s' for '%s'", identifier, Registry.BLOCK.getId(block)));
+                throw new IllegalStateException(String.format(Locale.ROOT, "Missing loottable '%s' for '%s'", identifier, Registries.BLOCK.getId(block)));
             }
             exporter.accept(identifier, builder);
         }

@@ -21,7 +21,7 @@ extends ButtonWidget {
     private final Text hoverText;
 
     public PressableTextWidget(int x, int y, int width, int height, Text text, ButtonWidget.PressAction onPress, TextRenderer textRenderer) {
-        super(x, y, width, height, text, onPress, EMPTY_TOOLTIP, DEFAULT_NARRATION_SUPPLIER);
+        super(x, y, width, height, text, onPress, DEFAULT_NARRATION_SUPPLIER);
         this.textRenderer = textRenderer;
         this.text = text;
         this.hoverText = Texts.setStyleIfAbsent(text.copy(), Style.EMPTY.withUnderline(true));

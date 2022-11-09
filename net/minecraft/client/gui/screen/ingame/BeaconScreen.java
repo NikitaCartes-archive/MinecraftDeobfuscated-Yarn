@@ -11,6 +11,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Tooltip;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
@@ -118,16 +119,11 @@ extends HandledScreen<BeaconScreenHandler> {
     protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
         BeaconScreen.drawCenteredText(matrices, this.textRenderer, PRIMARY_POWER_TEXT, 62, 10, 0xE0E0E0);
         BeaconScreen.drawCenteredText(matrices, this.textRenderer, SECONDARY_POWER_TEXT, 169, 10, 0xE0E0E0);
-        for (BeaconButtonWidget beaconButtonWidget : this.buttons) {
-            if (!beaconButtonWidget.shouldRenderTooltip()) continue;
-            beaconButtonWidget.renderTooltip(matrices, mouseX - this.x, mouseY - this.y);
-            break;
-        }
     }
 
     @Override
     protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.setShaderTexture(0, TEXTURE);
         int i = (this.width - this.backgroundWidth) / 2;
@@ -151,10 +147,6 @@ extends HandledScreen<BeaconScreenHandler> {
 
     @Environment(value=EnvType.CLIENT)
     static interface BeaconButtonWidget {
-        public boolean shouldRenderTooltip();
-
-        public void renderTooltip(MatrixStack var1, int var2, int var3);
-
         public void tick(int var1);
     }
 
@@ -201,7 +193,6 @@ extends HandledScreen<BeaconScreenHandler> {
         protected final int level;
         private StatusEffect effect;
         private Sprite sprite;
-        private Text tooltip;
 
         public EffectButtonWidget(int x, int y, StatusEffect statusEffect, boolean primary, int level) {
             super(x, y);
@@ -213,7 +204,7 @@ extends HandledScreen<BeaconScreenHandler> {
         protected void init(StatusEffect statusEffect) {
             this.effect = statusEffect;
             this.sprite = MinecraftClient.getInstance().getStatusEffectSpriteManager().getSprite(statusEffect);
-            this.tooltip = this.getEffectName(statusEffect);
+            this.setTooltip(Tooltip.of(this.getEffectName(statusEffect), null));
         }
 
         protected MutableText getEffectName(StatusEffect statusEffect) {
@@ -231,11 +222,6 @@ extends HandledScreen<BeaconScreenHandler> {
                 BeaconScreen.this.secondaryEffect = this.effect;
             }
             BeaconScreen.this.tickButtons();
-        }
-
-        @Override
-        public void renderTooltip(MatrixStack matrices, int mouseX, int mouseY) {
-            BeaconScreen.this.renderTooltip(matrices, this.tooltip, mouseX, mouseY);
         }
 
         @Override
@@ -281,25 +267,20 @@ extends HandledScreen<BeaconScreenHandler> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    abstract class IconButtonWidget
+    static abstract class IconButtonWidget
     extends BaseButtonWidget {
         private final int u;
         private final int v;
 
-        protected IconButtonWidget(int x, int y, int u, int v, Text message) {
-            super(x, y, message);
-            this.u = u;
-            this.v = v;
+        protected IconButtonWidget(int i, int j, int k, int l, Text text) {
+            super(i, j, text);
+            this.u = k;
+            this.v = l;
         }
 
         @Override
         protected void renderExtra(MatrixStack matrices) {
             this.drawTexture(matrices, this.getX() + 2, this.getY() + 2, this.u, this.v, 18, 18);
-        }
-
-        @Override
-        public void renderTooltip(MatrixStack matrices, int mouseX, int mouseY) {
-            BeaconScreen.this.renderTooltip(matrices, BeaconScreen.this.title, mouseX, mouseY);
         }
     }
 
@@ -319,7 +300,7 @@ extends HandledScreen<BeaconScreenHandler> {
 
         @Override
         public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShader(GameRenderer::getPositionTexProgram);
             RenderSystem.setShaderTexture(0, TEXTURE);
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             int i = 219;
@@ -346,12 +327,7 @@ extends HandledScreen<BeaconScreenHandler> {
         }
 
         @Override
-        public boolean shouldRenderTooltip() {
-            return this.hovered;
-        }
-
-        @Override
-        public void appendNarrations(NarrationMessageBuilder builder) {
+        public void appendClickableNarrations(NarrationMessageBuilder builder) {
             this.appendDefaultNarrations(builder);
         }
     }

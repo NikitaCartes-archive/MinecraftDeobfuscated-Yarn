@@ -4,6 +4,8 @@
 package net.minecraft.util.math.intprovider;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.math.intprovider.BiasedToBottomIntProvider;
 import net.minecraft.util.math.intprovider.ClampedIntProvider;
 import net.minecraft.util.math.intprovider.ClampedNormalIntProvider;
@@ -11,7 +13,6 @@ import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.math.intprovider.WeightedListIntProvider;
-import net.minecraft.util.registry.Registry;
 
 public interface IntProviderType<P extends IntProvider> {
     public static final IntProviderType<ConstantIntProvider> CONSTANT = IntProviderType.register("constant", ConstantIntProvider.CODEC);
@@ -24,7 +25,7 @@ public interface IntProviderType<P extends IntProvider> {
     public Codec<P> codec();
 
     public static <P extends IntProvider> IntProviderType<P> register(String id, Codec<P> codec) {
-        return Registry.register(Registry.INT_PROVIDER_TYPE, id, () -> codec);
+        return Registry.register(Registries.INT_PROVIDER_TYPE, id, () -> codec);
     }
 }
 

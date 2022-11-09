@@ -194,7 +194,7 @@ extends RealmsScreen {
         int i = RealmsPlayerScreen.row(12) + 20;
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
-        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
         RenderSystem.setShaderTexture(0, OPTIONS_BACKGROUND);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         float f = 32.0f;

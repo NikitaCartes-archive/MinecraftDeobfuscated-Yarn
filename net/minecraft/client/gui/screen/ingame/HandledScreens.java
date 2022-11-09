@@ -31,10 +31,10 @@ import net.minecraft.client.gui.screen.ingame.SmithingScreen;
 import net.minecraft.client.gui.screen.ingame.SmokerScreen;
 import net.minecraft.client.gui.screen.ingame.StonecutterScreen;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.registry.Registries;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.text.Text;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -50,7 +50,7 @@ public class HandledScreens {
         }
         Provider<T, ?> provider = HandledScreens.getProvider(type);
         if (provider == null) {
-            LOGGER.warn("Failed to create screen for menu type: {}", (Object)Registry.SCREEN_HANDLER.getId(type));
+            LOGGER.warn("Failed to create screen for menu type: {}", (Object)Registries.SCREEN_HANDLER.getId(type));
             return;
         }
         provider.open(title, type, client, id);
@@ -64,15 +64,15 @@ public class HandledScreens {
     private static <M extends ScreenHandler, U extends Screen> void register(ScreenHandlerType<? extends M> type, Provider<M, U> provider) {
         Provider<M, U> provider2 = PROVIDERS.put(type, provider);
         if (provider2 != null) {
-            throw new IllegalStateException("Duplicate registration for " + Registry.SCREEN_HANDLER.getId(type));
+            throw new IllegalStateException("Duplicate registration for " + Registries.SCREEN_HANDLER.getId(type));
         }
     }
 
     public static boolean isMissingScreens() {
         boolean bl = false;
-        for (ScreenHandlerType screenHandlerType : Registry.SCREEN_HANDLER) {
+        for (ScreenHandlerType screenHandlerType : Registries.SCREEN_HANDLER) {
             if (PROVIDERS.containsKey(screenHandlerType)) continue;
-            LOGGER.debug("Menu {} has no matching screen", (Object)Registry.SCREEN_HANDLER.getId(screenHandlerType));
+            LOGGER.debug("Menu {} has no matching screen", (Object)Registries.SCREEN_HANDLER.getId(screenHandlerType));
             bl = true;
         }
         return bl;

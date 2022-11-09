@@ -13,16 +13,16 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.OptionalLong;
 import net.minecraft.block.Block;
-import net.minecraft.tag.TagKey;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryElementCodec;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.Codecs;
-import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.intprovider.IntProvider;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionTypes;
 
@@ -34,10 +34,10 @@ public record DimensionType(OptionalLong fixedTime, boolean hasSkyLight, boolean
     public static final int MIN_HEIGHT = MAX_COLUMN_HEIGHT - MAX_HEIGHT + 1;
     public static final int field_35478 = MAX_COLUMN_HEIGHT << 4;
     public static final int field_35479 = MIN_HEIGHT << 4;
-    public static final Codec<DimensionType> CODEC = Codecs.exceptionCatching(RecordCodecBuilder.create(instance -> instance.group(Codecs.optionalLong(Codec.LONG.optionalFieldOf("fixed_time")).forGetter(DimensionType::fixedTime), ((MapCodec)Codec.BOOL.fieldOf("has_skylight")).forGetter(DimensionType::hasSkyLight), ((MapCodec)Codec.BOOL.fieldOf("has_ceiling")).forGetter(DimensionType::hasCeiling), ((MapCodec)Codec.BOOL.fieldOf("ultrawarm")).forGetter(DimensionType::ultrawarm), ((MapCodec)Codec.BOOL.fieldOf("natural")).forGetter(DimensionType::natural), ((MapCodec)Codec.doubleRange(1.0E-5f, 3.0E7).fieldOf("coordinate_scale")).forGetter(DimensionType::coordinateScale), ((MapCodec)Codec.BOOL.fieldOf("bed_works")).forGetter(DimensionType::bedWorks), ((MapCodec)Codec.BOOL.fieldOf("respawn_anchor_works")).forGetter(DimensionType::respawnAnchorWorks), ((MapCodec)Codec.intRange(MIN_HEIGHT, MAX_COLUMN_HEIGHT).fieldOf("min_y")).forGetter(DimensionType::minY), ((MapCodec)Codec.intRange(16, MAX_HEIGHT).fieldOf("height")).forGetter(DimensionType::height), ((MapCodec)Codec.intRange(0, MAX_HEIGHT).fieldOf("logical_height")).forGetter(DimensionType::logicalHeight), ((MapCodec)TagKey.codec(Registry.BLOCK_KEY).fieldOf("infiniburn")).forGetter(DimensionType::infiniburn), ((MapCodec)Identifier.CODEC.fieldOf("effects")).orElse(DimensionTypes.OVERWORLD_ID).forGetter(DimensionType::effects), ((MapCodec)Codec.FLOAT.fieldOf("ambient_light")).forGetter(DimensionType::ambientLight), MonsterSettings.CODEC.forGetter(DimensionType::monsterSettings)).apply((Applicative<DimensionType, ?>)instance, DimensionType::new)));
+    public static final Codec<DimensionType> CODEC = Codecs.exceptionCatching(RecordCodecBuilder.create(instance -> instance.group(Codecs.optionalLong(Codec.LONG.optionalFieldOf("fixed_time")).forGetter(DimensionType::fixedTime), ((MapCodec)Codec.BOOL.fieldOf("has_skylight")).forGetter(DimensionType::hasSkyLight), ((MapCodec)Codec.BOOL.fieldOf("has_ceiling")).forGetter(DimensionType::hasCeiling), ((MapCodec)Codec.BOOL.fieldOf("ultrawarm")).forGetter(DimensionType::ultrawarm), ((MapCodec)Codec.BOOL.fieldOf("natural")).forGetter(DimensionType::natural), ((MapCodec)Codec.doubleRange(1.0E-5f, 3.0E7).fieldOf("coordinate_scale")).forGetter(DimensionType::coordinateScale), ((MapCodec)Codec.BOOL.fieldOf("bed_works")).forGetter(DimensionType::bedWorks), ((MapCodec)Codec.BOOL.fieldOf("respawn_anchor_works")).forGetter(DimensionType::respawnAnchorWorks), ((MapCodec)Codec.intRange(MIN_HEIGHT, MAX_COLUMN_HEIGHT).fieldOf("min_y")).forGetter(DimensionType::minY), ((MapCodec)Codec.intRange(16, MAX_HEIGHT).fieldOf("height")).forGetter(DimensionType::height), ((MapCodec)Codec.intRange(0, MAX_HEIGHT).fieldOf("logical_height")).forGetter(DimensionType::logicalHeight), ((MapCodec)TagKey.codec(RegistryKeys.BLOCK).fieldOf("infiniburn")).forGetter(DimensionType::infiniburn), ((MapCodec)Identifier.CODEC.fieldOf("effects")).orElse(DimensionTypes.OVERWORLD_ID).forGetter(DimensionType::effects), ((MapCodec)Codec.FLOAT.fieldOf("ambient_light")).forGetter(DimensionType::ambientLight), MonsterSettings.CODEC.forGetter(DimensionType::monsterSettings)).apply((Applicative<DimensionType, ?>)instance, DimensionType::new)));
     private static final int field_31440 = 8;
     public static final float[] MOON_SIZES = new float[]{1.0f, 0.75f, 0.5f, 0.25f, 0.0f, 0.25f, 0.5f, 0.75f};
-    public static final Codec<RegistryEntry<DimensionType>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.DIMENSION_TYPE_KEY, CODEC);
+    public static final Codec<RegistryEntry<DimensionType>> REGISTRY_CODEC = RegistryElementCodec.of(RegistryKeys.DIMENSION_TYPE, CODEC);
 
     public DimensionType {
         if (j < 16) {

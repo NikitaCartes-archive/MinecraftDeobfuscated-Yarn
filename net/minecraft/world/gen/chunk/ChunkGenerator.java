@@ -26,6 +26,14 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import net.minecraft.SharedConstants;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureSet;
@@ -44,12 +52,6 @@ import net.minecraft.util.math.random.CheckedRandom;
 import net.minecraft.util.math.random.ChunkRandom;
 import net.minecraft.util.math.random.RandomSeed;
 import net.minecraft.util.math.random.Xoroshiro128PlusPlusRandom;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryEntryList;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.RegistryWrapper;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
@@ -86,7 +88,7 @@ import org.jetbrains.annotations.Nullable;
  * Biome placement starts here, however all vanilla and most modded chunk generators delegate this to a {@linkplain net.minecraft.world.biome.source.BiomeSource biome source}.
  */
 public abstract class ChunkGenerator {
-    public static final Codec<ChunkGenerator> CODEC = Registry.CHUNK_GENERATOR.getCodec().dispatchStable(ChunkGenerator::getCodec, Function.identity());
+    public static final Codec<ChunkGenerator> CODEC = Registries.CHUNK_GENERATOR.getCodec().dispatchStable(ChunkGenerator::getCodec, Function.identity());
     protected final BiomeSource biomeSource;
     private final Supplier<List<PlacedFeatureIndexer.IndexedFeatures>> indexedFeaturesListSupplier;
     private final Function<RegistryEntry<Biome>, GenerationSettings> generationSettingsGetter;
@@ -108,7 +110,7 @@ public abstract class ChunkGenerator {
     }
 
     public Optional<RegistryKey<Codec<? extends ChunkGenerator>>> getCodecKey() {
-        return Registry.CHUNK_GENERATOR.getKey(this.getCodec());
+        return Registries.CHUNK_GENERATOR.getKey(this.getCodec());
     }
 
     public CompletableFuture<Chunk> populateBiomes(Executor executor, NoiseConfig noiseConfig, Blender blender, StructureAccessor structureAccessor, Chunk chunk) {
@@ -260,7 +262,7 @@ public abstract class ChunkGenerator {
         }
         ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(chunkPos2, world.getBottomSectionCoord());
         BlockPos blockPos = chunkSectionPos.getMinPos();
-        Registry<Structure> registry = world.getRegistryManager().get(Registry.STRUCTURE_KEY);
+        Registry<Structure> registry = world.getRegistryManager().get(RegistryKeys.STRUCTURE_WORLDGEN);
         Map<Integer, List<Structure>> map = registry.stream().collect(Collectors.groupingBy(structureType -> structureType.getFeatureGenerationStep().ordinal()));
         List<PlacedFeatureIndexer.IndexedFeatures> list = this.indexedFeaturesListSupplier.get();
         ChunkRandom chunkRandom = new ChunkRandom(new Xoroshiro128PlusPlusRandom(RandomSeed.getSeed()));
@@ -275,7 +277,7 @@ public abstract class ChunkGenerator {
         set.retainAll(this.biomeSource.getBiomes());
         int i = list.size();
         try {
-            Registry<PlacedFeature> registry2 = world.getRegistryManager().get(Registry.PLACED_FEATURE_KEY);
+            Registry<PlacedFeature> registry2 = world.getRegistryManager().get(RegistryKeys.PLACED_FEATURE_WORLDGEN);
             int j = Math.max(GenerationStep.Feature.values().length, i);
             for (int k = 0; k < j; ++k) {
                 int m = 0;
@@ -467,9 +469,9 @@ public abstract class ChunkGenerator {
                     } catch (Exception exception) {
                         CrashReport crashReport = CrashReport.create(exception, "Generating structure reference");
                         CrashReportSection crashReportSection = crashReport.addElement("Structure");
-                        Optional<Registry<Structure>> optional = world.getRegistryManager().getOptional(Registry.STRUCTURE_KEY);
+                        Optional<Registry<Structure>> optional = world.getRegistryManager().getOptional(RegistryKeys.STRUCTURE_WORLDGEN);
                         crashReportSection.add("Id", () -> optional.map(structureTypeRegistry -> structureTypeRegistry.getId(structureStart.getStructure()).toString()).orElse("UNKNOWN"));
-                        crashReportSection.add("Name", () -> Registry.STRUCTURE_TYPE.getId(structureStart.getStructure().getType()).toString());
+                        crashReportSection.add("Name", () -> Registries.STRUCTURE_TYPE.getId(structureStart.getStructure().getType()).toString());
                         crashReportSection.add("Class", () -> structureStart.getStructure().getClass().getCanonicalName());
                         throw new CrashException(crashReport);
                     }

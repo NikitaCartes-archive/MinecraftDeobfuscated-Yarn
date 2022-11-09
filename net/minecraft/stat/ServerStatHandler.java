@@ -30,6 +30,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.s2c.play.StatisticsS2CPacket;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stat;
@@ -37,7 +38,6 @@ import net.minecraft.stat.StatHandler;
 import net.minecraft.stat.StatType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.registry.Registry;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 
@@ -98,7 +98,7 @@ extends StatHandler {
                 NbtCompound nbtCompound2 = nbtCompound.getCompound("stats");
                 for (String string : nbtCompound2.getKeys()) {
                     if (!nbtCompound2.contains(string, NbtElement.COMPOUND_TYPE)) continue;
-                    Util.ifPresentOrElse(Registry.STAT_TYPE.getOrEmpty(new Identifier(string)), statType -> {
+                    Util.ifPresentOrElse(Registries.STAT_TYPE.getOrEmpty(new Identifier(string)), statType -> {
                         NbtCompound nbtCompound2 = nbtCompound2.getCompound(string);
                         for (String string2 : nbtCompound2.getKeys()) {
                             if (nbtCompound2.contains(string2, NbtElement.NUMBER_TYPE)) {
@@ -142,7 +142,7 @@ extends StatHandler {
         }
         JsonObject jsonObject = new JsonObject();
         for (Map.Entry entry : map.entrySet()) {
-            jsonObject.add(Registry.STAT_TYPE.getId((StatType)entry.getKey()).toString(), (JsonElement)entry.getValue());
+            jsonObject.add(Registries.STAT_TYPE.getId((StatType)entry.getKey()).toString(), (JsonElement)entry.getValue());
         }
         JsonObject jsonObject2 = new JsonObject();
         jsonObject2.add("stats", jsonObject);

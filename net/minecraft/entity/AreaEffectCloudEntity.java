@@ -31,9 +31,9 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -332,7 +332,7 @@ extends Entity {
         }
         if (nbt.contains("Particle", NbtElement.STRING_TYPE)) {
             try {
-                this.setParticleType(ParticleEffectArgumentType.readParameters(new StringReader(nbt.getString("Particle")), Registry.PARTICLE_TYPE.getReadOnlyWrapper()));
+                this.setParticleType(ParticleEffectArgumentType.readParameters(new StringReader(nbt.getString("Particle")), Registries.PARTICLE_TYPE.getReadOnlyWrapper()));
             } catch (CommandSyntaxException commandSyntaxException) {
                 LOGGER.warn("Couldn't load custom particle {}", (Object)nbt.getString("Particle"), (Object)commandSyntaxException);
             }
@@ -372,7 +372,7 @@ extends Entity {
             nbt.putInt("Color", this.getColor());
         }
         if (this.potion != Potions.EMPTY) {
-            nbt.putString("Potion", Registry.POTION.getId(this.potion).toString());
+            nbt.putString("Potion", Registries.POTION.getId(this.potion).toString());
         }
         if (!this.effects.isEmpty()) {
             NbtList nbtList = new NbtList();

@@ -33,7 +33,7 @@ extends Sensor<LivingEntity> {
     }
 
     protected Optional<LivingTargetCache> getVisibleLivingEntities(LivingEntity entity) {
-        return entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS);
+        return entity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.VISIBLE_MOBS);
     }
 }
 

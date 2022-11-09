@@ -77,7 +77,7 @@ extends Screen {
         if (this.checkForClose()) {
             return;
         }
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         matrices.push();
         RenderSystem.enableBlend();
         RenderSystem.setShaderTexture(0, TEXTURE);
@@ -233,7 +233,7 @@ extends Screen {
         }
 
         @Override
-        public void appendNarrations(NarrationMessageBuilder builder) {
+        public void appendClickableNarrations(NarrationMessageBuilder builder) {
             this.appendDefaultNarrations(builder);
         }
 
@@ -247,7 +247,7 @@ extends Screen {
         }
 
         private void drawBackground(MatrixStack matrices, TextureManager textureManager) {
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShader(GameRenderer::getPositionTexProgram);
             RenderSystem.setShaderTexture(0, TEXTURE);
             matrices.push();
             matrices.translate(this.getX(), this.getY(), 0.0f);
@@ -256,7 +256,7 @@ extends Screen {
         }
 
         private void drawSelectionBox(MatrixStack matrices, TextureManager textureManager) {
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShader(GameRenderer::getPositionTexProgram);
             RenderSystem.setShaderTexture(0, TEXTURE);
             matrices.push();
             matrices.translate(this.getX(), this.getY(), 0.0f);

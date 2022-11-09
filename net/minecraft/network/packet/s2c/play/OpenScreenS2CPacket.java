@@ -6,9 +6,9 @@ package net.minecraft.network.packet.s2c.play;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.registry.Registries;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.text.Text;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class OpenScreenS2CPacket
@@ -25,14 +25,14 @@ implements Packet<ClientPlayPacketListener> {
 
     public OpenScreenS2CPacket(PacketByteBuf buf) {
         this.syncId = buf.readVarInt();
-        this.screenHandlerId = buf.readRegistryValue(Registry.SCREEN_HANDLER);
+        this.screenHandlerId = buf.readRegistryValue(Registries.SCREEN_HANDLER);
         this.name = buf.readText();
     }
 
     @Override
     public void write(PacketByteBuf buf) {
         buf.writeVarInt(this.syncId);
-        buf.writeRegistryValue(Registry.SCREEN_HANDLER, this.screenHandlerId);
+        buf.writeRegistryValue(Registries.SCREEN_HANDLER, this.screenHandlerId);
         buf.writeText(this.name);
     }
 

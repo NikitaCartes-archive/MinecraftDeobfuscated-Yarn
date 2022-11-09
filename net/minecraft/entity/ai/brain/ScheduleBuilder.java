@@ -26,7 +26,7 @@ public class ScheduleBuilder {
         this.activities.stream().map(ActivityEntry::getActivity).collect(Collectors.toSet()).forEach(this.schedule::addActivity);
         this.activities.forEach(activity -> {
             Activity activity2 = activity.getActivity();
-            this.schedule.getOtherRules(activity2).forEach(scheduleRule -> scheduleRule.add(activity.getStartTime(), 0.0f));
+            this.schedule.getOtherRules(activity2).forEach(rule -> rule.add(activity.getStartTime(), 0.0f));
             this.schedule.getRule(activity2).add(activity.getStartTime(), 1.0f);
         });
         return this.schedule;

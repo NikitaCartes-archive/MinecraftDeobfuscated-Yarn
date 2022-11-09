@@ -7,7 +7,6 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -17,6 +16,7 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.Tooltip;
 import net.minecraft.client.gui.screen.multiplayer.SocialInteractionsScreen;
 import net.minecraft.client.gui.screen.report.ChatReportScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -28,7 +28,6 @@ import net.minecraft.client.report.AbuseReportContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -40,7 +39,6 @@ public class SocialInteractionsPlayerListEntry
 extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
     private static final Identifier REPORT_BUTTON_TEXTURE = new Identifier("textures/gui/report_button.png");
     private static final int field_32418 = 10;
-    private static final int field_32419 = 150;
     private final MinecraftClient client;
     private final List<ClickableWidget> buttons;
     private final UUID uuid;
@@ -57,10 +55,7 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
     private ButtonWidget showButton;
     @Nullable
     private ButtonWidget reportButton;
-    final List<OrderedText> hideTooltip;
-    final List<OrderedText> showTooltip;
-    List<OrderedText> reportTooltip;
-    float timeCounter;
+    private float timeCounter;
     private static final Text HIDDEN_TEXT = Text.translatable("gui.socialInteractions.status_hidden").formatted(Formatting.ITALIC);
     private static final Text BLOCKED_TEXT = Text.translatable("gui.socialInteractions.status_blocked").formatted(Formatting.ITALIC);
     private static final Text OFFLINE_TEXT = Text.translatable("gui.socialInteractions.status_offline").formatted(Formatting.ITALIC);
@@ -82,7 +77,7 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
     public static final int WHITE_COLOR = ColorHelper.Argb.getArgb(255, 255, 255, 255);
     public static final int LIGHT_GRAY_COLOR = ColorHelper.Argb.getArgb(140, 255, 255, 255);
 
-    public SocialInteractionsPlayerListEntry(final MinecraftClient client, final SocialInteractionsScreen parent, UUID uuid, String name, Supplier<Identifier> skinTexture, boolean reportable) {
+    public SocialInteractionsPlayerListEntry(MinecraftClient client, SocialInteractionsScreen parent, UUID uuid, String name, Supplier<Identifier> skinTexture, boolean reportable) {
         boolean bl2;
         this.client = client;
         this.uuid = uuid;
@@ -92,11 +87,8 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
         this.canSendReports = abuseReportContext.getSender().canSendReports();
         this.reportable = reportable;
         this.hasDraftReport = abuseReportContext.draftPlayerUuidEquals(uuid);
-        final MutableText text = Text.translatable("gui.socialInteractions.narration.hide", name);
-        final MutableText text2 = Text.translatable("gui.socialInteractions.narration.show", name);
-        this.hideTooltip = client.textRenderer.wrapLines(hideText, 150);
-        this.showTooltip = client.textRenderer.wrapLines(showText, 150);
-        this.reportTooltip = client.textRenderer.wrapLines(this.getReportText(false), 150);
+        MutableText text = Text.translatable("gui.socialInteractions.narration.hide", name);
+        MutableText text2 = Text.translatable("gui.socialInteractions.narration.show", name);
         SocialInteractionsManager socialInteractionsManager = client.getSocialInteractionsManager();
         boolean bl = client.getChatRestriction().allowsChat(client.isInSingleplayer());
         boolean bl3 = bl2 = !client.player.getUuid().equals(uuid);
@@ -105,20 +97,6 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
                 if (abuseReportContext.tryShowDraftScreen(client, parent, false)) {
                     client.setScreen(new ChatReportScreen((Screen)parent, abuseReportContext, uuid));
                 }
-            }, new ButtonWidget.TooltipSupplier(){
-
-                @Override
-                public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {
-                    SocialInteractionsPlayerListEntry.this.timeCounter += client.getLastFrameDuration();
-                    if (SocialInteractionsPlayerListEntry.this.timeCounter >= 10.0f) {
-                        parent.setOnRendered(() -> SocialInteractionsPlayerListEntry.renderTooltip(parent, matrixStack, SocialInteractionsPlayerListEntry.this.reportTooltip, i, j));
-                    }
-                }
-
-                @Override
-                public void supply(Consumer<Text> consumer) {
-                    consumer.accept(SocialInteractionsPlayerListEntry.this.getReportText(true));
-                }
             }, Text.translatable("gui.socialInteractions.report")){
 
                 @Override
@@ -126,23 +104,11 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
                     return SocialInteractionsPlayerListEntry.this.getNarrationMessage(super.getNarrationMessage());
                 }
             };
+            this.reportButton.setTooltip(Tooltip.of(this.getReportText(false), this.getReportText(true)));
+            this.reportButton.setTooltipDelay(10);
             this.hideButton = new TexturedButtonWidget(0, 0, 20, 20, 0, 38, 20, SocialInteractionsScreen.SOCIAL_INTERACTIONS_TEXTURE, 256, 256, button -> {
                 socialInteractionsManager.hidePlayer(uuid);
                 this.onButtonClick(true, Text.translatable("gui.socialInteractions.hidden_in_chat", name));
-            }, new ButtonWidget.TooltipSupplier(){
-
-                @Override
-                public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {
-                    SocialInteractionsPlayerListEntry.this.timeCounter += client.getLastFrameDuration();
-                    if (SocialInteractionsPlayerListEntry.this.timeCounter >= 10.0f) {
-                        parent.setOnRendered(() -> SocialInteractionsPlayerListEntry.renderTooltip(parent, matrixStack, SocialInteractionsPlayerListEntry.this.hideTooltip, i, j));
-                    }
-                }
-
-                @Override
-                public void supply(Consumer<Text> consumer) {
-                    consumer.accept(text);
-                }
             }, Text.translatable("gui.socialInteractions.hide")){
 
                 @Override
@@ -150,23 +116,11 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
                     return SocialInteractionsPlayerListEntry.this.getNarrationMessage(super.getNarrationMessage());
                 }
             };
+            this.hideButton.setTooltip(Tooltip.of(hideText, text));
+            this.hideButton.setTooltipDelay(10);
             this.showButton = new TexturedButtonWidget(0, 0, 20, 20, 20, 38, 20, SocialInteractionsScreen.SOCIAL_INTERACTIONS_TEXTURE, 256, 256, button -> {
                 socialInteractionsManager.showPlayer(uuid);
                 this.onButtonClick(false, Text.translatable("gui.socialInteractions.shown_in_chat", name));
-            }, new ButtonWidget.TooltipSupplier(){
-
-                @Override
-                public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {
-                    SocialInteractionsPlayerListEntry.this.timeCounter += client.getLastFrameDuration();
-                    if (SocialInteractionsPlayerListEntry.this.timeCounter >= 10.0f) {
-                        parent.setOnRendered(() -> SocialInteractionsPlayerListEntry.renderTooltip(parent, matrixStack, SocialInteractionsPlayerListEntry.this.showTooltip, i, j));
-                    }
-                }
-
-                @Override
-                public void supply(Consumer<Text> consumer) {
-                    consumer.accept(text2);
-                }
             }, Text.translatable("gui.socialInteractions.show")){
 
                 @Override
@@ -174,6 +128,8 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
                     return SocialInteractionsPlayerListEntry.this.getNarrationMessage(super.getNarrationMessage());
                 }
             };
+            this.showButton.setTooltip(Tooltip.of(showText, text2));
+            this.showButton.setTooltipDelay(10);
             this.showButton.visible = socialInteractionsManager.isPlayerHidden(uuid);
             this.hideButton.visible = !this.showButton.visible;
             this.reportButton.active = false;
@@ -183,7 +139,7 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
         }
     }
 
-    Text getReportText(boolean narrated) {
+    private Text getReportText(boolean narrated) {
         if (!this.reportable) {
             return NOT_REPORTABLE_TEXT;
         }
@@ -270,7 +226,6 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
         if (this.reportButton != null) {
             this.reportButton.active = this.canSendReports && this.reportable && sentMessage;
         }
-        this.reportTooltip = this.client.textRenderer.wrapLines(this.getReportText(false), 150);
     }
 
     public boolean hasSentMessage() {
@@ -311,11 +266,6 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
             return OFFLINE_TEXT;
         }
         return ScreenTexts.EMPTY;
-    }
-
-    static void renderTooltip(SocialInteractionsScreen screen, MatrixStack matrices, List<OrderedText> tooltip, int mouseX, int mouseY) {
-        screen.renderOrderedTooltip(matrices, tooltip, mouseX, mouseY);
-        screen.setOnRendered(null);
     }
 }
 

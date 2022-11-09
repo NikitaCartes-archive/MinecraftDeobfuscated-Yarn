@@ -36,11 +36,7 @@ extends ButtonWidget {
     }
 
     public TexturedButtonWidget(int x, int y, int width, int height, int u, int v, int hoveredVOffset, Identifier texture, int textureWidth, int textureHeight, ButtonWidget.PressAction pressAction, Text text) {
-        this(x, y, width, height, u, v, hoveredVOffset, texture, textureWidth, textureHeight, pressAction, EMPTY_TOOLTIP, text);
-    }
-
-    public TexturedButtonWidget(int x, int y, int width, int height, int u, int v, int hoveredVOffset, Identifier texture, int textureWidth, int textureHeight, ButtonWidget.PressAction pressAction, ButtonWidget.TooltipSupplier tooltipSupplier, Text text) {
-        super(x, y, width, height, text, pressAction, tooltipSupplier, DEFAULT_NARRATION_SUPPLIER);
+        super(x, y, width, height, text, pressAction, DEFAULT_NARRATION_SUPPLIER);
         this.textureWidth = textureWidth;
         this.textureHeight = textureHeight;
         this.u = u;
@@ -57,7 +53,7 @@ extends ButtonWidget {
 
     @Override
     public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderTexture(0, this.texture);
         int i = this.v;
         if (!this.isNarratable()) {
@@ -67,9 +63,6 @@ extends ButtonWidget {
         }
         RenderSystem.enableDepthTest();
         TexturedButtonWidget.drawTexture(matrices, this.getX(), this.getY(), this.u, i, this.width, this.height, this.textureWidth, this.textureHeight);
-        if (this.hovered) {
-            this.renderTooltip(matrices, mouseX, mouseY);
-        }
     }
 }
 

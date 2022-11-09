@@ -37,7 +37,8 @@ import net.minecraft.enchantment.ThornsEnchantment;
 import net.minecraft.enchantment.UnbreakingEnchantment;
 import net.minecraft.enchantment.VanishingCurseEnchantment;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 public class Enchantments {
     private static final EquipmentSlot[] ALL_ARMOR = new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
@@ -82,7 +83,7 @@ public class Enchantments {
     public static final Enchantment VANISHING_CURSE = Enchantments.register("vanishing_curse", new VanishingCurseEnchantment(Enchantment.Rarity.VERY_RARE, EquipmentSlot.values()));
 
     private static Enchantment register(String name, Enchantment enchantment) {
-        return Registry.register(Registry.ENCHANTMENT, name, enchantment);
+        return Registry.register(Registries.ENCHANTMENT, name, enchantment);
     }
 }
 

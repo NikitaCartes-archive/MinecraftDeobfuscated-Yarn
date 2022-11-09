@@ -17,12 +17,12 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.Pool;
 import net.minecraft.util.collection.Weight;
 import net.minecraft.util.collection.Weighted;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -31,7 +31,7 @@ public class SpawnSettings {
     private static final float field_30983 = 0.1f;
     public static final Pool<SpawnEntry> EMPTY_ENTRY_POOL = Pool.empty();
     public static final SpawnSettings INSTANCE = new Builder().build();
-    public static final MapCodec<SpawnSettings> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(Codec.floatRange(0.0f, 0.9999999f).optionalFieldOf("creature_spawn_probability", Float.valueOf(0.1f)).forGetter(spawnSettings -> Float.valueOf(spawnSettings.creatureSpawnProbability)), Codec.simpleMap(SpawnGroup.CODEC, Pool.createCodec(SpawnEntry.CODEC).promotePartial((Consumer)Util.addPrefix("Spawn data: ", LOGGER::error)), StringIdentifiable.toKeyable(SpawnGroup.values())).fieldOf("spawners").forGetter(spawnSettings -> spawnSettings.spawners), Codec.simpleMap(Registry.ENTITY_TYPE.getCodec(), SpawnDensity.CODEC, Registry.ENTITY_TYPE).fieldOf("spawn_costs").forGetter(spawnSettings -> spawnSettings.spawnCosts)).apply((Applicative<SpawnSettings, ?>)instance, SpawnSettings::new));
+    public static final MapCodec<SpawnSettings> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(Codec.floatRange(0.0f, 0.9999999f).optionalFieldOf("creature_spawn_probability", Float.valueOf(0.1f)).forGetter(spawnSettings -> Float.valueOf(spawnSettings.creatureSpawnProbability)), Codec.simpleMap(SpawnGroup.CODEC, Pool.createCodec(SpawnEntry.CODEC).promotePartial((Consumer)Util.addPrefix("Spawn data: ", LOGGER::error)), StringIdentifiable.toKeyable(SpawnGroup.values())).fieldOf("spawners").forGetter(spawnSettings -> spawnSettings.spawners), Codec.simpleMap(Registries.ENTITY_TYPE.getCodec(), SpawnDensity.CODEC, Registries.ENTITY_TYPE).fieldOf("spawn_costs").forGetter(spawnSettings -> spawnSettings.spawnCosts)).apply((Applicative<SpawnSettings, ?>)instance, SpawnSettings::new));
     private final float creatureSpawnProbability;
     private final Map<SpawnGroup, Pool<SpawnEntry>> spawners;
     private final Map<EntityType<?>, SpawnDensity> spawnCosts;
@@ -76,7 +76,7 @@ public class SpawnSettings {
 
     public static class SpawnEntry
     extends Weighted.Absent {
-        public static final Codec<SpawnEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Registry.ENTITY_TYPE.getCodec().fieldOf("type")).forGetter(spawnEntry -> spawnEntry.type), ((MapCodec)Weight.CODEC.fieldOf("weight")).forGetter(Weighted.Absent::getWeight), ((MapCodec)Codec.INT.fieldOf("minCount")).forGetter(spawnEntry -> spawnEntry.minGroupSize), ((MapCodec)Codec.INT.fieldOf("maxCount")).forGetter(spawnEntry -> spawnEntry.maxGroupSize)).apply((Applicative<SpawnEntry, ?>)instance, SpawnEntry::new));
+        public static final Codec<SpawnEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Registries.ENTITY_TYPE.getCodec().fieldOf("type")).forGetter(spawnEntry -> spawnEntry.type), ((MapCodec)Weight.CODEC.fieldOf("weight")).forGetter(Weighted.Absent::getWeight), ((MapCodec)Codec.INT.fieldOf("minCount")).forGetter(spawnEntry -> spawnEntry.minGroupSize), ((MapCodec)Codec.INT.fieldOf("maxCount")).forGetter(spawnEntry -> spawnEntry.maxGroupSize)).apply((Applicative<SpawnEntry, ?>)instance, SpawnEntry::new));
         public final EntityType<?> type;
         public final int minGroupSize;
         public final int maxGroupSize;

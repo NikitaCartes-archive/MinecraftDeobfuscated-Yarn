@@ -17,12 +17,12 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.ParticleEffectArgumentType;
 import net.minecraft.command.argument.Vec3ArgumentType;
 import net.minecraft.particle.ParticleEffect;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 
 public class ParticleCommand {
     private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.particle.failed"));
@@ -40,7 +40,7 @@ public class ParticleCommand {
         if (i == 0) {
             throw FAILED_EXCEPTION.create();
         }
-        source.sendFeedback(Text.translatable("commands.particle.success", Registry.PARTICLE_TYPE.getId(parameters.getType()).toString()), true);
+        source.sendFeedback(Text.translatable("commands.particle.success", Registries.PARTICLE_TYPE.getId(parameters.getType()).toString()), true);
         return i;
     }
 }

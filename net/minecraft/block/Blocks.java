@@ -252,6 +252,9 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.resource.featuretoggle.FeatureFlag;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
@@ -262,7 +265,6 @@ import net.minecraft.util.SignType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.gen.feature.TreeConfiguredFeatures;
 
@@ -321,6 +323,7 @@ public class Blocks {
     public static final Block MANGROVE_LOG = Blocks.register("mangrove_log", Blocks.createLogBlock(MapColor.RED, MapColor.SPRUCE_BROWN));
     public static final Block MANGROVE_ROOTS = Blocks.register("mangrove_roots", new MangroveRootsBlock(AbstractBlock.Settings.of(Material.WOOD, MapColor.SPRUCE_BROWN).strength(0.7f).ticksRandomly().sounds(BlockSoundGroup.MANGROVE_ROOTS).nonOpaque().suffocates(Blocks::never).blockVision(Blocks::never).nonOpaque()));
     public static final Block MUDDY_MANGROVE_ROOTS = Blocks.register("muddy_mangrove_roots", new PillarBlock(AbstractBlock.Settings.of(Material.SOIL, MapColor.SPRUCE_BROWN).strength(0.7f).sounds(BlockSoundGroup.MUDDY_MANGROVE_ROOTS)));
+    public static final Block BAMBOO_BLOCK = Blocks.register("bamboo_block", Blocks.createBambooBlock(MapColor.YELLOW, MapColor.DARK_GREEN, BlockSoundGroup.BAMBOO_WOOD, FeatureFlags.UPDATE_1_20));
     public static final Block STRIPPED_SPRUCE_LOG = Blocks.register("stripped_spruce_log", Blocks.createLogBlock(MapColor.SPRUCE_BROWN, MapColor.SPRUCE_BROWN));
     public static final Block STRIPPED_BIRCH_LOG = Blocks.register("stripped_birch_log", Blocks.createLogBlock(MapColor.PALE_YELLOW, MapColor.PALE_YELLOW));
     public static final Block STRIPPED_JUNGLE_LOG = Blocks.register("stripped_jungle_log", Blocks.createLogBlock(MapColor.DIRT_BROWN, MapColor.DIRT_BROWN));
@@ -328,6 +331,7 @@ public class Blocks {
     public static final Block STRIPPED_DARK_OAK_LOG = Blocks.register("stripped_dark_oak_log", Blocks.createLogBlock(MapColor.BROWN, MapColor.BROWN));
     public static final Block STRIPPED_OAK_LOG = Blocks.register("stripped_oak_log", Blocks.createLogBlock(MapColor.OAK_TAN, MapColor.OAK_TAN));
     public static final Block STRIPPED_MANGROVE_LOG = Blocks.register("stripped_mangrove_log", Blocks.createLogBlock(MapColor.RED, MapColor.RED));
+    public static final Block STRIPPED_BAMBOO_BLOCK = Blocks.register("stripped_bamboo_block", Blocks.createBambooBlock(MapColor.YELLOW, MapColor.YELLOW, BlockSoundGroup.BAMBOO_WOOD, FeatureFlags.UPDATE_1_20));
     public static final Block OAK_WOOD = Blocks.register("oak_wood", new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, MapColor.OAK_TAN).strength(2.0f).sounds(BlockSoundGroup.WOOD)));
     public static final Block SPRUCE_WOOD = Blocks.register("spruce_wood", new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, MapColor.SPRUCE_BROWN).strength(2.0f).sounds(BlockSoundGroup.WOOD)));
     public static final Block BIRCH_WOOD = Blocks.register("birch_wood", new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, MapColor.PALE_YELLOW).strength(2.0f).sounds(BlockSoundGroup.WOOD)));
@@ -426,7 +430,7 @@ public class Blocks {
     public static final Block BRICKS = Blocks.register("bricks", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.RED).requiresTool().strength(2.0f, 6.0f)));
     public static final Block TNT = Blocks.register("tnt", new TntBlock(AbstractBlock.Settings.of(Material.TNT).breakInstantly().sounds(BlockSoundGroup.GRASS)));
     public static final Block BOOKSHELF = Blocks.register("bookshelf", new Block(AbstractBlock.Settings.of(Material.WOOD).strength(1.5f).sounds(BlockSoundGroup.WOOD)));
-    public static final Block CHISELED_BOOKSHELF = Blocks.register("chiseled_bookshelf", new ChiseledBookshelfBlock(AbstractBlock.Settings.of(Material.WOOD).strength(1.5f).sounds(BlockSoundGroup.WOOD).requires(FeatureFlags.UPDATE_1_20)));
+    public static final Block CHISELED_BOOKSHELF = Blocks.register("chiseled_bookshelf", new ChiseledBookshelfBlock(AbstractBlock.Settings.of(Material.WOOD).strength(1.5f).sounds(BlockSoundGroup.field_41085).requires(FeatureFlags.UPDATE_1_20)));
     public static final Block MOSSY_COBBLESTONE = Blocks.register("mossy_cobblestone", new Block(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(2.0f, 6.0f)));
     public static final Block OBSIDIAN = Blocks.register("obsidian", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.BLACK).requiresTool().strength(50.0f, 1200.0f)));
     public static final Block TORCH = Blocks.register("torch", new TorchBlock(AbstractBlock.Settings.of(Material.DECORATION).noCollision().breakInstantly().luminance(state -> 14).sounds(BlockSoundGroup.WOOD), ParticleTypes.FLAME));
@@ -470,10 +474,10 @@ public class Blocks {
     public static final Block ACACIA_HANGING_SIGN = Blocks.register("acacia_hanging_sign", new HangingSignBlock(AbstractBlock.Settings.of(Material.WOOD, MapColor.ORANGE).noCollision().strength(1.0f).sounds(BlockSoundGroup.HANGING_SIGN).requires(FeatureFlags.UPDATE_1_20), SignType.ACACIA));
     public static final Block JUNGLE_HANGING_SIGN = Blocks.register("jungle_hanging_sign", new HangingSignBlock(AbstractBlock.Settings.of(Material.WOOD, JUNGLE_LOG.getDefaultMapColor()).noCollision().strength(1.0f).sounds(BlockSoundGroup.HANGING_SIGN).requires(FeatureFlags.UPDATE_1_20), SignType.JUNGLE));
     public static final Block DARK_OAK_HANGING_SIGN = Blocks.register("dark_oak_hanging_sign", new HangingSignBlock(AbstractBlock.Settings.of(Material.WOOD, DARK_OAK_LOG.getDefaultMapColor()).noCollision().strength(1.0f).sounds(BlockSoundGroup.HANGING_SIGN).requires(FeatureFlags.UPDATE_1_20), SignType.DARK_OAK));
-    public static final Block CRIMSON_HANGING_SIGN = Blocks.register("crimson_hanging_sign", new HangingSignBlock(AbstractBlock.Settings.of(Material.WOOD, MapColor.DULL_PINK).noCollision().strength(1.0f).sounds(BlockSoundGroup.HANGING_SIGN).requires(FeatureFlags.UPDATE_1_20), SignType.CRIMSON));
-    public static final Block WARPED_HANGING_SIGN = Blocks.register("warped_hanging_sign", new HangingSignBlock(AbstractBlock.Settings.of(Material.WOOD, MapColor.DARK_AQUA).noCollision().strength(1.0f).sounds(BlockSoundGroup.HANGING_SIGN).requires(FeatureFlags.UPDATE_1_20), SignType.WARPED));
+    public static final Block CRIMSON_HANGING_SIGN = Blocks.register("crimson_hanging_sign", new HangingSignBlock(AbstractBlock.Settings.of(Material.WOOD, MapColor.DULL_PINK).noCollision().strength(1.0f).sounds(BlockSoundGroup.field_41083).requires(FeatureFlags.UPDATE_1_20), SignType.CRIMSON));
+    public static final Block WARPED_HANGING_SIGN = Blocks.register("warped_hanging_sign", new HangingSignBlock(AbstractBlock.Settings.of(Material.WOOD, MapColor.DARK_AQUA).noCollision().strength(1.0f).sounds(BlockSoundGroup.field_41083).requires(FeatureFlags.UPDATE_1_20), SignType.WARPED));
     public static final Block MANGROVE_HANGING_SIGN = Blocks.register("mangrove_hanging_sign", new HangingSignBlock(AbstractBlock.Settings.of(Material.WOOD, MANGROVE_LOG.getDefaultMapColor()).noCollision().strength(1.0f).sounds(BlockSoundGroup.HANGING_SIGN).requires(FeatureFlags.UPDATE_1_20), SignType.MANGROVE));
-    public static final Block BAMBOO_HANGING_SIGN = Blocks.register("bamboo_hanging_sign", new HangingSignBlock(AbstractBlock.Settings.of(Material.WOOD, MapColor.YELLOW).noCollision().strength(1.0f).sounds(BlockSoundGroup.HANGING_SIGN).requires(FeatureFlags.UPDATE_1_20), SignType.BAMBOO));
+    public static final Block BAMBOO_HANGING_SIGN = Blocks.register("bamboo_hanging_sign", new HangingSignBlock(AbstractBlock.Settings.of(Material.WOOD, MapColor.YELLOW).noCollision().strength(1.0f).sounds(BlockSoundGroup.field_41084).requires(FeatureFlags.UPDATE_1_20), SignType.BAMBOO));
     public static final Block OAK_WALL_HANGING_SIGN = Blocks.register("oak_wall_hanging_sign", new WallHangingSignBlock(AbstractBlock.Settings.of(Material.WOOD, OAK_LOG.getDefaultMapColor()).noCollision().strength(1.0f).sounds(BlockSoundGroup.HANGING_SIGN).requires(FeatureFlags.UPDATE_1_20).dropsLike(OAK_HANGING_SIGN), SignType.OAK));
     public static final Block SPRUCE_WALL_HANGING_SIGN = Blocks.register("spruce_wall_hanging_sign", new WallHangingSignBlock(AbstractBlock.Settings.of(Material.WOOD).noCollision().strength(1.0f).sounds(BlockSoundGroup.HANGING_SIGN).dropsLike(SPRUCE_HANGING_SIGN).requires(FeatureFlags.UPDATE_1_20), SignType.SPRUCE));
     public static final Block BIRCH_WALL_HANGING_SIGN = Blocks.register("birch_wall_hanging_sign", new WallHangingSignBlock(AbstractBlock.Settings.of(Material.AGGREGATE).noCollision().strength(1.0f).sounds(BlockSoundGroup.HANGING_SIGN).dropsLike(BIRCH_HANGING_SIGN).requires(FeatureFlags.UPDATE_1_20), SignType.BIRCH));
@@ -481,9 +485,9 @@ public class Blocks {
     public static final Block JUNGLE_WALL_HANGING_SIGN = Blocks.register("jungle_wall_hanging_sign", new WallHangingSignBlock(AbstractBlock.Settings.of(Material.WOOD, JUNGLE_LOG.getDefaultMapColor()).noCollision().strength(1.0f).sounds(BlockSoundGroup.HANGING_SIGN).dropsLike(JUNGLE_HANGING_SIGN).requires(FeatureFlags.UPDATE_1_20), SignType.JUNGLE));
     public static final Block DARK_OAK_WALL_HANGING_SIGN = Blocks.register("dark_oak_wall_hanging_sign", new WallHangingSignBlock(AbstractBlock.Settings.of(Material.WOOD, DARK_OAK_LOG.getDefaultMapColor()).noCollision().strength(1.0f).sounds(BlockSoundGroup.HANGING_SIGN).dropsLike(DARK_OAK_HANGING_SIGN).requires(FeatureFlags.UPDATE_1_20), SignType.DARK_OAK));
     public static final Block MANGROVE_WALL_HANGING_SIGN = Blocks.register("mangrove_wall_hanging_sign", new WallHangingSignBlock(AbstractBlock.Settings.of(Material.WOOD, MANGROVE_LOG.getDefaultMapColor()).noCollision().strength(1.0f).sounds(BlockSoundGroup.HANGING_SIGN).dropsLike(MANGROVE_HANGING_SIGN).requires(FeatureFlags.UPDATE_1_20), SignType.MANGROVE));
-    public static final Block CRIMSON_WALL_HANGING_SIGN = Blocks.register("crimson_wall_hanging_sign", new WallHangingSignBlock(AbstractBlock.Settings.of(Material.WOOD, MapColor.DULL_PINK).noCollision().strength(1.0f).sounds(BlockSoundGroup.HANGING_SIGN).dropsLike(CRIMSON_HANGING_SIGN).requires(FeatureFlags.UPDATE_1_20), SignType.CRIMSON));
-    public static final Block WARPED_WALL_HANGING_SIGN = Blocks.register("warped_wall_hanging_sign", new WallHangingSignBlock(AbstractBlock.Settings.of(Material.WOOD, MapColor.DARK_AQUA).noCollision().strength(1.0f).sounds(BlockSoundGroup.HANGING_SIGN).dropsLike(WARPED_HANGING_SIGN).requires(FeatureFlags.UPDATE_1_20), SignType.WARPED));
-    public static final Block BAMBOO_WALL_HANGING_SIGN = Blocks.register("bamboo_wall_hanging_sign", new WallHangingSignBlock(AbstractBlock.Settings.of(Material.WOOD, MapColor.YELLOW).noCollision().strength(1.0f).sounds(BlockSoundGroup.HANGING_SIGN).dropsLike(BAMBOO_HANGING_SIGN).requires(FeatureFlags.UPDATE_1_20), SignType.BAMBOO));
+    public static final Block CRIMSON_WALL_HANGING_SIGN = Blocks.register("crimson_wall_hanging_sign", new WallHangingSignBlock(AbstractBlock.Settings.of(Material.WOOD, MapColor.DULL_PINK).noCollision().strength(1.0f).sounds(BlockSoundGroup.field_41083).dropsLike(CRIMSON_HANGING_SIGN).requires(FeatureFlags.UPDATE_1_20), SignType.CRIMSON));
+    public static final Block WARPED_WALL_HANGING_SIGN = Blocks.register("warped_wall_hanging_sign", new WallHangingSignBlock(AbstractBlock.Settings.of(Material.WOOD, MapColor.DARK_AQUA).noCollision().strength(1.0f).sounds(BlockSoundGroup.field_41083).dropsLike(WARPED_HANGING_SIGN).requires(FeatureFlags.UPDATE_1_20), SignType.WARPED));
+    public static final Block BAMBOO_WALL_HANGING_SIGN = Blocks.register("bamboo_wall_hanging_sign", new WallHangingSignBlock(AbstractBlock.Settings.of(Material.WOOD, MapColor.YELLOW).noCollision().strength(1.0f).sounds(BlockSoundGroup.field_41084).dropsLike(BAMBOO_HANGING_SIGN).requires(FeatureFlags.UPDATE_1_20), SignType.BAMBOO));
     public static final Block LEVER = Blocks.register("lever", new LeverBlock(AbstractBlock.Settings.of(Material.DECORATION).noCollision().strength(0.5f).sounds(BlockSoundGroup.WOOD)));
     public static final Block STONE_PRESSURE_PLATE = Blocks.register("stone_pressure_plate", new PressurePlateBlock(PressurePlateBlock.ActivationRule.MOBS, AbstractBlock.Settings.of(Material.STONE).requiresTool().noCollision().strength(0.5f), SoundEvents.BLOCK_STONE_PRESSURE_PLATE_CLICK_OFF, SoundEvents.BLOCK_STONE_PRESSURE_PLATE_CLICK_ON));
     public static final Block IRON_DOOR = Blocks.register("iron_door", new DoorBlock(AbstractBlock.Settings.of(Material.METAL, MapColor.IRON_GRAY).requiresTool().strength(5.0f).sounds(BlockSoundGroup.METAL).nonOpaque(), SoundEvents.BLOCK_IRON_DOOR_CLOSE, SoundEvents.BLOCK_IRON_DOOR_OPEN));
@@ -1032,7 +1036,7 @@ public class Blocks {
     public static final Block WARPED_HYPHAE = Blocks.register("warped_hyphae", new PillarBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, MapColor.DARK_DULL_PINK).strength(2.0f).sounds(BlockSoundGroup.NETHER_STEM)));
     public static final Block STRIPPED_WARPED_HYPHAE = Blocks.register("stripped_warped_hyphae", new PillarBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, MapColor.DARK_DULL_PINK).strength(2.0f).sounds(BlockSoundGroup.NETHER_STEM)));
     public static final Block WARPED_NYLIUM = Blocks.register("warped_nylium", new NyliumBlock(AbstractBlock.Settings.of(Material.STONE, MapColor.TEAL).requiresTool().strength(0.4f).sounds(BlockSoundGroup.NYLIUM).ticksRandomly()));
-    public static final Block WARPED_FUNGUS = Blocks.register("warped_fungus", new FungusBlock(AbstractBlock.Settings.of(Material.PLANT, MapColor.CYAN).breakInstantly().noCollision().sounds(BlockSoundGroup.FUNGUS), TreeConfiguredFeatures.WARPED_FUNGUS_PLANTED));
+    public static final Block WARPED_FUNGUS = Blocks.register("warped_fungus", new FungusBlock(AbstractBlock.Settings.of(Material.PLANT, MapColor.CYAN).breakInstantly().noCollision().sounds(BlockSoundGroup.FUNGUS), TreeConfiguredFeatures.WARPED_FUNGUS_PLANTED, WARPED_NYLIUM));
     public static final Block WARPED_WART_BLOCK = Blocks.register("warped_wart_block", new Block(AbstractBlock.Settings.of(Material.SOLID_ORGANIC, MapColor.BRIGHT_TEAL).strength(1.0f).sounds(BlockSoundGroup.WART_BLOCK)));
     public static final Block WARPED_ROOTS = Blocks.register("warped_roots", new RootsBlock(AbstractBlock.Settings.of(Material.NETHER_SHOOTS, MapColor.CYAN).noCollision().breakInstantly().sounds(BlockSoundGroup.ROOTS).offsetType(AbstractBlock.OffsetType.XZ)));
     public static final Block NETHER_SPROUTS = Blocks.register("nether_sprouts", new SproutsBlock(AbstractBlock.Settings.of(Material.NETHER_SHOOTS, MapColor.CYAN).noCollision().breakInstantly().sounds(BlockSoundGroup.NETHER_SPROUTS).offsetType(AbstractBlock.OffsetType.XZ)));
@@ -1041,7 +1045,7 @@ public class Blocks {
     public static final Block CRIMSON_HYPHAE = Blocks.register("crimson_hyphae", new PillarBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, MapColor.DARK_CRIMSON).strength(2.0f).sounds(BlockSoundGroup.NETHER_STEM)));
     public static final Block STRIPPED_CRIMSON_HYPHAE = Blocks.register("stripped_crimson_hyphae", new PillarBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, MapColor.DARK_CRIMSON).strength(2.0f).sounds(BlockSoundGroup.NETHER_STEM)));
     public static final Block CRIMSON_NYLIUM = Blocks.register("crimson_nylium", new NyliumBlock(AbstractBlock.Settings.of(Material.STONE, MapColor.DULL_RED).requiresTool().strength(0.4f).sounds(BlockSoundGroup.NYLIUM).ticksRandomly()));
-    public static final Block CRIMSON_FUNGUS = Blocks.register("crimson_fungus", new FungusBlock(AbstractBlock.Settings.of(Material.PLANT, MapColor.DARK_RED).breakInstantly().noCollision().sounds(BlockSoundGroup.FUNGUS), TreeConfiguredFeatures.CRIMSON_FUNGUS_PLANTED));
+    public static final Block CRIMSON_FUNGUS = Blocks.register("crimson_fungus", new FungusBlock(AbstractBlock.Settings.of(Material.PLANT, MapColor.DARK_RED).breakInstantly().noCollision().sounds(BlockSoundGroup.FUNGUS), TreeConfiguredFeatures.CRIMSON_FUNGUS_PLANTED, CRIMSON_NYLIUM));
     public static final Block SHROOMLIGHT = Blocks.register("shroomlight", new Block(AbstractBlock.Settings.of(Material.SOLID_ORGANIC, MapColor.RED).strength(1.0f).sounds(BlockSoundGroup.SHROOMLIGHT).luminance(state -> 15)));
     public static final Block WEEPING_VINES = Blocks.register("weeping_vines", new WeepingVinesBlock(AbstractBlock.Settings.of(Material.PLANT, MapColor.DARK_RED).ticksRandomly().noCollision().breakInstantly().sounds(BlockSoundGroup.WEEPING_VINES)));
     public static final Block WEEPING_VINES_PLANT = Blocks.register("weeping_vines_plant", new WeepingVinesPlantBlock(AbstractBlock.Settings.of(Material.PLANT, MapColor.DARK_RED).noCollision().breakInstantly().sounds(BlockSoundGroup.WEEPING_VINES)));
@@ -1271,6 +1275,10 @@ public class Blocks {
         return new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, state -> state.get(PillarBlock.AXIS) == Direction.Axis.Y ? topMapColor : sideMapColor).strength(2.0f).sounds(BlockSoundGroup.WOOD));
     }
 
+    private static PillarBlock createBambooBlock(MapColor topMapColor, MapColor sideMapColor, BlockSoundGroup soundGroup, FeatureFlag ... requiredFeatures) {
+        return new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, state -> state.get(PillarBlock.AXIS) == Direction.Axis.Y ? topMapColor : sideMapColor).strength(2.0f).sounds(soundGroup).requires(requiredFeatures));
+    }
+
     private static Block createNetherStemBlock(MapColor mapColor) {
         return new PillarBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, state -> mapColor).strength(2.0f).sounds(BlockSoundGroup.NETHER_STEM));
     }
@@ -1329,7 +1337,7 @@ public class Blocks {
     }
 
     private static Block register(String id, Block block) {
-        return Registry.register(Registry.BLOCK, id, block);
+        return Registry.register(Registries.BLOCK, id, block);
     }
 
     public static void refreshShapeCache() {
@@ -1337,7 +1345,7 @@ public class Blocks {
     }
 
     static {
-        for (Block block : Registry.BLOCK) {
+        for (Block block : Registries.BLOCK) {
             for (BlockState blockState : block.getStateManager().getStates()) {
                 Block.STATE_IDS.add(blockState);
                 blockState.initShapeCache();

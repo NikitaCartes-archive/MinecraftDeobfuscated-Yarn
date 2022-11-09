@@ -11,9 +11,9 @@ import com.google.gson.JsonSyntaxException;
 import java.util.Map;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.predicate.NumberRange;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class EnchantmentPredicate {
@@ -58,7 +58,7 @@ public class EnchantmentPredicate {
         }
         JsonObject jsonObject = new JsonObject();
         if (this.enchantment != null) {
-            jsonObject.addProperty("enchantment", Registry.ENCHANTMENT.getId(this.enchantment).toString());
+            jsonObject.addProperty("enchantment", Registries.ENCHANTMENT.getId(this.enchantment).toString());
         }
         jsonObject.add("levels", this.levels.toJson());
         return jsonObject;
@@ -72,7 +72,7 @@ public class EnchantmentPredicate {
         Enchantment enchantment = null;
         if (jsonObject.has("enchantment")) {
             Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "enchantment"));
-            enchantment = Registry.ENCHANTMENT.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown enchantment '" + identifier + "'"));
+            enchantment = Registries.ENCHANTMENT.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown enchantment '" + identifier + "'"));
         }
         NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("levels"));
         return new EnchantmentPredicate(enchantment, intRange);

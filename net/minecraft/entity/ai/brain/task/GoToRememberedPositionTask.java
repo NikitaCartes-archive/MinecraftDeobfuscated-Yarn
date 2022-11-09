@@ -3,79 +3,52 @@
  */
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableMap;
+import java.util.Optional;
 import java.util.function.Function;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.FuzzyTargeting;
-import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
+import net.minecraft.entity.ai.brain.task.SingleTickTask;
 import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.TaskTriggerer;
 import net.minecraft.entity.mob.PathAwareEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
-public class GoToRememberedPositionTask<T>
-extends Task<PathAwareEntity> {
-    private final MemoryModuleType<T> entityMemory;
-    private final float speed;
-    private final int range;
-    private final Function<T, Vec3d> posRetriever;
-
-    public GoToRememberedPositionTask(MemoryModuleType<T> memoryType, float speed, int range, boolean requiresWalkTarget, Function<T, Vec3d> posRetriever) {
-        super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, requiresWalkTarget ? MemoryModuleState.REGISTERED : MemoryModuleState.VALUE_ABSENT, memoryType, MemoryModuleState.VALUE_PRESENT));
-        this.entityMemory = memoryType;
-        this.speed = speed;
-        this.range = range;
-        this.posRetriever = posRetriever;
+public class GoToRememberedPositionTask {
+    public static Task<PathAwareEntity> createPosBased(MemoryModuleType<BlockPos> posModule, float speed, int range, boolean requiresWalkTarget) {
+        return GoToRememberedPositionTask.create(posModule, speed, range, requiresWalkTarget, Vec3d::ofBottomCenter);
     }
 
-    public static GoToRememberedPositionTask<BlockPos> toBlock(MemoryModuleType<BlockPos> memoryType, float speed, int range, boolean requiresWalkTarget) {
-        return new GoToRememberedPositionTask<BlockPos>(memoryType, speed, range, requiresWalkTarget, Vec3d::ofBottomCenter);
+    public static SingleTickTask<PathAwareEntity> createEntityBased(MemoryModuleType<? extends Entity> entityModule, float speed, int range, boolean requiresWalkTarget) {
+        return GoToRememberedPositionTask.create(entityModule, speed, range, requiresWalkTarget, Entity::getPos);
     }
 
-    public static GoToRememberedPositionTask<? extends Entity> toEntity(MemoryModuleType<? extends Entity> memoryType, float speed, int range, boolean requiresWalkTarget) {
-        return new GoToRememberedPositionTask<Entity>(memoryType, speed, range, requiresWalkTarget, Entity::getPos);
-    }
-
-    @Override
-    protected boolean shouldRun(ServerWorld serverWorld, PathAwareEntity pathAwareEntity) {
-        if (this.isWalkTargetPresentAndFar(pathAwareEntity)) {
-            return false;
-        }
-        return pathAwareEntity.getPos().isInRange(this.getPos(pathAwareEntity), this.range);
-    }
-
-    private Vec3d getPos(PathAwareEntity entity) {
-        return this.posRetriever.apply(entity.getBrain().getOptionalMemory(this.entityMemory).get());
-    }
-
-    private boolean isWalkTargetPresentAndFar(PathAwareEntity entity) {
-        Vec3d vec3d2;
-        if (!entity.getBrain().hasMemoryModule(MemoryModuleType.WALK_TARGET)) {
-            return false;
-        }
-        WalkTarget walkTarget = entity.getBrain().getOptionalMemory(MemoryModuleType.WALK_TARGET).get();
-        if (walkTarget.getSpeed() != this.speed) {
-            return false;
-        }
-        Vec3d vec3d = walkTarget.getLookTarget().getPos().subtract(entity.getPos());
-        return vec3d.dotProduct(vec3d2 = this.getPos(entity).subtract(entity.getPos())) < 0.0;
-    }
-
-    @Override
-    protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
-        GoToRememberedPositionTask.setWalkTarget(pathAwareEntity, this.getPos(pathAwareEntity), this.speed);
-    }
-
-    private static void setWalkTarget(PathAwareEntity entity, Vec3d pos, float speed) {
-        for (int i = 0; i < 10; ++i) {
-            Vec3d vec3d = FuzzyTargeting.findFrom(entity, 16, 7, pos);
-            if (vec3d == null) continue;
-            entity.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(vec3d, speed, 0));
-            return;
-        }
+    private static <T> SingleTickTask<PathAwareEntity> create(MemoryModuleType<T> posSource, float speed, int range, boolean requiresWalkTarget, Function<T, Vec3d> posGetter) {
+        return TaskTriggerer.task(context -> context.group(context.queryMemoryOptional(MemoryModuleType.WALK_TARGET), context.queryMemoryValue(posSource)).apply(context, (walkTarget, posSource) -> (world, entity, time) -> {
+            Vec3d vec3d4;
+            Vec3d vec3d3;
+            Vec3d vec3d2;
+            Optional optional = context.getOptionalValue(walkTarget);
+            if (optional.isPresent() && !requiresWalkTarget) {
+                return false;
+            }
+            Vec3d vec3d = entity.getPos();
+            if (!vec3d.isInRange(vec3d2 = (Vec3d)posGetter.apply(context.getValue(posSource)), range)) {
+                return false;
+            }
+            if (optional.isPresent() && ((WalkTarget)optional.get()).getSpeed() == speed && (vec3d3 = ((WalkTarget)optional.get()).getLookTarget().getPos().subtract(vec3d)).dotProduct(vec3d4 = vec3d2.subtract(vec3d)) < 0.0) {
+                return false;
+            }
+            for (int j = 0; j < 10; ++j) {
+                vec3d4 = FuzzyTargeting.findFrom(entity, 16, 7, vec3d2);
+                if (vec3d4 == null) continue;
+                walkTarget.remember(new WalkTarget(vec3d4, speed, 0));
+                break;
+            }
+            return true;
+        }));
     }
 }
 

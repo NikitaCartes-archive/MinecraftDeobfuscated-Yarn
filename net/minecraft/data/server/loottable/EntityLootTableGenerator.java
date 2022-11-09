@@ -30,9 +30,9 @@ import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.EntityFlagsPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.TypeSpecificPredicate;
+import net.minecraft.registry.Registries;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public abstract class EntityLootTableGenerator
 implements LootTableGenerator {
@@ -55,7 +55,7 @@ implements LootTableGenerator {
     public void accept(BiConsumer<Identifier, LootTable.Builder> exporter) {
         this.generate();
         HashSet set = Sets.newHashSet();
-        Registry.ENTITY_TYPE.streamEntries().forEach(entityType -> {
+        Registries.ENTITY_TYPE.streamEntries().forEach(entityType -> {
             EntityType entityType2 = (EntityType)entityType.value();
             if (!entityType2.isEnabled(this.requiredFeatures)) {
                 return;

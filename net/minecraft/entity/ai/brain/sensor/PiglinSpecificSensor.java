@@ -27,8 +27,8 @@ import net.minecraft.entity.mob.PiglinBruteEntity;
 import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.entity.mob.WitherSkeletonEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 
 public class PiglinSpecificSensor
@@ -52,7 +52,7 @@ extends Sensor<LivingEntity> {
         int i = 0;
         ArrayList<AbstractPiglinEntity> list = Lists.newArrayList();
         ArrayList<AbstractPiglinEntity> list2 = Lists.newArrayList();
-        LivingTargetCache livingTargetCache = brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(LivingTargetCache.empty());
+        LivingTargetCache livingTargetCache = brain.getOptionalRegisteredMemory(MemoryModuleType.VISIBLE_MOBS).orElse(LivingTargetCache.empty());
         for (LivingEntity livingEntity2 : livingTargetCache.iterate(livingEntity -> true)) {
             if (livingEntity2 instanceof HoglinEntity) {
                 HoglinEntity hoglinEntity = (HoglinEntity)livingEntity2;
@@ -97,7 +97,7 @@ extends Sensor<LivingEntity> {
             if (!optional5.isEmpty() || !PiglinBrain.isZombified(livingEntity2.getType())) continue;
             optional5 = Optional.of(livingEntity2);
         }
-        List list3 = brain.getOptionalMemory(MemoryModuleType.MOBS).orElse(ImmutableList.of());
+        List list3 = brain.getOptionalRegisteredMemory(MemoryModuleType.MOBS).orElse(ImmutableList.of());
         for (LivingEntity livingEntity2 : list3) {
             AbstractPiglinEntity abstractPiglinEntity;
             if (!(livingEntity2 instanceof AbstractPiglinEntity) || !(abstractPiglinEntity = (AbstractPiglinEntity)livingEntity2).isAdult()) continue;

@@ -19,13 +19,14 @@ import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.serialize.ArgumentSerializer;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.structure.Structure;
 
@@ -61,15 +62,15 @@ implements ArgumentType<RegistryKey<T>> {
     }
 
     public static RegistryEntry.Reference<ConfiguredFeature<?, ?>> getConfiguredFeatureEntry(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-        return RegistryKeyArgumentType.getRegistryEntry(context, name, Registry.CONFIGURED_FEATURE_KEY, INVALID_FEATURE_EXCEPTION);
+        return RegistryKeyArgumentType.getRegistryEntry(context, name, RegistryKeys.CONFIGURED_FEATURE_WORLDGEN, INVALID_FEATURE_EXCEPTION);
     }
 
     public static RegistryEntry.Reference<Structure> getStructureEntry(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-        return RegistryKeyArgumentType.getRegistryEntry(context, name, Registry.STRUCTURE_KEY, INVALID_STRUCTURE_EXCEPTION);
+        return RegistryKeyArgumentType.getRegistryEntry(context, name, RegistryKeys.STRUCTURE_WORLDGEN, INVALID_STRUCTURE_EXCEPTION);
     }
 
     public static RegistryEntry.Reference<StructurePool> getStructurePoolEntry(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-        return RegistryKeyArgumentType.getRegistryEntry(context, name, Registry.STRUCTURE_POOL_KEY, INVALID_JIGSAW_EXCEPTION);
+        return RegistryKeyArgumentType.getRegistryEntry(context, name, RegistryKeys.TEMPLATE_POOL_WORLDGEN, INVALID_JIGSAW_EXCEPTION);
     }
 
     @Override

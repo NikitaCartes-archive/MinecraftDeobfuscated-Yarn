@@ -5,7 +5,8 @@ package net.minecraft.entity.attribute;
 
 import net.minecraft.entity.attribute.ClampedEntityAttribute;
 import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 public class EntityAttributes {
     public static final EntityAttribute GENERIC_MAX_HEALTH = EntityAttributes.register("generic.max_health", new ClampedEntityAttribute("attribute.name.generic.max_health", 20.0, 1.0, 1024.0).setTracked(true));
@@ -23,7 +24,7 @@ public class EntityAttributes {
     public static final EntityAttribute HORSE_JUMP_STRENGTH = EntityAttributes.register("horse.jump_strength", new ClampedEntityAttribute("attribute.name.horse.jump_strength", 0.7, 0.0, 2.0).setTracked(true));
 
     private static EntityAttribute register(String id, EntityAttribute attribute) {
-        return Registry.register(Registry.ATTRIBUTE, id, attribute);
+        return Registry.register(Registries.ATTRIBUTE, id, attribute);
     }
 }
 

@@ -11,10 +11,10 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.registry.Registry;
 
 /**
  * A recipe that has only one input ingredient. It can be used by any type
@@ -94,7 +94,7 @@ implements Recipe<Inventory> {
             Ingredient ingredient = JsonHelper.hasArray(jsonObject, "ingredient") ? Ingredient.fromJson(JsonHelper.getArray(jsonObject, "ingredient")) : Ingredient.fromJson(JsonHelper.getObject(jsonObject, "ingredient"));
             String string2 = JsonHelper.getString(jsonObject, "result");
             int i = JsonHelper.getInt(jsonObject, "count");
-            ItemStack itemStack = new ItemStack(Registry.ITEM.get(new Identifier(string2)), i);
+            ItemStack itemStack = new ItemStack(Registries.ITEM.get(new Identifier(string2)), i);
             return this.recipeFactory.create(identifier, string, ingredient, itemStack);
         }
 

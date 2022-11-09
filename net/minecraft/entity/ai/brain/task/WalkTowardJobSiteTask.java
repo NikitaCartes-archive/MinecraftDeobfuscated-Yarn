@@ -10,7 +10,7 @@ import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.LookTargetUtil;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
@@ -19,7 +19,7 @@ import net.minecraft.util.math.GlobalPos;
 import net.minecraft.world.poi.PointOfInterestStorage;
 
 public class WalkTowardJobSiteTask
-extends Task<VillagerEntity> {
+extends MultiTickTask<VillagerEntity> {
     private static final int RUN_TIME = 1200;
     final float speed;
 
@@ -40,12 +40,12 @@ extends Task<VillagerEntity> {
 
     @Override
     protected void keepRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-        LookTargetUtil.walkTowards((LivingEntity)villagerEntity, villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.POTENTIAL_JOB_SITE).get().getPos(), this.speed, 1);
+        LookTargetUtil.walkTowards((LivingEntity)villagerEntity, villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.POTENTIAL_JOB_SITE).get().getPos(), this.speed, 1);
     }
 
     @Override
     protected void finishRunning(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-        Optional<GlobalPos> optional = villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
+        Optional<GlobalPos> optional = villagerEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
         optional.ifPresent(pos -> {
             BlockPos blockPos = pos.getPos();
             ServerWorld serverWorld2 = serverWorld.getServer().getWorld(pos.getDimension());
@@ -53,7 +53,7 @@ extends Task<VillagerEntity> {
                 return;
             }
             PointOfInterestStorage pointOfInterestStorage = serverWorld2.getPointOfInterestStorage();
-            if (pointOfInterestStorage.test(blockPos, registryEntry -> true)) {
+            if (pointOfInterestStorage.test(blockPos, poiType -> true)) {
                 pointOfInterestStorage.releaseTicket(blockPos);
             }
             DebugInfoSender.sendPointOfInterest(serverWorld, blockPos);
@@ -62,8 +62,8 @@ extends Task<VillagerEntity> {
     }
 
     @Override
-    protected /* synthetic */ boolean shouldKeepRunning(ServerWorld world, LivingEntity entity, long time) {
-        return this.shouldKeepRunning(world, (VillagerEntity)entity, time);
+    protected /* synthetic */ void finishRunning(ServerWorld world, LivingEntity entity, long time) {
+        this.finishRunning(world, (VillagerEntity)entity, time);
     }
 
     @Override

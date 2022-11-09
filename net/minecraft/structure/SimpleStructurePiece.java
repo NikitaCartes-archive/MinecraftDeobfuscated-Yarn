@@ -13,6 +13,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.StructureBlockMode;
 import net.minecraft.command.argument.BlockArgumentParser;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.structure.StructureContext;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
@@ -26,7 +27,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
@@ -90,7 +90,7 @@ extends StructurePiece {
                 String string = structureBlockInfo2.nbt.getString("final_state");
                 BlockState blockState = Blocks.AIR.getDefaultState();
                 try {
-                    blockState = BlockArgumentParser.block(world.createCommandRegistryWrapper(Registry.BLOCK_KEY), string, true).blockState();
+                    blockState = BlockArgumentParser.block(world.createCommandRegistryWrapper(RegistryKeys.BLOCK), string, true).blockState();
                 } catch (CommandSyntaxException commandSyntaxException) {
                     LOGGER.error("Error while parsing blockstate {} in jigsaw block @ {}", (Object)string, (Object)structureBlockInfo2.pos);
                 }

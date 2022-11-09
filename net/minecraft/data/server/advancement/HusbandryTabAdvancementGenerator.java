@@ -39,12 +39,12 @@ import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.entity.TypeSpecificPredicate;
 import net.minecraft.predicate.item.EnchantmentPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
-import net.minecraft.tag.BlockTags;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.RegistryWrapper;
 
 public class HusbandryTabAdvancementGenerator
 implements AdvancementTabGenerator {
@@ -66,13 +66,13 @@ implements AdvancementTabGenerator {
         this.requireListedAnimalsBred(Advancement.Builder.create()).parent(advancement3).display(Items.GOLDEN_CARROT, (Text)Text.translatable("advancements.husbandry.breed_all_animals.title"), (Text)Text.translatable("advancements.husbandry.breed_all_animals.description"), null, AdvancementFrame.CHALLENGE, true, true, false).rewards(AdvancementRewards.Builder.experience(100)).build(exporter, "husbandry/bred_all_animals");
         Advancement advancement5 = this.requireListedFishCaught(Advancement.Builder.create()).parent(advancement).criteriaMerger(CriterionMerger.OR).display(Items.FISHING_ROD, (Text)Text.translatable("advancements.husbandry.fishy_business.title"), (Text)Text.translatable("advancements.husbandry.fishy_business.description"), null, AdvancementFrame.TASK, true, true, false).build(exporter, "husbandry/fishy_business");
         Advancement advancement6 = this.requireListedFishBucketsFilled(Advancement.Builder.create()).parent(advancement5).criteriaMerger(CriterionMerger.OR).display(Items.PUFFERFISH_BUCKET, (Text)Text.translatable("advancements.husbandry.tactical_fishing.title"), (Text)Text.translatable("advancements.husbandry.tactical_fishing.description"), null, AdvancementFrame.TASK, true, true, false).build(exporter, "husbandry/tactical_fishing");
-        Advancement advancement7 = Advancement.Builder.create().parent(advancement6).criteriaMerger(CriterionMerger.OR).criterion(Registry.ITEM.getId(Items.AXOLOTL_BUCKET).getPath(), FilledBucketCriterion.Conditions.create(ItemPredicate.Builder.create().items(Items.AXOLOTL_BUCKET).build())).display(Items.AXOLOTL_BUCKET, (Text)Text.translatable("advancements.husbandry.axolotl_in_a_bucket.title"), (Text)Text.translatable("advancements.husbandry.axolotl_in_a_bucket.description"), null, AdvancementFrame.TASK, true, true, false).build(exporter, "husbandry/axolotl_in_a_bucket");
+        Advancement advancement7 = Advancement.Builder.create().parent(advancement6).criteriaMerger(CriterionMerger.OR).criterion(Registries.ITEM.getId(Items.AXOLOTL_BUCKET).getPath(), FilledBucketCriterion.Conditions.create(ItemPredicate.Builder.create().items(Items.AXOLOTL_BUCKET).build())).display(Items.AXOLOTL_BUCKET, (Text)Text.translatable("advancements.husbandry.axolotl_in_a_bucket.title"), (Text)Text.translatable("advancements.husbandry.axolotl_in_a_bucket.description"), null, AdvancementFrame.TASK, true, true, false).build(exporter, "husbandry/axolotl_in_a_bucket");
         Advancement.Builder.create().parent(advancement7).criterion("kill_axolotl_target", EffectsChangedCriterion.Conditions.create(EntityPredicate.Builder.create().type(EntityType.AXOLOTL).build())).display(Items.TROPICAL_FISH_BUCKET, (Text)Text.translatable("advancements.husbandry.kill_axolotl_target.title"), (Text)Text.translatable("advancements.husbandry.kill_axolotl_target.description"), null, AdvancementFrame.TASK, true, true, false).build(exporter, "husbandry/kill_axolotl_target");
         this.requireAllCatsTamed(Advancement.Builder.create()).parent(advancement4).display(Items.COD, (Text)Text.translatable("advancements.husbandry.complete_catalogue.title"), (Text)Text.translatable("advancements.husbandry.complete_catalogue.description"), null, AdvancementFrame.CHALLENGE, true, true, false).rewards(AdvancementRewards.Builder.experience(50)).build(exporter, "husbandry/complete_catalogue");
         Advancement advancement8 = Advancement.Builder.create().parent(advancement).criterion("safely_harvest_honey", ItemCriterion.Conditions.create(LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().tag(BlockTags.BEEHIVES).build()).smokey(true), ItemPredicate.Builder.create().items(Items.GLASS_BOTTLE))).display(Items.HONEY_BOTTLE, (Text)Text.translatable("advancements.husbandry.safely_harvest_honey.title"), (Text)Text.translatable("advancements.husbandry.safely_harvest_honey.description"), null, AdvancementFrame.TASK, true, true, false).build(exporter, "husbandry/safely_harvest_honey");
         Advancement advancement9 = Advancement.Builder.create().parent(advancement8).display(Items.HONEYCOMB, (Text)Text.translatable("advancements.husbandry.wax_on.title"), (Text)Text.translatable("advancements.husbandry.wax_on.description"), null, AdvancementFrame.TASK, true, true, false).criterion("wax_on", ItemCriterion.Conditions.create(LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(HoneycombItem.UNWAXED_TO_WAXED_BLOCKS.get().keySet()).build()), ItemPredicate.Builder.create().items(Items.HONEYCOMB))).build(exporter, "husbandry/wax_on");
         Advancement.Builder.create().parent(advancement9).display(Items.STONE_AXE, (Text)Text.translatable("advancements.husbandry.wax_off.title"), (Text)Text.translatable("advancements.husbandry.wax_off.description"), null, AdvancementFrame.TASK, true, true, false).criterion("wax_off", ItemCriterion.Conditions.create(LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(HoneycombItem.WAXED_TO_UNWAXED_BLOCKS.get().keySet()).build()), ItemPredicate.Builder.create().items(AXE_ITEMS))).build(exporter, "husbandry/wax_off");
-        Advancement advancement10 = Advancement.Builder.create().parent(advancement).criterion(Registry.ITEM.getId(Items.TADPOLE_BUCKET).getPath(), FilledBucketCriterion.Conditions.create(ItemPredicate.Builder.create().items(Items.TADPOLE_BUCKET).build())).display(Items.TADPOLE_BUCKET, (Text)Text.translatable("advancements.husbandry.tadpole_in_a_bucket.title"), (Text)Text.translatable("advancements.husbandry.tadpole_in_a_bucket.description"), null, AdvancementFrame.TASK, true, true, false).build(exporter, "husbandry/tadpole_in_a_bucket");
+        Advancement advancement10 = Advancement.Builder.create().parent(advancement).criterion(Registries.ITEM.getId(Items.TADPOLE_BUCKET).getPath(), FilledBucketCriterion.Conditions.create(ItemPredicate.Builder.create().items(Items.TADPOLE_BUCKET).build())).display(Items.TADPOLE_BUCKET, (Text)Text.translatable("advancements.husbandry.tadpole_in_a_bucket.title"), (Text)Text.translatable("advancements.husbandry.tadpole_in_a_bucket.description"), null, AdvancementFrame.TASK, true, true, false).build(exporter, "husbandry/tadpole_in_a_bucket");
         Advancement advancement11 = this.requireAllFrogsOnLeads(Advancement.Builder.create()).parent(advancement10).display(Items.LEAD, (Text)Text.translatable("advancements.husbandry.leash_all_frog_variants.title"), (Text)Text.translatable("advancements.husbandry.leash_all_frog_variants.description"), null, AdvancementFrame.TASK, true, true, false).build(exporter, "husbandry/leash_all_frog_variants");
         Advancement.Builder.create().parent(advancement11).display(Items.VERDANT_FROGLIGHT, (Text)Text.translatable("advancements.husbandry.froglights.title"), (Text)Text.translatable("advancements.husbandry.froglights.description"), null, AdvancementFrame.CHALLENGE, true, true, false).criterion("froglights", InventoryChangedCriterion.Conditions.items(Items.OCHRE_FROGLIGHT, Items.PEARLESCENT_FROGLIGHT, Items.VERDANT_FROGLIGHT)).build(exporter, "husbandry/froglights");
         Advancement.Builder.create().parent(advancement).criterion("silk_touch_nest", BeeNestDestroyedCriterion.Conditions.create(Blocks.BEE_NEST, ItemPredicate.Builder.create().enchantment(new EnchantmentPredicate(Enchantments.SILK_TOUCH, NumberRange.IntRange.atLeast(1))), NumberRange.IntRange.exactly(3))).display(Blocks.BEE_NEST, (Text)Text.translatable("advancements.husbandry.silk_touch_nest.title"), (Text)Text.translatable("advancements.husbandry.silk_touch_nest.description"), null, AdvancementFrame.TASK, true, true, false).build(exporter, "husbandry/silk_touch_nest");
@@ -83,13 +83,13 @@ implements AdvancementTabGenerator {
     }
 
     private Advancement.Builder requireAllFrogsOnLeads(Advancement.Builder builder) {
-        Registry.FROG_VARIANT.streamEntries().forEach(variant -> builder.criterion(variant.registryKey().getValue().toString(), PlayerInteractedWithEntityCriterion.Conditions.create(ItemPredicate.Builder.create().items(Items.LEAD), EntityPredicate.Extended.ofLegacy(EntityPredicate.Builder.create().type(EntityType.FROG).typeSpecific(TypeSpecificPredicate.frog((FrogVariant)variant.value())).build()))));
+        Registries.FROG_VARIANT.streamEntries().forEach(variant -> builder.criterion(variant.registryKey().getValue().toString(), PlayerInteractedWithEntityCriterion.Conditions.create(ItemPredicate.Builder.create().items(Items.LEAD), EntityPredicate.Extended.ofLegacy(EntityPredicate.Builder.create().type(EntityType.FROG).typeSpecific(TypeSpecificPredicate.frog((FrogVariant)variant.value())).build()))));
         return builder;
     }
 
     private Advancement.Builder requireFoodItemsEaten(Advancement.Builder builder) {
         for (Item item : FOOD_ITEMS) {
-            builder.criterion(Registry.ITEM.getId(item).getPath(), ConsumeItemCriterion.Conditions.item(item));
+            builder.criterion(Registries.ITEM.getId(item).getPath(), ConsumeItemCriterion.Conditions.item(item));
         }
         return builder;
     }
@@ -106,20 +106,20 @@ implements AdvancementTabGenerator {
 
     private Advancement.Builder requireListedFishBucketsFilled(Advancement.Builder builder) {
         for (Item item : FISH_BUCKET_ITEMS) {
-            builder.criterion(Registry.ITEM.getId(item).getPath(), FilledBucketCriterion.Conditions.create(ItemPredicate.Builder.create().items(item).build()));
+            builder.criterion(Registries.ITEM.getId(item).getPath(), FilledBucketCriterion.Conditions.create(ItemPredicate.Builder.create().items(item).build()));
         }
         return builder;
     }
 
     private Advancement.Builder requireListedFishCaught(Advancement.Builder builder) {
         for (Item item : FISH_ITEMS) {
-            builder.criterion(Registry.ITEM.getId(item).getPath(), FishingRodHookedCriterion.Conditions.create(ItemPredicate.ANY, EntityPredicate.ANY, ItemPredicate.Builder.create().items(item).build()));
+            builder.criterion(Registries.ITEM.getId(item).getPath(), FishingRodHookedCriterion.Conditions.create(ItemPredicate.ANY, EntityPredicate.ANY, ItemPredicate.Builder.create().items(item).build()));
         }
         return builder;
     }
 
     private Advancement.Builder requireAllCatsTamed(Advancement.Builder builder) {
-        Registry.CAT_VARIANT.getEntrySet().stream().sorted(Map.Entry.comparingByKey(Comparator.comparing(RegistryKey::getValue))).forEach(entry -> builder.criterion(((RegistryKey)entry.getKey()).getValue().toString(), TameAnimalCriterion.Conditions.create(EntityPredicate.Builder.create().typeSpecific(TypeSpecificPredicate.cat((CatVariant)entry.getValue())).build())));
+        Registries.CAT_VARIANT.getEntrySet().stream().sorted(Map.Entry.comparingByKey(Comparator.comparing(RegistryKey::getValue))).forEach(entry -> builder.criterion(((RegistryKey)entry.getKey()).getValue().toString(), TameAnimalCriterion.Conditions.create(EntityPredicate.Builder.create().typeSpecific(TypeSpecificPredicate.cat((CatVariant)entry.getValue())).build())));
         return builder;
     }
 }

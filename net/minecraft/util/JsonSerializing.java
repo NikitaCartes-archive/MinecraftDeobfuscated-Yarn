@@ -14,10 +14,10 @@ import com.google.gson.JsonSyntaxException;
 import com.mojang.datafixers.util.Pair;
 import java.lang.reflect.Type;
 import java.util.function.Function;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.JsonSerializableType;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class JsonSerializing {

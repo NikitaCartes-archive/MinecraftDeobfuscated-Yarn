@@ -3,56 +3,34 @@
  */
 package net.minecraft.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableMap;
 import java.util.List;
-import java.util.Optional;
-import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.TaskTriggerer;
 import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.GlobalPos;
-import org.jetbrains.annotations.Nullable;
+import org.apache.commons.lang3.mutable.MutableLong;
 
-public class GoToSecondaryPositionTask
-extends Task<VillagerEntity> {
-    private final MemoryModuleType<List<GlobalPos>> secondaryPositions;
-    private final MemoryModuleType<GlobalPos> primaryPosition;
-    private final float speed;
-    private final int completionRange;
-    private final int primaryPositionActivationDistance;
-    private long nextRunTime;
-    @Nullable
-    private GlobalPos chosenPosition;
-
-    public GoToSecondaryPositionTask(MemoryModuleType<List<GlobalPos>> secondaryPositions, float speed, int completionRange, int primaryPositionActivationDistance, MemoryModuleType<GlobalPos> primaryPosition) {
-        super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.REGISTERED, secondaryPositions, MemoryModuleState.VALUE_PRESENT, primaryPosition, MemoryModuleState.VALUE_PRESENT));
-        this.secondaryPositions = secondaryPositions;
-        this.speed = speed;
-        this.completionRange = completionRange;
-        this.primaryPositionActivationDistance = primaryPositionActivationDistance;
-        this.primaryPosition = primaryPosition;
-    }
-
-    @Override
-    protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
-        List<GlobalPos> list;
-        Optional<List<GlobalPos>> optional = villagerEntity.getBrain().getOptionalMemory(this.secondaryPositions);
-        Optional<GlobalPos> optional2 = villagerEntity.getBrain().getOptionalMemory(this.primaryPosition);
-        if (optional.isPresent() && optional2.isPresent() && !(list = optional.get()).isEmpty()) {
-            this.chosenPosition = list.get(serverWorld.getRandom().nextInt(list.size()));
-            return this.chosenPosition != null && serverWorld.getRegistryKey() == this.chosenPosition.getDimension() && optional2.get().getPos().isWithinDistance(villagerEntity.getPos(), (double)this.primaryPositionActivationDistance);
-        }
-        return false;
-    }
-
-    @Override
-    protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-        if (l > this.nextRunTime && this.chosenPosition != null) {
-            villagerEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(this.chosenPosition.getPos(), this.speed, this.completionRange));
-            this.nextRunTime = l + 100L;
-        }
+public class GoToSecondaryPositionTask {
+    public static Task<VillagerEntity> create(MemoryModuleType<List<GlobalPos>> secondaryPositions, float speed, int completionRange, int primaryPositionActivationDistance, MemoryModuleType<GlobalPos> primaryPosition) {
+        MutableLong mutableLong = new MutableLong(0L);
+        return TaskTriggerer.task(context -> context.group(context.queryMemoryOptional(MemoryModuleType.WALK_TARGET), context.queryMemoryValue(secondaryPositions), context.queryMemoryValue(primaryPosition)).apply(context, (walkTarget, secondary, primary) -> (world, entity, time) -> {
+            List list = (List)context.getValue(secondary);
+            GlobalPos globalPos = (GlobalPos)context.getValue(primary);
+            if (list.isEmpty()) {
+                return false;
+            }
+            GlobalPos globalPos2 = (GlobalPos)list.get(world.getRandom().nextInt(list.size()));
+            if (globalPos2 == null || world.getRegistryKey() != globalPos2.getDimension() || !globalPos.getPos().isWithinDistance(entity.getPos(), (double)primaryPositionActivationDistance)) {
+                return false;
+            }
+            if (time > mutableLong.getValue()) {
+                walkTarget.remember(new WalkTarget(globalPos2.getPos(), speed, completionRange));
+                mutableLong.setValue(time + 100L);
+            }
+            return true;
+        }));
     }
 }
 

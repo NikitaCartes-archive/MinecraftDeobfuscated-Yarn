@@ -14,7 +14,6 @@ import java.nio.file.LinkOption;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileAttribute;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import net.minecraft.resource.DirectoryResourcePack;
@@ -25,6 +24,7 @@ import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.ZipResourcePack;
 import net.minecraft.resource.fs.ResourceFileSystem;
 import net.minecraft.text.Text;
+import net.minecraft.util.PathUtil;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -48,7 +48,7 @@ implements ResourcePackProvider {
     @Override
     public void register(Consumer<ResourcePackProfile> profileAdder) {
         try {
-            Files.createDirectories(this.packsDir, new FileAttribute[0]);
+            PathUtil.createDirectories(this.packsDir);
             FileResourcePackProvider.forEachProfile(this.packsDir, false, (path, packFactory) -> {
                 String string = FileResourcePackProvider.getFileName(path);
                 ResourcePackProfile resourcePackProfile = ResourcePackProfile.create("file/" + string, Text.literal(string), false, packFactory, this.type, ResourcePackProfile.InsertionPosition.TOP, this.source);

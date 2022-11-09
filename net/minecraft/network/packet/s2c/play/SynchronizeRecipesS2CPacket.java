@@ -10,8 +10,8 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.recipe.Recipe;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 public class SynchronizeRecipesS2CPacket
 implements Packet<ClientPlayPacketListener> {
@@ -42,11 +42,11 @@ implements Packet<ClientPlayPacketListener> {
     public static Recipe<?> readRecipe(PacketByteBuf buf) {
         Identifier identifier = buf.readIdentifier();
         Identifier identifier2 = buf.readIdentifier();
-        return Registry.RECIPE_SERIALIZER.getOrEmpty(identifier).orElseThrow(() -> new IllegalArgumentException("Unknown recipe serializer " + identifier)).read(identifier2, buf);
+        return Registries.RECIPE_SERIALIZER.getOrEmpty(identifier).orElseThrow(() -> new IllegalArgumentException("Unknown recipe serializer " + identifier)).read(identifier2, buf);
     }
 
     public static <T extends Recipe<?>> void writeRecipe(PacketByteBuf buf, T recipe) {
-        buf.writeIdentifier(Registry.RECIPE_SERIALIZER.getId(recipe.getSerializer()));
+        buf.writeIdentifier(Registries.RECIPE_SERIALIZER.getId(recipe.getSerializer()));
         buf.writeIdentifier(recipe.getId());
         recipe.getSerializer().write(buf, recipe);
     }

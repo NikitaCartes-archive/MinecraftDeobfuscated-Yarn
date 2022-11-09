@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.lang.invoke.LambdaMetafactory;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
@@ -25,6 +24,7 @@ import net.minecraft.client.gui.RotatingCubeMapRenderer;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.CreditsScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.Tooltip;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerWarningScreen;
 import net.minecraft.client.gui.screen.option.AccessibilityOptionsScreen;
@@ -150,22 +150,11 @@ extends Screen {
 
     private void initWidgetsNormal(int y, int spacingY) {
         this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("menu.singleplayer"), button -> this.client.setScreen(new SelectWorldScreen(this))).setPositionAndSize(this.width / 2 - 100, y, 200, 20).build());
-        final Text text = this.getMultiplayerDisabledText();
+        Text text = this.getMultiplayerDisabledText();
         boolean bl = text == null;
-        ButtonWidget.TooltipSupplier tooltipSupplier = text == null ? ButtonWidget.EMPTY_TOOLTIP : new ButtonWidget.TooltipSupplier(){
-
-            @Override
-            public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {
-                TitleScreen.this.renderOrderedTooltip(matrixStack, TitleScreen.this.client.textRenderer.wrapLines(text, Math.max(TitleScreen.this.width / 2 - 43, 170)), i, j);
-            }
-
-            @Override
-            public void supply(Consumer<Text> consumer) {
-                consumer.accept(text);
-            }
-        };
-        this.addDrawableChild(ButtonWidget.createBuilder((Text)Text.translatable((String)"menu.multiplayer"), (ButtonWidget.PressAction)(ButtonWidget.PressAction)LambdaMetafactory.metafactory(null, null, null, (Lnet/minecraft/client/gui/widget/ButtonWidget;)V, onMultiplayerButtonPressed(net.minecraft.client.gui.widget.ButtonWidget ), (Lnet/minecraft/client/gui/widget/ButtonWidget;)V)((TitleScreen)this)).setPositionAndSize((int)(this.width / 2 - 100), (int)(y + spacingY * 1), (int)200, (int)20).setTooltipSupplier((ButtonWidget.TooltipSupplier)tooltipSupplier).build()).active = bl;
-        this.addDrawableChild(ButtonWidget.createBuilder((Text)Text.translatable((String)"menu.online"), (ButtonWidget.PressAction)(ButtonWidget.PressAction)LambdaMetafactory.metafactory(null, null, null, (Lnet/minecraft/client/gui/widget/ButtonWidget;)V, onRealmsButtonPress(net.minecraft.client.gui.widget.ButtonWidget ), (Lnet/minecraft/client/gui/widget/ButtonWidget;)V)((TitleScreen)this)).setPositionAndSize((int)(this.width / 2 - 100), (int)(y + spacingY * 2), (int)200, (int)20).setTooltipSupplier((ButtonWidget.TooltipSupplier)tooltipSupplier).build()).active = bl;
+        Tooltip tooltip = text != null ? Tooltip.of(text) : null;
+        this.addDrawableChild(ButtonWidget.createBuilder((Text)Text.translatable((String)"menu.multiplayer"), (ButtonWidget.PressAction)(ButtonWidget.PressAction)LambdaMetafactory.metafactory(null, null, null, (Lnet/minecraft/client/gui/widget/ButtonWidget;)V, onMultiplayerButtonPressed(net.minecraft.client.gui.widget.ButtonWidget ), (Lnet/minecraft/client/gui/widget/ButtonWidget;)V)((TitleScreen)this)).setPositionAndSize((int)(this.width / 2 - 100), (int)(y + spacingY * 1), (int)200, (int)20).setTooltip((Tooltip)tooltip).build()).active = bl;
+        this.addDrawableChild(ButtonWidget.createBuilder((Text)Text.translatable((String)"menu.online"), (ButtonWidget.PressAction)(ButtonWidget.PressAction)LambdaMetafactory.metafactory(null, null, null, (Lnet/minecraft/client/gui/widget/ButtonWidget;)V, onRealmsButtonPress(net.minecraft.client.gui.widget.ButtonWidget ), (Lnet/minecraft/client/gui/widget/ButtonWidget;)V)((TitleScreen)this)).setPositionAndSize((int)(this.width / 2 - 100), (int)(y + spacingY * 2), (int)200, (int)20).setTooltip((Tooltip)tooltip).build()).active = bl;
     }
 
     @Nullable
@@ -249,7 +238,7 @@ extends Screen {
         int i = 274;
         int j = this.width / 2 - 137;
         int k = 30;
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderTexture(0, PANORAMA_OVERLAY);
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
@@ -260,7 +249,7 @@ extends Screen {
         if ((l & 0xFC000000) == 0) {
             return;
         }
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderTexture(0, MINECRAFT_TITLE_TEXTURE);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, g);
         if (this.isMinceraft) {

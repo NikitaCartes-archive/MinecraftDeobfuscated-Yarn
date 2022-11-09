@@ -18,9 +18,9 @@ import net.minecraft.loot.function.ConditionalLootFunction;
 import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.registry.Registry;
 
 public class SetLootTableLootFunction
 extends ConditionalLootFunction {
@@ -86,7 +86,7 @@ extends ConditionalLootFunction {
         public void toJson(JsonObject jsonObject, SetLootTableLootFunction setLootTableLootFunction, JsonSerializationContext jsonSerializationContext) {
             super.toJson(jsonObject, setLootTableLootFunction, jsonSerializationContext);
             jsonObject.addProperty("name", setLootTableLootFunction.id.toString());
-            jsonObject.addProperty("type", Registry.BLOCK_ENTITY_TYPE.getId(setLootTableLootFunction.type).toString());
+            jsonObject.addProperty("type", Registries.BLOCK_ENTITY_TYPE.getId(setLootTableLootFunction.type).toString());
             if (setLootTableLootFunction.seed != 0L) {
                 jsonObject.addProperty("seed", setLootTableLootFunction.seed);
             }
@@ -97,7 +97,7 @@ extends ConditionalLootFunction {
             Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "name"));
             long l = JsonHelper.getLong(jsonObject, "seed", 0L);
             Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "type"));
-            BlockEntityType<?> blockEntityType = Registry.BLOCK_ENTITY_TYPE.getOrEmpty(identifier2).orElseThrow(() -> new JsonSyntaxException("Unknown block entity type id '" + identifier2 + "'"));
+            BlockEntityType<?> blockEntityType = Registries.BLOCK_ENTITY_TYPE.getOrEmpty(identifier2).orElseThrow(() -> new JsonSyntaxException("Unknown block entity type id '" + identifier2 + "'"));
             return new SetLootTableLootFunction(lootConditions, identifier, l, blockEntityType);
         }
 

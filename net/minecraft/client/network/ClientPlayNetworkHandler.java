@@ -268,6 +268,15 @@ import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeManager;
+import net.minecraft.registry.CombinedDynamicRegistries;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.TagPacketSerializer;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.scoreboard.AbstractTeam;
@@ -286,7 +295,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.StatHandler;
-import net.minecraft.tag.TagPacketSerializer;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -300,12 +308,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.PositionImpl;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.CombinedDynamicRegistries;
-import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.RegistryWrapper;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
@@ -399,7 +401,7 @@ ClientPlayPacketListener {
         Collections.shuffle(list);
         this.worldKeys = Sets.newLinkedHashSet(list);
         RegistryKey<World> registryKey = packet.dimensionId();
-        RegistryEntry.Reference<DimensionType> registryEntry = this.combinedDynamicRegistries.getCombinedRegistryManager().get(Registry.DIMENSION_TYPE_KEY).entryOf(packet.dimensionType());
+        RegistryEntry.Reference<DimensionType> registryEntry = this.combinedDynamicRegistries.getCombinedRegistryManager().get(RegistryKeys.DIMENSION_TYPE).entryOf(packet.dimensionType());
         this.chunkLoadDistance = packet.viewDistance();
         this.simulationDistance = packet.simulationDistance();
         boolean bl = packet.debugWorld();
@@ -432,7 +434,9 @@ ClientPlayPacketListener {
         this.connection.send(new CustomPayloadC2SPacket(CustomPayloadC2SPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString(ClientBrandRetriever.getClientModName())));
         this.lastSeenMessagesCollector = new LastSeenMessagesCollector(20);
         this.signatureStorage = MessageSignatureStorage.create();
-        this.client.getProfileKeys().fetchKeyPair().thenAcceptAsync(keyPair -> keyPair.ifPresent(keys -> this.setSession(ClientPlayerSession.create(keys))), (Executor)this.client);
+        if (this.connection.isEncrypted()) {
+            this.client.getProfileKeys().fetchKeyPair().thenAcceptAsync(keyPair -> keyPair.ifPresent(keys -> this.setSession(ClientPlayerSession.create(keys))), (Executor)this.client);
+        }
         this.client.getGame().onStartGameSession();
         this.telemetrySender.setGameModeAndSend(packet.gameMode(), packet.hardcore());
     }
@@ -440,7 +444,7 @@ ClientPlayPacketListener {
     @Override
     public void onEntitySpawn(EntitySpawnS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
-        EntityType<?> entityType = packet.getEntityTypeId();
+        EntityType<?> entityType = packet.getEntityType();
         Object entity = entityType.create(this.world);
         if (entity != null) {
             ((Entity)entity).onSpawnPacket(packet);
@@ -962,7 +966,7 @@ ClientPlayPacketListener {
     public void onPlayerRespawn(PlayerRespawnS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         RegistryKey<World> registryKey = packet.getDimension();
-        RegistryEntry.Reference<DimensionType> registryEntry = this.combinedDynamicRegistries.getCombinedRegistryManager().get(Registry.DIMENSION_TYPE_KEY).entryOf(packet.getDimensionType());
+        RegistryEntry.Reference<DimensionType> registryEntry = this.combinedDynamicRegistries.getCombinedRegistryManager().get(RegistryKeys.DIMENSION_TYPE).entryOf(packet.getDimensionType());
         ClientPlayerEntity clientPlayerEntity = this.client.player;
         int i = clientPlayerEntity.getId();
         if (registryKey != clientPlayerEntity.world.getRegistryKey()) {
@@ -1052,9 +1056,10 @@ ClientPlayPacketListener {
             playerEntity.getInventory().setStack(i, itemStack);
         } else {
             boolean bl = false;
-            if (this.client.currentScreen instanceof CreativeInventoryScreen) {
-                CreativeInventoryScreen creativeInventoryScreen = (CreativeInventoryScreen)this.client.currentScreen;
-                boolean bl2 = bl = creativeInventoryScreen.getSelectedTab() != ItemGroups.INVENTORY.getIndex();
+            Screen screen = this.client.currentScreen;
+            if (screen instanceof CreativeInventoryScreen) {
+                CreativeInventoryScreen creativeInventoryScreen = (CreativeInventoryScreen)screen;
+                boolean bl2 = bl = !creativeInventoryScreen.isInventoryTabSelected();
             }
             if (packet.getSyncId() == 0 && PlayerScreenHandler.isInHotbar(i)) {
                 ItemStack itemStack2;
@@ -1207,7 +1212,7 @@ ClientPlayPacketListener {
         MapState mapState = this.client.world.getMapState(string);
         if (mapState == null) {
             mapState = MapState.of(packet.getScale(), packet.isLocked(), this.client.world.getRegistryKey());
-            this.client.world.putMapState(string, mapState);
+            this.client.world.method_47437(string, mapState);
         }
         packet.apply(mapState);
         mapRenderer.updateTexture(i, mapState);
@@ -1360,7 +1365,7 @@ ClientPlayPacketListener {
         if (!this.connection.isLocal()) {
             Blocks.refreshShapeCache();
         }
-        ItemGroups.SEARCH.markSearchProviderDirty();
+        ItemGroups.getSearchGroup().reloadSearchProvider();
     }
 
     @Override
@@ -1793,7 +1798,7 @@ ClientPlayPacketListener {
                 BlockPos blockPos = packetByteBuf.readBlockPos();
                 ((NeighborUpdateDebugRenderer)this.client.debugRenderer.neighborUpdateDebugRenderer).addNeighborUpdate(l, blockPos);
             } else if (CustomPayloadS2CPacket.DEBUG_STRUCTURES.equals(identifier)) {
-                DimensionType dimensionType = this.combinedDynamicRegistries.getCombinedRegistryManager().get(Registry.DIMENSION_TYPE_KEY).get(packetByteBuf.readIdentifier());
+                DimensionType dimensionType = this.combinedDynamicRegistries.getCombinedRegistryManager().get(RegistryKeys.DIMENSION_TYPE).get(packetByteBuf.readIdentifier());
                 BlockBox blockBox = new BlockBox(packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt());
                 int j = packetByteBuf.readInt();
                 ArrayList<BlockBox> list = Lists.newArrayList();
@@ -1941,12 +1946,12 @@ ClientPlayPacketListener {
                 int ac = packetByteBuf.readInt();
                 this.client.debugRenderer.gameTestDebugRenderer.addMarker(blockPos2, m, string12, ac);
             } else if (CustomPayloadS2CPacket.DEBUG_GAME_EVENT.equals(identifier)) {
-                GameEvent gameEvent = Registry.GAME_EVENT.get(new Identifier(packetByteBuf.readString()));
+                GameEvent gameEvent = Registries.GAME_EVENT.get(new Identifier(packetByteBuf.readString()));
                 Vec3d vec3d = new Vec3d(packetByteBuf.readDouble(), packetByteBuf.readDouble(), packetByteBuf.readDouble());
                 this.client.debugRenderer.gameEventDebugRenderer.addEvent(gameEvent, vec3d);
             } else if (CustomPayloadS2CPacket.DEBUG_GAME_EVENT_LISTENERS.equals(identifier)) {
                 Identifier identifier2 = packetByteBuf.readIdentifier();
-                Object positionSource = Registry.POSITION_SOURCE_TYPE.getOrEmpty(identifier2).orElseThrow(() -> new IllegalArgumentException("Unknown position source type " + identifier2)).readFromBuf(packetByteBuf);
+                Object positionSource = Registries.POSITION_SOURCE_TYPE.getOrEmpty(identifier2).orElseThrow(() -> new IllegalArgumentException("Unknown position source type " + identifier2)).readFromBuf(packetByteBuf);
                 int j = packetByteBuf.readVarInt();
                 this.client.debugRenderer.gameEventDebugRenderer.addListener((PositionSource)positionSource, j);
             } else {
@@ -2101,7 +2106,7 @@ ClientPlayPacketListener {
         for (EntityAttributesS2CPacket.Entry entry : packet.getEntries()) {
             EntityAttributeInstance entityAttributeInstance = attributeContainer.getCustomInstance(entry.getId());
             if (entityAttributeInstance == null) {
-                LOGGER.warn("Entity {} does not have attribute {}", (Object)entity, (Object)Registry.ATTRIBUTE.getId(entry.getId()));
+                LOGGER.warn("Entity {} does not have attribute {}", (Object)entity, (Object)Registries.ATTRIBUTE.getId(entry.getId()));
                 continue;
             }
             entityAttributeInstance.setBaseValue(entry.getBaseValue());
@@ -2312,8 +2317,8 @@ ClientPlayPacketListener {
 
     @Override
     public void tick() {
-        ProfileKeys profileKeys = this.client.getProfileKeys();
-        if (profileKeys.isExpired()) {
+        ProfileKeys profileKeys;
+        if (this.connection.isEncrypted() && (profileKeys = this.client.getProfileKeys()).isExpired()) {
             profileKeys.fetchKeyPair().thenAcceptAsync(keyPair -> keyPair.ifPresent(this::updateKeyPair), (Executor)this.client);
         }
     }

@@ -96,13 +96,16 @@ implements Waterloggable {
 
     @Override
     public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
-        ItemStack itemStack = super.getPickStack(world, pos, state);
-        if (state.get(LEVEL_15) != 15) {
+        return LightBlock.addNbtForLevel(super.getPickStack(world, pos, state), state.get(LEVEL_15));
+    }
+
+    public static ItemStack addNbtForLevel(ItemStack stack, int level) {
+        if (level != 15) {
             NbtCompound nbtCompound = new NbtCompound();
-            nbtCompound.putString(LEVEL_15.getName(), String.valueOf(state.get(LEVEL_15)));
-            itemStack.setSubNbt("BlockStateTag", nbtCompound);
+            nbtCompound.putString(LEVEL_15.getName(), String.valueOf(level));
+            stack.setSubNbt("BlockStateTag", nbtCompound);
         }
-        return itemStack;
+        return stack;
     }
 }
 

@@ -16,10 +16,10 @@ import java.util.function.Predicate;
 import java.util.stream.LongStream;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
@@ -32,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 public final class BelowZeroRetrogen {
     private static final BitSet EMPTY_MISSING_BEDROCK_BIT_SET = new BitSet(0);
     private static final Codec<BitSet> MISSING_BEDROCK_CODEC = Codec.LONG_STREAM.xmap(serializedBedrockBitSet -> BitSet.valueOf(serializedBedrockBitSet.toArray()), bedrockBitSet -> LongStream.of(bedrockBitSet.toLongArray()));
-    private static final Codec<ChunkStatus> STATUS_CODEC = Registry.CHUNK_STATUS.getCodec().comapFlatMap(status -> status == ChunkStatus.EMPTY ? DataResult.error("target_status cannot be empty") : DataResult.success(status), Function.identity());
+    private static final Codec<ChunkStatus> STATUS_CODEC = Registries.CHUNK_STATUS.getCodec().comapFlatMap(status -> status == ChunkStatus.EMPTY ? DataResult.error("target_status cannot be empty") : DataResult.success(status), Function.identity());
     public static final Codec<BelowZeroRetrogen> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)STATUS_CODEC.fieldOf("target_status")).forGetter(BelowZeroRetrogen::getTargetStatus), MISSING_BEDROCK_CODEC.optionalFieldOf("missing_bedrock").forGetter(belowZeroRetrogen -> belowZeroRetrogen.missingBedrock.isEmpty() ? Optional.empty() : Optional.of(belowZeroRetrogen.missingBedrock))).apply((Applicative<BelowZeroRetrogen, ?>)instance, BelowZeroRetrogen::new));
     private static final Set<RegistryKey<Biome>> CAVE_BIOMES = Set.of(BiomeKeys.LUSH_CAVES, BiomeKeys.DRIPSTONE_CAVES);
     public static final HeightLimitView BELOW_ZERO_VIEW = new HeightLimitView(){

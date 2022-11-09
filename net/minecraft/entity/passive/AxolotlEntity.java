@@ -48,12 +48,12 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.ItemTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
@@ -307,7 +307,7 @@ Bucketable {
         AxolotlBrain.updateActivities(this);
         this.world.getProfiler().pop();
         if (!this.isAiDisabled()) {
-            Optional<Integer> optional = this.getBrain().getOptionalMemory(MemoryModuleType.PLAY_DEAD_TICKS);
+            Optional<Integer> optional = this.getBrain().getOptionalRegisteredMemory(MemoryModuleType.PLAY_DEAD_TICKS);
             this.setPlayingDead(optional.isPresent() && optional.get() > 0);
         }
     }
@@ -368,7 +368,7 @@ Bucketable {
         nbtCompound.putInt("Age", this.getBreedingAge());
         Brain<AxolotlEntity> brain = this.getBrain();
         if (brain.hasMemoryModule(MemoryModuleType.HAS_HUNTING_COOLDOWN)) {
-            nbtCompound.putLong("HuntingCooldown", brain.getMemory(MemoryModuleType.HAS_HUNTING_COOLDOWN));
+            nbtCompound.putLong("HuntingCooldown", brain.getMemoryExpiry(MemoryModuleType.HAS_HUNTING_COOLDOWN));
         }
     }
 

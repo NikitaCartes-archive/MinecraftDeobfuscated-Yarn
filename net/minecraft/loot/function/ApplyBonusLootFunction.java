@@ -21,10 +21,10 @@ import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.function.ConditionalLootFunction;
 import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.function.LootFunctionTypes;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 
 public class ApplyBonusLootFunction
 extends ConditionalLootFunction {
@@ -199,7 +199,7 @@ extends ConditionalLootFunction {
         @Override
         public void toJson(JsonObject jsonObject, ApplyBonusLootFunction applyBonusLootFunction, JsonSerializationContext jsonSerializationContext) {
             super.toJson(jsonObject, applyBonusLootFunction, jsonSerializationContext);
-            jsonObject.addProperty("enchantment", Registry.ENCHANTMENT.getId(applyBonusLootFunction.enchantment).toString());
+            jsonObject.addProperty("enchantment", Registries.ENCHANTMENT.getId(applyBonusLootFunction.enchantment).toString());
             jsonObject.addProperty("formula", applyBonusLootFunction.formula.getId().toString());
             JsonObject jsonObject2 = new JsonObject();
             applyBonusLootFunction.formula.toJson(jsonObject2, jsonSerializationContext);
@@ -211,7 +211,7 @@ extends ConditionalLootFunction {
         @Override
         public ApplyBonusLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
             Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "enchantment"));
-            Enchantment enchantment = Registry.ENCHANTMENT.getOrEmpty(identifier).orElseThrow(() -> new JsonParseException("Invalid enchantment id: " + identifier));
+            Enchantment enchantment = Registries.ENCHANTMENT.getOrEmpty(identifier).orElseThrow(() -> new JsonParseException("Invalid enchantment id: " + identifier));
             Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "formula"));
             FormulaFactory formulaFactory = FACTORIES.get(identifier2);
             if (formulaFactory == null) {

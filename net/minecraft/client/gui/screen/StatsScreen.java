@@ -30,6 +30,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
+import net.minecraft.registry.Registries;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stat;
@@ -39,7 +40,6 @@ import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -157,7 +157,7 @@ implements StatsListener {
 
     void renderIcon(MatrixStack matrices, int x, int y, int u, int v) {
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderTexture(0, STATS_ICON_TEXTURE);
         StatsScreen.drawTexture(matrices, x, y, this.getZOffset(), u, v, 18, 18, 128, 128);
     }
@@ -231,7 +231,7 @@ implements StatsListener {
             this.itemStatTypes = Lists.newArrayList(Stats.BROKEN, Stats.CRAFTED, Stats.USED, Stats.PICKED_UP, Stats.DROPPED);
             this.setRenderHeader(true, 20);
             Set<Item> set = Sets.newIdentityHashSet();
-            for (Item item : Registry.ITEM) {
+            for (Item item : Registries.ITEM) {
                 bl = false;
                 for (StatType<Item> statType : this.itemStatTypes) {
                     if (!statType.hasStat(item) || StatsScreen.this.statHandler.getStat(statType.getOrCreateStat(item)) <= 0) continue;
@@ -240,7 +240,7 @@ implements StatsListener {
                 if (!bl) continue;
                 set.add(item);
             }
-            for (Block block : Registry.BLOCK) {
+            for (Block block : Registries.BLOCK) {
                 bl = false;
                 for (StatType<ItemConvertible> statType : this.blockStatTypes) {
                     if (!statType.hasStat(block) || StatsScreen.this.statHandler.getStat(statType.getOrCreateStat(block)) <= 0) continue;
@@ -458,7 +458,7 @@ implements StatsListener {
     extends AlwaysSelectedEntryListWidget<Entry> {
         public EntityStatsListWidget(MinecraftClient client) {
             super(client, StatsScreen.this.width, StatsScreen.this.height, 32, StatsScreen.this.height - 64, ((StatsScreen)StatsScreen.this).textRenderer.fontHeight * 4);
-            for (EntityType entityType : Registry.ENTITY_TYPE) {
+            for (EntityType entityType : Registries.ENTITY_TYPE) {
                 if (StatsScreen.this.statHandler.getStat(Stats.KILLED.getOrCreateStat(entityType)) <= 0 && StatsScreen.this.statHandler.getStat(Stats.KILLED_BY.getOrCreateStat(entityType)) <= 0) continue;
                 this.addEntry(new Entry(entityType));
             }

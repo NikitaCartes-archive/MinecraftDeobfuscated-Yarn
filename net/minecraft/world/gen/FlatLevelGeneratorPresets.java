@@ -10,14 +10,14 @@ import java.util.stream.Collectors;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
+import net.minecraft.registry.Registerable;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.structure.StructureSet;
 import net.minecraft.structure.StructureSetKeys;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registerable;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntryList;
-import net.minecraft.util.registry.RegistryEntryLookup;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.gen.FlatLevelGeneratorPreset;
@@ -41,7 +41,7 @@ public class FlatLevelGeneratorPresets {
     }
 
     private static RegistryKey<FlatLevelGeneratorPreset> of(String id) {
-        return RegistryKey.of(Registry.FLAT_LEVEL_GENERATOR_PRESET_KEY, new Identifier(id));
+        return RegistryKey.of(RegistryKeys.FLAT_LEVEL_GENERATOR_PRESET_WORLDGEN, new Identifier(id));
     }
 
     static class Registrar {
@@ -52,9 +52,9 @@ public class FlatLevelGeneratorPresets {
         }
 
         private void createAndRegister(RegistryKey<FlatLevelGeneratorPreset> registryKey, ItemConvertible icon, RegistryKey<Biome> biome, Set<RegistryKey<StructureSet>> structureSetKeys, boolean hasFeatures, boolean hasLakes, FlatChunkGeneratorLayer ... layers) {
-            RegistryEntryLookup<StructureSet> registryEntryLookup = this.presetRegisterable.getRegistryLookup(Registry.STRUCTURE_SET_KEY);
-            RegistryEntryLookup<PlacedFeature> registryEntryLookup2 = this.presetRegisterable.getRegistryLookup(Registry.PLACED_FEATURE_KEY);
-            RegistryEntryLookup<Biome> registryEntryLookup3 = this.presetRegisterable.getRegistryLookup(Registry.BIOME_KEY);
+            RegistryEntryLookup<StructureSet> registryEntryLookup = this.presetRegisterable.getRegistryLookup(RegistryKeys.STRUCTURE_SET_WORLDGEN);
+            RegistryEntryLookup<PlacedFeature> registryEntryLookup2 = this.presetRegisterable.getRegistryLookup(RegistryKeys.PLACED_FEATURE_WORLDGEN);
+            RegistryEntryLookup<Biome> registryEntryLookup3 = this.presetRegisterable.getRegistryLookup(RegistryKeys.BIOME_WORLDGEN);
             RegistryEntryList.Direct direct = RegistryEntryList.of(structureSetKeys.stream().map(registryEntryLookup::getOrThrow).collect(Collectors.toList()));
             FlatChunkGeneratorConfig flatChunkGeneratorConfig = new FlatChunkGeneratorConfig(Optional.of(direct), registryEntryLookup3.getOrThrow(biome), FlatChunkGeneratorConfig.getLavaLakes(registryEntryLookup2));
             if (hasFeatures) {

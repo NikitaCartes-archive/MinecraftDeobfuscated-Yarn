@@ -14,7 +14,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 
 public class ShriekParticleEffect
 implements ParticleEffect {
@@ -56,7 +56,7 @@ implements ParticleEffect {
 
     @Override
     public String asString() {
-        return String.format(Locale.ROOT, "%s %d", Registry.PARTICLE_TYPE.getId(this.getType()), this.delay);
+        return String.format(Locale.ROOT, "%s %d", Registries.PARTICLE_TYPE.getId(this.getType()), this.delay);
     }
 
     public ParticleType<ShriekParticleEffect> getType() {

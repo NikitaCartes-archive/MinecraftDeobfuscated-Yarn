@@ -13,9 +13,10 @@ import net.minecraft.entity.effect.InstantStatusEffect;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Difficulty;
 
 public class StatusEffects {
@@ -75,7 +76,7 @@ public class StatusEffects {
     public static final StatusEffect DARKNESS = StatusEffects.register(33, "darkness", new StatusEffect(StatusEffectCategory.HARMFUL, 2696993).setFactorCalculationDataSupplier(() -> new StatusEffectInstance.FactorCalculationData(22)));
 
     private static StatusEffect register(int rawId, String id, StatusEffect entry) {
-        return Registry.register(Registry.STATUS_EFFECT, rawId, id, entry);
+        return Registry.register(Registries.STATUS_EFFECT, rawId, id, entry);
     }
 }
 

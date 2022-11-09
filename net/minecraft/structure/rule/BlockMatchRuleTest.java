@@ -7,14 +7,14 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.registry.Registries;
 import net.minecraft.structure.rule.RuleTest;
 import net.minecraft.structure.rule.RuleTestType;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.util.registry.Registry;
 
 public class BlockMatchRuleTest
 extends RuleTest {
-    public static final Codec<BlockMatchRuleTest> CODEC = ((MapCodec)Registry.BLOCK.getCodec().fieldOf("block")).xmap(BlockMatchRuleTest::new, ruleTest -> ruleTest.block).codec();
+    public static final Codec<BlockMatchRuleTest> CODEC = ((MapCodec)Registries.BLOCK.getCodec().fieldOf("block")).xmap(BlockMatchRuleTest::new, ruleTest -> ruleTest.block).codec();
     private final Block block;
 
     public BlockMatchRuleTest(Block block) {

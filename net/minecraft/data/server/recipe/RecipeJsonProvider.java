@@ -5,8 +5,8 @@ package net.minecraft.data.server.recipe;
 
 import com.google.gson.JsonObject;
 import net.minecraft.recipe.RecipeSerializer;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public interface RecipeJsonProvider {
@@ -14,7 +14,7 @@ public interface RecipeJsonProvider {
 
     default public JsonObject toJson() {
         JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("type", Registry.RECIPE_SERIALIZER.getId(this.getSerializer()).toString());
+        jsonObject.addProperty("type", Registries.RECIPE_SERIALIZER.getId(this.getSerializer()).toString());
         this.serialize(jsonObject);
         return jsonObject;
     }

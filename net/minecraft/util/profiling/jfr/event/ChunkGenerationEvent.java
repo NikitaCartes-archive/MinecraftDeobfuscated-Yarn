@@ -11,8 +11,8 @@ import jdk.jfr.Label;
 import jdk.jfr.Name;
 import jdk.jfr.StackTrace;
 import net.minecraft.obfuscate.DontObfuscate;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
 @Name(value="minecraft.ChunkGeneration")

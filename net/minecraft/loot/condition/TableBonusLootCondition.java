@@ -18,10 +18,10 @@ import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.JsonSerializer;
-import net.minecraft.util.registry.Registry;
 
 public class TableBonusLootCondition
 implements LootCondition {
@@ -64,14 +64,14 @@ implements LootCondition {
     implements JsonSerializer<TableBonusLootCondition> {
         @Override
         public void toJson(JsonObject jsonObject, TableBonusLootCondition tableBonusLootCondition, JsonSerializationContext jsonSerializationContext) {
-            jsonObject.addProperty("enchantment", Registry.ENCHANTMENT.getId(tableBonusLootCondition.enchantment).toString());
+            jsonObject.addProperty("enchantment", Registries.ENCHANTMENT.getId(tableBonusLootCondition.enchantment).toString());
             jsonObject.add("chances", jsonSerializationContext.serialize(tableBonusLootCondition.chances));
         }
 
         @Override
         public TableBonusLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
             Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "enchantment"));
-            Enchantment enchantment = Registry.ENCHANTMENT.getOrEmpty(identifier).orElseThrow(() -> new JsonParseException("Invalid enchantment id: " + identifier));
+            Enchantment enchantment = Registries.ENCHANTMENT.getOrEmpty(identifier).orElseThrow(() -> new JsonParseException("Invalid enchantment id: " + identifier));
             float[] fs = JsonHelper.deserialize(jsonObject, "chances", jsonDeserializationContext, float[].class);
             return new TableBonusLootCondition(enchantment, fs);
         }

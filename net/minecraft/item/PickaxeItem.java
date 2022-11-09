@@ -6,7 +6,7 @@ package net.minecraft.item;
 import net.minecraft.item.Item;
 import net.minecraft.item.MiningToolItem;
 import net.minecraft.item.ToolMaterial;
-import net.minecraft.tag.BlockTags;
+import net.minecraft.registry.tag.BlockTags;
 
 public class PickaxeItem
 extends MiningToolItem {

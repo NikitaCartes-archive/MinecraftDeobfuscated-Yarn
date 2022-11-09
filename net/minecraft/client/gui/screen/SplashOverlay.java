@@ -114,7 +114,7 @@ extends Overlay {
         RenderSystem.enableBlend();
         RenderSystem.blendEquation(32774);
         RenderSystem.blendFunc(770, 1);
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, h);
         SplashOverlay.drawTexture(matrices, k - r, p - q, r, (int)d, -0.0625f, 0.0f, 120, 60, 120, 120);
         SplashOverlay.drawTexture(matrices, k, p - q, r, (int)d, 0.0625f, 60.0f, 120, 60, 120, 120);

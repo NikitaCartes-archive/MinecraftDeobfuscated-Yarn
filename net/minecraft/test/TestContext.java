@@ -28,10 +28,11 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Property;
 import net.minecraft.structure.StructureTemplate;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.test.GameTestException;
 import net.minecraft.test.GameTestState;
 import net.minecraft.test.PositionedException;
@@ -45,7 +46,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Heightmap;
 import org.jetbrains.annotations.Nullable;
 
@@ -462,7 +462,7 @@ public class TestContext {
         BlockPos blockPos = this.getAbsolutePos(pos);
         BlockEntity blockEntity = this.getWorld().getBlockEntity(blockPos);
         if (!(blockEntity instanceof LockableContainerBlockEntity)) {
-            throw new GameTestException("Expected a container at " + pos + ", found " + Registry.BLOCK_ENTITY_TYPE.getId(blockEntity.getType()));
+            throw new GameTestException("Expected a container at " + pos + ", found " + Registries.BLOCK_ENTITY_TYPE.getId(blockEntity.getType()));
         }
         if (((LockableContainerBlockEntity)blockEntity).count(item) != 1) {
             throw new GameTestException("Container should contain: " + item);

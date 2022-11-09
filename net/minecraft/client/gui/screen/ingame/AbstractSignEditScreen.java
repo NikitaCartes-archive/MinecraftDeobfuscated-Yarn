@@ -193,7 +193,7 @@ extends Screen {
             int v = Math.max(s, t);
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder bufferBuilder = tessellator.getBuffer();
-            RenderSystem.setShader(GameRenderer::getPositionColorShader);
+            RenderSystem.setShader(GameRenderer::getPositionColorProgram);
             RenderSystem.disableTexture();
             RenderSystem.enableColorLogicOp();
             RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
@@ -202,7 +202,7 @@ extends Screen {
             bufferBuilder.vertex(matrix4f, v, m + this.blockEntity.getTextLineHeight(), 0.0f).color(0, 0, 255, 255).next();
             bufferBuilder.vertex(matrix4f, v, m, 0.0f).color(0, 0, 255, 255).next();
             bufferBuilder.vertex(matrix4f, u, m, 0.0f).color(0, 0, 255, 255).next();
-            BufferRenderer.drawWithShader(bufferBuilder.end());
+            BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
             RenderSystem.disableColorLogicOp();
             RenderSystem.enableTexture();
         }

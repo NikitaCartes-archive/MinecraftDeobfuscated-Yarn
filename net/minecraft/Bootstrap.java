@@ -23,11 +23,11 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.Item;
 import net.minecraft.recipe.BrewingRecipeRegistry;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.util.Language;
 import net.minecraft.util.logging.DebugLoggerPrintStream;
 import net.minecraft.util.logging.LoggerPrintStream;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameRules;
 import org.slf4j.Logger;
 
@@ -41,7 +41,7 @@ public class Bootstrap {
             return;
         }
         initialized = true;
-        if (Registry.REGISTRIES.getIds().isEmpty()) {
+        if (Registries.REGISTRIES.getIds().isEmpty()) {
             throw new IllegalStateException("Unable to load registries");
         }
         FireBlock.registerDefaultFlammables();
@@ -53,8 +53,7 @@ public class Bootstrap {
         EntitySelectorOptions.register();
         DispenserBehavior.registerDefaults();
         CauldronBehavior.registerBehavior();
-        Registry.freezeRegistries();
-        Registry.validate(Registry.REGISTRIES);
+        Registries.bootstrap();
         Bootstrap.setOutputStreams();
     }
 
@@ -83,13 +82,13 @@ public class Bootstrap {
 
     public static Set<String> getMissingTranslations() {
         TreeSet<String> set = new TreeSet<String>();
-        Bootstrap.collectMissingTranslations(Registry.ATTRIBUTE, EntityAttribute::getTranslationKey, set);
-        Bootstrap.collectMissingTranslations(Registry.ENTITY_TYPE, EntityType::getTranslationKey, set);
-        Bootstrap.collectMissingTranslations(Registry.STATUS_EFFECT, StatusEffect::getTranslationKey, set);
-        Bootstrap.collectMissingTranslations(Registry.ITEM, Item::getTranslationKey, set);
-        Bootstrap.collectMissingTranslations(Registry.ENCHANTMENT, Enchantment::getTranslationKey, set);
-        Bootstrap.collectMissingTranslations(Registry.BLOCK, Block::getTranslationKey, set);
-        Bootstrap.collectMissingTranslations(Registry.CUSTOM_STAT, stat -> "stat." + stat.toString().replace(':', '.'), set);
+        Bootstrap.collectMissingTranslations(Registries.ATTRIBUTE, EntityAttribute::getTranslationKey, set);
+        Bootstrap.collectMissingTranslations(Registries.ENTITY_TYPE, EntityType::getTranslationKey, set);
+        Bootstrap.collectMissingTranslations(Registries.STATUS_EFFECT, StatusEffect::getTranslationKey, set);
+        Bootstrap.collectMissingTranslations(Registries.ITEM, Item::getTranslationKey, set);
+        Bootstrap.collectMissingTranslations(Registries.ENCHANTMENT, Enchantment::getTranslationKey, set);
+        Bootstrap.collectMissingTranslations(Registries.BLOCK, Block::getTranslationKey, set);
+        Bootstrap.collectMissingTranslations(Registries.CUSTOM_STAT, stat -> "stat." + stat.toString().replace(':', '.'), set);
         Bootstrap.collectMissingGameRuleTranslations(set);
         return set;
     }

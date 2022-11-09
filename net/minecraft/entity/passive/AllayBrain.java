@@ -17,15 +17,14 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.EntityLookTarget;
 import net.minecraft.entity.ai.brain.LookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.ai.brain.task.FollowMobTask;
+import net.minecraft.entity.ai.brain.task.FollowMobWithIntervalTask;
 import net.minecraft.entity.ai.brain.task.GiveInventoryToLookTargetTask;
-import net.minecraft.entity.ai.brain.task.GoTowardsLookTarget;
+import net.minecraft.entity.ai.brain.task.GoTowardsLookTargetTask;
 import net.minecraft.entity.ai.brain.task.LookAroundTask;
-import net.minecraft.entity.ai.brain.task.NoPenaltyStrollTask;
 import net.minecraft.entity.ai.brain.task.RandomTask;
 import net.minecraft.entity.ai.brain.task.StayAboveWaterTask;
+import net.minecraft.entity.ai.brain.task.StrollTask;
 import net.minecraft.entity.ai.brain.task.TemptationCooldownTask;
-import net.minecraft.entity.ai.brain.task.TimeLimitedTask;
 import net.minecraft.entity.ai.brain.task.WaitTask;
 import net.minecraft.entity.ai.brain.task.WalkTask;
 import net.minecraft.entity.ai.brain.task.WalkToNearestVisibleWantedItemTask;
@@ -67,7 +66,7 @@ public class AllayBrain {
     }
 
     private static void addIdleActivities(Brain<AllayEntity> brain) {
-        brain.setTaskList(Activity.IDLE, ImmutableList.of(Pair.of(0, new WalkToNearestVisibleWantedItemTask<AllayEntity>(allay -> true, 1.75f, true, 32)), Pair.of(1, new GiveInventoryToLookTargetTask(AllayBrain::getLookTarget, 2.25f, 20)), Pair.of(2, new WalkTowardsLookTargetTask(AllayBrain::getLookTarget, 4, 16, 2.25f)), Pair.of(3, new TimeLimitedTask<LivingEntity>(new FollowMobTask(allay -> true, 6.0f), UniformIntProvider.create(30, 60))), Pair.of(4, new RandomTask(ImmutableList.of(Pair.of(new NoPenaltyStrollTask(1.0f), 2), Pair.of(new GoTowardsLookTarget(1.0f, 3), 2), Pair.of(new WaitTask(30, 60), 1))))), ImmutableSet.of());
+        brain.setTaskList(Activity.IDLE, ImmutableList.of(Pair.of(0, WalkToNearestVisibleWantedItemTask.create(allay -> true, 1.75f, true, 32)), Pair.of(1, new GiveInventoryToLookTargetTask(AllayBrain::getLookTarget, 2.25f, 20)), Pair.of(2, WalkTowardsLookTargetTask.create(AllayBrain::getLookTarget, 4, 16, 2.25f)), Pair.of(3, FollowMobWithIntervalTask.follow(6.0f, UniformIntProvider.create(30, 60))), Pair.of(4, new RandomTask(ImmutableList.of(Pair.of(StrollTask.createSolidTargeting(1.0f), 2), Pair.of(GoTowardsLookTargetTask.create(1.0f, 3), 2), Pair.of(new WaitTask(30, 60), 1))))), ImmutableSet.of());
     }
 
     public static void updateActivities(AllayEntity allay) {
@@ -77,7 +76,7 @@ public class AllayBrain {
     public static void rememberNoteBlock(LivingEntity allay, BlockPos pos) {
         Brain<?> brain = allay.getBrain();
         GlobalPos globalPos = GlobalPos.create(allay.getWorld().getRegistryKey(), pos);
-        Optional<GlobalPos> optional = brain.getOptionalMemory(MemoryModuleType.LIKED_NOTEBLOCK);
+        Optional<GlobalPos> optional = brain.getOptionalRegisteredMemory(MemoryModuleType.LIKED_NOTEBLOCK);
         if (optional.isEmpty()) {
             brain.remember(MemoryModuleType.LIKED_NOTEBLOCK, globalPos);
             brain.remember(MemoryModuleType.LIKED_NOTEBLOCK_COOLDOWN_TICKS, 600);
@@ -88,7 +87,7 @@ public class AllayBrain {
 
     private static Optional<LookTarget> getLookTarget(LivingEntity allay) {
         Brain<?> brain = allay.getBrain();
-        Optional<GlobalPos> optional = brain.getOptionalMemory(MemoryModuleType.LIKED_NOTEBLOCK);
+        Optional<GlobalPos> optional = brain.getOptionalRegisteredMemory(MemoryModuleType.LIKED_NOTEBLOCK);
         if (optional.isPresent()) {
             GlobalPos globalPos = optional.get();
             if (AllayBrain.shouldGoTowardsNoteBlock(allay, brain, globalPos)) {
@@ -100,7 +99,7 @@ public class AllayBrain {
     }
 
     private static boolean shouldGoTowardsNoteBlock(LivingEntity allay, Brain<?> brain, GlobalPos pos) {
-        Optional<Integer> optional = brain.getOptionalMemory(MemoryModuleType.LIKED_NOTEBLOCK_COOLDOWN_TICKS);
+        Optional<Integer> optional = brain.getOptionalRegisteredMemory(MemoryModuleType.LIKED_NOTEBLOCK_COOLDOWN_TICKS);
         World world = allay.getWorld();
         return world.getRegistryKey() == pos.getDimension() && world.getBlockState(pos.getPos()).isOf(Blocks.NOTE_BLOCK) && optional.isPresent();
     }
@@ -113,7 +112,7 @@ public class AllayBrain {
         World world = allay.getWorld();
         if (!world.isClient() && world instanceof ServerWorld) {
             ServerWorld serverWorld = (ServerWorld)world;
-            Optional<UUID> optional = allay.getBrain().getOptionalMemory(MemoryModuleType.LIKED_PLAYER);
+            Optional<UUID> optional = allay.getBrain().getOptionalRegisteredMemory(MemoryModuleType.LIKED_PLAYER);
             if (optional.isPresent()) {
                 Entity entity = serverWorld.getEntity(optional.get());
                 if (entity instanceof ServerPlayerEntity) {

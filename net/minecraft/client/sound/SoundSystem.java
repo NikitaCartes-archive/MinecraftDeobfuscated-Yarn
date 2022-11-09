@@ -34,6 +34,7 @@ import net.minecraft.client.sound.Source;
 import net.minecraft.client.sound.StaticSound;
 import net.minecraft.client.sound.TickableSoundInstance;
 import net.minecraft.client.sound.WeightedSoundSet;
+import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourceFactory;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -41,7 +42,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 import org.slf4j.Logger;
@@ -90,10 +90,10 @@ public class SoundSystem {
 
     public void reloadSounds() {
         UNKNOWN_SOUNDS.clear();
-        for (SoundEvent soundEvent : Registry.SOUND_EVENT) {
+        for (SoundEvent soundEvent : Registries.SOUND_EVENT) {
             Identifier identifier = soundEvent.getId();
             if (this.loader.get(identifier) != null) continue;
-            LOGGER.warn("Missing sound for event: {}", (Object)Registry.SOUND_EVENT.getId(soundEvent));
+            LOGGER.warn("Missing sound for event: {}", (Object)Registries.SOUND_EVENT.getId(soundEvent));
             UNKNOWN_SOUNDS.add(identifier);
         }
         this.stop();

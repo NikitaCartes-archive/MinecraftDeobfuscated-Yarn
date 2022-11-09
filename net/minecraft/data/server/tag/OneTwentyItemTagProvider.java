@@ -10,10 +10,10 @@ import net.minecraft.data.server.tag.AbstractItemTagProvider;
 import net.minecraft.data.server.tag.AbstractTagProvider;
 import net.minecraft.data.server.tag.ValueLookupTagProvider;
 import net.minecraft.item.Items;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.ItemTags;
-import net.minecraft.tag.TagKey;
-import net.minecraft.util.registry.RegistryWrapper;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.registry.tag.TagKey;
 
 public class OneTwentyItemTagProvider
 extends AbstractItemTagProvider {
@@ -39,6 +39,7 @@ extends AbstractItemTagProvider {
         this.copy(BlockTags.TRAPDOORS, ItemTags.TRAPDOORS);
         this.copy(BlockTags.FENCES, ItemTags.FENCES);
         this.copy(BlockTags.STANDING_SIGNS, ItemTags.SIGNS);
+        this.copy(BlockTags.BAMBOO_BLOCKS, ItemTags.BAMBOO_BLOCKS);
         this.copy(BlockTags.CEILING_HANGING_SIGNS, ItemTags.HANGING_SIGNS);
         ((ValueLookupTagProvider.ObjectBuilder)this.getOrCreateTagBuilder((TagKey)ItemTags.CHEST_BOATS)).add(Items.BAMBOO_CHEST_RAFT);
         ((ValueLookupTagProvider.ObjectBuilder)this.getOrCreateTagBuilder((TagKey)ItemTags.BOATS)).add(Items.BAMBOO_RAFT);

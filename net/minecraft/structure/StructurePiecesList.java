@@ -13,13 +13,13 @@ import java.util.Map;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.Registries;
 import net.minecraft.structure.StructureContext;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
 
 /**
@@ -62,7 +62,7 @@ public record StructurePiecesList(List<StructurePiece> pieces) {
             String string = nbtCompound.getString("id").toLowerCase(Locale.ROOT);
             Identifier identifier = new Identifier(string);
             Identifier identifier2 = ID_UPDATES.getOrDefault(identifier, identifier);
-            StructurePieceType structurePieceType = Registry.STRUCTURE_PIECE.get(identifier2);
+            StructurePieceType structurePieceType = Registries.STRUCTURE_PIECE.get(identifier2);
             if (structurePieceType == null) {
                 LOGGER.error("Unknown structure piece id: {}", (Object)identifier2);
                 continue;

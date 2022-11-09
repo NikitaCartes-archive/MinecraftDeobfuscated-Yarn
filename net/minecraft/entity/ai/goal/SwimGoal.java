@@ -6,7 +6,7 @@ package net.minecraft.entity.ai.goal;
 import java.util.EnumSet;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.tag.FluidTags;
+import net.minecraft.registry.tag.FluidTags;
 
 public class SwimGoal
 extends Goal {

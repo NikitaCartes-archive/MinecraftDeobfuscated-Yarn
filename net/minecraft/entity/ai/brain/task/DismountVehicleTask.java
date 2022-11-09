@@ -5,11 +5,11 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.server.world.ServerWorld;
 
 public class DismountVehicleTask
-extends Task<LivingEntity> {
+extends MultiTickTask<LivingEntity> {
     public DismountVehicleTask() {
         super(ImmutableMap.of());
     }

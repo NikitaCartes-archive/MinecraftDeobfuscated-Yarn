@@ -223,7 +223,8 @@ InventoryOwner {
 
     @Override
     protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-        return this.isBaby() ? 0.93f : 1.74f;
+        float f = super.getActiveEyeHeight(pose, dimensions);
+        return this.isBaby() ? f - 0.81f : f;
     }
 
     @Override

@@ -9,7 +9,6 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,6 +41,7 @@ import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.registry.Registries;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
@@ -49,7 +49,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
@@ -135,8 +134,8 @@ AutoCloseable {
                                     }
                                 }
                                 throw throwable;
-                            } catch (IOException iOException) {
-                                LOGGER.error("Failed to load model {}", entry.getKey(), (Object)iOException);
+                            } catch (Exception exception) {
+                                LOGGER.error("Failed to load model {}", entry.getKey(), (Object)exception);
                                 return null;
                             }
                         }
@@ -166,8 +165,8 @@ AutoCloseable {
                                 if (reader == null) continue;
                                 ((Reader)reader).close();
                             }
-                        } catch (IOException iOException) {
-                            LOGGER.error("Failed to load blockstate {} from pack {}", entry.getKey(), resource.getResourcePackName(), iOException);
+                        } catch (Exception exception) {
+                            LOGGER.error("Failed to load blockstate {} from pack {}", entry.getKey(), resource.getResourcePackName(), exception);
                         }
                     }
                     return Pair.of((Identifier)entry.getKey(), list2);
@@ -195,7 +194,7 @@ AutoCloseable {
         Map<Identifier, BakedModel> map = modelLoader.getBakedModelMap();
         BakedModel bakedModel = map.get(ModelLoader.MISSING_ID);
         IdentityHashMap<BlockState, BakedModel> map2 = new IdentityHashMap<BlockState, BakedModel>();
-        for (Block block : Registry.BLOCK) {
+        for (Block block : Registries.BLOCK) {
             block.getStateManager().getStates().forEach(state -> {
                 Identifier identifier = state.getBlock().getRegistryEntry().registryKey().getValue();
                 BakedModel bakedModel2 = map.getOrDefault(BlockModels.getModelId(identifier, state), bakedModel);

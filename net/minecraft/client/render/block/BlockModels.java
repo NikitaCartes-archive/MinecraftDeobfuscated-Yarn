@@ -11,9 +11,9 @@ import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.ModelIdentifier;
+import net.minecraft.registry.Registries;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 @Environment(value=EnvType.CLIENT)
 public class BlockModels {
@@ -45,7 +45,7 @@ public class BlockModels {
     }
 
     public static ModelIdentifier getModelId(BlockState state) {
-        return BlockModels.getModelId(Registry.BLOCK.getId(state.getBlock()), state);
+        return BlockModels.getModelId(Registries.BLOCK.getId(state.getBlock()), state);
     }
 
     public static ModelIdentifier getModelId(Identifier id, BlockState state) {

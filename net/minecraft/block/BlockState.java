@@ -8,12 +8,12 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
+import net.minecraft.registry.Registries;
 import net.minecraft.state.property.Property;
-import net.minecraft.util.registry.Registry;
 
 public class BlockState
 extends AbstractBlock.AbstractBlockState {
-    public static final Codec<BlockState> CODEC = BlockState.createCodec(Registry.BLOCK.getCodec(), Block::getDefaultState).stable();
+    public static final Codec<BlockState> CODEC = BlockState.createCodec(Registries.BLOCK.getCodec(), Block::getDefaultState).stable();
 
     public BlockState(Block block, ImmutableMap<Property<?>, Comparable<?>> immutableMap, MapCodec<BlockState> mapCodec) {
         super(block, immutableMap, mapCodec);

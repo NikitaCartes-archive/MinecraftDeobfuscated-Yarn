@@ -4,11 +4,12 @@
 package net.minecraft.item;
 
 import net.minecraft.item.Instrument;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 
 public interface Instruments {
     public static final int GOAT_HORN_RANGE = 256;
@@ -23,7 +24,7 @@ public interface Instruments {
     public static final RegistryKey<Instrument> DREAM_GOAT_HORN = Instruments.of("dream_goat_horn");
 
     private static RegistryKey<Instrument> of(String id) {
-        return RegistryKey.of(Registry.INSTRUMENT_KEY, new Identifier(id));
+        return RegistryKey.of(RegistryKeys.INSTRUMENT, new Identifier(id));
     }
 
     public static Instrument registerAndGetDefault(Registry<Instrument> registry) {

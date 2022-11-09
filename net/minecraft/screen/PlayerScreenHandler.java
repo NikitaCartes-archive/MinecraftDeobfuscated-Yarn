@@ -153,32 +153,32 @@ extends AbstractRecipeScreenHandler<CraftingInventory> {
     }
 
     @Override
-    public ItemStack transferSlot(PlayerEntity player, int index) {
+    public ItemStack quickMove(PlayerEntity player, int slot) {
         ItemStack itemStack = ItemStack.EMPTY;
-        Slot slot = (Slot)this.slots.get(index);
-        if (slot != null && slot.hasStack()) {
+        Slot slot2 = (Slot)this.slots.get(slot);
+        if (slot2 != null && slot2.hasStack()) {
             int i;
-            ItemStack itemStack2 = slot.getStack();
+            ItemStack itemStack2 = slot2.getStack();
             itemStack = itemStack2.copy();
             EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
-            if (index == 0) {
+            if (slot == 0) {
                 if (!this.insertItem(itemStack2, 9, 45, true)) {
                     return ItemStack.EMPTY;
                 }
-                slot.onQuickTransfer(itemStack2, itemStack);
-            } else if (index >= 1 && index < 5 ? !this.insertItem(itemStack2, 9, 45, false) : (index >= 5 && index < 9 ? !this.insertItem(itemStack2, 9, 45, false) : (equipmentSlot.getType() == EquipmentSlot.Type.ARMOR && !((Slot)this.slots.get(8 - equipmentSlot.getEntitySlotId())).hasStack() ? !this.insertItem(itemStack2, i = 8 - equipmentSlot.getEntitySlotId(), i + 1, false) : (equipmentSlot == EquipmentSlot.OFFHAND && !((Slot)this.slots.get(45)).hasStack() ? !this.insertItem(itemStack2, 45, 46, false) : (index >= 9 && index < 36 ? !this.insertItem(itemStack2, 36, 45, false) : (index >= 36 && index < 45 ? !this.insertItem(itemStack2, 9, 36, false) : !this.insertItem(itemStack2, 9, 45, false))))))) {
+                slot2.onQuickTransfer(itemStack2, itemStack);
+            } else if (slot >= 1 && slot < 5 ? !this.insertItem(itemStack2, 9, 45, false) : (slot >= 5 && slot < 9 ? !this.insertItem(itemStack2, 9, 45, false) : (equipmentSlot.getType() == EquipmentSlot.Type.ARMOR && !((Slot)this.slots.get(8 - equipmentSlot.getEntitySlotId())).hasStack() ? !this.insertItem(itemStack2, i = 8 - equipmentSlot.getEntitySlotId(), i + 1, false) : (equipmentSlot == EquipmentSlot.OFFHAND && !((Slot)this.slots.get(45)).hasStack() ? !this.insertItem(itemStack2, 45, 46, false) : (slot >= 9 && slot < 36 ? !this.insertItem(itemStack2, 36, 45, false) : (slot >= 36 && slot < 45 ? !this.insertItem(itemStack2, 9, 36, false) : !this.insertItem(itemStack2, 9, 45, false))))))) {
                 return ItemStack.EMPTY;
             }
             if (itemStack2.isEmpty()) {
-                slot.setStack(ItemStack.EMPTY);
+                slot2.setStack(ItemStack.EMPTY);
             } else {
-                slot.markDirty();
+                slot2.markDirty();
             }
             if (itemStack2.getCount() == itemStack.getCount()) {
                 return ItemStack.EMPTY;
             }
-            slot.onTakeItem(player, itemStack2);
-            if (index == 0) {
+            slot2.onTakeItem(player, itemStack2);
+            if (slot == 0) {
                 player.dropItem(itemStack2, false);
             }
         }

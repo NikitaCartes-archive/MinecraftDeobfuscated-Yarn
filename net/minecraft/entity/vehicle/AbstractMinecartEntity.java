@@ -43,7 +43,8 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.tag.BlockTags;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -51,7 +52,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockLocating;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
@@ -646,7 +646,7 @@ extends Entity {
     @Override
     protected void readCustomDataFromNbt(NbtCompound nbt) {
         if (nbt.getBoolean("CustomDisplayTile")) {
-            this.setCustomBlock(NbtHelper.toBlockState(this.world.createCommandRegistryWrapper(Registry.BLOCK_KEY), nbt.getCompound("DisplayState")));
+            this.setCustomBlock(NbtHelper.toBlockState(this.world.createCommandRegistryWrapper(RegistryKeys.BLOCK), nbt.getCompound("DisplayState")));
             this.setCustomBlockOffset(nbt.getInt("DisplayOffset"));
         }
     }

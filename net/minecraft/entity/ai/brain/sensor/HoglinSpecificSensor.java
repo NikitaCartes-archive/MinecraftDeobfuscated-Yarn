@@ -15,8 +15,8 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.mob.HoglinEntity;
 import net.minecraft.entity.mob.PiglinEntity;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 
 public class HoglinSpecificSensor
@@ -33,7 +33,7 @@ extends Sensor<HoglinEntity> {
         Optional<Object> optional = Optional.empty();
         int i = 0;
         ArrayList<HoglinEntity> list = Lists.newArrayList();
-        LivingTargetCache livingTargetCache = brain.getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(LivingTargetCache.empty());
+        LivingTargetCache livingTargetCache = brain.getOptionalRegisteredMemory(MemoryModuleType.VISIBLE_MOBS).orElse(LivingTargetCache.empty());
         for (LivingEntity livingEntity2 : livingTargetCache.iterate(livingEntity -> !livingEntity.isBaby() && (livingEntity instanceof PiglinEntity || livingEntity instanceof HoglinEntity))) {
             if (livingEntity2 instanceof PiglinEntity) {
                 PiglinEntity piglinEntity = (PiglinEntity)livingEntity2;

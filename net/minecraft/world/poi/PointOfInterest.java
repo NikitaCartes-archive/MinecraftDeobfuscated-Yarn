@@ -8,11 +8,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Objects;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryFixedCodec;
 import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryFixedCodec;
 import net.minecraft.world.poi.PointOfInterestType;
 
 public class PointOfInterest {
@@ -22,7 +22,7 @@ public class PointOfInterest {
     private final Runnable updateListener;
 
     public static Codec<PointOfInterest> createCodec(Runnable updateListener) {
-        return RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockPos.CODEC.fieldOf("pos")).forGetter(poi -> poi.pos), ((MapCodec)RegistryFixedCodec.of(Registry.POINT_OF_INTEREST_TYPE_KEY).fieldOf("type")).forGetter(poi -> poi.type), ((MapCodec)Codec.INT.fieldOf("free_tickets")).orElse(0).forGetter(poi -> poi.freeTickets), RecordCodecBuilder.point(updateListener)).apply((Applicative<PointOfInterest, ?>)instance, PointOfInterest::new));
+        return RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockPos.CODEC.fieldOf("pos")).forGetter(poi -> poi.pos), ((MapCodec)RegistryFixedCodec.of(RegistryKeys.POINT_OF_INTEREST_TYPE).fieldOf("type")).forGetter(poi -> poi.type), ((MapCodec)Codec.INT.fieldOf("free_tickets")).orElse(0).forGetter(poi -> poi.freeTickets), RecordCodecBuilder.point(updateListener)).apply((Applicative<PointOfInterest, ?>)instance, PointOfInterest::new));
     }
 
     private PointOfInterest(BlockPos pos, RegistryEntry<PointOfInterestType> type, int freeTickets, Runnable updateListener) {

@@ -30,8 +30,9 @@ import net.minecraft.recipe.SpecialRecipeSerializer;
 import net.minecraft.recipe.StonecuttingRecipe;
 import net.minecraft.recipe.SuspiciousStewRecipe;
 import net.minecraft.recipe.TippedArrowRecipe;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 /**
  * The recipe serializer controls the serialization and deserialization of
@@ -111,7 +112,7 @@ public interface RecipeSerializer<T extends Recipe<?>> {
     public void write(PacketByteBuf var1, T var2);
 
     public static <S extends RecipeSerializer<T>, T extends Recipe<?>> S register(String id, S serializer) {
-        return (S)Registry.register(Registry.RECIPE_SERIALIZER, id, serializer);
+        return (S)Registry.register(Registries.RECIPE_SERIALIZER, id, serializer);
     }
 }
 

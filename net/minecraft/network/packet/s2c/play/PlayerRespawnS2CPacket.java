@@ -7,9 +7,9 @@ import java.util.Optional;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.math.GlobalPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
@@ -41,8 +41,8 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     public PlayerRespawnS2CPacket(PacketByteBuf buf) {
-        this.dimensionType = buf.readRegistryKey(Registry.DIMENSION_TYPE_KEY);
-        this.dimension = buf.readRegistryKey(Registry.WORLD_KEY);
+        this.dimensionType = buf.readRegistryKey(RegistryKeys.DIMENSION_TYPE);
+        this.dimension = buf.readRegistryKey(RegistryKeys.WORLD);
         this.sha256Seed = buf.readLong();
         this.gameMode = GameMode.byId(buf.readUnsignedByte());
         this.previousGameMode = GameMode.getOrNull(buf.readByte());

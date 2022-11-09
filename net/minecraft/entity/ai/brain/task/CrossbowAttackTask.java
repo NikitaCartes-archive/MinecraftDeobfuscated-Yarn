@@ -11,7 +11,7 @@ import net.minecraft.entity.ai.brain.EntityLookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.LookTargetUtil;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.CrossbowItem;
@@ -20,7 +20,7 @@ import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
 
 public class CrossbowAttackTask<E extends MobEntity, T extends LivingEntity>
-extends Task<E> {
+extends MultiTickTask<E> {
     private static final int RUN_TIME = 1200;
     private int chargingCooldown;
     private CrossbowState state = CrossbowState.UNCHARGED;
@@ -93,12 +93,12 @@ extends Task<E> {
     }
 
     private static LivingEntity getAttackTarget(LivingEntity entity) {
-        return entity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).get();
+        return entity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET).get();
     }
 
     @Override
-    protected /* synthetic */ boolean shouldKeepRunning(ServerWorld world, LivingEntity entity, long time) {
-        return this.shouldKeepRunning(world, (E)((MobEntity)entity), time);
+    protected /* synthetic */ void finishRunning(ServerWorld world, LivingEntity entity, long time) {
+        this.finishRunning(world, (E)((MobEntity)entity), time);
     }
 
     @Override

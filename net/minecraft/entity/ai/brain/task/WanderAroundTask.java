@@ -11,7 +11,7 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.MobEntity;
@@ -22,7 +22,7 @@ import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
 public class WanderAroundTask
-extends Task<MobEntity> {
+extends MultiTickTask<MobEntity> {
     private static final int MAX_UPDATE_COUNTDOWN = 40;
     private int pathUpdateCountdownTicks;
     @Nullable
@@ -46,7 +46,7 @@ extends Task<MobEntity> {
             return false;
         }
         Brain<?> brain = mobEntity.getBrain();
-        WalkTarget walkTarget = brain.getOptionalMemory(MemoryModuleType.WALK_TARGET).get();
+        WalkTarget walkTarget = brain.getOptionalRegisteredMemory(MemoryModuleType.WALK_TARGET).get();
         boolean bl = this.hasReached(mobEntity, walkTarget);
         if (!bl && this.hasFinishedPath(mobEntity, walkTarget, serverWorld.getTime())) {
             this.lookTargetPos = walkTarget.getLookTarget().getBlockPos();
@@ -64,14 +64,14 @@ extends Task<MobEntity> {
         if (this.path == null || this.lookTargetPos == null) {
             return false;
         }
-        Optional<WalkTarget> optional = mobEntity.getBrain().getOptionalMemory(MemoryModuleType.WALK_TARGET);
+        Optional<WalkTarget> optional = mobEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.WALK_TARGET);
         EntityNavigation entityNavigation = mobEntity.getNavigation();
         return !entityNavigation.isIdle() && optional.isPresent() && !this.hasReached(mobEntity, optional.get());
     }
 
     @Override
     protected void finishRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
-        if (mobEntity.getBrain().hasMemoryModule(MemoryModuleType.WALK_TARGET) && !this.hasReached(mobEntity, mobEntity.getBrain().getOptionalMemory(MemoryModuleType.WALK_TARGET).get()) && mobEntity.getNavigation().isNearPathStartPos()) {
+        if (mobEntity.getBrain().hasMemoryModule(MemoryModuleType.WALK_TARGET) && !this.hasReached(mobEntity, mobEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.WALK_TARGET).get()) && mobEntity.getNavigation().isNearPathStartPos()) {
             this.pathUpdateCountdownTicks = serverWorld.getRandom().nextInt(40);
         }
         mobEntity.getNavigation().stop();
@@ -97,7 +97,7 @@ extends Task<MobEntity> {
         if (path == null || this.lookTargetPos == null) {
             return;
         }
-        WalkTarget walkTarget = brain.getOptionalMemory(MemoryModuleType.WALK_TARGET).get();
+        WalkTarget walkTarget = brain.getOptionalRegisteredMemory(MemoryModuleType.WALK_TARGET).get();
         if (walkTarget.getLookTarget().getBlockPos().getSquaredDistance(this.lookTargetPos) > 4.0 && this.hasFinishedPath(mobEntity, walkTarget, serverWorld.getTime())) {
             this.lookTargetPos = walkTarget.getLookTarget().getBlockPos();
             this.run(serverWorld, mobEntity, l);
@@ -136,13 +136,8 @@ extends Task<MobEntity> {
     }
 
     @Override
-    protected /* synthetic */ boolean shouldKeepRunning(ServerWorld world, LivingEntity entity, long time) {
-        return this.shouldKeepRunning(world, (MobEntity)entity, time);
-    }
-
-    @Override
-    protected /* synthetic */ void finishRunning(ServerWorld world, LivingEntity entity, long time) {
-        this.finishRunning(world, (MobEntity)entity, time);
+    protected /* synthetic */ void keepRunning(ServerWorld world, LivingEntity entity, long time) {
+        this.keepRunning(world, (MobEntity)entity, time);
     }
 
     @Override

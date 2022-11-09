@@ -10,11 +10,11 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 import net.minecraft.world.dimension.DimensionType;
 
 public class FlatChunkGeneratorLayer {
-    public static final Codec<FlatChunkGeneratorLayer> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.intRange(0, DimensionType.MAX_HEIGHT).fieldOf("height")).forGetter(FlatChunkGeneratorLayer::getThickness), ((MapCodec)Registry.BLOCK.getCodec().fieldOf("block")).orElse(Blocks.AIR).forGetter(layer -> layer.getBlockState().getBlock())).apply((Applicative<FlatChunkGeneratorLayer, ?>)instance, FlatChunkGeneratorLayer::new));
+    public static final Codec<FlatChunkGeneratorLayer> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.intRange(0, DimensionType.MAX_HEIGHT).fieldOf("height")).forGetter(FlatChunkGeneratorLayer::getThickness), ((MapCodec)Registries.BLOCK.getCodec().fieldOf("block")).orElse(Blocks.AIR).forGetter(layer -> layer.getBlockState().getBlock())).apply((Applicative<FlatChunkGeneratorLayer, ?>)instance, FlatChunkGeneratorLayer::new));
     private final Block block;
     private final int thickness;
 
@@ -32,7 +32,7 @@ public class FlatChunkGeneratorLayer {
     }
 
     public String toString() {
-        return (String)(this.thickness != 1 ? this.thickness + "*" : "") + Registry.BLOCK.getId(this.block);
+        return (String)(this.thickness != 1 ? this.thickness + "*" : "") + Registries.BLOCK.getId(this.block);
     }
 }
 

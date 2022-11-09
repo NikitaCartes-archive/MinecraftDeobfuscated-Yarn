@@ -179,6 +179,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SkullItem;
@@ -191,6 +192,10 @@ import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.BiomeTags;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.DefaultResourcePack;
 import net.minecraft.resource.FileResourcePackProvider;
 import net.minecraft.resource.InputSupplier;
@@ -201,7 +206,6 @@ import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.resource.ResourceReload;
 import net.minecraft.resource.ResourceType;
-import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.QueueingWorldGenerationProgressListener;
@@ -209,8 +213,6 @@ import net.minecraft.server.SaveLoader;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.integrated.IntegratedServerLoader;
 import net.minecraft.sound.MusicSound;
-import net.minecraft.tag.BiomeTags;
-import net.minecraft.tag.TagKey;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.KeybindTranslations;
 import net.minecraft.text.MutableText;
@@ -250,8 +252,6 @@ import net.minecraft.util.profiler.ProfilerTiming;
 import net.minecraft.util.profiler.RecordDumper;
 import net.minecraft.util.profiler.Recorder;
 import net.minecraft.util.profiler.TickTimeTracker;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.thread.ReentrantThreadExecutor;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -591,7 +591,7 @@ implements WindowEventHandler {
         this.entityRenderDispatcher = new EntityRenderDispatcher(this, this.textureManager, this.itemRenderer, this.blockRenderManager, this.textRenderer, this.options, this.entityModelLoader);
         this.resourceManager.registerReloader(this.entityRenderDispatcher);
         this.gameRenderer = new GameRenderer(this, this.entityRenderDispatcher.getHeldItemRenderer(), this.resourceManager, this.bufferBuilders);
-        this.resourceManager.registerReloader(this.gameRenderer.createShaderReloader());
+        this.resourceManager.registerReloader(this.gameRenderer.createProgramReloader());
         this.worldRenderer = new WorldRenderer(this, this.entityRenderDispatcher, this.blockEntityRenderDispatcher, this.bufferBuilders);
         this.resourceManager.registerReloader(this.worldRenderer);
         this.initializeSearchProviders();
@@ -624,7 +624,7 @@ implements WindowEventHandler {
         this.window.setRawMouseMotion(this.options.getRawMouseInput().getValue());
         this.window.logOnGlError();
         this.onResolutionChanged();
-        this.gameRenderer.preloadShaders(this.defaultResourcePack.getFactory());
+        this.gameRenderer.preloadPrograms(this.defaultResourcePack.getFactory());
         this.profileKeys = ProfileKeys.create(this.userApiService, this.session, this.runDirectory.toPath());
         this.realms32BitWarningChecker = new Realms32BitWarningChecker(this);
         this.narratorManager = new NarratorManager(this);
@@ -784,12 +784,12 @@ implements WindowEventHandler {
     }
 
     private void initializeSearchProviders() {
-        this.searchManager.put(SearchManager.ITEM_TOOLTIP, stacks -> new TextSearchProvider<ItemStack>(stack -> stack.getTooltip(null, TooltipContext.Default.NORMAL).stream().map(tooltip -> Formatting.strip(tooltip.getString()).trim()).filter(string -> !string.isEmpty()), stack -> Stream.of(Registry.ITEM.getId(stack.getItem())), (List<ItemStack>)stacks));
+        this.searchManager.put(SearchManager.ITEM_TOOLTIP, stacks -> new TextSearchProvider<ItemStack>(stack -> stack.getTooltip(null, TooltipContext.Default.BASIC.withCreative()).stream().map(tooltip -> Formatting.strip(tooltip.getString()).trim()).filter(string -> !string.isEmpty()), stack -> Stream.of(Registries.ITEM.getId(stack.getItem())), (List<ItemStack>)stacks));
         this.searchManager.put(SearchManager.ITEM_TAG, stacks -> new IdentifierSearchProvider<ItemStack>(stack -> stack.streamTags().map(TagKey::id), (List<ItemStack>)stacks));
-        this.searchManager.put(SearchManager.RECIPE_OUTPUT, resultCollections -> new TextSearchProvider<RecipeResultCollection>(resultCollection -> resultCollection.getAllRecipes().stream().flatMap(recipe -> recipe.getOutput().getTooltip(null, TooltipContext.Default.NORMAL).stream()).map(text -> Formatting.strip(text.getString()).trim()).filter(text -> !text.isEmpty()), resultCollection -> resultCollection.getAllRecipes().stream().map(recipe -> Registry.ITEM.getId(recipe.getOutput().getItem())), (List<RecipeResultCollection>)resultCollections));
-        ItemGroups.SEARCH.setSearchProviderReloader(list -> {
-            this.reloadSearchProvider(SearchManager.ITEM_TOOLTIP, (List)list);
-            this.reloadSearchProvider(SearchManager.ITEM_TAG, (List)list);
+        this.searchManager.put(SearchManager.RECIPE_OUTPUT, resultCollections -> new TextSearchProvider<RecipeResultCollection>(resultCollection -> resultCollection.getAllRecipes().stream().flatMap(recipe -> recipe.getOutput().getTooltip(null, TooltipContext.Default.BASIC).stream()).map(text -> Formatting.strip(text.getString()).trim()).filter(text -> !text.isEmpty()), resultCollection -> resultCollection.getAllRecipes().stream().map(recipe -> Registries.ITEM.getId(recipe.getOutput().getItem())), (List<RecipeResultCollection>)resultCollections));
+        ItemGroups.getSearchGroup().setSearchProviderReloader(stacks -> {
+            this.reloadSearchProvider(SearchManager.ITEM_TOOLTIP, (List)stacks);
+            this.reloadSearchProvider(SearchManager.ITEM_TAG, (List)stacks);
         });
     }
 
@@ -878,7 +878,7 @@ implements WindowEventHandler {
         boolean bl = false;
         BlockModels blockModels = this.getBlockRenderManager().getModels();
         BakedModel bakedModel = blockModels.getModelManager().getMissingModel();
-        for (Block block : Registry.BLOCK) {
+        for (Block block : Registries.BLOCK) {
             for (BlockState blockState : block.getStateManager().getStates()) {
                 BakedModel bakedModel2;
                 if (blockState.getRenderType() != BlockRenderType.MODEL || (bakedModel2 = blockModels.getModel(blockState)) != bakedModel) continue;
@@ -887,7 +887,7 @@ implements WindowEventHandler {
             }
         }
         Sprite sprite = bakedModel.getParticleSprite();
-        for (Block block2 : Registry.BLOCK) {
+        for (Block block2 : Registries.BLOCK) {
             for (BlockState blockState2 : block2.getStateManager().getStates()) {
                 Sprite sprite2 = blockModels.getModelParticleSprite(blockState2);
                 if (blockState2.isAir() || sprite2 != sprite) continue;
@@ -895,11 +895,12 @@ implements WindowEventHandler {
                 bl = true;
             }
         }
-        for (ItemStack itemStack : ItemGroups.SEARCH.getDisplayStacks(FeatureFlags.FEATURE_MANAGER.getFeatureSet(), true)) {
+        for (Item item : Registries.ITEM) {
+            ItemStack itemStack = item.getDefaultStack();
             String string = itemStack.getTranslationKey();
             String string2 = Text.translatable(string).getString();
-            if (!string2.toLowerCase(Locale.ROOT).equals(itemStack.getItem().getTranslationKey())) continue;
-            LOGGER.debug("Missing translation for: {} {} {}", itemStack, string, itemStack.getItem());
+            if (!string2.toLowerCase(Locale.ROOT).equals(item.getTranslationKey())) continue;
+            LOGGER.debug("Missing translation for: {} {} {}", itemStack, string, item);
         }
         bl |= HandledScreens.isMissingScreens();
         if (bl |= EntityRenderers.isMissingRendererFactories()) {
@@ -1347,7 +1348,7 @@ implements WindowEventHandler {
         List<ProfilerTiming> list = profileResult.getTimings(this.openProfilerSection);
         ProfilerTiming profilerTiming = list.remove(0);
         RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, IS_SYSTEM_MAC);
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         Matrix4f matrix4f = new Matrix4f().setOrtho(0.0f, this.window.getFramebufferWidth(), this.window.getFramebufferHeight(), 0.0f, 1000.0f, 3000.0f);
         RenderSystem.setProjectionMatrix(matrix4f);
         MatrixStack matrixStack = RenderSystem.getModelViewStack();
@@ -1649,8 +1650,8 @@ implements WindowEventHandler {
                 }
                 this.world.tickEntities();
             }
-        } else if (this.gameRenderer.getShader() != null) {
-            this.gameRenderer.disableShader();
+        } else if (this.gameRenderer.getPostProcessor() != null) {
+            this.gameRenderer.disablePostProcessor();
         }
         if (!this.paused) {
             this.musicTracker.tick();
@@ -2037,9 +2038,9 @@ implements WindowEventHandler {
         if (itemStack.isEmpty()) {
             String string = "";
             if (type == HitResult.Type.BLOCK) {
-                string = Registry.BLOCK.getId(this.world.getBlockState(((BlockHitResult)this.crosshairTarget).getBlockPos()).getBlock()).toString();
+                string = Registries.BLOCK.getId(this.world.getBlockState(((BlockHitResult)this.crosshairTarget).getBlockPos()).getBlock()).toString();
             } else if (type == HitResult.Type.ENTITY) {
-                string = Registry.ENTITY_TYPE.getId(((EntityHitResult)this.crosshairTarget).getEntity().getType()).toString();
+                string = Registries.ENTITY_TYPE.getId(((EntityHitResult)this.crosshairTarget).getEntity().getType()).toString();
             }
             LOGGER.warn("Picking on: [{}] {} gave null item", (Object)type, (Object)string);
             return;
@@ -2170,6 +2171,11 @@ implements WindowEventHandler {
     @Nullable
     public IntegratedServer getServer() {
         return this.server;
+    }
+
+    public boolean method_47392() {
+        IntegratedServer integratedServer = this.getServer();
+        return integratedServer != null && !integratedServer.isRemote();
     }
 
     public Session getSession() {
@@ -2408,7 +2414,7 @@ implements WindowEventHandler {
         this.gameRenderer.setBlockOutlineEnabled(false);
         try {
             this.gameRenderer.setRenderingPanorama(true);
-            this.worldRenderer.reloadTransparencyShader();
+            this.worldRenderer.reloadTransparencyPostProcessor();
             this.window.setFramebufferWidth(width);
             this.window.setFramebufferHeight(height);
             for (int l = 0; l < 6; ++l) {
@@ -2471,7 +2477,7 @@ implements WindowEventHandler {
             this.window.setFramebufferHeight(j);
             framebuffer.delete();
             this.gameRenderer.setRenderingPanorama(false);
-            this.worldRenderer.reloadTransparencyShader();
+            this.worldRenderer.reloadTransparencyPostProcessor();
             this.getFramebuffer().beginWrite(true);
         }
     }

@@ -21,7 +21,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.BlockPosLookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
 import net.minecraft.entity.ai.pathing.Path;
@@ -40,7 +40,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class LongJumpTask<E extends MobEntity>
-extends Task<E> {
+extends MultiTickTask<E> {
     protected static final int MAX_COOLDOWN = 20;
     private static final int TARGET_RETAIN_TIME = 40;
     protected static final int PATHING_DISTANCE = 8;
@@ -93,7 +93,7 @@ extends Task<E> {
     protected boolean shouldKeepRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
         boolean bl;
         boolean bl2 = bl = this.lastPos.isPresent() && this.lastPos.get().equals(mobEntity.getPos()) && this.cooldown > 0 && !mobEntity.isInsideWaterOrBubbleColumn() && (this.lastTarget != null || !this.targets.isEmpty());
-        if (!bl && mobEntity.getBrain().getOptionalMemory(MemoryModuleType.LONG_JUMP_MID_JUMP).isEmpty()) {
+        if (!bl && mobEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.LONG_JUMP_MID_JUMP).isEmpty()) {
             mobEntity.getBrain().remember(MemoryModuleType.LONG_JUMP_COOLING_DOWN, this.cooldownRange.get(serverWorld.random) / 2);
             mobEntity.getBrain().forget(MemoryModuleType.LOOK_TARGET);
         }
@@ -238,8 +238,13 @@ extends Task<E> {
     }
 
     @Override
-    protected /* synthetic */ void keepRunning(ServerWorld world, LivingEntity entity, long time) {
-        this.keepRunning(world, (E)((MobEntity)entity), time);
+    protected /* synthetic */ boolean shouldKeepRunning(ServerWorld world, LivingEntity entity, long time) {
+        return this.shouldKeepRunning(world, (MobEntity)entity, time);
+    }
+
+    @Override
+    protected /* synthetic */ void run(ServerWorld world, LivingEntity entity, long time) {
+        this.run(world, (E)((MobEntity)entity), time);
     }
 
     public static class Target

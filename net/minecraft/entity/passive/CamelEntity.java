@@ -243,8 +243,8 @@ Saddleable {
     }
 
     @Override
-    public boolean canJump() {
-        return !this.isStationary() && super.canJump();
+    public boolean canJump(PlayerEntity player) {
+        return !this.isStationary() && this.getPrimaryPassenger() == player && super.canJump(player);
     }
 
     @Override

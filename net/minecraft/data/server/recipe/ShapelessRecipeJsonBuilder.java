@@ -22,9 +22,9 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.recipe.book.RecipeCategory;
-import net.minecraft.tag.TagKey;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class ShapelessRecipeJsonBuilder
@@ -151,7 +151,7 @@ implements CraftingRecipeJsonBuilder {
             }
             json.add("ingredients", jsonArray);
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("item", Registry.ITEM.getId(this.output).toString());
+            jsonObject.addProperty("item", Registries.ITEM.getId(this.output).toString());
             if (this.count > 1) {
                 jsonObject.addProperty("count", this.count);
             }

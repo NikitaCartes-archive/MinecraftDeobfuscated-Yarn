@@ -9,7 +9,7 @@ import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.WardenEntity;
@@ -21,7 +21,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class SonicBoomTask
-extends Task<WardenEntity> {
+extends MultiTickTask<WardenEntity> {
     private static final int HORIZONTAL_RANGE = 15;
     private static final int VERTICAL_RANGE = 20;
     private static final double field_38852 = 0.5;
@@ -36,7 +36,7 @@ extends Task<WardenEntity> {
 
     @Override
     protected boolean shouldRun(ServerWorld serverWorld, WardenEntity wardenEntity) {
-        return wardenEntity.isInRange(wardenEntity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).get(), 15.0, 20.0);
+        return wardenEntity.isInRange(wardenEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET).get(), 15.0, 20.0);
     }
 
     @Override
@@ -54,12 +54,12 @@ extends Task<WardenEntity> {
 
     @Override
     protected void keepRunning(ServerWorld serverWorld, WardenEntity wardenEntity, long l) {
-        wardenEntity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).ifPresent(target -> wardenEntity.getLookControl().lookAt(target.getPos()));
+        wardenEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET).ifPresent(target -> wardenEntity.getLookControl().lookAt(target.getPos()));
         if (wardenEntity.getBrain().hasMemoryModule(MemoryModuleType.SONIC_BOOM_SOUND_DELAY) || wardenEntity.getBrain().hasMemoryModule(MemoryModuleType.SONIC_BOOM_SOUND_COOLDOWN)) {
             return;
         }
         wardenEntity.getBrain().remember(MemoryModuleType.SONIC_BOOM_SOUND_COOLDOWN, Unit.INSTANCE, RUN_TIME - SOUND_DELAY);
-        wardenEntity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).filter(wardenEntity::isValidTarget).filter(target -> wardenEntity.isInRange((Entity)target, 15.0, 20.0)).ifPresent(target -> {
+        wardenEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET).filter(wardenEntity::isValidTarget).filter(target -> wardenEntity.isInRange((Entity)target, 15.0, 20.0)).ifPresent(target -> {
             Vec3d vec3d = wardenEntity.getPos().add(0.0, 1.6f, 0.0);
             Vec3d vec3d2 = target.getEyePos().subtract(vec3d);
             Vec3d vec3d3 = vec3d2.normalize();
@@ -85,18 +85,8 @@ extends Task<WardenEntity> {
     }
 
     @Override
-    protected /* synthetic */ boolean shouldKeepRunning(ServerWorld world, LivingEntity entity, long time) {
-        return this.shouldKeepRunning(world, (WardenEntity)entity, time);
-    }
-
-    @Override
     protected /* synthetic */ void finishRunning(ServerWorld world, LivingEntity entity, long time) {
         this.finishRunning(world, (WardenEntity)entity, time);
-    }
-
-    @Override
-    protected /* synthetic */ void keepRunning(ServerWorld world, LivingEntity entity, long time) {
-        this.keepRunning(world, (WardenEntity)entity, time);
     }
 
     @Override
